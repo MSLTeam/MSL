@@ -1,0 +1,31 @@
+﻿<Page x:Class="MSL.pages.SettingsPage"
+      xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+      xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+      xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006" 
+      xmlns:d="http://schemas.microsoft.com/expression/blend/2008" 
+      xmlns:local="clr-namespace:MSL.pages"
+      mc:Ignorable="d" 
+      d:DesignHeight="500" d:DesignWidth="820"
+      Title="SettingsPage" Loaded="Page_Loaded">
+
+    <Grid>
+        <Label Content="开服器设置" Foreground="#FF000000" FontSize="24" FontWeight="Bold" Height="44" Width="142" HorizontalAlignment="Left" VerticalAlignment="Top" Margin="10,5,0,0" Background="{x:Null}" BorderBrush="{x:Null}" />
+        <Button Name="setdefault" Content="恢复默认设置" HorizontalAlignment="Left" Margin="117,60,0,0" VerticalAlignment="Top" Width="200" Background="#FFFFFFFF" FontFamily="Microsoft YaHei UI" Height="37" FontSize="16" BorderBrush="#FF0078D7" FontWeight="Normal" Foreground="#FF000000" Click="setdefault_Click" />
+        <Label Content="下载线程：（默认为8，建议不超过16）" Margin="10,129,0,0" FontSize="16" HorizontalAlignment="Left" VerticalAlignment="Top" Height="36" Width="303" BorderBrush="{x:Null}" Background="{x:Null}" />
+        <TextBox Name="downthreadCount" Margin="316,131,205,0" Text="8" FontSize="18" VerticalAlignment="Top" Height="34" />
+        <Button Name="mulitDownthread" Height="34" Margin="0,131,79,0" Width="121" Content="确定" FontSize="16" HorizontalAlignment="Right" VerticalAlignment="Top" Click="mulitDownthread_Click" />
+        <Button Name="notifyIconbtn" Content="打开托盘图标" HorizontalAlignment="Left" Margin="339,60,0,0" VerticalAlignment="Top" Width="200" Background="#FFFFFFFF" FontFamily="Microsoft YaHei UI" Height="37" FontSize="16" BorderBrush="#FF0078D7" FontWeight="Normal" Foreground="#FF000000" Click="notifyIconbtn_Click" />
+        <Button Name="useidea" Content="使用教程" Margin="562,60,0,0" VerticalAlignment="Top" Width="179" Background="#FFFFFFFF" FontFamily="Microsoft YaHei UI" Height="37" FontSize="16" BorderBrush="#FF008042" FontWeight="Normal" Foreground="#FF000000" HorizontalAlignment="Left" Click="useidea_Click" />
+        <Label Content="启动软件自动打开以下服务器：" HorizontalAlignment="Left" Margin="10,189,0,0" VerticalAlignment="Top" FontSize="16" Height="40" Background="{x:Null}" BorderBrush="{x:Null}" />
+        <TextBox Name="openserversOnStartList" Margin="10,234,289,0" VerticalContentAlignment="Top" TextWrapping="Wrap" VerticalAlignment="Top" Height="134" />
+        <Label Content="启动软件自动打开内网映射：" HorizontalAlignment="Left" Margin="10,373,0,0" VerticalAlignment="Top" FontSize="16" Height="35" Background="{x:Null}" BorderBrush="{x:Null}" />
+        <ToggleButton Name="openfrpOnStart" Margin="245,376,0,0" Style="{StaticResource ToggleButtonSwitch}" HorizontalAlignment="Left" VerticalAlignment="Top" Width="36" Height="32" Click="openfrpOnStart_Click" />
+        <ToggleButton Name="openserversOnStart" Margin="261,193,0,0" Style="{StaticResource ToggleButtonSwitch}" HorizontalAlignment="Left" VerticalAlignment="Top" Width="36" Height="32" Click="openserversOnStart_Click" />
+        <TextBlock Text="左侧列表填写方法：&#xA;请按照以下格式进行填写：服务器ID+英文逗号&#xA;服务器ID是服务器列表栏中的服务器所在位置-1，如列表中的第一个服务器ID为0，第二个为1&#xA;填写示例：仅一个服务器时：0,  （切记不要忘记逗号）&#xA;多个服务器时：0,1,2,3,  （切记不要忘记逗号）" Margin="0,234,10,132" Foreground="#FFFF0000" TextWrapping="Wrap" Width="274" HorizontalAlignment="Right" FontSize="13" />
+        <Label Content="功能调整：" Margin="10,60,0,0" FontSize="16" HorizontalAlignment="Left" VerticalAlignment="Top" Height="36" BorderBrush="{x:Null}" Background="{x:Null}" />
+        <Label Content="皮肤：" HorizontalAlignment="Left" Margin="10,423,0,0" VerticalAlignment="Top" FontSize="16" Height="35" Background="{x:Null}" BorderBrush="{x:Null}" />
+        <RadioButton Name="NormalSkinBtn" HorizontalAlignment="Left" Margin="80,432,0,0" VerticalAlignment="Top" Content="默认皮肤" Checked="NormalSkinBtn_Checked" />
+        <RadioButton Name="BlackWhiteSkinBtn" HorizontalAlignment="Left" Margin="198,432,0,0" VerticalAlignment="Top" Content="灰色皮肤" Checked="BlackWhiteSkinBtn_Checked" />
+        <RadioButton Name="RedSkinBtn" HorizontalAlignment="Left" Margin="316,432,0,0" VerticalAlignment="Top" Content="红色皮肤" Checked="RedSkinBtn_Checked" />
+    </Grid>
+</Page>

@@ -1,0 +1,65 @@
+﻿<Window
+        xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+        xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+        xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
+        xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+        xmlns:hc="https://handyorg.github.io/handycontrol"
+        xmlns:local="clr-namespace:MSL"
+        x:Class="MSL.MainWindow"
+        mc:Ignorable="d" Height="540" Width="900" MinHeight="540" MinWidth="900" WindowStartupLocation="CenterScreen" Loaded="Window_Loaded" Closing="Window_Closing" Icon="我的世界开服器_00001.ico" Title="Minecraft Server Launcher" ResizeMode="CanResize" Style="{DynamicResource NormalColorStyle}" Activated="Window_Activated" Deactivated="Window_Deactivated">
+    <Window.Resources>
+        <Style x:Key="NormalColorStyle" TargetType="{x:Type Window}">
+            <Style.Setters>
+                <Setter Property="Background" Value="#FFF7FAFC"/>
+            </Style.Setters>
+        </Style>
+        <Style x:Key="BlackWhiteColorStyle" TargetType="{x:Type Window}">
+            <Style.Setters>
+                <Setter Property="Background" Value="#FFEAEAEA"/>
+            </Style.Setters>
+        </Style>
+        <Style x:Key="RedColorStyle" TargetType="{x:Type Window}">
+            <Style.Setters>
+                <Setter Property="Background" Value="#FFDCDC"/>
+            </Style.Setters>
+        </Style>
+    </Window.Resources>
+    <Grid>
+        <hc:SideMenu x:Name="SideMenu" BorderThickness="0" Background="#FFEEF4F9" HorizontalAlignment="Left" Width="50" BorderBrush="{x:Null}">
+            <hc:SideMenuItem x:Name="homePage" Header="主页" IsSelected="True" Background="{x:Null}" Selected="homePage_Selected" Margin="0,42,0,0">
+                <hc:SideMenuItem.Icon>
+                    <Image Source="/images/150px-Grass_Block_JE7_BE6.png" Width="24" Height="24"/>
+                </hc:SideMenuItem.Icon>
+            </hc:SideMenuItem>
+            <hc:SideMenuItem x:Name="serverlistPage" Header="服务器" Background="{x:Null}" Selected="serverlistPage_Selected">
+                <hc:SideMenuItem.Icon>
+                    <Image Source="/images/150px-Enchanted_Book.png" Width="24" Height="24"/>
+                </hc:SideMenuItem.Icon>
+            </hc:SideMenuItem>
+            <hc:SideMenuItem x:Name="frpPage" Header="映射" Background="{x:Null}" Selected="frpPage_Selected">
+                <hc:SideMenuItem.Icon>
+                    <Image Source="/images/150px-Beacon.png" Width="24" Height="24"/>
+                </hc:SideMenuItem.Icon>
+            </hc:SideMenuItem>
+            <hc:SideMenuItem x:Name="settingsPage" Header="设置" Background="{x:Null}" Selected="settingsPage_Selected">
+                <hc:SideMenuItem.Icon>
+                    <Image Source="/images/150px-Wooden_Pickaxe_JE3_BE3.png" Width="24" Height="24"/>
+                </hc:SideMenuItem.Icon>
+            </hc:SideMenuItem>
+            <hc:SideMenuItem x:Name="aboutPage" Header="关于" Background="{x:Null}" Selected="aboutPage_Selected">
+                <hc:SideMenuItem.Icon>
+                    <Image Source="/images/150px-Diamond_Revision_2.png" Width="24" Height="24"/>
+                </hc:SideMenuItem.Icon>
+            </hc:SideMenuItem>
+        </hc:SideMenu>
+        <Frame Margin="50,0,0,0" Name="frame" Source="/MSL;component/pages/Home.xaml" NavigationUIVisibility="Hidden"/>
+        <Button x:Name="sideMenuContextOpen" HorizontalAlignment="Left" VerticalAlignment="Top" Width="50" Height="42" FontSize="20" BorderBrush="{x:Null}" Click="sideMenuContextOpen_Click">
+            <Button.Background>
+                <ImageBrush ImageSource="/images/sidemenuextend.png" Stretch="Uniform" TileMode="None"/>
+            </Button.Background>
+        </Button>
+        <ScrollViewer VerticalScrollBarVisibility="Hidden" HorizontalAlignment="Right" VerticalAlignment="Top">
+            <StackPanel Name="GrowlPanel" hc:Growl.GrowlParent="True" VerticalAlignment="Top" Margin="0,10,10,10" />
+        </ScrollViewer>
+    </Grid>
+</Window>

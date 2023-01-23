@@ -1,0 +1,27 @@
+﻿<Window x:Class="MSL.pages.DownloadServer"
+      xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+      xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+      xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006" 
+      xmlns:d="http://schemas.microsoft.com/expression/blend/2008" 
+      xmlns:hc="https://handyorg.github.io/handycontrol"
+      xmlns:local="clr-namespace:MSL"
+      mc:Ignorable="d" 
+      Height="520" Width="820"
+      Title="下载服务端" Loaded="Page_Loaded" Background="#FFEEF4F9" ResizeMode="NoResize" WindowStartupLocation="CenterOwner">
+    <Grid>
+        <ListBox x:Name="serverlist1" Margin="10,77,210,12" MouseDoubleClick="serverlist_MouseDoubleClick" Background="White"/>
+        <TextBlock x:Name="getservermsg" HorizontalAlignment="Left" Margin="256,244,0,0" TextWrapping="Wrap" Text="加载中，请耐心等待..." VerticalAlignment="Top" Height="72" Width="154" FontSize="14" Foreground="Red"/>
+        <Label x:Name="downmsg1" Content="部分下载源由xiaoyu/BMCL提供" HorizontalAlignment="Right" Margin="0,0,10,12" VerticalAlignment="Bottom" Height="46" Foreground="Black" FontSize="12" Background="{x:Null}" BorderBrush="{x:Null}" Width="195"/>
+        <ComboBox x:Name="serverlist" Margin="192,8,88,0" SelectionChanged="serverlist_SelectionChanged" FontFamily="Microsoft YaHei UI" Background="White" Height="32" VerticalAlignment="Top"/>
+        <TextBox HorizontalAlignment="Right" Height="148" Margin="0,99,10,0" TextWrapping="Wrap" Text="Spigot——只可加插件&#xA;Paper——只可加插件&#xA;Purpur——只可加插件&#xA;Vanilla——Mojang原版服务端，无法加插件和MOD&#xA;MODServers——均可加MOD，有的可加插件" VerticalAlignment="Top" Width="195" Focusable="False" IsReadOnly="True" FontFamily="Microsoft YaHei UI" Background="{x:Null}"/>
+        <Button x:Name="openSpigot" Content="SpigotMc" Margin="0,0,10,158" VerticalAlignment="Bottom" Width="195" FontFamily="Microsoft YaHei UI" FontSize="14" Height="45" Background="#33000000" Click="openSpigot_Click" HorizontalAlignment="Right"/>
+        <Button x:Name="openPaper" Content="PaperMc" Margin="0,0,10,108" VerticalAlignment="Bottom" Width="195" FontFamily="Microsoft YaHei UI" FontSize="14" Height="45" Background="#33000000" Click="openPaper_Click" HorizontalAlignment="Right"/>
+        <Button x:Name="openMojang" Content="Mojang" Margin="0,0,10,58" VerticalAlignment="Bottom" Width="195" FontFamily="Microsoft YaHei UI" FontSize="14" Height="45" Background="#33000000" Click="openMojang_Click" HorizontalAlignment="Right"/>
+        <Label Content="相关网站:" HorizontalAlignment="Right" Margin="0,0,132,203" VerticalAlignment="Bottom" BorderBrush="{x:Null}" Background="{x:Null}" Height="29" FontWeight="Bold"/>
+        <Label Content="在此选择服务端：" HorizontalAlignment="Left" Margin="10,4,0,0" VerticalAlignment="Top" FontSize="20" Width="182" FontWeight="Bold" Background="{x:Null}" BorderBrush="{x:Null}" Height="39"/>
+        <Label Content="我该如何选择服务端？" HorizontalAlignment="Right" Margin="0,70,65,0" VerticalAlignment="Top" Background="{x:Null}" BorderBrush="{x:Null}" Width="140" Height="29" FontWeight="Bold"/>
+        <Label Content="双击版本号进行下载：" HorizontalAlignment="Left" Margin="10,38,0,0" VerticalAlignment="Top" FontSize="16" Width="174" BorderBrush="{x:Null}" Background="{x:Null}" Height="34"/>
+        <Button x:Name="RefreshBtn" Content="刷新" Margin="0,8,10,0" VerticalAlignment="Top" Click="RefreshBtn_Click" Height="32" Width="73" HorizontalAlignment="Right"/>
+        <hc:LoadingCircle x:Name="lCircle" HorizontalAlignment="Left" Margin="211,0,0,0" VerticalAlignment="Center"/>
+    </Grid>
+</Window>
