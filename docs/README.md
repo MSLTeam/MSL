@@ -8,97 +8,97 @@ Minecraft Server Launcher 官方文档
 
 # 基本功能
 以下为MSL的主界面：
-![image.png](http://106.12.157.82/web/wikiImage/1%20(1).png)
+![image.png](https://imgloc.com/i/OawcU)
 
 其中第一个汉堡包按钮为折叠侧边栏
 折叠后效果如下：
-![image.png](http://106.12.157.82/web/wikiImage/1%20(2).png)
+![image.png](https://imgloc.com/i/Oalnp)
 
 # 开启开服之旅！
 我们点击主页的开启服务器按钮，开服器会转到“服务器列表”页
 如果你是第一次使用开服器，软件会提示您新建一个服务器：
-![image-20230119180035857](http://106.12.157.82/web/wikiImage/1%20(3).png)
+![image-20230119180035857](https://imgloc.com/i/Oa2ov)
 
 我们点击确定，就可以在弹出的界面里面进行相关设置了。
-![image-20230119180108162](http://106.12.157.82/web/wikiImage/1%20(4).png)
+![image-20230119180108162](https://imgloc.com/i/OaOf3)
 # 创建服务器
 ## 第一步：填写服务器名称
 这里填写的服务器名称仅用于开服器后续的展示，并不会真正改变服务器的名字QWQ
-![image-20230119180108164](http://106.12.157.82/web/wikiImage/1%20(5).png)
+![image-20230119180108164](https://imgloc.com/i/Oab8y)
 
 ## 第二步：选择服务器目录
 服务器目录用于后续开服时存放服务器文件（超级多），所以不建议设置为桌面或者磁盘根目录，若执意设置为以上目录，删除服务器时请多加小心，否则开服器会清空你的桌面或者磁盘，十分危险！！！
-![image.png](http://106.12.157.82/web/wikiImage/1%20(6).png)
+![image.png](https://imgloc.com/i/OajF5)
 
 ## 第三步：选择Java
 Java是目前我的世界绝大多数服务端的运行环境，所以你必须得下载/安装Java
 如果您提前安装了Java/系统自带了Java,请点击“安装了Java”，否则请点击“我没有安装Java”（新手也建议选这个！！！）
-![image.png](http://106.12.157.82/web/wikiImage/1%20(7).png)
+![image.png](https://imgloc.com/i/Oa8Y8)
 
 （如果你是手动选择Java的可直接前往第四步）
 开服器目前支持为您下载4个版本的Java：（请务必根据您准备开的服务器版本来选择Java，否则会出现无法开服的问题！）
-![image.png](http://106.12.157.82/web/wikiImage/1%20(8).png)
+![image.png](https://imgloc.com/i/OaNwZ)
 
 我们选择一个版本，然后点击下一步
 下载Java需要遵守Oracle的条款，我们进入网站阅读后点击“确定”进行下载：
-![image.png](http://106.12.157.82/web/wikiImage/1%20(9).png)
+![image.png](https://imgloc.com/i/OarxF)
 
 ## 第四步：选择服务端
 此处和Java的选择界面大同小异，如果你备有服务端的话，就点击第二个按钮，没有的话就点击第一个（新手建议选这个）
-![image.png](http://106.12.157.82/web/wikiImage/1%20(10).png)
+![image.png](https://imgloc.com/i/Oa3MH)
 
 （如果你是手动选择服务端的可直接前往第五步）
 接着就是开服器下载服务端的窗口了
 开服器也为您配备了许多不同的服务端，您可根据括号里的描述进行下载（Forge端的下载安装比较不同，您后续前往B站观看UP的教程视频来操作）
-![image.png](http://106.12.157.82/web/wikiImage/1%20(11).png)
+![image.png](https://imgloc.com/i/OacnQ)
 
 ## 第五步：服务器的其他设置
 第五步是收尾步骤，您可在此配置服务器的运行内存和启动参数（新手和非新手都不建议更改！）
 若您选择优化参数后无法开服，请前往服务器设置界面删除启动参数（JVM参数）即可。
-![image.png](http://106.12.157.82/web/wikiImage/1%20(12).png)
+![image.png](https://imgloc.com/i/OamcE)
 
 完成后此界面将关闭，此时已经可以看见您的服务器了：
-![image.png](http://106.12.157.82/web/wikiImage/1%20(13).png)
+![image.png](https://imgloc.com/i/OapsC)
 
 # 开启服务器
 选中服务器后可以点击左侧按钮对服务器执行相关操作，这里我们直接双击来开服
 接着就会弹出服务器运行界面
-![image.png](http://106.12.157.82/web/wikiImage/1%20(14).png)
+![image.png](https://imgloc.com/i/OaXfP)
 
 我们耐心等待服务器开启
 
 开服务器也需接受Mojang的EULA条款，若弹出这个窗口，我们点击确定，开服器会自动接受Eula并重启服务器，我们要在打开的浏览器网页中仔细阅读条款并遵守其内容
-![image.png](http://106.12.157.82/web/wikiImage/1%20(15).png)
+![image.png](https://imgloc.com/i/Oag8X)
 
 （若你用的是Mohist端，操作可能不一样，我们只需在其提示时在指令栏输入true即可）
 
 若出现开服器的中文提示或以下方框中的内容时，即说明服务器已成功开启
-![image.png](http://106.12.157.82/web/wikiImage/1%20(16).png)
+![image.png](https://imgloc.com/i/OaxGt)
 
 此时，我们就可以点击关服按钮以对服务器进行进一步的设置……
 
 # 开服器更多功能
 在服务器运行界面，还有许多小功能待您探索，若您有一双善于发现的眼睛，就可以少走很多开服弯路QWQ
 以下为不同界面的截图：
-![image.png](http://106.12.157.82/web/wikiImage/1%20(17).png)
-![image.png](http://106.12.157.82/web/wikiImage/1%20(18).png)
-![image.png](http://106.12.157.82/web/wikiImage/1%20(19).png)
-![image.png](http://106.12.157.82/web/wikiImage/1%20(20).png)
-![image.png](http://106.12.157.82/web/wikiImage/1%20(21).png)
+![image.png](https://imgloc.com/i/Oa7YJ)
+![image.png](https://imgloc.com/i/Oaewc)
+![image.png](https://imgloc.com/i/Oaz7A)
+![image.png](https://imgloc.com/i/Oa6Mo)
+![image.png](https://imgloc.com/i/OaGtN)
 
 # 内网映射
 服务器开启后，肯定有很多小伙伴不知道怎么让自己进服或者让其他小伙伴进服
 想要自己进服的话，如果你没更改端口，只需要在我的世界游戏-多人联机-添加服务器-服务器地址中输入127.0.0.1就可以进了
 想要其他小伙伴进的话，你就需要公网IP（太过麻烦，且很多人没有条件，故文档中不讲）或者进行内网映射
 我们进入开服器的内网映射界面，依照下图步骤操作就行：
-![image.png](http://106.12.157.82/web/wikiImage/1%20(22).png)
+![image.png](https://imgloc.com/i/OadmV)
 
 # 开服器设置
 开服器设置界面可以对开服器的相关功能进行设置，也可以启用打开软件自动打开服务器/内网映射的功能
-![image.png](http://106.12.157.82/web/wikiImage/1%20(23).png)
+![image.png](https://imgloc.com/i/Oahsd)
 
 # 关于
-![image.png](http://106.12.157.82/web/wikiImage/1%20(24).png)
+![image.png](https://imgloc.com/i/OaSyb)
 
 # 视频教程
 <iframe src="//player.bilibili.com/player.html?aid=431020620&bvid=BV1LG411J7U8&cid=847537814&page=1" scrolling="no" border="0" frameborder="no" framespacing="0" allowfullscreen="true"> </iframe>
