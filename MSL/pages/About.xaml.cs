@@ -33,24 +33,30 @@ namespace MSL.pages
             switch (((Button)sender).Name)
             {
                 case "HyperLink1":
-                    Process.Start("https://github.com/CurseForgeCommunity/.NET-APIClient");
+                    Process.Start("https://github.com/Fody/Fody");
                     break;
                 case "HyperLink2":
-                    Process.Start("https://github.com/bezzad/Downloader");
+                    Process.Start("https://github.com/Fody/Costura");
                     break;
                 case "HyperLink3":
-                    Process.Start("https://github.com/ghost1372/HandyControls");
+                    Process.Start("https://github.com/CurseForgeCommunity/.NET-APIClient");
                     break;
                 case "HyperLink4":
-                    Process.Start("https://www.nuget.org/packages/Microsoft.Windows.SDK.Contracts");
+                    Process.Start("https://github.com/bezzad/Downloader");
                     break;
                 case "HyperLink5":
-                    Process.Start("https://www.newtonsoft.com/json");
+                    Process.Start("https://github.com/ghost1372/HandyControls");
                     break;
                 case "HyperLink6":
-                    Process.Start("https://github.com/icsharpcode/SharpZipLib");
+                    Process.Start("https://www.nuget.org/packages/Microsoft.Windows.SDK.Contracts");
                     break;
                 case "HyperLink7":
+                    Process.Start("https://www.newtonsoft.com/json");
+                    break;
+                case "HyperLink8":
+                    Process.Start("https://github.com/icsharpcode/SharpZipLib");
+                    break;
+                case "HyperLink9":
                     Process.Start("https://github.com/dotnet/runtime");
                     break;
             }
