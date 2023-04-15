@@ -1,0 +1,59 @@
+﻿<Window x:Class="MSL.controls.MessageDialog"
+             xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+             xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+             xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006" 
+             xmlns:d="http://schemas.microsoft.com/expression/blend/2008" 
+             xmlns:local="clr-namespace:MSL.controls"
+             mc:Ignorable="d" 
+             WindowStyle="None" WindowStartupLocation="CenterOwner" ShowInTaskbar="False" AllowsTransparency="True" Background="{x:Null}">
+    <Window.Resources>
+        <ResourceDictionary>
+            <Storyboard x:Key="ShowWindow" >
+                <DoubleAnimation Duration="0:0:0.15" From="0.5" To="1" Storyboard.TargetProperty="Opacity" FillBehavior="Stop"/>
+                <DoubleAnimation Duration="0:0:0.12" From="1.1" To="1" Storyboard.TargetProperty="(UIElement.RenderTransform).(TransformGroup.Children)[0].(ScaleX)" FillBehavior="Stop" Storyboard.TargetName="MainGrid"/>
+                <DoubleAnimation Duration="0:0:0.12" From="1.1" To="1" Storyboard.TargetProperty="(UIElement.RenderTransform).(TransformGroup.Children)[0].(ScaleY)" FillBehavior="Stop" Storyboard.TargetName="MainGrid"/>
+            </Storyboard>
+            <Storyboard x:Key="HideWindow" >
+                <DoubleAnimation Duration="0:0:0.15" From="1" To="0.5" Storyboard.TargetProperty="Opacity" FillBehavior="Stop"/>
+                <DoubleAnimation Duration="0:0:0.12" From="1" To="1.1" Storyboard.TargetProperty="(UIElement.RenderTransform).(TransformGroup.Children)[0].(ScaleX)" FillBehavior="Stop" Storyboard.TargetName="MainGrid"/>
+                <DoubleAnimation Duration="0:0:0.12" From="1" To="1.1" Storyboard.TargetProperty="(UIElement.RenderTransform).(TransformGroup.Children)[0].(ScaleY)" FillBehavior="Stop" Storyboard.TargetName="MainGrid"/>
+            </Storyboard>
+        </ResourceDictionary>
+    </Window.Resources>
+    <Window.Triggers>
+        <EventTrigger RoutedEvent="Loaded">
+            <BeginStoryboard Storyboard="{StaticResource ShowWindow}"/>
+        </EventTrigger>
+    </Window.Triggers>
+    <Border>
+        <Border.Effect>
+            <DropShadowEffect ShadowDepth="0" BlurRadius="50" Opacity="0.5"/>
+        </Border.Effect>
+        <Grid x:Name="MainGrid" RenderTransformOrigin="0.5,0.5" HorizontalAlignment="Center" VerticalAlignment="Center" Margin="50,20,50,20">
+            <Grid.RenderTransform>
+                <TransformGroup>
+                    <ScaleTransform  ScaleX="1" ScaleY="1"/>
+                    <SkewTransform/>
+                    <RotateTransform/>
+                    <TranslateTransform/>
+                </TransformGroup>
+            </Grid.RenderTransform>
+            <Border CornerRadius="10,10,0,0" Background="{DynamicResource DialogBrush1}" Margin="0,0,0,70">
+                <Grid Margin="25,20,25,20">
+                    <TextBlock x:Name="titleText" Foreground="{DynamicResource TextBlockBrush}" TextWrapping="NoWrap" Text="TitleText" FontSize="24" VerticalAlignment="Top" HorizontalAlignment="Left"/>
+                    <TextBlock x:Name="bodyText" Foreground="{DynamicResource TextBlockBrush}" Margin="0,45,0,0" TextWrapping="Wrap" Text="BodyText" FontSize="14" HorizontalAlignment="Left" VerticalAlignment="Top"/>
+                </Grid>
+            </Border>
+            <Border CornerRadius="0,0,10,10" Background="{DynamicResource DialogBrush2}" VerticalAlignment="Bottom" Height="70">
+                <Grid>
+                    <Grid.ColumnDefinitions>
+                        <ColumnDefinition/>
+                        <ColumnDefinition/>
+                    </Grid.ColumnDefinitions>
+                    <Button x:Name="primaryBtn" Content="确定" Style="{StaticResource ButtonPrimary}" HorizontalAlignment="Stretch" Margin="25,15,5,15" FontSize="14" Click="primaryBtn_Click"/>
+                    <Button x:Name="closeBtn" Content="取消" HorizontalAlignment="Stretch" Margin="5,15,25,15" FontSize="14" Click="closeBtn_Click" Grid.Column="1"/>
+                </Grid>
+            </Border>
+        </Grid>
+    </Border>
+</Window>

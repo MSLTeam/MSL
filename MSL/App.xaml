@@ -1,0 +1,45 @@
+﻿<Application x:Class="MSL.App"
+             xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+             xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+             xmlns:local="clr-namespace:MSL"
+             StartupUri="MainWindow.xaml"
+             xmlns:hc="https://handyorg.github.io/handycontrol"
+             xmlns:ui="http://schemas.lepo.co/wpfui/2022/xaml">
+    <Application.Resources>
+        <ResourceDictionary>
+            <ResourceDictionary.MergedDictionaries>
+                <ResourceDictionary Source="\controls\ContextMenu.xaml"/>
+                <hc:ThemeResources>
+                    <hc:ThemeResources.ThemeDictionaries>
+                        <ResourceDictionary x:Key="Light" hc:ThemeDictionary.Key="Light">
+                            <SolidColorBrush x:Key="PrimaryBrush" Color="#0078D4" />
+                            <SolidColorBrush x:Key="BackgroundBrush" Color="#FFF7FAFC" />
+                            <SolidColorBrush x:Key="DialogBrush1" Color="White" />
+                            <SolidColorBrush x:Key="DialogBrush2" Color="#FFF3F3F3" />
+                            <SolidColorBrush x:Key="BorderBackground" Color="White" Opacity="0.9" />
+                            <SolidColorBrush x:Key="BorderBrush" Color="#FFE6E6E6" />
+                            <SolidColorBrush x:Key="TextBlockBrush" Color="Black" />
+                            <SolidColorBrush x:Key="SideMenuBrush" Color="#FFEEF4F9" Opacity="0.7" />
+                            <SolidColorBrush x:Key="SideMenuItemBrush" Opacity="0" />
+                        </ResourceDictionary>
+
+                        <ResourceDictionary x:Key="Dark" hc:ThemeDictionary.Key="Dark">
+                            <SolidColorBrush x:Key="PrimaryBrush" Color="#0078D4" />
+                            <SolidColorBrush x:Key="BackgroundBrush" Color="#141414" />
+                            <SolidColorBrush x:Key="DialogBrush1" Color="Black" />
+                            <SolidColorBrush x:Key="DialogBrush2" Color="#FF232323" />
+                            <SolidColorBrush x:Key="BorderBackground" Color="#232323" Opacity="0.9" />
+                            <SolidColorBrush x:Key="BorderBrush" Color="#FF3F3F3F" />
+                            <SolidColorBrush x:Key="TextBlockBrush" Color="White" />
+                            <SolidColorBrush x:Key="SideMenuBrush" Color="Black" Opacity="0.7" />
+                            <SolidColorBrush x:Key="SideMenuItemBrush" Opacity="0" />
+                        </ResourceDictionary>
+                    </hc:ThemeResources.ThemeDictionaries>
+                </hc:ThemeResources>
+                <hc:Theme/>
+                <!-- Other merged dictionaries here -->
+            </ResourceDictionary.MergedDictionaries>
+            <!-- Other app resources here -->
+        </ResourceDictionary>
+    </Application.Resources>
+</Application>

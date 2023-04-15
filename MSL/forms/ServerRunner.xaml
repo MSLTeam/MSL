@@ -1,0 +1,345 @@
+﻿<Window x:Class="MSL.ServerRunner"
+        xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+        xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+        xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
+        xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+        xmlns:hc="https://handyorg.github.io/handycontrol"
+        xmlns:local="clr-namespace:MSL"
+        mc:Ignorable="d"
+        Title="ServerRunner" Height="500" Width="850" Loaded="Window_Loaded" WindowStartupLocation="CenterScreen" Closing="Window_Closing" Background="{DynamicResource BackgroundBrush}" Activated="Window_Activated" Deactivated="Window_Deactivated">
+    <Grid>
+        <TabControl x:Name="TabCtrl" SelectionChanged="TabCtrl_SelectionChanged" Background="{x:Null}">
+            <TabItem Header="仪表盘" Background="{x:Null}">
+                <Viewbox Stretch="Uniform">
+                    <Canvas Width="850" Height="453.76">
+                        <Border Margin="10,10,10,10" VerticalAlignment="Top" CornerRadius="10" BorderBrush="{DynamicResource BorderBrush}" BorderThickness="1" Background="{DynamicResource BorderBackground}" HorizontalAlignment="Left" Width="280">
+                            <Grid>
+                                <Label Content="服务器基本信息" HorizontalAlignment="Left" VerticalAlignment="Top" Background="{x:Null}" BorderBrush="{x:Null}" FontSize="18" FontWeight="Bold" Height="40"/>
+                                <Label Content="服务器状态" HorizontalAlignment="Left" Height="40" Margin="5,40,0,0" VerticalAlignment="Top"  Width="100" Background="{x:Null}" BorderBrush="{x:Null}" FontSize="16"/>
+                                <Label x:Name="serverStateLab" Content="已关闭" HorizontalAlignment="Left" Height="40" Margin="105,40,0,0" VerticalAlignment="Top" Width="162" Foreground="Green" FontSize="16"/>
+                                <Label Content="服务器版本" HorizontalAlignment="Left" Height="40" Margin="5,85,0,0" VerticalAlignment="Top" Width="100" Background="{x:Null}" BorderBrush="{x:Null}" FontSize="16"/>
+                                <Label x:Name="serverVersionLab" Content="获取中" HorizontalAlignment="Left" Height="40" Margin="105,85,0,0" VerticalAlignment="Top" Width="162" FontSize="16"/>
+                                <Label Content="正版验证" HorizontalAlignment="Left" Height="40" Margin="5,130,0,0" VerticalAlignment="Top" Width="100" Background="{x:Null}" BorderBrush="{x:Null}" FontSize="16"/>
+                                <Label x:Name="onlineModeLab" Content="获取中" HorizontalAlignment="Left" Height="40" Margin="105,130,0,0" VerticalAlignment="Top" Width="162" FontSize="16"/>
+                                <Label Content="游戏模式" HorizontalAlignment="Left" Height="40" Margin="5,175,0,0" VerticalAlignment="Top" Width="100" Background="{x:Null}" BorderBrush="{x:Null}" FontSize="16"/>
+                                <Label x:Name="gameTypeLab" Content="获取中" HorizontalAlignment="Left" Height="40" Margin="105,175,0,0" Width="162" FontSize="16" VerticalAlignment="Top"/>
+                                <Label Content="服务器IP" HorizontalAlignment="Left" Height="40" Margin="5,220,0,0" VerticalAlignment="Top" Width="100" Background="{x:Null}" BorderBrush="{x:Null}" FontSize="16"/>
+                                <Label x:Name="serverIPLab" Content="获取中" HorizontalAlignment="Left" Height="40" Margin="105,220,0,0" Width="162" FontSize="16" VerticalAlignment="Top"/>
+                                <Label Content="本地进入IP" HorizontalAlignment="Left" Height="40" Margin="5,265,0,0" VerticalAlignment="Top" Width="100" Background="{x:Null}" BorderBrush="{x:Null}" FontSize="16"/>
+                                <Label x:Name="localServerIPLab" Content="获取中" HorizontalAlignment="Left" Height="40" Margin="105,265,0,0" VerticalAlignment="Top" Width="162" FontSize="16"/>
+                                <Label Content="远程进入IP" HorizontalAlignment="Left" Height="40" Margin="5,310,0,0" VerticalAlignment="Top" Width="100" Background="{x:Null}" BorderBrush="{x:Null}" FontSize="16"/>
+                                <Button x:Name="gotoFrpc" HorizontalAlignment="Left" Margin="105,310,10,10" VerticalAlignment="Top" Height="40" Width="162" Content="点我查看" FontSize="16" Click="gotoFrpc_Click"/>
+                            </Grid>
+                        </Border>
+                        <Border VerticalAlignment="Top" CornerRadius="10" BorderBrush="{DynamicResource BorderBrush}" BorderThickness="1" Background="{DynamicResource BorderBackground}" HorizontalAlignment="Left" Width="275" Height="362" Canvas.Left="295" Canvas.Top="10">
+                            <Grid>
+                                <Label Content="系统占用" HorizontalAlignment="Left" VerticalAlignment="Top" Background="{x:Null}" BorderBrush="{x:Null}" FontSize="18" FontWeight="Bold" Height="37"/>
+                                <Label x:Name="cpuInfoLab" Content="CPU占用" HorizontalAlignment="Stretch" Margin="10,40,10,0" VerticalAlignment="Top" Height="31"/>
+                                <ProgressBar x:Name="cpuInfoBar" Style="{StaticResource ProgressBarFlat}" Height="24" Margin="10,80,10,0" VerticalAlignment="Top"/>
+                                <Label x:Name="memoryInfoLab" Content="内存占用" HorizontalAlignment="Stretch" Margin="10,120,10,0" VerticalAlignment="Top" Height="60"/>
+                                <Label Content="系统已用内存：" HorizontalAlignment="Right" Margin="0,190,139,0" VerticalAlignment="Top" Height="30" Width="124"/>
+                                <Label Content="系统空闲内存：" HorizontalAlignment="Right" Margin="0,190,10,0" VerticalAlignment="Top" Height="30" Width="124"/>
+                                <hc:CircleProgressBar x:Name="memoryInfoBar" HorizontalAlignment="Right" Height="125" Margin="0,225,139,0" VerticalAlignment="Top" Width="124"/>
+                                <hc:CircleProgressBar x:Name="availableMemoryInfoBar" HorizontalAlignment="Right" Height="125" Margin="0,225,10,0" VerticalAlignment="Top" Width="124"/>
+
+                            </Grid>
+                        </Border>
+                        <Border VerticalAlignment="Top" CornerRadius="10" BorderBrush="{DynamicResource BorderBrush}" BorderThickness="1" Background="{DynamicResource BorderBackground}" HorizontalAlignment="Left" Width="265" Height="434" Canvas.Left="575" Canvas.Top="10">
+                            <Grid>
+                                <ListBox x:Name="serverPlayerList" Margin="10,170,10,10">
+                                    <ListBox.ContextMenu>
+                                        <ContextMenu>
+                                            <MenuItem x:Name="kickPlayer" Click="kickPlayer_Click" Header="踢出玩家"/>
+                                            <MenuItem x:Name="banPlayer" Click="banPlayer_Click" Header="封禁玩家"/>
+                                        </ContextMenu>
+                                    </ListBox.ContextMenu>
+                                </ListBox>
+                                <Label Content="玩家列表" HorizontalAlignment="Left" Margin="0,130,0,0" VerticalAlignment="Top" Background="{x:Null}" BorderBrush="{x:Null}" FontSize="18" FontWeight="Bold" Height="40"/>
+                                <Label Content="输出预览" HorizontalAlignment="Left" VerticalAlignment="Top" Background="{x:Null}" BorderBrush="{x:Null}" FontSize="18" FontWeight="Bold" Height="40"/>
+                                <TextBox x:Name="previewOutlog" Height="82" Margin="10,40,10,0" IsReadOnly="True" TextWrapping="Wrap" Text="无" VerticalAlignment="Top" VerticalContentAlignment="Top" FontSize="14" Padding="10"/>
+                            </Grid>
+                        </Border>
+                        <Button x:Name="controlServer_Copy" hc:IconElement.Geometry="{StaticResource CheckedGeometry}" hc:IconElement.Width="20"  Style="{StaticResource ButtonPrimary}" Content="开服" Width="113" Canvas.Left="10" Canvas.Top="377" Height="67" Click="controlServer_Click" MouseDoubleClick="controlServer_MouseDoubleClick" FontSize="16"/>
+                        <Button x:Name="solveProblemBtn" hc:IconElement.Geometry="{StaticResource AskGeometry}" hc:IconElement.Width="20" Style="{StaticResource ButtonDanger}" Content="无法开服？点击进行智能检测" Canvas.Left="128" Canvas.Top="377" Height="67" Click="solveProblemBtn_Click" Width="275" FontSize="16"/>
+                        <Button x:Name="playerInfoBtn" Content="记录玩家:开" Canvas.Left="408" Canvas.Top="377" Height="31" Width="162" Click="playerInfoBtn_Click"/>
+                        <Button x:Name="systemInfoBtn" Content="显示占用:开" Canvas.Left="408" Canvas.Top="413" Height="31" Width="162" Click="systemInfoBtn_Click"/>
+                    </Canvas>
+                </Viewbox>
+            </TabItem>
+            <TabItem Header="服务器输出" Background="{x:Null}">
+                <Grid>
+                    <RichTextBox x:Name="outlog" Background="{DynamicResource BorderBackground}" ContextMenu="{DynamicResource UIContextMenu}" IsReadOnly="True" Block.LineHeight="1" Margin="10,10,10,47" FontSize="12" VerticalScrollBarVisibility="Visible">
+                        <FlowDocument>
+                            <Paragraph>
+                                <Run Text="在此显示输出......"/>
+                            </Paragraph>
+                        </FlowDocument>
+                    </RichTextBox>
+                    <Button x:Name="sendcmd" Content="发送" Style="{StaticResource ButtonPrimary}" HorizontalAlignment="Right" Margin="0,0,67,10" VerticalAlignment="Bottom" Click="sendcmd_Click" FontWeight="Normal" Visibility="Visible" FontSize="12" Height="32" Width="58" IsEnabled="False"/>
+                    <Button x:Name="controlServer" Content="开服" Margin="0,0,10,10" VerticalAlignment="Bottom" Height="32" Click="controlServer_Click" MouseDoubleClick="controlServer_MouseDoubleClick" Width="52" HorizontalAlignment="Right"/>
+                    <ComboBox x:Name="fastCMD" HorizontalAlignment="Left" Margin="10,0,0,10" VerticalAlignment="Bottom" SelectedIndex="0" IsEnabled="False" Width="104">
+                        <ComboBoxItem Content="/（指令）" FontFamily="Microsoft YaHei UI"/>
+                        <ComboBoxItem Content="/op（给管理员）" FontFamily="Microsoft YaHei UI"/>
+                        <ComboBoxItem Content="/deop（去除管理员）" FontFamily="Microsoft YaHei UI"/>
+                        <ComboBoxItem Content="/ban（封禁玩家）" FontFamily="Microsoft YaHei UI"/>
+                        <ComboBoxItem Content="/say（全服说话）" FontFamily="Microsoft YaHei UI"/>
+                        <ComboBoxItem Content="/pardon（解除封禁）" FontFamily="Microsoft YaHei UI"/>
+                    </ComboBox>
+                    <TextBox x:Name="cmdtext" Margin="114,0,125,10" Text="服务器已关闭" KeyDown="cmdtext_KeyDown" Visibility="Visible" IsEnabled="False" VerticalAlignment="Bottom" MaxLines="1" KeyUp="cmdtext_KeyUp"/>
+                </Grid>
+            </TabItem>
+            <TabItem Header="服务器选项" Background="{x:Null}">
+                <Viewbox Stretch="Uniform">
+                    <Canvas Width="850" Height="453.76">
+
+
+                        <Border CornerRadius="10" BorderBrush="{DynamicResource BorderBrush}" BorderThickness="1" Background="{DynamicResource BorderBackground}" HorizontalAlignment="Left" VerticalAlignment="Top" Canvas.Left="10" Canvas.Top="10" Width="830">
+                            <Grid Height="317">
+                                <Label Content="正版验证：" Margin="10,5,0,0" Background="{x:Null}" BorderBrush="{x:Null}" HorizontalAlignment="Left" VerticalAlignment="Top"/>
+                                <TextBox x:Name="onlineModeText" Margin="97,4,0,0" TextWrapping="Wrap" Text="" Width="120" HorizontalAlignment="Left" VerticalAlignment="Top"/>
+                                <TextBlock Margin="237,12,0,0" TextWrapping="Wrap" Text="注：正版验证（online-mode），若开启（true），盗版/离线用户将无法进入该服务器，关闭请输入false" VerticalAlignment="Top"/>
+
+                                <Label Content="游戏模式：" Margin="10,40,0,0" Background="{x:Null}" BorderBrush="{x:Null}" HorizontalAlignment="Left" VerticalAlignment="Top"/>
+                                <TextBox x:Name="gameModeText" Margin="97,39,0,0" TextWrapping="Wrap" Text="" Width="120" HorizontalAlignment="Left" VerticalAlignment="Top"/>
+                                <TextBlock Margin="237,47,0,0" TextWrapping="Wrap" Text="注：游戏模式（gamemode），不同版本改法不一致，具体可参照页面下方表格" VerticalAlignment="Top"/>
+
+                                <Label Content="游戏难度：" Margin="10,75,0,0" Background="{x:Null}" BorderBrush="{x:Null}" HorizontalAlignment="Left" VerticalAlignment="Top"/>
+                                <TextBox x:Name="gameDifficultyText" Margin="97,74,0,0" TextWrapping="Wrap" Text="" Width="120" HorizontalAlignment="Left" VerticalAlignment="Top"/>
+                                <TextBlock Margin="237,82,0,0" TextWrapping="Wrap" Text="注：游戏难度（difficulty），不同版本改法不一致，具体可参照页面下方表格" VerticalAlignment="Top"/>
+
+                                <Label Content="游戏人数：" Margin="10,110,0,0" Background="{x:Null}" BorderBrush="{x:Null}" HorizontalAlignment="Left" VerticalAlignment="Top"/>
+                                <TextBox x:Name="gamePlayerText" Margin="97,109,0,0" TextWrapping="Wrap" Text="" Width="120" HorizontalAlignment="Left" VerticalAlignment="Top"/>
+                                <TextBlock Margin="237,117,0,0" TextWrapping="Wrap" Text="注：游戏人数（max-player），在此输入数字来改变服务器最大人数" VerticalAlignment="Top"/>
+
+                                <Label Content="服务器端口：" Margin="10,145,0,0" Background="{x:Null}" BorderBrush="{x:Null}" HorizontalAlignment="Left" VerticalAlignment="Top"/>
+                                <TextBox x:Name="gamePortText" Margin="97,144,0,0" TextWrapping="Wrap" Text="" Width="120" HorizontalAlignment="Left" VerticalAlignment="Top"/>
+                                <TextBlock Margin="237,152,0,0" TextWrapping="Wrap" Text="注：服务器端口（server-port），非必要无需更改" VerticalAlignment="Top"/>
+
+                                <Label Content="命令方块：" Margin="10,180,0,0" Background="{x:Null}" BorderBrush="{x:Null}" HorizontalAlignment="Left" VerticalAlignment="Top"/>
+                                <TextBox x:Name="commandBlockText" Margin="97,179,0,0" TextWrapping="Wrap" Text="" Width="120" HorizontalAlignment="Left" VerticalAlignment="Top"/>
+                                <TextBlock Margin="237,187,0,0" TextWrapping="Wrap" Text="注：启用命令方块（enable-command-block），若开启(true)，服务器可使用命令方块，关闭请输入false" VerticalAlignment="Top"/>
+
+                                <Label Content="视距：" Margin="10,215,0,0" Width="82" Background="{x:Null}" BorderBrush="{x:Null}" HorizontalAlignment="Left" VerticalAlignment="Top"/>
+                                <TextBox x:Name="viewDistanceText" Margin="97,214,0,0" TextWrapping="Wrap" Text="" Width="120" HorizontalAlignment="Left" VerticalAlignment="Top"/>
+                                <TextBlock Margin="237,222,0,0" TextWrapping="Wrap" Text="注：视距（view-distance），和游戏内的渲染距离意思相近，设置过大会影响服务器性能" VerticalAlignment="Top"/>
+
+                                <Label Content="PVP：" Margin="10,250,0,0" Width="82" Background="{x:Null}" BorderBrush="{x:Null}" HorizontalAlignment="Left" VerticalAlignment="Top"/>
+                                <TextBox x:Name="gamePvpText" Margin="97,249,0,0" TextWrapping="Wrap" Text="" Width="120" HorizontalAlignment="Left" VerticalAlignment="Top"/>
+                                <TextBlock Margin="237,257,0,0" TextWrapping="Wrap" Text="注：PVP（pvp），若开启（true），玩家间可互相伤害，关闭请输入false" VerticalAlignment="Top"/>
+
+                                <Label Content="主世界地图：" Margin="10,285,0,0" Width="82" Background="{x:Null}" BorderBrush="{x:Null}" HorizontalAlignment="Left" VerticalAlignment="Top"/>
+                                <TextBox x:Name="gameWorldText" Margin="97,284,0,0" TextWrapping="Wrap" Text="" Width="120" HorizontalAlignment="Left" VerticalAlignment="Top"/>
+                                <TextBlock Margin="237,292,0,0" TextWrapping="Wrap" Text="注：主世界地图名称（level-name），默认为world，非必要无需更改" VerticalAlignment="Top"/>
+                                <Button x:Name="savaServerConfig" Style="{StaticResource ButtonPrimary}" Content="保存" Height="35" Width="142" Click="saveServerConfig_Click" FontSize="16" HorizontalAlignment="Left" Margin="676,272,0,0" VerticalAlignment="Top"/>
+                            </Grid>
+                        </Border>
+
+                        <Button x:Name="changeServerIcon" Content="更换服务器图标" Width="207" Height="35" FontSize="14" Canvas.Left="10" Canvas.Top="334" Click="changeServerIcon_Click" VerticalAlignment="Top"/>
+                        <Button x:Name="changeWorldMap" Content="更换主世界地图" Width="207" Click="changeWorldMap_Click" Height="35" FontSize="14" Canvas.Left="10" Canvas.Top="374" VerticalAlignment="Top"/>
+                        <Button x:Name="setServerconfig" Content="修改服务器配置文件" Width="207" Height="31" FontSize="14" Click="setServerconfig_Click" Canvas.Left="10" Canvas.Top="414" VerticalAlignment="Top"/>
+
+                        <Rectangle RadiusX="10" RadiusY="10" Height="108" Width="618" Canvas.Left="222" Canvas.Top="337" Stroke="{DynamicResource BorderBrush}" Fill="{DynamicResource BorderBackground}" HorizontalAlignment="Center" VerticalAlignment="Center"/>
+                        <TextBlock Text="游戏模式（请根据配置文件的内容来进行选择）" Canvas.Left="259" Canvas.Top="344"/>
+                        <TextBlock Text="游戏难度（请根据配置文件的内容来进行选择）" Canvas.Left="560" Canvas.Top="344"/>
+                        <Rectangle Height="107" Stroke="{DynamicResource BorderBrush}" Width="1" RenderTransformOrigin="0.5,0.5" Canvas.Left="528" Canvas.Top="337">
+                            <Rectangle.RenderTransform>
+                                <TransformGroup>
+                                    <ScaleTransform ScaleX="-1"/>
+                                    <SkewTransform/>
+                                    <RotateTransform/>
+                                    <TranslateTransform/>
+                                </TransformGroup>
+                            </Rectangle.RenderTransform>
+                        </Rectangle>
+                        <Rectangle Height="1" Stroke="{DynamicResource BorderBrush}" Width="588" Canvas.Left="234" Canvas.Top="364"/>
+                        <TextBlock TextWrapping="Wrap" Text="生存" Canvas.Left="247" Canvas.Top="370"/>
+                        <TextBlock TextWrapping="Wrap" Text="创造" Canvas.Left="319" Canvas.Top="370"/>
+                        <TextBlock TextWrapping="Wrap" Text="冒险" Canvas.Left="392" Canvas.Top="370"/>
+                        <TextBlock TextWrapping="Wrap" Text="旁观" Canvas.Left="462" Canvas.Top="370"/>
+                        <TextBlock TextWrapping="Wrap" Text="和平" Canvas.Left="536" Canvas.Top="370"/>
+                        <TextBlock TextWrapping="Wrap" Text="简单" Canvas.Left="608" Canvas.Top="370"/>
+                        <TextBlock TextWrapping="Wrap" Text="普通" Canvas.Left="682" Canvas.Top="370"/>
+                        <TextBlock TextWrapping="Wrap" Text="困难" Canvas.Left="755" Canvas.Top="370"/>
+                        <TextBlock TextWrapping="Wrap" Text="Survival" Canvas.Left="247" Canvas.Top="396"/>
+                        <TextBlock TextWrapping="Wrap" Text="Creative" Canvas.Left="319" Canvas.Top="396"/>
+                        <TextBlock TextWrapping="Wrap" Text="Adventure" Canvas.Left="392" Canvas.Top="396"/>
+                        <TextBlock TextWrapping="Wrap" Text="Spectator" Canvas.Left="462" Canvas.Top="396"/>
+                        <TextBlock TextWrapping="Wrap" Text="Peaceful" Canvas.Left="536" Canvas.Top="396"/>
+                        <TextBlock TextWrapping="Wrap" Text="Easy" Canvas.Left="608" Canvas.Top="396"/>
+                        <TextBlock TextWrapping="Wrap" Text="Normal" Canvas.Left="682" Canvas.Top="396"/>
+                        <TextBlock TextWrapping="Wrap" Text="Hard" Canvas.Left="755" Canvas.Top="396"/>
+                        <TextBlock Margin="247,420,0,0" TextWrapping="Wrap" Text="0"/>
+                        <TextBlock Margin="319,420,0,0" TextWrapping="Wrap" Text="1"/>
+                        <TextBlock Margin="392,420,0,0" TextWrapping="Wrap" Text="2"/>
+                        <TextBlock Margin="462,420,0,0" TextWrapping="Wrap" Text="3"/>
+                        <TextBlock Margin="536,420,0,0" TextWrapping="Wrap" Text="0"/>
+                        <TextBlock Margin="608,420,0,0" TextWrapping="Wrap" Text="1"/>
+                        <TextBlock Margin="682,420,0,0" TextWrapping="Wrap" Text="2"/>
+                        <TextBlock Margin="755,420,0,0" TextWrapping="Wrap" Text="3"/>
+                    </Canvas>
+                </Viewbox>
+            </TabItem>
+            <TabItem Header="服务器插件/MOD" Background="{x:Null}">
+                <Viewbox Stretch="Uniform">
+                    <Canvas Width="850" Height="453.76">
+                        <Label x:Name="lab001" Content="未检测到任何插件和模组，请重启服务器或检查该服务端是否支持" FontSize="16" FontWeight="Bold" Background="{x:Null}" BorderBrush="{x:Null}" Height="35" Canvas.Left="0" Canvas.Top="0"/>
+                        <GroupBox x:Name="pluginListBox" Header="插件列表" Width="410" Background="{DynamicResource BackgroundBrush}" Height="372" Margin="10,70,0,0">
+                            <Grid>
+                                <ListBox x:Name="pluginslist">
+                                    <ListBox.ContextMenu>
+                                        <ContextMenu>
+                                            <MenuItem Click="reFresh_Click" Header="刷新"/>
+                                            <MenuItem x:Name="addPlugin" Click="addPlugin_Click" Header="添加插件"/>
+                                            <MenuItem x:Name="delPlugin" Click="delPlugin_Click" Header="删除插件"/>
+                                            <MenuItem x:Name="openpluginsDir" Click="openpluginsDir_Click" Header="打开插件文件夹"/>
+                                        </ContextMenu>
+                                    </ListBox.ContextMenu>
+                                </ListBox>
+                                <Button x:Name="addPluginBtn" Margin="0,0,22,22" Style="{StaticResource ButtonPrimary}" hc:BorderElement.CornerRadius="30" VerticalAlignment="Bottom" Height="48" Width="48" Content="+" Click="addPlugin_Click" HorizontalAlignment="Right" FontSize="24"/>
+                            </Grid>
+                        </GroupBox>
+                        <GroupBox x:Name="modListBox" Header="模组列表" Width="410" Background="{DynamicResource BackgroundBrush}" Height="372" Margin="430,70,0,0">
+                            <Grid>
+                                <ListBox x:Name="modslist">
+                                    <ListBox.ContextMenu>
+                                        <ContextMenu>
+                                            <MenuItem Click="reFresh_Click" Header="刷新"/>
+                                            <MenuItem x:Name="addMod" Click="addMod_Click" Header="添加模组"/>
+                                            <MenuItem x:Name="delMod" Click="delMod_Click" Header="删除模组"/>
+                                            <MenuItem x:Name="openmodsDir" Click="openmodsDir_Click" Header="打开模组文件夹"/>
+                                        </ContextMenu>
+                                    </ListBox.ContextMenu>
+                                </ListBox>
+                                <Button x:Name="addModBtn" Margin="0,0,22,22" Style="{StaticResource ButtonPrimary}" hc:BorderElement.CornerRadius="30" VerticalAlignment="Bottom" Height="48" Width="48" Content="+" Click="addMod_Click" HorizontalAlignment="Right" FontSize="24"/>
+                            </Grid>
+                        </GroupBox>
+                        <Button x:Name="opencurseforge" Content="下载模组(CurseForge)" Style="{StaticResource ButtonPrimary}" Height="39" Click="opencurseforge_Click" Width="172" Canvas.Left="668" Canvas.Top="10" FontSize="14"/>
+                        <Button x:Name="reFresh" Content="刷新" Style="{StaticResource ButtonPrimary}" Height="39" Click="reFresh_Click" Width="72" Canvas.Left="486" Canvas.Top="10" FontSize="16" HorizontalAlignment="Left"/>
+                        <TextBlock TextWrapping="Wrap" Text="注意：添加的插件或MOD只有在重启服务器后才能生效！！！" Foreground="Red" FontSize="16" Canvas.Left="10" Canvas.Top="40" HorizontalAlignment="Center" VerticalAlignment="Top" />
+                        <Button x:Name="openpluginweb" Content="下载插件" Style="{StaticResource ButtonPrimary}" Height="39" Width="100" Canvas.Left="563" Canvas.Top="10" FontSize="14" Click="openpluginweb_Click"/>
+                    </Canvas>
+                </Viewbox>
+            </TabItem>
+            <TabItem Header="设置" Background="{x:Null}">
+                <Viewbox Stretch="Uniform">
+                    <Canvas Width="850" Height="453.76">
+                        <GroupBox Header="服务器信息" Width="830" Canvas.Left="10" Canvas.Top="10" HorizontalContentAlignment="Left" VerticalContentAlignment="Center" HorizontalAlignment="Center" VerticalAlignment="Center" Background="{DynamicResource BackgroundBrush}" Height="110">
+                            <Grid>
+                                <Label Content="服务器名称:" Background="{x:Null}" BorderBrush="{x:Null}" HorizontalAlignment="Left" VerticalAlignment="Top"/>
+                                <TextBox x:Name="nAme" Height="8" MaxLines="1" AutoWordSelection="True" IsReadOnly="True" Margin="114,0,0,34"/>
+                                <Label Content="服务器存放地址:" BorderBrush="{x:Null}" Background="{x:Null}" HorizontalAlignment="Left" Margin="0,34,0,0" VerticalAlignment="Top"/>
+                                <TextBox x:Name="bAse" Height="8" MaxLines="1" AutoWordSelection="True" IsReadOnly="True" Width="706" HorizontalAlignment="Left" VerticalAlignment="Top" Margin="114,34,0,0"/>
+                            </Grid>
+                        </GroupBox>
+                        <GroupBox Header="服务器设置" Width="830" Canvas.Left="10" Canvas.Top="125" HorizontalContentAlignment="Left" VerticalContentAlignment="Center" HorizontalAlignment="Center" VerticalAlignment="Top" Background="{DynamicResource BackgroundBrush}" Height="319">
+                            <Grid>
+                                <Label Content="服务端核心文件:" BorderBrush="{x:Null}" Background="{x:Null}" VerticalAlignment="Top" HorizontalAlignment="Left"/>
+                                <TextBox x:Name="server" Height="8" MaxLines="1" AutoWordSelection="True" Width="483" HorizontalAlignment="Left" VerticalAlignment="Top" Margin="114,0,0,0"/>
+                                <Label Content="服务器内存分配:" Background="{x:Null}" BorderBrush="{x:Null}" Width="109" VerticalAlignment="Top" HorizontalAlignment="Left" Margin="0,35,0,0"/>
+                                <Label Content="Java地址:" Background="{x:Null}" BorderBrush="{x:Null}" VerticalAlignment="Top" HorizontalAlignment="Left" Margin="0,103,0,0"/>
+                                <hc:RangeSlider x:Name="memorySlider" ValueChanged="memorySlider_ValueChanged" Height="18" Width="537" HorizontalAlignment="Left" VerticalAlignment="Top" Margin="114,73,0,0"/>
+                                <TextBox x:Name="memoryInfo" Text="当前为自动分配" Foreground="Red" BorderBrush="#FFD0D0D0" TextAlignment="Center" TextChanged="memoryInfo_TextChanged" Height="32" Width="164" HorizontalAlignment="Left" VerticalAlignment="Top" Margin="656,66,0,0"/>
+                                <Button x:Name="a03" Content="浏览" Width="59" Click="a03_Click" FontWeight="Normal" FontSize="12" Height="30" VerticalAlignment="Top" HorizontalAlignment="Left" Margin="761,103,0,0"/>
+                                <RadioButton x:Name="useSelf" Content="手动选择Java" IsChecked="True" Width="108" VerticalAlignment="Top" HorizontalAlignment="Left" Margin="114,109,0,0"/>
+                                <RadioButton x:Name="useDownJv" Content="开服器在线下载" VerticalAlignment="Top" HorizontalAlignment="Left" Margin="114,144,0,0"/>
+                                <ComboBox x:Name="selectJava" Width="95" HorizontalAlignment="Left" VerticalAlignment="Top" Margin="237,138,0,0">
+                                    <ComboBoxItem Content="Java8"/>
+                                    <ComboBoxItem Content="Java11"/>
+                                    <ComboBoxItem Content="Java16"/>
+                                    <ComboBoxItem Content="Java17"/>
+                                    <ComboBoxItem Content="Java18"/>
+                                    <ComboBoxItem Content="Java19"/>
+                                </ComboBox>
+                                <RadioButton x:Name="useJvpath" Content="使用环境变量（请确保电脑上已安装Java且已配置好环境变量）" VerticalAlignment="Top" HorizontalAlignment="Left" Margin="337,145,0,0"/>
+                                <Label Content="服务器JVM参数:" BorderBrush="{x:Null}" Background="{x:Null}" VerticalAlignment="Top" HorizontalAlignment="Left" Margin="0,175,0,0"/>
+                                <TextBox x:Name="jVMcmd" Height="23" MaxLines="1" AutoWordSelection="True" Width="706" HorizontalAlignment="Left" VerticalAlignment="Top" Margin="114,175,0,0"/>
+                                <Label Content="提示：一般格式为 -参数，如 -Dlog4j2.formatMsgNoLookups=true，非必要无需填此框" Background="{x:Null}" Foreground="#FF0078D7" BorderBrush="{x:Null}" VerticalAlignment="Top" Margin="114,205,0,0" FontSize="14" HorizontalAlignment="Left"/>
+                                <CheckBox x:Name="useJVMauto" Content="自动分配" Click="useJVMauto_Click" Width="88" VerticalAlignment="Top" HorizontalAlignment="Left" Margin="114,42,0,0"/>
+                                <CheckBox x:Name="useJVMself" Content="手动分配" Click="useJVMself_Click" Width="85" VerticalAlignment="Top" HorizontalAlignment="Left" Margin="200,42,0,0"/>
+                                <TextBox x:Name="jAva" Height="23" MaxLines="1" AutoWordSelection="True" Width="524" HorizontalAlignment="Left" VerticalAlignment="Top" Margin="237,103,0,0"/>
+                                <Button x:Name="a01" Content="浏览" Width="59" Click="a01_Click" Height="30" VerticalAlignment="Top" HorizontalAlignment="Left" Margin="597,0,0,0"/>
+                                <Button x:Name="downloadServer" hc:IconElement.Geometry="{StaticResource DownloadGeometry}" hc:IconElement.Width="15" Content="下载服务端" Width="164" Height="30" FontSize="14" Click="downloadServer_Click" BorderBrush="#FF0068FF" VerticalAlignment="Top" HorizontalAlignment="Left" Margin="656,0,0,0"/>
+                                <Label x:Name="downout" Content="" FontSize="14" Foreground="Red" Height="40" Background="{x:Null}" BorderBrush="{x:Null}" HorizontalAlignment="Left" VerticalAlignment="Bottom"/>
+                                <Button x:Name="refreahConfig" Content="刷新" Style="{StaticResource ButtonPrimary}" Width="86" Height="35" FontSize="14" Click="refreahConfig_Click" HorizontalAlignment="Left" VerticalAlignment="Top" Margin="150,238,0,0"/>
+                                <Button x:Name="doneBtn1" Content="保存/应用" Style="{StaticResource ButtonPrimary}" Width="102" Click="doneBtn1_Click" Height="35" FontSize="14" HorizontalAlignment="Left" VerticalAlignment="Top" Margin="350,238,0,0"/>
+                                <Button x:Name="getLaunchercode" Content="生成启动脚本" Style="{StaticResource ButtonPrimary}" Width="122" Height="35" FontSize="14" Click="getLaunchercode_Click" VerticalAlignment="Top" HorizontalAlignment="Left" Margin="560,238,0,0"/>
+
+                            </Grid>
+                        </GroupBox>
+                    </Canvas>
+                </Viewbox>
+            </TabItem>
+            <TabItem Header="更多功能" Background="{x:Null}">
+                <Viewbox Stretch="Uniform">
+                    <Canvas Width="850" Height="453.76">
+                        <GroupBox Height="190" Header="服务器功能" Width="830" Canvas.Left="10" Canvas.Top="10" HorizontalContentAlignment="Left" VerticalContentAlignment="Center" HorizontalAlignment="Center" VerticalAlignment="Top" Background="{DynamicResource BackgroundBrush}">
+                            <Grid>
+                                <Label Content="正版验证" FontSize="18" Width="112" Height="36" Margin="10,10,0,0" BorderBrush="{x:Null}" Background="{x:Null}" HorizontalAlignment="Left" VerticalAlignment="Top"/>
+                                <Label Content="服务器控制" FontSize="18" Width="112" Height="36" Margin="10,51,0,0" Background="{x:Null}" BorderBrush="{x:Null}" HorizontalAlignment="Left" VerticalAlignment="Top"/>
+                                <Label Content="日志输出" FontSize="18" Width="112" Height="36" Margin="10,92,0,0" BorderBrush="{x:Null}" Background="{x:Null}" HorizontalAlignment="Left" VerticalAlignment="Top"/>
+                                <Button x:Name="onlineMode" Content="关闭正版验证" Margin="154,11,0,0" Click="onlineMode_Click" FontSize="16" Height="36" Width="160" HorizontalAlignment="Left" VerticalAlignment="Top"/>
+                                <Button x:Name="closeOutlog" Content="日志输出:开" Margin="154,94,0,0" FontSize="16" Height="34" Click="closeOutlog_Click" Width="160" HorizontalAlignment="Left" VerticalAlignment="Top"/>
+                                <Button x:Name="closeOutlog_Copy" Content="屏蔽关键字日志:关" Margin="319,94,0,0" FontSize="16" Height="34" Click="closeOutlog_Copy_Click" Width="160" HorizontalAlignment="Left" VerticalAlignment="Top"/>
+                                <Button x:Name="autoStartserver" Content="关服自动开服:禁用" Margin="154,53,0,0" Width="160" Click="autostartServer_Click" FontSize="16" Height="35" HorizontalAlignment="Left" VerticalAlignment="Top"/>
+                            </Grid>
+                        </GroupBox>
+                        <GroupBox Height="229" Header="快捷指令栏控制" Width="830" Canvas.Left="10" Canvas.Top="215" HorizontalContentAlignment="Left" VerticalContentAlignment="Center" HorizontalAlignment="Center" VerticalAlignment="Center" Background="{DynamicResource BackgroundBrush}">
+                            <Grid>
+                                <ListBox x:Name="fastCmdList" Width="457" Margin="10,10,353,10" />
+                                <Button x:Name="refrushFastCmd" Content="刷新" Height="70" Width="110" Click="refrushFastCmd_Click" FontSize="18" VerticalAlignment="Top" HorizontalAlignment="Left" Margin="472,10,0,0"/>
+                                <Button x:Name="addFastCmd" Content="添加" Height="43" Width="110" Click="addFastCmd_Click" FontSize="18" VerticalAlignment="Top" HorizontalAlignment="Left" Margin="472,85,0,0"/>
+                                <Button x:Name="delFastCmd" Content="删除" Height="40" Width="110" Click="delFastCmd_Click" FontSize="18" HorizontalAlignment="Left" VerticalAlignment="Top" Margin="472,133,0,0"/>
+                                <Button x:Name="resetFastCmd" Content="重置" Height="163" Width="110" Click="resetFastCmd_Click" FontSize="18" HorizontalAlignment="Left" Margin="587,0,0,0"/>
+                            </Grid>
+                        </GroupBox>
+                    </Canvas>
+                </Viewbox>
+            </TabItem>
+            <TabItem Header="定时任务" Background="{x:Null}">
+                <Viewbox Stretch="Uniform">
+                    <Canvas Width="850" Height="453.76">
+                        <GroupBox Height="140" Header="定时任务1" Width="830" Canvas.Left="10" Canvas.Top="10" HorizontalContentAlignment="Left" VerticalContentAlignment="Center" HorizontalAlignment="Center" VerticalAlignment="Center" Background="{DynamicResource BackgroundBrush}">
+                            <Grid>
+                                <Label Content="周期：" FontSize="16" HorizontalAlignment="Left" VerticalAlignment="Top" Width="59" Height="33" Margin="10,10,0,0" BorderBrush="{x:Null}" Background="{x:Null}"/>
+                                <TextBox x:Name="timercmdTime" Margin="69,10,0,0" HorizontalAlignment="Left" VerticalAlignment="Top" Width="112"/>
+                                <Label Content="秒(s)" FontSize="16" HorizontalAlignment="Left" VerticalAlignment="Top" Width="57" Height="34" Margin="181,10,0,0" Background="{x:Null}" BorderBrush="{x:Null}"/>
+                                <TextBox x:Name="timercmdCmd" Margin="301,10,12,0" VerticalAlignment="Top" Height="32"/>
+                                <Label Content="指令：" FontSize="16" HorizontalAlignment="Left" VerticalAlignment="Top" Width="61" Height="34" Margin="243,10,0,0" BorderBrush="{x:Null}" Background="{x:Null}"/>
+                                <Button x:Name="startTimercmd" Height="36" Width="140" Margin="0,47,12,0" VerticalAlignment="Top" Content="启动定时任务" Click="startTimercmd_Click" HorizontalAlignment="Right"/>
+                                <Label Content="上次执行结果：" FontSize="16" HorizontalAlignment="Left" VerticalAlignment="Top" Width="131" Height="35" Margin="10,48,0,0" BorderBrush="{x:Null}" Background="{x:Null}"/>
+                                <Label x:Name="timerCmdout" Content="无" Margin="146,49,0,0" FontSize="16" VerticalAlignment="Top" Height="34" HorizontalAlignment="Left" Background="{x:Null}" BorderBrush="{x:Null}"/>
+                            </Grid>
+                        </GroupBox>
+                        <GroupBox Height="140" Header="定时任务2" Width="830" Canvas.Left="10" Canvas.Top="157" HorizontalContentAlignment="Left" VerticalContentAlignment="Center" HorizontalAlignment="Center" VerticalAlignment="Top" Background="{DynamicResource BackgroundBrush}">
+                            <Grid>
+                                <Label Content="周期：" FontSize="16" HorizontalAlignment="Left" VerticalAlignment="Top" Width="59" Height="34" Margin="10,10,0,0" BorderBrush="{x:Null}" Background="{x:Null}"/>
+                                <TextBox x:Name="timercmdTime2" Margin="69,10,0,0" HorizontalAlignment="Left" VerticalAlignment="Top" Width="112"/>
+                                <Label Content="秒(s)" FontSize="16" HorizontalAlignment="Left" VerticalAlignment="Top" Width="57" Height="34" Margin="181,10,0,0" Background="{x:Null}" BorderBrush="{x:Null}"/>
+                                <TextBox x:Name="timercmdCmd2" Margin="301,10,12,0" VerticalAlignment="Top" Height="32"/>
+                                <Label Content="指令：" FontSize="16" HorizontalAlignment="Left" VerticalAlignment="Top" Width="61" Height="34" Margin="243,10,0,0" BorderBrush="{x:Null}" Background="{x:Null}"/>
+                                <Button x:Name="startTimercmd2" Height="36" Width="140" Margin="0,47,12,0" VerticalAlignment="Top" Content="启动定时任务" Click="startTimercmd2_Click" HorizontalAlignment="Right"/>
+                                <Label Content="上次执行结果：" FontSize="16" HorizontalAlignment="Left" VerticalAlignment="Top" Width="131" Height="34" Margin="10,49,0,0" BorderBrush="{x:Null}" Background="{x:Null}"/>
+                                <Label x:Name="timerCmdout2" Content="无" Margin="146,49,0,0" FontSize="16" VerticalAlignment="Top" Height="34" HorizontalAlignment="Left" Background="{x:Null}" BorderBrush="{x:Null}"/>
+                            </Grid>
+                        </GroupBox>
+                        <GroupBox Height="140" Header="定时任务3" Width="830" Canvas.Left="10" Canvas.Top="304" HorizontalContentAlignment="Left" VerticalContentAlignment="Center" HorizontalAlignment="Center" VerticalAlignment="Center" Background="{DynamicResource BackgroundBrush}">
+                            <Grid>
+                                <Label Content="周期：" FontSize="16" HorizontalAlignment="Left" VerticalAlignment="Top" Width="59" Height="33" Margin="10,10,0,0" BorderBrush="{x:Null}" Background="{x:Null}"/>
+                                <TextBox x:Name="timercmdTime3" Margin="69,10,0,0" HorizontalAlignment="Left" VerticalAlignment="Top" Width="112"/>
+                                <Label Content="秒(s)" FontSize="16" HorizontalAlignment="Left" VerticalAlignment="Top" Width="57" Height="34" Margin="181,10,0,0" Background="{x:Null}" BorderBrush="{x:Null}"/>
+                                <TextBox x:Name="timercmdCmd3" Margin="301,10,12,0" VerticalAlignment="Top" Height="32"/>
+                                <Label Content="指令：" FontSize="16" HorizontalAlignment="Left" VerticalAlignment="Top" Width="61" Height="34" Margin="243,10,0,0" BorderBrush="{x:Null}" Background="{x:Null}"/>
+                                <Button x:Name="startTimercmd3" Height="36" Width="140" Margin="668,47,0,0" Content="启动定时任务" Click="startTimercmd3_Click" HorizontalAlignment="Left" VerticalAlignment="Top"/>
+                                <Label Content="上次执行结果：" FontSize="16" HorizontalAlignment="Left" Width="131" Height="35" Margin="10,48,0,0" BorderBrush="{x:Null}" Background="{x:Null}" VerticalAlignment="Top"/>
+                                <Label x:Name="timerCmdout3" Content="无" Margin="146,49,0,0" FontSize="16" VerticalAlignment="Top" Height="34" HorizontalAlignment="Left" Background="{x:Null}" BorderBrush="{x:Null}"/>
+                            </Grid>
+                        </GroupBox>
+                    </Canvas>
+                </Viewbox>
+            </TabItem>
+        </TabControl>
+        <ScrollViewer VerticalScrollBarVisibility="Hidden" HorizontalAlignment="Right" VerticalAlignment="Top">
+            <StackPanel Name="GrowlPanel" hc:Growl.GrowlParent="True" VerticalAlignment="Top" Margin="0,10,10,10" />
+        </ScrollViewer>
+    </Grid>
+</Window>

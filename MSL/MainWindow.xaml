@@ -1,0 +1,133 @@
+﻿<Window
+        xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+        xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+        xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
+        xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+        xmlns:hc="https://handyorg.github.io/handycontrol"
+        xmlns:local="clr-namespace:MSL"
+        x:Class="MSL.MainWindow"
+        MaxHeight="{StaticResource {x:Static SystemParameters.MaximizedPrimaryScreenHeightKey}}"
+        MaxWidth="{StaticResource {x:Static SystemParameters.MaximizedPrimaryScreenWidthKey}}"
+        mc:Ignorable="d" Width="800" Height="500" WindowStartupLocation="CenterScreen" Loaded="Window_Loaded" Closing="Window_Closing" Icon="icon.ico" Title="Minecraft Server Launcher" ResizeMode="CanResize"  Background="{DynamicResource BackgroundBrush}" Activated="Window_Activated" Deactivated="Window_Deactivated" SizeChanged="Window_SizeChanged">
+    <WindowChrome.WindowChrome>
+        <WindowChrome GlassFrameThickness="-1" CaptionHeight="40"/>
+    </WindowChrome.WindowChrome>
+    <Window.Resources>
+        <ControlTemplate x:Key="SideMenuTemplate" TargetType="{x:Type ListBoxItem}">
+            <Border CornerRadius="5" Background="{DynamicResource SideMenuItemBrush}" Name="Border">
+                <Grid>
+                    <Rectangle Fill="{DynamicResource SideMenuItemBrush}" RadiusX="5" RadiusY="5" HorizontalAlignment="Left" Width="3" Height="24" Name="Rect"/>
+                    <ContentPresenter RecognizesAccessKey="True" Margin="{TemplateBinding Padding}"></ContentPresenter>
+                </Grid>
+            </Border>
+            <ControlTemplate.Triggers>
+                <MultiDataTrigger>
+                    <MultiDataTrigger.Conditions>
+                        <Condition Binding="{Binding Path=IsMouseOver, RelativeSource={RelativeSource Self}}" Value="True"/>
+                        <Condition Binding="{Binding Path=IsSelected, RelativeSource={RelativeSource Self}}" Value="False"/>
+                    </MultiDataTrigger.Conditions>
+                    <MultiDataTrigger.EnterActions>
+                        <BeginStoryboard>
+                            <Storyboard>
+                                <ColorAnimation Storyboard.TargetName="Rect" Storyboard.TargetProperty="Fill.Color" To="Gray" Duration="0:0:0.2"/>
+                                <ColorAnimation Storyboard.TargetName="Border" Storyboard.TargetProperty="Background.Color" To="Gray" Duration="0:0:0.0"/>
+                                <DoubleAnimation Storyboard.TargetName="Border" Storyboard.TargetProperty="(Border.Background).Opacity" Duration="0:0:0.1" To="0.5"/>
+                            </Storyboard>
+                        </BeginStoryboard>
+                    </MultiDataTrigger.EnterActions>
+                    <MultiDataTrigger.ExitActions>
+                        <BeginStoryboard>
+                            <Storyboard>
+                                <ColorAnimation Storyboard.TargetName="Rect" Storyboard.TargetProperty="Fill.Color" Duration="0:0:0.5"/>
+                                <ColorAnimation Storyboard.TargetName="Border" Storyboard.TargetProperty="Background.Color" Duration="0:0:0.5"/>
+                                <DoubleAnimation Storyboard.TargetName="Border" Storyboard.TargetProperty="(Border.Background).Opacity" Duration="0:0:0.5"/>
+                            </Storyboard>
+                        </BeginStoryboard>
+                    </MultiDataTrigger.ExitActions>
+                </MultiDataTrigger>
+                <Trigger Property="IsSelected" Value="True">
+                    <Setter TargetName="Rect" Property="Fill" Value="{DynamicResource PrimaryBrush}"/>
+                    <Setter TargetName="Border" Property="Background" Value="{DynamicResource BorderBackground}"/>
+                </Trigger>
+            </ControlTemplate.Triggers>
+        </ControlTemplate>
+    </Window.Resources>
+    <Grid x:Name="MainGrid">
+        <Grid x:Name="TitleGrid" Height="40" VerticalAlignment="Top" Background="{DynamicResource PrimaryBrush}">
+            <Image HorizontalAlignment="Left" Source="/icon.ico" VerticalAlignment="Center" Width="20" Height="20" Margin="10,0,0,0"/>
+            <TextBlock x:Name="TitleBox" Text="Minecraft Server Launcher" Foreground="White" FontSize="14" HorizontalAlignment="Left" VerticalAlignment="Center" Margin="35,0,0,0"/>
+            <Button x:Name="MinBtn" WindowChrome.IsHitTestVisibleInChrome="True" hc:IconElement.Geometry="{StaticResource WindowMinGeometry}" hc:BorderElement.CornerRadius="30" VerticalAlignment="Center" Height="32" Width="32" HorizontalAlignment="Right" Margin="0,0,90,0" BorderBrush="{x:Null}" Foreground="White" Click="MinBtn_Click">
+                <Button.Background>
+                    <SolidColorBrush Color="White" Opacity="0.1"/>
+                </Button.Background>
+            </Button>
+            <Button x:Name="MaxBtn" WindowChrome.IsHitTestVisibleInChrome="True" hc:IconElement.Geometry="{StaticResource WindowMaxGeometry}" hc:BorderElement.CornerRadius="30" VerticalAlignment="Center" Height="32" Width="32" HorizontalAlignment="Right" Margin="0,0,50,0" BorderBrush="{x:Null}" Foreground="White" Click="MaxBtn_Click">
+                <Button.Background>
+                    <SolidColorBrush Color="White" Opacity="0.1"/>
+                </Button.Background>
+            </Button>
+            <Button x:Name="CloseBtn" WindowChrome.IsHitTestVisibleInChrome="True" hc:IconElement.Geometry="{StaticResource CloseGeometry}" hc:BorderElement.CornerRadius="30" VerticalAlignment="Center" Height="32" Width="32" HorizontalAlignment="Right" Margin="0,0,10,0" BorderBrush="{x:Null}" Foreground="White" Click="CloseBtn_Click">
+                <Button.Background>
+                    <SolidColorBrush Color="White" Opacity="0.1"/>
+                </Button.Background>
+            </Button>
+        </Grid>
+        <Grid x:Name="BodyGrid" Margin="0,40,0,0">
+            <Border Background="{DynamicResource SideMenuBrush}" BorderBrush="{DynamicResource BorderBrush}" BorderThickness="0,0,1,0" HorizontalAlignment="Left">
+                <StackPanel>
+                    <Button x:Name="sideMenuContextOpen" HorizontalAlignment="Left" VerticalAlignment="Top" Width="50" Height="42" BorderBrush="{x:Null}" Click="sideMenuContextOpen_Click">
+                        <Button.Background>
+                            <ImageBrush ImageSource="/images/sidemenuextend.png" Stretch="Uniform"/>
+                        </Button.Background>
+                    </Button>
+                    <ListBox x:Name="SideMenu" SelectionMode="Single" Width="50" HorizontalAlignment="Left" SelectionChanged="SideMenu_SelectionChanged" IsEnabled="False" Background="{x:Null}" BorderBrush="{x:Null}" Padding="2,0,2,0" >
+                        <ListBoxItem Template="{StaticResource SideMenuTemplate}" Height="38" Margin="0,0,0,10" Foreground="{DynamicResource TextBlockBrush}">
+                            <DockPanel >
+                                <Image Source="/images/150px-Grass_Block_JE7_BE6.png" Width="22" Height="22"/>
+                                <TextBlock Text="主页" VerticalAlignment="Center" Margin="8,0,0,0" FontSize="14" />
+                            </DockPanel>
+                        </ListBoxItem>
+                        <ListBoxItem Template="{StaticResource SideMenuTemplate}" Height="38" Margin="0,0,0,10" Foreground="{DynamicResource TextBlockBrush}">
+                            <DockPanel >
+                                <Image Source="/images/150px-Enchanted_Book.png" Width="22" Height="22"/>
+                                <TextBlock Text="服务器" VerticalAlignment="Center" Margin="8,0,0,0" FontSize="14" />
+                            </DockPanel>
+                        </ListBoxItem>
+                        <ListBoxItem Template="{StaticResource SideMenuTemplate}" Height="38" Margin="0,0,0,10" Foreground="{DynamicResource TextBlockBrush}">
+                            <DockPanel >
+                                <Image Source="/images/150px-Beacon.png" Width="22" Height="22"/>
+                                <TextBlock Text="映射" VerticalAlignment="Center" Margin="8,0,0,0" FontSize="14" />
+                            </DockPanel>
+                        </ListBoxItem>
+                        <ListBoxItem Template="{StaticResource SideMenuTemplate}" Height="38" Margin="0,0,0,10" Foreground="{DynamicResource TextBlockBrush}">
+                            <DockPanel >
+                                <Image Source="/images/150px-Impulse_Command_Block.png" Width="22" Height="22"/>
+                                <TextBlock Text="联机" VerticalAlignment="Center" Margin="8,0,0,0" FontSize="14" />
+                            </DockPanel>
+                        </ListBoxItem>
+                        <ListBoxItem Template="{StaticResource SideMenuTemplate}" Height="38" Margin="0,0,0,10" Foreground="{DynamicResource TextBlockBrush}">
+                            <DockPanel >
+                                <Image Source="/images/150px-Wooden_Pickaxe_JE3_BE3.png" Width="22" Height="22"/>
+                                <TextBlock Text="设置" VerticalAlignment="Center" Margin="8,0,0,0" FontSize="14" />
+                            </DockPanel>
+                        </ListBoxItem>
+                        <ListBoxItem Template="{StaticResource SideMenuTemplate}" Height="38" Foreground="{DynamicResource TextBlockBrush}">
+                            <DockPanel >
+                                <Image Source="/images/150px-Diamond_Revision_2.png" Width="22" Height="22"/>
+                                <TextBlock Text="关于" VerticalAlignment="Center" Margin="8,0,0,0" FontSize="14" />
+                            </DockPanel>
+                        </ListBoxItem>
+                    </ListBox>
+
+                </StackPanel>
+            </Border>
+
+
+            <Frame Margin="50,0,0,0" Name="frame" NavigationUIVisibility="Hidden" BorderBrush="{x:Null}"/>
+
+            <ScrollViewer VerticalScrollBarVisibility="Hidden" HorizontalAlignment="Right" VerticalAlignment="Top">
+                <StackPanel Name="GrowlPanel" hc:Growl.GrowlParent="True" VerticalAlignment="Top" Margin="0,10,10,10" />
+            </ScrollViewer>
+        </Grid>
+    </Grid>
+</Window>
