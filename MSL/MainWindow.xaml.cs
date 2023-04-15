@@ -51,8 +51,6 @@ namespace MSL
         public MainWindow()
         {
             InitializeComponent();
-            //Width += 16;
-            //Height += 24;
             MinWidth = Width;
             MinHeight = Height;
             Home.GotoFrpcEvent += GotoOnlinePage;
@@ -88,7 +86,6 @@ namespace MSL
             }
 
             //MessageBox.Show("GetLinkSuccess");
-
 
             //firstLauchEvent
             if (!Directory.Exists(AppDomain.CurrentDomain.BaseDirectory + @"MSL"))
