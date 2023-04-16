@@ -1,4 +1,4 @@
-<img src="http://106.12.157.82/web/msl.ico">
+<img src="http://8.218.191.134/web/msl.ico">
 
 # Minecraft Server Launcher（MSL）
 
@@ -42,6 +42,6 @@ https://wwyo.lanzouy.com/b02vailjc
 有什么问题也可以在QQ群询问哦~
 
 # Wiki 文档
-https://waheal.github.io/Minecraft-Server-Launcher/
+https://github.com/Waheal/Minecraft-Server-Launcher/wiki
 
 ## 作者的爱发电：https://afdian.net/@makabaka123 感谢支持！
