@@ -2444,107 +2444,10 @@ namespace MSL
         }
         #endregion
 
-
         #region 定时任务
         /// <summary>
         /// ///////////这是定时任务
         /// </summary>
-        /*
-        private void addTask_Click(object sender, RoutedEventArgs e)
-        {
-            tasksList.Items.Add(tasksList.Items.Count + 1);
-            taskTimers.Add(10);
-            taskCmds.Add("say Hello World!");
-        }
-
-        private void delTask_Click(object sender, RoutedEventArgs e)
-        {
-            tasksList.Items.Remove(tasksList.SelectedIndex);
-        }
-
-        List<int> taskTimers=new List<int>();
-        List<string> taskCmds=new List<string>();
-        private void tasksList_SelectionChanged(object sender, SelectionChangedEventArgs e)
-        {
-            startTimercmd.Content = "启动定时任务";
-            timercmdTime.Text = taskTimers[tasksList.SelectedIndex].ToString();
-            timercmdCmd.Text = taskCmds[tasksList.SelectedIndex];
-            //startTimercmd.Content = "停止定时任务";
-        }
-
-        private void startTimercmd_Click(object sender, RoutedEventArgs e)
-        {
-            try
-            {
-                if (startTimercmd.Content.ToString() == "启动定时任务")
-                {
-                    //cmdtimer.Interval = TimeSpan.FromSeconds(int.Parse(timercmdTime.Text));
-                    //cmdtimer.Start();
-                    stopTasks[tasksList.SelectedIndex] = false;
-                    //ScheduledTasks(tasksList.SelectedIndex,int.Parse(timercmdTime.Text), timercmdCmd.Text);
-                    Thread thread = new Thread(ScheduledTasks);
-                    thread.Start();
-                    startTimercmd.Content = "停止定时任务";
-                }
-                else
-                {
-                    //cmdtimer.Stop();
-                    stopTasks[tasksList.SelectedIndex] = true;
-                    startTimercmd.Content = "启动定时任务";
-                }
-            }
-            catch (Exception a)
-            {
-                timerCmdout.Content = "执行失败，" + a.Message;
-            }
-        }
-
-        ManualResetEvent stopEvent = new ManualResetEvent(false); 
-        Dictionary<int, bool> stopTasks = new Dictionary<int, bool>();
-
-        void ScheduledTasks()
-        {
-            int id = 0;
-            int timer = 0;
-            string cmd = null;
-            this.Dispatcher.Invoke(DispatcherPriority.Normal, (ThreadStart)delegate ()
-            {
-                id = tasksList.SelectedIndex;
-                timer = taskTimers[tasksList.SelectedIndex];
-                cmd = taskCmds[tasksList.SelectedIndex];
-            });
-            while (!stopTasks[id])
-            {
-                try
-                {
-                    if (SERVERCMD.HasExited == false)
-                    {
-                        SERVERCMD.StandardInput.WriteLine(cmd);
-                        this.Dispatcher.Invoke(DispatcherPriority.Normal, (ThreadStart)delegate ()
-                        {
-                            if (tasksList.SelectedIndex == id)
-                            {
-
-                                timerCmdout.Content = "执行成功  时间：" + DateTime.Now.ToString("F");
-
-                            }
-                        });
-                    }
-                }
-                catch
-                {
-                    this.Dispatcher.Invoke(DispatcherPriority.Normal, (ThreadStart)delegate ()
-                    {
-                        if (tasksList.SelectedIndex == id)
-                        {
-                            timerCmdout.Content = "执行失败，请检查服务器是否开启  时间：" + DateTime.Now.ToString("F");
-                        }
-                    });
-                }
-                stopEvent.WaitOne(timer);
-            }
-        }
-        */
         List<int> taskID = new List<int>();
         Dictionary<int, int> taskTimers = new Dictionary<int, int>();
         Dictionary<int, string> taskCmds = new Dictionary<int, string>();
@@ -2658,8 +2561,7 @@ namespace MSL
         }
         #endregion
 
-
-        #region active event
+        #region window event
         private void Window_Activated(object sender, EventArgs e)
         {
             Growl.SetGrowlParent(GrowlPanel, true);
@@ -2669,8 +2571,6 @@ namespace MSL
         {
             Growl.SetGrowlParent(GrowlPanel, false);
         }
-        #endregion
-
         private void MinBtn_Click(object sender, RoutedEventArgs e)
         {
             this.WindowState = WindowState.Minimized;
@@ -2703,5 +2603,6 @@ namespace MSL
                 MainGrid.Margin = new Thickness(0);
             }
         }
+        #endregion
     }
 }
