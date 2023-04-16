@@ -319,7 +319,7 @@
                     <Canvas Width="865" Height="450">
                         <Label Content="任务列表" Style="{StaticResource BorderTitle}" Canvas.Left="10" Canvas.Top="5"/>
                         <Label Content="操作" Style="{StaticResource BorderTitle}" Canvas.Left="550" Canvas.Top="5"/>
-                        <Label Content="任务设置" Style="{StaticResource BorderTitle}" Canvas.Left="10" Canvas.Top="320"/>
+                        <Label Content="任务设置(请先添加任务，然后选中想要运行的任务进行更改)" Style="{StaticResource BorderTitle}" Canvas.Left="10" Canvas.Top="320"/>
                         <Label Content="周期：" FontSize="16" Height="32" BorderBrush="{x:Null}" Background="{x:Null}" Canvas.Left="10" Canvas.Top="360" VerticalAlignment="Top" Width="60"/>
                         <TextBox x:Name="timercmdTime" HorizontalAlignment="Center" VerticalAlignment="Top" Width="110" Height="32" Canvas.Left="70" Canvas.Top="360"/>
                         <Label Content="秒(s)" FontSize="16" HorizontalAlignment="Left" VerticalAlignment="Top" Width="60" Height="32" Background="{x:Null}" BorderBrush="{x:Null}" Canvas.Left="180" Canvas.Top="360"/>
