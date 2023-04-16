@@ -2444,7 +2444,6 @@ namespace MSL
         }
         #endregion
 
-
         #region 定时任务
         /// <summary>
         /// ///////////这是定时任务
@@ -2562,8 +2561,7 @@ namespace MSL
         }
         #endregion
 
-
-        #region active event
+        #region window event
         private void Window_Activated(object sender, EventArgs e)
         {
             Growl.SetGrowlParent(GrowlPanel, true);
@@ -2573,8 +2571,6 @@ namespace MSL
         {
             Growl.SetGrowlParent(GrowlPanel, false);
         }
-        #endregion
-
         private void MinBtn_Click(object sender, RoutedEventArgs e)
         {
             this.WindowState = WindowState.Minimized;
@@ -2607,5 +2603,6 @@ namespace MSL
                 MainGrid.Margin = new Thickness(0);
             }
         }
+        #endregion
     }
 }
