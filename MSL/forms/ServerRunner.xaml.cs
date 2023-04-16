@@ -73,14 +73,16 @@ namespace MSL
             ReadStdOutput += new DelReadStdOutput(ReadStdOutputAction);
             ServerList.OpenServerForm += ShowWindowEvent;
             SettingsPage.DelBackground += DelBackground;
+            MainWindow.RunFormChangeTitle += ChangeTitleStyle;
             InitializeComponent();
-            Width += 16;
-            Height += 24;
-            MinWidth = Width;
-            MinHeight = Height;
+            //Width += 16;
+            //Height += 24;
+            //MinWidth = Width;
+            //MinHeight = Height;
         }
         private void Window_Loaded(object sender, RoutedEventArgs e)
         {
+            ChangeTitleStyle();
             //Get Server's Information
             JObject jsonObject = JObject.Parse(File.ReadAllText(AppDomain.CurrentDomain.BaseDirectory + @"MSL\ServerList.json", Encoding.UTF8));
             JObject _json = (JObject)jsonObject[RserverId];
@@ -97,9 +99,11 @@ namespace MSL
             RserverJVMcmd = _json["args"].ToString();
 
             this.Title = Rservername;//set title to server name
+            TitleBox.Text = Rservername;//set title to server name
             if (File.Exists(Rserverbase + "\\server-icon.png"))//check server-icon,if exist,set icon to server-icon
             {
                 this.Icon= new BitmapImage(new Uri(Rserverbase + "\\server-icon.png"));
+                IconBox.Source = new BitmapImage(new Uri(Rserverbase + "\\server-icon.png"));
             }
 
             if (File.Exists(AppDomain.CurrentDomain.BaseDirectory + "MSL\\Background.png"))//check background and set it
@@ -218,6 +222,42 @@ namespace MSL
         void DelBackground()
         {
             this.SetResourceReference(BackgroundProperty, "BackgroundBrush");
+        }
+        void ChangeTitleStyle()
+        {
+            try
+            {
+                JObject jsonObject = JObject.Parse(File.ReadAllText(AppDomain.CurrentDomain.BaseDirectory + @"MSL\config.json", Encoding.UTF8));
+                if (jsonObject["semitransparentTitle"].ToString() == "True")
+                {
+                    ChangeTitleStyle(true);
+                }
+                else
+                {
+                    ChangeTitleStyle(false);
+                }
+            }
+            catch
+            { }
+        }
+        void ChangeTitleStyle(bool isOpen)
+        {
+            if (isOpen)
+            {
+                TitleGrid.SetResourceReference(BackgroundProperty, "SideMenuBrush");
+                TitleBox.SetResourceReference(ForegroundProperty, "TextBlockBrush");
+                MaxBtn.SetResourceReference(ForegroundProperty, "TextBlockBrush");
+                MinBtn.SetResourceReference(ForegroundProperty, "TextBlockBrush");
+                CloseBtn.SetResourceReference(ForegroundProperty, "TextBlockBrush");
+            }
+            else
+            {
+                TitleGrid.SetResourceReference(BackgroundProperty, "PrimaryBrush");
+                TitleBox.Foreground = Brushes.White;
+                MaxBtn.Foreground = Brushes.White;
+                MinBtn.Foreground = Brushes.White;
+                CloseBtn.Foreground = Brushes.White;
+            }
         }
 
         bool isModsPluginsRefresh = true;
@@ -1695,20 +1735,30 @@ namespace MSL
                     useDownJv.IsChecked = true;
                     selectJava.SelectedIndex = 0;
                 }
-                if (jAva.Text == AppDomain.CurrentDomain.BaseDirectory + @"MSL\Java16\bin\java.exe")
+                else if (jAva.Text == AppDomain.CurrentDomain.BaseDirectory + @"MSL\Java11\bin\java.exe")
                 {
                     useDownJv.IsChecked = true;
                     selectJava.SelectedIndex = 1;
                 }
-                if (jAva.Text == AppDomain.CurrentDomain.BaseDirectory + @"MSL\Java17\bin\java.exe")
+                else if (jAva.Text == AppDomain.CurrentDomain.BaseDirectory + @"MSL\Java16\bin\java.exe")
                 {
                     useDownJv.IsChecked = true;
                     selectJava.SelectedIndex = 2;
                 }
-                if (jAva.Text == AppDomain.CurrentDomain.BaseDirectory + @"MSL\Java18\bin\java.exe")
+                else if (jAva.Text == AppDomain.CurrentDomain.BaseDirectory + @"MSL\Java17\bin\java.exe")
                 {
                     useDownJv.IsChecked = true;
                     selectJava.SelectedIndex = 3;
+                }
+                else if (jAva.Text == AppDomain.CurrentDomain.BaseDirectory + @"MSL\Java18\bin\java.exe")
+                {
+                    useDownJv.IsChecked = true;
+                    selectJava.SelectedIndex = 4;
+                }
+                else if (jAva.Text == AppDomain.CurrentDomain.BaseDirectory + @"MSL\Java19\bin\java.exe")
+                {
+                    useDownJv.IsChecked = true;
+                    selectJava.SelectedIndex = 5;
                 }
                 if (RserverJVM == "")
                 {
@@ -2527,5 +2577,38 @@ namespace MSL
             Growl.SetGrowlParent(GrowlPanel, false);
         }
         #endregion
+
+        private void MinBtn_Click(object sender, RoutedEventArgs e)
+        {
+            this.WindowState = WindowState.Minimized;
+        }
+        private void MaxBtn_Click(object sender, RoutedEventArgs e)
+        {
+            if (WindowState == WindowState.Normal)
+            {
+                WindowState = WindowState.Maximized;
+            }
+            else
+            {
+                WindowState = WindowState.Normal;
+            }
+        }
+        private void CloseBtn_Click(object sender, RoutedEventArgs e)
+        {
+            this.Close();
+        }
+
+        private void Window_SizeChanged(object sender, SizeChangedEventArgs e)
+        {
+            if (this.WindowState == WindowState.Maximized)
+            {
+                MainGrid.Margin = new Thickness(7);
+
+            }
+            else
+            {
+                MainGrid.Margin = new Thickness(0);
+            }
+        }
     }
 }

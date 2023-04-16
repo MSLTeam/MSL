@@ -9,6 +9,7 @@
         <ResourceDictionary>
             <ResourceDictionary.MergedDictionaries>
                 <ResourceDictionary Source="\controls\ContextMenu.xaml"/>
+                <ResourceDictionary Source="\controls\Styles.xaml"/>
                 <hc:ThemeResources>
                     <hc:ThemeResources.ThemeDictionaries>
                         <ResourceDictionary x:Key="Light" hc:ThemeDictionary.Key="Light">

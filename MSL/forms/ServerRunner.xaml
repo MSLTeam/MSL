@@ -6,12 +6,34 @@
         xmlns:hc="https://handyorg.github.io/handycontrol"
         xmlns:local="clr-namespace:MSL"
         mc:Ignorable="d"
-        Title="ServerRunner" Height="500" Width="850" Loaded="Window_Loaded" WindowStartupLocation="CenterScreen" Closing="Window_Closing" Background="{DynamicResource BackgroundBrush}" Activated="Window_Activated" Deactivated="Window_Deactivated">
-    <Grid>
-        <TabControl x:Name="TabCtrl" SelectionChanged="TabCtrl_SelectionChanged" Background="{x:Null}">
+        Title="ServerRunner" Height="550" Width="900" MinHeight="500" MinWidth="800" Loaded="Window_Loaded" WindowStartupLocation="CenterScreen" Closing="Window_Closing" Background="{DynamicResource BackgroundBrush}" Activated="Window_Activated" Deactivated="Window_Deactivated" SizeChanged="Window_SizeChanged">
+    <WindowChrome.WindowChrome>
+        <WindowChrome GlassFrameThickness="-1" CaptionHeight="40"/>
+    </WindowChrome.WindowChrome>
+    <Grid x:Name="MainGrid">
+        <Grid x:Name="TitleGrid" Height="40" VerticalAlignment="Top" Background="{DynamicResource PrimaryBrush}">
+            <Image x:Name="IconBox" HorizontalAlignment="Left" Source="/icon.ico" VerticalAlignment="Center" Width="20" Height="20" Margin="10,0,0,0"/>
+            <TextBlock x:Name="TitleBox" Text="ServerRunner" Foreground="White" FontSize="14" HorizontalAlignment="Left" VerticalAlignment="Center" Margin="35,0,0,0"/>
+            <Button x:Name="MinBtn" WindowChrome.IsHitTestVisibleInChrome="True" hc:IconElement.Geometry="{StaticResource WindowMinGeometry}" hc:BorderElement.CornerRadius="30" VerticalAlignment="Center" Height="32" Width="32" HorizontalAlignment="Right" Margin="0,0,90,0" BorderBrush="{x:Null}" Foreground="White" Click="MinBtn_Click">
+                <Button.Background>
+                    <SolidColorBrush Color="White" Opacity="0.1"/>
+                </Button.Background>
+            </Button>
+            <Button x:Name="MaxBtn" WindowChrome.IsHitTestVisibleInChrome="True" hc:IconElement.Geometry="{StaticResource WindowMaxGeometry}" hc:BorderElement.CornerRadius="30" VerticalAlignment="Center" Height="32" Width="32" HorizontalAlignment="Right" Margin="0,0,50,0" BorderBrush="{x:Null}" Foreground="White" Click="MaxBtn_Click">
+                <Button.Background>
+                    <SolidColorBrush Color="White" Opacity="0.1"/>
+                </Button.Background>
+            </Button>
+            <Button x:Name="CloseBtn" WindowChrome.IsHitTestVisibleInChrome="True" hc:IconElement.Geometry="{StaticResource CloseGeometry}" hc:BorderElement.CornerRadius="30" VerticalAlignment="Center" Height="32" Width="32" HorizontalAlignment="Right" Margin="0,0,10,0" BorderBrush="{x:Null}" Foreground="White" Click="CloseBtn_Click">
+                <Button.Background>
+                    <SolidColorBrush Color="White" Opacity="0.1"/>
+                </Button.Background>
+            </Button>
+        </Grid>
+        <TabControl x:Name="TabCtrl" SelectionChanged="TabCtrl_SelectionChanged" Background="{x:Null}" Margin="0,40,0,0">
             <TabItem Header="仪表盘" Background="{x:Null}">
                 <Viewbox Stretch="Uniform">
-                    <Canvas Width="850" Height="453.76">
+                    <Canvas Width="850" Height="450">
                         <Border Margin="10,10,10,10" VerticalAlignment="Top" CornerRadius="10" BorderBrush="{DynamicResource BorderBrush}" BorderThickness="1" Background="{DynamicResource BorderBackground}" HorizontalAlignment="Left" Width="280">
                             <Grid>
                                 <Label Content="服务器基本信息" HorizontalAlignment="Left" VerticalAlignment="Top" Background="{x:Null}" BorderBrush="{x:Null}" FontSize="18" FontWeight="Bold" Height="40"/>
@@ -90,9 +112,7 @@
             </TabItem>
             <TabItem Header="服务器选项" Background="{x:Null}">
                 <Viewbox Stretch="Uniform">
-                    <Canvas Width="850" Height="453.76">
-
-
+                    <Canvas Width="850" Height="450">
                         <Border CornerRadius="10" BorderBrush="{DynamicResource BorderBrush}" BorderThickness="1" Background="{DynamicResource BorderBackground}" HorizontalAlignment="Left" VerticalAlignment="Top" Canvas.Left="10" Canvas.Top="10" Width="830">
                             <Grid Height="317">
                                 <Label Content="正版验证：" Margin="10,5,0,0" Background="{x:Null}" BorderBrush="{x:Null}" HorizontalAlignment="Left" VerticalAlignment="Top"/>
@@ -181,7 +201,7 @@
             </TabItem>
             <TabItem Header="服务器插件/MOD" Background="{x:Null}">
                 <Viewbox Stretch="Uniform">
-                    <Canvas Width="850" Height="453.76">
+                    <Canvas Width="850" Height="450">
                         <Label x:Name="lab001" Content="未检测到任何插件和模组，请重启服务器或检查该服务端是否支持" FontSize="16" FontWeight="Bold" Background="{x:Null}" BorderBrush="{x:Null}" Height="35" Canvas.Left="0" Canvas.Top="0"/>
                         <GroupBox x:Name="pluginListBox" Header="插件列表" Width="410" Background="{DynamicResource BackgroundBrush}" Height="372" Margin="10,70,0,0">
                             <Grid>
@@ -222,7 +242,7 @@
             </TabItem>
             <TabItem Header="设置" Background="{x:Null}">
                 <Viewbox Stretch="Uniform">
-                    <Canvas Width="850" Height="453.76">
+                    <Canvas Width="850" Height="450">
                         <GroupBox Header="服务器信息" Width="830" Canvas.Left="10" Canvas.Top="10" HorizontalContentAlignment="Left" VerticalContentAlignment="Center" HorizontalAlignment="Center" VerticalAlignment="Center" Background="{DynamicResource BackgroundBrush}" Height="110">
                             <Grid>
                                 <Label Content="服务器名称:" Background="{x:Null}" BorderBrush="{x:Null}" HorizontalAlignment="Left" VerticalAlignment="Top"/>
@@ -271,7 +291,7 @@
             </TabItem>
             <TabItem Header="更多功能" Background="{x:Null}">
                 <Viewbox Stretch="Uniform">
-                    <Canvas Width="850" Height="453.76">
+                    <Canvas Width="850" Height="450">
                         <GroupBox Height="190" Header="服务器功能" Width="830" Canvas.Left="10" Canvas.Top="10" HorizontalContentAlignment="Left" VerticalContentAlignment="Center" HorizontalAlignment="Center" VerticalAlignment="Top" Background="{DynamicResource BackgroundBrush}">
                             <Grid>
                                 <Label Content="正版验证" FontSize="18" Width="112" Height="36" Margin="10,10,0,0" BorderBrush="{x:Null}" Background="{x:Null}" HorizontalAlignment="Left" VerticalAlignment="Top"/>
@@ -297,7 +317,7 @@
             </TabItem>
             <TabItem Header="定时任务" Background="{x:Null}">
                 <Viewbox Stretch="Uniform">
-                    <Canvas Width="850" Height="453.76">
+                    <Canvas Width="865" Height="450">
                         <GroupBox Height="140" Header="定时任务1" Width="830" Canvas.Left="10" Canvas.Top="10" HorizontalContentAlignment="Left" VerticalContentAlignment="Center" HorizontalAlignment="Center" VerticalAlignment="Center" Background="{DynamicResource BackgroundBrush}">
                             <Grid>
                                 <Label Content="周期：" FontSize="16" HorizontalAlignment="Left" VerticalAlignment="Top" Width="59" Height="33" Margin="10,10,0,0" BorderBrush="{x:Null}" Background="{x:Null}"/>

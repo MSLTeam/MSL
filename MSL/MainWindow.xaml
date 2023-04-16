@@ -73,7 +73,7 @@
             </Button>
         </Grid>
         <Grid x:Name="BodyGrid" Margin="0,40,0,0">
-            <Border Background="{DynamicResource SideMenuBrush}" BorderBrush="{DynamicResource BorderBrush}" BorderThickness="0,0,1,0" HorizontalAlignment="Left">
+            <Border x:Name="SideMenuBorder" Background="{DynamicResource SideMenuBrush}" BorderBrush="{DynamicResource BorderBrush}" BorderThickness="0,0,1,0" HorizontalAlignment="Left">
                 <StackPanel>
                     <Button x:Name="sideMenuContextOpen" HorizontalAlignment="Left" VerticalAlignment="Top" Width="50" Height="42" BorderBrush="{x:Null}" Click="sideMenuContextOpen_Click">
                         <Button.Background>

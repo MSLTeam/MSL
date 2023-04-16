@@ -31,7 +31,7 @@ namespace MSL
     /// </summary>
     public partial class MainWindow : Window
     {
-        public static string update = "v3.4.7.7";
+        public static string update = "v3.4.7.8";
         Home _homePage = new Home();
         ServerList _listPage = new ServerList();
         FrpcPage _frpcPage = new FrpcPage();
@@ -40,6 +40,7 @@ namespace MSL
         About _aboutPage = new About();
         public static event DeleControl AutoOpenServer;
         public static event DeleControl AutoOpenFrpc;
+        public static event DeleControl RunFormChangeTitle;
         public static string serverid;
         public static string frpc;
         public static string serverLink;
@@ -223,6 +224,7 @@ namespace MSL
                 this.Dispatcher.Invoke(DispatcherPriority.Normal, (ThreadStart)delegate ()
                 {
                     Background = new ImageBrush(SettingsPage.GetImage(AppDomain.CurrentDomain.BaseDirectory + "MSL\\Background.png"));
+                    SideMenuBorder.BorderThickness = new Thickness(0);
                 });
             }
             //skin
@@ -322,6 +324,26 @@ namespace MSL
                     this.Dispatcher.Invoke(DispatcherPriority.Normal, (ThreadStart)delegate ()
                     {
                         ThemeManager.Current.ApplicationTheme = ApplicationTheme.Dark;
+                    });
+                }
+            }
+            catch
+            { }
+            try
+            {
+                if (jsonObject["semitransparentTitle"] == null)
+                {
+                    string jsonString = File.ReadAllText(AppDomain.CurrentDomain.BaseDirectory + @"MSL\config.json", Encoding.UTF8);
+                    JObject jobject = JObject.Parse(jsonString);
+                    jobject.Add("semitransparentTitle", "False");
+                    string convertString = Convert.ToString(jobject);
+                    File.WriteAllText(AppDomain.CurrentDomain.BaseDirectory + @"MSL\config.json", convertString, Encoding.UTF8);
+                }
+                else if (jsonObject["semitransparentTitle"].ToString() == "True")
+                {
+                    Dispatcher.Invoke(DispatcherPriority.Normal, (ThreadStart)delegate ()
+                    {
+                        ChangeTitleStyle(true);
                     });
                 }
             }
@@ -706,12 +728,40 @@ namespace MSL
         }
         void ChangeTitleStyle()
         {
-            TitleGrid.SetResourceReference(BackgroundProperty, "SideMenuBrush");
-            TitleBox.SetResourceReference(ForegroundProperty, "TextBlockBrush");
-            MaxBtn.SetResourceReference(ForegroundProperty, "TextBlockBrush");
-            MinBtn.SetResourceReference(ForegroundProperty, "TextBlockBrush");
-            CloseBtn.SetResourceReference(ForegroundProperty, "TextBlockBrush");
-            
+            try
+            {
+                JObject jsonObject = JObject.Parse(File.ReadAllText(AppDomain.CurrentDomain.BaseDirectory + @"MSL\config.json", Encoding.UTF8));
+                if (jsonObject["semitransparentTitle"].ToString() == "True")
+                {
+                    ChangeTitleStyle(true);
+                }
+                else
+                {
+                    ChangeTitleStyle(false);
+                }
+                RunFormChangeTitle();
+            }
+            catch
+            { }
+        }
+        void ChangeTitleStyle(bool isOpen)
+        {
+            if (isOpen)
+            {
+                TitleGrid.SetResourceReference(BackgroundProperty, "SideMenuBrush");
+                TitleBox.SetResourceReference(ForegroundProperty, "TextBlockBrush");
+                MaxBtn.SetResourceReference(ForegroundProperty, "TextBlockBrush");
+                MinBtn.SetResourceReference(ForegroundProperty, "TextBlockBrush");
+                CloseBtn.SetResourceReference(ForegroundProperty, "TextBlockBrush");
+            }
+            else
+            {
+                TitleGrid.SetResourceReference(BackgroundProperty, "PrimaryBrush");
+                TitleBox.Foreground = Brushes.White;
+                MaxBtn.Foreground = Brushes.White;
+                MinBtn.Foreground = Brushes.White;
+                CloseBtn.Foreground = Brushes.White;
+            }
         }
         public static void SetDynamicResourceKey(DependencyObject obj, DependencyProperty prop, object resourceKey)
         {

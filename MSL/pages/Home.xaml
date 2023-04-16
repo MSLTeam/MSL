@@ -24,17 +24,17 @@
         </EventTrigger>
     </Page.Triggers>
     <Grid>
-        <Border x:Name="noticeBorder" Margin="10,10,10,200" VerticalAlignment="Top" CornerRadius="10" BorderBrush="{DynamicResource BorderBrush}" BorderThickness="1" Background="{DynamicResource BorderBackground}" SizeChanged="noticeBorder_SizeChanged">
+        <Border x:Name="noticeBorder" Margin="10,10,10,200" Padding="10" Style="{StaticResource MagicBorder}" SizeChanged="noticeBorder_SizeChanged">
             <Grid>
                 <Image x:Name="noticeImage" Margin="0,35,0,0"/>
                 <TextBox x:Name="noticeLab" TextBlock.LineHeight="24" ContextMenu="{DynamicResource UIContextMenu}" IsReadOnly="True" VerticalScrollBarVisibility="Auto" TextWrapping="Wrap" VerticalContentAlignment="Top" BorderThickness="0" Background="{x:Null}" Margin="5,35,5,5" FontSize="14"/>
-                <Label Content="公告：" FontSize="18" FontWeight="Bold" Background="{x:Null}" BorderBrush="{x:Null}" HorizontalAlignment="Left" VerticalAlignment="Top" Height="40"/>
+                <Label Content="公告：" Style="{StaticResource BorderTitle}"/>
             </Grid>
         </Border>
-        <Border x:Name="recommendBorder" Margin="10,100,10,80" VerticalAlignment="Top" CornerRadius="10" BorderBrush="{DynamicResource BorderBrush}" BorderThickness="1" Background="{DynamicResource BorderBackground}" Visibility="Hidden">
+        <Border x:Name="recommendBorder" Margin="10,100,10,80" Padding="10" Style="{StaticResource MagicBorder}" Visibility="Hidden">
             <ScrollViewer>
                 <Grid x:Name="RecommendGrid">
-                    <Label Content="为您推荐：" FontSize="18" FontWeight="Bold" Background="{x:Null}" BorderBrush="{x:Null}" HorizontalAlignment="Left" VerticalAlignment="Top" Height="40"/>
+                    <Label Content="为您推荐：" Style="{StaticResource BorderTitle}"/>
                 </Grid>
             </ScrollViewer>
         </Border>

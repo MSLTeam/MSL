@@ -156,36 +156,37 @@ namespace MSL.pages
                 OrangeSkinBtn.IsEnabled = true;
                 PurpleSkinBtn.IsEnabled = true;
                 PinkSkinBtn.IsEnabled = true;
-                if (jsonObject["skin"].ToString() == "1")
+                switch (jsonObject["skin"].ToString())
                 {
-                    autoSetTheme.IsChecked = false;
-                    BlueSkinBtn.IsChecked = true;
+                    case "1":
+                        autoSetTheme.IsChecked = false;
+                        BlueSkinBtn.IsChecked = true;
+                        break;
+                    case "2":
+                        autoSetTheme.IsChecked = false;
+                        RedSkinBtn.IsChecked = true;
+                        break;
+                    case "3":
+                        autoSetTheme.IsChecked = false;
+                        GreenSkinBtn.IsChecked = true;
+                        break;
+                    case "4":
+                        autoSetTheme.IsChecked = false;
+                        OrangeSkinBtn.IsChecked = true;
+                        break;
+                    case "5":
+                        autoSetTheme.IsChecked = false;
+                        PurpleSkinBtn.IsChecked = true;
+                        break;
+                    case "6":
+                        autoSetTheme.IsChecked = false;
+                        PinkSkinBtn.IsChecked = true;
+                        break;
                 }
-                else if (jsonObject["skin"].ToString() == "2")
-                {
-                    autoSetTheme.IsChecked = false;
-                    RedSkinBtn.IsChecked = true;
-                }
-                else if (jsonObject["skin"].ToString() == "3")
-                {
-                    autoSetTheme.IsChecked = false;
-                    GreenSkinBtn.IsChecked = true;
-                }
-                else if (jsonObject["skin"].ToString() == "4")
-                {
-                    autoSetTheme.IsChecked = false;
-                    OrangeSkinBtn.IsChecked = true;
-                }
-                else if (jsonObject["skin"].ToString() == "5")
-                {
-                    autoSetTheme.IsChecked = false;
-                    PurpleSkinBtn.IsChecked = true;
-                }
-                else if (jsonObject["skin"].ToString() == "6")
-                {
-                    autoSetTheme.IsChecked = false;
-                    PinkSkinBtn.IsChecked = true;
-                }
+            }
+            if (jsonObject["semitransparentTitle"].ToString() == "True")
+            {
+                semitransparentTitle.IsChecked = true;
             }
             serverListBox.Items.Clear();
             if(File.Exists(AppDomain.CurrentDomain.BaseDirectory + @"MSL\ServerList.json"))
@@ -444,7 +445,24 @@ namespace MSL.pages
         }
         private void semitransparentTitle_Click(object sender, RoutedEventArgs e)
         {
-            ChangeTitleStyle();
+            if (semitransparentTitle.IsChecked == true)
+            {
+                JObject jobject = JObject.Parse(File.ReadAllText(AppDomain.CurrentDomain.BaseDirectory + "MSL\\config.json", Encoding.UTF8));
+                jobject["semitransparentTitle"] = "True";
+                string convertString = Convert.ToString(jobject);
+                File.WriteAllText(AppDomain.CurrentDomain.BaseDirectory + "MSL\\config.json", convertString, Encoding.UTF8);
+                Growl.Success("开启成功！"); 
+                ChangeTitleStyle();
+            }
+            else
+            {
+                JObject jobject = JObject.Parse(File.ReadAllText(AppDomain.CurrentDomain.BaseDirectory + "MSL\\config.json", Encoding.UTF8));
+                jobject["semitransparentTitle"] = "False";
+                string convertString = Convert.ToString(jobject);
+                File.WriteAllText(AppDomain.CurrentDomain.BaseDirectory + "MSL\\config.json", convertString, Encoding.UTF8);
+                Growl.Success("关闭成功！"); 
+                ChangeTitleStyle();
+            }
         }
 
         private void paintedEgg_Click(object sender, RoutedEventArgs e)
@@ -516,6 +534,7 @@ namespace MSL.pages
             {
                 File.Copy(openfile.FileName, AppDomain.CurrentDomain.BaseDirectory + "MSL\\Background.png", true);
                 mainwindow.Background = new ImageBrush(GetImage(AppDomain.CurrentDomain.BaseDirectory + "MSL\\Background.png"));     // path为图片路径new ImageBrush(new BitmapImage(new Uri(AppDomain.CurrentDomain.BaseDirectory + "MSL\\Background.png")));
+                mainwindow.SideMenuBorder.BorderThickness = new Thickness(0);
             }
         }
         public static BitmapImage GetImage(string imagePath)
@@ -539,6 +558,7 @@ namespace MSL.pages
         {
             var mainwindow = (MainWindow)System.Windows.Window.GetWindow(this);
             mainwindow.SetResourceReference(BackgroundProperty, "BackgroundBrush");
+            mainwindow.SideMenuBorder.BorderThickness = new Thickness(0, 0, 1, 0);
             try
             {
                 DelBackground();
