@@ -1,4 +1,5 @@
 ﻿using MSL.controls;
+using MSL.pages;
 using Newtonsoft.Json;
 using Newtonsoft.Json.Linq;
 using System;
@@ -37,10 +38,20 @@ namespace MSL
             }
             catch
             {
-                MessageBox.Show("连接服务器失败！\n错误代码：" + "w3x1", "Error", MessageBoxButton.OK, MessageBoxImage.Error);
-                pageHtml = "";
-                return;
-                //Close();
+                try
+                {
+                    MainWindow.serverLink = "http://msl.waheal.top";
+                    WebClient MyWebClient = new WebClient();
+                    MyWebClient.Credentials = CredentialCache.DefaultCredentials;
+                    byte[] pageData = MyWebClient.DownloadData(MainWindow.serverLink + @"/web/CC/frpcserver.txt");
+                    pageHtml = Encoding.UTF8.GetString(pageData);
+                }
+                catch
+                {
+                    MessageBox.Show("连接服务器失败！", "Error", MessageBoxButton.OK, MessageBoxImage.Error);
+                    pageHtml = "";
+                    Close();
+                }
             }
             while (pageHtml.IndexOf("#") != -1)
             {

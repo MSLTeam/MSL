@@ -14,6 +14,7 @@ using System.Net;
 using System.Security.Policy;
 using System.Text;
 using System.Threading;
+using System.Threading.Tasks;
 using System.Windows;
 using System.Windows.Controls;
 using System.Windows.Documents;
@@ -56,9 +57,6 @@ namespace MSL
         public string Rserverbase;
         DispatcherTimer timer1 = new DispatcherTimer();
         DispatcherTimer timer2 = new DispatcherTimer();
-        DispatcherTimer cmdtimer = new DispatcherTimer();
-        DispatcherTimer cmdtimer2 = new DispatcherTimer();
-        DispatcherTimer cmdtimer3 = new DispatcherTimer();
 
         /// <summary>
         /// /////////主要代码
@@ -67,9 +65,6 @@ namespace MSL
         {
             timer1.Tick += new EventHandler(timer1_Tick);
             timer2.Tick += new EventHandler(timer2_Tick);
-            cmdtimer.Tick += new EventHandler(cmdtimer_Tick);
-            cmdtimer2.Tick += new EventHandler(cmdtimer2_Tick);
-            cmdtimer3.Tick += new EventHandler(cmdtimer3_Tick);
             ReadStdOutput += new DelReadStdOutput(ReadStdOutputAction);
             ServerList.OpenServerForm += ShowWindowEvent;
             SettingsPage.DelBackground += DelBackground;
@@ -2449,23 +2444,52 @@ namespace MSL
         }
         #endregion
 
+
         #region 定时任务
         /// <summary>
-        /// ///////////这是定时任务 （3个）
+        /// ///////////这是定时任务
         /// </summary>
+        /*
+        private void addTask_Click(object sender, RoutedEventArgs e)
+        {
+            tasksList.Items.Add(tasksList.Items.Count + 1);
+            taskTimers.Add(10);
+            taskCmds.Add("say Hello World!");
+        }
+
+        private void delTask_Click(object sender, RoutedEventArgs e)
+        {
+            tasksList.Items.Remove(tasksList.SelectedIndex);
+        }
+
+        List<int> taskTimers=new List<int>();
+        List<string> taskCmds=new List<string>();
+        private void tasksList_SelectionChanged(object sender, SelectionChangedEventArgs e)
+        {
+            startTimercmd.Content = "启动定时任务";
+            timercmdTime.Text = taskTimers[tasksList.SelectedIndex].ToString();
+            timercmdCmd.Text = taskCmds[tasksList.SelectedIndex];
+            //startTimercmd.Content = "停止定时任务";
+        }
+
         private void startTimercmd_Click(object sender, RoutedEventArgs e)
         {
             try
             {
                 if (startTimercmd.Content.ToString() == "启动定时任务")
                 {
-                    cmdtimer.Interval = TimeSpan.FromSeconds(int.Parse(timercmdTime.Text));
-                    cmdtimer.Start();
+                    //cmdtimer.Interval = TimeSpan.FromSeconds(int.Parse(timercmdTime.Text));
+                    //cmdtimer.Start();
+                    stopTasks[tasksList.SelectedIndex] = false;
+                    //ScheduledTasks(tasksList.SelectedIndex,int.Parse(timercmdTime.Text), timercmdCmd.Text);
+                    Thread thread = new Thread(ScheduledTasks);
+                    thread.Start();
                     startTimercmd.Content = "停止定时任务";
                 }
                 else
                 {
-                    cmdtimer.Stop();
+                    //cmdtimer.Stop();
+                    stopTasks[tasksList.SelectedIndex] = true;
                     startTimercmd.Content = "启动定时任务";
                 }
             }
@@ -2474,97 +2498,166 @@ namespace MSL
                 timerCmdout.Content = "执行失败，" + a.Message;
             }
         }
-        private void startTimercmd2_Click(object sender, RoutedEventArgs e)
+
+        ManualResetEvent stopEvent = new ManualResetEvent(false); 
+        Dictionary<int, bool> stopTasks = new Dictionary<int, bool>();
+
+        void ScheduledTasks()
         {
-            try
+            int id = 0;
+            int timer = 0;
+            string cmd = null;
+            this.Dispatcher.Invoke(DispatcherPriority.Normal, (ThreadStart)delegate ()
             {
-                if (startTimercmd2.Content.ToString() == "启动定时任务")
+                id = tasksList.SelectedIndex;
+                timer = taskTimers[tasksList.SelectedIndex];
+                cmd = taskCmds[tasksList.SelectedIndex];
+            });
+            while (!stopTasks[id])
+            {
+                try
                 {
-                    cmdtimer2.Interval = TimeSpan.FromSeconds(int.Parse(timercmdTime2.Text));
-                    cmdtimer2.Start();
-                    startTimercmd2.Content = "停止定时任务";
+                    if (SERVERCMD.HasExited == false)
+                    {
+                        SERVERCMD.StandardInput.WriteLine(cmd);
+                        this.Dispatcher.Invoke(DispatcherPriority.Normal, (ThreadStart)delegate ()
+                        {
+                            if (tasksList.SelectedIndex == id)
+                            {
+
+                                timerCmdout.Content = "执行成功  时间：" + DateTime.Now.ToString("F");
+
+                            }
+                        });
+                    }
+                }
+                catch
+                {
+                    this.Dispatcher.Invoke(DispatcherPriority.Normal, (ThreadStart)delegate ()
+                    {
+                        if (tasksList.SelectedIndex == id)
+                        {
+                            timerCmdout.Content = "执行失败，请检查服务器是否开启  时间：" + DateTime.Now.ToString("F");
+                        }
+                    });
+                }
+                stopEvent.WaitOne(timer);
+            }
+        }
+        */
+        List<int> taskID = new List<int>();
+        Dictionary<int, int> taskTimers = new Dictionary<int, int>();
+        Dictionary<int, string> taskCmds = new Dictionary<int, string>();
+        Dictionary<int, bool> stopTasks = new Dictionary<int, bool>();
+        private void addTask_Click(object sender, RoutedEventArgs e)
+        {
+            taskID.Add(tasksList.Items.Count);
+            stopTasks.Add(taskID[tasksList.Items.Count], true);
+            taskTimers.Add(taskID[tasksList.Items.Count], 10);
+            taskCmds.Add(taskID[tasksList.Items.Count], "say Hello World!");
+            tasksList.Items.Add(tasksList.Items.Count + 1);
+        }
+
+        private void delTask_Click(object sender, RoutedEventArgs e)
+        {
+            if (tasksList.SelectedIndex != -1)
+            {
+                if (startTimercmd.Content.ToString() == "停止定时任务")
+                {
+                    DialogShow.ShowMsg(this, "请先停止任务！", "警告");
+                    return;
+                }
+                stopTasks.Remove(taskID[tasksList.SelectedIndex]);
+                taskTimers.Remove(taskID[tasksList.SelectedIndex]);
+                taskCmds.Remove(taskID[tasksList.SelectedIndex]);
+                taskID.Remove(taskID[tasksList.SelectedIndex]);
+                tasksList.Items.Remove(tasksList.SelectedIndex + 1);
+            }
+        }
+
+        private void tasksList_SelectionChanged(object sender, SelectionChangedEventArgs e)
+        {
+            if (tasksList.SelectedIndex!=-1)
+            {
+                if (stopTasks[taskID[tasksList.SelectedIndex]] == false)
+                {
+                    startTimercmd.Content = "停止定时任务";
                 }
                 else
                 {
-                    cmdtimer2.Stop();
-                    startTimercmd2.Content = "启动定时任务";
+                    startTimercmd.Content = "启动定时任务";
+                }
+                timerCmdout.Content = "无";
+                timercmdTime.Text = taskTimers[taskID[tasksList.SelectedIndex]].ToString();
+                timercmdCmd.Text = taskCmds[taskID[tasksList.SelectedIndex]];
+            }
+        }
+
+        private void startTimercmd_Click(object sender, RoutedEventArgs e)
+        {
+            try
+            {
+                if (startTimercmd.Content.ToString() == "启动定时任务")
+                {
+                    stopTasks[taskID[tasksList.SelectedIndex]] = false;
+                    taskTimers[taskID[tasksList.SelectedIndex]]=int.Parse(timercmdTime.Text);
+                    taskCmds[taskID[tasksList.SelectedIndex]]=timercmdCmd.Text;
+                    int i = taskID[tasksList.SelectedIndex];
+                    Task.Run(() => ScheduledTasks(i, taskTimers[i], taskCmds[i]));
+                    startTimercmd.Content = "停止定时任务";
+                }
+                else
+                {
+                    stopTasks[taskID[tasksList.SelectedIndex]] = true;
+                    startTimercmd.Content = "启动定时任务";
                 }
             }
             catch (Exception a)
             {
-                timerCmdout2.Content = "执行失败，" + a.Message;
+                timerCmdout.Content = "执行失败，" + a.Message;
             }
         }
-        private void startTimercmd3_Click(object sender, RoutedEventArgs e)
-        {
-            try
-            {
-                if (startTimercmd3.Content.ToString() == "启动定时任务")
-                {
-                    cmdtimer3.Interval = TimeSpan.FromSeconds(int.Parse(timercmdTime3.Text));
-                    cmdtimer3.Start();
-                    startTimercmd3.Content = "停止定时任务";
-                }
-                else
-                {
-                    cmdtimer3.Stop();
-                    startTimercmd3.Content = "启动定时任务";
-                }
-            }
-            catch (Exception a)
-            {
-                timerCmdout3.Content = "执行失败，" + a.Message;
-            }
-        }
-        private void cmdtimer_Tick(object sender, EventArgs e)
-        {
 
+        void ScheduledTasks(int id, int timer, string cmd)
+        {
             try
             {
-                if (SERVERCMD.HasExited == false)
+                while (!stopTasks[id])
                 {
-                    SERVERCMD.StandardInput.WriteLine(timercmdCmd.Text);
-                    timerCmdout.Content = "执行成功  时间：" + DateTime.Now.ToString("F");
+                    try
+                    {
+                        if (SERVERCMD.HasExited == false)
+                        {
+                            SERVERCMD.StandardInput.WriteLine(cmd);
+                            this.Dispatcher.Invoke(DispatcherPriority.Normal, (ThreadStart)delegate ()
+                            {
+                                if (tasksList.SelectedIndex != -1 && taskID[tasksList.SelectedIndex] == id)
+                                {
+                                    timerCmdout.Content = "执行成功  时间：" + DateTime.Now.ToString("F");
+                                }
+                            });
+                        }
+                    }
+                    catch
+                    {
+                        this.Dispatcher.Invoke(DispatcherPriority.Normal, (ThreadStart)delegate ()
+                        {
+                            if (tasksList.SelectedIndex != -1 && taskID[tasksList.SelectedIndex] == id)
+                            {
+                                timerCmdout.Content = "执行失败，请检查服务器是否开启  时间：" + DateTime.Now.ToString("F");
+                            }
+                        });
+                    }
+                    Thread.Sleep(timer * 1000);
                 }
             }
             catch
             {
-                timerCmdout.Content = "执行失败，请检查服务器是否开启  时间：" + DateTime.Now.ToString("F");
-            }
-        }
-        private void cmdtimer2_Tick(object sender, EventArgs e)
-        {
-
-            try
-            {
-                if (SERVERCMD.HasExited == false)
-                {
-                    SERVERCMD.StandardInput.WriteLine(timercmdCmd2.Text);
-                    timerCmdout2.Content = "执行成功  时间：" + DateTime.Now.ToString("F");
-                }
-            }
-            catch
-            {
-                timerCmdout2.Content = "执行失败，请检查服务器是否开启  时间：" + DateTime.Now.ToString("F");
-            }
-        }
-        private void cmdtimer3_Tick(object sender, EventArgs e)
-        {
-
-            try
-            {
-                if (SERVERCMD.HasExited == false)
-                {
-                    SERVERCMD.StandardInput.WriteLine(timercmdCmd3.Text);
-                    timerCmdout3.Content = "执行成功  时间：" + DateTime.Now.ToString("F");
-                }
-            }
-            catch
-            {
-                timerCmdout3.Content = "执行失败，请检查服务器是否开启  时间：" + DateTime.Now.ToString("F");
+                return;
             }
         }
         #endregion
+
 
         #region active event
         private void Window_Activated(object sender, EventArgs e)

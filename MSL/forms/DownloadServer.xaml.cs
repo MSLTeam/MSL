@@ -111,10 +111,31 @@ namespace MSL.pages
             });
             try
             {
-                WebClient MyWebClient1 = new WebClient();
-                MyWebClient1.Credentials = CredentialCache.DefaultCredentials;
-                byte[] pageData1 = MyWebClient1.DownloadData(MainWindow.serverLink + @"/web/CC/getserver.txt");
-                string pageHtml1 = Encoding.UTF8.GetString(pageData1);
+                string pageHtml1 = "";
+                try
+                {
+                    WebClient MyWebClient1 = new WebClient();
+                    MyWebClient1.Credentials = CredentialCache.DefaultCredentials;
+                    byte[] pageData1 = MyWebClient1.DownloadData(MainWindow.serverLink + @"/web/CC/getserver.txt");
+                    pageHtml1 = Encoding.UTF8.GetString(pageData1);
+                }
+                catch
+                {
+                    try
+                    {
+                        MainWindow.serverLink = "http://msl.waheal.top";
+                        WebClient MyWebClient = new WebClient();
+                        MyWebClient.Credentials = CredentialCache.DefaultCredentials;
+                        byte[] pageData = MyWebClient.DownloadData(MainWindow.serverLink + @"/web/CC/getserver.txt");
+                        pageHtml1 = Encoding.UTF8.GetString(pageData);
+                    }
+                    catch
+                    {
+                        MessageBox.Show("连接服务器失败！", "Error", MessageBoxButton.OK, MessageBoxImage.Error);
+                        pageHtml1 = "";
+                        Close();
+                    }
+                }
                 //MessageBox.Show(pageHtml1);
                 int IndexofA0 = pageHtml1.IndexOf("*");
                 string Ru0 = pageHtml1.Substring(IndexofA0 + 1);

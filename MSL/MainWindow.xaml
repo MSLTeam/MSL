@@ -118,10 +118,8 @@
                             </DockPanel>
                         </ListBoxItem>
                     </ListBox>
-
                 </StackPanel>
             </Border>
-
 
             <Frame Margin="50,0,0,0" Name="frame" NavigationUIVisibility="Hidden" BorderBrush="{x:Null}"/>
 
