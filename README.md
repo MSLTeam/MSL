@@ -1,4 +1,4 @@
-<img src="http://8.218.191.134/web/msl.ico">
+<img src="http://8.218.191.134/web/wikiImage/icon.ico">
 
 # Minecraft Server Launcher（MSL）
 
