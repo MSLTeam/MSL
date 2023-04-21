@@ -56,7 +56,7 @@ namespace MSL
                 lb01.Visibility = Visibility.Visible;
                 WebClient webClient = new WebClient();
                 webClient.Credentials = CredentialCache.DefaultCredentials;
-                byte[] pageData = webClient.DownloadData(MainWindow.serverLink + @"/web/CC/cruseforgetoken");
+                byte[] pageData = webClient.DownloadData(MainWindow.serverLink + @"/msl/CC/cruseforgetoken");
                 string token = Encoding.UTF8.GetString(pageData);
                 int index = token.IndexOf("\r\n");
                 string _token = token.Substring(0, index);
@@ -172,7 +172,7 @@ namespace MSL
 
                 WebClient webClient = new WebClient();
                 webClient.Credentials = CredentialCache.DefaultCredentials;
-                byte[] pageData = webClient.DownloadData(MainWindow.serverLink + @"/web/CC/cruseforgetoken");
+                byte[] pageData = webClient.DownloadData(MainWindow.serverLink + @"/msl/CC/cruseforgetoken");
                 string token = Encoding.UTF8.GetString(pageData);
                 int index = token.IndexOf("\r\n");
                 string _token = token.Substring(0, index);
@@ -278,7 +278,7 @@ namespace MSL
                     {
                         WebClient webClient = new WebClient();
                         webClient.Credentials = CredentialCache.DefaultCredentials;
-                        byte[] pageData = webClient.DownloadData(MainWindow.serverLink + @"/web/CC/cruseforgetoken");
+                        byte[] pageData = webClient.DownloadData(MainWindow.serverLink + @"/msl/CC/cruseforgetoken");
                         string token = Encoding.UTF8.GetString(pageData);
                         int index = token.IndexOf("\r\n");
                         string _token = token.Substring(0, index);

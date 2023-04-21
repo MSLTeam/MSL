@@ -158,7 +158,7 @@ namespace MSL.forms
             try
             {
                 WebClient MyWebClient = new WebClient();
-                byte[] pageData = MyWebClient.DownloadData(MainWindow.serverLink + @"/web/otherdownload.json");
+                byte[] pageData = MyWebClient.DownloadData(MainWindow.serverLink + @"/msl/otherdownload.json");
                 string _javaList = Encoding.UTF8.GetString(pageData);
 
                 JObject javaList0 = JObject.Parse(_javaList);

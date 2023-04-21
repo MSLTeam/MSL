@@ -306,7 +306,7 @@ namespace MSL.pages
         void RefreshLink()
         {
             WebClient MyWebClient = new WebClient();
-            byte[] pageData = MyWebClient.DownloadData(MainWindow.serverLink + @"/web/otherdownload.json");
+            byte[] pageData = MyWebClient.DownloadData(MainWindow.serverLink + @"/msl/otherdownload.json");
             string _javaList = Encoding.UTF8.GetString(pageData);
 
             JObject javaList0 = JObject.Parse(_javaList);
@@ -408,7 +408,7 @@ namespace MSL.pages
 
         private void onlineHelp_Click(object sender, RoutedEventArgs e)
         {
-            Process.Start("https://waheal.top/getonlinehelp.html");
+            Process.Start("https://docs.waheal.top/#/?id=msl%e7%82%b9%e5%af%b9%e7%82%b9%e8%81%94%e6%9c%ba%e6%95%99%e7%a8%8b");
         }
     }
 }

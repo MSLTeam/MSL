@@ -40,20 +40,18 @@ namespace MSL
         About _aboutPage = new About();
         public static event DeleControl AutoOpenServer;
         public static event DeleControl AutoOpenFrpc;
-        public static event DeleControl RunFormChangeTitle;
+        //public static event DeleControl RunningFormChangeTitle;
+        public static event DeleControl CloseNotify;
         public static string serverid;
         public static string frpc;
         public static string serverLink;
-        public static double PhisicalMemory;
-        public static bool notifyIcon;
+        public static float PhisicalMemory;
         public static bool getServerInfo = false;
         public static bool getPlayerInfo = false;
 
         public MainWindow()
         {
             InitializeComponent();
-            MinWidth = Width;
-            MinHeight = Height;
             Home.GotoFrpcEvent += GotoOnlinePage;
             SettingsPage.C_NotifyIcon += CtrlNotifyIcon;
             ServerRunner.GotoFrpcEvent += GotoFrpcPage;
@@ -101,7 +99,7 @@ namespace MSL
                 {
                     WebClient MyWebClient = new WebClient();
                     MyWebClient.Credentials = CredentialCache.DefaultCredentials;
-                    byte[] pageData = MyWebClient.DownloadData(serverLink + @"/web/eula.txt");
+                    byte[] pageData = MyWebClient.DownloadData(serverLink + @"/msl/eula.txt");
                     string notice = Encoding.UTF8.GetString(pageData);
                     Process.Start(notice);
                 }
@@ -130,9 +128,7 @@ namespace MSL
                 }
             }
             catch
-            {
-                frpc = "";
-            }
+            {}
 
             //MessageBox.Show("CheckFrpcSuccess");
 
@@ -146,27 +142,16 @@ namespace MSL
                     jobject.Add("notifyIcon", "False");
                     string convertString = Convert.ToString(jobject);
                     File.WriteAllText(AppDomain.CurrentDomain.BaseDirectory + @"MSL\config.json", convertString, Encoding.UTF8);
-                    notifyIcon = false;
                 }
                 else if (jsonObject["notifyIcon"].ToString() == "True")
                 {
-                    notifyIcon = true;
-                }
-                else
-                {
-                    notifyIcon = false;
+                    NotifyForm fw = new NotifyForm();
+                    fw.Show();
+                    fw.NotifyFormShowEvent += NotifyFormShow;
                 }
             }
             catch
-            {
-                notifyIcon = false;
-            }
-            if (notifyIcon == true)
-            {
-                NotifyForm fw = new NotifyForm();
-                fw.Show();
-                fw.NotifyFormShowEvent += NotifyFormShow;
-            }
+            {}
 
             //MessageBox.Show("CheckNotifySuccess");
 
@@ -402,7 +387,7 @@ namespace MSL
             {
                 WebClient MyWebClient = new WebClient();
                 MyWebClient.Credentials = CredentialCache.DefaultCredentials;
-                byte[] pageData = MyWebClient.DownloadData(MainWindow.serverLink + @"/web/update.txt");
+                byte[] pageData = MyWebClient.DownloadData(MainWindow.serverLink + @"/msl/update.txt");
                 string pageHtml = Encoding.UTF8.GetString(pageData);
                 string strtempa = "#";
                 int IndexofA = pageHtml.IndexOf(strtempa);
@@ -410,7 +395,7 @@ namespace MSL
                 string aaa = Ru.Substring(0, Ru.IndexOf("#"));
                 if (aaa != update)
                 {
-                    byte[] _updatelog = MyWebClient.DownloadData(MainWindow.serverLink + @"/web/updatelog.txt");
+                    byte[] _updatelog = MyWebClient.DownloadData(MainWindow.serverLink + @"/msl/updatelog.txt");
                     string updatelog = Encoding.UTF8.GetString(_updatelog);
                     this.Dispatcher.Invoke(DispatcherPriority.Normal, (ThreadStart)delegate ()
                     {
@@ -628,7 +613,7 @@ namespace MSL
 
         private void Window_Closing(object sender, System.ComponentModel.CancelEventArgs e)
         {
-            if (notifyIcon == true)
+            if (NotifyForm.isNotifyOpen)
             {
                 e.Cancel = true;
                 this.Visibility = Visibility.Hidden;
@@ -710,9 +695,16 @@ namespace MSL
 
         void CtrlNotifyIcon()//C_NotifyIcon
         {
-            NotifyForm fw = new NotifyForm();
-            fw.Show();
-            fw.NotifyFormShowEvent += NotifyFormShow;
+            if (NotifyForm.isNotifyOpen)
+            {
+                CloseNotify();
+            }
+            else
+            {
+                NotifyForm fw = new NotifyForm();
+                fw.Show();
+                fw.NotifyFormShowEvent += NotifyFormShow;
+            }
         }
 
         void GotoFrpcPage()
@@ -739,7 +731,7 @@ namespace MSL
                 {
                     ChangeTitleStyle(false);
                 }
-                RunFormChangeTitle();
+                //RunFormChangeTitle();
             }
             catch
             { }

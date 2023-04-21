@@ -8,7 +8,10 @@
         x:Class="MSL.MainWindow"
         MaxHeight="{StaticResource {x:Static SystemParameters.MaximizedPrimaryScreenHeightKey}}"
         MaxWidth="{StaticResource {x:Static SystemParameters.MaximizedPrimaryScreenWidthKey}}"
-        mc:Ignorable="d" Width="800" Height="500" WindowStartupLocation="CenterScreen" Loaded="Window_Loaded" Closing="Window_Closing" Icon="icon.ico" Title="Minecraft Server Launcher" ResizeMode="CanResize"  Background="{DynamicResource BackgroundBrush}" Activated="Window_Activated" Deactivated="Window_Deactivated" SizeChanged="Window_SizeChanged">
+        mc:Ignorable="d" Width="800" Height="500" MinWidth="800" MinHeight="500"
+        WindowStartupLocation="CenterScreen" Loaded="Window_Loaded" Closing="Window_Closing" Icon="icon.ico"
+        Title="Minecraft Server Launcher" ResizeMode="CanResize"  Background="{DynamicResource BackgroundBrush}"
+        Activated="Window_Activated" Deactivated="Window_Deactivated" SizeChanged="Window_SizeChanged">
     <WindowChrome.WindowChrome>
         <WindowChrome GlassFrameThickness="-1" CaptionHeight="40"/>
     </WindowChrome.WindowChrome>

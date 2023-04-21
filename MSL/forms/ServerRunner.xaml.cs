@@ -68,7 +68,7 @@ namespace MSL
             ReadStdOutput += new DelReadStdOutput(ReadStdOutputAction);
             ServerList.OpenServerForm += ShowWindowEvent;
             SettingsPage.DelBackground += DelBackground;
-            MainWindow.RunFormChangeTitle += ChangeTitleStyle;
+            SettingsPage.ChangeTitleStyle += ChangeTitleStyle;
             InitializeComponent();
             //Width += 16;
             //Height += 24;
@@ -125,7 +125,7 @@ namespace MSL
                 }
                 LoadSettings();
                 ReFreshPluginsAndMods();
-                TabCtrl.SelectedIndex = 3;
+                TabCtrl.SelectedIndex = 2;
                 ReFreshPluginsAndMods();
             }
             else if (ServerList.ControlSetServerTab == true)
@@ -146,7 +146,7 @@ namespace MSL
                 }
                 LoadSettings();
                 ReFreshPluginsAndMods();
-                TabCtrl.SelectedIndex = 4;
+                TabCtrl.SelectedIndex = 3;
             }
             else
             {
@@ -260,14 +260,6 @@ namespace MSL
         {
             if (TabCtrl.SelectedIndex == 2)
             {
-                GetServerConfig();
-            }
-            else
-            {
-                config = null;
-            }
-            if (TabCtrl.SelectedIndex == 3)
-            {
                 if (isModsPluginsRefresh)
                 {
                     isModsPluginsRefresh = false;
@@ -296,6 +288,14 @@ namespace MSL
                         }
                     }
                 }
+            }
+            if (TabCtrl.SelectedIndex == 3)
+            {
+                GetServerConfig();
+            }
+            else
+            {
+                config = null;
             }
         }
         private void solveProblemBtn_Click(object sender, RoutedEventArgs e)
@@ -1246,7 +1246,7 @@ namespace MSL
                 {
                     WebClient MyWebClient = new WebClient();
                     MyWebClient.Credentials = CredentialCache.DefaultCredentials;
-                    byte[] pageData = MyWebClient.DownloadData(MainWindow.serverLink + @"/web/commands.txt");
+                    byte[] pageData = MyWebClient.DownloadData(MainWindow.serverLink + @"/msl/commands.txt");
                     string pageHtml = Encoding.UTF8.GetString(pageData);
                     File.WriteAllText(AppDomain.CurrentDomain.BaseDirectory + "MSL\\TabComplete.txt", pageHtml);
                 }
@@ -1430,9 +1430,13 @@ namespace MSL
                 string gw3 = gw2.Substring(0, gw2.IndexOf("\r\n"));
                 config = config.Replace("level-name=" + gw3, "level-name=");
                 gameWorldText.Text = gw3;
-                savaServerConfig.IsEnabled = true;
+                changeServerPropertiesLab.Content = "更改服务器配置信息";
+                changeServerProperties.Visibility = Visibility.Visible;
+                changeServerProperties.Height = double.NaN;
+                changeServerProperties_Add.Visibility = Visibility.Visible;
+                changeServerProperties_Add.Height = double.NaN;
             }
-            catch (Exception ex) { DialogShow.ShowMsg(this,"出现错误，您的服务器可能还未启动过，请开启一次服务器再试！\n" + ex.Message, "错误"); savaServerConfig.IsEnabled=false; }
+            catch{ changeServerPropertiesLab.Content = "找不到配置文件，更改配置功能已隐藏（请尝试开启一次服务器）";changeServerProperties.Visibility = Visibility.Hidden; changeServerProperties.Height = 0; changeServerProperties_Add.Visibility = Visibility.Hidden; changeServerProperties_Add.Height = 0; }
         }
         private void saveServerConfig_Click(object sender, RoutedEventArgs e)
         {
@@ -1553,8 +1557,8 @@ namespace MSL
                     modListBox.Visibility = Visibility.Visible;
                     pluginListBox.Width = 410;
                     modListBox.Width = 410;
-                    pluginListBox.Margin = new Thickness(10, 70, 0, 0);
-                    modListBox.Margin = new Thickness(430, 70, 0, 0);
+                    pluginListBox.Margin = new Thickness(10, 55, 0, 0);
+                    modListBox.Margin = new Thickness(430, 55, 0, 0);
                     DirectoryInfo directoryInfo1 = new DirectoryInfo(Rserverbase + @"\mods");
                     FileInfo[] file1 = directoryInfo1.GetFiles("*.jar");
                     foreach (FileInfo f1 in file1)
@@ -1569,7 +1573,7 @@ namespace MSL
                     pluginListBox.Visibility = Visibility.Visible;
                     modListBox.Visibility = Visibility.Hidden;
                     pluginListBox.Width = 820;
-                    pluginListBox.Margin = new Thickness(10, 70, 0, 0);
+                    pluginListBox.Margin = new Thickness(10, 55, 0, 0);
                 }
             }
             else
@@ -1581,7 +1585,7 @@ namespace MSL
                     pluginListBox.Visibility = Visibility.Hidden;
                     modListBox.Visibility = Visibility.Visible;
                     modListBox.Width = 820;
-                    modListBox.Margin = new Thickness(10, 70, 0, 0);
+                    modListBox.Margin = new Thickness(10, 55, 0, 0);
                     modslist.Items.Clear();
                     DirectoryInfo directoryInfo = new DirectoryInfo(Rserverbase + @"\mods");
                     FileInfo[] file = directoryInfo.GetFiles("*.jar");
@@ -1589,8 +1593,6 @@ namespace MSL
                     {
                         modslist.Items.Add(f.Name);
                     }
-                    openpluginsDir.IsEnabled = false;
-                    addPlugin.IsEnabled = false;
                 }
                 else
                 {
@@ -1598,12 +1600,6 @@ namespace MSL
                     lab001.Margin = new Thickness(182, 209,0,0);
                     pluginListBox.Visibility = Visibility.Hidden;
                     modListBox.Visibility = Visibility.Hidden;
-                    openpluginsDir.IsEnabled = false;
-                    openmodsDir.IsEnabled = false;
-                    addPlugin.IsEnabled = false;
-                    addMod.IsEnabled = false;
-                    delPlugin.IsEnabled = false;
-                    delMod.IsEnabled = false;
                 }
             }
         }
@@ -1821,7 +1817,7 @@ namespace MSL
                     jAva.Text = AppDomain.CurrentDomain.BaseDirectory + jAva.Text;
                 }
                 WebClient MyWebClient = new WebClient();
-                byte[] pageData = MyWebClient.DownloadData(MainWindow.serverLink + @"/web/otherdownload.json");
+                byte[] pageData = MyWebClient.DownloadData(MainWindow.serverLink + @"/msl/otherdownload.json");
                 string _javaList = Encoding.UTF8.GetString(pageData);
 
                 JObject javaList0 = JObject.Parse(_javaList);
@@ -1961,7 +1957,7 @@ namespace MSL
                 if (!File.Exists(AppDomain.CurrentDomain.BaseDirectory + @"MSL\" + fileName + @"\bin\java.exe"))
                 {
                     DownjavaName = fileName;
-                    //DownloadWindow.downloadurl = RserverLink +@"/web/Java8.exe";
+                    //DownloadWindow.downloadurl = RserverLink +@"/msl/Java8.exe";
                     DialogShow.ShowDownload(this, downUrl, AppDomain.CurrentDomain.BaseDirectory + "MSL", "Java.zip", "下载" + fileName + "中……");
                     downout.Content = "解压中...";
                     try

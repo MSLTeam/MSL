@@ -33,7 +33,7 @@ namespace MSL
             {
                 WebClient MyWebClient = new WebClient();
                 MyWebClient.Credentials = CredentialCache.DefaultCredentials;
-                byte[] pageData = MyWebClient.DownloadData(MainWindow.serverLink + @"/web/CC/frpcserver.txt");
+                byte[] pageData = MyWebClient.DownloadData(MainWindow.serverLink + @"/msl/CC/frpcserver.txt");
                 pageHtml = Encoding.UTF8.GetString(pageData);
             }
             catch
@@ -43,7 +43,7 @@ namespace MSL
                     MainWindow.serverLink = "http://msl.waheal.top";
                     WebClient MyWebClient = new WebClient();
                     MyWebClient.Credentials = CredentialCache.DefaultCredentials;
-                    byte[] pageData = MyWebClient.DownloadData(MainWindow.serverLink + @"/web/CC/frpcserver.txt");
+                    byte[] pageData = MyWebClient.DownloadData(MainWindow.serverLink + @"/msl/CC/frpcserver.txt");
                     pageHtml = Encoding.UTF8.GetString(pageData);
                 }
                 catch
@@ -95,7 +95,7 @@ namespace MSL
             {
                 WebClient MyWebClient1 = new WebClient();
                 MyWebClient1.Credentials = CredentialCache.DefaultCredentials;
-                Byte[] pageData1 = MyWebClient1.DownloadData(MainWindow.serverLink + @"/web/frpcgg.txt");
+                Byte[] pageData1 = MyWebClient1.DownloadData(MainWindow.serverLink + @"/msl/frpcgg.txt");
                 gonggao.Content = Encoding.UTF8.GetString(pageData1);
             }
             catch
@@ -326,7 +326,7 @@ namespace MSL
         {
             WebClient MyWebClient = new WebClient();
             MyWebClient.Credentials = CredentialCache.DefaultCredentials;
-            byte[] pageData = MyWebClient.DownloadData(MainWindow.serverLink + @"/web/frpcweb.txt");
+            byte[] pageData = MyWebClient.DownloadData(MainWindow.serverLink + @"/msl/frpcweb.txt");
             string pageHtml1 = Encoding.UTF8.GetString(pageData);
             Process.Start(pageHtml1);
         }
