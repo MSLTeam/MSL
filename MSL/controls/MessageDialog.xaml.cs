@@ -9,7 +9,7 @@ namespace MSL.controls
     public partial class MessageDialog : Window
     {
         public static bool _dialogReturn;
-        public MessageDialog(Window window,string dialogText, string dialogTitle, bool primaryBtnVisible, string closeText)
+        public MessageDialog(Window window,string dialogText, string dialogTitle, bool primaryBtnVisible, string closeText,string primaryText)
         {
             InitializeComponent();
             this.MaxHeight=window.ActualHeight-50;
@@ -18,6 +18,7 @@ namespace MSL.controls
             titleText.Text = dialogTitle;
             bodyText.Text = dialogText;
             closeBtn.Content = closeText;
+            primaryBtn.Content=primaryText;
             if (!primaryBtnVisible)
             {
                 primaryBtn.Visibility = Visibility.Hidden;

@@ -6,11 +6,11 @@ namespace MSL.controls
 {
     public class DialogShow
     {
-        public static void ShowMsg(System.Windows.Window window, string dialogText, string dialogTitle, bool primaryBtnVisible = false, string closeText = "确定")
+        public static void ShowMsg(System.Windows.Window window, string dialogText, string dialogTitle, bool primaryBtnVisible = false, string closeText = "确定",string primaryText="确定")
         {
             window.Focus();
             var dialog = Dialog.Show(string.Empty);
-            MessageDialog messageDialog = new MessageDialog(window,dialogText, dialogTitle, primaryBtnVisible, closeText);
+            MessageDialog messageDialog = new MessageDialog(window,dialogText, dialogTitle, primaryBtnVisible, closeText,primaryText);
             messageDialog.Owner = window;
             messageDialog.ShowDialog();
             window.Focus();

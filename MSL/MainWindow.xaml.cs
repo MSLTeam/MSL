@@ -93,17 +93,18 @@ namespace MSL
             }
             if (!File.Exists(AppDomain.CurrentDomain.BaseDirectory + @"MSL\config.json"))
             {
-                File.WriteAllText(AppDomain.CurrentDomain.BaseDirectory + @"MSL\config.json", string.Format("{{{0}}}", "\n"));
-
-                try
+                Process.Start("https://www.waheal.top/eula.html");
+                this.Dispatcher.Invoke(DispatcherPriority.Normal, (ThreadStart)delegate ()
                 {
-                    WebClient MyWebClient = new WebClient();
-                    MyWebClient.Credentials = CredentialCache.DefaultCredentials;
-                    byte[] pageData = MyWebClient.DownloadData(serverLink + @"/msl/eula.txt");
-                    string notice = Encoding.UTF8.GetString(pageData);
-                    Process.Start(notice);
-                }
-                catch { }
+                    DialogShow.ShowMsg(this, "请阅读并同意MSL开服器使用协议：https://www.waheal.top/eula.html", "提示", true, "不同意", "同意");
+                    if (!MessageDialog._dialogReturn)
+                    {
+
+                        Close();
+                    }
+                    MessageDialog._dialogReturn = false;
+                    File.WriteAllText(AppDomain.CurrentDomain.BaseDirectory + @"MSL\config.json", string.Format("{{{0}}}", "\n"));
+                });
             }
 
             //MessageBox.Show("CheckDirSuccess");
