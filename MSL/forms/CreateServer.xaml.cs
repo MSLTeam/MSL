@@ -6,11 +6,13 @@ using MSL.pages;
 using Newtonsoft.Json.Linq;
 using System;
 using System.Collections.Generic;
+using System.Diagnostics;
 using System.IO;
 using System.Linq;
 using System.Net;
 using System.Text;
 using System.Text.RegularExpressions;
+using System.Threading;
 using System.Windows;
 using System.Windows.Controls;
 using System.Windows.Threading;
@@ -123,90 +125,116 @@ namespace MSL.forms
             {
                 serverjava = txjava.Text;
                 //MainWindow.serverserver = txb3.Text;
-                next3.IsEnabled = true;
-                return1.IsEnabled = true;
                 javagrid.Visibility = Visibility.Hidden;
                 servergrid.Visibility = Visibility.Visible;
-                label3.Visibility = Visibility.Visible;
-                downloadjava.Visibility = Visibility.Visible;
-                selectjava.Visibility = Visibility.Visible;
-                return2.Visibility = Visibility.Visible;
-                if (isImportPack)
-                {
-                    Growl.Info("整合包中通常会附带一个服务端核心，若您想要使用整合包中的服务端，请点击第二个按钮进行手动选择");
-                }
-                return;
+                CheckServerPackCore();
             }
-            if (usejvPath.IsChecked == true)
+            else if (usejvPath.IsChecked == true)
             {
                 serverjava = "Java";
                 //MainWindow.serverserver = txb3.Text;
-                next3.IsEnabled = true;
-                return1.IsEnabled = true;
                 javagrid.Visibility = Visibility.Hidden;
                 servergrid.Visibility = Visibility.Visible;
-                label3.Visibility = Visibility.Visible;
-                downloadjava.Visibility = Visibility.Visible;
-                selectjava.Visibility = Visibility.Visible;
-                return2.Visibility = Visibility.Visible;
-                if (isImportPack)
-                {
-                    Growl.Info("整合包中通常会附带一个服务端核心，若您想要使用整合包中的服务端，请点击第二个按钮进行手动选择");
-                }
-                return;
+                CheckServerPackCore();
             }
-            try
+            else if (usecheckedjv.IsChecked == true)
+            { 
+                string a = selectCheckedJavaComb.Items[selectCheckedJavaComb.SelectedIndex].ToString();
+                serverjava = a.Substring(a.IndexOf(":")+1);
+                javagrid.Visibility = Visibility.Hidden;
+                servergrid.Visibility = Visibility.Visible;
+                CheckServerPackCore();
+            }
+            else if (usedownloadjv.IsChecked==true)
             {
-                WebClient MyWebClient = new WebClient();
-                byte[] pageData = MyWebClient.DownloadData(MainWindow.serverLink + @"/msl/otherdownload.json");
-                string _javaList = Encoding.UTF8.GetString(pageData);
-
-                JObject javaList0 = JObject.Parse(_javaList);
-                JObject javaList = (JObject)javaList0["java"];
-
-                next3.IsEnabled = false;
-                return1.IsEnabled = false;
-                if (usedownloadjv.IsChecked == true)
+                try
                 {
-                    try
+                    WebClient MyWebClient = new WebClient();
+                    byte[] pageData = MyWebClient.DownloadData(MainWindow.serverLink + @"/msl/otherdownload.json");
+                    string _javaList = Encoding.UTF8.GetString(pageData);
+
+                    JObject javaList0 = JObject.Parse(_javaList);
+                    JObject javaList = (JObject)javaList0["java"];
+
+                    next3.IsEnabled = false;
+                    return5.IsEnabled = false;
+                    if (usedownloadjv.IsChecked == true)
                     {
-                        switch (selectJavaComb.SelectedIndex)
+                        try
                         {
-                            case 0:
-                                DownloadJava("Java8", javaList["Java8"].ToString());
-                                break;
-                            case 1:
-                                DownloadJava("Java11", javaList["Java11"].ToString());
-                                break;
-                            case 2:
-                                DownloadJava("Java16", javaList["Java16"].ToString());
-                                break;
-                            case 3:
-                                DownloadJava("Java17", javaList["Java17"].ToString());
-                                break;
-                            case 4:
-                                DownloadJava("Java18", javaList["Java18"].ToString());
-                                break;
-                            case 5:
-                                DownloadJava("Java19", javaList["Java19"].ToString());
-                                break;
-                            default:
-                                Growl.Error("请选择一个版本以下载！");
-                                break;
+                            switch (selectJavaComb.SelectedIndex)
+                            {
+                                case 0:
+                                    DownloadJava("Java8", javaList["Java8"].ToString());
+                                    break;
+                                case 1:
+                                    DownloadJava("Java11", javaList["Java11"].ToString());
+                                    break;
+                                case 2:
+                                    DownloadJava("Java16", javaList["Java16"].ToString());
+                                    break;
+                                case 3:
+                                    DownloadJava("Java17", javaList["Java17"].ToString());
+                                    break;
+                                case 4:
+                                    DownloadJava("Java18", javaList["Java18"].ToString());
+                                    break;
+                                case 5:
+                                    DownloadJava("Java19", javaList["Java19"].ToString());
+                                    break;
+                                default:
+                                    Growl.Error("请选择一个版本以下载！");
+                                    break;
+                            }
+                        }
+                        catch
+                        {
+                            Growl.Error("出现错误，请检查网络连接！");
                         }
                     }
-                    catch
-                    {
-                        Growl.Error("出现错误，请检查网络连接！");
-                    }
+                }
+                catch
+                {
+                    next3.IsEnabled = true;
+                    return5.IsEnabled = true;
+                    DialogShow.ShowMsg(this, "出现错误！请检查您的网络连接！", "信息", false, "确定");
                 }
             }
-            catch
+        }
+        void CheckServerPackCore()
+        {
+            if (isImportPack)
             {
-                DialogShow.ShowMsg(this, "出现错误！请检查您的网络连接！", "信息", false, "确定");
+                if (File.Exists(serverbase + "\\server.jar"))
+                {
+                    DialogShow.ShowMsg(this, "开服器在整合包中检测到了服务端核心文件server.jar，是否选择此文件为开服核心？", "提示", true, "取消");
+                    if (MessageDialog._dialogReturn == true)
+                    {
+                        MessageDialog._dialogReturn = false;
+                        servercore = "server.jar";
+                        sJVM.IsSelected = true;
+                        sJVM.IsEnabled = true;
+                        sserver.IsEnabled = false;
+                    }
+                }
+                else if (File.Exists(serverbase + "\\Server.jar"))
+                {
+                    DialogShow.ShowMsg(this, "开服器在整合包中检测到了服务端核心文件Server.jar，是否选择此文件为开服核心？", "提示", true, "取消");
+                    if (MessageDialog._dialogReturn == true)
+                    {
+                        MessageDialog._dialogReturn = false;
+                        servercore = "Server.jar";
+                        sJVM.IsSelected = true;
+                        sJVM.IsEnabled = true;
+                        sserver.IsEnabled = false;
+                    }
+                }
+                else
+                {
+                    Growl.Info("整合包中通常会附带一个服务端核心，您可进行手动选择，若找不到的话，请选择下载选项并点击下一步以下载");
+                }
             }
         }
-
         private void DownloadJava(string fileName, string downUrl)
         {
             //MessageBox.Show("下载Java即代表您接受Java的服务条款https://www.oracle.com/downloads/licenses/javase-license1.html", "INFO", MessageBoxButton.OK, MessageBoxImage.Information);
@@ -253,7 +281,7 @@ namespace MSL.forms
                     MessageBox.Show("安装失败，请查看是否有杀毒软件进行拦截！请确保添加信任或关闭杀毒软件后进行重新安装！", "错误", MessageBoxButton.OK, MessageBoxImage.Error);
                     outlog.Content = "安装失败！";
                     next3.IsEnabled = true;
-                    return1.IsEnabled = true;
+                    return5.IsEnabled = true;
                 }
                 /*
                 Form4 fw = new Form4();
@@ -263,48 +291,10 @@ namespace MSL.forms
             {
                 serverjava = AppDomain.CurrentDomain.BaseDirectory + @"MSL\" + fileName + @"\bin\java.exe";
                 next3.IsEnabled = true;
-                return1.IsEnabled = true;
+                return5.IsEnabled = true;
                 javagrid.Visibility = Visibility.Hidden;
                 servergrid.Visibility = Visibility.Visible;
-                label3.Visibility = Visibility.Visible;
-                downloadjava.Visibility = Visibility.Visible;
-                selectjava.Visibility = Visibility.Visible;
-                return2.Visibility = Visibility.Visible;
-                if (isImportPack)
-                {
-                    if (File.Exists(serverbase + "\\server.jar"))
-                    {
-                        DialogShow.ShowMsg(this, "开服器在整合包中检测到了服务端核心文件server.jar，是否选择此文件为开服核心？", "提示", true, "取消");
-                        if (MessageDialog._dialogReturn == true)
-                        {
-                            MessageDialog._dialogReturn = false;
-                            servercore = "server.jar";
-                            sJVM.IsSelected = true;
-                            sJVM.IsEnabled = true;
-                            sserver.IsEnabled = false;
-                            next3.IsEnabled = true;
-                            return1.IsEnabled = true;
-                        }
-                    }
-                    else if (File.Exists(serverbase + "\\Server.jar"))
-                    {
-                        DialogShow.ShowMsg(this, "开服器在整合包中检测到了服务端核心文件Server.jar，是否选择此文件为开服核心？", "提示", true, "取消");
-                        if (MessageDialog._dialogReturn == true)
-                        {
-                            MessageDialog._dialogReturn = false;
-                            servercore = "Server.jar";
-                            sJVM.IsSelected = true;
-                            sJVM.IsEnabled = true;
-                            sserver.IsEnabled = false;
-                            next3.IsEnabled = true;
-                            return1.IsEnabled = true;
-                        }
-                    }
-                    else
-                    {
-                        Growl.Info("整合包中通常会附带一个服务端核心，您可点击第二个按钮进行手动选择，若找不到的话，请返回这一步并点击第一个按钮进行下载");
-                    }
-                }
+                CheckServerPackCore();
             }
         }
         private void timer1_Tick(object sender, EventArgs e)
@@ -316,48 +306,10 @@ namespace MSL.forms
                     outlog.Content = "完成";
                     serverjava = AppDomain.CurrentDomain.BaseDirectory + @"MSL\" + DownjavaName + @"\bin\java.exe";
                     next3.IsEnabled = true;
-                    return1.IsEnabled = true;
+                    return5.IsEnabled = true;
                     javagrid.Visibility = Visibility.Hidden;
                     servergrid.Visibility = Visibility.Visible;
-                    label3.Visibility = Visibility.Visible;
-                    downloadjava.Visibility = Visibility.Visible;
-                    selectjava.Visibility = Visibility.Visible;
-                    return2.Visibility = Visibility.Visible;
-                    if (isImportPack)
-                    {
-                        if (File.Exists(serverbase + "\\server.jar"))
-                        {
-                            DialogShow.ShowMsg(this, "开服器在整合包中检测到了服务端核心文件server.jar，是否选择此文件为开服核心？", "提示", true, "取消");
-                            if (MessageDialog._dialogReturn == true)
-                            {
-                                MessageDialog._dialogReturn = false;
-                                servercore = "server.jar";
-                                sJVM.IsSelected = true;
-                                sJVM.IsEnabled = true;
-                                sserver.IsEnabled = false;
-                                next3.IsEnabled = true;
-                                return1.IsEnabled = true;
-                            }
-                        }
-                        else if (File.Exists(serverbase + "\\Server.jar"))
-                        {
-                            DialogShow.ShowMsg(this, "开服器在整合包中检测到了服务端核心文件Server.jar，是否选择此文件为开服核心？", "提示", true, "取消");
-                            if (MessageDialog._dialogReturn == true)
-                            {
-                                MessageDialog._dialogReturn = false;
-                                servercore = "Server.jar";
-                                sJVM.IsSelected = true;
-                                sJVM.IsEnabled = true;
-                                sserver.IsEnabled = false;
-                                next3.IsEnabled = true;
-                                return1.IsEnabled = true;
-                            }
-                        }
-                        else
-                        {
-                            Growl.Info("整合包中通常会附带一个服务端核心，您可点击第二个按钮进行手动选择，若找不到的话，请返回这一步并点击第一个按钮进行下载");
-                        }
-                    }
+                    CheckServerPackCore();
                     timer1.Stop();
                 }
                 catch
@@ -366,7 +318,11 @@ namespace MSL.forms
                 }
             }
         }
-
+        private void return2_Click(object sender, RoutedEventArgs e)
+        {
+            javagrid.Visibility = Visibility.Visible;
+            servergrid.Visibility = Visibility.Hidden;
+        }
         private void usedefault_Checked(object sender, RoutedEventArgs e)
         {
             if (this.IsLoaded)
@@ -462,20 +418,6 @@ namespace MSL.forms
             sserver.IsSelected = true;
             sserver.IsEnabled = true;
             sJVM.IsEnabled = false;
-            label3.Visibility = Visibility.Visible;
-            downloadjava.Visibility = Visibility.Visible;
-            selectjava.Visibility = Visibility.Visible;
-            label5.Visibility = Visibility.Hidden;
-            usedownloadjv.Visibility = Visibility.Hidden;
-            selectJavaComb.Visibility = Visibility.Hidden;
-            outlog.Visibility = Visibility.Hidden;
-            jvhelp.Visibility = Visibility.Hidden;
-            label4.Visibility = Visibility.Hidden;
-            usejvPath.Visibility = Visibility.Hidden;
-            useJVself.Visibility = Visibility.Hidden;
-            txjava.Visibility = Visibility.Hidden;
-            a0002_Copy.Visibility = Visibility.Hidden;
-            next3.Visibility = Visibility.Hidden;
         }
 
         private void a0002_Click(object sender, RoutedEventArgs e)
@@ -520,12 +462,124 @@ namespace MSL.forms
                 txjava.Text = openfile.FileName;
             }
         }
+        private void usedownloadjv_Checked(object sender, RoutedEventArgs e)
+        {
+            if (this.IsLoaded)
+            {
+                txjava.IsEnabled = false;
+                a0002_Copy.IsEnabled = false;
+            }
+        }
+        private void usecheckedjv_Checked(object sender, RoutedEventArgs e)
+        {
+            txjava.IsEnabled = false;
+            a0002_Copy.IsEnabled = false;
+            selectCheckedJavaComb.Items.Clear();
+            CheckJava();
+        }
+        private void usejvPath_Checked(object sender, RoutedEventArgs e)
+        {
+            txjava.IsEnabled = false;
+            a0002_Copy.IsEnabled = false;
+            Process process = new Process();
+            process.StartInfo.FileName = "java";
+            process.StartInfo.Arguments = "-version";
+            process.StartInfo.UseShellExecute = false;
+            process.StartInfo.CreateNoWindow=true;
+            process.StartInfo.RedirectStandardOutput = true;
+            process.StartInfo.RedirectStandardError = true;
+            process.Start();
 
+            string output = process.StandardError.ReadToEnd();
+            process.WaitForExit();
+
+            Match match = Regex.Match(output, @"java version \""([\d\._]+)\""");
+            if (match.Success)
+            {
+                outlog.Content = "环境变量可用性检查完毕，您的环境变量正常！";
+                usejvPath.Content = "使用环境变量:" + "Java" + match.Groups[1].Value;
+            }
+            else 
+            {
+                DialogShow.ShowMsg(this, "检测环境变量失败，您的环境变量似乎不存在！", "错误");
+                usedownloadjv.IsChecked = true;
+            }
+        }
         private void useJVself_Checked(object sender, RoutedEventArgs e)
         {
             txjava.IsEnabled = true;
+            a0002_Copy.IsEnabled = true;
         }
+        private void usedownloadserver_Checked(object sender, RoutedEventArgs e)
+        {
+            if (this.IsLoaded)
+            {
+                txb3.IsEnabled = false;
+                a0002.IsEnabled=false;
+            }
+        }
+        private void useServerself_Checked(object sender, RoutedEventArgs e)
+        {
+            txb3.IsEnabled = true;
+            a0002.IsEnabled = true;
+        }
+        void CheckJava()
+        {
+            string[] javaPaths = new string[] 
+            {
+                @"C:\Program Files\Java",
+                @"C:\Java",
+                @"D:\Program Files\Java",
+                @"D:\Java",
+                @"E:\Program Files\Java",
+                @"E:\Java",
+                @"F:\Program Files\Java",
+                @"F:\Java",
+                @"G:\Program Files\Java",
+                @"G:\Java"
+            };
+            foreach (string javaPath in javaPaths)
+            {
+                if (Directory.Exists(javaPath))
+                {
+                    string[] javaVersions = Directory.GetDirectories(javaPath);
+                    foreach (string version in javaVersions)
+                    {
+                        string javaExePath = Path.Combine(version, "bin\\java.exe");
+                        if (File.Exists(javaExePath))
+                        {
+                            Process process = new Process();
+                            process.StartInfo.FileName = javaExePath;
+                            process.StartInfo.Arguments = "-version";
+                            process.StartInfo.UseShellExecute = false;
+                            process.StartInfo.CreateNoWindow = true;
+                            process.StartInfo.RedirectStandardOutput = true;
+                            process.StartInfo.RedirectStandardError = true;
+                            process.Start();
 
+                            string output = process.StandardError.ReadToEnd();
+                            process.WaitForExit();
+
+                            Match match = Regex.Match(output, @"java version \""([\d\._]+)\""");
+                            if (match.Success)
+                            {
+                                selectCheckedJavaComb.Items.Add("Java" + match.Groups[1].Value + ":" + javaExePath);
+                            }
+                        }
+                    }
+                }
+            }
+            if(selectCheckedJavaComb.Items.Count > 0)
+            {
+                outlog.Content = "检测完毕！";
+                selectCheckedJavaComb.SelectedIndex = 0;
+            }
+            else
+            {
+                outlog.Content = "检测完毕，暂未找到Java";
+                usedownloadjv.IsChecked = true;
+            }
+        }
         private void next_Click(object sender, RoutedEventArgs e)
         {
             servername = serverNameBox.Text;
@@ -605,155 +659,65 @@ namespace MSL.forms
             }
         }
 
-        private void usejvPath_Checked(object sender, RoutedEventArgs e)
-        {
-            if (this.IsLoaded)
-            {
-                txjava.IsEnabled = false;
-            }
-        }
-
-        private void downloadserver_Click(object sender, RoutedEventArgs e)
-        {
-            DownloadServer.downloadServerJava = serverjava;
-            DownloadServer.downloadServerBase = serverbase;
-            DownloadServer downloadServer = new DownloadServer();
-            downloadServer.Owner = this;
-            downloadServer.ShowDialog();
-            if (File.Exists(serverbase + @"\" + DownloadServer.downloadServerName))
-            {
-                servercore = DownloadServer.downloadServerName;
-                sJVM.IsSelected = true;
-                sJVM.IsEnabled = true;
-                sserver.IsEnabled = false;
-                next3.IsEnabled = true;
-                return1.IsEnabled = true;
-            }
-            else if (DownloadServer.downloadServerArgs != "")
-            {
-                servercore = "";
-                serverargs = DownloadServer.downloadServerArgs;
-                sJVM.IsSelected = true;
-                sJVM.IsEnabled = true;
-                sserver.IsEnabled = false;
-                next3.IsEnabled = true;
-                return1.IsEnabled = true;
-            }
-            else
-            {
-                DialogShow.ShowMsg(this, "出现错误，下载失败！", "错误");
-            }
-        }
-
-        private void selectserver_Click(object sender, RoutedEventArgs e)
-        {
-            servertips.Visibility = Visibility.Hidden;
-            downloadserver.Visibility = Visibility.Hidden;
-            selectserver.Visibility = Visibility.Hidden;
-            label1.Visibility = Visibility.Hidden;
-            return2.Visibility = Visibility.Visible;
-            txb3.Visibility = Visibility.Visible;
-            next2.Visibility = Visibility.Visible;
-            a0002.Visibility = Visibility.Visible;
-            label2.Visibility = Visibility.Visible;
-        }
 
         private void next2_Click(object sender, RoutedEventArgs e)
         {
-            try
+            if (usedownloadserver.IsChecked == true)
             {
-                if (!Directory.Exists(serverbase))
+                DownloadServer.downloadServerJava = serverjava;
+                DownloadServer.downloadServerBase = serverbase;
+                DownloadServer downloadServer = new DownloadServer();
+                downloadServer.Owner = this;
+                downloadServer.ShowDialog();
+                if (File.Exists(serverbase + @"\" + DownloadServer.downloadServerName))
                 {
-                    Directory.CreateDirectory(serverbase);
+                    servercore = DownloadServer.downloadServerName;
+                    sJVM.IsSelected = true;
+                    sJVM.IsEnabled = true;
+                    sserver.IsEnabled = false;
                 }
-                string _filename = Path.GetFileName(txb3.Text);
-                if (Path.GetDirectoryName(txb3.Text) != serverbase)
+                else if (DownloadServer.downloadServerArgs != "")
                 {
-                    File.Copy(txb3.Text, serverbase + @"\" + _filename, true);
-                    DialogShow.ShowMsg(this, "已将服务端文件移至服务器文件夹中！您可将源文件删除！", "提示");
-                    txb3.Text = serverbase + @"\" + _filename;
+                    servercore = "";
+                    serverargs = DownloadServer.downloadServerArgs;
+                    sJVM.IsSelected = true;
+                    sJVM.IsEnabled = true;
+                    sserver.IsEnabled = false;
                 }
-                servercore = _filename;
-                sJVM.IsSelected = true;
-                sJVM.IsEnabled = true;
-                sserver.IsEnabled = false;
-                next3.IsEnabled = true;
-                return1.IsEnabled = true;
+                else
+                {
+                    DialogShow.ShowMsg(this, "出现错误，下载失败！", "错误");
+                }
             }
-            catch (Exception ex)
+            else
             {
-                DialogShow.ShowMsg(this, ex.Message, "错误");
+                try
+                {
+                    if (!Directory.Exists(serverbase))
+                    {
+                        Directory.CreateDirectory(serverbase);
+                    }
+                    string _filename = Path.GetFileName(txb3.Text);
+                    if (Path.GetDirectoryName(txb3.Text) != serverbase)
+                    {
+                        File.Copy(txb3.Text, serverbase + @"\" + _filename, true);
+                        DialogShow.ShowMsg(this, "已将服务端文件移至服务器文件夹中！您可将源文件删除！", "提示");
+                        txb3.Text = serverbase + @"\" + _filename;
+                    }
+                    servercore = _filename;
+                    sJVM.IsSelected = true;
+                    sJVM.IsEnabled = true;
+                    sserver.IsEnabled = false;
+                    next3.IsEnabled = true;
+                    return5.IsEnabled = true;
+                }
+                catch (Exception ex)
+                {
+                    DialogShow.ShowMsg(this, ex.Message, "错误");
+                }
             }
         }
 
-        private void selectjava_Click(object sender, RoutedEventArgs e)
-        {
-            DialogShow.ShowMsg(this, "请确保您要选择的Java版本适用于将要运行的MC服务器版本，如果版本不匹配，服务器将无法开启！\nJava版本和MC版本兼容列表：\n1.8之前：可以使用Java7-Java8\n1.8-1.12.2 可以使用Java8-Java11\n1.13-1.17.1 可以使用Java11-Java16\n1.18-最新版 可以使用Java18-Java19", "警告");
-            tipsjv1.Visibility = Visibility.Hidden;
-            label4.Visibility = Visibility.Visible;
-            usejvPath.Visibility = Visibility.Visible;
-            usejvPath.IsChecked = true;
-            useJVself.Visibility = Visibility.Visible;
-            txjava.Visibility = Visibility.Visible;
-            a0002_Copy.Visibility = Visibility.Visible;
-            jvhelp.Visibility = Visibility.Visible;
-            next3.Visibility = Visibility.Visible;
-            return1.Visibility = Visibility.Visible;
-            return5.Visibility = Visibility.Hidden;
-            label3.Visibility = Visibility.Hidden;
-            downloadjava.Visibility = Visibility.Hidden;
-            selectjava.Visibility = Visibility.Hidden;
-        }
-
-        private void downloadjava_Click(object sender, RoutedEventArgs e)
-        {
-            tipsjv1.Visibility = Visibility.Hidden;
-            label5.Visibility = Visibility.Visible;
-            usedownloadjv.Visibility = Visibility.Visible;
-            selectJavaComb.Visibility = Visibility.Visible;
-            usedownloadjv.IsChecked = true;
-            selectJavaComb.SelectedIndex = 0;
-            outlog.Visibility = Visibility.Visible;
-            jvhelp.Visibility = Visibility.Visible;
-            next3.Visibility = Visibility.Visible;
-            return1.Visibility = Visibility.Visible;
-            return5.Visibility = Visibility.Hidden;
-            label3.Visibility = Visibility.Hidden;
-            downloadjava.Visibility = Visibility.Hidden;
-            selectjava.Visibility = Visibility.Hidden;
-        }
-
-        private void return1_Click(object sender, RoutedEventArgs e)
-        {
-            servertips.Visibility = Visibility.Visible;
-            tipsjv1.Visibility = Visibility.Visible;
-            downloadserver.Visibility = Visibility.Visible;
-            selectserver.Visibility = Visibility.Visible;
-            label1.Visibility = Visibility.Visible;
-            javagrid.Visibility = Visibility.Visible;
-            label3.Visibility = Visibility.Visible;
-            downloadjava.Visibility = Visibility.Visible;
-            return5.Visibility = Visibility.Visible;
-            selectjava.Visibility = Visibility.Visible;
-            servergrid.Visibility = Visibility.Hidden;
-            label5.Visibility = Visibility.Hidden;
-            usedownloadjv.Visibility = Visibility.Hidden;
-            selectJavaComb.Visibility = Visibility.Hidden;
-            outlog.Visibility = Visibility.Hidden;
-            jvhelp.Visibility = Visibility.Hidden;
-            label4.Visibility = Visibility.Hidden;
-            return1.Visibility = Visibility.Hidden;
-            return2.Visibility = Visibility.Hidden;
-            usejvPath.Visibility = Visibility.Hidden;
-            useJVself.Visibility = Visibility.Hidden;
-            txjava.Visibility = Visibility.Hidden;
-            a0002_Copy.Visibility = Visibility.Hidden;
-            next3.Visibility = Visibility.Hidden;
-            txb3.Visibility = Visibility.Hidden;
-            next2.Visibility = Visibility.Hidden;
-            a0002.Visibility = Visibility.Hidden;
-            label2.Visibility = Visibility.Hidden;
-        }
 
         private void skip_Click(object sender, RoutedEventArgs e)
         {

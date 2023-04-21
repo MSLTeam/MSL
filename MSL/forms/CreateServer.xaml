@@ -49,31 +49,20 @@
                 <TabItem x:Name="sserver" Header="Java及服务端" IsEnabled="False" FontSize="14" Background="{x:Null}">
                     <Grid>
                         <Grid x:Name="servergrid" Background="{DynamicResource BackgroundBrush}">
-                            <Button x:Name="return2" Content="上一步" hc:BorderElement.CornerRadius="15" Margin="15,220,0,0" VerticalAlignment="Top" Width="90" Click="return1_Click" FontWeight="Normal" Height="45" FontSize="14" HorizontalAlignment="Left"/>
-                            <TextBox x:Name="txb3" HorizontalAlignment="Left" Margin="10,129,0,0" VerticalAlignment="Top" Width="645" MaxLines="1" FontSize="16" Height="35" Visibility="Hidden"/>
-                            <Button x:Name="next2" Content="下一步" Style="{StaticResource ButtonPrimary}" hc:BorderElement.CornerRadius="15" HorizontalAlignment="Left" Margin="330,220,0,0" VerticalAlignment="Top" Width="100" Click="next2_Click" Height="45" FontSize="14" Visibility="Hidden"/>
-                            <Button x:Name="a0002" Content="浏览" Margin="660,128,0,0" VerticalAlignment="Top" Width="66" Click="a0002_Click" FontWeight="Normal" HorizontalAlignment="Left" Height="36" FontSize="16" Visibility="Hidden"/>
-                            <Label x:Name="label2" Content="在此选择服务端" HorizontalAlignment="Left" Margin="28,76,0,0" VerticalAlignment="Top" FontSize="20" Background="{x:Null}" BorderBrush="{x:Null}" Height="48" Visibility="Hidden"/>
-                            <Label Content="服务端" HorizontalAlignment="Left" Margin="10,10,0,0" VerticalAlignment="Top" FontSize="30" Background="{x:Null}" BorderBrush="{x:Null}" Height="57" FontWeight="Bold"/>
-                            <Label x:Name="label1" Content="请选择您是否备有服务端" HorizontalAlignment="Left" Margin="127,21,0,0" VerticalAlignment="Top" FontSize="20" Height="43" Background="{x:Null}" BorderBrush="{x:Null}"/>
-                            <Button x:Name="selectserver" Content="我有服务端，点击选择" hc:BorderElement.CornerRadius="30" Margin="425,210,0,0" VerticalAlignment="Top" Width="215" FontWeight="Normal" FontSize="18" Height="65" Click="selectserver_Click" HorizontalAlignment="Left"/>
-                            <Button x:Name="downloadserver" Content="没有服务端，点击下载" Style="{StaticResource ButtonPrimary}" hc:BorderElement.CornerRadius="30" Margin="140,210,0,0" VerticalAlignment="Top" Width="215" Click="downloadserver_Click" FontWeight="Normal" FontSize="18" Height="65" HorizontalAlignment="Left"/>
-                            <TextBlock x:Name="servertips" HorizontalAlignment="Center" Margin="20,90,0,0" TextWrapping="Wrap" VerticalAlignment="Top" Text="什么是服务端？&#xA;服务端是服务器的核心，没有服务端服务器也无法运行。&#xA;如果不知道服务端是什么，建议选择没有服务端。" FontSize="20" Foreground="Red"/>
+                            <Label HorizontalAlignment="Left" Margin="20,65,0,0" VerticalAlignment="Top" Content="在此选择一个服务端核心（建议选择“使用开服器下载”）"/>
+                            <RadioButton x:Name="usedownloadserver" Content="使用开服器下载一个服务端" IsChecked="True" Margin="20,105,0,0" VerticalAlignment="Top" HorizontalAlignment="Left" FontSize="16" Checked="usedownloadserver_Checked"/>
+                            <RadioButton x:Name="useServerself" Content="备有服务端，选择地址" Margin="20,135,0,0" VerticalAlignment="Top" Checked="useServerself_Checked" HorizontalAlignment="Left" FontSize="16"/>
+                            <Button x:Name="return2" Content="上一步" hc:BorderElement.CornerRadius="15" Margin="150,220,0,0" Width="100" Click="return2_Click" Height="45" FontSize="14" HorizontalAlignment="Left" VerticalAlignment="Top"/>
+                            <TextBox x:Name="txb3" HorizontalAlignment="Left" Margin="20,165,0,0" VerticalAlignment="Top" Width="645" MaxLines="1" FontSize="16" Height="35" IsEnabled="False"/>
+                            <Button x:Name="next2" Content="下一步" Style="{StaticResource ButtonPrimary}" hc:BorderElement.CornerRadius="15" HorizontalAlignment="Left" Margin="320,220,0,0" Width="100" Click="next2_Click" Height="45" FontSize="14" VerticalAlignment="Top"/>
+                            <Button x:Name="a0002" Content="浏览" IsEnabled="False" Margin="670,165,0,0" Width="66" Click="a0002_Click" FontWeight="Normal" HorizontalAlignment="Left" Height="35" FontSize="16" VerticalAlignment="Top"/>
+                            <Label Content="服务端" HorizontalAlignment="Left" Margin="10,10,0,0" VerticalAlignment="Top" FontSize="30" Background="{x:Null}" BorderBrush="{x:Null}" Height="50" FontWeight="Bold"/>
                         </Grid>
                         <Grid x:Name="javagrid" Background="{DynamicResource BackgroundBrush}">
-                            <Button x:Name="return1" Content="上一步" hc:BorderElement.CornerRadius="15" Margin="160,230,0,0" VerticalAlignment="Top" Width="87" Click="return1_Click" FontWeight="Normal" Height="39" FontSize="14" HorizontalAlignment="Left" Visibility="Hidden"/>
-                            <Label x:Name="label3" Content="请选择您的电脑是否安装了Java" HorizontalAlignment="Left" Margin="164,25,0,0" VerticalAlignment="Top" FontSize="20" Height="39" Background="{x:Null}" BorderBrush="{x:Null}"/>
-                            <Button x:Name="selectjava" Content="我有Java，点击选择" Margin="425,210,0,0" hc:BorderElement.CornerRadius="30" VerticalAlignment="Top" Width="215" FontWeight="Normal" FontSize="18" Height="65" Click="selectjava_Click" HorizontalAlignment="Left"/>
-                            <Button x:Name="downloadjava" Content="没有Java，点击下载" Style="{StaticResource ButtonPrimary}" hc:BorderElement.CornerRadius="30" Margin="140,210,0,0" VerticalAlignment="Top" Width="215" FontWeight="Normal" FontSize="18" Height="65" Click="downloadjava_Click" HorizontalAlignment="Left"/>
-                            <Button x:Name="next3" Content="下一步" Style="{StaticResource ButtonPrimary}" hc:BorderElement.CornerRadius="15" Margin="377,230,0,0" VerticalAlignment="Top" Width="94" Click="next3_Click" FontWeight="Normal" Height="39" FontSize="14" HorizontalAlignment="Left" Visibility="Hidden"/>
-                            <Label x:Name="jvhelp" Content="帮助：不同版本该如何选择Java？ &#xA;1.8之前：可以使用Java7-Java8&#xA;1.8-1.12.2 可以使用Java8-Java11 &#xA;1.13-1.17.1 可以使用Java11-Java16 &#xA;1.18-最新版 可以使用Java18-Java19" HorizontalAlignment="Left" Margin="420,5,0,0" Height="120" VerticalAlignment="Top" FontSize="16" Foreground="Red" BorderBrush="Red" Visibility="Hidden"/>
-                            <Label Content="Java环境" HorizontalAlignment="Left" Margin="10,10,0,0" VerticalAlignment="Top" FontSize="30" Background="{x:Null}" BorderBrush="{x:Null}" Height="60" FontWeight="Bold"/>
-                            <RadioButton x:Name="useJVself" Content="没有配置环境变量，在此选择地址" Margin="20,160,0,0" VerticalAlignment="Top" Checked="useJVself_Checked" HorizontalAlignment="Left" Visibility="Hidden" FontSize="14"/>
-                            <TextBox x:Name="txjava" HorizontalAlignment="Left" Height="30" Margin="15,185,0,0" VerticalAlignment="Top" Width="600" IsEnabled="False" MaxLines="1" Visibility="Hidden"/>
-                            <Button x:Name="a0002_Copy" Content="浏览" Margin="625,185,0,0" VerticalAlignment="Top" Width="74" FontWeight="Normal" Click="a0002_Copy_Click" Height="30" HorizontalAlignment="Left" Visibility="Hidden"/>
-                            <Label x:Name="outlog" Content="" HorizontalAlignment="Left" Margin="23,165,0,0" VerticalAlignment="Top" FontSize="14" RenderTransformOrigin="3.7,-1.679" Foreground="Red" Background="{x:Null}" BorderBrush="{x:Null}" Visibility="Hidden"/>
-                            <RadioButton x:Name="usejvPath" Content="使用环境变量（使用该选项前请确保已安装Java且已配置好环境变量）" HorizontalAlignment="Left" Margin="20,130,0,0" VerticalAlignment="Top" Checked="usejvPath_Checked" IsChecked="True" Visibility="Hidden" FontSize="14"/>
-                            <ComboBox x:Name="selectJavaComb" Margin="205,128,0,0" HorizontalAlignment="Left" VerticalAlignment="Top" Width="200" Visibility="Hidden">
+                            <Label Content="Java环境" HorizontalAlignment="Left" Margin="10,10,0,0" VerticalAlignment="Top" FontSize="30" Background="{x:Null}" BorderBrush="{x:Null}" Height="50" FontWeight="Bold"/>
+                            <Label HorizontalAlignment="Left" Margin="20,65,0,0" VerticalAlignment="Top" Content="在此选择一个Java环境（建议选择让开服器下载，因为有时服务器无法开启就是因为Java环境错误或不完整）"/>
+                            <RadioButton x:Name="usedownloadjv" Content="开服器为您下载" IsChecked="True" Margin="20,105,0,0" VerticalAlignment="Top" HorizontalAlignment="Left" FontSize="16" Checked="usedownloadjv_Checked"/>
+                            <ComboBox x:Name="selectJavaComb" Margin="160,100,0,0" HorizontalAlignment="Left" VerticalAlignment="Top" Width="150" SelectedIndex="0">
                                 <ComboBoxItem Content="Java8"/>
                                 <ComboBoxItem Content="Java11"/>
                                 <ComboBoxItem Content="Java16"/>
@@ -81,11 +70,16 @@
                                 <ComboBoxItem Content="Java18"/>
                                 <ComboBoxItem Content="Java19"/>
                             </ComboBox>
-                            <RadioButton x:Name="usedownloadjv" Content="开服器为您下载" Margin="41,132,0,0" VerticalAlignment="Top" HorizontalAlignment="Left" FontSize="16" Visibility="Hidden"/>
-                            <Label x:Name="label4" Content="在此选择您的Java路径" HorizontalAlignment="Left" Margin="28,76,0,0" VerticalAlignment="Top" FontSize="20" Background="{x:Null}" BorderBrush="{x:Null}" Height="51" Visibility="Hidden"/>
-                            <Label x:Name="label5" Content="选择一个版本让开服器为您下载" HorizontalAlignment="Left" Margin="28,76,0,0" VerticalAlignment="Top" FontSize="20" Background="{x:Null}" BorderBrush="{x:Null}" Height="51" Visibility="Hidden"/>
-                            <TextBlock x:Name="tipsjv1" HorizontalAlignment="Center" Margin="20,90,0,0" TextWrapping="Wrap" VerticalAlignment="Top" Text="什么是Java？&#xA;Java是服务器的运行环境，没有Java服务器就无法运行。&#xA;如果不知道Java是什么，建议选择没有Java来让开服器为您下载。" FontSize="20" Foreground="Red"/>
-                            <Button x:Name="return5" Content="上一步" hc:BorderElement.CornerRadius="15" Margin="15,220,0,0" VerticalAlignment="Top" Width="90" Click="return5_Click" FontWeight="Normal" Height="45" FontSize="14" HorizontalAlignment="Left"/>
+                            <RadioButton x:Name="usecheckedjv" Content="检查电脑上的Java" Margin="20,140,0,0" VerticalAlignment="Top" HorizontalAlignment="Left" FontSize="16" Checked="usecheckedjv_Checked"/>
+                            <ComboBox x:Name="selectCheckedJavaComb" Margin="180,135,0,0" HorizontalAlignment="Left" VerticalAlignment="Top" Width="150"/>
+                            <RadioButton x:Name="usejvPath" Content="使用环境变量" HorizontalAlignment="Left" Margin="20,175,0,0" VerticalAlignment="Top" FontSize="16" Checked="usejvPath_Checked"/>
+                            <RadioButton x:Name="useJVself" Content="选择地址" Margin="20,210,0,0" VerticalAlignment="Top" Checked="useJVself_Checked" HorizontalAlignment="Left" FontSize="16"/>
+                            <TextBox x:Name="txjava" HorizontalAlignment="Left" Height="30" Margin="115,205,0,0" VerticalAlignment="Top" Width="540" IsEnabled="False" MaxLines="1"/>
+                            <Button x:Name="a0002_Copy" Content="浏览" IsEnabled="False" Margin="660,205,0,0" VerticalAlignment="Top" Width="78" FontWeight="Normal" Click="a0002_Copy_Click" Height="30" HorizontalAlignment="Left"/>
+                            <Label x:Name="outlog" Content="" HorizontalAlignment="Left" Margin="20,245,0,0" VerticalAlignment="Top" FontSize="14" Foreground="Red" Background="{x:Null}" BorderBrush="{x:Null}"/>
+                            <Button x:Name="return5" Content="上一步" hc:BorderElement.CornerRadius="15" Margin="180,270,0,0" VerticalAlignment="Top" Width="90" Click="return5_Click" FontWeight="Normal" Height="40" FontSize="14" HorizontalAlignment="Left"/>
+                            <Button x:Name="next3" Content="下一步" Style="{StaticResource ButtonPrimary}" hc:BorderElement.CornerRadius="15" Margin="0,270,0,0" VerticalAlignment="Top" Width="94" Click="next3_Click" Height="40" FontSize="14"/>
+                            <Label x:Name="jvhelp" Content="帮助：不同版本该如何选择Java？ &#xA;1.8之前：可以使用Java7-Java8&#xA;1.8-1.12.2 可以使用Java8-Java11 &#xA;1.13-1.17.1 可以使用Java11-Java16 &#xA;1.18-最新版 可以使用Java18-Java19" HorizontalAlignment="Right" Height="110" VerticalAlignment="Bottom" FontSize="15" Foreground="Red" BorderBrush="Red" Margin="0,0,10,10"/>
                         </Grid>
                     </Grid>
                 </TabItem>

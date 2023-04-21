@@ -300,7 +300,7 @@ namespace MSL
         }
         private void solveProblemBtn_Click(object sender, RoutedEventArgs e)
         {
-            DialogShow.ShowMsg(this, "此功能还在测试中，且占用极高，请勿随意使用！\n分析报告将在服务器关闭后生成！若使用后还是无法解决问题，请尝试进Q群询问：1145888872", "警告", true, "取消");
+            DialogShow.ShowMsg(this, "分析报告将在服务器关闭后生成！若使用后还是无法解决问题，请尝试进Q群询问（附带崩溃日志截图）：1145888872", "警告", true, "取消");
             if (MessageDialog._dialogReturn == true)
             {
                 MessageDialog._dialogReturn = false;
@@ -954,7 +954,7 @@ namespace MSL
                     solveProblemSystem = false;
                     if (foundProblems == null)
                     {
-                        Growl.Info("服务器已关闭！开服器未检测到相关问题，请加Q群寻求帮助：1145888872！");
+                        Growl.Info("服务器已关闭！开服器未检测到相关问题，请加Q群寻求帮助（附带崩溃日志截图）：1145888872！");
                     }
                     else
                     {
@@ -967,11 +967,15 @@ namespace MSL
                 {
                     LaunchServer();
                 }
-                else
+                else if (getServerInfoLine <= 50 && getServerInfoLine >= 0)
                 {
-                    if (getServerInfoLine <= 50 && getServerInfoLine >= 0)
+                    DialogShow.ShowMsg(this, "您的服务器疑似异常关闭，是否使用崩溃分析系统进行检测？", "提示", true, "取消");
+                    if (MessageDialog._dialogReturn)
                     {
-                        DialogShow.ShowMsg(this, "您的服务器疑似异常关闭，请尝试使用智能分析功能进行检查，若无法解决，请加群:1145888872 并发送服务器输出日志来寻求帮助！", "提示");
+                        MessageDialog._dialogReturn = false;
+                        TabCtrl.SelectedIndex = 1;
+                        solveProblemSystem = true;
+                        LaunchServer();
                     }
                 }
             }

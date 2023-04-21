@@ -31,7 +31,7 @@ namespace MSL
     /// </summary>
     public partial class MainWindow : Window
     {
-        public static string update = "v3.4.7.9";
+        public static string update = "v3.4.8.0";
         Home _homePage = new Home();
         ServerList _listPage = new ServerList();
         FrpcPage _frpcPage = new FrpcPage();
