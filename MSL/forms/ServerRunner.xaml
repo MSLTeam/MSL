@@ -6,7 +6,9 @@
         xmlns:hc="https://handyorg.github.io/handycontrol"
         xmlns:local="clr-namespace:MSL"
         mc:Ignorable="d"
-        Title="ServerRunner" Height="550" Width="900" MinHeight="500" MinWidth="800" Loaded="Window_Loaded" WindowStartupLocation="CenterScreen" Closing="Window_Closing" Background="{DynamicResource BackgroundBrush}" Activated="Window_Activated" Deactivated="Window_Deactivated" SizeChanged="Window_SizeChanged">
+        Title="ServerRunner" Height="550" Width="900" MinHeight="550" MinWidth="900" 
+        Loaded="Window_Loaded" Closing="Window_Closing" Activated="Window_Activated" Deactivated="Window_Deactivated" SizeChanged="Window_SizeChanged"
+        WindowStartupLocation="CenterScreen" Background="{DynamicResource BackgroundBrush}">
     <WindowChrome.WindowChrome>
         <WindowChrome GlassFrameThickness="-1" CaptionHeight="40"/>
     </WindowChrome.WindowChrome>
@@ -203,7 +205,7 @@
                                     <Label Content="主世界地图：" Margin="10,285,0,0" Width="82" Background="{x:Null}" BorderBrush="{x:Null}" HorizontalAlignment="Left" VerticalAlignment="Top"/>
                                     <TextBox x:Name="gameWorldText" Margin="97,284,0,0" TextWrapping="Wrap" Text="" Width="120" HorizontalAlignment="Left" VerticalAlignment="Top"/>
                                     <TextBlock Margin="237,292,0,0" TextWrapping="Wrap" Text="注：主世界地图名称（level-name），默认为world，非必要无需更改" VerticalAlignment="Top"/>
-                                    <Button x:Name="savaServerConfig" Style="{StaticResource ButtonPrimary}" Content="保存" Height="35" Width="142" Click="saveServerConfig_Click" FontSize="16" HorizontalAlignment="Left" Margin="676,272,0,0" VerticalAlignment="Top"/>
+                                    <Button x:Name="savaServerConfig" Style="{StaticResource ButtonPrimary}" Content="保存" Height="35" Width="140" Click="saveServerConfig_Click" FontSize="16" HorizontalAlignment="Left" Margin="700,272,0,0" VerticalAlignment="Top"/>
                                 </Grid>
                                 <Grid x:Name="changeServerProperties_Add">
                                     <Button x:Name="changeServerIcon" Content="更换服务器图标" Width="200" Height="35" FontSize="14" Canvas.Left="10" Canvas.Top="334" Click="changeServerIcon_Click" VerticalAlignment="Top" HorizontalAlignment="Left" Margin="10,10,0,0"/>
@@ -280,30 +282,34 @@
                 </ScrollViewer>
             </TabItem>
             <TabItem Header="更多功能" Background="{x:Null}">
-                <StackPanel>
-                    <Border Style="{StaticResource MagicBorder}" Padding="10,10,10,20">
-                        <Grid>
-                            <Label Content="开服器功能：" Style="{StaticResource BorderTitle}"/>
-                            <Label Content="正版验证" FontSize="18" Width="112" Height="36" Margin="10,40,0,0" BorderBrush="{x:Null}" Background="{x:Null}" HorizontalAlignment="Left" VerticalAlignment="Top"/>
-                            <Label Content="服务器控制" FontSize="18" Width="112" Height="36" Margin="10,80,0,0" Background="{x:Null}" BorderBrush="{x:Null}" HorizontalAlignment="Left" VerticalAlignment="Top"/>
-                            <Label Content="日志输出" FontSize="18" Width="112" Height="36" Margin="10,120,0,0" BorderBrush="{x:Null}" Background="{x:Null}" HorizontalAlignment="Left" VerticalAlignment="Top"/>
-                            <Button x:Name="onlineMode" Content="关闭正版验证" Margin="154,40,0,0" Click="onlineMode_Click" FontSize="16" Height="36" Width="160" HorizontalAlignment="Left" VerticalAlignment="Top"/>
-                            <Button x:Name="closeOutlog" Content="日志输出:开" Margin="154,120,0,0" FontSize="16" Height="34" Click="closeOutlog_Click" Width="160" HorizontalAlignment="Left" VerticalAlignment="Top"/>
-                            <Button x:Name="closeOutlog_Copy" Content="屏蔽关键字日志:关" Margin="320,120,0,0" FontSize="16" Height="34" Click="closeOutlog_Copy_Click" Width="160" HorizontalAlignment="Left" VerticalAlignment="Top"/>
-                            <Button x:Name="autoStartserver" Content="关服自动开服:禁用" Margin="154,80,0,0" Width="160" Click="autostartServer_Click" FontSize="16" Height="35" HorizontalAlignment="Left" VerticalAlignment="Top"/>
-                        </Grid>
-                    </Border>
-                    <Border Style="{StaticResource MagicBorder}" Padding="10,10,10,20">
-                        <Grid>
-                            <Label Content="快捷指令栏：" Style="{StaticResource BorderTitle}"/>
-                            <ListBox x:Name="fastCmdList" Width="457" Margin="10,40,350,0" />
-                            <Button x:Name="refrushFastCmd" Content="刷新" Height="70" Width="110" Click="refrushFastCmd_Click" FontSize="18" VerticalAlignment="Top" HorizontalAlignment="Left" Margin="495,40,0,0"/>
-                            <Button x:Name="addFastCmd" Content="添加" Height="60" Width="110" Click="addFastCmd_Click" FontSize="18" VerticalAlignment="Top" HorizontalAlignment="Left" Margin="495,115,0,0"/>
-                            <Button x:Name="delFastCmd" Content="删除" Height="38" Width="110" Click="delFastCmd_Click" FontSize="18" HorizontalAlignment="Left" VerticalAlignment="Top" Margin="495,180,0,0"/>
-                            <Button x:Name="resetFastCmd" Content="重置" Height="178" Width="110" Click="resetFastCmd_Click" FontSize="18" HorizontalAlignment="Left" Margin="610,40,0,0" VerticalAlignment="Top"/>
-                        </Grid>
-                    </Border>
-                </StackPanel>
+                <Viewbox Stretch="Uniform">
+                    <Canvas Width="865" Height="450">
+                        <StackPanel>
+                            <Border Style="{StaticResource MagicBorder}">
+                                <Grid>
+                                    <Label Content="开服器功能：" Style="{StaticResource BorderTitle}"/>
+                                    <Label Content="正版验证：" FontSize="18" Width="120" Height="36" Margin="10,40,0,0" BorderBrush="{x:Null}" Background="{x:Null}" HorizontalAlignment="Left" VerticalAlignment="Top" HorizontalContentAlignment="Left"/>
+                                    <Label Content="服务器控制：" FontSize="18" Width="120" Height="36" Margin="10,80,0,0" Background="{x:Null}" BorderBrush="{x:Null}" HorizontalAlignment="Left" VerticalAlignment="Top" HorizontalContentAlignment="Left"/>
+                                    <Label Content="日志输出：" FontSize="18" Width="120" Height="36" Margin="10,120,0,0" BorderBrush="{x:Null}" Background="{x:Null}" HorizontalAlignment="Left" VerticalAlignment="Top" HorizontalContentAlignment="Left"/>
+                                    <Button x:Name="onlineMode" Content="关闭正版验证" Margin="154,40,0,0" Click="onlineMode_Click" FontSize="16" Height="36" Width="160" HorizontalAlignment="Left" VerticalAlignment="Top"/>
+                                    <Button x:Name="closeOutlog" Content="日志输出:开" Margin="154,120,0,0" FontSize="16" Height="34" Click="closeOutlog_Click" Width="160" HorizontalAlignment="Left" VerticalAlignment="Top"/>
+                                    <Button x:Name="closeOutlog_Copy" Content="屏蔽关键字日志:关" Margin="320,120,0,0" FontSize="16" Height="34" Click="closeOutlog_Copy_Click" Width="160" HorizontalAlignment="Left" VerticalAlignment="Top"/>
+                                    <Button x:Name="autoStartserver" Content="关服自动开服:禁用" Margin="154,80,0,0" Width="160" Click="autostartServer_Click" FontSize="16" Height="35" HorizontalAlignment="Left" VerticalAlignment="Top"/>
+                                </Grid>
+                            </Border>
+                            <Border Style="{StaticResource MagicBorder}">
+                                <Grid>
+                                    <Label Content="快捷指令栏：" Style="{StaticResource BorderTitle}"/>
+                                    <ListBox x:Name="fastCmdList" Width="480" Margin="10,40,330,0" HorizontalAlignment="Left" VerticalAlignment="Top" Height="170" />
+                                    <Button x:Name="refrushFastCmd" Content="刷新" Height="60" Width="110" Click="refrushFastCmd_Click" FontSize="18" VerticalAlignment="Top" HorizontalAlignment="Left" Margin="495,40,0,0"/>
+                                    <Button x:Name="addFastCmd" Content="添加" Height="60" Width="110" Click="addFastCmd_Click" FontSize="18" VerticalAlignment="Top" HorizontalAlignment="Left" Margin="495,105,0,0"/>
+                                    <Button x:Name="delFastCmd" Content="删除" Height="38" Width="110" Click="delFastCmd_Click" FontSize="18" HorizontalAlignment="Left" VerticalAlignment="Top" Margin="495,170,0,0"/>
+                                    <Button x:Name="resetFastCmd" Content="重置" Height="170" Width="110" Click="resetFastCmd_Click" FontSize="18" HorizontalAlignment="Left" Margin="610,40,0,0" VerticalAlignment="Top"/>
+                                </Grid>
+                            </Border>
+                        </StackPanel>
+                    </Canvas>
+                </Viewbox>
             </TabItem>
             <TabItem Header="定时任务" Background="{x:Null}">
                 <Viewbox Stretch="Uniform">
