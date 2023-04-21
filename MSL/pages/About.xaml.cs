@@ -16,7 +16,7 @@ namespace MSL.pages
         }
         private void Border_MouseLeftButtonUp(object sender, MouseButtonEventArgs e)
         {
-            Process.Start("https://waheal.github.io/Minecraft-Server-Launcher/");
+            Process.Start("https://docs.waheal.top/");
         }
         private void openSource_MouseLeftButtonUp(object sender, MouseButtonEventArgs e)
         {

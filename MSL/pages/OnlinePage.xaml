@@ -21,7 +21,7 @@
     </Page.Triggers>
     <Grid>
         <Label Content="点对点联机功能" HorizontalAlignment="Left" Margin="10,5,0,0" VerticalAlignment="Top" FontSize="24" FontWeight="Bold" Background="{x:Null}" BorderBrush="{x:Null}" Height="45"/>
-        <Button x:Name="onlineHelp" Style="{StaticResource ButtonPrimary}" Content="联机教程" HorizontalAlignment="Left" Height="40" Margin="200,10,0,0" VerticalAlignment="Top" Width="200" FontSize="16" Click="onlineHelp_Click"/>
+        <Button x:Name="onlineHelp" Content="联机教程" HorizontalAlignment="Left" Height="35" Margin="220,10,0,0" VerticalAlignment="Top" Width="100" FontSize="16" Click="onlineHelp_Click"/>
         <Border Margin="10,55,10,0" VerticalAlignment="Top" CornerRadius="10" BorderBrush="{DynamicResource BorderBrush}" BorderThickness="1" Background="{DynamicResource BorderBackground}">
             <Grid>
                 <TextBox x:Name="masterQQ" HorizontalAlignment="Left" Height="30" Margin="145,50,0,0" TextWrapping="Wrap" Text="" VerticalAlignment="Top" Width="185" IsEnabled="False"/>

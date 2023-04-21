@@ -8,16 +8,16 @@ namespace MSL
 {
     public partial class NotifyForm : Form
     {
+        public static bool isNotifyOpen;
         public NotifyForm()
         {
+            MainWindow.CloseNotify += CtrlNotify;
             InitializeComponent();
         }
 
-        private void Form2_Load(object sender, EventArgs e)
+        private void Form_Load(object sender, EventArgs e)
         {
-            this.WindowState = FormWindowState.Minimized;
-            this.Visible = false;
-            this.ShowInTaskbar = false;
+            isNotifyOpen = true;
             this.Hide();
         }
         public event Action NotifyFormShowEvent;
@@ -88,14 +88,11 @@ namespace MSL
                 }
             }
         }
-        private void timer1_Tick(object sender, EventArgs e)
+        void CtrlNotify()
         {
-            if (MainWindow.notifyIcon == false)
-            {
-                notifyIcon1.Visible = false;
-                this.Dispose();
-                this.Close();
-            }
+            isNotifyOpen = false;
+            notifyIcon1.Visible = false;
+            this.Close();
         }
     }
 }

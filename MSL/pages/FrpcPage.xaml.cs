@@ -141,7 +141,7 @@ namespace MSL.pages
                         int frpcserver2 = MainWindow.frpc.IndexOf(".") + 1;
                         WebClient MyWebClient = new WebClient();
                         MyWebClient.Credentials = CredentialCache.DefaultCredentials;
-                        byte[] pageData = MyWebClient.DownloadData(MainWindow.serverLink + @"/web/CC/frpcserver.txt");
+                        byte[] pageData = MyWebClient.DownloadData(MainWindow.serverLink + @"/msl/CC/frpcserver.txt");
                         string @string = Encoding.UTF8.GetString(pageData);
                         int IndexofA = @string.IndexOf(frpcserver);
                         string Ru = @string.Substring(IndexofA + frpcserver2);
@@ -191,7 +191,7 @@ namespace MSL.pages
                             int frpcserver2 = MainWindow.frpc.IndexOf(".") + 1;
                             WebClient MyWebClient = new WebClient();
                             MyWebClient.Credentials = CredentialCache.DefaultCredentials;
-                            byte[] pageData = MyWebClient.DownloadData(MainWindow.serverLink + @"/web/CC/frpcserver.txt");
+                            byte[] pageData = MyWebClient.DownloadData(MainWindow.serverLink + @"/msl/CC/frpcserver.txt");
                             string @string = Encoding.UTF8.GetString(pageData);
                             int IndexofA = @string.IndexOf(frpcserver);
                             string Ru = @string.Substring(IndexofA + frpcserver2);
@@ -317,7 +317,7 @@ namespace MSL.pages
         void RefreshLink()
         {
             WebClient MyWebClient = new WebClient();
-            byte[] pageData = MyWebClient.DownloadData(MainWindow.serverLink + @"/web/otherdownload.json");
+            byte[] pageData = MyWebClient.DownloadData(MainWindow.serverLink + @"/msl/otherdownload.json");
             string _javaList = Encoding.UTF8.GetString(pageData);
 
             JObject javaList0 = JObject.Parse(_javaList);

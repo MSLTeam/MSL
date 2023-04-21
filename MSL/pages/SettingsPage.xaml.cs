@@ -65,7 +65,7 @@ namespace MSL.pages
             if (notifyIconbtn.Content.ToString() == "托盘图标:打开")
             {
                 notifyIconbtn.Content = "托盘图标:关闭";
-                MainWindow.notifyIcon = false;
+                C_NotifyIcon();
                 try
                 {
                     string jsonString = File.ReadAllText(AppDomain.CurrentDomain.BaseDirectory + @"MSL\config.json", System.Text.Encoding.UTF8);
@@ -85,7 +85,6 @@ namespace MSL.pages
             else
             {
                 notifyIconbtn.Content = "托盘图标:打开";
-                MainWindow.notifyIcon = true;
                 C_NotifyIcon();
                 try
                 {
@@ -111,110 +110,106 @@ namespace MSL.pages
         }
         private void Page_Loaded(object sender, RoutedEventArgs e)
         {
-            if (MainWindow.notifyIcon == true)
+            try
             {
-                notifyIconbtn.Content = "托盘图标:打开";
-            }
-            else
-            {
-                notifyIconbtn.Content = "托盘图标:关闭";
-            }
-            JObject jsonObject = JObject.Parse(File.ReadAllText(AppDomain.CurrentDomain.BaseDirectory + @"MSL\config.json", Encoding.UTF8));
-            if (jsonObject["autoOpenServer"].ToString() != "False")
-            {
-                openserversOnStart.IsChecked = true;
-                openserversOnStartList.Text = jsonObject["autoOpenServer"].ToString();
-            }
-            if (jsonObject["autoOpenFrpc"].ToString() == "True")
-            {
-                openfrpOnStart.IsChecked = true;
-            }
-            if (jsonObject["autoGetPlayerInfo"].ToString() == "True")
-            {
-                autoGetPlayerInfo.IsChecked = true;
-            }
-            if (jsonObject["autoGetServerInfo"].ToString() == "True")
-            {
-                autoGetServerInfo.IsChecked = true;
-            }
-            if (jsonObject["darkTheme"].ToString() == "True")
-            {
-                autoSetTheme.IsChecked = false;
-                darkTheme.IsChecked = true;
-                darkTheme.IsEnabled = true;
-            }
-            else if(jsonObject["darkTheme"].ToString() == "False")
-            {
-                autoSetTheme.IsChecked = false;
-                darkTheme.IsEnabled = true;
-            }
-            if (jsonObject["skin"].ToString() != "0")
-            {
-                BlueSkinBtn.IsEnabled = true;
-                RedSkinBtn.IsEnabled = true;
-                GreenSkinBtn.IsEnabled = true;
-                OrangeSkinBtn.IsEnabled = true;
-                PurpleSkinBtn.IsEnabled = true;
-                PinkSkinBtn.IsEnabled = true;
-                switch (jsonObject["skin"].ToString())
+                JObject jsonObject = JObject.Parse(File.ReadAllText(AppDomain.CurrentDomain.BaseDirectory + @"MSL\config.json", Encoding.UTF8));
+                if (jsonObject["notifyIcon"].ToString() == "True")
                 {
-                    case "1":
-                        autoSetTheme.IsChecked = false;
-                        BlueSkinBtn.IsChecked = true;
-                        break;
-                    case "2":
-                        autoSetTheme.IsChecked = false;
-                        RedSkinBtn.IsChecked = true;
-                        break;
-                    case "3":
-                        autoSetTheme.IsChecked = false;
-                        GreenSkinBtn.IsChecked = true;
-                        break;
-                    case "4":
-                        autoSetTheme.IsChecked = false;
-                        OrangeSkinBtn.IsChecked = true;
-                        break;
-                    case "5":
-                        autoSetTheme.IsChecked = false;
-                        PurpleSkinBtn.IsChecked = true;
-                        break;
-                    case "6":
-                        autoSetTheme.IsChecked = false;
-                        PinkSkinBtn.IsChecked = true;
-                        break;
+                    notifyIconbtn.Content = "托盘图标:打开";
+                }
+                else
+                {
+                    notifyIconbtn.Content = "托盘图标:关闭";
+                }
+                if (jsonObject["autoOpenServer"].ToString() != "False")
+                {
+                    openserversOnStart.IsChecked = true;
+                    openserversOnStartList.Text = jsonObject["autoOpenServer"].ToString();
+                }
+                if (jsonObject["autoOpenFrpc"].ToString() == "True")
+                {
+                    openfrpOnStart.IsChecked = true;
+                }
+                if (jsonObject["autoGetPlayerInfo"].ToString() == "True")
+                {
+                    autoGetPlayerInfo.IsChecked = true;
+                }
+                if (jsonObject["autoGetServerInfo"].ToString() == "True")
+                {
+                    autoGetServerInfo.IsChecked = true;
+                }
+                if (jsonObject["darkTheme"].ToString() == "True")
+                {
+                    autoSetTheme.IsChecked = false;
+                    darkTheme.IsChecked = true;
+                    darkTheme.IsEnabled = true;
+                }
+                else if (jsonObject["darkTheme"].ToString() == "False")
+                {
+                    autoSetTheme.IsChecked = false;
+                    darkTheme.IsEnabled = true;
+                }
+                if (jsonObject["skin"].ToString() != "0")
+                {
+                    BlueSkinBtn.IsEnabled = true;
+                    RedSkinBtn.IsEnabled = true;
+                    GreenSkinBtn.IsEnabled = true;
+                    OrangeSkinBtn.IsEnabled = true;
+                    PurpleSkinBtn.IsEnabled = true;
+                    PinkSkinBtn.IsEnabled = true;
+                    switch (jsonObject["skin"].ToString())
+                    {
+                        case "1":
+                            autoSetTheme.IsChecked = false;
+                            BlueSkinBtn.IsChecked = true;
+                            break;
+                        case "2":
+                            autoSetTheme.IsChecked = false;
+                            RedSkinBtn.IsChecked = true;
+                            break;
+                        case "3":
+                            autoSetTheme.IsChecked = false;
+                            GreenSkinBtn.IsChecked = true;
+                            break;
+                        case "4":
+                            autoSetTheme.IsChecked = false;
+                            OrangeSkinBtn.IsChecked = true;
+                            break;
+                        case "5":
+                            autoSetTheme.IsChecked = false;
+                            PurpleSkinBtn.IsChecked = true;
+                            break;
+                        case "6":
+                            autoSetTheme.IsChecked = false;
+                            PinkSkinBtn.IsChecked = true;
+                            break;
+                    }
+                }
+                if (jsonObject["semitransparentTitle"].ToString() == "True")
+                {
+                    semitransparentTitle.IsChecked = true;
+                }
+                serverListBox.Items.Clear();
+                if (File.Exists(AppDomain.CurrentDomain.BaseDirectory + @"MSL\ServerList.json"))
+                {
+                    JObject _json = JObject.Parse(File.ReadAllText(AppDomain.CurrentDomain.BaseDirectory + @"MSL\ServerList.json", Encoding.UTF8));
+                    foreach (var item in _json)
+                    {
+                        serverListBox.Items.Add(item.Value["name"]);
+                        _runServerList.Add(item.Key);
+                        serverListBox.SelectedIndex = 0;
+                    }
                 }
             }
-            if (jsonObject["semitransparentTitle"].ToString() == "True")
+            catch(Exception ex)
             {
-                semitransparentTitle.IsChecked = true;
-            }
-            serverListBox.Items.Clear();
-            if(File.Exists(AppDomain.CurrentDomain.BaseDirectory + @"MSL\ServerList.json"))
-            {
-                JObject _json = JObject.Parse(File.ReadAllText(AppDomain.CurrentDomain.BaseDirectory + @"MSL\ServerList.json", Encoding.UTF8));
-                foreach (var item in _json)
-                {
-                    serverListBox.Items.Add(item.Value["name"]);
-                    _runServerList.Add(item.Key);
-                    serverListBox.SelectedIndex = 0;
-                }
+                Growl.Error("Err\n" + ex.Message);
             }
         }
 
         private void useidea_Click(object sender, RoutedEventArgs e)
         {
-            try
-            {
-                WebClient MyWebClient = new WebClient();
-                MyWebClient.Credentials = CredentialCache.DefaultCredentials;
-                byte[] pageData = MyWebClient.DownloadData(MainWindow.serverLink + @"/web/help.txt");
-                string notice = Encoding.UTF8.GetString(pageData);
-                Process.Start(notice);
-            }
-            catch
-            {
-                MessageBox.Show("获取教程失败！", "err", MessageBoxButton.OK, MessageBoxImage.Error);
-            }
+            Process.Start("https://docs.waheal.top/#/?id=msl%e5%bc%80%e6%9c%8d%e6%95%99%e7%a8%8b");
         }
 
         private void openserversOnStart_Click(object sender, RoutedEventArgs e)

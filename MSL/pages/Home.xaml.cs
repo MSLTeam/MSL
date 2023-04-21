@@ -50,7 +50,7 @@ namespace MSL.pages
             {
                 WebClient MyWebClient = new WebClient();
                 MyWebClient.Credentials = CredentialCache.DefaultCredentials;
-                byte[] pageData1 = MyWebClient.DownloadData(MainWindow.serverLink + @"/web/noticeversion.txt");
+                byte[] pageData1 = MyWebClient.DownloadData(MainWindow.serverLink + @"/msl/noticeversion.txt");
                 string noticeversion = Encoding.UTF8.GetString(pageData1);
                 JObject jsonObject = JObject.Parse(File.ReadAllText(AppDomain.CurrentDomain.BaseDirectory + @"MSL\config.json", Encoding.UTF8));
                 if (jsonObject["notice"] == null)
@@ -68,7 +68,7 @@ namespace MSL.pages
                 }
                 if (noticeversion1 != noticeversion)
                 {
-                    byte[] pageData = MyWebClient.DownloadData(MainWindow.serverLink + @"/web/notice.json");
+                    byte[] pageData = MyWebClient.DownloadData(MainWindow.serverLink + @"/msl/notice.json");
                     string notice = Encoding.UTF8.GetString(pageData);
 
                     JObject keyValues = JObject.Parse(notice);
@@ -139,7 +139,7 @@ namespace MSL.pages
                                 }
                                 else
                                 {
-                                    image.Source = new BitmapImage(new Uri(MainWindow.serverLink + "/web/recommendImg/" + i.ToString() + ".png"));
+                                    image.Source = new BitmapImage(new Uri(MainWindow.serverLink + "/msl/recommendImg/" + i.ToString() + ".png"));
                                 }
                                 RecommendGrid.Children.Add(image);
                                 RecommendGrid.RegisterName("RecImg" + i.ToString(), image);
@@ -183,7 +183,7 @@ namespace MSL.pages
                     });
                     if (noticevisible == Visibility.Visible)
                     {
-                        byte[] pageData = MyWebClient.DownloadData(MainWindow.serverLink + @"/web/notice.json");
+                        byte[] pageData = MyWebClient.DownloadData(MainWindow.serverLink + @"/msl/notice.json");
                         string notice = Encoding.UTF8.GetString(pageData);
 
                         JObject keyValues = JObject.Parse(notice);
@@ -246,7 +246,7 @@ namespace MSL.pages
                                     }
                                     else
                                     {
-                                        image.Source = new BitmapImage(new Uri(MainWindow.serverLink + "/web/recommendImg/" + i.ToString() + ".png"));
+                                        image.Source = new BitmapImage(new Uri(MainWindow.serverLink + "/msl/recommendImg/" + i.ToString() + ".png"));
                                     }
                                     RecommendGrid.Children.Add(image);
                                     RecommendGrid.RegisterName("RecImg" + i.ToString(), image);
@@ -281,7 +281,7 @@ namespace MSL.pages
                 {
                     noticeLab.Visibility = Visibility.Hidden;
                     noticeLab.Text = "";
-                    noticeImage.Source = new BitmapImage(new Uri(MainWindow.serverLink + "/web/notice.png"));
+                    noticeImage.Source = new BitmapImage(new Uri(MainWindow.serverLink + "/msl/notice.png"));
                 }
                 else
                 {
