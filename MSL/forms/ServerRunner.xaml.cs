@@ -1440,7 +1440,7 @@ namespace MSL
                 changeServerProperties_Add.Visibility = Visibility.Visible;
                 changeServerProperties_Add.Height = double.NaN;
             }
-            catch{ changeServerPropertiesLab.Content = "找不到配置文件，更改配置功能已隐藏（请尝试开启一次服务器）";changeServerProperties.Visibility = Visibility.Hidden; changeServerProperties.Height = 0; changeServerProperties_Add.Visibility = Visibility.Hidden; changeServerProperties_Add.Height = 0; }
+            catch{ changeServerPropertiesLab.Content = "找不到配置文件，更改配置功能已隐藏（请尝试开启一次服务器再试）";changeServerProperties.Visibility = Visibility.Hidden; changeServerProperties.Height = 0; changeServerProperties_Add.Visibility = Visibility.Hidden; changeServerProperties_Add.Height = 0; }
         }
         private void saveServerConfig_Click(object sender, RoutedEventArgs e)
         {

@@ -281,7 +281,7 @@
             </TabItem>
             <TabItem Header="更多功能" Background="{x:Null}">
                 <StackPanel>
-                    <Border Style="{StaticResource MagicBorder}">
+                    <Border Style="{StaticResource MagicBorder}" Padding="10,10,10,20">
                         <Grid>
                             <Label Content="开服器功能：" Style="{StaticResource BorderTitle}"/>
                             <Label Content="正版验证" FontSize="18" Width="112" Height="36" Margin="10,40,0,0" BorderBrush="{x:Null}" Background="{x:Null}" HorizontalAlignment="Left" VerticalAlignment="Top"/>
@@ -289,18 +289,18 @@
                             <Label Content="日志输出" FontSize="18" Width="112" Height="36" Margin="10,120,0,0" BorderBrush="{x:Null}" Background="{x:Null}" HorizontalAlignment="Left" VerticalAlignment="Top"/>
                             <Button x:Name="onlineMode" Content="关闭正版验证" Margin="154,40,0,0" Click="onlineMode_Click" FontSize="16" Height="36" Width="160" HorizontalAlignment="Left" VerticalAlignment="Top"/>
                             <Button x:Name="closeOutlog" Content="日志输出:开" Margin="154,120,0,0" FontSize="16" Height="34" Click="closeOutlog_Click" Width="160" HorizontalAlignment="Left" VerticalAlignment="Top"/>
-                            <Button x:Name="closeOutlog_Copy" Content="屏蔽关键字日志:关" Margin="320,120,0,10" FontSize="16" Height="34" Click="closeOutlog_Copy_Click" Width="160" HorizontalAlignment="Left" VerticalAlignment="Top"/>
+                            <Button x:Name="closeOutlog_Copy" Content="屏蔽关键字日志:关" Margin="320,120,0,0" FontSize="16" Height="34" Click="closeOutlog_Copy_Click" Width="160" HorizontalAlignment="Left" VerticalAlignment="Top"/>
                             <Button x:Name="autoStartserver" Content="关服自动开服:禁用" Margin="154,80,0,0" Width="160" Click="autostartServer_Click" FontSize="16" Height="35" HorizontalAlignment="Left" VerticalAlignment="Top"/>
                         </Grid>
                     </Border>
-                    <Border Style="{StaticResource MagicBorder}">
+                    <Border Style="{StaticResource MagicBorder}" Padding="10,10,10,20">
                         <Grid>
                             <Label Content="快捷指令栏：" Style="{StaticResource BorderTitle}"/>
                             <ListBox x:Name="fastCmdList" Width="457" Margin="10,40,350,0" />
                             <Button x:Name="refrushFastCmd" Content="刷新" Height="70" Width="110" Click="refrushFastCmd_Click" FontSize="18" VerticalAlignment="Top" HorizontalAlignment="Left" Margin="495,40,0,0"/>
                             <Button x:Name="addFastCmd" Content="添加" Height="60" Width="110" Click="addFastCmd_Click" FontSize="18" VerticalAlignment="Top" HorizontalAlignment="Left" Margin="495,115,0,0"/>
                             <Button x:Name="delFastCmd" Content="删除" Height="38" Width="110" Click="delFastCmd_Click" FontSize="18" HorizontalAlignment="Left" VerticalAlignment="Top" Margin="495,180,0,0"/>
-                            <Button x:Name="resetFastCmd" Content="重置" Height="178" Width="110" Click="resetFastCmd_Click" FontSize="18" HorizontalAlignment="Left" Margin="610,40,0,10" VerticalAlignment="Top"/>
+                            <Button x:Name="resetFastCmd" Content="重置" Height="178" Width="110" Click="resetFastCmd_Click" FontSize="18" HorizontalAlignment="Left" Margin="610,40,0,0" VerticalAlignment="Top"/>
                         </Grid>
                     </Border>
                 </StackPanel>
