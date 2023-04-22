@@ -1,4 +1,4 @@
-<img src="http://8.218.191.134/web/wikiImage/icon.ico">
+<img src="https://www.waheal.top/assets/img/logo.ico">
 
 # Minecraft Server Launcher（MSL）
 
