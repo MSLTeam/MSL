@@ -24,7 +24,7 @@
         <Label Content="内网映射" HorizontalAlignment="Left" Margin="10,5,0,0" VerticalAlignment="Top" FontSize="24" FontWeight="Bold" Background="{x:Null}" BorderBrush="{x:Null}" Height="45"/>
         <Label x:Name="frplab1" Content="未检测到内网映射配置，请点击 配置 按钮以配置" HorizontalAlignment="Left" Margin="20,50,0,0" VerticalAlignment="Top" FontSize="20" Background="{x:Null}" BorderBrush="{x:Null}" Height="50" Foreground="Red"/>
         <Label Content="您的公网IP为：" HorizontalAlignment="Left" Margin="20,100,0,0" VerticalAlignment="Top" FontSize="20" BorderBrush="{x:Null}" Background="{x:Null}" Height="35"/>
-        <TextBlock x:Name="frplab3" Text="无" HorizontalAlignment="Left" Margin="185,105,0,0" VerticalAlignment="Top" FontSize="20" Background="{x:Null}"/>
+        <TextBlock x:Name="frplab3" Text="无" HorizontalAlignment="Left" Margin="185,105,0,0" VerticalAlignment="Top" FontSize="20" Foreground="{DynamicResource TextBlockBrush}"/>
         <Label Content="日志输出：" HorizontalAlignment="Left" Margin="10,145,0,0" VerticalAlignment="Top" FontSize="14" BorderBrush="{x:Null}" Background="{x:Null}" Height="35"/>
         <Button x:Name="copyFrpc" Content="复制" HorizontalAlignment="Right" FontSize="14"  Margin="0,100,20,0" VerticalAlignment="Top" Width="100" Height="40" FontWeight="Normal" IsEnabled="False" Click="copyFrpc_Click"/>
         <Button x:Name="setfrpc" Content="配置" HorizontalAlignment="Right" Margin="0,180,20,0" VerticalAlignment="Top" Width="133" Height="64" FontSize="20" Click="setfrpc_Click"/>
