@@ -8,7 +8,7 @@
         mc:Ignorable="d"
         Title="下载Mod" Height="460" Width="810" WindowStartupLocation="CenterOwner" ResizeMode="CanMinimize" Loaded="Window_Loaded" Background="{DynamicResource BackgroundBrush}" Closing="window_Closing">
     <Grid>
-        <ListView x:Name="listBox" MouseDoubleClick="listBox_MouseDoubleClick" HorizontalAlignment="Center" VerticalAlignment="Top" Height="329" Width="790" Margin="0,46,0,0" Background="{x:Null}">
+        <ListView x:Name="listBox" MouseDoubleClick="listBox_MouseDoubleClick" HorizontalAlignment="Center" VerticalAlignment="Center" Height="351" Width="790" Background="{DynamicResource BorderBackground}">
             <ListView.View>
                 <GridView>
                     <GridViewColumn x:Name="listBoxColumnName" Width="750">
@@ -26,8 +26,8 @@
         </ListView>
         <TextBox x:Name="textBox1" ContextMenu="{DynamicResource UIContextMenu}" HorizontalAlignment="Left" Margin="258,10,0,0" TextWrapping="Wrap" Text="" VerticalAlignment="Top" Width="260"/>
         <Button x:Name="searchMod" Content="搜索" Margin="523,10,0,0" VerticalAlignment="Top" Click="searchMod_Click" HorizontalAlignment="Left"/>
-        <Label x:Name="label1" Content="下载进度……" HorizontalAlignment="Left" Margin="0,380,0,0" VerticalAlignment="Top" Background="{x:Null}" BorderBrush="{x:Null}"/>
-        <ProgressBar x:Name="pbar" HorizontalAlignment="Center" Height="15" Margin="0,404,0,0" VerticalAlignment="Top" Width="790"/>
+        <Label x:Name="label1" Content="下载进度……" HorizontalAlignment="Left" Margin="0,402,0,0" VerticalAlignment="Top" Background="{x:Null}" BorderBrush="{x:Null}"/>
+        <ProgressBar x:Name="pbar" HorizontalAlignment="Center" Height="15" Margin="0,430,0,0" VerticalAlignment="Top" Width="810"/>
         <Label x:Name="lb01" Content="加载中，请耐心等待……" HorizontalAlignment="Left" Margin="619,11,0,0" VerticalAlignment="Top" Background="{x:Null}" BorderBrush="{x:Null}" Foreground="Red" Visibility="Hidden"/>
         <Label Content="搜索Mod" Margin="154,4,0,0" VerticalAlignment="Top" FontSize="18" BorderBrush="{x:Null}" Background="{x:Null}" HorizontalAlignment="Left" Height="37"/>
         <hc:LoadingCircle x:Name="lCircle" HorizontalAlignment="Left" Height="34" Margin="574,8,0,0" VerticalAlignment="Top" Width="40" Visibility="Hidden"/>

@@ -145,7 +145,7 @@ namespace MSL.pages
             {
                 if (createRoom.Content.ToString() != "关闭房间")
                 {
-                    string a = "[common]\r\nserver_port = 7000\r\nserver_addr = 8.218.191.134\r\n\r\n[" + masterQQ.Text + "]\r\ntype = xtcp\r\nlocal_ip = 127.0.0.1\r\nlocal_port = " + masterPort.Text + "\r\nsk = " + masterKey.Text + "\r\n";
+                    string a = "[common]\r\nserver_port = 50001\r\nserver_addr = yun2.flsq.info\r\n\r\n[" + masterQQ.Text + "]\r\ntype = xtcp\r\nlocal_ip = 127.0.0.1\r\nlocal_port = " + masterPort.Text + "\r\nsk = " + masterKey.Text + "\r\n";
                     File.WriteAllText(AppDomain.CurrentDomain.BaseDirectory + "MSL\\P2Pfrpc", a);
                     isMaster = true;
                     visiterBtn.IsEnabled = false;
@@ -191,7 +191,7 @@ namespace MSL.pages
             {
                 if (joinRoom.Content.ToString() != "退出房间")
                 {
-                    string a = "[common]\r\nserver_port = 7000\r\nserver_addr = 8.218.191.134\r\n\r\n[p2p_ssh_visitor]\r\ntype = xtcp\r\nrole = visitor\r\nbind_addr = 127.0.0.1\r\nbind_port = " + visiterPort.Text + "\r\nserver_name = " + visiterQQ.Text + "\r\nsk = " + visiterKey.Text + "\r\n";
+                    string a = "[common]\r\nserver_port = 50001\r\nserver_addr = yun2.flsq.info\r\n\r\n[p2p_ssh_visitor]\r\ntype = xtcp\r\nrole = visitor\r\nbind_addr = 127.0.0.1\r\nbind_port = " + visiterPort.Text + "\r\nserver_name = " + visiterQQ.Text + "\r\nsk = " + visiterKey.Text + "\r\n";
                     File.WriteAllText(AppDomain.CurrentDomain.BaseDirectory + "MSL\\P2Pfrpc", a);
                     isMaster = false;
                     masterBtn.IsEnabled = false;

@@ -31,7 +31,7 @@ namespace MSL
     /// </summary>
     public partial class MainWindow : Window
     {
-        public static string update = "v3.4.8.0";
+        public static string update = "v3.4.8.2";
         Home _homePage = new Home();
         ServerList _listPage = new ServerList();
         FrpcPage _frpcPage = new FrpcPage();
@@ -43,7 +43,6 @@ namespace MSL
         //public static event DeleControl RunningFormChangeTitle;
         public static event DeleControl CloseNotify;
         public static string serverid;
-        public static string frpc;
         public static string serverLink;
         public static float PhisicalMemory;
         public static bool getServerInfo = false;
@@ -111,21 +110,16 @@ namespace MSL
 
             JObject jsonObject = JObject.Parse(File.ReadAllText(AppDomain.CurrentDomain.BaseDirectory + @"MSL\config.json", Encoding.UTF8));
 
-            //检测是否配置了内网映射
+            //检测是否配置了内网映射(新版已弃用，现改为删除frpc的key)
             try
             {
-                if (jsonObject["frpc"] == null)
+                if (jsonObject["frpc"] != null)
                 {
                     string jsonString = File.ReadAllText(AppDomain.CurrentDomain.BaseDirectory + @"MSL\config.json", Encoding.UTF8);
                     JObject jobject = JObject.Parse(jsonString);
-                    jobject.Add("frpc", "");
+                    jobject.Remove("frpc");
                     string convertString = Convert.ToString(jobject);
                     File.WriteAllText(AppDomain.CurrentDomain.BaseDirectory + @"MSL\config.json", convertString, Encoding.UTF8);
-                    frpc = "";
-                }
-                else
-                {
-                    frpc = jsonObject["frpc"].ToString();
                 }
             }
             catch

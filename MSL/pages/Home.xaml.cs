@@ -88,8 +88,8 @@ namespace MSL.pages
                     {
                         noticeLabText = "获取公告失败！请检查网络连接是否正常或联系作者进行解决！";
                     }
-                    JObject keyValues1 = (JObject)keyValues["recmmends"];
-                    if (keyValues["recmmends"] != null)
+                    JObject keyValues1 = (JObject)keyValues["recommends"];
+                    if (keyValues["recommends"] != null)
                     {
                         this.Dispatcher.Invoke(DispatcherPriority.Normal, (ThreadStart)delegate ()
                         {
@@ -195,8 +195,8 @@ namespace MSL.pages
                         {
                             noticeLabText = "获取公告失败！请检查网络连接是否正常或联系作者进行解决！";
                         }
-                        JObject keyValues1 = (JObject)keyValues["recmmends"];
-                        if (keyValues["recmmends"] != null)
+                        JObject keyValues1 = (JObject)keyValues["recommends"];
+                        if (keyValues["recommends"] != null)
                         {
                             this.Dispatcher.Invoke(DispatcherPriority.Normal, (ThreadStart)delegate ()
                             {

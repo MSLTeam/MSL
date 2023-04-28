@@ -35,10 +35,10 @@
         <TabControl x:Name="TabCtrl" SelectionChanged="TabCtrl_SelectionChanged" Background="{x:Null}" Margin="0,40,0,0">
             <TabItem Header="仪表盘" Background="{x:Null}">
                 <Viewbox Stretch="Uniform">
-                    <Canvas Width="850" Height="450">
-                        <Border Style="{StaticResource MagicBorder}" Width="280" Padding="0">
+                    <Canvas Width="900" Height="481">
+                        <Border Style="{StaticResource MagicBorder}">
                             <Grid>
-                                <Label Content="服务器基本信息" Style="{StaticResource BorderTitle}" Margin="5,5,0,0"/>
+                                <Label Content="服务器基本信息" Style="{StaticResource BorderTitle}"/>
                                 <Label Content="服务器状态" HorizontalAlignment="Left" Height="40" Margin="5,40,0,0" VerticalAlignment="Top"  Width="110" Background="{x:Null}" BorderBrush="{x:Null}" FontSize="16"/>
                                 <Label x:Name="serverStateLab" Content="已关闭" HorizontalAlignment="Left" Height="40" Margin="110,40,0,0" VerticalAlignment="Top" Width="150" Foreground="Green" FontSize="16"/>
                                 <Label Content="服务器版本" HorizontalAlignment="Left" Height="40" Margin="5,85,0,0" VerticalAlignment="Top" Width="110" Background="{x:Null}" BorderBrush="{x:Null}" FontSize="16"/>
@@ -55,9 +55,9 @@
                                 <Button x:Name="gotoFrpc" HorizontalAlignment="Left" Margin="110,310,10,10" VerticalAlignment="Top" Height="40" Width="150" Content="点我查看" FontSize="16" Click="gotoFrpc_Click"/>
                             </Grid>
                         </Border>
-                        <Border Style="{StaticResource MagicBorder}" Width="275" Height="362" Canvas.Left="290" Padding="0">
+                        <Border Style="{StaticResource MagicBorder}" Canvas.Left="300" Height="382">
                             <Grid>
-                                <Label Content="系统占用" Style="{StaticResource BorderTitle}" Margin="5,5,0,0"/>
+                                <Label Content="系统占用" Style="{StaticResource BorderTitle}"/>
                                 <Label x:Name="cpuInfoLab" Content="CPU占用" HorizontalAlignment="Stretch" Margin="10,40,10,0" VerticalAlignment="Top" Height="31"/>
                                 <ProgressBar x:Name="cpuInfoBar" Style="{StaticResource ProgressBarFlat}" Height="24" Margin="10,80,10,0" VerticalAlignment="Top"/>
                                 <Label x:Name="memoryInfoLab" Content="内存占用" HorizontalAlignment="Stretch" Margin="10,120,10,0" VerticalAlignment="Top" Height="60"/>
@@ -68,11 +68,11 @@
 
                             </Grid>
                         </Border>
-                        <Border Style="{StaticResource MagicBorder}" Width="255" Height="434" Canvas.Left="575" Padding="0">
+                        <Border Style="{StaticResource MagicBorder}" Width="287" Height="463" Canvas.Left="593">
                             <Grid>
-                                <Label Content="输出预览" Style="{StaticResource BorderTitle}" Margin="5,5,0,0"/>
+                                <Label Content="输出预览" Style="{StaticResource BorderTitle}"/>
                                 <TextBox x:Name="previewOutlog" Height="82" Margin="10,40,10,0" IsReadOnly="True" TextWrapping="Wrap" Text="无" VerticalAlignment="Top" VerticalContentAlignment="Top" FontSize="14" Padding="10"/>
-                                <Label Content="玩家列表" Margin="5,130,0,0" Style="{StaticResource BorderTitle}"/>
+                                <Label Content="玩家列表" Margin="0,130,0,0" Style="{StaticResource BorderTitle}"/>
                                 <ListBox x:Name="serverPlayerList" Margin="10,170,10,10">
                                     <ListBox.ContextMenu>
                                         <ContextMenu>
@@ -83,10 +83,10 @@
                                 </ListBox>
                             </Grid>
                         </Border>
-                        <Button x:Name="controlServer_Copy" hc:IconElement.Geometry="{StaticResource CheckedGeometry}" hc:IconElement.Width="20"  Style="{StaticResource ButtonPrimary}" Content="开服" Width="135" Canvas.Left="10" Canvas.Top="377" Height="67" Click="controlServer_Click" MouseDoubleClick="controlServer_MouseDoubleClick" FontSize="16" HorizontalAlignment="Left"/>
-                        <Button x:Name="solveProblemBtn" hc:IconElement.Geometry="{StaticResource AskGeometry}" hc:IconElement.Width="20" Style="{StaticResource ButtonDanger}" Content="服务器崩溃检测系统" Canvas.Left="153" Canvas.Top="377" Height="67" Click="solveProblemBtn_Click" Width="250" FontSize="16" HorizontalAlignment="Left"/>
-                        <Button x:Name="playerInfoBtn" Content="记录玩家:开" Canvas.Left="410" Canvas.Top="377" Height="31" Width="165" Click="playerInfoBtn_Click" HorizontalAlignment="Left"/>
-                        <Button x:Name="systemInfoBtn" Content="显示占用:开" Canvas.Left="410" Canvas.Top="413" Height="31" Width="165" Click="systemInfoBtn_Click" HorizontalAlignment="Left"/>
+                        <Button x:Name="controlServer_Copy" hc:IconElement.Geometry="{StaticResource CheckedGeometry}" hc:IconElement.Width="20"  Style="{StaticResource ButtonPrimary}" Content="开服" Width="160" Canvas.Left="10" Canvas.Top="400" Height="73" Click="controlServer_Click" MouseDoubleClick="controlServer_MouseDoubleClick" FontSize="16" VerticalAlignment="Top" HorizontalAlignment="Left"/>
+                        <Button x:Name="solveProblemBtn" hc:IconElement.Geometry="{StaticResource AskGeometry}" hc:IconElement.Width="20" Style="{StaticResource ButtonDanger}" Content="服务器崩溃检测系统" Canvas.Left="175" Canvas.Top="400" Height="73" Click="solveProblemBtn_Click" Width="250" FontSize="16" VerticalAlignment="Top"/>
+                        <Button x:Name="playerInfoBtn" Content="记录玩家:开" Canvas.Left="430" Canvas.Top="400" Height="34" Width="165" Click="playerInfoBtn_Click" VerticalAlignment="Top" FontSize="14"/>
+                        <Button x:Name="systemInfoBtn" Content="显示占用:开" Canvas.Left="430" Canvas.Top="439" Height="34" Width="165" Click="systemInfoBtn_Click" VerticalAlignment="Top" FontSize="14"/>
                     </Canvas>
                 </Viewbox>
             </TabItem>
@@ -101,7 +101,7 @@
                     </RichTextBox>
                     <Button x:Name="sendcmd" Content="发送" Style="{StaticResource ButtonPrimary}" HorizontalAlignment="Right" Margin="0,0,67,10" VerticalAlignment="Bottom" Click="sendcmd_Click" FontWeight="Normal" Visibility="Visible" FontSize="12" Height="32" Width="58" IsEnabled="False"/>
                     <Button x:Name="controlServer" Content="开服" Margin="0,0,10,10" VerticalAlignment="Bottom" Height="32" Click="controlServer_Click" MouseDoubleClick="controlServer_MouseDoubleClick" Width="52" HorizontalAlignment="Right"/>
-                    <ComboBox x:Name="fastCMD" HorizontalAlignment="Left" Margin="10,0,0,10" VerticalAlignment="Bottom" SelectedIndex="0" IsEnabled="False" Width="104">
+                    <ComboBox x:Name="fastCMD" HorizontalAlignment="Left" Margin="10,0,0,10" VerticalAlignment="Bottom" SelectedIndex="0" IsEnabled="False" Width="104" Height="32">
                         <ComboBoxItem Content="/（指令）" FontFamily="Microsoft YaHei UI"/>
                         <ComboBoxItem Content="/op（给管理员）" FontFamily="Microsoft YaHei UI"/>
                         <ComboBoxItem Content="/deop（去除管理员）" FontFamily="Microsoft YaHei UI"/>
@@ -109,48 +109,96 @@
                         <ComboBoxItem Content="/say（全服说话）" FontFamily="Microsoft YaHei UI"/>
                         <ComboBoxItem Content="/pardon（解除封禁）" FontFamily="Microsoft YaHei UI"/>
                     </ComboBox>
-                    <TextBox x:Name="cmdtext" Margin="114,0,125,10" Text="服务器已关闭" KeyDown="cmdtext_KeyDown" Visibility="Visible" IsEnabled="False" VerticalAlignment="Bottom" MaxLines="1" KeyUp="cmdtext_KeyUp"/>
+                    <TextBox x:Name="cmdtext" Margin="114,0,125,10" Text="服务器已关闭" KeyDown="cmdtext_KeyDown" Visibility="Visible" IsEnabled="False" VerticalAlignment="Bottom" MaxLines="1" KeyUp="cmdtext_KeyUp" Height="32"/>
                 </Grid>
             </TabItem>
             <TabItem Header="服务器插件/MOD" Background="{x:Null}">
                 <Viewbox Stretch="Uniform">
-                    <Canvas Width="850" Height="450">
-                        <Label x:Name="lab001" Content="未检测到任何插件和模组，请重启服务器或检查该服务端是否支持" FontSize="16" FontWeight="Bold" Background="{x:Null}" BorderBrush="{x:Null}" Height="35" Canvas.Left="0" Canvas.Top="10" VerticalAlignment="Top"/>
-                        <Border Style="{StaticResource MagicBorder}" x:Name="pluginListBox" Width="410" Height="380" Margin="10,55,0,0">
+                    <Canvas Width="900" Height="481">
+                        <Label x:Name="lab001" Content="未检测到任何插件和模组，请重启服务器或检查该服务端是否支持" FontSize="18" FontWeight="Bold" Background="{x:Null}" BorderBrush="{x:Null}" Height="35" Canvas.Left="0" Canvas.Top="10" VerticalAlignment="Top"/>
+                        <Border Style="{StaticResource MagicBorder}" x:Name="pluginListBox" Width="430" Height="400" Margin="10,55,0,0">
                             <Grid>
                                 <Label Content="插件列表（添加的插件在服务器重启后生效）" Style="{StaticResource BorderTitle}"/>
-                                <ListBox x:Name="pluginslist" Margin="0,40,0,0" BorderBrush="{x:Null}">
+                                <ListView x:Name="pluginslist" Margin="0,40,0,0" BorderBrush="{x:Null}" Background="{x:Null}">
                                     <ListBox.ContextMenu>
                                         <ContextMenu>
                                             <MenuItem Click="reFresh_Click" Header="刷新"/>
                                             <MenuItem x:Name="addPlugin" Click="addPlugin_Click" Header="添加插件"/>
                                             <MenuItem x:Name="delPlugin" Click="delPlugin_Click" Header="删除插件"/>
+                                            <MenuItem x:Name="disAllPlugin" Click="disAllPlugin_Click" Header="禁用/启用所有插件"/>
                                             <MenuItem x:Name="openpluginsDir" Click="openpluginsDir_Click" Header="打开插件文件夹"/>
                                         </ContextMenu>
                                     </ListBox.ContextMenu>
-                                </ListBox>
+                                    <ListView.View>
+                                        <GridView>
+                                            <GridViewColumn x:Name="pluginlistPluginName" Width="250" Header="插件名称">
+                                                <GridViewColumn.CellTemplate>
+                                                    <DataTemplate>
+                                                        <Grid>
+                                                            <TextBlock Width="Auto" Text="{Binding PluginName}"/>
+                                                        </Grid>
+                                                    </DataTemplate>
+                                                </GridViewColumn.CellTemplate>
+                                            </GridViewColumn>
+                                            <GridViewColumn Width="100" Header="操作">
+                                                <GridViewColumn.CellTemplate>
+                                                    <DataTemplate>
+                                                        <Grid>
+                                                            <Button Margin="0,0,0,0" hc:IconElement.Geometry="{StaticResource WindowMinGeometry}" HorizontalAlignment="Left" hc:Poptip.Content="禁用/启用该插件" hc:Poptip.HorizontalOffset="40" hc:Poptip.Placement="Left" Click="disPlugin_Click"/>
+                                                            <Button Margin="40,0,0,0" hc:IconElement.Geometry="{StaticResource DeleteFillCircleGeometry}" HorizontalAlignment="Left" hc:Poptip.Content="删除该插件" hc:Poptip.HorizontalOffset="40" hc:Poptip.Placement="Left" Click="delPlugin_Click"/>
+                                                        </Grid>
+                                                    </DataTemplate>
+                                                </GridViewColumn.CellTemplate>
+                                            </GridViewColumn>
+                                        </GridView>
+                                    </ListView.View>
+                                </ListView>
                                 <Button x:Name="addPluginBtn" Margin="0,0,12,12" Style="{StaticResource ButtonPrimary}" hc:BorderElement.CornerRadius="30" VerticalAlignment="Bottom" Height="48" Width="48" Content="+" Click="addPlugin_Click" HorizontalAlignment="Right" FontSize="24"/>
                             </Grid>
                         </Border>
-                        <Border Style="{StaticResource MagicBorder}" x:Name="modListBox" Width="410" Height="380" Margin="430,55,0,0">
+                        <Border Style="{StaticResource MagicBorder}" x:Name="modListBox" Width="430" Height="400" Margin="450,55,0,0">
                             <Grid>
                                 <Label Content="模组列表（添加的模组在服务器重启后生效）" Style="{StaticResource BorderTitle}"/>
-                                <ListBox x:Name="modslist" BorderBrush="{x:Null}" Margin="0,40,0,0">
+                                <ListView x:Name="modslist" BorderBrush="{x:Null}" Margin="0,40,0,0" Background="{x:Null}">
                                     <ListBox.ContextMenu>
                                         <ContextMenu>
                                             <MenuItem Click="reFresh_Click" Header="刷新"/>
                                             <MenuItem x:Name="addMod" Click="addMod_Click" Header="添加模组"/>
                                             <MenuItem x:Name="delMod" Click="delMod_Click" Header="删除模组"/>
+                                            <MenuItem x:Name="disAllMod" Click="disAllMod_Click" Header="禁用/启用所有模组"/>
                                             <MenuItem x:Name="openmodsDir" Click="openmodsDir_Click" Header="打开模组文件夹"/>
                                         </ContextMenu>
                                     </ListBox.ContextMenu>
-                                </ListBox>
+                                    <ListView.View>
+                                        <GridView>
+                                            <GridViewColumn x:Name="modlistModName" Width="250" Header="模组名称">
+                                                <GridViewColumn.CellTemplate>
+                                                    <DataTemplate>
+                                                        <Grid>
+                                                            <TextBlock Width="Auto" Text="{Binding ModName}"/>
+                                                        </Grid>
+                                                    </DataTemplate>
+                                                </GridViewColumn.CellTemplate>
+                                            </GridViewColumn>
+                                            <GridViewColumn Width="100" Header="操作">
+                                                <GridViewColumn.CellTemplate>
+                                                    <DataTemplate>
+                                                        <Grid>
+                                                            <Button Margin="0,0,0,0" hc:IconElement.Geometry="{StaticResource WindowMinGeometry}" HorizontalAlignment="Left" hc:Poptip.Content="禁用/启用该模组" hc:Poptip.HorizontalOffset="40" hc:Poptip.Placement="Left" Click="disMod_Click"/>
+                                                            <Button Margin="40,0,0,0" hc:IconElement.Geometry="{StaticResource DeleteFillCircleGeometry}" HorizontalAlignment="Left" hc:Poptip.Content="删除该模组" hc:Poptip.HorizontalOffset="40" hc:Poptip.Placement="Left" Click="delMod_Click"/>
+                                                        </Grid>
+                                                    </DataTemplate>
+                                                </GridViewColumn.CellTemplate>
+                                            </GridViewColumn>
+                                        </GridView>
+                                    </ListView.View>
+                                </ListView>
                                 <Button x:Name="addModBtn" Margin="0,0,12,12" Style="{StaticResource ButtonPrimary}" hc:BorderElement.CornerRadius="30" VerticalAlignment="Bottom" Height="48" Width="48" Content="+" Click="addMod_Click" HorizontalAlignment="Right" FontSize="24"/>
                             </Grid>
                         </Border>
-                        <Button x:Name="opencurseforge" Content="下载模组(CurseForge)" Style="{StaticResource ButtonPrimary}" Height="39" Click="opencurseforge_Click" Width="172" Canvas.Left="668" Canvas.Top="10" FontSize="14"/>
-                        <Button x:Name="reFresh" Content="刷新" Style="{StaticResource ButtonPrimary}" Height="39" Click="reFresh_Click" Width="72" Canvas.Left="486" Canvas.Top="10" FontSize="16" HorizontalAlignment="Left"/>
-                        <Button x:Name="openpluginweb" Content="下载插件" Style="{StaticResource ButtonPrimary}" Height="39" Width="100" Canvas.Left="563" Canvas.Top="10" FontSize="14" Click="openpluginweb_Click"/>
+                        <Button x:Name="opencurseforge" Content="下载模组(CurseForge)" Style="{StaticResource ButtonPrimary}" Height="39" Click="opencurseforge_Click" Width="170" Canvas.Left="710" Canvas.Top="10" FontSize="14" HorizontalAlignment="Left"/>
+                        <Button x:Name="reFresh" Content="刷新" Style="{StaticResource ButtonPrimary}" Height="39" Click="reFresh_Click" Width="70" Canvas.Left="550" Canvas.Top="9" FontSize="16" HorizontalAlignment="Left"/>
+                        <Button x:Name="openpluginweb" Content="下载插件" Style="{StaticResource ButtonPrimary}" Height="39" Width="80" Canvas.Left="625" Canvas.Top="10" FontSize="14" Click="openpluginweb_Click" HorizontalAlignment="Left"/>
                     </Canvas>
                 </Viewbox>
             </TabItem>
@@ -283,7 +331,7 @@
             </TabItem>
             <TabItem Header="更多功能" Background="{x:Null}">
                 <Viewbox Stretch="Uniform">
-                    <Canvas Width="865" Height="450">
+                    <Canvas Width="900" Height="481">
                         <StackPanel>
                             <Border Style="{StaticResource MagicBorder}">
                                 <Grid>
@@ -295,16 +343,18 @@
                                     <Button x:Name="closeOutlog" Content="日志输出:开" Margin="154,120,0,0" FontSize="16" Height="34" Click="closeOutlog_Click" Width="160" HorizontalAlignment="Left" VerticalAlignment="Top"/>
                                     <Button x:Name="closeOutlog_Copy" Content="屏蔽关键字日志:关" Margin="320,120,0,0" FontSize="16" Height="34" Click="closeOutlog_Copy_Click" Width="160" HorizontalAlignment="Left" VerticalAlignment="Top"/>
                                     <Button x:Name="autoStartserver" Content="关服自动开服:禁用" Margin="154,80,0,0" Width="160" Click="autostartServer_Click" FontSize="16" Height="35" HorizontalAlignment="Left" VerticalAlignment="Top"/>
+                                    <Button x:Name="inputCmdEncoding" Content="输入编码:自动识别" Margin="320,80,0,0" Width="160" FontSize="16" Height="35" HorizontalAlignment="Left" VerticalAlignment="Top" Click="inputCmdEncoding_Click"/>
+                                    <Button x:Name="outputCmdEncoding" Content="输出编码:自动识别" Margin="485,80,0,0" Width="160" FontSize="16" Height="35" HorizontalAlignment="Left" VerticalAlignment="Top" Click="outputCmdEncoding_Click"/>
                                 </Grid>
                             </Border>
                             <Border Style="{StaticResource MagicBorder}">
                                 <Grid>
                                     <Label Content="快捷指令栏：" Style="{StaticResource BorderTitle}"/>
-                                    <ListBox x:Name="fastCmdList" Width="480" Margin="10,40,330,0" HorizontalAlignment="Left" VerticalAlignment="Top" Height="170" />
-                                    <Button x:Name="refrushFastCmd" Content="刷新" Height="60" Width="110" Click="refrushFastCmd_Click" FontSize="18" VerticalAlignment="Top" HorizontalAlignment="Left" Margin="495,40,0,0"/>
-                                    <Button x:Name="addFastCmd" Content="添加" Height="60" Width="110" Click="addFastCmd_Click" FontSize="18" VerticalAlignment="Top" HorizontalAlignment="Left" Margin="495,105,0,0"/>
-                                    <Button x:Name="delFastCmd" Content="删除" Height="38" Width="110" Click="delFastCmd_Click" FontSize="18" HorizontalAlignment="Left" VerticalAlignment="Top" Margin="495,170,0,0"/>
-                                    <Button x:Name="resetFastCmd" Content="重置" Height="170" Width="110" Click="resetFastCmd_Click" FontSize="18" HorizontalAlignment="Left" Margin="610,40,0,0" VerticalAlignment="Top"/>
+                                    <ListBox x:Name="fastCmdList" Width="478" Margin="10,40,370,0" HorizontalAlignment="Left" VerticalAlignment="Top" Height="210" />
+                                    <Button x:Name="refrushFastCmd" Content="刷新" Height="80" Width="110" Click="refrushFastCmd_Click" FontSize="18" VerticalAlignment="Top" HorizontalAlignment="Left" Margin="495,40,0,0"/>
+                                    <Button x:Name="addFastCmd" Content="添加" Height="70" Width="110" Click="addFastCmd_Click" FontSize="18" VerticalAlignment="Top" HorizontalAlignment="Left" Margin="495,125,0,0"/>
+                                    <Button x:Name="delFastCmd" Content="删除" Height="50" Width="110" Click="delFastCmd_Click" FontSize="18" HorizontalAlignment="Left" VerticalAlignment="Top" Margin="495,200,0,0"/>
+                                    <Button x:Name="resetFastCmd" Content="重置" Height="210" Width="110" Click="resetFastCmd_Click" FontSize="18" HorizontalAlignment="Left" Margin="610,40,0,0" VerticalAlignment="Top"/>
                                 </Grid>
                             </Border>
                         </StackPanel>
@@ -313,21 +363,25 @@
             </TabItem>
             <TabItem Header="定时任务" Background="{x:Null}">
                 <Viewbox Stretch="Uniform">
-                    <Canvas Width="865" Height="450">
+                    <Canvas Width="900" Height="481">
                         <Label Content="任务列表" Style="{StaticResource BorderTitle}" Canvas.Left="10" Canvas.Top="5"/>
-                        <Label Content="操作" Style="{StaticResource BorderTitle}" Canvas.Left="550" Canvas.Top="5"/>
-                        <Label Content="任务设置(请先添加任务，然后选中想要运行的任务进行更改)" Style="{StaticResource BorderTitle}" Canvas.Left="10" Canvas.Top="320"/>
-                        <Label Content="周期：" FontSize="16" Height="32" BorderBrush="{x:Null}" Background="{x:Null}" Canvas.Left="10" Canvas.Top="360" VerticalAlignment="Top" Width="60"/>
-                        <TextBox x:Name="timercmdTime" HorizontalAlignment="Center" VerticalAlignment="Top" Width="110" Height="32" Canvas.Left="70" Canvas.Top="360"/>
-                        <Label Content="秒(s)" FontSize="16" HorizontalAlignment="Left" VerticalAlignment="Top" Width="60" Height="32" Background="{x:Null}" BorderBrush="{x:Null}" Canvas.Left="180" Canvas.Top="360"/>
-                        <TextBox x:Name="timercmdCmd" VerticalAlignment="Center" Height="32" Width="545" Canvas.Left="310" Canvas.Top="360" HorizontalAlignment="Left"/>
-                        <Label Content="指令：" FontSize="16" HorizontalAlignment="Left" VerticalAlignment="Top" Width="60" Height="32" BorderBrush="{x:Null}" Background="{x:Null}" Canvas.Left="250" Canvas.Top="360"/>
-                        <Button x:Name="startTimercmd" Height="36" Width="140" VerticalAlignment="Top" Content="启动定时任务" Click="startTimercmd_Click" Canvas.Left="715" Canvas.Top="400"/>
-                        <Label Content="上次执行结果：" FontSize="16" HorizontalAlignment="Left" VerticalAlignment="Top" Width="130" Height="35" BorderBrush="{x:Null}" Background="{x:Null}" Canvas.Left="10" Canvas.Top="400"/>
-                        <Label x:Name="timerCmdout" Content="无" FontSize="16" VerticalAlignment="Top" Height="35" HorizontalAlignment="Left" Background="{x:Null}" BorderBrush="{x:Null}" Canvas.Left="150" Canvas.Top="400"/>
-                        <ListBox x:Name="tasksList" Height="270" Width="540" SelectionChanged="tasksList_SelectionChanged" HorizontalAlignment="Center" VerticalAlignment="Top" Canvas.Left="10" Canvas.Top="40"/>
-                        <Button x:Name="addTask" Height="130" VerticalAlignment="Top" Width="300" Canvas.Left="555" Canvas.Top="45" Click="addTask_Click" Content="添加" FontSize="18"/>
-                        <Button x:Name="delTask" Height="130" Width="300" Canvas.Left="555" Canvas.Top="180" Click="delTask_Click" FontSize="18" Content="删除" VerticalAlignment="Top"/>
+                        <Label Content="操作" Style="{StaticResource BorderTitle}" Canvas.Left="590" Canvas.Top="5" VerticalAlignment="Center"/>
+                        <ListBox x:Name="tasksList" Height="265" Width="575" SelectionChanged="tasksList_SelectionChanged" HorizontalAlignment="Center" VerticalAlignment="Center" Canvas.Left="10" Canvas.Top="45"/>
+                        <Button x:Name="addTask" Height="130" Width="300" Canvas.Left="590" Canvas.Top="45" Click="addTask_Click" Content="添加" FontSize="18" HorizontalAlignment="Left"/>
+                        <Button x:Name="delTask" Height="130" Width="300" Canvas.Left="590" Canvas.Top="180" Click="delTask_Click" FontSize="18" Content="删除" HorizontalAlignment="Left"/>
+                        <Border Style="{StaticResource MagicBorder}" Canvas.Top="310">
+                            <Grid>
+                                <Label Content="任务设置(请先添加任务，然后选中想要运行的任务进行更改)" Style="{StaticResource BorderTitle}" />
+                                <Label Content="周期：" FontSize="16" Height="32" BorderBrush="{x:Null}" Background="{x:Null}" VerticalAlignment="Top" Width="60" HorizontalAlignment="Left" Margin="0,48,0,0"/>
+                                <TextBox x:Name="timercmdTime" HorizontalAlignment="Left" VerticalAlignment="Top" Width="110" Height="32" Margin="60,48,0,0"/>
+                                <Label Content="秒(s)" FontSize="16" HorizontalAlignment="Left" VerticalAlignment="Top" Width="60" Height="32" Background="{x:Null}" BorderBrush="{x:Null}" Margin="170,48,0,0"/>
+                                <TextBox x:Name="timercmdCmd" VerticalAlignment="Top" Height="32" Width="558" HorizontalAlignment="Left" Margin="300,48,0,0"/>
+                                <Label Content="指令：" FontSize="16" HorizontalAlignment="Left" VerticalAlignment="Top" Width="60" Height="32" BorderBrush="{x:Null}" Background="{x:Null}" Margin="235,48,0,0"/>
+                                <Button x:Name="startTimercmd" Height="36" Width="140" Content="启动定时任务" Click="startTimercmd_Click" HorizontalAlignment="Left" Margin="718,85,0,0" VerticalAlignment="Top"/>
+                                <Label Content="上次执行结果：" FontSize="16" HorizontalAlignment="Left" VerticalAlignment="Top" Width="130" Height="35" BorderBrush="{x:Null}" Background="{x:Null}" Margin="0,84,0,0"/>
+                                <Label x:Name="timerCmdout" Content="无" FontSize="16" VerticalAlignment="Top" Height="35" HorizontalAlignment="Left" Background="{x:Null}" BorderBrush="{x:Null}" Margin="130,85,0,0"/>
+                            </Grid>
+                        </Border>
                     </Canvas>
                 </Viewbox>
             </TabItem>

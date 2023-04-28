@@ -97,7 +97,7 @@ namespace MSL
             TitleBox.Text = Rservername;//set title to server name
             if (File.Exists(Rserverbase + "\\server-icon.png"))//check server-icon,if exist,set icon to server-icon
             {
-                this.Icon= new BitmapImage(new Uri(Rserverbase + "\\server-icon.png"));
+                this.Icon = new BitmapImage(new Uri(Rserverbase + "\\server-icon.png"));
                 IconBox.Source = new BitmapImage(new Uri(Rserverbase + "\\server-icon.png"));
             }
 
@@ -202,7 +202,7 @@ namespace MSL
         }
         void ShowWindowEvent()
         {
-            if (RserverId==MainWindow.serverid)
+            if (RserverId == MainWindow.serverid)
             {
                 if (WindowState == WindowState.Minimized)
                 {
@@ -383,6 +383,16 @@ namespace MSL
                 SERVERCMD.StartInfo.RedirectStandardInput = true;
                 SERVERCMD.StartInfo.RedirectStandardOutput = true;
                 SERVERCMD.StartInfo.RedirectStandardError = true;
+                if (outputCmdEncoding.Content.ToString() == "输出编码:UTF8")
+                {
+                    SERVERCMD.StartInfo.StandardOutputEncoding = Encoding.UTF8;
+                    SERVERCMD.StartInfo.StandardErrorEncoding = Encoding.UTF8;
+                }
+                else
+                {
+                    SERVERCMD.StartInfo.StandardOutputEncoding = Encoding.Default;
+                    SERVERCMD.StartInfo.StandardErrorEncoding = Encoding.Default;
+                }
                 SERVERCMD.OutputDataReceived += new DataReceivedEventHandler(p_OutputDataReceived);
                 SERVERCMD.ErrorDataReceived += new DataReceivedEventHandler(p_OutputDataReceived);
                 SERVERCMD.Start();
@@ -515,130 +525,7 @@ namespace MSL
         {
             if (solveProblemSystem)
             {
-                ShowLog(msg, Brushes.Blue);
-                if (getServerInfoLine <= 50)
-                {
-                    getServerInfoLine++;
-                    if (msg.IndexOf("UnsupportedClassVersionError") != -1)
-                    {
-                        foundProblems = foundProblems + "*不支持的Class版本：您的Java版本可能太低！\n";
-                        int a=int.Parse(msg.Substring(msg.IndexOf("(class file version ") + 20, 2));
-                        switch(a)
-                        {
-                            case 52:
-                                foundProblems += "请使用Java8或以上版本！\n";
-                                break;
-                            case 53:
-                                foundProblems += "请使用Java9或以上版本！\n";
-                                break;
-                            case 54:
-                                foundProblems += "请使用Java10或以上版本！\n";
-                                break;
-                            case 55:
-                                foundProblems += "请使用Java11或以上版本！\n";
-                                break;
-                            case 56:
-                                foundProblems += "请使用Java12或以上版本！\n";
-                                break;
-                            case 57:
-                                foundProblems += "请使用Java13或以上版本！\n";
-                                break;
-                            case 58:
-                                foundProblems += "请使用Java14或以上版本！\n";
-                                break;
-                            case 59:
-                                foundProblems += "请使用Java15或以上版本！\n";
-                                break;
-                            case 60:
-                                foundProblems += "请使用Java16或以上版本！\n";
-                                break;
-                            case 61:
-                                foundProblems += "请使用Java17或以上版本！\n";
-                                break;
-                            case 62:
-                                foundProblems += "请使用Java18或以上版本！\n";
-                                break;
-                            case 63:
-                                foundProblems += "请使用Java19或以上版本！\n";
-                                break;
-                            case 64:
-                                foundProblems += "请使用Java20或以上版本！\n";
-                                break;
-                        }
-                    }
-                    else if (msg.IndexOf("Unsupported Java detected") != -1)
-                    {
-                        foundProblems += "*不匹配的Java版本：\n";
-                        foundProblems += "请使用"+ msg.Substring(msg.IndexOf("Only up to ") + 11, 7) +"！\n";
-                    }
-                    else if (msg.IndexOf("requires running the server with") != -1)
-                    {
-                        foundProblems = foundProblems + "*不匹配的Java版本：\n";
-                        foundProblems = foundProblems + "请使用" + msg.Substring(msg.IndexOf("Java"), 7) + "！\n";
-                    }
-                    else if (msg.IndexOf("OutOfMemoryError") != -1)
-                    {
-                        foundProblems = foundProblems + "*服务器内存分配过低或过高！\n";
-                    }
-                    else if (msg.IndexOf("Invalid maximum heap size") != -1)
-                    {
-                        foundProblems = foundProblems + "*服务器最大内存分配有误！\n"+msg+"\n";
-                    }
-                    else if (msg.IndexOf("Unrecognized VM option") != -1)
-                    {
-                        foundProblems = foundProblems + "*服务器JVM参数有误！请前往设置界面进行查看！\n错误的参数为：" + msg.Substring(msg.IndexOf("'")+1,msg.Length-3- msg.IndexOf(" '")) + "\n";
-                    }
-                    else if (msg.IndexOf("There is insufficient memory for the Java Runtime Environment to continue") != -1)
-                    {
-                        foundProblems = foundProblems + "*JVM内存分配不足，请尝试增加系统的虚拟内存（不是内存条！具体方法请自行上网查找）！\n";
-                    }
-                    else if (msg.IndexOf("进程无法访问") != -1)
-                    {
-                        foundProblems = foundProblems + "*文件被占用，您的服务器可能多开，可尝试重启电脑解决！\n";
-                    }
-                    else if (msg.IndexOf("FAILED TO BIND TO PORT")  != -1)
-                    {
-                        foundProblems = foundProblems + "*端口被占用，您的服务器可能多开，可尝试重启电脑解决！\n";
-                    }
-                    else if (msg.IndexOf("Unable to access jarfile") != -1)
-                    {
-                        foundProblems = foundProblems + "*无法访问JAR文件！您的服务端可能已损坏或路径中含有中文或其他特殊字符,请及时修改！\n";
-                    }
-                    else if (msg.IndexOf("加载 Java 代理时出错") != -1)
-                    {
-                        foundProblems = foundProblems + "*无法访问JAR文件！您的服务端可能已损坏或路径中含有中文或其他特殊字符,请及时修改！\n";
-                    }
-                    else if(msg.IndexOf("ArraylndexOutOfBoundsException") != -1)
-                    {
-                        foundProblems = foundProblems + "*开启服务器时发生数组越界错误，请尝试更换服务端再试！\n";
-                    }
-                    else if (msg.IndexOf("ClassCastException") != -1)
-                    {
-                        foundProblems = foundProblems + "*开启服务器时发生类转换异常，请检查Java版本是否匹配，或者让开服器为您下载Java环境（设置界面更改）！\n";
-                    }
-                    else if (msg.IndexOf("could not open") != -1&& msg.IndexOf("jvm.cfg") != -1)
-                    {
-                        foundProblems = foundProblems + "*Java异常，请检查Java环境是否正常，或者让开服器为您下载Java环境（设置界面更改）！\n";
-                    }
-                }
-                if (msg.IndexOf("Could not load") !=-1 && msg.IndexOf("plugin") != -1)
-                {
-                    foundProblems = foundProblems + "*无法加载插件！\n";
-                    foundProblems = foundProblems + "插件名称："+msg.Substring(msg.IndexOf("Could not load '")+16,msg.IndexOf("' ")- (msg.IndexOf("Could not load '") + 16))+"\n";
-                }
-                else if (msg.IndexOf("Error loading plugin") != -1)
-                {
-                    foundProblems = foundProblems + "*无法加载插件！\n";
-                    foundProblems = foundProblems + "插件名称：" + msg.Substring(msg.IndexOf(" '") + 2, msg.IndexOf("' ") - (msg.IndexOf(" '") + 2)) + "\n";
-                }
-                else if (msg.IndexOf("Error occurred while enabling ") != -1)
-                {
-                    foundProblems = foundProblems + "*在启用 "+msg.Substring(msg.IndexOf("enabling ") + 9, msg.IndexOf(" (") - (msg.IndexOf("enabling ") + 9)) + " 时发生了错误\n"; ;
-                }
-                else if (msg.IndexOf("Encountered an unexpected exception") != -1)
-                {
-                    foundProblems = foundProblems + "*服务器出现意外崩溃，可能是由于模组冲突，请检查您的模组列表（如果使用的是整合包，请使用整合包制作方提供的Server专用包开服）\n";
-                }
+                ProblemSystemShow(msg);
             }
             else
             {
@@ -661,9 +548,11 @@ namespace MSL
                     {
                         if (serverVersionLab.Content.ToString() == "获取中")
                         {
-                            DialogShow.ShowMsg(this, "开服器未能获取到服务器信息，可能该服务端需要下载依赖文件，请耐心等待！\n即将为您跳转至输出界面，开服过程中部分问题可能需要您手动处理！\n\n(注：Mohist端接受EULA条款的方式是在控制台输入true，在接受前请务必前往该网站仔细阅读条款内容：https://account.mojang.com/documents/minecraft_eula)", "提示");
+                            DialogShow.ShowMsg(this, "开服器未能获取到服务器信息，可能该服务端需要下载依赖文件，请耐心等待！\n即将为您跳转至输出界面，开服过程中部分事件可能需要您手动处理！\n\n(注：Mohist端接受EULA条款的方式是在控制台输入true，在接受前请务必前往该网站仔细阅读条款内容：https://account.mojang.com/documents/minecraft_eula)", "提示");
                             TabCtrl.SelectedIndex = 1;
                             serverVersionLab.Content = "未知";
+                            inputCmdEncoding.Content = "编码:UTF8";
+                            Growl.Error("开服器未获取到服务器版本，因此无法根据版本自动切换相应的编码，若服务器出现乱码情况，请前往“更多功能”界面手动切换编码：1.12以下版本请使用ANSI，1.12及以上版本请使用UTF8");
                         }
                         if (gameTypeLab.Content.ToString() == "获取中")
                         {
@@ -679,225 +568,57 @@ namespace MSL
                         }
                     }
                 }
-                if (msg.IndexOf("INFO") + 1 != 0)
+                if (msg.Contains("INFO"))
                 {
                     ShowLog("[" + DateTime.Now.ToString("T") + " 信息]" + msg.Substring(msg.IndexOf("INFO") + 5), Brushes.Green);
                     if (getServerInfoLine < 50)
                     {
-                        if (msg.IndexOf("You need to agree to the EULA in order to run the server") + 1 != 0)
-                        {
-                            getServerInfoLine = -10;
-                            DialogShow.ShowMsg(this, "检测到您没有接受Mojang的EULA条款！是否阅读并接受EULA条款并继续开服？", "提示", true, "取消");
-                            if (MessageDialog._dialogReturn == true)
-                            {
-                                MessageDialog._dialogReturn = false;
-                                try
-                                {
-                                    timer1.Stop();
-                                    string path1 = Rserverbase + @"\eula.txt";
-                                    FileStream fs = new FileStream(path1, FileMode.Open, FileAccess.Read, FileShare.ReadWrite);
-                                    StreamReader sr = new StreamReader(fs, Encoding.Default);
-                                    string line;
-                                    line = sr.ReadToEnd();
-                                    line = line.Replace("eula=false", "eula=true");
-                                    string path = Rserverbase + @"\eula.txt";
-                                    StreamWriter streamWriter = new StreamWriter(path);
-                                    streamWriter.WriteLine(line);
-                                    streamWriter.Flush();
-                                    streamWriter.Close();
-                                    if (!SERVERCMD.HasExited)
-                                    {
-                                        SERVERCMD.Kill();
-                                    }
-                                    SERVERCMD.CancelOutputRead();
-                                    SERVERCMD.CancelErrorRead();
-                                    SERVERCMD.OutputDataReceived -= new DataReceivedEventHandler(p_OutputDataReceived);
-                                    SERVERCMD.ErrorDataReceived -= new DataReceivedEventHandler(p_OutputDataReceived);
-                                    outlog.Document.Blocks.Clear();
-                                    ShowLog("正在重启服务器...", Brushes.Green);
-                                    LaunchServer();
-                                }
-                                catch (Exception a)
-                                {
-                                    MessageBox.Show("出现错误，请手动修改eula文件或重试:" + a, "错误", MessageBoxButton.OK, MessageBoxImage.Error);
-                                }
-                                Process.Start("https://account.mojang.com/documents/minecraft_eula");
-                            }
-
-                        }
-                        else if (msg.IndexOf("Starting minecraft server version") + 1 != 0)
-                        {
-                            serverVersionLab.Content = msg.Substring(msg.LastIndexOf(" ") + 1);
-                        }
-                        else if (msg.IndexOf("Default game type:") + 1 != 0)
-                        {
-                            gameTypeLab.Content = msg.Substring(msg.LastIndexOf(" ") + 1);
-                        }
-                        else if (msg.IndexOf("Starting Minecraft server on") + 1 != 0)
-                        {
-                            serverIPLab.Content = msg.Substring(msg.LastIndexOf(" ") + 1);
-                            if (serverIPLab.Content.ToString().IndexOf("*") + 1 != 0)
-                            {
-                                localServerIPLab.Content = serverIPLab.Content.ToString().Replace("*", "127.0.0.1");
-                                if (localServerIPLab.Content.ToString().IndexOf(":25565") + 1 != 0)
-                                {
-                                    localServerIPLab.Content = localServerIPLab.Content.ToString().Replace(":25565", "");
-                                }
-                            }
-                            else
-                            {
-                                localServerIPLab.Content = serverIPLab.Content;
-                                if (localServerIPLab.Content.ToString().IndexOf(":25565") + 1 != 0)
-                                {
-                                    localServerIPLab.Content = localServerIPLab.Content.ToString().Replace(":25565", "");
-                                }
-                            }
-                        }
-                        else if (msg.IndexOf("正在启动") + 1 != 0)
-                        {
-                            if (msg.IndexOf("的Minecraft服务端") + 1 != 0)
-                            {
-                                serverVersionLab.Content = msg.Substring(msg.LastIndexOf("正在启动") + 4, (msg.IndexOf("的") / 2) - 7);
-                            }
-                        }
-                        else if (msg.IndexOf("默认游戏模式:") + 1 != 0)
-                        {
-                            gameTypeLab.Content = msg.Substring(msg.LastIndexOf("游戏模式:") + 5);
-                        }
-                        else if (msg.IndexOf("正在") + 1 != 0)
-                        {
-                            if (msg.IndexOf("上启动服务器") + 1 != 0)
-                            {
-                                try
-                                {
-                                    serverIPLab.Content = msg.Substring(msg.IndexOf("正在 ") + 3, (msg.IndexOf("上") / 2) - 4);
-                                    if (serverIPLab.Content.ToString().IndexOf("*") + 1 != 0)
-                                    {
-                                        localServerIPLab.Content = serverIPLab.Content.ToString().Replace("*", "127.0.0.1");
-                                        if (localServerIPLab.Content.ToString().IndexOf(":25565") + 1 != 0)
-                                        {
-                                            localServerIPLab.Content = localServerIPLab.Content.ToString().Replace(":25565", "");
-                                        }
-                                    }
-                                    else
-                                    {
-                                        localServerIPLab.Content = serverIPLab.Content;
-                                        if (localServerIPLab.Content.ToString().IndexOf(":25565") + 1 != 0)
-                                        {
-                                            localServerIPLab.Content = localServerIPLab.Content.ToString().Replace(":25565", "");
-                                        }
-                                    }
-                                }
-                                catch (Exception ex) { MessageBox.Show(ex.Message); }
-                            }
-                        }
+                        GetServerInfoSys(msg);
                     }
-
                     //服务器启动成功和关闭时的提示
-                    if (msg.IndexOf("Done") + 1 != 0)
+                    if (msg.Contains("Done") && msg.Contains("For help"))
                     {
-                        if (msg.IndexOf("For help") + 1 != 0)
-                        {
-                            ShowLog("已成功开启服务器！你可以输入stop来关闭服务器！\r\n服务器本地IP通常为:127.0.0.1，想要远程进入服务器，需要开通公网IP或使用内网映射，详情参照开服器的内网映射界面。", Brushes.Green);
-                            Growl.Success("已成功开启服务器！");
-                            serverStateLab.Content = "运行中(已开服)";
-                            Thread thread = new Thread(CheckOnlineMode);
-                            thread.Start();
-                        }
+                        ShowLog("已成功开启服务器！你可以输入stop来关闭服务器！\r\n服务器本地IP通常为:127.0.0.1，想要远程进入服务器，需要开通公网IP或使用内网映射，详情查看开服器的内网映射界面。", Brushes.Green);
+                        Growl.Success("已成功开启服务器！");
+                        serverStateLab.Content = "运行中(已开服)";
+                        Thread thread = new Thread(CheckOnlineMode);
+                        thread.Start();
                     }
-                    else if (msg.IndexOf("Stopping server") + 1 != 0)
+                    else if (msg.Contains("Stopping server"))
                     {
                         ShowLog("正在关闭服务器！", Brushes.Green);
                     }
-                    else if (msg.IndexOf("加载完成") + 1 != 0)
+                    else if (msg.Contains("加载完成") && msg.Contains("如需帮助"))
                     {
-                        if (msg.IndexOf("如需帮助") + 1 != 0)
-                        {
-                            ShowLog("已成功开启服务器！你可以输入stop来关闭服务器！\r\n服务器本地IP通常为:127.0.0.1，想要远程进入服务器，需要开通公网IP或使用内网映射，详情参照开服器的内网映射界面。", Brushes.Green);
-                            Growl.Success("已成功开启服务器！");
-                            serverStateLab.Content = "运行中(已开服)";
-                            Thread thread = new Thread(CheckOnlineMode);
-                            thread.Start();
-                        }
+                        ShowLog("已成功开启服务器！你可以输入stop来关闭服务器！\r\n服务器本地IP通常为:127.0.0.1，想要远程进入服务器，需要开通公网IP或使用内网映射，详情参照开服器的内网映射界面。", Brushes.Green);
+                        Growl.Success("已成功开启服务器！");
+                        serverStateLab.Content = "运行中(已开服)";
+                        Thread thread = new Thread(CheckOnlineMode);
+                        thread.Start();
                     }
-
                     //玩家进服是否记录
                     if (getPlayerInfo == true)
                     {
-                        if (msg.IndexOf("logged in with entity id") + 1 != 0)
-                        {
-                            string a = msg.Substring(0, msg.IndexOf(" logged in with entity id"));
-                            while (a.IndexOf(" ") + 1 != 0)
-                            {
-                                a = a.Substring(a.IndexOf(" ") + 1);
-                            }
-                            serverPlayerList.Items.Add(a);
-                        }
-                        else if (msg.IndexOf("lost connection:") + 1 != 0)
-                        {
-                            try
-                            {
-                                string a = msg.Substring(0, msg.IndexOf(" lost connection:"));
-                                while (a.IndexOf(" ") + 1 != 0)
-                                {
-                                    a = a.Substring(a.IndexOf(" ") + 1);
-                                }
-                                foreach (string x in serverPlayerList.Items)
-                                {
-                                    if (x.IndexOf(a + "[/") + 1 != 0)
-                                    {
-                                        serverPlayerList.Items.Remove(x);
-                                        break;
-                                    }
-                                }
-                            }
-                            catch
-                            {
-                                Growl.Error("好像出现了点错误……");
-                            }
-                        }
-                        else if (msg.IndexOf("与服务器失去连接:") + 1 != 0)
-                        {
-                            try
-                            {
-                                string a = msg.Substring(0, msg.IndexOf(" 与服务器失去连接"));
-                                while (a.IndexOf(" ") + 1 != 0)
-                                {
-                                    a = a.Substring(a.IndexOf(" ") + 1);
-                                }
-                                foreach (string x in serverPlayerList.Items)
-                                {
-                                    if (x.IndexOf(a + "[/") + 1 != 0)
-                                    {
-                                        serverPlayerList.Items.Remove(x);
-                                        break;
-                                    }
-                                }
-                            }
-                            catch
-                            {
-                                Growl.Error("好像出现了点错误……");
-                            }
-                        }
+                        GetPlayerInfoSys(msg);
                     }
                 }
-                else if (msg.IndexOf("WARN") + 1 != 0)
+                else if (msg.Contains("WARN"))
                 {
                     ShowLog("[" + DateTime.Now.ToString("T") + " 警告]" + msg.Substring(msg.IndexOf("WARN") + 5), Brushes.Orange);
-                    if (msg.IndexOf("FAILED TO BIND TO PORT") + 1 != 0)
+                    if (msg.Contains("FAILED TO BIND TO PORT"))
                     {
                         ShowLog("警告：由于端口占用，服务器已自动关闭！请检查您的服务器是否多开或者有其他软件占用端口！\r\n解决方法：您可尝试通过重启电脑解决！", Brushes.Red);
                     }
-                    else if (msg.IndexOf("Unable to access jarfile") + 1 != 0)
+                    else if (msg.Contains("Unable to access jarfile"))
                     {
                         ShowLog("警告：无法访问JAR文件！您的服务端可能已损坏或路径中含有中文或其他特殊字符,请及时修改！", Brushes.Red);
                     }
-                    else if (msg.IndexOf("加载 Java 代理时出错") + 1 != 0)
+                    else if (msg.Contains("加载 Java 代理时出错"))
                     {
                         ShowLog("警告：无法访问JAR文件！您的服务端可能已损坏或路径中含有中文或其他特殊字符,请及时修改！", Brushes.Red);
                     }
                 }
-                else if (msg.IndexOf("ERROR") + 1 != 0)
+                else if (msg.Contains("ERROR"))
                 {
                     ShowLog("[" + DateTime.Now.ToString("T") + " 错误]" + msg.Substring(msg.IndexOf("ERROR") + 6), Brushes.Red);
                 }
@@ -907,9 +628,427 @@ namespace MSL
                 }
             }
         }
+
+        void ProblemSystemShow(string msg)
+        {
+            ShowLog(msg, Brushes.Blue);
+            if (getServerInfoLine <= 50)
+            {
+                getServerInfoLine++;
+                if (msg.Contains("UnsupportedClassVersionError"))
+                {
+                    foundProblems = foundProblems + "*不支持的Class版本：您的Java版本可能太低！\n";
+                    int a = int.Parse(msg.Substring(msg.IndexOf("(class file version ") + 20, 2));
+                    switch (a)
+                    {
+                        case 52:
+                            foundProblems += "请使用Java8或以上版本！\n";
+                            break;
+                        case 53:
+                            foundProblems += "请使用Java9或以上版本！\n";
+                            break;
+                        case 54:
+                            foundProblems += "请使用Java10或以上版本！\n";
+                            break;
+                        case 55:
+                            foundProblems += "请使用Java11或以上版本！\n";
+                            break;
+                        case 56:
+                            foundProblems += "请使用Java12或以上版本！\n";
+                            break;
+                        case 57:
+                            foundProblems += "请使用Java13或以上版本！\n";
+                            break;
+                        case 58:
+                            foundProblems += "请使用Java14或以上版本！\n";
+                            break;
+                        case 59:
+                            foundProblems += "请使用Java15或以上版本！\n";
+                            break;
+                        case 60:
+                            foundProblems += "请使用Java16或以上版本！\n";
+                            break;
+                        case 61:
+                            foundProblems += "请使用Java17或以上版本！\n";
+                            break;
+                        case 62:
+                            foundProblems += "请使用Java18或以上版本！\n";
+                            break;
+                        case 63:
+                            foundProblems += "请使用Java19或以上版本！\n";
+                            break;
+                        case 64:
+                            foundProblems += "请使用Java20或以上版本！\n";
+                            break;
+                    }
+                }
+                else if (msg.Contains("Unsupported Java detected"))
+                {
+                    foundProblems += "*不匹配的Java版本：\n";
+                    foundProblems += "请使用" + msg.Substring(msg.IndexOf("Only up to ") + 11, 7) + "！\n";
+                }
+                else if (msg.Contains("requires running the server with"))
+                {
+                    foundProblems = foundProblems + "*不匹配的Java版本：\n";
+                    foundProblems = foundProblems + "请使用" + msg.Substring(msg.IndexOf("Java"), 7) + "！\n";
+                }
+                else if (msg.Contains("OutOfMemoryError"))
+                {
+                    foundProblems = foundProblems + "*服务器内存分配过低或过高！\n";
+                }
+                else if (msg.Contains("Invalid maximum heap size"))
+                {
+                    foundProblems = foundProblems + "*服务器最大内存分配有误！\n" + msg + "\n";
+                }
+                else if (msg.Contains("Unrecognized VM option"))
+                {
+                    foundProblems = foundProblems + "*服务器JVM参数有误！请前往设置界面进行查看！\n错误的参数为：" + msg.Substring(msg.IndexOf("'") + 1, msg.Length - 3 - msg.IndexOf(" '")) + "\n";
+                }
+                else if (msg.Contains("There is insufficient memory for the Java Runtime Environment to continue"))
+                {
+                    foundProblems = foundProblems + "*JVM内存分配不足，请尝试增加系统的虚拟内存（不是内存条！具体方法请自行上网查找）！\n";
+                }
+                else if (msg.Contains("进程无法访问"))
+                {
+                    foundProblems = foundProblems + "*文件被占用，您的服务器可能多开，可尝试重启电脑解决！\n";
+                }
+                else if (msg.Contains("FAILED TO BIND TO PORT"))
+                {
+                    foundProblems = foundProblems + "*端口被占用，您的服务器可能多开，可尝试重启电脑解决！\n";
+                }
+                else if (msg.Contains("Unable to access jarfile"))
+                {
+                    foundProblems = foundProblems + "*无法访问JAR文件！您的服务端可能已损坏或路径中含有中文或其他特殊字符,请及时修改！\n";
+                }
+                else if (msg.Contains("加载 Java 代理时出错"))
+                {
+                    foundProblems = foundProblems + "*无法访问JAR文件！您的服务端可能已损坏或路径中含有中文或其他特殊字符,请及时修改！\n";
+                }
+                else if (msg.Contains("ArraylndexOutOfBoundsException"))
+                {
+                    foundProblems = foundProblems + "*开启服务器时发生数组越界错误，请尝试更换服务端再试！\n";
+                }
+                else if (msg.Contains("ClassCastException"))
+                {
+                    foundProblems = foundProblems + "*开启服务器时发生类转换异常，请检查Java版本是否匹配，或者让开服器为您下载Java环境（设置界面更改）！\n";
+                }
+                else if (msg.Contains("could not open") && msg.Contains("jvm.cfg"))
+                {
+                    foundProblems = foundProblems + "*Java异常，请检查Java环境是否正常，或者让开服器为您下载Java环境（设置界面更改）！\n";
+                }
+                else if (msg.Contains("Failed to download vanilla jar"))
+                {
+                    foundProblems = foundProblems + "*下载原版核心文件失败，您可尝试使用代理或更换服务端为Spigot端！\n";
+                }
+                else if (msg.Contains("Exception in thread \"main\""))
+                {
+                    foundProblems = foundProblems + "*疑似服务端核心Main方法报错，您可尝试更换服务端或更换Java再试！\n";
+                }
+            }
+            if (msg.Contains("Could not load") && msg.Contains("plugin"))
+            {
+                foundProblems = foundProblems + "*无法加载插件！\n";
+                foundProblems = foundProblems + "插件名称：" + msg.Substring(msg.IndexOf("Could not load '") + 16, msg.IndexOf("' ") - (msg.IndexOf("Could not load '") + 16)) + "\n";
+            }
+            else if (msg.Contains("Error loading plugin"))
+            {
+                foundProblems = foundProblems + "*无法加载插件！\n";
+                foundProblems = foundProblems + "插件名称：" + msg.Substring(msg.IndexOf(" '") + 2, msg.IndexOf("' ") - (msg.IndexOf(" '") + 2)) + "\n";
+            }
+            else if (msg.Contains("Error occurred while enabling "))
+            {
+                foundProblems = foundProblems + "*在启用 " + msg.Substring(msg.IndexOf("enabling ") + 9, msg.IndexOf(" (") - (msg.IndexOf("enabling ") + 9)) + " 时发生了错误\n"; ;
+            }
+            else if (msg.Contains("Encountered an unexpected exception"))
+            {
+                foundProblems = foundProblems + "*服务器出现意外崩溃，可能是由于模组冲突，请检查您的模组列表（如果使用的是整合包，请使用整合包制作方提供的Server专用包开服）\n";
+            }
+        }
+        void GetServerInfoSys(string msg)
+        {
+            if (msg.Contains("You need to agree to the EULA in order to run the server"))
+            {
+                getServerInfoLine = -10;
+                DialogShow.ShowMsg(this, "检测到您没有接受Mojang的EULA条款！是否阅读并接受EULA条款并继续开服？", "提示", true, "取消");
+                if (MessageDialog._dialogReturn == true)
+                {
+                    MessageDialog._dialogReturn = false;
+                    try
+                    {
+                        timer1.Stop();
+                        string path1 = Rserverbase + @"\eula.txt";
+                        FileStream fs = new FileStream(path1, FileMode.Open, FileAccess.Read, FileShare.ReadWrite);
+                        StreamReader sr = new StreamReader(fs, Encoding.Default);
+                        string line;
+                        line = sr.ReadToEnd();
+                        line = line.Replace("eula=false", "eula=true");
+                        string path = Rserverbase + @"\eula.txt";
+                        StreamWriter streamWriter = new StreamWriter(path);
+                        streamWriter.WriteLine(line);
+                        streamWriter.Flush();
+                        streamWriter.Close();
+                        if (!SERVERCMD.HasExited)
+                        {
+                            SERVERCMD.Kill();
+                        }
+                        SERVERCMD.CancelOutputRead();
+                        SERVERCMD.CancelErrorRead();
+                        SERVERCMD.OutputDataReceived -= new DataReceivedEventHandler(p_OutputDataReceived);
+                        SERVERCMD.ErrorDataReceived -= new DataReceivedEventHandler(p_OutputDataReceived);
+                        outlog.Document.Blocks.Clear();
+                        ShowLog("正在重启服务器...", Brushes.Green);
+                        LaunchServer();
+                    }
+                    catch (Exception a)
+                    {
+                        MessageBox.Show("出现错误，请手动修改eula文件或重试:" + a, "错误", MessageBoxButton.OK, MessageBoxImage.Error);
+                    }
+                    Process.Start("https://account.mojang.com/documents/minecraft_eula");
+                }
+
+            }
+            else if (msg.Contains("Starting minecraft server version"))
+            {
+                serverVersionLab.Content = msg.Substring(msg.LastIndexOf(" ") + 1);
+                if (!RserverJVMcmd.Contains("-Dfile.encoding=UTF-8"))
+                {
+                    string versionString = msg.Substring(msg.LastIndexOf(" ") + 1);
+                    string[] components = versionString.Split('.');
+                    if (components.Length >= 3 && int.TryParse(components[2], out int _))
+                    {
+                        versionString = $"{components[0]}.{components[1]}"; // remove the last component
+                    }
+
+                    Version version = new Version(versionString);
+                    Version targetVersion = new Version("1.12");
+
+                    if (version >= targetVersion)
+                    {
+                        // version is greater than targetVersion,or equal to targetVersion
+                        if (inputCmdEncoding.Content.ToString() == "输入编码:自动识别")
+                        {
+                            inputCmdEncoding.Content = "输入编码:UTF8";
+                        }
+                        if (outputCmdEncoding.Content.ToString() == "输出编码:自动识别")
+                        {
+                            outputCmdEncoding.Content = "输出编码:ANSI";
+                        }
+                    }
+                    else if (version < targetVersion)
+                    {
+                        // version is less than targetVersion
+                        if (inputCmdEncoding.Content.ToString() == "输入编码:自动识别")
+                        {
+                            inputCmdEncoding.Content = "输入编码:ANSI";
+                        }
+                        if (outputCmdEncoding.Content.ToString() == "输出编码:自动识别")
+                        {
+                            outputCmdEncoding.Content = "输出编码:ANSI";
+                        }
+                    }
+                }
+                else
+                {
+
+                    if (inputCmdEncoding.Content.ToString() == "输入编码:自动识别")
+                    {
+                        inputCmdEncoding.Content = "输入编码:UTF8";
+                    }
+                    if (outputCmdEncoding.Content.ToString() == "输出编码:自动识别")
+                    {
+                        outputCmdEncoding.Content = "输出编码:UTF8";
+                        if (!SERVERCMD.HasExited)
+                        {
+                            SERVERCMD.Kill();
+                        }
+                        SERVERCMD.CancelOutputRead();
+                        SERVERCMD.CancelErrorRead();
+                        SERVERCMD.OutputDataReceived -= new DataReceivedEventHandler(p_OutputDataReceived);
+                        SERVERCMD.ErrorDataReceived -= new DataReceivedEventHandler(p_OutputDataReceived);
+                        outlog.Document.Blocks.Clear();
+                        ShowLog("检测到编码更改，正在重启服务器...", Brushes.Green);
+                        LaunchServer();
+                    }
+                }
+            }
+            else if (msg.Contains("Default game type:"))
+            {
+                gameTypeLab.Content = msg.Substring(msg.LastIndexOf(" ") + 1);
+            }
+            else if (msg.Contains("Starting Minecraft server on"))
+            {
+                serverIPLab.Content = msg.Substring(msg.LastIndexOf(" ") + 1);
+                if (serverIPLab.Content.ToString().Contains("*"))
+                {
+                    localServerIPLab.Content = serverIPLab.Content.ToString().Replace("*", "127.0.0.1");
+                    if (localServerIPLab.Content.ToString().IndexOf(":25565") + 1 != 0)
+                    {
+                        localServerIPLab.Content = localServerIPLab.Content.ToString().Replace(":25565", "");
+                    }
+                }
+                else
+                {
+                    localServerIPLab.Content = serverIPLab.Content;
+                    if (localServerIPLab.Content.ToString().Contains(":25565"))
+                    {
+                        localServerIPLab.Content = localServerIPLab.Content.ToString().Replace(":25565", "");
+                    }
+                }
+            }
+            else if (msg.Contains("正在启动") && msg.Contains("的Minecraft服务端"))
+            {
+                serverVersionLab.Content = msg.Substring(msg.LastIndexOf("正在启动") + 4, (msg.IndexOf("的") / 2) - 7);
+                if (!RserverJVMcmd.Contains("-Dfile.encoding=UTF-8"))
+                {
+                    string versionString = msg.Substring(msg.LastIndexOf(" ") + 1);
+                    string[] components = versionString.Split('.');
+                    if (components.Length >= 3 && int.TryParse(components[2], out int _))
+                    {
+                        versionString = $"{components[0]}.{components[1]}"; // remove the last component
+                    }
+
+                    Version version = new Version(versionString);
+                    Version targetVersion = new Version("1.12");
+
+                    if (version >= targetVersion)
+                    {
+                        // version is greater than targetVersion,or equal to targetVersion
+                        if (inputCmdEncoding.Content.ToString() == "输入编码:自动识别")
+                        {
+                            inputCmdEncoding.Content = "输入编码:UTF8";
+                        }
+                        if (outputCmdEncoding.Content.ToString() == "输出编码:自动识别")
+                        {
+                            outputCmdEncoding.Content = "输出编码:ANSI";
+                        }
+                    }
+                    else if (version < targetVersion)
+                    {
+                        // version is less than targetVersion
+                        if (inputCmdEncoding.Content.ToString() == "输入编码:自动识别")
+                        {
+                            inputCmdEncoding.Content = "输入编码:ANSI";
+                        }
+                        if (outputCmdEncoding.Content.ToString() == "输出编码:自动识别")
+                        {
+                            outputCmdEncoding.Content = "输出编码:ANSI";
+                        }
+                    }
+                }
+                else
+                {
+
+                    if (inputCmdEncoding.Content.ToString() == "输入编码:自动识别")
+                    {
+                        inputCmdEncoding.Content = "输入编码:UTF8";
+                    }
+                    if (outputCmdEncoding.Content.ToString() == "输出编码:自动识别")
+                    {
+                        outputCmdEncoding.Content = "输出编码:UTF8";
+                        if (!SERVERCMD.HasExited)
+                        {
+                            SERVERCMD.Kill();
+                        }
+                        SERVERCMD.CancelOutputRead();
+                        SERVERCMD.CancelErrorRead();
+                        SERVERCMD.OutputDataReceived -= new DataReceivedEventHandler(p_OutputDataReceived);
+                        SERVERCMD.ErrorDataReceived -= new DataReceivedEventHandler(p_OutputDataReceived);
+                        outlog.Document.Blocks.Clear();
+                        ShowLog("检测到编码更改，正在重启服务器...", Brushes.Green);
+                        LaunchServer();
+                    }
+                }
+            }
+            else if (msg.Contains("默认游戏模式:"))
+            {
+                gameTypeLab.Content = msg.Substring(msg.LastIndexOf("游戏模式:") + 5);
+            }
+            else if (msg.Contains("正在") && msg.Contains("上启动服务器"))
+            {
+                try
+                {
+                    serverIPLab.Content = msg.Substring(msg.IndexOf("正在 ") + 3, (msg.IndexOf("上") / 2) - 4);
+                    if (serverIPLab.Content.ToString().Contains("*"))
+                    {
+                        localServerIPLab.Content = serverIPLab.Content.ToString().Replace("*", "127.0.0.1");
+                        if (localServerIPLab.Content.ToString().IndexOf(":25565") + 1 != 0)
+                        {
+                            localServerIPLab.Content = localServerIPLab.Content.ToString().Replace(":25565", "");
+                        }
+                    }
+                    else
+                    {
+                        localServerIPLab.Content = serverIPLab.Content;
+                        if (localServerIPLab.Content.ToString().Contains(":25565"))
+                        {
+                            localServerIPLab.Content = localServerIPLab.Content.ToString().Replace(":25565", "");
+                        }
+                    }
+                }
+                catch (Exception ex) { MessageBox.Show(ex.Message); }
+            }
+        }
+        void GetPlayerInfoSys(string msg)
+        {
+            if (msg.Contains("logged in with entity id"))
+            {
+                string a = msg.Substring(0, msg.IndexOf(" logged in with entity id"));
+                while (a.IndexOf(" ") + 1 != 0)
+                {
+                    a = a.Substring(a.IndexOf(" ") + 1);
+                }
+                serverPlayerList.Items.Add(a);
+            }
+            else if (msg.Contains("lost connection:"))
+            {
+                try
+                {
+                    string a = msg.Substring(0, msg.IndexOf(" lost connection:"));
+                    while (a.IndexOf(" ") + 1 != 0)
+                    {
+                        a = a.Substring(a.IndexOf(" ") + 1);
+                    }
+                    foreach (string x in serverPlayerList.Items)
+                    {
+                        if (x.IndexOf(a + "[/") + 1 != 0)
+                        {
+                            serverPlayerList.Items.Remove(x);
+                            break;
+                        }
+                    }
+                }
+                catch
+                {
+                    Growl.Error("好像出现了点错误……");
+                }
+            }
+            else if (msg.Contains("与服务器失去连接:"))
+            {
+                try
+                {
+                    string a = msg.Substring(0, msg.IndexOf(" 与服务器失去连接"));
+                    while (a.IndexOf(" ") + 1 != 0)
+                    {
+                        a = a.Substring(a.IndexOf(" ") + 1);
+                    }
+                    foreach (string x in serverPlayerList.Items)
+                    {
+                        if (x.IndexOf(a + "[/") + 1 != 0)
+                        {
+                            serverPlayerList.Items.Remove(x);
+                            break;
+                        }
+                    }
+                }
+                catch
+                {
+                    Growl.Error("好像出现了点错误……");
+                }
+            }
+        }
         void CheckOnlineMode()
         {
-            for(int i = 0; i < 5; i++)
+            for (int i = 0; i < 5; i++)
             {
                 try
                 {
@@ -941,7 +1080,7 @@ namespace MSL
                 }
             }
             this.Dispatcher.Invoke(DispatcherPriority.Normal, (ThreadStart)delegate ()
-            { if(onlineModeLab.Content.ToString()=="获取中") onlineModeLab.Content = "未知"; });
+            { if (onlineModeLab.Content.ToString() == "获取中") onlineModeLab.Content = "未知"; });
         }
         void timer1_Tick(object sender, EventArgs e)
         {
@@ -984,48 +1123,120 @@ namespace MSL
 
         string lastCommand;
         string nextCommand;
-        private void sendcmd_Click(object sender, RoutedEventArgs e)
+
+        void SendCommand()
         {
             lastCommand = cmdtext.Text;
             try
             {
-                if (fastCMD.SelectedIndex == 0)
+                if(inputCmdEncoding.Content.ToString() == "输入编码:UTF8")
                 {
-                    SERVERCMD.StandardInput.WriteLine(cmdtext.Text);
-                    cmdtext.Text = "";
+                    //MessageBox.Show("utf8");
+                    if (fastCMD.SelectedIndex == 0)
+                    {
+                        SendCmdUTF8(cmdtext.Text);
+                    }
+                    else if (fastCMD.SelectedItem.ToString().IndexOf("/op（给管理员）") != -1)
+                    {
+                        SendCmdUTF8("op " + cmdtext.Text);
+                    }
+                    else if (fastCMD.SelectedItem.ToString().IndexOf("/deop（去除管理员）") != -1)
+                    {
+                        SendCmdUTF8("deop " + cmdtext.Text);
+                    }
+                    else if (fastCMD.SelectedItem.ToString().IndexOf("/ban（封禁玩家）") != -1)
+                    {
+                        SendCmdUTF8("ban " + cmdtext.Text);
+                    }
+                    else if (fastCMD.SelectedItem.ToString().IndexOf("/say（全服说话）") != -1)
+                    {
+                        SendCmdUTF8("say " + cmdtext.Text);
+                    }
+                    else if (fastCMD.SelectedItem.ToString().IndexOf("/pardon（解除封禁）") != -1)
+                    {
+                        SendCmdUTF8("pardon " + cmdtext.Text);
+                    }
+                    else
+                    {
+                        if (fastCMD.Items[fastCMD.SelectedIndex].ToString().StartsWith("/"))
+                        {
+                            SendCmdUTF8(fastCMD.Items[fastCMD.SelectedIndex].ToString().Substring(1) + cmdtext.Text);
+                        }
+                        else
+                        {
+                            SendCmdUTF8(fastCMD.Items[fastCMD.SelectedIndex].ToString() + cmdtext.Text);
+                        }
+                    }
                 }
-                else if (fastCMD.SelectedItem.ToString().IndexOf("/op（给管理员）") != -1)
+                else
                 {
-                    SERVERCMD.StandardInput.WriteLine("op " + cmdtext.Text);
-                    cmdtext.Text = "";
-                }
-                else if (fastCMD.SelectedItem.ToString().IndexOf("/deop（去除管理员）") != -1)
-                {
-                    SERVERCMD.StandardInput.WriteLine("deop " + cmdtext.Text);
-                    cmdtext.Text = "";
-                }
-                else if (fastCMD.SelectedItem.ToString().IndexOf("/ban（封禁玩家）") != -1)
-                {
-                    SERVERCMD.StandardInput.WriteLine("ban " + cmdtext.Text);
-                    cmdtext.Text = "";
-                }
-                else if (fastCMD.SelectedItem.ToString().IndexOf("/say（全服说话）") != -1)
-                {
-                    SERVERCMD.StandardInput.WriteLine("say " + cmdtext.Text);
-                    cmdtext.Text = "";
-                }
-                else if (fastCMD.SelectedItem.ToString().IndexOf("/pardon（解除封禁）") != -1)
-                {
-                    SERVERCMD.StandardInput.WriteLine("pardon " + cmdtext.Text);
-                    cmdtext.Text = "";
+                    //MessageBox.Show("ansi");
+                    if (fastCMD.SelectedIndex == 0)
+                    {
+                        SendCmdANSL(cmdtext.Text);
+                    }
+                    else if (fastCMD.SelectedItem.ToString().IndexOf("/op（给管理员）") != -1)
+                    {
+                        SendCmdANSL("op " + cmdtext.Text);
+                    }
+                    else if (fastCMD.SelectedItem.ToString().IndexOf("/deop（去除管理员）") != -1)
+                    {
+                        SendCmdANSL("deop " + cmdtext.Text);
+                    }
+                    else if (fastCMD.SelectedItem.ToString().IndexOf("/ban（封禁玩家）") != -1)
+                    {
+                        SendCmdANSL("ban " + cmdtext.Text);
+                    }
+                    else if (fastCMD.SelectedItem.ToString().IndexOf("/say（全服说话）") != -1)
+                    {
+                        SendCmdANSL("say " + cmdtext.Text);
+                    }
+                    else if (fastCMD.SelectedItem.ToString().IndexOf("/pardon（解除封禁）") != -1)
+                    {
+                        SendCmdANSL("pardon " + cmdtext.Text);
+                    }
+                    else
+                    {
+                        if (fastCMD.Items[fastCMD.SelectedIndex].ToString().StartsWith("/"))
+                        {
+                            SendCmdANSL(fastCMD.Items[fastCMD.SelectedIndex].ToString().Substring(1) + cmdtext.Text);
+                        }
+                        else
+                        {
+                            SendCmdANSL(fastCMD.Items[fastCMD.SelectedIndex].ToString() + cmdtext.Text);
+                        }
+                    }
                 }
             }
             catch
             {
                 fastCMD.SelectedIndex = 0;
-                SERVERCMD.StandardInput.WriteLine(cmdtext.Text);
-                cmdtext.Text = "";
+                if (inputCmdEncoding.Content.ToString() == "编码:自动识别" || serverVersionLab.Content.ToString() == "编码:UTF8")
+                {
+                    SendCmdUTF8(cmdtext.Text);
+                }
+                else
+                {
+                    SendCmdANSL(cmdtext.Text);
+                }
             }
+        }
+
+        void SendCmdUTF8(string cmd)
+        {
+            byte[] utf8Bytes = Encoding.UTF8.GetBytes(cmd);
+            SERVERCMD.StandardInput.BaseStream.Write(utf8Bytes, 0, utf8Bytes.Length);
+            SERVERCMD.StandardInput.WriteLine();
+            cmdtext.Text = "";
+        }
+        void SendCmdANSL(string cmd)
+        {
+            SERVERCMD.StandardInput.WriteLine(cmd);
+            cmdtext.Text = "";
+        }
+        private void sendcmd_Click(object sender, RoutedEventArgs e)
+        {
+            SendCommand();
         }
 
         //tab补全命令列表
@@ -1034,46 +1245,7 @@ namespace MSL
         {
             if (e.Key == Key.Enter)
             {
-                lastCommand = cmdtext.Text;
-                try
-                {
-                    if (fastCMD.SelectedIndex == 0)
-                    {
-                        SERVERCMD.StandardInput.WriteLine(cmdtext.Text);
-                        cmdtext.Text = "";
-                    }
-                    else if (fastCMD.SelectedItem.ToString().IndexOf("/op（给管理员）") != -1)
-                    {
-                        SERVERCMD.StandardInput.WriteLine("op " + cmdtext.Text);
-                        cmdtext.Text = "";
-                    }
-                    else if (fastCMD.SelectedItem.ToString().IndexOf("/deop（去除管理员）") != -1)
-                    {
-                        SERVERCMD.StandardInput.WriteLine("deop " + cmdtext.Text);
-                        cmdtext.Text = "";
-                    }
-                    else if (fastCMD.SelectedItem.ToString().IndexOf("/ban（封禁玩家）") != -1)
-                    {
-                        SERVERCMD.StandardInput.WriteLine("ban " + cmdtext.Text);
-                        cmdtext.Text = "";
-                    }
-                    else if (fastCMD.SelectedItem.ToString().IndexOf("/say（全服说话）") != -1)
-                    {
-                        SERVERCMD.StandardInput.WriteLine("say " + cmdtext.Text);
-                        cmdtext.Text = "";
-                    }
-                    else if (fastCMD.SelectedItem.ToString().IndexOf("/pardon（解除封禁）") != -1)
-                    {
-                        SERVERCMD.StandardInput.WriteLine("pardon " + cmdtext.Text);
-                        cmdtext.Text = "";
-                    }
-                }
-                catch
-                {
-                    fastCMD.SelectedIndex = 0;
-                    SERVERCMD.StandardInput.WriteLine(cmdtext.Text);
-                    cmdtext.Text = "";
-                }
+                SendCommand();
             }
             if (e.Key == Key.Tab)
             {
@@ -1230,6 +1402,7 @@ namespace MSL
                     nextCommand = cmdtext.Text;
                     cmdtext.Text = lastCommand;
                 }
+                cmdtext.Select(cmdtext.Text.Length, 0);
             }
             if (e.Key == Key.Down)
             {
@@ -1238,8 +1411,8 @@ namespace MSL
                     lastCommand = cmdtext.Text;
                     cmdtext.Text = nextCommand;
                 }
+                cmdtext.Select(cmdtext.Text.Length, 0);
             }
-            cmdtext.Select(cmdtext.Text.Length, 0);
         }
         private void controlServer_Click(object sender, RoutedEventArgs e)
         {
@@ -1261,7 +1434,7 @@ namespace MSL
             }
             else
             {
-                Growl.Info("关服中……\n(双击按钮可强制关服)");
+                Growl.Info("关服中……(双击按钮可强制关服)");
                 SERVERCMD.StandardInput.WriteLine("stop");
             }
         }
@@ -1548,10 +1721,17 @@ namespace MSL
             if (Directory.Exists(Rserverbase + @"\plugins"))
             {
                 DirectoryInfo directoryInfo = new DirectoryInfo(Rserverbase + @"\plugins");
-                FileInfo[] file = directoryInfo.GetFiles("*.jar");
+                FileInfo[] file = directoryInfo.GetFiles("*.*");
                 foreach (FileInfo f in file)
                 {
-                    pluginslist.Items.Add(f.Name);
+                    if (f.Name.EndsWith(".disabled"))
+                    {
+                        pluginslist.Items.Add(new PluginInfo("[已禁用]" + f.Name));
+                    }
+                    else if (f.Name.EndsWith(".jar"))
+                    {
+                        pluginslist.Items.Add(new PluginInfo(f.Name));
+                    }
                 }
                 if (Directory.Exists(Rserverbase + @"\mods"))
                 {
@@ -1559,15 +1739,24 @@ namespace MSL
                     lab001.Margin = new Thickness(0);
                     pluginListBox.Visibility = Visibility.Visible;
                     modListBox.Visibility = Visibility.Visible;
-                    pluginListBox.Width = 410;
-                    modListBox.Width = 410;
+                    pluginListBox.Width = 430;
+                    modListBox.Width = 430;
                     pluginListBox.Margin = new Thickness(10, 55, 0, 0);
-                    modListBox.Margin = new Thickness(430, 55, 0, 0);
+                    modListBox.Margin = new Thickness(450, 55, 0, 0);
+                    pluginlistPluginName.Width = 250;
+                    modlistModName.Width = 250;
                     DirectoryInfo directoryInfo1 = new DirectoryInfo(Rserverbase + @"\mods");
-                    FileInfo[] file1 = directoryInfo1.GetFiles("*.jar");
+                    FileInfo[] file1 = directoryInfo1.GetFiles("*.*");
                     foreach (FileInfo f1 in file1)
                     {
-                        modslist.Items.Add(f1.Name);
+                        if (f1.Name.EndsWith(".disabled"))
+                        {
+                            modslist.Items.Add(new ModInfo("[已禁用]" + f1.Name));
+                        }
+                        else if (f1.Name.EndsWith(".jar"))
+                        {
+                            modslist.Items.Add(new ModInfo(f1.Name));
+                        }
                     }
                 }
                 else
@@ -1576,8 +1765,9 @@ namespace MSL
                     lab001.Margin = new Thickness(0);
                     pluginListBox.Visibility = Visibility.Visible;
                     modListBox.Visibility = Visibility.Hidden;
-                    pluginListBox.Width = 820;
+                    pluginListBox.Width = 880;
                     pluginListBox.Margin = new Thickness(10, 55, 0, 0);
+                    pluginlistPluginName.Width = 500;
                 }
             }
             else
@@ -1588,14 +1778,22 @@ namespace MSL
                     lab001.Margin = new Thickness(0);
                     pluginListBox.Visibility = Visibility.Hidden;
                     modListBox.Visibility = Visibility.Visible;
-                    modListBox.Width = 820;
+                    modListBox.Width = 880;
                     modListBox.Margin = new Thickness(10, 55, 0, 0);
                     modslist.Items.Clear();
+                    modlistModName.Width = 500;
                     DirectoryInfo directoryInfo = new DirectoryInfo(Rserverbase + @"\mods");
-                    FileInfo[] file = directoryInfo.GetFiles("*.jar");
+                    FileInfo[] file = directoryInfo.GetFiles("*.*");
                     foreach (FileInfo f in file)
                     {
-                        modslist.Items.Add(f.Name);
+                        if (f.Name.EndsWith(".disabled"))
+                        {
+                            modslist.Items.Add(new ModInfo("[已禁用]"+f.Name));
+                        }
+                        else if (f.Name.EndsWith(".jar"))
+                        {
+                            modslist.Items.Add(new ModInfo(f.Name));
+                        }
                     }
                 }
                 else
@@ -1607,6 +1805,24 @@ namespace MSL
                 }
             }
         }
+
+        class PluginInfo
+        {
+            public string PluginName { get; set; }
+            public PluginInfo(string pluginName)
+            {
+                PluginName = pluginName;
+            }
+        }
+        class ModInfo
+        {
+            public string ModName { get; set; }
+            public ModInfo(string modName)
+            {
+                ModName = modName;
+            }
+        }
+
         private void openpluginsDir_Click(object sender, RoutedEventArgs e)
         {
             Process p = new Process();
@@ -1631,6 +1847,7 @@ namespace MSL
         {
             OpenFileDialog openfile = new OpenFileDialog();
             openfile.InitialDirectory = AppDomain.CurrentDomain.BaseDirectory;
+            openfile.Multiselect = true;
             openfile.Title = "请选择文件";
             openfile.Filter = "JAR文件|*.jar|所有文件类型|*.*";
             var res = openfile.ShowDialog();
@@ -1638,7 +1855,12 @@ namespace MSL
             {
                 try
                 {
-                    File.Copy(openfile.FileName, Rserverbase + @"\plugins\" + openfile.SafeFileName);
+                    int i=0;
+                    foreach (var file in openfile.FileNames)
+                    {
+                        File.Copy(file, Rserverbase + @"\plugins\" + openfile.SafeFileNames[i]);
+                        i++;
+                    }
                 }
                 catch (Exception ex)
                 {
@@ -1652,6 +1874,7 @@ namespace MSL
         {
             OpenFileDialog openfile = new OpenFileDialog();
             openfile.InitialDirectory = AppDomain.CurrentDomain.BaseDirectory;
+            openfile.Multiselect = true;
             openfile.Title = "请选择文件";
             openfile.Filter = "JAR文件|*.jar|所有文件类型|*.*";
             var res = openfile.ShowDialog();
@@ -1659,7 +1882,12 @@ namespace MSL
             {
                 try
                 {
-                    File.Copy(openfile.FileName, Rserverbase + @"\mods\" + openfile.SafeFileName);
+                    int i = 0;
+                    foreach (var file in openfile.FileNames)
+                    {
+                        File.Copy(file, Rserverbase + @"\mods\" + openfile.SafeFileNames[i]);
+                        i++;
+                    }
                 }
                 catch (Exception ex)
                 {
@@ -1668,24 +1896,132 @@ namespace MSL
                 ReFreshPluginsAndMods();
             }
         }
+
+        private void disPlugin_Click(object sender, RoutedEventArgs e)
+        {
+            Button btn = sender as Button;
+            if (btn != null)
+            {
+                ListViewItem item = ServerList.FindAncestor<ListViewItem>(btn);
+                if (item != null)
+                {
+                    item.IsSelected = true;
+                }
+            }
+            PluginInfo pluginInfo=pluginslist.SelectedItem as PluginInfo;
+            if (pluginInfo.PluginName.ToString().IndexOf("[已禁用]") == -1)
+            {
+                File.Copy(Rserverbase + @"\plugins\" +pluginInfo.PluginName, Rserverbase + @"\plugins\" + pluginInfo.PluginName + ".disabled",true);
+                File.Delete(Rserverbase + @"\plugins\" + pluginInfo.PluginName);
+                ReFreshPluginsAndMods();
+            }
+            else
+            {
+                File.Copy(Rserverbase + @"\plugins\" + pluginInfo.PluginName.Substring(5, pluginInfo.PluginName.Length-5), Rserverbase + @"\plugins\" + pluginInfo.PluginName.Substring(5, pluginInfo.PluginName.Length - 13), true);
+                File.Delete(Rserverbase + @"\plugins\" + pluginInfo.PluginName.Substring(5, pluginInfo.PluginName.Length - 5));
+                ReFreshPluginsAndMods();
+            }
+        }
         private void delPlugin_Click(object sender, RoutedEventArgs e)
         {
-            if (pluginslist.SelectedIndex != -1)
+            try
             {
-                File.Delete(Rserverbase + @"\plugins\" + pluginslist.SelectedItem.ToString());
+                Button btn = sender as Button;
+                if (btn != null)
+                {
+                    ListViewItem item = ServerList.FindAncestor<ListViewItem>(btn);
+                    if (item != null)
+                    {
+                        item.IsSelected = true;
+                    }
+                }
+                PluginInfo pluginInfo = pluginslist.SelectedItem as PluginInfo;
+                File.Delete(Rserverbase + @"\plugins\" + pluginInfo.PluginName);
+                ReFreshPluginsAndMods();
+            }
+            catch { return; }
+        }
+        private void disMod_Click(object sender, RoutedEventArgs e)
+        {
+            Button btn = sender as Button;
+            if (btn != null)
+            {
+                ListViewItem item = ServerList.FindAncestor<ListViewItem>(btn);
+                if (item != null)
+                {
+                    item.IsSelected = true;
+                }
+            }
+            ModInfo modInfo = modslist.SelectedItem as ModInfo;
+            if (modInfo.ModName.ToString().IndexOf("[已禁用]") == -1)
+            {
+                File.Copy(Rserverbase + @"\mods\" + modInfo.ModName, Rserverbase + @"\mods\" + modInfo.ModName + ".disabled", true);
+                File.Delete(Rserverbase + @"\mods\" + modInfo.ModName);
+                ReFreshPluginsAndMods();
+            }
+            else
+            {
+                File.Copy(Rserverbase + @"\mods\" + modInfo.ModName.Substring(5, modInfo.ModName.Length - 5), Rserverbase + @"\mods\" + modInfo.ModName.Substring(5, modInfo.ModName.Length - 13), true);
+                File.Delete(Rserverbase + @"\mods\" + modInfo.ModName.Substring(5, modInfo.ModName.Length - 5));
                 ReFreshPluginsAndMods();
             }
         }
-
         private void delMod_Click(object sender, RoutedEventArgs e)
         {
-            if (modslist.SelectedIndex != -1)
+            try
             {
-                File.Delete(Rserverbase + @"\mods\" + modslist.SelectedItem.ToString());
+                Button btn = sender as Button;
+                if (btn != null)
+                {
+                    ListViewItem item = ServerList.FindAncestor<ListViewItem>(btn);
+                    if (item != null)
+                    {
+                        item.IsSelected = true;
+                    }
+                }
+                ModInfo modInfo = modslist.SelectedItem as ModInfo;
+                File.Delete(Rserverbase + @"\mods\" + modInfo.ModName);
                 ReFreshPluginsAndMods();
             }
+            catch { return; }
         }
 
+        private void disAllPlugin_Click(object sender, RoutedEventArgs e)
+        {
+            foreach(var x in pluginslist.Items)
+            {
+                PluginInfo pluginInfo = x as PluginInfo;
+                if (pluginInfo.PluginName.ToString().IndexOf("[已禁用]") == -1)
+                {
+                    File.Copy(Rserverbase + @"\plugins\" + pluginInfo.PluginName, Rserverbase + @"\plugins\" + pluginInfo.PluginName + ".disabled", true);
+                    File.Delete(Rserverbase + @"\plugins\" + pluginInfo.PluginName);
+                }
+                else
+                {
+                    File.Copy(Rserverbase + @"\plugins\" + pluginInfo.PluginName.Substring(5, pluginInfo.PluginName.Length - 5), Rserverbase + @"\plugins\" + pluginInfo.PluginName.Substring(5, pluginInfo.PluginName.Length - 13), true);
+                    File.Delete(Rserverbase + @"\plugins\" + pluginInfo.PluginName.Substring(5, pluginInfo.PluginName.Length - 5));
+                }
+            }
+            ReFreshPluginsAndMods();
+        }
+        private void disAllMod_Click(object sender, RoutedEventArgs e)
+        {
+            foreach(var x in modslist.Items)
+            {
+                ModInfo modInfo = x as ModInfo;
+                if (modInfo.ModName.ToString().IndexOf("[已禁用]") == -1)
+                {
+                    File.Copy(Rserverbase + @"\mods\" + modInfo.ModName, Rserverbase + @"\mods\" + modInfo.ModName + ".disabled", true);
+                    File.Delete(Rserverbase + @"\mods\" + modInfo.ModName);
+                }
+                else
+                {
+                    File.Copy(Rserverbase + @"\mods\" + modInfo.ModName.Substring(5, modInfo.ModName.Length - 5), Rserverbase + @"\mods\" + modInfo.ModName.Substring(5, modInfo.ModName.Length - 13), true);
+                    File.Delete(Rserverbase + @"\mods\" + modInfo.ModName.Substring(5, modInfo.ModName.Length - 5));
+                }
+            }
+            ReFreshPluginsAndMods();
+        }
         private void opencurseforge_Click(object sender, RoutedEventArgs e)
         {
             DownloadMods downloadMods = new DownloadMods();
@@ -1816,10 +2152,6 @@ namespace MSL
             { }
             try
             {
-                if (!Path.IsPathRooted(jAva.Text))
-                {
-                    jAva.Text = AppDomain.CurrentDomain.BaseDirectory + jAva.Text;
-                }
                 WebClient MyWebClient = new WebClient();
                 byte[] pageData = MyWebClient.DownloadData(MainWindow.serverLink + @"/msl/otherdownload.json");
                 string _javaList = Encoding.UTF8.GetString(pageData);
@@ -1865,6 +2197,10 @@ namespace MSL
                 }
                 else if (useSelf.IsChecked == true)
                 {
+                    if (!Path.IsPathRooted(jAva.Text))
+                    {
+                        jAva.Text = AppDomain.CurrentDomain.BaseDirectory + jAva.Text;
+                    }
                     if (useJVMauto.IsChecked == true)
                     {
                         RserverJVM = "";
@@ -1876,6 +2212,7 @@ namespace MSL
                 }
                 else   // (useJvpath.IsChecked == true)
                 {
+                    jAva.Text = "Java";
                     if (useJVMauto.IsChecked == true)
                     {
                         RserverJVM = "";
@@ -2233,6 +2570,36 @@ namespace MSL
                 autoStartserver.Content = "关服自动开服:禁用";
             }
         }
+        private void inputCmdEncoding_Click(object sender, RoutedEventArgs e)
+        {
+            if (inputCmdEncoding.Content.ToString() == "输入编码:自动识别")
+            { 
+                inputCmdEncoding.Content = "输入编码:UTF8";
+            }
+            else if(inputCmdEncoding.Content.ToString() == "输入编码:UTF8")
+            {
+                inputCmdEncoding.Content = "输入编码:ANSL";
+            }
+            else// if(inputCmdEncoding.Content.ToString() == "编码:ANSL")
+            {
+                inputCmdEncoding.Content = "输入编码:自动识别";
+            }
+        }
+        private void outputCmdEncoding_Click(object sender, RoutedEventArgs e)
+        {
+            if (outputCmdEncoding.Content.ToString() == "输出编码:自动识别")
+            {
+                outputCmdEncoding.Content = "输出编码:UTF8";
+            }
+            else if (outputCmdEncoding.Content.ToString() == "输出编码:UTF8")
+            {
+                outputCmdEncoding.Content = "输出编码:ANSL";
+            }
+            else// if(outputCmdEncoding.Content.ToString() == "编码:ANSL")
+            {
+                outputCmdEncoding.Content = "输出编码:自动识别";
+            }
+        }
         private void onlineMode_Click(object sender, RoutedEventArgs e)
         {
             try
@@ -2413,11 +2780,7 @@ namespace MSL
         {
             try
             {
-                string text = Microsoft.VisualBasic.Interaction.InputBox("请输入指令（格式为：/指令）\n请不要加入其他字符，如：（、）、[、]等", "输入", "", -1, -1);
-                if (text.Substring(text.Length - 1, 1) == " ")
-                {
-                    text = text.Remove(text.Length - 1, 1);
-                }
+                string text = Microsoft.VisualBasic.Interaction.InputBox("请输入指令（格式为：/指令）\n若要输入的指令不是完整指令，请自行在最后添加空格", "输入", "", -1, -1);
                 //fastCMD.Items.Add(text);
                 fastCmdList.Items.Add(text);
                 SetFastCmd();
