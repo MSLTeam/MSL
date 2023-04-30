@@ -249,44 +249,63 @@ namespace MSL.pages
                         System.Windows.Clipboard.SetDataObject(downloadServerBase);
                         if (filename.IndexOf("1.12") + 1 != 0 || filename.IndexOf("1.13") + 1 != 0 || filename.IndexOf("1.14") + 1 != 0 || filename.IndexOf("1.15") + 1 != 0)
                         {
+                            Thread.Sleep(200);
                             SendKeys.SendWait("{Tab}");
+                            Thread.Sleep(200);
                             SendKeys.SendWait("{Tab}");
+                            Thread.Sleep(200);
                             SendKeys.SendWait("{DOWN}");
+                            Thread.Sleep(200);
                             SendKeys.SendWait("{Tab}");
+                            Thread.Sleep(200);
                             SendKeys.SendWait("{Tab}");
+                            Thread.Sleep(200);
                             SendKeys.SendWait("{ENTER}");
                             Thread.Sleep(500);
                             SendKeys.SendWait("{DELETE}");
+                            Thread.Sleep(200);
                             SendKeys.SendWait("^{v}");
                             Thread.Sleep(500);
                             SendKeys.SendWait("{Tab}");
+                            Thread.Sleep(200);
                             SendKeys.SendWait("{Tab}");
                             Thread.Sleep(500);
                             SendKeys.SendWait("{ENTER}");
                             Thread.Sleep(500);
                             SendKeys.SendWait("{Tab}");
+                            Thread.Sleep(200);
                             SendKeys.SendWait("{ENTER}");
                             break;
                         }
                         else
                         {
+                            Thread.Sleep(200);
                             SendKeys.SendWait("{Tab}");
+                            Thread.Sleep(200);
                             SendKeys.SendWait("{Tab}");
+                            Thread.Sleep(200);
                             SendKeys.SendWait("{Tab}");
+                            Thread.Sleep(200);
                             SendKeys.SendWait("{DOWN}");
+                            Thread.Sleep(200);
                             SendKeys.SendWait("{Tab}");
+                            Thread.Sleep(200);
                             SendKeys.SendWait("{Tab}");
+                            Thread.Sleep(200);
                             SendKeys.SendWait("{ENTER}");
                             Thread.Sleep(500);
                             SendKeys.SendWait("{DELETE}");
+                            Thread.Sleep(200);
                             SendKeys.SendWait("^{v}");
                             Thread.Sleep(500);
                             SendKeys.SendWait("{Tab}");
+                            Thread.Sleep(200);
                             SendKeys.SendWait("{Tab}");
                             Thread.Sleep(500);
                             SendKeys.SendWait("{ENTER}");
                             Thread.Sleep(500);
                             SendKeys.SendWait("{Tab}");
+                            Thread.Sleep(200);
                             SendKeys.SendWait("{ENTER}");
                             break;
                         }

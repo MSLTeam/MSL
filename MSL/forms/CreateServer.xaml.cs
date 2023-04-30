@@ -3,6 +3,7 @@ using ICSharpCode.SharpZipLib.Zip;
 using Microsoft.Win32;
 using MSL.controls;
 using MSL.pages;
+using Newtonsoft.Json;
 using Newtonsoft.Json.Linq;
 using System;
 using System.Collections.Generic;
@@ -10,14 +11,18 @@ using System.Diagnostics;
 using System.IO;
 using System.Linq;
 using System.Net;
+using System.Net.NetworkInformation;
+using System.Runtime.InteropServices;
 using System.Text;
 using System.Text.RegularExpressions;
 using System.Threading;
 using System.Windows;
 using System.Windows.Controls;
+using System.Windows.Forms;
 using System.Windows.Threading;
 using System.Xml.Linq;
 using MessageBox = System.Windows.MessageBox;
+using OpenFileDialog = Microsoft.Win32.OpenFileDialog;
 using Path = System.IO.Path;
 using Window = System.Windows.Window;
 
@@ -37,10 +42,8 @@ namespace MSL.forms
         string servermemory;
         string serverargs;
 
-        DispatcherTimer timer1 = new DispatcherTimer();
         public CreateServer()
         {
-            timer1.Tick += new EventHandler(timer1_Tick);
             InitializeComponent();
         }
         private void Window_Loaded(object sender, RoutedEventArgs e)
@@ -235,86 +238,116 @@ namespace MSL.forms
                 }
             }
         }
-        private void DownloadJava(string fileName, string downUrl)
+        private void DownloadJava(string fileName, string downUrl,bool changePage=true)
         {
-            //MessageBox.Show("下载Java即代表您接受Java的服务条款https://www.oracle.com/downloads/licenses/javase-license1.html", "INFO", MessageBoxButton.OK, MessageBoxImage.Information);
             if (!File.Exists(AppDomain.CurrentDomain.BaseDirectory + @"MSL\" + fileName + @"\bin\java.exe"))
             {
                 DialogShow.ShowMsg(this, "下载Java即代表您接受Java的服务条款https://www.oracle.com/downloads/licenses/javase-license1.html", "信息", false, "确定");
-                //MessageDialog messageDialog = new MessageDialog();
-                //messageDialog.Owner = this;
-                //messageDialog.ShowDialog();
                 DownjavaName = fileName;
                 DialogShow.ShowDownload(this, downUrl, AppDomain.CurrentDomain.BaseDirectory + "MSL", "Java.zip", "下载" + fileName + "中……");
-                outlog.Content = "解压中...";
-                try
+                if(changePage)
                 {
-                    string javaDirName = "";
-                    using (ZipFile zip = new ZipFile(AppDomain.CurrentDomain.BaseDirectory + @"MSL\Java.zip"))
+                    outlog.Content = "解压中...";
+                    try
                     {
-                        foreach (ZipEntry entry in zip)
+                        string javaDirName = "";
+                        using (ZipFile zip = new ZipFile(AppDomain.CurrentDomain.BaseDirectory + @"MSL\Java.zip"))
                         {
-                            if (entry.IsDirectory == true)
+                            foreach (ZipEntry entry in zip)
                             {
-                                int c0 = entry.Name.Length - entry.Name.Replace("/", "").Length;
-                                if (c0 == 1)
+                                if (entry.IsDirectory == true)
                                 {
-                                    javaDirName = entry.Name.Replace("/", "");
-                                    break;
+                                    int c0 = entry.Name.Length - entry.Name.Replace("/", "").Length;
+                                    if (c0 == 1)
+                                    {
+                                        javaDirName = entry.Name.Replace("/", "");
+                                        break;
+                                    }
                                 }
                             }
                         }
+                        FastZip fastZip = new FastZip();
+                        fastZip.ExtractZip(AppDomain.CurrentDomain.BaseDirectory + @"MSL\Java.zip", AppDomain.CurrentDomain.BaseDirectory + "MSL", "");
+                        outlog.Content = "解压完成，移动中...";
+                        File.Delete(AppDomain.CurrentDomain.BaseDirectory + @"MSL\Java.zip");
+                        if (AppDomain.CurrentDomain.BaseDirectory + @"MSL\" + javaDirName != AppDomain.CurrentDomain.BaseDirectory + @"MSL\" + DownjavaName)
+                        {
+                            MoveFolder(AppDomain.CurrentDomain.BaseDirectory + @"MSL\" + javaDirName, AppDomain.CurrentDomain.BaseDirectory + @"MSL\" + DownjavaName);
+                        } 
+                        while (!File.Exists(AppDomain.CurrentDomain.BaseDirectory + @"MSL\" + DownjavaName + @"\bin\java.exe"))
+                        {
+                            Thread.Sleep(1000);
+                        }
+                        outlog.Content = "完成";
+                        serverjava = AppDomain.CurrentDomain.BaseDirectory + @"MSL\" + DownjavaName + @"\bin\java.exe";
+                        next3.IsEnabled = true;
+                        return5.IsEnabled = true;
+                        javagrid.Visibility = Visibility.Hidden;
+                        servergrid.Visibility = Visibility.Visible;
+                        CheckServerPackCore();
                     }
-                    FastZip fastZip = new FastZip();
-                    fastZip.ExtractZip(AppDomain.CurrentDomain.BaseDirectory + @"MSL\Java.zip", AppDomain.CurrentDomain.BaseDirectory + "MSL", "");
-                    outlog.Content = "解压完成，移动中...";
-                    File.Delete(AppDomain.CurrentDomain.BaseDirectory + @"MSL\Java.zip");
-                    timer1.Interval = TimeSpan.FromSeconds(3);
-                    timer1.Start();
-                    if (AppDomain.CurrentDomain.BaseDirectory + @"MSL\" + javaDirName != AppDomain.CurrentDomain.BaseDirectory + @"MSL\" + DownjavaName)
+                    catch
                     {
-                        MoveFolder(AppDomain.CurrentDomain.BaseDirectory + @"MSL\" + javaDirName, AppDomain.CurrentDomain.BaseDirectory + @"MSL\" + DownjavaName);
+                        MessageBox.Show("安装失败，请查看是否有杀毒软件进行拦截！请确保添加信任或关闭杀毒软件后进行重新安装！", "错误", MessageBoxButton.OK, MessageBoxImage.Error);
+                        outlog.Content = "安装失败！";
+                        next3.IsEnabled = true;
+                        return5.IsEnabled = true;
                     }
                 }
-                catch
+                else
                 {
-                    MessageBox.Show("安装失败，请查看是否有杀毒软件进行拦截！请确保添加信任或关闭杀毒软件后进行重新安装！", "错误", MessageBoxButton.OK, MessageBoxImage.Error);
-                    outlog.Content = "安装失败！";
-                    next3.IsEnabled = true;
-                    return5.IsEnabled = true;
+                    try
+                    {
+                        string javaDirName = "";
+                        using (ZipFile zip = new ZipFile(AppDomain.CurrentDomain.BaseDirectory + @"MSL\Java.zip"))
+                        {
+                            foreach (ZipEntry entry in zip)
+                            {
+                                if (entry.IsDirectory == true)
+                                {
+                                    int c0 = entry.Name.Length - entry.Name.Replace("/", "").Length;
+                                    if (c0 == 1)
+                                    {
+                                        javaDirName = entry.Name.Replace("/", "");
+                                        break;
+                                    }
+                                }
+                            }
+                        }
+                        FastZip fastZip = new FastZip();
+                        fastZip.ExtractZip(AppDomain.CurrentDomain.BaseDirectory + @"MSL\Java.zip", AppDomain.CurrentDomain.BaseDirectory + "MSL", "");
+                        File.Delete(AppDomain.CurrentDomain.BaseDirectory + @"MSL\Java.zip");
+                        if (AppDomain.CurrentDomain.BaseDirectory + @"MSL\" + javaDirName != AppDomain.CurrentDomain.BaseDirectory + @"MSL\" + DownjavaName)
+                        {
+                            MoveFolder(AppDomain.CurrentDomain.BaseDirectory + @"MSL\" + javaDirName, AppDomain.CurrentDomain.BaseDirectory + @"MSL\" + DownjavaName);
+                        }
+                        while(!File.Exists(AppDomain.CurrentDomain.BaseDirectory + @"MSL\" + DownjavaName + @"\bin\java.exe"))
+                        {
+                            Thread.Sleep(1000);
+                        }
+                        serverjava = AppDomain.CurrentDomain.BaseDirectory + @"MSL\" + DownjavaName + @"\bin\java.exe";
+                        MessageBox.Show("安装成功", "success", MessageBoxButton.OK, MessageBoxImage.Information);
+                    }
+                    catch
+                    {
+                        MessageBox.Show("安装失败，请查看是否有杀毒软件进行拦截！请确保添加信任或关闭杀毒软件后进行重新安装！", "错误", MessageBoxButton.OK, MessageBoxImage.Error);
+                    }
                 }
-                /*
-                Form4 fw = new Form4();
-                fw.ShowDialog();*/
             }
             else
             {
                 serverjava = AppDomain.CurrentDomain.BaseDirectory + @"MSL\" + fileName + @"\bin\java.exe";
-                next3.IsEnabled = true;
-                return5.IsEnabled = true;
-                javagrid.Visibility = Visibility.Hidden;
-                servergrid.Visibility = Visibility.Visible;
-                CheckServerPackCore();
-            }
-        }
-        private void timer1_Tick(object sender, EventArgs e)
-        {
-            if (File.Exists(AppDomain.CurrentDomain.BaseDirectory + @"MSL\" + DownjavaName + @"\bin\java.exe"))
-            {
-                try
+                if (changePage)
                 {
-                    outlog.Content = "完成";
-                    serverjava = AppDomain.CurrentDomain.BaseDirectory + @"MSL\" + DownjavaName + @"\bin\java.exe";
                     next3.IsEnabled = true;
                     return5.IsEnabled = true;
                     javagrid.Visibility = Visibility.Hidden;
                     servergrid.Visibility = Visibility.Visible;
                     CheckServerPackCore();
-                    timer1.Stop();
                 }
-                catch
+                else
                 {
-                    return;
+                    MessageBox.Show("安装成功", "success", MessageBoxButton.OK, MessageBoxImage.Information);
                 }
             }
         }
@@ -585,7 +618,7 @@ namespace MSL.forms
             servername = serverNameBox.Text;
             if (new Regex("[\u4E00-\u9FA5]").IsMatch(txb6.Text))
             {
-                var result = MessageBox.Show("使用带中文的路径可能会出现无法开服的致命bug，您确定要继续吗？", "警告", MessageBoxButton.YesNo, MessageBoxImage.Warning);
+                var result = MessageBox.Show("使用带有中文的路径可能造成编码错误，导致无法开服，您确定要继续吗？", "警告", MessageBoxButton.YesNo, MessageBoxImage.Warning);
                 if (result == MessageBoxResult.No)
                 {
                     return;
@@ -593,7 +626,7 @@ namespace MSL.forms
             }
             else if (txb6.Text.IndexOf(" ") + 1 != 0)
             {
-                var result = MessageBox.Show("使用带空格的路径可能会出现无法开服的致命bug，您确定要继续吗？", "警告", MessageBoxButton.YesNo, MessageBoxImage.Warning);
+                var result = MessageBox.Show("使用带有空格的路径可能造成编码错误，导致无法开服，您确定要继续吗？", "警告", MessageBoxButton.YesNo, MessageBoxImage.Warning);
                 if (result == MessageBoxResult.No)
                 {
                     return;
@@ -755,6 +788,528 @@ namespace MSL.forms
         private void CloseBtn_Click(object sender, RoutedEventArgs e)
         {
             this.Close();
+        }
+
+        private void FastModeBtn_Click(object sender, RoutedEventArgs e)
+        {
+            MainGrid.Visibility = Visibility.Hidden;
+            FastModeGrid.Visibility = Visibility.Visible;
+            Thread thread = new Thread(FastModeGetCore);
+            thread.Start();
+        }
+
+        Dictionary<string, List<string>> serverCoreTypes = new Dictionary<string, List<string>>
+            {
+                {"pluginsCore",new List<string>()
+                    {"Paper","Purpur","Spigot","CraftBukkit","Folia"}
+                },
+                {"modsCore_Forge",new List<string>()
+                    {"Forge"}
+                },
+                {"modsCore_Fabric",new List<string>()
+                    {"Fabric"}
+                },
+                {"pluginsAndModsCore",new List<string>()
+                    {"Mohist","Catserver"}
+                },
+                {"vanillaCore",new List<string>()
+                    {"Vanilla"}
+                },
+                {"bedrockCore",new List<string>()
+                    {"Nukkit"}
+                },
+                {"proxyCore",new List<string>()
+                    {"BungeeCord"}
+                }
+            };
+        Dictionary<string, Dictionary<string, string>> serverCores;
+        void FastModeGetCore()
+        {
+            try
+            {
+                Ping pingSender = new Ping();
+                string serverAddr = MainWindow.serverLink;
+                if(serverAddr!= "https://msl.waheal.top")
+                {
+                    if (serverAddr.Contains("http://")) { serverAddr = serverAddr.Remove(0, 7); }
+                    PingReply reply = pingSender.Send(serverAddr, 2000); // 替换成您要 ping 的 IP 地址
+                    if (reply.Status != IPStatus.Success)
+                    {
+                        MainWindow.serverLink = "https://msl.waheal.top";
+                        Growl.Info("MSL主服务器连接超时，已切换至备用服务器！");
+                    }
+                }
+                var coreVersions = new Dictionary<string, List<string>>();
+                WebClient MyWebClient = new WebClient();
+                MyWebClient.Credentials = CredentialCache.DefaultCredentials;
+                byte[] pageData = MyWebClient.DownloadData(MainWindow.serverLink + "/msl/CC/versions.json");
+                string versionsList = Encoding.UTF8.GetString(pageData);
+                //分类服务端
+                //serverVersions = JObject.Parse(versionsList);
+                serverCores = JsonConvert.DeserializeObject<Dictionary<string, Dictionary<string, string>>>(versionsList);
+                this.Dispatcher.Invoke(DispatcherPriority.Normal, (ThreadStart)delegate ()
+                {
+                    ServerCoreCombo.SelectedIndex = 0;
+                });
+            }
+            catch (Exception a)
+            {
+                Growl.Info("获取服务端失败！请重试" + a.Message);
+            }
+        }
+
+        private void ServerCoreCombo_SelectionChanged(object sender, SelectionChangedEventArgs e)
+        {
+            ServerVersionCombo.Items.Clear();
+            int i = 0;
+            // 遍历所有核心类型
+            foreach (var coreType in serverCoreTypes)
+            {
+                if (i == ServerCoreCombo.SelectedIndex)
+                {
+                    // 遍历所有核心版本
+                    foreach (var core in coreType.Value)
+                    {
+                        // 获取该核心类型下的所有版本
+                        var versions = serverCores.FirstOrDefault(c => c.Key.Contains(core)).Value;
+
+                        if (versions != null)
+                        {
+                            foreach (var version in versions)
+                            {
+                                string _ver = version.Key;
+                                if (version.Key.Contains("-"))
+                                {
+                                    _ver = version.Key.Substring(0, _ver.IndexOf("-"));
+                                }
+                                // 添加版本到版本列表
+                                if (!ServerVersionCombo.Items.Contains(_ver) && version.Value != null)
+                                {
+                                    ServerVersionCombo.Items.Add(_ver);
+                                }
+                            }
+                        }
+                    }
+                    break;
+                }
+                else { i++; }
+            }
+            ServerVersionCombo.SelectedIndex = 0;
+            switch (ServerCoreCombo.SelectedIndex)
+            {
+                case 0:
+                    ServerCoreDescrip.Text = "插件服务器：";
+                    break;
+                case 1:
+                    ServerCoreDescrip.Text = "模组服务器（Forge加载器）：";
+                    break;
+                case 2:
+                    ServerCoreDescrip.Text = "模组服务器（Fabric加载器）：";
+                    break;
+                case 3:
+                    ServerCoreDescrip.Text = "插件模组二合一服务器（Forge加载器）：";
+                    break;
+                case 4:
+                    ServerCoreDescrip.Text = "原版服务器：";
+                    break;
+                case 5:
+                    ServerCoreDescrip.Text = "基岩版服务器：";
+                    break;
+                case 6:
+                    ServerCoreDescrip.Text = "代理服务器：";
+                    break;
+            }
+        }
+
+        List<string> downloadCoreUrl = new List<string>();
+        private void FastModeNextBtn_Click(object sender, RoutedEventArgs e)
+        {
+            servername = ServerNameBox.Text;
+            if (new Regex("[\u4E00-\u9FA5]").IsMatch(txb6.Text))
+            {
+                var result = MessageBox.Show("开服器被放置于带有中文的目录里，中文目录可能会造成编码错误导致无法开服，您确定要继续吗？", "警告", MessageBoxButton.YesNo, MessageBoxImage.Warning);
+                if (result == MessageBoxResult.No)
+                {
+                    return;
+                }
+            }
+            else if (txb6.Text.IndexOf(" ") + 1 != 0)
+            {
+                var result = MessageBox.Show("开服器被放置于带有空格的目录里，这种目录可能会造成编码错误导致无法开服，您确定要继续吗？", "警告", MessageBoxButton.YesNo, MessageBoxImage.Warning);
+                if (result == MessageBoxResult.No)
+                {
+                    return;
+                }
+            }
+            serverbase = txb6.Text;
+            FastModeGrid.Visibility = Visibility.Hidden;
+            InstallGrid.Visibility = Visibility.Visible;
+            int i = 0;
+            
+            // 遍历所有核心类型
+            foreach (var coreType in serverCoreTypes)
+            {
+                if (i == ServerCoreCombo.SelectedIndex)
+                {
+                    int _coreType = 0;
+                    // 遍历所有核心版本
+                    foreach (var core in coreType.Value)
+                    {
+                        // 获取该核心类型下的所有版本
+                        var versions = serverCores.FirstOrDefault(c => c.Key.Contains(core)).Value;
+
+                        if (versions != null)
+                        {
+                            foreach (var version in versions)
+                            {
+                                string _ver = version.Key;
+                                if (version.Key.Contains("-"))
+                                {
+                                    _ver = version.Key.Substring(0, _ver.IndexOf("-"));
+                                }
+                                // 添加版本到版本列表
+                                if (_ver==ServerVersionCombo.Items[ServerVersionCombo.SelectedIndex].ToString() && version.Value != null)
+                                {
+                                    FinallyCoreCombo.Items.Add(coreType.Value[_coreType]+"-" + version.Key);
+                                    downloadCoreUrl.Add(version.Value);
+                                }
+                            }
+                        }
+                        _coreType++;
+                    }
+                    break;
+                }
+                else { i++; }
+            }
+            string versionString = ServerVersionCombo.Items[ServerVersionCombo.SelectedIndex].ToString();
+            string[] components = versionString.Split('.');
+            if (components.Length >= 3 && int.TryParse(components[2], out int _))
+            {
+                versionString = $"{components[0]}.{components[1]}"; // remove the last component
+            }
+
+            Version _version = new Version(versionString);
+            Version targetVersion1 = new Version("1.7");
+            Version targetVersion2 = new Version("1.12");
+            Version targetVersion3 = new Version("1.17");
+
+            if (_version <= targetVersion1)
+            {
+                //_version <=1.7
+                FinallyJavaDescrip.Text = "根据您的选择，最适合您服务器的Java版本为：Java7-Java8";
+                FinallyJavaCombo.SelectedIndex = 0;
+            }
+            else if (_version <= targetVersion2)
+            {
+                //1.7< _version <=1.12
+                FinallyJavaDescrip.Text = "根据您的选择，最适合您服务器的Java版本为：Java8-Java11";
+                FinallyJavaCombo.SelectedIndex = 0;
+            }
+            else if (_version <= targetVersion3)
+            {
+                //1.12< _version <=1.17
+                FinallyJavaDescrip.Text = "根据您的选择，最适合您服务器的Java版本为：Java11-Java17（或更高）";
+                FinallyJavaCombo.SelectedIndex = 3;
+            }
+            else
+            {
+                //_version >1.17
+                FinallyJavaDescrip.Text = "根据您的选择，最适合您服务器的Java版本为：Java18-Java19（或更高）";
+                FinallyJavaCombo.SelectedIndex = 5;
+            }
+            FinallyCoreCombo.SelectedIndex = 0;
+        }
+
+        private void FastModeInstallBtn_Click(object sender, RoutedEventArgs e)
+        {
+            try
+            {
+                WebClient MyWebClient = new WebClient();
+                byte[] pageData = MyWebClient.DownloadData(MainWindow.serverLink + @"/msl/otherdownload.json");
+                string _javaList = Encoding.UTF8.GetString(pageData);
+
+                JObject javaList0 = JObject.Parse(_javaList);
+                JObject javaList = (JObject)javaList0["java"];
+                switch (FinallyJavaCombo.SelectedIndex)
+                {
+                    case 0:
+                        DownloadJava("Java8", javaList["Java8"].ToString(),false);
+                        break;
+                    case 1:
+                        DownloadJava("Java11", javaList["Java11"].ToString(), false);
+                        break;
+                    case 2:
+                        DownloadJava("Java16", javaList["Java16"].ToString(), false);
+                        break;
+                    case 3:
+                        DownloadJava("Java17", javaList["Java17"].ToString(), false);
+                        break;
+                    case 4:
+                        DownloadJava("Java18", javaList["Java18"].ToString(), false);
+                        break;
+                    case 5:
+                        DownloadJava("Java19", javaList["Java19"].ToString(), false);
+                        break;
+                    default:
+                        Growl.Error("请选择一个版本以下载！");
+                        break;
+                }
+                FastModeInstallCore();
+            }
+            catch
+            {
+                Growl.Error("出现错误，请检查网络连接！");
+            }
+        }
+        void FastModeInstallCore()
+        {
+            string filename = FinallyCoreCombo.Items[FinallyCoreCombo.SelectedIndex].ToString()+".jar";
+            DialogShow.ShowDownload(this, downloadCoreUrl[FinallyCoreCombo.SelectedIndex], serverbase, filename, "下载服务端中……");
+            if (File.Exists(serverbase + @"\" + filename))
+            {
+                servercore = filename;
+                bool installReturn = true;
+                if (filename.IndexOf("Forge") + 1 != 0)
+                {
+                    
+                    DialogShow.ShowMsg(this, "检测到您下载的是Forge端，开服器将自动进行安装操作，稍后请您不要随意移动鼠标且不要随意触碰键盘，耐心等待安装完毕！\n注：开服器已经把安装地址复制，如果Forge安装窗口弹出很久后没有任何改动的话，请手动选择第二个选项，然后把地址粘贴进去进行安装", "提示");
+                    installReturn = InstallForge();
+                }
+                if (installReturn)
+                {
+                    try
+                    {
+                        if (!File.Exists(AppDomain.CurrentDomain.BaseDirectory + @"MSL\ServerList.json"))
+                        {
+                            File.WriteAllText(AppDomain.CurrentDomain.BaseDirectory + @"MSL\ServerList.json", string.Format("{{{0}}}", "\n"));
+                        }
+                        JObject _json = new JObject
+                {
+                    { "name", servername },
+                    { "java", serverjava },
+                    { "base", serverbase },
+                    { "core", servercore },
+                    { "memory", servermemory },
+                    { "args", serverargs }
+                };
+                        JObject jsonObject = JObject.Parse(File.ReadAllText(AppDomain.CurrentDomain.BaseDirectory + @"MSL\ServerList.json", Encoding.UTF8));
+                        List<string> keys = jsonObject.Properties().Select(p => p.Name).ToList();
+                        var _keys = keys.Select(x => Convert.ToInt32(x));
+                        int[] ikeys = _keys.ToArray();
+                        Array.Sort(ikeys);
+                        int i = 0;
+
+                        foreach (int key in ikeys)
+                        {
+                            if (i == key)
+                            {
+                                i++;
+                            }
+                            else
+                            {
+                                break;
+                            }
+                        }
+                        jsonObject.Add(i.ToString(), _json);
+                        File.WriteAllText(AppDomain.CurrentDomain.BaseDirectory + @"MSL\ServerList.json", Convert.ToString(jsonObject), Encoding.UTF8);
+                        DialogShow.ShowMsg(this, "创建完毕，请点击“开启服务器”按钮以开服", "信息");
+                        Close();
+                    }
+                    catch (Exception ex)
+                    {
+                        MessageBox.Show("出现错误，请重试：" + ex.Message, "Error", MessageBoxButton.OK, MessageBoxImage.Error);
+                    }
+                }
+            }
+            else
+            {
+                DialogShow.ShowMsg(this, "下载失败！", "错误");
+            }
+        }
+
+        #region InstallForge
+        /// <summary>
+        /// 找到窗口
+        /// </summary>
+        /// <param name="lpClassName">窗口类名(例：Button)</param>
+        /// <param name="lpWindowName">窗口标题</param>
+        /// <returns></returns>
+        [DllImport("user32.dll", EntryPoint = "FindWindow")]
+        private extern static IntPtr FindWindow(string lpClassName, string lpWindowName);
+
+        /// <summary>
+        /// 找到窗口
+        /// </summary>
+        /// <param name="hwndParent">父窗口句柄（如果为空，则为桌面窗口）</param>
+        /// <param name="hwndChildAfter">子窗口句柄（从该子窗口之后查找）</param>
+        /// <param name="lpszClass">窗口类名(例：Button</param>
+        /// <param name="lpszWindow">窗口标题</param>
+        /// <returns></returns>
+        [DllImport("user32.dll", EntryPoint = "FindWindowEx")]
+        private extern static IntPtr FindWindowEx(IntPtr hwndParent, IntPtr hwndChildAfter, string lpszClass, string lpszWindow);
+
+        /// <summary>
+        /// 发送消息
+        /// </summary>
+        /// <param name="hwnd">消息接受窗口句柄</param>
+        /// <param name="wMsg">消息</param>
+        /// <param name="wParam">指定附加的消息特定信息</param>
+        /// <param name="lParam">指定附加的消息特定信息</param>
+        /// <returns></returns>
+        [DllImport("user32.dll", EntryPoint = "SendMessageA")]
+        private static extern int SendMessage(IntPtr hwnd, uint wMsg, int wParam, int lParam);
+
+        const int WM_SETFOCUS = 0x07;
+        bool InstallForge()
+        {
+            string filename = FinallyCoreCombo.Items[FinallyCoreCombo.SelectedIndex].ToString()+".jar";
+            string forgeVersion;
+            if (downloadCoreUrl[FinallyCoreCombo.SelectedIndex].IndexOf("bmcl") + 1 != 0)
+            {
+                forgeVersion = FinallyCoreCombo.Items[FinallyCoreCombo.SelectedIndex].ToString().Replace("Forge","") + downloadCoreUrl[FinallyCoreCombo.SelectedIndex].Substring(downloadCoreUrl[FinallyCoreCombo.SelectedIndex].IndexOf("&version=") + 9,
+                    downloadCoreUrl[FinallyCoreCombo.SelectedIndex].IndexOf("&category") - (downloadCoreUrl[FinallyCoreCombo.SelectedIndex].IndexOf("&version=") + 9));
+            }
+            else
+            {
+                forgeVersion = downloadCoreUrl[FinallyCoreCombo.SelectedIndex].Substring(downloadCoreUrl[FinallyCoreCombo.SelectedIndex].IndexOf("forge-") + 6,
+                downloadCoreUrl[FinallyCoreCombo.SelectedIndex].IndexOf("-installer") - (downloadCoreUrl[FinallyCoreCombo.SelectedIndex].IndexOf("forge-") + 6));
+            }
+            if (forgeVersion.Length - forgeVersion.Replace("-", "").Length > 1)
+            {
+                forgeVersion = forgeVersion.Substring(0, forgeVersion.LastIndexOf("-"));
+            }
+            Process process = new Process();
+            process.StartInfo.FileName = serverjava;
+            process.StartInfo.Arguments = "-jar " + serverbase + @"\" + filename;
+            Directory.SetCurrentDirectory(serverbase);
+            process.Start();
+            try
+            {
+                while (!process.HasExited)
+                {
+                    IntPtr maindHwnd = FindWindow(null, "Mod system installer");//主窗口标题
+                    if (maindHwnd != IntPtr.Zero)
+                    {
+                        SendMessage(maindHwnd, WM_SETFOCUS, 0, 0);
+                        System.Windows.Clipboard.SetDataObject(serverbase);
+                        if (filename.IndexOf("1.12") + 1 != 0 || filename.IndexOf("1.13") + 1 != 0 || filename.IndexOf("1.14") + 1 != 0 || filename.IndexOf("1.15") + 1 != 0)
+                        {
+                            Thread.Sleep(200);
+                            SendKeys.SendWait("{Tab}");
+                            Thread.Sleep(200);
+                            SendKeys.SendWait("{Tab}");
+                            Thread.Sleep(200);
+                            SendKeys.SendWait("{DOWN}");
+                            Thread.Sleep(200);
+                            SendKeys.SendWait("{Tab}");
+                            Thread.Sleep(200);
+                            SendKeys.SendWait("{Tab}");
+                            Thread.Sleep(200);
+                            SendKeys.SendWait("{ENTER}");
+                            Thread.Sleep(500);
+                            SendKeys.SendWait("{DELETE}");
+                            Thread.Sleep(200);
+                            SendKeys.SendWait("^{v}");
+                            Thread.Sleep(500);
+                            SendKeys.SendWait("{Tab}");
+                            Thread.Sleep(200);
+                            SendKeys.SendWait("{Tab}");
+                            Thread.Sleep(500);
+                            SendKeys.SendWait("{ENTER}");
+                            Thread.Sleep(500);
+                            SendKeys.SendWait("{Tab}");
+                            Thread.Sleep(200);
+                            SendKeys.SendWait("{ENTER}");
+                            break;
+                        }
+                        else
+                        {
+                            Thread.Sleep(200);
+                            SendKeys.SendWait("{Tab}");
+                            Thread.Sleep(200);
+                            SendKeys.SendWait("{Tab}");
+                            Thread.Sleep(200);
+                            SendKeys.SendWait("{Tab}");
+                            Thread.Sleep(200);
+                            SendKeys.SendWait("{DOWN}");
+                            Thread.Sleep(200);
+                            SendKeys.SendWait("{Tab}");
+                            Thread.Sleep(200);
+                            SendKeys.SendWait("{Tab}");
+                            Thread.Sleep(200);
+                            SendKeys.SendWait("{ENTER}");
+                            Thread.Sleep(500);
+                            SendKeys.SendWait("{DELETE}");
+                            Thread.Sleep(200);
+                            SendKeys.SendWait("^{v}");
+                            Thread.Sleep(500);
+                            SendKeys.SendWait("{Tab}");
+                            Thread.Sleep(200);
+                            SendKeys.SendWait("{Tab}");
+                            Thread.Sleep(500);
+                            SendKeys.SendWait("{ENTER}");
+                            Thread.Sleep(500);
+                            SendKeys.SendWait("{Tab}");
+                            Thread.Sleep(200);
+                            SendKeys.SendWait("{ENTER}");
+                            break;
+                        }
+                    }
+                    Thread.Sleep(1000);
+                }
+
+                while (!process.HasExited)
+                {
+                    Thread.Sleep(1000);
+                }
+                if (File.Exists(serverbase + "\\libraries\\net\\minecraftforge\\forge\\" + forgeVersion + "\\win_args.txt"))
+                {
+                    servercore = "";
+                    serverargs = "@libraries/net/minecraftforge/forge/" + forgeVersion + "/win_args.txt %*";
+                    return true;
+                }
+                else
+                {
+                    DirectoryInfo directoryInfo = new DirectoryInfo(serverbase);
+                    FileInfo[] fileInfo = directoryInfo.GetFiles();
+                    foreach (FileInfo file in fileInfo)
+                    {
+                        if (file.Name.IndexOf("forge-" + forgeVersion) + 1 != 0)
+                        {
+                            servercore = file.FullName.Replace(serverbase + @"\", "");
+                            return true;
+                        }
+                        else
+                        {
+                            DialogShow.ShowMsg(this, "下载失败,请多次尝试或使用代理再试！", "错误");
+                            servercore = "";
+                            return false;
+                        }
+                    }
+                }
+                return false;
+            }
+            catch
+            {
+                DialogShow.ShowMsg(this, "下载失败！", "错误");
+                return false;
+            }
+        }
+        #endregion
+
+        private void CustomModeBtn_Click(object sender, RoutedEventArgs e)
+        {
+            MainGrid.Visibility = Visibility.Hidden;
+            tabCtrl.Visibility = Visibility.Visible;
+        }
+
+        private void FastModeReturnBtn_Click(object sender, RoutedEventArgs e)
+        {
+            FinallyCoreCombo.Items.Clear();
+            downloadCoreUrl.Clear();
+            InstallGrid.Visibility = Visibility.Hidden;
+            FastModeGrid.Visibility = Visibility.Visible;
+            
         }
     }
 }

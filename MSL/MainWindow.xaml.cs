@@ -22,6 +22,7 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Windows.Input;
 using System.Resources;
+using System.Net.NetworkInformation;
 
 namespace MSL
 {
@@ -75,12 +76,25 @@ namespace MSL
             {
                 WebClient MyWebClient = new WebClient();
                 MyWebClient.Credentials = CredentialCache.DefaultCredentials;
-                byte[] pageData = MyWebClient.DownloadData("https://msl2.oss-cn-hangzhou.aliyuncs.com/");
-                serverLink = Encoding.UTF8.GetString(pageData);
+                byte[] pageData = MyWebClient.DownloadData("https://waheal.oss-cn-hangzhou.aliyuncs.com/");
+                //serverLink = Encoding.UTF8.GetString(pageData);
+                string serverAddr = Encoding.UTF8.GetString(pageData);
+                Ping pingSender = new Ping();
+                PingReply reply = pingSender.Send(serverAddr, 2000); // 替换成您要 ping 的 IP 地址
+                if (reply.Status == IPStatus.Success)
+                {
+                    serverLink = "http://"+serverAddr;
+                }
+                else
+                {
+                    serverLink = "https://msl.waheal.top";
+                    Growl.Info("MSL主服务器连接超时，已切换至备用服务器！");
+                }
             }
             catch
             {
-                serverLink = null;
+                serverLink = "https://msl.waheal.top";
+                Growl.Info("出现错误，已切换至备用服务器！");
             }
 
             //MessageBox.Show("GetLinkSuccess");
@@ -429,13 +443,9 @@ namespace MSL
                     Growl.Success("您使用的开服器已是最新版本！");
                 }
             }
-            catch
+            catch(Exception ex)
             {
-                if (serverLink != null)
-                {
-                    serverLink = "http://msl.waheal.top";
-                    Growl.Error("连接开服器服务器失败，也许服务器被攻击，已切换至备用线路！");
-                }
+                MessageBox.Show("Err" + ex.Message);
             }
 
             //MessageBox.Show("CheckUpdateSuccess");

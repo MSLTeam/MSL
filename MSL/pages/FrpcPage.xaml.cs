@@ -7,6 +7,7 @@ using System.Diagnostics;
 using System.IO;
 using System.Net;
 using System.Net.NetworkInformation;
+using System.Net.Sockets;
 using System.Text;
 using System.Text.RegularExpressions;
 using System.Threading;
@@ -466,7 +467,7 @@ namespace MSL.pages
                     }
                 });
                 Ping pingSender = new Ping();
-                PingReply reply = pingSender.Send(serverAddr, serverPort); // 替换成您要 ping 的 IP 地址
+                PingReply reply = pingSender.Send(serverAddr, 2000); // 替换成您要 ping 的 IP 地址
                 if (reply.Status == IPStatus.Success)
                 {
                     // 节点在线，可以获取延迟等信息

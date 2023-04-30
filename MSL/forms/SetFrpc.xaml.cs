@@ -96,7 +96,7 @@ namespace MSL
                     list2.Add(a102);
 
                     Ping pingSender = new Ping();
-                    PingReply reply = pingSender.Send(a101, int.Parse(a102)); // 替换成您要 ping 的 IP 地址
+                    PingReply reply = pingSender.Send(a101, 2000); // 替换成您要 ping 的 IP 地址
                     this.Dispatcher.Invoke(DispatcherPriority.Normal, (ThreadStart)delegate ()
                     {
                         if (reply.Status == IPStatus.Success)
@@ -152,7 +152,7 @@ namespace MSL
                     list2.Add(a102);
 
                     Ping pingSender = new Ping();
-                    PingReply reply = pingSender.Send(a101, int.Parse(a102)); // 替换成您要 ping 的 IP 地址
+                    PingReply reply = pingSender.Send(a101, 2000); // 替换成您要 ping 的 IP 地址
                     this.Dispatcher.Invoke(DispatcherPriority.Normal, (ThreadStart)delegate ()
                     {
                         if (reply.Status == IPStatus.Success)

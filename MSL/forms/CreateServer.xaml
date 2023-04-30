@@ -21,7 +21,86 @@
             </Button>
         </Grid>
         <Grid Margin="0,40,0,0">
-            <TabControl x:Name="tabCtrl" Visibility="Visible" Background="{x:Null}">
+            <Grid x:Name="MainGrid" Visibility="Visible">
+                <Label Content="将通过几个步骤为您创建服务器……&#xA;请您选择一个创建模式以继续（第一次使用或新手服主请使用快速模式）" FontSize="22" Background="{x:Null}" BorderBrush="{x:Null}" VerticalAlignment="Top" Height="100" HorizontalAlignment="Left" FontWeight="Bold"/>
+                <Button x:Name="FastModeBtn" Content="快速模式（适合小白）" FontSize="18" hc:BorderElement.CornerRadius="30" Style="{StaticResource ButtonPrimary}" Margin="0,0,300,0" Click="FastModeBtn_Click" Width="250" Height="80"/>
+                <Button x:Name="CustomModeBtn" Content="自定义模式（适合老手）" FontSize="18" hc:BorderElement.CornerRadius="30" Margin="300,0,0,0" Width="250" Height="80" Click="CustomModeBtn_Click"/>
+                <Image Source="/icon.ico" VerticalAlignment="Bottom" HorizontalAlignment="Right" Width="120"/>
+
+            </Grid>
+            <Grid x:Name="FastModeGrid" Visibility="Hidden">
+                <ScrollViewer Margin="0,0,0,65">
+                    <StackPanel>
+                        <Label Content="将通过几个步骤为您创建服务器……" FontSize="18" Background="{x:Null}" BorderBrush="{x:Null}" VerticalAlignment="Top" Height="40" HorizontalAlignment="Left" FontWeight="Bold"/>
+                        <Border Style="{StaticResource MagicBorder}" Padding="5" Margin="10,0,10,0">
+                            <Grid>
+                                <Label Content="服务器名称" Style="{StaticResource BorderTitle}"/>
+                                <Label Content="服务器名称（将在服务器列表中显示该名称）：" HorizontalAlignment="Left" Margin="10,35,0,0" VerticalAlignment="Top" FontSize="16" BorderBrush="{x:Null}" Background="{x:Null}" Height="35"/>
+                                <TextBox x:Name="ServerNameBox" HorizontalAlignment="Left" Margin="360,35,0,0" TextWrapping="Wrap" Text="MyServer" VerticalAlignment="Top" Width="330" Height="35"/>
+                            </Grid>
+                        </Border>
+                        <Border Style="{StaticResource MagicBorder}" Padding="5" >
+                            <Grid>
+                                <Label Content="服务器类型" Style="{StaticResource BorderTitle}"/>
+                                <Label Content="服务器类型（选择你想要开的服务器类型）：" HorizontalAlignment="Left" Margin="10,35,0,0" VerticalAlignment="Top" FontSize="16" BorderBrush="{x:Null}" Background="{x:Null}" Height="35"/>
+                                <ComboBox x:Name="ServerCoreCombo" HorizontalAlignment="Left" Margin="360,35,0,0" Width="330" VerticalAlignment="Top" Height="35" SelectionChanged="ServerCoreCombo_SelectionChanged">
+                                    <ComboBoxItem Content="插件服务器"/>
+                                    <ComboBoxItem Content="模组服务器（Forge）"/>
+                                    <ComboBoxItem Content="模组服务器（Fabric）"/>
+                                    <ComboBoxItem Content="插件模组二合一服务器（Forge）"/>
+                                    <ComboBoxItem Content="原版服务器"/>
+                                    <ComboBoxItem Content="基岩版服务器"/>
+                                    <ComboBoxItem Content="代理服务器"/>
+                                </ComboBox>
+                                <TextBlock x:Name="ServerCoreDescrip" Text="请选择一个服务器类型" Foreground="Red" VerticalAlignment="Top" HorizontalAlignment="Left" Margin="20,70,30,0" TextWrapping="Wrap"/>
+                            </Grid>
+                        </Border>
+                        <Border Style="{StaticResource MagicBorder}" Padding="5"  Margin="10,10,10,10">
+                            <Grid>
+                                <Label Content="服务器版本" Style="{StaticResource BorderTitle}"/>
+                                <Label Content="服务器版本（选择你想要开的服务器版本）：" HorizontalAlignment="Left" Margin="10,35,0,0" VerticalAlignment="Top" FontSize="16" BorderBrush="{x:Null}" Background="{x:Null}" Height="35"/>
+                                <ComboBox x:Name="ServerVersionCombo" HorizontalAlignment="Left" Margin="360,35,0,0" Width="330" VerticalAlignment="Top" Height="35"/>
+                            </Grid>
+                        </Border>
+                    </StackPanel>
+                </ScrollViewer>
+                <Grid VerticalAlignment="Bottom" Margin="0,0,0,25">
+                    <Button Content="取消" hc:BorderElement.CornerRadius="20" Width="150" Click="skip_Click" Height="45" FontSize="22" Margin="0,0,300,0"/>
+                    <Button x:Name="FastModeNextBtn" Content="下一步" Style="{StaticResource ButtonPrimary}" hc:BorderElement.CornerRadius="20" Width="150" Click="FastModeNextBtn_Click" Height="45" FontSize="22" Margin="200,0,0,0"/>
+                </Grid>
+            </Grid>
+            <Grid x:Name="InstallGrid" Visibility="Hidden">
+                <StackPanel>
+                    <Label Content="根据您的选择，MSL为您选出了以下版本的Java和服务端核心&#xA;请点击确定按钮以安装……" FontSize="18" Background="{x:Null}" BorderBrush="{x:Null}" VerticalAlignment="Top" Height="60" HorizontalAlignment="Left" FontWeight="Bold"/>
+                    <Border Style="{StaticResource MagicBorder}" Padding="5"  Margin="10,10,10,10">
+                        <Grid>
+                            <Label Content="Java版本" Style="{StaticResource BorderTitle}"/>
+                            <Label Content="Java版本（此版本为MSL评估的最优版本，&#xA;如果您后续要加载的插件或模组&#xA;有要求Java版本的话，请在此处更改）：" HorizontalAlignment="Left" Margin="10,35,0,0" VerticalAlignment="Top" FontSize="16" BorderBrush="{x:Null}" Background="{x:Null}" Height="90"/>
+                            <ComboBox x:Name="FinallyJavaCombo" HorizontalAlignment="Left" Margin="360,50,0,0" Width="330" VerticalAlignment="Top" Height="40">
+                                <ComboBoxItem Content="Java8"/>
+                                <ComboBoxItem Content="Java11"/>
+                                <ComboBoxItem Content="Java16"/>
+                                <ComboBoxItem Content="Java17"/>
+                                <ComboBoxItem Content="Java18"/>
+                                <ComboBoxItem Content="Java19"/>
+                            </ComboBox>
+                            <TextBlock x:Name="FinallyJavaDescrip" Foreground="Red" HorizontalAlignment="Left" VerticalAlignment="Top" Margin="330,100,0,0"/>
+                        </Grid>
+                    </Border>
+                    <Border Style="{StaticResource MagicBorder}" Padding="5"  Margin="10,10,10,10">
+                        <Grid>
+                            <Label Content="服务端核心" Style="{StaticResource BorderTitle}"/>
+                            <Label Content="服务端核心（若不会选择，保持默认即可）：" HorizontalAlignment="Left" Margin="10,35,0,0" VerticalAlignment="Top" FontSize="16" BorderBrush="{x:Null}" Background="{x:Null}" Height="35"/>
+                            <ComboBox x:Name="FinallyCoreCombo" HorizontalAlignment="Left" Margin="360,35,0,0" Width="330" VerticalAlignment="Top" Height="35"/>
+                        </Grid>
+                    </Border>
+                </StackPanel>
+                <Grid VerticalAlignment="Bottom" Margin="0,0,0,25">
+                    <Button x:Name="FastModeReturnBtn" Content="上一步" hc:BorderElement.CornerRadius="20" Width="150" Click="FastModeReturnBtn_Click" Height="45" FontSize="22" Margin="0,0,300,0"/>
+                    <Button x:Name="FastModeInstallBtn" Content="确定" Style="{StaticResource ButtonPrimary}" hc:BorderElement.CornerRadius="20" Width="150" Click="FastModeInstallBtn_Click" Height="45" FontSize="22" Margin="200,0,0,0"/>
+                </Grid>
+            </Grid>
+            <TabControl x:Name="tabCtrl" Visibility="Hidden" Background="{x:Null}">
                 <TabItem x:Name="welcome" Header="基本信息" FontSize="14" Background="{x:Null}">
                     <Grid x:Name="welcome1">
                         <Label Content="将通过几个步骤为您创建服务器……" FontSize="18" Background="{x:Null}" BorderBrush="{x:Null}" VerticalAlignment="Top" Height="40" HorizontalAlignment="Left" FontWeight="Bold"/>
@@ -79,7 +158,7 @@
                             <Label x:Name="outlog" Content="" HorizontalAlignment="Left" Margin="20,245,0,0" VerticalAlignment="Top" FontSize="14" Foreground="Red" Background="{x:Null}" BorderBrush="{x:Null}"/>
                             <Button x:Name="return5" Content="上一步" hc:BorderElement.CornerRadius="15" Margin="180,270,0,0" VerticalAlignment="Top" Width="90" Click="return5_Click" FontWeight="Normal" Height="40" FontSize="14" HorizontalAlignment="Left"/>
                             <Button x:Name="next3" Content="下一步" Style="{StaticResource ButtonPrimary}" hc:BorderElement.CornerRadius="15" Margin="0,270,0,0" VerticalAlignment="Top" Width="94" Click="next3_Click" Height="40" FontSize="14"/>
-                            <Label x:Name="jvhelp" Content="帮助：不同版本该如何选择Java？ &#xA;1.8之前：可以使用Java7-Java8&#xA;1.8-1.12.2 可以使用Java8-Java11 &#xA;1.13-1.17.1 可以使用Java11-Java16 &#xA;1.18-最新版 可以使用Java18-Java19" HorizontalAlignment="Right" Height="110" VerticalAlignment="Bottom" FontSize="15" Foreground="Red" BorderBrush="Red" Margin="0,0,10,10"/>
+                            <Label x:Name="jvhelp" Content="帮助：不同版本该如何选择Java？ &#xA;1.8之前：可以使用Java7-Java8&#xA;1.8-1.12.2 可以使用Java8-Java11 &#xA;1.13-1.17.1 可以使用Java11-Java17 &#xA;1.18-最新版 可以使用Java18-Java19" HorizontalAlignment="Right" Height="110" VerticalAlignment="Bottom" FontSize="15" Foreground="Red" BorderBrush="Red" Margin="0,0,10,10"/>
                         </Grid>
                     </Grid>
                 </TabItem>

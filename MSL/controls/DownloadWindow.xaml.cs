@@ -96,6 +96,7 @@ namespace MSL
                 this.Dispatcher.Invoke(DispatcherPriority.Normal, (ThreadStart)delegate ()
                 {
                     infolabel.Text = "下载完成！";
+                    pbar.Value = 100;
                 });
             }
             Thread.Sleep(1000);
@@ -108,13 +109,24 @@ namespace MSL
     })
     );
         }
+
+        int counter = 0;
         private void OnDownloadProgressChanged(object sender, Downloader.DownloadProgressChangedEventArgs e)
         {
-            this.Dispatcher.Invoke(DispatcherPriority.Normal, (ThreadStart)delegate ()
+            if (counter <=1000)
             {
-                infolabel.Text = "已下载：" + e.ReceivedBytesSize / 1024 / 1024 + "MB/" + e.TotalBytesToReceive / 1024 / 1024 + "MB" + " 进度：" + e.ProgressPercentage.ToString("f2") + "%" + " 速度：" + (e.BytesPerSecondSpeed / 1024 / 1024).ToString("f2") + "MB/s";
-                pbar.Value = e.ProgressPercentage;
-            });
+                counter++;
+            }
+            else
+            {
+                counter = 0;
+                this.Dispatcher.Invoke(DispatcherPriority.Normal, (ThreadStart)delegate ()
+                {
+                    infolabel.Text = "已下载：" + e.ReceivedBytesSize / 1024 / 1024 + "MB/" + e.TotalBytesToReceive / 1024 / 1024 + "MB" + " 进度：" + e.ProgressPercentage.ToString("f2") + "%" + " 速度：" + (e.BytesPerSecondSpeed / 1024 / 1024).ToString("f2") + "MB/s";
+                    pbar.Value = e.ProgressPercentage;
+                });
+            }
+            
             //Thread.Sleep(1000);
         }
 
