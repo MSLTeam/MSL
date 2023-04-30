@@ -20,9 +20,7 @@ namespace MSL.controls
             }
             catch
             {
-                MessageDialog messageDialog = new MessageDialog(window, dialogText, dialogTitle, primaryBtnVisible, closeText, primaryText);
-                messageDialog.Owner = window;
-                messageDialog.ShowDialog();
+                return;
             }
         }
         public static void ShowDownload(System.Windows.Window window, string downloadurl, string downloadPath, string filename,string downloadinfo)
@@ -39,9 +37,7 @@ namespace MSL.controls
             }
             catch
             {
-                DownloadWindow download = new DownloadWindow(downloadurl, downloadPath, filename, downloadinfo);
-                download.Owner = window;
-                download.ShowDialog();
+                return;
             }
             
         }
