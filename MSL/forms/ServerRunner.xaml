@@ -219,75 +219,80 @@
                                 <Label x:Name="changeServerPropertiesLab" Style="{StaticResource BorderTitle}" Content="更改服务器配置信息"/>
                                 <Grid x:Name="changeServerProperties">
                                     <Label Content="正版验证：" Margin="10,5,0,0" Background="{x:Null}" BorderBrush="{x:Null}" HorizontalAlignment="Left" VerticalAlignment="Top"/>
-                                    <TextBox x:Name="onlineModeText" Margin="97,4,0,0" TextWrapping="Wrap" Text="" Width="120" HorizontalAlignment="Left" VerticalAlignment="Top"/>
-                                    <TextBlock Margin="237,12,0,0" TextWrapping="Wrap" Text="注：正版验证（online-mode），若开启（true），盗版/离线用户将无法进入该服务器，关闭请输入false" VerticalAlignment="Top"/>
-
+                                    <TextBox x:Name="onlineModeText" Margin="100,4,630,0" TextWrapping="Wrap" Text="" VerticalAlignment="Top"/>
+                                    
                                     <Label Content="游戏模式：" Margin="10,40,0,0" Background="{x:Null}" BorderBrush="{x:Null}" HorizontalAlignment="Left" VerticalAlignment="Top"/>
-                                    <TextBox x:Name="gameModeText" Margin="97,39,0,0" TextWrapping="Wrap" Text="" Width="120" HorizontalAlignment="Left" VerticalAlignment="Top"/>
-                                    <TextBlock Margin="237,47,0,0" TextWrapping="Wrap" Text="注：游戏模式（gamemode），不同版本改法不一致，具体可参照页面下方表格" VerticalAlignment="Top"/>
-
+                                    <TextBox x:Name="gameModeText" Margin="100,39,630,0" TextWrapping="Wrap" Text="" VerticalAlignment="Top"/>
+                                    
                                     <Label Content="游戏难度：" Margin="10,75,0,0" Background="{x:Null}" BorderBrush="{x:Null}" HorizontalAlignment="Left" VerticalAlignment="Top"/>
-                                    <TextBox x:Name="gameDifficultyText" Margin="97,74,0,0" TextWrapping="Wrap" Text="" Width="120" HorizontalAlignment="Left" VerticalAlignment="Top"/>
-                                    <TextBlock Margin="237,82,0,0" TextWrapping="Wrap" Text="注：游戏难度（difficulty），不同版本改法不一致，具体可参照页面下方表格" VerticalAlignment="Top"/>
-
+                                    <TextBox x:Name="gameDifficultyText" Margin="100,74,630,0" TextWrapping="Wrap" Text="" VerticalAlignment="Top"/>
+                                    
                                     <Label Content="游戏人数：" Margin="10,110,0,0" Background="{x:Null}" BorderBrush="{x:Null}" HorizontalAlignment="Left" VerticalAlignment="Top"/>
-                                    <TextBox x:Name="gamePlayerText" Margin="97,109,0,0" TextWrapping="Wrap" Text="" Width="120" HorizontalAlignment="Left" VerticalAlignment="Top"/>
-                                    <TextBlock Margin="237,117,0,0" TextWrapping="Wrap" Text="注：游戏人数（max-player），在此输入数字来改变服务器最大人数" VerticalAlignment="Top"/>
-
+                                    <TextBox x:Name="gamePlayerText" Margin="100,109,630,0" TextWrapping="Wrap" Text="" VerticalAlignment="Top"/>
+                                    
                                     <Label Content="服务器端口：" Margin="10,145,0,0" Background="{x:Null}" BorderBrush="{x:Null}" HorizontalAlignment="Left" VerticalAlignment="Top"/>
-                                    <TextBox x:Name="gamePortText" Margin="97,144,0,0" TextWrapping="Wrap" Text="" Width="120" HorizontalAlignment="Left" VerticalAlignment="Top"/>
-                                    <TextBlock Margin="237,152,0,0" TextWrapping="Wrap" Text="注：服务器端口（server-port），非必要无需更改" VerticalAlignment="Top"/>
-
+                                    <TextBox x:Name="gamePortText" Margin="100,144,630,0" TextWrapping="Wrap" Text="" VerticalAlignment="Top"/>
+                                    
                                     <Label Content="命令方块：" Margin="10,180,0,0" Background="{x:Null}" BorderBrush="{x:Null}" HorizontalAlignment="Left" VerticalAlignment="Top"/>
-                                    <TextBox x:Name="commandBlockText" Margin="97,179,0,0" TextWrapping="Wrap" Text="" Width="120" HorizontalAlignment="Left" VerticalAlignment="Top"/>
-                                    <TextBlock Margin="237,187,0,0" TextWrapping="Wrap" Text="注：启用命令方块（enable-command-block），若开启(true)，服务器可使用命令方块，关闭请输入false" VerticalAlignment="Top"/>
-
+                                    <TextBox x:Name="commandBlockText" Margin="100,179,630,0" TextWrapping="Wrap" Text="" VerticalAlignment="Top"/>
+                                    
                                     <Label Content="视距：" Margin="10,215,0,0" Width="82" Background="{x:Null}" BorderBrush="{x:Null}" HorizontalAlignment="Left" VerticalAlignment="Top"/>
-                                    <TextBox x:Name="viewDistanceText" Margin="97,214,0,0" TextWrapping="Wrap" Text="" Width="120" HorizontalAlignment="Left" VerticalAlignment="Top"/>
-                                    <TextBlock Margin="237,222,0,0" TextWrapping="Wrap" Text="注：视距（view-distance），和游戏内的渲染距离意思相近，设置过大会影响服务器性能" VerticalAlignment="Top"/>
-
+                                    <TextBox x:Name="viewDistanceText" Margin="100,214,630,0" TextWrapping="Wrap" Text="" VerticalAlignment="Top"/>
+                                    
                                     <Label Content="PVP：" Margin="10,250,0,0" Width="82" Background="{x:Null}" BorderBrush="{x:Null}" HorizontalAlignment="Left" VerticalAlignment="Top"/>
-                                    <TextBox x:Name="gamePvpText" Margin="97,249,0,0" TextWrapping="Wrap" Text="" Width="120" HorizontalAlignment="Left" VerticalAlignment="Top"/>
-                                    <TextBlock Margin="237,257,0,0" TextWrapping="Wrap" Text="注：PVP（pvp），若开启（true），玩家间可互相伤害，关闭请输入false" VerticalAlignment="Top"/>
-
+                                    <TextBox x:Name="gamePvpText" Margin="100,249,630,0" TextWrapping="Wrap" Text="" VerticalAlignment="Top"/>
+                                    
                                     <Label Content="主世界地图：" Margin="10,285,0,0" Width="82" Background="{x:Null}" BorderBrush="{x:Null}" HorizontalAlignment="Left" VerticalAlignment="Top"/>
-                                    <TextBox x:Name="gameWorldText" Margin="97,284,0,0" TextWrapping="Wrap" Text="" Width="120" HorizontalAlignment="Left" VerticalAlignment="Top"/>
-                                    <TextBlock Margin="237,292,0,0" TextWrapping="Wrap" Text="注：主世界地图名称（level-name），默认为world，非必要无需更改" VerticalAlignment="Top"/>
-                                    <Button x:Name="savaServerConfig" Style="{StaticResource ButtonPrimary}" Content="保存" Height="35" Width="140" Click="saveServerConfig_Click" FontSize="16" HorizontalAlignment="Left" Margin="700,272,0,0" VerticalAlignment="Top"/>
+                                    <TextBox x:Name="gameWorldText" Margin="100,284,630,0" TextWrapping="Wrap" Text="" VerticalAlignment="Top"/>
+                                    <Grid HorizontalAlignment="Right">
+                                        <TextBlock Margin="237,12,0,0" TextWrapping="Wrap" Text="注：正版验证（online-mode），若开启（true），盗版/离线用户将无法进入该服务器，关闭请输入false" VerticalAlignment="Top"/>
+                                        <TextBlock Margin="237,47,0,0" TextWrapping="Wrap" Text="注：游戏模式（gamemode），不同版本改法不一致，具体可参照页面下方表格" VerticalAlignment="Top"/>
+                                        <TextBlock Margin="237,82,0,0" TextWrapping="Wrap" Text="注：游戏难度（difficulty），不同版本改法不一致，具体可参照页面下方表格" VerticalAlignment="Top"/>
+                                        <TextBlock Margin="237,117,0,0" TextWrapping="Wrap" Text="注：游戏人数（max-player），在此输入数字来改变服务器最大人数" VerticalAlignment="Top"/>
+                                        <TextBlock Margin="237,152,0,0" TextWrapping="Wrap" Text="注：服务器端口（server-port），非必要无需更改" VerticalAlignment="Top"/>
+                                        <TextBlock Margin="237,187,0,0" TextWrapping="Wrap" Text="注：启用命令方块（enable-command-block），若开启(true)，服务器可使用命令方块，关闭请输入false" VerticalAlignment="Top"/>
+                                        <TextBlock Margin="237,222,0,0" TextWrapping="Wrap" Text="注：视距（view-distance），和游戏内的渲染距离意思相近，设置过大会影响服务器性能" VerticalAlignment="Top"/>
+                                        <TextBlock Margin="237,257,0,0" TextWrapping="Wrap" Text="注：PVP（pvp），若开启（true），玩家间可互相伤害，关闭请输入false" VerticalAlignment="Top"/>
+                                        <TextBlock Margin="237,292,0,0" TextWrapping="Wrap" Text="注：主世界地图名称（level-name），默认为world，非必要无需更改" VerticalAlignment="Top"/>
+                                        <Button x:Name="savaServerConfig" Style="{StaticResource ButtonPrimary}" Content="保存" Height="35" Width="140" Click="saveServerConfig_Click" FontSize="16" HorizontalAlignment="Left" Margin="700,272,0,0" VerticalAlignment="Top"/>
+                                    </Grid>
+                                    
                                 </Grid>
                                 <Grid x:Name="changeServerProperties_Add">
-                                    <Button x:Name="changeServerIcon" Content="更换服务器图标" Width="200" Height="35" FontSize="14" Canvas.Left="10" Canvas.Top="334" Click="changeServerIcon_Click" VerticalAlignment="Top" HorizontalAlignment="Left" Margin="10,10,0,0"/>
-                                    <Button x:Name="changeWorldMap" Content="更换主世界地图" Width="200" Click="changeWorldMap_Click" Height="35" FontSize="14" Canvas.Left="10" Canvas.Top="374" VerticalAlignment="Top" HorizontalAlignment="Left" Margin="10,50,0,0"/>
-                                    <Button x:Name="setServerconfig" Content="修改服务器配置文件" Width="200" Height="32" FontSize="14" Click="setServerconfig_Click" Canvas.Left="10" Canvas.Top="414" VerticalAlignment="Top" HorizontalAlignment="Left" Margin="10,90,0,0"/>
-                                    <Rectangle RadiusX="10" RadiusY="10" Height="112" Width="618" Canvas.Left="222" Canvas.Top="337" Stroke="{DynamicResource BorderBrush}" Fill="{DynamicResource BorderBackground}" HorizontalAlignment="Left" VerticalAlignment="Top" Margin="220,10,0,0"/>
-                                    <TextBlock Text="游戏模式（请根据配置文件的内容来进行选择）" Canvas.Left="259" Canvas.Top="344" HorizontalAlignment="Left" VerticalAlignment="Top" Margin="247,15,0,0"/>
-                                    <TextBlock Text="游戏难度（请根据配置文件的内容来进行选择）" Canvas.Left="560" Canvas.Top="344" HorizontalAlignment="Left" VerticalAlignment="Top" Margin="536,15,0,0"/>
-                                    <Rectangle Stroke="{DynamicResource BorderBrush}" Width="1" RenderTransformOrigin="0.5,0.5" Canvas.Left="528" Canvas.Top="337" Margin="530,10,325,21" HorizontalAlignment="Left" Height="112" VerticalAlignment="Top"/>
-                                    <Rectangle Height="1" Stroke="{DynamicResource BorderBrush}" Canvas.Left="234" Canvas.Top="364" Margin="220,35,18,107" Width="618" HorizontalAlignment="Left" VerticalAlignment="Top"/>
-                                    <TextBlock TextWrapping="Wrap" Text="生存" Margin="250,40,0,0" HorizontalAlignment="Left" VerticalAlignment="Top"/>
-                                    <TextBlock TextWrapping="Wrap" Text="创造" Margin="320,40,0,0" HorizontalAlignment="Left" VerticalAlignment="Top"/>
-                                    <TextBlock TextWrapping="Wrap" Text="冒险" Margin="395,40,0,0" HorizontalAlignment="Left" VerticalAlignment="Top"/>
-                                    <TextBlock TextWrapping="Wrap" Text="旁观" Margin="470,40,0,0" HorizontalAlignment="Left" VerticalAlignment="Top"/>
-                                    <TextBlock TextWrapping="Wrap" Text="和平" Margin="550,40,0,0" HorizontalAlignment="Left" VerticalAlignment="Top"/>
-                                    <TextBlock TextWrapping="Wrap" Text="简单" Margin="620,40,0,0" HorizontalAlignment="Left" VerticalAlignment="Top"/>
-                                    <TextBlock TextWrapping="Wrap" Text="普通" Margin="690,40,0,0" HorizontalAlignment="Left" VerticalAlignment="Top"/>
-                                    <TextBlock TextWrapping="Wrap" Text="困难" Margin="760,40,0,0" HorizontalAlignment="Left" VerticalAlignment="Top"/>
-                                    <TextBlock TextWrapping="Wrap" Text="Survival" Margin="250,70,0,0" HorizontalAlignment="Left" VerticalAlignment="Top"/>
-                                    <TextBlock TextWrapping="Wrap" Text="Creative" Margin="320,70,0,0" HorizontalAlignment="Left" VerticalAlignment="Top"/>
-                                    <TextBlock TextWrapping="Wrap" Text="Adventure" Margin="395,70,0,0" HorizontalAlignment="Left" VerticalAlignment="Top"/>
-                                    <TextBlock TextWrapping="Wrap" Text="Spectator" Margin="470,70,0,0" HorizontalAlignment="Left" VerticalAlignment="Top"/>
-                                    <TextBlock TextWrapping="Wrap" Text="Peaceful" Margin="550,70,0,0" HorizontalAlignment="Left" VerticalAlignment="Top"/>
-                                    <TextBlock TextWrapping="Wrap" Text="Easy" Margin="620,70,0,0" HorizontalAlignment="Left" VerticalAlignment="Top"/>
-                                    <TextBlock TextWrapping="Wrap" Text="Normal" Margin="690,70,0,0" HorizontalAlignment="Left" VerticalAlignment="Top"/>
-                                    <TextBlock TextWrapping="Wrap" Text="Hard" Margin="760,70,0,0" HorizontalAlignment="Left" VerticalAlignment="Top"/>
-                                    <TextBlock Margin="250,100,0,0" TextWrapping="Wrap" Text="0" HorizontalAlignment="Left" VerticalAlignment="Top"/>
-                                    <TextBlock Margin="320,100,0,0" TextWrapping="Wrap" Text="1" HorizontalAlignment="Left" VerticalAlignment="Top"/>
-                                    <TextBlock Margin="395,100,0,0" TextWrapping="Wrap" Text="2" HorizontalAlignment="Left" VerticalAlignment="Top"/>
-                                    <TextBlock Margin="470,100,0,0" TextWrapping="Wrap" Text="3" HorizontalAlignment="Left" VerticalAlignment="Top"/>
-                                    <TextBlock Margin="550,100,0,0" TextWrapping="Wrap" Text="0" HorizontalAlignment="Left" VerticalAlignment="Top"/>
-                                    <TextBlock Margin="620,100,0,0" TextWrapping="Wrap" Text="1" HorizontalAlignment="Left" VerticalAlignment="Top"/>
-                                    <TextBlock Margin="690,100,0,0" TextWrapping="Wrap" Text="2" HorizontalAlignment="Left" VerticalAlignment="Top"/>
-                                    <TextBlock Margin="760,100,0,0" TextWrapping="Wrap" Text="3" HorizontalAlignment="Left" VerticalAlignment="Top"/>
+                                    <Button x:Name="changeServerIcon" Content="更换服务器图标" Height="35" FontSize="14" Canvas.Left="10" Canvas.Top="334" Click="changeServerIcon_Click" VerticalAlignment="Top" HorizontalAlignment="Stretch" Margin="10,10,650,0"/>
+                                    <Button x:Name="changeWorldMap" Content="更换主世界地图" Click="changeWorldMap_Click" Height="35" FontSize="14" Canvas.Left="10" Canvas.Top="374" VerticalAlignment="Top" HorizontalAlignment="Stretch" Margin="10,50,650,0"/>
+                                    <Button x:Name="setServerconfig" Content="修改服务器配置文件" Height="32" FontSize="14" Click="setServerconfig_Click" Canvas.Left="10" Canvas.Top="414" VerticalAlignment="Top" HorizontalAlignment="Stretch" Margin="10,90,650,0"/>
+                                    <Grid HorizontalAlignment="Right">
+                                        <Rectangle RadiusX="10" RadiusY="10" Height="112" Width="618" Canvas.Left="222" Canvas.Top="337" Stroke="{DynamicResource BorderBrush}" Fill="{DynamicResource BorderBackground}" HorizontalAlignment="Left" VerticalAlignment="Top" Margin="220,10,0,0"/>
+                                        <TextBlock Text="游戏模式（请根据配置文件的内容来进行选择）" Canvas.Left="259" Canvas.Top="344" HorizontalAlignment="Left" VerticalAlignment="Top" Margin="247,15,0,0"/>
+                                        <TextBlock Text="游戏难度（请根据配置文件的内容来进行选择）" Canvas.Left="560" Canvas.Top="344" HorizontalAlignment="Left" VerticalAlignment="Top" Margin="536,15,0,0"/>
+                                        <Rectangle Stroke="{DynamicResource BorderBrush}" Width="1" RenderTransformOrigin="0.5,0.5" Canvas.Left="528" Canvas.Top="337" Margin="530,10,325,21" HorizontalAlignment="Left" Height="112" VerticalAlignment="Top"/>
+                                        <Rectangle Height="1" Stroke="{DynamicResource BorderBrush}" Canvas.Left="234" Canvas.Top="364" Margin="220,35,18,107" Width="618" HorizontalAlignment="Left" VerticalAlignment="Top"/>
+                                        <TextBlock TextWrapping="Wrap" Text="生存" Margin="250,40,0,0" HorizontalAlignment="Left" VerticalAlignment="Top"/>
+                                        <TextBlock TextWrapping="Wrap" Text="创造" Margin="320,40,0,0" HorizontalAlignment="Left" VerticalAlignment="Top"/>
+                                        <TextBlock TextWrapping="Wrap" Text="冒险" Margin="395,40,0,0" HorizontalAlignment="Left" VerticalAlignment="Top"/>
+                                        <TextBlock TextWrapping="Wrap" Text="旁观" Margin="470,40,0,0" HorizontalAlignment="Left" VerticalAlignment="Top"/>
+                                        <TextBlock TextWrapping="Wrap" Text="和平" Margin="550,40,0,0" HorizontalAlignment="Left" VerticalAlignment="Top"/>
+                                        <TextBlock TextWrapping="Wrap" Text="简单" Margin="620,40,0,0" HorizontalAlignment="Left" VerticalAlignment="Top"/>
+                                        <TextBlock TextWrapping="Wrap" Text="普通" Margin="690,40,0,0" HorizontalAlignment="Left" VerticalAlignment="Top"/>
+                                        <TextBlock TextWrapping="Wrap" Text="困难" Margin="760,40,0,0" HorizontalAlignment="Left" VerticalAlignment="Top"/>
+                                        <TextBlock TextWrapping="Wrap" Text="Survival" Margin="250,70,0,0" HorizontalAlignment="Left" VerticalAlignment="Top"/>
+                                        <TextBlock TextWrapping="Wrap" Text="Creative" Margin="320,70,0,0" HorizontalAlignment="Left" VerticalAlignment="Top"/>
+                                        <TextBlock TextWrapping="Wrap" Text="Adventure" Margin="395,70,0,0" HorizontalAlignment="Left" VerticalAlignment="Top"/>
+                                        <TextBlock TextWrapping="Wrap" Text="Spectator" Margin="470,70,0,0" HorizontalAlignment="Left" VerticalAlignment="Top"/>
+                                        <TextBlock TextWrapping="Wrap" Text="Peaceful" Margin="550,70,0,0" HorizontalAlignment="Left" VerticalAlignment="Top"/>
+                                        <TextBlock TextWrapping="Wrap" Text="Easy" Margin="620,70,0,0" HorizontalAlignment="Left" VerticalAlignment="Top"/>
+                                        <TextBlock TextWrapping="Wrap" Text="Normal" Margin="690,70,0,0" HorizontalAlignment="Left" VerticalAlignment="Top"/>
+                                        <TextBlock TextWrapping="Wrap" Text="Hard" Margin="760,70,0,0" HorizontalAlignment="Left" VerticalAlignment="Top"/>
+                                        <TextBlock Margin="250,100,0,0" TextWrapping="Wrap" Text="0" HorizontalAlignment="Left" VerticalAlignment="Top"/>
+                                        <TextBlock Margin="320,100,0,0" TextWrapping="Wrap" Text="1" HorizontalAlignment="Left" VerticalAlignment="Top"/>
+                                        <TextBlock Margin="395,100,0,0" TextWrapping="Wrap" Text="2" HorizontalAlignment="Left" VerticalAlignment="Top"/>
+                                        <TextBlock Margin="470,100,0,0" TextWrapping="Wrap" Text="3" HorizontalAlignment="Left" VerticalAlignment="Top"/>
+                                        <TextBlock Margin="550,100,0,0" TextWrapping="Wrap" Text="0" HorizontalAlignment="Left" VerticalAlignment="Top"/>
+                                        <TextBlock Margin="620,100,0,0" TextWrapping="Wrap" Text="1" HorizontalAlignment="Left" VerticalAlignment="Top"/>
+                                        <TextBlock Margin="690,100,0,0" TextWrapping="Wrap" Text="2" HorizontalAlignment="Left" VerticalAlignment="Top"/>
+                                        <TextBlock Margin="760,100,0,0" TextWrapping="Wrap" Text="3" HorizontalAlignment="Left" VerticalAlignment="Top"/>
+                                    </Grid>
                                 </Grid>
                             </StackPanel>
                         </Border>
@@ -345,6 +350,7 @@
                                     <Button x:Name="autoStartserver" Content="关服自动开服:禁用" Margin="154,80,0,0" Width="160" Click="autostartServer_Click" FontSize="16" Height="35" HorizontalAlignment="Left" VerticalAlignment="Top"/>
                                     <Button x:Name="inputCmdEncoding" Content="输入编码:自动识别" Margin="320,80,0,0" Width="160" FontSize="16" Height="35" HorizontalAlignment="Left" VerticalAlignment="Top" Click="inputCmdEncoding_Click"/>
                                     <Button x:Name="outputCmdEncoding" Content="输出编码:自动识别" Margin="485,80,0,0" Width="160" FontSize="16" Height="35" HorizontalAlignment="Left" VerticalAlignment="Top" Click="outputCmdEncoding_Click"/>
+                                    <Button x:Name="shieldStackOut" Content="屏蔽堆栈追踪:开" Margin="485,120,0,0" FontSize="16" Height="34" Click="shieldStackOut_Click" Width="160" HorizontalAlignment="Left" VerticalAlignment="Top"/>
                                 </Grid>
                             </Border>
                             <Border Style="{StaticResource MagicBorder}">

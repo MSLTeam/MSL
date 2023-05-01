@@ -1,6 +1,5 @@
 ﻿using HandyControl.Controls;
 using ICSharpCode.SharpZipLib.Zip;
-using Microsoft.Win32;
 using MSL.controls;
 using MSL.pages;
 using Newtonsoft.Json;
@@ -20,7 +19,6 @@ using System.Windows;
 using System.Windows.Controls;
 using System.Windows.Forms;
 using System.Windows.Threading;
-using System.Xml.Linq;
 using MessageBox = System.Windows.MessageBox;
 using OpenFileDialog = Microsoft.Win32.OpenFileDialog;
 using Path = System.IO.Path;
@@ -326,7 +324,7 @@ namespace MSL.forms
                             Thread.Sleep(1000);
                         }
                         serverjava = AppDomain.CurrentDomain.BaseDirectory + @"MSL\" + DownjavaName + @"\bin\java.exe";
-                        MessageBox.Show("安装成功", "success", MessageBoxButton.OK, MessageBoxImage.Information);
+                        MessageBox.Show("Java安装成功！点击确定以继续", "success", MessageBoxButton.OK, MessageBoxImage.Information);
                     }
                     catch
                     {
@@ -347,7 +345,7 @@ namespace MSL.forms
                 }
                 else
                 {
-                    MessageBox.Show("安装成功", "success", MessageBoxButton.OK, MessageBoxImage.Information);
+                    MessageBox.Show("Java安装成功！点击确定以继续", "success", MessageBoxButton.OK, MessageBoxImage.Information);
                 }
             }
         }
@@ -422,21 +420,7 @@ namespace MSL.forms
                     }
                 }
                     jsonObject.Add(i.ToString(), _json);
-                /*
-                JObject jsonObject = JObject.Parse(File.ReadAllText(AppDomain.CurrentDomain.BaseDirectory + @"MSL\ServerList.json", Encoding.UTF8));
-                int i = 0;
-                foreach (var item in jsonObject)
-                {
-                    if (item.Key == i.ToString())
-                    {
-                        i++;
-                    }
-                }
-                jsonObject.Add(i.ToString(),_json);
-                */
                 File.WriteAllText(AppDomain.CurrentDomain.BaseDirectory + @"MSL\ServerList.json", Convert.ToString(jsonObject), Encoding.UTF8);
-
-                //File.WriteAllText(AppDomain.CurrentDomain.BaseDirectory + @"MSL\ServerList.ini", text + "*|-n " + MainWindow.servername + "|-j " + MainWindow.serverjava + "|-s " + MainWindow.serverserver + "|-a " + MainWindow.serverJVM + "|-b " + MainWindow.serverbase + "|-c " + MainWindow.serverJVMcmd + "|*\n");
                 DialogShow.ShowMsg(this, "创建完毕，请点击“开启服务器”按钮以开服", "信息");
                 Close();
             }
@@ -850,6 +834,7 @@ namespace MSL.forms
                 this.Dispatcher.Invoke(DispatcherPriority.Normal, (ThreadStart)delegate ()
                 {
                     ServerCoreCombo.SelectedIndex = 0;
+                    FastModeNextBtn.IsEnabled = true;
                 });
             }
             catch (Exception a)
@@ -898,25 +883,25 @@ namespace MSL.forms
             switch (ServerCoreCombo.SelectedIndex)
             {
                 case 0:
-                    ServerCoreDescrip.Text = "插件服务器：";
+                    ServerCoreDescrip.Text = "插件服务器：指在服务端添加插件（客户端无需添加），通过更改服务端底层来增加功能，这种方式极易做到对服务器、服务器用户玩家进行管理，如权限组、封禁系统等，但这种方式不能修改客户端内容，所以也导致很多功能很难实现，如添加新的物品，只能通过更改材质包的方式让客户端显示新的物品";
                     break;
                 case 1:
-                    ServerCoreDescrip.Text = "模组服务器（Forge加载器）：";
+                    ServerCoreDescrip.Text = "模组服务器（Forge加载器）：指通过Forge加载器，添加模组来增加功能（服务端和客户端均需添加），这种方式既可以更改服务端的内容，也可以更改客户端的内容，所以插件服务器无法实现的功能在这里即可轻易做到，但是这种方式很难做到插件服的管理功能，且需要客户端的模组和服务端进行同步，会给玩家造成一定的麻烦";
                     break;
                 case 2:
-                    ServerCoreDescrip.Text = "模组服务器（Fabric加载器）：";
+                    ServerCoreDescrip.Text = "模组服务器（Fabric加载器）：指通过Fabric加载器，添加模组来增加功能（服务端和客户端均需添加），这种方式既可以更改服务端的内容，也可以更改客户端的内容，所以插件服务器无法实现的功能在这里即可轻易做到，但是这种方式很难做到插件服的管理功能，且需要客户端的模组和服务端进行同步，会给玩家造成一定的麻烦";
                     break;
                 case 3:
-                    ServerCoreDescrip.Text = "插件模组二合一服务器（Forge加载器）：";
+                    ServerCoreDescrip.Text = "插件模组二合一服务器（Forge加载器）：这种服务器将插件服务端和Forge服务端合二为一，既吸取了二者的优点（服务器管理功能可通过添加插件做到，添加新物品更改游戏玩法可通过添加模组做到），同时又有许多缺点（如服务器不稳定，同时添加插件和模组，极易造成冲突问题，且也存在模组服务器服务端和客户端需要同步模组的问题）";
                     break;
                 case 4:
-                    ServerCoreDescrip.Text = "原版服务器：";
+                    ServerCoreDescrip.Text = "原版服务器：Mojang纯原生服务器，不能添加任何插件或模组，给您原汁原味的体验";
                     break;
                 case 5:
-                    ServerCoreDescrip.Text = "基岩版服务器：";
+                    ServerCoreDescrip.Text = "基岩版服务器：专为基岩版提供的服务器，这种服务器在配置等方面和Java版服务器不太一样，同时开服器也不太适配，更改配置文件等相关操作只能您手动操作";
                     break;
                 case 6:
-                    ServerCoreDescrip.Text = "代理服务器：";
+                    ServerCoreDescrip.Text = "代理服务器：指Java版群组服务器的转发服务器，这种服务器相当于一个桥梁，将玩家在不同的服务器之间进行传送转发，使用这种服务器您首先需要开启一个普通服务器，因为这种服务器没有游戏内容，如果没有普通服务器进行连接，玩家根本无法进入，且目前开服器并不兼容这种服务器，创建完毕后您需在列表右键该服务器并使用“命令行开服”功能来启动";
                     break;
             }
         }
@@ -982,42 +967,50 @@ namespace MSL.forms
                 else { i++; }
             }
             string versionString = ServerVersionCombo.Items[ServerVersionCombo.SelectedIndex].ToString();
-            string[] components = versionString.Split('.');
-            if (components.Length >= 3 && int.TryParse(components[2], out int _))
+            if (versionString != "Latest")
             {
-                versionString = $"{components[0]}.{components[1]}"; // remove the last component
-            }
+                string[] components = versionString.Split('.');
+                if (components.Length >= 3 && int.TryParse(components[2], out int _))
+                {
+                    versionString = $"{components[0]}.{components[1]}"; // remove the last component
+                }
 
-            Version _version = new Version(versionString);
-            Version targetVersion1 = new Version("1.7");
-            Version targetVersion2 = new Version("1.12");
-            Version targetVersion3 = new Version("1.17");
+                Version _version = new Version(versionString);
+                Version targetVersion1 = new Version("1.7");
+                Version targetVersion2 = new Version("1.12");
+                Version targetVersion3 = new Version("1.17");
 
-            if (_version <= targetVersion1)
-            {
-                //_version <=1.7
-                FinallyJavaDescrip.Text = "根据您的选择，最适合您服务器的Java版本为：Java7-Java8";
-                FinallyJavaCombo.SelectedIndex = 0;
-            }
-            else if (_version <= targetVersion2)
-            {
-                //1.7< _version <=1.12
-                FinallyJavaDescrip.Text = "根据您的选择，最适合您服务器的Java版本为：Java8-Java11";
-                FinallyJavaCombo.SelectedIndex = 0;
-            }
-            else if (_version <= targetVersion3)
-            {
-                //1.12< _version <=1.17
-                FinallyJavaDescrip.Text = "根据您的选择，最适合您服务器的Java版本为：Java11-Java17（或更高）";
-                FinallyJavaCombo.SelectedIndex = 3;
+                if (_version <= targetVersion1)
+                {
+                    //_version <=1.7
+                    FinallyJavaDescrip.Text = "根据您的选择，最适合您服务器的Java版本为：Java7-Java8";
+                    FinallyJavaCombo.SelectedIndex = 0;
+                }
+                else if (_version <= targetVersion2)
+                {
+                    //1.7< _version <=1.12
+                    FinallyJavaDescrip.Text = "根据您的选择，最适合您服务器的Java版本为：Java8-Java11";
+                    FinallyJavaCombo.SelectedIndex = 0;
+                }
+                else if (_version <= targetVersion3)
+                {
+                    //1.12< _version <=1.17
+                    FinallyJavaDescrip.Text = "根据您的选择，最适合您服务器的Java版本为：Java11-Java17（或更高）";
+                    FinallyJavaCombo.SelectedIndex = 3;
+                }
+                else
+                {
+                    //_version >1.17
+                    FinallyJavaDescrip.Text = "根据您的选择，最适合您服务器的Java版本为：Java18-Java19（或更高）";
+                    FinallyJavaCombo.SelectedIndex = 5;
+                }
+                FinallyCoreCombo.SelectedIndex = 0;
             }
             else
             {
-                //_version >1.17
-                FinallyJavaDescrip.Text = "根据您的选择，最适合您服务器的Java版本为：Java18-Java19（或更高）";
+                FinallyJavaDescrip.Text = "根据您的选择，最适合您服务器的Java版本为：Java8-Java19（或更高）";
                 FinallyJavaCombo.SelectedIndex = 5;
             }
-            FinallyCoreCombo.SelectedIndex = 0;
         }
 
         private void FastModeInstallBtn_Click(object sender, RoutedEventArgs e)
@@ -1309,7 +1302,7 @@ namespace MSL.forms
             downloadCoreUrl.Clear();
             InstallGrid.Visibility = Visibility.Hidden;
             FastModeGrid.Visibility = Visibility.Visible;
-            
+            //FastModeNextBtn.IsEnabled=false;
         }
     }
 }

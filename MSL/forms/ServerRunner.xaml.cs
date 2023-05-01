@@ -22,6 +22,7 @@ using System.Windows.Input;
 using System.Windows.Media;
 using System.Windows.Media.Imaging;
 using System.Windows.Threading;
+using static System.Net.Mime.MediaTypeNames;
 using MessageBox = System.Windows.MessageBox;
 using Path = System.IO.Path;
 using Window = System.Windows.Window;
@@ -431,7 +432,8 @@ namespace MSL
                 {
                     ShowLog("服务器目录有误", Brushes.Red);
                 }
-                DialogShow.ShowMsg(this, "出现错误，开服器已检测完毕，请根据检测信息对服务器设置进行更改！\n错误代码:" + e.Message, "错误", false, "确定");
+                ShowLog("错误代码："+e.Message, Brushes.Red);
+                DialogShow.ShowMsg(this, "出现错误，开服器已检测完毕，请根据检测信息对服务器设置进行更改！", "错误", false, "确定");
                 TabCtrl.SelectedIndex = 1;
                 ChangeControlsState(false);
             }
@@ -495,24 +497,46 @@ namespace MSL
                 Dispatcher.Invoke(ReadStdOutput, new object[] { e.Data });
             }
         }
-        Brush tempbrush = Brushes.Green;
-        void ShowLog(string msg, Brush color)
+
+        private Brush tempbrush = Brushes.Green;
+        private void ShowLog(string msg, Brush color)
         {
+            tempbrush = color;
+            Paragraph p = new Paragraph();
+            if (msg.Contains("&"))
+            {
+                string[] splitMsg = msg.Split('&');
+                foreach (var everyMsg in splitMsg)
+                {
+                    string colorCode = everyMsg.Substring(0, 1);
+                    string text = everyMsg.Substring(1);
+                    Run run = new Run(text);
+                    run.Foreground = GetBrushFromMinecraftColorCode(colorCode[0]);
+                    p.Inlines.Add(run);
+                }
+            }
+            else if (msg.Contains("\x1B"))
+            {
+                string[] splitMsg = msg.Split('\x1B');
+                foreach (var everyMsg in splitMsg)
+                {
+                    string colorCode = everyMsg.Substring(1, 2);
+                    //MessageBox.Show(colorCode.ToString());
+                    string text = everyMsg.Substring(everyMsg.IndexOf("m") + 1);
+                    Run run = new Run(text);
+                    run.Foreground = GetBrushFromAnsiColorCode(colorCode.ToString());
+                    p.Inlines.Add(run);
+                }
+            }
+            else
+            {
+                Run run = new Run(msg);
+                run.Foreground = color;
+                p.Inlines.Add(run);
+            }
             this.Dispatcher.BeginInvoke(DispatcherPriority.SystemIdle, (ThreadStart)delegate ()
             {
-                Paragraph p = new Paragraph(new Run(string.Format("{1}", DateTime.Now, msg)));
-                if (color == Brushes.White)
-                {
-                    p.Foreground = tempbrush;
-                    outlog.Document.Blocks.Add(p);
-                    if (outlog.VerticalOffset + outlog.ViewportHeight >= outlog.ExtentHeight)
-                    {
-                        outlog.ScrollToEnd();
-                    }
-                    return;
-                }
-                p.Foreground = color;
-                tempbrush = color;
+                //p.Foreground = color;
                 outlog.Document.Blocks.Add(p);
                 if (outlog.VerticalOffset + outlog.ViewportHeight >= outlog.ExtentHeight)
                 {
@@ -520,6 +544,65 @@ namespace MSL
                 }
             });
         }
+
+        private Dictionary<char, SolidColorBrush> colorDict = new Dictionary<char, SolidColorBrush>
+        {
+            ['0'] = Brushes.Black,
+            ['1'] = Brushes.DarkBlue,
+            ['2'] = Brushes.DarkGreen,
+            ['3'] = Brushes.DarkCyan,
+            ['4'] = Brushes.DarkRed,
+            ['5'] = Brushes.DarkMagenta,
+            ['6'] = Brushes.Gold,
+            ['7'] = Brushes.Gray,
+            ['8'] = Brushes.DarkGray,
+            ['9'] = Brushes.Blue,
+            ['a'] = Brushes.Green,
+            ['b'] = Brushes.Cyan,
+            ['c'] = Brushes.Red,
+            ['d'] = Brushes.Magenta,
+            ['e'] = Brushes.Yellow,
+            ['f'] = Brushes.White,
+        };
+
+        private Brush GetBrushFromMinecraftColorCode(char colorCode)
+        {
+            if (colorDict.ContainsKey(colorCode))
+            {
+                return colorDict[colorCode];
+            }
+            return Brushes.Green;
+        }
+
+        Dictionary<string, Brush> colorDictAnsi = new Dictionary<string, Brush>
+        {
+            ["30"] = Brushes.Black,
+            ["31"] = Brushes.Red,
+            ["32"] = Brushes.Green,
+            ["33"] = Brushes.Yellow,
+            ["34"] = Brushes.Blue,
+            ["35"] = Brushes.Magenta,
+            ["36"] = Brushes.Cyan,
+            ["37"] = Brushes.White,
+            ["90"] = Brushes.Gray,
+            ["91"] = Brushes.LightPink,
+            ["92"] = Brushes.LightGreen,
+            ["93"] = Brushes.LightYellow,
+            ["94"] = Brushes.LightBlue,
+            ["95"] = Brushes.LightPink,
+            ["96"] = Brushes.LightCyan,
+            ["97"] = Brushes.White,
+        };
+
+        private Brush GetBrushFromAnsiColorCode(string colorCode)
+        {
+            if (colorDictAnsi.ContainsKey(colorCode))
+            {
+                return colorDictAnsi[colorCode];
+            }
+            return Brushes.Green;
+        }
+
         private delegate void AddMessageHandler(string msg);
         private void ReadStdOutputAction(string msg)
         {
@@ -533,7 +616,7 @@ namespace MSL
                 {
                     outlog.Document.Blocks.Clear();
                 }
-                if (ShieldLog != null && msg.IndexOf(ShieldLog) + 1 != 0)
+                if ((msg.Contains("\tat ")&&shieldStackOut.Content.ToString().Contains("开"))||(ShieldLog != null && msg.Contains(ShieldLog)))
                 {
                     return;
                 }
@@ -551,8 +634,7 @@ namespace MSL
                             DialogShow.ShowMsg(this, "开服器未能获取到服务器信息，可能该服务端需要下载依赖文件，请耐心等待！\n即将为您跳转至输出界面，开服过程中部分事件可能需要您手动处理！\n\n(注：Mohist端接受EULA条款的方式是在控制台输入true，在接受前请务必前往该网站仔细阅读条款内容：https://account.mojang.com/documents/minecraft_eula)", "提示");
                             TabCtrl.SelectedIndex = 1;
                             serverVersionLab.Content = "未知";
-                            inputCmdEncoding.Content = "编码:UTF8";
-                            Growl.Error("开服器未获取到服务器版本，因此无法根据版本自动切换相应的编码，若服务器出现乱码情况，请前往“更多功能”界面手动切换编码：1.12以下版本请使用ANSI，1.12及以上版本请使用UTF8");
+                            Growl.Info("开服器未获取到服务器版本，因此无法根据版本自动切换相应的编码，若服务器出现乱码情况，请前往“更多功能”界面手动切换编码（优先更改输入编码）：1.12以下版本请使用ANSI，1.12及以上版本请使用UTF8");
                         }
                         if (gameTypeLab.Content.ToString() == "获取中")
                         {
@@ -604,18 +686,25 @@ namespace MSL
                 }
                 else if (msg.Contains("WARN"))
                 {
-                    ShowLog("[" + DateTime.Now.ToString("T") + " 警告]" + msg.Substring(msg.IndexOf("WARN") + 5), Brushes.Orange);
-                    if (msg.Contains("FAILED TO BIND TO PORT"))
+                    if (msg.Contains("Advanced terminal features are not available in this environment"))
                     {
-                        ShowLog("警告：由于端口占用，服务器已自动关闭！请检查您的服务器是否多开或者有其他软件占用端口！\r\n解决方法：您可尝试通过重启电脑解决！", Brushes.Red);
+                        return;
                     }
-                    else if (msg.Contains("Unable to access jarfile"))
+                    else
                     {
-                        ShowLog("警告：无法访问JAR文件！您的服务端可能已损坏或路径中含有中文或其他特殊字符,请及时修改！", Brushes.Red);
-                    }
-                    else if (msg.Contains("加载 Java 代理时出错"))
-                    {
-                        ShowLog("警告：无法访问JAR文件！您的服务端可能已损坏或路径中含有中文或其他特殊字符,请及时修改！", Brushes.Red);
+                        ShowLog("[" + DateTime.Now.ToString("T") + " 警告]" + msg.Substring(msg.IndexOf("WARN") + 5), Brushes.Orange);
+                        if (msg.Contains("FAILED TO BIND TO PORT"))
+                        {
+                            ShowLog("警告：由于端口占用，服务器已自动关闭！请检查您的服务器是否多开或者有其他软件占用端口！\r\n解决方法：您可尝试通过重启电脑解决！", Brushes.Red);
+                        }
+                        else if (msg.Contains("Unable to access jarfile"))
+                        {
+                            ShowLog("警告：无法访问JAR文件！您的服务端可能已损坏或路径中含有中文或其他特殊字符,请及时修改！", Brushes.Red);
+                        }
+                        else if (msg.Contains("加载 Java 代理时出错"))
+                        {
+                            ShowLog("警告：无法访问JAR文件！您的服务端可能已损坏或路径中含有中文或其他特殊字符,请及时修改！", Brushes.Red);
+                        }
                     }
                 }
                 else if (msg.Contains("ERROR"))
@@ -624,14 +713,14 @@ namespace MSL
                 }
                 else
                 {
-                    ShowLog(msg, Brushes.White);
+                    ShowLog(msg, tempbrush);
                 }
             }
         }
 
         void ProblemSystemShow(string msg)
         {
-            ShowLog(msg, Brushes.Blue);
+            ShowLog(msg, Brushes.Black);
             if (getServerInfoLine <= 50)
             {
                 getServerInfoLine++;
@@ -689,79 +778,79 @@ namespace MSL
                 }
                 else if (msg.Contains("requires running the server with"))
                 {
-                    foundProblems = foundProblems + "*不匹配的Java版本：\n";
-                    foundProblems = foundProblems + "请使用" + msg.Substring(msg.IndexOf("Java"), 7) + "！\n";
+                    foundProblems += "*不匹配的Java版本：\n";
+                    foundProblems += "请使用" + msg.Substring(msg.IndexOf("Java"), 7) + "！\n";
                 }
                 else if (msg.Contains("OutOfMemoryError"))
                 {
-                    foundProblems = foundProblems + "*服务器内存分配过低或过高！\n";
+                    foundProblems += "*服务器内存分配过低或过高！\n";
                 }
                 else if (msg.Contains("Invalid maximum heap size"))
                 {
-                    foundProblems = foundProblems + "*服务器最大内存分配有误！\n" + msg + "\n";
+                    foundProblems += "*服务器最大内存分配有误！\n" + msg + "\n";
                 }
                 else if (msg.Contains("Unrecognized VM option"))
                 {
-                    foundProblems = foundProblems + "*服务器JVM参数有误！请前往设置界面进行查看！\n错误的参数为：" + msg.Substring(msg.IndexOf("'") + 1, msg.Length - 3 - msg.IndexOf(" '")) + "\n";
+                    foundProblems += "*服务器JVM参数有误！请前往设置界面进行查看！\n错误的参数为：" + msg.Substring(msg.IndexOf("'") + 1, msg.Length - 3 - msg.IndexOf(" '")) + "\n";
                 }
                 else if (msg.Contains("There is insufficient memory for the Java Runtime Environment to continue"))
                 {
-                    foundProblems = foundProblems + "*JVM内存分配不足，请尝试增加系统的虚拟内存（不是内存条！具体方法请自行上网查找）！\n";
+                    foundProblems += "*JVM内存分配不足，请尝试增加系统的虚拟内存（不是内存条！具体方法请自行上网查找）！\n";
                 }
                 else if (msg.Contains("进程无法访问"))
                 {
-                    foundProblems = foundProblems + "*文件被占用，您的服务器可能多开，可尝试重启电脑解决！\n";
+                    foundProblems += "*文件被占用，您的服务器可能多开，可尝试重启电脑解决！\n";
                 }
                 else if (msg.Contains("FAILED TO BIND TO PORT"))
                 {
-                    foundProblems = foundProblems + "*端口被占用，您的服务器可能多开，可尝试重启电脑解决！\n";
+                    foundProblems += "*端口被占用，您的服务器可能多开，可尝试重启电脑解决！\n";
                 }
                 else if (msg.Contains("Unable to access jarfile"))
                 {
-                    foundProblems = foundProblems + "*无法访问JAR文件！您的服务端可能已损坏或路径中含有中文或其他特殊字符,请及时修改！\n";
+                    foundProblems += "*无法访问JAR文件！您的服务端可能已损坏或路径中含有中文或其他特殊字符,请及时修改！\n";
                 }
                 else if (msg.Contains("加载 Java 代理时出错"))
                 {
-                    foundProblems = foundProblems + "*无法访问JAR文件！您的服务端可能已损坏或路径中含有中文或其他特殊字符,请及时修改！\n";
+                    foundProblems += "*无法访问JAR文件！您的服务端可能已损坏或路径中含有中文或其他特殊字符,请及时修改！\n";
                 }
                 else if (msg.Contains("ArraylndexOutOfBoundsException"))
                 {
-                    foundProblems = foundProblems + "*开启服务器时发生数组越界错误，请尝试更换服务端再试！\n";
+                    foundProblems += "*开启服务器时发生数组越界错误，请尝试更换服务端再试！\n";
                 }
                 else if (msg.Contains("ClassCastException"))
                 {
-                    foundProblems = foundProblems + "*开启服务器时发生类转换异常，请检查Java版本是否匹配，或者让开服器为您下载Java环境（设置界面更改）！\n";
+                    foundProblems += "*开启服务器时发生类转换异常，请检查Java版本是否匹配，或者让开服器为您下载Java环境（设置界面更改）！\n";
                 }
                 else if (msg.Contains("could not open") && msg.Contains("jvm.cfg"))
                 {
-                    foundProblems = foundProblems + "*Java异常，请检查Java环境是否正常，或者让开服器为您下载Java环境（设置界面更改）！\n";
+                    foundProblems += "*Java异常，请检查Java环境是否正常，或者让开服器为您下载Java环境（设置界面更改）！\n";
                 }
                 else if (msg.Contains("Failed to download vanilla jar"))
                 {
-                    foundProblems = foundProblems + "*下载原版核心文件失败，您可尝试使用代理或更换服务端为Spigot端！\n";
+                    foundProblems += "*下载原版核心文件失败，您可尝试使用代理或更换服务端为Spigot端！\n";
                 }
                 else if (msg.Contains("Exception in thread \"main\""))
                 {
-                    foundProblems = foundProblems + "*疑似服务端核心Main方法报错，您可尝试更换服务端或更换Java再试！\n";
+                    foundProblems += "*疑似服务端核心Main方法报错，您可尝试更换服务端或更换Java再试！\n";
                 }
             }
             if (msg.Contains("Could not load") && msg.Contains("plugin"))
             {
-                foundProblems = foundProblems + "*无法加载插件！\n";
-                foundProblems = foundProblems + "插件名称：" + msg.Substring(msg.IndexOf("Could not load '") + 16, msg.IndexOf("' ") - (msg.IndexOf("Could not load '") + 16)) + "\n";
+                foundProblems += "*无法加载插件！\n";
+                foundProblems += "插件名称：" + msg.Substring(msg.IndexOf("Could not load '") + 16, msg.IndexOf("' ") - (msg.IndexOf("Could not load '") + 16)) + "\n";
             }
             else if (msg.Contains("Error loading plugin"))
             {
-                foundProblems = foundProblems + "*无法加载插件！\n";
-                foundProblems = foundProblems + "插件名称：" + msg.Substring(msg.IndexOf(" '") + 2, msg.IndexOf("' ") - (msg.IndexOf(" '") + 2)) + "\n";
+                foundProblems += "*无法加载插件！\n";
+                foundProblems += "插件名称：" + msg.Substring(msg.IndexOf(" '") + 2, msg.IndexOf("' ") - (msg.IndexOf(" '") + 2)) + "\n";
             }
             else if (msg.Contains("Error occurred while enabling "))
             {
-                foundProblems = foundProblems + "*在启用 " + msg.Substring(msg.IndexOf("enabling ") + 9, msg.IndexOf(" (") - (msg.IndexOf("enabling ") + 9)) + " 时发生了错误\n"; ;
+                foundProblems += "*在启用 " + msg.Substring(msg.IndexOf("enabling ") + 9, msg.IndexOf(" (") - (msg.IndexOf("enabling ") + 9)) + " 时发生了错误\n"; ;
             }
             else if (msg.Contains("Encountered an unexpected exception"))
             {
-                foundProblems = foundProblems + "*服务器出现意外崩溃，可能是由于模组冲突，请检查您的模组列表（如果使用的是整合包，请使用整合包制作方提供的Server专用包开服）\n";
+                foundProblems += "*服务器出现意外崩溃，可能是由于模组冲突，请检查您的模组列表（如果使用的是整合包，请使用整合包制作方提供的Server专用包开服）\n";
             }
         }
         void GetServerInfoSys(string msg)
@@ -2690,6 +2779,17 @@ namespace MSL
             {
                 ShieldLog = null;
                 closeOutlog_Copy.Content = "屏蔽关键字日志:关";
+            }
+        }
+        private void shieldStackOut_Click(object sender, RoutedEventArgs e)
+        {
+            if (shieldStackOut.Content.ToString() == "屏蔽堆栈追踪:开")
+            {
+                shieldStackOut.Content = "屏蔽堆栈追踪:关";
+            }
+            else
+            {
+                shieldStackOut.Content = "屏蔽堆栈追踪:开";
             }
         }
 
