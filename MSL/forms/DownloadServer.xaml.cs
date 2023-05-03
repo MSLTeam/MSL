@@ -80,7 +80,12 @@ namespace MSL.pages
                         filename = serverlist.SelectedItem.ToString() + "-" + serverlist1.SelectedItem.ToString() + ".jar";
                     }
                 }
-                DialogShow.ShowDownload(this, downUrl, downPath, filename, "下载服务端中……");
+                bool dwnDialog= DialogShow.ShowDownload(this, downUrl, downPath, filename, "下载服务端中……");
+                if (!dwnDialog)
+                {
+                    DialogShow.ShowMsg(this, "下载取消！", "提示");
+                    return;
+                }
                 if (File.Exists(downPath + @"\" + filename))
                 {
                     if (filename.IndexOf("Forge") + 1 != 0)

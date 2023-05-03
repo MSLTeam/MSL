@@ -7,16 +7,12 @@
       mc:Ignorable="d" 
       d:DesignHeight="460" d:DesignWidth="750"
       Title="SettingsPage" Loaded="Page_Loaded">
-    <Page.Resources>
-        <ResourceDictionary>
-            <Storyboard x:Key="ShowWindow" >
-                <DoubleAnimation Duration="0:0:0.15" From="0" To="1" Storyboard.TargetProperty="Opacity" FillBehavior="Stop"/>
-            </Storyboard>
-        </ResourceDictionary>
-    </Page.Resources>
+    <Page.RenderTransform>
+        <TranslateTransform/>
+    </Page.RenderTransform>
     <Page.Triggers>
         <EventTrigger RoutedEvent="Loaded">
-            <BeginStoryboard Storyboard="{StaticResource ShowWindow}"/>
+            <BeginStoryboard Storyboard="{StaticResource ShowPage}"/>
         </EventTrigger>
     </Page.Triggers>
     <ScrollViewer>
@@ -24,14 +20,14 @@
             <Border Style="{StaticResource MagicBorder}">
                 <Grid>
                     <Label Content="功能调整" Style="{StaticResource BorderTitle}"/>
-                    <Button Name="setdefault" Content="恢复默认设置" HorizontalAlignment="Left" Margin="10,40,0,0" VerticalAlignment="Top" Width="130" Height="37" FontSize="16" Click="setdefault_Click" />
-                    <Button Name="notifyIconbtn" Content="托盘图标:关闭" HorizontalAlignment="Left" Margin="150,40,0,0" VerticalAlignment="Top" Width="130" Height="37" FontSize="16" Click="notifyIconbtn_Click" />
-                    <Button x:Name="developerSettings" Content="开发者选项" HorizontalAlignment="Left" Margin="290,40,0,0" VerticalAlignment="Top" Height="37" FontSize="16" Click="developerSettings_Click" Width="120" />
-                    <Button Name="useidea" Content="使用教程" Margin="420,40,0,0" VerticalAlignment="Top" Height="37" FontSize="16" HorizontalAlignment="Left" Click="useidea_Click" Width="120" />
-                    <Button x:Name="paintedEgg" Content="不要点我" Style="{StaticResource ButtonDanger}" HorizontalAlignment="Stretch" Margin="550,40,10,0" VerticalAlignment="Top" Click="paintedEgg_Click" Height="37" FontSize="16"/>
+                    <Button Name="setdefault" Template="{StaticResource CustomButton}" Content="恢复默认设置" HorizontalAlignment="Left" Margin="10,40,0,0" VerticalAlignment="Top" Width="130" Height="37" FontSize="16" Click="setdefault_Click" />
+                    <Button Name="notifyIconbtn" Template="{StaticResource CustomButton}" Content="托盘图标:关闭" HorizontalAlignment="Left" Margin="150,40,0,0" VerticalAlignment="Top" Width="130" Height="37" FontSize="16" Click="notifyIconbtn_Click" />
+                    <Button x:Name="developerSettings" Template="{StaticResource CustomButton}" Content="开发者选项" HorizontalAlignment="Left" Margin="290,40,0,0" VerticalAlignment="Top" Height="37" FontSize="16" Click="developerSettings_Click" Width="120" />
+                    <Button Name="useidea" Template="{StaticResource CustomButton}" Content="使用教程" Margin="420,40,0,0" VerticalAlignment="Top" Height="37" FontSize="16" HorizontalAlignment="Left" Click="useidea_Click" Width="120" />
+                    <Button x:Name="paintedEgg" Template="{StaticResource CustomButton}" Content="不要点我" Style="{StaticResource ButtonDanger}" HorizontalAlignment="Stretch" Margin="550,40,10,0" VerticalAlignment="Top" Click="paintedEgg_Click" Height="37" FontSize="16"/>
                     <Label Content="下载线程：（默认为8，建议不超过16）" Margin="0,90,0,0" FontSize="16" HorizontalAlignment="Left" VerticalAlignment="Top" Height="32" BorderBrush="{x:Null}" Background="{x:Null}" />
                     <TextBox Name="downthreadCount" Margin="316,90,127,0" Text="8" FontSize="18" VerticalAlignment="Top" Height="34" />
-                    <Button Name="mulitDownthread" Height="34" Margin="0,90,0,0" Width="112" Content="确定" FontSize="16" HorizontalAlignment="Right" VerticalAlignment="Top" Click="mulitDownthread_Click" />
+                    <Button Name="mulitDownthread" Template="{StaticResource CustomButton}" Height="34" Margin="0,90,0,0" Width="112" Content="确定" FontSize="16" HorizontalAlignment="Right" VerticalAlignment="Top" Click="mulitDownthread_Click" />
                 </Grid>
             </Border>
             <Border Style="{StaticResource MagicBorder}">
@@ -41,7 +37,7 @@
                     <ToggleButton Name="openserversOnStart" Margin="250,46,0,0" Style="{StaticResource ToggleButtonSwitch}" HorizontalAlignment="Left" VerticalAlignment="Top" Click="openserversOnStart_Click" />
                     <TextBox Name="openserversOnStartList" Margin="10,80,330,0" VerticalContentAlignment="Top" TextWrapping="Wrap" VerticalAlignment="Top" Height="120" FontSize="16" />
                     <ComboBox x:Name="serverListBox" Margin="0,80,10,0" HorizontalAlignment="Right" VerticalAlignment="Top" Height="58" Width="315"/>
-                    <Button x:Name="addServerToRunlist" Content="将选中服务器添加至启动列表" HorizontalAlignment="Right" Margin="0,145,10,0" VerticalAlignment="Top" Height="55" Width="315" Click="addServerToRunlist_Click" FontSize="16"/>
+                    <Button x:Name="addServerToRunlist" Template="{StaticResource CustomButton}" Content="将选中服务器添加至启动列表" HorizontalAlignment="Right" Margin="0,145,10,0" VerticalAlignment="Top" Height="55" Width="315" Click="addServerToRunlist_Click" FontSize="16"/>
                     <Label Content="启动软件自动打开内网映射：" HorizontalAlignment="Left" Margin="0,205,0,5" VerticalAlignment="Top" FontSize="16" Height="35" Background="{x:Null}" BorderBrush="{x:Null}" />
                     <ToggleButton Name="openfrpOnStart" Margin="250,210,0,0" Style="{StaticResource ToggleButtonSwitch}" HorizontalAlignment="Left" VerticalAlignment="Top" Click="openfrpOnStart_Click" />
 
@@ -65,8 +61,8 @@
                     <RadioButton Name="PurpleSkinBtn" HorizontalAlignment="Left" Margin="430,80,0,0" VerticalAlignment="Top" Content="紫色皮肤" Checked="ChangeSkin" Foreground="Purple" IsEnabled="False" />
                     <RadioButton Name="PinkSkinBtn" HorizontalAlignment="Left" Margin="530,80,0,0" VerticalAlignment="Top" Content="粉色皮肤" Checked="ChangeSkin" Foreground="DeepPink" IsEnabled="False" />
                     <Label Content="背景图片:" HorizontalAlignment="Left" Margin="0,105,0,10" VerticalAlignment="Top" FontSize="16" Height="35" Background="{x:Null}" BorderBrush="{x:Null}" />
-                    <Button x:Name="changeBackImg" Content="更改背景图片" HorizontalAlignment="Left" Margin="100,110,0,0" VerticalAlignment="Top" Width="95" Click="changeBackImg_Click"/>
-                    <Button x:Name="delBackImg" Content="清除背景图片" HorizontalAlignment="Left" Margin="200,110,0,0" VerticalAlignment="Top" Width="95" Click="delBackImg_Click"/>
+                    <Button x:Name="changeBackImg" Template="{StaticResource CustomButton}" Content="更改背景图片" HorizontalAlignment="Left" Margin="100,110,0,0" VerticalAlignment="Top" Width="95" Click="changeBackImg_Click"/>
+                    <Button x:Name="delBackImg" Template="{StaticResource CustomButton}" Content="清除背景图片" HorizontalAlignment="Left" Margin="200,110,0,0" VerticalAlignment="Top" Width="95" Click="delBackImg_Click"/>
                 </Grid>
             </Border>
         </StackPanel>

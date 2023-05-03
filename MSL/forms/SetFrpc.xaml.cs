@@ -39,8 +39,8 @@ namespace MSL
             loadingCircle.VerticalAlignment = VerticalAlignment.Top;
             loadingCircle.HorizontalAlignment = HorizontalAlignment.Left;
             loadingCircle.Margin=new Thickness(120,150,0,0);
-            MainGrid.Children.Add(loadingCircle);
-            MainGrid.RegisterName("loadingBar", loadingCircle);
+            BodyGrid.Children.Add(loadingCircle);
+            BodyGrid.RegisterName("loadingBar", loadingCircle);
             Thread thread = new Thread(GetFrpsInfo);
             thread.Start();
         }
@@ -202,8 +202,8 @@ namespace MSL
             this.Dispatcher.Invoke(DispatcherPriority.Normal, (ThreadStart)delegate ()
             {
                 LoadingCircle loadingCircle = MainGrid.FindName("loadingBar") as LoadingCircle;
-                MainGrid.Children.Remove(loadingCircle);
-                MainGrid.UnregisterName("loadingBar");
+                BodyGrid.Children.Remove(loadingCircle);
+                BodyGrid.UnregisterName("loadingBar");
             });
         }
         private void Button_Click(object sender, RoutedEventArgs e)

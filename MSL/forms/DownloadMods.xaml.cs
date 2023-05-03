@@ -34,8 +34,8 @@ namespace MSL
         public DownloadMods()
         {
             InitializeComponent();
-            Width += 16;
-            Height += 24;
+            //Width += 16;
+            //Height += 24;
         }
         class MODsInfo
         {

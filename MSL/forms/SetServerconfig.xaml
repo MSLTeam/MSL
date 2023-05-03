@@ -6,7 +6,7 @@
         xmlns:hc="https://handyorg.github.io/handycontrol"
         xmlns:local="clr-namespace:MSL"
         mc:Ignorable="d"
-        Title="配置服务器配置文件,请参照左边汉化文件对右侧配置文件进行修改" Height="450" Width="800" Loaded="Window_Loaded" Closing="Window_Closing" ResizeMode="CanMinimize" WindowStartupLocation="CenterScreen" Background="{DynamicResource BackgroundBrush}">
+        Title="配置服务器配置文件,请参照左边汉化文件对右侧配置文件进行修改" Height="450" Width="800" Loaded="Window_Loaded" Closing="Window_Closing" ShowInTaskbar="False" ResizeMode="NoResize" WindowStartupLocation="CenterScreen" Background="{DynamicResource BackgroundBrush}">
     <Grid>
         <TabControl HorizontalAlignment="Left" Height="419" VerticalAlignment="Top" Width="792" Background="{x:Null}">
             <TabItem x:Name="server" Header="server.properties" Background="{x:Null}">

@@ -20,7 +20,7 @@ namespace MSL
         public static string downloadPath;
         public static string filename;
         public static string downloadurl;
-        bool ifStop = false;
+        public static bool isStopDwn;
         //DispatcherTimer timer1 = new DispatcherTimer();
         //DispatcherTimer timer2 = new DispatcherTimer();
         //static Thread thread;
@@ -33,7 +33,7 @@ namespace MSL
             filename = _filename;
 
             taskinfo.Text = downloadinfo;
-            ifStop = false;
+            isStopDwn = false;
             Thread thread = new Thread(Downloader);
             thread.Start();
         }
@@ -63,7 +63,7 @@ namespace MSL
             // cancelled or download completed successfully.
             downloader.DownloadFileCompleted += OnDownloadFileCompleted;
             downloader.DownloadFileTaskAsync(downloadurl, downloadPath + @"\" + filename);
-            while (ifStop != true)
+            while (isStopDwn != true)
             {
                 Thread.Sleep(1000);
             }
@@ -79,7 +79,7 @@ namespace MSL
         }
         private void OnDownloadFileCompleted(object sender, AsyncCompletedEventArgs e)
         {
-            if (ifStop == true)
+            if (isStopDwn == true)
             {
                 this.Dispatcher.Invoke(DispatcherPriority.Normal, (ThreadStart)delegate ()
                 {
@@ -150,12 +150,12 @@ namespace MSL
         private void button1_Click(object sender, RoutedEventArgs e)
         {
             //Downloader.CancelAsync();
-            ifStop = true;
+            isStopDwn = true;
         }
 
         private void button1_MouseDoubleClick(object sender, MouseButtonEventArgs e)
         {
-            ifStop = true;
+            isStopDwn = true;
             Close();
         }
     }

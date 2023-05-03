@@ -2,6 +2,7 @@
 using System.Windows;
 using System.Windows.Controls;
 using System.Windows.Input;
+using System.Windows.Media;
 
 namespace MSL.pages
 {
@@ -13,6 +14,7 @@ namespace MSL.pages
         public About()
         {
             InitializeComponent();
+            AppVersionLab.Content += string.Format("(MSLv{0})", System.Reflection.Assembly.GetExecutingAssembly().GetName().Version.ToString());
         }
         private void Border_MouseLeftButtonUp(object sender, MouseButtonEventArgs e)
         {

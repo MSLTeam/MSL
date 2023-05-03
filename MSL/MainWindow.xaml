@@ -5,29 +5,25 @@
         xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
         xmlns:hc="https://handyorg.github.io/handycontrol"
         xmlns:local="clr-namespace:MSL"
+        xmlns:controls="clr-namespace:MSL.controls"
         x:Class="MSL.MainWindow"
-        MaxHeight="{StaticResource {x:Static SystemParameters.MaximizedPrimaryScreenHeightKey}}"
-        MaxWidth="{StaticResource {x:Static SystemParameters.MaximizedPrimaryScreenWidthKey}}"
         mc:Ignorable="d" Width="800" Height="500" MinWidth="800" MinHeight="500"
         WindowStartupLocation="CenterScreen" Loaded="Window_Loaded" Closing="Window_Closing" Icon="icon.ico"
         Title="Minecraft Server Launcher" ResizeMode="CanResize"  Background="{DynamicResource BackgroundBrush}"
         Activated="Window_Activated" Deactivated="Window_Deactivated" SizeChanged="Window_SizeChanged">
-    <WindowChrome.WindowChrome>
-        <WindowChrome GlassFrameThickness="-1" CaptionHeight="40"/>
-    </WindowChrome.WindowChrome>
     <Window.Resources>
         <ControlTemplate x:Key="SideMenuTemplate" TargetType="{x:Type ListBoxItem}">
-            <Border CornerRadius="5" Background="{DynamicResource SideMenuItemBrush}" Name="Border">
+            <Border CornerRadius="5" Background="{DynamicResource SideMenuItemBrush}" x:Name="Border">
                 <Grid>
-                    <Rectangle Fill="{DynamicResource SideMenuItemBrush}" RadiusX="5" RadiusY="5" HorizontalAlignment="Left" Width="3" Height="24" Name="Rect"/>
-                    <ContentPresenter RecognizesAccessKey="True" Margin="{TemplateBinding Padding}"></ContentPresenter>
+                    <Rectangle Fill="{DynamicResource SideMenuItemBrush}" RadiusX="5" RadiusY="5" HorizontalAlignment="Left" Width="3" Height="24" x:Name="Rect"/>
+                    <ContentPresenter RecognizesAccessKey="True" Margin="{TemplateBinding Padding}"/>
                 </Grid>
             </Border>
             <ControlTemplate.Triggers>
                 <MultiDataTrigger>
                     <MultiDataTrigger.Conditions>
-                        <Condition Binding="{Binding Path=IsMouseOver, RelativeSource={RelativeSource Self}}" Value="True"/>
-                        <Condition Binding="{Binding Path=IsSelected, RelativeSource={RelativeSource Self}}" Value="False"/>
+                        <Condition Binding="{Binding IsMouseOver, RelativeSource={RelativeSource Self}}" Value="True"/>
+                        <Condition Binding="{Binding IsSelected, RelativeSource={RelativeSource Self}}" Value="False"/>
                     </MultiDataTrigger.Conditions>
                     <MultiDataTrigger.EnterActions>
                         <BeginStoryboard>
@@ -55,27 +51,39 @@
             </ControlTemplate.Triggers>
         </ControlTemplate>
     </Window.Resources>
+    <WindowChrome.WindowChrome>
+        <WindowChrome GlassFrameThickness="-1" CaptionHeight="40"/>
+    </WindowChrome.WindowChrome>
+    <Window.DataContext>
+        <controls:WindowViewModel/>
+    </Window.DataContext>
     <Grid x:Name="MainGrid">
-        <Grid x:Name="TitleGrid" Height="40" VerticalAlignment="Top" Background="{DynamicResource PrimaryBrush}">
-            <Image HorizontalAlignment="Left" Source="/icon.ico" VerticalAlignment="Center" Width="20" Height="20" Margin="10,0,0,0"/>
-            <TextBlock x:Name="TitleBox" Text="Minecraft Server Launcher" Foreground="White" FontSize="14" HorizontalAlignment="Left" VerticalAlignment="Center" Margin="35,0,0,0"/>
-            <Button x:Name="MinBtn" WindowChrome.IsHitTestVisibleInChrome="True" hc:IconElement.Geometry="{StaticResource WindowMinGeometry}" hc:BorderElement.CornerRadius="30" VerticalAlignment="Center" Height="32" Width="32" HorizontalAlignment="Right" Margin="0,0,90,0" BorderBrush="{x:Null}" Foreground="White" Click="MinBtn_Click">
-                <Button.Background>
-                    <SolidColorBrush Color="White" Opacity="0.1"/>
-                </Button.Background>
-            </Button>
-            <Button x:Name="MaxBtn" WindowChrome.IsHitTestVisibleInChrome="True" hc:IconElement.Geometry="{StaticResource WindowMaxGeometry}" hc:BorderElement.CornerRadius="30" VerticalAlignment="Center" Height="32" Width="32" HorizontalAlignment="Right" Margin="0,0,50,0" BorderBrush="{x:Null}" Foreground="White" Click="MaxBtn_Click">
-                <Button.Background>
-                    <SolidColorBrush Color="White" Opacity="0.1"/>
-                </Button.Background>
-            </Button>
-            <Button x:Name="CloseBtn" WindowChrome.IsHitTestVisibleInChrome="True" hc:IconElement.Geometry="{StaticResource CloseGeometry}" hc:BorderElement.CornerRadius="30" VerticalAlignment="Center" Height="32" Width="32" HorizontalAlignment="Right" Margin="0,0,10,0" BorderBrush="{x:Null}" Foreground="White" Click="CloseBtn_Click">
-                <Button.Background>
-                    <SolidColorBrush Color="White" Opacity="0.1"/>
-                </Button.Background>
-            </Button>
-        </Grid>
-        <Grid x:Name="BodyGrid" Margin="0,40,0,0">
+        <Grid.RowDefinitions>
+            <RowDefinition Height="40"/>
+            <RowDefinition/>
+        </Grid.RowDefinitions>
+        <DockPanel x:Name="TitleGrid" Grid.Row="0" Background="{DynamicResource PrimaryBrush}">
+            <Image HorizontalAlignment="Left" Source="{Binding Icon, RelativeSource={RelativeSource AncestorType={x:Type Window}, Mode=FindAncestor}}" Width="20" Height="20" Margin="10,0,0,0"/>
+            <TextBlock x:Name="TitleBox" Text="{Binding Title, RelativeSource={RelativeSource AncestorType={x:Type Window}, Mode=FindAncestor}}" Foreground="White" FontSize="14" VerticalAlignment="Center" Margin="5,0,0,0"/>
+            <StackPanel Orientation="Horizontal" HorizontalAlignment="Right" WindowChrome.IsHitTestVisibleInChrome="True">
+                <Button x:Name="MinBtn" hc:IconElement.Geometry="{StaticResource WindowMinGeometry}" hc:BorderElement.CornerRadius="30" Height="32" Width="32" Margin="0,0,10,0" BorderBrush="{x:Null}" Foreground="White" Command="{Binding MinimizeCommand}" CommandParameter="{Binding RelativeSource={RelativeSource AncestorType=Window}}">
+                    <Button.Background>
+                        <SolidColorBrush Color="White" Opacity="0.1"/>
+                    </Button.Background>
+                </Button>
+                <Button x:Name="MaxBtn" hc:IconElement.Geometry="{StaticResource WindowMaxGeometry}" hc:BorderElement.CornerRadius="30" Height="32" Width="32" Margin="0,0,10,0" BorderBrush="{x:Null}" Foreground="White" Command="{Binding MaximizeCommand}" CommandParameter="{Binding RelativeSource={RelativeSource AncestorType=Window}}">
+                    <Button.Background>
+                        <SolidColorBrush Color="White" Opacity="0.1"/>
+                    </Button.Background>
+                </Button>
+                <Button x:Name="CloseBtn" hc:IconElement.Geometry="{StaticResource CloseGeometry}" hc:BorderElement.CornerRadius="30" Height="32" Width="32" Margin="0,0,10,0" BorderBrush="{x:Null}" Foreground="White" Command="{Binding CloseCommand}" CommandParameter="{Binding RelativeSource={RelativeSource AncestorType=Window}}">
+                    <Button.Background>
+                        <SolidColorBrush Color="White" Opacity="0.1"/>
+                    </Button.Background>
+                </Button>
+            </StackPanel>
+        </DockPanel>
+        <Grid x:Name="BodyGrid" Grid.Row="1">
             <Border x:Name="SideMenuBorder" Background="{DynamicResource SideMenuBrush}" BorderBrush="{DynamicResource BorderBrush}" BorderThickness="0,0,1,0" HorizontalAlignment="Left">
                 <StackPanel>
                     <Button x:Name="sideMenuContextOpen" HorizontalAlignment="Left" VerticalAlignment="Top" Width="50" Height="42" BorderBrush="{x:Null}" Click="sideMenuContextOpen_Click">
@@ -124,11 +132,21 @@
                 </StackPanel>
             </Border>
 
-            <Frame Margin="50,0,0,0" Name="frame" NavigationUIVisibility="Hidden" BorderBrush="{x:Null}"/>
+            <Frame Margin="50,0,0,0" x:Name="frame" NavigationUIVisibility="Hidden" BorderBrush="{x:Null}"/>
 
             <ScrollViewer VerticalScrollBarVisibility="Hidden" HorizontalAlignment="Right" VerticalAlignment="Top">
-                <StackPanel Name="GrowlPanel" hc:Growl.GrowlParent="True" VerticalAlignment="Top" Margin="0,10,10,10" />
+                <StackPanel x:Name="GrowlPanel" hc:Growl.GrowlParent="True" VerticalAlignment="Top" Margin="0,10,10,10" />
             </ScrollViewer>
+
+            <hc:NotifyIcon x:Name="MainNoticyIcon" Text="Minecraft Server Launcher" Visibility="Hidden" MouseDoubleClick="MainNoticyIcon_MouseDoubleClick">
+                <hc:NotifyIcon.ContextMenu>
+                    <ContextMenu>
+                        <MenuItem Command="hc:ControlCommands.PushMainWindow2Top" Header="打开主界面"/>
+                        <MenuItem x:Name="NotifyClose" Header="退出程序" Click="NotifyClose_Click"/>
+                    </ContextMenu>
+                </hc:NotifyIcon.ContextMenu>
+            </hc:NotifyIcon>
+
         </Grid>
     </Grid>
 </Window>

@@ -32,17 +32,15 @@ namespace MSL
     /// </summary>
     public partial class MainWindow : Window
     {
-        public static string update = "v3.4.8.3";
-        Home _homePage = new Home();
-        ServerList _listPage = new ServerList();
-        FrpcPage _frpcPage = new FrpcPage();
-        OnlinePage _onlinePage = new OnlinePage();
-        SettingsPage _setPage = new SettingsPage();
-        About _aboutPage = new About();
+        //public static string update = "v3.4.8.4";
+        readonly Home _homePage = new Home();
+        readonly ServerList _listPage = new ServerList();
+        readonly FrpcPage _frpcPage = new FrpcPage();
+        readonly OnlinePage _onlinePage = new OnlinePage();
+        readonly SettingsPage _setPage = new SettingsPage();
+        readonly About _aboutPage = new About();
         public static event DeleControl AutoOpenServer;
         public static event DeleControl AutoOpenFrpc;
-        //public static event DeleControl RunningFormChangeTitle;
-        public static event DeleControl CloseNotify;
         public static string serverid;
         public static string serverLink;
         public static float PhisicalMemory;
@@ -58,18 +56,19 @@ namespace MSL
             SettingsPage.ChangeTitleStyle += ChangeTitleStyle;
         }
 
-        [DllImport("kernel32.dll")]
-        public static extern uint WinExec(string lpCmdLine, uint uCmdShow);
         private void Window_Loaded(object sender, RoutedEventArgs e)
         {
             LoadingCircle loadingCircle = new LoadingCircle();
-            MainGrid.Children.Add(loadingCircle);
-            MainGrid.RegisterName("loadingBar", loadingCircle);
+            BodyGrid.Children.Add(loadingCircle);
+            BodyGrid.RegisterName("loadingBar", loadingCircle);
 
             Thread thread = new Thread(AsyncLoadEvent);
             thread.Start();
         }
-        void AsyncLoadEvent()
+
+        //[DllImport("kernel32.dll")]
+        //public static extern uint WinExec(string lpCmdLine, uint uCmdShow);
+        private void AsyncLoadEvent()
         {
             //get serverlink
             try
@@ -154,9 +153,10 @@ namespace MSL
                 }
                 else if (jsonObject["notifyIcon"].ToString() == "True")
                 {
-                    NotifyForm fw = new NotifyForm();
-                    fw.Show();
-                    fw.NotifyFormShowEvent += NotifyFormShow;
+                    this.Dispatcher.Invoke(DispatcherPriority.Normal, (ThreadStart)delegate ()
+                    {
+                        CtrlNotifyIcon();
+                    });
                 }
             }
             catch
@@ -402,16 +402,22 @@ namespace MSL
                 int IndexofA = pageHtml.IndexOf(strtempa);
                 string Ru = pageHtml.Substring(IndexofA + 1);
                 string aaa = Ru.Substring(0, Ru.IndexOf("#"));
-                if (aaa != update)
+                if (aaa.Contains("v"))
+                {
+                    aaa = aaa.Replace("v", "");
+                }
+                Version newVersion = new Version(aaa);
+                Version version = new Version(System.Reflection.Assembly.GetExecutingAssembly().GetName().Version.ToString());
+                
+                if (newVersion > version)
                 {
                     byte[] _updatelog = MyWebClient.DownloadData(MainWindow.serverLink + @"/msl/updatelog.txt");
                     string updatelog = Encoding.UTF8.GetString(_updatelog);
                     this.Dispatcher.Invoke(DispatcherPriority.Normal, (ThreadStart)delegate ()
                     {
-                        DialogShow.ShowMsg(this, "发现新版本，版本号为：" + aaa + "，是否进行更新？\n更新日志：\n" + updatelog, "更新", true, "取消");
-                        if (MessageDialog._dialogReturn == true)
+                        bool dialog = DialogShow.ShowMsg(this, "发现新版本，版本号为：" + aaa + "，是否进行更新？\n更新日志：\n" + updatelog, "更新", true, "取消");
+                        if (dialog == true)
                         {
-                            MessageDialog._dialogReturn = false;
                             string strtempa1 = "* ";
                             int IndexofA1 = pageHtml.IndexOf(strtempa1);
                             string Ru1 = pageHtml.Substring(IndexofA1 + 2);
@@ -419,12 +425,35 @@ namespace MSL
                             DialogShow.ShowDownload(this, aaa1, AppDomain.CurrentDomain.BaseDirectory, "MSL" + aaa + ".exe", "下载新版本中……");
                             if (File.Exists(AppDomain.CurrentDomain.BaseDirectory + "MSL" + aaa + ".exe"))
                             {
-                                string vBatFile = System.IO.Path.GetDirectoryName(AppDomain.CurrentDomain.BaseDirectory) + @"\DEL.bat";
+                                /*
+                                string vBatFile = Path.GetDirectoryName(AppDomain.CurrentDomain.BaseDirectory) + @"\DEL.bat";
                                 using (StreamWriter vStreamWriter = new StreamWriter(vBatFile, false, Encoding.Default))
                                 {
                                     vStreamWriter.Write(string.Format(":del\r\n del \"" + System.Windows.Forms.Application.ExecutablePath + "\"\r\n " + "if exist \"" + System.Windows.Forms.Application.ExecutablePath + "\" goto del\r\n " + "start /d \"" + AppDomain.CurrentDomain.BaseDirectory + "\" MSL" + aaa + ".exe" + "\r\n" + " del %0\r\n", AppDomain.CurrentDomain.BaseDirectory));
                                 }
                                 WinExec(vBatFile, 0);
+                                Process.GetCurrentProcess().Kill();
+                                */
+                                string oldExePath = Process.GetCurrentProcess().MainModule.ModuleName;
+                                string dwnExePath = Path.Combine(AppDomain.CurrentDomain.BaseDirectory, "MSL" + aaa + ".exe");
+                                string newExeDir = AppDomain.CurrentDomain.BaseDirectory;
+
+                                // 输出CMD命令以便调试
+                                string cmdCommand = "/C choice /C Y /N /D Y /T 1 & Del \"" + oldExePath + "\" & Ren \"" + "MSL" + aaa + ".exe" + "\" \"MSL.exe\" & start \"\" \"MSL.exe\"";
+                                MessageBox.Show(cmdCommand);
+
+                                // 关闭当前运行中的应用程序
+                                Application.Current.Shutdown();
+
+                                // 删除旧版本并启动新版本
+                                Process delProcess = new Process();
+                                delProcess.StartInfo.FileName = "cmd.exe";
+                                delProcess.StartInfo.Arguments = cmdCommand;
+                                Directory.SetCurrentDirectory(newExeDir);
+                                delProcess.StartInfo.WindowStyle = ProcessWindowStyle.Hidden;
+                                delProcess.Start();
+
+                                // 退出当前进程
                                 Process.GetCurrentProcess().Kill();
                             }
                             else
@@ -437,6 +466,10 @@ namespace MSL
                             Growl.Error("您拒绝了更新新版本，若在此版本中遇到bug，请勿报告给作者！");
                         }
                     });
+                }
+                else if(newVersion<version)
+                {
+                    Growl.Info("当前版本高于正式版本，若使用中遇到BUG，请及时反馈！");
                 }
                 else
                 {
@@ -590,16 +623,12 @@ namespace MSL
                 SideMenu.IsEnabled = true;
                 SideMenu.SelectedIndex = 0;
                 LoadingCircle loadingCircle = MainGrid.FindName("loadingBar") as LoadingCircle;
-                MainGrid.Children.Remove(loadingCircle);
-                MainGrid.UnregisterName("loadingBar");
-                TitleBox.Text = "Minecraft Server Launcher " + update;
+                BodyGrid.Children.Remove(loadingCircle);
+                BodyGrid.UnregisterName("loadingBar");
+                //TitleBox.Text = "Minecraft Server Launcher " + update;
             });
         }
 
-        private void NotifyFormShow()
-        {
-            this.Visibility = Visibility.Visible;
-        }
         private static long GetPhisicalMemory()
         {
             long amemory = 0;
@@ -618,31 +647,42 @@ namespace MSL
 
         private void Window_Closing(object sender, System.ComponentModel.CancelEventArgs e)
         {
-            if (NotifyForm.isNotifyOpen)
+            if (MainNoticyIcon.Visibility == Visibility.Visible)
             {
                 e.Cancel = true;
                 this.Visibility = Visibility.Hidden;
                 return;
             }
+            else if (CloseApp())
+            {
+                Application.Current.Shutdown();
+                Process.GetCurrentProcess().Kill();
+            }
+            else
+            {
+                e.Cancel = true;
+            }
+        }
+        private bool CloseApp()
+        {
             try
             {
                 if (ServerList.RunningServerIDs != "" || FrpcPage.FRPCMD.HasExited == false || OnlinePage.FRPCMD.HasExited == false)
                 {
-                    DialogShow.ShowMsg(this, "您的服务器、内网映射或联机功能正在运行中，关闭软件可能会让服务器进程在后台一直运行并占用资源！确定要继续关闭吗？\n注：如果想隐藏主窗口的话，请前往设置打开托盘图标", "警告", true, "取消");
-                    if (MessageDialog._dialogReturn == true)
+                    bool dialog = DialogShow.ShowMsg(this, "您的服务器、内网映射或联机功能正在运行中，关闭软件可能会让服务器进程在后台一直运行并占用资源！确定要继续关闭吗？\n注：如果想隐藏主窗口的话，请前往设置打开托盘图标", "警告", true, "取消");
+                    if (dialog == true)
                     {
-                        MessageDialog._dialogReturn = false;
-                        Process.GetCurrentProcess().Kill();
+                        return true;
                     }
                     else
                     {
-                        e.Cancel = true;
+                        return false;
                     }
 
                 }
                 else
                 {
-                    Process.GetCurrentProcess().Kill();
+                    return true;
                 }
             }
             catch
@@ -651,20 +691,19 @@ namespace MSL
                 {
                     if (FrpcPage.FRPCMD.HasExited == false || OnlinePage.FRPCMD.HasExited == false)
                     {
-                        DialogShow.ShowMsg(this, "内网映射或联机功能正在运行中，关闭软件可能会让内网映射进程在后台一直运行并占用资源！确定要继续关闭吗？\n如果想隐藏主窗口的话，请前往设置打开托盘图标", "警告", true, "取消");
-                        if (MessageDialog._dialogReturn == true)
+                        bool dialog = DialogShow.ShowMsg(this, "内网映射或联机功能正在运行中，关闭软件可能会让内网映射进程在后台一直运行并占用资源！确定要继续关闭吗？\n如果想隐藏主窗口的话，请前往设置打开托盘图标", "警告", true, "取消");
+                        if (dialog == true)
                         {
-                            MessageDialog._dialogReturn = false;
-                            Process.GetCurrentProcess().Kill();
+                            return true;
                         }
                         else
                         {
-                            e.Cancel = true;
+                            return false;
                         }
                     }
                     else
                     {
-                        Process.GetCurrentProcess().Kill();
+                        return true;
                     }
                 }
                 catch
@@ -673,42 +712,38 @@ namespace MSL
                     {
                         if (OnlinePage.FRPCMD.HasExited == false)
                         {
-                            DialogShow.ShowMsg(this, "联机功能正在运行中，关闭软件可能会让内网映射进程在后台一直运行并占用资源！确定要继续关闭吗？\n如果想隐藏主窗口的话，请前往设置打开托盘图标", "警告", true, "取消");
-                            if (MessageDialog._dialogReturn == true)
+                            bool dialog = DialogShow.ShowMsg(this, "联机功能正在运行中，关闭软件可能会让内网映射进程在后台一直运行并占用资源！确定要继续关闭吗？\n如果想隐藏主窗口的话，请前往设置打开托盘图标", "警告", true, "取消");
+                            if (dialog== true)
                             {
-                                MessageDialog._dialogReturn = false;
-                                Process.GetCurrentProcess().Kill();
+                                return true;
                             }
                             else
                             {
-                                e.Cancel = true;
+                                return false;
                             }
                         }
                         else
                         {
-                            Process.GetCurrentProcess().Kill();
+                            return true;
                         }
                     }
                     catch
                     {
-                        Process.GetCurrentProcess().Kill();
+                        return true;
                     }
                 }
             }
         }
 
-
         void CtrlNotifyIcon()//C_NotifyIcon
         {
-            if (NotifyForm.isNotifyOpen)
+            if (MainNoticyIcon.Visibility==Visibility.Hidden)
             {
-                CloseNotify();
+                MainNoticyIcon.Visibility = Visibility.Visible;
             }
             else
             {
-                NotifyForm fw = new NotifyForm();
-                fw.Show();
-                fw.NotifyFormShowEvent += NotifyFormShow;
+                MainNoticyIcon.Visibility = Visibility.Hidden;
             }
         }
 
@@ -829,25 +864,6 @@ namespace MSL
             }
         }
 
-        private void MinBtn_Click(object sender, RoutedEventArgs e)
-        {
-            this.WindowState = WindowState.Minimized;
-        }
-        private void MaxBtn_Click(object sender, RoutedEventArgs e)
-        {
-            if (WindowState == WindowState.Normal)
-            {
-                WindowState = WindowState.Maximized;
-            }
-            else
-            {
-                WindowState = WindowState.Normal;
-            }
-        }
-        private void CloseBtn_Click(object sender, RoutedEventArgs e)
-        {
-            this.Close();
-        }
         private void Window_SizeChanged(object sender, SizeChangedEventArgs e)
         {
             if (this.WindowState == WindowState.Maximized)
@@ -858,6 +874,24 @@ namespace MSL
             else
             {
                 MainGrid.Margin = new Thickness(0);
+            }
+        }
+
+        private void MainNoticyIcon_MouseDoubleClick(object sender, RoutedEventArgs e)
+        {
+            this.Visibility = Visibility.Visible;
+        }
+
+        private void NotifyClose_Click(object sender, RoutedEventArgs e)
+        {
+            if (CloseApp())
+            {
+                Application.Current.Shutdown();
+                Process.GetCurrentProcess().Kill();
+            }
+            else
+            {
+                return;
             }
         }
     }

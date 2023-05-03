@@ -4,33 +4,54 @@
         xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
         xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
         xmlns:hc="https://handyorg.github.io/handycontrol"
+        xmlns:controls="clr-namespace:MSL.controls"
         xmlns:local="clr-namespace:MSL"
         mc:Ignorable="d"
-        Title="下载Mod" Height="460" Width="810" WindowStartupLocation="CenterOwner" ResizeMode="CanMinimize" Loaded="Window_Loaded" Background="{DynamicResource BackgroundBrush}" Closing="window_Closing">
-    <Grid>
-        <ListView x:Name="listBox" MouseDoubleClick="listBox_MouseDoubleClick" HorizontalAlignment="Center" VerticalAlignment="Center" Height="351" Width="790" Background="{DynamicResource BorderBackground}">
-            <ListView.View>
-                <GridView>
-                    <GridViewColumn x:Name="listBoxColumnName" Width="750">
-                        <GridViewColumn.CellTemplate>
-                            <DataTemplate>
-                                <Grid>
-                                    <Image Height="18" Width="18" Name="imageName"  Source="{Binding Icon}" HorizontalAlignment="Left"/>
-                                    <TextBlock Margin="30,0,0,0" Width="Auto" Text="{Binding State}"/>
-                                </Grid>
-                            </DataTemplate>
-                        </GridViewColumn.CellTemplate>
-                    </GridViewColumn>
-                </GridView>
-            </ListView.View>
-        </ListView>
-        <TextBox x:Name="textBox1" ContextMenu="{DynamicResource UIContextMenu}" HorizontalAlignment="Left" Margin="258,10,0,0" TextWrapping="Wrap" Text="" VerticalAlignment="Top" Width="260"/>
-        <Button x:Name="searchMod" Content="搜索" Margin="523,10,0,0" VerticalAlignment="Top" Click="searchMod_Click" HorizontalAlignment="Left"/>
-        <Label x:Name="label1" Content="下载进度……" HorizontalAlignment="Left" Margin="0,402,0,0" VerticalAlignment="Top" Background="{x:Null}" BorderBrush="{x:Null}"/>
-        <ProgressBar x:Name="pbar" HorizontalAlignment="Center" Height="15" Margin="0,430,0,0" VerticalAlignment="Top" Width="810"/>
-        <Label x:Name="lb01" Content="加载中，请耐心等待……" HorizontalAlignment="Left" Margin="619,11,0,0" VerticalAlignment="Top" Background="{x:Null}" BorderBrush="{x:Null}" Foreground="Red" Visibility="Hidden"/>
-        <Label Content="搜索Mod" Margin="154,4,0,0" VerticalAlignment="Top" FontSize="18" BorderBrush="{x:Null}" Background="{x:Null}" HorizontalAlignment="Left" Height="37"/>
-        <hc:LoadingCircle x:Name="lCircle" HorizontalAlignment="Left" Height="34" Margin="574,8,0,0" VerticalAlignment="Top" Width="40" Visibility="Hidden"/>
-        <Button x:Name="backBtn" Content="返回" Margin="10,10,0,0" VerticalAlignment="Top" Click="backBtn_Click" Width="139" IsEnabled="False" HorizontalAlignment="Left"/>
+        Title="MSL-下载Mod" Height="460" Width="810" WindowStartupLocation="CenterOwner" ResizeMode="CanMinimize" Loaded="Window_Loaded" Background="{DynamicResource BackgroundBrush}" Closing="window_Closing">
+    <WindowChrome.WindowChrome>
+        <WindowChrome GlassFrameThickness="-1" CaptionHeight="40"/>
+    </WindowChrome.WindowChrome>
+    <Window.DataContext>
+        <controls:WindowViewModel/>
+    </Window.DataContext>
+    <Grid x:Name="MainGrid">
+        <Grid.RowDefinitions>
+            <RowDefinition Height="40"/>
+            <RowDefinition/>
+        </Grid.RowDefinitions>
+        <DockPanel x:Name="TitleGrid" Grid.Row="0" Background="{DynamicResource SideMenuBrush}">
+            <TextBlock x:Name="TitleBox" Text="{Binding Title, RelativeSource={RelativeSource AncestorType={x:Type Window}, Mode=FindAncestor}}" Foreground="{StaticResource TextBlockBrush}" FontSize="14" VerticalAlignment="Center" Margin="10,0,0,0"/>
+            <Button x:Name="CloseBtn" HorizontalAlignment="Right" WindowChrome.IsHitTestVisibleInChrome="True" hc:IconElement.Geometry="{StaticResource CloseGeometry}" hc:BorderElement.CornerRadius="30" Height="32" Width="32" Margin="0,0,10,0" BorderBrush="{x:Null}" Foreground="{StaticResource TextBlockBrush}" Command="{Binding CloseCommand}" CommandParameter="{Binding RelativeSource={RelativeSource AncestorType=Window}}">
+                <Button.Background>
+                    <SolidColorBrush Color="White" Opacity="0.1"/>
+                </Button.Background>
+            </Button>
+        </DockPanel>
+        <Grid x:Name="BodyGrid" Grid.Row="1">
+            <ListView x:Name="listBox" MouseDoubleClick="listBox_MouseDoubleClick" Background="{DynamicResource BorderBackground}" Margin="10,50,10,50">
+                <ListView.View>
+                    <GridView>
+                        <GridViewColumn x:Name="listBoxColumnName" Width="750">
+                            <GridViewColumn.CellTemplate>
+                                <DataTemplate>
+                                    <Grid>
+                                        <Image Height="18" Width="18" Name="imageName"  Source="{Binding Icon}" HorizontalAlignment="Left"/>
+                                        <TextBlock Margin="30,0,0,0" Width="Auto" Text="{Binding State}"/>
+                                    </Grid>
+                                </DataTemplate>
+                            </GridViewColumn.CellTemplate>
+                        </GridViewColumn>
+                    </GridView>
+                </ListView.View>
+            </ListView>
+            <TextBox x:Name="textBox1" ContextMenu="{DynamicResource UIContextMenu}" HorizontalAlignment="Left" Margin="258,10,0,0" TextWrapping="Wrap" Text="" VerticalAlignment="Top" Width="260"/>
+            <Button x:Name="searchMod" Content="搜索" Margin="523,10,0,0" VerticalAlignment="Top" Click="searchMod_Click" HorizontalAlignment="Left"/>
+            <Label x:Name="label1" Content="下载进度……" HorizontalAlignment="Left" VerticalAlignment="Bottom" Background="{x:Null}" BorderBrush="{x:Null}" Margin="0,0,0,20"/>
+            <ProgressBar x:Name="pbar" HorizontalAlignment="Center" Height="15" Width="810" VerticalAlignment="Bottom"/>
+            <Label x:Name="lb01" Content="加载中，请耐心等待……" HorizontalAlignment="Left" Margin="619,11,0,0" VerticalAlignment="Top" Background="{x:Null}" BorderBrush="{x:Null}" Foreground="Red" Visibility="Hidden"/>
+            <Label Content="搜索Mod" Margin="154,4,0,0" VerticalAlignment="Top" FontSize="18" BorderBrush="{x:Null}" Background="{x:Null}" HorizontalAlignment="Left" Height="37"/>
+            <hc:LoadingCircle x:Name="lCircle" HorizontalAlignment="Left" Height="34" Margin="574,8,0,0" VerticalAlignment="Top" Width="40" Visibility="Hidden"/>
+            <Button x:Name="backBtn" Content="返回" Margin="10,10,0,0" VerticalAlignment="Top" Click="backBtn_Click" Width="139" IsEnabled="False" HorizontalAlignment="Left"/>
+        </Grid>
     </Grid>
 </Window>

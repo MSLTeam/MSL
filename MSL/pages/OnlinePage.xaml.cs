@@ -22,6 +22,7 @@ using System.Windows.Shapes;
 using Window = System.Windows.Window;
 using MessageBox = System.Windows.MessageBox;
 using MSL.controls;
+using System.Text.RegularExpressions;
 
 namespace MSL.pages
 {
@@ -70,10 +71,14 @@ namespace MSL.pages
                 string a = File.ReadAllText(AppDomain.CurrentDomain.BaseDirectory + "MSL\\P2Pfrpc");
                 if (a.IndexOf("role = visitor") + 1 == 0)
                 {
-                    masterQQ.Text = a.Substring(a.LastIndexOf("[") + 1, a.LastIndexOf("]") - (a.LastIndexOf("[") + 1));
-                    masterKey.Text = a.Substring(a.IndexOf("sk = ") + 5, a.LastIndexOf("\r\n") - (a.IndexOf("sk = ") + 5));
-                    string port = a.Substring(a.IndexOf("local_port = ") + 13);
-                    masterPort.Text = port.Substring(0, a.IndexOf("\r\n") - 3);
+                    string pattern = @"\[(\w+)\]\s*type\s*=\s*xtcp\s*local_ip\s*=\s*(\S+)\s*local_port\s*=\s*(\d+)\s*sk\s*=\s*(\S+)";
+                    Match match = Regex.Match(a, pattern);
+                    if (match.Success)
+                    {
+                        masterQQ.Text = match.Groups[1].Value;
+                        masterKey.Text = match.Groups[4].Value;
+                        masterPort.Text = match.Groups[3].Value;
+                    }
                 }
                 
                 masterQQ.IsEnabled = true;
@@ -107,11 +112,14 @@ namespace MSL.pages
                 string a = File.ReadAllText(AppDomain.CurrentDomain.BaseDirectory + "MSL\\P2Pfrpc");
                 if (a.IndexOf("role = visitor") + 1 != 0)
                 {
-                    string qq = a.Substring(a.IndexOf("server_name = ") + 14);
-                    visiterQQ.Text = qq.Substring(0, a.IndexOf("\r\n") - 3);
-                    visiterKey.Text = a.Substring(a.IndexOf("sk = ") + 5, a.LastIndexOf("\r\n") - (a.IndexOf("sk = ") + 5));
-                    string port = a.Substring(a.IndexOf("bind_port = ") + 12);
-                    visiterPort.Text = port.Substring(0, a.IndexOf("\r\n") - 3);
+                    string pattern = @"server_name\s*=\s*(\S+)\s*sk\s*=\s*(\S+)\s*bind_port\s*=\s*(\d+)";
+                    Match match = Regex.Match(a, pattern);
+                    if (match.Success)
+                    {
+                        visiterQQ.Text = match.Groups[1].Value;
+                        visiterKey.Text = match.Groups[2].Value;
+                        visiterPort.Text = match.Groups[3].Value;
+                    }
                 }
 
                 visiterQQ.IsEnabled = true;

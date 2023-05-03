@@ -8,16 +8,13 @@
       mc:Ignorable="d" 
       d:DesignHeight="460" d:DesignWidth="750"
       Title="ServerList" Loaded="Page_Loaded">
-    <Page.Resources>
-        <ResourceDictionary>
-            <Storyboard x:Key="ShowWindow" >
-                <DoubleAnimation Duration="0:0:0.15" From="0" To="1" Storyboard.TargetProperty="Opacity" FillBehavior="Stop"/>
-            </Storyboard>
-        </ResourceDictionary>
-    </Page.Resources>
+    <Page.RenderTransform>
+        <TranslateTransform/>
+    </Page.RenderTransform>
+
     <Page.Triggers>
         <EventTrigger RoutedEvent="Loaded">
-            <BeginStoryboard Storyboard="{StaticResource ShowWindow}"/>
+            <BeginStoryboard Storyboard="{StaticResource ShowPage}"/>
         </EventTrigger>
     </Page.Triggers>
     <Grid>

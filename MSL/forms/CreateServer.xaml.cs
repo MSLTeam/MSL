@@ -15,6 +15,7 @@ using System.Runtime.InteropServices;
 using System.Text;
 using System.Text.RegularExpressions;
 using System.Threading;
+using System.Threading.Tasks;
 using System.Windows;
 using System.Windows.Controls;
 using System.Windows.Forms;
@@ -120,7 +121,7 @@ namespace MSL.forms
                 throw new DirectoryNotFoundException("源目录不存在！");
             }
         }
-        private void next3_Click(object sender, RoutedEventArgs e)
+        private async void next3_Click(object sender, RoutedEventArgs e)
         {
             if (useJVself.IsChecked == true)
             {
@@ -128,7 +129,10 @@ namespace MSL.forms
                 //MainWindow.serverserver = txb3.Text;
                 javagrid.Visibility = Visibility.Hidden;
                 servergrid.Visibility = Visibility.Visible;
-                CheckServerPackCore();
+                await this.Dispatcher.InvokeAsync(() =>
+                {
+                    CheckServerPackCore();
+                });
             }
             else if (usejvPath.IsChecked == true)
             {
@@ -136,26 +140,32 @@ namespace MSL.forms
                 //MainWindow.serverserver = txb3.Text;
                 javagrid.Visibility = Visibility.Hidden;
                 servergrid.Visibility = Visibility.Visible;
-                CheckServerPackCore();
+                await this.Dispatcher.InvokeAsync(() =>
+                {
+                    CheckServerPackCore();
+                });
             }
             else if (usecheckedjv.IsChecked == true)
-            { 
+            {
                 string a = selectCheckedJavaComb.Items[selectCheckedJavaComb.SelectedIndex].ToString();
-                serverjava = a.Substring(a.IndexOf(":")+1);
+                serverjava = a.Substring(a.IndexOf(":") + 1);
                 javagrid.Visibility = Visibility.Hidden;
                 servergrid.Visibility = Visibility.Visible;
-                CheckServerPackCore();
+                await this.Dispatcher.InvokeAsync(() =>
+                {
+                    CheckServerPackCore();
+                });
             }
-            else if (usedownloadjv.IsChecked==true)
+            else if (usedownloadjv.IsChecked == true)
             {
                 try
                 {
-                    WebClient MyWebClient = new WebClient();
-                    byte[] pageData = MyWebClient.DownloadData(MainWindow.serverLink + @"/msl/otherdownload.json");
-                    string _javaList = Encoding.UTF8.GetString(pageData);
+                    outlog.Content = "当前进度:获取Java下载地址……";
+                    string _javaList = await AsyncGetJavaDwnLink();
 
                     JObject javaList0 = JObject.Parse(_javaList);
                     JObject javaList = (JObject)javaList0["java"];
+                    outlog.Content = "当前进度:下载Java……";
 
                     next3.IsEnabled = false;
                     return5.IsEnabled = false;
@@ -163,29 +173,69 @@ namespace MSL.forms
                     {
                         try
                         {
-                            switch (selectJavaComb.SelectedIndex)
+                            int dwnJava = 0;
+                            await this.Dispatcher.InvokeAsync(() =>
                             {
-                                case 0:
-                                    DownloadJava("Java8", javaList["Java8"].ToString());
-                                    break;
-                                case 1:
-                                    DownloadJava("Java11", javaList["Java11"].ToString());
-                                    break;
-                                case 2:
-                                    DownloadJava("Java16", javaList["Java16"].ToString());
-                                    break;
-                                case 3:
-                                    DownloadJava("Java17", javaList["Java17"].ToString());
-                                    break;
-                                case 4:
-                                    DownloadJava("Java18", javaList["Java18"].ToString());
-                                    break;
-                                case 5:
-                                    DownloadJava("Java19", javaList["Java19"].ToString());
-                                    break;
-                                default:
-                                    Growl.Error("请选择一个版本以下载！");
-                                    break;
+                                switch (selectJavaComb.SelectedIndex)
+                                {
+                                    case 0:
+                                        dwnJava = DownloadJava("Java8", javaList["Java8"].ToString());
+                                        break;
+                                    case 1:
+                                        dwnJava = DownloadJava("Java11", javaList["Java11"].ToString());
+                                        break;
+                                    case 2:
+                                        dwnJava = DownloadJava("Java16", javaList["Java16"].ToString());
+                                        break;
+                                    case 3:
+                                        dwnJava = DownloadJava("Java17", javaList["Java17"].ToString());
+                                        break;
+                                    case 4:
+                                        dwnJava = DownloadJava("Java18", javaList["Java18"].ToString());
+                                        break;
+                                    case 5:
+                                        dwnJava = DownloadJava("Java19", javaList["Java19"].ToString());
+                                        break;
+                                    default:
+                                        Growl.Error("请选择一个版本以下载！");
+                                        break;
+                                }
+                            });
+                            if (dwnJava==1)
+                            {
+                                outlog.Content = "当前进度:解压Java……";
+                                bool unzipJava = await UnzipJava();
+                                if (unzipJava)
+                                {
+                                    outlog.Content = "完成";
+                                    next3.IsEnabled = true;
+                                    return5.IsEnabled = true;
+                                    javagrid.Visibility = Visibility.Hidden;
+                                    servergrid.Visibility = Visibility.Visible;
+                                    await this.Dispatcher.InvokeAsync(() =>
+                                    {
+                                        CheckServerPackCore();
+                                    });
+                                }
+                            }
+                            else if (dwnJava == 2)
+                            {
+                                outlog.Content = "完成";
+                                next3.IsEnabled = true;
+                                return5.IsEnabled = true;
+                                javagrid.Visibility = Visibility.Hidden;
+                                servergrid.Visibility = Visibility.Visible;
+                                await this.Dispatcher.InvokeAsync(() =>
+                                {
+                                    CheckServerPackCore();
+                                });
+                            }
+                            else
+                            {
+                                MessageBox.Show("安装失败，请查看是否有杀毒软件进行拦截！请确保添加信任或关闭杀毒软件后进行重新安装！", "错误", MessageBoxButton.OK, MessageBoxImage.Error);
+                                outlog.Content = "安装失败！";
+                                next3.IsEnabled = true;
+                                return5.IsEnabled = true;
                             }
                         }
                         catch
@@ -198,7 +248,10 @@ namespace MSL.forms
                 {
                     next3.IsEnabled = true;
                     return5.IsEnabled = true;
-                    DialogShow.ShowMsg(this, "出现错误！请检查您的网络连接！", "信息", false, "确定");
+                    await this.Dispatcher.InvokeAsync(() =>
+                    {
+                        DialogShow.ShowMsg(this, "出现错误！请检查您的网络连接！", "信息", false, "确定");
+                    });
                 }
             }
         }
@@ -236,117 +289,67 @@ namespace MSL.forms
                 }
             }
         }
-        private void DownloadJava(string fileName, string downUrl,bool changePage=true)
+        private int DownloadJava(string fileName, string downUrl)
         {
             if (!File.Exists(AppDomain.CurrentDomain.BaseDirectory + @"MSL\" + fileName + @"\bin\java.exe"))
             {
                 DialogShow.ShowMsg(this, "下载Java即代表您接受Java的服务条款https://www.oracle.com/downloads/licenses/javase-license1.html", "信息", false, "确定");
                 DownjavaName = fileName;
-                DialogShow.ShowDownload(this, downUrl, AppDomain.CurrentDomain.BaseDirectory + "MSL", "Java.zip", "下载" + fileName + "中……");
-                if(changePage)
+                bool downDialog= DialogShow.ShowDownload(this, downUrl, AppDomain.CurrentDomain.BaseDirectory + "MSL", "Java.zip", "下载" + fileName + "中……");
+                if (!downDialog)
                 {
-                    outlog.Content = "解压中...";
-                    try
-                    {
-                        string javaDirName = "";
-                        using (ZipFile zip = new ZipFile(AppDomain.CurrentDomain.BaseDirectory + @"MSL\Java.zip"))
-                        {
-                            foreach (ZipEntry entry in zip)
-                            {
-                                if (entry.IsDirectory == true)
-                                {
-                                    int c0 = entry.Name.Length - entry.Name.Replace("/", "").Length;
-                                    if (c0 == 1)
-                                    {
-                                        javaDirName = entry.Name.Replace("/", "");
-                                        break;
-                                    }
-                                }
-                            }
-                        }
-                        FastZip fastZip = new FastZip();
-                        fastZip.ExtractZip(AppDomain.CurrentDomain.BaseDirectory + @"MSL\Java.zip", AppDomain.CurrentDomain.BaseDirectory + "MSL", "");
-                        outlog.Content = "解压完成，移动中...";
-                        File.Delete(AppDomain.CurrentDomain.BaseDirectory + @"MSL\Java.zip");
-                        if (AppDomain.CurrentDomain.BaseDirectory + @"MSL\" + javaDirName != AppDomain.CurrentDomain.BaseDirectory + @"MSL\" + DownjavaName)
-                        {
-                            MoveFolder(AppDomain.CurrentDomain.BaseDirectory + @"MSL\" + javaDirName, AppDomain.CurrentDomain.BaseDirectory + @"MSL\" + DownjavaName);
-                        } 
-                        while (!File.Exists(AppDomain.CurrentDomain.BaseDirectory + @"MSL\" + DownjavaName + @"\bin\java.exe"))
-                        {
-                            Thread.Sleep(1000);
-                        }
-                        outlog.Content = "完成";
-                        serverjava = AppDomain.CurrentDomain.BaseDirectory + @"MSL\" + DownjavaName + @"\bin\java.exe";
-                        next3.IsEnabled = true;
-                        return5.IsEnabled = true;
-                        javagrid.Visibility = Visibility.Hidden;
-                        servergrid.Visibility = Visibility.Visible;
-                        CheckServerPackCore();
-                    }
-                    catch
-                    {
-                        MessageBox.Show("安装失败，请查看是否有杀毒软件进行拦截！请确保添加信任或关闭杀毒软件后进行重新安装！", "错误", MessageBoxButton.OK, MessageBoxImage.Error);
-                        outlog.Content = "安装失败！";
-                        next3.IsEnabled = true;
-                        return5.IsEnabled = true;
-                    }
+                    DialogShow.ShowMsg(this, "下载取消！", "提示");
+                    return 0;
                 }
                 else
                 {
-                    try
-                    {
-                        string javaDirName = "";
-                        using (ZipFile zip = new ZipFile(AppDomain.CurrentDomain.BaseDirectory + @"MSL\Java.zip"))
-                        {
-                            foreach (ZipEntry entry in zip)
-                            {
-                                if (entry.IsDirectory == true)
-                                {
-                                    int c0 = entry.Name.Length - entry.Name.Replace("/", "").Length;
-                                    if (c0 == 1)
-                                    {
-                                        javaDirName = entry.Name.Replace("/", "");
-                                        break;
-                                    }
-                                }
-                            }
-                        }
-                        FastZip fastZip = new FastZip();
-                        fastZip.ExtractZip(AppDomain.CurrentDomain.BaseDirectory + @"MSL\Java.zip", AppDomain.CurrentDomain.BaseDirectory + "MSL", "");
-                        File.Delete(AppDomain.CurrentDomain.BaseDirectory + @"MSL\Java.zip");
-                        if (AppDomain.CurrentDomain.BaseDirectory + @"MSL\" + javaDirName != AppDomain.CurrentDomain.BaseDirectory + @"MSL\" + DownjavaName)
-                        {
-                            MoveFolder(AppDomain.CurrentDomain.BaseDirectory + @"MSL\" + javaDirName, AppDomain.CurrentDomain.BaseDirectory + @"MSL\" + DownjavaName);
-                        }
-                        while(!File.Exists(AppDomain.CurrentDomain.BaseDirectory + @"MSL\" + DownjavaName + @"\bin\java.exe"))
-                        {
-                            Thread.Sleep(1000);
-                        }
-                        serverjava = AppDomain.CurrentDomain.BaseDirectory + @"MSL\" + DownjavaName + @"\bin\java.exe";
-                        MessageBox.Show("Java安装成功！点击确定以继续", "success", MessageBoxButton.OK, MessageBoxImage.Information);
-                    }
-                    catch
-                    {
-                        MessageBox.Show("安装失败，请查看是否有杀毒软件进行拦截！请确保添加信任或关闭杀毒软件后进行重新安装！", "错误", MessageBoxButton.OK, MessageBoxImage.Error);
-                    }
+                    return 1;
                 }
             }
             else
             {
                 serverjava = AppDomain.CurrentDomain.BaseDirectory + @"MSL\" + fileName + @"\bin\java.exe";
-                if (changePage)
+                return 2;
+            }
+        }
+        private async Task<bool> UnzipJava()
+        {
+            try
+            {
+                string javaDirName = "";
+                using (ZipFile zip = new ZipFile(AppDomain.CurrentDomain.BaseDirectory + @"MSL\Java.zip"))
                 {
-                    next3.IsEnabled = true;
-                    return5.IsEnabled = true;
-                    javagrid.Visibility = Visibility.Hidden;
-                    servergrid.Visibility = Visibility.Visible;
-                    CheckServerPackCore();
+                    foreach (ZipEntry entry in zip)
+                    {
+                        if (entry.IsDirectory == true)
+                        {
+                            int c0 = entry.Name.Length - entry.Name.Replace("/", "").Length;
+                            if (c0 == 1)
+                            {
+                                javaDirName = entry.Name.Replace("/", "");
+                                break;
+                            }
+                        }
+                    }
                 }
-                else
+                FastZip fastZip = new FastZip();
+                await Task.Run(() => fastZip.ExtractZip(AppDomain.CurrentDomain.BaseDirectory + @"MSL\Java.zip", AppDomain.CurrentDomain.BaseDirectory + "MSL", ""));
+                File.Delete(AppDomain.CurrentDomain.BaseDirectory + @"MSL\Java.zip");
+                if (AppDomain.CurrentDomain.BaseDirectory + @"MSL\" + javaDirName != AppDomain.CurrentDomain.BaseDirectory + @"MSL\" + DownjavaName)
                 {
-                    MessageBox.Show("Java安装成功！点击确定以继续", "success", MessageBoxButton.OK, MessageBoxImage.Information);
+                    MoveFolder(AppDomain.CurrentDomain.BaseDirectory + @"MSL\" + javaDirName, AppDomain.CurrentDomain.BaseDirectory + @"MSL\" + DownjavaName);
                 }
+                while (!File.Exists(AppDomain.CurrentDomain.BaseDirectory + @"MSL\" + DownjavaName + @"\bin\java.exe"))
+                {
+                    await Task.Delay(1000);
+                }
+                serverjava = AppDomain.CurrentDomain.BaseDirectory + @"MSL\" + DownjavaName + @"\bin\java.exe";
+                return true;
+            }
+            catch
+            {
+                return false;
+                //MessageBox.Show("安装失败，请查看是否有杀毒软件进行拦截！请确保添加信任或关闭杀毒软件后进行重新安装！", "错误", MessageBoxButton.OK, MessageBoxImage.Error);
             }
         }
         private void return2_Click(object sender, RoutedEventArgs e)
@@ -542,51 +545,35 @@ namespace MSL.forms
         }
         void CheckJava()
         {
-            string[] javaPaths = new string[] 
+            string[] javaPaths = new string[]
+{
+    @"Program Files\Java",
+    @"Program Files (x86)\Java",
+    @"Java"
+};
+            DriveInfo[] drives = DriveInfo.GetDrives();
+            foreach (DriveInfo drive in drives)
             {
-                @"C:\Program Files\Java",
-                @"C:\Java",
-                @"D:\Program Files\Java",
-                @"D:\Java",
-                @"E:\Program Files\Java",
-                @"E:\Java",
-                @"F:\Program Files\Java",
-                @"F:\Java",
-                @"G:\Program Files\Java",
-                @"G:\Java"
-            };
-            foreach (string javaPath in javaPaths)
-            {
-                if (Directory.Exists(javaPath))
+                string driveLetter = drive.Name.Substring(0, 1);
+                foreach (string _javaPath in javaPaths)
                 {
-                    string[] javaVersions = Directory.GetDirectories(javaPath);
-                    foreach (string version in javaVersions)
+                    string javaPath = string.Format(@"{0}:\{1}", driveLetter, _javaPath);
+                    if (Directory.Exists(javaPath))
                     {
-                        string javaExePath = Path.Combine(version, "bin\\java.exe");
-                        if (File.Exists(javaExePath))
+                        string[] directories = Directory.GetDirectories(javaPath);
+                        foreach (string directory in directories)
                         {
-                            Process process = new Process();
-                            process.StartInfo.FileName = javaExePath;
-                            process.StartInfo.Arguments = "-version";
-                            process.StartInfo.UseShellExecute = false;
-                            process.StartInfo.CreateNoWindow = true;
-                            process.StartInfo.RedirectStandardOutput = true;
-                            process.StartInfo.RedirectStandardError = true;
-                            process.Start();
-
-                            string output = process.StandardError.ReadToEnd();
-                            process.WaitForExit();
-
-                            Match match = Regex.Match(output, @"java version \""([\d\._]+)\""");
-                            if (match.Success)
-                            {
-                                selectCheckedJavaComb.Items.Add("Java" + match.Groups[1].Value + ":" + javaExePath);
-                            }
+                            CheckJavaDirectory(directory);
+                        }
+                        string[] files = Directory.GetFiles(javaPath, "release", SearchOption.TopDirectoryOnly);
+                        foreach (string file in files)
+                        {
+                            CheckJavaRelease(file);
                         }
                     }
                 }
             }
-            if(selectCheckedJavaComb.Items.Count > 0)
+            if (selectCheckedJavaComb.Items.Count > 0)
             {
                 outlog.Content = "检测完毕！";
                 selectCheckedJavaComb.SelectedIndex = 0;
@@ -597,6 +584,27 @@ namespace MSL.forms
                 usedownloadjv.IsChecked = true;
             }
         }
+
+        void CheckJavaDirectory(string directory)
+        {
+            string[] files = Directory.GetFiles(directory, "release", SearchOption.TopDirectoryOnly);
+            foreach (string file in files)
+            {
+                CheckJavaRelease(file);
+            }
+        }
+
+        void CheckJavaRelease(string releaseFile)
+        {
+            string releaseContent = File.ReadAllText(releaseFile);
+            Match match = Regex.Match(releaseContent, @"JAVA_VERSION=""([\d\._a-zA-Z]+)""");
+            if (match.Success)
+            {
+                string javaVersion = match.Groups[1].Value;
+                selectCheckedJavaComb.Items.Add("Java" + javaVersion + ":" + Path.GetDirectoryName(releaseFile));
+            }
+        }
+
         private void next_Click(object sender, RoutedEventArgs e)
         {
             servername = serverNameBox.Text;
@@ -633,10 +641,9 @@ namespace MSL.forms
         bool isImportPack = false;
         private void importPack_Click(object sender, RoutedEventArgs e)
         {
-            DialogShow.ShowMsg(this, "如果您要导入的是模组整合包，请确保您下载的整合包是服务器专用包（如RlCraft下载界面就有一个ServerPack的压缩包），否则可能会出现无法开服或者崩溃的问题！", "提示", true, "取消");
-            if (MessageDialog._dialogReturn == true)
+            bool dialog = DialogShow.ShowMsg(this, "如果您要导入的是模组整合包，请确保您下载的整合包是服务器专用包（如RlCraft下载界面就有一个ServerPack的压缩包），否则可能会出现无法开服或者崩溃的问题！", "提示", true, "取消");
+            if (dialog == true)
             {
-                MessageDialog._dialogReturn = false;
                 servername = serverNameBox.Text;
                 string serverPath = "";
                 for (int a = 1; a != 0; a++)
@@ -1013,63 +1020,116 @@ namespace MSL.forms
             }
         }
 
-        private void FastModeInstallBtn_Click(object sender, RoutedEventArgs e)
+        private async Task<string> AsyncGetJavaDwnLink()
+        {
+            WebClient MyWebClient = new WebClient();
+            byte[] pageData = await MyWebClient.DownloadDataTaskAsync(MainWindow.serverLink + @"/msl/otherdownload.json");
+            string _javaList = Encoding.UTF8.GetString(pageData);
+            return _javaList;
+        }
+
+        private async void FastModeInstallBtn_Click(object sender, RoutedEventArgs e)
         {
             try
             {
-                WebClient MyWebClient = new WebClient();
-                byte[] pageData = MyWebClient.DownloadData(MainWindow.serverLink + @"/msl/otherdownload.json");
-                string _javaList = Encoding.UTF8.GetString(pageData);
+                FastModeInstallBtn.IsEnabled = false;
+                FastInstallProcess.Text = "当前进度:获取Java下载地址……";
+                //Thread.Sleep(1000);
+                string _javaList = await AsyncGetJavaDwnLink();
 
                 JObject javaList0 = JObject.Parse(_javaList);
                 JObject javaList = (JObject)javaList0["java"];
-                switch (FinallyJavaCombo.SelectedIndex)
+                FastInstallProcess.Text = "当前进度:下载Java……";
+                int dwnJava = 0;
+                await this.Dispatcher.InvokeAsync(() =>
                 {
-                    case 0:
-                        DownloadJava("Java8", javaList["Java8"].ToString(),false);
-                        break;
-                    case 1:
-                        DownloadJava("Java11", javaList["Java11"].ToString(), false);
-                        break;
-                    case 2:
-                        DownloadJava("Java16", javaList["Java16"].ToString(), false);
-                        break;
-                    case 3:
-                        DownloadJava("Java17", javaList["Java17"].ToString(), false);
-                        break;
-                    case 4:
-                        DownloadJava("Java18", javaList["Java18"].ToString(), false);
-                        break;
-                    case 5:
-                        DownloadJava("Java19", javaList["Java19"].ToString(), false);
-                        break;
-                    default:
-                        Growl.Error("请选择一个版本以下载！");
-                        break;
+                    switch (FinallyJavaCombo.SelectedIndex)
+                    {
+                        case 0:
+                            dwnJava = DownloadJava("Java8", javaList["Java8"].ToString());
+                            break;
+                        case 1:
+                            dwnJava = DownloadJava("Java11", javaList["Java11"].ToString());
+                            break;
+                        case 2:
+                            dwnJava = DownloadJava("Java16", javaList["Java16"].ToString());
+                            break;
+                        case 3:
+                            dwnJava = DownloadJava("Java17", javaList["Java17"].ToString());
+                            break;
+                        case 4:
+                            dwnJava = DownloadJava("Java18", javaList["Java18"].ToString());
+                            break;
+                        case 5:
+                            dwnJava = DownloadJava("Java19", javaList["Java19"].ToString());
+                            break;
+                        default:
+                            Growl.Error("请选择一个版本以下载！");
+                            break;
+                    }
+                });
+                if (dwnJava == 1)
+                {
+                    FastInstallProcess.Text = "当前进度:解压Java……";
+                    bool unzipJava =await UnzipJava();
+                    if (unzipJava)
+                    {
+                        FastInstallProcess.Text = "当前进度:下载服务端……";
+                        await this.Dispatcher.InvokeAsync(() =>
+                        {
+                            FastModeInstallCore();
+                        });
+                    }
+                    else
+                    {
+                        FastModeInstallBtn.IsEnabled = true;
+                    }
                 }
-                FastModeInstallCore();
+                else if (dwnJava == 2)
+                {
+                    FastInstallProcess.Text = "当前进度:下载服务端……";
+                    await this.Dispatcher.InvokeAsync(() =>
+                    {
+                        FastModeInstallCore();
+                    });
+                }
+                else
+                {
+                    MessageBox.Show("安装失败，请查看是否有杀毒软件进行拦截！请确保添加信任或关闭杀毒软件后进行重新安装！", "错误", MessageBoxButton.OK, MessageBoxImage.Error);
+                    FastModeInstallBtn.IsEnabled = true;
+                    FastInstallProcess.Text = "安装Java失败！";
+                    next3.IsEnabled = true;
+                    return5.IsEnabled = true;
+                }
             }
             catch
             {
                 Growl.Error("出现错误，请检查网络连接！");
+                FastModeInstallBtn.IsEnabled = true;
             }
         }
         void FastModeInstallCore()
         {
             string filename = FinallyCoreCombo.Items[FinallyCoreCombo.SelectedIndex].ToString()+".jar";
-            DialogShow.ShowDownload(this, downloadCoreUrl[FinallyCoreCombo.SelectedIndex], serverbase, filename, "下载服务端中……");
+            bool dwnDialog= DialogShow.ShowDownload(this, downloadCoreUrl[FinallyCoreCombo.SelectedIndex], serverbase, filename, "下载服务端中……");
+            if (!dwnDialog)
+            {
+                DialogShow.ShowMsg(this, "下载取消！", "提示");
+                FastModeInstallBtn.IsEnabled = true;
+                return;
+            }
             if (File.Exists(serverbase + @"\" + filename))
             {
                 servercore = filename;
                 bool installReturn = true;
                 if (filename.IndexOf("Forge") + 1 != 0)
                 {
-                    
                     DialogShow.ShowMsg(this, "检测到您下载的是Forge端，开服器将自动进行安装操作，稍后请您不要随意移动鼠标且不要随意触碰键盘，耐心等待安装完毕！\n注：开服器已经把安装地址复制，如果Forge安装窗口弹出很久后没有任何改动的话，请手动选择第二个选项，然后把地址粘贴进去进行安装", "提示");
                     installReturn = InstallForge();
                 }
                 if (installReturn)
                 {
+                    FastInstallProcess.Text = "当前进度:完成！";
                     try
                     {
                         if (!File.Exists(AppDomain.CurrentDomain.BaseDirectory + @"MSL\ServerList.json"))
@@ -1077,14 +1137,14 @@ namespace MSL.forms
                             File.WriteAllText(AppDomain.CurrentDomain.BaseDirectory + @"MSL\ServerList.json", string.Format("{{{0}}}", "\n"));
                         }
                         JObject _json = new JObject
-                {
-                    { "name", servername },
-                    { "java", serverjava },
-                    { "base", serverbase },
-                    { "core", servercore },
-                    { "memory", servermemory },
-                    { "args", serverargs }
-                };
+                        {
+                        { "name", servername },
+                        { "java", serverjava },
+                        { "base", serverbase },
+                        { "core", servercore },
+                        { "memory", servermemory },
+                        { "args", serverargs }
+                        };
                         JObject jsonObject = JObject.Parse(File.ReadAllText(AppDomain.CurrentDomain.BaseDirectory + @"MSL\ServerList.json", Encoding.UTF8));
                         List<string> keys = jsonObject.Properties().Select(p => p.Name).ToList();
                         var _keys = keys.Select(x => Convert.ToInt32(x));
@@ -1111,15 +1171,22 @@ namespace MSL.forms
                     catch (Exception ex)
                     {
                         MessageBox.Show("出现错误，请重试：" + ex.Message, "Error", MessageBoxButton.OK, MessageBoxImage.Error);
+                        FastModeInstallBtn.IsEnabled = true;
                     }
+                }
+                else
+                {
+                    DialogShow.ShowMsg(this, "下载失败,请多次尝试或使用代理再试！", "错误");
+                    FastModeInstallBtn.IsEnabled = true;
                 }
             }
             else
             {
                 DialogShow.ShowMsg(this, "下载失败！", "错误");
+                FastModeInstallBtn.IsEnabled = true;
             }
         }
-
+        
         #region InstallForge
         /// <summary>
         /// 找到窗口
@@ -1274,7 +1341,6 @@ namespace MSL.forms
                         }
                         else
                         {
-                            DialogShow.ShowMsg(this, "下载失败,请多次尝试或使用代理再试！", "错误");
                             servercore = "";
                             return false;
                         }
@@ -1284,7 +1350,6 @@ namespace MSL.forms
             }
             catch
             {
-                DialogShow.ShowMsg(this, "下载失败！", "错误");
                 return false;
             }
         }

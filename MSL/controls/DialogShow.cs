@@ -6,7 +6,7 @@ namespace MSL.controls
 {
     public class DialogShow
     {
-        public static void ShowMsg(System.Windows.Window window, string dialogText, string dialogTitle, bool primaryBtnVisible = false, string closeText = "确定",string primaryText="确定")
+        public static bool ShowMsg(System.Windows.Window window, string dialogText, string dialogTitle, bool primaryBtnVisible = false, string closeText = "确定",string primaryText="确定")
         {
             try
             {
@@ -17,13 +17,22 @@ namespace MSL.controls
                 messageDialog.ShowDialog();
                 window.Focus();
                 dialog.Close();
+                if (MessageDialog._dialogReturn)
+                {
+                    return true;
+                }
+                else
+                {
+                    return false;
+                }
+                
             }
             catch
             {
-                return;
+                return false;
             }
         }
-        public static void ShowDownload(System.Windows.Window window, string downloadurl, string downloadPath, string filename,string downloadinfo)
+        public static bool ShowDownload(System.Windows.Window window, string downloadurl, string downloadPath, string filename,string downloadinfo)
         {
             try
             {
@@ -34,10 +43,18 @@ namespace MSL.controls
                 download.ShowDialog();
                 window.Focus();
                 dialog.Close();
+                if (DownloadWindow.isStopDwn)
+                {
+                    return false;
+                }
+                else
+                {
+                    return true;
+                }
             }
             catch
             {
-                return;
+                return false;
             }
             
         }

@@ -119,6 +119,8 @@
     <Compile Include="controls\MessageDialog.xaml.cs">
       <DependentUpon>MessageDialog.xaml</DependentUpon>
     </Compile>
+    <Compile Include="controls\RelayCommand.cs" />
+    <Compile Include="controls\WindowViewModel.cs" />
     <Compile Include="forms\CreateServer.xaml.cs">
       <DependentUpon>CreateServer.xaml</DependentUpon>
     </Compile>
@@ -127,12 +129,6 @@
     </Compile>
     <Compile Include="forms\DownloadMods.xaml.cs">
       <DependentUpon>DownloadMods.xaml</DependentUpon>
-    </Compile>
-    <Compile Include="NotifyForm.cs">
-      <SubType>Form</SubType>
-    </Compile>
-    <Compile Include="NotifyForm.Designer.cs">
-      <DependentUpon>NotifyForm.cs</DependentUpon>
     </Compile>
     <Compile Include="pages\About.xaml.cs">
       <DependentUpon>About.xaml</DependentUpon>
@@ -164,6 +160,10 @@
     <Compile Include="forms\SetServerconfig.xaml.cs">
       <DependentUpon>SetServerconfig.xaml</DependentUpon>
     </Compile>
+    <Page Include="controls\Animations.xaml">
+      <SubType>Designer</SubType>
+      <Generator>MSBuild:Compile</Generator>
+    </Page>
     <Page Include="controls\ContextMenu.xaml">
       <SubType>Designer</SubType>
       <Generator>MSBuild:Compile</Generator>
@@ -262,10 +262,6 @@
       <DependentUpon>Settings.settings</DependentUpon>
       <DesignTimeSharedInput>True</DesignTimeSharedInput>
     </Compile>
-    <EmbeddedResource Include="NotifyForm.resx">
-      <DependentUpon>NotifyForm.cs</DependentUpon>
-      <SubType>Designer</SubType>
-    </EmbeddedResource>
     <EmbeddedResource Include="Properties\Resources.resx">
       <Generator>ResXFileCodeGenerator</Generator>
       <LastGenOutput>Resources.Designer.cs</LastGenOutput>
@@ -293,7 +289,7 @@
       <Version>3.0.4</Version>
     </PackageReference>
     <PackageReference Include="Fody">
-      <Version>6.6.5-beta2</Version>
+      <Version>6.7.0</Version>
       <IncludeAssets>runtime; build; native; contentfiles; analyzers; buildtransitive</IncludeAssets>
       <PrivateAssets>all</PrivateAssets>
     </PackageReference>
