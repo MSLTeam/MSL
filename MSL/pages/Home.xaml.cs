@@ -303,7 +303,11 @@ namespace MSL.pages
                 if (_jsonObject["selectedServer"] != null)
                 {
                     //MessageBox.Show(_jsonObject["selectedServer"].ToString());
-                    i = int.Parse(_jsonObject["selectedServer"].ToString());
+                    int _i = int.Parse(_jsonObject["selectedServer"].ToString());
+                    if (_i != -1)
+                    {
+                        i = _i;
+                    }
                 }
                 ServerList.serverid.Clear();
                 startServerDropdown.Items.Clear();
@@ -318,7 +322,13 @@ namespace MSL.pages
             catch
             {
                 startServerDropdown.SelectedIndex = -1;
-                return;
+            }
+            finally
+            {
+                if (startServerDropdown.SelectedIndex == -1)
+                {
+                    selectedItemTextBlock.Text = "创建一个新的服务器";
+                }
             }
         }
         private void startServer_Click(object sender, RoutedEventArgs e)

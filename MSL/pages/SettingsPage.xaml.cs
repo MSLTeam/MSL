@@ -190,16 +190,20 @@ namespace MSL.pages
                     semitransparentTitle.IsChecked = true;
                 }
                 serverListBox.Items.Clear();
-                if (File.Exists(AppDomain.CurrentDomain.BaseDirectory + @"MSL\ServerList.json"))
+                try
                 {
-                    JObject _json = JObject.Parse(File.ReadAllText(AppDomain.CurrentDomain.BaseDirectory + @"MSL\ServerList.json", Encoding.UTF8));
-                    foreach (var item in _json)
+                    if (File.Exists(AppDomain.CurrentDomain.BaseDirectory + @"MSL\ServerList.json"))
                     {
-                        serverListBox.Items.Add(item.Value["name"]);
-                        _runServerList.Add(item.Key);
-                        serverListBox.SelectedIndex = 0;
+                        JObject _json = JObject.Parse(File.ReadAllText(AppDomain.CurrentDomain.BaseDirectory + @"MSL\ServerList.json", Encoding.UTF8));
+                        foreach (var item in _json)
+                        {
+                            serverListBox.Items.Add(item.Value["name"]);
+                            _runServerList.Add(item.Key);
+                            serverListBox.SelectedIndex = 0;
+                        }
                     }
                 }
+                catch { return; }
             }
             catch(Exception ex)
             {

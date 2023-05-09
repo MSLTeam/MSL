@@ -502,47 +502,65 @@ namespace MSL
         private void ShowLog(string msg, Brush color)
         {
             tempbrush = color;
-            Paragraph p = new Paragraph();
-            if (msg.Contains("&"))
+            try
             {
-                string[] splitMsg = msg.Split('&');
-                foreach (var everyMsg in splitMsg)
+                Paragraph p = new Paragraph();
+                if (msg.Contains("&"))
                 {
-                    string colorCode = everyMsg.Substring(0, 1);
-                    string text = everyMsg.Substring(1);
-                    Run run = new Run(text);
-                    run.Foreground = GetBrushFromMinecraftColorCode(colorCode[0]);
+                    string[] splitMsg = msg.Split('&');
+                    foreach (var everyMsg in splitMsg)
+                    {
+                        string colorCode = everyMsg.Substring(0, 1);
+                        string text = everyMsg.Substring(1);
+                        Run run = new Run(text);
+                        run.Foreground = GetBrushFromMinecraftColorCode(colorCode[0]);
+                        p.Inlines.Add(run);
+                    }
+                }
+                else if (msg.Contains("\x1B"))
+                {
+                    string[] splitMsg = msg.Split('\x1B');
+                    foreach (var everyMsg in splitMsg)
+                    {
+                        string colorCode = everyMsg.Substring(1, 2);
+                        //MessageBox.Show(colorCode.ToString());
+                        string text = everyMsg.Substring(everyMsg.IndexOf("m") + 1);
+                        Run run = new Run(text);
+                        run.Foreground = GetBrushFromAnsiColorCode(colorCode.ToString());
+                        p.Inlines.Add(run);
+                    }
+                }
+                else
+                {
+                    Run run = new Run(msg);
+                    run.Foreground = color;
                     p.Inlines.Add(run);
                 }
-            }
-            else if (msg.Contains("\x1B"))
-            {
-                string[] splitMsg = msg.Split('\x1B');
-                foreach (var everyMsg in splitMsg)
+                this.Dispatcher.BeginInvoke(DispatcherPriority.SystemIdle, (ThreadStart)delegate ()
                 {
-                    string colorCode = everyMsg.Substring(1, 2);
-                    //MessageBox.Show(colorCode.ToString());
-                    string text = everyMsg.Substring(everyMsg.IndexOf("m") + 1);
-                    Run run = new Run(text);
-                    run.Foreground = GetBrushFromAnsiColorCode(colorCode.ToString());
-                    p.Inlines.Add(run);
-                }
+                    //p.Foreground = color;
+                    outlog.Document.Blocks.Add(p);
+                    if (outlog.VerticalOffset + outlog.ViewportHeight >= outlog.ExtentHeight)
+                    {
+                        outlog.ScrollToEnd();
+                    }
+                });
             }
-            else
+            catch
             {
+                Paragraph p = new Paragraph();
                 Run run = new Run(msg);
                 run.Foreground = color;
                 p.Inlines.Add(run);
-            }
-            this.Dispatcher.BeginInvoke(DispatcherPriority.SystemIdle, (ThreadStart)delegate ()
-            {
-                //p.Foreground = color;
-                outlog.Document.Blocks.Add(p);
-                if (outlog.VerticalOffset + outlog.ViewportHeight >= outlog.ExtentHeight)
+                this.Dispatcher.BeginInvoke(DispatcherPriority.SystemIdle, (ThreadStart)delegate ()
                 {
-                    outlog.ScrollToEnd();
-                }
-            });
+                    outlog.Document.Blocks.Add(p);
+                    if (outlog.VerticalOffset + outlog.ViewportHeight >= outlog.ExtentHeight)
+                    {
+                        outlog.ScrollToEnd();
+                    }
+                });
+            }
         }
 
         private Dictionary<char, SolidColorBrush> colorDict = new Dictionary<char, SolidColorBrush>
@@ -1296,7 +1314,7 @@ namespace MSL
             catch
             {
                 fastCMD.SelectedIndex = 0;
-                if (inputCmdEncoding.Content.ToString() == "编码:自动识别" || serverVersionLab.Content.ToString() == "编码:UTF8")
+                if (inputCmdEncoding.Content.ToString() == "输入编码:UTF8")
                 {
                     SendCmdUTF8(cmdtext.Text);
                 }

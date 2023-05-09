@@ -208,6 +208,11 @@ namespace MSL
         }
         private void Button_Click(object sender, RoutedEventArgs e)
         {
+            if (listBox1.SelectedIndex == -1)
+            {
+                DialogShow.ShowMsg(this, "您没有选择节点哦，请先选择一个节点！", "信息");
+                return;
+            }
             string frptype = "";
             if (textBox3.Visibility == Visibility.Hidden)
             {
@@ -283,22 +288,12 @@ namespace MSL
                             fs.Close();
                         }
                     }
-                    /*string frpc1 = list1[a].ToString() + ":" + n;
-                    MainWindow.frpc = frpc1.Replace("\r", "");
-                    StreamReader reader = File.OpenText(AppDomain.CurrentDomain.BaseDirectory + @"MSL\config.json");
-                    JsonTextReader jsonTextReader = new JsonTextReader(reader);
-                    JObject jsonObject = (JObject)JToken.ReadFrom(jsonTextReader);
-                    jsonObject["frpc"] = MainWindow.frpc;
-                    reader.Close();
-                    string output = JsonConvert.SerializeObject(jsonObject, Formatting.Indented);
-                    File.WriteAllText(AppDomain.CurrentDomain.BaseDirectory + @"MSL\config.json", output);
-                    */
                     DialogShow.ShowMsg(this, "映射配置成功，请您点击“启动内网映射”以启动映射！", "信息", false, "确定");
                     this.Close();
                 }
                 catch (Exception a)
                 {
-                    MessageBox.Show("出现错误，请确保选择节点后再试：" + a.ToString(), "错误", MessageBoxButton.OK, MessageBoxImage.Error);
+                    MessageBox.Show("出现错误：" + a.ToString(), "错误", MessageBoxButton.OK, MessageBoxImage.Error);
                 }
             }
             else

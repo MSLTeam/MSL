@@ -113,7 +113,7 @@ namespace MSL
         int counter = 0;
         private void OnDownloadProgressChanged(object sender, Downloader.DownloadProgressChangedEventArgs e)
         {
-            if (counter <=1000)
+            if (counter <=200)
             {
                 counter++;
             }

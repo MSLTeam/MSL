@@ -5,10 +5,12 @@ using System;
 using System.Collections.Generic;
 using System.Diagnostics;
 using System.IO;
+using System.Linq;
 using System.Net;
 using System.Runtime.InteropServices;
 using System.Runtime.InteropServices.ComTypes;
 using System.Text;
+using System.Text.RegularExpressions;
 using System.Threading;
 using System.Windows;
 using System.Windows.Controls;
@@ -223,20 +225,25 @@ namespace MSL.pages
         void InstallForge()
         {
             string forgeVersion;
-            if (serverdownurl[serverlist1.SelectedIndex].ToString().IndexOf("bmcl") + 1 != 0)
+            string serverDownUrl = serverdownurl[serverlist1.SelectedIndex].ToString();
+
+            if (serverDownUrl.Contains("bmcl"))
             {
-                forgeVersion = serverlist1.SelectedItem.ToString() + "-" + serverdownurl[serverlist1.SelectedIndex].ToString().Substring(serverdownurl[serverlist1.SelectedIndex].ToString().IndexOf("&version=") + 9,
-                    serverdownurl[serverlist1.SelectedIndex].ToString().IndexOf("&category") - (serverdownurl[serverlist1.SelectedIndex].ToString().IndexOf("&version=") + 9));
+                Match match = Regex.Match(serverDownUrl, @"&version=([\w.-]+)&category");
+                if (serverlist1.SelectedItem.ToString().Contains("-"))
+                {
+                    string version = serverlist1.SelectedItem.ToString().Split('-')[0];
+                    forgeVersion = version + "-" + match.Groups[1].Value;
+                }
+                else
+                {
+                    forgeVersion = serverlist1.SelectedItem.ToString() + "-" + match.Groups[1].Value;
+                }
             }
             else
             {
-                forgeVersion = serverdownurl[serverlist1.SelectedIndex].ToString().Substring(serverdownurl[serverlist1.SelectedIndex].ToString().IndexOf("forge-") + 6,
-                serverdownurl[serverlist1.SelectedIndex].ToString().IndexOf("-installer") - (serverdownurl[serverlist1.SelectedIndex].ToString().IndexOf("forge-") + 6));
-            }
-            //MessageBox.Show((forgeVersion.Length - forgeVersion.Replace("-", "").Length).ToString());
-            if (forgeVersion.Length - forgeVersion.Replace("-", "").Length > 1)
-            {
-                forgeVersion = forgeVersion.Substring(0, forgeVersion.LastIndexOf("-"));
+                Match match = Regex.Match(serverDownUrl, @"forge-([\w.-]+)-installer");
+                forgeVersion = match.Groups[1].Value.Split('-')[0];
             }
             Process process = new Process();
             process.StartInfo.FileName = downloadServerJava;

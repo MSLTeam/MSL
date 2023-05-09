@@ -440,7 +440,7 @@ namespace MSL
 
                                 // 输出CMD命令以便调试
                                 string cmdCommand = "/C choice /C Y /N /D Y /T 1 & Del \"" + oldExePath + "\" & Ren \"" + "MSL" + aaa + ".exe" + "\" \"MSL.exe\" & start \"\" \"MSL.exe\"";
-                                MessageBox.Show(cmdCommand);
+                                //MessageBox.Show(cmdCommand);
 
                                 // 关闭当前运行中的应用程序
                                 Application.Current.Shutdown();

@@ -30,12 +30,12 @@
         <Grid x:Name="BodyGrid" Grid.Row="1">
             <Grid x:Name="MainGrid" Visibility="Visible">
                 <Label Content="将通过几个步骤为您创建服务器……" FontSize="22" FontWeight="Bold" Background="{x:Null}" BorderBrush="{x:Null}" VerticalAlignment="Top" Height="40" HorizontalAlignment="Left" Margin="0,10,0,0"/>
-                <Label Content="请您选择一个创建模式以继续：" FontSize="18" Background="{x:Null}" BorderBrush="{x:Null}" VerticalAlignment="Top" Height="40" HorizontalAlignment="Left" Margin="10,60,0,0"/>
-                <TextBlock Foreground="Red" Text="第一次使用或新手服主请使用快速模式，如需导入整合包（ServerPack），请选择自定义模式" FontSize="16" HorizontalAlignment="Left" VerticalAlignment="Top" Margin="20,100,0,0"/>
-                <Button x:Name="FastModeBtn" Template="{StaticResource CustomButton}" Content="快速模式（适合小白）" FontSize="18" hc:BorderElement.CornerRadius="30" Style="{StaticResource ButtonPrimary}" Margin="0,150,300,0" Click="FastModeBtn_Click" Width="250" Height="80" VerticalAlignment="Top"/>
-                <Button x:Name="CustomModeBtn" Template="{StaticResource CustomButton}" Content="自定义模式（适合老手）" FontSize="18" hc:BorderElement.CornerRadius="30" Margin="300,150,0,0" Width="250" Height="80" Click="CustomModeBtn_Click" VerticalAlignment="Top"/>
-                <TextBlock Foreground="OrangeRed" Text="快速模式：开服器自动为您选择服务器目录，并根据您想要开的服务器类型自动判断Java版本和服务端核心并进行下载" FontSize="16" HorizontalAlignment="Center" VerticalAlignment="Top" Margin="0,250,300,0" TextWrapping="Wrap" Width="250"/>
-                <TextBlock Foreground="OrangeRed" Text="自定义模式：您将手动进行Java版本选择，服务端核心选择等操作，可操作性高，可以更改服务器运行内存和启动参数" FontSize="16" HorizontalAlignment="Center" VerticalAlignment="Top" Margin="300,250,0,0" TextWrapping="Wrap" Width="250"/>
+                <TextBlock Text="请您选择一个创建模式以继续：" FontSize="18" VerticalAlignment="Top" HorizontalAlignment="Left" Margin="40,60,0,0"/>
+                <TextBlock Foreground="Red" Text="第一次使用或新手服主请使用快速模式，如需导入整合包（ServerPack），请选择自定义模式" FontSize="16" HorizontalAlignment="Left" VerticalAlignment="Top" Margin="40,90,0,0"/>
+                <Button x:Name="FastModeBtn" Template="{StaticResource CustomButton}" Content="快速模式（适合小白）" FontSize="18" hc:BorderElement.CornerRadius="30" Style="{StaticResource ButtonPrimary}" Margin="80,140,0,0" Click="FastModeBtn_Click" Width="250" Height="80" VerticalAlignment="Top" HorizontalAlignment="Left"/>
+                <Button x:Name="CustomModeBtn" Template="{StaticResource CustomButton}" Content="自定义模式（适合老手）" FontSize="18" hc:BorderElement.CornerRadius="30" Margin="80,260,0,0" Width="250" Height="80" Click="CustomModeBtn_Click" VerticalAlignment="Top" HorizontalAlignment="Left"/>
+                <TextBlock Foreground="OrangeRed" Text="快速模式：开服器自动为您选择服务器目录，并根据您想要开的服务器类型自动判断Java版本和服务端核心并进行下载" FontSize="16" HorizontalAlignment="Left" VerticalAlignment="Top" Margin="350,150,0,0" TextWrapping="Wrap" Width="300"/>
+                <TextBlock Foreground="OrangeRed" Text="自定义模式：您将手动进行Java版本选择，服务端核心选择等操作，可操作性高，可以更改服务器运行内存和启动参数" FontSize="16" HorizontalAlignment="Left" VerticalAlignment="Top" Margin="350,270,0,0" TextWrapping="Wrap" Width="300"/>
                 <Image Source="/icon.ico" VerticalAlignment="Bottom" HorizontalAlignment="Right" Width="80"/>
             </Grid>
             <Grid x:Name="FastModeGrid" Visibility="Hidden">
@@ -115,7 +115,7 @@
                 <TabItem x:Name="welcome" Header="基本信息" FontSize="14" Background="{x:Null}">
                     <Grid x:Name="welcome1">
                         <Label Content="将通过几个步骤为您创建服务器……" FontSize="18" Background="{x:Null}" BorderBrush="{x:Null}" VerticalAlignment="Top" Height="40" HorizontalAlignment="Left" FontWeight="Bold"/>
-                        <Button x:Name="next" Template="{StaticResource CustomButton}" Content="下一步" Style="{StaticResource ButtonPrimary}" hc:BorderElement.CornerRadius="20" Margin="320,310,0,0" VerticalAlignment="Top" Width="160" Click="next_Click" Height="48" FontSize="22" HorizontalAlignment="Left"/>
+                        <Button x:Name="next" Template="{StaticResource CustomButton}" Content="下一步" Style="{StaticResource ButtonPrimary}" hc:BorderElement.CornerRadius="20" Margin="320,310,0,0" VerticalAlignment="Top" Width="150" Click="next_Click" Height="48" FontSize="22" HorizontalAlignment="Left"/>
                         <Button Name="importPack" Template="{StaticResource CustomButton}" Content="导入整合包（ZIP格式）" hc:BorderElement.CornerRadius="15" Margin="520,320,0,0" VerticalAlignment="Top" Width="150" Click="importPack_Click" HorizontalAlignment="Left" Height="38" />
                         <Button x:Name="skip" Template="{StaticResource CustomButton}" Content="取消" Margin="110,310,0,0" hc:BorderElement.CornerRadius="20" VerticalAlignment="Top" Width="150" Click="skip_Click" Height="48" FontSize="22" HorizontalAlignment="Left"/>
                         <Border Margin="10,40,10,0" VerticalAlignment="Top" CornerRadius="10" BorderBrush="{DynamicResource BorderBrush}" BorderThickness="1" Background="{DynamicResource BorderBackground}">
@@ -125,13 +125,13 @@
                                 <TextBox x:Name="serverNameBox" HorizontalAlignment="Left" Margin="388,40,0,0" TextWrapping="Wrap" Text="MyServer" VerticalAlignment="Top" Width="330" Height="39"/>
                             </Grid>
                         </Border>
-                        <Border Margin="10,140,10,0" VerticalAlignment="Top" CornerRadius="10" BorderBrush="{DynamicResource BorderBrush}" BorderThickness="1" Background="{DynamicResource BorderBackground}">
+                        <Border Margin="10,140,10,0" VerticalAlignment="Top" CornerRadius="10" BorderBrush="{DynamicResource BorderBrush}" BorderThickness="1" Background="{DynamicResource BorderBackground}" Padding="0,0,0,10">
                             <Grid>
                                 <Label Content="服务器目录" HorizontalAlignment="Left" VerticalAlignment="Top" FontSize="18" Background="{x:Null}" BorderBrush="{x:Null}" Height="40" FontWeight="Bold"/>
                                 <Label Content="在此选择服务器目录（用于安放服务器的相关文件）：" Margin="25,40,0,0" VerticalAlignment="Top" FontSize="16" Background="{x:Null}" BorderBrush="{x:Null}" Height="42" HorizontalAlignment="Left"/>
                                 <TextBox x:Name="txb6" HorizontalAlignment="Left" Height="32" Margin="25,80,0,0" VerticalAlignment="Top" Width="630" MaxLines="1"/>
                                 <Button x:Name="a0003" Content="浏览" Margin="655,80,0,0" VerticalAlignment="Top" Width="66" Click="a0003_Click" FontWeight="Normal" Height="32" HorizontalAlignment="Left"/>
-                                <Label Content="选择提示：请不要选择桌面或磁盘根目录，否则会在生成许多存储文件且会造成误删问题" HorizontalAlignment="Left" Margin="25,115,0,5" VerticalAlignment="Top" FontSize="14" Foreground="Red" Height="36" Background="{x:Null}" BorderBrush="{x:Null}"/>
+                                <TextBlock Text="选择提示：请不要选择桌面或磁盘根目录，否则会生成许多存储文件且会造成误删问题" HorizontalAlignment="Left" Margin="25,115,0,5" VerticalAlignment="Top" FontSize="14" Foreground="Red" />
                             </Grid>
                         </Border>
                     </Grid>

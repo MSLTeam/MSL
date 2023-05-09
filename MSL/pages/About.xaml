@@ -21,7 +21,7 @@
             <Border MouseLeftButtonUp="Border_MouseLeftButtonUp" Style="{StaticResource MagicBorder}">
                 <Grid>
                     <Label x:Name="AppVersionLab" Content="关于开服器" Style="{StaticResource BorderTitle}"/>
-                    <TextBlock Margin="100,35,0,10" FontSize="14" VerticalAlignment="Center" HorizontalAlignment="Center" Foreground="{DynamicResource TextBlockBrush}" Text="Minecraft Server Launcher(MSL) Copyright © 2021-2023 By Waheal&#xA;开服器的成功制作离不开以下人员的帮助及支持：&#xA;MojaveHao、FlyingChubbyFish —— 提供部分技术支持和改进意见&#xA;终末丶谎言 —— 提供内网映射服务&#xA;官方文档：https://docs.waheal.top/（点击打开）"/>
+                    <TextBlock Margin="100,35,0,10" FontSize="14" VerticalAlignment="Center" HorizontalAlignment="Center" Foreground="{DynamicResource TextBlockBrush}" Text="Minecraft Server Launcher(MSL) Copyright © 2021-2023 By Waheal&#xA;开服器的成功制作离不开以下人员的帮助及支持：&#xA;MojaveHao、FlyingChubbyFish —— 提供部分技术支持和改进意见&#xA;终末丶谎言 —— 提供内网映射服务&#xA;同时在此鸣谢所有使用MSL的用户，以及给MSL提出过改进建议和Bug的用户&#xA;感谢各位的支持与信任！&#xA;官方文档：https://docs.waheal.top/（点击打开）"/>
                     <Image Source="/MSL;component/icon.ico" Margin="0,25,550,0" HorizontalAlignment="Center" VerticalAlignment="Center" Width="80" Height="80"/>
                 </Grid>
             </Border>

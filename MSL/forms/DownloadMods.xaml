@@ -7,7 +7,7 @@
         xmlns:controls="clr-namespace:MSL.controls"
         xmlns:local="clr-namespace:MSL"
         mc:Ignorable="d"
-        Title="MSL-下载Mod" Height="460" Width="810" WindowStartupLocation="CenterOwner" ResizeMode="CanMinimize" Loaded="Window_Loaded" Background="{DynamicResource BackgroundBrush}" Closing="window_Closing">
+        Title="MSL-下载Mod" Height="450" Width="600" WindowStartupLocation="CenterOwner" ResizeMode="CanMinimize" Loaded="Window_Loaded" Background="{DynamicResource BackgroundBrush}" Closing="window_Closing">
     <WindowChrome.WindowChrome>
         <WindowChrome GlassFrameThickness="-1" CaptionHeight="40"/>
     </WindowChrome.WindowChrome>
@@ -31,7 +31,7 @@
             <ListView x:Name="listBox" MouseDoubleClick="listBox_MouseDoubleClick" Background="{DynamicResource BorderBackground}" Margin="10,50,10,50">
                 <ListView.View>
                     <GridView>
-                        <GridViewColumn x:Name="listBoxColumnName" Width="750">
+                        <GridViewColumn x:Name="listBoxColumnName" Width="500">
                             <GridViewColumn.CellTemplate>
                                 <DataTemplate>
                                     <Grid>
@@ -45,12 +45,12 @@
                 </ListView.View>
             </ListView>
             <TextBox x:Name="textBox1" ContextMenu="{DynamicResource UIContextMenu}" HorizontalAlignment="Left" Margin="258,10,0,0" TextWrapping="Wrap" Text="" VerticalAlignment="Top" Width="260"/>
-            <Button x:Name="searchMod" Content="搜索" Margin="523,10,0,0" VerticalAlignment="Top" Click="searchMod_Click" HorizontalAlignment="Left"/>
+            <Button x:Name="searchMod" Content="搜索" Margin="523,10,0,0" VerticalAlignment="Top" Click="searchMod_Click" HorizontalAlignment="Left" Width="67"/>
             <Label x:Name="label1" Content="下载进度……" HorizontalAlignment="Left" VerticalAlignment="Bottom" Background="{x:Null}" BorderBrush="{x:Null}" Margin="0,0,0,20"/>
-            <ProgressBar x:Name="pbar" HorizontalAlignment="Center" Height="15" Width="810" VerticalAlignment="Bottom"/>
-            <Label x:Name="lb01" Content="加载中，请耐心等待……" HorizontalAlignment="Left" Margin="619,11,0,0" VerticalAlignment="Top" Background="{x:Null}" BorderBrush="{x:Null}" Foreground="Red" Visibility="Hidden"/>
+            <ProgressBar x:Name="pbar" Height="15" VerticalAlignment="Bottom"/>
+            <Label x:Name="lb01" Content="加载中，请耐心等待……" Margin="60,0,0,0" HorizontalAlignment="Center" VerticalAlignment="Center" Background="{x:Null}" BorderBrush="{x:Null}" Foreground="Red" Visibility="Hidden"/>
             <Label Content="搜索Mod" Margin="154,4,0,0" VerticalAlignment="Top" FontSize="18" BorderBrush="{x:Null}" Background="{x:Null}" HorizontalAlignment="Left" Height="37"/>
-            <hc:LoadingCircle x:Name="lCircle" HorizontalAlignment="Left" Height="34" Margin="574,8,0,0" VerticalAlignment="Top" Width="40" Visibility="Hidden"/>
+            <hc:LoadingCircle x:Name="lCircle" HorizontalAlignment="Center" Height="34" VerticalAlignment="Center" Width="40" Visibility="Hidden" Margin="0,0,100,0"/>
             <Button x:Name="backBtn" Content="返回" Margin="10,10,0,0" VerticalAlignment="Top" Click="backBtn_Click" Width="139" IsEnabled="False" HorizontalAlignment="Left"/>
         </Grid>
     </Grid>

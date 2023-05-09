@@ -217,6 +217,11 @@ namespace MSL.forms
                                         CheckServerPackCore();
                                     });
                                 }
+                                else
+                                {
+                                    DialogShow.ShowMsg(this, "安装失败，请查看是否有杀毒软件进行拦截！请确保添加信任或关闭杀毒软件后进行重新安装！", "错误");
+                                    return;
+                                }
                             }
                             else if (dwnJava == 2)
                             {
@@ -232,10 +237,10 @@ namespace MSL.forms
                             }
                             else
                             {
-                                MessageBox.Show("安装失败，请查看是否有杀毒软件进行拦截！请确保添加信任或关闭杀毒软件后进行重新安装！", "错误", MessageBoxButton.OK, MessageBoxImage.Error);
-                                outlog.Content = "安装失败！";
+                                DialogShow.ShowMsg(this, "下载取消！", "提示");
                                 next3.IsEnabled = true;
                                 return5.IsEnabled = true;
+                                return;
                             }
                         }
                         catch
@@ -296,14 +301,13 @@ namespace MSL.forms
                 DialogShow.ShowMsg(this, "下载Java即代表您接受Java的服务条款https://www.oracle.com/downloads/licenses/javase-license1.html", "信息", false, "确定");
                 DownjavaName = fileName;
                 bool downDialog= DialogShow.ShowDownload(this, downUrl, AppDomain.CurrentDomain.BaseDirectory + "MSL", "Java.zip", "下载" + fileName + "中……");
-                if (!downDialog)
+                if (downDialog)
                 {
-                    DialogShow.ShowMsg(this, "下载取消！", "提示");
-                    return 0;
+                    return 1;
                 }
                 else
                 {
-                    return 1;
+                    return 0;
                 }
             }
             else
@@ -610,16 +614,16 @@ namespace MSL.forms
             servername = serverNameBox.Text;
             if (new Regex("[\u4E00-\u9FA5]").IsMatch(txb6.Text))
             {
-                var result = MessageBox.Show("使用带有中文的路径可能造成编码错误，导致无法开服，您确定要继续吗？", "警告", MessageBoxButton.YesNo, MessageBoxImage.Warning);
-                if (result == MessageBoxResult.No)
+                bool result = DialogShow.ShowMsg(this, "使用带有中文的路径可能造成编码错误，导致无法开服，您确定要继续吗？", "警告",true,"取消");
+                if (result == false)
                 {
                     return;
                 }
             }
             else if (txb6.Text.IndexOf(" ") + 1 != 0)
             {
-                var result = MessageBox.Show("使用带有空格的路径可能造成编码错误，导致无法开服，您确定要继续吗？", "警告", MessageBoxButton.YesNo, MessageBoxImage.Warning);
-                if (result == MessageBoxResult.No)
+                bool result = DialogShow.ShowMsg(this, "使用带有空格的路径可能造成编码错误，导致无法开服，您确定要继续吗？", "警告", true, "取消");
+                if (result == false)
                 {
                     return;
                 }
@@ -749,7 +753,7 @@ namespace MSL.forms
         }
         private void usebasicfastJvm_Checked(object sender, RoutedEventArgs e)
         {
-            MessageBox.Show("使用优化参数需要手动设置大小相同的内存，请对上面的内存进行更改！", "警告", MessageBoxButton.OK, MessageBoxImage.Exclamation);
+            MessageBox.Show("使用优化参数需要手动设置大小相同的内存，请对上面的内存进行更改！Java11及以上请勿选择此优化参数！", "警告", MessageBoxButton.OK, MessageBoxImage.Exclamation);
             useJVM.IsChecked = true;
             usefastJvm.IsChecked = false;
             txb7.Text = "-XX:+AggressiveOpts";
@@ -919,16 +923,16 @@ namespace MSL.forms
             servername = ServerNameBox.Text;
             if (new Regex("[\u4E00-\u9FA5]").IsMatch(txb6.Text))
             {
-                var result = MessageBox.Show("开服器被放置于带有中文的目录里，中文目录可能会造成编码错误导致无法开服，您确定要继续吗？", "警告", MessageBoxButton.YesNo, MessageBoxImage.Warning);
-                if (result == MessageBoxResult.No)
+                bool result = DialogShow.ShowMsg(this, "开服器被放置于带有中文的目录里，中文目录可能会造成编码错误导致无法开服，您确定要继续吗？", "警告", true, "取消");
+                if (result == false)
                 {
                     return;
                 }
             }
             else if (txb6.Text.IndexOf(" ") + 1 != 0)
             {
-                var result = MessageBox.Show("开服器被放置于带有空格的目录里，这种目录可能会造成编码错误导致无法开服，您确定要继续吗？", "警告", MessageBoxButton.YesNo, MessageBoxImage.Warning);
-                if (result == MessageBoxResult.No)
+                bool result = DialogShow.ShowMsg(this, "开服器被放置于带有空格的目录里，这种目录可能会造成编码错误导致无法开服，您确定要继续吗？", "警告", true, "取消");
+                if (result ==false)
                 {
                     return;
                 }
@@ -936,6 +940,8 @@ namespace MSL.forms
             serverbase = txb6.Text;
             FastModeGrid.Visibility = Visibility.Hidden;
             InstallGrid.Visibility = Visibility.Visible;
+            downloadCoreUrl.Clear();
+            FinallyCoreCombo.Items.Clear();
             int i = 0;
             
             // 遍历所有核心类型
@@ -1082,7 +1088,9 @@ namespace MSL.forms
                     }
                     else
                     {
+                        DialogShow.ShowMsg(this, "安装失败，请查看是否有杀毒软件进行拦截！请确保添加信任或关闭杀毒软件后进行重新安装！", "错误");
                         FastModeInstallBtn.IsEnabled = true;
+                        return;
                     }
                 }
                 else if (dwnJava == 2)
@@ -1095,11 +1103,10 @@ namespace MSL.forms
                 }
                 else
                 {
-                    MessageBox.Show("安装失败，请查看是否有杀毒软件进行拦截！请确保添加信任或关闭杀毒软件后进行重新安装！", "错误", MessageBoxButton.OK, MessageBoxImage.Error);
+                    DialogShow.ShowMsg(this, "下载取消！", "提示");
+                    FastInstallProcess.Text = "取消安装！";
                     FastModeInstallBtn.IsEnabled = true;
-                    FastInstallProcess.Text = "安装Java失败！";
-                    next3.IsEnabled = true;
-                    return5.IsEnabled = true;
+                    return;
                 }
             }
             catch
@@ -1115,6 +1122,7 @@ namespace MSL.forms
             if (!dwnDialog)
             {
                 DialogShow.ShowMsg(this, "下载取消！", "提示");
+                FastInstallProcess.Text = "取消安装！";
                 FastModeInstallBtn.IsEnabled = true;
                 return;
             }
@@ -1224,19 +1232,26 @@ namespace MSL.forms
         {
             string filename = FinallyCoreCombo.Items[FinallyCoreCombo.SelectedIndex].ToString()+".jar";
             string forgeVersion;
-            if (downloadCoreUrl[FinallyCoreCombo.SelectedIndex].IndexOf("bmcl") + 1 != 0)
+            string serverDownUrl = downloadCoreUrl[FinallyCoreCombo.SelectedIndex].ToString();
+
+            if (serverDownUrl.Contains("bmcl"))
             {
-                forgeVersion = FinallyCoreCombo.Items[FinallyCoreCombo.SelectedIndex].ToString().Replace("Forge","") + downloadCoreUrl[FinallyCoreCombo.SelectedIndex].Substring(downloadCoreUrl[FinallyCoreCombo.SelectedIndex].IndexOf("&version=") + 9,
-                    downloadCoreUrl[FinallyCoreCombo.SelectedIndex].IndexOf("&category") - (downloadCoreUrl[FinallyCoreCombo.SelectedIndex].IndexOf("&version=") + 9));
+                Match match = Regex.Match(serverDownUrl, @"&version=([\w.-]+)&category");
+                string version = FinallyCoreCombo.SelectedItem.ToString().Split('-')[1];
+                if (version.Contains("-"))
+                {
+                    string _version = version.Split('-')[0];
+                    forgeVersion = _version + "-" + match.Groups[1].Value;
+                }
+                else
+                {
+                    forgeVersion = version + "-" + match.Groups[1].Value;
+                }
             }
             else
             {
-                forgeVersion = downloadCoreUrl[FinallyCoreCombo.SelectedIndex].Substring(downloadCoreUrl[FinallyCoreCombo.SelectedIndex].IndexOf("forge-") + 6,
-                downloadCoreUrl[FinallyCoreCombo.SelectedIndex].IndexOf("-installer") - (downloadCoreUrl[FinallyCoreCombo.SelectedIndex].IndexOf("forge-") + 6));
-            }
-            if (forgeVersion.Length - forgeVersion.Replace("-", "").Length > 1)
-            {
-                forgeVersion = forgeVersion.Substring(0, forgeVersion.LastIndexOf("-"));
+                Match match = Regex.Match(serverDownUrl, @"forge-([\w.-]+)-installer");
+                forgeVersion = match.Groups[1].Value.Split('-')[0];
             }
             Process process = new Process();
             process.StartInfo.FileName = serverjava;
@@ -1363,8 +1378,8 @@ namespace MSL.forms
 
         private void FastModeReturnBtn_Click(object sender, RoutedEventArgs e)
         {
-            FinallyCoreCombo.Items.Clear();
-            downloadCoreUrl.Clear();
+            //FinallyCoreCombo.Items.Clear();
+            //downloadCoreUrl.Clear();
             InstallGrid.Visibility = Visibility.Hidden;
             FastModeGrid.Visibility = Visibility.Visible;
             //FastModeNextBtn.IsEnabled=false;
