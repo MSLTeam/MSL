@@ -50,7 +50,7 @@
             <ProgressBar x:Name="pbar" Height="15" VerticalAlignment="Bottom"/>
             <Label x:Name="lb01" Content="加载中，请耐心等待……" Margin="60,0,0,0" HorizontalAlignment="Center" VerticalAlignment="Center" Background="{x:Null}" BorderBrush="{x:Null}" Foreground="Red" Visibility="Hidden"/>
             <Label Content="搜索Mod" Margin="154,4,0,0" VerticalAlignment="Top" FontSize="18" BorderBrush="{x:Null}" Background="{x:Null}" HorizontalAlignment="Left" Height="37"/>
-            <hc:LoadingCircle x:Name="lCircle" HorizontalAlignment="Center" Height="34" VerticalAlignment="Center" Width="40" Visibility="Hidden" Margin="0,0,100,0"/>
+            <hc:LoadingCircle x:Name="lCircle" HorizontalAlignment="Center" Height="34" VerticalAlignment="Center" Width="40" Visibility="Hidden" Margin="0,0,110,0"/>
             <Button x:Name="backBtn" Content="返回" Margin="10,10,0,0" VerticalAlignment="Top" Click="backBtn_Click" Width="139" IsEnabled="False" HorizontalAlignment="Left"/>
         </Grid>
     </Grid>

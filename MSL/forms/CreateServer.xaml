@@ -30,7 +30,7 @@
         <Grid x:Name="BodyGrid" Grid.Row="1">
             <Grid x:Name="MainGrid" Visibility="Visible">
                 <Label Content="将通过几个步骤为您创建服务器……" FontSize="22" FontWeight="Bold" Background="{x:Null}" BorderBrush="{x:Null}" VerticalAlignment="Top" Height="40" HorizontalAlignment="Left" Margin="0,10,0,0"/>
-                <TextBlock Text="请您选择一个创建模式以继续：" FontSize="18" VerticalAlignment="Top" HorizontalAlignment="Left" Margin="40,60,0,0"/>
+                <TextBlock Text="请您选择一个创建模式以继续：" Foreground="{DynamicResource TextBlockBrush}" FontSize="18" VerticalAlignment="Top" HorizontalAlignment="Left" Margin="40,60,0,0"/>
                 <TextBlock Foreground="Red" Text="第一次使用或新手服主请使用快速模式，如需导入整合包（ServerPack），请选择自定义模式" FontSize="16" HorizontalAlignment="Left" VerticalAlignment="Top" Margin="40,90,0,0"/>
                 <Button x:Name="FastModeBtn" Template="{StaticResource CustomButton}" Content="快速模式（适合小白）" FontSize="18" hc:BorderElement.CornerRadius="30" Style="{StaticResource ButtonPrimary}" Margin="80,140,0,0" Click="FastModeBtn_Click" Width="250" Height="80" VerticalAlignment="Top" HorizontalAlignment="Left"/>
                 <Button x:Name="CustomModeBtn" Template="{StaticResource CustomButton}" Content="自定义模式（适合老手）" FontSize="18" hc:BorderElement.CornerRadius="30" Margin="80,260,0,0" Width="250" Height="80" Click="CustomModeBtn_Click" VerticalAlignment="Top" HorizontalAlignment="Left"/>
