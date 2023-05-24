@@ -505,25 +505,33 @@ namespace MSL.forms
         {
             txjava.IsEnabled = false;
             a0002_Copy.IsEnabled = false;
-            Process process = new Process();
-            process.StartInfo.FileName = "java";
-            process.StartInfo.Arguments = "-version";
-            process.StartInfo.UseShellExecute = false;
-            process.StartInfo.CreateNoWindow=true;
-            process.StartInfo.RedirectStandardOutput = true;
-            process.StartInfo.RedirectStandardError = true;
-            process.Start();
-
-            string output = process.StandardError.ReadToEnd();
-            process.WaitForExit();
-
-            Match match = Regex.Match(output, @"java version \""([\d\._]+)\""");
-            if (match.Success)
+            try
             {
-                outlog.Content = "环境变量可用性检查完毕，您的环境变量正常！";
-                usejvPath.Content = "使用环境变量:" + "Java" + match.Groups[1].Value;
+                Process process = new Process();
+                process.StartInfo.FileName = "java";
+                process.StartInfo.Arguments = "-version";
+                process.StartInfo.UseShellExecute = false;
+                process.StartInfo.CreateNoWindow = true;
+                process.StartInfo.RedirectStandardOutput = true;
+                process.StartInfo.RedirectStandardError = true;
+                process.Start();
+
+                string output = process.StandardError.ReadToEnd();
+                process.WaitForExit();
+
+                Match match = Regex.Match(output, @"java version \""([\d\._]+)\""");
+                if (match.Success)
+                {
+                    outlog.Content = "环境变量可用性检查完毕，您的环境变量正常！";
+                    usejvPath.Content = "使用环境变量:" + "Java" + match.Groups[1].Value;
+                }
+                else
+                {
+                    DialogShow.ShowMsg(this, "检测环境变量失败，您的环境变量似乎不存在！", "错误");
+                    usedownloadjv.IsChecked = true;
+                }
             }
-            else 
+            catch
             {
                 DialogShow.ShowMsg(this, "检测环境变量失败，您的环境变量似乎不存在！", "错误");
                 usedownloadjv.IsChecked = true;
@@ -605,7 +613,7 @@ namespace MSL.forms
             if (match.Success)
             {
                 string javaVersion = match.Groups[1].Value;
-                selectCheckedJavaComb.Items.Add("Java" + javaVersion + ":" + Path.GetDirectoryName(releaseFile));
+                selectCheckedJavaComb.Items.Add("Java" + javaVersion + ":" + Path.GetDirectoryName(releaseFile)+"\\bin\\java.exe");
             }
         }
 
@@ -897,7 +905,7 @@ namespace MSL.forms
                     ServerCoreDescrip.Text = "插件服务器：指在服务端添加插件（客户端无需添加），通过更改服务端底层来增加功能，这种方式极易做到对服务器、服务器用户玩家进行管理，如权限组、封禁系统等，但这种方式不能修改客户端内容，所以也导致很多功能很难实现，如添加新的物品，只能通过更改材质包的方式让客户端显示新的物品";
                     break;
                 case 1:
-                    ServerCoreDescrip.Text = "模组服务器（Forge加载器）：指通过Forge加载器，添加模组来增加功能（服务端和客户端均需添加），这种方式既可以更改服务端的内容，也可以更改客户端的内容，所以插件服务器无法实现的功能在这里即可轻易做到，但是这种方式很难做到插件服的管理功能，且需要客户端的模组和服务端进行同步，会给玩家造成一定的麻烦";
+                    ServerCoreDescrip.Text = "注意：此服务端的相关库文件源在海外，若多次出现下载失败的情况，请换用二合一服务端！\n模组服务器（Forge加载器）：指通过Forge加载器，添加模组来增加功能（服务端和客户端均需添加），这种方式既可以更改服务端的内容，也可以更改客户端的内容，所以插件服务器无法实现的功能在这里即可轻易做到，但是这种方式很难做到插件服的管理功能，且需要客户端的模组和服务端进行同步，会给玩家造成一定的麻烦";
                     break;
                 case 2:
                     ServerCoreDescrip.Text = "模组服务器（Fabric加载器）：指通过Fabric加载器，添加模组来增加功能（服务端和客户端均需添加），这种方式既可以更改服务端的内容，也可以更改客户端的内容，所以插件服务器无法实现的功能在这里即可轻易做到，但是这种方式很难做到插件服的管理功能，且需要客户端的模组和服务端进行同步，会给玩家造成一定的麻烦";

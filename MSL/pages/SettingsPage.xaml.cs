@@ -103,53 +103,48 @@ namespace MSL.pages
                 }
             }
         }
-        private void developerSettings_Click(object sender, RoutedEventArgs e)
-        {
-            System.Windows.Window window = new DeveloperSettings();
-            window.ShowDialog();
-        }
         private void Page_Loaded(object sender, RoutedEventArgs e)
         {
             try
             {
                 JObject jsonObject = JObject.Parse(File.ReadAllText(AppDomain.CurrentDomain.BaseDirectory + @"MSL\config.json", Encoding.UTF8));
-                if (jsonObject["notifyIcon"].ToString() == "True")
+                if (jsonObject["notifyIcon"] != null && jsonObject["notifyIcon"].ToString() == "True")
                 {
                     notifyIconbtn.Content = "托盘图标:打开";
                 }
-                else
+                if (jsonObject["autoRunApp"] != null && jsonObject["autoRunApp"].ToString() == "True")
                 {
-                    notifyIconbtn.Content = "托盘图标:关闭";
+                    autoRunApp.IsChecked = true;
                 }
-                if (jsonObject["autoOpenServer"].ToString() != "False")
+                if (jsonObject["autoOpenServer"] != null && jsonObject["autoOpenServer"].ToString() != "False")
                 {
                     openserversOnStart.IsChecked = true;
                     openserversOnStartList.Text = jsonObject["autoOpenServer"].ToString();
                 }
-                if (jsonObject["autoOpenFrpc"].ToString() == "True")
+                if (jsonObject["autoOpenFrpc"] != null && jsonObject["autoOpenFrpc"].ToString() == "True")
                 {
                     openfrpOnStart.IsChecked = true;
                 }
-                if (jsonObject["autoGetPlayerInfo"].ToString() == "True")
+                if (jsonObject["autoGetPlayerInfo"] != null && jsonObject["autoGetPlayerInfo"].ToString() == "True")
                 {
                     autoGetPlayerInfo.IsChecked = true;
                 }
-                if (jsonObject["autoGetServerInfo"].ToString() == "True")
+                if (jsonObject["autoGetServerInfo"] != null && jsonObject["autoGetServerInfo"].ToString() == "True")
                 {
                     autoGetServerInfo.IsChecked = true;
                 }
-                if (jsonObject["darkTheme"].ToString() == "True")
+                if (jsonObject["darkTheme"] != null && jsonObject["darkTheme"].ToString() == "True")
                 {
                     autoSetTheme.IsChecked = false;
                     darkTheme.IsChecked = true;
                     darkTheme.IsEnabled = true;
                 }
-                else if (jsonObject["darkTheme"].ToString() == "False")
+                else if (jsonObject["darkTheme"] != null && jsonObject["darkTheme"].ToString() == "False")
                 {
                     autoSetTheme.IsChecked = false;
                     darkTheme.IsEnabled = true;
                 }
-                if (jsonObject["skin"].ToString() != "0")
+                if (jsonObject["skin"] != null && jsonObject["skin"].ToString() != "0")
                 {
                     BlueSkinBtn.IsEnabled = true;
                     RedSkinBtn.IsEnabled = true;
@@ -185,7 +180,7 @@ namespace MSL.pages
                             break;
                     }
                 }
-                if (jsonObject["semitransparentTitle"].ToString() == "True")
+                if (jsonObject["semitransparentTitle"] != null && jsonObject["semitransparentTitle"].ToString() == "True")
                 {
                     semitransparentTitle.IsChecked = true;
                 }
@@ -205,9 +200,9 @@ namespace MSL.pages
                 }
                 catch { return; }
             }
-            catch(Exception ex)
+            catch
             {
-                Growl.Error("Err\n" + ex.Message);
+                Growl.Error("加载配置时发生错误！此错误不影响使用，您可继续使用或将其反馈给作者！");
             }
         }
 
@@ -467,11 +462,13 @@ namespace MSL.pages
         private void paintedEgg_Click(object sender, RoutedEventArgs e)
         {
             var mainwindow = (MainWindow)System.Windows.Window.GetWindow(this);
-            DialogShow.ShowMsg(mainwindow, "点击此按钮后软件出现任何问题作者概不负责，你确定要继续吗？\n（光敏性癫痫警告！若您患有光敏性癫痫，请不要点击下面任何按钮，并立即使用任务管理器结束此程序或重启电脑！）", "警告", true, "确定");
-            MessageDialog._dialogReturn = false;
-            ThemeManager.Current.UsingSystemTheme = false;
-            Thread thread = new Thread(PaintedEgg);
-            thread.Start();
+            bool dialog=DialogShow.ShowMsg(mainwindow, "点击此按钮后软件出现任何问题作者概不负责，你确定要继续吗？\n（光敏性癫痫警告！若您患有光敏性癫痫，请不要点击确定！）", "警告", true, "取消");
+            if (dialog)
+            {
+                ThemeManager.Current.UsingSystemTheme = false;
+                Thread thread = new Thread(PaintedEgg);
+                thread.Start();
+            }
         }
         void PaintedEgg()
         {
@@ -575,6 +572,136 @@ namespace MSL.pages
             catch
             {
                 Growl.Error("出现错误，您是否选择了一个服务器？");
+            }
+        }
+
+        private void autoRunApp_Click(object sender, RoutedEventArgs e)
+        {
+            if(autoRunApp.IsChecked == true)
+            {
+                // 获取当前用户的注册表启动项
+                RegistryKey regKey = Registry.CurrentUser.OpenSubKey("SOFTWARE\\Microsoft\\Windows\\CurrentVersion\\Run", true);
+
+                // 如果启动项中不存在该应用程序，则添加该应用程序
+                if (regKey.GetValue("Minecraft Server Launcher") == null)
+                {
+                    regKey.SetValue("Minecraft Server Launcher", System.Reflection.Assembly.GetExecutingAssembly().Location);
+                }
+                string jsonString = File.ReadAllText(AppDomain.CurrentDomain.BaseDirectory + @"MSL\config.json", System.Text.Encoding.UTF8);
+                JObject jobject = JObject.Parse(jsonString);
+                jobject["autoRunApp"] = "True";
+                string convertString = Convert.ToString(jobject);
+                File.WriteAllText(AppDomain.CurrentDomain.BaseDirectory + @"MSL\config.json", convertString, System.Text.Encoding.UTF8);
+            }
+            else
+            {
+                // 获取当前用户的注册表启动项
+                RegistryKey regKey = Registry.CurrentUser.OpenSubKey("SOFTWARE\\Microsoft\\Windows\\CurrentVersion\\Run", true);
+
+                // 如果启动项中存在该应用程序，则删除该应用程序
+                if (regKey.GetValue("Minecraft Server Launcher") != null)
+                {
+                    regKey.DeleteValue("Minecraft Server Launcher");
+                }
+                string jsonString = File.ReadAllText(AppDomain.CurrentDomain.BaseDirectory + @"MSL\config.json", System.Text.Encoding.UTF8);
+                JObject jobject = JObject.Parse(jsonString);
+                jobject["autoRunApp"] = "False";
+                string convertString = Convert.ToString(jobject);
+                File.WriteAllText(AppDomain.CurrentDomain.BaseDirectory + @"MSL\config.json", convertString, System.Text.Encoding.UTF8);
+            }
+        }
+
+        private void checkUpdateBtn_Click(object sender, RoutedEventArgs e)
+        {
+            //更新
+            try
+            {
+                var mainwindow = (MainWindow)System.Windows.Window.GetWindow(this);
+                WebClient MyWebClient = new WebClient();
+                MyWebClient.Credentials = CredentialCache.DefaultCredentials;
+                byte[] pageData = MyWebClient.DownloadData(MainWindow.serverLink + @"/msl/update.txt");
+                string pageHtml = Encoding.UTF8.GetString(pageData);
+                string strtempa = "#";
+                int IndexofA = pageHtml.IndexOf(strtempa);
+                string Ru = pageHtml.Substring(IndexofA + 1);
+                string aaa = Ru.Substring(0, Ru.IndexOf("#"));
+                if (aaa.Contains("v"))
+                {
+                    aaa = aaa.Replace("v", "");
+                }
+                Version newVersion = new Version(aaa);
+                Version version = new Version(System.Reflection.Assembly.GetExecutingAssembly().GetName().Version.ToString());
+
+                if (newVersion > version)
+                {
+                    byte[] _updatelog = MyWebClient.DownloadData(MainWindow.serverLink + @"/msl/updatelog.txt");
+                    string updatelog = Encoding.UTF8.GetString(_updatelog);
+                    this.Dispatcher.Invoke(DispatcherPriority.Normal, (ThreadStart)delegate ()
+                    {
+                        bool dialog = DialogShow.ShowMsg(mainwindow, "发现新版本，版本号为：" + aaa + "，是否进行更新？\n更新日志：\n" + updatelog, "更新", true, "取消");
+                        if (dialog == true)
+                        {
+                            string strtempa1 = "* ";
+                            int IndexofA1 = pageHtml.IndexOf(strtempa1);
+                            string Ru1 = pageHtml.Substring(IndexofA1 + 2);
+                            string aaa1 = Ru1.Substring(0, Ru1.IndexOf(" *"));
+                            DialogShow.ShowDownload(mainwindow, aaa1, AppDomain.CurrentDomain.BaseDirectory, "MSL" + aaa + ".exe", "下载新版本中……");
+                            if (File.Exists(AppDomain.CurrentDomain.BaseDirectory + "MSL" + aaa + ".exe"))
+                            {
+                                /*
+                                string vBatFile = Path.GetDirectoryName(AppDomain.CurrentDomain.BaseDirectory) + @"\DEL.bat";
+                                using (StreamWriter vStreamWriter = new StreamWriter(vBatFile, false, Encoding.Default))
+                                {
+                                    vStreamWriter.Write(string.Format(":del\r\n del \"" + System.Windows.Forms.Application.ExecutablePath + "\"\r\n " + "if exist \"" + System.Windows.Forms.Application.ExecutablePath + "\" goto del\r\n " + "start /d \"" + AppDomain.CurrentDomain.BaseDirectory + "\" MSL" + aaa + ".exe" + "\r\n" + " del %0\r\n", AppDomain.CurrentDomain.BaseDirectory));
+                                }
+                                WinExec(vBatFile, 0);
+                                Process.GetCurrentProcess().Kill();
+                                */
+                                string oldExePath = Process.GetCurrentProcess().MainModule.ModuleName;
+                                string dwnExePath = Path.Combine(AppDomain.CurrentDomain.BaseDirectory, "MSL" + aaa + ".exe");
+                                string newExeDir = AppDomain.CurrentDomain.BaseDirectory;
+
+                                // 输出CMD命令以便调试
+                                string cmdCommand = "/C choice /C Y /N /D Y /T 1 & Del \"" + oldExePath + "\" & Ren \"" + "MSL" + aaa + ".exe" + "\" \"MSL.exe\" & start \"\" \"MSL.exe\"";
+                                //MessageBox.Show(cmdCommand);
+
+                                // 关闭当前运行中的应用程序
+                                Application.Current.Shutdown();
+
+                                // 删除旧版本并启动新版本
+                                Process delProcess = new Process();
+                                delProcess.StartInfo.FileName = "cmd.exe";
+                                delProcess.StartInfo.Arguments = cmdCommand;
+                                Directory.SetCurrentDirectory(newExeDir);
+                                delProcess.StartInfo.WindowStyle = ProcessWindowStyle.Hidden;
+                                delProcess.Start();
+
+                                // 退出当前进程
+                                Process.GetCurrentProcess().Kill();
+                            }
+                            else
+                            {
+                                MessageBox.Show("更新失败！", "错误", MessageBoxButton.OK, MessageBoxImage.Error);
+                            }
+                        }
+                        else
+                        {
+                            Growl.Error("您拒绝了更新新版本，若在此版本中遇到bug，请勿报告给作者！");
+                        }
+                    });
+                }
+                else if (newVersion < version)
+                {
+                    Growl.Info("当前版本高于正式版本，若使用中遇到BUG，请及时反馈！");
+                }
+                else
+                {
+                    Growl.Success("您使用的开服器已是最新版本！");
+                }
+            }
+            catch (Exception ex)
+            {
+                MessageBox.Show("Err" + ex.Message);
             }
         }
     }

@@ -489,6 +489,7 @@ namespace MSL
              * 后续版本要移除
              * 
              * **************************************************************/
+            /*
             if (File.Exists(AppDomain.CurrentDomain.BaseDirectory + "MSL\\ServerList.ini"))
             {
                 string line = File.ReadAllText(AppDomain.CurrentDomain.BaseDirectory + "MSL\\ServerList.ini");
@@ -561,6 +562,7 @@ namespace MSL
                 File.Delete(AppDomain.CurrentDomain.BaseDirectory + "MSL\\ServerList.ini");
                 Growl.Success("已成功将旧版服务器存储文件转换为新版文件！旧版存储文件已删除");
             }
+            */
 
 
             //获取电脑内存

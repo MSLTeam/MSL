@@ -95,11 +95,51 @@ namespace MSL
             RserverJVMcmd = _json["args"].ToString();
 
             this.Title = Rservername;//set title to server name
-            //TitleBox.Text = Rservername;//set title to server name
-            if (File.Exists(Rserverbase + "\\server-icon.png"))//check server-icon,if exist,set icon to server-icon
+            
+            bool isChangeConfig = false;
+            if (!Directory.Exists(Rserverbase))
+            {
+                string[] pathParts = Rserverbase.Split('\\');
+                if (pathParts.Length >= 2 && pathParts[pathParts.Length - 2] == "MSL")
+                {
+                    // 路径的倒数第二个是 MSL
+                    isChangeConfig=true;
+                    string baseDirectory = AppDomain.CurrentDomain.BaseDirectory; // 获取当前应用程序的基目录
+                    Rserverbase = Path.Combine(baseDirectory, "MSL", string.Join("\\", pathParts.Skip(pathParts.Length - 1))); // 拼接 MSL 目录下的路径
+                }
+                else
+                {
+                    // 路径的倒数第二个不是 MSL
+                    Growl.Error("您的服务器目录似乎有误，是从别的位置转移到此处吗？请手动前往服务器设置界面进行更改！");
+                }
+            }
+            else if (File.Exists(Rserverbase + "\\server-icon.png"))//check server-icon,if exist,set icon to server-icon
             {
                 this.Icon = new BitmapImage(new Uri(Rserverbase + "\\server-icon.png"));
                 //IconBox.Source = new BitmapImage(new Uri(Rserverbase + "\\server-icon.png"));
+            }
+            if (Rserverjava != "Java" && Rserverjava != "java"&& !File.Exists(Rserverjava))
+            {
+                string[] pathParts = Rserverjava.Split('\\');
+                if (pathParts.Length >= 4 && pathParts[pathParts.Length - 4] == "MSL")
+                {
+                    // 路径的倒数第四个是 MSL
+                    isChangeConfig = true;
+                    string baseDirectory = AppDomain.CurrentDomain.BaseDirectory; // 获取当前应用程序的基目录
+                    Rserverjava = Path.Combine(baseDirectory, "MSL", string.Join("\\", pathParts.Skip(pathParts.Length - 3))); // 拼接 MSL 目录下的路径
+                }
+                else
+                {
+                    // 路径的倒数第四个不是 MSL
+                    Growl.Error("您的Java目录似乎有误，是从别的位置转移到此处吗？请手动前往服务器设置界面进行更改！");
+                }
+            }
+            if (isChangeConfig)
+            {
+                _json["java"].Replace(Rserverjava);
+                _json["base"].Replace(Rserverbase);
+                jsonObject[RserverId].Replace(_json);
+                File.WriteAllText(AppDomain.CurrentDomain.BaseDirectory + @"MSL\ServerList.json", Convert.ToString(jsonObject), Encoding.UTF8);
             }
 
             if (File.Exists(AppDomain.CurrentDomain.BaseDirectory + "MSL\\Background.png"))//check background and set it
@@ -401,6 +441,7 @@ namespace MSL
                 SERVERCMD.BeginErrorReadLine();
                 timer1.Interval = TimeSpan.FromSeconds(1);
                 timer1.Start();
+                Directory.SetCurrentDirectory(AppDomain.CurrentDomain.BaseDirectory);
             }
             catch (Exception e)
             {
@@ -628,7 +669,7 @@ namespace MSL
             {
                 ProblemSystemShow(msg);
             }
-            if (outlog.Document.Blocks.Count >= 1000 && DeveloperSettings.developerMode != true)
+            if (outlog.Document.Blocks.Count >= 1000 && autoClearOutlog.Content.ToString().Contains("开"))
             {
                 outlog.Document.Blocks.Clear();
             }
@@ -2149,11 +2190,6 @@ namespace MSL
         {
             try
             {
-                if (DeveloperSettings.developerMode == true)
-                {
-                    nAme.IsReadOnly = false;
-                    bAse.IsReadOnly = false;
-                }
                 nAme.Text = Rservername;
                 server.Text = Rserverserver;
                 memorySlider.Maximum = MainWindow.PhisicalMemory / 1024.0 / 1024.0;
@@ -2328,7 +2364,16 @@ namespace MSL
                 //Directory.CreateDirectory(bAse.Text);
                 doneBtn1.IsEnabled = true;
                 Rservername = nAme.Text;
+                Title = Rservername;
                 Rserverserver = server.Text;
+                if (Rserverbase != bAse.Text)
+                {
+                    bool dialog = DialogShow.ShowMsg(this, "检测到您更改了服务器目录，是否将当前的服务器目录移动至新的目录？", "警告", true, "取消");
+                    if (dialog)
+                    {
+                        MoveFolder(Rserverbase, bAse.Text);
+                    }
+                }
                 Rserverbase = bAse.Text;
                 RserverJVMcmd = jVMcmd.Text;
                 Rserverjava = jAva.Text;
@@ -2371,6 +2416,7 @@ namespace MSL
 
                 doneBtn1.IsEnabled = true;
                 Rservername = nAme.Text;
+                Title = Rservername;
                 Rserverserver = server.Text;
                 Rserverbase = bAse.Text;
                 RserverJVMcmd = jVMcmd.Text;
@@ -2507,6 +2553,7 @@ namespace MSL
                     downout.Content = "安装成功！";
                     doneBtn1.IsEnabled = true;
                     Rservername = nAme.Text;
+                    Title = Rservername;
                     Rserverserver = server.Text;
                     Rserverbase = bAse.Text;
                     RserverJVMcmd = jVMcmd.Text;
@@ -2808,7 +2855,21 @@ namespace MSL
                 shieldStackOut.Content = "屏蔽堆栈追踪:开";
             }
         }
-
+        private void autoClearOutlog_Click(object sender, RoutedEventArgs e)
+        {
+            if (autoClearOutlog.Content.ToString() == "自动清屏:开")
+            {
+                bool msgreturn = DialogShow.ShowMsg(this, "关闭此功能后，服务器输出界面超过1000行日志后将不再清屏，这样可能会造成性能损失，您确定要继续吗？", "警告", true, "取消");
+                if (msgreturn)
+                {
+                    autoClearOutlog.Content = "自动清屏:关";
+                }
+            }
+            else
+            {
+                autoClearOutlog.Content = "自动清屏:开";
+            }
+        }
         void GetFastCmd()
         {
             JObject jsonObject = JObject.Parse(File.ReadAllText(AppDomain.CurrentDomain.BaseDirectory + @"MSL\ServerList.json", Encoding.UTF8));
