@@ -58,6 +58,11 @@
         <controls:WindowViewModel/>
     </Window.DataContext>
     <Grid x:Name="MainGrid">
+        <!--
+        <Grid.Effect>
+            <hc:GrayScaleEffect/>
+        </Grid.Effect>
+        -->
         <Grid.RowDefinitions>
             <RowDefinition Height="40"/>
             <RowDefinition/>

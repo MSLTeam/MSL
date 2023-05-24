@@ -18,18 +18,23 @@
     </Page.Triggers>
     <ScrollViewer>
         <StackPanel>
-            <Border MouseLeftButtonUp="Border_MouseLeftButtonUp" Style="{StaticResource MagicBorder}">
+            <Border Style="{StaticResource MagicBorder}">
                 <Grid>
                     <Label x:Name="AppVersionLab" Content="关于开服器" Style="{StaticResource BorderTitle}"/>
-                    <TextBlock Margin="100,35,0,10" FontSize="14" VerticalAlignment="Center" HorizontalAlignment="Center" Foreground="{DynamicResource TextBlockBrush}" Text="Minecraft Server Launcher(MSL) Copyright © 2021-2023 By Waheal&#xA;开服器的成功制作离不开以下人员的帮助及支持：&#xA;MojaveHao、FlyingChubbyFish —— 提供部分技术支持和改进意见&#xA;终末丶谎言 —— 提供内网映射服务&#xA;同时在此鸣谢所有使用MSL的用户，以及给MSL提出过改进建议和Bug的用户&#xA;感谢各位的支持与信任！&#xA;官方文档：https://docs.waheal.top/（点击打开）"/>
                     <Image Source="/MSL;component/icon.ico" Margin="0,25,550,0" HorizontalAlignment="Center" VerticalAlignment="Center" Width="80" Height="80"/>
+                    <StackPanel HorizontalAlignment="Center" VerticalAlignment="Center" Margin="100,30,0,0">
+                        <TextBlock FontSize="14" VerticalAlignment="Center" HorizontalAlignment="Center" Foreground="{DynamicResource TextBlockBrush}" Text="Minecraft Server Launcher(MSL) Copyright © 2021-2023 By Waheal&#xA;开服器的成功制作离不开以下人员的帮助及支持：&#xA;MojaveHao、FlyingChubbyFish —— 提供部分技术支持和改进意见&#xA;终末丶谎言 —— 提供内网映射服务&#xA;同时在此鸣谢所有使用MSL的用户，以及给MSL提出过改进建议和Bug的用户&#xA;感谢各位的支持与信任！"/>
+                        <hc:Shield Subject="官方文档：https://docs.waheal.top/" Status="打开网站" Command="hc:ControlCommands.OpenLink" CommandParameter="https://docs.waheal.top/" HorizontalAlignment="Left" VerticalAlignment="Bottom" Margin="0,5,0,0"/>
+                    </StackPanel>
+                    
                 </Grid>
             </Border>
-            <Border x:Name="openSource" MouseLeftButtonUp="openSource_MouseLeftButtonUp" Style="{StaticResource MagicBorder}">
-                <Grid>
+            <Border x:Name="openSource" Style="{StaticResource MagicBorder}">
+                <StackPanel>
                     <Label Content="开源（Github）" Style="{StaticResource BorderTitle}"/>
-                    <TextBlock Margin="20,35,20,10" FontSize="14" HorizontalAlignment="Center" VerticalAlignment="Center" TextWrapping="Wrap" Foreground="{DynamicResource TextBlockBrush}" Text="Waheal/Minecraft-Server-Launcher is licensed under the GNU General Public License v3.0&#xA;Permissions of this strong copyleft license are conditioned on making available complete source code of licensed works and modifications, which include larger works using a licensed work, under the same license. Copyright and license notices must be preserved. Contributors provide an express grant of patent rights.&#xA;地址：https://github.com/Waheal/Minecraft-Server-Launcher（点击打开）"/>
-                </Grid>
+                    <TextBlock Margin="20,0,20,0" FontSize="14" HorizontalAlignment="Center" VerticalAlignment="Center" TextWrapping="Wrap" Foreground="{DynamicResource TextBlockBrush}" Text="Waheal/Minecraft-Server-Launcher is licensed under the GNU General Public License v3.0&#xA;Permissions of this strong copyleft license are conditioned on making available complete source code of licensed works and modifications, which include larger works using a licensed work, under the same license. Copyright and license notices must be preserved. Contributors provide an express grant of patent rights."/>
+                    <hc:Shield Subject="地址：https://github.com/Waheal/Minecraft-Server-Launcher" Status="打开网站" Margin="20,5,20,0" Command="hc:ControlCommands.OpenLink" CommandParameter="https://github.com/Waheal/Minecraft-Server-Launcher" HorizontalAlignment="Left" VerticalAlignment="Top"/>
+                </StackPanel>
             </Border>
             <Border Style="{StaticResource MagicBorder}">
                 <StackPanel>
@@ -37,49 +42,49 @@
                     <StackPanel>
                         <TextBlock Text="1.Fody" Margin="20,0,0,5" FontSize="16" VerticalAlignment="Top" HorizontalAlignment="Left" FontWeight="Bold" Foreground="{DynamicResource TextBlockBrush}"/>
                         <TextBlock Text="Copyright (c) Simon Cropp.&#xA;Licensed under the MIT License." Margin="20,0,0,5" VerticalAlignment="Top" HorizontalAlignment="Left" Foreground="{DynamicResource TextBlockBrush}"/>
-                        <Button x:Name="HyperLink1" hc:IconElement.Geometry="{StaticResource DragHorizontalGeometry}" hc:Poptip.Content="打开网站" hc:Poptip.HorizontalOffset="40" hc:Poptip.Placement="Left" HorizontalAlignment="Right" VerticalAlignment="Top" Margin="0,-45,20,0" Click="HyperLink_Click"/>
+                        <hc:Shield Subject="..." Status="打开网站" Margin="0,-45,20,0" Command="hc:ControlCommands.OpenLink" CommandParameter="https://github.com/Fody/Fody" HorizontalAlignment="Right" VerticalAlignment="Top"/>
                     </StackPanel>
                     <StackPanel>
                         <TextBlock Text="2.Costura.Fody" Margin="20,0,0,5" FontSize="16" VerticalAlignment="Top" HorizontalAlignment="Left" FontWeight="Bold" Foreground="{DynamicResource TextBlockBrush}"/>
                         <TextBlock Text="Copyright (c) 2012 Simon Cropp and contributors.&#xA;Licensed under the MIT License." Margin="20,0,0,5" VerticalAlignment="Top" HorizontalAlignment="Left" Foreground="{DynamicResource TextBlockBrush}"/>
-                        <Button x:Name="HyperLink2" hc:IconElement.Geometry="{StaticResource DragHorizontalGeometry}" hc:Poptip.Content="打开网站" hc:Poptip.HorizontalOffset="40" hc:Poptip.Placement="Left" HorizontalAlignment="Right" VerticalAlignment="Top" Margin="0,-45,20,0" Click="HyperLink_Click"/>
+                        <hc:Shield Subject="..." Status="打开网站" Margin="0,-45,20,0" Command="hc:ControlCommands.OpenLink" CommandParameter="https://github.com/Fody/Costura" HorizontalAlignment="Right" VerticalAlignment="Top"/>
                     </StackPanel>
                     <StackPanel>
                         <TextBlock Text="3.CurseForge.APIClient" Margin="20,0,0,5" FontSize="16" VerticalAlignment="Top" HorizontalAlignment="Left" FontWeight="Bold" Foreground="{DynamicResource TextBlockBrush}"/>
                         <TextBlock Text="Copyright (c) 2021 Chris Gårdenberg (NoLifeKing85 / It's Simple Studios).&#xA;Licensed under the MIT License." Margin="20,0,0,5" VerticalAlignment="Top" HorizontalAlignment="Left" Foreground="{DynamicResource TextBlockBrush}"/>
-                        <Button x:Name="HyperLink3" hc:IconElement.Geometry="{StaticResource DragHorizontalGeometry}" hc:Poptip.Content="打开网站" hc:Poptip.HorizontalOffset="40" hc:Poptip.Placement="Left" HorizontalAlignment="Right" VerticalAlignment="Top" Margin="0,-45,20,0" Click="HyperLink_Click"/>
+                        <hc:Shield Subject="..." Status="打开网站" Margin="0,-45,20,0" Command="hc:ControlCommands.OpenLink" CommandParameter="https://github.com/CurseForgeCommunity/.NET-APIClient" HorizontalAlignment="Right" VerticalAlignment="Top"/>
                     </StackPanel>
                     <StackPanel Margin="0,10,0,0">
                         <TextBlock Text="4.Downloader" Margin="20,0,0,5" FontSize="16" VerticalAlignment="Top" HorizontalAlignment="Left" FontWeight="Bold" Foreground="{DynamicResource TextBlockBrush}"/>
                         <TextBlock Text="Copyright (c) 2021 Behzad Khosravifar.&#xA;Licensed under the MIT License." Margin="20,0,0,5" VerticalAlignment="Top" HorizontalAlignment="Left" Foreground="{DynamicResource TextBlockBrush}"/>
-                        <Button x:Name="HyperLink4" hc:IconElement.Geometry="{StaticResource DragHorizontalGeometry}" hc:Poptip.Content="打开网站" hc:Poptip.HorizontalOffset="40" hc:Poptip.Placement="Left" HorizontalAlignment="Right" VerticalAlignment="Top" Margin="0,-45,20,0" Click="HyperLink_Click"/>
+                        <hc:Shield Subject="..." Status="打开网站" Margin="0,-45,20,0" Command="hc:ControlCommands.OpenLink" CommandParameter="https://github.com/bezzad/Downloader" HorizontalAlignment="Right" VerticalAlignment="Top"/>
                     </StackPanel>
                     <StackPanel Margin="0,10,0,0">
                         <TextBlock Text="5.HandyControls" Margin="20,0,0,5" FontSize="16" VerticalAlignment="Top" HorizontalAlignment="Left" FontWeight="Bold" Foreground="{DynamicResource TextBlockBrush}"/>
                         <TextBlock Text="Copyright (c) 2018-2022 HandyOrg.&#xA;Licensed under the MIT License." Margin="20,0,0,5" VerticalAlignment="Top" HorizontalAlignment="Left" Foreground="{DynamicResource TextBlockBrush}"/>
-                        <Button x:Name="HyperLink5" hc:IconElement.Geometry="{StaticResource DragHorizontalGeometry}" hc:Poptip.Content="打开网站" hc:Poptip.HorizontalOffset="40" hc:Poptip.Placement="Left" HorizontalAlignment="Right" VerticalAlignment="Top" Margin="0,-45,20,0" Click="HyperLink_Click"/>
+                        <hc:Shield Subject="..." Status="打开网站" Margin="0,-45,20,0" Command="hc:ControlCommands.OpenLink" CommandParameter="https://github.com/ghost1372/HandyControls" HorizontalAlignment="Right" VerticalAlignment="Top"/>
                     </StackPanel>
                     <StackPanel Margin="0,10,0,0">
                         <TextBlock Text="6.Microsoft.Windows.SDK.Contracts" Margin="20,0,0,5" FontSize="16" VerticalAlignment="Top" HorizontalAlignment="Left" FontWeight="Bold" Foreground="{DynamicResource TextBlockBrush}"/>
                         <TextBlock Text="Copyright (c) MICROSOFT SOFTWARE.&#xA;Licensed under the MICROSOFT SOFTWARE LICENSE TERMS." Margin="20,0,0,5" VerticalAlignment="Top" HorizontalAlignment="Left" Foreground="{DynamicResource TextBlockBrush}"/>
-                        <Button x:Name="HyperLink6" hc:IconElement.Geometry="{StaticResource DragHorizontalGeometry}" hc:Poptip.Content="打开网站" hc:Poptip.HorizontalOffset="40" hc:Poptip.Placement="Left" HorizontalAlignment="Right" VerticalAlignment="Top" Margin="0,-45,20,0" Click="HyperLink_Click"/>
+                        <hc:Shield Subject="..." Status="打开网站" Margin="0,-45,20,0" Command="hc:ControlCommands.OpenLink" CommandParameter="https://www.nuget.org/packages/Microsoft.Windows.SDK.Contracts" HorizontalAlignment="Right" VerticalAlignment="Top"/>
                     </StackPanel>
                     <StackPanel Margin="0,10,0,0">
                         <TextBlock Text="7.Newtonsoft.Json" Margin="20,0,0,5" FontSize="16" VerticalAlignment="Top" HorizontalAlignment="Left" FontWeight="Bold" Foreground="{DynamicResource TextBlockBrush}"/>
                         <TextBlock Text="Copyright (c) 2007 James Newton-King.&#xA;Licensed under the MIT License." Margin="20,0,0,5" VerticalAlignment="Top" HorizontalAlignment="Left" Foreground="{DynamicResource TextBlockBrush}"/>
-                        <Button x:Name="HyperLink7" hc:IconElement.Geometry="{StaticResource DragHorizontalGeometry}" hc:Poptip.Content="打开网站" hc:Poptip.HorizontalOffset="40" hc:Poptip.Placement="Left" HorizontalAlignment="Right" VerticalAlignment="Top" Margin="0,-45,20,0" Click="HyperLink_Click"/>
+                        <hc:Shield Subject="..." Status="打开网站" Margin="0,-45,20,0" Command="hc:ControlCommands.OpenLink" CommandParameter="https://www.newtonsoft.com/json" HorizontalAlignment="Right" VerticalAlignment="Top"/>
                     </StackPanel>
                     <StackPanel Margin="0,10,0,0">
                         <TextBlock Text="8.SharpZipLib" Margin="20,0,0,5" FontSize="16" VerticalAlignment="Top" HorizontalAlignment="Left" FontWeight="Bold" Foreground="{DynamicResource TextBlockBrush}"/>
                         <TextBlock Text="Copyright © 2000-2018 SharpZipLib Contributors.&#xA;Licensed under the MIT License." Margin="20,0,0,5" VerticalAlignment="Top" HorizontalAlignment="Left" Foreground="{DynamicResource TextBlockBrush}"/>
-                        <Button x:Name="HyperLink8" hc:IconElement.Geometry="{StaticResource DragHorizontalGeometry}" hc:Poptip.Content="打开网站" hc:Poptip.HorizontalOffset="40" hc:Poptip.Placement="Left" HorizontalAlignment="Right" VerticalAlignment="Top" Margin="0,-45,20,0" Click="HyperLink_Click"/>
+                        <hc:Shield Subject="..." Status="打开网站" Margin="0,-45,20,0" Command="hc:ControlCommands.OpenLink" CommandParameter="https://github.com/icsharpcode/SharpZipLib" HorizontalAlignment="Right" VerticalAlignment="Top"/>
                     </StackPanel>
                     <StackPanel Margin="0,10,0,0">
                         <TextBlock Text="9.System.Runtime.WindowsRuntime" Margin="20,0,0,5" FontSize="16" VerticalAlignment="Top" HorizontalAlignment="Left" FontWeight="Bold" Foreground="{DynamicResource TextBlockBrush}"/>
                         <TextBlock Text="10.System.Runtime.WindowsRuntime.UI.Xaml" Margin="20,0,0,5" FontSize="16" VerticalAlignment="Top" HorizontalAlignment="Left" FontWeight="Bold" Foreground="{DynamicResource TextBlockBrush}"/>
                         <TextBlock Text="11.System.ValueTuple" Margin="20,0,0,5" FontSize="16" VerticalAlignment="Top" HorizontalAlignment="Left" FontWeight="Bold" Foreground="{DynamicResource TextBlockBrush}"/>
                         <TextBlock Text="Copyright (c) .NET Foundation and Contributors.&#xA;Licensed under the MIT License." Margin="20,0,0,5" VerticalAlignment="Top" HorizontalAlignment="Left" Foreground="{DynamicResource TextBlockBrush}"/>
-                        <Button x:Name="HyperLink9" hc:IconElement.Geometry="{StaticResource DragHorizontalGeometry}" hc:Poptip.Content="打开网站" hc:Poptip.HorizontalOffset="40" hc:Poptip.Placement="Left" HorizontalAlignment="Right" VerticalAlignment="Top" Margin="0,-45,20,0" Click="HyperLink_Click"/>
+                        <hc:Shield Subject="..." Status="打开网站" Margin="0,-45,20,0" Command="hc:ControlCommands.OpenLink" CommandParameter="https://github.com/dotnet/runtime" HorizontalAlignment="Right" VerticalAlignment="Top"/>
                     </StackPanel>
                 </StackPanel>
             </Border>

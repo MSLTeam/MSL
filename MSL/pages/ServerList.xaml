@@ -20,7 +20,7 @@
     <Grid>
         <Label Margin="10,5,0,0" Content="服务器列表（双击可快捷启动服务器）：" FontSize="24" FontWeight="Bold" HorizontalAlignment="Left" VerticalAlignment="Top" Background="{x:Null}" BorderBrush="{x:Null}" Height="42"/>
         <Border Margin="10,50,10,10" CornerRadius="10" BorderBrush="{DynamicResource BorderBrush}" BorderThickness="1" Background="{DynamicResource SideMenuItemBrush}">
-            <ListView x:Name="serverList" MouseDoubleClick="serverList_MouseDoubleClick" FontSize="16" SelectionMode="Single" SelectionChanged="serverList_SelectionChanged" Background="{x:Null}" BorderBrush="{x:Null}">
+            <ListView x:Name="serverList" hc:Empty.ShowEmpty="true" MouseDoubleClick="serverList_MouseDoubleClick" FontSize="16" SelectionMode="Single" SelectionChanged="serverList_SelectionChanged" Background="{x:Null}" BorderBrush="{x:Null}">
                 <ListView.ContextMenu>
                     <ContextMenu>
                         <MenuItem Click="refreshList_Click" Header="刷新"/>

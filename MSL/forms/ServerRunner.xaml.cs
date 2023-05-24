@@ -22,7 +22,6 @@ using System.Windows.Input;
 using System.Windows.Media;
 using System.Windows.Media.Imaging;
 using System.Windows.Threading;
-using static System.Net.Mime.MediaTypeNames;
 using MessageBox = System.Windows.MessageBox;
 using Path = System.IO.Path;
 using Window = System.Windows.Window;
@@ -56,8 +55,8 @@ namespace MSL
         public string RserverJVM;
         public string RserverJVMcmd;
         public string Rserverbase;
-        DispatcherTimer timer1 = new DispatcherTimer();
-        DispatcherTimer timer2 = new DispatcherTimer();
+        readonly DispatcherTimer timer1 = new DispatcherTimer();
+        readonly DispatcherTimer timer2 = new DispatcherTimer();
 
         /// <summary>
         /// /////////主要代码
@@ -956,7 +955,7 @@ namespace MSL
                 serverVersionLab.Content = msg.Substring(msg.LastIndexOf(" ") + 1);
                 if (!RserverJVMcmd.Contains("-Dfile.encoding=UTF-8"))
                 {
-                    string versionString = msg.Substring(msg.LastIndexOf(" ") + 1);
+                    string versionString = serverVersionLab.Content.ToString();
                     string[] components = versionString.Split('.');
                     if (components.Length >= 3 && int.TryParse(components[2], out int _))
                     {
@@ -1044,7 +1043,7 @@ namespace MSL
                 serverVersionLab.Content = msg.Substring(msg.LastIndexOf("正在启动") + 4, (msg.IndexOf("的") / 2) - 7);
                 if (!RserverJVMcmd.Contains("-Dfile.encoding=UTF-8"))
                 {
-                    string versionString = msg.Substring(msg.LastIndexOf(" ") + 1);
+                    string versionString = serverVersionLab.Content.ToString();
                     string[] components = versionString.Split('.');
                     if (components.Length >= 3 && int.TryParse(components[2], out int _))
                     {
@@ -1879,14 +1878,16 @@ namespace MSL
                 }
                 if (Directory.Exists(Rserverbase + @"\mods"))
                 {
-                    lab001.Content = "已检测到插件和模组的文件夹，以下为插件和模组列表";
-                    lab001.Margin = new Thickness(0);
+                    lab001.Text = "已检测到插件和模组的文件夹，以下为插件和模组列表";
+                    lab001.Margin = new Thickness(10, 20, 0, 0);
                     pluginListBox.Visibility = Visibility.Visible;
                     modListBox.Visibility = Visibility.Visible;
-                    pluginListBox.Width = 430;
-                    modListBox.Width = 430;
-                    pluginListBox.Margin = new Thickness(10, 55, 0, 0);
-                    modListBox.Margin = new Thickness(450, 55, 0, 0);
+                    PGrid.Width = new GridLength(1,GridUnitType.Star);
+                    MGrid.Width = new GridLength(1,GridUnitType.Star);
+                    //pluginListBox.Width = 430;
+                    //modListBox.Width = 430;
+                    //pluginListBox.Margin = new Thickness(10, 55, 0, 0);
+                    //modListBox.Margin = new Thickness(450, 55, 0, 0);
                     pluginlistPluginName.Width = 250;
                     modlistModName.Width = 250;
                     DirectoryInfo directoryInfo1 = new DirectoryInfo(Rserverbase + @"\mods");
@@ -1905,27 +1906,31 @@ namespace MSL
                 }
                 else
                 {
-                    lab001.Content = "已检测到插件文件夹，以下为插件列表";
-                    lab001.Margin = new Thickness(0);
+                    lab001.Text = "已检测到插件文件夹，以下为插件列表";
+                    lab001.Margin = new Thickness(10,20,0,0);
                     pluginListBox.Visibility = Visibility.Visible;
                     modListBox.Visibility = Visibility.Hidden;
-                    pluginListBox.Width = 880;
-                    pluginListBox.Margin = new Thickness(10, 55, 0, 0);
-                    pluginlistPluginName.Width = 500;
+                    PGrid.Width = new GridLength(1, GridUnitType.Star);
+                    MGrid.Width = new GridLength(0);
+                    //pluginListBox.Width = 880;
+                    //pluginListBox.Margin = new Thickness(10, 55, 0, 0);
+                    //pluginlistPluginName.Width = 500;
                 }
             }
             else
             {
                 if (Directory.Exists(Rserverbase + @"\mods"))
                 {
-                    lab001.Content = "已检测到模组文件夹，以下为模组列表";
-                    lab001.Margin = new Thickness(0);
+                    lab001.Text = "已检测到模组文件夹，以下为模组列表";
+                    lab001.Margin = new Thickness(10, 20, 0, 0);
                     pluginListBox.Visibility = Visibility.Hidden;
                     modListBox.Visibility = Visibility.Visible;
-                    modListBox.Width = 880;
-                    modListBox.Margin = new Thickness(10, 55, 0, 0);
+                    PGrid.Width = new GridLength(0);
+                    MGrid.Width = new GridLength(1, GridUnitType.Star);
+                    //modListBox.Width = 880;
+                    //modListBox.Margin = new Thickness(10, 55, 0, 0);
                     modslist.Items.Clear();
-                    modlistModName.Width = 500;
+                    //modlistModName.Width = 500;
                     DirectoryInfo directoryInfo = new DirectoryInfo(Rserverbase + @"\mods");
                     FileInfo[] file = directoryInfo.GetFiles("*.*");
                     foreach (FileInfo f in file)
@@ -1942,8 +1947,8 @@ namespace MSL
                 }
                 else
                 {
-                    lab001.Content = "未检测到任何插件和模组，请重启服务器或检查该服务端是否支持";
-                    lab001.Margin = new Thickness(182, 209, 0, 0);
+                    lab001.Text = "未检测到任何插件和模组，请重启服务器或检查该服务端是否支持";
+                    lab001.Margin = new Thickness(150, 200, 0, 0);
                     pluginListBox.Visibility = Visibility.Hidden;
                     modListBox.Visibility = Visibility.Hidden;
                 }

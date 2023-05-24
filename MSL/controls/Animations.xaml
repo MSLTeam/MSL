@@ -11,6 +11,7 @@
             <SplineDoubleKeyFrame KeyTime="0:0:0.12" Value="0" />
         </DoubleAnimationUsingKeyFrames>
     </Storyboard>
+    <!--
     <ControlTemplate x:Key="CustomButton" TargetType="Button">
         <Border x:Name="button" CornerRadius="{TemplateBinding hc:BorderElement.CornerRadius}" Background="{TemplateBinding Background}" BorderBrush="{TemplateBinding BorderBrush}" BorderThickness="{TemplateBinding BorderThickness}" Padding="{TemplateBinding Padding}" RenderTransformOrigin="0.5,0.5">
             <Border.RenderTransform>
@@ -52,4 +53,5 @@
             </EventTrigger>
         </ControlTemplate.Triggers>
     </ControlTemplate>
+    -->
 </ResourceDictionary>

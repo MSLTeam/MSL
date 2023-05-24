@@ -32,7 +32,7 @@
             </ScrollViewer>
         </Border>
 
-        <Button x:Name="gotoFrpBtn" Template="{StaticResource CustomButton}" Content="点对点联机" HorizontalAlignment="Right" Height="60" Margin="0,0,235,10" VerticalAlignment="Bottom" Width="120" Click="gotoFrpBtn_Click" FontSize="16"/>
+        <Button x:Name="gotoFrpBtn" Content="点对点联机" HorizontalAlignment="Right" Height="60" Margin="0,0,235,10" VerticalAlignment="Bottom" Width="120" Click="gotoFrpBtn_Click" FontSize="16"/>
         <hc:SplitButton x:Name="startServer" Style="{StaticResource SplitButtonPrimary}" Margin="0,0,10,10" VerticalAlignment="Bottom" Height="60" Width="220" Click="startServer_Click" HorizontalAlignment="Right">
             <hc:SplitButton.DropDownContent>
                 <ListBox x:Name="startServerDropdown" BorderThickness="0" SelectionChanged="startServerDropdown_SelectionChanged"/>

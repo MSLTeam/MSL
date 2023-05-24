@@ -29,7 +29,7 @@
         </DockPanel>
         <Grid x:Name="BodyGrid" Grid.Row="1">
             <ListBox x:Name="listBox1" Height="250" Width="255" SelectionChanged="listBox1_SelectionChanged" SelectionMode="Single" Margin="20,50,0,0" HorizontalAlignment="Left" VerticalAlignment="Top"/>
-            <Button Content="确定" Template="{StaticResource CustomButton}" Margin="618,225,0,0" Style="{StaticResource ButtonPrimary}" VerticalAlignment="Top" Width="95" Click="Button_Click" FontWeight="Normal" FontSize="18" Height="92" HorizontalAlignment="Left"/>
+            <Button Content="确定" Margin="618,225,0,0" Style="{StaticResource ButtonPrimary}" VerticalAlignment="Top" Width="95" Click="Button_Click" FontWeight="Normal" FontSize="18" Height="92" HorizontalAlignment="Left"/>
             <TextBox x:Name="textBox1" HorizontalAlignment="Left" Height="23" Margin="320,84,0,0" VerticalAlignment="Top" Width="393" Text="25565"/>
             <TextBox x:Name="textBox2" HorizontalAlignment="Left" Height="23" Margin="320,169,0,0" VerticalAlignment="Top" Width="393"/>
             <Label x:Name="lab1" Content="输入本地端口(Java版默认25565,基岩版默认19132,双协议用|分割)：" HorizontalAlignment="Left" Margin="280,49,0,0" VerticalAlignment="Top" Background="{x:Null}" BorderBrush="{x:Null}" FontSize="14"/>
@@ -40,7 +40,7 @@
             <TextBox x:Name="textBox3" HorizontalAlignment="Left" Height="23" Margin="320,182,0,0" VerticalAlignment="Top" Width="393" Visibility="Hidden"/>
             <Label x:Name="paidPasswordLabel" Content="如果您购买了付费节点，在此输入您的密码：" HorizontalAlignment="Left" Margin="280,152,0,0" VerticalAlignment="Top" Background="{x:Null}" BorderBrush="{x:Null}" Visibility="Hidden"/>
             <Label Content="传输协议：" HorizontalAlignment="Left" Margin="280,225,0,0" VerticalAlignment="Top" BorderBrush="{x:Null}" Background="{x:Null}" Width="86" FontSize="14"/>
-            <Button x:Name="gotoAifadian" Template="{StaticResource CustomButton}" Content="购买付费节点" Margin="618,322,0,0" VerticalAlignment="Top" Click="gotoWeb_Click" HorizontalAlignment="Left" Width="95" Height="66"/>
+            <Button x:Name="gotoAifadian" Content="购买付费节点" Margin="618,322,0,0" VerticalAlignment="Top" Click="gotoWeb_Click" HorizontalAlignment="Left" Width="95" Height="66"/>
             <ComboBox x:Name="frpcType" HorizontalAlignment="Left" Margin="360,225,0,0" VerticalAlignment="Top" Width="242" SelectionChanged="frpcType_SelectionChanged">
                 <ComboBoxItem IsSelected="True" Content="TCP（Java版）"/>
                 <ComboBoxItem Content="UDP（基岩版）"/>

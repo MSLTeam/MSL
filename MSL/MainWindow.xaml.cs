@@ -627,7 +627,6 @@ namespace MSL
                 LoadingCircle loadingCircle = MainGrid.FindName("loadingBar") as LoadingCircle;
                 BodyGrid.Children.Remove(loadingCircle);
                 BodyGrid.UnregisterName("loadingBar");
-                //TitleBox.Text = "Minecraft Server Launcher " + update;
             });
         }
 

@@ -32,8 +32,8 @@
                 <Label Content="将通过几个步骤为您创建服务器……" FontSize="22" FontWeight="Bold" Background="{x:Null}" BorderBrush="{x:Null}" VerticalAlignment="Top" Height="40" HorizontalAlignment="Left" Margin="0,10,0,0"/>
                 <TextBlock Text="请您选择一个创建模式以继续：" Foreground="{DynamicResource TextBlockBrush}" FontSize="18" VerticalAlignment="Top" HorizontalAlignment="Left" Margin="40,60,0,0"/>
                 <TextBlock Foreground="Red" Text="第一次使用或新手服主请使用快速模式，如需导入整合包（ServerPack），请选择自定义模式" FontSize="16" HorizontalAlignment="Left" VerticalAlignment="Top" Margin="40,90,0,0"/>
-                <Button x:Name="FastModeBtn" Template="{StaticResource CustomButton}" Content="快速模式（适合小白）" FontSize="18" hc:BorderElement.CornerRadius="30" Style="{StaticResource ButtonPrimary}" Margin="80,140,0,0" Click="FastModeBtn_Click" Width="250" Height="80" VerticalAlignment="Top" HorizontalAlignment="Left"/>
-                <Button x:Name="CustomModeBtn" Template="{StaticResource CustomButton}" Content="自定义模式（适合老手）" FontSize="18" hc:BorderElement.CornerRadius="30" Margin="80,260,0,0" Width="250" Height="80" Click="CustomModeBtn_Click" VerticalAlignment="Top" HorizontalAlignment="Left"/>
+                <Button x:Name="FastModeBtn" Content="快速模式（适合小白）" FontSize="18" hc:BorderElement.CornerRadius="30" Style="{StaticResource ButtonPrimary}" Margin="80,140,0,0" Click="FastModeBtn_Click" Width="250" Height="80" VerticalAlignment="Top" HorizontalAlignment="Left"/>
+                <Button x:Name="CustomModeBtn" Content="自定义模式（适合老手）" FontSize="18" hc:BorderElement.CornerRadius="30" Margin="80,260,0,0" Width="250" Height="80" Click="CustomModeBtn_Click" VerticalAlignment="Top" HorizontalAlignment="Left"/>
                 <TextBlock Foreground="OrangeRed" Text="快速模式：开服器自动为您选择服务器目录，并根据您想要开的服务器类型自动判断Java版本和服务端核心并进行下载" FontSize="16" HorizontalAlignment="Left" VerticalAlignment="Top" Margin="350,150,0,0" TextWrapping="Wrap" Width="300"/>
                 <TextBlock Foreground="OrangeRed" Text="自定义模式：您将手动进行Java版本选择，服务端核心选择等操作，可操作性高，可以更改服务器运行内存和启动参数" FontSize="16" HorizontalAlignment="Left" VerticalAlignment="Top" Margin="350,270,0,0" TextWrapping="Wrap" Width="300"/>
                 <Image Source="/icon.ico" VerticalAlignment="Bottom" HorizontalAlignment="Right" Width="80"/>
@@ -75,8 +75,8 @@
                     </StackPanel>
                 </ScrollViewer>
                 <Grid VerticalAlignment="Bottom" Margin="0,0,0,10">
-                    <Button Template="{StaticResource CustomButton}" Content="取消" hc:BorderElement.CornerRadius="20" Width="150" Click="skip_Click" Height="45" FontSize="22" Margin="0,0,300,0"/>
-                    <Button x:Name="FastModeNextBtn" Template="{StaticResource CustomButton}" Content="下一步" IsEnabled="False" Style="{StaticResource ButtonPrimary}" hc:BorderElement.CornerRadius="20" Width="150" Click="FastModeNextBtn_Click" Height="45" FontSize="22" Margin="200,0,0,0"/>
+                    <Button Content="取消" hc:BorderElement.CornerRadius="20" Width="150" Click="skip_Click" Height="45" FontSize="22" Margin="0,0,300,0"/>
+                    <Button x:Name="FastModeNextBtn" Content="下一步" IsEnabled="False" Style="{StaticResource ButtonPrimary}" hc:BorderElement.CornerRadius="20" Width="150" Click="FastModeNextBtn_Click" Height="45" FontSize="22" Margin="200,0,0,0"/>
                 </Grid>
             </Grid>
             <Grid x:Name="InstallGrid" Visibility="Hidden">
@@ -107,17 +107,17 @@
                     <TextBlock x:Name="FastInstallProcess" Text="" Foreground="Red" Margin="15,0,0,0" />
                 </StackPanel>
                 <Grid VerticalAlignment="Bottom" Margin="0,0,0,10">
-                    <Button x:Name="FastModeReturnBtn" Template="{StaticResource CustomButton}" Content="上一步" hc:BorderElement.CornerRadius="20" Width="150" Click="FastModeReturnBtn_Click" Height="45" FontSize="22" Margin="0,0,300,0"/>
-                    <Button x:Name="FastModeInstallBtn" Template="{StaticResource CustomButton}" Content="确定" Style="{StaticResource ButtonPrimary}" hc:BorderElement.CornerRadius="20" Width="150" Click="FastModeInstallBtn_Click" Height="45" FontSize="22" Margin="200,0,0,0"/>
+                    <Button x:Name="FastModeReturnBtn" Content="上一步" hc:BorderElement.CornerRadius="20" Width="150" Click="FastModeReturnBtn_Click" Height="45" FontSize="22" Margin="0,0,300,0"/>
+                    <Button x:Name="FastModeInstallBtn" Content="确定" Style="{StaticResource ButtonPrimary}" hc:BorderElement.CornerRadius="20" Width="150" Click="FastModeInstallBtn_Click" Height="45" FontSize="22" Margin="200,0,0,0"/>
                 </Grid>
             </Grid>
             <TabControl x:Name="tabCtrl" Visibility="Hidden" Background="{x:Null}">
                 <TabItem x:Name="welcome" Header="基本信息" FontSize="14" Background="{x:Null}">
                     <Grid x:Name="welcome1">
                         <Label Content="将通过几个步骤为您创建服务器……" FontSize="18" Background="{x:Null}" BorderBrush="{x:Null}" VerticalAlignment="Top" Height="40" HorizontalAlignment="Left" FontWeight="Bold"/>
-                        <Button x:Name="next" Template="{StaticResource CustomButton}" Content="下一步" Style="{StaticResource ButtonPrimary}" hc:BorderElement.CornerRadius="20" Margin="320,310,0,0" VerticalAlignment="Top" Width="150" Click="next_Click" Height="48" FontSize="22" HorizontalAlignment="Left"/>
-                        <Button Name="importPack" Template="{StaticResource CustomButton}" Content="导入整合包（ZIP格式）" hc:BorderElement.CornerRadius="15" Margin="520,320,0,0" VerticalAlignment="Top" Width="150" Click="importPack_Click" HorizontalAlignment="Left" Height="38" />
-                        <Button x:Name="skip" Template="{StaticResource CustomButton}" Content="取消" Margin="110,310,0,0" hc:BorderElement.CornerRadius="20" VerticalAlignment="Top" Width="150" Click="skip_Click" Height="48" FontSize="22" HorizontalAlignment="Left"/>
+                        <Button x:Name="next" Content="下一步" Style="{StaticResource ButtonPrimary}" hc:BorderElement.CornerRadius="20" Margin="320,310,0,0" VerticalAlignment="Top" Width="150" Click="next_Click" Height="48" FontSize="22" HorizontalAlignment="Left"/>
+                        <Button Name="importPack" Content="导入整合包（ZIP格式）" hc:BorderElement.CornerRadius="15" Margin="520,320,0,0" VerticalAlignment="Top" Width="150" Click="importPack_Click" HorizontalAlignment="Left" Height="38" />
+                        <Button x:Name="skip" Content="取消" Margin="110,310,0,0" hc:BorderElement.CornerRadius="20" VerticalAlignment="Top" Width="150" Click="skip_Click" Height="48" FontSize="22" HorizontalAlignment="Left"/>
                         <Border Margin="10,40,10,0" VerticalAlignment="Top" CornerRadius="10" BorderBrush="{DynamicResource BorderBrush}" BorderThickness="1" Background="{DynamicResource BorderBackground}">
                             <Grid>
                                 <Label Content="服务器名称" HorizontalAlignment="Left" VerticalAlignment="Top" FontSize="18" Background="{x:Null}" BorderBrush="{x:Null}" Height="40" FontWeight="Bold"/>
@@ -142,9 +142,9 @@
                             <Label HorizontalAlignment="Left" Margin="20,65,0,0" VerticalAlignment="Top" Content="在此选择一个服务端核心（建议选择“使用开服器下载”）"/>
                             <RadioButton x:Name="usedownloadserver" Content="使用开服器下载一个服务端" IsChecked="True" Margin="20,105,0,0" VerticalAlignment="Top" HorizontalAlignment="Left" FontSize="16" Checked="usedownloadserver_Checked"/>
                             <RadioButton x:Name="useServerself" Content="备有服务端，选择地址" Margin="20,135,0,0" VerticalAlignment="Top" Checked="useServerself_Checked" HorizontalAlignment="Left" FontSize="16"/>
-                            <Button x:Name="return2" Template="{StaticResource CustomButton}" Content="上一步" hc:BorderElement.CornerRadius="15" Margin="150,220,0,0" Width="100" Click="return2_Click" Height="45" FontSize="14" HorizontalAlignment="Left" VerticalAlignment="Top"/>
+                            <Button x:Name="return2" Content="上一步" hc:BorderElement.CornerRadius="15" Margin="150,220,0,0" Width="100" Click="return2_Click" Height="45" FontSize="14" HorizontalAlignment="Left" VerticalAlignment="Top"/>
                             <TextBox x:Name="txb3" HorizontalAlignment="Left" Margin="20,165,0,0" VerticalAlignment="Top" Width="645" MaxLines="1" FontSize="16" Height="35" IsEnabled="False"/>
-                            <Button x:Name="next2" Template="{StaticResource CustomButton}" Content="下一步" Style="{StaticResource ButtonPrimary}" hc:BorderElement.CornerRadius="15" HorizontalAlignment="Left" Margin="320,220,0,0" Width="100" Click="next2_Click" Height="45" FontSize="14" VerticalAlignment="Top"/>
+                            <Button x:Name="next2" Content="下一步" Style="{StaticResource ButtonPrimary}" hc:BorderElement.CornerRadius="15" HorizontalAlignment="Left" Margin="320,220,0,0" Width="100" Click="next2_Click" Height="45" FontSize="14" VerticalAlignment="Top"/>
                             <Button x:Name="a0002" Content="浏览" IsEnabled="False" Margin="670,165,0,0" Width="66" Click="a0002_Click" FontWeight="Normal" HorizontalAlignment="Left" Height="35" FontSize="16" VerticalAlignment="Top"/>
                             <Label Content="服务端" HorizontalAlignment="Left" Margin="10,10,0,0" VerticalAlignment="Top" FontSize="30" Background="{x:Null}" BorderBrush="{x:Null}" Height="50" FontWeight="Bold"/>
                         </Grid>
@@ -167,8 +167,8 @@
                             <TextBox x:Name="txjava" HorizontalAlignment="Left" Height="30" Margin="115,205,0,0" VerticalAlignment="Top" Width="540" IsEnabled="False" MaxLines="1"/>
                             <Button x:Name="a0002_Copy" Content="浏览" IsEnabled="False" Margin="660,205,0,0" VerticalAlignment="Top" Width="78" FontWeight="Normal" Click="a0002_Copy_Click" Height="30" HorizontalAlignment="Left"/>
                             <Label x:Name="outlog" Content="" HorizontalAlignment="Left" Margin="20,245,0,0" VerticalAlignment="Top" FontSize="14" Foreground="Red" Background="{x:Null}" BorderBrush="{x:Null}"/>
-                            <Button x:Name="return5" Template="{StaticResource CustomButton}" Content="上一步" hc:BorderElement.CornerRadius="15" Margin="180,270,0,0" VerticalAlignment="Top" Width="90" Click="return5_Click" FontWeight="Normal" Height="40" FontSize="14" HorizontalAlignment="Left"/>
-                            <Button x:Name="next3" Template="{StaticResource CustomButton}" Content="下一步" Style="{StaticResource ButtonPrimary}" hc:BorderElement.CornerRadius="15" Margin="0,270,0,0" VerticalAlignment="Top" Width="94" Click="next3_Click" Height="40" FontSize="14"/>
+                            <Button x:Name="return5" Content="上一步" hc:BorderElement.CornerRadius="15" Margin="180,270,0,0" VerticalAlignment="Top" Width="90" Click="return5_Click" FontWeight="Normal" Height="40" FontSize="14" HorizontalAlignment="Left"/>
+                            <Button x:Name="next3" Content="下一步" Style="{StaticResource ButtonPrimary}" hc:BorderElement.CornerRadius="15" Margin="0,270,0,0" VerticalAlignment="Top" Width="94" Click="next3_Click" Height="40" FontSize="14"/>
                             <Label x:Name="jvhelp" Content="帮助：不同版本该如何选择Java？ &#xA;1.8之前：可以使用Java7-Java8&#xA;1.8-1.12.2 可以使用Java8-Java11 &#xA;1.13-1.17.1 可以使用Java11-Java17 &#xA;1.18-最新版 可以使用Java18-Java19" HorizontalAlignment="Right" Height="110" VerticalAlignment="Bottom" FontSize="15" Foreground="Red" BorderBrush="Red" Margin="0,0,10,10"/>
                         </Grid>
                     </Grid>
@@ -199,8 +199,8 @@
                                 <TextBox x:Name="txb7" HorizontalAlignment="Left" Margin="40,65,0,10" TextWrapping="NoWrap" Text="" VerticalAlignment="Top" Width="676"/>
                             </Grid>
                         </Border>
-                        <Button x:Name="return3" Template="{StaticResource CustomButton}" Content="上一步" hc:BorderElement.CornerRadius="15" Margin="174,315,0,0" VerticalAlignment="Top" Width="86" Click="return3_Click" FontWeight="Normal" Height="40" FontSize="14" HorizontalAlignment="Left"/>
-                        <Button x:Name="done" Template="{StaticResource CustomButton}" Content="确定" Style="{StaticResource ButtonPrimary}" hc:BorderElement.CornerRadius="15" Margin="0,315,0,0" VerticalAlignment="Top" Width="92" Click="done_Click" FontWeight="Normal" Height="40" FontSize="14"/>
+                        <Button x:Name="return3" Content="上一步" hc:BorderElement.CornerRadius="15" Margin="174,315,0,0" VerticalAlignment="Top" Width="86" Click="return3_Click" FontWeight="Normal" Height="40" FontSize="14" HorizontalAlignment="Left"/>
+                        <Button x:Name="done" Content="确定" Style="{StaticResource ButtonPrimary}" hc:BorderElement.CornerRadius="15" Margin="0,315,0,0" VerticalAlignment="Top" Width="92" Click="done_Click" FontWeight="Normal" Height="40" FontSize="14"/>
                     </Grid>
                 </TabItem>
             </TabControl>
