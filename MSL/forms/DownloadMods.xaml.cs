@@ -5,6 +5,7 @@ using System.Collections.Generic;
 using System.IO;
 using System.IO.Compression;
 using System.Net;
+using System.Security.Cryptography;
 using System.Text;
 using System.Text.RegularExpressions;
 using System.Threading;
@@ -25,15 +26,17 @@ namespace MSL
         string Url;
         string Filename;
         public string serverbase;
+        int loadType = 0;  //0: mods , 1: modpacks 
         List<int> modIds = new List<int>();
         List<string> modVersions = new List<string>();
         List<string> modVersionurl = new List<string>();
         List<string> modUrls = new List<string>();
         List<string> imageUrls = new List<string>();
         List<string> backList = new List<string>();
-        public DownloadMods()
+        public DownloadMods(int loadtype=0)
         {
             InitializeComponent();
+            loadType = loadtype;
             //Width += 16;
             //Height += 24;
         }
@@ -60,76 +63,168 @@ namespace MSL
                 string token = Encoding.UTF8.GetString(pageData);
                 int index = token.IndexOf("\r\n");
                 string _token = token.Substring(0, index);
-                string _email = token.Substring(index + 2);
-                var cfApiClient = new CurseForge.APIClient.ApiClient(_token, _email);
-                var featuredMods = await cfApiClient.GetFeaturedModsAsync(new GetFeaturedModsRequestBody
+                //string _email = token.Substring(index + 2);
+                var cfApiClient = new CurseForge.APIClient.ApiClient(_token);
+                if (loadType == 0)
                 {
-                    GameId = 432,
-                    ExcludedModIds = new List<int>(),
-                    GameVersionTypeId = null
-                });
-                backList.Clear();
-                imageUrls.Clear();
-                listBox.Items.Clear();
-                modIds.Clear();
-                modVersionurl.Clear();
-                modUrls.Clear();
-                for (int i = 0; i < featuredMods.Data.Popular.Count; i++)
-                {
-                    //listBox.Items.Add(featuredMods.Data.Popular[i].Name);
-                    try
+                    var featuredMods = await cfApiClient.GetFeaturedModsAsync(new GetFeaturedModsRequestBody
                     {
-                        if (featuredMods.Data.Popular[i].Name.IndexOf("(") + 1 != 0)
-                        {
-                            string aaa = featuredMods.Data.Popular[i].Name.Substring(0, featuredMods.Data.Popular[0].Name.IndexOf("("));
-                            //MessageBox.Show(GetHtml("https://search.mcmod.cn/s?key=" + aaa + "&filter=1&mold="));
-
-                            string pageHtml = GetHtml("https://search.mcmod.cn/s?key=" + aaa + "&filter=1&mold=0");
-                            int IndexofA = pageHtml.IndexOf("耗时:");
-                            string Ru = pageHtml.Substring(IndexofA);
-                            string aa = Ru.Substring(0, Ru.IndexOf("</div><div class=\"foot\">"));
-
-
-                            int IndexofB = aa.IndexOf("html\">");
-                            string Ru2 = aa.Substring(IndexofB + 6);
-                            string a = Ru2.Substring(0, Ru2.IndexOf(" ("));
-
-                            a = a.Replace("<em>", "");
-                            a = a.Replace("</em>", "");
-
-                            listBox.Items.Add(new MODsInfo(featuredMods.Data.Popular[i].Logo.ThumbnailUrl, featuredMods.Data.Popular[i].Name + "(" + a + ")"));
-                            imageUrls.Add(featuredMods.Data.Popular[i].Logo.ThumbnailUrl);
-                            backList.Add(featuredMods.Data.Popular[i].Name + "(" + a + ")");
-                        }
-                        else
-                        {
-                            string pageHtml = GetHtml("https://search.mcmod.cn/s?key=" + featuredMods.Data.Popular[i].Name + "&filter=1&mold=0");
-                            int IndexofA = pageHtml.IndexOf("耗时:");
-                            string Ru = pageHtml.Substring(IndexofA);
-                            string aa = Ru.Substring(0, Ru.IndexOf("</div><div class=\"foot\">"));
-
-
-                            int IndexofB = aa.IndexOf("html\">");
-                            string Ru2 = aa.Substring(IndexofB + 6);
-                            string a = Ru2.Substring(0, Ru2.IndexOf(" ("));
-
-                            a = a.Replace("<em>", "");
-                            a = a.Replace("</em>", "");
-
-                            listBox.Items.Add(new MODsInfo(featuredMods.Data.Popular[i].Logo.ThumbnailUrl, featuredMods.Data.Popular[i].Name + "(" + a + ")"));
-                            imageUrls.Add(featuredMods.Data.Popular[i].Logo.ThumbnailUrl);
-                            backList.Add(featuredMods.Data.Popular[i].Name + "(" + a + ")");
-                        }
-                    }
-                    catch
+                        GameId = 432,
+                        ExcludedModIds = new List<int>(),
+                        GameVersionTypeId = null
+                    });
+                    backList.Clear();
+                    imageUrls.Clear();
+                    listBox.Items.Clear();
+                    modIds.Clear();
+                    modVersionurl.Clear();
+                    modUrls.Clear();
+                    for (int i = 0; i < featuredMods.Data.Popular.Count; i++)
                     {
-                        listBox.Items.Add(new MODsInfo(featuredMods.Data.Popular[i].Logo.ThumbnailUrl, featuredMods.Data.Popular[i].Name));
-                        imageUrls.Add(featuredMods.Data.Popular[i].Logo.ThumbnailUrl);
-                        backList.Add(featuredMods.Data.Popular[i].Name);
                         //listBox.Items.Add(featuredMods.Data.Popular[i].Name);
+                        try
+                        {
+                            if (featuredMods.Data.Popular[i].Name.IndexOf("(") + 1 != 0)
+                            {
+                                string aaa = featuredMods.Data.Popular[i].Name.Substring(0, featuredMods.Data.Popular[0].Name.IndexOf("("));
+                                //MessageBox.Show(GetHtml("https://search.mcmod.cn/s?key=" + aaa + "&filter=1&mold="));
+
+                                string pageHtml = GetHtml("https://search.mcmod.cn/s?key=" + aaa + "&filter=1&mold=0");
+                                int IndexofA = pageHtml.IndexOf("耗时:");
+                                string Ru = pageHtml.Substring(IndexofA);
+                                string aa = Ru.Substring(0, Ru.IndexOf("</div><div class=\"foot\">"));
+
+
+                                int IndexofB = aa.IndexOf("html\">");
+                                string Ru2 = aa.Substring(IndexofB + 6);
+                                string a = Ru2.Substring(0, Ru2.IndexOf(" ("));
+
+                                a = a.Replace("<em>", "");
+                                a = a.Replace("</em>", "");
+
+                                listBox.Items.Add(new MODsInfo(featuredMods.Data.Popular[i].Logo.ThumbnailUrl, featuredMods.Data.Popular[i].Name + "(" + a + ")"));
+                                imageUrls.Add(featuredMods.Data.Popular[i].Logo.ThumbnailUrl);
+                                backList.Add(featuredMods.Data.Popular[i].Name + "(" + a + ")");
+                            }
+                            else
+                            {
+                                string pageHtml = GetHtml("https://search.mcmod.cn/s?key=" + featuredMods.Data.Popular[i].Name + "&filter=1&mold=0");
+                                int IndexofA = pageHtml.IndexOf("耗时:");
+                                string Ru = pageHtml.Substring(IndexofA);
+                                string aa = Ru.Substring(0, Ru.IndexOf("</div><div class=\"foot\">"));
+
+
+                                int IndexofB = aa.IndexOf("html\">");
+                                string Ru2 = aa.Substring(IndexofB + 6);
+                                string a = Ru2.Substring(0, Ru2.IndexOf(" ("));
+
+                                a = a.Replace("<em>", "");
+                                a = a.Replace("</em>", "");
+
+                                listBox.Items.Add(new MODsInfo(featuredMods.Data.Popular[i].Logo.ThumbnailUrl, featuredMods.Data.Popular[i].Name + "(" + a + ")"));
+                                imageUrls.Add(featuredMods.Data.Popular[i].Logo.ThumbnailUrl);
+                                backList.Add(featuredMods.Data.Popular[i].Name + "(" + a + ")");
+                            }
+                        }
+                        catch
+                        {
+                            listBox.Items.Add(new MODsInfo(featuredMods.Data.Popular[i].Logo.ThumbnailUrl, featuredMods.Data.Popular[i].Name));
+                            imageUrls.Add(featuredMods.Data.Popular[i].Logo.ThumbnailUrl);
+                            backList.Add(featuredMods.Data.Popular[i].Name);
+                            //listBox.Items.Add(featuredMods.Data.Popular[i].Name);
+                        }
+                        modIds.Add(featuredMods.Data.Popular[i].Id);
+                        modUrls.Add(featuredMods.Data.Popular[i].Links.WebsiteUrl.ToString());
                     }
-                    modIds.Add(featuredMods.Data.Popular[i].Id);
-                    modUrls.Add(featuredMods.Data.Popular[i].Links.WebsiteUrl.ToString());
+                }
+                else if (loadType == 1)
+                {
+                    var modpacks = await cfApiClient.SearchModsAsync(432, null, 5128);
+                    backList.Clear();
+                    imageUrls.Clear();
+                    listBox.Items.Clear();
+                    modIds.Clear();
+                    modVersionurl.Clear();
+                    modUrls.Clear();
+                    for (int i = 0; i < modpacks.Data.Count; i++)
+                    {
+                        try
+                        {
+                            if (modpacks.Data[i].Name.IndexOf("(") + 1 != 0)
+                            {
+                                string aaa = modpacks.Data[i].Name.Substring(0, modpacks.Data[0].Name.IndexOf("("));
+                                //MessageBox.Show(GetHtml("https://search.mcmod.cn/s?key=" + aaa + "&filter=1&mold="));
+
+                                string pageHtml = GetHtml("https://search.mcmod.cn/s?key=" + aaa + "&filter=1&mold=0");
+                                int IndexofA = pageHtml.IndexOf("耗时:");
+                                string Ru = pageHtml.Substring(IndexofA);
+                                string aa = Ru.Substring(0, Ru.IndexOf("</div><div class=\"foot\">"));
+
+
+                                int IndexofB = aa.IndexOf("html\">");
+                                string Ru2 = aa.Substring(IndexofB + 6);
+                                string a = Ru2.Substring(0, Ru2.IndexOf(" ("));
+
+                                a = a.Replace("<em>", "");
+                                a = a.Replace("</em>", "");
+
+                                listBox.Items.Add(new MODsInfo(modpacks.Data[i].Logo.ThumbnailUrl, modpacks.Data[i].Name + "(" + a + ")"));
+                                imageUrls.Add(modpacks.Data[i].Logo.ThumbnailUrl);
+                                backList.Add(modpacks.Data[i].Name + "(" + a + ")");
+                            }
+                            else
+                            {
+                                string pageHtml = GetHtml("https://search.mcmod.cn/s?key=" + modpacks.Data[i].Name + "&filter=1&mold=0");
+                                int IndexofA = pageHtml.IndexOf("耗时:");
+                                string Ru = pageHtml.Substring(IndexofA);
+                                string aa = Ru.Substring(0, Ru.IndexOf("</div><div class=\"foot\">"));
+
+
+                                int IndexofB = aa.IndexOf("html\">");
+                                string Ru2 = aa.Substring(IndexofB + 6);
+                                string a = Ru2.Substring(0, Ru2.IndexOf(" ("));
+
+                                a = a.Replace("<em>", "");
+                                a = a.Replace("</em>", "");
+
+                                listBox.Items.Add(new MODsInfo(modpacks.Data[i].Logo.ThumbnailUrl, modpacks.Data[i].Name + "(" + a + ")"));
+                                imageUrls.Add(modpacks.Data[i].Logo.ThumbnailUrl);
+                                backList.Add(modpacks.Data[i].Name + "(" + a + ")");
+                            }
+                        }
+                        catch
+                        {
+                            listBox.Items.Add(new MODsInfo(modpacks.Data[i].Logo.ThumbnailUrl, modpacks.Data[i].Name));
+                            imageUrls.Add(modpacks.Data[i].Logo.ThumbnailUrl);
+                            backList.Add(modpacks.Data[i].Name);
+                            //listBox.Items.Add(featuredMods.Data.Popular[i].Name);
+                        }
+
+                        modIds.Add(modpacks.Data[i].Id);
+                        modUrls.Add(modpacks.Data[i].Links.WebsiteUrl.ToString());
+                    }
+                    /*
+                     var featuredMods = await cfApiClient.GetFeaturedModsAsync(new GetFeaturedModsRequestBody
+                    {
+                        GameId = 432,
+                        ExcludedModIds = new List<int>(),
+                        GameVersionTypeId = null
+                    });
+                    backList.Clear();
+                    imageUrls.Clear();
+                    listBox.Items.Clear();
+                    modIds.Clear();
+                    modVersionurl.Clear();
+                    modUrls.Clear();
+                    for (int i = 0; i < featuredMods.Data.Featured.Count; i++)
+                    {
+                        listBox.Items.Add(new MODsInfo(featuredMods.Data.Featured[i].Logo.ThumbnailUrl, featuredMods.Data.Featured[i].Name));
+                        imageUrls.Add(featuredMods.Data.Featured[i].Logo.ThumbnailUrl);
+                        backList.Add(featuredMods.Data.Featured[i].Name);
+                        modIds.Add(featuredMods.Data.Featured[i].Id);
+                        modUrls.Add(featuredMods.Data.Featured[i].Links.WebsiteUrl.ToString());
+                    }
+                     */
                 }
                 //listBox. = modAssets;
                 lCircle.IsRunning = false;
@@ -176,8 +271,8 @@ namespace MSL
                 string token = Encoding.UTF8.GetString(pageData);
                 int index = token.IndexOf("\r\n");
                 string _token = token.Substring(0, index);
-                string _email = token.Substring(index + 2);
-                var cfApiClient = new CurseForge.APIClient.ApiClient(_token, _email);
+                //string _email = token.Substring(index + 2);
+                var cfApiClient = new CurseForge.APIClient.ApiClient(_token);
                 var searchedMods = await cfApiClient.SearchModsAsync(432, null, null, null, textBox1.Text);
                 backList.Clear();
                 listBox.Items.Clear();
@@ -282,20 +377,46 @@ namespace MSL
                         string token = Encoding.UTF8.GetString(pageData);
                         int index = token.IndexOf("\r\n");
                         string _token = token.Substring(0, index);
-                        string _email = token.Substring(index + 2);
-                        var cfApiClient = new CurseForge.APIClient.ApiClient(_token, _email);
-                        var modFiles = await cfApiClient.GetModFilesAsync(modIds[listBox.SelectedIndex]);
+                        //string _email = token.Substring(index + 2);
+
+                        var cfApiClient = new CurseForge.APIClient.ApiClient(_token);
+                        var selectedModId = modIds[listBox.SelectedIndex];
+                        var modFiles = await cfApiClient.GetModFilesAsync(selectedModId);
+                        
                         listBox.Items.Clear();
                         modVersions.Clear();
-
-                        for (int i = 0; i < modFiles.Data.Count; i++)
+                        
+                        if (loadType == 0)
                         {
-                            listBox.Items.Add(new MODsInfo(imageurl, modFiles.Data[i].DisplayName));
-                            modVersions.Add(modFiles.Data[i].DisplayName);
-                            modVersionurl.Add(modFiles.Data[i].DownloadUrl);
+                            for (int i = 0; i < modFiles.Data.Count; i++)
+                            {
+                                listBox.Items.Add(new MODsInfo(imageurl, modFiles.Data[i].DisplayName));
+                                modVersions.Add(modFiles.Data[i].DisplayName);
+                                modVersionurl.Add(modFiles.Data[i].DownloadUrl);
+                            }
                         }
+                        else if (loadType == 1)
+                        {
+                            for (int i = 0; i < modFiles.Data.Count; i++)
+                            {
+                                try
+                                {
+                                    var serverPackFileId = modFiles.Data[i].ServerPackFileId.Value;
+                                    //MessageBox.Show(serverPackFileId.ToString());
+                                    var modFile = await cfApiClient.GetModFileAsync(selectedModId, serverPackFileId);
+                                    listBox.Items.Add(new MODsInfo(imageurl, modFile.Data.DisplayName));
+                                    modVersions.Add(modFile.Data.DisplayName);
+                                    modVersionurl.Add(modFile.Data.DownloadUrl);
+                                }
+                                catch
+                                {
+                                    continue;
+                                }
+                            }
+                        }
+                        
                     }
-                    catch { }
+                    catch(Exception ex) { MessageBox.Show(ex.ToString()); }
                     lCircle.IsRunning = false;
                     lCircle.Visibility = Visibility.Hidden;
                     lb01.Visibility = Visibility.Hidden;
@@ -303,23 +424,34 @@ namespace MSL
                 }
                 else
                 {
-                    if (Directory.Exists(serverbase + @"\mods"))
+                    if (loadType == 0)
                     {
-                        Filename = serverbase + @"\mods" + modVersions[listBox.SelectedIndex].ToString();
-                    }
-                    else
-                    {
-                        FolderBrowserDialog dialog = new FolderBrowserDialog();
-                        dialog.Description = "请选择MOD存放文件夹";
-                        if (dialog.ShowDialog() == System.Windows.Forms.DialogResult.OK)
+                        if (Directory.Exists(serverbase + @"\mods"))
                         {
-                            Filename = dialog.SelectedPath + @"\" + modVersions[listBox.SelectedIndex].ToString();
+                            Filename = serverbase + @"\mods" + modVersions[listBox.SelectedIndex].ToString();
                         }
+                        else
+                        {
+                            FolderBrowserDialog dialog = new FolderBrowserDialog();
+                            dialog.Description = "请选择MOD存放文件夹";
+                            if (dialog.ShowDialog() == System.Windows.Forms.DialogResult.OK)
+                            {
+                                Filename = dialog.SelectedPath + @"\" + modVersions[listBox.SelectedIndex].ToString();
+                            }
+                        }
+                        Url = modVersionurl[listBox.SelectedIndex];
+                        //Process.Start(modVersionurl[modVersions.SelectedIndex]);
+                        Thread thread = new Thread(DownloadFile);
+                        thread.Start();
                     }
-                    Url = modVersionurl[listBox.SelectedIndex];
-                    //Process.Start(modVersionurl[modVersions.SelectedIndex]);
-                    Thread thread = new Thread(DownloadFile);
-                    thread.Start();
+                    else if (loadType == 1)
+                    {
+                        Filename = AppDomain.CurrentDomain.BaseDirectory + "MSL\\ServerPack.zip";
+                        Url = modVersionurl[listBox.SelectedIndex];
+                        //Process.Start(modVersionurl[modVersions.SelectedIndex]);
+                        Thread thread = new Thread(DownloadFile);
+                        thread.Start();
+                    }
                 }
             }
             catch
@@ -403,15 +535,21 @@ namespace MSL
                 st.Close();
                 this.Dispatcher.Invoke(DispatcherPriority.Normal, (ThreadStart)delegate ()
                 {
-                    if (Directory.Exists(serverbase + @"\mods"))
+                    if (loadType == 0)
                     {
-                        label1.Content = "下载成功，模组已存放至该服务器的mods文件夹中";
+                        if (Directory.Exists(serverbase + @"\mods"))
+                        {
+                            label1.Content = "下载成功，模组已存放至该服务器的mods文件夹中";
+                        }
+                        else
+                        {
+                            label1.Content = "下载成功";
+                        }
                     }
-                    else
+                    else if (loadType == 1)
                     {
-                        label1.Content = "下载成功";
+                        Close();
                     }
-
                 });
             }
             catch (Exception ex)

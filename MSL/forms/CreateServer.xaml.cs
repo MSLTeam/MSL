@@ -264,9 +264,11 @@ namespace MSL.forms
         {
             if (isImportPack)
             {
-                if (File.Exists(serverbase + "\\server.jar"))
+                DirectoryInfo directoryInfo = new DirectoryInfo(serverbase);
+                FileInfo[] fileInfo = directoryInfo.GetFiles("*.jar");
+                foreach (var file in fileInfo)
                 {
-                    DialogShow.ShowMsg(this, "开服器在整合包中检测到了服务端核心文件server.jar，是否选择此文件为开服核心？", "提示", true, "取消");
+                    DialogShow.ShowMsg(this, "开服器在整合包中检测到了jar文件"+file.Name+"，是否选择此文件为开服核心？", "提示", true, "取消");
                     if (MessageDialog._dialogReturn == true)
                     {
                         MessageDialog._dialogReturn = false;
@@ -274,23 +276,12 @@ namespace MSL.forms
                         sJVM.IsSelected = true;
                         sJVM.IsEnabled = true;
                         sserver.IsEnabled = false;
+                        break;
                     }
                 }
-                else if (File.Exists(serverbase + "\\Server.jar"))
+                if(fileInfo.Length==0)
                 {
-                    DialogShow.ShowMsg(this, "开服器在整合包中检测到了服务端核心文件Server.jar，是否选择此文件为开服核心？", "提示", true, "取消");
-                    if (MessageDialog._dialogReturn == true)
-                    {
-                        MessageDialog._dialogReturn = false;
-                        servercore = "Server.jar";
-                        sJVM.IsSelected = true;
-                        sJVM.IsEnabled = true;
-                        sserver.IsEnabled = false;
-                    }
-                }
-                else
-                {
-                    Growl.Info("整合包中通常会附带一个服务端核心，您可进行手动选择，若找不到的话，请选择下载选项并点击下一步以下载");
+                    Growl.Info("开服器未在整合包中找到核心文件，请您进行下载或手动选择已有核心，核心的版本要和整合包对应的游戏版本一致");
                 }
             }
         }
@@ -653,44 +644,102 @@ namespace MSL.forms
         bool isImportPack = false;
         private void importPack_Click(object sender, RoutedEventArgs e)
         {
-            bool dialog = DialogShow.ShowMsg(this, "如果您要导入的是模组整合包，请确保您下载的整合包是服务器专用包（如RlCraft下载界面就有一个ServerPack的压缩包），否则可能会出现无法开服或者崩溃的问题！", "提示", true, "取消");
-            if (dialog == true)
+            bool _dialog = DialogShow.ShowMsg(this, "请选择你要导入本地整合包还是在线整合包！", "提示", true, "导入本地整合包", "导入在线整合包");
+            if (_dialog)
             {
-                servername = serverNameBox.Text;
-                string serverPath = "";
-                for (int a = 1; a != 0; a++)
+                DownloadMods downloadMods=new DownloadMods(1);
+                downloadMods.Owner = this;
+                downloadMods.ShowDialog();
+                if (!File.Exists(AppDomain.CurrentDomain.BaseDirectory + "MSL\\ServerPack.zip"))
                 {
-                    if (!Directory.Exists(AppDomain.CurrentDomain.BaseDirectory + "MSL\\Server"))
-                    {
-                        serverPath = AppDomain.CurrentDomain.BaseDirectory + "MSL\\Server";
-                        break;
-                    }
-                    if (!Directory.Exists(AppDomain.CurrentDomain.BaseDirectory + "MSL\\Server" + a.ToString()))
-                    {
-                        serverPath = AppDomain.CurrentDomain.BaseDirectory + "MSL\\Server" + a.ToString();
-                        break;
-                    }
+                    DialogShow.ShowMsg(this, "下载失败！", "错误");
+                    return;
                 }
-                OpenFileDialog openfile = new OpenFileDialog();
-                openfile.InitialDirectory = AppDomain.CurrentDomain.BaseDirectory + "MSL";
-                openfile.Title = "请选择整合包压缩文件";
-                openfile.Filter = "ZIP文件|*.zip|所有文件类型|*.*";
-                var res = openfile.ShowDialog();
-                if (res == true)
+                string input;
+                bool result = DialogShow.ShowInput(this, "服务器名称：", out input, "ImportedServer");
+                if (result)
                 {
-                    new FastZip().ExtractZip(openfile.FileName, serverPath, "");
+                    servername = input;
+                    string serverPath = "";
+                    for (int a = 1; a != 0; a++)
+                    {
+                        if (!Directory.Exists(AppDomain.CurrentDomain.BaseDirectory + "MSL\\Server"))
+                        {
+                            serverPath = AppDomain.CurrentDomain.BaseDirectory + "MSL\\Server";
+                            break;
+                        }
+                        if (!Directory.Exists(AppDomain.CurrentDomain.BaseDirectory + "MSL\\Server" + a.ToString()))
+                        {
+                            serverPath = AppDomain.CurrentDomain.BaseDirectory + "MSL\\Server" + a.ToString();
+                            break;
+                        }
+                    }
+                    new FastZip().ExtractZip(AppDomain.CurrentDomain.BaseDirectory + "MSL\\ServerPack.zip", serverPath, "");
                     DirectoryInfo[] dirs = new DirectoryInfo(serverPath).GetDirectories();
                     if (dirs.Length == 1)
                     {
                         MoveFolder(dirs[0].FullName, serverPath);
                     }
+                    File.Delete(AppDomain.CurrentDomain.BaseDirectory + "MSL\\ServerPack.zip");
+                    MainGrid.Visibility = Visibility.Hidden;
+                    tabCtrl.Visibility = Visibility.Visible;
                     isImportPack = true;
                     serverbase = serverPath;
-                    Growl.Info("整合包解压完成，接下来请按照正常步骤进行操作");
+                    Growl.Info("整合包解压完成！请在此界面选择Java环境，Java的版本要和导入整合包的版本相对应，详情查看界面下方的表格");
                     sserver.IsSelected = true;
                     sserver.IsEnabled = true;
                     welcome.IsEnabled = false;
                     return5.IsEnabled = false;
+                }
+            }
+            else
+            {
+                bool dialog = DialogShow.ShowMsg(this, "如果您要导入的是模组整合包，请确保您下载的整合包是服务器专用包（如RlCraft下载界面就有一个ServerPack的压缩包），否则可能会出现无法开服或者崩溃的问题！", "提示", true, "取消");
+                if (dialog == true)
+                {
+                    string input;
+                    bool result = DialogShow.ShowInput(this, "服务器名称：", out input, "ImportedServer");
+                    if (result)
+                    {
+                        servername = input;
+                        string serverPath = "";
+                        for (int a = 1; a != 0; a++)
+                        {
+                            if (!Directory.Exists(AppDomain.CurrentDomain.BaseDirectory + "MSL\\Server"))
+                            {
+                                serverPath = AppDomain.CurrentDomain.BaseDirectory + "MSL\\Server";
+                                break;
+                            }
+                            if (!Directory.Exists(AppDomain.CurrentDomain.BaseDirectory + "MSL\\Server" + a.ToString()))
+                            {
+                                serverPath = AppDomain.CurrentDomain.BaseDirectory + "MSL\\Server" + a.ToString();
+                                break;
+                            }
+                        }
+                        OpenFileDialog openfile = new OpenFileDialog();
+                        openfile.InitialDirectory = AppDomain.CurrentDomain.BaseDirectory + "MSL";
+                        openfile.Title = "请选择整合包压缩文件";
+                        openfile.Filter = "ZIP文件|*.zip|所有文件类型|*.*";
+                        var res = openfile.ShowDialog();
+                        if (res == true)
+                        {
+                            new FastZip().ExtractZip(openfile.FileName, serverPath, "");
+                            DirectoryInfo[] dirs = new DirectoryInfo(serverPath).GetDirectories();
+                            if (dirs.Length == 1)
+                            {
+                                MoveFolder(dirs[0].FullName, serverPath);
+                            }
+                            MainGrid.Visibility = Visibility.Hidden;
+                            tabCtrl.Visibility = Visibility.Visible;
+                            isImportPack = true;
+                            serverbase = serverPath;
+                            Growl.Info("整合包解压完成！请在此界面选择Java环境，Java的版本要和导入整合包的版本相对应，详情查看界面下方的表格");
+                            sserver.IsSelected = true;
+                            sserver.IsEnabled = true;
+                            welcome.IsEnabled = false;
+                            return5.IsEnabled = false;
+                        }
+                    }
                 }
             }
         }
@@ -757,7 +806,9 @@ namespace MSL.forms
 
         private void skip_Click(object sender, RoutedEventArgs e)
         {
-            Close();
+            MainGrid.Visibility = Visibility.Visible;
+            tabCtrl.Visibility = Visibility.Hidden;
+            FastModeGrid.Visibility = Visibility.Hidden;
         }
         private void usebasicfastJvm_Checked(object sender, RoutedEventArgs e)
         {

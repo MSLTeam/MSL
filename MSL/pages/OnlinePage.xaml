@@ -3,6 +3,7 @@
       xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
       xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006" 
       xmlns:d="http://schemas.microsoft.com/expression/blend/2008" 
+      xmlns:hc="https://handyorg.github.io/handycontrol"
       xmlns:local="clr-namespace:MSL.pages"
       mc:Ignorable="d" 
       d:DesignHeight="460" d:DesignWidth="750"
@@ -15,34 +16,46 @@
             <BeginStoryboard Storyboard="{StaticResource ShowPage}"/>
         </EventTrigger>
     </Page.Triggers>
-    <Grid>
-        <Label Content="点对点联机功能" HorizontalAlignment="Left" Margin="10,5,0,0" VerticalAlignment="Top" FontSize="24" FontWeight="Bold" Background="{x:Null}" BorderBrush="{x:Null}" Height="45"/>
-        <Button x:Name="onlineHelp" Content="联机教程" HorizontalAlignment="Left" Height="35" Margin="220,10,0,0" VerticalAlignment="Top" Width="100" FontSize="16" Click="onlineHelp_Click"/>
-        <TextBlock x:Name="serverState" Text="服务器状态：检测中" Foreground="Red" Margin="350,15,0,0" VerticalAlignment="Top" HorizontalAlignment="Left" FontSize="16"/>
-        <Border Margin="10,55,10,0" VerticalAlignment="Top" CornerRadius="10" BorderBrush="{DynamicResource BorderBrush}" BorderThickness="1" Background="{DynamicResource BorderBackground}">
-            <Grid>
-                <TextBox x:Name="masterQQ" HorizontalAlignment="Left" Height="30" Margin="145,50,0,0" TextWrapping="Wrap" Text="" VerticalAlignment="Top" Width="185" IsEnabled="False"/>
-                <Label Content="QQ号:" HorizontalAlignment="Left" Height="30" Margin="70,50,0,0" VerticalAlignment="Top" Width="70" FontSize="14" Background="{x:Null}" BorderBrush="{x:Null}"/>
-                <TextBox x:Name="masterKey" Height="30" Margin="455,50,10,0" TextWrapping="Wrap" Text="" VerticalAlignment="Top" IsEnabled="False"/>
-                <Label Content="房间密钥:" HorizontalAlignment="Left" Height="30" Margin="360,50,0,0" VerticalAlignment="Top" Width="90" FontSize="14" Background="{x:Null}" BorderBrush="{x:Null}"/>
-                <Button x:Name="createRoom" Content="点击创建房间" HorizontalAlignment="Right" Height="30" Margin="0,90,10,5" VerticalAlignment="Top" IsEnabled="False" Click="createRoom_Click" Width="130"/>
-                <TextBox x:Name="masterPort" HorizontalAlignment="Left" Height="30" Margin="165,90,0,0" TextWrapping="Wrap" Text="" VerticalAlignment="Top" Width="185" IsEnabled="False"/>
-                <Label Content="游戏端口:" HorizontalAlignment="Left" Height="30" Margin="70,90,0,0" VerticalAlignment="Top" Width="90" FontSize="14" Background="{x:Null}" BorderBrush="{x:Null}"/>
+    <Border Style="{StaticResource MagicBorder}" VerticalAlignment="Stretch" Margin="10,10,10,10">
+
+        <Grid>
+            <Label Style="{StaticResource BorderTitle}" Content="点对点联机功能"/>
+            <hc:Shield Subject="联机教程" Status="点击打开网站" Margin="150,5,0,0" Command="hc:ControlCommands.OpenLink" CommandParameter="https://docs.waheal.top/#/?id=msl%e7%82%b9%e5%af%b9%e7%82%b9%e8%81%94%e6%9c%ba%e6%95%99%e7%a8%8b" HorizontalAlignment="Left" VerticalAlignment="Top" Height="25"/>
+            <TextBlock x:Name="serverState" Text="服务器状态：检测中" Foreground="Red" Margin="10,40,0,0" VerticalAlignment="Top" HorizontalAlignment="Left" FontSize="16"/>
+            <Grid Margin="0,70,0,0">
+                <Grid.RowDefinitions>
+                    <RowDefinition Height="Auto"/>
+                    <RowDefinition/>
+                </Grid.RowDefinitions>
+                <StackPanel Grid.Row="0">
+                    <Expander x:Name="masterExp" Margin="10,0,10,0" VerticalAlignment="Top" Expanded="masterExp_Expanded" Header="创建房间——房主" >
+                        <Grid Background="{DynamicResource BackgroundBrush}">
+                            <TextBox x:Name="masterQQ" HorizontalAlignment="Left" Height="30" Margin="80,10,0,0" TextWrapping="Wrap" Text="" VerticalAlignment="Top" Width="185"/>
+                            <Label Content="QQ号:" HorizontalAlignment="Left" Height="30" Margin="10,10,0,0" VerticalAlignment="Top" Width="70" FontSize="14" Background="{x:Null}" BorderBrush="{x:Null}"/>
+                            <TextBox x:Name="masterKey" Height="30" Margin="400,10,10,0" TextWrapping="Wrap" Text="" VerticalAlignment="Top"/>
+                            <Label Content="房间密钥:" HorizontalAlignment="Left" Height="30" Margin="300,10,0,0" VerticalAlignment="Top" Width="90" FontSize="14" Background="{x:Null}" BorderBrush="{x:Null}"/>
+                            <Button x:Name="createRoom" Content="点击创建房间" HorizontalAlignment="Right" Height="30" Margin="0,50,10,5" VerticalAlignment="Top" Click="createRoom_Click" Width="130"/>
+                            <TextBox x:Name="masterPort" HorizontalAlignment="Left" Height="30" Margin="100,50,0,0" TextWrapping="Wrap" Text="" VerticalAlignment="Top" Width="180"/>
+                            <Label Content="游戏端口:" HorizontalAlignment="Left" Height="30" Margin="10,50,0,0" VerticalAlignment="Top" Width="90" FontSize="14" Background="{x:Null}" BorderBrush="{x:Null}"/>
+                        </Grid>
+                    </Expander>
+                    <Expander x:Name="visiterExp" Margin="10,10,10,0" VerticalAlignment="Top" Expanded="visiterExp_Expanded" Header="进入房间——成员">
+                        <Grid Background="{DynamicResource BackgroundBrush}">
+                            <TextBox x:Name="visiterQQ" HorizontalAlignment="Left" Height="30" Margin="100,10,0,0" TextWrapping="Wrap" Text="" VerticalAlignment="Top" Width="160"/>
+                            <Label Content="房主QQ号:" HorizontalAlignment="Left" Height="30" Margin="10,10,0,0" VerticalAlignment="Top" Width="90" FontSize="14" Background="{x:Null}" BorderBrush="{x:Null}"/>
+                            <TextBox x:Name="visiterKey" Height="30" Margin="400,10,10,0" TextWrapping="Wrap" Text="" VerticalAlignment="Top"/>
+                            <Label Content="房间密钥:" Height="30" Margin="300,10,0,0" VerticalAlignment="Top" Width="90" FontSize="14" Background="{x:Null}" BorderBrush="{x:Null}" HorizontalAlignment="Left"/>
+                            <TextBox x:Name="visiterPort" HorizontalAlignment="Left" Height="30" Margin="280,50,0,0" TextWrapping="Wrap" Text="25565" VerticalAlignment="Top" Width="180"/>
+                            <Label Content="绑定端口（默认25565，非必要勿改）:" HorizontalAlignment="Left" Height="30" Margin="10,50,0,0" VerticalAlignment="Top" FontSize="14" Background="{x:Null}" BorderBrush="{x:Null}"/>
+                            <Button x:Name="joinRoom" Content="点击加入房间" HorizontalAlignment="Right" Height="30" Margin="0,50,10,5" VerticalAlignment="Top" Click="joinRoom_Click" Width="130"/>
+                        </Grid>
+                    </Expander>
+                </StackPanel>
+                <TextBox x:Name="frpcOutlog" Grid.Row="1" ContextMenu="{DynamicResource UIContextMenu}" Margin="10,10,10,10" TextWrapping="Wrap" Text="日志" IsReadOnly="True" HorizontalScrollBarVisibility="Visible" VerticalScrollBarVisibility="Auto" VerticalContentAlignment="Top" Padding="10"/>
             </Grid>
-        </Border>
-        <RadioButton x:Name="masterBtn" Content="我是房主，我要创建房间:" HorizontalAlignment="Left" Height="50" VerticalAlignment="Top" Width="250" FontSize="20" Checked="masterBtn_Checked" Margin="25,55,0,0"/>
-        <Border Margin="10,190,10,0" VerticalAlignment="Top" CornerRadius="10" BorderBrush="{DynamicResource BorderBrush}" BorderThickness="1" Background="{DynamicResource BorderBackground}">
-            <Grid>
-                <TextBox x:Name="visiterQQ" HorizontalAlignment="Left" Height="30" Margin="170,50,0,0" TextWrapping="Wrap" Text="" VerticalAlignment="Top" Width="160" IsEnabled="False"/>
-                <Label Content="房主QQ号:" HorizontalAlignment="Left" Height="30" Margin="75,50,0,0" VerticalAlignment="Top" Width="90" FontSize="14" Background="{x:Null}" BorderBrush="{x:Null}"/>
-                <TextBox x:Name="visiterKey" Height="30" Margin="455,50,10,0" TextWrapping="Wrap" Text="" VerticalAlignment="Top" IsEnabled="False"/>
-                <Label Content="房间密钥:" Height="30" Margin="360,50,0,0" VerticalAlignment="Top" Width="90" FontSize="14" Background="{x:Null}" BorderBrush="{x:Null}" HorizontalAlignment="Left"/>
-                <TextBox x:Name="visiterPort" HorizontalAlignment="Left" Height="30" Margin="335,90,0,0" TextWrapping="Wrap" Text="25565" VerticalAlignment="Top" Width="115" IsEnabled="False"/>
-                <Label Content="绑定端口:（默认25565，非必要勿改）" HorizontalAlignment="Left" Height="30" Margin="75,90,0,0" VerticalAlignment="Top" Width="255" FontSize="14" Background="{x:Null}" BorderBrush="{x:Null}"/>
-                <Button x:Name="joinRoom" Content="点击加入房间" HorizontalAlignment="Right" Height="30" Margin="0,90,10,5" VerticalAlignment="Top" IsEnabled="False" Click="joinRoom_Click" Width="130"/>
-            </Grid>
-        </Border>
-        <RadioButton x:Name="visiterBtn" Content="我不是房主，我要加入房间:" HorizontalAlignment="Left" Height="50" VerticalAlignment="Top" Width="270" FontSize="20" Checked="visiterBtn_Checked" Margin="25,190,0,0"/>
-        <TextBox x:Name="frpcOutlog" ContextMenu="{DynamicResource UIContextMenu}" Margin="10,322,10,10" TextWrapping="Wrap" Text="日志" IsReadOnly="True" HorizontalScrollBarVisibility="Visible" VerticalScrollBarVisibility="Auto" VerticalContentAlignment="Top" Padding="10"/>
-    </Grid>
+            
+            
+        </Grid>
+    </Border>
+    
 </Page>

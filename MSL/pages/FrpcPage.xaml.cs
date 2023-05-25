@@ -406,7 +406,7 @@ namespace MSL.pages
                 {
                     copyFrpc.IsEnabled = true;
                     startfrpc.IsEnabled = true;
-                    frplab1.Content = "检测节点信息中……";
+                    frplab1.Text = "检测节点信息中……";
                 });
 
                 string configText = File.ReadAllText(AppDomain.CurrentDomain.BaseDirectory + @"MSL\frpc");
@@ -474,7 +474,7 @@ namespace MSL.pages
                     int roundTripTime = (int)reply.RoundtripTime;
                     this.Dispatcher.Invoke(DispatcherPriority.Normal, (ThreadStart)delegate ()
                     {
-                        frplab1.Content = nodeName + "  延迟：" + roundTripTime + "ms";
+                        frplab1.Text = nodeName + "  延迟：" + roundTripTime + "ms";
                     });
                 }
                 else
@@ -482,7 +482,7 @@ namespace MSL.pages
                     // 节点离线
                     this.Dispatcher.Invoke(DispatcherPriority.Normal, (ThreadStart)delegate ()
                     {
-                        frplab1.Content = nodeName + "  节点离线，请重新配置！";
+                        frplab1.Text = nodeName + "  节点离线，请重新配置！";
                     });
                 }
             }
@@ -490,7 +490,7 @@ namespace MSL.pages
             {
                 this.Dispatcher.Invoke(DispatcherPriority.Normal, (ThreadStart)delegate ()
                 {
-                    frplab1.Content = "获取节点信息失败，建议重新配置！";
+                    frplab1.Text = "获取节点信息失败，建议重新配置！";
                 });
             }
         }
@@ -527,7 +527,7 @@ namespace MSL.pages
                 {
                     copyFrpc.IsEnabled = false;
                     startfrpc.IsEnabled = false;
-                    frplab1.Content = "未检测到内网映射配置，请点击 配置 按钮以配置";
+                    frplab1.Text = "未检测到内网映射配置，请点击 配置 按钮以配置";
                     frplab3.Text = "无";
                 }
             }

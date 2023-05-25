@@ -22,8 +22,8 @@
                 <Grid>
                     <Label x:Name="AppVersionLab" Content="关于开服器" Style="{StaticResource BorderTitle}"/>
                     <Image Source="/MSL;component/icon.ico" Margin="0,25,550,0" HorizontalAlignment="Center" VerticalAlignment="Center" Width="80" Height="80"/>
-                    <StackPanel HorizontalAlignment="Center" VerticalAlignment="Center" Margin="100,30,0,0">
-                        <TextBlock FontSize="14" VerticalAlignment="Center" HorizontalAlignment="Center" Foreground="{DynamicResource TextBlockBrush}" Text="Minecraft Server Launcher(MSL) Copyright © 2021-2023 By Waheal&#xA;开服器的成功制作离不开以下人员的帮助及支持：&#xA;MojaveHao、FlyingChubbyFish —— 提供部分技术支持和改进意见&#xA;终末丶谎言 —— 提供内网映射服务&#xA;同时在此鸣谢所有使用MSL的用户，以及给MSL提出过改进建议和Bug的用户&#xA;感谢各位的支持与信任！"/>
+                    <StackPanel HorizontalAlignment="Center" VerticalAlignment="Center" Margin="100,35,0,0">
+                        <TextBlock FontSize="14" VerticalAlignment="Center" HorizontalAlignment="Center" Foreground="{DynamicResource TextBlockBrush}" Text="Minecraft Server Launcher(MSL) Copyright © 2021-2023 By Waheal&#xA;开服器的成功制作离不开以下人员的帮助及支持：&#xA;MojaveHao、FlyingChubbyFish —— 提供部分技术支持和改进意见&#xA;同时在此鸣谢所有使用MSL的用户，以及给MSL提出过改进建议和Bug的用户&#xA;感谢各位的支持与信任！"/>
                         <hc:Shield Subject="官方文档：https://docs.waheal.top/" Status="打开网站" Command="hc:ControlCommands.OpenLink" CommandParameter="https://docs.waheal.top/" HorizontalAlignment="Left" VerticalAlignment="Bottom" Margin="0,5,0,0"/>
                     </StackPanel>
                     
@@ -32,14 +32,14 @@
             <Border x:Name="openSource" Style="{StaticResource MagicBorder}">
                 <StackPanel>
                     <Label Content="开源（Github）" Style="{StaticResource BorderTitle}"/>
-                    <TextBlock Margin="20,0,20,0" FontSize="14" HorizontalAlignment="Center" VerticalAlignment="Center" TextWrapping="Wrap" Foreground="{DynamicResource TextBlockBrush}" Text="Waheal/Minecraft-Server-Launcher is licensed under the GNU General Public License v3.0&#xA;Permissions of this strong copyleft license are conditioned on making available complete source code of licensed works and modifications, which include larger works using a licensed work, under the same license. Copyright and license notices must be preserved. Contributors provide an express grant of patent rights."/>
+                    <TextBlock Margin="20,10,20,0" FontSize="14" HorizontalAlignment="Center" VerticalAlignment="Center" TextWrapping="Wrap" Foreground="{DynamicResource TextBlockBrush}" Text="Waheal/Minecraft-Server-Launcher is licensed under the GNU General Public License v3.0&#xA;Permissions of this strong copyleft license are conditioned on making available complete source code of licensed works and modifications, which include larger works using a licensed work, under the same license. Copyright and license notices must be preserved. Contributors provide an express grant of patent rights."/>
                     <hc:Shield Subject="地址：https://github.com/Waheal/Minecraft-Server-Launcher" Status="打开网站" Margin="20,5,20,0" Command="hc:ControlCommands.OpenLink" CommandParameter="https://github.com/Waheal/Minecraft-Server-Launcher" HorizontalAlignment="Left" VerticalAlignment="Top"/>
                 </StackPanel>
             </Border>
             <Border Style="{StaticResource MagicBorder}">
                 <StackPanel>
                     <Label Content="依赖" Style="{StaticResource BorderTitle}"/>
-                    <StackPanel>
+                    <StackPanel Margin="0,10,0,0">
                         <TextBlock Text="1.Fody" Margin="20,0,0,5" FontSize="16" VerticalAlignment="Top" HorizontalAlignment="Left" FontWeight="Bold" Foreground="{DynamicResource TextBlockBrush}"/>
                         <TextBlock Text="Copyright (c) Simon Cropp.&#xA;Licensed under the MIT License." Margin="20,0,0,5" VerticalAlignment="Top" HorizontalAlignment="Left" Foreground="{DynamicResource TextBlockBrush}"/>
                         <hc:Shield Subject="..." Status="打开网站" Margin="0,-45,20,0" Command="hc:ControlCommands.OpenLink" CommandParameter="https://github.com/Fody/Fody" HorizontalAlignment="Right" VerticalAlignment="Top"/>
@@ -88,11 +88,12 @@
                     </StackPanel>
                 </StackPanel>
             </Border>
-            <Border x:Name="support" Margin="10,10,10,20" MouseLeftButtonUp="support_MouseLeftButtonUp" Style="{StaticResource MagicBorder}">
-                <Grid>
+            <Border x:Name="support" Margin="10,10,10,20" Style="{StaticResource MagicBorder}">
+                <StackPanel>
                     <Label Content="赞助" Style="{StaticResource BorderTitle}"/>
-                    <TextBlock Text="软件制作不易，十分期待您的赞助！地址：https://afdian.net/@makabaka123（点击打开）" Margin="0,35,0,5" Foreground="{DynamicResource TextBlockBrush}" FontSize="16" VerticalAlignment="Center" HorizontalAlignment="Center"/>
-                </Grid>
+                    <TextBlock Text="软件制作不易，十分期待您的赞助！" Foreground="{DynamicResource TextBlockBrush}" FontSize="16" VerticalAlignment="Center" HorizontalAlignment="Center"/>
+                    <hc:Shield Subject="地址：https://afdian.net/@makabaka123" Status="打开网站" Margin="0,5,0,0" Command="hc:ControlCommands.OpenLink" CommandParameter="https://afdian.net/@makabaka123" HorizontalAlignment="Center"/>
+                </StackPanel>
             </Border>
         </StackPanel>
     </ScrollViewer>

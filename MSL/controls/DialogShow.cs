@@ -32,6 +32,34 @@ namespace MSL.controls
                 return false;
             }
         }
+        public static bool ShowInput(System.Windows.Window window, string dialogText, out string userInput, string textboxText = "")
+        {
+            userInput = string.Empty;
+            try
+            {
+                window.Focus();
+                var dialog = Dialog.Show(string.Empty);
+                InputDialog inputDialog = new InputDialog(window, dialogText, textboxText);
+                inputDialog.Owner = window;
+                inputDialog.ShowDialog();
+                window.Focus();
+                dialog.Close();
+                if (InputDialog._dialogReturn)
+                {
+                    userInput = InputDialog._textReturn;
+                    return true;
+                }
+                else
+                {
+                    return false;
+                }
+            }
+            catch
+            {
+                return false;
+            }
+        }
+
         public static bool ShowDownload(System.Windows.Window window, string downloadurl, string downloadPath, string filename,string downloadinfo)
         {
             try

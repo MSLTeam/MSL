@@ -7,7 +7,7 @@
         xmlns:controls="clr-namespace:MSL.controls"
         xmlns:local="clr-namespace:MSL"
         mc:Ignorable="d"
-        Title="MSL-下载Mod" Height="500" Width="600" WindowStartupLocation="CenterOwner" ResizeMode="CanMinimize" Loaded="Window_Loaded" Background="{DynamicResource BackgroundBrush}" Closing="window_Closing">
+        Title="MSL-下载Mod" Height="450" Width="600" WindowStartupLocation="CenterOwner" ResizeMode="CanMinimize" Loaded="Window_Loaded" Background="{DynamicResource BackgroundBrush}" Closing="window_Closing">
     <WindowChrome.WindowChrome>
         <WindowChrome GlassFrameThickness="-1" CaptionHeight="40"/>
     </WindowChrome.WindowChrome>

@@ -116,6 +116,10 @@
       <SubType>Designer</SubType>
     </ApplicationDefinition>
     <Compile Include="controls\DialogShow.cs" />
+    <Compile Include="controls\ImagePathConverter.cs" />
+    <Compile Include="controls\InputDialog.xaml.cs">
+      <DependentUpon>InputDialog.xaml</DependentUpon>
+    </Compile>
     <Compile Include="controls\MessageDialog.xaml.cs">
       <DependentUpon>MessageDialog.xaml</DependentUpon>
     </Compile>
@@ -164,6 +168,10 @@
     <Page Include="controls\ContextMenu.xaml">
       <SubType>Designer</SubType>
       <Generator>MSBuild:Compile</Generator>
+    </Page>
+    <Page Include="controls\InputDialog.xaml">
+      <Generator>MSBuild:Compile</Generator>
+      <SubType>Designer</SubType>
     </Page>
     <Page Include="controls\MessageDialog.xaml">
       <SubType>Designer</SubType>

@@ -4,6 +4,7 @@
       xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006" 
       xmlns:d="http://schemas.microsoft.com/expression/blend/2008" 
       xmlns:hc="https://handyorg.github.io/handycontrol"
+      xmlns:controls="clr-namespace:MSL.controls"
       xmlns:local="clr-namespace:MSL.pages"
       mc:Ignorable="d" 
       d:DesignHeight="460" d:DesignWidth="750"
@@ -11,62 +12,66 @@
     <Page.RenderTransform>
         <TranslateTransform/>
     </Page.RenderTransform>
-
     <Page.Triggers>
         <EventTrigger RoutedEvent="Loaded">
             <BeginStoryboard Storyboard="{StaticResource ShowPage}"/>
         </EventTrigger>
     </Page.Triggers>
-    <Grid>
-        <Label Margin="10,5,0,0" Content="服务器列表（双击可快捷启动服务器）：" FontSize="24" FontWeight="Bold" HorizontalAlignment="Left" VerticalAlignment="Top" Background="{x:Null}" BorderBrush="{x:Null}" Height="42"/>
-        <Border Margin="10,50,10,10" CornerRadius="10" BorderBrush="{DynamicResource BorderBrush}" BorderThickness="1" Background="{DynamicResource SideMenuItemBrush}">
-            <ListView x:Name="serverList" hc:Empty.ShowEmpty="true" MouseDoubleClick="serverList_MouseDoubleClick" FontSize="16" SelectionMode="Single" SelectionChanged="serverList_SelectionChanged" Background="{x:Null}" BorderBrush="{x:Null}">
-                <ListView.ContextMenu>
-                    <ContextMenu>
-                        <MenuItem Click="refreshList_Click" Header="刷新"/>
-                        <MenuItem x:Name="startServerBtn" Click="startServer_Click" Header="开启服务器" IsEnabled="False"/>
-                        <MenuItem x:Name="startWithCmd" Click="startWithCmd_Click" Header="用命令行开服" IsEnabled="False"/>
-                        <MenuItem x:Name="setServer" Click="setServer_Click" Header="更改服务器设置" IsEnabled="False"/>
-                        <MenuItem x:Name="setModorPlugin" Click="setModorPlugin_Click" Header="管理服务器插件或MOD" IsEnabled="False"/>
-                        <MenuItem x:Name="openServerDir" Click="openServerDir_Click" Header="打开服务器文件夹" IsEnabled="False"/>
-                        <MenuItem x:Name="delServer" Click="delServer_Click" Header="删除所选服务器" IsEnabled="False"/>
-                    </ContextMenu>
-                </ListView.ContextMenu>
-                <ListView.View>
-                    <GridView>
-                        <GridViewColumn Width="230" Header="服务器名称">
-                            <GridViewColumn.CellTemplate>
-                                <DataTemplate>
-                                    <Grid>
-                                        <Image Height="22" Width="22" Name="imageName"  Source="{Binding ServerIcon}" HorizontalAlignment="Left"/>
-                                        <TextBlock Margin="30,0,0,0" Width="Auto" Text="{Binding ServerName}"/>
-                                    </Grid>
-                                </DataTemplate>
-                            </GridViewColumn.CellTemplate>
-                        </GridViewColumn>
-                        <GridViewColumn Width="230" Header="服务器状态">
-                            <GridViewColumn.CellTemplate>
-                                <DataTemplate>
-                                    <Grid>
-                                        <TextBlock Margin="0,0,0,0" Width="Auto" Text="{Binding ServerState}" Foreground="{Binding ServerStateFore}"/>
-                                    </Grid>
-                                </DataTemplate>
-                            </GridViewColumn.CellTemplate>
-                        </GridViewColumn>
-                        <GridViewColumn Width="150" Header="操作">
-                            <GridViewColumn.CellTemplate>
-                                <DataTemplate>
-                                    <Grid>
-                                        <Button Margin="0,0,0,0" hc:IconElement.Geometry="{StaticResource CheckedGeometry}" HorizontalAlignment="Left" hc:Poptip.Content="开启该服务器" hc:Poptip.HorizontalOffset="40" hc:Poptip.Placement="Left" Click="startServerBtn_Click"/>
-                                        <Button Margin="40,0,0,0" hc:IconElement.Geometry="{StaticResource DeleteFillCircleGeometry}" HorizontalAlignment="Left" hc:Poptip.Content="删除该服务器" hc:Poptip.HorizontalOffset="40" hc:Poptip.Placement="Left" Click="delServerBtn_Click"/>
-                                    </Grid>
-                                </DataTemplate>
-                            </GridViewColumn.CellTemplate>
-                        </GridViewColumn>
-                    </GridView>
-                </ListView.View>
-            </ListView>
-        </Border>
-        <Button x:Name="addServer" hc:IconElement.Geometry="{StaticResource AddGeometry}" Margin="0,0,25,25" Style="{StaticResource ButtonPrimary}" hc:BorderElement.CornerRadius="30" VerticalAlignment="Bottom" Height="48" Width="48" Click="addServer_Click" HorizontalAlignment="Right"/>
-    </Grid>
+    <Page.Resources>
+        <controls:ImagePathConverter x:Key="ImagePathConverter"/>
+    </Page.Resources>
+    <Border Style="{StaticResource MagicBorder}" VerticalAlignment="Stretch" Margin="10,10,10,10">
+        <Grid>
+            <Label Style="{StaticResource BorderTitle}" Content="服务器列表（双击可快捷启动服务器）："/>
+            <Border Margin="0,40,0,0" CornerRadius="10" BorderThickness="0" Background="{DynamicResource BackgroundBrush}">
+                <ListView x:Name="serverList" hc:Empty.ShowEmpty="true" MouseDoubleClick="serverList_MouseDoubleClick" FontSize="16" SelectionMode="Single" SelectionChanged="serverList_SelectionChanged" Background="{x:Null}" BorderBrush="{x:Null}">
+                    <ListView.ContextMenu>
+                        <ContextMenu>
+                            <MenuItem Click="refreshList_Click" Header="刷新"/>
+                            <MenuItem x:Name="startServerBtn" Click="startServer_Click" Header="开启服务器" IsEnabled="False"/>
+                            <MenuItem x:Name="startWithCmd" Click="startWithCmd_Click" Header="用命令行开服" IsEnabled="False"/>
+                            <MenuItem x:Name="setServer" Click="setServer_Click" Header="更改服务器设置" IsEnabled="False"/>
+                            <MenuItem x:Name="setModorPlugin" Click="setModorPlugin_Click" Header="管理服务器插件或MOD" IsEnabled="False"/>
+                            <MenuItem x:Name="openServerDir" Click="openServerDir_Click" Header="打开服务器文件夹" IsEnabled="False"/>
+                            <MenuItem x:Name="delServer" Click="delServer_Click" Header="删除所选服务器" IsEnabled="False"/>
+                        </ContextMenu>
+                    </ListView.ContextMenu>
+                    <ListView.View>
+                        <GridView>
+                            <GridViewColumn Width="230" Header="服务器名称">
+                                <GridViewColumn.CellTemplate>
+                                    <DataTemplate>
+                                        <Grid>
+                                            <Image Height="22" Width="22" Name="imageName" Source="{Binding ServerIcon, Converter={StaticResource ImagePathConverter}}" HorizontalAlignment="Left"/>
+                                            <TextBlock Margin="30,0,0,0" Width="Auto" Text="{Binding ServerName}"/>
+                                        </Grid>
+                                    </DataTemplate>
+                                </GridViewColumn.CellTemplate>
+                            </GridViewColumn>
+                            <GridViewColumn Width="230" Header="服务器状态">
+                                <GridViewColumn.CellTemplate>
+                                    <DataTemplate>
+                                        <Grid>
+                                            <TextBlock Margin="0,0,0,0" Width="Auto" Text="{Binding ServerState}" Foreground="{Binding ServerStateFore}"/>
+                                        </Grid>
+                                    </DataTemplate>
+                                </GridViewColumn.CellTemplate>
+                            </GridViewColumn>
+                            <GridViewColumn Width="150" Header="操作">
+                                <GridViewColumn.CellTemplate>
+                                    <DataTemplate>
+                                        <Grid>
+                                            <Button Margin="0,0,0,0" hc:IconElement.Geometry="{StaticResource CheckedGeometry}" HorizontalAlignment="Left" hc:Poptip.Content="开启该服务器" hc:Poptip.HorizontalOffset="40" hc:Poptip.Placement="Left" Click="startServerBtn_Click"/>
+                                            <Button Margin="40,0,0,0" hc:IconElement.Geometry="{StaticResource DeleteFillCircleGeometry}" HorizontalAlignment="Left" hc:Poptip.Content="删除该服务器" hc:Poptip.HorizontalOffset="40" hc:Poptip.Placement="Left" Click="delServerBtn_Click"/>
+                                        </Grid>
+                                    </DataTemplate>
+                                </GridViewColumn.CellTemplate>
+                            </GridViewColumn>
+                        </GridView>
+                    </ListView.View>
+                </ListView>
+            </Border>
+            <Button x:Name="addServer" hc:IconElement.Geometry="{StaticResource AddGeometry}" Margin="0,0,20,20" Style="{StaticResource ButtonPrimary}" hc:BorderElement.CornerRadius="30" VerticalAlignment="Bottom" Height="48" Width="48" Click="addServer_Click" HorizontalAlignment="Right"/>
+        </Grid>
+    </Border>
 </Page>

@@ -13,6 +13,7 @@ using System.Linq;
 using System.Net;
 using System.Security.Policy;
 using System.Text;
+using System.Text.RegularExpressions;
 using System.Threading;
 using System.Threading.Tasks;
 using System.Windows;
@@ -687,8 +688,11 @@ namespace MSL
                 {
                     if (serverVersionLab.Content.ToString() == "获取中")
                     {
-                        DialogShow.ShowMsg(this, "开服器未能获取到服务器信息，可能该服务端需要下载依赖文件，请耐心等待！\n即将为您跳转至输出界面，开服过程中部分事件可能需要您手动处理！\n\n(注：Mohist端接受EULA条款的方式是在控制台输入true，在接受前请务必前往该网站仔细阅读条款内容：https://account.mojang.com/documents/minecraft_eula)", "提示");
-                        TabCtrl.SelectedIndex = 1;
+                        if (!File.Exists(Rserverbase + "\\eula.txt"))
+                        {
+                            DialogShow.ShowMsg(this, "开服器未能获取到服务器信息，可能该服务端需要下载依赖文件，请耐心等待！\n即将为您跳转至输出界面，开服过程中部分事件可能需要您手动处理！\n\n(注：Mohist端接受EULA条款的方式是在控制台输入true，在接受前请务必前往该网站仔细阅读条款内容：https://account.mojang.com/documents/minecraft_eula)", "提示");
+                            TabCtrl.SelectedIndex = 1;
+                        }
                         serverVersionLab.Content = "未知";
                         Growl.Info("开服器未获取到服务器版本，因此无法根据版本自动切换相应的编码，若服务器出现乱码情况，请前往“更多功能”界面手动切换编码（优先更改输入编码）：1.12以下版本请使用ANSI，1.12及以上版本请使用UTF8");
                     }
@@ -1879,7 +1883,9 @@ namespace MSL
                 if (Directory.Exists(Rserverbase + @"\mods"))
                 {
                     lab001.Text = "已检测到插件和模组的文件夹，以下为插件和模组列表";
-                    lab001.Margin = new Thickness(10, 20, 0, 0);
+                    lab001.Margin = new Thickness(10, 15, 0, 0);
+                    lab001.HorizontalAlignment = HorizontalAlignment.Left;
+                    lab001.VerticalAlignment = VerticalAlignment.Top;
                     pluginListBox.Visibility = Visibility.Visible;
                     modListBox.Visibility = Visibility.Visible;
                     PGrid.Width = new GridLength(1,GridUnitType.Star);
@@ -1907,7 +1913,9 @@ namespace MSL
                 else
                 {
                     lab001.Text = "已检测到插件文件夹，以下为插件列表";
-                    lab001.Margin = new Thickness(10,20,0,0);
+                    lab001.Margin = new Thickness(10,15,0,0);
+                    lab001.HorizontalAlignment = HorizontalAlignment.Left;
+                    lab001.VerticalAlignment = VerticalAlignment.Top;
                     pluginListBox.Visibility = Visibility.Visible;
                     modListBox.Visibility = Visibility.Hidden;
                     PGrid.Width = new GridLength(1, GridUnitType.Star);
@@ -1922,7 +1930,9 @@ namespace MSL
                 if (Directory.Exists(Rserverbase + @"\mods"))
                 {
                     lab001.Text = "已检测到模组文件夹，以下为模组列表";
-                    lab001.Margin = new Thickness(10, 20, 0, 0);
+                    lab001.Margin = new Thickness(10, 15, 0, 0);
+                    lab001.HorizontalAlignment = HorizontalAlignment.Left ;
+                    lab001.VerticalAlignment = VerticalAlignment.Top;
                     pluginListBox.Visibility = Visibility.Hidden;
                     modListBox.Visibility = Visibility.Visible;
                     PGrid.Width = new GridLength(0);
@@ -1948,7 +1958,9 @@ namespace MSL
                 else
                 {
                     lab001.Text = "未检测到任何插件和模组，请重启服务器或检查该服务端是否支持";
-                    lab001.Margin = new Thickness(150, 200, 0, 0);
+                    lab001.Margin = new Thickness(0);
+                    lab001.HorizontalAlignment= HorizontalAlignment.Center;
+                    lab001.VerticalAlignment= VerticalAlignment.Center;
                     pluginListBox.Visibility = Visibility.Hidden;
                     modListBox.Visibility = Visibility.Hidden;
                 }
@@ -2235,6 +2247,10 @@ namespace MSL
                     useDownJv.IsChecked = true;
                     selectJava.SelectedIndex = 5;
                 }
+                else
+                {
+                    useSelf.IsChecked = true;
+                }
                 if (RserverJVM == "")
                 {
                     memorySlider.IsEnabled = false;
@@ -2304,6 +2320,14 @@ namespace MSL
                 JObject javaList = (JObject)javaList0["java"];
 
                 doneBtn1.IsEnabled = false;
+                if (useJVMauto.IsChecked == true)
+                {
+                    RserverJVM = "";
+                }
+                else
+                {
+                    RserverJVM = "-Xms" + memorySlider.ValueStart.ToString("f0") + "M" + " -Xmx" + memorySlider.ValueEnd.ToString("f0") + "M";
+                }
                 if (useDownJv.IsChecked == true)
                 {
                     try
@@ -2345,26 +2369,15 @@ namespace MSL
                     {
                         jAva.Text = AppDomain.CurrentDomain.BaseDirectory + jAva.Text;
                     }
-                    if (useJVMauto.IsChecked == true)
-                    {
-                        RserverJVM = "";
-                    }
-                    else
-                    {
-                        RserverJVM = "-Xms" + memorySlider.ValueStart.ToString("f0") + "M" + " -Xmx" + memorySlider.ValueEnd.ToString("f0") + "M";
-                    }
                 }
-                else   // (useJvpath.IsChecked == true)
+                else if (usecheckedjv.IsChecked == true)
+                {
+                    string a = selectCheckedJavaComb.Items[selectCheckedJavaComb.SelectedIndex].ToString();
+                    jAva.Text = a.Substring(a.IndexOf(":") + 1);
+                }
+                else// (useJvpath.IsChecked == true)
                 {
                     jAva.Text = "Java";
-                    if (useJVMauto.IsChecked == true)
-                    {
-                        RserverJVM = "";
-                    }
-                    else
-                    {
-                        RserverJVM = "-Xms" + memorySlider.ValueStart.ToString("f0") + "M" + " -Xmx" + memorySlider.ValueEnd.ToString("f0") + "M";
-                    }
                 }
                 //Directory.CreateDirectory(bAse.Text);
                 doneBtn1.IsEnabled = true;
@@ -2410,15 +2423,6 @@ namespace MSL
             jAva.Text = AppDomain.CurrentDomain.BaseDirectory + @"MSL\" + fileName + @"\bin\java.exe";
             if (File.Exists(AppDomain.CurrentDomain.BaseDirectory + @"MSL\" + fileName + @"\bin\java.exe"))
             {
-                if (useJVMauto.IsChecked == true)
-                {
-                    RserverJVM = "";
-                }
-                else
-                {
-                    RserverJVM = "-Xms" + memorySlider.ValueStart.ToString("f0") + "M" + " -Xmx" + memorySlider.ValueEnd.ToString("f0") + "M";
-                }
-
                 doneBtn1.IsEnabled = true;
                 Rservername = nAme.Text;
                 Title = Rservername;
@@ -2685,6 +2689,106 @@ namespace MSL
                 }
             }
         }
+        private void useJvpath_Checked(object sender, RoutedEventArgs e)
+        {
+            try
+            {
+                Process process = new Process();
+                process.StartInfo.FileName = "java";
+                process.StartInfo.Arguments = "-version";
+                process.StartInfo.UseShellExecute = false;
+                process.StartInfo.CreateNoWindow = true;
+                process.StartInfo.RedirectStandardOutput = true;
+                process.StartInfo.RedirectStandardError = true;
+                process.Start();
+
+                string output = process.StandardError.ReadToEnd();
+                process.WaitForExit();
+
+                Match match = Regex.Match(output, @"java version \""([\d\._]+)\""");
+                if (match.Success)
+                {
+                    downout.Content = "您的环境变量正常！";
+                    useJvpath.Content = "使用环境变量:" + "Java" + match.Groups[1].Value;
+                }
+                else
+                {
+                    DialogShow.ShowMsg(this, "检测环境变量失败，您的环境变量似乎不存在！", "错误");
+                    useSelf.IsChecked = true;
+                }
+            }
+            catch
+            {
+                DialogShow.ShowMsg(this, "检测环境变量失败，您的环境变量似乎不存在！", "错误");
+                useSelf.IsChecked = true;
+            }
+        }
+
+        private void usecheckedjv_Checked(object sender, RoutedEventArgs e)
+        {
+            selectCheckedJavaComb.Items.Clear();
+            CheckJava();
+        }
+        void CheckJava()
+        {
+            string[] javaPaths = new string[]
+{
+    @"Program Files\Java",
+    @"Program Files (x86)\Java",
+    @"Java"
+};
+            DriveInfo[] drives = DriveInfo.GetDrives();
+            foreach (DriveInfo drive in drives)
+            {
+                string driveLetter = drive.Name.Substring(0, 1);
+                foreach (string _javaPath in javaPaths)
+                {
+                    string javaPath = string.Format(@"{0}:\{1}", driveLetter, _javaPath);
+                    if (Directory.Exists(javaPath))
+                    {
+                        string[] directories = Directory.GetDirectories(javaPath);
+                        foreach (string directory in directories)
+                        {
+                            CheckJavaDirectory(directory);
+                        }
+                        string[] files = Directory.GetFiles(javaPath, "release", SearchOption.TopDirectoryOnly);
+                        foreach (string file in files)
+                        {
+                            CheckJavaRelease(file);
+                        }
+                    }
+                }
+            }
+            if (selectCheckedJavaComb.Items.Count > 0)
+            {
+                downout.Content = "检测完毕！";
+                selectCheckedJavaComb.SelectedIndex = 0;
+            }
+            else
+            {
+                downout.Content = "检测完毕，暂未找到Java";
+                useSelf.IsChecked = true;
+            }
+        }
+        void CheckJavaDirectory(string directory)
+        {
+            string[] files = Directory.GetFiles(directory, "release", SearchOption.TopDirectoryOnly);
+            foreach (string file in files)
+            {
+                CheckJavaRelease(file);
+            }
+        }
+
+        void CheckJavaRelease(string releaseFile)
+        {
+            string releaseContent = File.ReadAllText(releaseFile);
+            Match match = Regex.Match(releaseContent, @"JAVA_VERSION=""([\d\._a-zA-Z]+)""");
+            if (match.Success)
+            {
+                string javaVersion = match.Groups[1].Value;
+                selectCheckedJavaComb.Items.Add("Java" + javaVersion + ":" + Path.GetDirectoryName(releaseFile) + "\\bin\\java.exe");
+            }
+        }
         private void setServerconfig_Click(object sender, RoutedEventArgs e)
         {
             SetServerconfig.serverbase = Rserverbase;
@@ -2840,8 +2944,13 @@ namespace MSL
         {
             if (closeOutlog_Copy.Content.ToString() == "屏蔽关键字日志:关")
             {
-                ShieldLog = Microsoft.VisualBasic.Interaction.InputBox("输入你想屏蔽的关键词", "输入", "", -1, -1);
-                closeOutlog_Copy.Content = "屏蔽关键字日志:开";
+                string text;
+                bool input=DialogShow.ShowInput(this, "输入你想屏蔽的关键字，\n开服器将不会输出含有此关键字的日志", out  text);
+                if (input)
+                {
+                    ShieldLog = text;
+                    closeOutlog_Copy.Content = "屏蔽关键字日志:开";
+                }
             }
             else
             {
@@ -2962,10 +3071,13 @@ namespace MSL
         {
             try
             {
-                string text = Microsoft.VisualBasic.Interaction.InputBox("请输入指令（格式为：/指令）\n若要输入的指令不是完整指令，请自行在最后添加空格", "输入", "", -1, -1);
-                //fastCMD.Items.Add(text);
-                fastCmdList.Items.Add(text);
-                SetFastCmd();
+                string text;
+                bool input=DialogShow.ShowInput(this, "请输入指令（格式为：/指令）\n若要输入的指令不是完整指令，请自行在最后添加空格",out text);
+                if (input)
+                {
+                    fastCmdList.Items.Add(text);
+                    SetFastCmd();
+                }
             }
             catch
             {
@@ -3140,5 +3252,7 @@ namespace MSL
             }
         }
         #endregion
+
+        
     }
 }

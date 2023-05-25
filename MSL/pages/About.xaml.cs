@@ -16,10 +16,5 @@ namespace MSL.pages
             InitializeComponent();
             AppVersionLab.Content += string.Format("(MSLv{0})", System.Reflection.Assembly.GetExecutingAssembly().GetName().Version.ToString());
         }
-
-        private void support_MouseLeftButtonUp(object sender, MouseButtonEventArgs e)
-        {
-            Process.Start("https://afdian.net/@makabaka123?tab=sponsor");
-        }
     }
 }

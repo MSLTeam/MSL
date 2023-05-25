@@ -17,8 +17,9 @@
         <Setter Property="BorderBrush" Value="{x:Null}"/>
         <Setter Property="Background" Value="{x:Null}"/>
         <Setter Property="Foreground" Value="{DynamicResource TextBlockBrush}"/>
-        <Setter Property="Height" Value="35"/>
         <Setter Property="FontWeight" Value="Bold"/>
+        <Setter Property="Padding" Value="0"/>
+        <Setter Property="Margin" Value="5,5,0,0"/>
     </Style>
-    
+
 </ResourceDictionary>

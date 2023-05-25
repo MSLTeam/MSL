@@ -121,12 +121,12 @@ namespace MSL.pages
                     }
                     else if (item.Value["core"].ToString().IndexOf("forge") + 1 != 0 || item.Value["core"].ToString() == "")
                     {
-                        serverList.Items.Add(new ServerInfo(item.Value["name"].ToString(), "/images/150px-Anvil.png", "未运行", Brushes.Green));
+                        serverList.Items.Add(new ServerInfo(item.Value["name"].ToString(), "pack://application:,,,/images/150px-Anvil.png", "未运行", Brushes.Green));
                         StateCheck();
                     }
                     else
                     {
-                        serverList.Items.Add(new ServerInfo(item.Value["name"].ToString(), "/images/150px-Impulse_Command_Block.png", "未运行", Brushes.MediumSeaGreen));
+                        serverList.Items.Add(new ServerInfo(item.Value["name"].ToString(), "pack://application:,,,/images/150px-Impulse_Command_Block.png", "未运行", Brushes.MediumSeaGreen));
                         StateCheck();
                     }
                 }
@@ -236,13 +236,17 @@ namespace MSL.pages
             }
             try
             {
+                
+                //serverList.Items.Remove(serverList.SelectedItem);
                 DialogShow.ShowMsg(mainwindow, "是否删除该服务器的目录？（服务器目录中的所有文件都会被移至回收站）", "提示", true, "取消");
                 if (MessageDialog._dialogReturn)
                 {
+                    //_server.ServerIcon = "/images/150px-Impulse_Command_Block.png";
                     MessageDialog._dialogReturn = false;
                     JObject jsonObject = JObject.Parse(File.ReadAllText(AppDomain.CurrentDomain.BaseDirectory + @"MSL\ServerList.json", Encoding.UTF8));
                     JObject _json = (JObject)jsonObject[serverid[serverList.SelectedIndex]];
                     FileSystem.DeleteDirectory(_json["base"].ToString(), UIOption.OnlyErrorDialogs, RecycleOption.SendToRecycleBin);
+                    //Directory.Delete(_json["base"].ToString(), true);
                     Growl.Success("服务器目录已成功移至回收站！");
                 }
             }

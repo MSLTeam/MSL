@@ -51,18 +51,18 @@ namespace MSL.pages
                 string a = File.ReadAllText(AppDomain.CurrentDomain.BaseDirectory + "MSL\\P2Pfrpc");
                 if(a.IndexOf("role = visitor")+1!=0)
                 {
-                    visiterBtn.IsChecked = true;
+                    visiterExp.IsExpanded = true;
                 }
                 else
                 {
-                    masterBtn.IsChecked = true;
+                    masterExp.IsExpanded = true;
                 }
             }
             else
             {
                 var mainwindow=(MainWindow)Window.GetWindow(this);
                 DialogShow.ShowMsg(mainwindow, "注意：此功能目前不稳定，无法穿透所有类型的NAT，若联机失败，请尝试开服务器并使用内网映射联机！\r\n该功能可能需要正版账户，若无法联机，请从网络上寻找解决方法或尝试开服务器并使用内网映射联机！", "警告");
-                masterBtn.IsChecked = true;
+                masterExp.IsExpanded = true;
             }
             Thread thread = new Thread(GetFrpcInfo);
             thread.Start();
@@ -98,9 +98,9 @@ namespace MSL.pages
                 });
             }
         }
-
-        private void masterBtn_Checked(object sender, RoutedEventArgs e)
+        private void masterExp_Expanded(object sender, RoutedEventArgs e)
         {
+            visiterExp.IsExpanded = false;
             if (File.Exists(AppDomain.CurrentDomain.BaseDirectory + "MSL\\P2Pfrpc"))
             {
                 string a = File.ReadAllText(AppDomain.CurrentDomain.BaseDirectory + "MSL\\P2Pfrpc");
@@ -115,33 +115,11 @@ namespace MSL.pages
                         masterPort.Text = match.Groups[3].Value;
                     }
                 }
-                
-                masterQQ.IsEnabled = true;
-                masterKey.IsEnabled=true;
-                masterPort.IsEnabled=true;
-                createRoom.IsEnabled = true;
-
-                visiterQQ.IsEnabled = false;
-                visiterKey.IsEnabled = false;
-                visiterPort.IsEnabled = false;
-                joinRoom.IsEnabled = false;
-            }
-            else
-            {
-                masterQQ.IsEnabled = true;
-                masterKey.IsEnabled = true;
-                masterPort.IsEnabled = true;
-                createRoom.IsEnabled = true;
-
-                visiterQQ.IsEnabled = false;
-                visiterKey.IsEnabled = false;
-                visiterPort.IsEnabled = false;
-                joinRoom.IsEnabled = false;
             }
         }
-
-        private void visiterBtn_Checked(object sender, RoutedEventArgs e)
+        private void visiterExp_Expanded(object sender, RoutedEventArgs e)
         {
+            masterExp.IsExpanded = false;
             if (File.Exists(AppDomain.CurrentDomain.BaseDirectory + "MSL\\P2Pfrpc"))
             {
                 string a = File.ReadAllText(AppDomain.CurrentDomain.BaseDirectory + "MSL\\P2Pfrpc");
@@ -156,31 +134,9 @@ namespace MSL.pages
                         visiterPort.Text = match.Groups[3].Value;
                     }
                 }
-
-                visiterQQ.IsEnabled = true;
-                visiterKey.IsEnabled = true;
-                visiterPort.IsEnabled = true;
-                joinRoom.IsEnabled = true;
-                
-
-                masterQQ.IsEnabled = false;
-                masterKey.IsEnabled = false;
-                masterPort.IsEnabled = false;
-                createRoom.IsEnabled = false;
-            }
-            else
-            {
-                visiterQQ.IsEnabled = true;
-                visiterKey.IsEnabled = true;
-                visiterPort.IsEnabled = true;
-                joinRoom.IsEnabled = true;
-
-                masterQQ.IsEnabled = false;
-                masterKey.IsEnabled = false;
-                masterPort.IsEnabled = false;
-                createRoom.IsEnabled = false;
             }
         }
+
 
         private void createRoom_Click(object sender, RoutedEventArgs e)
         {
@@ -191,14 +147,14 @@ namespace MSL.pages
                     string a = "[common]\r\nserver_port = 7000\r\nserver_addr = 47.243.96.125\r\n\r\n[" + masterQQ.Text + "]\r\ntype = xtcp\r\nlocal_ip = 127.0.0.1\r\nlocal_port = " + masterPort.Text + "\r\nsk = " + masterKey.Text + "\r\n";
                     File.WriteAllText(AppDomain.CurrentDomain.BaseDirectory + "MSL\\P2Pfrpc", a);
                     isMaster = true;
-                    visiterBtn.IsEnabled = false;
+                    visiterExp.IsEnabled = false;
                     StartFrpc();
                 }
                 else
                 {
                     FRPCMD.Kill();
                     Thread.Sleep(200);
-                    visiterBtn.IsEnabled = true;
+                    visiterExp.IsEnabled = true;
                     Growl.Success("关闭成功！");
                     FRPCMD.CancelOutputRead();
                     FRPCMD.OutputDataReceived -= new DataReceivedEventHandler(p_OutputDataReceived);
@@ -237,14 +193,14 @@ namespace MSL.pages
                     string a = "[common]\r\nserver_port = 7000\r\nserver_addr = 47.243.96.125\r\n\r\n[p2p_ssh_visitor]\r\ntype = xtcp\r\nrole = visitor\r\nbind_addr = 127.0.0.1\r\nbind_port = " + visiterPort.Text + "\r\nserver_name = " + visiterQQ.Text + "\r\nsk = " + visiterKey.Text + "\r\n";
                     File.WriteAllText(AppDomain.CurrentDomain.BaseDirectory + "MSL\\P2Pfrpc", a);
                     isMaster = false;
-                    masterBtn.IsEnabled = false;
+                    masterExp.IsEnabled = false;
                     StartFrpc();
                 }
                 else
                 {
                     FRPCMD.Kill();
                     Thread.Sleep(200);
-                    masterBtn.IsEnabled = true;
+                    masterExp.IsEnabled = true;
                     Growl.Success("关闭成功！");
                     FRPCMD.CancelOutputRead();
                     FRPCMD.OutputDataReceived -= new DataReceivedEventHandler(p_OutputDataReceived);
@@ -391,12 +347,12 @@ namespace MSL.pages
                     if (isMaster)
                     {
                         createRoom.Content = "点击创建房间";
-                        visiterBtn.IsEnabled = true;
+                        visiterExp.IsEnabled = true;
                     }
                     else
                     {
                         joinRoom.Content = "点击加入房间";
-                        masterBtn.IsEnabled = true;
+                        masterExp.IsEnabled = true;
                     }
                 }
                 if (msg.IndexOf("success") + 1 != 0)
@@ -437,21 +393,17 @@ namespace MSL.pages
                     if (isMaster)
                     {
                         createRoom.Content = "点击创建房间";
-                        visiterBtn.IsEnabled = true;
+                        visiterExp.IsEnabled = true;
                     }
                     else
                     {
                         joinRoom.Content = "点击加入房间";
-                        masterBtn.IsEnabled = true;
+                        masterExp.IsEnabled = true;
                     }
                 }
             }
             frpcOutlog.ScrollToEnd();
         }
 
-        private void onlineHelp_Click(object sender, RoutedEventArgs e)
-        {
-            Process.Start("https://docs.waheal.top/#/?id=msl%e7%82%b9%e5%af%b9%e7%82%b9%e8%81%94%e6%9c%ba%e6%95%99%e7%a8%8b");
-        }
     }
 }
