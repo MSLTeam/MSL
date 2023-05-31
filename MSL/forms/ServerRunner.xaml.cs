@@ -539,7 +539,7 @@ namespace MSL
             }
         }
 
-        private Brush tempbrush = Brushes.Green;
+        private static Brush tempbrush = Brushes.Green;
         private void ShowLog(string msg, Brush color)
         {
             tempbrush = color;
@@ -551,6 +551,26 @@ namespace MSL
                     string[] splitMsg = msg.Split('&');
                     foreach (var everyMsg in splitMsg)
                     {
+                        if (everyMsg == string.Empty)
+                        {
+                            continue;
+                        }
+                        string colorCode = everyMsg.Substring(0, 1);
+                        string text = everyMsg.Substring(1);
+                        Run run = new Run(text);
+                        run.Foreground = GetBrushFromMinecraftColorCode(colorCode[0]);
+                        p.Inlines.Add(run);
+                    }
+                }
+                else if (msg.Contains("§"))
+                {
+                    string[] splitMsg = msg.Split('§');
+                    foreach (var everyMsg in splitMsg)
+                    {
+                        if (everyMsg == string.Empty)
+                        {
+                            continue;
+                        }
                         string colorCode = everyMsg.Substring(0, 1);
                         string text = everyMsg.Substring(1);
                         Run run = new Run(text);
@@ -563,6 +583,10 @@ namespace MSL
                     string[] splitMsg = msg.Split('\x1B');
                     foreach (var everyMsg in splitMsg)
                     {
+                        if (everyMsg == string.Empty)
+                        {
+                            continue;
+                        }
                         string colorCode = everyMsg.Substring(1, 2);
                         //MessageBox.Show(colorCode.ToString());
                         string text = everyMsg.Substring(everyMsg.IndexOf("m") + 1);
@@ -606,13 +630,14 @@ namespace MSL
 
         private Dictionary<char, SolidColorBrush> colorDict = new Dictionary<char, SolidColorBrush>
         {
+            ['r'] = (SolidColorBrush)tempbrush,
             ['0'] = Brushes.Black,
             ['1'] = Brushes.DarkBlue,
             ['2'] = Brushes.DarkGreen,
             ['3'] = Brushes.DarkCyan,
             ['4'] = Brushes.DarkRed,
             ['5'] = Brushes.DarkMagenta,
-            ['6'] = Brushes.Gold,
+            ['6'] = Brushes.Orange,//gold
             ['7'] = Brushes.Gray,
             ['8'] = Brushes.DarkGray,
             ['9'] = Brushes.Blue,
@@ -620,7 +645,7 @@ namespace MSL
             ['b'] = Brushes.Cyan,
             ['c'] = Brushes.Red,
             ['d'] = Brushes.Magenta,
-            ['e'] = Brushes.Yellow,
+            ['e'] = Brushes.Gold,//yellow
             ['f'] = Brushes.White,
         };
 
@@ -638,7 +663,7 @@ namespace MSL
             ["30"] = Brushes.Black,
             ["31"] = Brushes.Red,
             ["32"] = Brushes.Green,
-            ["33"] = Brushes.Yellow,
+            ["33"] = Brushes.Gold,//yellow
             ["34"] = Brushes.Blue,
             ["35"] = Brushes.Magenta,
             ["36"] = Brushes.Cyan,
@@ -690,7 +715,7 @@ namespace MSL
                     {
                         if (!File.Exists(Rserverbase + "\\eula.txt"))
                         {
-                            DialogShow.ShowMsg(this, "开服器未能获取到服务器信息，可能该服务端需要下载依赖文件，请耐心等待！\n即将为您跳转至输出界面，开服过程中部分事件可能需要您手动处理！\n\n(注：Mohist端接受EULA条款的方式是在控制台输入true，在接受前请务必前往该网站仔细阅读条款内容：https://account.mojang.com/documents/minecraft_eula)", "提示");
+                            DialogShow.ShowMsg(this, "该服务端可能在下载依赖文件，请耐心等待！\n将为您跳转至控制台界面，开服过程中部分操作需要您手动完成！\n(注：Mohist端接受EULA条款的方式是在控制台输入true，在接受前请务必前往该网站仔细阅读条款内容：https://account.mojang.com/documents/minecraft_eula)", "提示");
                             TabCtrl.SelectedIndex = 1;
                         }
                         serverVersionLab.Content = "未知";
@@ -776,345 +801,122 @@ namespace MSL
                 ShowLog(msg, tempbrush);
             }
         }
-
-        void ProblemSystemShow(string msg)
-        {
-            if (getServerInfoLine <= 50)
-            {
-                getServerInfoLine++;
-                if (msg.Contains("UnsupportedClassVersionError"))
-                {
-                    foundProblems = foundProblems + "*不支持的Class版本：您的Java版本可能太低！\n";
-                    int a = int.Parse(msg.Substring(msg.IndexOf("(class file version ") + 20, 2));
-                    switch (a)
-                    {
-                        case 52:
-                            foundProblems += "请使用Java8或以上版本！\n";
-                            break;
-                        case 53:
-                            foundProblems += "请使用Java9或以上版本！\n";
-                            break;
-                        case 54:
-                            foundProblems += "请使用Java10或以上版本！\n";
-                            break;
-                        case 55:
-                            foundProblems += "请使用Java11或以上版本！\n";
-                            break;
-                        case 56:
-                            foundProblems += "请使用Java12或以上版本！\n";
-                            break;
-                        case 57:
-                            foundProblems += "请使用Java13或以上版本！\n";
-                            break;
-                        case 58:
-                            foundProblems += "请使用Java14或以上版本！\n";
-                            break;
-                        case 59:
-                            foundProblems += "请使用Java15或以上版本！\n";
-                            break;
-                        case 60:
-                            foundProblems += "请使用Java16或以上版本！\n";
-                            break;
-                        case 61:
-                            foundProblems += "请使用Java17或以上版本！\n";
-                            break;
-                        case 62:
-                            foundProblems += "请使用Java18或以上版本！\n";
-                            break;
-                        case 63:
-                            foundProblems += "请使用Java19或以上版本！\n";
-                            break;
-                        case 64:
-                            foundProblems += "请使用Java20或以上版本！\n";
-                            break;
-                    }
-                }
-                else if (msg.Contains("Unsupported Java detected"))
-                {
-                    foundProblems += "*不匹配的Java版本：\n";
-                    foundProblems += "请使用" + msg.Substring(msg.IndexOf("Only up to ") + 11, 7) + "！\n";
-                }
-                else if (msg.Contains("requires running the server with"))
-                {
-                    foundProblems += "*不匹配的Java版本：\n";
-                    foundProblems += "请使用" + msg.Substring(msg.IndexOf("Java"), 7) + "！\n";
-                }
-                else if (msg.Contains("OutOfMemoryError"))
-                {
-                    foundProblems += "*服务器内存分配过低或过高！\n";
-                }
-                else if (msg.Contains("Invalid maximum heap size"))
-                {
-                    foundProblems += "*服务器最大内存分配有误！\n" + msg + "\n";
-                }
-                else if (msg.Contains("Unrecognized VM option"))
-                {
-                    foundProblems += "*服务器JVM参数有误！请前往设置界面进行查看！\n错误的参数为：" + msg.Substring(msg.IndexOf("'") + 1, msg.Length - 3 - msg.IndexOf(" '")) + "\n";
-                }
-                else if (msg.Contains("There is insufficient memory for the Java Runtime Environment to continue"))
-                {
-                    foundProblems += "*JVM内存分配不足，请尝试增加系统的虚拟内存（不是内存条！具体方法请自行上网查找）！\n";
-                }
-                else if (msg.Contains("进程无法访问"))
-                {
-                    foundProblems += "*文件被占用，您的服务器可能多开，可尝试重启电脑解决！\n";
-                }
-                else if (msg.Contains("FAILED TO BIND TO PORT"))
-                {
-                    foundProblems += "*端口被占用，您的服务器可能多开，可尝试重启电脑解决！\n";
-                }
-                else if (msg.Contains("Unable to access jarfile"))
-                {
-                    foundProblems += "*无法访问JAR文件！您的服务端可能已损坏或路径中含有中文或其他特殊字符,请及时修改！\n";
-                }
-                else if (msg.Contains("加载 Java 代理时出错"))
-                {
-                    foundProblems += "*无法访问JAR文件！您的服务端可能已损坏或路径中含有中文或其他特殊字符,请及时修改！\n";
-                }
-                else if (msg.Contains("ArraylndexOutOfBoundsException"))
-                {
-                    foundProblems += "*开启服务器时发生数组越界错误，请尝试更换服务端再试！\n";
-                }
-                else if (msg.Contains("ClassCastException"))
-                {
-                    foundProblems += "*开启服务器时发生类转换异常，请检查Java版本是否匹配，或者让开服器为您下载Java环境（设置界面更改）！\n";
-                }
-                else if (msg.Contains("could not open") && msg.Contains("jvm.cfg"))
-                {
-                    foundProblems += "*Java异常，请检查Java环境是否正常，或者让开服器为您下载Java环境（设置界面更改）！\n";
-                }
-                else if (msg.Contains("Failed to download vanilla jar"))
-                {
-                    foundProblems += "*下载原版核心文件失败，您可尝试使用代理或更换服务端为Spigot端！\n";
-                }
-                else if (msg.Contains("Exception in thread \"main\""))
-                {
-                    foundProblems += "*疑似服务端核心Main方法报错，您可尝试更换服务端或更换Java再试！\n";
-                }
-            }
-            if (msg.Contains("Could not load") && msg.Contains("plugin"))
-            {
-                foundProblems += "*无法加载插件！\n";
-                foundProblems += "插件名称：" + msg.Substring(msg.IndexOf("Could not load '") + 16, msg.IndexOf("' ") - (msg.IndexOf("Could not load '") + 16)) + "\n";
-            }
-            else if (msg.Contains("Error loading plugin"))
-            {
-                foundProblems += "*无法加载插件！\n";
-                foundProblems += "插件名称：" + msg.Substring(msg.IndexOf(" '") + 2, msg.IndexOf("' ") - (msg.IndexOf(" '") + 2)) + "\n";
-            }
-            else if (msg.Contains("Error occurred while enabling "))
-            {
-                foundProblems += "*在启用 " + msg.Substring(msg.IndexOf("enabling ") + 9, msg.IndexOf(" (") - (msg.IndexOf("enabling ") + 9)) + " 时发生了错误\n"; ;
-            }
-            else if (msg.Contains("Encountered an unexpected exception"))
-            {
-                foundProblems += "*服务器出现意外崩溃，可能是由于模组冲突，请检查您的模组列表（如果使用的是整合包，请使用整合包制作方提供的Server专用包开服）\n";
-            }
-        }
         void GetServerInfoSys(string msg)
         {
-            if (msg.Contains("You need to agree to the EULA in order to run the server"))
+            try
             {
-                getServerInfoLine = -10;
-                DialogShow.ShowMsg(this, "检测到您没有接受Mojang的EULA条款！是否阅读并接受EULA条款并继续开服？", "提示", true, "取消");
-                if (MessageDialog._dialogReturn == true)
+                if (msg.Contains("You need to agree to the EULA in order to run the server"))
                 {
-                    MessageDialog._dialogReturn = false;
-                    try
+                    getServerInfoLine = -10;
+                    DialogShow.ShowMsg(this, "检测到您没有接受Mojang的EULA条款！是否阅读并接受EULA条款并继续开服？", "提示", true, "取消");
+                    if (MessageDialog._dialogReturn == true)
                     {
-                        timer1.Stop();
-                        string path1 = Rserverbase + @"\eula.txt";
-                        FileStream fs = new FileStream(path1, FileMode.Open, FileAccess.Read, FileShare.ReadWrite);
-                        StreamReader sr = new StreamReader(fs, Encoding.Default);
-                        string line;
-                        line = sr.ReadToEnd();
-                        line = line.Replace("eula=false", "eula=true");
-                        string path = Rserverbase + @"\eula.txt";
-                        StreamWriter streamWriter = new StreamWriter(path);
-                        streamWriter.WriteLine(line);
-                        streamWriter.Flush();
-                        streamWriter.Close();
-                        if (!SERVERCMD.HasExited)
+                        MessageDialog._dialogReturn = false;
+                        try
                         {
-                            SERVERCMD.Kill();
+                            timer1.Stop();
+                            string path1 = Rserverbase + @"\eula.txt";
+                            FileStream fs = new FileStream(path1, FileMode.Open, FileAccess.Read, FileShare.ReadWrite);
+                            StreamReader sr = new StreamReader(fs, Encoding.Default);
+                            string line;
+                            line = sr.ReadToEnd();
+                            line = line.Replace("eula=false", "eula=true");
+                            string path = Rserverbase + @"\eula.txt";
+                            StreamWriter streamWriter = new StreamWriter(path);
+                            streamWriter.WriteLine(line);
+                            streamWriter.Flush();
+                            streamWriter.Close();
+                            if (!SERVERCMD.HasExited)
+                            {
+                                SERVERCMD.Kill();
+                            }
+                            SERVERCMD.CancelOutputRead();
+                            SERVERCMD.CancelErrorRead();
+                            SERVERCMD.OutputDataReceived -= new DataReceivedEventHandler(p_OutputDataReceived);
+                            SERVERCMD.ErrorDataReceived -= new DataReceivedEventHandler(p_OutputDataReceived);
+                            outlog.Document.Blocks.Clear();
+                            ShowLog("正在重启服务器...", Brushes.Green);
+                            LaunchServer();
                         }
-                        SERVERCMD.CancelOutputRead();
-                        SERVERCMD.CancelErrorRead();
-                        SERVERCMD.OutputDataReceived -= new DataReceivedEventHandler(p_OutputDataReceived);
-                        SERVERCMD.ErrorDataReceived -= new DataReceivedEventHandler(p_OutputDataReceived);
-                        outlog.Document.Blocks.Clear();
-                        ShowLog("正在重启服务器...", Brushes.Green);
-                        LaunchServer();
+                        catch (Exception a)
+                        {
+                            MessageBox.Show("出现错误，请手动修改eula文件或重试:" + a, "错误", MessageBoxButton.OK, MessageBoxImage.Error);
+                        }
+                        Process.Start("https://account.mojang.com/documents/minecraft_eula");
                     }
-                    catch (Exception a)
-                    {
-                        MessageBox.Show("出现错误，请手动修改eula文件或重试:" + a, "错误", MessageBoxButton.OK, MessageBoxImage.Error);
-                    }
-                    Process.Start("https://account.mojang.com/documents/minecraft_eula");
+
                 }
-
-            }
-            else if (msg.Contains("Starting minecraft server version"))
-            {
-                serverVersionLab.Content = msg.Substring(msg.LastIndexOf(" ") + 1);
-                if (!RserverJVMcmd.Contains("-Dfile.encoding=UTF-8"))
+                else if (msg.Contains("Starting minecraft server version"))
                 {
-                    string versionString = serverVersionLab.Content.ToString();
-                    string[] components = versionString.Split('.');
-                    if (components.Length >= 3 && int.TryParse(components[2], out int _))
+                    serverVersionLab.Content = msg.Substring(msg.LastIndexOf(" ") + 1);
+                    if (!RserverJVMcmd.Contains("-Dfile.encoding=UTF-8"))
                     {
-                        versionString = $"{components[0]}.{components[1]}"; // remove the last component
+                        string versionString = serverVersionLab.Content.ToString();
+                        string[] components = versionString.Split('.');
+                        if (components.Length >= 3 && int.TryParse(components[2], out int _))
+                        {
+                            versionString = $"{components[0]}.{components[1]}"; // remove the last component
+                        }
+
+                        Version version = new Version(versionString);
+                        Version targetVersion = new Version("1.12");
+
+                        if (version >= targetVersion)
+                        {
+                            // version is greater than targetVersion,or equal to targetVersion
+                            if (inputCmdEncoding.Content.ToString() == "输入编码:自动识别")
+                            {
+                                inputCmdEncoding.Content = "输入编码:UTF8";
+                            }
+                            if (outputCmdEncoding.Content.ToString() == "输出编码:自动识别")
+                            {
+                                outputCmdEncoding.Content = "输出编码:ANSI";
+                            }
+                        }
+                        else if (version < targetVersion)
+                        {
+                            // version is less than targetVersion
+                            if (inputCmdEncoding.Content.ToString() == "输入编码:自动识别")
+                            {
+                                inputCmdEncoding.Content = "输入编码:ANSI";
+                            }
+                            if (outputCmdEncoding.Content.ToString() == "输出编码:自动识别")
+                            {
+                                outputCmdEncoding.Content = "输出编码:ANSI";
+                            }
+                        }
                     }
-
-                    Version version = new Version(versionString);
-                    Version targetVersion = new Version("1.12");
-
-                    if (version >= targetVersion)
+                    else
                     {
-                        // version is greater than targetVersion,or equal to targetVersion
+
                         if (inputCmdEncoding.Content.ToString() == "输入编码:自动识别")
                         {
                             inputCmdEncoding.Content = "输入编码:UTF8";
                         }
                         if (outputCmdEncoding.Content.ToString() == "输出编码:自动识别")
                         {
-                            outputCmdEncoding.Content = "输出编码:ANSI";
-                        }
-                    }
-                    else if (version < targetVersion)
-                    {
-                        // version is less than targetVersion
-                        if (inputCmdEncoding.Content.ToString() == "输入编码:自动识别")
-                        {
-                            inputCmdEncoding.Content = "输入编码:ANSI";
-                        }
-                        if (outputCmdEncoding.Content.ToString() == "输出编码:自动识别")
-                        {
-                            outputCmdEncoding.Content = "输出编码:ANSI";
-                        }
-                    }
-                }
-                else
-                {
-
-                    if (inputCmdEncoding.Content.ToString() == "输入编码:自动识别")
-                    {
-                        inputCmdEncoding.Content = "输入编码:UTF8";
-                    }
-                    if (outputCmdEncoding.Content.ToString() == "输出编码:自动识别")
-                    {
-                        outputCmdEncoding.Content = "输出编码:UTF8";
-                        if (!SERVERCMD.HasExited)
-                        {
-                            SERVERCMD.Kill();
-                        }
-                        SERVERCMD.CancelOutputRead();
-                        SERVERCMD.CancelErrorRead();
-                        SERVERCMD.OutputDataReceived -= new DataReceivedEventHandler(p_OutputDataReceived);
-                        SERVERCMD.ErrorDataReceived -= new DataReceivedEventHandler(p_OutputDataReceived);
-                        outlog.Document.Blocks.Clear();
-                        ShowLog("检测到编码更改，正在重启服务器...", Brushes.Green);
-                        LaunchServer();
-                    }
-                }
-            }
-            else if (msg.Contains("Default game type:"))
-            {
-                gameTypeLab.Content = msg.Substring(msg.LastIndexOf(" ") + 1);
-            }
-            else if (msg.Contains("Starting Minecraft server on"))
-            {
-                serverIPLab.Content = msg.Substring(msg.LastIndexOf(" ") + 1);
-                if (serverIPLab.Content.ToString().Contains("*"))
-                {
-                    localServerIPLab.Content = serverIPLab.Content.ToString().Replace("*", "127.0.0.1");
-                    if (localServerIPLab.Content.ToString().IndexOf(":25565") + 1 != 0)
-                    {
-                        localServerIPLab.Content = localServerIPLab.Content.ToString().Replace(":25565", "");
-                    }
-                }
-                else
-                {
-                    localServerIPLab.Content = serverIPLab.Content;
-                    if (localServerIPLab.Content.ToString().Contains(":25565"))
-                    {
-                        localServerIPLab.Content = localServerIPLab.Content.ToString().Replace(":25565", "");
-                    }
-                }
-            }
-            else if (msg.Contains("正在启动") && msg.Contains("的Minecraft服务端"))
-            {
-                serverVersionLab.Content = msg.Substring(msg.LastIndexOf("正在启动") + 4, (msg.IndexOf("的") / 2) - 7);
-                if (!RserverJVMcmd.Contains("-Dfile.encoding=UTF-8"))
-                {
-                    string versionString = serverVersionLab.Content.ToString();
-                    string[] components = versionString.Split('.');
-                    if (components.Length >= 3 && int.TryParse(components[2], out int _))
-                    {
-                        versionString = $"{components[0]}.{components[1]}"; // remove the last component
-                    }
-
-                    Version version = new Version(versionString);
-                    Version targetVersion = new Version("1.12");
-
-                    if (version >= targetVersion)
-                    {
-                        // version is greater than targetVersion,or equal to targetVersion
-                        if (inputCmdEncoding.Content.ToString() == "输入编码:自动识别")
-                        {
-                            inputCmdEncoding.Content = "输入编码:UTF8";
-                        }
-                        if (outputCmdEncoding.Content.ToString() == "输出编码:自动识别")
-                        {
-                            outputCmdEncoding.Content = "输出编码:ANSI";
-                        }
-                    }
-                    else if (version < targetVersion)
-                    {
-                        // version is less than targetVersion
-                        if (inputCmdEncoding.Content.ToString() == "输入编码:自动识别")
-                        {
-                            inputCmdEncoding.Content = "输入编码:ANSI";
-                        }
-                        if (outputCmdEncoding.Content.ToString() == "输出编码:自动识别")
-                        {
-                            outputCmdEncoding.Content = "输出编码:ANSI";
+                            outputCmdEncoding.Content = "输出编码:UTF8";
+                            if (!SERVERCMD.HasExited)
+                            {
+                                SERVERCMD.Kill();
+                            }
+                            SERVERCMD.CancelOutputRead();
+                            SERVERCMD.CancelErrorRead();
+                            SERVERCMD.OutputDataReceived -= new DataReceivedEventHandler(p_OutputDataReceived);
+                            SERVERCMD.ErrorDataReceived -= new DataReceivedEventHandler(p_OutputDataReceived);
+                            outlog.Document.Blocks.Clear();
+                            ShowLog("检测到编码更改，正在重启服务器...", Brushes.Green);
+                            LaunchServer();
                         }
                     }
                 }
-                else
+                else if (msg.Contains("Default game type:"))
                 {
-
-                    if (inputCmdEncoding.Content.ToString() == "输入编码:自动识别")
-                    {
-                        inputCmdEncoding.Content = "输入编码:UTF8";
-                    }
-                    if (outputCmdEncoding.Content.ToString() == "输出编码:自动识别")
-                    {
-                        outputCmdEncoding.Content = "输出编码:UTF8";
-                        if (!SERVERCMD.HasExited)
-                        {
-                            SERVERCMD.Kill();
-                        }
-                        SERVERCMD.CancelOutputRead();
-                        SERVERCMD.CancelErrorRead();
-                        SERVERCMD.OutputDataReceived -= new DataReceivedEventHandler(p_OutputDataReceived);
-                        SERVERCMD.ErrorDataReceived -= new DataReceivedEventHandler(p_OutputDataReceived);
-                        outlog.Document.Blocks.Clear();
-                        ShowLog("检测到编码更改，正在重启服务器...", Brushes.Green);
-                        LaunchServer();
-                    }
+                    gameTypeLab.Content = msg.Substring(msg.LastIndexOf(" ") + 1);
                 }
-            }
-            else if (msg.Contains("默认游戏模式:"))
-            {
-                gameTypeLab.Content = msg.Substring(msg.LastIndexOf("游戏模式:") + 5);
-            }
-            else if (msg.Contains("正在") && msg.Contains("上启动服务器"))
-            {
-                try
+                else if (msg.Contains("Starting Minecraft server on"))
                 {
-                    serverIPLab.Content = msg.Substring(msg.IndexOf("正在 ") + 3, (msg.IndexOf("上") / 2) - 4);
+                    serverIPLab.Content = msg.Substring(msg.LastIndexOf(" ") + 1);
                     if (serverIPLab.Content.ToString().Contains("*"))
                     {
                         localServerIPLab.Content = serverIPLab.Content.ToString().Replace("*", "127.0.0.1");
@@ -1132,7 +934,105 @@ namespace MSL
                         }
                     }
                 }
-                catch (Exception ex) { MessageBox.Show(ex.Message); }
+                else if (msg.Contains("正在启动") && msg.Contains("的Minecraft服务端"))
+                {
+                    try
+                    {
+                        serverVersionLab.Content = msg.Substring(msg.IndexOf("正在启动") + 4, msg.IndexOf("的") - (msg.IndexOf("正在启动") + 4));
+                        if (!RserverJVMcmd.Contains("-Dfile.encoding=UTF-8"))
+                        {
+                            string versionString = serverVersionLab.Content.ToString();
+                            string[] components = versionString.Split('.');
+                            if (components.Length >= 3 && int.TryParse(components[2], out int _))
+                            {
+                                versionString = $"{components[0]}.{components[1]}"; // remove the last component
+                            }
+
+                            Version version = new Version(versionString);
+                            Version targetVersion = new Version("1.12");
+
+                            if (version >= targetVersion)
+                            {
+                                // version is greater than targetVersion,or equal to targetVersion
+                                if (inputCmdEncoding.Content.ToString() == "输入编码:自动识别")
+                                {
+                                    inputCmdEncoding.Content = "输入编码:UTF8";
+                                }
+                                if (outputCmdEncoding.Content.ToString() == "输出编码:自动识别")
+                                {
+                                    outputCmdEncoding.Content = "输出编码:ANSI";
+                                }
+                            }
+                            else if (version < targetVersion)
+                            {
+                                // version is less than targetVersion
+                                if (inputCmdEncoding.Content.ToString() == "输入编码:自动识别")
+                                {
+                                    inputCmdEncoding.Content = "输入编码:ANSI";
+                                }
+                                if (outputCmdEncoding.Content.ToString() == "输出编码:自动识别")
+                                {
+                                    outputCmdEncoding.Content = "输出编码:ANSI";
+                                }
+                            }
+                        }
+                        else
+                        {
+                            if (inputCmdEncoding.Content.ToString() == "输入编码:自动识别")
+                            {
+                                inputCmdEncoding.Content = "输入编码:UTF8";
+                            }
+                            if (outputCmdEncoding.Content.ToString() == "输出编码:自动识别")
+                            {
+                                outputCmdEncoding.Content = "输出编码:UTF8";
+                                if (!SERVERCMD.HasExited)
+                                {
+                                    SERVERCMD.Kill();
+                                }
+                                SERVERCMD.CancelOutputRead();
+                                SERVERCMD.CancelErrorRead();
+                                SERVERCMD.OutputDataReceived -= new DataReceivedEventHandler(p_OutputDataReceived);
+                                SERVERCMD.ErrorDataReceived -= new DataReceivedEventHandler(p_OutputDataReceived);
+                                outlog.Document.Blocks.Clear();
+                                ShowLog("检测到编码更改，正在重启服务器...", Brushes.Green);
+                                LaunchServer();
+                            }
+                        }
+                    }
+                    catch (Exception ex) { MessageBox.Show(ex.Message); }
+                }
+                else if (msg.Contains("默认游戏模式:"))
+                {
+                    gameTypeLab.Content = msg.Substring(msg.LastIndexOf("游戏模式:") + 5);
+                }
+                else if (msg.Contains("正在") && msg.Contains("上启动服务器"))
+                {
+                    try
+                    {
+                        serverIPLab.Content = msg.Substring(msg.IndexOf("正在 ") + 3, msg.IndexOf("上") - (msg.IndexOf("正在 ") + 3));
+                        if (serverIPLab.Content.ToString().Contains("*"))
+                        {
+                            localServerIPLab.Content = serverIPLab.Content.ToString().Replace("*", "127.0.0.1");
+                            if (localServerIPLab.Content.ToString().IndexOf(":25565") + 1 != 0)
+                            {
+                                localServerIPLab.Content = localServerIPLab.Content.ToString().Replace(":25565", "");
+                            }
+                        }
+                        else
+                        {
+                            localServerIPLab.Content = serverIPLab.Content;
+                            if (localServerIPLab.Content.ToString().Contains(":25565"))
+                            {
+                                localServerIPLab.Content = localServerIPLab.Content.ToString().Replace(":25565", "");
+                            }
+                        }
+                    }
+                    catch (Exception ex) { MessageBox.Show(ex.Message); }
+                }
+            }
+            catch
+            {
+                Growl.Info("开服器在获取服务器信息时出现错误！此问题不影响服务器运行，您可继续正常使用或将此问题报告给作者！");
             }
         }
         void GetPlayerInfoSys(string msg)
@@ -1229,6 +1129,206 @@ namespace MSL
             this.Dispatcher.Invoke(DispatcherPriority.Normal, (ThreadStart)delegate ()
             { if (onlineModeLab.Content.ToString() == "获取中") onlineModeLab.Content = "未知"; });
         }
+        void ProblemSystemShow(string msg)
+        {
+            if (getServerInfoLine <= 50)
+            {
+                getServerInfoLine++;
+                if (msg.Contains("UnsupportedClassVersionError"))
+                {
+                    foundProblems += "*不支持的Class版本：您的Java版本可能太低！\n";
+                    int a = int.Parse(msg.Substring(msg.IndexOf("(class file version ") + 20, 2));
+                    switch (a)
+                    {
+                        case 52:
+                            foundProblems += "请使用Java8或以上版本！\n";
+                            break;
+                        case 53:
+                            foundProblems += "请使用Java9或以上版本！\n";
+                            break;
+                        case 54:
+                            foundProblems += "请使用Java10或以上版本！\n";
+                            break;
+                        case 55:
+                            foundProblems += "请使用Java11或以上版本！\n";
+                            break;
+                        case 56:
+                            foundProblems += "请使用Java12或以上版本！\n";
+                            break;
+                        case 57:
+                            foundProblems += "请使用Java13或以上版本！\n";
+                            break;
+                        case 58:
+                            foundProblems += "请使用Java14或以上版本！\n";
+                            break;
+                        case 59:
+                            foundProblems += "请使用Java15或以上版本！\n";
+                            break;
+                        case 60:
+                            foundProblems += "请使用Java16或以上版本！\n";
+                            break;
+                        case 61:
+                            foundProblems += "请使用Java17或以上版本！\n";
+                            break;
+                        case 62:
+                            foundProblems += "请使用Java18或以上版本！\n";
+                            break;
+                        case 63:
+                            foundProblems += "请使用Java19或以上版本！\n";
+                            break;
+                        case 64:
+                            foundProblems += "请使用Java20或以上版本！\n";
+                            break;
+                    }
+                }
+                else if (msg.Contains("Unsupported Java detected"))
+                {
+                    foundProblems += "*不匹配的Java版本：\n";
+                    foundProblems += "请使用" + msg.Substring(msg.IndexOf("Only up to ") + 11, 7) + "！\n";
+                }
+                else if (msg.Contains("requires running the server with"))
+                {
+                    foundProblems += "*不匹配的Java版本：\n";
+                    foundProblems += "请使用" + msg.Substring(msg.IndexOf("Java"), 7) + "！\n";
+                }
+                else if (msg.Contains("OutOfMemoryError"))
+                {
+                    foundProblems += "*服务器内存分配过低或过高！\n";
+                }
+                else if (msg.Contains("Invalid maximum heap size"))
+                {
+                    foundProblems += "*服务器最大内存分配有误！\n" + msg + "\n";
+                }
+                else if (msg.Contains("Unrecognized VM option"))
+                {
+                    foundProblems += "*服务器JVM参数有误！请前往设置界面进行查看！\n错误的参数为：" + msg.Substring(msg.IndexOf("'") + 1, msg.Length - 3 - msg.IndexOf(" '")) + "\n";
+                }
+                else if (msg.Contains("There is insufficient memory for the Java Runtime Environment to continue"))
+                {
+                    foundProblems += "*JVM内存分配不足，请尝试增加系统的虚拟内存（不是内存条！具体方法请自行上网查找）！\n";
+                }
+                else if (msg.Contains("进程无法访问"))
+                {
+                    if (foundProblems==null||!foundProblems.Contains("*文件被占用，您的服务器可能多开，可尝试重启电脑解决！\n"))
+                    {
+                        foundProblems += "*文件被占用，您的服务器可能多开，可尝试重启电脑解决！\n";
+                    }
+                }
+                else if (msg.Contains("FAILED TO BIND TO PORT"))
+                {
+                    foundProblems += "*端口被占用，您的服务器可能多开，可尝试重启电脑解决！\n";
+                }
+                else if (msg.Contains("Unable to access jarfile"))
+                {
+                    foundProblems += "*无法访问JAR文件！您的服务端可能已损坏或路径中含有中文或其他特殊字符,请及时修改！\n";
+                }
+                else if (msg.Contains("加载 Java 代理时出错"))
+                {
+                    foundProblems += "*无法访问JAR文件！您的服务端可能已损坏或路径中含有中文或其他特殊字符,请及时修改！\n";
+                }
+                else if (msg.Contains("ArraylndexOutOfBoundsException"))
+                {
+                    foundProblems += "*开启服务器时发生数组越界错误，请尝试更换服务端再试！\n";
+                }
+                else if (msg.Contains("ClassCastException"))
+                {
+                    foundProblems += "*开启服务器时发生类转换异常，请检查Java版本是否匹配，或者让开服器为您下载Java环境（设置界面更改）！\n";
+                }
+                else if (msg.Contains("could not open") && msg.Contains("jvm.cfg"))
+                {
+                    foundProblems += "*Java异常，请检查Java环境是否正常，或者让开服器为您下载Java环境（设置界面更改）！\n";
+                }
+                else if (msg.Contains("Failed to download vanilla jar"))
+                {
+                    foundProblems += "*下载原版核心文件失败，您可尝试使用代理或更换服务端为Spigot端！\n";
+                }
+                else if (msg.Contains("Exception in thread \"main\""))
+                {
+                    foundProblems += "*疑似服务端核心Main方法报错，您可尝试更换服务端或更换Java再试！\n";
+                }
+            }
+            if (msg.Contains("Could not load") && msg.Contains("plugin"))
+            {
+                foundProblems += "*无法加载插件！\n";
+                foundProblems += "插件名称：" + msg.Substring(msg.IndexOf("Could not load '") + 16, msg.IndexOf("' ") - (msg.IndexOf("Could not load '") + 16)) + "\n";
+            }
+            else if (msg.Contains("Error loading plugin"))
+            {
+                foundProblems += "*无法加载插件！\n";
+                foundProblems += "插件名称：" + msg.Substring(msg.IndexOf(" '") + 2, msg.IndexOf("' ") - (msg.IndexOf(" '") + 2)) + "\n";
+            }
+            else if (msg.Contains("Error occurred while enabling "))
+            {
+                foundProblems += "*在启用 " + msg.Substring(msg.IndexOf("enabling ") + 9, msg.IndexOf(" (") - (msg.IndexOf("enabling ") + 9)) + " 时发生了错误\n"; ;
+            }
+            else if (msg.Contains("Encountered an unexpected exception"))
+            {
+                foundProblems += "*服务器出现意外崩溃，可能是由于模组冲突，请检查您的模组列表（如果使用的是整合包，请使用整合包制作方提供的Server专用包开服）\n";
+            }
+            else if (msg.Contains("Mod")&&msg.Contains("requires") &&msg.Contains("or above"))
+            {
+                string _msg=msg;
+                if (msg.Contains("&"))
+                {
+                    _msg = "";
+                    string[] splitMsg = msg.Split('&');
+                    foreach (var everyMsg in splitMsg)
+                    {
+                        if (everyMsg == string.Empty)
+                        {
+                            continue;
+                        }
+                        string text = everyMsg.Substring(1);
+                        _msg += text;
+                    }
+                }
+                else if (msg.Contains("§"))
+                {
+                    _msg = "";
+                    string[] splitMsg = msg.Split('§');
+                    foreach (var everyMsg in splitMsg)
+                    {
+                        if (everyMsg == string.Empty)
+                        {
+                            continue;
+                        }
+                        string text = everyMsg.Substring(1);
+                        _msg += text;
+                    }
+                }
+                else if (msg.Contains("\x1B"))
+                {
+                    _msg = "";
+                    string[] splitMsg = msg.Split('\x1B');
+                    foreach (var everyMsg in splitMsg)
+                    {
+                        if (everyMsg == string.Empty)
+                        {
+                            continue;
+                        }
+                        string text = everyMsg.Substring(everyMsg.IndexOf("m") + 1);
+                        _msg += text;
+                    }
+                }
+                string modNamePattern = @"Mod (\w+) requires";
+                string preModPattern = @"requires (\w+ \d+\.\d+\.\d+)";
+
+                Match modNameMatch = Regex.Match(_msg, modNamePattern);
+                Match preModMatch = Regex.Match(_msg, preModPattern);
+
+                if (modNameMatch.Success && preModMatch.Success)
+                {
+                    string modName = modNameMatch.Groups[1].Value;
+                    string preMod = preModMatch.Groups[1].Value;
+
+                    if (foundProblems == null || !foundProblems.Contains("*" + modName + " 模组出现问题！该模组需要 " + preMod + " ！\n"))
+                    {
+                        foundProblems += "*" + modName + " 模组出现问题！该模组需要 " + preMod + " ！\n";
+                    }
+                }
+            }
+        }
+        
         void timer1_Tick(object sender, EventArgs e)
         {
             if (SERVERCMD.HasExited == true)

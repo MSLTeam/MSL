@@ -123,7 +123,7 @@
                         </Grid>
                     </Grid>
                 </TabItem>
-                <TabItem Header="服务器输出" Background="Transparent">
+                <TabItem Header="服务器控制台" Background="Transparent">
                     <Grid>
                         <RichTextBox x:Name="outlog" Background="{DynamicResource BorderBackground}" ContextMenu="{DynamicResource UIContextMenu}" IsReadOnly="True" Block.LineHeight="1" Margin="10,10,10,47" FontSize="12" VerticalScrollBarVisibility="Visible">
                             <FlowDocument>
