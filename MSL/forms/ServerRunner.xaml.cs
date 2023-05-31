@@ -706,95 +706,74 @@ namespace MSL
             {
                 return;
             }
-            if (getServerInfoLine <= 50)
+            if (getServerInfoLine <= 100)
             {
-                getServerInfoLine++;
-                if (getServerInfoLine == 50)
+                GetServerInfoSys(msg);
+            }
+            if (msg.StartsWith("["))
+            {
+                string loghead=msg.Substring(0, msg.IndexOf("]"));
+                if (loghead.Contains("INFO"))
                 {
-                    if (serverVersionLab.Content.ToString() == "获取中")
+                    ShowLog("[" + DateTime.Now.ToString("T") + " 信息]" + msg.Substring(msg.IndexOf("]") + 1), Brushes.Green);
+                    //服务器启动成功和关闭时的提示
+                    if (msg.Contains("Done") && msg.Contains("For help"))
                     {
-                        if (!File.Exists(Rserverbase + "\\eula.txt"))
+                        ShowLog("已成功开启服务器！你可以输入stop来关闭服务器！\r\n服务器本地IP通常为:127.0.0.1，想要远程进入服务器，需要开通公网IP或使用内网映射，详情查看开服器的内网映射界面。", Brushes.Green);
+                        Growl.Success("已成功开启服务器！");
+                        serverStateLab.Content = "运行中(已开服)";
+                        Thread thread = new Thread(CheckOnlineMode);
+                        thread.Start();
+                    }
+                    else if (msg.Contains("Stopping server"))
+                    {
+                        ShowLog("正在关闭服务器！", Brushes.Green);
+                    }
+                    else if (msg.Contains("加载完成") && msg.Contains("如需帮助"))
+                    {
+                        ShowLog("已成功开启服务器！你可以输入stop来关闭服务器！\r\n服务器本地IP通常为:127.0.0.1，想要远程进入服务器，需要开通公网IP或使用内网映射，详情参照开服器的内网映射界面。", Brushes.Green);
+                        Growl.Success("已成功开启服务器！");
+                        serverStateLab.Content = "运行中(已开服)";
+                        Thread thread = new Thread(CheckOnlineMode);
+                        thread.Start();
+                    }
+                    //玩家进服是否记录
+                    if (getPlayerInfo == true)
+                    {
+                        GetPlayerInfoSys(msg);
+                    }
+                }
+                else if (loghead.Contains("WARN"))
+                {
+                    if (msg.Contains("Advanced terminal features are not available in this environment"))
+                    {
+                        return;
+                    }
+                    else
+                    {
+                        ShowLog("[" + DateTime.Now.ToString("T") + " 警告]" + msg.Substring(msg.IndexOf("]") + 1), Brushes.Orange);
+                        if (msg.Contains("FAILED TO BIND TO PORT"))
                         {
-                            DialogShow.ShowMsg(this, "该服务端可能在下载依赖文件，请耐心等待！\n将为您跳转至控制台界面，开服过程中部分操作需要您手动完成！\n(注：Mohist端接受EULA条款的方式是在控制台输入true，在接受前请务必前往该网站仔细阅读条款内容：https://account.mojang.com/documents/minecraft_eula)", "提示");
-                            TabCtrl.SelectedIndex = 1;
+                            ShowLog("警告：由于端口占用，服务器已自动关闭！请检查您的服务器是否多开或者有其他软件占用端口！\r\n解决方法：您可尝试通过重启电脑解决！", Brushes.Red);
                         }
-                        serverVersionLab.Content = "未知";
-                        Growl.Info("开服器未获取到服务器版本，因此无法根据版本自动切换相应的编码，若服务器出现乱码情况，请前往“更多功能”界面手动切换编码（优先更改输入编码）：1.12以下版本请使用ANSI，1.12及以上版本请使用UTF8");
-                    }
-                    if (gameTypeLab.Content.ToString() == "获取中")
-                    {
-                        gameTypeLab.Content = "未知";
-                    }
-                    if (serverIPLab.Content.ToString() == "获取中")
-                    {
-                        serverIPLab.Content = "未知";
-                    }
-                    if (localServerIPLab.Content.ToString() == "获取中")
-                    {
-                        localServerIPLab.Content = "未知";
+                        else if (msg.Contains("Unable to access jarfile"))
+                        {
+                            ShowLog("警告：无法访问JAR文件！您的服务端可能已损坏或路径中含有中文或其他特殊字符,请及时修改！", Brushes.Red);
+                        }
+                        else if (msg.Contains("加载 Java 代理时出错"))
+                        {
+                            ShowLog("警告：无法访问JAR文件！您的服务端可能已损坏或路径中含有中文或其他特殊字符,请及时修改！", Brushes.Red);
+                        }
                     }
                 }
-            }
-            if (msg.Contains("INFO"))
-            {
-                ShowLog("[" + DateTime.Now.ToString("T") + " 信息]" + msg.Substring(msg.IndexOf("INFO") + 5), Brushes.Green);
-                if (getServerInfoLine < 50)
+                else if (loghead.Contains("ERROR"))
                 {
-                    GetServerInfoSys(msg);
-                }
-                //服务器启动成功和关闭时的提示
-                if (msg.Contains("Done") && msg.Contains("For help"))
-                {
-                    ShowLog("已成功开启服务器！你可以输入stop来关闭服务器！\r\n服务器本地IP通常为:127.0.0.1，想要远程进入服务器，需要开通公网IP或使用内网映射，详情查看开服器的内网映射界面。", Brushes.Green);
-                    Growl.Success("已成功开启服务器！");
-                    serverStateLab.Content = "运行中(已开服)";
-                    Thread thread = new Thread(CheckOnlineMode);
-                    thread.Start();
-                }
-                else if (msg.Contains("Stopping server"))
-                {
-                    ShowLog("正在关闭服务器！", Brushes.Green);
-                }
-                else if (msg.Contains("加载完成") && msg.Contains("如需帮助"))
-                {
-                    ShowLog("已成功开启服务器！你可以输入stop来关闭服务器！\r\n服务器本地IP通常为:127.0.0.1，想要远程进入服务器，需要开通公网IP或使用内网映射，详情参照开服器的内网映射界面。", Brushes.Green);
-                    Growl.Success("已成功开启服务器！");
-                    serverStateLab.Content = "运行中(已开服)";
-                    Thread thread = new Thread(CheckOnlineMode);
-                    thread.Start();
-                }
-                //玩家进服是否记录
-                if (getPlayerInfo == true)
-                {
-                    GetPlayerInfoSys(msg);
-                }
-            }
-            else if (msg.Contains("WARN"))
-            {
-                if (msg.Contains("Advanced terminal features are not available in this environment"))
-                {
-                    return;
+                    ShowLog("[" + DateTime.Now.ToString("T") + " 错误]" + msg.Substring(msg.IndexOf("]") + 1), Brushes.Red);
                 }
                 else
                 {
-                    ShowLog("[" + DateTime.Now.ToString("T") + " 警告]" + msg.Substring(msg.IndexOf("WARN") + 5), Brushes.Orange);
-                    if (msg.Contains("FAILED TO BIND TO PORT"))
-                    {
-                        ShowLog("警告：由于端口占用，服务器已自动关闭！请检查您的服务器是否多开或者有其他软件占用端口！\r\n解决方法：您可尝试通过重启电脑解决！", Brushes.Red);
-                    }
-                    else if (msg.Contains("Unable to access jarfile"))
-                    {
-                        ShowLog("警告：无法访问JAR文件！您的服务端可能已损坏或路径中含有中文或其他特殊字符,请及时修改！", Brushes.Red);
-                    }
-                    else if (msg.Contains("加载 Java 代理时出错"))
-                    {
-                        ShowLog("警告：无法访问JAR文件！您的服务端可能已损坏或路径中含有中文或其他特殊字符,请及时修改！", Brushes.Red);
-                    }
+                    ShowLog(msg, Brushes.Green);
                 }
-            }
-            else if (msg.Contains("ERROR"))
-            {
-                ShowLog("[" + DateTime.Now.ToString("T") + " 错误]" + msg.Substring(msg.IndexOf("ERROR") + 6), Brushes.Red);
             }
             else
             {
@@ -803,11 +782,45 @@ namespace MSL
         }
         void GetServerInfoSys(string msg)
         {
+            if(msg.Contains("下载")||msg.Contains("Download")|| msg.Contains("download"))
+            {
+                getServerInfoLine--;
+
+                if (getServerInfoLine==-5&&!File.Exists(Rserverbase + "\\eula.txt"))
+                {
+                    DialogShow.ShowMsg(this, "该服务端可能在下载依赖文件，请耐心等待！\n\n将为您跳转至控制台界面，开服过程中部分操作需要您手动完成！\n(注：Mohist端接受EULA条款的方式是在控制台输入true，在接受前请务必前往该网站仔细阅读条款内容：https://account.mojang.com/documents/minecraft_eula)", "提示");
+                    TabCtrl.SelectedIndex = 1;
+                }
+            }
+            else
+            {
+                getServerInfoLine++;
+            }
+            if (getServerInfoLine == 100)
+            {
+                if (serverVersionLab.Content.ToString() == "获取中")
+                {
+                    serverVersionLab.Content = "未知";
+                    Growl.Info("开服器未获取到服务器版本，因此无法根据版本自动切换相应的编码，若服务器出现乱码情况，请前往“更多功能”界面手动切换编码（优先更改输入编码）：1.12以下版本请使用ANSI，1.12及以上版本请使用UTF8");
+                }
+                if (gameTypeLab.Content.ToString() == "获取中")
+                {
+                    gameTypeLab.Content = "未知";
+                }
+                if (serverIPLab.Content.ToString() == "获取中")
+                {
+                    serverIPLab.Content = "未知";
+                }
+                if (localServerIPLab.Content.ToString() == "获取中")
+                {
+                    localServerIPLab.Content = "未知";
+                }
+            }
             try
             {
                 if (msg.Contains("You need to agree to the EULA in order to run the server"))
                 {
-                    getServerInfoLine = -10;
+                    //getServerInfoLine = -10;
                     DialogShow.ShowMsg(this, "检测到您没有接受Mojang的EULA条款！是否阅读并接受EULA条款并继续开服？", "提示", true, "取消");
                     if (MessageDialog._dialogReturn == true)
                     {
@@ -844,71 +857,11 @@ namespace MSL
                         }
                         Process.Start("https://account.mojang.com/documents/minecraft_eula");
                     }
-
                 }
                 else if (msg.Contains("Starting minecraft server version"))
                 {
                     serverVersionLab.Content = msg.Substring(msg.LastIndexOf(" ") + 1);
-                    if (!RserverJVMcmd.Contains("-Dfile.encoding=UTF-8"))
-                    {
-                        string versionString = serverVersionLab.Content.ToString();
-                        string[] components = versionString.Split('.');
-                        if (components.Length >= 3 && int.TryParse(components[2], out int _))
-                        {
-                            versionString = $"{components[0]}.{components[1]}"; // remove the last component
-                        }
-
-                        Version version = new Version(versionString);
-                        Version targetVersion = new Version("1.12");
-
-                        if (version >= targetVersion)
-                        {
-                            // version is greater than targetVersion,or equal to targetVersion
-                            if (inputCmdEncoding.Content.ToString() == "输入编码:自动识别")
-                            {
-                                inputCmdEncoding.Content = "输入编码:UTF8";
-                            }
-                            if (outputCmdEncoding.Content.ToString() == "输出编码:自动识别")
-                            {
-                                outputCmdEncoding.Content = "输出编码:ANSI";
-                            }
-                        }
-                        else if (version < targetVersion)
-                        {
-                            // version is less than targetVersion
-                            if (inputCmdEncoding.Content.ToString() == "输入编码:自动识别")
-                            {
-                                inputCmdEncoding.Content = "输入编码:ANSI";
-                            }
-                            if (outputCmdEncoding.Content.ToString() == "输出编码:自动识别")
-                            {
-                                outputCmdEncoding.Content = "输出编码:ANSI";
-                            }
-                        }
-                    }
-                    else
-                    {
-
-                        if (inputCmdEncoding.Content.ToString() == "输入编码:自动识别")
-                        {
-                            inputCmdEncoding.Content = "输入编码:UTF8";
-                        }
-                        if (outputCmdEncoding.Content.ToString() == "输出编码:自动识别")
-                        {
-                            outputCmdEncoding.Content = "输出编码:UTF8";
-                            if (!SERVERCMD.HasExited)
-                            {
-                                SERVERCMD.Kill();
-                            }
-                            SERVERCMD.CancelOutputRead();
-                            SERVERCMD.CancelErrorRead();
-                            SERVERCMD.OutputDataReceived -= new DataReceivedEventHandler(p_OutputDataReceived);
-                            SERVERCMD.ErrorDataReceived -= new DataReceivedEventHandler(p_OutputDataReceived);
-                            outlog.Document.Blocks.Clear();
-                            ShowLog("检测到编码更改，正在重启服务器...", Brushes.Green);
-                            LaunchServer();
-                        }
-                    }
+                    ChangeEncoding();
                 }
                 else if (msg.Contains("Default game type:"))
                 {
@@ -917,89 +870,17 @@ namespace MSL
                 else if (msg.Contains("Starting Minecraft server on"))
                 {
                     serverIPLab.Content = msg.Substring(msg.LastIndexOf(" ") + 1);
-                    if (serverIPLab.Content.ToString().Contains("*"))
-                    {
-                        localServerIPLab.Content = serverIPLab.Content.ToString().Replace("*", "127.0.0.1");
-                        if (localServerIPLab.Content.ToString().IndexOf(":25565") + 1 != 0)
-                        {
-                            localServerIPLab.Content = localServerIPLab.Content.ToString().Replace(":25565", "");
-                        }
-                    }
-                    else
-                    {
-                        localServerIPLab.Content = serverIPLab.Content;
-                        if (localServerIPLab.Content.ToString().Contains(":25565"))
-                        {
-                            localServerIPLab.Content = localServerIPLab.Content.ToString().Replace(":25565", "");
-                        }
-                    }
+                    ChangeServerIP();
                 }
                 else if (msg.Contains("正在启动") && msg.Contains("的Minecraft服务端"))
                 {
-                    try
-                    {
-                        serverVersionLab.Content = msg.Substring(msg.IndexOf("正在启动") + 4, msg.IndexOf("的") - (msg.IndexOf("正在启动") + 4));
-                        if (!RserverJVMcmd.Contains("-Dfile.encoding=UTF-8"))
-                        {
-                            string versionString = serverVersionLab.Content.ToString();
-                            string[] components = versionString.Split('.');
-                            if (components.Length >= 3 && int.TryParse(components[2], out int _))
-                            {
-                                versionString = $"{components[0]}.{components[1]}"; // remove the last component
-                            }
-
-                            Version version = new Version(versionString);
-                            Version targetVersion = new Version("1.12");
-
-                            if (version >= targetVersion)
-                            {
-                                // version is greater than targetVersion,or equal to targetVersion
-                                if (inputCmdEncoding.Content.ToString() == "输入编码:自动识别")
-                                {
-                                    inputCmdEncoding.Content = "输入编码:UTF8";
-                                }
-                                if (outputCmdEncoding.Content.ToString() == "输出编码:自动识别")
-                                {
-                                    outputCmdEncoding.Content = "输出编码:ANSI";
-                                }
-                            }
-                            else if (version < targetVersion)
-                            {
-                                // version is less than targetVersion
-                                if (inputCmdEncoding.Content.ToString() == "输入编码:自动识别")
-                                {
-                                    inputCmdEncoding.Content = "输入编码:ANSI";
-                                }
-                                if (outputCmdEncoding.Content.ToString() == "输出编码:自动识别")
-                                {
-                                    outputCmdEncoding.Content = "输出编码:ANSI";
-                                }
-                            }
-                        }
-                        else
-                        {
-                            if (inputCmdEncoding.Content.ToString() == "输入编码:自动识别")
-                            {
-                                inputCmdEncoding.Content = "输入编码:UTF8";
-                            }
-                            if (outputCmdEncoding.Content.ToString() == "输出编码:自动识别")
-                            {
-                                outputCmdEncoding.Content = "输出编码:UTF8";
-                                if (!SERVERCMD.HasExited)
-                                {
-                                    SERVERCMD.Kill();
-                                }
-                                SERVERCMD.CancelOutputRead();
-                                SERVERCMD.CancelErrorRead();
-                                SERVERCMD.OutputDataReceived -= new DataReceivedEventHandler(p_OutputDataReceived);
-                                SERVERCMD.ErrorDataReceived -= new DataReceivedEventHandler(p_OutputDataReceived);
-                                outlog.Document.Blocks.Clear();
-                                ShowLog("检测到编码更改，正在重启服务器...", Brushes.Green);
-                                LaunchServer();
-                            }
-                        }
-                    }
-                    catch (Exception ex) { MessageBox.Show(ex.Message); }
+                    serverVersionLab.Content = msg.Substring(msg.IndexOf("正在启动") + 4, msg.IndexOf("的") - (msg.IndexOf("正在启动") + 4));
+                    ChangeEncoding();
+                }
+                else if (msg.Contains("正在启动Minecraft服务器") && msg.Contains("版本"))
+                {
+                    serverVersionLab.Content = msg.Substring(msg.IndexOf("版本") + 2);
+                    ChangeEncoding();
                 }
                 else if (msg.Contains("默认游戏模式:"))
                 {
@@ -1007,32 +888,94 @@ namespace MSL
                 }
                 else if (msg.Contains("正在") && msg.Contains("上启动服务器"))
                 {
-                    try
-                    {
-                        serverIPLab.Content = msg.Substring(msg.IndexOf("正在 ") + 3, msg.IndexOf("上") - (msg.IndexOf("正在 ") + 3));
-                        if (serverIPLab.Content.ToString().Contains("*"))
-                        {
-                            localServerIPLab.Content = serverIPLab.Content.ToString().Replace("*", "127.0.0.1");
-                            if (localServerIPLab.Content.ToString().IndexOf(":25565") + 1 != 0)
-                            {
-                                localServerIPLab.Content = localServerIPLab.Content.ToString().Replace(":25565", "");
-                            }
-                        }
-                        else
-                        {
-                            localServerIPLab.Content = serverIPLab.Content;
-                            if (localServerIPLab.Content.ToString().Contains(":25565"))
-                            {
-                                localServerIPLab.Content = localServerIPLab.Content.ToString().Replace(":25565", "");
-                            }
-                        }
-                    }
-                    catch (Exception ex) { MessageBox.Show(ex.Message); }
+                    serverIPLab.Content = msg.Substring(msg.IndexOf("正在 ") + 3, msg.IndexOf("上") - (msg.IndexOf("正在 ") + 3));
+                    ChangeServerIP();
                 }
             }
             catch
             {
                 Growl.Info("开服器在获取服务器信息时出现错误！此问题不影响服务器运行，您可继续正常使用或将此问题报告给作者！");
+            }
+        }
+        void ChangeEncoding()
+        {
+            if (!RserverJVMcmd.Contains("-Dfile.encoding=UTF-8"))
+            {
+                string versionString = serverVersionLab.Content.ToString();
+                string[] components = versionString.Split('.');
+                if (components.Length >= 3 && int.TryParse(components[2], out int _))
+                {
+                    versionString = $"{components[0]}.{components[1]}"; // remove the last component
+                }
+
+                Version version = new Version(versionString);
+                Version targetVersion = new Version("1.12");
+
+                if (version >= targetVersion)
+                {
+                    // version is greater than targetVersion,or equal to targetVersion
+                    if (inputCmdEncoding.Content.ToString() == "输入编码:自动识别")
+                    {
+                        inputCmdEncoding.Content = "输入编码:UTF8";
+                    }
+                    if (outputCmdEncoding.Content.ToString() == "输出编码:自动识别")
+                    {
+                        outputCmdEncoding.Content = "输出编码:ANSI";
+                    }
+                }
+                else if (version < targetVersion)
+                {
+                    // version is less than targetVersion
+                    if (inputCmdEncoding.Content.ToString() == "输入编码:自动识别")
+                    {
+                        inputCmdEncoding.Content = "输入编码:ANSI";
+                    }
+                    if (outputCmdEncoding.Content.ToString() == "输出编码:自动识别")
+                    {
+                        outputCmdEncoding.Content = "输出编码:ANSI";
+                    }
+                }
+            }
+            else
+            {
+                if (inputCmdEncoding.Content.ToString() == "输入编码:自动识别")
+                {
+                    inputCmdEncoding.Content = "输入编码:UTF8";
+                }
+                if (outputCmdEncoding.Content.ToString() == "输出编码:自动识别")
+                {
+                    outputCmdEncoding.Content = "输出编码:UTF8";
+                    if (!SERVERCMD.HasExited)
+                    {
+                        SERVERCMD.Kill();
+                    }
+                    SERVERCMD.CancelOutputRead();
+                    SERVERCMD.CancelErrorRead();
+                    SERVERCMD.OutputDataReceived -= new DataReceivedEventHandler(p_OutputDataReceived);
+                    SERVERCMD.ErrorDataReceived -= new DataReceivedEventHandler(p_OutputDataReceived);
+                    outlog.Document.Blocks.Clear();
+                    ShowLog("检测到编码更改，正在重启服务器...", Brushes.Green);
+                    LaunchServer();
+                }
+            }
+        }
+        void ChangeServerIP()
+        {
+            if (serverIPLab.Content.ToString().Contains("*"))
+            {
+                localServerIPLab.Content = serverIPLab.Content.ToString().Replace("*", "127.0.0.1");
+                if (localServerIPLab.Content.ToString().IndexOf(":25565") + 1 != 0)
+                {
+                    localServerIPLab.Content = localServerIPLab.Content.ToString().Replace(":25565", "");
+                }
+            }
+            else
+            {
+                localServerIPLab.Content = serverIPLab.Content;
+                if (localServerIPLab.Content.ToString().Contains(":25565"))
+                {
+                    localServerIPLab.Content = localServerIPLab.Content.ToString().Replace(":25565", "");
+                }
             }
         }
         void GetPlayerInfoSys(string msg)
@@ -1265,7 +1208,7 @@ namespace MSL
             {
                 foundProblems += "*服务器出现意外崩溃，可能是由于模组冲突，请检查您的模组列表（如果使用的是整合包，请使用整合包制作方提供的Server专用包开服）\n";
             }
-            else if (msg.Contains("Mod")&&msg.Contains("requires") &&msg.Contains("or above"))
+            else if (msg.Contains("Mod")&&msg.Contains("requires"))
             {
                 string _msg=msg;
                 if (msg.Contains("&"))
@@ -1321,9 +1264,19 @@ namespace MSL
                     string modName = modNameMatch.Groups[1].Value;
                     string preMod = preModMatch.Groups[1].Value;
 
-                    if (foundProblems == null || !foundProblems.Contains("*" + modName + " 模组出现问题！该模组需要 " + preMod + " ！\n"))
+                    if(msg.Contains("or above"))
                     {
-                        foundProblems += "*" + modName + " 模组出现问题！该模组需要 " + preMod + " ！\n";
+                        if (foundProblems == null || !foundProblems.Contains("*" + modName + " 模组出现问题！该模组需要 " + preMod + " 或以上版本！\n"))
+                        {
+                            foundProblems += "*" + modName + " 模组出现问题！该模组需要 " + preMod + " 或以上版本！\n";
+                        }
+                    }
+                    else
+                    {
+                        if (foundProblems == null || !foundProblems.Contains("*" + modName + " 模组出现问题！该模组需要 " + preMod + " ！\n"))
+                        {
+                            foundProblems += "*" + modName + " 模组出现问题！该模组需要 " + preMod + " ！\n";
+                        }
                     }
                 }
             }
@@ -1994,8 +1947,8 @@ namespace MSL
                     //modListBox.Width = 430;
                     //pluginListBox.Margin = new Thickness(10, 55, 0, 0);
                     //modListBox.Margin = new Thickness(450, 55, 0, 0);
-                    pluginlistPluginName.Width = 250;
-                    modlistModName.Width = 250;
+                    pluginlistPluginName.Width = 200;
+                    modlistModName.Width = 200;
                     DirectoryInfo directoryInfo1 = new DirectoryInfo(Rserverbase + @"\mods");
                     FileInfo[] file1 = directoryInfo1.GetFiles("*.*");
                     foreach (FileInfo f1 in file1)
@@ -2020,6 +1973,7 @@ namespace MSL
                     modListBox.Visibility = Visibility.Hidden;
                     PGrid.Width = new GridLength(1, GridUnitType.Star);
                     MGrid.Width = new GridLength(0);
+                    pluginlistPluginName.Width = 400;
                     //pluginListBox.Width = 880;
                     //pluginListBox.Margin = new Thickness(10, 55, 0, 0);
                     //pluginlistPluginName.Width = 500;
@@ -2037,6 +1991,7 @@ namespace MSL
                     modListBox.Visibility = Visibility.Visible;
                     PGrid.Width = new GridLength(0);
                     MGrid.Width = new GridLength(1, GridUnitType.Star);
+                    modlistModName.Width = 400;
                     //modListBox.Width = 880;
                     //modListBox.Margin = new Thickness(10, 55, 0, 0);
                     modslist.Items.Clear();
@@ -2313,11 +2268,12 @@ namespace MSL
                 bAse.Text = Rserverbase;
                 jVMcmd.Text = RserverJVMcmd;
                 jAva.Text = Rserverjava;
+                
                 if (jAva.Text == "Java")
                 {
                     useJvpath.IsChecked = true;
                 }
-                if (jAva.Text == AppDomain.CurrentDomain.BaseDirectory + @"MSL\Java8\bin\java.exe")
+                else if (jAva.Text == AppDomain.CurrentDomain.BaseDirectory + @"MSL\Java8\bin\java.exe")
                 {
                     useDownJv.IsChecked = true;
                     selectJava.SelectedIndex = 0;
@@ -2527,6 +2483,14 @@ namespace MSL
                 Rservername = nAme.Text;
                 Title = Rservername;
                 Rserverserver = server.Text;
+                if (Rserverbase != bAse.Text)
+                {
+                    bool dialog = DialogShow.ShowMsg(this, "检测到您更改了服务器目录，是否将当前的服务器目录移动至新的目录？", "警告", true, "取消");
+                    if (dialog)
+                    {
+                        MoveFolder(Rserverbase, bAse.Text);
+                    }
+                }
                 Rserverbase = bAse.Text;
                 RserverJVMcmd = jVMcmd.Text;
                 Rserverjava = jAva.Text;
