@@ -82,7 +82,7 @@ namespace MSL
             //Get Server's Information
             JObject jsonObject = JObject.Parse(File.ReadAllText(AppDomain.CurrentDomain.BaseDirectory + @"MSL\ServerList.json", Encoding.UTF8));
             JObject _json = (JObject)jsonObject[RserverId];
-            if (_json["core"].ToString().IndexOf("Bungeecord") + 1 != 0 || _json["core"].ToString().IndexOf("bungeecord") + 1 != 0)//is the server Bungeecord,it will send a message and close window
+            if (_json["core"].ToString().Contains("Bungeecord")|| _json["core"].ToString().Contains("bungeecord"))//is the server Bungeecord,it will send a message and close window
             {
                 MessageBox.Show("开服器暂不支持Bungeecord服务端的运行，请右键点击“用命令行开服”选项来开服！");
                 Close();
@@ -706,22 +706,32 @@ namespace MSL
             {
                 return;
             }
-            if (getServerInfoLine <= 100)
+            if (getServerInfoLine < 100)
             {
                 GetServerInfoSys(msg);
             }
             if (msg.StartsWith("["))
             {
-                string loghead=msg.Substring(0, msg.IndexOf("]"));
-                if (loghead.Contains("INFO"))
+                //string loghead=msg.Substring(0, msg.IndexOf("]"));
+                if (msg.Contains("INFO]"))
                 {
-                    ShowLog("[" + DateTime.Now.ToString("T") + " 信息]" + msg.Substring(msg.IndexOf("]") + 1), Brushes.Green);
+                    ShowLog("[" + DateTime.Now.ToString("T") + " 信息]" + msg.Substring(msg.IndexOf("INFO]") + 5), Brushes.Green);
                     //服务器启动成功和关闭时的提示
                     if (msg.Contains("Done") && msg.Contains("For help"))
                     {
+                        getServerInfoLine = 101;
                         ShowLog("已成功开启服务器！你可以输入stop来关闭服务器！\r\n服务器本地IP通常为:127.0.0.1，想要远程进入服务器，需要开通公网IP或使用内网映射，详情查看开服器的内网映射界面。", Brushes.Green);
                         Growl.Success("已成功开启服务器！");
-                        serverStateLab.Content = "运行中(已开服)";
+                        serverStateLab.Content = "已开服";
+                        Thread thread = new Thread(CheckOnlineMode);
+                        thread.Start();
+                    }
+                    else if (msg.Contains("加载完成") && msg.Contains("如需帮助"))
+                    {
+                        getServerInfoLine = 101;
+                        ShowLog("已成功开启服务器！你可以输入stop来关闭服务器！\r\n服务器本地IP通常为:127.0.0.1，想要远程进入服务器，需要开通公网IP或使用内网映射，详情参照开服器的内网映射界面。", Brushes.Green);
+                        Growl.Success("已成功开启服务器！");
+                        serverStateLab.Content = "已开服";
                         Thread thread = new Thread(CheckOnlineMode);
                         thread.Start();
                     }
@@ -729,21 +739,14 @@ namespace MSL
                     {
                         ShowLog("正在关闭服务器！", Brushes.Green);
                     }
-                    else if (msg.Contains("加载完成") && msg.Contains("如需帮助"))
-                    {
-                        ShowLog("已成功开启服务器！你可以输入stop来关闭服务器！\r\n服务器本地IP通常为:127.0.0.1，想要远程进入服务器，需要开通公网IP或使用内网映射，详情参照开服器的内网映射界面。", Brushes.Green);
-                        Growl.Success("已成功开启服务器！");
-                        serverStateLab.Content = "运行中(已开服)";
-                        Thread thread = new Thread(CheckOnlineMode);
-                        thread.Start();
-                    }
+                    
                     //玩家进服是否记录
                     if (getPlayerInfo == true)
                     {
                         GetPlayerInfoSys(msg);
                     }
                 }
-                else if (loghead.Contains("WARN"))
+                else if (msg.Contains("WARN]"))
                 {
                     if (msg.Contains("Advanced terminal features are not available in this environment"))
                     {
@@ -751,7 +754,7 @@ namespace MSL
                     }
                     else
                     {
-                        ShowLog("[" + DateTime.Now.ToString("T") + " 警告]" + msg.Substring(msg.IndexOf("]") + 1), Brushes.Orange);
+                        ShowLog("[" + DateTime.Now.ToString("T") + " 警告]" + msg.Substring(msg.IndexOf("WARN]") + 5), Brushes.Orange);
                         if (msg.Contains("FAILED TO BIND TO PORT"))
                         {
                             ShowLog("警告：由于端口占用，服务器已自动关闭！请检查您的服务器是否多开或者有其他软件占用端口！\r\n解决方法：您可尝试通过重启电脑解决！", Brushes.Red);
@@ -766,9 +769,9 @@ namespace MSL
                         }
                     }
                 }
-                else if (loghead.Contains("ERROR"))
+                else if (msg.Contains("ERROR]"))
                 {
-                    ShowLog("[" + DateTime.Now.ToString("T") + " 错误]" + msg.Substring(msg.IndexOf("]") + 1), Brushes.Red);
+                    ShowLog("[" + DateTime.Now.ToString("T") + " 错误]" + msg.Substring(msg.IndexOf("ERROR]") + 6), Brushes.Red);
                 }
                 else
                 {
@@ -964,18 +967,23 @@ namespace MSL
             if (serverIPLab.Content.ToString().Contains("*"))
             {
                 localServerIPLab.Content = serverIPLab.Content.ToString().Replace("*", "127.0.0.1");
-                if (localServerIPLab.Content.ToString().IndexOf(":25565") + 1 != 0)
+                if (localServerIPLab.Content.ToString().Contains(":25565"))
                 {
                     localServerIPLab.Content = localServerIPLab.Content.ToString().Replace(":25565", "");
+                    return;
                 }
+                localServerIPLab.FontSize = 12;
             }
             else
             {
+                serverIPLab.FontSize = 12;
                 localServerIPLab.Content = serverIPLab.Content;
                 if (localServerIPLab.Content.ToString().Contains(":25565"))
                 {
                     localServerIPLab.Content = localServerIPLab.Content.ToString().Replace(":25565", "");
+                    return;
                 }
+                localServerIPLab.FontSize = 12;
             }
         }
         void GetPlayerInfoSys(string msg)
@@ -1306,7 +1314,7 @@ namespace MSL
                 {
                     LaunchServer();
                 }
-                else if (getServerInfoLine <= 50 && getServerInfoLine >= 0)
+                else if (getServerInfoLine <= 100)
                 {
                     DialogShow.ShowMsg(this, "您的服务器疑似异常关闭，是否使用崩溃分析系统进行检测？", "提示", true, "取消");
                     if (MessageDialog._dialogReturn)
@@ -1634,6 +1642,7 @@ namespace MSL
             }
             else
             {
+                getServerInfoLine = 101;
                 Growl.Info("关服中……(双击按钮可强制关服)");
                 SERVERCMD.StandardInput.WriteLine("stop");
             }
@@ -1672,7 +1681,7 @@ namespace MSL
                 //outlog.Margin = new Thickness(10, 10, 10, 47);
                 getServerInfo = false;
                 systemInfoBtn.Content = "显示占用:关";
-                previewOutlog.Text = "预览功能已关闭，请前往服务器输出界面查看日志信息！";
+                previewOutlog.Text = "预览功能已关闭，请前往服务器控制台界面查看日志信息！";
             }
         }
 
@@ -1725,7 +1734,7 @@ namespace MSL
                     Growl.Error("出现错误！" + ex.Message);
                     this.Dispatcher.BeginInvoke(DispatcherPriority.SystemIdle, (ThreadStart)delegate ()
                     {
-                        previewOutlog.Text = "预览功能已关闭，请前往服务器输出界面查看日志信息！";
+                        previewOutlog.Text = "预览功能已关闭，请前往服务器控制台界面查看日志信息！";
                         systemInfoBtn.Content = "显示占用:关";
                     });
                     getServerInfo = false;

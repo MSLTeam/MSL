@@ -66,9 +66,9 @@
                                             <TextBlock Text="游戏模式" Margin="15,125,0,0" Foreground="{DynamicResource TextBlockBrush}" FontSize="16" />
                                             <Label x:Name="gameTypeLab" Content="获取中" HorizontalAlignment="Left" Height="32" Margin="100,120,0,0" FontSize="16" VerticalAlignment="Top" Width="120"/>
                                             <TextBlock Text="服务器IP" Margin="15,165,0,0" Foreground="{DynamicResource TextBlockBrush}" FontSize="16" />
-                                            <Label x:Name="serverIPLab" Content="获取中" HorizontalAlignment="Left" Height="32" Margin="100,160,0,0" FontSize="16" VerticalAlignment="Top" Width="120"/>
+                                            <Label x:Name="serverIPLab" Content="获取中" HorizontalAlignment="Left" Height="32" Margin="100,160,0,0" VerticalAlignment="Top" Width="120" FontSize="16"/>
                                             <TextBlock Text="本地进入IP" Margin="10,205,0,0" Foreground="{DynamicResource TextBlockBrush}" FontSize="16" />
-                                            <Label x:Name="localServerIPLab" Content="获取中" HorizontalAlignment="Left" Height="32" Margin="100,200,0,0" VerticalAlignment="Top" FontSize="16" Width="120"/>
+                                            <Label x:Name="localServerIPLab" Content="获取中" HorizontalAlignment="Left" Height="32" Margin="100,200,0,0" VerticalAlignment="Top" Width="120" FontSize="16"/>
                                             <TextBlock Text="远程进入IP" Margin="10,245,0,0" Foreground="{DynamicResource TextBlockBrush}" FontSize="16" />
                                             <Button x:Name="gotoFrpc" HorizontalAlignment="Left" Margin="100,240,0,0" VerticalAlignment="Top" Height="32" Content="点击查看" FontSize="16" Click="gotoFrpc_Click" Width="120"/>
                                         </Canvas>
