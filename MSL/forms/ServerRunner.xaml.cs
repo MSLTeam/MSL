@@ -8,6 +8,7 @@ using Newtonsoft.Json.Linq;
 using System;
 using System.Collections.Generic;
 using System.Diagnostics;
+using System.Globalization;
 using System.IO;
 using System.Linq;
 using System.Net;
@@ -191,7 +192,7 @@ namespace MSL
             }
             else
             {
-                LaunchServer();
+                LaunchServerOnLoad();
                 if (getServerInfo == false)
                 {
                     systemInfoBtn.Content = "显示占用:关";
@@ -229,7 +230,7 @@ namespace MSL
                     getServerInfo = false;
                     getPlayerInfo = false;
                     outlog.Document.Blocks.Clear();
-                    GC.Collect();
+                    //GC.Collect();
                 }
             }
             catch
@@ -238,7 +239,7 @@ namespace MSL
                 getServerInfo = false;
                 getPlayerInfo = false;
                 outlog.Document.Blocks.Clear();
-                GC.Collect();
+                //GC.Collect();
             }
         }
         void ShowWindowEvent()
@@ -388,10 +389,56 @@ namespace MSL
         /// <summary>
         /// ///////////这里是服务器输出
         /// </summary>
+        private async void LaunchServerOnLoad()
+        {
+            while (!IsLoaded)
+            {
+                Thread.Sleep(1000);
+            }
+            await this.Dispatcher.InvokeAsync(() =>
+            {
+                LaunchServer();
+            });
+        }
         private void LaunchServer()
         {
             try
             {
+                string path1 = Rserverbase + "\\eula.txt";
+                if (!File.Exists(path1) || (File.Exists(path1) && !File.ReadAllText(path1).Contains("eula=true")))
+                {
+
+                    bool dialog = DialogShow.ShowMsg(this, "开启Minecraft服务器需要接受Mojang的EULA，是否细阅读EULA条款（https://aka.ms/MinecraftEULA）并继续开服？", "提示", true, "取消");
+                    if (dialog == true)
+                    {
+                        Process.Start("https://aka.ms/MinecraftEULA");
+                        try
+                        {
+                            File.WriteAllText(path1,string.Empty);
+                            FileStream fs = new FileStream(path1, FileMode.Open, FileAccess.Read, FileShare.ReadWrite);
+                            StreamReader sr = new StreamReader(fs, Encoding.Default);
+                            
+                            StreamWriter streamWriter = new StreamWriter(path1);
+                            // 写入注释和日期
+                            streamWriter.WriteLine("#By changing the setting below to TRUE you are indicating your agreement to our EULA (https://aka.ms/MinecraftEULA).");
+                            streamWriter.WriteLine($"#{DateTime.Now.ToString("ddd MMM dd HH:mm:ss zzz yyyy", CultureInfo.InvariantCulture)}");
+
+                            // 写入eula=true
+                            streamWriter.WriteLine("eula=true");
+                            streamWriter.Flush();
+                            streamWriter.Close();
+                        }
+                        catch (Exception a)
+                        {
+                            MessageBox.Show("出现错误，请手动修改eula文件或重试:" + a, "错误", MessageBoxButton.OK, MessageBoxImage.Error);
+                        }
+                        //Process.Start("https://account.mojang.com/documents/minecraft_eula");
+                    }
+                    else
+                    {
+                        return;
+                    }
+                }
                 ChangeControlsState();
                 if (Rserverserver == "")
                 {
@@ -401,7 +448,7 @@ namespace MSL
                 {
                     StartServer(RserverJVM + " " + RserverJVMcmd + " -jar \"" + Rserverbase + @"\" + Rserverserver + "\" nogui");
                 }
-                GC.Collect();
+                //GC.Collect();
             }
             catch (Exception a)
             {
@@ -789,10 +836,11 @@ namespace MSL
             {
                 getServerInfoLine--;
 
-                if (getServerInfoLine==-5&&!File.Exists(Rserverbase + "\\eula.txt"))
+                if (getServerInfoLine==-5)//&&!File.Exists(Rserverbase + "\\eula.txt"))
                 {
-                    DialogShow.ShowMsg(this, "该服务端可能在下载依赖文件，请耐心等待！\n\n将为您跳转至控制台界面，开服过程中部分操作需要您手动完成！\n(注：Mohist端接受EULA条款的方式是在控制台输入true，在接受前请务必前往该网站仔细阅读条款内容：https://account.mojang.com/documents/minecraft_eula)", "提示");
-                    TabCtrl.SelectedIndex = 1;
+                    Growl.Info("该服务端可能在下载依赖文件，请耐心等待！");
+                    //DialogShow.ShowMsg(this, "该服务端可能在下载依赖文件，请耐心等待！\n\n将为您跳转至控制台界面，开服过程中部分操作需要您手动完成！\n(注：Mohist端接受EULA条款的方式是在控制台输入true，在接受前请务必前往该网站仔细阅读条款内容：https://account.mojang.com/documents/minecraft_eula)", "提示");
+                    //TabCtrl.SelectedIndex = 1;
                 }
             }
             else
@@ -821,6 +869,7 @@ namespace MSL
             }
             try
             {
+                /*
                 if (msg.Contains("You need to agree to the EULA in order to run the server"))
                 {
                     //getServerInfoLine = -10;
@@ -861,7 +910,8 @@ namespace MSL
                         Process.Start("https://account.mojang.com/documents/minecraft_eula");
                     }
                 }
-                else if (msg.Contains("Starting minecraft server version"))
+                else */
+                if (msg.Contains("Starting minecraft server version"))
                 {
                     serverVersionLab.Content = msg.Substring(msg.LastIndexOf(" ") + 1);
                     ChangeEncoding();
