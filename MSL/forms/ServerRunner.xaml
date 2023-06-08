@@ -377,8 +377,8 @@
                                 <Button x:Name="closeOutlog" Content="日志输出:开" Margin="154,120,0,0" FontSize="16" Height="34" Click="closeOutlog_Click" Width="130" HorizontalAlignment="Left" VerticalAlignment="Top"/>
                                 <Button x:Name="closeOutlog_Copy" Content="屏蔽关键字日志:关" Margin="289,120,0,0" FontSize="16" Height="34" Click="closeOutlog_Copy_Click" Width="160" VerticalAlignment="Top" HorizontalAlignment="Left"/>
                                 <Button x:Name="autoStartserver" Content="关服自动开服:禁用" Margin="154,80,0,0" Width="160" Click="autostartServer_Click" FontSize="16" Height="35" HorizontalAlignment="Left" VerticalAlignment="Top"/>
-                                <Button x:Name="inputCmdEncoding" Content="输入编码:自动识别" Margin="320,80,0,0" Width="160" FontSize="16" Height="35" HorizontalAlignment="Left" VerticalAlignment="Top" Click="inputCmdEncoding_Click"/>
-                                <Button x:Name="outputCmdEncoding" Content="输出编码:自动识别" Margin="485,80,0,0" Width="160" FontSize="16" Height="35" HorizontalAlignment="Left" VerticalAlignment="Top" Click="outputCmdEncoding_Click"/>
+                                <Button x:Name="inputCmdEncoding" Content="输入编码:系统默认" Margin="320,80,0,0" Width="160" FontSize="16" Height="35" HorizontalAlignment="Left" VerticalAlignment="Top" Click="inputCmdEncoding_Click"/>
+                                <Button x:Name="outputCmdEncoding" Content="输出编码:系统默认" Margin="485,80,0,0" Width="160" FontSize="16" Height="35" HorizontalAlignment="Left" VerticalAlignment="Top" Click="outputCmdEncoding_Click"/>
                                 <Button x:Name="shieldStackOut" Content="屏蔽堆栈追踪:开" Margin="454,120,0,0" FontSize="16" Height="34" Click="shieldStackOut_Click" Width="160" HorizontalAlignment="Left" VerticalAlignment="Top"/>
                                 <Button x:Name="autoClearOutlog" Content="自动清屏:开" Margin="619,120,0,0" FontSize="16" Height="34" Click="autoClearOutlog_Click" Width="130" HorizontalAlignment="Left" VerticalAlignment="Top"/>
                             </Grid>

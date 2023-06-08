@@ -83,9 +83,9 @@ namespace MSL
             //Get Server's Information
             JObject jsonObject = JObject.Parse(File.ReadAllText(AppDomain.CurrentDomain.BaseDirectory + @"MSL\ServerList.json", Encoding.UTF8));
             JObject _json = (JObject)jsonObject[RserverId];
-            if (_json["core"].ToString().Contains("Bungeecord")|| _json["core"].ToString().Contains("bungeecord"))//is the server Bungeecord,it will send a message and close window
+            if (_json["core"].ToString().IndexOf("bungeecord", StringComparison.OrdinalIgnoreCase) != -1|| _json["core"].ToString().IndexOf("waterfall", StringComparison.OrdinalIgnoreCase) != -1)//is the server Bungeecord,it will send a message and close window
             {
-                MessageBox.Show("开服器暂不支持Bungeecord服务端的运行，请右键点击“用命令行开服”选项来开服！");
+                MessageBox.Show("开服器暂不支持Bungeecord类服务端的运行，请右键服务器并点击“用命令行开服”选项来开服！");
                 Close();
             }
             Rservername = _json["name"].ToString();
@@ -94,6 +94,14 @@ namespace MSL
             Rserverserver = _json["core"].ToString();
             RserverJVM = _json["memory"].ToString();
             RserverJVMcmd = _json["args"].ToString();
+            if (_json["encoding_in"] != null)
+            {
+                inputCmdEncoding.Content = "输入编码:" + _json["encoding_in"].ToString();
+            }
+            if (_json["encoding_out"] != null)
+            {
+                outputCmdEncoding.Content = "输出编码:" + _json["encoding_out"].ToString();
+            }
 
             this.Title = Rservername;//set title to server name
             
@@ -952,6 +960,8 @@ namespace MSL
         }
         void ChangeEncoding()
         {
+            JObject jsonObject = JObject.Parse(File.ReadAllText(AppDomain.CurrentDomain.BaseDirectory + @"MSL\ServerList.json", Encoding.UTF8));
+            JObject _json = (JObject)jsonObject[RserverId];
             if (!RserverJVMcmd.Contains("-Dfile.encoding=UTF-8"))
             {
                 string versionString = serverVersionLab.Content.ToString();
@@ -967,50 +977,57 @@ namespace MSL
                 if (version >= targetVersion)
                 {
                     // version is greater than targetVersion,or equal to targetVersion
-                    if (inputCmdEncoding.Content.ToString() == "输入编码:自动识别")
+                    if (inputCmdEncoding.Content.ToString() == "输入编码:系统默认")
                     {
                         inputCmdEncoding.Content = "输入编码:UTF8";
+                        _json["encoding_in"] = "UTF8";
                     }
-                    if (outputCmdEncoding.Content.ToString() == "输出编码:自动识别")
+                    if (outputCmdEncoding.Content.ToString() == "输出编码:系统默认")
                     {
-                        outputCmdEncoding.Content = "输出编码:ANSI";
+                        if (Rserverserver.IndexOf("spigot", StringComparison.OrdinalIgnoreCase) != -1 || Rserverserver.IndexOf("craftbukkit", StringComparison.OrdinalIgnoreCase) != -1)
+                        {
+                            outputCmdEncoding.Content = "输出编码:UTF8";
+                            _json["encoding_out"] = "UTF8";
+                            Growl.Warning("您的服务器编码已更改，请重启服务器以使更改生效！");
+                        }
+                        else
+                        {
+                            outputCmdEncoding.Content = "输出编码:ANSI";
+                            _json["encoding_out"] = "ANSI";
+                        }
                     }
                 }
                 else if (version < targetVersion)
                 {
                     // version is less than targetVersion
-                    if (inputCmdEncoding.Content.ToString() == "输入编码:自动识别")
+                    if (inputCmdEncoding.Content.ToString() == "输入编码:系统默认")
                     {
                         inputCmdEncoding.Content = "输入编码:ANSI";
+                        _json["encoding_in"] = "ANSI";
                     }
-                    if (outputCmdEncoding.Content.ToString() == "输出编码:自动识别")
+                    if (outputCmdEncoding.Content.ToString() == "输出编码:系统默认")
                     {
                         outputCmdEncoding.Content = "输出编码:ANSI";
+                        _json["encoding_out"] = "ANSI";
                     }
                 }
             }
             else
             {
-                if (inputCmdEncoding.Content.ToString() == "输入编码:自动识别")
+                if (inputCmdEncoding.Content.ToString() == "输入编码:系统默认")
                 {
                     inputCmdEncoding.Content = "输入编码:UTF8";
+                    _json["encoding_in"] = "UTF8";
                 }
-                if (outputCmdEncoding.Content.ToString() == "输出编码:自动识别")
+                if (outputCmdEncoding.Content.ToString() == "输出编码:系统默认")
                 {
                     outputCmdEncoding.Content = "输出编码:UTF8";
-                    if (!SERVERCMD.HasExited)
-                    {
-                        SERVERCMD.Kill();
-                    }
-                    SERVERCMD.CancelOutputRead();
-                    SERVERCMD.CancelErrorRead();
-                    SERVERCMD.OutputDataReceived -= new DataReceivedEventHandler(p_OutputDataReceived);
-                    SERVERCMD.ErrorDataReceived -= new DataReceivedEventHandler(p_OutputDataReceived);
-                    outlog.Document.Blocks.Clear();
-                    ShowLog("检测到编码更改，正在重启服务器...", Brushes.Green);
-                    LaunchServer();
+                    _json["encoding_out"] = "UTF8";
+                    Growl.Warning("您的服务器编码已更改，请重启服务器以使更改生效！");
                 }
             }
+            jsonObject[RserverId] = _json;
+            File.WriteAllText(AppDomain.CurrentDomain.BaseDirectory + "MSL\\Serverlist.json", Convert.ToString(jsonObject), Encoding.UTF8);
         }
         void ChangeServerIP()
         {
@@ -1385,6 +1402,10 @@ namespace MSL
         void SendCommand()
         {
             lastCommand = cmdtext.Text;
+            if (cmdtext.Text.ToString() == "stop") //|| cmdtext.Text.ToString() == "end")
+            {
+                getServerInfoLine = 101;
+            }
             try
             {
                 if (inputCmdEncoding.Content.ToString() == "输入编码:UTF8")
@@ -1693,7 +1714,7 @@ namespace MSL
             else
             {
                 getServerInfoLine = 101;
-                Growl.Info("关服中……(双击按钮可强制关服)");
+                Growl.Info("关服中，请耐心等待……\n双击按钮可强制关服（不建议）");
                 SERVERCMD.StandardInput.WriteLine("stop");
             }
         }
@@ -1779,9 +1800,9 @@ namespace MSL
                         }
                     });
                 }
-                catch (Exception ex)
+                catch
                 {
-                    Growl.Error("出现错误！" + ex.Message);
+                    Growl.Error("无法获取系统占用信息！显示占用功能已自动关闭！");
                     this.Dispatcher.BeginInvoke(DispatcherPriority.SystemIdle, (ThreadStart)delegate ()
                     {
                         previewOutlog.Text = "预览功能已关闭，请前往服务器控制台界面查看日志信息！";
@@ -2724,7 +2745,7 @@ namespace MSL
             {
                 if (Path.GetDirectoryName(openfile.FileName) != Rserverbase)
                 {
-                    File.Copy(openfile.FileName, Rserverbase + @"\" + openfile.SafeFileName);
+                    File.Copy(openfile.FileName, Rserverbase + @"\" + openfile.SafeFileName, true);
                     DialogShow.ShowMsg(this, "已将服务端文件移至服务器文件夹中！您可将源文件删除！", "提示", false, "确定");
                 }
                 server.Text = openfile.SafeFileName;
@@ -2916,6 +2937,7 @@ namespace MSL
         {
             SetServerconfig.serverbase = Rserverbase;
             Window window = new SetServerconfig();
+            window.Owner = this;
             window.ShowDialog();
         }
         private void getLaunchercode_Click(object sender, RoutedEventArgs e)
@@ -2956,33 +2978,47 @@ namespace MSL
         }
         private void inputCmdEncoding_Click(object sender, RoutedEventArgs e)
         {
-            if (inputCmdEncoding.Content.ToString() == "输入编码:自动识别")
+            JObject jsonObject = JObject.Parse(File.ReadAllText(AppDomain.CurrentDomain.BaseDirectory + @"MSL\ServerList.json", Encoding.UTF8));
+            JObject _json = (JObject)jsonObject[RserverId];
+            if (inputCmdEncoding.Content.ToString() == "输入编码:系统默认")
             {
                 inputCmdEncoding.Content = "输入编码:UTF8";
+                _json["encoding_in"] = "UTF8";
             }
             else if (inputCmdEncoding.Content.ToString() == "输入编码:UTF8")
             {
                 inputCmdEncoding.Content = "输入编码:ANSL";
+                _json["encoding_in"] = "ANSL";
             }
             else// if(inputCmdEncoding.Content.ToString() == "编码:ANSL")
             {
-                inputCmdEncoding.Content = "输入编码:自动识别";
+                inputCmdEncoding.Content = "输入编码:系统默认";
+                _json.Remove("encoding_in");
             }
+            jsonObject[RserverId] = _json;
+            File.WriteAllText(AppDomain.CurrentDomain.BaseDirectory + "MSL\\Serverlist.json", Convert.ToString(jsonObject), Encoding.UTF8);
         }
         private void outputCmdEncoding_Click(object sender, RoutedEventArgs e)
         {
-            if (outputCmdEncoding.Content.ToString() == "输出编码:自动识别")
+            JObject jsonObject = JObject.Parse(File.ReadAllText(AppDomain.CurrentDomain.BaseDirectory + @"MSL\ServerList.json", Encoding.UTF8));
+            JObject _json = (JObject)jsonObject[RserverId];
+            if (outputCmdEncoding.Content.ToString() == "输出编码:系统默认")
             {
                 outputCmdEncoding.Content = "输出编码:UTF8";
+                _json["encoding_out"] = "UTF8";
             }
             else if (outputCmdEncoding.Content.ToString() == "输出编码:UTF8")
             {
                 outputCmdEncoding.Content = "输出编码:ANSL";
+                _json["encoding_out"] = "ANSL";
             }
             else// if(outputCmdEncoding.Content.ToString() == "编码:ANSL")
             {
-                outputCmdEncoding.Content = "输出编码:自动识别";
+                outputCmdEncoding.Content = "输出编码:系统默认";
+                _json.Remove("encoding_out");
             }
+            jsonObject[RserverId] = _json;
+            File.WriteAllText(AppDomain.CurrentDomain.BaseDirectory + "MSL\\Serverlist.json", Convert.ToString(jsonObject), Encoding.UTF8);
         }
         private void onlineMode_Click(object sender, RoutedEventArgs e)
         {

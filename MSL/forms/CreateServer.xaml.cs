@@ -873,7 +873,7 @@ namespace MSL.forms
                     {"Nukkit"}
                 },
                 {"proxyCore",new List<string>()
-                    {"BungeeCord"}
+                    {"Velocity","BungeeCord"}
                 }
             };
         Dictionary<string, Dictionary<string, string>> serverCores;

@@ -457,10 +457,10 @@ namespace MSL
                     paidProtocolLabel.Visibility = Visibility.Visible;
                     usePaidProtocol.Visibility = Visibility.Visible;
                 }
-                lab1.Margin = new Thickness(280, 32, 0, 0);
-                textBox1.Margin = new Thickness(320, 62, 0, 0);
-                lab2.Margin = new Thickness(280, 92, 0, 0);
-                textBox2.Margin = new Thickness(320, 122, 0, 0);
+                lab1.Margin = new Thickness(290, 30, 0, 0);
+                textBox1.Margin = new Thickness(330, 60, 0, 0);
+                lab2.Margin = new Thickness(290, 90, 0, 0);
+                textBox2.Margin = new Thickness(330, 120, 0, 0);
                 paidProtocolLabel.Visibility = Visibility.Visible;
                 usePaidProtocol.Visibility = Visibility.Visible;
                 paidPasswordLabel.Visibility = Visibility.Visible;
@@ -468,10 +468,10 @@ namespace MSL
             }
             else
             {
-                lab1.Margin = new Thickness(280, 49, 0, 0);
-                textBox1.Margin = new Thickness(320, 84, 0, 0);
-                lab2.Margin = new Thickness(280, 134, 0, 0);
-                textBox2.Margin = new Thickness(320, 169, 0, 0);
+                lab1.Margin = new Thickness(290, 50, 0, 0);
+                textBox1.Margin = new Thickness(330, 85, 0, 0);
+                lab2.Margin = new Thickness(290, 135, 0, 0);
+                textBox2.Margin = new Thickness(330, 170, 0, 0);
                 paidProtocolLabel.Visibility = Visibility.Hidden;
                 usePaidProtocol.Visibility = Visibility.Hidden;
                 paidPasswordLabel.Visibility = Visibility.Hidden;

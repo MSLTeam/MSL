@@ -1,4 +1,5 @@
-﻿using System;
+﻿using MSL.controls;
+using System;
 using System.IO;
 using System.Windows;
 
@@ -14,8 +15,6 @@ namespace MSL
         public SetServerconfig()
         {
             InitializeComponent();
-            Width += 16;
-            Height += 24;
         }
 
         private void Window_Loaded(object sender, RoutedEventArgs e)
@@ -67,7 +66,20 @@ namespace MSL
                 {
                     File.WriteAllText(serverbase + @"\spigot.yml", item003.Text);
                 }
-                MessageBox.Show("配置已成功保存，请重启服务器以使设置生效！", "提示", MessageBoxButton.OK, MessageBoxImage.Information);
+                DialogShow.ShowMsg(this,"配置已成功保存，请重启服务器以使设置生效！", "提示");
+            }
+        }
+
+        private void Window_SizeChanged(object sender, SizeChangedEventArgs e)
+        {
+            if (this.WindowState == WindowState.Maximized)
+            {
+                MainGrid.Margin = new Thickness(7);
+
+            }
+            else
+            {
+                MainGrid.Margin = new Thickness(0);
             }
         }
     }
