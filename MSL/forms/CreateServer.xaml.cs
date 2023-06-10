@@ -864,7 +864,7 @@ namespace MSL.forms
                     {"Fabric"}
                 },
                 {"pluginsAndModsCore",new List<string>()
-                    {"Mohist","Catserver"}
+                    {"Arclight","Mohist","Catserver"}
                 },
                 {"vanillaCore",new List<string>()
                     {"Vanilla"}
@@ -916,6 +916,11 @@ namespace MSL.forms
         private void ServerCoreCombo_SelectionChanged(object sender, SelectionChangedEventArgs e)
         {
             ServerVersionCombo.Items.Clear();
+            if (serverCores == null)
+            {
+                DialogShow.ShowMsg(this, "服务端正在加载中，请稍后再选择！", "提示");
+                return;
+            }
             int i = 0;
             // 遍历所有核心类型
             foreach (var coreType in serverCoreTypes)
@@ -950,6 +955,7 @@ namespace MSL.forms
                 else { i++; }
             }
             ServerVersionCombo.SelectedIndex = 0;
+
             switch (ServerCoreCombo.SelectedIndex)
             {
                 case 0:
