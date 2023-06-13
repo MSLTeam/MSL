@@ -97,7 +97,7 @@ namespace MSL
 
                     Ping pingSender = new Ping();
                     PingReply reply = pingSender.Send(a101, 2000); // 替换成您要 ping 的 IP 地址
-                    this.Dispatcher.Invoke(DispatcherPriority.Normal, (ThreadStart)delegate ()
+                    Dispatcher.InvokeAsync(() =>
                     {
                         if (reply.Status == IPStatus.Success)
                         {
@@ -153,7 +153,7 @@ namespace MSL
 
                     Ping pingSender = new Ping();
                     PingReply reply = pingSender.Send(a101, 2000); // 替换成您要 ping 的 IP 地址
-                    this.Dispatcher.Invoke(DispatcherPriority.Normal, (ThreadStart)delegate ()
+                    Dispatcher.InvokeAsync(() =>
                     {
                         if (reply.Status == IPStatus.Success)
                         {
@@ -187,19 +187,19 @@ namespace MSL
                 WebClient MyWebClient1 = new WebClient();
                 MyWebClient1.Credentials = CredentialCache.DefaultCredentials;
                 Byte[] pageData1 = MyWebClient1.DownloadData(MainWindow.serverLink + @"/msl/frpcgg.txt");
-                this.Dispatcher.Invoke(DispatcherPriority.Normal, (ThreadStart)delegate ()
+                Dispatcher.InvokeAsync(() =>
                 {
                     gonggao.Content = Encoding.UTF8.GetString(pageData1);
                 });
             }
             catch
             {
-                this.Dispatcher.Invoke(DispatcherPriority.Normal, (ThreadStart)delegate ()
+                Dispatcher.InvokeAsync(() =>
                 {
                     gonggao.Content = "none";
                 });
             }
-            this.Dispatcher.Invoke(DispatcherPriority.Normal, (ThreadStart)delegate ()
+            Dispatcher.InvokeAsync(() =>
             {
                 LoadingCircle loadingCircle = MainGrid.FindName("loadingBar") as LoadingCircle;
                 BodyGrid.Children.Remove(loadingCircle);

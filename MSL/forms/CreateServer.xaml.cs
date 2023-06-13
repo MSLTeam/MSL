@@ -82,7 +82,7 @@ namespace MSL.forms
                 //MainWindow.serverserver = txb3.Text;
                 javagrid.Visibility = Visibility.Hidden;
                 servergrid.Visibility = Visibility.Visible;
-                await this.Dispatcher.InvokeAsync(() =>
+                await Dispatcher.InvokeAsync(() =>
                 {
                     CheckServerPackCore();
                 });
@@ -93,7 +93,7 @@ namespace MSL.forms
                 //MainWindow.serverserver = txb3.Text;
                 javagrid.Visibility = Visibility.Hidden;
                 servergrid.Visibility = Visibility.Visible;
-                await this.Dispatcher.InvokeAsync(() =>
+                await Dispatcher.InvokeAsync(() =>
                 {
                     CheckServerPackCore();
                 });
@@ -104,7 +104,7 @@ namespace MSL.forms
                 serverjava = a.Substring(a.IndexOf(":") + 1);
                 javagrid.Visibility = Visibility.Hidden;
                 servergrid.Visibility = Visibility.Visible;
-                await this.Dispatcher.InvokeAsync(() =>
+                await Dispatcher.InvokeAsync(() =>
                 {
                     CheckServerPackCore();
                 });
@@ -127,7 +127,7 @@ namespace MSL.forms
                         try
                         {
                             int dwnJava = 0;
-                            await this.Dispatcher.InvokeAsync(() =>
+                            await Dispatcher.InvokeAsync(() =>
                             {
                                 switch (selectJavaComb.SelectedIndex)
                                 {
@@ -165,7 +165,7 @@ namespace MSL.forms
                                     return5.IsEnabled = true;
                                     javagrid.Visibility = Visibility.Hidden;
                                     servergrid.Visibility = Visibility.Visible;
-                                    await this.Dispatcher.InvokeAsync(() =>
+                                    await Dispatcher.InvokeAsync(() =>
                                     {
                                         CheckServerPackCore();
                                     });
@@ -183,7 +183,7 @@ namespace MSL.forms
                                 return5.IsEnabled = true;
                                 javagrid.Visibility = Visibility.Hidden;
                                 servergrid.Visibility = Visibility.Visible;
-                                await this.Dispatcher.InvokeAsync(() =>
+                                await Dispatcher.InvokeAsync(() =>
                                 {
                                     CheckServerPackCore();
                                 });
@@ -206,7 +206,7 @@ namespace MSL.forms
                 {
                     next3.IsEnabled = true;
                     return5.IsEnabled = true;
-                    await this.Dispatcher.InvokeAsync(() =>
+                    await Dispatcher.InvokeAsync(() =>
                     {
                         DialogShow.ShowMsg(this, "出现错误！请检查您的网络连接！", "信息", false, "确定");
                     });
@@ -873,7 +873,7 @@ namespace MSL.forms
                     }
                     else
                     {
-                        url = MainWindow.serverLink + "/api";
+                        url = "https://api.waheal.top";
                     }
                     WebClient webClient = new WebClient();
                     //webClient.Encoding = Encoding.UTF8;
@@ -891,13 +891,13 @@ namespace MSL.forms
                         //webClient.Encoding = Encoding.UTF8;
                         webClient.Credentials = CredentialCache.DefaultCredentials;
                         //byte[] pageData = webClient.DownloadData(MainWindow.serverLink + @"/msl/CC/getserver.txt");
-                        byte[] pageData = webClient.DownloadData("https://msl.waheal.top/api");
+                        byte[] pageData = webClient.DownloadData("https://api.waheal.top");
                         string jsonData = Encoding.UTF8.GetString(pageData);
                         serverTypes = JsonConvert.DeserializeObject<string[]>(jsonData);
                     }
                     catch (Exception ex)
                     {
-                        this.Dispatcher.Invoke(DispatcherPriority.Normal, (ThreadStart)delegate ()
+                        Dispatcher.InvokeAsync(() =>
                         {
                             DialogShow.ShowMsg(this, "获取服务端失败！请重试！\n错误代码：" + ex.Message, "错误");
                             return;
@@ -905,7 +905,7 @@ namespace MSL.forms
                     }
                 }
 
-                this.Dispatcher.Invoke(DispatcherPriority.Normal, (ThreadStart)delegate ()
+                Dispatcher.InvokeAsync(() =>
                 {
                     ServerCoreCombo.SelectedIndex = 0;
                 });
@@ -934,7 +934,7 @@ namespace MSL.forms
         private void GetServerVersion()
         {
             int selectType = 0;
-            this.Dispatcher.Invoke(DispatcherPriority.Normal, (ThreadStart)delegate ()
+            Dispatcher.InvokeAsync(() =>
             {
                 ServerCoreDescrip.Text = "加载中，请稍等……";
                 selectType = ServerCoreCombo.SelectedIndex;
@@ -969,7 +969,7 @@ namespace MSL.forms
                                         }
                                         else
                                         {
-                                            url = MainWindow.serverLink + "/api/server";
+                                            url = "https://api.waheal.top/server";
                                         }
                                         string PostUrl = url;
                                         JObject patientinfo = new JObject();
@@ -992,7 +992,7 @@ namespace MSL.forms
                                     {
                                         try
                                         {
-                                            string PostUrl = "https://msl.waheal.top/api/server";
+                                            string PostUrl = "https://api.waheal.top/server";
                                             JObject patientinfo = new JObject();
                                             patientinfo["server_name"] = i;
                                             string sendData = JsonConvert.SerializeObject(patientinfo);
@@ -1010,7 +1010,7 @@ namespace MSL.forms
                                         }
                                         catch (Exception ex)
                                         {
-                                            this.Dispatcher.Invoke(DispatcherPriority.Normal, (ThreadStart)delegate ()
+                                            Dispatcher.InvokeAsync(() =>
                                             {
                                                 DialogShow.ShowMsg(this, "获取服务端失败！请重试！\n错误代码：" + ex.Message, "错误");
                                             });
@@ -1033,7 +1033,7 @@ namespace MSL.forms
             }
             catch (Exception ex)
             {
-                this.Dispatcher.Invoke(DispatcherPriority.Normal, (ThreadStart)delegate ()
+                Dispatcher.InvokeAsync(() =>
                 {
                     DialogShow.ShowMsg(this, "出现错误：" + ex.Message, "err");
                     FastModeNextBtn.IsEnabled = true;
@@ -1041,7 +1041,7 @@ namespace MSL.forms
                 });
             }
             var sortedList = typeVersions.OrderByDescending(p => Functions.VersionCompare(p)).ToList();
-            this.Dispatcher.Invoke(DispatcherPriority.Normal, (ThreadStart)delegate ()
+            Dispatcher.InvokeAsync(() =>
             {
                 FastModeNextBtn.IsEnabled = true;
                 ServerVersionCombo.ItemsSource = sortedList;
@@ -1190,7 +1190,7 @@ namespace MSL.forms
                 JObject javaList = (JObject)javaList0["java"];
                 FastInstallProcess.Text = "当前进度:下载Java……";
                 int dwnJava = 0;
-                await this.Dispatcher.InvokeAsync(() =>
+                await Dispatcher.InvokeAsync(() =>
                 {
                     switch (FinallyJavaCombo.SelectedIndex)
                     {
@@ -1224,7 +1224,7 @@ namespace MSL.forms
                     if (unzipJava)
                     {
                         FastInstallProcess.Text = "当前进度:下载服务端……";
-                        await this.Dispatcher.InvokeAsync(() =>
+                        await Dispatcher.InvokeAsync(() =>
                         {
                             FastModeInstallCore();
                         });
@@ -1239,7 +1239,7 @@ namespace MSL.forms
                 else if (dwnJava == 2)
                 {
                     FastInstallProcess.Text = "当前进度:下载服务端……";
-                    await this.Dispatcher.InvokeAsync(() =>
+                    await Dispatcher.InvokeAsync(() =>
                     {
                         FastModeInstallCore();
                     });

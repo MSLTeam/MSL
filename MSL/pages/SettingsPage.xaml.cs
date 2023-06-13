@@ -636,7 +636,7 @@ namespace MSL.pages
                 {
                     byte[] _updatelog = MyWebClient.DownloadData(MainWindow.serverLink + @"/msl/updatelog.txt");
                     string updatelog = Encoding.UTF8.GetString(_updatelog);
-                    this.Dispatcher.Invoke(DispatcherPriority.Normal, (ThreadStart)delegate ()
+                    Dispatcher.InvokeAsync(() =>
                     {
                         bool dialog = DialogShow.ShowMsg(mainwindow, "发现新版本，版本号为：" + aaa + "，是否进行更新？\n更新日志：\n" + updatelog, "更新", true, "取消");
                         if (dialog == true)

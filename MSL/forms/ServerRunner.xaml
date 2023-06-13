@@ -79,14 +79,15 @@
                             <Grid Grid.Column="0" Grid.ColumnSpan="2" VerticalAlignment="Bottom">
                                 <Grid.ColumnDefinitions>
                                     <ColumnDefinition Width="*"/>
-                                    <ColumnDefinition Width="205"/>
-                                    <ColumnDefinition Width="105"/>
+                                    <ColumnDefinition Width="175"/>
+                                    <ColumnDefinition Width="125"/>
                                     <ColumnDefinition Width="100"/>
                                 </Grid.ColumnDefinitions>
                                 <Button x:Name="controlServer_Copy" Grid.Column="0" hc:IconElement.Geometry="{StaticResource CheckedGeometry}" hc:IconElement.Width="20" Style="{StaticResource ButtonPrimary}" Content="开服" Height="60" Click="controlServer_Click" MouseDoubleClick="controlServer_MouseDoubleClick" FontSize="14" VerticalAlignment="Bottom" HorizontalAlignment="Stretch" Margin="10,0,5,10"/>
-                                <Button x:Name="solveProblemBtn" Grid.Column="1" hc:IconElement.Geometry="{StaticResource AskGeometry}" hc:IconElement.Width="20" Style="{StaticResource ButtonDanger}" Content="服务器崩溃检测系统"  Height="60" Click="solveProblemBtn_Click" FontSize="14" VerticalAlignment="Bottom" Margin="0,0,5,10" HorizontalAlignment="Stretch"/>
-                                <Button x:Name="systemInfoBtn" Grid.Column="2" Content="显示占用:开" Height="60" Click="systemInfoBtn_Click" VerticalAlignment="Bottom" HorizontalAlignment="Stretch" Margin="0,0,5,10"/>
-                                <Button x:Name="playerInfoBtn" Grid.Column="3" Content="记录玩家:开" Height="60" Click="playerInfoBtn_Click" VerticalAlignment="Bottom" HorizontalAlignment="Stretch" Margin="0,0,0,10"/>
+                                <Button x:Name="solveProblemBtn" Grid.Column="1" hc:IconElement.Geometry="{StaticResource AskGeometry}" hc:IconElement.Width="20" Style="{StaticResource ButtonDanger}" Content="服务器错误检测"  Height="60" Click="solveProblemBtn_Click" FontSize="14" VerticalAlignment="Bottom" Margin="0,0,5,10" HorizontalAlignment="Stretch"/>
+                                <Button x:Name="openServerDir" Grid.Column="2" Content="打开服务器目录" Height="60" VerticalAlignment="Bottom" HorizontalAlignment="Stretch" Margin="0,0,5,10" FontSize="14" Click="openServerDir_Click"/>
+                                <Button x:Name="systemInfoBtn" Grid.Column="4" Content="显示占用:开" Click="systemInfoBtn_Click" VerticalAlignment="Top" HorizontalAlignment="Stretch"/>
+                                <Button x:Name="playerInfoBtn" Grid.Column="4" Content="记录玩家:开" Click="playerInfoBtn_Click" VerticalAlignment="Bottom" HorizontalAlignment="Stretch" Margin="0,0,0,10"/>
 
                             </Grid>
                             <Border Style="{StaticResource MagicBorder}" Margin="0,10,0,80" Grid.Column="1" VerticalAlignment="Stretch" >
@@ -380,7 +381,7 @@
                                 <Button x:Name="outputCmdEncoding" Content="输出编码:UTF8" Margin="319,80,0,0" Width="160" FontSize="16" Height="35" HorizontalAlignment="Left" VerticalAlignment="Top" Click="outputCmdEncoding_Click"/>
                                 <Button x:Name="shieldStackOut" Content="屏蔽堆栈追踪:开" Margin="454,120,0,0" FontSize="16" Height="35" Click="shieldStackOut_Click" Width="160" HorizontalAlignment="Left" VerticalAlignment="Top"/>
                                 <Button x:Name="autoClearOutlog" Content="自动清屏:开" Margin="619,120,0,0" FontSize="16" Height="35" Click="autoClearOutlog_Click" Width="130" HorizontalAlignment="Left" VerticalAlignment="Top"/>
-                                <Button x:Name="forceUTF8encoding" Content="强制UTF8编码:开" Margin="484,40,0,0" Width="160" FontSize="16" Height="35" HorizontalAlignment="Left" VerticalAlignment="Top" Click="forceUTF8encoding_Click"/>
+                                <Button x:Name="fileforceUTF8encoding" Content="强制服务器文件UTF8编码:关" Margin="484,40,0,0" Width="265" FontSize="16" Height="35" HorizontalAlignment="Left" VerticalAlignment="Top" Click="fileforceUTF8encoding_Click"/>
                             </Grid>
                         </Border>
                         <Border Style="{StaticResource MagicBorder}">

@@ -319,7 +319,7 @@ namespace MSL.pages
 
         void AutoOpenServer()
         {
-            this.Dispatcher.Invoke(DispatcherPriority.Normal, (ThreadStart)delegate ()
+            Dispatcher.InvokeAsync(() =>
             {
                 try
                 {

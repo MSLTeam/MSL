@@ -41,7 +41,7 @@ namespace MSL.pages
             //version
             string noticeLabText = "";
 
-            this.Dispatcher.Invoke(DispatcherPriority.Normal, (ThreadStart)delegate ()
+            Dispatcher.InvokeAsync(() =>
             {
                 noticeLabText = noticeLab.Text;
             });
@@ -77,7 +77,7 @@ namespace MSL.pages
                         noticeLabText = keyValues["notice"].ToString();
                         if (noticeLabText != "")
                         {
-                            this.Dispatcher.Invoke(DispatcherPriority.Normal, (ThreadStart)delegate ()
+                            Dispatcher.InvokeAsync(() =>
                             {
                                 var mainwindow = (MainWindow)Window.GetWindow(this);
                                 DialogShow.ShowMsg(mainwindow, noticeLabText, "公告", false, "确定");
@@ -91,7 +91,7 @@ namespace MSL.pages
                     JObject keyValues1 = (JObject)keyValues["recommends"];
                     if (keyValues["recommends"] != null)
                     {
-                        this.Dispatcher.Invoke(DispatcherPriority.Normal, (ThreadStart)delegate ()
+                        Dispatcher.InvokeAsync(() =>
                         {
                             recommendBorder.Visibility = Visibility.Visible;
                             for (int x = 1; x < 100; x++)
@@ -118,7 +118,7 @@ namespace MSL.pages
                         foreach (var x in keyValues1)
                         {
                             i++;
-                            this.Dispatcher.Invoke(DispatcherPriority.Normal, (ThreadStart)delegate ()
+                            Dispatcher.InvokeAsync(() =>
                             {
                                 Image image = new Image();
                                 if (i == 1)
@@ -178,7 +178,7 @@ namespace MSL.pages
                 else if (noticeLabText == "")
                 {
                     Visibility noticevisible = Visibility.Visible;
-                    this.Dispatcher.Invoke(DispatcherPriority.Normal, (ThreadStart)delegate ()
+                    Dispatcher.InvokeAsync(() =>
                     {
                         noticevisible = noticeLab.Visibility;
                     });
@@ -199,7 +199,7 @@ namespace MSL.pages
                         JObject keyValues1 = (JObject)keyValues["recommends"];
                         if (keyValues["recommends"] != null)
                         {
-                            this.Dispatcher.Invoke(DispatcherPriority.Normal, (ThreadStart)delegate ()
+                            Dispatcher.InvokeAsync(() =>
                             {
                                 recommendBorder.Visibility = Visibility.Visible;
                                 for (int x = 1; x < 100; x++)
@@ -226,7 +226,7 @@ namespace MSL.pages
                             foreach (var x in keyValues1)
                             {
                                 i++;
-                                this.Dispatcher.Invoke(DispatcherPriority.Normal, (ThreadStart)delegate ()
+                                Dispatcher.InvokeAsync(() =>
                                 {
                                     Image image = new Image();
                                     if (i == 1)
@@ -277,7 +277,7 @@ namespace MSL.pages
                 noticeLabText = "获取公告失败！请检查网络连接是否正常或联系作者进行解决！";
             }
 
-            this.Dispatcher.Invoke(DispatcherPriority.Normal, (ThreadStart)delegate ()
+            Dispatcher.InvokeAsync(() =>
             {
                 if (noticeLabText == "")
                 {

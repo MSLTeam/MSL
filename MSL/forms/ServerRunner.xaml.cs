@@ -12,7 +12,6 @@ using System.Globalization;
 using System.IO;
 using System.Linq;
 using System.Net;
-using System.Security.Policy;
 using System.Text;
 using System.Text.RegularExpressions;
 using System.Threading;
@@ -25,6 +24,7 @@ using System.Windows.Interop;
 using System.Windows.Media;
 using System.Windows.Media.Imaging;
 using System.Windows.Threading;
+using static System.Net.Mime.MediaTypeNames;
 using MessageBox = System.Windows.MessageBox;
 using Path = System.IO.Path;
 using Window = System.Windows.Window;
@@ -40,7 +40,7 @@ namespace MSL
         public static event DeleControl SaveConfigEvent;
         public static event DeleControl ServerStateChange;
         public static event DeleControl GotoFrpcEvent;
-        public Process SERVERCMD = new Process();
+        public Process ServerProcess = new Process();
         string ShieldLog;
         public event DelReadStdOutput ReadStdOutput;
         bool autoserver = false;
@@ -58,16 +58,16 @@ namespace MSL
         public string RserverJVM;
         public string RserverJVMcmd;
         public string Rserverbase;
-        readonly DispatcherTimer timer1 = new DispatcherTimer();
-        readonly DispatcherTimer timer2 = new DispatcherTimer();
+        //readonly DispatcherTimer timer1 = new DispatcherTimer();
+        //readonly DispatcherTimer timer2 = new DispatcherTimer();
 
         /// <summary>
         /// /////////主要代码
         /// </summary>
         public ServerRunner()
         {
-            timer1.Tick += new EventHandler(timer1_Tick);
-            timer2.Tick += new EventHandler(timer2_Tick);
+            //timer1.Tick += new EventHandler(timer1_Tick);
+            //timer2.Tick += new EventHandler(timer2_Tick);
             ReadStdOutput += new DelReadStdOutput(ReadStdOutputAction);
             ServerList.OpenServerForm += ShowWindowEvent;
             SettingsPage.DelBackground += DelBackground;
@@ -103,9 +103,9 @@ namespace MSL
             {
                 outputCmdEncoding.Content = "输出编码:" + _json["encoding_out"].ToString();
             }
-            if (_json["forceUTF8"] != null && _json["forceUTF8"].ToString() == "False")
+            if (_json["fileforceUTF8"] != null && _json["fileforceUTF8"].ToString() == "True")
             {
-                forceUTF8encoding.Content = "强制UTF8编码:关";
+                fileforceUTF8encoding.Content = "强制服务器文件UTF8编码:开";
             }
 
             this.Title = Rservername;//set title to server name
@@ -227,7 +227,7 @@ namespace MSL
         {
             try
             {
-                if (SERVERCMD.HasExited != true)
+                if (ServerProcess.HasExited != true)
                 {
                     DialogShow.ShowMsg(this, "检测到您没有关闭服务器，是否隐藏此窗口？\n如要重新显示此窗口，请在服务器列表内双击该服务器（或点击开启服务器按钮）", "警告", true, "取消");
                     e.Cancel = true;
@@ -310,7 +310,7 @@ namespace MSL
             }
         }
 
-        bool isModsPluginsRefresh = true;
+        private bool isModsPluginsRefresh = true;
         private void TabCtrl_SelectionChanged(object sender, SelectionChangedEventArgs e)
         {
             if (TabCtrl.SelectedIndex == 2)
@@ -366,7 +366,11 @@ namespace MSL
                 LaunchServer();
             }
         }
-
+        private void openServerDir_Click(object sender, RoutedEventArgs e)
+        {
+            Growl.Info("正在为您打开服务器目录……");
+            Process.Start(Rserverbase);
+        }
         private void kickPlayer_Click(object sender, RoutedEventArgs e)
         {
             DialogShow.ShowMsg(this, "确定要踢出这个玩家吗？", "警告", true, "取消");
@@ -375,7 +379,7 @@ namespace MSL
                 MessageDialog._dialogReturn = false;
                 try
                 {
-                    SERVERCMD.StandardInput.WriteLine("kick " + serverPlayerList.SelectedItem.ToString().Substring(0, serverPlayerList.SelectedItem.ToString().IndexOf("[")));
+                    ServerProcess.StandardInput.WriteLine("kick " + serverPlayerList.SelectedItem.ToString().Substring(0, serverPlayerList.SelectedItem.ToString().IndexOf("[")));
                 }
                 catch
                 {
@@ -392,7 +396,7 @@ namespace MSL
                 MessageDialog._dialogReturn = false;
                 try
                 {
-                    SERVERCMD.StandardInput.WriteLine("ban " + serverPlayerList.SelectedItem.ToString().Substring(0, serverPlayerList.SelectedItem.ToString().IndexOf("[")));
+                    ServerProcess.StandardInput.WriteLine("ban " + serverPlayerList.SelectedItem.ToString().Substring(0, serverPlayerList.SelectedItem.ToString().IndexOf("[")));
                 }
                 catch
                 {
@@ -401,7 +405,6 @@ namespace MSL
             }
         }
         #endregion
-
 
         #region 服务器输出
         /// <summary>
@@ -413,7 +416,7 @@ namespace MSL
             {
                 Thread.Sleep(1000);
             }
-            await this.Dispatcher.InvokeAsync(() =>
+            await Dispatcher.InvokeAsync(() =>
             {
                 LaunchServer();
             });
@@ -458,18 +461,18 @@ namespace MSL
                     }
                 }
                 ChangeControlsState();
-                string forceUTF8Jvm = "";
-                if (forceUTF8encoding.Content.ToString().Contains("开"))
+                string fileforceUTF8Jvm = "";
+                if (fileforceUTF8encoding.Content.ToString().Contains("开")&&!RserverJVMcmd.Contains("-Dfile.encoding=UTF-8"))
                 {
-                    forceUTF8Jvm = "-Dfile.encoding=UTF-8 ";
+                    fileforceUTF8Jvm = "-Dfile.encoding=UTF-8 ";
                 }
                 if (Rserverserver == "")
                 {
-                    StartServer(RserverJVM + " " + forceUTF8Jvm + RserverJVMcmd + " nogui");
+                    StartServer(RserverJVM + " " + fileforceUTF8Jvm + RserverJVMcmd + " nogui");
                 }
                 else
                 {
-                    StartServer(RserverJVM + " " + forceUTF8Jvm + RserverJVMcmd + " -jar \"" + Rserverbase + @"\" + Rserverserver + "\" nogui");
+                    StartServer(RserverJVM + " " + fileforceUTF8Jvm + RserverJVMcmd + " -jar \"" + Rserverbase + @"\" + Rserverserver + "\" nogui");
                 }
                 //GC.Collect();
             }
@@ -486,36 +489,35 @@ namespace MSL
             try
             {
                 Directory.CreateDirectory(Rserverbase);
-                SERVERCMD.StartInfo.FileName = Rserverjava;
-                SERVERCMD.StartInfo.Arguments = StartFileArg;
+                ServerProcess.StartInfo.FileName = Rserverjava;
+                ServerProcess.StartInfo.Arguments = StartFileArg;
                 Directory.SetCurrentDirectory(Rserverbase);
-                SERVERCMD.StartInfo.CreateNoWindow = true;
-                SERVERCMD.StartInfo.UseShellExecute = false;
-                SERVERCMD.StartInfo.RedirectStandardInput = true;
-                SERVERCMD.StartInfo.RedirectStandardOutput = true;
-                SERVERCMD.StartInfo.RedirectStandardError = true;
+                ServerProcess.StartInfo.CreateNoWindow = true;
+                ServerProcess.StartInfo.UseShellExecute = false;
+                ServerProcess.StartInfo.RedirectStandardInput = true;
+                ServerProcess.StartInfo.RedirectStandardOutput = true;
+                ServerProcess.StartInfo.RedirectStandardError = true;
                 if (outputCmdEncoding.Content.ToString() == "输出编码:UTF8")
                 {
-                    SERVERCMD.StartInfo.StandardOutputEncoding = Encoding.UTF8;
-                    SERVERCMD.StartInfo.StandardErrorEncoding = Encoding.UTF8;
+                    ServerProcess.StartInfo.StandardOutputEncoding = Encoding.UTF8;
+                    ServerProcess.StartInfo.StandardErrorEncoding = Encoding.UTF8;
                 }
                 else
                 {
-                    SERVERCMD.StartInfo.StandardOutputEncoding = Encoding.Default;
-                    SERVERCMD.StartInfo.StandardErrorEncoding = Encoding.Default;
+                    ServerProcess.StartInfo.StandardOutputEncoding = Encoding.Default;
+                    ServerProcess.StartInfo.StandardErrorEncoding = Encoding.Default;
                 }
-                SERVERCMD.OutputDataReceived += new DataReceivedEventHandler(p_OutputDataReceived);
-                SERVERCMD.ErrorDataReceived += new DataReceivedEventHandler(p_OutputDataReceived);
-                SERVERCMD.Start();
-                SERVERCMD.BeginOutputReadLine();
-                SERVERCMD.BeginErrorReadLine();
-                timer1.Interval = TimeSpan.FromSeconds(1);
-                timer1.Start();
+                ServerProcess.OutputDataReceived += new DataReceivedEventHandler(p_OutputDataReceived);
+                ServerProcess.ErrorDataReceived += new DataReceivedEventHandler(p_OutputDataReceived);
+                ServerProcess.Start();
+                ServerProcess.BeginOutputReadLine();
+                ServerProcess.BeginErrorReadLine();
+                Thread thread = new Thread(CheckServerExit);
+                thread.Start();
                 Directory.SetCurrentDirectory(AppDomain.CurrentDomain.BaseDirectory);
             }
             catch (Exception e)
             {
-                timer1.Stop();
                 ShowLog("出现错误，正在检查问题...", Brushes.Red);
                 string a = Rserverjava;
                 if (File.Exists(a))
@@ -592,10 +594,10 @@ namespace MSL
                 fastCMD.IsEnabled = false;
                 try
                 {
-                    SERVERCMD.OutputDataReceived -= new DataReceivedEventHandler(p_OutputDataReceived);
-                    SERVERCMD.ErrorDataReceived -= new DataReceivedEventHandler(p_OutputDataReceived);
-                    SERVERCMD.CancelOutputRead();
-                    SERVERCMD.CancelErrorRead();
+                    ServerProcess.OutputDataReceived -= new DataReceivedEventHandler(p_OutputDataReceived);
+                    ServerProcess.ErrorDataReceived -= new DataReceivedEventHandler(p_OutputDataReceived);
+                    ServerProcess.CancelOutputRead();
+                    ServerProcess.CancelErrorRead();
                 }
                 catch
                 { return; }
@@ -609,8 +611,8 @@ namespace MSL
                 Dispatcher.Invoke(ReadStdOutput, new object[] { e.Data });
             }
         }
-        
 
+        #region 日志显示功能、彩色日志实现
         private static Brush tempbrush = Brushes.Green;
         private void ShowLog(string msg, Brush color)
         {
@@ -758,8 +760,11 @@ namespace MSL
             }
             return Brushes.Green;
         }
+        #endregion
+
+        private bool outlogEncodingAsk = true;
         private delegate void AddMessageHandler(string msg);
-        private void ReadStdOutputAction(string msg)
+        private void ReadStdOutputAction(string msg)//日志回显实现
         {
             if (solveProblemSystem)
             {
@@ -769,11 +774,7 @@ namespace MSL
             {
                 outlog.Document.Blocks.Clear();
             }
-            if ((msg.Contains("\tat ") && shieldStackOut.Content.ToString().Contains("开")) || (ShieldLog != null && msg.Contains(ShieldLog)))
-            {
-                return;
-            }
-            if (closeOutlog.Content.ToString() != "日志输出:开")
+            if ((msg.Contains("\tat ") && shieldStackOut.Content.ToString().Contains("开")) || (ShieldLog != null && msg.Contains(ShieldLog))|| closeOutlog.Content.ToString() != "日志输出:开")
             {
                 return;
             }
@@ -853,6 +854,32 @@ namespace MSL
             {
                 ShowLog(msg, tempbrush);
             }
+            if (msg.Contains("�")&&outlogEncodingAsk)
+            {
+                outlogEncodingAsk = false;
+                ShowLog("MSL检测到您的服务器输出了乱码日志，请尝试去“更多功能”界面更改服务器的“输出编码”来解决此问题！", Brushes.Red);
+                //Growl.Ask("");
+                string encoding = "UTF8";
+                if (outputCmdEncoding.Content.ToString().Contains("UTF8"))
+                {
+                    encoding = "ANSI";
+                }
+                Growl.Ask("MSL检测到您的服务器输出了乱码日志，是否将服务器输出编码更改为“" + encoding + "”？\n点击Confirm确认", isConfirmed =>
+                {
+                    if (isConfirmed)
+                    {
+                        JObject jsonObject = JObject.Parse(File.ReadAllText(AppDomain.CurrentDomain.BaseDirectory + @"MSL\ServerList.json", Encoding.UTF8));
+                        JObject _json = (JObject)jsonObject[RserverId];
+                        outputCmdEncoding.Content = "输出编码:" + encoding;
+                        _json["encoding_out"] = encoding;
+                        jsonObject[RserverId] = _json;
+                        File.WriteAllText(AppDomain.CurrentDomain.BaseDirectory + "MSL\\Serverlist.json", Convert.ToString(jsonObject), Encoding.UTF8);
+                        Growl.Success("更改完毕，请重启服务器使其生效！");
+                    }
+                    return true;
+                });
+
+            }
         }
         void GetServerInfoSys(string msg)
         {
@@ -915,14 +942,14 @@ namespace MSL
                             streamWriter.WriteLine(line);
                             streamWriter.Flush();
                             streamWriter.Close();
-                            if (!SERVERCMD.HasExited)
+                            if (!ServerProcess.HasExited)
                             {
-                                SERVERCMD.Kill();
+                                ServerProcess.Kill();
                             }
-                            SERVERCMD.CancelOutputRead();
-                            SERVERCMD.CancelErrorRead();
-                            SERVERCMD.OutputDataReceived -= new DataReceivedEventHandler(p_OutputDataReceived);
-                            SERVERCMD.ErrorDataReceived -= new DataReceivedEventHandler(p_OutputDataReceived);
+                            ServerProcess.CancelOutputRead();
+                            ServerProcess.CancelErrorRead();
+                            ServerProcess.OutputDataReceived -= new DataReceivedEventHandler(p_OutputDataReceived);
+                            ServerProcess.ErrorDataReceived -= new DataReceivedEventHandler(p_OutputDataReceived);
                             outlog.Document.Blocks.Clear();
                             ShowLog("正在重启服务器...", Brushes.Green);
                             LaunchServer();
@@ -1143,7 +1170,7 @@ namespace MSL
                     sr.Close();
                     if (text.IndexOf("online-mode=true") + 1 != 0)
                     {
-                        this.Dispatcher.Invoke(DispatcherPriority.Normal, (ThreadStart)delegate ()
+                        Dispatcher.InvokeAsync(() =>
                         {
                             ShowLog("检测到您没有关闭正版验证，如果客户端为离线登录的话，请点击“更多功能”里“关闭正版验证”按钮以关闭正版验证。否则离线账户将无法进入服务器！", Brushes.OrangeRed);
                             Growl.Info("检测到您没有关闭正版验证，您可前往“更多功能”界面点击“关闭正版验证”按钮以关闭。否则离线账户无法进入服务器！");
@@ -1153,17 +1180,17 @@ namespace MSL
                     }
                     else if (text.IndexOf("online-mode=false") + 1 != 0)
                     {
-                        this.Dispatcher.Invoke(DispatcherPriority.Normal, (ThreadStart)delegate ()
+                        Dispatcher.InvokeAsync(() =>
                         { onlineModeLab.Content = "已关闭"; }); break;
                     }
                 }
                 catch
                 {
-                    this.Dispatcher.Invoke(DispatcherPriority.Normal, (ThreadStart)delegate ()
+                    Dispatcher.InvokeAsync(() =>
                     { onlineModeLab.Content = "未知"; }); break;
                 }
             }
-            this.Dispatcher.Invoke(DispatcherPriority.Normal, (ThreadStart)delegate ()
+            Dispatcher.InvokeAsync(() =>
             { if (onlineModeLab.Content.ToString() == "获取中") onlineModeLab.Content = "未知"; });
         }
         void ProblemSystemShow(string msg)
@@ -1376,41 +1403,50 @@ namespace MSL
             }
         }
         
-        void timer1_Tick(object sender, EventArgs e)
+        private void CheckServerExit()
         {
-            if (SERVERCMD.HasExited == true)
+            try
             {
-                timer1.Stop();
-                ChangeControlsState(false);
-                if (solveProblemSystem)
+                while (!ServerProcess.HasExited)
                 {
-                    solveProblemSystem = false;
-                    if (foundProblems == null)
-                    {
-                        Growl.Info("服务器已关闭！开服器未检测到相关问题，请加Q群寻求帮助（附带崩溃日志截图）：1145888872！");
-                    }
-                    else
-                    {
-                        Growl.Info("服务器已关闭！即将为您展示分析报告！");
-                        DialogShow.ShowMsg(this, foundProblems, "服务器分析报告");
-                        foundProblems = null;
-                    }
+                    Thread.Sleep(1000);
                 }
-                else if (autoserver == true)
+            }
+            finally
+            {
+                Dispatcher.InvokeAsync(() =>
                 {
-                    LaunchServer();
-                }
-                else if (getServerInfoLine <= 100)
-                {
-                    DialogShow.ShowMsg(this, "您的服务器疑似异常关闭，是否使用崩溃分析系统进行检测？", "提示", true, "取消");
-                    if (MessageDialog._dialogReturn)
+                    ChangeControlsState(false);
+                    if (solveProblemSystem)
                     {
-                        MessageDialog._dialogReturn = false;
-                        TabCtrl.SelectedIndex = 1;
-                        solveProblemSystem = true;
+                        solveProblemSystem = false;
+                        if (foundProblems == null)
+                        {
+                            Growl.Info("服务器已关闭！开服器未检测到相关问题，请加Q群寻求帮助（附带崩溃日志截图）：1145888872！");
+                        }
+                        else
+                        {
+                            Growl.Info("服务器已关闭！即将为您展示分析报告！");
+                            DialogShow.ShowMsg(this, foundProblems, "服务器分析报告");
+                            foundProblems = null;
+                        }
+                    }
+                    else if (autoserver == true)
+                    {
                         LaunchServer();
                     }
-                }
+                    else if (getServerInfoLine <= 100)
+                    {
+                        DialogShow.ShowMsg(this, "您的服务器疑似异常关闭，是否使用崩溃分析系统进行检测？", "提示", true, "取消");
+                        if (MessageDialog._dialogReturn)
+                        {
+                            MessageDialog._dialogReturn = false;
+                            TabCtrl.SelectedIndex = 1;
+                            solveProblemSystem = true;
+                            LaunchServer();
+                        }
+                    }
+                });
             }
         }
 
@@ -1523,13 +1559,13 @@ namespace MSL
         void SendCmdUTF8(string cmd)
         {
             byte[] utf8Bytes = Encoding.UTF8.GetBytes(cmd);
-            SERVERCMD.StandardInput.BaseStream.Write(utf8Bytes, 0, utf8Bytes.Length);
-            SERVERCMD.StandardInput.WriteLine();
+            ServerProcess.StandardInput.BaseStream.Write(utf8Bytes, 0, utf8Bytes.Length);
+            ServerProcess.StandardInput.WriteLine();
             cmdtext.Text = "";
         }
         void SendCmdANSL(string cmd)
         {
-            SERVERCMD.StandardInput.WriteLine(cmd);
+            ServerProcess.StandardInput.WriteLine(cmd);
             cmdtext.Text = "";
         }
         private void sendcmd_Click(object sender, RoutedEventArgs e)
@@ -1734,7 +1770,7 @@ namespace MSL
             {
                 getServerInfoLine = 101;
                 Growl.Info("关服中，请耐心等待……\n双击按钮可强制关服（不建议）");
-                SERVERCMD.StandardInput.WriteLine("stop");
+                ServerProcess.StandardInput.WriteLine("stop");
             }
         }
 
@@ -1744,7 +1780,7 @@ namespace MSL
             {
                 if (controlServer.Content.ToString() == "关服")
                 {
-                    SERVERCMD.Kill();
+                    ServerProcess.Kill();
                 }
             }
             catch { }
@@ -1918,7 +1954,7 @@ namespace MSL
         {
             try
             {
-                if (SERVERCMD.HasExited == false)
+                if (ServerProcess.HasExited == false)
                 {
                     DialogShow.ShowMsg(this, "您没有关闭服务器，无法调整服务器功能！", "错误", false, "确定");
                     return;
@@ -1947,7 +1983,7 @@ namespace MSL
         {
             try
             {
-                if (SERVERCMD.HasExited == false)
+                if (ServerProcess.HasExited == false)
                 {
                     DialogShow.ShowMsg(this, "您没有关闭服务器，无法更换图标！", "错误");
                     return;
@@ -1980,7 +2016,7 @@ namespace MSL
         {
             try
             {
-                if (SERVERCMD.HasExited == false)
+                if (ServerProcess.HasExited == false)
                 {
                     DialogShow.ShowMsg(this, "您没有关闭服务器，无法更换地图！", "错误");
                     return;
@@ -2453,28 +2489,32 @@ namespace MSL
         {
             LoadSettings();
         }
-        private void doneBtn1_Click(object sender, RoutedEventArgs e)
+        private async Task<JObject> AsyncGetJavaDwnLink()
+        {
+            WebClient MyWebClient = new WebClient();
+            byte[] pageData = await MyWebClient.DownloadDataTaskAsync(MainWindow.serverLink + @"/msl/otherdownload.json");
+            string _javaList = Encoding.UTF8.GetString(pageData);
+
+            JObject javaList0 = JObject.Parse(_javaList);
+            JObject javaList = (JObject)javaList0["java"];
+            return javaList;
+        }
+
+        private async void doneBtn1_Click(object sender, RoutedEventArgs e)
         {
             try
             {
-                if (SERVERCMD.HasExited == false)
+                if (ServerProcess.HasExited == false)
                 {
                     DialogShow.ShowMsg(this, "您没有关闭服务器，无法更改服务器设置！", "错误", false, "确定");
                     return;
                 }
             }
-            catch
-            { }
+            catch { }
             try
             {
-                WebClient MyWebClient = new WebClient();
-                byte[] pageData = MyWebClient.DownloadData(MainWindow.serverLink + @"/msl/otherdownload.json");
-                string _javaList = Encoding.UTF8.GetString(pageData);
-
-                JObject javaList0 = JObject.Parse(_javaList);
-                JObject javaList = (JObject)javaList0["java"];
-
                 doneBtn1.IsEnabled = false;
+                refreahConfig.IsEnabled = false;
                 if (useJVMauto.IsChecked == true)
                 {
                     RserverJVM = "";
@@ -2485,31 +2525,60 @@ namespace MSL
                 }
                 if (useDownJv.IsChecked == true)
                 {
+                    downout.Content = "获取Java地址...";
+                    JObject javaList = await AsyncGetJavaDwnLink();
+                    int dwnJava = 0;
                     try
                     {
-                        switch (selectJava.SelectedIndex)
+                        await Dispatcher.InvokeAsync(() =>
                         {
-                            case 0:
-                                DownloadJava("Java8", javaList["Java8"].ToString());
+                            switch (selectJava.SelectedIndex)
+                            {
+                                case 0:
+                                    dwnJava=DownloadJava("Java8", javaList["Java8"].ToString());
+                                    break;
+                                case 1:
+                                    dwnJava = DownloadJava("Java11", javaList["Java11"].ToString());
+                                    break;
+                                case 2:
+                                    dwnJava = DownloadJava("Java16", javaList["Java16"].ToString());
+                                    break;
+                                case 3:
+                                    dwnJava = DownloadJava("Java17", javaList["Java17"].ToString());
+                                    break;
+                                case 4:
+                                    dwnJava = DownloadJava("Java18", javaList["Java18"].ToString());
+                                    break;
+                                case 5:
+                                    dwnJava = DownloadJava("Java19", javaList["Java19"].ToString());
+                                    break;
+                                default:
+                                    Growl.Error("请选择一个版本以下载！");
+                                    return;
+                            }
+                        });
+                        if (dwnJava == 1)
+                        {
+                            downout.Content = "解压中...";
+                            bool unzipJava = await UnzipJava();
+                            if (!unzipJava)
+                            {
+                                DialogShow.ShowMsg(this, "安装失败，请查看是否有杀毒软件进行拦截！请确保添加信任或关闭杀毒软件后进行重新安装！", "错误");
                                 return;
-                            case 1:
-                                DownloadJava("Java11", javaList["Java11"].ToString());
-                                return;
-                            case 2:
-                                DownloadJava("Java16", javaList["Java16"].ToString());
-                                return;
-                            case 3:
-                                DownloadJava("Java17", javaList["Java17"].ToString());
-                                return;
-                            case 4:
-                                DownloadJava("Java18", javaList["Java18"].ToString());
-                                return;
-                            case 5:
-                                DownloadJava("Java19", javaList["Java19"].ToString());
-                                return;
-                            default:
-                                Growl.Error("请选择一个版本以下载！");
-                                return;
+                            }
+                            downout.Content = "完成";
+                        }
+                        else if (dwnJava == 2)
+                        {
+                            downout.Content = "完成";
+                        }
+                        else
+                        {
+                            DialogShow.ShowMsg(this, "下载取消！", "提示");
+                            downout.Content = "下载取消";
+                            doneBtn1.IsEnabled = true;
+                            refreahConfig.IsEnabled = true;
+                            return;
                         }
                     }
                     catch
@@ -2536,17 +2605,21 @@ namespace MSL
                 }
                 //Directory.CreateDirectory(bAse.Text);
                 doneBtn1.IsEnabled = true;
+                refreahConfig.IsEnabled = true;
                 Rservername = nAme.Text;
                 Title = Rservername;
                 Rserverserver = server.Text;
-                if (Rserverbase != bAse.Text)
+                await Dispatcher.InvokeAsync(() =>
                 {
-                    bool dialog = DialogShow.ShowMsg(this, "检测到您更改了服务器目录，是否将当前的服务器目录移动至新的目录？", "警告", true, "取消");
-                    if (dialog)
+                    if (Rserverbase != bAse.Text)
                     {
-                        Functions.MoveFolder(Rserverbase, bAse.Text);
+                        bool dialog = DialogShow.ShowMsg(this, "检测到您更改了服务器目录，是否将当前的服务器目录移动至新的目录？", "警告", true, "取消");
+                        if (dialog)
+                        {
+                            Functions.MoveFolder(Rserverbase, bAse.Text);
+                        }
                     }
-                }
+                });
                 Rserverbase = bAse.Text;
                 RserverJVMcmd = jVMcmd.Text;
                 Rserverjava = jAva.Text;
@@ -2570,143 +2643,76 @@ namespace MSL
             {
                 MessageBox.Show("出现错误！请重试:\n" + err.Message, "ERROR", MessageBoxButton.OK, MessageBoxImage.Error);
                 doneBtn1.IsEnabled = true;
+                refreahConfig.IsEnabled = true;
             }
         }
 
-        private void DownloadJava(string fileName, string downUrl)
+        private int DownloadJava(string fileName, string downUrl)
         {
             jAva.Text = AppDomain.CurrentDomain.BaseDirectory + @"MSL\" + fileName + @"\bin\java.exe";
             if (File.Exists(AppDomain.CurrentDomain.BaseDirectory + @"MSL\" + fileName + @"\bin\java.exe"))
             {
-                doneBtn1.IsEnabled = true;
-                Rservername = nAme.Text;
-                Title = Rservername;
-                Rserverserver = server.Text;
-                if (Rserverbase != bAse.Text)
-                {
-                    bool dialog = DialogShow.ShowMsg(this, "检测到您更改了服务器目录，是否将当前的服务器目录移动至新的目录？", "警告", true, "取消");
-                    if (dialog)
-                    {
-                        Functions.MoveFolder(Rserverbase, bAse.Text);
-                    }
-                }
-                Rserverbase = bAse.Text;
-                RserverJVMcmd = jVMcmd.Text;
-                Rserverjava = jAva.Text;
-
-                JObject jsonObject = JObject.Parse(File.ReadAllText(AppDomain.CurrentDomain.BaseDirectory + @"MSL\ServerList.json", Encoding.UTF8));
-                JObject _json = (JObject)jsonObject[RserverId];
-                _json["name"].Replace(Rservername);
-                _json["java"].Replace(Rserverjava);
-                _json["base"].Replace(Rserverbase);
-                _json["core"].Replace(Rserverserver);
-                _json["memory"].Replace(RserverJVM);
-                _json["args"].Replace(RserverJVMcmd);
-                jsonObject[RserverId].Replace(_json);
-                File.WriteAllText(AppDomain.CurrentDomain.BaseDirectory + @"MSL\ServerList.json", Convert.ToString(jsonObject), Encoding.UTF8);
-                LoadSettings();
-                SaveConfigEvent();
-
-                DialogShow.ShowMsg(this, "保存完毕！", "信息");
+                return 2;
             }
             else
             {
-                //MessageBox.Show("下载Java即代表您接受Java的服务条款https://www.oracle.com/downloads/licenses/javase-license1.html", "INFO", MessageBoxButton.OK, MessageBoxImage.Information);
                 DialogShow.ShowMsg(this, "下载Java即代表您接受Java的服务条款https://www.oracle.com/downloads/licenses/javase-license1.html", "信息", false, "确定");
                 //MessageDialog messageDialog = new MessageDialog();
                 //messageDialog.Owner = this;
                 //messageDialog.ShowDialog();
-                if (!File.Exists(AppDomain.CurrentDomain.BaseDirectory + @"MSL\" + fileName + @"\bin\java.exe"))
+                DownjavaName = fileName;
+                //DownloadWindow.downloadurl = RserverLink +@"/msl/Java8.exe";
+                bool downDialog = DialogShow.ShowDownload(this, downUrl, AppDomain.CurrentDomain.BaseDirectory + "MSL", "Java.zip", "下载" + fileName + "中……");
+                if (downDialog)
                 {
-                    DownjavaName = fileName;
-                    //DownloadWindow.downloadurl = RserverLink +@"/msl/Java8.exe";
-                    DialogShow.ShowDownload(this, downUrl, AppDomain.CurrentDomain.BaseDirectory + "MSL", "Java.zip", "下载" + fileName + "中……");
-                    downout.Content = "解压中...";
-                    try
+                    return 1;
+                }
+                else
+                {
+                    return 0;
+                }
+            }
+        }
+
+        private async Task<bool> UnzipJava()
+        {
+            try
+            {
+                string javaDirName = "";
+                using (ZipFile zip = new ZipFile(AppDomain.CurrentDomain.BaseDirectory + @"MSL\Java.zip"))
+                {
+                    foreach (ZipEntry entry in zip)
                     {
-                        string javaDirName = "";
-                        using (ZipFile zip = new ZipFile(AppDomain.CurrentDomain.BaseDirectory + @"MSL\Java.zip"))
+                        if (entry.IsDirectory == true)
                         {
-                            foreach (ZipEntry entry in zip)
+                            int c0 = entry.Name.Length - entry.Name.Replace("/", "").Length;
+                            if (c0 == 1)
                             {
-                                if (entry.IsDirectory == true)
-                                {
-                                    int c0 = entry.Name.Length - entry.Name.Replace("/", "").Length;
-                                    if (c0 == 1)
-                                    {
-                                        javaDirName = entry.Name.Replace("/", "");
-                                        break;
-                                    }
-                                }
+                                javaDirName = entry.Name.Replace("/", "");
+                                break;
                             }
                         }
-                        FastZip fastZip = new FastZip();
-                        fastZip.ExtractZip(AppDomain.CurrentDomain.BaseDirectory + @"MSL\Java.zip", AppDomain.CurrentDomain.BaseDirectory + "MSL", "");
-                        downout.Content = "解压完成，移动中...";
-                        File.Delete(AppDomain.CurrentDomain.BaseDirectory + @"MSL\Java.zip");
-                        timer2.Interval = TimeSpan.FromSeconds(3);
-                        timer2.Start();
-                        if (AppDomain.CurrentDomain.BaseDirectory + @"MSL\" + javaDirName != AppDomain.CurrentDomain.BaseDirectory + @"MSL\" + DownjavaName)
-                        {
-                            Functions.MoveFolder(AppDomain.CurrentDomain.BaseDirectory + @"MSL\" + javaDirName, AppDomain.CurrentDomain.BaseDirectory + @"MSL\" + DownjavaName);
-                        }
-                    }
-                    catch
-                    {
-                        MessageBox.Show("安装失败，请查看是否有杀毒软件进行拦截！请确保添加信任或关闭杀毒软件后进行重新安装！", "错误", MessageBoxButton.OK, MessageBoxImage.Error);
-                        downout.Content = "安装失败！";
-                        doneBtn1.IsEnabled = true;
                     }
                 }
-
+                FastZip fastZip = new FastZip();
+                await Task.Run(() => fastZip.ExtractZip(AppDomain.CurrentDomain.BaseDirectory + @"MSL\Java.zip", AppDomain.CurrentDomain.BaseDirectory + "MSL", ""));
+                File.Delete(AppDomain.CurrentDomain.BaseDirectory + @"MSL\Java.zip");
+                if (AppDomain.CurrentDomain.BaseDirectory + @"MSL\" + javaDirName != AppDomain.CurrentDomain.BaseDirectory + @"MSL\" + DownjavaName)
+                {
+                    Functions.MoveFolder(AppDomain.CurrentDomain.BaseDirectory + @"MSL\" + javaDirName, AppDomain.CurrentDomain.BaseDirectory + @"MSL\" + DownjavaName);
+                }
+                while (!File.Exists(AppDomain.CurrentDomain.BaseDirectory + @"MSL\" + DownjavaName + @"\bin\java.exe"))
+                {
+                    await Task.Delay(1000);
+                }
+                return true;
             }
-        }
-        
-        private void timer2_Tick(object sender, EventArgs e)
-        {
-            if (File.Exists(AppDomain.CurrentDomain.BaseDirectory + @"MSL\" + DownjavaName + @"\bin\java.exe"))
+            catch
             {
-                try
-                {
-                    if (useJVMauto.IsChecked == true)
-                    {
-                        RserverJVM = "";
-                    }
-                    else
-                    {
-                        RserverJVM = "-Xms" + memorySlider.ValueStart.ToString("f0") + "M" + " -Xmx" + memorySlider.ValueEnd.ToString("f0") + "M";
-                    }
-                    downout.Content = "安装成功！";
-                    doneBtn1.IsEnabled = true;
-                    Rservername = nAme.Text;
-                    Title = Rservername;
-                    Rserverserver = server.Text;
-                    Rserverbase = bAse.Text;
-                    RserverJVMcmd = jVMcmd.Text;
-                    Rserverjava = jAva.Text;
-
-                    JObject jsonObject = JObject.Parse(File.ReadAllText(AppDomain.CurrentDomain.BaseDirectory + @"MSL\ServerList.json", Encoding.UTF8));
-                    JObject _json = (JObject)jsonObject[RserverId];
-                    _json["name"].Replace(Rservername);
-                    _json["java"].Replace(Rserverjava);
-                    _json["base"].Replace(Rserverbase);
-                    _json["core"].Replace(Rserverserver);
-                    _json["memory"].Replace(RserverJVM);
-                    _json["args"].Replace(RserverJVMcmd);
-                    jsonObject[RserverId].Replace(_json);
-                    File.WriteAllText(AppDomain.CurrentDomain.BaseDirectory + @"MSL\ServerList.json", Convert.ToString(jsonObject), Encoding.UTF8);
-                    LoadSettings();
-                    SaveConfigEvent();
-
-                    DialogShow.ShowMsg(this, "保存完毕！", "信息");
-                    timer2.Stop();
-                }
-                catch
-                {
-                    return;
-                }
+                return false;
             }
         }
+
         private void a01_Click(object sender, RoutedEventArgs e)
         {
             OpenFileDialog openfile = new OpenFileDialog();
@@ -2953,49 +2959,65 @@ namespace MSL
         {
             JObject jsonObject = JObject.Parse(File.ReadAllText(AppDomain.CurrentDomain.BaseDirectory + @"MSL\ServerList.json", Encoding.UTF8));
             JObject _json = (JObject)jsonObject[RserverId];
-            if (inputCmdEncoding.Content.ToString() == "输入编码:ANSL")
+            if (inputCmdEncoding.Content.ToString() == "输入编码:ANSI")
             {
                 inputCmdEncoding.Content = "输入编码:UTF8";
                 _json["encoding_in"] = "UTF8";
             }
             else if (inputCmdEncoding.Content.ToString() == "输入编码:UTF8")
             {
-                inputCmdEncoding.Content = "输入编码:ANSL";
-                _json["encoding_in"] = "ANSL";
+                inputCmdEncoding.Content = "输入编码:ANSI";
+                _json["encoding_in"] = "ANSI";
             }
             jsonObject[RserverId] = _json;
             File.WriteAllText(AppDomain.CurrentDomain.BaseDirectory + "MSL\\Serverlist.json", Convert.ToString(jsonObject), Encoding.UTF8);
+            Growl.Success("编码更改已生效！");
         }
         private void outputCmdEncoding_Click(object sender, RoutedEventArgs e)
         {
             JObject jsonObject = JObject.Parse(File.ReadAllText(AppDomain.CurrentDomain.BaseDirectory + @"MSL\ServerList.json", Encoding.UTF8));
             JObject _json = (JObject)jsonObject[RserverId];
-            if (outputCmdEncoding.Content.ToString() == "输出编码:ANSL")
+            if (outputCmdEncoding.Content.ToString() == "输出编码:ANSI")
             {
                 outputCmdEncoding.Content = "输出编码:UTF8";
                 _json["encoding_out"] = "UTF8";
             }
             else if (outputCmdEncoding.Content.ToString() == "输出编码:UTF8")
             {
-                outputCmdEncoding.Content = "输出编码:ANSL";
-                _json["encoding_out"] = "ANSL";
+                outputCmdEncoding.Content = "输出编码:ANSI";
+                _json["encoding_out"] = "ANSI";
             }
             jsonObject[RserverId] = _json;
             File.WriteAllText(AppDomain.CurrentDomain.BaseDirectory + "MSL\\Serverlist.json", Convert.ToString(jsonObject), Encoding.UTF8);
+            try
+            {
+                if (ServerProcess.HasExited)
+                {
+                    Growl.Success("编码更改已生效！");
+                }
+                else
+                {
+                    Growl.Success("编码已更改，重启服务器后生效！");
+                }
+            }
+            catch
+            {
+                Growl.Success("编码更改已生效！");
+            }
         }
-        private void forceUTF8encoding_Click(object sender, RoutedEventArgs e)
+        private void fileforceUTF8encoding_Click(object sender, RoutedEventArgs e)
         {
             JObject jsonObject = JObject.Parse(File.ReadAllText(AppDomain.CurrentDomain.BaseDirectory + @"MSL\ServerList.json", Encoding.UTF8));
             JObject _json = (JObject)jsonObject[RserverId]; 
-            if (forceUTF8encoding.Content.ToString().Contains("开"))
+            if (fileforceUTF8encoding.Content.ToString().Contains("开"))
             {
-                forceUTF8encoding.Content = "强制UTF8编码:关";
-                _json["forceUTF8"] = "False";
+                fileforceUTF8encoding.Content = "强制服务器文件UTF8编码:关";
+                _json["fileforceUTF8"] = "False";
             }
-            else if (forceUTF8encoding.Content.ToString().Contains("关"))
+            else if (fileforceUTF8encoding.Content.ToString().Contains("关"))
             {
-                forceUTF8encoding.Content = "强制UTF8编码:开";
-                _json["forceUTF8"] = "True";
+                fileforceUTF8encoding.Content = "强制服务器文件UTF8编码:开";
+                _json["fileforceUTF8"] = "True";
             }
             jsonObject[RserverId] = _json;
             File.WriteAllText(AppDomain.CurrentDomain.BaseDirectory + "MSL\\Serverlist.json", Convert.ToString(jsonObject), Encoding.UTF8);
@@ -3004,14 +3026,14 @@ namespace MSL
         {
             try
             {
-                if (SERVERCMD.HasExited == false)
+                if (ServerProcess.HasExited == false)
                 {
                     //MessageBox.Show("检测到服务器正在运行，正在关闭服务器");
                     DialogShow.ShowMsg(this, "检测到服务器正在运行，正在关闭服务器", "信息", false, "确定");
                     //MessageDialog messageDialog = new MessageDialog();
                     //messageDialog.Owner = this;
                     //messageDialog.ShowDialog();
-                    SERVERCMD.StandardInput.WriteLine("stop");
+                    ServerProcess.StandardInput.WriteLine("stop");
                 }
                 try
                 {
@@ -3335,10 +3357,10 @@ namespace MSL
                 {
                     try
                     {
-                        if (SERVERCMD.HasExited == false)
+                        if (ServerProcess.HasExited == false)
                         {
-                            SERVERCMD.StandardInput.WriteLine(cmd);
-                            this.Dispatcher.Invoke(DispatcherPriority.Normal, (ThreadStart)delegate ()
+                            ServerProcess.StandardInput.WriteLine(cmd);
+                            Dispatcher.InvokeAsync(() =>
                             {
                                 if (tasksList.SelectedIndex != -1 && taskID[tasksList.SelectedIndex] == id)
                                 {
@@ -3349,7 +3371,7 @@ namespace MSL
                     }
                     catch
                     {
-                        this.Dispatcher.Invoke(DispatcherPriority.Normal, (ThreadStart)delegate ()
+                        Dispatcher.InvokeAsync(() =>
                         {
                             if (tasksList.SelectedIndex != -1 && taskID[tasksList.SelectedIndex] == id)
                             {

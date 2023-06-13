@@ -57,7 +57,7 @@ namespace MSL.pages
                 //string filename = serverlist.SelectedItem.ToString();
                 string downUrl = serverdownurl[url].ToString();
                 
-                //MessageBox.Show(downloadurl);
+                //MessageBox.Show(downUrl);
                 
                 if (serverlist.SelectedItem.ToString().IndexOf("（") + 1 != 0)
                 {
@@ -124,7 +124,7 @@ namespace MSL.pages
                     MainWindow.serverLink = "https://msl.waheal.top";
                 }
             }
-            this.Dispatcher.Invoke(DispatcherPriority.Normal, (ThreadStart)delegate ()
+            Dispatcher.InvokeAsync(() =>
             {
                 serverlist.ItemsSource = null;
                 serverlist1.ItemsSource = null;
@@ -140,7 +140,7 @@ namespace MSL.pages
                 }
                 else
                 {
-                    url = MainWindow.serverLink + "/api";
+                    url = "https://api.waheal.top";
                 }
                 WebClient webClient = new WebClient();
                 //webClient.Encoding = Encoding.UTF8;
@@ -149,7 +149,7 @@ namespace MSL.pages
                 byte[] pageData = webClient.DownloadData(url);
                 string jsonData = Encoding.UTF8.GetString(pageData);
                 string[] serverTypes = JsonConvert.DeserializeObject<string[]>(jsonData);
-                this.Dispatcher.Invoke(DispatcherPriority.Normal, (ThreadStart)delegate ()
+                Dispatcher.InvokeAsync(() =>
                 {
                     /*
                     foreach (var serverType in serverTypes)
@@ -171,10 +171,10 @@ namespace MSL.pages
                     //webClient.Encoding = Encoding.UTF8;
                     webClient.Credentials = CredentialCache.DefaultCredentials;
                     //byte[] pageData = webClient.DownloadData(MainWindow.serverLink + @"/msl/CC/getserver.txt");
-                    byte[] pageData = webClient.DownloadData("https://msl.waheal.top/api");
+                    byte[] pageData = webClient.DownloadData("https://api.waheal.top");
                     string jsonData = Encoding.UTF8.GetString(pageData);
                     string[] serverTypes = JsonConvert.DeserializeObject<string[]>(jsonData);
-                    this.Dispatcher.Invoke(DispatcherPriority.Normal, (ThreadStart)delegate ()
+                    Dispatcher.InvokeAsync(() =>
                     {
                         /*
                         foreach (var serverType in serverTypes)
@@ -190,7 +190,7 @@ namespace MSL.pages
                 }
                 catch (Exception a)
                 {
-                    this.Dispatcher.Invoke(DispatcherPriority.Normal, (ThreadStart)delegate ()
+                    Dispatcher.InvokeAsync(() =>
                     {
                         getservermsg.Text = "获取服务端失败！请重试" + a.Message;
                         lCircle.Visibility = Visibility.Hidden;
@@ -244,13 +244,13 @@ namespace MSL.pages
                     //MessageBox.Show(jsonObject.ToString());
                     foreach (var x in jsonObject)
                     {
-                        this.Dispatcher.Invoke(DispatcherPriority.Normal, (ThreadStart)delegate ()
+                        Dispatcher.InvokeAsync(() =>
                         {
                             serverlist.Items.Add(x.Key);
                         });
                         //MessageBox.Show( x.Value.ToString(), x.Key);
                     }
-                    this.Dispatcher.Invoke(DispatcherPriority.Normal, (ThreadStart)delegate ()
+                    Dispatcher.InvokeAsync(() =>
                     {
                         serverlist.SelectedIndex = 0;
                         getservermsg.Visibility = Visibility.Hidden;
@@ -263,7 +263,7 @@ namespace MSL.pages
             }
             catch (Exception a)
             {
-                this.Dispatcher.Invoke(DispatcherPriority.Normal, (ThreadStart)delegate ()
+                Dispatcher.InvokeAsync(() =>
                 {
                     getservermsg.Text = "获取服务端失败！请重试" + a.Message;
                     lCircle.Visibility = Visibility.Hidden;
@@ -286,7 +286,7 @@ namespace MSL.pages
             try
             {
                 int serverName = 0;
-                this.Dispatcher.Invoke(DispatcherPriority.Normal, (ThreadStart)delegate ()
+                Dispatcher.InvokeAsync(() =>
                 {
                     serverlist1.ItemsSource = null;
                     //serverurl.Clear();
@@ -303,7 +303,7 @@ namespace MSL.pages
                 }
                 else
                 {
-                    url = MainWindow.serverLink + "/api/server";
+                    url = "https://api.waheal.top/server";
                 }
                 string PostUrl = url;
                 JObject patientinfo = new JObject();
@@ -312,7 +312,7 @@ namespace MSL.pages
                 string resultData = Functions.Post(sendData, PostUrl);
                 JObject serverDetails = JObject.Parse(resultData);
                 List<JProperty> sortedProperties = serverDetails.Properties().OrderByDescending(p => Functions.VersionCompare(p.Name)).ToList();
-                this.Dispatcher.Invoke(DispatcherPriority.Normal, (ThreadStart)delegate ()
+                Dispatcher.InvokeAsync(() =>
                 {
                     serverlist1.ItemsSource = sortedProperties.Select(p => p.Name).ToList();
                     serverdownurl = sortedProperties.Select(p => p.Value.ToString()).ToList();
@@ -326,7 +326,7 @@ namespace MSL.pages
                 try
                 {
                     int serverName = 0;
-                    this.Dispatcher.Invoke(DispatcherPriority.Normal, (ThreadStart)delegate ()
+                    Dispatcher.InvokeAsync(() =>
                     {
                         serverlist1.ItemsSource = null;
                         //serverurl.Clear();
@@ -336,14 +336,14 @@ namespace MSL.pages
                         serverName = serverlist.SelectedIndex;
                         //serverName = serverlist.SelectedItem.ToString();
                     });
-                    string PostUrl = MainWindow.serverLink + "https://msl.waheal.top/api/server";
+                    string PostUrl = "https://api.waheal.top/server";
                     JObject patientinfo = new JObject();
                     patientinfo["server_name"] = serverName;
                     string sendData = JsonConvert.SerializeObject(patientinfo);
                     string resultData = Functions.Post(sendData, PostUrl);
                     JObject serverDetails = JObject.Parse(resultData);
                     List<JProperty> sortedProperties = serverDetails.Properties().OrderByDescending(p => Functions.VersionCompare(p.Name)).ToList();
-                    this.Dispatcher.Invoke(DispatcherPriority.Normal, (ThreadStart)delegate ()
+                    Dispatcher.InvokeAsync(() =>
                     {
                         serverlist1.ItemsSource = sortedProperties.Select(p => p.Name).ToList();
                         serverdownurl = sortedProperties.Select(p => p.Value.ToString()).ToList();
@@ -354,7 +354,7 @@ namespace MSL.pages
                 }
                 catch(Exception a)
                 {
-                    this.Dispatcher.Invoke(DispatcherPriority.Normal, (ThreadStart)delegate ()
+                    Dispatcher.InvokeAsync(() =>
                     {
                         getservermsg.Text = "获取服务端失败！请重试" + a.Message;
                         lCircle.Visibility = Visibility.Hidden;
@@ -362,7 +362,7 @@ namespace MSL.pages
                 }
             }
             /*
-            this.Dispatcher.Invoke(DispatcherPriority.Normal, (ThreadStart)delegate ()
+            Dispatcher.InvokeAsync(() =>
             {
                 try
                 {

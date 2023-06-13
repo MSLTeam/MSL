@@ -76,7 +76,7 @@ namespace MSL.pages
                 if (reply.Status == IPStatus.Success)
                 {
                     // 节点在线，可以获取延迟等信息
-                    this.Dispatcher.Invoke(DispatcherPriority.Normal, (ThreadStart)delegate ()
+                    Dispatcher.InvokeAsync(() =>
                     {
                         serverState.Text = "服务器状态：可用";
                     });
@@ -84,7 +84,7 @@ namespace MSL.pages
                 else
                 {
                     // 节点离线
-                    this.Dispatcher.Invoke(DispatcherPriority.Normal, (ThreadStart)delegate ()
+                    Dispatcher.InvokeAsync(() =>
                     {
                         serverState.Text = "服务器状态：检测超时，服务器可能下线";
                     });
@@ -92,7 +92,7 @@ namespace MSL.pages
             }
             catch
             {
-                this.Dispatcher.Invoke(DispatcherPriority.Normal, (ThreadStart)delegate ()
+                Dispatcher.InvokeAsync(() =>
                 {
                     serverState.Text = "服务器状态：检测失败，服务器可能下线";
                 });

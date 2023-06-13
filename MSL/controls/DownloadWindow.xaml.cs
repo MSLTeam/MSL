@@ -72,7 +72,7 @@ namespace MSL
 
         private void OnDownloadStarted(object sender, DownloadStartedEventArgs e)
         {
-            this.Dispatcher.Invoke(DispatcherPriority.Normal, (ThreadStart)delegate ()
+            Dispatcher.InvokeAsync(() =>
             {
                 infolabel.Text = "获取下载地址……大小：" + e.TotalBytesToReceive / 1024 / 1024 + "MB";
             });
@@ -81,7 +81,7 @@ namespace MSL
         {
             if (isStopDwn == true)
             {
-                this.Dispatcher.Invoke(DispatcherPriority.Normal, (ThreadStart)delegate ()
+                Dispatcher.InvokeAsync(() =>
                 {
                     infolabel.Text = "取消成功！";
                     try
@@ -93,7 +93,7 @@ namespace MSL
             }
             else
             {
-                this.Dispatcher.Invoke(DispatcherPriority.Normal, (ThreadStart)delegate ()
+                Dispatcher.InvokeAsync(() =>
                 {
                     infolabel.Text = "下载完成！";
                     pbar.Value = 100;
@@ -120,7 +120,7 @@ namespace MSL
             else
             {
                 counter = 0;
-                this.Dispatcher.Invoke(DispatcherPriority.Normal, (ThreadStart)delegate ()
+                Dispatcher.InvokeAsync(() =>
                 {
                     infolabel.Text = "已下载：" + e.ReceivedBytesSize / 1024 / 1024 + "MB/" + e.TotalBytesToReceive / 1024 / 1024 + "MB" + " 进度：" + e.ProgressPercentage.ToString("f2") + "%" + " 速度：" + (e.BytesPerSecondSpeed / 1024 / 1024).ToString("f2") + "MB/s";
                     pbar.Value = e.ProgressPercentage;

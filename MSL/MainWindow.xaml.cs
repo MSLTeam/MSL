@@ -108,7 +108,7 @@ namespace MSL
                 if (!File.Exists(AppDomain.CurrentDomain.BaseDirectory + @"MSL\config.json"))
                 {
                     Process.Start("https://www.waheal.top/eula.html");
-                    this.Dispatcher.Invoke(DispatcherPriority.Normal, (ThreadStart)delegate ()
+                    Dispatcher.InvokeAsync(() =>
                     {
                         DialogShow.ShowMsg(this, "请阅读并同意MSL开服器使用协议：https://www.waheal.top/eula.html", "提示", true, "不同意", "同意");
                         if (!MessageDialog._dialogReturn)
@@ -160,7 +160,7 @@ namespace MSL
                 }
                 else if (jsonObject["notifyIcon"].ToString() == "True")
                 {
-                    this.Dispatcher.Invoke(DispatcherPriority.Normal, (ThreadStart)delegate ()
+                    Dispatcher.InvokeAsync(() =>
                     {
                         CtrlNotifyIcon();
                     });
@@ -181,7 +181,7 @@ namespace MSL
                     jobject.Add("sidemenu", "0");
                     string convertString = Convert.ToString(jobject);
                     File.WriteAllText(AppDomain.CurrentDomain.BaseDirectory + @"MSL\config.json", convertString, Encoding.UTF8);
-                    this.Dispatcher.Invoke(DispatcherPriority.Normal, (ThreadStart)delegate ()
+                    Dispatcher.InvokeAsync(() =>
                     {
                         sideMenuContextOpen.Width = 100;
                         SideMenu.Width = 100;
@@ -190,7 +190,7 @@ namespace MSL
                 }
                 else if (jsonObject["sidemenu"].ToString() == "0")
                 {
-                    this.Dispatcher.Invoke(DispatcherPriority.Normal, (ThreadStart)delegate ()
+                    Dispatcher.InvokeAsync(() =>
                     {
                         sideMenuContextOpen.Width = 100;
                         SideMenu.Width = 100;
@@ -199,7 +199,7 @@ namespace MSL
                 }
                 else
                 {
-                    this.Dispatcher.Invoke(DispatcherPriority.Normal, (ThreadStart)delegate ()
+                    Dispatcher.InvokeAsync(() =>
                     {
                         sideMenuContextOpen.Width = 50;
                         SideMenu.Width = 50;
@@ -209,7 +209,7 @@ namespace MSL
             }
             catch
             {
-                this.Dispatcher.Invoke(DispatcherPriority.Normal, (ThreadStart)delegate ()
+                Dispatcher.InvokeAsync(() =>
                 {
                     sideMenuContextOpen.Width = 100;
                     SideMenu.Width = 100;
@@ -222,7 +222,7 @@ namespace MSL
             //background
             if (File.Exists(AppDomain.CurrentDomain.BaseDirectory + "MSL\\Background.png"))
             {
-                this.Dispatcher.Invoke(DispatcherPriority.Normal, (ThreadStart)delegate ()
+                Dispatcher.InvokeAsync(() =>
                 {
                     Background = new ImageBrush(SettingsPage.GetImage(AppDomain.CurrentDomain.BaseDirectory + "MSL\\Background.png"));
                     SideMenuBorder.BorderThickness = new Thickness(0);
@@ -272,7 +272,7 @@ namespace MSL
                     }
                     else if (jsonObject["skin"].ToString() == "3")
                     {
-                        this.Dispatcher.Invoke(DispatcherPriority.Normal, (ThreadStart)delegate ()
+                        Dispatcher.InvokeAsync(() =>
                         {
                             ThemeManager.Current.AccentColor = Brushes.Green;
                         });
@@ -280,7 +280,7 @@ namespace MSL
                     }
                     else if (jsonObject["skin"].ToString() == "4")
                     {
-                        this.Dispatcher.Invoke(DispatcherPriority.Normal, (ThreadStart)delegate ()
+                        Dispatcher.InvokeAsync(() =>
                         {
                             ThemeManager.Current.AccentColor = Brushes.Orange;
                         });
@@ -288,7 +288,7 @@ namespace MSL
                     }
                     else if (jsonObject["skin"].ToString() == "5")
                     {
-                        this.Dispatcher.Invoke(DispatcherPriority.Normal, (ThreadStart)delegate ()
+                        Dispatcher.InvokeAsync(() =>
                         {
                             ThemeManager.Current.AccentColor = Brushes.Purple;
                         });
@@ -296,7 +296,7 @@ namespace MSL
                     }
                     else if (jsonObject["skin"].ToString() == "6")
                     {
-                        this.Dispatcher.Invoke(DispatcherPriority.Normal, (ThreadStart)delegate ()
+                        Dispatcher.InvokeAsync(() =>
                         {
                             ThemeManager.Current.AccentColor = Brushes.DeepPink;
                         });
@@ -322,7 +322,7 @@ namespace MSL
                 }
                 else if (jsonObject["darkTheme"].ToString() == "True")
                 {
-                    this.Dispatcher.Invoke(DispatcherPriority.Normal, (ThreadStart)delegate ()
+                    Dispatcher.InvokeAsync(() =>
                     {
                         ThemeManager.Current.ApplicationTheme = ApplicationTheme.Dark;
                     });
@@ -342,7 +342,7 @@ namespace MSL
                 }
                 else if (jsonObject["semitransparentTitle"].ToString() == "True")
                 {
-                    Dispatcher.Invoke(DispatcherPriority.Normal, (ThreadStart)delegate ()
+                    Dispatcher.InvokeAsync(() =>
                     {
                         ChangeTitleStyle(true);
                     });
@@ -420,7 +420,7 @@ namespace MSL
                 {
                     byte[] _updatelog = MyWebClient.DownloadData(MainWindow.serverLink + @"/msl/updatelog.txt");
                     string updatelog = Encoding.UTF8.GetString(_updatelog);
-                    this.Dispatcher.Invoke(DispatcherPriority.Normal, (ThreadStart)delegate ()
+                    Dispatcher.InvokeAsync(() =>
                     {
                         bool dialog = DialogShow.ShowMsg(this, "发现新版本，版本号为：" + aaa + "，是否进行更新？\n更新日志：\n" + updatelog, "更新", true, "取消");
                         if (dialog == true)
@@ -626,7 +626,7 @@ namespace MSL
 
             //MessageBox.Show("AutoEventSuccess");
 
-            this.Dispatcher.Invoke(DispatcherPriority.Normal, (ThreadStart)delegate ()
+            Dispatcher.InvokeAsync(() =>
             {
                 //frame.Content = _homePage;
                 SideMenu.IsEnabled = true;

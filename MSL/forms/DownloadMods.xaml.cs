@@ -428,7 +428,7 @@ namespace MSL
                     {
                         if (Directory.Exists(serverbase + @"\mods"))
                         {
-                            Filename = serverbase + @"\mods" + modVersions[listBox.SelectedIndex].ToString();
+                            Filename = serverbase + @"\mods\" + modVersions[listBox.SelectedIndex].ToString();
                         }
                         else
                         {
@@ -491,7 +491,7 @@ namespace MSL
 
         void DownloadFile()
         {
-            this.Dispatcher.Invoke(DispatcherPriority.Normal, (ThreadStart)delegate ()
+            Dispatcher.InvokeAsync(() =>
             {
                 label1.Content = "连接下载地址中...";
             });
@@ -506,7 +506,7 @@ namespace MSL
                 long totalDownloadedByte = 0;
                 byte[] by = new byte[1024];
                 int osize = st.Read(by, 0, (int)by.Length);
-                this.Dispatcher.Invoke(DispatcherPriority.Normal, (ThreadStart)delegate ()
+                Dispatcher.InvokeAsync(() =>
                 {
                     if (pbar != null)
                     {
@@ -521,7 +521,7 @@ namespace MSL
                     osize = st.Read(by, 0, (int)by.Length);
                     float percent = 0;
                     percent = (float)totalDownloadedByte / (float)totalBytes * 100;
-                    this.Dispatcher.Invoke(DispatcherPriority.Normal, (ThreadStart)delegate ()
+                    Dispatcher.InvokeAsync(() =>
                     {
                         if (pbar != null)
                         {
@@ -533,12 +533,13 @@ namespace MSL
                 }
                 so.Close();
                 st.Close();
-                this.Dispatcher.Invoke(DispatcherPriority.Normal, (ThreadStart)delegate ()
+                Dispatcher.InvokeAsync(() =>
                 {
                     if (loadType == 0)
                     {
                         if (Directory.Exists(serverbase + @"\mods"))
                         {
+                            //MessageBox.Show(serverbase + @"\mods");
                             label1.Content = "下载成功，模组已存放至该服务器的mods文件夹中";
                         }
                         else
@@ -554,7 +555,7 @@ namespace MSL
             }
             catch (Exception ex)
             {
-                this.Dispatcher.Invoke(DispatcherPriority.Normal, (ThreadStart)delegate ()
+                Dispatcher.InvokeAsync(() =>
                 {
                     System.Windows.MessageBox.Show(ex.Message);
                     label1.Content = "发生错误，请重试:" + ex;

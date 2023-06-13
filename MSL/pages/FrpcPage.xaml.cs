@@ -62,7 +62,7 @@ namespace MSL.pages
         {
             try
             {
-                this.Dispatcher.Invoke(DispatcherPriority.Normal, (ThreadStart)delegate ()
+                Dispatcher.InvokeAsync(() =>
                 {
                     startfrpc.Content = "关闭内网映射";
                 });
@@ -402,7 +402,7 @@ namespace MSL.pages
         {
             try
             {
-                this.Dispatcher.Invoke(DispatcherPriority.Normal, (ThreadStart)delegate ()
+                Dispatcher.InvokeAsync(() =>
                 {
                     copyFrpc.IsEnabled = true;
                     startfrpc.IsEnabled = true;
@@ -448,7 +448,7 @@ namespace MSL.pages
                     }
                 }
 
-                this.Dispatcher.Invoke(DispatcherPriority.Normal, (ThreadStart)delegate ()
+                Dispatcher.InvokeAsync(() =>
                 {
                     if (!readServerInfo)
                     {
@@ -472,7 +472,7 @@ namespace MSL.pages
                 {
                     // 节点在线，可以获取延迟等信息
                     int roundTripTime = (int)reply.RoundtripTime;
-                    this.Dispatcher.Invoke(DispatcherPriority.Normal, (ThreadStart)delegate ()
+                    Dispatcher.InvokeAsync(() =>
                     {
                         frplab1.Text = nodeName + "  延迟：" + roundTripTime + "ms";
                     });
@@ -480,7 +480,7 @@ namespace MSL.pages
                 else
                 {
                     // 节点离线
-                    this.Dispatcher.Invoke(DispatcherPriority.Normal, (ThreadStart)delegate ()
+                    Dispatcher.InvokeAsync(() =>
                     {
                         frplab1.Text = nodeName + "  节点离线，请重新配置！";
                     });
@@ -488,7 +488,7 @@ namespace MSL.pages
             }
             catch
             {
-                this.Dispatcher.Invoke(DispatcherPriority.Normal, (ThreadStart)delegate ()
+                Dispatcher.InvokeAsync(() =>
                 {
                     frplab1.Text = "获取节点信息失败，建议重新配置！";
                 });
