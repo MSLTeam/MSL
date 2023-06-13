@@ -76,26 +76,26 @@ namespace MSL.pages
                 if (reply.Status == IPStatus.Success)
                 {
                     // 节点在线，可以获取延迟等信息
-                    Dispatcher.InvokeAsync(() =>
+                    Dispatcher.Invoke(new Action(delegate
                     {
                         serverState.Text = "服务器状态：可用";
-                    });
+                    }));
                 }
                 else
                 {
                     // 节点离线
-                    Dispatcher.InvokeAsync(() =>
+                    Dispatcher.Invoke(new Action(delegate
                     {
                         serverState.Text = "服务器状态：检测超时，服务器可能下线";
-                    });
+                    }));
                 }
             }
             catch
             {
-                Dispatcher.InvokeAsync(() =>
+                Dispatcher.Invoke(new Action(delegate
                 {
                     serverState.Text = "服务器状态：检测失败，服务器可能下线";
-                });
+                }));
             }
         }
         private void masterExp_Expanded(object sender, RoutedEventArgs e)

@@ -675,7 +675,7 @@ namespace MSL
                     run.Foreground = color;
                     p.Inlines.Add(run);
                 }
-                this.Dispatcher.BeginInvoke(DispatcherPriority.SystemIdle, (ThreadStart)delegate ()
+                Dispatcher.Invoke(new Action(delegate
                 {
                     //p.Foreground = color;
                     outlog.Document.Blocks.Add(p);
@@ -683,7 +683,7 @@ namespace MSL
                     {
                         outlog.ScrollToEnd();
                     }
-                });
+                }));
             }
             catch
             {
@@ -691,14 +691,14 @@ namespace MSL
                 Run run = new Run(msg);
                 run.Foreground = color;
                 p.Inlines.Add(run);
-                this.Dispatcher.BeginInvoke(DispatcherPriority.SystemIdle, (ThreadStart)delegate ()
+                Dispatcher.Invoke(new Action(delegate
                 {
                     outlog.Document.Blocks.Add(p);
                     if (outlog.VerticalOffset + outlog.ViewportHeight >= outlog.ExtentHeight)
                     {
                         outlog.ScrollToEnd();
                     }
-                });
+                }));
             }
         }
 
@@ -1170,28 +1170,28 @@ namespace MSL
                     sr.Close();
                     if (text.IndexOf("online-mode=true") + 1 != 0)
                     {
-                        Dispatcher.InvokeAsync(() =>
+                        Dispatcher.Invoke(new Action(delegate
                         {
                             ShowLog("检测到您没有关闭正版验证，如果客户端为离线登录的话，请点击“更多功能”里“关闭正版验证”按钮以关闭正版验证。否则离线账户将无法进入服务器！", Brushes.OrangeRed);
                             Growl.Info("检测到您没有关闭正版验证，您可前往“更多功能”界面点击“关闭正版验证”按钮以关闭。否则离线账户无法进入服务器！");
                             onlineModeLab.Content = "已开启";
-                        });
+                        }));
                         break;
                     }
                     else if (text.IndexOf("online-mode=false") + 1 != 0)
                     {
-                        Dispatcher.InvokeAsync(() =>
-                        { onlineModeLab.Content = "已关闭"; }); break;
+                        Dispatcher.Invoke(new Action(delegate
+                        { onlineModeLab.Content = "已关闭"; })); break;
                     }
                 }
                 catch
                 {
-                    Dispatcher.InvokeAsync(() =>
-                    { onlineModeLab.Content = "未知"; }); break;
+                    Dispatcher.Invoke(new Action(delegate
+                    { onlineModeLab.Content = "未知"; })); break;
                 }
             }
-            Dispatcher.InvokeAsync(() =>
-            { if (onlineModeLab.Content.ToString() == "获取中") onlineModeLab.Content = "未知"; });
+            Dispatcher.Invoke(new Action(delegate
+            { if (onlineModeLab.Content.ToString() == "获取中") onlineModeLab.Content = "未知"; }));
         }
         void ProblemSystemShow(string msg)
         {
@@ -1414,7 +1414,7 @@ namespace MSL
             }
             finally
             {
-                Dispatcher.InvokeAsync(() =>
+                Dispatcher.Invoke(new Action(delegate
                 {
                     ChangeControlsState(false);
                     if (solveProblemSystem)
@@ -1446,7 +1446,7 @@ namespace MSL
                             LaunchServer();
                         }
                     }
-                });
+                }));
             }
         }
 
@@ -1824,25 +1824,25 @@ namespace MSL
                         float cpuUsage = cpuCounter.NextValue();
                         if ((int)cpuUsage <= 100)
                         {
-                            this.Dispatcher.BeginInvoke(DispatcherPriority.SystemIdle, (ThreadStart)delegate ()
+                            Dispatcher.Invoke(new Action(delegate
                             {
                                 cpuInfoLab.Content = "CPU:" + cpuUsage.ToString("f2") + "%";
                                 cpuInfoBar.Value = (int)cpuUsage;
-                            });
+                            }));
                         }
                     }
                     catch
                     {
-                        this.Dispatcher.BeginInvoke(DispatcherPriority.SystemIdle, (ThreadStart)delegate ()
+                        Dispatcher.Invoke(new Action(delegate
                         {
                             cpuInfoLab.Content = "无法获取CPU信息";
-                        });
+                        }));
                     }
                     var ramCounter = new PerformanceCounter("Memory", "Available MBytes");
 
                     float ramAvailable = ramCounter.NextValue() / 1024;
                     double allMemory = MainWindow.PhisicalMemory / 1024.0 / 1024.0 / 1024.0;
-                    this.Dispatcher.BeginInvoke(DispatcherPriority.SystemIdle, (ThreadStart)delegate ()
+                    Dispatcher.Invoke(new Action(delegate
                     {
                         memoryInfoLab.Content = "总内存:" + allMemory.ToString("f2") + "G\n" + "已使用:" + (allMemory - ramAvailable).ToString("f2") + "G\n" + "可使用:" + ramAvailable.ToString("f2") + "G";
                         memoryInfoBar.Value = (allMemory - ramAvailable) / allMemory * 100;
@@ -1853,16 +1853,16 @@ namespace MSL
                             TextRange textRange = new TextRange(outlog.Document.Blocks.LastBlock.ContentStart, outlog.Document.Blocks.LastBlock.ContentEnd);
                             previewOutlog.Text = textRange.Text;
                         }
-                    });
+                    }));
                 }
                 catch
                 {
                     Growl.Error("无法获取系统占用信息！显示占用功能已自动关闭！");
-                    this.Dispatcher.BeginInvoke(DispatcherPriority.SystemIdle, (ThreadStart)delegate ()
+                    Dispatcher.Invoke(new Action(delegate
                     {
                         previewOutlog.Text = "预览功能已关闭，请前往服务器控制台界面查看日志信息！";
                         systemInfoBtn.Content = "显示占用:关";
-                    });
+                    }));
                     getServerInfo = false;
                 }
                 Thread.Sleep(3000);
@@ -3360,24 +3360,24 @@ namespace MSL
                         if (ServerProcess.HasExited == false)
                         {
                             ServerProcess.StandardInput.WriteLine(cmd);
-                            Dispatcher.InvokeAsync(() =>
+                            Dispatcher.Invoke(new Action(delegate
                             {
                                 if (tasksList.SelectedIndex != -1 && taskID[tasksList.SelectedIndex] == id)
                                 {
                                     timerCmdout.Content = "执行成功  时间：" + DateTime.Now.ToString("F");
                                 }
-                            });
+                            }));
                         }
                     }
                     catch
                     {
-                        Dispatcher.InvokeAsync(() =>
+                        Dispatcher.Invoke(new Action(delegate
                         {
                             if (tasksList.SelectedIndex != -1 && taskID[tasksList.SelectedIndex] == id)
                             {
                                 timerCmdout.Content = "执行失败，请检查服务器是否开启  时间：" + DateTime.Now.ToString("F");
                             }
-                        });
+                        }));
                     }
                     Thread.Sleep(timer * 1000);
                 }

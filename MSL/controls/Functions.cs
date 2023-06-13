@@ -111,7 +111,7 @@ namespace MSL.controls
                     //Directory.Move(c, destDir);
 
                     //采用递归的方法实现
-                    Functions.MoveFolder(c, destDir);
+                    MoveFolder(c, destDir);
                 });
                 Directory.Delete(sourcePath);
             }

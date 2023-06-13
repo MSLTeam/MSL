@@ -97,7 +97,7 @@ namespace MSL
 
                     Ping pingSender = new Ping();
                     PingReply reply = pingSender.Send(a101, 2000); // 替换成您要 ping 的 IP 地址
-                    Dispatcher.InvokeAsync(() =>
+                    Dispatcher.Invoke(new Action(delegate
                     {
                         if (reply.Status == IPStatus.Success)
                         {
@@ -109,7 +109,7 @@ namespace MSL
                         {
                             listBox1.Items.Add(a100 + "(已下线，检测失败)");
                         }
-                    });
+                    }));
 
                     string strtempa3 = "min_open_port=";
                     int IndexofA03 = pageHtml.IndexOf(strtempa3);
@@ -153,7 +153,7 @@ namespace MSL
 
                     Ping pingSender = new Ping();
                     PingReply reply = pingSender.Send(a101, 2000); // 替换成您要 ping 的 IP 地址
-                    Dispatcher.InvokeAsync(() =>
+                    Dispatcher.Invoke(new Action(delegate
                     {
                         if (reply.Status == IPStatus.Success)
                         {
@@ -165,7 +165,7 @@ namespace MSL
                         {
                             listBox1.Items.Add(a100 + "(已下线，检测失败)");
                         }
-                    });
+                    }));
 
                     string strtempa3 = "min_open_port=";
                     int IndexofA03 = pageHtml.IndexOf(strtempa3);
@@ -187,24 +187,24 @@ namespace MSL
                 WebClient MyWebClient1 = new WebClient();
                 MyWebClient1.Credentials = CredentialCache.DefaultCredentials;
                 Byte[] pageData1 = MyWebClient1.DownloadData(MainWindow.serverLink + @"/msl/frpcgg.txt");
-                Dispatcher.InvokeAsync(() =>
+                Dispatcher.Invoke(new Action(delegate
                 {
                     gonggao.Content = Encoding.UTF8.GetString(pageData1);
-                });
+                }));
             }
             catch
             {
-                Dispatcher.InvokeAsync(() =>
+                Dispatcher.Invoke(new Action(delegate
                 {
                     gonggao.Content = "none";
-                });
+                }));
             }
-            Dispatcher.InvokeAsync(() =>
+            Dispatcher.Invoke(new Action(delegate
             {
                 LoadingCircle loadingCircle = MainGrid.FindName("loadingBar") as LoadingCircle;
                 BodyGrid.Children.Remove(loadingCircle);
                 BodyGrid.UnregisterName("loadingBar");
-            });
+            }));
         }
         private void Button_Click(object sender, RoutedEventArgs e)
         {

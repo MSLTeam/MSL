@@ -72,16 +72,16 @@ namespace MSL
 
         private void OnDownloadStarted(object sender, DownloadStartedEventArgs e)
         {
-            Dispatcher.InvokeAsync(() =>
+            Dispatcher.Invoke(new Action(delegate
             {
                 infolabel.Text = "获取下载地址……大小：" + e.TotalBytesToReceive / 1024 / 1024 + "MB";
-            });
+            }));
         }
         private void OnDownloadFileCompleted(object sender, AsyncCompletedEventArgs e)
         {
             if (isStopDwn == true)
             {
-                Dispatcher.InvokeAsync(() =>
+                Dispatcher.Invoke(new Action(delegate
                 {
                     infolabel.Text = "取消成功！";
                     try
@@ -89,15 +89,15 @@ namespace MSL
                         File.Delete(downloadPath + @"\" + filename);
                     }
                     catch { }
-                });
+                }));
             }
             else
             {
-                Dispatcher.InvokeAsync(() =>
+                Dispatcher.Invoke(new Action(delegate
                 {
                     infolabel.Text = "下载完成！";
                     pbar.Value = 100;
-                });
+                }));
             }
             Thread.Sleep(1000);
             downloadurl = null;
@@ -120,11 +120,11 @@ namespace MSL
             else
             {
                 counter = 0;
-                Dispatcher.InvokeAsync(() =>
+                Dispatcher.Invoke(new Action(delegate
                 {
                     infolabel.Text = "已下载：" + e.ReceivedBytesSize / 1024 / 1024 + "MB/" + e.TotalBytesToReceive / 1024 / 1024 + "MB" + " 进度：" + e.ProgressPercentage.ToString("f2") + "%" + " 速度：" + (e.BytesPerSecondSpeed / 1024 / 1024).ToString("f2") + "MB/s";
                     pbar.Value = e.ProgressPercentage;
-                });
+                }));
             }
             
             //Thread.Sleep(1000);

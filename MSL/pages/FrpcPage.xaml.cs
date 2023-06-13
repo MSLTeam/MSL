@@ -62,10 +62,10 @@ namespace MSL.pages
         {
             try
             {
-                Dispatcher.InvokeAsync(() =>
+                Dispatcher.Invoke(new Action(delegate
                 {
                     startfrpc.Content = "关闭内网映射";
-                });
+                }));
                 FRPCMD.StartInfo.FileName = AppDomain.CurrentDomain.BaseDirectory + @"MSL\frpc.exe";
                 FRPCMD.StartInfo.Arguments = "-c frpc";
                 Directory.SetCurrentDirectory(AppDomain.CurrentDomain.BaseDirectory + "MSL");
@@ -402,12 +402,12 @@ namespace MSL.pages
         {
             try
             {
-                Dispatcher.InvokeAsync(() =>
+                Dispatcher.Invoke(new Action(delegate
                 {
                     copyFrpc.IsEnabled = true;
                     startfrpc.IsEnabled = true;
                     frplab1.Text = "检测节点信息中……";
-                });
+                }));
 
                 string configText = File.ReadAllText(AppDomain.CurrentDomain.BaseDirectory + @"MSL\frpc");
                 // 读取每一行
@@ -448,7 +448,7 @@ namespace MSL.pages
                     }
                 }
 
-                Dispatcher.InvokeAsync(() =>
+                Dispatcher.Invoke(new Action(delegate
                 {
                     if (!readServerInfo)
                     {
@@ -465,33 +465,33 @@ namespace MSL.pages
                             frplab3.Text = serverAddr + ":" + remotePort;
                         }
                     }
-                });
+                }));
                 Ping pingSender = new Ping();
                 PingReply reply = pingSender.Send(serverAddr, 2000); // 替换成您要 ping 的 IP 地址
                 if (reply.Status == IPStatus.Success)
                 {
                     // 节点在线，可以获取延迟等信息
                     int roundTripTime = (int)reply.RoundtripTime;
-                    Dispatcher.InvokeAsync(() =>
+                    Dispatcher.Invoke(new Action(delegate
                     {
                         frplab1.Text = nodeName + "  延迟：" + roundTripTime + "ms";
-                    });
+                    }));
                 }
                 else
                 {
                     // 节点离线
-                    Dispatcher.InvokeAsync(() =>
+                    Dispatcher.Invoke(new Action(delegate
                     {
                         frplab1.Text = nodeName + "  节点离线，请重新配置！";
-                    });
+                    }));
                 }
             }
             catch
             {
-                Dispatcher.InvokeAsync(() =>
+                Dispatcher.Invoke(new Action(delegate
                 {
                     frplab1.Text = "获取节点信息失败，建议重新配置！";
-                });
+                }));
             }
         }
         string GetFrpcIP()

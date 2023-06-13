@@ -124,13 +124,13 @@ namespace MSL.pages
                     MainWindow.serverLink = "https://msl.waheal.top";
                 }
             }
-            Dispatcher.InvokeAsync(() =>
+            Dispatcher.Invoke(new Action(delegate
             {
                 serverlist.ItemsSource = null;
                 serverlist1.ItemsSource = null;
                 //serverurl.Clear();
                 serverdownurl = null;
-            });
+            }));
             try
             {
                 string url;
@@ -149,7 +149,7 @@ namespace MSL.pages
                 byte[] pageData = webClient.DownloadData(url);
                 string jsonData = Encoding.UTF8.GetString(pageData);
                 string[] serverTypes = JsonConvert.DeserializeObject<string[]>(jsonData);
-                Dispatcher.InvokeAsync(() =>
+                Dispatcher.Invoke(new Action(delegate
                 {
                     /*
                     foreach (var serverType in serverTypes)
@@ -161,7 +161,7 @@ namespace MSL.pages
                     serverlist.SelectedIndex = 0;
                     getservermsg.Visibility = Visibility.Hidden;
                     lCircle.Visibility = Visibility.Hidden;
-                });
+                }));
             }
             catch
             {
@@ -174,7 +174,7 @@ namespace MSL.pages
                     byte[] pageData = webClient.DownloadData("https://api.waheal.top");
                     string jsonData = Encoding.UTF8.GetString(pageData);
                     string[] serverTypes = JsonConvert.DeserializeObject<string[]>(jsonData);
-                    Dispatcher.InvokeAsync(() =>
+                    Dispatcher.Invoke(new Action(delegate
                     {
                         /*
                         foreach (var serverType in serverTypes)
@@ -186,15 +186,15 @@ namespace MSL.pages
                         serverlist.SelectedIndex = 0;
                         getservermsg.Visibility = Visibility.Hidden;
                         lCircle.Visibility = Visibility.Hidden;
-                    });
+                    }));
                 }
                 catch (Exception a)
                 {
-                    Dispatcher.InvokeAsync(() =>
+                    Dispatcher.Invoke(new Action(delegate
                     {
                         getservermsg.Text = "获取服务端失败！请重试" + a.Message;
                         lCircle.Visibility = Visibility.Hidden;
-                    });
+                    }));
                 }
             }
             //return serverTypes;
@@ -244,18 +244,18 @@ namespace MSL.pages
                     //MessageBox.Show(jsonObject.ToString());
                     foreach (var x in jsonObject)
                     {
-                        Dispatcher.InvokeAsync(() =>
+                        Dispatcher.Invoke(new Action(delegate
                         {
                             serverlist.Items.Add(x.Key);
-                        });
+                        }));
                         //MessageBox.Show( x.Value.ToString(), x.Key);
                     }
-                    Dispatcher.InvokeAsync(() =>
+                    Dispatcher.Invoke(new Action(delegate
                     {
                         serverlist.SelectedIndex = 0;
                         getservermsg.Visibility = Visibility.Hidden;
                         lCircle.Visibility = Visibility.Hidden;
-                    });
+                    }));
                 }
                 catch
                 {
@@ -263,12 +263,12 @@ namespace MSL.pages
             }
             catch (Exception a)
             {
-                Dispatcher.InvokeAsync(() =>
+                Dispatcher.Invoke(new Action(delegate
                 {
                     getservermsg.Text = "获取服务端失败！请重试" + a.Message;
                     lCircle.Visibility = Visibility.Hidden;
                     //File.Delete(AppDomain.CurrentDomain.BaseDirectory + @"MSL/serverlist.json");
-                });
+                }));
             }
             */
         }
@@ -286,7 +286,7 @@ namespace MSL.pages
             try
             {
                 int serverName = 0;
-                Dispatcher.InvokeAsync(() =>
+                Dispatcher.Invoke(new Action(delegate
                 {
                     serverlist1.ItemsSource = null;
                     //serverurl.Clear();
@@ -295,7 +295,7 @@ namespace MSL.pages
                     lCircle.Visibility = Visibility.Visible;
                     serverName = serverlist.SelectedIndex;
                     //serverName = serverlist.SelectedItem.ToString();
-                });
+                }));
                 string url;
                 if (MainWindow.serverLink != "https://msl.waheal.top")
                 {
@@ -312,21 +312,21 @@ namespace MSL.pages
                 string resultData = Functions.Post(sendData, PostUrl);
                 JObject serverDetails = JObject.Parse(resultData);
                 List<JProperty> sortedProperties = serverDetails.Properties().OrderByDescending(p => Functions.VersionCompare(p.Name)).ToList();
-                Dispatcher.InvokeAsync(() =>
+                Dispatcher.Invoke(new Action(delegate
                 {
                     serverlist1.ItemsSource = sortedProperties.Select(p => p.Name).ToList();
                     serverdownurl = sortedProperties.Select(p => p.Value.ToString()).ToList();
                     //serverlist.SelectedIndex = 0;
                     getservermsg.Visibility = Visibility.Hidden;
                     lCircle.Visibility = Visibility.Hidden;
-                });
+                }));
             }
             catch
             {
                 try
                 {
                     int serverName = 0;
-                    Dispatcher.InvokeAsync(() =>
+                    Dispatcher.Invoke(new Action(delegate
                     {
                         serverlist1.ItemsSource = null;
                         //serverurl.Clear();
@@ -335,7 +335,7 @@ namespace MSL.pages
                         lCircle.Visibility = Visibility.Visible;
                         serverName = serverlist.SelectedIndex;
                         //serverName = serverlist.SelectedItem.ToString();
-                    });
+                    }));
                     string PostUrl = "https://api.waheal.top/server";
                     JObject patientinfo = new JObject();
                     patientinfo["server_name"] = serverName;
@@ -343,26 +343,26 @@ namespace MSL.pages
                     string resultData = Functions.Post(sendData, PostUrl);
                     JObject serverDetails = JObject.Parse(resultData);
                     List<JProperty> sortedProperties = serverDetails.Properties().OrderByDescending(p => Functions.VersionCompare(p.Name)).ToList();
-                    Dispatcher.InvokeAsync(() =>
+                    Dispatcher.Invoke(new Action(delegate
                     {
                         serverlist1.ItemsSource = sortedProperties.Select(p => p.Name).ToList();
                         serverdownurl = sortedProperties.Select(p => p.Value.ToString()).ToList();
                         //serverlist.SelectedIndex = 0;
                         getservermsg.Visibility = Visibility.Hidden;
                         lCircle.Visibility = Visibility.Hidden;
-                    });
+                    }));
                 }
                 catch(Exception a)
                 {
-                    Dispatcher.InvokeAsync(() =>
+                    Dispatcher.Invoke(new Action(delegate
                     {
                         getservermsg.Text = "获取服务端失败！请重试" + a.Message;
                         lCircle.Visibility = Visibility.Hidden;
-                    });
+                    }));
                 }
             }
             /*
-            Dispatcher.InvokeAsync(() =>
+            Dispatcher.Invoke(new Action(delegate
             {
                 try
                 {
@@ -394,7 +394,7 @@ namespace MSL.pages
                 {
                     MessageBox.Show("获取下载链接失败！" + ex.Message);
                 }
-            });
+            }));
             */
         }
 

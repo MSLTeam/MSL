@@ -897,18 +897,18 @@ namespace MSL.forms
                     }
                     catch (Exception ex)
                     {
-                        Dispatcher.InvokeAsync(() =>
+                        Dispatcher.Invoke(new Action(delegate
                         {
                             DialogShow.ShowMsg(this, "获取服务端失败！请重试！\n错误代码：" + ex.Message, "错误");
                             return;
-                        });
+                        }));
                     }
                 }
 
-                Dispatcher.InvokeAsync(() =>
+                Dispatcher.Invoke(new Action(delegate
                 {
                     ServerCoreCombo.SelectedIndex = 0;
-                });
+                }));
             }
             catch (Exception a)
             {
@@ -934,11 +934,11 @@ namespace MSL.forms
         private void GetServerVersion()
         {
             int selectType = 0;
-            Dispatcher.InvokeAsync(() =>
+            Dispatcher.Invoke(new Action(delegate
             {
                 ServerCoreDescrip.Text = "加载中，请稍等……";
                 selectType = ServerCoreCombo.SelectedIndex;
-            });
+            }));
             try
             {
                 int i = 0;
@@ -1010,10 +1010,10 @@ namespace MSL.forms
                                         }
                                         catch (Exception ex)
                                         {
-                                            Dispatcher.InvokeAsync(() =>
+                                            Dispatcher.Invoke(new Action(delegate
                                             {
                                                 DialogShow.ShowMsg(this, "获取服务端失败！请重试！\n错误代码：" + ex.Message, "错误");
-                                            });
+                                            }));
                                             return;
                                         }
                                     }
@@ -1033,15 +1033,15 @@ namespace MSL.forms
             }
             catch (Exception ex)
             {
-                Dispatcher.InvokeAsync(() =>
+                Dispatcher.Invoke(new Action(delegate
                 {
                     DialogShow.ShowMsg(this, "出现错误：" + ex.Message, "err");
                     FastModeNextBtn.IsEnabled = true;
                     return;
-                });
+                }));
             }
             var sortedList = typeVersions.OrderByDescending(p => Functions.VersionCompare(p)).ToList();
-            Dispatcher.InvokeAsync(() =>
+            Dispatcher.Invoke(new Action(delegate
             {
                 FastModeNextBtn.IsEnabled = true;
                 ServerVersionCombo.ItemsSource = sortedList;
@@ -1070,7 +1070,7 @@ namespace MSL.forms
                         ServerCoreDescrip.Text = "代理服务器：指Java版群组服务器的转发服务器，这种服务器相当于一个桥梁，将玩家在不同的服务器之间进行传送转发，使用这种服务器您首先需要开启一个普通服务器，因为这种服务器没有游戏内容，如果没有普通服务器进行连接，玩家根本无法进入，且目前开服器并不兼容这种服务器，创建完毕后您需在列表右键该服务器并使用“命令行开服”功能来启动";
                         break;
                 }
-            });
+            }));
         }
 
         List<string> downloadCoreUrl = new List<string>();

@@ -108,7 +108,7 @@ namespace MSL
                 if (!File.Exists(AppDomain.CurrentDomain.BaseDirectory + @"MSL\config.json"))
                 {
                     Process.Start("https://www.waheal.top/eula.html");
-                    Dispatcher.InvokeAsync(() =>
+                    Dispatcher.Invoke(new Action(delegate
                     {
                         DialogShow.ShowMsg(this, "请阅读并同意MSL开服器使用协议：https://www.waheal.top/eula.html", "提示", true, "不同意", "同意");
                         if (!MessageDialog._dialogReturn)
@@ -118,7 +118,7 @@ namespace MSL
                         }
                         MessageDialog._dialogReturn = false;
                         File.WriteAllText(AppDomain.CurrentDomain.BaseDirectory + @"MSL\config.json", string.Format("{{{0}}}", "\n"));
-                    });
+                    }));
                 }
             }
             catch(Exception ex)
@@ -160,10 +160,10 @@ namespace MSL
                 }
                 else if (jsonObject["notifyIcon"].ToString() == "True")
                 {
-                    Dispatcher.InvokeAsync(() =>
+                    Dispatcher.Invoke(new Action(delegate
                     {
                         CtrlNotifyIcon();
-                    });
+                    }));
                 }
             }
             catch
@@ -181,40 +181,40 @@ namespace MSL
                     jobject.Add("sidemenu", "0");
                     string convertString = Convert.ToString(jobject);
                     File.WriteAllText(AppDomain.CurrentDomain.BaseDirectory + @"MSL\config.json", convertString, Encoding.UTF8);
-                    Dispatcher.InvokeAsync(() =>
+                    Dispatcher.Invoke(new Action(delegate
                     {
                         sideMenuContextOpen.Width = 100;
                         SideMenu.Width = 100;
                         frame.Margin = new Thickness(100, 0, 0, 0);
-                    });
+                    }));
                 }
                 else if (jsonObject["sidemenu"].ToString() == "0")
                 {
-                    Dispatcher.InvokeAsync(() =>
+                    Dispatcher.Invoke(new Action(delegate
                     {
                         sideMenuContextOpen.Width = 100;
                         SideMenu.Width = 100;
                         frame.Margin = new Thickness(100, 0, 0, 0);
-                    });
+                    }));
                 }
                 else
                 {
-                    Dispatcher.InvokeAsync(() =>
+                    Dispatcher.Invoke(new Action(delegate
                     {
                         sideMenuContextOpen.Width = 50;
                         SideMenu.Width = 50;
                         frame.Margin = new Thickness(50, 0, 0, 0);
-                    });
+                    }));
                 }
             }
             catch
             {
-                Dispatcher.InvokeAsync(() =>
+                Dispatcher.Invoke(new Action(delegate
                 {
                     sideMenuContextOpen.Width = 100;
                     SideMenu.Width = 100;
                     frame.Margin = new Thickness(100, 0, 0, 0);
-                });
+                }));
             }
 
             //MessageBox.Show("CheckSidemenuSuccess");
@@ -222,11 +222,11 @@ namespace MSL
             //background
             if (File.Exists(AppDomain.CurrentDomain.BaseDirectory + "MSL\\Background.png"))
             {
-                Dispatcher.InvokeAsync(() =>
+                Dispatcher.Invoke(new Action(delegate
                 {
                     Background = new ImageBrush(SettingsPage.GetImage(AppDomain.CurrentDomain.BaseDirectory + "MSL\\Background.png"));
                     SideMenuBorder.BorderThickness = new Thickness(0);
-                });
+                }));
             }
             //skin
             try
@@ -238,68 +238,68 @@ namespace MSL
                     jobject.Add("skin", "1");
                     string convertString = Convert.ToString(jobject);
                     File.WriteAllText(AppDomain.CurrentDomain.BaseDirectory + @"MSL\config.json", convertString, Encoding.UTF8);
-                    this.Dispatcher.BeginInvoke(DispatcherPriority.SystemIdle, (ThreadStart)delegate ()
+                    Dispatcher.Invoke(new Action(delegate
                     {
                         BrushConverter brushConverter = new BrushConverter();
                         ThemeManager.Current.AccentColor = (Brush)brushConverter.ConvertFromString("#0078D4");
-                    });
+                    }));
                 }
                 else
                 {
                     if (jsonObject["skin"].ToString() == "0")
                     {
-                        this.Dispatcher.BeginInvoke(DispatcherPriority.SystemIdle, (ThreadStart)delegate ()
+                        Dispatcher.Invoke(new Action(delegate
                         {
                             ThemeManager.Current.UsingSystemTheme = true;
-                        });
+                        }));
                     }
                     if (jsonObject["skin"].ToString() == "1")
                     {
-                        this.Dispatcher.BeginInvoke(DispatcherPriority.SystemIdle, (ThreadStart)delegate ()
+                        Dispatcher.Invoke(new Action(delegate
                         {
                             BrushConverter brushConverter = new BrushConverter();
                             ThemeManager.Current.AccentColor = (Brush)brushConverter.ConvertFromString("#0078D4");
-                        });
+                        }));
                         //Growl.Success("皮肤切换成功！");
                     }
                     else if (jsonObject["skin"].ToString() == "2")
                     {
-                        this.Dispatcher.BeginInvoke(DispatcherPriority.SystemIdle, (ThreadStart)delegate ()
+                        Dispatcher.Invoke(new Action(delegate
                         {
                             ThemeManager.Current.AccentColor = Brushes.Red;
-                        });
+                        }));
                         Growl.Success("皮肤切换成功！");
                     }
                     else if (jsonObject["skin"].ToString() == "3")
                     {
-                        Dispatcher.InvokeAsync(() =>
+                        Dispatcher.Invoke(new Action(delegate
                         {
                             ThemeManager.Current.AccentColor = Brushes.Green;
-                        });
+                        }));
                         Growl.Success("皮肤切换成功！");
                     }
                     else if (jsonObject["skin"].ToString() == "4")
                     {
-                        Dispatcher.InvokeAsync(() =>
+                        Dispatcher.Invoke(new Action(delegate
                         {
                             ThemeManager.Current.AccentColor = Brushes.Orange;
-                        });
+                        }));
                         Growl.Success("皮肤切换成功！");
                     }
                     else if (jsonObject["skin"].ToString() == "5")
                     {
-                        Dispatcher.InvokeAsync(() =>
+                        Dispatcher.Invoke(new Action(delegate
                         {
                             ThemeManager.Current.AccentColor = Brushes.Purple;
-                        });
+                        }));
                         Growl.Success("皮肤切换成功！");
                     }
                     else if (jsonObject["skin"].ToString() == "6")
                     {
-                        Dispatcher.InvokeAsync(() =>
+                        Dispatcher.Invoke(new Action(delegate
                         {
                             ThemeManager.Current.AccentColor = Brushes.DeepPink;
-                        });
+                        }));
                         Growl.Success("皮肤切换成功！");
                     }
                 }
@@ -322,10 +322,10 @@ namespace MSL
                 }
                 else if (jsonObject["darkTheme"].ToString() == "True")
                 {
-                    Dispatcher.InvokeAsync(() =>
+                    Dispatcher.Invoke(new Action(delegate
                     {
                         ThemeManager.Current.ApplicationTheme = ApplicationTheme.Dark;
-                    });
+                    }));
                 }
             }
             catch
@@ -342,10 +342,10 @@ namespace MSL
                 }
                 else if (jsonObject["semitransparentTitle"].ToString() == "True")
                 {
-                    Dispatcher.InvokeAsync(() =>
+                    Dispatcher.Invoke(new Action(delegate
                     {
                         ChangeTitleStyle(true);
-                    });
+                    }));
                 }
             }
             catch
@@ -420,7 +420,7 @@ namespace MSL
                 {
                     byte[] _updatelog = MyWebClient.DownloadData(MainWindow.serverLink + @"/msl/updatelog.txt");
                     string updatelog = Encoding.UTF8.GetString(_updatelog);
-                    Dispatcher.InvokeAsync(() =>
+                    Dispatcher.Invoke(new Action(delegate
                     {
                         bool dialog = DialogShow.ShowMsg(this, "发现新版本，版本号为：" + aaa + "，是否进行更新？\n更新日志：\n" + updatelog, "更新", true, "取消");
                         if (dialog == true)
@@ -472,7 +472,7 @@ namespace MSL
                         {
                             Growl.Error("您拒绝了更新新版本，若在此版本中遇到bug，请勿报告给作者！");
                         }
-                    });
+                    }));
                 }
                 else if(newVersion<version)
                 {
@@ -626,7 +626,7 @@ namespace MSL
 
             //MessageBox.Show("AutoEventSuccess");
 
-            Dispatcher.InvokeAsync(() =>
+            Dispatcher.Invoke(new Action(delegate
             {
                 //frame.Content = _homePage;
                 SideMenu.IsEnabled = true;
@@ -634,7 +634,7 @@ namespace MSL
                 LoadingCircle loadingCircle = MainGrid.FindName("loadingBar") as LoadingCircle;
                 BodyGrid.Children.Remove(loadingCircle);
                 BodyGrid.UnregisterName("loadingBar");
-            });
+            }));
         }
 
         private static long GetPhisicalMemory()

@@ -473,46 +473,46 @@ namespace MSL.pages
         void PaintedEgg()
         {
             System.Windows.Window mainwindow=null;
-            this.Dispatcher.BeginInvoke(DispatcherPriority.SystemIdle, (ThreadStart)delegate ()
+            Dispatcher.Invoke(new Action(delegate
             {
                 mainwindow = (MainWindow)System.Windows.Window.GetWindow(this);
-            });
+            }));
             while (true)
             {
-                this.Dispatcher.BeginInvoke(DispatcherPriority.SystemIdle, (ThreadStart)delegate ()
+                Dispatcher.Invoke(new Action(delegate
                 {
                     mainwindow.Background = System.Windows.Media.Brushes.LightBlue;
                     BrushConverter brushConverter = new BrushConverter();
                     ThemeManager.Current.AccentColor = (System.Windows.Media.Brush)brushConverter.ConvertFromString("#0078D4");
-                });
+                }));
                 Thread.Sleep(200);
-                this.Dispatcher.BeginInvoke(DispatcherPriority.SystemIdle, (ThreadStart)delegate ()
+                Dispatcher.Invoke(new Action(delegate
                 {
                     ThemeManager.Current.AccentColor = System.Windows.Media.Brushes.Red;
-                });
+                }));
                 Thread.Sleep(200);
-                this.Dispatcher.BeginInvoke(DispatcherPriority.SystemIdle, (ThreadStart)delegate ()
+                Dispatcher.Invoke(new Action(delegate
                 {
                     mainwindow.Background = System.Windows.Media.Brushes.LightGreen;
                     ThemeManager.Current.AccentColor = System.Windows.Media.Brushes.Green;
-                });
+                }));
                 Thread.Sleep(200);
-                this.Dispatcher.BeginInvoke(DispatcherPriority.SystemIdle, (ThreadStart)delegate ()
+                Dispatcher.Invoke(new Action(delegate
                 {
                     mainwindow.Background = System.Windows.Media.Brushes.LightYellow;
                     ThemeManager.Current.AccentColor = System.Windows.Media.Brushes.Orange;
-                });
+                }));
                 Thread.Sleep(200);
-                this.Dispatcher.BeginInvoke(DispatcherPriority.SystemIdle, (ThreadStart)delegate ()
+                Dispatcher.Invoke(new Action(delegate
                 {
                     ThemeManager.Current.AccentColor = System.Windows.Media.Brushes.Purple;
-                });
+                }));
                 Thread.Sleep(200);
-                this.Dispatcher.BeginInvoke(DispatcherPriority.SystemIdle, (ThreadStart)delegate ()
+                Dispatcher.Invoke(new Action(delegate
                 {
                     mainwindow.Background = System.Windows.Media.Brushes.LightPink;
                     ThemeManager.Current.AccentColor = System.Windows.Media.Brushes.DeepPink;
-                });
+                }));
                 Thread.Sleep(200);
             }
         }
@@ -636,7 +636,7 @@ namespace MSL.pages
                 {
                     byte[] _updatelog = MyWebClient.DownloadData(MainWindow.serverLink + @"/msl/updatelog.txt");
                     string updatelog = Encoding.UTF8.GetString(_updatelog);
-                    Dispatcher.InvokeAsync(() =>
+                    Dispatcher.Invoke(new Action(delegate
                     {
                         bool dialog = DialogShow.ShowMsg(mainwindow, "发现新版本，版本号为：" + aaa + "，是否进行更新？\n更新日志：\n" + updatelog, "更新", true, "取消");
                         if (dialog == true)
@@ -688,7 +688,7 @@ namespace MSL.pages
                         {
                             Growl.Error("您拒绝了更新新版本，若在此版本中遇到bug，请勿报告给作者！");
                         }
-                    });
+                    }));
                 }
                 else if (newVersion < version)
                 {
