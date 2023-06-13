@@ -116,6 +116,7 @@
       <SubType>Designer</SubType>
     </ApplicationDefinition>
     <Compile Include="controls\DialogShow.cs" />
+    <Compile Include="controls\Functions.cs" />
     <Compile Include="controls\ImagePathConverter.cs" />
     <Compile Include="controls\InputDialog.xaml.cs">
       <DependentUpon>InputDialog.xaml</DependentUpon>

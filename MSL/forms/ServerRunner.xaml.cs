@@ -21,6 +21,7 @@ using System.Windows;
 using System.Windows.Controls;
 using System.Windows.Documents;
 using System.Windows.Input;
+using System.Windows.Interop;
 using System.Windows.Media;
 using System.Windows.Media.Imaging;
 using System.Windows.Threading;
@@ -101,6 +102,10 @@ namespace MSL
             if (_json["encoding_out"] != null)
             {
                 outputCmdEncoding.Content = "输出编码:" + _json["encoding_out"].ToString();
+            }
+            if (_json["forceUTF8"] != null && _json["forceUTF8"].ToString() == "False")
+            {
+                forceUTF8encoding.Content = "强制UTF8编码:关";
             }
 
             this.Title = Rservername;//set title to server name
@@ -348,6 +353,8 @@ namespace MSL
                 config = null;
             }
         }
+
+        #region 仪表盘
         private void solveProblemBtn_Click(object sender, RoutedEventArgs e)
         {
             DialogShow.ShowMsg(this, "分析报告将在服务器关闭后生成！若使用后还是无法解决问题，请尝试进Q群询问（附带崩溃日志截图）：1145888872", "警告", true, "取消");
@@ -393,6 +400,9 @@ namespace MSL
                 }
             }
         }
+        #endregion
+
+
         #region 服务器输出
         /// <summary>
         /// ///////////这里是服务器输出
@@ -448,13 +458,18 @@ namespace MSL
                     }
                 }
                 ChangeControlsState();
+                string forceUTF8Jvm = "";
+                if (forceUTF8encoding.Content.ToString().Contains("开"))
+                {
+                    forceUTF8Jvm = "-Dfile.encoding=UTF-8 ";
+                }
                 if (Rserverserver == "")
                 {
-                    StartServer(RserverJVM + " " + RserverJVMcmd + " nogui");
+                    StartServer(RserverJVM + " " + forceUTF8Jvm + RserverJVMcmd + " nogui");
                 }
                 else
                 {
-                    StartServer(RserverJVM + " " + RserverJVMcmd + " -jar \"" + Rserverbase + @"\" + Rserverserver + "\" nogui");
+                    StartServer(RserverJVM + " " + forceUTF8Jvm + RserverJVMcmd + " -jar \"" + Rserverbase + @"\" + Rserverserver + "\" nogui");
                 }
                 //GC.Collect();
             }
@@ -585,7 +600,8 @@ namespace MSL
                 catch
                 { return; }
             }
-        }//enable or disable some controls
+        }
+
         private void p_OutputDataReceived(object sender, DataReceivedEventArgs e)
         {
             if (e.Data != null)
@@ -593,6 +609,7 @@ namespace MSL
                 Dispatcher.Invoke(ReadStdOutput, new object[] { e.Data });
             }
         }
+        
 
         private static Brush tempbrush = Brushes.Green;
         private void ShowLog(string msg, Brush color)
@@ -741,7 +758,6 @@ namespace MSL
             }
             return Brushes.Green;
         }
-
         private delegate void AddMessageHandler(string msg);
         private void ReadStdOutputAction(string msg)
         {
@@ -794,7 +810,7 @@ namespace MSL
                     {
                         ShowLog("正在关闭服务器！", Brushes.Green);
                     }
-                    
+
                     //玩家进服是否记录
                     if (getPlayerInfo == true)
                     {
@@ -922,7 +938,7 @@ namespace MSL
                 if (msg.Contains("Starting minecraft server version"))
                 {
                     serverVersionLab.Content = msg.Substring(msg.LastIndexOf(" ") + 1);
-                    ChangeEncoding();
+                    //ChangeEncoding();
                 }
                 else if (msg.Contains("Default game type:"))
                 {
@@ -936,12 +952,12 @@ namespace MSL
                 else if (msg.Contains("正在启动") && msg.Contains("的Minecraft服务端"))
                 {
                     serverVersionLab.Content = msg.Substring(msg.IndexOf("正在启动") + 4, msg.IndexOf("的") - (msg.IndexOf("正在启动") + 4));
-                    ChangeEncoding();
+                    //ChangeEncoding();
                 }
                 else if (msg.Contains("正在启动Minecraft服务器") && msg.Contains("版本"))
                 {
                     serverVersionLab.Content = msg.Substring(msg.IndexOf("版本") + 2);
-                    ChangeEncoding();
+                    //ChangeEncoding();
                 }
                 else if (msg.Contains("默认游戏模式:"))
                 {
@@ -958,6 +974,7 @@ namespace MSL
                 Growl.Info("开服器在获取服务器信息时出现错误！此问题不影响服务器运行，您可继续正常使用或将此问题报告给作者！");
             }
         }
+        /*
         void ChangeEncoding()
         {
             JObject jsonObject = JObject.Parse(File.ReadAllText(AppDomain.CurrentDomain.BaseDirectory + @"MSL\ServerList.json", Encoding.UTF8));
@@ -1029,6 +1046,8 @@ namespace MSL
             jsonObject[RserverId] = _json;
             File.WriteAllText(AppDomain.CurrentDomain.BaseDirectory + "MSL\\Serverlist.json", Convert.ToString(jsonObject), Encoding.UTF8);
         }
+
+        */
         void ChangeServerIP()
         {
             if (serverIPLab.Content.ToString().Contains("*"))
@@ -1983,7 +2002,7 @@ namespace MSL
                 dialog.Description = "请选择地图文件夹(或解压后的文件夹)";
                 if (dialog.ShowDialog() == System.Windows.Forms.DialogResult.OK)
                 {
-                    MoveFolder(dialog.SelectedPath, Rserverbase + @"\" + gameWorldText.Text);
+                    Functions.MoveFolder(dialog.SelectedPath, Rserverbase + @"\" + gameWorldText.Text);
                     DialogShow.ShowMsg(this, "导入世界成功！", "信息", false, "确定");
                 }
             }
@@ -2525,7 +2544,7 @@ namespace MSL
                     bool dialog = DialogShow.ShowMsg(this, "检测到您更改了服务器目录，是否将当前的服务器目录移动至新的目录？", "警告", true, "取消");
                     if (dialog)
                     {
-                        MoveFolder(Rserverbase, bAse.Text);
+                        Functions.MoveFolder(Rserverbase, bAse.Text);
                     }
                 }
                 Rserverbase = bAse.Text;
@@ -2568,7 +2587,7 @@ namespace MSL
                     bool dialog = DialogShow.ShowMsg(this, "检测到您更改了服务器目录，是否将当前的服务器目录移动至新的目录？", "警告", true, "取消");
                     if (dialog)
                     {
-                        MoveFolder(Rserverbase, bAse.Text);
+                        Functions.MoveFolder(Rserverbase, bAse.Text);
                     }
                 }
                 Rserverbase = bAse.Text;
@@ -2629,7 +2648,7 @@ namespace MSL
                         timer2.Start();
                         if (AppDomain.CurrentDomain.BaseDirectory + @"MSL\" + javaDirName != AppDomain.CurrentDomain.BaseDirectory + @"MSL\" + DownjavaName)
                         {
-                            MoveFolder(AppDomain.CurrentDomain.BaseDirectory + @"MSL\" + javaDirName, AppDomain.CurrentDomain.BaseDirectory + @"MSL\" + DownjavaName);
+                            Functions.MoveFolder(AppDomain.CurrentDomain.BaseDirectory + @"MSL\" + javaDirName, AppDomain.CurrentDomain.BaseDirectory + @"MSL\" + DownjavaName);
                         }
                     }
                     catch
@@ -2642,53 +2661,7 @@ namespace MSL
 
             }
         }
-        public static void MoveFolder(string sourcePath, string destPath)
-        {
-            if (Directory.Exists(sourcePath))
-            {
-                if (!Directory.Exists(destPath))
-                {
-                    //目标目录不存在则创建
-                    try
-                    {
-                        Directory.CreateDirectory(destPath);
-                    }
-                    catch (Exception ex)
-                    {
-                        throw new Exception("创建目标目录失败：" + ex.Message);
-                    }
-                }
-                //获得源文件下所有文件
-                List<string> files = new List<string>(Directory.GetFiles(sourcePath));
-                files.ForEach(c =>
-                {
-                    string destFile = Path.Combine(new string[] { destPath, Path.GetFileName(c) });
-                    //覆盖模式
-                    if (File.Exists(destFile))
-                    {
-                        File.Delete(destFile);
-                    }
-                    File.Move(c, destFile);
-                });
-                //获得源文件下所有目录文件
-                List<string> folders = new List<string>(Directory.GetDirectories(sourcePath));
-
-                folders.ForEach(c =>
-                {
-                    string destDir = Path.Combine(new string[] { destPath, Path.GetFileName(c) });
-                    //Directory.Move必须要在同一个根目录下移动才有效，不能在不同卷中移动。
-                    //Directory.Move(c, destDir);
-
-                    //采用递归的方法实现
-                    MoveFolder(c, destDir);
-                });
-                Directory.Delete(sourcePath);
-            }
-            else
-            {
-                throw new DirectoryNotFoundException("源目录不存在！");
-            }
-        }
+        
         private void timer2_Tick(object sender, EventArgs e)
         {
             if (File.Exists(AppDomain.CurrentDomain.BaseDirectory + @"MSL\" + DownjavaName + @"\bin\java.exe"))
@@ -2980,7 +2953,7 @@ namespace MSL
         {
             JObject jsonObject = JObject.Parse(File.ReadAllText(AppDomain.CurrentDomain.BaseDirectory + @"MSL\ServerList.json", Encoding.UTF8));
             JObject _json = (JObject)jsonObject[RserverId];
-            if (inputCmdEncoding.Content.ToString() == "输入编码:系统默认")
+            if (inputCmdEncoding.Content.ToString() == "输入编码:ANSL")
             {
                 inputCmdEncoding.Content = "输入编码:UTF8";
                 _json["encoding_in"] = "UTF8";
@@ -2990,11 +2963,6 @@ namespace MSL
                 inputCmdEncoding.Content = "输入编码:ANSL";
                 _json["encoding_in"] = "ANSL";
             }
-            else// if(inputCmdEncoding.Content.ToString() == "编码:ANSL")
-            {
-                inputCmdEncoding.Content = "输入编码:系统默认";
-                _json.Remove("encoding_in");
-            }
             jsonObject[RserverId] = _json;
             File.WriteAllText(AppDomain.CurrentDomain.BaseDirectory + "MSL\\Serverlist.json", Convert.ToString(jsonObject), Encoding.UTF8);
         }
@@ -3002,7 +2970,7 @@ namespace MSL
         {
             JObject jsonObject = JObject.Parse(File.ReadAllText(AppDomain.CurrentDomain.BaseDirectory + @"MSL\ServerList.json", Encoding.UTF8));
             JObject _json = (JObject)jsonObject[RserverId];
-            if (outputCmdEncoding.Content.ToString() == "输出编码:系统默认")
+            if (outputCmdEncoding.Content.ToString() == "输出编码:ANSL")
             {
                 outputCmdEncoding.Content = "输出编码:UTF8";
                 _json["encoding_out"] = "UTF8";
@@ -3012,10 +2980,22 @@ namespace MSL
                 outputCmdEncoding.Content = "输出编码:ANSL";
                 _json["encoding_out"] = "ANSL";
             }
-            else// if(outputCmdEncoding.Content.ToString() == "编码:ANSL")
+            jsonObject[RserverId] = _json;
+            File.WriteAllText(AppDomain.CurrentDomain.BaseDirectory + "MSL\\Serverlist.json", Convert.ToString(jsonObject), Encoding.UTF8);
+        }
+        private void forceUTF8encoding_Click(object sender, RoutedEventArgs e)
+        {
+            JObject jsonObject = JObject.Parse(File.ReadAllText(AppDomain.CurrentDomain.BaseDirectory + @"MSL\ServerList.json", Encoding.UTF8));
+            JObject _json = (JObject)jsonObject[RserverId]; 
+            if (forceUTF8encoding.Content.ToString().Contains("开"))
             {
-                outputCmdEncoding.Content = "输出编码:系统默认";
-                _json.Remove("encoding_out");
+                forceUTF8encoding.Content = "强制UTF8编码:关";
+                _json["forceUTF8"] = "False";
+            }
+            else if (forceUTF8encoding.Content.ToString().Contains("关"))
+            {
+                forceUTF8encoding.Content = "强制UTF8编码:开";
+                _json["forceUTF8"] = "True";
             }
             jsonObject[RserverId] = _json;
             File.WriteAllText(AppDomain.CurrentDomain.BaseDirectory + "MSL\\Serverlist.json", Convert.ToString(jsonObject), Encoding.UTF8);
@@ -3410,8 +3390,7 @@ namespace MSL
                 MainGrid.Margin = new Thickness(0);
             }
         }
-        #endregion
 
-        
+        #endregion
     }
 }

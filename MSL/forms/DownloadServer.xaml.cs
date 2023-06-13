@@ -4,11 +4,14 @@ using Newtonsoft.Json.Linq;
 using System;
 using System.Collections.Generic;
 using System.Diagnostics;
+using System.Drawing.Drawing2D;
 using System.IO;
 using System.Linq;
 using System.Net;
+using System.Net.NetworkInformation;
 using System.Runtime.InteropServices;
 using System.Runtime.InteropServices.ComTypes;
+using System.Security.Policy;
 using System.Text;
 using System.Text.RegularExpressions;
 using System.Threading;
@@ -28,10 +31,10 @@ namespace MSL.pages
     public partial class DownloadServer : Window
     {
         //public static event DeleControl DownComplete;
-        List<string> serverurl = new List<string>();
+        //List<string> serverurl = new List<string>();
         List<string> serverdownurl = new List<string>();
-        string autoupdate;
-        string mserversurl;
+        //string autoupdate;
+        //string mserversurl;
         public static string downloadServerBase;
         public static string downloadServerName;
         public static string downloadServerJava;
@@ -55,17 +58,18 @@ namespace MSL.pages
                 string downUrl = serverdownurl[url].ToString();
                 
                 //MessageBox.Show(downloadurl);
+                
                 if (serverlist.SelectedItem.ToString().IndexOf("（") + 1 != 0)
                 {
                     if (serverlist1.SelectedItem.ToString().IndexOf("（") + 1 != 0)
                     {
                         downPath = downloadServerBase;
-                        filename = serverlist.SelectedItem.ToString().Substring(0, autoupdate.IndexOf("（")) + "-" + serverlist1.SelectedItem.ToString().Substring(0, serverlist1.SelectedItem.ToString().IndexOf("（")) + ".jar";
+                        filename = serverlist.SelectedItem.ToString().Substring(0, serverlist.SelectedItem.ToString().IndexOf("（")) + "-" + serverlist1.SelectedItem.ToString().Substring(0, serverlist1.SelectedItem.ToString().IndexOf("（")) + ".jar";
                     }
                     else
                     {
                         downPath = downloadServerBase;
-                        filename = serverlist.SelectedItem.ToString().Substring(0, autoupdate.IndexOf("（")) + "-" + serverlist1.SelectedItem.ToString() + ".jar";
+                        filename = serverlist.SelectedItem.ToString().Substring(0, serverlist.SelectedItem.ToString().IndexOf("（")) + "-" + serverlist1.SelectedItem.ToString() + ".jar";
                     }
 
                 }
@@ -109,13 +113,92 @@ namespace MSL.pages
         }
         void GetServer()
         {
+            Ping pingSender = new Ping();
+            string serverAddr = MainWindow.serverLink;
+            if (serverAddr != "https://msl.waheal.top")
+            {
+                if (serverAddr.Contains("http://")) { serverAddr = serverAddr.Remove(0, 7); }
+                PingReply reply = pingSender.Send(serverAddr, 2000); // 替换成您要 ping 的 IP 地址
+                if (reply.Status != IPStatus.Success)
+                {
+                    MainWindow.serverLink = "https://msl.waheal.top";
+                }
+            }
             this.Dispatcher.Invoke(DispatcherPriority.Normal, (ThreadStart)delegate ()
             {
-                serverlist.Items.Clear();
-                serverlist1.Items.Clear();
-                serverurl.Clear();
-                serverdownurl.Clear();
+                serverlist.ItemsSource = null;
+                serverlist1.ItemsSource = null;
+                //serverurl.Clear();
+                serverdownurl = null;
             });
+            try
+            {
+                string url;
+                if (MainWindow.serverLink != "https://msl.waheal.top")
+                {
+                    url = MainWindow.serverLink + ":5000";
+                }
+                else
+                {
+                    url = MainWindow.serverLink + "/api";
+                }
+                WebClient webClient = new WebClient();
+                //webClient.Encoding = Encoding.UTF8;
+                webClient.Credentials = CredentialCache.DefaultCredentials;
+                //byte[] pageData = webClient.DownloadData(MainWindow.serverLink + @"/msl/CC/getserver.txt");
+                byte[] pageData = webClient.DownloadData(url);
+                string jsonData = Encoding.UTF8.GetString(pageData);
+                string[] serverTypes = JsonConvert.DeserializeObject<string[]>(jsonData);
+                this.Dispatcher.Invoke(DispatcherPriority.Normal, (ThreadStart)delegate ()
+                {
+                    /*
+                    foreach (var serverType in serverTypes)
+                    {
+                        serverlist.Items.Add(serverType);
+                    }*/
+                    serverlist.ItemsSource=serverTypes;
+
+                    serverlist.SelectedIndex = 0;
+                    getservermsg.Visibility = Visibility.Hidden;
+                    lCircle.Visibility = Visibility.Hidden;
+                });
+            }
+            catch
+            {
+                try
+                {
+                    WebClient webClient = new WebClient();
+                    //webClient.Encoding = Encoding.UTF8;
+                    webClient.Credentials = CredentialCache.DefaultCredentials;
+                    //byte[] pageData = webClient.DownloadData(MainWindow.serverLink + @"/msl/CC/getserver.txt");
+                    byte[] pageData = webClient.DownloadData("https://msl.waheal.top/api");
+                    string jsonData = Encoding.UTF8.GetString(pageData);
+                    string[] serverTypes = JsonConvert.DeserializeObject<string[]>(jsonData);
+                    this.Dispatcher.Invoke(DispatcherPriority.Normal, (ThreadStart)delegate ()
+                    {
+                        /*
+                        foreach (var serverType in serverTypes)
+                        {
+                            serverlist.Items.Add(serverType);
+                        }*/
+                        serverlist.ItemsSource = serverTypes;
+
+                        serverlist.SelectedIndex = 0;
+                        getservermsg.Visibility = Visibility.Hidden;
+                        lCircle.Visibility = Visibility.Hidden;
+                    });
+                }
+                catch (Exception a)
+                {
+                    this.Dispatcher.Invoke(DispatcherPriority.Normal, (ThreadStart)delegate ()
+                    {
+                        getservermsg.Text = "获取服务端失败！请重试" + a.Message;
+                        lCircle.Visibility = Visibility.Hidden;
+                    });
+                }
+            }
+            //return serverTypes;
+            /*
             try
             {
                 string pageHtml1 = "";
@@ -186,8 +269,133 @@ namespace MSL.pages
                     lCircle.Visibility = Visibility.Hidden;
                     //File.Delete(AppDomain.CurrentDomain.BaseDirectory + @"MSL/serverlist.json");
                 });
-                //timer7.Stop();
             }
+            */
+        }
+
+        private void serverlist_SelectionChanged(object sender, SelectionChangedEventArgs e)
+        {
+            if (serverlist.Items.Count != 0)
+            {
+                Thread thread = new Thread(GetServerVersionList);
+                thread.Start();
+            }
+        }
+        void GetServerVersionList()
+        {
+            try
+            {
+                int serverName = 0;
+                this.Dispatcher.Invoke(DispatcherPriority.Normal, (ThreadStart)delegate ()
+                {
+                    serverlist1.ItemsSource = null;
+                    //serverurl.Clear();
+                    serverdownurl = null;
+                    getservermsg.Visibility = Visibility.Visible;
+                    lCircle.Visibility = Visibility.Visible;
+                    serverName = serverlist.SelectedIndex;
+                    //serverName = serverlist.SelectedItem.ToString();
+                });
+                string url;
+                if (MainWindow.serverLink != "https://msl.waheal.top")
+                {
+                    url = MainWindow.serverLink + ":5000/server";
+                }
+                else
+                {
+                    url = MainWindow.serverLink + "/api/server";
+                }
+                string PostUrl = url;
+                JObject patientinfo = new JObject();
+                patientinfo["server_name"] = serverName;
+                string sendData = JsonConvert.SerializeObject(patientinfo);
+                string resultData = Functions.Post(sendData, PostUrl);
+                JObject serverDetails = JObject.Parse(resultData);
+                List<JProperty> sortedProperties = serverDetails.Properties().OrderByDescending(p => Functions.VersionCompare(p.Name)).ToList();
+                this.Dispatcher.Invoke(DispatcherPriority.Normal, (ThreadStart)delegate ()
+                {
+                    serverlist1.ItemsSource = sortedProperties.Select(p => p.Name).ToList();
+                    serverdownurl = sortedProperties.Select(p => p.Value.ToString()).ToList();
+                    //serverlist.SelectedIndex = 0;
+                    getservermsg.Visibility = Visibility.Hidden;
+                    lCircle.Visibility = Visibility.Hidden;
+                });
+            }
+            catch
+            {
+                try
+                {
+                    int serverName = 0;
+                    this.Dispatcher.Invoke(DispatcherPriority.Normal, (ThreadStart)delegate ()
+                    {
+                        serverlist1.ItemsSource = null;
+                        //serverurl.Clear();
+                        serverdownurl = null;
+                        getservermsg.Visibility = Visibility.Visible;
+                        lCircle.Visibility = Visibility.Visible;
+                        serverName = serverlist.SelectedIndex;
+                        //serverName = serverlist.SelectedItem.ToString();
+                    });
+                    string PostUrl = MainWindow.serverLink + "https://msl.waheal.top/api/server";
+                    JObject patientinfo = new JObject();
+                    patientinfo["server_name"] = serverName;
+                    string sendData = JsonConvert.SerializeObject(patientinfo);
+                    string resultData = Functions.Post(sendData, PostUrl);
+                    JObject serverDetails = JObject.Parse(resultData);
+                    List<JProperty> sortedProperties = serverDetails.Properties().OrderByDescending(p => Functions.VersionCompare(p.Name)).ToList();
+                    this.Dispatcher.Invoke(DispatcherPriority.Normal, (ThreadStart)delegate ()
+                    {
+                        serverlist1.ItemsSource = sortedProperties.Select(p => p.Name).ToList();
+                        serverdownurl = sortedProperties.Select(p => p.Value.ToString()).ToList();
+                        //serverlist.SelectedIndex = 0;
+                        getservermsg.Visibility = Visibility.Hidden;
+                        lCircle.Visibility = Visibility.Hidden;
+                    });
+                }
+                catch(Exception a)
+                {
+                    this.Dispatcher.Invoke(DispatcherPriority.Normal, (ThreadStart)delegate ()
+                    {
+                        getservermsg.Text = "获取服务端失败！请重试" + a.Message;
+                        lCircle.Visibility = Visibility.Hidden;
+                    });
+                }
+            }
+            /*
+            this.Dispatcher.Invoke(DispatcherPriority.Normal, (ThreadStart)delegate ()
+            {
+                try
+                {
+                    //MessageBox.Show(mserversurl);
+                    //StreamReader reader = File.OpenText(AppDomain.CurrentDomain.BaseDirectory + @"MSL/serverlist.json");
+                    autoupdate = serverlist.SelectedItem.ToString();
+                    WebClient MyWebClient = new WebClient();
+                    MyWebClient.Credentials = CredentialCache.DefaultCredentials;
+                    byte[] pageData = MyWebClient.DownloadData(mserversurl);
+
+                    string pageHtml = Encoding.UTF8.GetString(pageData);
+                    //MessageBox.Show(servers);
+                    //分类服务端
+                    JObject jsonObject = JObject.Parse(pageHtml);
+                    //MessageBox.Show(serverlist.SelectedItem.ToString());
+                    string abc = serverlist.SelectedItem.ToString();
+                    JObject jsonObject1 = (JObject)jsonObject[abc];
+                    serverlist1.Items.Clear();
+                    serverdownurl.Clear();
+                    foreach (var x in jsonObject1)
+                    {
+                        serverlist1.Items.Add(x.Key);
+                        serverdownurl.Add(x.Value.ToString());
+                        //MessageBox.Show(x.Value.ToString(), x.Key);
+                    }
+                    pageHtml = null;
+                }
+                catch (Exception ex)
+                {
+                    MessageBox.Show("获取下载链接失败！" + ex.Message);
+                }
+            });
+            */
         }
 
         /// <summary>
@@ -372,50 +580,7 @@ namespace MSL.pages
                 DialogShow.ShowMsg(this, "下载失败！", "错误");
             }
         }
-        private void serverlist_SelectionChanged(object sender, SelectionChangedEventArgs e)
-        {
-            if (serverlist.Items.Count != 0)
-            {
-                Thread thread = new Thread(GetServerVersionList);
-                thread.Start();
-            }
-        }
-        void GetServerVersionList()
-        {
-            this.Dispatcher.Invoke(DispatcherPriority.Normal, (ThreadStart)delegate ()
-            {
-                try
-                {
-                    //MessageBox.Show(mserversurl);
-                    //StreamReader reader = File.OpenText(AppDomain.CurrentDomain.BaseDirectory + @"MSL/serverlist.json");
-                    autoupdate = serverlist.SelectedItem.ToString();
-                    WebClient MyWebClient = new WebClient();
-                    MyWebClient.Credentials = CredentialCache.DefaultCredentials;
-                    byte[] pageData = MyWebClient.DownloadData(mserversurl);
-
-                    string pageHtml = Encoding.UTF8.GetString(pageData);
-                    //MessageBox.Show(servers);
-                    //分类服务端
-                    JObject jsonObject = JObject.Parse(pageHtml);
-                    //MessageBox.Show(serverlist.SelectedItem.ToString());
-                    string abc = serverlist.SelectedItem.ToString();
-                    JObject jsonObject1 = (JObject)jsonObject[abc];
-                    serverlist1.Items.Clear();
-                    serverdownurl.Clear();
-                    foreach (var x in jsonObject1)
-                    {
-                        serverlist1.Items.Add(x.Key);
-                        serverdownurl.Add(x.Value.ToString());
-                        //MessageBox.Show(x.Value.ToString(), x.Key);
-                    }
-                    pageHtml = null;
-                }
-                catch (Exception ex)
-                {
-                    MessageBox.Show("获取下载链接失败！" + ex.Message);
-                }
-            });
-        }
+        
         private void openSpigot_Click(object sender, RoutedEventArgs e)
         {
             Process.Start("https://www.spigotmc.org/");

@@ -74,53 +74,6 @@ namespace MSL.forms
             }
         }
 
-        public static void MoveFolder(string sourcePath, string destPath)
-        {
-            if (Directory.Exists(sourcePath))
-            {
-                if (!Directory.Exists(destPath))
-                {
-                    //目标目录不存在则创建
-                    try
-                    {
-                        Directory.CreateDirectory(destPath);
-                    }
-                    catch (Exception ex)
-                    {
-                        throw new Exception("创建目标目录失败：" + ex.Message);
-                    }
-                }
-                //获得源文件下所有文件
-                List<string> files = new List<string>(Directory.GetFiles(sourcePath));
-                files.ForEach(c =>
-                {
-                    string destFile = Path.Combine(new string[] { destPath, Path.GetFileName(c) });
-                    //覆盖模式
-                    if (File.Exists(destFile))
-                    {
-                        File.Delete(destFile);
-                    }
-                    File.Move(c, destFile);
-                });
-                //获得源文件下所有目录文件
-                List<string> folders = new List<string>(Directory.GetDirectories(sourcePath));
-
-                folders.ForEach(c =>
-                {
-                    string destDir = Path.Combine(new string[] { destPath, Path.GetFileName(c) });
-                    //Directory.Move必须要在同一个根目录下移动才有效，不能在不同卷中移动。
-                    //Directory.Move(c, destDir);
-
-                    //采用递归的方法实现
-                    MoveFolder(c, destDir);
-                });
-                Directory.Delete(sourcePath);
-            }
-            else
-            {
-                throw new DirectoryNotFoundException("源目录不存在！");
-            }
-        }
         private async void next3_Click(object sender, RoutedEventArgs e)
         {
             if (useJVself.IsChecked == true)
@@ -201,7 +154,7 @@ namespace MSL.forms
                                         break;
                                 }
                             });
-                            if (dwnJava==1)
+                            if (dwnJava == 1)
                             {
                                 outlog.Content = "当前进度:解压Java……";
                                 bool unzipJava = await UnzipJava();
@@ -268,7 +221,7 @@ namespace MSL.forms
                 FileInfo[] fileInfo = directoryInfo.GetFiles("*.jar");
                 foreach (var file in fileInfo)
                 {
-                    DialogShow.ShowMsg(this, "开服器在整合包中检测到了jar文件"+file.Name+"，是否选择此文件为开服核心？", "提示", true, "取消");
+                    DialogShow.ShowMsg(this, "开服器在整合包中检测到了jar文件" + file.Name + "，是否选择此文件为开服核心？", "提示", true, "取消");
                     if (MessageDialog._dialogReturn == true)
                     {
                         MessageDialog._dialogReturn = false;
@@ -279,7 +232,7 @@ namespace MSL.forms
                         break;
                     }
                 }
-                if(fileInfo.Length==0)
+                if (fileInfo.Length == 0)
                 {
                     Growl.Info("开服器未在整合包中找到核心文件，请您进行下载或手动选择已有核心，核心的版本要和整合包对应的游戏版本一致");
                 }
@@ -291,7 +244,7 @@ namespace MSL.forms
             {
                 DialogShow.ShowMsg(this, "下载Java即代表您接受Java的服务条款https://www.oracle.com/downloads/licenses/javase-license1.html", "信息", false, "确定");
                 DownjavaName = fileName;
-                bool downDialog= DialogShow.ShowDownload(this, downUrl, AppDomain.CurrentDomain.BaseDirectory + "MSL", "Java.zip", "下载" + fileName + "中……");
+                bool downDialog = DialogShow.ShowDownload(this, downUrl, AppDomain.CurrentDomain.BaseDirectory + "MSL", "Java.zip", "下载" + fileName + "中……");
                 if (downDialog)
                 {
                     return 1;
@@ -332,7 +285,7 @@ namespace MSL.forms
                 File.Delete(AppDomain.CurrentDomain.BaseDirectory + @"MSL\Java.zip");
                 if (AppDomain.CurrentDomain.BaseDirectory + @"MSL\" + javaDirName != AppDomain.CurrentDomain.BaseDirectory + @"MSL\" + DownjavaName)
                 {
-                    MoveFolder(AppDomain.CurrentDomain.BaseDirectory + @"MSL\" + javaDirName, AppDomain.CurrentDomain.BaseDirectory + @"MSL\" + DownjavaName);
+                    Functions.MoveFolder(AppDomain.CurrentDomain.BaseDirectory + @"MSL\" + javaDirName, AppDomain.CurrentDomain.BaseDirectory + @"MSL\" + DownjavaName);
                 }
                 while (!File.Exists(AppDomain.CurrentDomain.BaseDirectory + @"MSL\" + DownjavaName + @"\bin\java.exe"))
                 {
@@ -404,7 +357,7 @@ namespace MSL.forms
                 int[] ikeys = _keys.ToArray();
                 Array.Sort(ikeys);
                 int i = 0;
-                
+
                 foreach (int key in ikeys)
                 {
                     if (i == key)
@@ -417,7 +370,7 @@ namespace MSL.forms
                         break;
                     }
                 }
-                    jsonObject.Add(i.ToString(), _json);
+                jsonObject.Add(i.ToString(), _json);
                 File.WriteAllText(AppDomain.CurrentDomain.BaseDirectory + @"MSL\ServerList.json", Convert.ToString(jsonObject), Encoding.UTF8);
                 DialogShow.ShowMsg(this, "创建完毕，请点击“开启服务器”按钮以开服", "信息");
                 Close();
@@ -538,7 +491,7 @@ namespace MSL.forms
             if (this.IsLoaded)
             {
                 txb3.IsEnabled = false;
-                a0002.IsEnabled=false;
+                a0002.IsEnabled = false;
             }
         }
         private void useServerself_Checked(object sender, RoutedEventArgs e)
@@ -604,7 +557,7 @@ namespace MSL.forms
             if (match.Success)
             {
                 string javaVersion = match.Groups[1].Value;
-                selectCheckedJavaComb.Items.Add("Java" + javaVersion + ":" + Path.GetDirectoryName(releaseFile)+"\\bin\\java.exe");
+                selectCheckedJavaComb.Items.Add("Java" + javaVersion + ":" + Path.GetDirectoryName(releaseFile) + "\\bin\\java.exe");
             }
         }
 
@@ -613,7 +566,7 @@ namespace MSL.forms
             servername = serverNameBox.Text;
             if (new Regex("[\u4E00-\u9FA5]").IsMatch(txb6.Text))
             {
-                bool result = DialogShow.ShowMsg(this, "使用带有中文的路径可能造成编码错误，导致无法开服，您确定要继续吗？", "警告",true,"取消");
+                bool result = DialogShow.ShowMsg(this, "使用带有中文的路径可能造成编码错误，导致无法开服，您确定要继续吗？", "警告", true, "取消");
                 if (result == false)
                 {
                     return;
@@ -647,7 +600,7 @@ namespace MSL.forms
             bool _dialog = DialogShow.ShowMsg(this, "请选择你要导入本地整合包还是在线整合包！", "提示", true, "导入本地整合包", "导入在线整合包");
             if (_dialog)
             {
-                DownloadMods downloadMods=new DownloadMods(1);
+                DownloadMods downloadMods = new DownloadMods(1);
                 downloadMods.Owner = this;
                 downloadMods.ShowDialog();
                 if (!File.Exists(AppDomain.CurrentDomain.BaseDirectory + "MSL\\ServerPack.zip"))
@@ -674,13 +627,21 @@ namespace MSL.forms
                             break;
                         }
                     }
-                    new FastZip().ExtractZip(AppDomain.CurrentDomain.BaseDirectory + "MSL\\ServerPack.zip", serverPath, "");
-                    DirectoryInfo[] dirs = new DirectoryInfo(serverPath).GetDirectories();
-                    if (dirs.Length == 1)
+                    try
                     {
-                        MoveFolder(dirs[0].FullName, serverPath);
+                        new FastZip().ExtractZip(AppDomain.CurrentDomain.BaseDirectory + "MSL\\ServerPack.zip", serverPath, "");
+                        DirectoryInfo[] dirs = new DirectoryInfo(serverPath).GetDirectories();
+                        if (dirs.Length == 1)
+                        {
+                            Functions.MoveFolder(dirs[0].FullName, serverPath);
+                        }
+                        File.Delete(AppDomain.CurrentDomain.BaseDirectory + "MSL\\ServerPack.zip");
                     }
-                    File.Delete(AppDomain.CurrentDomain.BaseDirectory + "MSL\\ServerPack.zip");
+                    catch (Exception ex)
+                    {
+                        DialogShow.ShowMsg(this, "整合包解压失败！请确认您的整合包是.zip格式！\n错误代码：" + ex.Message, "错误");
+                        return;
+                    }
                     MainGrid.Visibility = Visibility.Hidden;
                     tabCtrl.Visibility = Visibility.Visible;
                     isImportPack = true;
@@ -723,11 +684,21 @@ namespace MSL.forms
                         var res = openfile.ShowDialog();
                         if (res == true)
                         {
-                            new FastZip().ExtractZip(openfile.FileName, serverPath, "");
-                            DirectoryInfo[] dirs = new DirectoryInfo(serverPath).GetDirectories();
-                            if (dirs.Length == 1)
+                            try
                             {
-                                MoveFolder(dirs[0].FullName, serverPath);
+
+
+                                new FastZip().ExtractZip(openfile.FileName, serverPath, "");
+                                DirectoryInfo[] dirs = new DirectoryInfo(serverPath).GetDirectories();
+                                if (dirs.Length == 1)
+                                {
+                                    Functions.MoveFolder(dirs[0].FullName, serverPath);
+                                }
+                            }
+                            catch (Exception ex)
+                            {
+                                DialogShow.ShowMsg(this, "整合包解压失败！请确认您的整合包是.zip格式！\n错误代码：" + ex.Message, "错误");
+                                return;
                             }
                             MainGrid.Visibility = Visibility.Hidden;
                             tabCtrl.Visibility = Visibility.Visible;
@@ -876,14 +847,14 @@ namespace MSL.forms
                     {"Velocity","BungeeCord"}
                 }
             };
-        Dictionary<string, Dictionary<string, string>> serverCores;
+        string[] serverTypes;
         void FastModeGetCore()
         {
             try
             {
                 Ping pingSender = new Ping();
                 string serverAddr = MainWindow.serverLink;
-                if(serverAddr!= "https://msl.waheal.top")
+                if (serverAddr != "https://msl.waheal.top")
                 {
                     if (serverAddr.Contains("http://")) { serverAddr = serverAddr.Remove(0, 7); }
                     PingReply reply = pingSender.Send(serverAddr, 2000); // 替换成您要 ping 的 IP 地址
@@ -893,18 +864,50 @@ namespace MSL.forms
                         Growl.Info("MSL主服务器连接超时，已切换至备用服务器！");
                     }
                 }
-                var coreVersions = new Dictionary<string, List<string>>();
-                WebClient MyWebClient = new WebClient();
-                MyWebClient.Credentials = CredentialCache.DefaultCredentials;
-                byte[] pageData = MyWebClient.DownloadData(MainWindow.serverLink + "/msl/CC/versions.json");
-                string versionsList = Encoding.UTF8.GetString(pageData);
-                //分类服务端
-                //serverVersions = JObject.Parse(versionsList);
-                serverCores = JsonConvert.DeserializeObject<Dictionary<string, Dictionary<string, string>>>(versionsList);
+                try
+                {
+                    string url;
+                    if (MainWindow.serverLink != "https://msl.waheal.top")
+                    {
+                        url = MainWindow.serverLink + ":5000";
+                    }
+                    else
+                    {
+                        url = MainWindow.serverLink + "/api";
+                    }
+                    WebClient webClient = new WebClient();
+                    //webClient.Encoding = Encoding.UTF8;
+                    webClient.Credentials = CredentialCache.DefaultCredentials;
+                    //byte[] pageData = webClient.DownloadData(MainWindow.serverLink + @"/msl/CC/getserver.txt");
+                    byte[] pageData = webClient.DownloadData(url);
+                    string jsonData = Encoding.UTF8.GetString(pageData);
+                    serverTypes = JsonConvert.DeserializeObject<string[]>(jsonData);
+                }
+                catch
+                {
+                    try
+                    {
+                        WebClient webClient = new WebClient();
+                        //webClient.Encoding = Encoding.UTF8;
+                        webClient.Credentials = CredentialCache.DefaultCredentials;
+                        //byte[] pageData = webClient.DownloadData(MainWindow.serverLink + @"/msl/CC/getserver.txt");
+                        byte[] pageData = webClient.DownloadData("https://msl.waheal.top/api");
+                        string jsonData = Encoding.UTF8.GetString(pageData);
+                        serverTypes = JsonConvert.DeserializeObject<string[]>(jsonData);
+                    }
+                    catch (Exception ex)
+                    {
+                        this.Dispatcher.Invoke(DispatcherPriority.Normal, (ThreadStart)delegate ()
+                        {
+                            DialogShow.ShowMsg(this, "获取服务端失败！请重试！\n错误代码：" + ex.Message, "错误");
+                            return;
+                        });
+                    }
+                }
+
                 this.Dispatcher.Invoke(DispatcherPriority.Normal, (ThreadStart)delegate ()
                 {
                     ServerCoreCombo.SelectedIndex = 0;
-                    FastModeNextBtn.IsEnabled = true;
                 });
             }
             catch (Exception a)
@@ -912,77 +915,166 @@ namespace MSL.forms
                 Growl.Info("获取服务端失败！请重试" + a.Message);
             }
         }
-
+        List<string> typeVersions = new List<string>();
         private void ServerCoreCombo_SelectionChanged(object sender, SelectionChangedEventArgs e)
         {
-            ServerVersionCombo.Items.Clear();
-            if (serverCores == null)
+            FastModeNextBtn.IsEnabled = false;
+            ServerVersionCombo.ItemsSource = null;
+            typeVersions.Clear();
+            tempServerCore.Clear();
+            if (serverTypes == null)
             {
                 DialogShow.ShowMsg(this, "服务端正在加载中，请稍后再选择！", "提示");
                 return;
             }
-            int i = 0;
-            // 遍历所有核心类型
-            foreach (var coreType in serverCoreTypes)
-            {
-                if (i == ServerCoreCombo.SelectedIndex)
-                {
-                    // 遍历所有核心版本
-                    foreach (var core in coreType.Value)
-                    {
-                        // 获取该核心类型下的所有版本
-                        var versions = serverCores.FirstOrDefault(c => c.Key.Contains(core)).Value;
+            Thread thread = new Thread(GetServerVersion);
+            thread.Start();
+        }
 
-                        if (versions != null)
+        private void GetServerVersion()
+        {
+            int selectType = 0;
+            this.Dispatcher.Invoke(DispatcherPriority.Normal, (ThreadStart)delegate ()
+            {
+                ServerCoreDescrip.Text = "加载中，请稍等……";
+                selectType = ServerCoreCombo.SelectedIndex;
+            });
+            try
+            {
+                int i = 0;
+                foreach (var serverType in serverTypes)
+                {
+                    //MessageBox.Show(serverType);
+                    int x = 0;
+                    foreach (var coreTypes in serverCoreTypes)
+                    {
+                        if (x == selectType)
                         {
-                            foreach (var version in versions)
+                            string _serverType = serverType;
+                            if (serverType.Contains("（"))
                             {
-                                string _ver = version.Key;
-                                if (version.Key.Contains("-"))
+                                _serverType = serverType.Substring(0, serverType.IndexOf("（"));
+                            }
+                            foreach (var coreType in coreTypes.Value)
+                            {
+                                if (coreType == _serverType)
                                 {
-                                    _ver = version.Key.Substring(0, _ver.IndexOf("-"));
-                                }
-                                // 添加版本到版本列表
-                                if (!ServerVersionCombo.Items.Contains(_ver) && version.Value != null)
-                                {
-                                    ServerVersionCombo.Items.Add(_ver);
+                                    //MessageBox.Show(_serverType);
+                                    try
+                                    {
+                                        string url;
+                                        if (MainWindow.serverLink != "https://msl.waheal.top")
+                                        {
+                                            url = MainWindow.serverLink + ":5000/server";
+                                        }
+                                        else
+                                        {
+                                            url = MainWindow.serverLink + "/api/server";
+                                        }
+                                        string PostUrl = url;
+                                        JObject patientinfo = new JObject();
+                                        patientinfo["server_name"] = i;
+                                        string sendData = JsonConvert.SerializeObject(patientinfo);
+                                        string resultData = Functions.Post(sendData, PostUrl);
+                                        //MessageBox.Show(resultData);
+                                        tempServerCore.Add(coreType,resultData);
+                                        Dictionary<string, string> serverDetails = JsonConvert.DeserializeObject<Dictionary<string, string>>(resultData);
+                                        foreach (var item in serverDetails.Keys)
+                                        {
+                                            //MessageBox.Show(item);
+                                            if (!typeVersions.Contains(item) && !item.StartsWith("*"))
+                                            {
+                                                typeVersions.Add(item);
+                                            }
+                                        }
+                                    }
+                                    catch
+                                    {
+                                        try
+                                        {
+                                            string PostUrl = "https://msl.waheal.top/api/server";
+                                            JObject patientinfo = new JObject();
+                                            patientinfo["server_name"] = i;
+                                            string sendData = JsonConvert.SerializeObject(patientinfo);
+                                            string resultData = Functions.Post(sendData, PostUrl);
+                                            tempServerCore.Add(coreType, resultData);
+                                            //MessageBox.Show(resultData);
+                                            Dictionary<string, string> serverDetails = JsonConvert.DeserializeObject<Dictionary<string, string>>(resultData);
+                                            foreach (var item in serverDetails.Keys)
+                                            {
+                                                if (!typeVersions.Contains(item) && !item.StartsWith("*"))
+                                                {
+                                                    typeVersions.Add(item);
+                                                }
+                                            }
+                                        }
+                                        catch (Exception ex)
+                                        {
+                                            this.Dispatcher.Invoke(DispatcherPriority.Normal, (ThreadStart)delegate ()
+                                            {
+                                                DialogShow.ShowMsg(this, "获取服务端失败！请重试！\n错误代码：" + ex.Message, "错误");
+                                            });
+                                            return;
+                                        }
+                                    }
+                                    //typeVersions = serverDetails.Keys.ToList();
                                 }
                             }
+                            x++;
+                            //continue;
+                        }
+                        else
+                        {
+                            x++;
                         }
                     }
-                    break;
+                    i++;
                 }
-                else { i++; }
             }
-            ServerVersionCombo.SelectedIndex = 0;
-
-            switch (ServerCoreCombo.SelectedIndex)
+            catch (Exception ex)
             {
-                case 0:
-                    ServerCoreDescrip.Text = "插件服务器：指在服务端添加插件（客户端无需添加），通过更改服务端底层来增加功能，这种方式极易做到对服务器、服务器用户玩家进行管理，如权限组、封禁系统等，但这种方式不能修改客户端内容，所以也导致很多功能很难实现，如添加新的物品，只能通过更改材质包的方式让客户端显示新的物品";
-                    break;
-                case 1:
-                    ServerCoreDescrip.Text = "注意：此服务端的相关库文件源在海外，若多次出现下载失败的情况，请换用二合一服务端！\n模组服务器（Forge加载器）：指通过Forge加载器，添加模组来增加功能（服务端和客户端均需添加），这种方式既可以更改服务端的内容，也可以更改客户端的内容，所以插件服务器无法实现的功能在这里即可轻易做到，但是这种方式很难做到插件服的管理功能，且需要客户端的模组和服务端进行同步，会给玩家造成一定的麻烦";
-                    break;
-                case 2:
-                    ServerCoreDescrip.Text = "模组服务器（Fabric加载器）：指通过Fabric加载器，添加模组来增加功能（服务端和客户端均需添加），这种方式既可以更改服务端的内容，也可以更改客户端的内容，所以插件服务器无法实现的功能在这里即可轻易做到，但是这种方式很难做到插件服的管理功能，且需要客户端的模组和服务端进行同步，会给玩家造成一定的麻烦";
-                    break;
-                case 3:
-                    ServerCoreDescrip.Text = "插件模组二合一服务器（Forge加载器）：这种服务器将插件服务端和Forge服务端合二为一，既吸取了二者的优点（服务器管理功能可通过添加插件做到，添加新物品更改游戏玩法可通过添加模组做到），同时又有许多缺点（如服务器不稳定，同时添加插件和模组，极易造成冲突问题，且也存在模组服务器服务端和客户端需要同步模组的问题）";
-                    break;
-                case 4:
-                    ServerCoreDescrip.Text = "原版服务器：Mojang纯原生服务器，不能添加任何插件或模组，给您原汁原味的体验";
-                    break;
-                case 5:
-                    ServerCoreDescrip.Text = "基岩版服务器：专为基岩版提供的服务器，这种服务器在配置等方面和Java版服务器不太一样，同时开服器也不太适配，更改配置文件等相关操作只能您手动操作";
-                    break;
-                case 6:
-                    ServerCoreDescrip.Text = "代理服务器：指Java版群组服务器的转发服务器，这种服务器相当于一个桥梁，将玩家在不同的服务器之间进行传送转发，使用这种服务器您首先需要开启一个普通服务器，因为这种服务器没有游戏内容，如果没有普通服务器进行连接，玩家根本无法进入，且目前开服器并不兼容这种服务器，创建完毕后您需在列表右键该服务器并使用“命令行开服”功能来启动";
-                    break;
+                this.Dispatcher.Invoke(DispatcherPriority.Normal, (ThreadStart)delegate ()
+                {
+                    DialogShow.ShowMsg(this, "出现错误：" + ex.Message, "err");
+                    FastModeNextBtn.IsEnabled = true;
+                    return;
+                });
             }
+            var sortedList = typeVersions.OrderByDescending(p => Functions.VersionCompare(p)).ToList();
+            this.Dispatcher.Invoke(DispatcherPriority.Normal, (ThreadStart)delegate ()
+            {
+                FastModeNextBtn.IsEnabled = true;
+                ServerVersionCombo.ItemsSource = sortedList;
+                ServerVersionCombo.SelectedIndex = 0;
+                switch (ServerCoreCombo.SelectedIndex)
+                {
+                    case 0:
+                        ServerCoreDescrip.Text = "插件服务器：指在服务端添加插件（客户端无需添加），通过更改服务端底层来增加功能，这种方式极易做到对服务器、服务器用户玩家进行管理，如权限组、封禁系统等，但这种方式不能修改客户端内容，所以也导致很多功能很难实现，如添加新的物品，只能通过更改材质包的方式让客户端显示新的物品";
+                        break;
+                    case 1:
+                        ServerCoreDescrip.Text = "注意：此服务端的相关库文件源在海外，若多次出现下载失败的情况，请换用二合一服务端！\n模组服务器（Forge加载器）：指通过Forge加载器，添加模组来增加功能（服务端和客户端均需添加），这种方式既可以更改服务端的内容，也可以更改客户端的内容，所以插件服务器无法实现的功能在这里即可轻易做到，但是这种方式很难做到插件服的管理功能，且需要客户端的模组和服务端进行同步，会给玩家造成一定的麻烦";
+                        break;
+                    case 2:
+                        ServerCoreDescrip.Text = "模组服务器（Fabric加载器）：指通过Fabric加载器，添加模组来增加功能（服务端和客户端均需添加），这种方式既可以更改服务端的内容，也可以更改客户端的内容，所以插件服务器无法实现的功能在这里即可轻易做到，但是这种方式很难做到插件服的管理功能，且需要客户端的模组和服务端进行同步，会给玩家造成一定的麻烦";
+                        break;
+                    case 3:
+                        ServerCoreDescrip.Text = "插件模组二合一服务器（Forge加载器）：这种服务器将插件服务端和Forge服务端合二为一，既吸取了二者的优点（服务器管理功能可通过添加插件做到，添加新物品更改游戏玩法可通过添加模组做到），同时又有许多缺点（如服务器不稳定，同时添加插件和模组，极易造成冲突问题，且也存在模组服务器服务端和客户端需要同步模组的问题）";
+                        break;
+                    case 4:
+                        ServerCoreDescrip.Text = "原版服务器：Mojang纯原生服务器，不能添加任何插件或模组，给您原汁原味的体验";
+                        break;
+                    case 5:
+                        ServerCoreDescrip.Text = "基岩版服务器：专为基岩版提供的服务器，这种服务器在配置等方面和Java版服务器不太一样，同时开服器也不太适配，更改配置文件等相关操作只能您手动操作";
+                        break;
+                    case 6:
+                        ServerCoreDescrip.Text = "代理服务器：指Java版群组服务器的转发服务器，这种服务器相当于一个桥梁，将玩家在不同的服务器之间进行传送转发，使用这种服务器您首先需要开启一个普通服务器，因为这种服务器没有游戏内容，如果没有普通服务器进行连接，玩家根本无法进入，且目前开服器并不兼容这种服务器，创建完毕后您需在列表右键该服务器并使用“命令行开服”功能来启动";
+                        break;
+                }
+            });
         }
 
         List<string> downloadCoreUrl = new List<string>();
+        Dictionary<string,string> tempServerCore = new Dictionary<string,string>();
         private void FastModeNextBtn_Click(object sender, RoutedEventArgs e)
         {
             servername = ServerNameBox.Text;
@@ -997,56 +1089,38 @@ namespace MSL.forms
             else if (txb6.Text.IndexOf(" ") + 1 != 0)
             {
                 bool result = DialogShow.ShowMsg(this, "开服器被放置于带有空格的目录里，这种目录可能会造成编码错误导致无法开服，您确定要继续吗？", "警告", true, "取消");
-                if (result ==false)
+                if (result == false)
                 {
                     return;
                 }
             }
             serverbase = txb6.Text;
-            FastModeGrid.Visibility = Visibility.Hidden;
-            InstallGrid.Visibility = Visibility.Visible;
             downloadCoreUrl.Clear();
             FinallyCoreCombo.Items.Clear();
-            int i = 0;
-            
-            // 遍历所有核心类型
-            foreach (var coreType in serverCoreTypes)
-            {
-                if (i == ServerCoreCombo.SelectedIndex)
-                {
-                    int _coreType = 0;
-                    // 遍历所有核心版本
-                    foreach (var core in coreType.Value)
-                    {
-                        // 获取该核心类型下的所有版本
-                        var versions = serverCores.FirstOrDefault(c => c.Key.Contains(core)).Value;
+            FastModeNextBtn.IsEnabled = false;
 
-                        if (versions != null)
-                        {
-                            foreach (var version in versions)
-                            {
-                                string _ver = version.Key;
-                                if (version.Key.Contains("-"))
-                                {
-                                    _ver = version.Key.Substring(0, _ver.IndexOf("-"));
-                                }
-                                // 添加版本到版本列表
-                                if (_ver==ServerVersionCombo.Items[ServerVersionCombo.SelectedIndex].ToString() && version.Value != null)
-                                {
-                                    FinallyCoreCombo.Items.Add(coreType.Value[_coreType]+"-" + version.Key);
-                                    downloadCoreUrl.Add(version.Value);
-                                }
-                            }
-                        }
-                        _coreType++;
+            //Thread thread = new Thread(GetFinallyServerCore);
+            //thread.Start();
+
+            foreach (var _item in tempServerCore)
+            {
+                Dictionary<string, string> serverDetails = JsonConvert.DeserializeObject<Dictionary<string, string>>(_item.Value);
+                foreach (var item in serverDetails)
+                {
+                    if (item.Key == ServerVersionCombo.SelectedItem.ToString() && !FinallyCoreCombo.Items.Contains(_item.Key + "-" + item.Key))
+                    {
+                        FinallyCoreCombo.Items.Add(_item.Key + "-" + item.Key);
+                        downloadCoreUrl.Add(item.Value);
                     }
-                    break;
                 }
-                else { i++; }
             }
             string versionString = ServerVersionCombo.Items[ServerVersionCombo.SelectedIndex].ToString();
             if (versionString != "Latest")
             {
+                if (versionString.Contains("-"))
+                {
+                    versionString=versionString.Substring(0,versionString.IndexOf("-"));
+                }
                 string[] components = versionString.Split('.');
                 if (components.Length >= 3 && int.TryParse(components[2], out int _))
                 {
@@ -1057,6 +1131,7 @@ namespace MSL.forms
                 Version targetVersion1 = new Version("1.7");
                 Version targetVersion2 = new Version("1.12");
                 Version targetVersion3 = new Version("1.17");
+
 
                 if (_version <= targetVersion1)
                 {
@@ -1082,13 +1157,16 @@ namespace MSL.forms
                     FinallyJavaDescrip.Text = "根据您的选择，最适合您服务器的Java版本为：Java18-Java19（或更高）";
                     FinallyJavaCombo.SelectedIndex = 5;
                 }
-                FinallyCoreCombo.SelectedIndex = 0;
             }
             else
             {
                 FinallyJavaDescrip.Text = "根据您的选择，最适合您服务器的Java版本为：Java8-Java19（或更高）";
                 FinallyJavaCombo.SelectedIndex = 5;
             }
+            FinallyCoreCombo.SelectedIndex = 0;
+            FastModeNextBtn.IsEnabled = true;
+            FastModeGrid.Visibility = Visibility.Hidden;
+            InstallGrid.Visibility = Visibility.Visible;
         }
 
         private async Task<string> AsyncGetJavaDwnLink()
@@ -1142,7 +1220,7 @@ namespace MSL.forms
                 if (dwnJava == 1)
                 {
                     FastInstallProcess.Text = "当前进度:解压Java……";
-                    bool unzipJava =await UnzipJava();
+                    bool unzipJava = await UnzipJava();
                     if (unzipJava)
                     {
                         FastInstallProcess.Text = "当前进度:下载服务端……";
@@ -1182,8 +1260,8 @@ namespace MSL.forms
         }
         void FastModeInstallCore()
         {
-            string filename = FinallyCoreCombo.Items[FinallyCoreCombo.SelectedIndex].ToString()+".jar";
-            bool dwnDialog= DialogShow.ShowDownload(this, downloadCoreUrl[FinallyCoreCombo.SelectedIndex], serverbase, filename, "下载服务端中……");
+            string filename = FinallyCoreCombo.Items[FinallyCoreCombo.SelectedIndex].ToString() + ".jar";
+            bool dwnDialog = DialogShow.ShowDownload(this, downloadCoreUrl[FinallyCoreCombo.SelectedIndex], serverbase, filename, "下载服务端中……");
             if (!dwnDialog)
             {
                 DialogShow.ShowMsg(this, "下载取消！", "提示");
@@ -1259,7 +1337,7 @@ namespace MSL.forms
                 FastModeInstallBtn.IsEnabled = true;
             }
         }
-        
+
         #region InstallForge
         /// <summary>
         /// 找到窗口
@@ -1295,7 +1373,7 @@ namespace MSL.forms
         const int WM_SETFOCUS = 0x07;
         bool InstallForge()
         {
-            string filename = FinallyCoreCombo.Items[FinallyCoreCombo.SelectedIndex].ToString()+".jar";
+            string filename = FinallyCoreCombo.Items[FinallyCoreCombo.SelectedIndex].ToString() + ".jar";
             string forgeVersion;
             string serverDownUrl = downloadCoreUrl[FinallyCoreCombo.SelectedIndex].ToString();
 

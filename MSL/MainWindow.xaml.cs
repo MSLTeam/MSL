@@ -98,25 +98,32 @@ namespace MSL
 
             //MessageBox.Show("GetLinkSuccess");
 
-            //firstLauchEvent
-            if (!Directory.Exists(AppDomain.CurrentDomain.BaseDirectory + @"MSL"))
+            try
             {
-                Directory.CreateDirectory(AppDomain.CurrentDomain.BaseDirectory + @"MSL");
-            }
-            if (!File.Exists(AppDomain.CurrentDomain.BaseDirectory + @"MSL\config.json"))
-            {
-                Process.Start("https://www.waheal.top/eula.html");
-                this.Dispatcher.Invoke(DispatcherPriority.Normal, (ThreadStart)delegate ()
+                //firstLauchEvent
+                if (!Directory.Exists(AppDomain.CurrentDomain.BaseDirectory + @"MSL"))
                 {
-                    DialogShow.ShowMsg(this, "请阅读并同意MSL开服器使用协议：https://www.waheal.top/eula.html", "提示", true, "不同意", "同意");
-                    if (!MessageDialog._dialogReturn)
+                    Directory.CreateDirectory(AppDomain.CurrentDomain.BaseDirectory + @"MSL");
+                }
+                if (!File.Exists(AppDomain.CurrentDomain.BaseDirectory + @"MSL\config.json"))
+                {
+                    Process.Start("https://www.waheal.top/eula.html");
+                    this.Dispatcher.Invoke(DispatcherPriority.Normal, (ThreadStart)delegate ()
                     {
+                        DialogShow.ShowMsg(this, "请阅读并同意MSL开服器使用协议：https://www.waheal.top/eula.html", "提示", true, "不同意", "同意");
+                        if (!MessageDialog._dialogReturn)
+                        {
 
-                        Close();
-                    }
-                    MessageDialog._dialogReturn = false;
-                    File.WriteAllText(AppDomain.CurrentDomain.BaseDirectory + @"MSL\config.json", string.Format("{{{0}}}", "\n"));
-                });
+                            Close();
+                        }
+                        MessageDialog._dialogReturn = false;
+                        File.WriteAllText(AppDomain.CurrentDomain.BaseDirectory + @"MSL\config.json", string.Format("{{{0}}}", "\n"));
+                    });
+                }
+            }
+            catch(Exception ex)
+            {
+                DialogShow.ShowMsg(this, "MSL在初始化加载过程中出现问题，请尝试用管理员身份运行MSL……\n错误代码：" + ex.Message, "错误");
             }
 
             //MessageBox.Show("CheckDirSuccess");
@@ -478,7 +485,7 @@ namespace MSL
             }
             catch(Exception ex)
             {
-                MessageBox.Show("Err" + ex.Message);
+                Growl.Error("检查更新失败！"+ex.Message);
             }
 
             //MessageBox.Show("CheckUpdateSuccess");
