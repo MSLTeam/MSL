@@ -8,6 +8,7 @@ using Newtonsoft.Json.Linq;
 using System;
 using System.Collections.Generic;
 using System.Diagnostics;
+using System.Drawing.Drawing2D;
 using System.Globalization;
 using System.IO;
 using System.Linq;
@@ -854,31 +855,33 @@ namespace MSL
             {
                 ShowLog(msg, tempbrush);
             }
-            if (msg.Contains("�")&&outlogEncodingAsk)
+            if (msg.Contains("�"))
             {
-                outlogEncodingAsk = false;
                 ShowLog("MSL检测到您的服务器输出了乱码日志，请尝试去“更多功能”界面更改服务器的“输出编码”来解决此问题！", Brushes.Red);
                 //Growl.Ask("");
-                string encoding = "UTF8";
-                if (outputCmdEncoding.Content.ToString().Contains("UTF8"))
+                if (outlogEncodingAsk)
                 {
-                    encoding = "ANSI";
-                }
-                Growl.Ask("MSL检测到您的服务器输出了乱码日志，是否将服务器输出编码更改为“" + encoding + "”？\n点击Confirm确认", isConfirmed =>
-                {
-                    if (isConfirmed)
+                    outlogEncodingAsk = false;
+                    string encoding = "UTF8";
+                    if (outputCmdEncoding.Content.ToString().Contains("UTF8"))
                     {
-                        JObject jsonObject = JObject.Parse(File.ReadAllText(AppDomain.CurrentDomain.BaseDirectory + @"MSL\ServerList.json", Encoding.UTF8));
-                        JObject _json = (JObject)jsonObject[RserverId];
-                        outputCmdEncoding.Content = "输出编码:" + encoding;
-                        _json["encoding_out"] = encoding;
-                        jsonObject[RserverId] = _json;
-                        File.WriteAllText(AppDomain.CurrentDomain.BaseDirectory + "MSL\\Serverlist.json", Convert.ToString(jsonObject), Encoding.UTF8);
-                        Growl.Success("更改完毕，请重启服务器使其生效！");
+                        encoding = "ANSI";
                     }
-                    return true;
-                });
-
+                    Growl.Ask("MSL检测到您的服务器输出了乱码日志，是否将服务器输出编码更改为“" + encoding + "”？\n点击Confirm确认", isConfirmed =>
+                    {
+                        if (isConfirmed)
+                        {
+                            JObject jsonObject = JObject.Parse(File.ReadAllText(AppDomain.CurrentDomain.BaseDirectory + @"MSL\ServerList.json", Encoding.UTF8));
+                            JObject _json = (JObject)jsonObject[RserverId];
+                            outputCmdEncoding.Content = "输出编码:" + encoding;
+                            _json["encoding_out"] = encoding;
+                            jsonObject[RserverId] = _json;
+                            File.WriteAllText(AppDomain.CurrentDomain.BaseDirectory + "MSL\\Serverlist.json", Convert.ToString(jsonObject), Encoding.UTF8);
+                            Growl.Success("更改完毕，请重启服务器使其生效！");
+                        }
+                        return true;
+                    });
+                }
             }
         }
         void GetServerInfoSys(string msg)
@@ -1993,23 +1996,21 @@ namespace MSL
             { }
             if (File.Exists(Rserverbase + "\\server-icon.png"))
             {
-                DialogShow.ShowMsg(this, "此功能会覆盖原来的旧图标，是否要继续？", "警告", true, "取消");
-                if (!MessageDialog._dialogReturn)
+                bool dialogret= DialogShow.ShowMsg(this, "此功能会覆盖原来的旧图标，是否要继续？", "警告", true, "取消");
+                if (dialogret)
                 {
-                    return;
+                    DialogShow.ShowMsg(this, "请先准备一张64*64像素的图片（格式为png），准备完成后点击确定以继续", "如何操作？");
+                    OpenFileDialog openfile = new OpenFileDialog();
+                    openfile.InitialDirectory = AppDomain.CurrentDomain.BaseDirectory;
+                    openfile.Title = "请选择文件";
+                    openfile.Filter = "PNG图像|*.png";
+                    var res = openfile.ShowDialog();
+                    if (res == true)
+                    {
+                        File.Copy(openfile.FileName, Rserverbase + "\\server-icon.png", true);
+                        DialogShow.ShowMsg(this, "图标更换完成！", "信息");
+                    }
                 }
-            }
-            MessageDialog._dialogReturn = false;
-            DialogShow.ShowMsg(this, "请先准备一张64*64像素的图片（格式为png），准备完成后点击确定以继续", "如何操作？");
-            OpenFileDialog openfile = new OpenFileDialog();
-            openfile.InitialDirectory = AppDomain.CurrentDomain.BaseDirectory;
-            openfile.Title = "请选择文件";
-            openfile.Filter = "PNG图像|*.png";
-            var res = openfile.ShowDialog();
-            if (res == true)
-            {
-                File.Copy(openfile.FileName, Rserverbase + "\\server-icon.png", true);
-                DialogShow.ShowMsg(this, "图标更换完成！", "信息");
             }
         }
         private void changeWorldMap_Click(object sender, RoutedEventArgs e)
@@ -2024,10 +2025,9 @@ namespace MSL
             }
             catch
             { }
-            DialogShow.ShowMsg(this, "此功能会删除原来的旧地图，是否要继续使用？", "警告", true, "取消");
-            if (MessageDialog._dialogReturn == true)
+            bool dialogret = DialogShow.ShowMsg(this, "此功能会删除原来的旧地图，是否要继续使用？", "警告", true, "取消");
+            if (dialogret)
             {
-                MessageDialog._dialogReturn = false;
                 if (Directory.Exists(Rserverbase + @"\" + gameWorldText.Text))
                 {
                     DirectoryInfo di = new DirectoryInfo(Rserverbase + @"\" + gameWorldText.Text);
@@ -2250,31 +2250,53 @@ namespace MSL
 
         private void disPlugin_Click(object sender, RoutedEventArgs e)
         {
-            Button btn = sender as Button;
-            if (btn != null)
+            try
             {
-                ListViewItem item = ServerList.FindAncestor<ListViewItem>(btn);
-                if (item != null)
+                if (!ServerProcess.HasExited)
                 {
-                    item.IsSelected = true;
+                    DialogShow.ShowMsg(this, "服务器在运行中，无法进行操作！请关闭服务器后再试！", "警告");
+                    return;
                 }
             }
-            PluginInfo pluginInfo = pluginslist.SelectedItem as PluginInfo;
-            if (pluginInfo.PluginName.ToString().IndexOf("[已禁用]") == -1)
+            catch { }
+            try
             {
-                File.Copy(Rserverbase + @"\plugins\" + pluginInfo.PluginName, Rserverbase + @"\plugins\" + pluginInfo.PluginName + ".disabled", true);
-                File.Delete(Rserverbase + @"\plugins\" + pluginInfo.PluginName);
-                ReFreshPluginsAndMods();
+                Button btn = sender as Button;
+                if (btn != null)
+                {
+                    ListViewItem item = ServerList.FindAncestor<ListViewItem>(btn);
+                    if (item != null)
+                    {
+                        item.IsSelected = true;
+                    }
+                }
+                PluginInfo pluginInfo = pluginslist.SelectedItem as PluginInfo;
+                if (pluginInfo.PluginName.ToString().IndexOf("[已禁用]") == -1)
+                {
+                    File.Copy(Rserverbase + @"\plugins\" + pluginInfo.PluginName, Rserverbase + @"\plugins\" + pluginInfo.PluginName + ".disabled", true);
+                    File.Delete(Rserverbase + @"\plugins\" + pluginInfo.PluginName);
+                    ReFreshPluginsAndMods();
+                }
+                else
+                {
+                    File.Copy(Rserverbase + @"\plugins\" + pluginInfo.PluginName.Substring(5, pluginInfo.PluginName.Length - 5), Rserverbase + @"\plugins\" + pluginInfo.PluginName.Substring(5, pluginInfo.PluginName.Length - 13), true);
+                    File.Delete(Rserverbase + @"\plugins\" + pluginInfo.PluginName.Substring(5, pluginInfo.PluginName.Length - 5));
+                    ReFreshPluginsAndMods();
+                }
             }
-            else
-            {
-                File.Copy(Rserverbase + @"\plugins\" + pluginInfo.PluginName.Substring(5, pluginInfo.PluginName.Length - 5), Rserverbase + @"\plugins\" + pluginInfo.PluginName.Substring(5, pluginInfo.PluginName.Length - 13), true);
-                File.Delete(Rserverbase + @"\plugins\" + pluginInfo.PluginName.Substring(5, pluginInfo.PluginName.Length - 5));
-                ReFreshPluginsAndMods();
-            }
+            catch { return; }
         }
         private void delPlugin_Click(object sender, RoutedEventArgs e)
         {
+            try
+            {
+                if (!ServerProcess.HasExited)
+                {
+                    DialogShow.ShowMsg(this, "服务器在运行中，无法进行操作！请关闭服务器后再试！", "警告");
+                    return;
+                }
+            }
+            catch { }
             try
             {
                 Button btn = sender as Button;
@@ -2294,31 +2316,53 @@ namespace MSL
         }
         private void disMod_Click(object sender, RoutedEventArgs e)
         {
-            Button btn = sender as Button;
-            if (btn != null)
+            try
             {
-                ListViewItem item = ServerList.FindAncestor<ListViewItem>(btn);
-                if (item != null)
+                if (!ServerProcess.HasExited)
                 {
-                    item.IsSelected = true;
+                    DialogShow.ShowMsg(this, "服务器在运行中，无法进行操作！请关闭服务器后再试！", "警告");
+                    return;
                 }
             }
-            ModInfo modInfo = modslist.SelectedItem as ModInfo;
-            if (modInfo.ModName.ToString().IndexOf("[已禁用]") == -1)
+            catch { }
+            try
             {
-                File.Copy(Rserverbase + @"\mods\" + modInfo.ModName, Rserverbase + @"\mods\" + modInfo.ModName + ".disabled", true);
-                File.Delete(Rserverbase + @"\mods\" + modInfo.ModName);
-                ReFreshPluginsAndMods();
+                Button btn = sender as Button;
+                if (btn != null)
+                {
+                    ListViewItem item = ServerList.FindAncestor<ListViewItem>(btn);
+                    if (item != null)
+                    {
+                        item.IsSelected = true;
+                    }
+                }
+                ModInfo modInfo = modslist.SelectedItem as ModInfo;
+                if (modInfo.ModName.ToString().IndexOf("[已禁用]") == -1)
+                {
+                    File.Copy(Rserverbase + @"\mods\" + modInfo.ModName, Rserverbase + @"\mods\" + modInfo.ModName + ".disabled", true);
+                    File.Delete(Rserverbase + @"\mods\" + modInfo.ModName);
+                    ReFreshPluginsAndMods();
+                }
+                else
+                {
+                    File.Copy(Rserverbase + @"\mods\" + modInfo.ModName.Substring(5, modInfo.ModName.Length - 5), Rserverbase + @"\mods\" + modInfo.ModName.Substring(5, modInfo.ModName.Length - 13), true);
+                    File.Delete(Rserverbase + @"\mods\" + modInfo.ModName.Substring(5, modInfo.ModName.Length - 5));
+                    ReFreshPluginsAndMods();
+                }
             }
-            else
-            {
-                File.Copy(Rserverbase + @"\mods\" + modInfo.ModName.Substring(5, modInfo.ModName.Length - 5), Rserverbase + @"\mods\" + modInfo.ModName.Substring(5, modInfo.ModName.Length - 13), true);
-                File.Delete(Rserverbase + @"\mods\" + modInfo.ModName.Substring(5, modInfo.ModName.Length - 5));
-                ReFreshPluginsAndMods();
-            }
+            catch { return; }
         }
         private void delMod_Click(object sender, RoutedEventArgs e)
         {
+            try
+            {
+                if (!ServerProcess.HasExited)
+                {
+                    DialogShow.ShowMsg(this, "服务器在运行中，无法进行操作！请关闭服务器后再试！", "警告");
+                    return;
+                }
+            }
+            catch { }
             try
             {
                 Button btn = sender as Button;
@@ -2339,6 +2383,15 @@ namespace MSL
 
         private void disAllPlugin_Click(object sender, RoutedEventArgs e)
         {
+            try
+            {
+                if (!ServerProcess.HasExited)
+                {
+                    DialogShow.ShowMsg(this, "服务器在运行中，无法进行操作！请关闭服务器后再试！", "警告");
+                    return;
+                }
+            }
+            catch { }
             foreach (var x in pluginslist.Items)
             {
                 PluginInfo pluginInfo = x as PluginInfo;
@@ -2357,6 +2410,15 @@ namespace MSL
         }
         private void disAllMod_Click(object sender, RoutedEventArgs e)
         {
+            try
+            {
+                if (!ServerProcess.HasExited)
+                {
+                    DialogShow.ShowMsg(this, "服务器在运行中，无法进行操作！请关闭服务器后再试！", "警告");
+                    return;
+                }
+            }
+            catch { }
             foreach (var x in modslist.Items)
             {
                 ModInfo modInfo = x as ModInfo;
@@ -2491,8 +2553,22 @@ namespace MSL
         }
         private async Task<JObject> AsyncGetJavaDwnLink()
         {
+            /*
             WebClient MyWebClient = new WebClient();
             byte[] pageData = await MyWebClient.DownloadDataTaskAsync(MainWindow.serverLink + @"/msl/otherdownload.json");
+            string _javaList = Encoding.UTF8.GetString(pageData);
+            */
+            string url;
+            if (MainWindow.serverLink != "https://msl.waheal.top")
+            {
+                url = MainWindow.serverLink + ":5000";
+            }
+            else
+            {
+                url = "https://api.waheal.top";
+            }
+            WebClient MyWebClient = new WebClient();
+            byte[] pageData = await MyWebClient.DownloadDataTaskAsync(url + "/otherdownloads");
             string _javaList = Encoding.UTF8.GetString(pageData);
 
             JObject javaList0 = JObject.Parse(_javaList);
@@ -2997,7 +3073,7 @@ namespace MSL
                 }
                 else
                 {
-                    Growl.Success("编码已更改，重启服务器后生效！");
+                    Growl.Warning("编码已更改，重启服务器后生效！");
                 }
             }
             catch

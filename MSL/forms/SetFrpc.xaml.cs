@@ -48,13 +48,22 @@ namespace MSL
         {
             try
             {
+                /*
                 WebClient MyWebClient = new WebClient();
                 MyWebClient.Credentials = CredentialCache.DefaultCredentials;
                 byte[] pageData = MyWebClient.DownloadData(MainWindow.serverLink + @"/msl/CC/frpcserver.txt");
                 pageHtml = Encoding.UTF8.GetString(pageData);
+                */
+                pageHtml = Functions.Get("frplist");
             }
             catch
             {
+                Dispatcher.Invoke(new Action(delegate
+                {
+                    MessageBox.Show("连接服务器失败！", "Error", MessageBoxButton.OK, MessageBoxImage.Error);
+                    Close();
+                }));
+                /*
                 try
                 {
                     MainWindow.serverLink = "http://msl.waheal.top";
@@ -69,6 +78,7 @@ namespace MSL
                     pageHtml = "";
                     Close();
                 }
+                */
             }
             if (pageHtml.IndexOf("\r\n") != -1)
             {
@@ -196,7 +206,7 @@ namespace MSL
             {
                 Dispatcher.Invoke(new Action(delegate
                 {
-                    gonggao.Content = "none";
+                    gonggao.Content = "无公告";
                 }));
             }
             Dispatcher.Invoke(new Action(delegate
@@ -496,11 +506,7 @@ namespace MSL
 
         private void gotoWeb_Click(object sender, RoutedEventArgs e)
         {
-            WebClient MyWebClient = new WebClient();
-            MyWebClient.Credentials = CredentialCache.DefaultCredentials;
-            byte[] pageData = MyWebClient.DownloadData(MainWindow.serverLink + @"/msl/frpcweb.txt");
-            string pageHtml1 = Encoding.UTF8.GetString(pageData);
-            Process.Start(pageHtml1);
+            Process.Start("https://afdian.net/a/makabaka123");
         }
     }
 }

@@ -864,47 +864,8 @@ namespace MSL.forms
                         Growl.Info("MSL主服务器连接超时，已切换至备用服务器！");
                     }
                 }
-                try
-                {
-                    string url;
-                    if (MainWindow.serverLink != "https://msl.waheal.top")
-                    {
-                        url = MainWindow.serverLink + ":5000";
-                    }
-                    else
-                    {
-                        url = "https://api.waheal.top";
-                    }
-                    WebClient webClient = new WebClient();
-                    //webClient.Encoding = Encoding.UTF8;
-                    webClient.Credentials = CredentialCache.DefaultCredentials;
-                    //byte[] pageData = webClient.DownloadData(MainWindow.serverLink + @"/msl/CC/getserver.txt");
-                    byte[] pageData = webClient.DownloadData(url);
-                    string jsonData = Encoding.UTF8.GetString(pageData);
-                    serverTypes = JsonConvert.DeserializeObject<string[]>(jsonData);
-                }
-                catch
-                {
-                    try
-                    {
-                        WebClient webClient = new WebClient();
-                        //webClient.Encoding = Encoding.UTF8;
-                        webClient.Credentials = CredentialCache.DefaultCredentials;
-                        //byte[] pageData = webClient.DownloadData(MainWindow.serverLink + @"/msl/CC/getserver.txt");
-                        byte[] pageData = webClient.DownloadData("https://api.waheal.top");
-                        string jsonData = Encoding.UTF8.GetString(pageData);
-                        serverTypes = JsonConvert.DeserializeObject<string[]>(jsonData);
-                    }
-                    catch (Exception ex)
-                    {
-                        Dispatcher.Invoke(new Action(delegate
-                        {
-                            DialogShow.ShowMsg(this, "获取服务端失败！请重试！\n错误代码：" + ex.Message, "错误");
-                            return;
-                        }));
-                    }
-                }
-
+                string jsonData = Functions.Get("serverlist");
+                serverTypes = JsonConvert.DeserializeObject<string[]>(jsonData);
                 Dispatcher.Invoke(new Action(delegate
                 {
                     ServerCoreCombo.SelectedIndex = 0;
@@ -962,22 +923,12 @@ namespace MSL.forms
                                     //MessageBox.Show(_serverType);
                                     try
                                     {
-                                        string url;
-                                        if (MainWindow.serverLink != "https://msl.waheal.top")
-                                        {
-                                            url = MainWindow.serverLink + ":5000/server";
-                                        }
-                                        else
-                                        {
-                                            url = "https://api.waheal.top/server";
-                                        }
-                                        string PostUrl = url;
                                         JObject patientinfo = new JObject();
                                         patientinfo["server_name"] = i;
                                         string sendData = JsonConvert.SerializeObject(patientinfo);
-                                        string resultData = Functions.Post(sendData, PostUrl);
+                                        string resultData = Functions.Post("serverlist",0,sendData);
                                         //MessageBox.Show(resultData);
-                                        tempServerCore.Add(coreType,resultData);
+                                        tempServerCore.Add(coreType, resultData);
                                         Dictionary<string, string> serverDetails = JsonConvert.DeserializeObject<Dictionary<string, string>>(resultData);
                                         foreach (var item in serverDetails.Keys)
                                         {
@@ -988,34 +939,13 @@ namespace MSL.forms
                                             }
                                         }
                                     }
-                                    catch
+                                    catch(Exception ex)
                                     {
-                                        try
+                                        Dispatcher.Invoke(new Action(delegate
                                         {
-                                            string PostUrl = "https://api.waheal.top/server";
-                                            JObject patientinfo = new JObject();
-                                            patientinfo["server_name"] = i;
-                                            string sendData = JsonConvert.SerializeObject(patientinfo);
-                                            string resultData = Functions.Post(sendData, PostUrl);
-                                            tempServerCore.Add(coreType, resultData);
-                                            //MessageBox.Show(resultData);
-                                            Dictionary<string, string> serverDetails = JsonConvert.DeserializeObject<Dictionary<string, string>>(resultData);
-                                            foreach (var item in serverDetails.Keys)
-                                            {
-                                                if (!typeVersions.Contains(item) && !item.StartsWith("*"))
-                                                {
-                                                    typeVersions.Add(item);
-                                                }
-                                            }
-                                        }
-                                        catch (Exception ex)
-                                        {
-                                            Dispatcher.Invoke(new Action(delegate
-                                            {
-                                                DialogShow.ShowMsg(this, "获取服务端失败！请重试！\n错误代码：" + ex.Message, "错误");
-                                            }));
-                                            return;
-                                        }
+                                            DialogShow.ShowMsg(this, "获取服务端失败！请重试！\n错误代码：" + ex.Message, "错误");
+                                        }));
+                                        return;
                                     }
                                     //typeVersions = serverDetails.Keys.ToList();
                                 }
@@ -1171,8 +1101,22 @@ namespace MSL.forms
 
         private async Task<string> AsyncGetJavaDwnLink()
         {
+            /*
             WebClient MyWebClient = new WebClient();
             byte[] pageData = await MyWebClient.DownloadDataTaskAsync(MainWindow.serverLink + @"/msl/otherdownload.json");
+            string _javaList = Encoding.UTF8.GetString(pageData);
+            */
+            string url;
+            if (MainWindow.serverLink != "https://msl.waheal.top")
+            {
+                url = MainWindow.serverLink + ":5000";
+            }
+            else
+            {
+                url = "https://api.waheal.top";
+            }
+            WebClient MyWebClient = new WebClient();
+            byte[] pageData = await MyWebClient.DownloadDataTaskAsync(url + "/otherdownloads");
             string _javaList = Encoding.UTF8.GetString(pageData);
             return _javaList;
         }

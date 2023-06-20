@@ -6,22 +6,61 @@ using System.Net;
 using System.Text;
 using System.Text.RegularExpressions;
 using System.Threading.Tasks;
+using System.Web;
 
 namespace MSL.controls
 {
     internal class Functions
     {
-        public static string Post(string parameterData, string serviceUrl)
+        public static string Get(string path)
         {
-            HttpWebRequest myRequest = (HttpWebRequest)WebRequest.Create(serviceUrl);
-            byte[] buf = System.Text.Encoding.GetEncoding("UTF-8").GetBytes(parameterData);
+            string url;
+            if (MainWindow.serverLink != "https://msl.waheal.top")
+            {
+                url = MainWindow.serverLink + ":5000";
+            }
+            else
+            {
+                url = "https://api.waheal.top";
+            }
+            WebClient webClient = new WebClient();
+            webClient.Credentials = CredentialCache.DefaultCredentials;
+            byte[] pageData = webClient.DownloadData(url + "/" + path);
+            return Encoding.UTF8.GetString(pageData);
+        }
 
-            myRequest.Method = "POST";
-            myRequest.Accept = "application/json";
-            myRequest.ContentType = "application/json; charset=UTF-8";
-            myRequest.ContentLength = buf.Length;
-            myRequest.MaximumAutomaticRedirections = 1;
-            myRequest.AllowAutoRedirect = true;
+        public static string Post(string path,int contentType=0, string parameterData="")
+        {
+            string url;
+            if (MainWindow.serverLink != "https://msl.waheal.top")
+            {
+                url = MainWindow.serverLink + ":5000";
+            }
+            else
+            {
+                url = "https://api.waheal.top";
+            }
+            HttpWebRequest myRequest = (HttpWebRequest)WebRequest.Create(url+"/"+path);
+            byte[] buf = Encoding.GetEncoding("UTF-8").GetBytes(parameterData);
+
+            if (contentType == 0)
+            {
+                myRequest.Method = "POST";
+                myRequest.Accept = "application/json";
+                myRequest.ContentType = "application/json; charset=UTF-8";
+                myRequest.ContentLength = buf.Length;
+                myRequest.MaximumAutomaticRedirections = 1;
+                myRequest.AllowAutoRedirect = true;
+            }
+            else if (contentType == 1)
+            {
+                myRequest.Method = "POST";
+                myRequest.Accept = "text/plain";
+                myRequest.ContentType = "text/plain; charset=UTF-8";
+                myRequest.ContentLength = buf.Length;
+                myRequest.MaximumAutomaticRedirections = 1;
+                myRequest.AllowAutoRedirect = true;
+            }
 
             // 发送请求
             using (Stream stream = myRequest.GetRequestStream())
@@ -33,6 +72,7 @@ namespace MSL.controls
             using (HttpWebResponse myResponse = (HttpWebResponse)myRequest.GetResponse())
             using (StreamReader reader = new StreamReader(myResponse.GetResponseStream(), Encoding.UTF8))
             {
+                //string returnData = Regex.Unescape(reader.ReadToEnd());
                 string returnData = reader.ReadToEnd();
                 return returnData;
             }

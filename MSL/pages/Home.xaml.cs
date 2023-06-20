@@ -48,10 +48,13 @@ namespace MSL.pages
             string noticeversion1;
             try
             {
+                /*
                 WebClient MyWebClient = new WebClient();
                 MyWebClient.Credentials = CredentialCache.DefaultCredentials;
                 byte[] pageData1 = MyWebClient.DownloadData(MainWindow.serverLink + @"/msl/noticeversion.txt");
                 string noticeversion = Encoding.UTF8.GetString(pageData1);
+                */
+                string noticeversion = Functions.Get("notice");
                 JObject jsonObject = JObject.Parse(File.ReadAllText(AppDomain.CurrentDomain.BaseDirectory + @"MSL\config.json", Encoding.UTF8));
                 if (jsonObject["notice"] == null)
                 {
@@ -68,10 +71,13 @@ namespace MSL.pages
                 }
                 if (noticeversion1 != noticeversion)
                 {
+                    /*
                     byte[] pageData = MyWebClient.DownloadData(MainWindow.serverLink + @"/msl/notice.json");
                     string notice = Encoding.UTF8.GetString(pageData);
-
+                    */
+                    string notice = Functions.Post("notice");
                     JObject keyValues = JObject.Parse(notice);
+
                     if (keyValues["notice"] != null)
                     {
                         noticeLabText = keyValues["notice"].ToString();
@@ -184,8 +190,11 @@ namespace MSL.pages
                     }));
                     if (noticevisible == Visibility.Visible)
                     {
+                        /*
                         byte[] pageData = MyWebClient.DownloadData(MainWindow.serverLink + @"/msl/notice.json");
                         string notice = Encoding.UTF8.GetString(pageData);
+                        */
+                        string notice = Functions.Post("notice");
 
                         JObject keyValues = JObject.Parse(notice);
                         if (keyValues["notice"] != null)

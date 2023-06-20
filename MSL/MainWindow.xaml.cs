@@ -23,6 +23,9 @@ using System.Linq;
 using System.Windows.Input;
 using System.Resources;
 using System.Net.NetworkInformation;
+using System.Security.Policy;
+using System.Web;
+using System.Text.RegularExpressions;
 
 namespace MSL
 {
@@ -83,6 +86,7 @@ namespace MSL
                 if (reply.Status == IPStatus.Success)
                 {
                     serverLink = "http://"+serverAddr;
+                    //serverLink = "https://msl.waheal.top";
                 }
                 else
                 {
@@ -401,10 +405,14 @@ namespace MSL
             //更新
             try
             {
+                /*
                 WebClient MyWebClient = new WebClient();
                 MyWebClient.Credentials = CredentialCache.DefaultCredentials;
-                byte[] pageData = MyWebClient.DownloadData(MainWindow.serverLink + @"/msl/update.txt");
+                byte[] pageData = MyWebClient.DownloadData(serverLink + @"/msl/update.txt");
                 string pageHtml = Encoding.UTF8.GetString(pageData);
+                */
+
+                string pageHtml = Functions.Get("update");
                 string strtempa = "#";
                 int IndexofA = pageHtml.IndexOf(strtempa);
                 string Ru = pageHtml.Substring(IndexofA + 1);
@@ -418,8 +426,11 @@ namespace MSL
                 
                 if (newVersion > version)
                 {
-                    byte[] _updatelog = MyWebClient.DownloadData(MainWindow.serverLink + @"/msl/updatelog.txt");
+                    /*
+                    byte[] _updatelog = MyWebClient.DownloadData(serverLink + @"/msl/updatelog.txt");
                     string updatelog = Encoding.UTF8.GetString(_updatelog);
+                    */
+                    string updatelog = Functions.Post("update",1);
                     Dispatcher.Invoke(new Action(delegate
                     {
                         bool dialog = DialogShow.ShowMsg(this, "发现新版本，版本号为：" + aaa + "，是否进行更新？\n更新日志：\n" + updatelog, "更新", true, "取消");

@@ -165,8 +165,9 @@
                                             <ContextMenu>
                                                 <MenuItem Click="reFresh_Click" Header="刷新"/>
                                                 <MenuItem x:Name="addPlugin" Click="addPlugin_Click" Header="添加插件"/>
+                                                <MenuItem x:Name="disPlugin" Click="disPlugin_Click" Header="禁用/启用所选插件"/>
                                                 <MenuItem x:Name="delPlugin" Click="delPlugin_Click" Header="删除插件"/>
-                                                <MenuItem x:Name="disAllPlugin" Click="disAllPlugin_Click" Header="禁用/启用所有插件"/>
+                                                <MenuItem x:Name="disAllPlugin" Click="disAllPlugin_Click" Header="禁用/启用全部插件"/>
                                                 <MenuItem x:Name="openpluginsDir" Click="openpluginsDir_Click" Header="打开插件文件夹"/>
                                             </ContextMenu>
                                         </ListBox.ContextMenu>
@@ -205,8 +206,9 @@
                                             <ContextMenu>
                                                 <MenuItem Click="reFresh_Click" Header="刷新"/>
                                                 <MenuItem x:Name="addMod" Click="addMod_Click" Header="添加模组"/>
+                                                <MenuItem x:Name="disMod" Click="disMod_Click" Header="禁用/启用所选模组"/>
                                                 <MenuItem x:Name="delMod" Click="delMod_Click" Header="删除模组"/>
-                                                <MenuItem x:Name="disAllMod" Click="disAllMod_Click" Header="禁用/启用所有模组"/>
+                                                <MenuItem x:Name="disAllMod" Click="disAllMod_Click" Header="禁用/启用全部模组"/>
                                                 <MenuItem x:Name="openmodsDir" Click="openmodsDir_Click" Header="打开模组文件夹"/>
                                             </ContextMenu>
                                         </ListBox.ContextMenu>

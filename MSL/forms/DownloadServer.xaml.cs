@@ -133,6 +133,7 @@ namespace MSL.pages
             }));
             try
             {
+                /*
                 string url;
                 if (MainWindow.serverLink != "https://msl.waheal.top")
                 {
@@ -148,6 +149,8 @@ namespace MSL.pages
                 //byte[] pageData = webClient.DownloadData(MainWindow.serverLink + @"/msl/CC/getserver.txt");
                 byte[] pageData = webClient.DownloadData(url);
                 string jsonData = Encoding.UTF8.GetString(pageData);
+                */
+                string jsonData = Functions.Get("serverlist");
                 string[] serverTypes = JsonConvert.DeserializeObject<string[]>(jsonData);
                 Dispatcher.Invoke(new Action(delegate
                 {
@@ -163,39 +166,13 @@ namespace MSL.pages
                     lCircle.Visibility = Visibility.Hidden;
                 }));
             }
-            catch
+            catch(Exception a)
             {
-                try
+                Dispatcher.Invoke(new Action(delegate
                 {
-                    WebClient webClient = new WebClient();
-                    //webClient.Encoding = Encoding.UTF8;
-                    webClient.Credentials = CredentialCache.DefaultCredentials;
-                    //byte[] pageData = webClient.DownloadData(MainWindow.serverLink + @"/msl/CC/getserver.txt");
-                    byte[] pageData = webClient.DownloadData("https://api.waheal.top");
-                    string jsonData = Encoding.UTF8.GetString(pageData);
-                    string[] serverTypes = JsonConvert.DeserializeObject<string[]>(jsonData);
-                    Dispatcher.Invoke(new Action(delegate
-                    {
-                        /*
-                        foreach (var serverType in serverTypes)
-                        {
-                            serverlist.Items.Add(serverType);
-                        }*/
-                        serverlist.ItemsSource = serverTypes;
-
-                        serverlist.SelectedIndex = 0;
-                        getservermsg.Visibility = Visibility.Hidden;
-                        lCircle.Visibility = Visibility.Hidden;
-                    }));
-                }
-                catch (Exception a)
-                {
-                    Dispatcher.Invoke(new Action(delegate
-                    {
-                        getservermsg.Text = "获取服务端失败！请重试" + a.Message;
-                        lCircle.Visibility = Visibility.Hidden;
-                    }));
-                }
+                    getservermsg.Text = "获取服务端失败！请重试" + a.Message;
+                    lCircle.Visibility = Visibility.Hidden;
+                }));
             }
             //return serverTypes;
             /*
@@ -296,20 +273,10 @@ namespace MSL.pages
                     serverName = serverlist.SelectedIndex;
                     //serverName = serverlist.SelectedItem.ToString();
                 }));
-                string url;
-                if (MainWindow.serverLink != "https://msl.waheal.top")
-                {
-                    url = MainWindow.serverLink + ":5000/server";
-                }
-                else
-                {
-                    url = "https://api.waheal.top/server";
-                }
-                string PostUrl = url;
                 JObject patientinfo = new JObject();
                 patientinfo["server_name"] = serverName;
                 string sendData = JsonConvert.SerializeObject(patientinfo);
-                string resultData = Functions.Post(sendData, PostUrl);
+                string resultData = Functions.Post("serverlist",0,sendData);
                 JObject serverDetails = JObject.Parse(resultData);
                 List<JProperty> sortedProperties = serverDetails.Properties().OrderByDescending(p => Functions.VersionCompare(p.Name)).ToList();
                 Dispatcher.Invoke(new Action(delegate
@@ -340,7 +307,7 @@ namespace MSL.pages
                     JObject patientinfo = new JObject();
                     patientinfo["server_name"] = serverName;
                     string sendData = JsonConvert.SerializeObject(patientinfo);
-                    string resultData = Functions.Post(sendData, PostUrl);
+                    string resultData = Functions.Post(sendData, 0, PostUrl);
                     JObject serverDetails = JObject.Parse(resultData);
                     List<JProperty> sortedProperties = serverDetails.Properties().OrderByDescending(p => Functions.VersionCompare(p.Name)).ToList();
                     Dispatcher.Invoke(new Action(delegate
