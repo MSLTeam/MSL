@@ -273,41 +273,12 @@ namespace MSL.pages
                     serverName = serverlist.SelectedIndex;
                     //serverName = serverlist.SelectedItem.ToString();
                 }));
-                JObject patientinfo = new JObject();
-                patientinfo["server_name"] = serverName;
-                string sendData = JsonConvert.SerializeObject(patientinfo);
-                string resultData = Functions.Post("serverlist",0,sendData);
-                JObject serverDetails = JObject.Parse(resultData);
-                List<JProperty> sortedProperties = serverDetails.Properties().OrderByDescending(p => Functions.VersionCompare(p.Name)).ToList();
-                Dispatcher.Invoke(new Action(delegate
-                {
-                    serverlist1.ItemsSource = sortedProperties.Select(p => p.Name).ToList();
-                    serverdownurl = sortedProperties.Select(p => p.Value.ToString()).ToList();
-                    //serverlist.SelectedIndex = 0;
-                    getservermsg.Visibility = Visibility.Hidden;
-                    lCircle.Visibility = Visibility.Hidden;
-                }));
-            }
-            catch
-            {
                 try
                 {
-                    int serverName = 0;
-                    Dispatcher.Invoke(new Action(delegate
-                    {
-                        serverlist1.ItemsSource = null;
-                        //serverurl.Clear();
-                        serverdownurl = null;
-                        getservermsg.Visibility = Visibility.Visible;
-                        lCircle.Visibility = Visibility.Visible;
-                        serverName = serverlist.SelectedIndex;
-                        //serverName = serverlist.SelectedItem.ToString();
-                    }));
-                    string PostUrl = "https://api.waheal.top/server";
                     JObject patientinfo = new JObject();
                     patientinfo["server_name"] = serverName;
                     string sendData = JsonConvert.SerializeObject(patientinfo);
-                    string resultData = Functions.Post(sendData, 0, PostUrl);
+                    string resultData = Functions.Post("serverlist", 0, sendData);
                     JObject serverDetails = JObject.Parse(resultData);
                     List<JProperty> sortedProperties = serverDetails.Properties().OrderByDescending(p => Functions.VersionCompare(p.Name)).ToList();
                     Dispatcher.Invoke(new Action(delegate
@@ -319,14 +290,42 @@ namespace MSL.pages
                         lCircle.Visibility = Visibility.Hidden;
                     }));
                 }
-                catch(Exception a)
+                catch
                 {
-                    Dispatcher.Invoke(new Action(delegate
+                    try
                     {
-                        getservermsg.Text = "获取服务端失败！请重试" + a.Message;
-                        lCircle.Visibility = Visibility.Hidden;
-                    }));
+                        JObject patientinfo = new JObject();
+                        patientinfo["server_name"] = serverName;
+                        string sendData = JsonConvert.SerializeObject(patientinfo);
+                        string resultData = Functions.Post("serverlist", 0, sendData,"https://api.waheal.top");
+                        JObject serverDetails = JObject.Parse(resultData);
+                        List<JProperty> sortedProperties = serverDetails.Properties().OrderByDescending(p => Functions.VersionCompare(p.Name)).ToList();
+                        Dispatcher.Invoke(new Action(delegate
+                        {
+                            serverlist1.ItemsSource = sortedProperties.Select(p => p.Name).ToList();
+                            serverdownurl = sortedProperties.Select(p => p.Value.ToString()).ToList();
+                            //serverlist.SelectedIndex = 0;
+                            getservermsg.Visibility = Visibility.Hidden;
+                            lCircle.Visibility = Visibility.Hidden;
+                        }));
+                    }
+                    catch(Exception a)
+                    {
+                        Dispatcher.Invoke(new Action(delegate
+                        {
+                            getservermsg.Text = "获取服务端失败！请重试" + a.Message;
+                            lCircle.Visibility = Visibility.Hidden;
+                        }));
+                    }
                 }
+            }
+            catch(Exception a)
+            {
+                Dispatcher.Invoke(new Action(delegate
+                {
+                    getservermsg.Text = "获取服务端失败！请重试" + a.Message;
+                    lCircle.Visibility = Visibility.Hidden;
+                }));
             }
             /*
             Dispatcher.Invoke(new Action(delegate

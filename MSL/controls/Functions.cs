@@ -29,16 +29,23 @@ namespace MSL.controls
             return Encoding.UTF8.GetString(pageData);
         }
 
-        public static string Post(string path,int contentType=0, string parameterData="")
+        public static string Post(string path,int contentType=0, string parameterData="",string customUrl="")
         {
             string url;
-            if (MainWindow.serverLink != "https://msl.waheal.top")
+            if (customUrl == "")
             {
-                url = MainWindow.serverLink + ":5000";
+                if (MainWindow.serverLink != "https://msl.waheal.top")
+                {
+                    url = MainWindow.serverLink + ":5000";
+                }
+                else
+                {
+                    url = "https://api.waheal.top";
+                }
             }
             else
             {
-                url = "https://api.waheal.top";
+                url = customUrl;
             }
             HttpWebRequest myRequest = (HttpWebRequest)WebRequest.Create(url+"/"+path);
             byte[] buf = Encoding.GetEncoding("UTF-8").GetBytes(parameterData);

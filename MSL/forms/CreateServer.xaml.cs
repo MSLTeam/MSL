@@ -939,13 +939,34 @@ namespace MSL.forms
                                             }
                                         }
                                     }
-                                    catch(Exception ex)
+                                    catch
                                     {
-                                        Dispatcher.Invoke(new Action(delegate
+                                        try
                                         {
-                                            DialogShow.ShowMsg(this, "获取服务端失败！请重试！\n错误代码：" + ex.Message, "错误");
-                                        }));
-                                        return;
+                                            JObject patientinfo = new JObject();
+                                            patientinfo["server_name"] = i;
+                                            string sendData = JsonConvert.SerializeObject(patientinfo);
+                                            string resultData = Functions.Post("serverlist", 0, sendData,"https://api.waheal.top");
+                                            //MessageBox.Show(resultData);
+                                            tempServerCore.Add(coreType, resultData);
+                                            Dictionary<string, string> serverDetails = JsonConvert.DeserializeObject<Dictionary<string, string>>(resultData);
+                                            foreach (var item in serverDetails.Keys)
+                                            {
+                                                //MessageBox.Show(item);
+                                                if (!typeVersions.Contains(item) && !item.StartsWith("*"))
+                                                {
+                                                    typeVersions.Add(item);
+                                                }
+                                            }
+                                        }
+                                        catch (Exception ex)
+                                        {
+                                            Dispatcher.Invoke(new Action(delegate
+                                            {
+                                                DialogShow.ShowMsg(this, "获取服务端失败！请重试！\n错误代码：" + ex.Message, "错误");
+                                            }));
+                                            return;
+                                        }
                                     }
                                     //typeVersions = serverDetails.Keys.ToList();
                                 }
