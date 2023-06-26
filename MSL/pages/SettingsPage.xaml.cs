@@ -13,6 +13,7 @@ using System.Drawing;
 using System.IO;
 using System.Net;
 using System.Resources;
+//using System.Runtime.InteropServices;
 using System.Text;
 using System.Threading;
 using System.Windows;
@@ -115,6 +116,10 @@ namespace MSL.pages
                 if (jsonObject["autoRunApp"] != null && jsonObject["autoRunApp"].ToString() == "True")
                 {
                     autoRunApp.IsChecked = true;
+                }
+                if (jsonObject["autoUpdateApp"] != null && jsonObject["autoUpdateApp"].ToString() == "True")
+                {
+                    autoUpdateApp.IsChecked = true;
                 }
                 if (jsonObject["autoOpenServer"] != null && jsonObject["autoOpenServer"].ToString() != "False")
                 {
@@ -616,11 +621,14 @@ namespace MSL.pages
             //更新
             try
             {
-                var mainwindow = (MainWindow)System.Windows.Window.GetWindow(this);
+                /*
                 WebClient MyWebClient = new WebClient();
                 MyWebClient.Credentials = CredentialCache.DefaultCredentials;
-                byte[] pageData = MyWebClient.DownloadData(MainWindow.serverLink + @"/msl/update.txt");
+                byte[] pageData = MyWebClient.DownloadData(serverLink + @"/msl/update.txt");
                 string pageHtml = Encoding.UTF8.GetString(pageData);
+                */
+                var mainwindow = (MainWindow)System.Windows.Window.GetWindow(this);
+                string pageHtml = Functions.Get("update");
                 string strtempa = "#";
                 int IndexofA = pageHtml.IndexOf(strtempa);
                 string Ru = pageHtml.Substring(IndexofA + 1);
@@ -634,8 +642,11 @@ namespace MSL.pages
 
                 if (newVersion > version)
                 {
-                    byte[] _updatelog = MyWebClient.DownloadData(MainWindow.serverLink + @"/msl/updatelog.txt");
+                    /*
+                    byte[] _updatelog = MyWebClient.DownloadData(serverLink + @"/msl/updatelog.txt");
                     string updatelog = Encoding.UTF8.GetString(_updatelog);
+                    */
+                    string updatelog = Functions.Post("update", 1);
                     Dispatcher.Invoke(new Action(delegate
                     {
                         bool dialog = DialogShow.ShowMsg(mainwindow, "发现新版本，版本号为：" + aaa + "，是否进行更新？\n更新日志：\n" + updatelog, "更新", true, "取消");
@@ -699,10 +710,40 @@ namespace MSL.pages
                     Growl.Success("您使用的开服器已是最新版本！");
                 }
             }
-            catch (Exception ex)
+            catch
             {
-                MessageBox.Show("Err" + ex.Message);
+                Growl.Error("检查更新失败！");
             }
         }
+
+        private void autoUpdateApp_Click(object sender, RoutedEventArgs e)
+        {
+            if (autoUpdateApp.IsChecked == true)
+            {
+                string jsonString = File.ReadAllText(AppDomain.CurrentDomain.BaseDirectory + @"MSL\config.json", System.Text.Encoding.UTF8);
+                JObject jobject = JObject.Parse(jsonString);
+                jobject["autoUpdateApp"] = "True";
+                string convertString = Convert.ToString(jobject);
+                File.WriteAllText(AppDomain.CurrentDomain.BaseDirectory + @"MSL\config.json", convertString, System.Text.Encoding.UTF8);
+                Growl.Success("开启成功！");
+            }
+            else
+            {
+                string jsonString = File.ReadAllText(AppDomain.CurrentDomain.BaseDirectory + @"MSL\config.json", System.Text.Encoding.UTF8);
+                JObject jobject = JObject.Parse(jsonString);
+                jobject["autoUpdateApp"] = "False";
+                string convertString = Convert.ToString(jobject);
+                File.WriteAllText(AppDomain.CurrentDomain.BaseDirectory + @"MSL\config.json", convertString, System.Text.Encoding.UTF8);
+                Growl.Success("关闭成功！");
+            }
+        }
+        /*
+[DllImport("MSL-BCLinker.dll", EntryPoint = "send_msg_to_bc")]
+private extern static int SendMsgToBC(string cmd, string port);
+private void bcLink_Click(object sender, RoutedEventArgs e)
+{
+   SendMsgToBC("end", "11451");
+}
+*/
     }
 }

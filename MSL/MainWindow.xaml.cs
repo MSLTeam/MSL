@@ -97,7 +97,6 @@ namespace MSL
             catch
             {
                 serverLink = "https://msl.waheal.top";
-                Growl.Info("出现错误，已切换至备用服务器！");
             }
 
             //MessageBox.Show("GetLinkSuccess");
@@ -223,15 +222,6 @@ namespace MSL
 
             //MessageBox.Show("CheckSidemenuSuccess");
 
-            //background
-            if (File.Exists(AppDomain.CurrentDomain.BaseDirectory + "MSL\\Background.png"))
-            {
-                Dispatcher.Invoke(new Action(delegate
-                {
-                    Background = new ImageBrush(SettingsPage.GetImage(AppDomain.CurrentDomain.BaseDirectory + "MSL\\Background.png"));
-                    SideMenuBorder.BorderThickness = new Thickness(0);
-                }));
-            }
             //skin
             try
             {
@@ -334,6 +324,76 @@ namespace MSL
             }
             catch
             { }
+            
+            //background
+            if (File.Exists(AppDomain.CurrentDomain.BaseDirectory + "MSL\\Background.png"))
+            {
+                Dispatcher.Invoke(new Action(delegate
+                {
+                    Background = new ImageBrush(SettingsPage.GetImage(AppDomain.CurrentDomain.BaseDirectory + "MSL\\Background.png"));
+                    SideMenuBorder.BorderThickness = new Thickness(0);
+                }));
+            }
+            else
+            {
+                try
+                {
+                    Dispatcher.Invoke(new Action(delegate
+                    {
+                        if (ThemeManager.Current.ApplicationTheme == ApplicationTheme.Dark)
+                        {
+                            string jsonString = File.ReadAllText(AppDomain.CurrentDomain.BaseDirectory + @"MSL\config.json", Encoding.UTF8);
+                            JObject jobject = JObject.Parse(jsonString);
+                            jobject["colorfulBackground"] = "False";
+                            string convertString = Convert.ToString(jobject);
+                            File.WriteAllText(AppDomain.CurrentDomain.BaseDirectory + @"MSL\config.json", convertString, Encoding.UTF8);
+                            SetResourceReference(BackgroundProperty, "BackgroundBrush");
+                        }
+                        else
+                        {
+                            if (jsonObject["colorfulBackground"] == null)
+                            {
+                                string jsonString = File.ReadAllText(AppDomain.CurrentDomain.BaseDirectory + @"MSL\config.json", Encoding.UTF8);
+                                JObject jobject = JObject.Parse(jsonString);
+                                jobject.Add("colorfulBackground", "True");
+                                string convertString = Convert.ToString(jobject);
+                                File.WriteAllText(AppDomain.CurrentDomain.BaseDirectory + @"MSL\config.json", convertString, Encoding.UTF8);
+                                // 创建线性渐变画刷
+                                LinearGradientBrush gradientBrush = new LinearGradientBrush(
+                                    Color.FromRgb(79, 172, 254), // 开始颜色
+                                    Color.FromRgb(0, 242, 254), // 结束颜色
+                                    new Point(0.5, 0), // 开始点
+                                    new Point(1, 1) // 结束点
+                                );
+
+                                // 创建渐变色的渐变停止点
+                                gradientBrush.GradientStops.Add(new GradientStop(Color.FromRgb(79, 172, 254), 0));
+                                gradientBrush.GradientStops.Add(new GradientStop(Color.FromRgb(0, 242, 254), 1));
+                                Background = gradientBrush;
+                            }
+                            if (jsonObject["colorfulBackground"].ToString() == "True")
+                            {
+                                // 创建线性渐变画刷
+                                LinearGradientBrush gradientBrush = new LinearGradientBrush(
+                                    Color.FromRgb(79, 172, 254), // 开始颜色
+                                    Color.FromRgb(0, 242, 254), // 结束颜色
+                                    new Point(0.5, 0), // 开始点
+                                    new Point(1, 1) // 结束点
+                                );
+
+                                // 创建渐变色的渐变停止点
+                                gradientBrush.GradientStops.Add(new GradientStop(Color.FromRgb(79, 172, 254), 0));
+                                gradientBrush.GradientStops.Add(new GradientStop(Color.FromRgb(0, 242, 254), 1));
+                                Background = gradientBrush;
+                            }
+                        }
+                    }));
+                }
+                catch
+                { }
+            }
+
+            //半透明标题栏
             try
             {
                 if (jsonObject["semitransparentTitle"] == null)
@@ -433,51 +493,27 @@ namespace MSL
                     string updatelog = Functions.Post("update",1);
                     Dispatcher.Invoke(new Action(delegate
                     {
+                        try
+                        {
+                            if (jsonObject["autoUpdateApp"] == null)
+                            {
+                                string jsonString = File.ReadAllText(AppDomain.CurrentDomain.BaseDirectory + @"MSL\config.json", Encoding.UTF8);
+                                JObject jobject = JObject.Parse(jsonString);
+                                jobject.Add("autoUpdateApp", "False");
+                                string convertString = Convert.ToString(jobject);
+                                File.WriteAllText(AppDomain.CurrentDomain.BaseDirectory + @"MSL\config.json", convertString, Encoding.UTF8);
+                            }
+                            else if (jsonObject["autoUpdateApp"].ToString() == "True")
+                            {
+                                UpdateApp(pageHtml, aaa);
+                            }
+                        }
+                        catch
+                        { }
                         bool dialog = DialogShow.ShowMsg(this, "发现新版本，版本号为：" + aaa + "，是否进行更新？\n更新日志：\n" + updatelog, "更新", true, "取消");
                         if (dialog == true)
                         {
-                            string strtempa1 = "* ";
-                            int IndexofA1 = pageHtml.IndexOf(strtempa1);
-                            string Ru1 = pageHtml.Substring(IndexofA1 + 2);
-                            string aaa1 = Ru1.Substring(0, Ru1.IndexOf(" *"));
-                            DialogShow.ShowDownload(this, aaa1, AppDomain.CurrentDomain.BaseDirectory, "MSL" + aaa + ".exe", "下载新版本中……");
-                            if (File.Exists(AppDomain.CurrentDomain.BaseDirectory + "MSL" + aaa + ".exe"))
-                            {
-                                /*
-                                string vBatFile = Path.GetDirectoryName(AppDomain.CurrentDomain.BaseDirectory) + @"\DEL.bat";
-                                using (StreamWriter vStreamWriter = new StreamWriter(vBatFile, false, Encoding.Default))
-                                {
-                                    vStreamWriter.Write(string.Format(":del\r\n del \"" + System.Windows.Forms.Application.ExecutablePath + "\"\r\n " + "if exist \"" + System.Windows.Forms.Application.ExecutablePath + "\" goto del\r\n " + "start /d \"" + AppDomain.CurrentDomain.BaseDirectory + "\" MSL" + aaa + ".exe" + "\r\n" + " del %0\r\n", AppDomain.CurrentDomain.BaseDirectory));
-                                }
-                                WinExec(vBatFile, 0);
-                                Process.GetCurrentProcess().Kill();
-                                */
-                                string oldExePath = Process.GetCurrentProcess().MainModule.ModuleName;
-                                string dwnExePath = Path.Combine(AppDomain.CurrentDomain.BaseDirectory, "MSL" + aaa + ".exe");
-                                string newExeDir = AppDomain.CurrentDomain.BaseDirectory;
-
-                                // 输出CMD命令以便调试
-                                string cmdCommand = "/C choice /C Y /N /D Y /T 1 & Del \"" + oldExePath + "\" & Ren \"" + "MSL" + aaa + ".exe" + "\" \"MSL.exe\" & start \"\" \"MSL.exe\"";
-                                //MessageBox.Show(cmdCommand);
-
-                                // 关闭当前运行中的应用程序
-                                Application.Current.Shutdown();
-
-                                // 删除旧版本并启动新版本
-                                Process delProcess = new Process();
-                                delProcess.StartInfo.FileName = "cmd.exe";
-                                delProcess.StartInfo.Arguments = cmdCommand;
-                                Directory.SetCurrentDirectory(newExeDir);
-                                delProcess.StartInfo.WindowStyle = ProcessWindowStyle.Hidden;
-                                delProcess.Start();
-
-                                // 退出当前进程
-                                Process.GetCurrentProcess().Kill();
-                            }
-                            else
-                            {
-                                MessageBox.Show("更新失败！", "错误", MessageBoxButton.OK, MessageBoxImage.Error);
-                            }
+                            UpdateApp(pageHtml, aaa);
                         }
                         else
                         {
@@ -494,94 +530,12 @@ namespace MSL
                     Growl.Success("您使用的开服器已是最新版本！");
                 }
             }
-            catch(Exception ex)
+            catch
             {
-                Growl.Error("检查更新失败！"+ex.Message);
+                Growl.Error("检查更新失败！");
             }
 
             //MessageBox.Show("CheckUpdateSuccess");
-
-            /****************************************************************
-             * 
-             * 临时增加的serverlist.ini转serverlist.json模块
-             * 后续版本要移除
-             * 
-             * **************************************************************/
-            /*
-            if (File.Exists(AppDomain.CurrentDomain.BaseDirectory + "MSL\\ServerList.ini"))
-            {
-                string line = File.ReadAllText(AppDomain.CurrentDomain.BaseDirectory + "MSL\\ServerList.ini");
-                while (line.IndexOf("*") + 1 != 0)
-                {
-
-                    int IndexofA3 = line.IndexOf("-s ");
-                    string Ru3 = line.Substring(IndexofA3 + 3);
-                    string servercore = Ru3.Substring(0, Ru3.IndexOf("|"));
-
-                    int IndexofA1 = line.IndexOf("-n ");
-                    string Ru1 = line.Substring(IndexofA1 + 3);
-                    string servername = Ru1.Substring(0, Ru1.IndexOf("|"));
-                    //serverjavalist.Items.Add(a200);
-
-                    int IndexofA2 = line.IndexOf("-j ");
-                    string Ru2 = line.Substring(IndexofA2 + 3);
-                    string serverjava = Ru2.Substring(0, Ru2.IndexOf("|"));
-
-                    int IndexofA4 = line.IndexOf("-a ");
-                    string Ru4 = line.Substring(IndexofA4 + 3);
-                    string servermemory = Ru4.Substring(0, Ru4.IndexOf("|"));
-                    //serverJVMlist.Items.Add(a400);
-
-                    int IndexofA5 = line.IndexOf("-b ");
-                    string Ru5 = line.Substring(IndexofA5 + 3);
-                    string serverbase = Ru5.Substring(0, Ru5.IndexOf("|"));
-
-                    int IndexofA6 = line.IndexOf("-c ");
-                    string Ru6 = line.Substring(IndexofA6 + 3);
-                    string serverargs = Ru6.Substring(0, Ru6.IndexOf("|"));
-                    //serverbaselist.Items.Add(a500);
-
-                    int IndexofA7 = line.IndexOf("*");
-                    string Ru7 = line.Substring(IndexofA7);
-                    string a700 = Ru7.Substring(0, Ru7.IndexOf("\n"));
-                    //serverbaselist.Items.Add(a500);
-                    line = line.Replace(a700, "");
-
-
-                    try
-                    {
-                        Directory.CreateDirectory(serverbase);
-
-                        if (!File.Exists(AppDomain.CurrentDomain.BaseDirectory + @"MSL\ServerList.json"))
-                        {
-                            File.WriteAllText(AppDomain.CurrentDomain.BaseDirectory + @"MSL\ServerList.json", string.Format("{{{0}}}", "\n"));
-                        }
-                        JObject _json = new JObject
-                        {
-                            { "name", servername },
-                            { "java", serverjava },
-                            { "base", serverbase },
-                            { "core", servercore },
-                            { "memory", servermemory },
-                            { "args", serverargs }
-                        };
-                        JObject _jsonObject = JObject.Parse(File.ReadAllText(AppDomain.CurrentDomain.BaseDirectory + @"MSL\ServerList.json", Encoding.UTF8));
-                        List<string> keys = _jsonObject.Properties().Select(p => p.Name).ToList();
-                        keys.Sort();
-                        int i = (keys.Count > 0) ? int.Parse(keys.Last()) + 1 : 0;
-                        _jsonObject.Add(i.ToString(), _json);
-                        File.WriteAllText(AppDomain.CurrentDomain.BaseDirectory + @"MSL\ServerList.json", Convert.ToString(_jsonObject), Encoding.UTF8);
-                    }
-                    catch (Exception ex)
-                    {
-                        MessageBox.Show("出现错误，请重试：" + ex.Message, "Error", MessageBoxButton.OK, MessageBoxImage.Error);
-                    }
-                }
-                File.Delete(AppDomain.CurrentDomain.BaseDirectory + "MSL\\ServerList.ini");
-                Growl.Success("已成功将旧版服务器存储文件转换为新版文件！旧版存储文件已删除");
-            }
-            */
-
 
             //获取电脑内存
             PhisicalMemory = GetPhisicalMemory();
@@ -646,6 +600,51 @@ namespace MSL
                 BodyGrid.Children.Remove(loadingCircle);
                 BodyGrid.UnregisterName("loadingBar");
             }));
+        }
+        private void UpdateApp(string pageHtml,string aaa)
+        {
+            string strtempa1 = "* ";
+            int IndexofA1 = pageHtml.IndexOf(strtempa1);
+            string Ru1 = pageHtml.Substring(IndexofA1 + 2);
+            string aaa1 = Ru1.Substring(0, Ru1.IndexOf(" *"));
+            DialogShow.ShowDownload(this, aaa1, AppDomain.CurrentDomain.BaseDirectory, "MSL" + aaa + ".exe", "下载新版本中……");
+            if (File.Exists(AppDomain.CurrentDomain.BaseDirectory + "MSL" + aaa + ".exe"))
+            {
+                /*
+                string vBatFile = Path.GetDirectoryName(AppDomain.CurrentDomain.BaseDirectory) + @"\DEL.bat";
+                using (StreamWriter vStreamWriter = new StreamWriter(vBatFile, false, Encoding.Default))
+                {
+                    vStreamWriter.Write(string.Format(":del\r\n del \"" + System.Windows.Forms.Application.ExecutablePath + "\"\r\n " + "if exist \"" + System.Windows.Forms.Application.ExecutablePath + "\" goto del\r\n " + "start /d \"" + AppDomain.CurrentDomain.BaseDirectory + "\" MSL" + aaa + ".exe" + "\r\n" + " del %0\r\n", AppDomain.CurrentDomain.BaseDirectory));
+                }
+                WinExec(vBatFile, 0);
+                Process.GetCurrentProcess().Kill();
+                */
+                string oldExePath = Process.GetCurrentProcess().MainModule.ModuleName;
+                string dwnExePath = Path.Combine(AppDomain.CurrentDomain.BaseDirectory, "MSL" + aaa + ".exe");
+                string newExeDir = AppDomain.CurrentDomain.BaseDirectory;
+
+                // 输出CMD命令以便调试
+                string cmdCommand = "/C choice /C Y /N /D Y /T 1 & Del \"" + oldExePath + "\" & Ren \"" + "MSL" + aaa + ".exe" + "\" \"MSL.exe\" & start \"\" \"MSL.exe\"";
+                //MessageBox.Show(cmdCommand);
+
+                // 关闭当前运行中的应用程序
+                Application.Current.Shutdown();
+
+                // 删除旧版本并启动新版本
+                Process delProcess = new Process();
+                delProcess.StartInfo.FileName = "cmd.exe";
+                delProcess.StartInfo.Arguments = cmdCommand;
+                Directory.SetCurrentDirectory(newExeDir);
+                delProcess.StartInfo.WindowStyle = ProcessWindowStyle.Hidden;
+                delProcess.Start();
+
+                // 退出当前进程
+                Process.GetCurrentProcess().Kill();
+            }
+            else
+            {
+                MessageBox.Show("更新失败！", "错误", MessageBoxButton.OK, MessageBoxImage.Error);
+            }
         }
 
         private static long GetPhisicalMemory()

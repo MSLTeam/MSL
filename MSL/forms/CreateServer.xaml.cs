@@ -30,7 +30,7 @@ namespace MSL.forms
     /// <summary>
     /// CreateServer.xaml 的交互逻辑
     /// </summary>
-    public partial class CreateServer : Window
+    public partial class CreateServer : HandyControl.Controls.Window
     {
         string DownjavaName;
 
@@ -172,7 +172,6 @@ namespace MSL.forms
                                 }
                                 else
                                 {
-                                    DialogShow.ShowMsg(this, "安装失败，请查看是否有杀毒软件进行拦截！请确保添加信任或关闭杀毒软件后进行重新安装！", "错误");
                                     return;
                                 }
                             }
@@ -294,10 +293,11 @@ namespace MSL.forms
                 serverjava = AppDomain.CurrentDomain.BaseDirectory + @"MSL\" + DownjavaName + @"\bin\java.exe";
                 return true;
             }
-            catch
+            catch(Exception ex)
             {
+                //MessageBox.Show(ex.ToString(), "错误", MessageBoxButton.OK, MessageBoxImage.Error);
+                DialogShow.ShowMsg(this, "安装失败，请查看是否有杀毒软件进行拦截！请确保添加信任或关闭杀毒软件后进行重新安装！\n错误代码："+ex.Message, "错误");
                 return false;
-                //MessageBox.Show("安装失败，请查看是否有杀毒软件进行拦截！请确保添加信任或关闭杀毒软件后进行重新安装！", "错误", MessageBoxButton.OK, MessageBoxImage.Error);
             }
         }
         private void return2_Click(object sender, RoutedEventArgs e)
@@ -861,7 +861,6 @@ namespace MSL.forms
                     if (reply.Status != IPStatus.Success)
                     {
                         MainWindow.serverLink = "https://msl.waheal.top";
-                        Growl.Info("MSL主服务器连接超时，已切换至备用服务器！");
                     }
                 }
                 string jsonData = Functions.Get("serverlist");
@@ -1196,7 +1195,6 @@ namespace MSL.forms
                     }
                     else
                     {
-                        DialogShow.ShowMsg(this, "安装失败，请查看是否有杀毒软件进行拦截！请确保添加信任或关闭杀毒软件后进行重新安装！", "错误");
                         FastModeInstallBtn.IsEnabled = true;
                         return;
                     }

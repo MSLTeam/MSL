@@ -28,6 +28,7 @@
                     <TextBox Name="downthreadCount" Margin="300,85,130,0" Text="8" FontSize="18" VerticalAlignment="Top" Height="32" />
                     <Button Name="mulitDownthread" Height="32" Margin="0,85,10,0" Width="112" Content="确定" FontSize="16" HorizontalAlignment="Right" VerticalAlignment="Top" Click="mulitDownthread_Click" />
                     <Button x:Name="checkUpdateBtn" Content="检查更新" Style="{StaticResource ButtonPrimary}" HorizontalAlignment="Left" Margin="430,0,0,0" Height="40" FontSize="16" Width="130" Click="checkUpdateBtn_Click"/>
+                    <!--<Button x:Name="bcLink" Content="检查更新" Style="{StaticResource ButtonPrimary}" HorizontalAlignment="Left" Margin="568,0,0,0" Height="40" FontSize="16" Width="130" Click="bcLink_Click"/>-->
                 </Grid>
             </Border>
             <Border Style="{StaticResource MagicBorder}">
@@ -42,11 +43,13 @@
                     <Button x:Name="addServerToRunlist" Content="将选中服务器添加至启动列表" HorizontalAlignment="Right" Margin="0,140,10,0" VerticalAlignment="Top" Height="55" Width="315" Click="addServerToRunlist_Click" FontSize="16"/>
                     <Label Content="开机自动启动MSL:" HorizontalAlignment="Left" Margin="0,205,0,10" VerticalAlignment="Top" FontSize="16" Height="35" Background="{x:Null}" BorderBrush="{x:Null}" />
                     <ToggleButton x:Name="autoRunApp" Margin="160,210,0,0" Style="{StaticResource ToggleButtonSwitch}" HorizontalAlignment="Left" VerticalAlignment="Top" Click="autoRunApp_Click"/>
-
+                    <Label Content="遇到更新时自动更新:" HorizontalAlignment="Left" Margin="236,205,0,0" VerticalAlignment="Top" FontSize="16" Height="35" Background="{x:Null}" BorderBrush="{x:Null}" />
+                    <ToggleButton x:Name="autoUpdateApp" Margin="410,210,0,0" Style="{StaticResource ToggleButtonSwitch}" HorizontalAlignment="Left" VerticalAlignment="Top" Click="autoUpdateApp_Click"/>
                     <!--<TextBlock Text="左侧列表填写方法：&#xA;请按照以下格式进行填写：服务器ID+英文逗号&#xA;服务器ID是服务器列表栏中的服务器所在位置-1，如列表中的第一个服务器ID为0，第二个为1&#xA;填写示例：仅一个服务器时：0,  （切记不要忘记逗号）&#xA;多个服务器时：0,1,2,3,  （切记不要忘记逗号）" Margin="0,80,10,0" Foreground="#FFFF0000" TextWrapping="Wrap" Width="274" HorizontalAlignment="Right" FontSize="13" />-->
                     <Label Content="开服时自动开启:" HorizontalAlignment="Left" Margin="0,245,0,10" VerticalAlignment="Top" FontSize="16" Height="35" Background="{x:Null}" BorderBrush="{x:Null}" />
                     <ToggleButton x:Name="autoGetPlayerInfo" Margin="150,250,0,0" Style="{StaticResource ToggleButtonSwitch}" HorizontalAlignment="Left" VerticalAlignment="Top" Click="autoGetPlayerInfo_Click" Content="记录玩家功能"/>
                     <ToggleButton x:Name="autoGetServerInfo" Margin="320,250,0,0" Style="{StaticResource ToggleButtonSwitch}" HorizontalAlignment="Left" VerticalAlignment="Top" Click="autoGetServerInfo_Click" Content="显示占用功能"/>
+                    
                 </Grid>
             </Border>
             <Border Margin="10,10,10,20" Style="{StaticResource MagicBorder}">

@@ -59,25 +59,16 @@ namespace MSL
         public string RserverJVM;
         public string RserverJVMcmd;
         public string Rserverbase;
-        //readonly DispatcherTimer timer1 = new DispatcherTimer();
-        //readonly DispatcherTimer timer2 = new DispatcherTimer();
 
         /// <summary>
         /// /////////主要代码
         /// </summary>
         public ServerRunner()
         {
-            //timer1.Tick += new EventHandler(timer1_Tick);
-            //timer2.Tick += new EventHandler(timer2_Tick);
             ReadStdOutput += new DelReadStdOutput(ReadStdOutputAction);
             ServerList.OpenServerForm += ShowWindowEvent;
             SettingsPage.DelBackground += DelBackground;
-            SettingsPage.ChangeTitleStyle += ChangeTitleStyle;
             InitializeComponent();
-            //Width += 16;
-            //Height += 24;
-            //MinWidth = Width;
-            //MinHeight = Height;
         }
         private void Window_Loaded(object sender, RoutedEventArgs e)
         {
@@ -269,11 +260,6 @@ namespace MSL
                 Topmost = false;
             }
         }
-
-        void DelBackground()
-        {
-            this.SetResourceReference(BackgroundProperty, "BackgroundBrush");
-        }
         void ChangeTitleStyle()
         {
             try
@@ -309,6 +295,11 @@ namespace MSL
                 MinBtn.Foreground = Brushes.White;
                 CloseBtn.Foreground = Brushes.White;
             }
+        }
+
+        void DelBackground()
+        {
+            SetResourceReference(BackgroundProperty, "BackgroundBrush");
         }
 
         private bool isModsPluginsRefresh = true;
@@ -790,34 +781,7 @@ namespace MSL
                 {
                     ShowLog("[" + DateTime.Now.ToString("T") + " 信息]" + msg.Substring(msg.IndexOf("INFO]") + 5), Brushes.Green);
                     //服务器启动成功和关闭时的提示
-                    if (msg.Contains("Done") && msg.Contains("For help"))
-                    {
-                        getServerInfoLine = 101;
-                        ShowLog("已成功开启服务器！你可以输入stop来关闭服务器！\r\n服务器本地IP通常为:127.0.0.1，想要远程进入服务器，需要开通公网IP或使用内网映射，详情查看开服器的内网映射界面。", Brushes.Green);
-                        Growl.Success("已成功开启服务器！");
-                        serverStateLab.Content = "已开服";
-                        Thread thread = new Thread(CheckOnlineMode);
-                        thread.Start();
-                    }
-                    else if (msg.Contains("加载完成") && msg.Contains("如需帮助"))
-                    {
-                        getServerInfoLine = 101;
-                        ShowLog("已成功开启服务器！你可以输入stop来关闭服务器！\r\n服务器本地IP通常为:127.0.0.1，想要远程进入服务器，需要开通公网IP或使用内网映射，详情参照开服器的内网映射界面。", Brushes.Green);
-                        Growl.Success("已成功开启服务器！");
-                        serverStateLab.Content = "已开服";
-                        Thread thread = new Thread(CheckOnlineMode);
-                        thread.Start();
-                    }
-                    else if (msg.Contains("Stopping server"))
-                    {
-                        ShowLog("正在关闭服务器！", Brushes.Green);
-                    }
-
-                    //玩家进服是否记录
-                    if (getPlayerInfo == true)
-                    {
-                        GetPlayerInfoSys(msg);
-                    }
+                    LogHandleInfo(msg);
                 }
                 else if (msg.Contains("WARN]"))
                 {
@@ -828,24 +792,36 @@ namespace MSL
                     else
                     {
                         ShowLog("[" + DateTime.Now.ToString("T") + " 警告]" + msg.Substring(msg.IndexOf("WARN]") + 5), Brushes.Orange);
-                        if (msg.Contains("FAILED TO BIND TO PORT"))
-                        {
-                            ShowLog("警告：由于端口占用，服务器已自动关闭！请检查您的服务器是否多开或者有其他软件占用端口！\r\n解决方法：您可尝试通过重启电脑解决！", Brushes.Red);
-                        }
-                        else if (msg.Contains("Unable to access jarfile"))
-                        {
-                            ShowLog("警告：无法访问JAR文件！您的服务端可能已损坏或路径中含有中文或其他特殊字符,请及时修改！", Brushes.Red);
-                        }
-                        else if (msg.Contains("加载 Java 代理时出错"))
-                        {
-                            ShowLog("警告：无法访问JAR文件！您的服务端可能已损坏或路径中含有中文或其他特殊字符,请及时修改！", Brushes.Red);
-                        }
+                        LogHandleWarn(msg);
                     }
                 }
                 else if (msg.Contains("ERROR]"))
                 {
                     ShowLog("[" + DateTime.Now.ToString("T") + " 错误]" + msg.Substring(msg.IndexOf("ERROR]") + 6), Brushes.Red);
                 }
+                /*
+                else if(msg.Contains("INFO")) //If 
+                {
+                    ShowLog(msg, Brushes.Green);
+                    LogHandleInfo(msg);
+                }
+                else if (msg.Contains("WARN"))
+                {
+                    if (msg.Contains("Advanced terminal features are not available in this environment"))
+                    {
+                        return;
+                    }
+                    else
+                    {
+                        ShowLog(msg, Brushes.Orange);
+                        LogHandleWarn(msg);
+                    }
+                }
+                else if (msg.Contains("ERROR"))
+                {
+                    ShowLog(msg, Brushes.Red);
+                }
+                */
                 else
                 {
                     ShowLog(msg, Brushes.Green);
@@ -853,11 +829,37 @@ namespace MSL
             }
             else
             {
-                ShowLog(msg, tempbrush);
+                if (msg.Contains("INFO"))
+                {
+                    ShowLog(msg, Brushes.Green);
+                    LogHandleInfo(msg);
+                }
+                else if (msg.Contains("WARN"))
+                {
+                    if (msg.Contains("Advanced terminal features are not available in this environment"))
+                    {
+                        return;
+                    }
+                    else
+                    {
+                        ShowLog(msg, Brushes.Orange);
+                        LogHandleWarn(msg);
+                    }
+                }
+                else if (msg.Contains("ERROR"))
+                {
+                    ShowLog(msg, Brushes.Red);
+                }
+                else
+                {
+                    ShowLog(msg, tempbrush);
+                }
             }
             if (msg.Contains("�"))
             {
+                Brush brush = tempbrush;
                 ShowLog("MSL检测到您的服务器输出了乱码日志，请尝试去“更多功能”界面更改服务器的“输出编码”来解决此问题！", Brushes.Red);
+                tempbrush = brush;
                 //Growl.Ask("");
                 if (outlogEncodingAsk)
                 {
@@ -884,7 +886,56 @@ namespace MSL
                 }
             }
         }
-        void GetServerInfoSys(string msg)
+
+        private void LogHandleInfo(string msg)
+        {
+            if (msg.Contains("Done") && msg.Contains("For help"))
+            {
+                getServerInfoLine = 101;
+                ShowLog("已成功开启服务器！你可以输入stop来关闭服务器！\r\n服务器本地IP通常为:127.0.0.1，想要远程进入服务器，需要开通公网IP或使用内网映射，详情查看开服器的内网映射界面。", Brushes.Green);
+                Growl.Success("已成功开启服务器！");
+                serverStateLab.Content = "已开服";
+                Thread thread = new Thread(CheckOnlineMode);
+                thread.Start();
+            }
+            else if (msg.Contains("加载完成") && msg.Contains("如需帮助"))
+            {
+                getServerInfoLine = 101;
+                ShowLog("已成功开启服务器！你可以输入stop来关闭服务器！\r\n服务器本地IP通常为:127.0.0.1，想要远程进入服务器，需要开通公网IP或使用内网映射，详情参照开服器的内网映射界面。", Brushes.Green);
+                Growl.Success("已成功开启服务器！");
+                serverStateLab.Content = "已开服";
+                Thread thread = new Thread(CheckOnlineMode);
+                thread.Start();
+            }
+            else if (msg.Contains("Stopping server"))
+            {
+                ShowLog("正在关闭服务器！", Brushes.Green);
+            }
+
+            //玩家进服是否记录
+            if (getPlayerInfo == true)
+            {
+                GetPlayerInfoSys(msg);
+            }
+        }
+
+        private void LogHandleWarn(string msg)
+        {
+            if (msg.Contains("FAILED TO BIND TO PORT"))
+            {
+                ShowLog("警告：由于端口占用，服务器已自动关闭！请检查您的服务器是否多开或者有其他软件占用端口！\r\n解决方法：您可尝试通过重启电脑解决！", Brushes.Red);
+            }
+            else if (msg.Contains("Unable to access jarfile"))
+            {
+                ShowLog("警告：无法访问JAR文件！您的服务端可能已损坏或路径中含有中文或其他特殊字符,请及时修改！", Brushes.Red);
+            }
+            else if (msg.Contains("加载 Java 代理时出错"))
+            {
+                ShowLog("警告：无法访问JAR文件！您的服务端可能已损坏或路径中含有中文或其他特殊字符,请及时修改！", Brushes.Red);
+            }
+        }
+
+        private void GetServerInfoSys(string msg)
         {
             if(msg.Contains("下载")||msg.Contains("Download")|| msg.Contains("download"))
             {
@@ -923,48 +974,6 @@ namespace MSL
             }
             try
             {
-                /*
-                if (msg.Contains("You need to agree to the EULA in order to run the server"))
-                {
-                    //getServerInfoLine = -10;
-                    DialogShow.ShowMsg(this, "检测到您没有接受Mojang的EULA条款！是否阅读并接受EULA条款并继续开服？", "提示", true, "取消");
-                    if (MessageDialog._dialogReturn == true)
-                    {
-                        MessageDialog._dialogReturn = false;
-                        try
-                        {
-                            timer1.Stop();
-                            string path1 = Rserverbase + @"\eula.txt";
-                            FileStream fs = new FileStream(path1, FileMode.Open, FileAccess.Read, FileShare.ReadWrite);
-                            StreamReader sr = new StreamReader(fs, Encoding.Default);
-                            string line;
-                            line = sr.ReadToEnd();
-                            line = line.Replace("eula=false", "eula=true");
-                            string path = Rserverbase + @"\eula.txt";
-                            StreamWriter streamWriter = new StreamWriter(path);
-                            streamWriter.WriteLine(line);
-                            streamWriter.Flush();
-                            streamWriter.Close();
-                            if (!ServerProcess.HasExited)
-                            {
-                                ServerProcess.Kill();
-                            }
-                            ServerProcess.CancelOutputRead();
-                            ServerProcess.CancelErrorRead();
-                            ServerProcess.OutputDataReceived -= new DataReceivedEventHandler(p_OutputDataReceived);
-                            ServerProcess.ErrorDataReceived -= new DataReceivedEventHandler(p_OutputDataReceived);
-                            outlog.Document.Blocks.Clear();
-                            ShowLog("正在重启服务器...", Brushes.Green);
-                            LaunchServer();
-                        }
-                        catch (Exception a)
-                        {
-                            MessageBox.Show("出现错误，请手动修改eula文件或重试:" + a, "错误", MessageBoxButton.OK, MessageBoxImage.Error);
-                        }
-                        Process.Start("https://account.mojang.com/documents/minecraft_eula");
-                    }
-                }
-                else */
                 if (msg.Contains("Starting minecraft server version"))
                 {
                     serverVersionLab.Content = msg.Substring(msg.LastIndexOf(" ") + 1);
@@ -1078,7 +1087,7 @@ namespace MSL
         }
 
         */
-        void ChangeServerIP()
+        private void ChangeServerIP()
         {
             if (serverIPLab.Content.ToString().Contains("*"))
             {
@@ -1102,7 +1111,7 @@ namespace MSL
                 localServerIPLab.FontSize = 12;
             }
         }
-        void GetPlayerInfoSys(string msg)
+        private void GetPlayerInfoSys(string msg)
         {
             if (msg.Contains("logged in with entity id"))
             {
@@ -1160,7 +1169,7 @@ namespace MSL
                 }
             }
         }
-        void CheckOnlineMode()
+        private void CheckOnlineMode()
         {
             for (int i = 0; i < 5; i++)
             {
@@ -1196,7 +1205,7 @@ namespace MSL
             Dispatcher.Invoke(new Action(delegate
             { if (onlineModeLab.Content.ToString() == "获取中") onlineModeLab.Content = "未知"; }));
         }
-        void ProblemSystemShow(string msg)
+        private void ProblemSystemShow(string msg)
         {
             if (getServerInfoLine <= 50)
             {
@@ -1405,7 +1414,7 @@ namespace MSL
                 }
             }
         }
-        
+
         private void CheckServerExit()
         {
             try
@@ -1788,11 +1797,13 @@ namespace MSL
             }
             catch { }
         }
+
         private void gotoFrpc_Click(object sender, RoutedEventArgs e)
         {
             DialogShow.ShowMsg(this, "服务器开启后，通常远程的小伙伴是无法进入的，你需要开通公网IP或进行内网映射才可让他人进入。开服器内置有免费的内网映射，您可点击主界面左侧的“内网映射”按钮查看详情并进行配置。", "注意");
             GotoFrpcEvent();
         }
+
         private void systemInfoBtn_Click(object sender, RoutedEventArgs e)
         {
             if (systemInfoBtn.Content.ToString() == "显示占用:关")
@@ -1860,7 +1871,7 @@ namespace MSL
                 }
                 catch
                 {
-                    Growl.Error("无法获取系统占用信息！显示占用功能已自动关闭！");
+                    Growl.Error("无法获取系统占用信息！显示占用功能已自动关闭！\n通常此问题是因为系统原因造成的，不影响软件正常使用！");
                     Dispatcher.Invoke(new Action(delegate
                     {
                         previewOutlog.Text = "预览功能已关闭，请前往服务器控制台界面查看日志信息！";
@@ -1976,8 +1987,15 @@ namespace MSL
                 config = config.Replace("view-distance=", "view-distance=" + viewDistanceText.Text);
                 config = config.Replace("pvp=", "pvp=" + gamePvpText.Text);
                 config = config.Replace("level-name=", "level-name=" + gameWorldText.Text);
-                File.WriteAllText(Rserverbase + @"\server.properties", config);
-                DialogShow.ShowMsg(this, "保存成功！", "信息");
+                try
+                {
+                    File.WriteAllText(Rserverbase + @"\server.properties", config);
+                    DialogShow.ShowMsg(this, "保存成功！", "信息");
+                }
+                catch (Exception ex)
+                {
+                    DialogShow.ShowMsg(this, "保存失败！请检查服务器是否关闭！\n错误代码：" + ex.Message, "错误");
+                }
                 GetServerConfig();
             }
             catch { }
@@ -2007,8 +2025,15 @@ namespace MSL
                     var res = openfile.ShowDialog();
                     if (res == true)
                     {
-                        File.Copy(openfile.FileName, Rserverbase + "\\server-icon.png", true);
-                        DialogShow.ShowMsg(this, "图标更换完成！", "信息");
+                        try
+                        {
+                            File.Copy(openfile.FileName, Rserverbase + "\\server-icon.png", true);
+                            DialogShow.ShowMsg(this, "图标更换完成！", "信息");
+                        }
+                        catch(Exception ex)
+                        {
+                            DialogShow.ShowMsg(this, "图标更换失败！请检查服务器是否关闭！\n错误代码："+ex.Message, "错误");
+                        }
                     }
                 }
             }
@@ -2038,8 +2063,16 @@ namespace MSL
                 dialog.Description = "请选择地图文件夹(或解压后的文件夹)";
                 if (dialog.ShowDialog() == System.Windows.Forms.DialogResult.OK)
                 {
-                    Functions.MoveFolder(dialog.SelectedPath, Rserverbase + @"\" + gameWorldText.Text);
-                    DialogShow.ShowMsg(this, "导入世界成功！", "信息", false, "确定");
+                    try
+                    {
+                        Functions.MoveFolder(dialog.SelectedPath, Rserverbase + @"\" + gameWorldText.Text);
+                        DialogShow.ShowMsg(this, "导入世界成功！", "信息", false, "确定");
+                    }
+                    catch (Exception ex)
+                    {
+                        DialogShow.ShowMsg(this, "导入世界失败！请检查服务器是否关闭！\n错误代码：" + ex.Message, "错误", false, "确定");
+                    }
+                    
                 }
             }
         }
@@ -3133,7 +3166,7 @@ namespace MSL
                 }
                 catch (Exception a)
                 {
-                    MessageBox.Show("出现错误，请手动修改server.properties文件或重试:" + a.Message, "错误", MessageBoxButton.OK, MessageBoxImage.Error);
+                    MessageBox.Show("出现错误，您确定您的服务器启动过一次吗？请手动修改server.properties文件或重试:" + a.Message, "错误", MessageBoxButton.OK, MessageBoxImage.Error);
                 }
             }
             catch
@@ -3159,7 +3192,7 @@ namespace MSL
                 }
                 catch (Exception a)
                 {
-                    MessageBox.Show("出现错误，请手动修改server.properties文件或重试:" + a.Message, "错误", MessageBoxButton.OK, MessageBoxImage.Error);
+                    MessageBox.Show("出现错误，您确定您的服务器启动过一次吗？请手动修改server.properties文件或重试:" + a.Message, "错误", MessageBoxButton.OK, MessageBoxImage.Error);
                 }
             }
         }
@@ -3181,8 +3214,7 @@ namespace MSL
         {
             if (closeOutlog_Copy.Content.ToString() == "屏蔽关键字日志:关")
             {
-                string text;
-                bool input=DialogShow.ShowInput(this, "输入你想屏蔽的关键字，\n开服器将不会输出含有此关键字的日志", out  text);
+                bool input = DialogShow.ShowInput(this, "输入你想屏蔽的关键字，\n开服器将不会输出含有此关键字的日志", out string text);
                 if (input)
                 {
                     ShieldLog = text;
@@ -3488,7 +3520,6 @@ namespace MSL
                 MainGrid.Margin = new Thickness(0);
             }
         }
-
         #endregion
     }
 }

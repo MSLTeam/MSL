@@ -21,7 +21,7 @@ namespace MSL
     /// <summary>
     /// DownloadMods.xaml 的交互逻辑
     /// </summary>
-    public partial class DownloadMods : Window
+    public partial class DownloadMods : HandyControl.Controls.Window
     {
         string Url;
         string Filename;
@@ -233,9 +233,9 @@ namespace MSL
                 backBtn.IsEnabled = false;
                 listBoxColumnName.Header = "模组列表（双击获取该模组的版本）：";
             }
-            catch
+            catch(Exception ex)
             {
-                MessageBox.Show("获取MOD失败！您的系统版本可能过旧，请再次尝试或前往浏览器自行下载！", "错误", MessageBoxButton.OK, MessageBoxImage.Error);
+                MessageBox.Show("获取MOD失败！您的系统版本可能过旧，请再次尝试或前往浏览器自行下载！"+ex.ToString(), "错误", MessageBoxButton.OK, MessageBoxImage.Error);
             }
         }
         private async void searchMod_Click(object sender, RoutedEventArgs e)

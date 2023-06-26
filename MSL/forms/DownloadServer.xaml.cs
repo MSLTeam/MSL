@@ -28,7 +28,7 @@ namespace MSL.pages
     /// <summary>
     /// DownloadServer.xaml 的交互逻辑
     /// </summary>
-    public partial class DownloadServer : Window
+    public partial class DownloadServer : HandyControl.Controls.Window
     {
         //public static event DeleControl DownComplete;
         //List<string> serverurl = new List<string>();

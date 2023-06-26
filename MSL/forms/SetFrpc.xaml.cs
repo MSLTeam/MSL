@@ -22,7 +22,7 @@ namespace MSL
     /// <summary>
     /// SetFrpc.xaml 的交互逻辑
     /// </summary>
-    public partial class SetFrpc : Window
+    public partial class SetFrpc : HandyControl.Controls.Window
     {
         List<string> list1=new List<string>();
         List<string> list2 = new List<string>();
@@ -39,8 +39,8 @@ namespace MSL
             loadingCircle.VerticalAlignment = VerticalAlignment.Top;
             loadingCircle.HorizontalAlignment = HorizontalAlignment.Left;
             loadingCircle.Margin=new Thickness(120,150,0,0);
-            BodyGrid.Children.Add(loadingCircle);
-            BodyGrid.RegisterName("loadingBar", loadingCircle);
+            MainGrid.Children.Add(loadingCircle);
+            MainGrid.RegisterName("loadingBar", loadingCircle);
             Thread thread = new Thread(GetFrpsInfo);
             thread.Start();
         }
@@ -55,6 +55,118 @@ namespace MSL
                 pageHtml = Encoding.UTF8.GetString(pageData);
                 */
                 pageHtml = Functions.Get("frplist");
+                if (pageHtml.IndexOf("\r\n") != -1)
+                {
+                    while (pageHtml.IndexOf("#") != -1)
+                    {
+                        string strtempa = "#";
+                        int IndexofA = pageHtml.IndexOf(strtempa);
+                        string Ru = pageHtml.Substring(IndexofA + 1);
+                        string a100 = Ru.Substring(0, Ru.IndexOf("\r\n"));
+
+                        int IndexofA3 = pageHtml.IndexOf("#");
+                        string Ru3 = pageHtml.Substring(IndexofA3 + 1);
+                        pageHtml = Ru3;
+
+                        string strtempa1 = "server_addr=";
+                        int IndexofA1 = pageHtml.IndexOf(strtempa1);
+                        string Ru1 = pageHtml.Substring(IndexofA1 + 12);
+                        string a101 = Ru1.Substring(0, Ru1.IndexOf("\r\n"));
+                        list1.Add(a101);
+
+                        string strtempa2 = "server_port=";
+                        int IndexofA2 = pageHtml.IndexOf(strtempa2);
+                        string Ru2 = pageHtml.Substring(IndexofA2 + 12);
+                        string a102 = Ru2.Substring(0, Ru2.IndexOf("\r\n"));
+                        list2.Add(a102);
+
+                        Ping pingSender = new Ping();
+                        PingReply reply = pingSender.Send(a101, 2000); // 替换成您要 ping 的 IP 地址
+                        Dispatcher.Invoke(new Action(delegate
+                        {
+                            if (reply.Status == IPStatus.Success)
+                            {
+                                // 节点在线，可以获取延迟等信息
+                                int roundTripTime = (int)reply.RoundtripTime;
+                                listBox1.Items.Add(a100 + "(延迟：" + roundTripTime + "ms)");
+                            }
+                            else
+                            {
+                                listBox1.Items.Add(a100 + "(已下线，检测失败)");
+                            }
+                        }));
+
+                        string strtempa3 = "min_open_port=";
+                        int IndexofA03 = pageHtml.IndexOf(strtempa3);
+                        string Ru03 = pageHtml.Substring(IndexofA03 + 14);
+                        string a103 = Ru03.Substring(0, Ru03.IndexOf("\r\n"));
+                        //MessageBox.Show(a103);
+                        list3.Add(a103);
+
+                        string strtemp4 = "max_open_port=";
+                        int IndexofA4 = pageHtml.IndexOf(strtemp4);
+                        string Ru4 = pageHtml.Substring(IndexofA4 + 14);
+                        string a104 = Ru4.Substring(0, Ru4.IndexOf("\r\n"));
+                        //MessageBox.Show(a104);
+                        list4.Add(a104);
+                    }
+                }
+                else
+                {
+                    while (pageHtml.IndexOf("#") != -1)
+                    {
+                        string strtempa = "#";
+                        int IndexofA = pageHtml.IndexOf(strtempa);
+                        string Ru = pageHtml.Substring(IndexofA + 1);
+                        string a100 = Ru.Substring(0, Ru.IndexOf("\n"));
+
+                        int IndexofA3 = pageHtml.IndexOf("#");
+                        string Ru3 = pageHtml.Substring(IndexofA3 + 1);
+                        pageHtml = Ru3;
+
+                        string strtempa1 = "server_addr=";
+                        int IndexofA1 = pageHtml.IndexOf(strtempa1);
+                        string Ru1 = pageHtml.Substring(IndexofA1 + 12);
+                        string a101 = Ru1.Substring(0, Ru1.IndexOf("\n"));
+                        list1.Add(a101);
+
+                        string strtempa2 = "server_port=";
+                        int IndexofA2 = pageHtml.IndexOf(strtempa2);
+                        string Ru2 = pageHtml.Substring(IndexofA2 + 12);
+                        string a102 = Ru2.Substring(0, Ru2.IndexOf("\n"));
+                        list2.Add(a102);
+
+                        Ping pingSender = new Ping();
+                        PingReply reply = pingSender.Send(a101, 2000); // 替换成您要 ping 的 IP 地址
+                        Dispatcher.Invoke(new Action(delegate
+                        {
+                            if (reply.Status == IPStatus.Success)
+                            {
+                                // 节点在线，可以获取延迟等信息
+                                int roundTripTime = (int)reply.RoundtripTime;
+                                listBox1.Items.Add(a100 + "(延迟：" + roundTripTime + "ms)");
+                            }
+                            else
+                            {
+                                listBox1.Items.Add(a100 + "(已下线，检测失败)");
+                            }
+                        }));
+
+                        string strtempa3 = "min_open_port=";
+                        int IndexofA03 = pageHtml.IndexOf(strtempa3);
+                        string Ru03 = pageHtml.Substring(IndexofA03 + 14);
+                        string a103 = Ru03.Substring(0, Ru03.IndexOf("\n"));
+                        //MessageBox.Show(a103);
+                        list3.Add(a103);
+
+                        string strtemp4 = "max_open_port=";
+                        int IndexofA4 = pageHtml.IndexOf(strtemp4);
+                        string Ru4 = pageHtml.Substring(IndexofA4 + 14);
+                        string a104 = Ru4.Substring(0, Ru4.IndexOf("\n"));
+                        //MessageBox.Show(a104);
+                        list4.Add(a104);
+                    }
+                }
             }
             catch
             {
@@ -80,118 +192,6 @@ namespace MSL
                 }
                 */
             }
-            if (pageHtml.IndexOf("\r\n") != -1)
-            {
-                while (pageHtml.IndexOf("#") != -1)
-                {
-                    string strtempa = "#";
-                    int IndexofA = pageHtml.IndexOf(strtempa);
-                    string Ru = pageHtml.Substring(IndexofA + 1);
-                    string a100 = Ru.Substring(0, Ru.IndexOf("\r\n"));
-
-                    int IndexofA3 = pageHtml.IndexOf("#");
-                    string Ru3 = pageHtml.Substring(IndexofA3 + 1);
-                    pageHtml = Ru3;
-
-                    string strtempa1 = "server_addr=";
-                    int IndexofA1 = pageHtml.IndexOf(strtempa1);
-                    string Ru1 = pageHtml.Substring(IndexofA1 + 12);
-                    string a101 = Ru1.Substring(0, Ru1.IndexOf("\r\n"));
-                    list1.Add(a101);
-
-                    string strtempa2 = "server_port=";
-                    int IndexofA2 = pageHtml.IndexOf(strtempa2);
-                    string Ru2 = pageHtml.Substring(IndexofA2 + 12);
-                    string a102 = Ru2.Substring(0, Ru2.IndexOf("\r\n"));
-                    list2.Add(a102);
-
-                    Ping pingSender = new Ping();
-                    PingReply reply = pingSender.Send(a101, 2000); // 替换成您要 ping 的 IP 地址
-                    Dispatcher.Invoke(new Action(delegate
-                    {
-                        if (reply.Status == IPStatus.Success)
-                        {
-                            // 节点在线，可以获取延迟等信息
-                            int roundTripTime = (int)reply.RoundtripTime;
-                            listBox1.Items.Add(a100 + "(延迟：" + roundTripTime + "ms)");
-                        }
-                        else
-                        {
-                            listBox1.Items.Add(a100 + "(已下线，检测失败)");
-                        }
-                    }));
-
-                    string strtempa3 = "min_open_port=";
-                    int IndexofA03 = pageHtml.IndexOf(strtempa3);
-                    string Ru03 = pageHtml.Substring(IndexofA03 + 14);
-                    string a103 = Ru03.Substring(0, Ru03.IndexOf("\r\n"));
-                    //MessageBox.Show(a103);
-                    list3.Add(a103);
-
-                    string strtemp4 = "max_open_port=";
-                    int IndexofA4 = pageHtml.IndexOf(strtemp4);
-                    string Ru4 = pageHtml.Substring(IndexofA4 + 14);
-                    string a104 = Ru4.Substring(0, Ru4.IndexOf("\r\n"));
-                    //MessageBox.Show(a104);
-                    list4.Add(a104);
-                }
-            }
-            else
-            {
-                while (pageHtml.IndexOf("#") != -1)
-                {
-                    string strtempa = "#";
-                    int IndexofA = pageHtml.IndexOf(strtempa);
-                    string Ru = pageHtml.Substring(IndexofA + 1);
-                    string a100 = Ru.Substring(0, Ru.IndexOf("\n"));
-
-                    int IndexofA3 = pageHtml.IndexOf("#");
-                    string Ru3 = pageHtml.Substring(IndexofA3 + 1);
-                    pageHtml = Ru3;
-
-                    string strtempa1 = "server_addr=";
-                    int IndexofA1 = pageHtml.IndexOf(strtempa1);
-                    string Ru1 = pageHtml.Substring(IndexofA1 + 12);
-                    string a101 = Ru1.Substring(0, Ru1.IndexOf("\n"));
-                    list1.Add(a101);
-
-                    string strtempa2 = "server_port=";
-                    int IndexofA2 = pageHtml.IndexOf(strtempa2);
-                    string Ru2 = pageHtml.Substring(IndexofA2 + 12);
-                    string a102 = Ru2.Substring(0, Ru2.IndexOf("\n"));
-                    list2.Add(a102);
-
-                    Ping pingSender = new Ping();
-                    PingReply reply = pingSender.Send(a101, 2000); // 替换成您要 ping 的 IP 地址
-                    Dispatcher.Invoke(new Action(delegate
-                    {
-                        if (reply.Status == IPStatus.Success)
-                        {
-                            // 节点在线，可以获取延迟等信息
-                            int roundTripTime = (int)reply.RoundtripTime;
-                            listBox1.Items.Add(a100 + "(延迟：" + roundTripTime + "ms)");
-                        }
-                        else
-                        {
-                            listBox1.Items.Add(a100 + "(已下线，检测失败)");
-                        }
-                    }));
-
-                    string strtempa3 = "min_open_port=";
-                    int IndexofA03 = pageHtml.IndexOf(strtempa3);
-                    string Ru03 = pageHtml.Substring(IndexofA03 + 14);
-                    string a103 = Ru03.Substring(0, Ru03.IndexOf("\n"));
-                    //MessageBox.Show(a103);
-                    list3.Add(a103);
-
-                    string strtemp4 = "max_open_port=";
-                    int IndexofA4 = pageHtml.IndexOf(strtemp4);
-                    string Ru4 = pageHtml.Substring(IndexofA4 + 14);
-                    string a104 = Ru4.Substring(0, Ru4.IndexOf("\n"));
-                    //MessageBox.Show(a104);
-                    list4.Add(a104);
-                }
-            }
             try
             {
                 WebClient MyWebClient1 = new WebClient();
@@ -212,8 +212,8 @@ namespace MSL
             Dispatcher.Invoke(new Action(delegate
             {
                 LoadingCircle loadingCircle = MainGrid.FindName("loadingBar") as LoadingCircle;
-                BodyGrid.Children.Remove(loadingCircle);
-                BodyGrid.UnregisterName("loadingBar");
+                MainGrid.Children.Remove(loadingCircle);
+                MainGrid.UnregisterName("loadingBar");
             }));
         }
         private void Button_Click(object sender, RoutedEventArgs e)
@@ -506,7 +506,30 @@ namespace MSL
 
         private void gotoWeb_Click(object sender, RoutedEventArgs e)
         {
+            DialogShow.ShowMsg(this, "点击确定后，开服器会弹出一个输入框，同时为您打开爱发电网站，您需要在爱发电购买的时候备注自己的QQ号（纯数字，不要夹带其他内容），购买完毕后，返回开服器，将您的QQ号输入进弹出的输入框中，开服器会自动为您获取密码。\n（注：付费密码在购买后会在服务器保存30分钟，请及时返回开服器进行操作，如果超时，请自行添加QQ：483232994来手动获取）","购买须知");
             Process.Start("https://afdian.net/a/makabaka123");
+            bool input = DialogShow.ShowInput(this, "输入您在爱发电备注的QQ号：", out string text);
+            if (input)
+            {
+                JObject patientinfo = new JObject
+                {
+                    ["qq"] = text
+                };
+                string sendData = JsonConvert.SerializeObject(patientinfo);
+                string ret = Functions.Post("getpassword", 0, sendData, "https://aifadian.waheal.top");
+                if (ret != "Err")
+                {
+                    bool dialog= DialogShow.ShowMsg(this, "您的付费密码为：" + ret+" 请牢记！", "获取成功！",true,"确定","复制&确定");
+                    if(dialog)
+                    {
+                        Clipboard.SetDataObject(ret);
+                    }
+                }
+                else
+                {
+                    DialogShow.ShowMsg(this, "您的密码可能长时间无人获取，已经超时！请添加QQ：483232994（昵称：MSL-FRP），并发送赞助图片来获取密码\r\n（注：回复消息不一定及时，请耐心等待！如果没有添加成功，或者添加后长时间无人回复，请进入MSL交流群然后从群里私聊）", "获取失败！");
+                }
+            }
         }
     }
 }

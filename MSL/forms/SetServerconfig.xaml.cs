@@ -8,7 +8,7 @@ namespace MSL
     /// <summary>
     /// SetServerconfig.xaml 的交互逻辑
     /// </summary>
-    public partial class SetServerconfig : Window
+    public partial class SetServerconfig : HandyControl.Controls.Window
     {
         bool nosafeClose = false;
         public static string serverbase;
@@ -67,19 +67,6 @@ namespace MSL
                     File.WriteAllText(serverbase + @"\spigot.yml", item003.Text);
                 }
                 DialogShow.ShowMsg(this,"配置已成功保存，请重启服务器以使设置生效！", "提示");
-            }
-        }
-
-        private void Window_SizeChanged(object sender, SizeChangedEventArgs e)
-        {
-            if (this.WindowState == WindowState.Maximized)
-            {
-                MainGrid.Margin = new Thickness(7);
-
-            }
-            else
-            {
-                MainGrid.Margin = new Thickness(0);
             }
         }
     }

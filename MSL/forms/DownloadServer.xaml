@@ -1,48 +1,29 @@
-﻿<Window x:Class="MSL.pages.DownloadServer"
+﻿<hc:Window x:Class="MSL.pages.DownloadServer"
       xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
       xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
       xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006" 
       xmlns:d="http://schemas.microsoft.com/expression/blend/2008" 
       xmlns:hc="https://handyorg.github.io/handycontrol"
-        xmlns:controls="clr-namespace:MSL.controls"
+      xmlns:controls="clr-namespace:MSL.controls"
       xmlns:local="clr-namespace:MSL"
       mc:Ignorable="d" 
       Height="450" Width="600"
+      NonClientAreaBackground="{DynamicResource SideMenuBrush}"
       Title="MSL-下载服务端" Loaded="Page_Loaded" Background="{DynamicResource BackgroundBrush}" ResizeMode="NoResize" WindowStartupLocation="CenterOwner" ShowInTaskbar="False">
-    <WindowChrome.WindowChrome>
-        <WindowChrome GlassFrameThickness="-1" CaptionHeight="40"/>
-    </WindowChrome.WindowChrome>
-    <Window.DataContext>
-        <controls:WindowViewModel/>
-    </Window.DataContext>
-    <Grid x:Name="MainGrid">
-        <Grid.RowDefinitions>
-            <RowDefinition Height="40"/>
-            <RowDefinition/>
-        </Grid.RowDefinitions>
-        <DockPanel x:Name="TitleGrid" Grid.Row="0" Background="{DynamicResource SideMenuBrush}">
-            <TextBlock x:Name="TitleBox" Text="{Binding Title, RelativeSource={RelativeSource AncestorType={x:Type Window}, Mode=FindAncestor}}" Foreground="{StaticResource TextBlockBrush}" FontSize="14" VerticalAlignment="Center" Margin="10,0,0,0"/>
-            <Button x:Name="CloseBtn" HorizontalAlignment="Right" WindowChrome.IsHitTestVisibleInChrome="True" hc:IconElement.Geometry="{StaticResource CloseGeometry}" hc:BorderElement.CornerRadius="30" Height="32" Width="32" Margin="0,0,10,0" BorderBrush="{x:Null}" Foreground="{StaticResource TextBlockBrush}" Command="{Binding CloseCommand}" CommandParameter="{Binding RelativeSource={RelativeSource AncestorType=Window}}">
-                <Button.Background>
-                    <SolidColorBrush Color="White" Opacity="0.1"/>
-                </Button.Background>
-            </Button>
-        </DockPanel>
-        <Grid x:Name="BodyGrid" Grid.Row="1">
-            <ListBox x:Name="serverlist1" Margin="10,80,200,10" SelectionMode="Single" MouseDoubleClick="serverlist_MouseDoubleClick"/>
-            <TextBlock x:Name="getservermsg" HorizontalAlignment="Left" Margin="150,0,0,0" TextWrapping="Wrap" Text="加载中，请耐心等待..." VerticalAlignment="Center" FontSize="14" Foreground="Red"/>
-            <TextBlock Text="部分源由BMCL/Getbukkit提供" Foreground="{DynamicResource TextBlockBrush}" HorizontalAlignment="Right" Margin="0,0,10,10" VerticalAlignment="Bottom" TextWrapping="Wrap"/>
-            <ComboBox x:Name="serverlist" Margin="175,8,88,0" SelectionChanged="serverlist_SelectionChanged" Height="32" VerticalAlignment="Top"/>
-            <TextBox HorizontalAlignment="Right" Height="130" Margin="0,100,10,0" TextWrapping="Wrap" Text="插件服务端——只可加插件，不可加MOD&#xA;模组服务端——只可加MOD，不可加插件&#xA;二合一服务端——插件MOD都可添加&#xA;Vanilla——Mojang原版服务端，无法加插件和MOD" VerticalAlignment="Top" Width="185" Focusable="False" IsReadOnly="True" Background="{x:Null}"/>
-            <Button x:Name="openSpigot" Content="SpigotMC" Margin="0,0,10,110" VerticalAlignment="Bottom" Width="185" FontSize="14" Height="35" Background="#33000000" Click="openSpigot_Click" HorizontalAlignment="Right"/>
-            <Button x:Name="openPaper" Content="PaperNC" Margin="0,0,10,70" VerticalAlignment="Bottom" Width="185" FontSize="14" Height="35" Background="#33000000" Click="openPaper_Click" HorizontalAlignment="Right"/>
-            <Button x:Name="openMojang" Content="Mojang" Margin="0,0,10,30" VerticalAlignment="Bottom" Width="185" FontSize="14" Height="35" Background="#33000000" Click="openMojang_Click" HorizontalAlignment="Right"/>
-            <TextBlock Text="相关网站：" Foreground="{DynamicResource TextBlockBrush}" HorizontalAlignment="Right" Margin="0,0,135,150" VerticalAlignment="Bottom" FontWeight="Bold"/>
-            <TextBlock Text="在此选择服务端：" Foreground="{DynamicResource TextBlockBrush}" HorizontalAlignment="Left" Margin="10,10,0,0" VerticalAlignment="Top" FontSize="20" FontWeight="Bold" Padding="5,0,0,0"/>
-            <TextBlock Text="我该如何选择服务端？" Foreground="{DynamicResource TextBlockBrush}" HorizontalAlignment="Right" Margin="0,77,75,0" VerticalAlignment="Top" FontWeight="Bold"/>
-            <TextBlock Text="双击版本号进行下载：" Foreground="{DynamicResource TextBlockBrush}" HorizontalAlignment="Left" Margin="10,50,0,0" VerticalAlignment="Top" FontSize="16" Padding="5,0,0,0"/>
-            <Button x:Name="RefreshBtn" Content="刷新" Margin="0,8,10,0" VerticalAlignment="Top" Click="RefreshBtn_Click" Height="32" Width="73" HorizontalAlignment="Right"/>
-            <hc:LoadingCircle x:Name="lCircle" HorizontalAlignment="Left" Margin="100,0,0,0" VerticalAlignment="Center"/>
-        </Grid>
+    <Grid x:Name="BodyGrid">
+        <ListBox x:Name="serverlist1" Margin="10,80,200,10" SelectionMode="Single" MouseDoubleClick="serverlist_MouseDoubleClick"/>
+        <TextBlock x:Name="getservermsg" HorizontalAlignment="Left" Margin="150,0,0,0" TextWrapping="Wrap" Text="加载中，请耐心等待..." VerticalAlignment="Center" FontSize="14" Foreground="Red"/>
+        <TextBlock Text="部分源由BMCL/Getbukkit提供" Foreground="{DynamicResource TextBlockBrush}" HorizontalAlignment="Right" Margin="0,0,10,10" VerticalAlignment="Bottom" TextWrapping="Wrap"/>
+        <ComboBox x:Name="serverlist" Margin="175,8,88,0" SelectionChanged="serverlist_SelectionChanged" Height="32" VerticalAlignment="Top"/>
+        <TextBox HorizontalAlignment="Right" Height="130" Margin="0,100,10,0" TextWrapping="Wrap" Text="插件服务端——只可加插件，不可加MOD&#xA;模组服务端——只可加MOD，不可加插件&#xA;二合一服务端——插件MOD都可添加&#xA;Vanilla——Mojang原版服务端，无法加插件和MOD" VerticalAlignment="Top" Width="185" Focusable="False" IsReadOnly="True" Background="{x:Null}"/>
+        <Button x:Name="openSpigot" Content="SpigotMC" Margin="0,0,10,110" VerticalAlignment="Bottom" Width="185" FontSize="14" Height="35" Background="#33000000" Click="openSpigot_Click" HorizontalAlignment="Right"/>
+        <Button x:Name="openPaper" Content="PaperNC" Margin="0,0,10,70" VerticalAlignment="Bottom" Width="185" FontSize="14" Height="35" Background="#33000000" Click="openPaper_Click" HorizontalAlignment="Right"/>
+        <Button x:Name="openMojang" Content="Mojang" Margin="0,0,10,30" VerticalAlignment="Bottom" Width="185" FontSize="14" Height="35" Background="#33000000" Click="openMojang_Click" HorizontalAlignment="Right"/>
+        <TextBlock Text="相关网站：" Foreground="{DynamicResource TextBlockBrush}" HorizontalAlignment="Right" Margin="0,0,135,150" VerticalAlignment="Bottom" FontWeight="Bold"/>
+        <TextBlock Text="在此选择服务端：" Foreground="{DynamicResource TextBlockBrush}" HorizontalAlignment="Left" Margin="10,10,0,0" VerticalAlignment="Top" FontSize="20" FontWeight="Bold" Padding="5,0,0,0"/>
+        <TextBlock Text="我该如何选择服务端？" Foreground="{DynamicResource TextBlockBrush}" HorizontalAlignment="Right" Margin="0,77,75,0" VerticalAlignment="Top" FontWeight="Bold"/>
+        <TextBlock Text="双击版本号进行下载：" Foreground="{DynamicResource TextBlockBrush}" HorizontalAlignment="Left" Margin="10,50,0,0" VerticalAlignment="Top" FontSize="16" Padding="5,0,0,0"/>
+        <Button x:Name="RefreshBtn" Content="刷新" Margin="0,8,10,0" VerticalAlignment="Top" Click="RefreshBtn_Click" Height="32" Width="73" HorizontalAlignment="Right"/>
+        <hc:LoadingCircle x:Name="lCircle" HorizontalAlignment="Left" Margin="100,0,0,0" VerticalAlignment="Center"/>
     </Grid>
-</Window>
+</hc:Window>

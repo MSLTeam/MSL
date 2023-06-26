@@ -18,7 +18,7 @@
                             <SolidColorBrush x:Key="BackgroundBrush" Color="#FFF7FAFC" />
                             <SolidColorBrush x:Key="DialogBrush1" Color="White" />
                             <SolidColorBrush x:Key="DialogBrush2" Color="#FFF3F3F3" />
-                            <SolidColorBrush x:Key="BorderBackground" Color="White" Opacity="0.9" />
+                            <SolidColorBrush x:Key="BorderBackground" Color="White" Opacity="0.7" />
                             <SolidColorBrush x:Key="BorderBrush" Color="#FFE6E6E6" />
                             <SolidColorBrush x:Key="TextBlockBrush" Color="Black" />
                             <SolidColorBrush x:Key="SideMenuBrush" Color="#FFEEF4F9" Opacity="0.7" />
@@ -30,7 +30,7 @@
                             <SolidColorBrush x:Key="BackgroundBrush" Color="#141414" />
                             <SolidColorBrush x:Key="DialogBrush1" Color="Black" />
                             <SolidColorBrush x:Key="DialogBrush2" Color="#FF232323" />
-                            <SolidColorBrush x:Key="BorderBackground" Color="#232323" Opacity="0.9" />
+                            <SolidColorBrush x:Key="BorderBackground" Color="#232323" Opacity="0.7" />
                             <SolidColorBrush x:Key="BorderBrush" Color="#FF3F3F3F" />
                             <SolidColorBrush x:Key="TextBlockBrush" Color="White" />
                             <SolidColorBrush x:Key="SideMenuBrush" Color="Black" Opacity="0.7" />
