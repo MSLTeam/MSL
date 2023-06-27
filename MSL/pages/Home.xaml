@@ -31,8 +31,6 @@
                 </Grid>
             </ScrollViewer>
         </Border>
-
-        <ToggleButton Name="ColorfulBackground" Content="彩色背景开关（BETA）" Style="{StaticResource ToggleButtonSwitch}" HorizontalAlignment="Left" Margin="10,422,0,0" VerticalAlignment="Top" Click="ColorfulBackground_Click" />
         <Button x:Name="gotoFrpBtn" Content="点对点联机" HorizontalAlignment="Right" Height="60" Margin="0,0,235,10" VerticalAlignment="Bottom" Width="120" Click="gotoFrpBtn_Click" FontSize="16"/>
         <hc:SplitButton x:Name="startServer" Style="{StaticResource SplitButtonPrimary}" Margin="0,0,10,10" VerticalAlignment="Bottom" Height="60" Width="220" Click="startServer_Click" HorizontalAlignment="Right">
             <hc:SplitButton.DropDownContent>

@@ -21,53 +21,52 @@
             <Border Style="{StaticResource MagicBorder}">
                 <Grid>
                     <Label Content="功能调整" Style="{StaticResource BorderTitle}"/>
-                    <Button Name="setdefault" Content="恢复默认设置" HorizontalAlignment="Left" Margin="10,40,0,0" VerticalAlignment="Top" Width="130" Height="40" FontSize="16" Click="setdefault_Click" />
-                    <Button Name="notifyIconbtn" Content="托盘图标:关闭" HorizontalAlignment="Left" Margin="150,40,0,0" VerticalAlignment="Top" Width="130" Height="40" FontSize="16" Click="notifyIconbtn_Click" />
-                    <Button Name="useidea" Content="使用教程" Margin="290,40,0,0" VerticalAlignment="Top" Height="40" FontSize="16" HorizontalAlignment="Left" Click="useidea_Click" Width="130" />
-                    <Label Content="下载线程：（默认为8，建议不超过16）" Margin="10,85,0,0" FontSize="16" HorizontalAlignment="Left" VerticalAlignment="Top" Height="32" BorderBrush="{x:Null}" Background="{x:Null}" Padding="0,5,0,5" />
-                    <TextBox Name="downthreadCount" Margin="300,85,130,0" Text="8" FontSize="18" VerticalAlignment="Top" Height="32" />
-                    <Button Name="mulitDownthread" Height="32" Margin="0,85,10,0" Width="112" Content="确定" FontSize="16" HorizontalAlignment="Right" VerticalAlignment="Top" Click="mulitDownthread_Click" />
-                    <Button x:Name="checkUpdateBtn" Content="检查更新" Style="{StaticResource ButtonPrimary}" HorizontalAlignment="Left" Margin="430,0,0,0" Height="40" FontSize="16" Width="130" Click="checkUpdateBtn_Click"/>
-                    <!--<Button x:Name="bcLink" Content="检查更新" Style="{StaticResource ButtonPrimary}" HorizontalAlignment="Left" Margin="568,0,0,0" Height="40" FontSize="16" Width="130" Click="bcLink_Click"/>-->
+                    <Button Name="setdefault" Content="恢复默认设置" HorizontalAlignment="Left" Margin="10,35,0,0" VerticalAlignment="Top" Width="130" Height="40" FontSize="16" Click="setdefault_Click" />
+                    <Button Name="notifyIconbtn" Content="托盘图标:关闭" HorizontalAlignment="Left" Margin="150,35,0,0" VerticalAlignment="Top" Width="130" Height="40" FontSize="16" Click="notifyIconbtn_Click" />
+                    <Button Name="useidea" Content="使用教程" Margin="290,35,0,0" VerticalAlignment="Top" Height="40" FontSize="16" HorizontalAlignment="Left" Click="useidea_Click" Width="130" />
+                    <Button x:Name="checkUpdateBtn" Content="检查更新" Style="{StaticResource ButtonPrimary}" HorizontalAlignment="Left" VerticalAlignment="Top" Margin="430,35,0,0" Height="40" FontSize="16" Width="130" Click="checkUpdateBtn_Click"/>
+                    <TextBlock Text="下载线程（默认为8，建议不超过16）：" Margin="10,90,0,0" FontSize="16" HorizontalAlignment="Left" VerticalAlignment="Top" Foreground="{DynamicResource TextBlockBrush}" />
+                    <TextBox Name="downthreadCount" Margin="300,85,125,0" Text="8" FontSize="18" VerticalAlignment="Top" Height="30" />
+                    <Button Name="mulitDownthread" Height="30" Margin="0,85,10,0" Width="110" Content="确定" FontSize="16" HorizontalAlignment="Right" VerticalAlignment="Top" Click="mulitDownthread_Click" />
                 </Grid>
             </Border>
             <Border Style="{StaticResource MagicBorder}">
                 <Grid>
                     <Label Content="自动化选项" Style="{StaticResource BorderTitle}"/>
-                    <Label Content="启动软件自动打开以下服务器：" HorizontalAlignment="Left" Margin="0,35,0,0" VerticalAlignment="Top" FontSize="16" Height="35" Background="{x:Null}" BorderBrush="{x:Null}" />
-                    <ToggleButton Name="openserversOnStart" Margin="250,40,0,0" Style="{StaticResource ToggleButtonSwitch}" HorizontalAlignment="Left" VerticalAlignment="Top" Click="openserversOnStart_Click" />
-                    <Label Content="启动软件自动打开内网映射：" HorizontalAlignment="Left" Margin="320,35,0,0" VerticalAlignment="Top" FontSize="16" Height="35" Background="{x:Null}" BorderBrush="{x:Null}" />
-                    <ToggleButton Name="openfrpOnStart" Margin="550,40,0,0" Style="{StaticResource ToggleButtonSwitch}" HorizontalAlignment="Left" VerticalAlignment="Top" Click="openfrpOnStart_Click" />
-                    <TextBox Name="openserversOnStartList" Margin="10,75,330,0" VerticalContentAlignment="Top" TextWrapping="Wrap" VerticalAlignment="Top" Height="120" FontSize="16" />
-                    <ComboBox x:Name="serverListBox" Margin="0,75,10,0" HorizontalAlignment="Right" VerticalAlignment="Top" Height="58" Width="315"/>
-                    <Button x:Name="addServerToRunlist" Content="将选中服务器添加至启动列表" HorizontalAlignment="Right" Margin="0,140,10,0" VerticalAlignment="Top" Height="55" Width="315" Click="addServerToRunlist_Click" FontSize="16"/>
-                    <Label Content="开机自动启动MSL:" HorizontalAlignment="Left" Margin="0,205,0,10" VerticalAlignment="Top" FontSize="16" Height="35" Background="{x:Null}" BorderBrush="{x:Null}" />
-                    <ToggleButton x:Name="autoRunApp" Margin="160,210,0,0" Style="{StaticResource ToggleButtonSwitch}" HorizontalAlignment="Left" VerticalAlignment="Top" Click="autoRunApp_Click"/>
-                    <Label Content="遇到更新时自动更新:" HorizontalAlignment="Left" Margin="236,205,0,0" VerticalAlignment="Top" FontSize="16" Height="35" Background="{x:Null}" BorderBrush="{x:Null}" />
-                    <ToggleButton x:Name="autoUpdateApp" Margin="410,210,0,0" Style="{StaticResource ToggleButtonSwitch}" HorizontalAlignment="Left" VerticalAlignment="Top" Click="autoUpdateApp_Click"/>
+                    <TextBlock Text="启动软件自动打开以下服务器：" Margin="10,35,0,0" FontSize="16" HorizontalAlignment="Left" VerticalAlignment="Top" Foreground="{DynamicResource TextBlockBrush}" Padding="0,2,0,0" />
+                    <ToggleButton Name="openserversOnStart" Margin="250,35,0,0" Style="{StaticResource ToggleButtonSwitch}" HorizontalAlignment="Left" VerticalAlignment="Top" Click="openserversOnStart_Click" />
+                    <TextBlock Text="启动软件自动打开内网映射：" Margin="320,35,0,0" FontSize="16" HorizontalAlignment="Left" VerticalAlignment="Top" Foreground="{DynamicResource TextBlockBrush}" Padding="0,2,0,0" />
+                    <ToggleButton Name="openfrpOnStart" Margin="550,35,0,0" Style="{StaticResource ToggleButtonSwitch}" HorizontalAlignment="Left" VerticalAlignment="Top" Click="openfrpOnStart_Click" />
+                    <TextBox Name="openserversOnStartList" Margin="10,65,330,0" VerticalContentAlignment="Top" TextWrapping="Wrap" VerticalAlignment="Top" Height="120" FontSize="16" />
+                    <ComboBox x:Name="serverListBox" Margin="0,65,10,0" HorizontalAlignment="Right" VerticalAlignment="Top" Height="58" Width="315"/>
+                    <Button x:Name="addServerToRunlist" Content="将所选服务器添加至启动列表" HorizontalAlignment="Right" Margin="0,130,10,0" VerticalAlignment="Top" Height="55" Width="315" Click="addServerToRunlist_Click" FontSize="16"/>
+                    <TextBlock Text="开机自动启动MSL:" HorizontalAlignment="Left" Margin="10,200,0,10" VerticalAlignment="Top" FontSize="16" Foreground="{DynamicResource TextBlockBrush}" Padding="0,2,0,0" />
+                    <ToggleButton x:Name="autoRunApp" Margin="160,200,0,0" Style="{StaticResource ToggleButtonSwitch}" HorizontalAlignment="Left" VerticalAlignment="Top" Click="autoRunApp_Click"/>
+                    <TextBlock Text="遇到更新时自动更新:" HorizontalAlignment="Left" Margin="240,200,0,0" VerticalAlignment="Top" FontSize="16" Foreground="{DynamicResource TextBlockBrush}" Padding="0,2,0,0" />
+                    <ToggleButton x:Name="autoUpdateApp" Margin="405,200,0,0" Style="{StaticResource ToggleButtonSwitch}" HorizontalAlignment="Left" VerticalAlignment="Top" Click="autoUpdateApp_Click"/>
                     <!--<TextBlock Text="左侧列表填写方法：&#xA;请按照以下格式进行填写：服务器ID+英文逗号&#xA;服务器ID是服务器列表栏中的服务器所在位置-1，如列表中的第一个服务器ID为0，第二个为1&#xA;填写示例：仅一个服务器时：0,  （切记不要忘记逗号）&#xA;多个服务器时：0,1,2,3,  （切记不要忘记逗号）" Margin="0,80,10,0" Foreground="#FFFF0000" TextWrapping="Wrap" Width="274" HorizontalAlignment="Right" FontSize="13" />-->
-                    <Label Content="开服时自动开启:" HorizontalAlignment="Left" Margin="0,245,0,10" VerticalAlignment="Top" FontSize="16" Height="35" Background="{x:Null}" BorderBrush="{x:Null}" />
-                    <ToggleButton x:Name="autoGetPlayerInfo" Margin="150,250,0,0" Style="{StaticResource ToggleButtonSwitch}" HorizontalAlignment="Left" VerticalAlignment="Top" Click="autoGetPlayerInfo_Click" Content="记录玩家功能"/>
-                    <ToggleButton x:Name="autoGetServerInfo" Margin="320,250,0,0" Style="{StaticResource ToggleButtonSwitch}" HorizontalAlignment="Left" VerticalAlignment="Top" Click="autoGetServerInfo_Click" Content="显示占用功能"/>
-                    
+                    <TextBlock Text="开服时自动开启:" HorizontalAlignment="Left" Margin="10,240,0,10" VerticalAlignment="Top" FontSize="16" Foreground="{DynamicResource TextBlockBrush}" Padding="0,2,0,0" />
+                    <ToggleButton x:Name="autoGetPlayerInfo" Margin="150,240,0,0" Style="{StaticResource ToggleButtonSwitch}" HorizontalAlignment="Left" VerticalAlignment="Top" Click="autoGetPlayerInfo_Click" Content="记录玩家功能"/>
+                    <ToggleButton x:Name="autoGetServerInfo" Margin="320,240,0,0" Style="{StaticResource ToggleButtonSwitch}" HorizontalAlignment="Left" VerticalAlignment="Top" Click="autoGetServerInfo_Click" Content="显示占用功能"/>
+
                 </Grid>
             </Border>
             <Border Margin="10,10,10,20" Style="{StaticResource MagicBorder}">
                 <Grid>
                     <Label Content="皮肤选项" Style="{StaticResource BorderTitle}"/>
-                    <Label Content="主题颜色:" HorizontalAlignment="Left" Margin="0,35,0,0" VerticalAlignment="Top" FontSize="16" Height="35" Background="{x:Null}" BorderBrush="{x:Null}" />
-                    <ToggleButton x:Name="autoSetTheme" Margin="100,40,0,0" Style="{StaticResource ToggleButtonSwitch}" HorizontalAlignment="Left" VerticalAlignment="Top" Click="autoSetTheme_Click" IsChecked="True" Content="使用系统样式" Height="25"/>
-                    <ToggleButton x:Name="darkTheme" Margin="250,40,0,0" Style="{StaticResource ToggleButtonSwitch}" HorizontalAlignment="Left" VerticalAlignment="Top" Click="darkTheme_Click" IsEnabled="False" Content="暗色模式" Height="25"/>
-                    <ToggleButton x:Name="semitransparentTitle" Margin="380,40,0,0" Style="{StaticResource ToggleButtonSwitch}" HorizontalAlignment="Left" VerticalAlignment="Top" Content="半透明标题栏" Height="25" Click="semitransparentTitle_Click"/>
-                    <RadioButton Name="BlueSkinBtn" HorizontalAlignment="Left" Margin="10,80,0,0" VerticalAlignment="Top" Content="蓝色皮肤(默认)" Foreground="Blue" IsEnabled="False" Click="ChangeSkin" />
-                    <RadioButton Name="RedSkinBtn" HorizontalAlignment="Left" Margin="130,80,0,0"  VerticalAlignment="Top" Content="红色皮肤" Checked="ChangeSkin" Foreground="Red" IsEnabled="False" />
-                    <RadioButton Name="GreenSkinBtn" HorizontalAlignment="Left" Margin="230,80,0,0" VerticalAlignment="Top" Content="绿色皮肤" Checked="ChangeSkin" Foreground="Green" IsEnabled="False" />
-                    <RadioButton Name="OrangeSkinBtn" HorizontalAlignment="Left" Margin="330,80,0,0" VerticalAlignment="Top" Content="橙色皮肤" Checked="ChangeSkin" Foreground="Orange" IsEnabled="False" />
-                    <RadioButton Name="PurpleSkinBtn" HorizontalAlignment="Left" Margin="430,80,0,0" VerticalAlignment="Top" Content="紫色皮肤" Checked="ChangeSkin" Foreground="Purple" IsEnabled="False" />
-                    <RadioButton Name="PinkSkinBtn" HorizontalAlignment="Left" Margin="530,80,0,0" VerticalAlignment="Top" Content="粉色皮肤" Checked="ChangeSkin" Foreground="DeepPink" IsEnabled="False" />
-                    <Label Content="背景图片:" HorizontalAlignment="Left" Margin="0,105,0,10" VerticalAlignment="Top" FontSize="16" Height="35" Background="{x:Null}" BorderBrush="{x:Null}" />
-                    <Button x:Name="changeBackImg" Content="更改背景图片" HorizontalAlignment="Left" Margin="100,110,0,0" VerticalAlignment="Top" Width="95" Click="changeBackImg_Click"/>
-                    <Button x:Name="delBackImg" Content="清除背景图片" HorizontalAlignment="Left" Margin="200,110,0,0" VerticalAlignment="Top" Width="95" Click="delBackImg_Click"/>
+                    <TextBlock Text="主题颜色:" HorizontalAlignment="Left" Margin="10,35,0,0" VerticalAlignment="Top" FontSize="16" Foreground="{DynamicResource TextBlockBrush}" Padding="0,2,0,0" />
+                    <ToggleButton x:Name="autoSetTheme" Margin="100,35,0,0" Style="{StaticResource ToggleButtonSwitch}" HorizontalAlignment="Left" VerticalAlignment="Top" Click="autoSetTheme_Click" IsChecked="True" Content="使用系统样式" Height="25"/>
+                    <ToggleButton x:Name="darkTheme" Margin="250,35,0,0" Style="{StaticResource ToggleButtonSwitch}" HorizontalAlignment="Left" VerticalAlignment="Top" Click="darkTheme_Click" IsEnabled="False" Content="暗色模式" Height="25"/>
+                    <ToggleButton x:Name="semitransparentTitle" Margin="380,35,0,0" Style="{StaticResource ToggleButtonSwitch}" HorizontalAlignment="Left" VerticalAlignment="Top" Content="半透明标题栏" Height="25" Click="semitransparentTitle_Click"/>
+                    <RadioButton Name="BlueSkinBtn" HorizontalAlignment="Left" Margin="10,75,0,0" VerticalAlignment="Top" Content="蓝色皮肤(默认)" Foreground="Blue" IsEnabled="False" Click="ChangeSkin" />
+                    <RadioButton Name="RedSkinBtn" HorizontalAlignment="Left" Margin="130,75,0,0"  VerticalAlignment="Top" Content="红色皮肤" Checked="ChangeSkin" Foreground="Red" IsEnabled="False" />
+                    <RadioButton Name="GreenSkinBtn" HorizontalAlignment="Left" Margin="230,75,0,0" VerticalAlignment="Top" Content="绿色皮肤" Checked="ChangeSkin" Foreground="Green" IsEnabled="False" />
+                    <RadioButton Name="OrangeSkinBtn" HorizontalAlignment="Left" Margin="330,75,0,0" VerticalAlignment="Top" Content="橙色皮肤" Checked="ChangeSkin" Foreground="Orange" IsEnabled="False" />
+                    <RadioButton Name="PurpleSkinBtn" HorizontalAlignment="Left" Margin="430,75,0,0" VerticalAlignment="Top" Content="紫色皮肤" Checked="ChangeSkin" Foreground="Purple" IsEnabled="False" />
+                    <RadioButton Name="PinkSkinBtn" HorizontalAlignment="Left" Margin="530,75,0,0" VerticalAlignment="Top" Content="粉色皮肤" Checked="ChangeSkin" Foreground="DeepPink" IsEnabled="False" />
+                    <TextBlock Text="背景图片:" HorizontalAlignment="Left" Margin="10,105,0,0" VerticalAlignment="Top" FontSize="16" Foreground="{DynamicResource TextBlockBrush}" Padding="0,2,0,0" />
+                    <Button x:Name="changeBackImg" Content="更改背景图片" HorizontalAlignment="Left" Margin="100,105,0,0" VerticalAlignment="Top" Width="95" Click="changeBackImg_Click"/>
+                    <Button x:Name="delBackImg" Content="清除背景图片" HorizontalAlignment="Left" Margin="200,105,0,0" VerticalAlignment="Top" Width="95" Click="delBackImg_Click"/>
                     <Button x:Name="paintedEgg" Content="千万别点" Style="{StaticResource ButtonDanger}" HorizontalAlignment="Left" Margin="530,35,0,0" VerticalAlignment="Top" Click="paintedEgg_Click" Height="30" Width="100"/>
                 </Grid>
             </Border>

@@ -1,8 +1,4 @@
 ﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
 using System.Windows.Input;
 
 namespace MSL.controls
@@ -12,7 +8,7 @@ namespace MSL.controls
         public Action<object> ExecuteAction { get; }
         public RelayCommand(Action<object> executeAction)
         {
-            ExecuteAction= executeAction;
+            ExecuteAction = executeAction;
         }
 
         public event EventHandler CanExecuteChanged

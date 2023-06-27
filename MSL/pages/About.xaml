@@ -32,7 +32,7 @@
             <Border x:Name="openSource" Style="{StaticResource MagicBorder}">
                 <StackPanel>
                     <Label Content="开源（Github）" Style="{StaticResource BorderTitle}"/>
-                    <TextBlock Margin="20,10,20,0" FontSize="14" HorizontalAlignment="Center" VerticalAlignment="Center" TextWrapping="Wrap" Foreground="{DynamicResource TextBlockBrush}" Text="Waheal/Minecraft-Server-Launcher is licensed under the GNU General Public License v3.0&#xA;Permissions of this strong copyleft license are conditioned on making available complete source code of licensed works and modifications, which include larger works using a licensed work, under the same license. Copyright and license notices must be preserved. Contributors provide an express grant of patent rights."/>
+                    <TextBlock Margin="20,5,20,0" FontSize="14" HorizontalAlignment="Center" VerticalAlignment="Center" TextWrapping="Wrap" Foreground="{DynamicResource TextBlockBrush}" Text="Waheal/Minecraft-Server-Launcher is licensed under the GNU General Public License v3.0&#xA;Permissions of this strong copyleft license are conditioned on making available complete source code of licensed works and modifications, which include larger works using a licensed work, under the same license. Copyright and license notices must be preserved. Contributors provide an express grant of patent rights."/>
                     <hc:Shield Subject="地址：https://github.com/Waheal/Minecraft-Server-Launcher" Status="打开网站" Margin="20,5,20,0" Command="hc:ControlCommands.OpenLink" CommandParameter="https://github.com/Waheal/Minecraft-Server-Launcher" HorizontalAlignment="Left" VerticalAlignment="Top"/>
                 </StackPanel>
             </Border>

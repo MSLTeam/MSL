@@ -1,4 +1,5 @@
 ﻿using HandyControl.Controls;
+using HandyControl.Themes;
 using MSL.controls;
 using MSL.pages;
 using Newtonsoft.Json.Linq;
@@ -7,7 +8,7 @@ using System.Diagnostics;
 using System.IO;
 using System.Management;
 using System.Net;
-using System.Runtime.InteropServices;
+using System.Net.NetworkInformation;
 using System.Text;
 using System.Threading;
 using System.Windows;
@@ -16,16 +17,6 @@ using System.Windows.Threading;
 using Brush = System.Windows.Media.Brush;
 using MessageBox = System.Windows.MessageBox;
 using Window = System.Windows.Window;
-using HandyControl.Themes;
-using HandyControl.Tools.Extension;
-using System.Collections.Generic;
-using System.Linq;
-using System.Windows.Input;
-using System.Resources;
-using System.Net.NetworkInformation;
-using System.Security.Policy;
-using System.Web;
-using System.Text.RegularExpressions;
 
 namespace MSL
 {
@@ -35,7 +26,6 @@ namespace MSL
     /// </summary>
     public partial class MainWindow : Window
     {
-        //public static string update = "v3.4.8.4";
         readonly Home _homePage = new Home();
         readonly ServerList _listPage = new ServerList();
         readonly FrpcPage _frpcPage = new FrpcPage();
@@ -56,15 +46,16 @@ namespace MSL
             Home.GotoFrpcEvent += GotoOnlinePage;
             SettingsPage.C_NotifyIcon += CtrlNotifyIcon;
             ServerRunner.GotoFrpcEvent += GotoFrpcPage;
-            SettingsPage.ChangeTitleStyle += ChangeTitleStyle;
+            SettingsPage.ChangeSkinStyle += ChangeSkinStyle;
         }
 
         private void Window_Loaded(object sender, RoutedEventArgs e)
         {
+            this.Topmost = true;
             LoadingCircle loadingCircle = new LoadingCircle();
             BodyGrid.Children.Add(loadingCircle);
             BodyGrid.RegisterName("loadingBar", loadingCircle);
-
+            this.Topmost = false;
             Thread thread = new Thread(AsyncLoadEvent);
             thread.Start();
         }
@@ -85,7 +76,7 @@ namespace MSL
                 PingReply reply = pingSender.Send(serverAddr, 2000); // 替换成您要 ping 的 IP 地址
                 if (reply.Status == IPStatus.Success)
                 {
-                    serverLink = "http://"+serverAddr;
+                    serverLink = "http://" + serverAddr;
                     //serverLink = "https://msl.waheal.top";
                 }
                 else
@@ -124,7 +115,7 @@ namespace MSL
                     }));
                 }
             }
-            catch(Exception ex)
+            catch (Exception ex)
             {
                 DialogShow.ShowMsg(this, "MSL在初始化加载过程中出现问题，请尝试用管理员身份运行MSL……\n错误代码：" + ex.Message, "错误");
             }
@@ -146,7 +137,7 @@ namespace MSL
                 }
             }
             catch
-            {}
+            { }
 
             //MessageBox.Show("CheckFrpcSuccess");
 
@@ -170,7 +161,7 @@ namespace MSL
                 }
             }
             catch
-            {}
+            { }
 
             //MessageBox.Show("CheckNotifySuccess");
 
@@ -324,7 +315,7 @@ namespace MSL
             }
             catch
             { }
-            
+
             //background
             if (File.Exists(AppDomain.CurrentDomain.BaseDirectory + "MSL\\Background.png"))
             {
@@ -334,64 +325,20 @@ namespace MSL
                     SideMenuBorder.BorderThickness = new Thickness(0);
                 }));
             }
-            else
+
+            try
             {
-                try
+                if (jsonObject["colorfulBackground"] != null)
                 {
-                    Dispatcher.Invoke(new Action(delegate
-                    {
-                        if (ThemeManager.Current.ApplicationTheme == ApplicationTheme.Dark)
-                        {
-                            string jsonString = File.ReadAllText(AppDomain.CurrentDomain.BaseDirectory + @"MSL\config.json", Encoding.UTF8);
-                            JObject jobject = JObject.Parse(jsonString);
-                            jobject["colorfulBackground"] = "False";
-                            string convertString = Convert.ToString(jobject);
-                            File.WriteAllText(AppDomain.CurrentDomain.BaseDirectory + @"MSL\config.json", convertString, Encoding.UTF8);
-                            SetResourceReference(BackgroundProperty, "BackgroundBrush");
-                        }
-                        else
-                        {
-                            if (jsonObject["colorfulBackground"] == null)
-                            {
-                                string jsonString = File.ReadAllText(AppDomain.CurrentDomain.BaseDirectory + @"MSL\config.json", Encoding.UTF8);
-                                JObject jobject = JObject.Parse(jsonString);
-                                jobject.Add("colorfulBackground", "True");
-                                string convertString = Convert.ToString(jobject);
-                                File.WriteAllText(AppDomain.CurrentDomain.BaseDirectory + @"MSL\config.json", convertString, Encoding.UTF8);
-                                // 创建线性渐变画刷
-                                LinearGradientBrush gradientBrush = new LinearGradientBrush(
-                                    Color.FromRgb(79, 172, 254), // 开始颜色
-                                    Color.FromRgb(0, 242, 254), // 结束颜色
-                                    new Point(0.5, 0), // 开始点
-                                    new Point(1, 1) // 结束点
-                                );
-
-                                // 创建渐变色的渐变停止点
-                                gradientBrush.GradientStops.Add(new GradientStop(Color.FromRgb(79, 172, 254), 0));
-                                gradientBrush.GradientStops.Add(new GradientStop(Color.FromRgb(0, 242, 254), 1));
-                                Background = gradientBrush;
-                            }
-                            if (jsonObject["colorfulBackground"].ToString() == "True")
-                            {
-                                // 创建线性渐变画刷
-                                LinearGradientBrush gradientBrush = new LinearGradientBrush(
-                                    Color.FromRgb(79, 172, 254), // 开始颜色
-                                    Color.FromRgb(0, 242, 254), // 结束颜色
-                                    new Point(0.5, 0), // 开始点
-                                    new Point(1, 1) // 结束点
-                                );
-
-                                // 创建渐变色的渐变停止点
-                                gradientBrush.GradientStops.Add(new GradientStop(Color.FromRgb(79, 172, 254), 0));
-                                gradientBrush.GradientStops.Add(new GradientStop(Color.FromRgb(0, 242, 254), 1));
-                                Background = gradientBrush;
-                            }
-                        }
-                    }));
+                    string jsonString = File.ReadAllText(AppDomain.CurrentDomain.BaseDirectory + @"MSL\config.json", Encoding.UTF8);
+                    JObject jobject = JObject.Parse(jsonString);
+                    jobject.Remove("colorfulBackground");
+                    string convertString = Convert.ToString(jobject);
+                    File.WriteAllText(AppDomain.CurrentDomain.BaseDirectory + @"MSL\config.json", convertString, Encoding.UTF8);
                 }
-                catch
-                { }
             }
+            catch
+            { }
 
             //半透明标题栏
             try
@@ -483,14 +430,14 @@ namespace MSL
                 }
                 Version newVersion = new Version(aaa);
                 Version version = new Version(System.Reflection.Assembly.GetExecutingAssembly().GetName().Version.ToString());
-                
+
                 if (newVersion > version)
                 {
                     /*
                     byte[] _updatelog = MyWebClient.DownloadData(serverLink + @"/msl/updatelog.txt");
                     string updatelog = Encoding.UTF8.GetString(_updatelog);
                     */
-                    string updatelog = Functions.Post("update",1);
+                    string updatelog = Functions.Post("update", 1);
                     Dispatcher.Invoke(new Action(delegate
                     {
                         try
@@ -521,7 +468,7 @@ namespace MSL
                         }
                     }));
                 }
-                else if(newVersion<version)
+                else if (newVersion < version)
                 {
                     Growl.Info("当前版本高于正式版本，若使用中遇到BUG，请及时反馈！");
                 }
@@ -601,7 +548,7 @@ namespace MSL
                 BodyGrid.UnregisterName("loadingBar");
             }));
         }
-        private void UpdateApp(string pageHtml,string aaa)
+        private void UpdateApp(string pageHtml, string aaa)
         {
             string strtempa1 = "* ";
             int IndexofA1 = pageHtml.IndexOf(strtempa1);
@@ -731,7 +678,7 @@ namespace MSL
                         if (OnlinePage.FRPCMD.HasExited == false)
                         {
                             bool dialog = DialogShow.ShowMsg(this, "联机功能正在运行中，关闭软件可能会让内网映射进程在后台一直运行并占用资源！确定要继续关闭吗？\n如果想隐藏主窗口的话，请前往设置打开托盘图标", "警告", true, "取消");
-                            if (dialog== true)
+                            if (dialog == true)
                             {
                                 return true;
                             }
@@ -755,7 +702,7 @@ namespace MSL
 
         void CtrlNotifyIcon()//C_NotifyIcon
         {
-            if (MainNoticyIcon.Visibility==Visibility.Hidden)
+            if (MainNoticyIcon.Visibility == Visibility.Hidden)
             {
                 MainNoticyIcon.Visibility = Visibility.Visible;
             }
@@ -776,7 +723,7 @@ namespace MSL
             frame.Content = _onlinePage;
             SideMenu.SelectedIndex = 3;
         }
-        void ChangeTitleStyle()
+        void ChangeSkinStyle()
         {
             try
             {
@@ -788,6 +735,16 @@ namespace MSL
                 else
                 {
                     ChangeTitleStyle(false);
+                }
+                if (File.Exists(AppDomain.CurrentDomain.BaseDirectory + "MSL\\Background.png"))//check background and set it
+                {
+                    SideMenuBorder.BorderThickness = new Thickness(0);
+                    Background = new ImageBrush(SettingsPage.GetImage(AppDomain.CurrentDomain.BaseDirectory + "MSL\\Background.png"));
+                }
+                else
+                {
+                    SetResourceReference(BackgroundProperty, "BackgroundBrush");
+                    SideMenuBorder.BorderThickness = new Thickness(0, 0, 1, 0);
                 }
                 //RunFormChangeTitle();
             }
@@ -887,7 +844,7 @@ namespace MSL
             if (this.WindowState == WindowState.Maximized)
             {
                 MainGrid.Margin = new Thickness(7);
-                
+
             }
             else
             {

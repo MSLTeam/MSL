@@ -1,16 +1,11 @@
-﻿using HandyControl.Controls;
-using MSL.controls;
-using Newtonsoft.Json;
+﻿using MSL.controls;
 using Newtonsoft.Json.Linq;
 using System;
-using System.Diagnostics;
 using System.IO;
-using System.Net;
 using System.Text;
 using System.Threading;
 using System.Windows;
 using System.Windows.Controls;
-using System.Windows.Media;
 using System.Windows.Media.Imaging;
 using System.Windows.Threading;
 using MessageBox = System.Windows.MessageBox;
@@ -31,30 +26,6 @@ namespace MSL.pages
 
         private void Page_Loaded(object sender, RoutedEventArgs e)
         {
-            try
-            {
-                JObject jsonObject = JObject.Parse(File.ReadAllText(AppDomain.CurrentDomain.BaseDirectory + @"MSL\config.json", Encoding.UTF8));
-                if (jsonObject["colorfulBackground"] == null)
-                {
-                    string jsonString = File.ReadAllText(AppDomain.CurrentDomain.BaseDirectory + @"MSL\config.json", Encoding.UTF8);
-                    JObject jobject = JObject.Parse(jsonString);
-                    jobject.Add("colorfulBackground", "True");
-                    string convertString = Convert.ToString(jobject);
-                    File.WriteAllText(AppDomain.CurrentDomain.BaseDirectory + @"MSL\config.json", convertString, Encoding.UTF8);
-                }
-                else if (jsonObject["colorfulBackground"].ToString() == "False")
-                {
-                    var mainwindow = (MainWindow)System.Windows.Window.GetWindow(this);
-                    mainwindow.SetResourceReference(BackgroundProperty, "BackgroundBrush");
-                    //mainwindow.SideMenuBorder.BorderThickness = new Thickness(0, 0, 1, 0);
-                }
-                else
-                {
-                    ColorfulBackground.IsChecked = true;
-                }
-            }
-            catch
-            { }
             Thread thread = new Thread(GetNotice);
             thread.Start();
             //welcomelabel.Content = "MSL开服器 版本：" + MainWindow.update;
@@ -410,44 +381,6 @@ namespace MSL.pages
             }
             File.WriteAllText(AppDomain.CurrentDomain.BaseDirectory + @"MSL\config.json", Convert.ToString(_jsonObject), Encoding.UTF8);
             startServer.IsDropDownOpen = false;
-        }
-
-        private void ColorfulBackground_Click(object sender, RoutedEventArgs e)
-        {
-            if(ColorfulBackground.IsChecked == true)
-            {
-                string jsonString = File.ReadAllText(AppDomain.CurrentDomain.BaseDirectory + @"MSL\config.json", System.Text.Encoding.UTF8);
-                JObject jobject = JObject.Parse(jsonString);
-                jobject["colorfulBackground"] = "True";
-                string convertString = Convert.ToString(jobject);
-                File.WriteAllText(AppDomain.CurrentDomain.BaseDirectory + @"MSL\config.json", convertString, System.Text.Encoding.UTF8);
-                Growl.Success("开启成功！");
-                // 创建线性渐变画刷
-                LinearGradientBrush gradientBrush = new LinearGradientBrush(
-                    Color.FromRgb(79, 172, 254), // 开始颜色
-                    Color.FromRgb(0, 242, 254), // 结束颜色
-                    new Point(0.5, 0), // 开始点
-                    new Point(1, 1) // 结束点
-                );
-
-                // 创建渐变色的渐变停止点
-                gradientBrush.GradientStops.Add(new GradientStop(Color.FromRgb(79, 172, 254), 0));
-                gradientBrush.GradientStops.Add(new GradientStop(Color.FromRgb(0, 242, 254), 1));
-                var mainwindow = (MainWindow)System.Windows.Window.GetWindow(this);
-                mainwindow.Background = gradientBrush;
-            }
-            else
-            {
-                string jsonString = File.ReadAllText(AppDomain.CurrentDomain.BaseDirectory + @"MSL\config.json", System.Text.Encoding.UTF8);
-                JObject jobject = JObject.Parse(jsonString);
-                jobject["colorfulBackground"] = "False";
-                string convertString = Convert.ToString(jobject);
-                File.WriteAllText(AppDomain.CurrentDomain.BaseDirectory + @"MSL\config.json", convertString, System.Text.Encoding.UTF8);
-                Growl.Success("关闭成功！");
-                var mainwindow = (MainWindow)System.Windows.Window.GetWindow(this);
-                mainwindow.SetResourceReference(BackgroundProperty, "BackgroundBrush");
-                //mainwindow.SideMenuBorder.BorderThickness = new Thickness(0, 0, 1, 0);
-            }
         }
     }
 }

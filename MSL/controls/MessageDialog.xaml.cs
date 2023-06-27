@@ -9,16 +9,16 @@ namespace MSL.controls
     public partial class MessageDialog : Window
     {
         public static bool _dialogReturn;
-        public MessageDialog(Window window,string dialogText, string dialogTitle, bool primaryBtnVisible, string closeText,string primaryText)
+        public MessageDialog(Window window, string dialogText, string dialogTitle, bool primaryBtnVisible, string closeText, string primaryText)
         {
             InitializeComponent();
-            this.MaxHeight=window.ActualHeight-50;
+            this.MaxHeight = window.ActualHeight - 50;
             this.MaxWidth = window.ActualWidth - 200;
             _dialogReturn = false;
             titleText.Text = dialogTitle;
             bodyText.Text = dialogText;
             closeBtn.Content = closeText;
-            primaryBtn.Content=primaryText;
+            primaryBtn.Content = primaryText;
             if (!primaryBtnVisible)
             {
                 primaryBtn.Visibility = Visibility.Hidden;
@@ -44,7 +44,7 @@ namespace MSL.controls
             var story = (Storyboard)this.Resources["HideWindow"];
             if (story != null)
             {
-                story.Completed += delegate 
+                story.Completed += delegate
                 {
                     _dialogReturn = false;
                     Close();

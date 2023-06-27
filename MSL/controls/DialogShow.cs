@@ -1,12 +1,10 @@
 ﻿using HandyControl.Controls;
-using System;
-using System.Runtime.CompilerServices;
 
 namespace MSL.controls
 {
     public class DialogShow
     {
-        public static bool ShowMsg(System.Windows.Window window, string dialogText, string dialogTitle, bool primaryBtnVisible = false, string closeText = "确定",string primaryText="确定")
+        public static bool ShowMsg(System.Windows.Window window, string dialogText, string dialogTitle, bool primaryBtnVisible = false, string closeText = "确定", string primaryText = "确定")
         {
             try
             {
@@ -25,7 +23,7 @@ namespace MSL.controls
                 {
                     return false;
                 }
-                
+
             }
             catch
             {
@@ -60,7 +58,7 @@ namespace MSL.controls
             }
         }
 
-        public static bool ShowDownload(System.Windows.Window window, string downloadurl, string downloadPath, string filename,string downloadinfo)
+        public static bool ShowDownload(System.Windows.Window window, string downloadurl, string downloadPath, string filename, string downloadinfo)
         {
             try
             {
@@ -84,7 +82,7 @@ namespace MSL.controls
             {
                 return false;
             }
-            
+
         }
     }
 }

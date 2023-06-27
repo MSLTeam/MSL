@@ -23,7 +23,7 @@
     <Border Style="{StaticResource MagicBorder}" VerticalAlignment="Stretch" Margin="10,10,10,10">
         <Grid>
             <Label Style="{StaticResource BorderTitle}" Content="服务器列表（双击可快捷启动服务器）："/>
-            <Border Margin="0,40,0,0" CornerRadius="10" BorderThickness="0" Background="{DynamicResource BackgroundBrush}">
+            <Border Margin="0,35,0,0" CornerRadius="10" BorderThickness="0" Background="{DynamicResource BackgroundBrush}">
                 <ListView x:Name="serverList" hc:Empty.ShowEmpty="true" MouseDoubleClick="serverList_MouseDoubleClick" FontSize="16" SelectionMode="Single" SelectionChanged="serverList_SelectionChanged" Background="{x:Null}" BorderBrush="{x:Null}">
                     <ListView.ContextMenu>
                         <ContextMenu>

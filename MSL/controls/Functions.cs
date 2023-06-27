@@ -1,12 +1,9 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.IO;
-using System.Linq;
 using System.Net;
 using System.Text;
 using System.Text.RegularExpressions;
-using System.Threading.Tasks;
-using System.Web;
 
 namespace MSL.controls
 {
@@ -29,7 +26,7 @@ namespace MSL.controls
             return Encoding.UTF8.GetString(pageData);
         }
 
-        public static string Post(string path,int contentType=0, string parameterData="",string customUrl="")
+        public static string Post(string path, int contentType = 0, string parameterData = "", string customUrl = "")
         {
             string url;
             if (customUrl == "")
@@ -47,7 +44,7 @@ namespace MSL.controls
             {
                 url = customUrl;
             }
-            HttpWebRequest myRequest = (HttpWebRequest)WebRequest.Create(url+"/"+path);
+            HttpWebRequest myRequest = (HttpWebRequest)WebRequest.Create(url + "/" + path);
             byte[] buf = Encoding.GetEncoding("UTF-8").GetBytes(parameterData);
 
             if (contentType == 0)

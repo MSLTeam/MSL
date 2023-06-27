@@ -2,17 +2,17 @@
 using ICSharpCode.SharpZipLib.Zip;
 using Microsoft.Win32;
 using MSL.controls;
-using MSL.forms;
 using MSL.pages;
 using Newtonsoft.Json.Linq;
 using System;
 using System.Collections.Generic;
 using System.Diagnostics;
-using System.Drawing.Drawing2D;
 using System.Globalization;
 using System.IO;
 using System.Linq;
+//using System.Management;
 using System.Net;
+//using System.Runtime.Remoting.Channels;
 using System.Text;
 using System.Text.RegularExpressions;
 using System.Threading;
@@ -21,11 +21,9 @@ using System.Windows;
 using System.Windows.Controls;
 using System.Windows.Documents;
 using System.Windows.Input;
-using System.Windows.Interop;
 using System.Windows.Media;
 using System.Windows.Media.Imaging;
 using System.Windows.Threading;
-using static System.Net.Mime.MediaTypeNames;
 using MessageBox = System.Windows.MessageBox;
 using Path = System.IO.Path;
 using Window = System.Windows.Window;
@@ -67,154 +65,62 @@ namespace MSL
         {
             ReadStdOutput += new DelReadStdOutput(ReadStdOutputAction);
             ServerList.OpenServerForm += ShowWindowEvent;
-            SettingsPage.DelBackground += DelBackground;
+            SettingsPage.ChangeSkinStyle += ChangeSkinStyle;
             InitializeComponent();
         }
         private void Window_Loaded(object sender, RoutedEventArgs e)
         {
-            ChangeTitleStyle();
-            //Get Server's Information
-            JObject jsonObject = JObject.Parse(File.ReadAllText(AppDomain.CurrentDomain.BaseDirectory + @"MSL\ServerList.json", Encoding.UTF8));
-            JObject _json = (JObject)jsonObject[RserverId];
-            if (_json["core"].ToString().IndexOf("bungeecord", StringComparison.OrdinalIgnoreCase) != -1|| _json["core"].ToString().IndexOf("waterfall", StringComparison.OrdinalIgnoreCase) != -1)//is the server Bungeecord,it will send a message and close window
-            {
-                MessageBox.Show("开服器暂不支持Bungeecord类服务端的运行，请右键服务器并点击“用命令行开服”选项来开服！");
-                Close();
-            }
-            Rservername = _json["name"].ToString();
-            Rserverjava = _json["java"].ToString();
-            Rserverbase = _json["base"].ToString();
-            Rserverserver = _json["core"].ToString();
-            RserverJVM = _json["memory"].ToString();
-            RserverJVMcmd = _json["args"].ToString();
-            if (_json["encoding_in"] != null)
-            {
-                inputCmdEncoding.Content = "输入编码:" + _json["encoding_in"].ToString();
-            }
-            if (_json["encoding_out"] != null)
-            {
-                outputCmdEncoding.Content = "输出编码:" + _json["encoding_out"].ToString();
-            }
-            if (_json["fileforceUTF8"] != null && _json["fileforceUTF8"].ToString() == "True")
-            {
-                fileforceUTF8encoding.Content = "强制服务器文件UTF8编码:开";
-            }
-
-            this.Title = Rservername;//set title to server name
-            
-            bool isChangeConfig = false;
-            if (!Directory.Exists(Rserverbase))
-            {
-                string[] pathParts = Rserverbase.Split('\\');
-                if (pathParts.Length >= 2 && pathParts[pathParts.Length - 2] == "MSL")
-                {
-                    // 路径的倒数第二个是 MSL
-                    isChangeConfig=true;
-                    string baseDirectory = AppDomain.CurrentDomain.BaseDirectory; // 获取当前应用程序的基目录
-                    Rserverbase = Path.Combine(baseDirectory, "MSL", string.Join("\\", pathParts.Skip(pathParts.Length - 1))); // 拼接 MSL 目录下的路径
-                }
-                else
-                {
-                    // 路径的倒数第二个不是 MSL
-                    Growl.Error("您的服务器目录似乎有误，是从别的位置转移到此处吗？请手动前往服务器设置界面进行更改！");
-                }
-            }
-            else if (File.Exists(Rserverbase + "\\server-icon.png"))//check server-icon,if exist,set icon to server-icon
-            {
-                this.Icon = new BitmapImage(new Uri(Rserverbase + "\\server-icon.png"));
-                //IconBox.Source = new BitmapImage(new Uri(Rserverbase + "\\server-icon.png"));
-            }
-            if (Rserverjava != "Java" && Rserverjava != "java"&& !File.Exists(Rserverjava))
-            {
-                string[] pathParts = Rserverjava.Split('\\');
-                if (pathParts.Length >= 4 && pathParts[pathParts.Length - 4] == "MSL")
-                {
-                    // 路径的倒数第四个是 MSL
-                    isChangeConfig = true;
-                    string baseDirectory = AppDomain.CurrentDomain.BaseDirectory; // 获取当前应用程序的基目录
-                    Rserverjava = Path.Combine(baseDirectory, "MSL", string.Join("\\", pathParts.Skip(pathParts.Length - 3))); // 拼接 MSL 目录下的路径
-                }
-                else
-                {
-                    // 路径的倒数第四个不是 MSL
-                    Growl.Error("您的Java目录似乎有误，是从别的位置转移到此处吗？请手动前往服务器设置界面进行更改！");
-                }
-            }
-            if (isChangeConfig)
-            {
-                _json["java"].Replace(Rserverjava);
-                _json["base"].Replace(Rserverbase);
-                jsonObject[RserverId].Replace(_json);
-                File.WriteAllText(AppDomain.CurrentDomain.BaseDirectory + @"MSL\ServerList.json", Convert.ToString(jsonObject), Encoding.UTF8);
-            }
-
-            if (File.Exists(AppDomain.CurrentDomain.BaseDirectory + "MSL\\Background.png"))//check background and set it
-            {
-                Background = new ImageBrush(SettingsPage.GetImage(AppDomain.CurrentDomain.BaseDirectory + "MSL\\Background.png"));
-            }
-
+            WindowLoadingEvent();
             GetFastCmd();
             if (ServerList.ControlSetPMTab == true)
             {
                 ServerList.ControlSetPMTab = false;
-                if (getServerInfo == false)
-                {
-                    systemInfoBtn.Content = "显示占用";
-                }
-                else
-                {
-                    Thread thread = new Thread(GetSystemInfo);
-                    thread.Start();
-                }
-                if (getPlayerInfo == false)
-                {
-                    playerInfoBtn.Content = "记录玩家:关";
-                }
-                LoadSettings();
-                ReFreshPluginsAndMods();
+                WindowLoadedEvent();
                 TabCtrl.SelectedIndex = 2;
-                ReFreshPluginsAndMods();
             }
             else if (ServerList.ControlSetServerTab == true)
             {
                 ServerList.ControlSetServerTab = false;
-                if (getServerInfo == false)
-                {
-                    systemInfoBtn.Content = "显示占用:关";
-                }
-                else
-                {
-                    Thread thread = new Thread(GetSystemInfo);
-                    thread.Start();
-                }
-                if (getPlayerInfo == false)
-                {
-                    playerInfoBtn.Content = "记录玩家:关";
-                }
-                LoadSettings();
-                ReFreshPluginsAndMods();
+                WindowLoadedEvent();
                 TabCtrl.SelectedIndex = 3;
             }
             else
             {
+                //KillPreviousServerProcess();
                 LaunchServerOnLoad();
-                if (getServerInfo == false)
-                {
-                    systemInfoBtn.Content = "显示占用:关";
-                }
-                else
-                {
-                    Thread thread = new Thread(GetSystemInfo);
-                    thread.Start();
-                }
-                if (getPlayerInfo == false)
-                {
-                    playerInfoBtn.Content = "记录玩家:关";
-                }
-                LoadSettings();
-                ReFreshPluginsAndMods();
+                WindowLoadedEvent();
             }
         }
+        /*
+        private void KillPreviousServerProcess()
+        {
+            var searcher = new ManagementObjectSearcher("SELECT CommandLine, ProcessId FROM Win32_Process WHERE Name = 'java.exe'");
+
+            foreach (var obj in searcher.Get())
+            {
+                var commandLine = obj["CommandLine"] as string;
+                var processId = (uint)obj["ProcessId"];
+                MessageBox.Show(commandLine);
+                if (commandLine != null && commandLine.Contains(Rserverjava) && commandLine.Contains(Rserverserver))
+                {
+                    MessageBox.Show("111");
+                    try
+                    {
+                        var process = Process.GetProcessById((int)processId);
+                        //process.StandardInput.WriteLine("stop");
+                        process.Kill();
+                        //process.WaitForExit();
+                        break;
+                    }
+                    catch
+                    {
+                        // 忽略错误
+                    }
+                }
+            }
+        }
+        */
+
         private void Window_Closing(object sender, System.ComponentModel.CancelEventArgs e)
         {
             try
@@ -247,7 +153,108 @@ namespace MSL
                 //GC.Collect();
             }
         }
-        void ShowWindowEvent()
+
+        private void WindowLoadingEvent()
+        {
+            ChangeSkinStyle();
+            //Get Server's Information
+            JObject jsonObject = JObject.Parse(File.ReadAllText(AppDomain.CurrentDomain.BaseDirectory + @"MSL\ServerList.json", Encoding.UTF8));
+            JObject _json = (JObject)jsonObject[RserverId];
+            if (_json["core"].ToString().IndexOf("bungeecord", StringComparison.OrdinalIgnoreCase) != -1 || _json["core"].ToString().IndexOf("waterfall", StringComparison.OrdinalIgnoreCase) != -1)//is the server Bungeecord,it will send a message and close window
+            {
+                MessageBox.Show("开服器暂不支持Bungeecord类服务端的运行，请右键服务器并点击“用命令行开服”选项来开服！");
+                Close();
+            }
+            Rservername = _json["name"].ToString();
+            Rserverjava = _json["java"].ToString();
+            Rserverbase = _json["base"].ToString();
+            Rserverserver = _json["core"].ToString();
+            RserverJVM = _json["memory"].ToString();
+            RserverJVMcmd = _json["args"].ToString();
+            if (_json["encoding_in"] != null)
+            {
+                inputCmdEncoding.Content = "输入编码:" + _json["encoding_in"].ToString();
+            }
+            if (_json["encoding_out"] != null)
+            {
+                outputCmdEncoding.Content = "输出编码:" + _json["encoding_out"].ToString();
+            }
+            if (_json["fileforceUTF8"] != null && _json["fileforceUTF8"].ToString() == "True")
+            {
+                fileforceUTF8encoding.Content = "强制服务器文件UTF8编码:开";
+            }
+
+            this.Title = Rservername;//set title to server name
+
+            bool isChangeConfig = false;
+            if (!Directory.Exists(Rserverbase))
+            {
+                string[] pathParts = Rserverbase.Split('\\');
+                if (pathParts.Length >= 2 && pathParts[pathParts.Length - 2] == "MSL")
+                {
+                    // 路径的倒数第二个是 MSL
+                    isChangeConfig = true;
+                    string baseDirectory = AppDomain.CurrentDomain.BaseDirectory; // 获取当前应用程序的基目录
+                    Rserverbase = Path.Combine(baseDirectory, "MSL", string.Join("\\", pathParts.Skip(pathParts.Length - 1))); // 拼接 MSL 目录下的路径
+                }
+                else
+                {
+                    // 路径的倒数第二个不是 MSL
+                    Growl.Error("您的服务器目录似乎有误，是从别的位置转移到此处吗？请手动前往服务器设置界面进行更改！");
+                }
+            }
+            else if (File.Exists(Rserverbase + "\\server-icon.png"))//check server-icon,if exist,set icon to server-icon
+            {
+                this.Icon = new BitmapImage(new Uri(Rserverbase + "\\server-icon.png"));
+                //IconBox.Source = new BitmapImage(new Uri(Rserverbase + "\\server-icon.png"));
+            }
+            if (Rserverjava != "Java" && Rserverjava != "java" && !File.Exists(Rserverjava))
+            {
+                string[] pathParts = Rserverjava.Split('\\');
+                if (pathParts.Length >= 4 && pathParts[pathParts.Length - 4] == "MSL")
+                {
+                    // 路径的倒数第四个是 MSL
+                    isChangeConfig = true;
+                    string baseDirectory = AppDomain.CurrentDomain.BaseDirectory; // 获取当前应用程序的基目录
+                    Rserverjava = Path.Combine(baseDirectory, "MSL", string.Join("\\", pathParts.Skip(pathParts.Length - 3))); // 拼接 MSL 目录下的路径
+                }
+                else
+                {
+                    // 路径的倒数第四个不是 MSL
+                    Growl.Error("您的Java目录似乎有误，是从别的位置转移到此处吗？请手动前往服务器设置界面进行更改！");
+                }
+            }
+            if (isChangeConfig)
+            {
+                _json["java"].Replace(Rserverjava);
+                _json["base"].Replace(Rserverbase);
+                jsonObject[RserverId].Replace(_json);
+                File.WriteAllText(AppDomain.CurrentDomain.BaseDirectory + @"MSL\ServerList.json", Convert.ToString(jsonObject), Encoding.UTF8);
+            }
+
+
+        }//窗体加载后，运行此方法，主要为改变UI、检测服务器是否完整
+
+        private void WindowLoadedEvent()
+        {
+            if (getServerInfo == false)
+            {
+                systemInfoBtn.Content = "显示占用:关";
+            }
+            else
+            {
+                Thread thread = new Thread(GetSystemInfo);
+                thread.Start();
+            }
+            if (getPlayerInfo == false)
+            {
+                playerInfoBtn.Content = "记录玩家:关";
+            }
+            LoadSettings();
+            ReFreshPluginsAndMods();
+        }//运行完WindowLoadingEvent后运行此方法，主要为加载占用显示模块和其他配置加载
+
+        private void ShowWindowEvent()
         {
             if (RserverId == MainWindow.serverid)
             {
@@ -259,8 +266,11 @@ namespace MSL
                 Topmost = true;
                 Topmost = false;
             }
-        }
-        void ChangeTitleStyle()
+        }//此方法是在Mainwindow的服务器列表双击后，如果服务器运行，就显示此窗口
+
+        //此部分是更改窗体皮肤的方法
+        #region ChangeSkin
+        private void ChangeSkinStyle()
         {
             try
             {
@@ -273,11 +283,19 @@ namespace MSL
                 {
                     ChangeTitleStyle(false);
                 }
+                if (File.Exists(AppDomain.CurrentDomain.BaseDirectory + "MSL\\Background.png"))//check background and set it
+                {
+                    Background = new ImageBrush(SettingsPage.GetImage(AppDomain.CurrentDomain.BaseDirectory + "MSL\\Background.png"));
+                }
+                else
+                {
+                    SetResourceReference(BackgroundProperty, "BackgroundBrush");
+                }
             }
             catch
             { }
         }
-        void ChangeTitleStyle(bool isOpen)
+        private void ChangeTitleStyle(bool isOpen)
         {
             if (isOpen)
             {
@@ -296,11 +314,12 @@ namespace MSL
                 CloseBtn.Foreground = Brushes.White;
             }
         }
-
-        void DelBackground()
+        private void DelBackground()
         {
             SetResourceReference(BackgroundProperty, "BackgroundBrush");
         }
+        #endregion
+
 
         private bool isModsPluginsRefresh = true;
         private void TabCtrl_SelectionChanged(object sender, SelectionChangedEventArgs e)
@@ -427,10 +446,10 @@ namespace MSL
                         Process.Start("https://aka.ms/MinecraftEULA");
                         try
                         {
-                            File.WriteAllText(path1,string.Empty);
+                            File.WriteAllText(path1, string.Empty);
                             FileStream fs = new FileStream(path1, FileMode.Open, FileAccess.Read, FileShare.ReadWrite);
                             StreamReader sr = new StreamReader(fs, Encoding.Default);
-                            
+
                             StreamWriter streamWriter = new StreamWriter(path1);
                             // 写入注释和日期
                             streamWriter.WriteLine("#By changing the setting below to TRUE you are indicating your agreement to our EULA (https://aka.ms/MinecraftEULA).");
@@ -454,7 +473,7 @@ namespace MSL
                 }
                 ChangeControlsState();
                 string fileforceUTF8Jvm = "";
-                if (fileforceUTF8encoding.Content.ToString().Contains("开")&&!RserverJVMcmd.Contains("-Dfile.encoding=UTF-8"))
+                if (fileforceUTF8encoding.Content.ToString().Contains("开") && !RserverJVMcmd.Contains("-Dfile.encoding=UTF-8"))
                 {
                     fileforceUTF8Jvm = "-Dfile.encoding=UTF-8 ";
                 }
@@ -484,6 +503,10 @@ namespace MSL
                 ServerProcess.StartInfo.FileName = Rserverjava;
                 ServerProcess.StartInfo.Arguments = StartFileArg;
                 Directory.SetCurrentDirectory(Rserverbase);
+                //string ServerProcessId = Guid.NewGuid().ToString();
+                //MessageBox.Show(ServerProcessId);
+                // 在启动服务器进程时设置环境变量
+                //ServerProcess.StartInfo.EnvironmentVariables["SERVER_PROCESS_ID"] = ServerProcessId;
                 ServerProcess.StartInfo.CreateNoWindow = true;
                 ServerProcess.StartInfo.UseShellExecute = false;
                 ServerProcess.StartInfo.RedirectStandardInput = true;
@@ -766,7 +789,7 @@ namespace MSL
             {
                 outlog.Document.Blocks.Clear();
             }
-            if ((msg.Contains("\tat ") && shieldStackOut.Content.ToString().Contains("开")) || (ShieldLog != null && msg.Contains(ShieldLog))|| closeOutlog.Content.ToString() != "日志输出:开")
+            if ((msg.Contains("\tat ") && shieldStackOut.Content.ToString().Contains("开")) || (ShieldLog != null && msg.Contains(ShieldLog)) || closeOutlog.Content.ToString() != "日志输出:开")
             {
                 return;
             }
@@ -937,11 +960,11 @@ namespace MSL
 
         private void GetServerInfoSys(string msg)
         {
-            if(msg.Contains("下载")||msg.Contains("Download")|| msg.Contains("download"))
+            if (msg.Contains("下载") || msg.Contains("Download") || msg.Contains("download"))
             {
                 getServerInfoLine--;
 
-                if (getServerInfoLine==-5)//&&!File.Exists(Rserverbase + "\\eula.txt"))
+                if (getServerInfoLine == -5)//&&!File.Exists(Rserverbase + "\\eula.txt"))
                 {
                     Growl.Info("该服务端可能在下载依赖文件，请耐心等待！");
                     //DialogShow.ShowMsg(this, "该服务端可能在下载依赖文件，请耐心等待！\n\n将为您跳转至控制台界面，开服过程中部分操作需要您手动完成！\n(注：Mohist端接受EULA条款的方式是在控制台输入true，在接受前请务必前往该网站仔细阅读条款内容：https://account.mojang.com/documents/minecraft_eula)", "提示");
@@ -1285,7 +1308,7 @@ namespace MSL
                 }
                 else if (msg.Contains("进程无法访问"))
                 {
-                    if (foundProblems==null||!foundProblems.Contains("*文件被占用，您的服务器可能多开，可尝试重启电脑解决！\n"))
+                    if (foundProblems == null || !foundProblems.Contains("*文件被占用，您的服务器可能多开，可尝试重启电脑解决！\n"))
                     {
                         foundProblems += "*文件被占用，您的服务器可能多开，可尝试重启电脑解决！\n";
                     }
@@ -1341,9 +1364,9 @@ namespace MSL
             {
                 foundProblems += "*服务器出现意外崩溃，可能是由于模组冲突，请检查您的模组列表（如果使用的是整合包，请使用整合包制作方提供的Server专用包开服）\n";
             }
-            else if (msg.Contains("Mod")&&msg.Contains("requires"))
+            else if (msg.Contains("Mod") && msg.Contains("requires"))
             {
-                string _msg=msg;
+                string _msg = msg;
                 if (msg.Contains("&"))
                 {
                     _msg = "";
@@ -1397,7 +1420,7 @@ namespace MSL
                     string modName = modNameMatch.Groups[1].Value;
                     string preMod = preModMatch.Groups[1].Value;
 
-                    if(msg.Contains("or above"))
+                    if (msg.Contains("or above"))
                     {
                         if (foundProblems == null || !foundProblems.Contains("*" + modName + " 模组出现问题！该模组需要 " + preMod + " 或以上版本！\n"))
                         {
@@ -1800,7 +1823,38 @@ namespace MSL
 
         private void gotoFrpc_Click(object sender, RoutedEventArgs e)
         {
-            DialogShow.ShowMsg(this, "服务器开启后，通常远程的小伙伴是无法进入的，你需要开通公网IP或进行内网映射才可让他人进入。开服器内置有免费的内网映射，您可点击主界面左侧的“内网映射”按钮查看详情并进行配置。", "注意");
+            string ipAddress = string.Empty;
+
+            // 获取本地计算机的IP地址列表
+            IPAddress[] localIPs = Dns.GetHostAddresses(Dns.GetHostName());
+
+            // 遍历IP地址列表
+            foreach (IPAddress localIP in localIPs)
+            {
+                // 检查IPv4地址是否为公网IP
+                if (localIP.AddressFamily == System.Net.Sockets.AddressFamily.InterNetwork &&
+                    !IPAddress.IsLoopback(localIP) &&
+                    !localIP.ToString().StartsWith("169.254.") &&
+                    !localIP.ToString().StartsWith("192.168.") &&
+                    !localIP.ToString().StartsWith("10."))
+                {
+                    ipAddress = localServerIPLab.Content.ToString();
+
+                    if (ipAddress.Contains(":"))
+                    {
+                        DialogShow.ShowMsg(this, "您的公网IP为：" + localIP.ToString() + "\n您的服务器远程进入地址为：" + localIP.ToString() + ":" + ipAddress.Substring(ipAddress.IndexOf(":") + 1, ipAddress.Length - ipAddress.IndexOf(":") - 1) + "\n注意：记得检查您的防火墙是否关闭，否则远程玩家无法进入服务器！", "信息");
+                    }
+                    else
+                    {
+                        DialogShow.ShowMsg(this, "您的公网IP为：" + localIP.ToString() + "\n您的服务器远程进入地址为：" + localIP.ToString() + "\n注意：记得检查您的防火墙是否关闭，否则远程玩家无法进入服务器！", "信息");
+                    }
+                    return;
+                }
+            }
+
+            // 返回IP地址，如果没有找到公网IP，则返回"none"
+            //return string.IsNullOrEmpty(ipAddress) ? "none" : ipAddress;
+            DialogShow.ShowMsg(this, "服务器开启后，通常远程的小伙伴是无法进入的，您需要进行内网映射才可让他人进入。开服器内置有免费的内网映射，您可点击主界面左侧的“内网映射”按钮查看详情并进行配置。", "注意");
             GotoFrpcEvent();
         }
 
@@ -2014,27 +2068,28 @@ namespace MSL
             { }
             if (File.Exists(Rserverbase + "\\server-icon.png"))
             {
-                bool dialogret= DialogShow.ShowMsg(this, "此功能会覆盖原来的旧图标，是否要继续？", "警告", true, "取消");
-                if (dialogret)
+                bool dialogret = DialogShow.ShowMsg(this, "此功能会覆盖原来的旧图标，是否要继续？", "警告", true, "取消");
+                if (!dialogret)
                 {
-                    DialogShow.ShowMsg(this, "请先准备一张64*64像素的图片（格式为png），准备完成后点击确定以继续", "如何操作？");
-                    OpenFileDialog openfile = new OpenFileDialog();
-                    openfile.InitialDirectory = AppDomain.CurrentDomain.BaseDirectory;
-                    openfile.Title = "请选择文件";
-                    openfile.Filter = "PNG图像|*.png";
-                    var res = openfile.ShowDialog();
-                    if (res == true)
-                    {
-                        try
-                        {
-                            File.Copy(openfile.FileName, Rserverbase + "\\server-icon.png", true);
-                            DialogShow.ShowMsg(this, "图标更换完成！", "信息");
-                        }
-                        catch(Exception ex)
-                        {
-                            DialogShow.ShowMsg(this, "图标更换失败！请检查服务器是否关闭！\n错误代码："+ex.Message, "错误");
-                        }
-                    }
+                    return;
+                }
+            }
+            DialogShow.ShowMsg(this, "请先准备一张64*64像素的图片（格式为png），准备完成后点击确定以继续", "如何操作？");
+            OpenFileDialog openfile = new OpenFileDialog();
+            openfile.InitialDirectory = AppDomain.CurrentDomain.BaseDirectory;
+            openfile.Title = "请选择文件";
+            openfile.Filter = "PNG图像|*.png";
+            var res = openfile.ShowDialog();
+            if (res == true)
+            {
+                try
+                {
+                    File.Copy(openfile.FileName, Rserverbase + "\\server-icon.png", true);
+                    DialogShow.ShowMsg(this, "图标更换完成！", "信息");
+                }
+                catch (Exception ex)
+                {
+                    DialogShow.ShowMsg(this, "图标更换失败！请检查服务器是否关闭！\n错误代码：" + ex.Message, "错误");
                 }
             }
         }
@@ -2072,7 +2127,7 @@ namespace MSL
                     {
                         DialogShow.ShowMsg(this, "导入世界失败！请检查服务器是否关闭！\n错误代码：" + ex.Message, "错误", false, "确定");
                     }
-                    
+
                 }
             }
         }
@@ -2109,8 +2164,8 @@ namespace MSL
                     lab001.VerticalAlignment = VerticalAlignment.Top;
                     pluginListBox.Visibility = Visibility.Visible;
                     modListBox.Visibility = Visibility.Visible;
-                    PGrid.Width = new GridLength(1,GridUnitType.Star);
-                    MGrid.Width = new GridLength(1,GridUnitType.Star);
+                    PGrid.Width = new GridLength(1, GridUnitType.Star);
+                    MGrid.Width = new GridLength(1, GridUnitType.Star);
                     //pluginListBox.Width = 430;
                     //modListBox.Width = 430;
                     //pluginListBox.Margin = new Thickness(10, 55, 0, 0);
@@ -2134,7 +2189,7 @@ namespace MSL
                 else
                 {
                     lab001.Text = "已检测到插件文件夹，以下为插件列表";
-                    lab001.Margin = new Thickness(10,15,0,0);
+                    lab001.Margin = new Thickness(10, 15, 0, 0);
                     lab001.HorizontalAlignment = HorizontalAlignment.Left;
                     lab001.VerticalAlignment = VerticalAlignment.Top;
                     pluginListBox.Visibility = Visibility.Visible;
@@ -2153,7 +2208,7 @@ namespace MSL
                 {
                     lab001.Text = "已检测到模组文件夹，以下为模组列表";
                     lab001.Margin = new Thickness(10, 15, 0, 0);
-                    lab001.HorizontalAlignment = HorizontalAlignment.Left ;
+                    lab001.HorizontalAlignment = HorizontalAlignment.Left;
                     lab001.VerticalAlignment = VerticalAlignment.Top;
                     pluginListBox.Visibility = Visibility.Hidden;
                     modListBox.Visibility = Visibility.Visible;
@@ -2182,8 +2237,8 @@ namespace MSL
                 {
                     lab001.Text = "未检测到任何插件和模组，请重启服务器或检查该服务端是否支持";
                     lab001.Margin = new Thickness(0);
-                    lab001.HorizontalAlignment= HorizontalAlignment.Center;
-                    lab001.VerticalAlignment= VerticalAlignment.Center;
+                    lab001.HorizontalAlignment = HorizontalAlignment.Center;
+                    lab001.VerticalAlignment = VerticalAlignment.Center;
                     pluginListBox.Visibility = Visibility.Hidden;
                     modListBox.Visibility = Visibility.Hidden;
                 }
@@ -2341,8 +2396,16 @@ namespace MSL
                         item.IsSelected = true;
                     }
                 }
+
                 PluginInfo pluginInfo = pluginslist.SelectedItem as PluginInfo;
-                File.Delete(Rserverbase + @"\plugins\" + pluginInfo.PluginName);
+                if (pluginInfo.PluginName.ToString().Contains("[已禁用]"))
+                {
+                    File.Delete(Rserverbase + @"\plugins\" + pluginInfo.PluginName.Substring(5, pluginInfo.PluginName.Length - 5));
+                }
+                else
+                {
+                    File.Delete(Rserverbase + @"\plugins\" + pluginInfo.PluginName);
+                }
                 ReFreshPluginsAndMods();
             }
             catch { return; }
@@ -2408,7 +2471,14 @@ namespace MSL
                     }
                 }
                 ModInfo modInfo = modslist.SelectedItem as ModInfo;
-                File.Delete(Rserverbase + @"\mods\" + modInfo.ModName);
+                if (modInfo.ModName.ToString().Contains("[已禁用]"))
+                {
+                    File.Delete(Rserverbase + @"\mods\" + modInfo.ModName.Substring(5, modInfo.ModName.Length - 5));
+                }
+                else
+                {
+                    File.Delete(Rserverbase + @"\mods\" + modInfo.ModName);
+                }
                 ReFreshPluginsAndMods();
             }
             catch { return; }
@@ -2498,7 +2568,7 @@ namespace MSL
                 bAse.Text = Rserverbase;
                 jVMcmd.Text = RserverJVMcmd;
                 jAva.Text = Rserverjava;
-                
+
                 if (jAva.Text == "Java")
                 {
                     useJvpath.IsChecked = true;
@@ -2644,7 +2714,7 @@ namespace MSL
                             switch (selectJava.SelectedIndex)
                             {
                                 case 0:
-                                    dwnJava=DownloadJava("Java8", javaList["Java8"].ToString());
+                                    dwnJava = DownloadJava("Java8", javaList["Java8"].ToString());
                                     break;
                                 case 1:
                                     dwnJava = DownloadJava("Java11", javaList["Java11"].ToString());
@@ -3117,7 +3187,7 @@ namespace MSL
         private void fileforceUTF8encoding_Click(object sender, RoutedEventArgs e)
         {
             JObject jsonObject = JObject.Parse(File.ReadAllText(AppDomain.CurrentDomain.BaseDirectory + @"MSL\ServerList.json", Encoding.UTF8));
-            JObject _json = (JObject)jsonObject[RserverId]; 
+            JObject _json = (JObject)jsonObject[RserverId];
             if (fileforceUTF8encoding.Content.ToString().Contains("开"))
             {
                 fileforceUTF8encoding.Content = "强制服务器文件UTF8编码:关";
@@ -3341,7 +3411,7 @@ namespace MSL
             try
             {
                 string text;
-                bool input=DialogShow.ShowInput(this, "请输入指令（格式为：/指令）\n若要输入的指令不是完整指令，请自行在最后添加空格",out text);
+                bool input = DialogShow.ShowInput(this, "请输入指令（格式为：/指令）\n若要输入的指令不是完整指令，请自行在最后添加空格", out text);
                 if (input)
                 {
                     fastCmdList.Items.Add(text);
@@ -3380,7 +3450,7 @@ namespace MSL
         Dictionary<int, bool> stopTasks = new Dictionary<int, bool>();
         private void addTask_Click(object sender, RoutedEventArgs e)
         {
-            if(taskID.Count == 0)
+            if (taskID.Count == 0)
             {
                 taskID.Add(0);
             }

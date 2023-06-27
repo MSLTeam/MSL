@@ -1,9 +1,4 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
-using System.Windows;
+﻿using System.Windows;
 
 namespace MSL.controls
 {
@@ -27,7 +22,7 @@ namespace MSL.controls
         private void MaximizeWindow(object obj)
         {
             var window = obj as Window;
-            switch(window.WindowState)
+            switch (window.WindowState)
             {
                 case WindowState.Normal:
                     SystemCommands.MaximizeWindow(window);

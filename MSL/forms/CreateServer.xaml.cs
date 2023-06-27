@@ -23,7 +23,6 @@ using System.Windows.Threading;
 using MessageBox = System.Windows.MessageBox;
 using OpenFileDialog = Microsoft.Win32.OpenFileDialog;
 using Path = System.IO.Path;
-using Window = System.Windows.Window;
 
 namespace MSL.forms
 {
@@ -293,10 +292,10 @@ namespace MSL.forms
                 serverjava = AppDomain.CurrentDomain.BaseDirectory + @"MSL\" + DownjavaName + @"\bin\java.exe";
                 return true;
             }
-            catch(Exception ex)
+            catch (Exception ex)
             {
                 //MessageBox.Show(ex.ToString(), "错误", MessageBoxButton.OK, MessageBoxImage.Error);
-                DialogShow.ShowMsg(this, "安装失败，请查看是否有杀毒软件进行拦截！请确保添加信任或关闭杀毒软件后进行重新安装！\n错误代码："+ex.Message, "错误");
+                DialogShow.ShowMsg(this, "解压失败，Java压缩包可能已损坏，请重试！错误代码：" + ex.Message + "\n（注：若多次重试均无法解压的话，请自行去网络上下载安装并使用自定义模式来创建服务器）", "错误");
                 return false;
             }
         }
@@ -925,7 +924,7 @@ namespace MSL.forms
                                         JObject patientinfo = new JObject();
                                         patientinfo["server_name"] = i;
                                         string sendData = JsonConvert.SerializeObject(patientinfo);
-                                        string resultData = Functions.Post("serverlist",0,sendData);
+                                        string resultData = Functions.Post("serverlist", 0, sendData);
                                         //MessageBox.Show(resultData);
                                         tempServerCore.Add(coreType, resultData);
                                         Dictionary<string, string> serverDetails = JsonConvert.DeserializeObject<Dictionary<string, string>>(resultData);
@@ -945,7 +944,7 @@ namespace MSL.forms
                                             JObject patientinfo = new JObject();
                                             patientinfo["server_name"] = i;
                                             string sendData = JsonConvert.SerializeObject(patientinfo);
-                                            string resultData = Functions.Post("serverlist", 0, sendData,"https://api.waheal.top");
+                                            string resultData = Functions.Post("serverlist", 0, sendData, "https://api.waheal.top");
                                             //MessageBox.Show(resultData);
                                             tempServerCore.Add(coreType, resultData);
                                             Dictionary<string, string> serverDetails = JsonConvert.DeserializeObject<Dictionary<string, string>>(resultData);
@@ -1024,7 +1023,7 @@ namespace MSL.forms
         }
 
         List<string> downloadCoreUrl = new List<string>();
-        Dictionary<string,string> tempServerCore = new Dictionary<string,string>();
+        Dictionary<string, string> tempServerCore = new Dictionary<string, string>();
         private void FastModeNextBtn_Click(object sender, RoutedEventArgs e)
         {
             servername = ServerNameBox.Text;
@@ -1069,7 +1068,7 @@ namespace MSL.forms
             {
                 if (versionString.Contains("-"))
                 {
-                    versionString=versionString.Substring(0,versionString.IndexOf("-"));
+                    versionString = versionString.Substring(0, versionString.IndexOf("-"));
                 }
                 string[] components = versionString.Split('.');
                 if (components.Length >= 3 && int.TryParse(components[2], out int _))

@@ -7,7 +7,6 @@ using System.Collections.Generic;
 using System.Diagnostics;
 using System.IO;
 using System.Text;
-using System.Threading;
 using System.Windows;
 using System.Windows.Controls;
 using System.Windows.Input;
@@ -111,7 +110,7 @@ namespace MSL.pages
                 serverid.Clear();
 
                 JObject jsonObject = JObject.Parse(File.ReadAllText(AppDomain.CurrentDomain.BaseDirectory + @"MSL\ServerList.json", Encoding.UTF8));
-                foreach(var item in jsonObject)
+                foreach (var item in jsonObject)
                 {
                     serverid.Add(item.Key);
                     if (File.Exists(item.Value["base"].ToString() + "\\server-icon.png"))
@@ -144,12 +143,12 @@ namespace MSL.pages
                 }
             }
         }
-        
+
         private void serverList_MouseDoubleClick(object sender, MouseButtonEventArgs e)
         {
             StartServerEvent();
         }
-        
+
 
         private void startServer_Click(object sender, RoutedEventArgs e)
         {
@@ -236,7 +235,7 @@ namespace MSL.pages
             }
             try
             {
-                
+
                 //serverList.Items.Remove(serverList.SelectedItem);
                 DialogShow.ShowMsg(mainwindow, "是否删除该服务器的目录？（服务器目录中的所有文件都会被移至回收站）", "提示", true, "取消");
                 if (MessageDialog._dialogReturn)

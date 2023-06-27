@@ -10,14 +10,14 @@ namespace MSL.controls
     {
         public static bool _dialogReturn;
         public static string _textReturn;
-        public InputDialog(Window window,string dialogText, string textboxText)
+        public InputDialog(Window window, string dialogText, string textboxText)
         {
             InitializeComponent();
-            this.MaxHeight=window.ActualHeight-50;
+            this.MaxHeight = window.ActualHeight - 50;
             this.MaxWidth = window.ActualWidth - 200;
             _dialogReturn = false;
             bodyText.Text = dialogText;
-            textBox.Text=textboxText;
+            textBox.Text = textboxText;
         }
 
         private void primaryBtn_Click(object sender, RoutedEventArgs e)
@@ -40,7 +40,7 @@ namespace MSL.controls
             var story = (Storyboard)this.Resources["HideWindow"];
             if (story != null)
             {
-                story.Completed += delegate 
+                story.Completed += delegate
                 {
                     _dialogReturn = false;
                     Close();

@@ -1,18 +1,12 @@
 ﻿using HandyControl.Controls;
-using HandyControl.Media.Effects;
 using HandyControl.Themes;
 using Microsoft.Win32;
 using MSL.controls;
-using MSL.forms;
-using Newtonsoft.Json;
 using Newtonsoft.Json.Linq;
 using System;
 using System.Collections.Generic;
 using System.Diagnostics;
-using System.Drawing;
 using System.IO;
-using System.Net;
-using System.Resources;
 //using System.Runtime.InteropServices;
 using System.Text;
 using System.Threading;
@@ -20,7 +14,6 @@ using System.Windows;
 using System.Windows.Media;
 using System.Windows.Media.Imaging;
 using System.Windows.Threading;
-using static MSL.App;
 using MessageBox = System.Windows.MessageBox;
 using MessageDialog = MSL.controls.MessageDialog;
 
@@ -32,8 +25,7 @@ namespace MSL.pages
     public partial class SettingsPage : System.Windows.Controls.Page
     {
         public static event DeleControl C_NotifyIcon;
-        public static event DeleControl DelBackground;
-        public static event DeleControl ChangeTitleStyle;
+        public static event DeleControl ChangeSkinStyle;
         List<string> _runServerList = new List<string>();
         public SettingsPage()
         {
@@ -386,7 +378,7 @@ namespace MSL.pages
 
                 Growl.Success("开启成功！");
                 ThemeManager.Current.UsingSystemTheme = true;
-                BlueSkinBtn.IsChecked= false;
+                BlueSkinBtn.IsChecked = false;
                 darkTheme.IsChecked = false;
 
                 BlueSkinBtn.IsEnabled = false;
@@ -450,8 +442,8 @@ namespace MSL.pages
                 jobject["semitransparentTitle"] = "True";
                 string convertString = Convert.ToString(jobject);
                 File.WriteAllText(AppDomain.CurrentDomain.BaseDirectory + "MSL\\config.json", convertString, Encoding.UTF8);
-                Growl.Success("开启成功！"); 
-                ChangeTitleStyle();
+                Growl.Success("开启成功！");
+                ChangeSkinStyle();
             }
             else
             {
@@ -459,15 +451,15 @@ namespace MSL.pages
                 jobject["semitransparentTitle"] = "False";
                 string convertString = Convert.ToString(jobject);
                 File.WriteAllText(AppDomain.CurrentDomain.BaseDirectory + "MSL\\config.json", convertString, Encoding.UTF8);
-                Growl.Success("关闭成功！"); 
-                ChangeTitleStyle();
+                Growl.Success("关闭成功！");
+                ChangeSkinStyle();
             }
         }
 
         private void paintedEgg_Click(object sender, RoutedEventArgs e)
         {
             var mainwindow = (MainWindow)System.Windows.Window.GetWindow(this);
-            bool dialog=DialogShow.ShowMsg(mainwindow, "点击此按钮后软件出现任何问题作者概不负责，你确定要继续吗？\n（光敏性癫痫警告！若您患有光敏性癫痫，请不要点击确定！）", "警告", true, "取消");
+            bool dialog = DialogShow.ShowMsg(mainwindow, "点击此按钮后软件出现任何问题作者概不负责，你确定要继续吗？\n（光敏性癫痫警告！若您患有光敏性癫痫，请不要点击确定！）", "警告", true, "取消");
             if (dialog)
             {
                 ThemeManager.Current.UsingSystemTheme = false;
@@ -477,7 +469,7 @@ namespace MSL.pages
         }
         void PaintedEgg()
         {
-            System.Windows.Window mainwindow=null;
+            System.Windows.Window mainwindow = null;
             Dispatcher.Invoke(new Action(delegate
             {
                 mainwindow = (MainWindow)System.Windows.Window.GetWindow(this);
@@ -525,7 +517,6 @@ namespace MSL.pages
         private void changeBackImg_Click(object sender, RoutedEventArgs e)
         {
             var mainwindow = (MainWindow)System.Windows.Window.GetWindow(this);
-            DialogShow.ShowMsg(mainwindow, "该功能搭配暗色模式使用，效果最佳", "提示");
             OpenFileDialog openfile = new OpenFileDialog();
             openfile.InitialDirectory = AppDomain.CurrentDomain.BaseDirectory;
             openfile.Title = "请选择文件";
@@ -534,8 +525,7 @@ namespace MSL.pages
             if (res == true)
             {
                 File.Copy(openfile.FileName, AppDomain.CurrentDomain.BaseDirectory + "MSL\\Background.png", true);
-                mainwindow.Background = new ImageBrush(GetImage(AppDomain.CurrentDomain.BaseDirectory + "MSL\\Background.png"));     // path为图片路径new ImageBrush(new BitmapImage(new Uri(AppDomain.CurrentDomain.BaseDirectory + "MSL\\Background.png")));
-                mainwindow.SideMenuBorder.BorderThickness = new Thickness(0);
+                ChangeSkinStyle();
             }
         }
         public static BitmapImage GetImage(string imagePath)
@@ -557,15 +547,8 @@ namespace MSL.pages
 
         private void delBackImg_Click(object sender, RoutedEventArgs e)
         {
-            var mainwindow = (MainWindow)System.Windows.Window.GetWindow(this);
-            mainwindow.SetResourceReference(BackgroundProperty, "BackgroundBrush");
-            mainwindow.SideMenuBorder.BorderThickness = new Thickness(0, 0, 1, 0);
-            try
-            {
-                DelBackground();
-            }
-            catch { }
             File.Delete(AppDomain.CurrentDomain.BaseDirectory + "MSL\\Background.png");
+            ChangeSkinStyle();
         }
 
         private void addServerToRunlist_Click(object sender, RoutedEventArgs e)
@@ -582,7 +565,7 @@ namespace MSL.pages
 
         private void autoRunApp_Click(object sender, RoutedEventArgs e)
         {
-            if(autoRunApp.IsChecked == true)
+            if (autoRunApp.IsChecked == true)
             {
                 // 获取当前用户的注册表启动项
                 RegistryKey regKey = Registry.CurrentUser.OpenSubKey("SOFTWARE\\Microsoft\\Windows\\CurrentVersion\\Run", true);
@@ -613,6 +596,27 @@ namespace MSL.pages
                 jobject["autoRunApp"] = "False";
                 string convertString = Convert.ToString(jobject);
                 File.WriteAllText(AppDomain.CurrentDomain.BaseDirectory + @"MSL\config.json", convertString, System.Text.Encoding.UTF8);
+            }
+        }
+        private void autoUpdateApp_Click(object sender, RoutedEventArgs e)
+        {
+            if (autoUpdateApp.IsChecked == true)
+            {
+                string jsonString = File.ReadAllText(AppDomain.CurrentDomain.BaseDirectory + @"MSL\config.json", System.Text.Encoding.UTF8);
+                JObject jobject = JObject.Parse(jsonString);
+                jobject["autoUpdateApp"] = "True";
+                string convertString = Convert.ToString(jobject);
+                File.WriteAllText(AppDomain.CurrentDomain.BaseDirectory + @"MSL\config.json", convertString, System.Text.Encoding.UTF8);
+                Growl.Success("开启成功！");
+            }
+            else
+            {
+                string jsonString = File.ReadAllText(AppDomain.CurrentDomain.BaseDirectory + @"MSL\config.json", System.Text.Encoding.UTF8);
+                JObject jobject = JObject.Parse(jsonString);
+                jobject["autoUpdateApp"] = "False";
+                string convertString = Convert.ToString(jobject);
+                File.WriteAllText(AppDomain.CurrentDomain.BaseDirectory + @"MSL\config.json", convertString, System.Text.Encoding.UTF8);
+                Growl.Success("关闭成功！");
             }
         }
 
@@ -713,28 +717,6 @@ namespace MSL.pages
             catch
             {
                 Growl.Error("检查更新失败！");
-            }
-        }
-
-        private void autoUpdateApp_Click(object sender, RoutedEventArgs e)
-        {
-            if (autoUpdateApp.IsChecked == true)
-            {
-                string jsonString = File.ReadAllText(AppDomain.CurrentDomain.BaseDirectory + @"MSL\config.json", System.Text.Encoding.UTF8);
-                JObject jobject = JObject.Parse(jsonString);
-                jobject["autoUpdateApp"] = "True";
-                string convertString = Convert.ToString(jobject);
-                File.WriteAllText(AppDomain.CurrentDomain.BaseDirectory + @"MSL\config.json", convertString, System.Text.Encoding.UTF8);
-                Growl.Success("开启成功！");
-            }
-            else
-            {
-                string jsonString = File.ReadAllText(AppDomain.CurrentDomain.BaseDirectory + @"MSL\config.json", System.Text.Encoding.UTF8);
-                JObject jobject = JObject.Parse(jsonString);
-                jobject["autoUpdateApp"] = "False";
-                string convertString = Convert.ToString(jobject);
-                File.WriteAllText(AppDomain.CurrentDomain.BaseDirectory + @"MSL\config.json", convertString, System.Text.Encoding.UTF8);
-                Growl.Success("关闭成功！");
             }
         }
         /*

@@ -5,7 +5,6 @@ using System.Collections.Generic;
 using System.IO;
 using System.IO.Compression;
 using System.Net;
-using System.Security.Cryptography;
 using System.Text;
 using System.Text.RegularExpressions;
 using System.Threading;
@@ -33,7 +32,7 @@ namespace MSL
         List<string> modUrls = new List<string>();
         List<string> imageUrls = new List<string>();
         List<string> backList = new List<string>();
-        public DownloadMods(int loadtype=0)
+        public DownloadMods(int loadtype = 0)
         {
             InitializeComponent();
             loadType = loadtype;
@@ -59,7 +58,7 @@ namespace MSL
                 lb01.Visibility = Visibility.Visible;
                 WebClient webClient = new WebClient();
                 webClient.Credentials = CredentialCache.DefaultCredentials;
-                byte[] pageData = webClient.DownloadData(MainWindow.serverLink + @"/msl/CC/cruseforgetoken");
+                byte[] pageData = await webClient.DownloadDataTaskAsync(MainWindow.serverLink + @"/msl/CC/cruseforgetoken");
                 string token = Encoding.UTF8.GetString(pageData);
                 int index = token.IndexOf("\r\n");
                 string _token = token.Substring(0, index);
@@ -233,9 +232,9 @@ namespace MSL
                 backBtn.IsEnabled = false;
                 listBoxColumnName.Header = "模组列表（双击获取该模组的版本）：";
             }
-            catch(Exception ex)
+            catch (Exception ex)
             {
-                MessageBox.Show("获取MOD失败！您的系统版本可能过旧，请再次尝试或前往浏览器自行下载！"+ex.ToString(), "错误", MessageBoxButton.OK, MessageBoxImage.Error);
+                MessageBox.Show("获取MOD失败！您的系统版本可能过旧，请再次尝试或前往浏览器自行下载！" + ex.ToString(), "错误", MessageBoxButton.OK, MessageBoxImage.Error);
             }
         }
         private async void searchMod_Click(object sender, RoutedEventArgs e)
@@ -382,10 +381,10 @@ namespace MSL
                         var cfApiClient = new CurseForge.APIClient.ApiClient(_token);
                         var selectedModId = modIds[listBox.SelectedIndex];
                         var modFiles = await cfApiClient.GetModFilesAsync(selectedModId);
-                        
+
                         listBox.Items.Clear();
                         modVersions.Clear();
-                        
+
                         if (loadType == 0)
                         {
                             for (int i = 0; i < modFiles.Data.Count; i++)
@@ -414,9 +413,9 @@ namespace MSL
                                 }
                             }
                         }
-                        
+
                     }
-                    catch(Exception ex) { MessageBox.Show(ex.ToString()); }
+                    catch (Exception ex) { MessageBox.Show(ex.ToString()); }
                     lCircle.IsRunning = false;
                     lCircle.Visibility = Visibility.Hidden;
                     lb01.Visibility = Visibility.Hidden;

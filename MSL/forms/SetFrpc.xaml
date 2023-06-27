@@ -17,7 +17,7 @@
         <Label x:Name="lab1" Content="输入本地端口(Java版默认25565,基岩版默认19132,双协议用|分割)：" HorizontalAlignment="Left" Margin="290,50,0,0" VerticalAlignment="Top" Background="{x:Null}" BorderBrush="{x:Null}" FontSize="14"/>
         <Label x:Name="lab2" Content="输入您的QQ号：" HorizontalAlignment="Left" Margin="290,135,0,0" VerticalAlignment="Top" BorderBrush="{x:Null}" Background="{x:Null}" FontSize="14"/>
         <Label Content="节点列表：" HorizontalAlignment="Left" VerticalAlignment="Top" FontSize="20" FontWeight="Bold" Margin="10,10,0,0" Background="{x:Null}" BorderBrush="{x:Null}" Height="39"/>
-        <Label x:Name="gonggao" Content="加载中" HorizontalAlignment="Left" Margin="20,305,0,0" VerticalAlignment="Top" FontSize="14" Height="95" Width="595" HorizontalContentAlignment="Left" VerticalContentAlignment="Top"/>
+        <Label x:Name="gonggao" Content="加载中" HorizontalAlignment="Left" Margin="20,305,0,0" VerticalAlignment="Top" FontSize="16" Height="95" Width="595" HorizontalContentAlignment="Left" VerticalContentAlignment="Top"/>
         <Label Content="（请务必选择节点）" HorizontalAlignment="Left" Margin="110,15,0,0" VerticalAlignment="Top" FontSize="16" BorderBrush="{x:Null}" Background="{x:Null}" Height="34"/>
         <TextBox x:Name="textBox3" HorizontalAlignment="Left" Height="23" Margin="330,185,0,0" VerticalAlignment="Top" Width="400" Visibility="Hidden"/>
         <Label x:Name="paidPasswordLabel" Content="如果您购买了付费节点，在此输入您的密码：" HorizontalAlignment="Left" Margin="290,155,0,0" FontSize="14" VerticalAlignment="Top" Background="{x:Null}" BorderBrush="{x:Null}" Visibility="Hidden"/>

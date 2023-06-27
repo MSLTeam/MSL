@@ -4,15 +4,10 @@ using Newtonsoft.Json.Linq;
 using System;
 using System.Collections.Generic;
 using System.Diagnostics;
-using System.Drawing.Drawing2D;
 using System.IO;
 using System.Linq;
-using System.Net;
 using System.Net.NetworkInformation;
 using System.Runtime.InteropServices;
-using System.Runtime.InteropServices.ComTypes;
-using System.Security.Policy;
-using System.Text;
 using System.Text.RegularExpressions;
 using System.Threading;
 using System.Windows;
@@ -21,7 +16,6 @@ using System.Windows.Forms;
 using System.Windows.Input;
 using System.Windows.Threading;
 using File = System.IO.File;
-using MessageBox = System.Windows.MessageBox;
 
 namespace MSL.pages
 {
@@ -56,9 +50,9 @@ namespace MSL.pages
                 int url = serverlist1.SelectedIndex;
                 //string filename = serverlist.SelectedItem.ToString();
                 string downUrl = serverdownurl[url].ToString();
-                
+
                 //MessageBox.Show(downUrl);
-                
+
                 if (serverlist.SelectedItem.ToString().IndexOf("（") + 1 != 0)
                 {
                     if (serverlist1.SelectedItem.ToString().IndexOf("（") + 1 != 0)
@@ -86,7 +80,7 @@ namespace MSL.pages
                         filename = serverlist.SelectedItem.ToString() + "-" + serverlist1.SelectedItem.ToString() + ".jar";
                     }
                 }
-                bool dwnDialog= DialogShow.ShowDownload(this, downUrl, downPath, filename, "下载服务端中……");
+                bool dwnDialog = DialogShow.ShowDownload(this, downUrl, downPath, filename, "下载服务端中……");
                 if (!dwnDialog)
                 {
                     DialogShow.ShowMsg(this, "下载取消！", "提示");
@@ -96,7 +90,7 @@ namespace MSL.pages
                 {
                     if (filename.IndexOf("Forge") + 1 != 0)
                     {
-                        DialogShow.ShowMsg(this,"检测到您下载的是Forge端，开服器将自动进行安装操作，稍后请您不要随意移动鼠标且不要随意触碰键盘，耐心等待安装完毕！\n注：开服器已经把安装地址复制，如果Forge安装窗口弹出很久后没有任何改动的话，请手动选择第二个选项，然后把地址粘贴进去进行安装", "提示");
+                        DialogShow.ShowMsg(this, "检测到您下载的是Forge端，开服器将自动进行安装操作，稍后请您不要随意移动鼠标且不要随意触碰键盘，耐心等待安装完毕！\n注：开服器已经把安装地址复制，如果Forge安装窗口弹出很久后没有任何改动的话，请手动选择第二个选项，然后把地址粘贴进去进行安装", "提示");
                         InstallForge();
                     }
                     else
@@ -107,7 +101,7 @@ namespace MSL.pages
                 }
                 else
                 {
-                    DialogShow.ShowMsg(this,"下载失败！","错误");
+                    DialogShow.ShowMsg(this, "下载失败！", "错误");
                 }
             }
         }
@@ -159,14 +153,14 @@ namespace MSL.pages
                     {
                         serverlist.Items.Add(serverType);
                     }*/
-                    serverlist.ItemsSource=serverTypes;
+                    serverlist.ItemsSource = serverTypes;
 
                     serverlist.SelectedIndex = 0;
                     getservermsg.Visibility = Visibility.Hidden;
                     lCircle.Visibility = Visibility.Hidden;
                 }));
             }
-            catch(Exception a)
+            catch (Exception a)
             {
                 Dispatcher.Invoke(new Action(delegate
                 {
@@ -297,7 +291,7 @@ namespace MSL.pages
                         JObject patientinfo = new JObject();
                         patientinfo["server_name"] = serverName;
                         string sendData = JsonConvert.SerializeObject(patientinfo);
-                        string resultData = Functions.Post("serverlist", 0, sendData,"https://api.waheal.top");
+                        string resultData = Functions.Post("serverlist", 0, sendData, "https://api.waheal.top");
                         JObject serverDetails = JObject.Parse(resultData);
                         List<JProperty> sortedProperties = serverDetails.Properties().OrderByDescending(p => Functions.VersionCompare(p.Name)).ToList();
                         Dispatcher.Invoke(new Action(delegate
@@ -309,7 +303,7 @@ namespace MSL.pages
                             lCircle.Visibility = Visibility.Hidden;
                         }));
                     }
-                    catch(Exception a)
+                    catch (Exception a)
                     {
                         Dispatcher.Invoke(new Action(delegate
                         {
@@ -319,7 +313,7 @@ namespace MSL.pages
                     }
                 }
             }
-            catch(Exception a)
+            catch (Exception a)
             {
                 Dispatcher.Invoke(new Action(delegate
                 {
@@ -511,7 +505,7 @@ namespace MSL.pages
                 if (File.Exists(downloadServerBase + "\\libraries\\net\\minecraftforge\\forge\\" + forgeVersion + "\\win_args.txt"))
                 {
                     downloadServerName = "";
-                    downloadServerArgs= "@libraries/net/minecraftforge/forge/" + forgeVersion + "/win_args.txt %*";
+                    downloadServerArgs = "@libraries/net/minecraftforge/forge/" + forgeVersion + "/win_args.txt %*";
                     //CreateServer.isCreateForge = true;
                     Close();
                 }
@@ -546,7 +540,7 @@ namespace MSL.pages
                 DialogShow.ShowMsg(this, "下载失败！", "错误");
             }
         }
-        
+
         private void openSpigot_Click(object sender, RoutedEventArgs e)
         {
             Process.Start("https://www.spigotmc.org/");

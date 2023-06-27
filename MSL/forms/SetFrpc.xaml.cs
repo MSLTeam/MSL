@@ -1,6 +1,5 @@
 ﻿using HandyControl.Controls;
 using MSL.controls;
-using MSL.pages;
 using Newtonsoft.Json;
 using Newtonsoft.Json.Linq;
 using System;
@@ -15,7 +14,6 @@ using System.Windows;
 using System.Windows.Controls;
 using System.Windows.Threading;
 using MessageBox = System.Windows.MessageBox;
-using Window = System.Windows.Window;
 
 namespace MSL
 {
@@ -24,7 +22,7 @@ namespace MSL
     /// </summary>
     public partial class SetFrpc : HandyControl.Controls.Window
     {
-        List<string> list1=new List<string>();
+        List<string> list1 = new List<string>();
         List<string> list2 = new List<string>();
         List<string> list3 = new List<string>();
         List<string> list4 = new List<string>();
@@ -38,7 +36,7 @@ namespace MSL
             LoadingCircle loadingCircle = new LoadingCircle();
             loadingCircle.VerticalAlignment = VerticalAlignment.Top;
             loadingCircle.HorizontalAlignment = HorizontalAlignment.Left;
-            loadingCircle.Margin=new Thickness(120,150,0,0);
+            loadingCircle.Margin = new Thickness(120, 150, 0, 0);
             MainGrid.Children.Add(loadingCircle);
             MainGrid.RegisterName("loadingBar", loadingCircle);
             Thread thread = new Thread(GetFrpsInfo);
@@ -275,7 +273,7 @@ namespace MSL
                     }
                     else
                     {
-                        if (listBox1.Items[listBox1.SelectedIndex].ToString().IndexOf("(")== -1)
+                        if (listBox1.Items[listBox1.SelectedIndex].ToString().IndexOf("(") == -1)
                         {
                             string frpc = "#" + listBox1.Items[listBox1.SelectedIndex].ToString() + "\n[common]\nserver_port = " + list2[a].ToString() + "\nserver_addr = " + list1[a].ToString() + "\n" + "token = \n" + "\n[" + textBox2.Text + "]\ntype = " + frptype + "\nlocal_ip = 127.0.0.1\nlocal_port = " + textBox1.Text + "\nremote_port = " + n;
                             FileStream fs = new FileStream(AppDomain.CurrentDomain.BaseDirectory + @"MSL\frpc", FileMode.Create, FileAccess.Write);
@@ -506,28 +504,35 @@ namespace MSL
 
         private void gotoWeb_Click(object sender, RoutedEventArgs e)
         {
-            DialogShow.ShowMsg(this, "点击确定后，开服器会弹出一个输入框，同时为您打开爱发电网站，您需要在爱发电购买的时候备注自己的QQ号（纯数字，不要夹带其他内容），购买完毕后，返回开服器，将您的QQ号输入进弹出的输入框中，开服器会自动为您获取密码。\n（注：付费密码在购买后会在服务器保存30分钟，请及时返回开服器进行操作，如果超时，请自行添加QQ：483232994来手动获取）","购买须知");
+            DialogShow.ShowMsg(this, "点击确定后，开服器会弹出一个输入框，同时为您打开爱发电网站，您需要在爱发电购买的时候备注自己的QQ号（纯数字，不要夹带其他内容），购买完毕后，返回开服器，将您的QQ号输入进弹出的输入框中，开服器会自动为您获取密码。\n（注：付费密码在购买后会在服务器保存30分钟，请及时返回开服器进行操作，如果超时，请自行添加QQ：483232994来手动获取）", "购买须知");
             Process.Start("https://afdian.net/a/makabaka123");
             bool input = DialogShow.ShowInput(this, "输入您在爱发电备注的QQ号：", out string text);
             if (input)
             {
-                JObject patientinfo = new JObject
+                try
                 {
-                    ["qq"] = text
-                };
-                string sendData = JsonConvert.SerializeObject(patientinfo);
-                string ret = Functions.Post("getpassword", 0, sendData, "https://aifadian.waheal.top");
-                if (ret != "Err")
-                {
-                    bool dialog= DialogShow.ShowMsg(this, "您的付费密码为：" + ret+" 请牢记！", "获取成功！",true,"确定","复制&确定");
-                    if(dialog)
+                    JObject patientinfo = new JObject
                     {
-                        Clipboard.SetDataObject(ret);
+                        ["qq"] = text
+                    };
+                    string sendData = JsonConvert.SerializeObject(patientinfo);
+                    string ret = Functions.Post("getpassword", 0, sendData, "https://aifadian.waheal.top");
+                    if (ret != "Err")
+                    {
+                        bool dialog = DialogShow.ShowMsg(this, "您的付费密码为：" + ret + " 请牢记！", "获取成功！", true, "确定", "复制&确定");
+                        if (dialog)
+                        {
+                            Clipboard.SetDataObject(ret);
+                        }
+                    }
+                    else
+                    {
+                        DialogShow.ShowMsg(this, "您的密码可能长时间无人获取，已经超时！请添加QQ：483232994（昵称：MSL-FRP），并发送赞助图片来手动获取密码\r\n（注：回复消息不一定及时，请耐心等待！如果没有添加成功，或者添加后长时间无人回复，请进入MSL交流群然后从群里私聊）", "获取失败！");
                     }
                 }
-                else
+                catch
                 {
-                    DialogShow.ShowMsg(this, "您的密码可能长时间无人获取，已经超时！请添加QQ：483232994（昵称：MSL-FRP），并发送赞助图片来获取密码\r\n（注：回复消息不一定及时，请耐心等待！如果没有添加成功，或者添加后长时间无人回复，请进入MSL交流群然后从群里私聊）", "获取失败！");
+                    DialogShow.ShowMsg(this, "获取失败，请添加QQ：483232994（昵称：MSL-FRP），并发送赞助图片来手动获取密码\r\n（注：回复消息不一定及时，请耐心等待！如果没有添加成功，或者添加后长时间无人回复，请进入MSL交流群然后从群里私聊）", "获取失败！");
                 }
             }
         }

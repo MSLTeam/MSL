@@ -29,7 +29,7 @@ namespace MSL
             InitializeComponent();
 
             downloadurl = _downloadurl;
-            downloadPath= _downloadPath;
+            downloadPath = _downloadPath;
             filename = _filename;
 
             taskinfo.Text = downloadinfo;
@@ -113,7 +113,7 @@ namespace MSL
         int counter = 0;
         private void OnDownloadProgressChanged(object sender, Downloader.DownloadProgressChangedEventArgs e)
         {
-            if (counter <=200)
+            if (counter <= 200)
             {
                 counter++;
             }
@@ -126,7 +126,7 @@ namespace MSL
                     pbar.Value = e.ProgressPercentage;
                 }));
             }
-            
+
             //Thread.Sleep(1000);
         }
 

@@ -7,15 +7,11 @@ using System.Diagnostics;
 using System.IO;
 using System.Net;
 using System.Net.NetworkInformation;
-using System.Net.Sockets;
 using System.Text;
-using System.Text.RegularExpressions;
 using System.Threading;
 using System.Windows;
 using System.Windows.Controls;
-using System.Windows.Media;
 using System.Windows.Threading;
-using static HandyControl.Tools.Interop.InteropValues;
 using MessageBox = System.Windows.MessageBox;
 using Window = System.Windows.Window;
 
@@ -106,7 +102,7 @@ namespace MSL.pages
                     {
                         frpcOutlog.Text = frpcOutlog.Text + "用户名或密码不能为空！\n";
                     }
-                    else if(msg.IndexOf("i/o timeout") + 1 != 0)
+                    else if (msg.IndexOf("i/o timeout") + 1 != 0)
                     {
                         frpcOutlog.Text = frpcOutlog.Text + "连接超时，该节点可能下线，请重新配置！\n";
                     }
@@ -520,7 +516,7 @@ namespace MSL.pages
             {
                 if (File.Exists(AppDomain.CurrentDomain.BaseDirectory + @"MSL\frpc"))
                 {
-                    Thread thread=new Thread(GetFrpcInfo);
+                    Thread thread = new Thread(GetFrpcInfo);
                     thread.Start();
                 }
                 else
