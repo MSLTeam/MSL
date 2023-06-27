@@ -26,7 +26,7 @@
             <Border Margin="0,35,0,0" CornerRadius="10" BorderThickness="0" Background="{DynamicResource BackgroundBrush}">
                 <ListView x:Name="serverList" hc:Empty.ShowEmpty="true" MouseDoubleClick="serverList_MouseDoubleClick" FontSize="16" SelectionMode="Single" SelectionChanged="serverList_SelectionChanged" Background="{x:Null}" BorderBrush="{x:Null}">
                     <ListView.ContextMenu>
-                        <ContextMenu>
+                        <ContextMenu FontSize="14">
                             <MenuItem Click="refreshList_Click" Header="刷新"/>
                             <MenuItem x:Name="startServerBtn" Click="startServer_Click" Header="开启服务器" IsEnabled="False"/>
                             <MenuItem x:Name="startWithCmd" Click="startWithCmd_Click" Header="用命令行开服" IsEnabled="False"/>

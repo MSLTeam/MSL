@@ -1036,80 +1036,7 @@ namespace MSL
                 Growl.Info("开服器在获取服务器信息时出现错误！此问题不影响服务器运行，您可继续正常使用或将此问题报告给作者！");
             }
         }
-        /*
-        void ChangeEncoding()
-        {
-            JObject jsonObject = JObject.Parse(File.ReadAllText(AppDomain.CurrentDomain.BaseDirectory + @"MSL\ServerList.json", Encoding.UTF8));
-            JObject _json = (JObject)jsonObject[RserverId];
-            if (!RserverJVMcmd.Contains("-Dfile.encoding=UTF-8"))
-            {
-                string versionString = serverVersionLab.Content.ToString();
-                string[] components = versionString.Split('.');
-                if (components.Length >= 3 && int.TryParse(components[2], out int _))
-                {
-                    versionString = $"{components[0]}.{components[1]}"; // remove the last component
-                }
 
-                Version version = new Version(versionString);
-                Version targetVersion = new Version("1.12");
-
-                if (version >= targetVersion)
-                {
-                    // version is greater than targetVersion,or equal to targetVersion
-                    if (inputCmdEncoding.Content.ToString() == "输入编码:系统默认")
-                    {
-                        inputCmdEncoding.Content = "输入编码:UTF8";
-                        _json["encoding_in"] = "UTF8";
-                    }
-                    if (outputCmdEncoding.Content.ToString() == "输出编码:系统默认")
-                    {
-                        if (Rserverserver.IndexOf("spigot", StringComparison.OrdinalIgnoreCase) != -1 || Rserverserver.IndexOf("craftbukkit", StringComparison.OrdinalIgnoreCase) != -1)
-                        {
-                            outputCmdEncoding.Content = "输出编码:UTF8";
-                            _json["encoding_out"] = "UTF8";
-                            Growl.Warning("您的服务器编码已更改，请重启服务器以使更改生效！");
-                        }
-                        else
-                        {
-                            outputCmdEncoding.Content = "输出编码:ANSI";
-                            _json["encoding_out"] = "ANSI";
-                        }
-                    }
-                }
-                else if (version < targetVersion)
-                {
-                    // version is less than targetVersion
-                    if (inputCmdEncoding.Content.ToString() == "输入编码:系统默认")
-                    {
-                        inputCmdEncoding.Content = "输入编码:ANSI";
-                        _json["encoding_in"] = "ANSI";
-                    }
-                    if (outputCmdEncoding.Content.ToString() == "输出编码:系统默认")
-                    {
-                        outputCmdEncoding.Content = "输出编码:ANSI";
-                        _json["encoding_out"] = "ANSI";
-                    }
-                }
-            }
-            else
-            {
-                if (inputCmdEncoding.Content.ToString() == "输入编码:系统默认")
-                {
-                    inputCmdEncoding.Content = "输入编码:UTF8";
-                    _json["encoding_in"] = "UTF8";
-                }
-                if (outputCmdEncoding.Content.ToString() == "输出编码:系统默认")
-                {
-                    outputCmdEncoding.Content = "输出编码:UTF8";
-                    _json["encoding_out"] = "UTF8";
-                    Growl.Warning("您的服务器编码已更改，请重启服务器以使更改生效！");
-                }
-            }
-            jsonObject[RserverId] = _json;
-            File.WriteAllText(AppDomain.CurrentDomain.BaseDirectory + "MSL\\Serverlist.json", Convert.ToString(jsonObject), Encoding.UTF8);
-        }
-
-        */
         private void ChangeServerIP()
         {
             if (serverIPLab.Content.ToString().Contains("*"))
@@ -1343,7 +1270,7 @@ namespace MSL
                 }
                 else if (msg.Contains("Exception in thread \"main\""))
                 {
-                    foundProblems += "*疑似服务端核心Main方法报错，您可尝试更换服务端或更换Java再试！\n";
+                    foundProblems += "*服务端核心Main方法报错，可能是Java版本不正确，请尝试更换Java版本！\n";
                 }
             }
             if (msg.Contains("Could not load") && msg.Contains("plugin"))
@@ -1827,16 +1754,15 @@ namespace MSL
 
             // 获取本地计算机的IP地址列表
             IPAddress[] localIPs = Dns.GetHostAddresses(Dns.GetHostName());
-
+            // 正则表达式匹配内网地址的模式
+            string privateIpPattern = @"^(10\.|192\.168\.|172\.(1[6-9]|2[0-9]|3[0-1])\.)";
             // 遍历IP地址列表
             foreach (IPAddress localIP in localIPs)
             {
                 // 检查IPv4地址是否为公网IP
                 if (localIP.AddressFamily == System.Net.Sockets.AddressFamily.InterNetwork &&
                     !IPAddress.IsLoopback(localIP) &&
-                    !localIP.ToString().StartsWith("169.254.") &&
-                    !localIP.ToString().StartsWith("192.168.") &&
-                    !localIP.ToString().StartsWith("10."))
+                    !Regex.IsMatch(localIP.ToString(), privateIpPattern))
                 {
                     ipAddress = localServerIPLab.Content.ToString();
 

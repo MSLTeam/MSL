@@ -217,20 +217,41 @@ namespace MSL.forms
             {
                 DirectoryInfo directoryInfo = new DirectoryInfo(serverbase);
                 FileInfo[] fileInfo = directoryInfo.GetFiles("*.jar");
+                List<string> files = new List<string>();
                 foreach (var file in fileInfo)
                 {
-                    DialogShow.ShowMsg(this, "开服器在整合包中检测到了jar文件" + file.Name + "，是否选择此文件为开服核心？", "提示", true, "取消");
-                    if (MessageDialog._dialogReturn == true)
+                    files.Add(file.Name);
+                }
+                if(files.Count > 1)
+                {
+                    string filestr="";
+                    int i = 0;
+                    foreach (var file in files)
                     {
-                        MessageDialog._dialogReturn = false;
-                        servercore = "server.jar";
+                        filestr += "\n"+i.ToString()+"."+ file;
+                        i++;
+                    }
+                    bool ret= DialogShow.ShowInput(this, "开服器在整合包中检测到了以下jar文件，你可输选择一个作为开服核心（输入文件前对应的数字，取消为不选择以下文件）\n" + filestr,out string selectFile);
+                    if (ret)
+                    {
+                        servercore = files[int.Parse(selectFile)];
                         sJVM.IsSelected = true;
                         sJVM.IsEnabled = true;
                         sserver.IsEnabled = false;
-                        break;
                     }
                 }
-                if (fileInfo.Length == 0)
+                else if(files.Count==1)
+                {
+                    bool ret= DialogShow.ShowMsg(this, "开服器在整合包中检测到了jar文件" + files[0] + "，是否选择此文件为开服核心？", "提示", true, "取消");
+                    if (ret)
+                    {
+                        servercore = files[0];
+                        sJVM.IsSelected = true;
+                        sJVM.IsEnabled = true;
+                        sserver.IsEnabled = false;
+                    }
+                }
+                else if (files.Count == 0)
                 {
                     Growl.Info("开服器未在整合包中找到核心文件，请您进行下载或手动选择已有核心，核心的版本要和整合包对应的游戏版本一致");
                 }
@@ -594,7 +615,7 @@ namespace MSL.forms
         }
 
         bool isImportPack = false;
-        private void importPack_Click(object sender, RoutedEventArgs e)
+        private async void importPack_Click(object sender, RoutedEventArgs e)
         {
             bool _dialog = DialogShow.ShowMsg(this, "请选择你要导入本地整合包还是在线整合包！", "提示", true, "导入本地整合包", "导入在线整合包");
             if (_dialog)
@@ -626,9 +647,13 @@ namespace MSL.forms
                             break;
                         }
                     }
+                    unzipServerTip.Visibility = Visibility.Visible;
+                    importPack.IsEnabled = false;
+                    FastModeBtn.IsEnabled = false;
+                    CustomModeBtn.IsEnabled = false;
                     try
                     {
-                        new FastZip().ExtractZip(AppDomain.CurrentDomain.BaseDirectory + "MSL\\ServerPack.zip", serverPath, "");
+                        await Task.Run(() => new FastZip().ExtractZip(AppDomain.CurrentDomain.BaseDirectory + "MSL\\ServerPack.zip", serverPath, ""));
                         DirectoryInfo[] dirs = new DirectoryInfo(serverPath).GetDirectories();
                         if (dirs.Length == 1)
                         {
@@ -641,8 +666,12 @@ namespace MSL.forms
                         DialogShow.ShowMsg(this, "整合包解压失败！请确认您的整合包是.zip格式！\n错误代码：" + ex.Message, "错误");
                         return;
                     }
+                    unzipServerTip.Visibility = Visibility.Hidden;
                     MainGrid.Visibility = Visibility.Hidden;
                     tabCtrl.Visibility = Visibility.Visible;
+                    importPack.IsEnabled = true;
+                    FastModeBtn.IsEnabled = true;
+                    CustomModeBtn.IsEnabled = true;
                     isImportPack = true;
                     serverbase = serverPath;
                     Growl.Info("整合包解压完成！请在此界面选择Java环境，Java的版本要和导入整合包的版本相对应，详情查看界面下方的表格");
@@ -683,11 +712,13 @@ namespace MSL.forms
                         var res = openfile.ShowDialog();
                         if (res == true)
                         {
+                            unzipServerTip.Visibility = Visibility.Visible;
+                            importPack.IsEnabled = false;
+                            FastModeBtn.IsEnabled = false;
+                            CustomModeBtn.IsEnabled = false;
                             try
                             {
-
-
-                                new FastZip().ExtractZip(openfile.FileName, serverPath, "");
+                                await Task.Run(() => new FastZip().ExtractZip(openfile.FileName, serverPath, ""));
                                 DirectoryInfo[] dirs = new DirectoryInfo(serverPath).GetDirectories();
                                 if (dirs.Length == 1)
                                 {
@@ -699,8 +730,12 @@ namespace MSL.forms
                                 DialogShow.ShowMsg(this, "整合包解压失败！请确认您的整合包是.zip格式！\n错误代码：" + ex.Message, "错误");
                                 return;
                             }
+                            unzipServerTip.Visibility = Visibility.Hidden;
                             MainGrid.Visibility = Visibility.Hidden;
                             tabCtrl.Visibility = Visibility.Visible;
+                            importPack.IsEnabled = true;
+                            FastModeBtn.IsEnabled = true;
+                            CustomModeBtn.IsEnabled = true;
                             isImportPack = true;
                             serverbase = serverPath;
                             Growl.Info("整合包解压完成！请在此界面选择Java环境，Java的版本要和导入整合包的版本相对应，详情查看界面下方的表格");

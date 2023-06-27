@@ -1,6 +1,6 @@
 ﻿<ResourceDictionary xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
                     xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml">
-    <ContextMenu x:Key="UIContextMenu">
+    <ContextMenu x:Key="UIContextMenu" FontSize="14">
         <MenuItem Command="Cut"/>
         <MenuItem Command="Copy"/>
         <MenuItem Command="Paste"/>
