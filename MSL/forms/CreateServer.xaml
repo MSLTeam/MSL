@@ -17,9 +17,8 @@
                 <Button x:Name="CustomModeBtn" Content="自定义模式（适合老手）" FontSize="18" hc:BorderElement.CornerRadius="30" Margin="80,250,0,0" Width="250" Height="80" Click="CustomModeBtn_Click" VerticalAlignment="Top" HorizontalAlignment="Left"/>
                 <TextBlock Foreground="Red" Text="快速模式：开服器自动为您选择服务器目录，并根据您想要开的服务器类型自动判断Java版本和服务端核心并进行下载" FontSize="16" HorizontalAlignment="Left" VerticalAlignment="Top" Margin="350,130,0,0" TextWrapping="Wrap" Width="300"/>
                 <TextBlock Foreground="Red" Text="自定义模式：您将手动进行Java版本选择，服务端核心选择等操作，可操作性高，可以更改服务器运行内存和启动参数" FontSize="16" HorizontalAlignment="Left" VerticalAlignment="Top" Margin="350,260,0,0" TextWrapping="Wrap" Width="300"/>
-                <Button Name="importPack" Content="导入整合包（ZIP格式）" hc:BorderElement.CornerRadius="15" Margin="10,0,0,10" VerticalAlignment="Bottom" Width="150" Click="importPack_Click" HorizontalAlignment="Left" Height="40" />
-                <TextBlock Name="unzipServerTip" Visibility="Hidden" Foreground="Red" Text="解压整合包文件中，请稍等……" FontSize="16" HorizontalAlignment="Left" VerticalAlignment="Bottom" Margin="170,0,0,20" TextWrapping="Wrap"/>
-                <Image Source="/icon.ico" VerticalAlignment="Bottom" HorizontalAlignment="Right" Width="80" Margin="0,0,10,10"/>
+            <Button Name="importPack" Content="导入整合包（ZIP格式）" hc:BorderElement.CornerRadius="15" Margin="10,0,0,10" VerticalAlignment="Bottom" Width="150" Click="importPack_Click" HorizontalAlignment="Left" Height="40" />
+            <Image Source="/icon.ico" VerticalAlignment="Bottom" HorizontalAlignment="Right" Width="80" Margin="0,0,10,10"/>
             </Grid>
             <Grid x:Name="FastModeGrid" Visibility="Hidden">
                 <ScrollViewer Margin="0,0,0,65">

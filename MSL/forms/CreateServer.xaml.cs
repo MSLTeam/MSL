@@ -433,6 +433,15 @@ namespace MSL.forms
 
         private void return5_Click(object sender, RoutedEventArgs e)
         {
+            if (isImportPack)
+            {
+                MainGrid.Visibility = Visibility.Visible;
+                tabCtrl.Visibility = Visibility.Hidden;
+                welcome.IsSelected = true;
+                welcome.IsEnabled = true;
+                sserver.IsEnabled = false;
+                return;
+            }
             welcome.IsSelected = true;
             welcome.IsEnabled = true;
             sserver.IsEnabled = false;
@@ -647,12 +656,10 @@ namespace MSL.forms
                             break;
                         }
                     }
-                    unzipServerTip.Visibility = Visibility.Visible;
-                    importPack.IsEnabled = false;
-                    FastModeBtn.IsEnabled = false;
-                    CustomModeBtn.IsEnabled = false;
+                    Dialog waitDialog = new Dialog();
                     try
                     {
+                        waitDialog = Dialog.Show(new TextDialog("解压整合包中，请稍等……"));
                         await Task.Run(() => new FastZip().ExtractZip(AppDomain.CurrentDomain.BaseDirectory + "MSL\\ServerPack.zip", serverPath, ""));
                         DirectoryInfo[] dirs = new DirectoryInfo(serverPath).GetDirectories();
                         if (dirs.Length == 1)
@@ -663,22 +670,19 @@ namespace MSL.forms
                     }
                     catch (Exception ex)
                     {
+                        waitDialog.Close();
                         DialogShow.ShowMsg(this, "整合包解压失败！请确认您的整合包是.zip格式！\n错误代码：" + ex.Message, "错误");
                         return;
                     }
-                    unzipServerTip.Visibility = Visibility.Hidden;
+                    waitDialog.Close();
                     MainGrid.Visibility = Visibility.Hidden;
                     tabCtrl.Visibility = Visibility.Visible;
-                    importPack.IsEnabled = true;
-                    FastModeBtn.IsEnabled = true;
-                    CustomModeBtn.IsEnabled = true;
                     isImportPack = true;
                     serverbase = serverPath;
                     Growl.Info("整合包解压完成！请在此界面选择Java环境，Java的版本要和导入整合包的版本相对应，详情查看界面下方的表格");
                     sserver.IsSelected = true;
                     sserver.IsEnabled = true;
                     welcome.IsEnabled = false;
-                    return5.IsEnabled = false;
                 }
             }
             else
@@ -712,12 +716,10 @@ namespace MSL.forms
                         var res = openfile.ShowDialog();
                         if (res == true)
                         {
-                            unzipServerTip.Visibility = Visibility.Visible;
-                            importPack.IsEnabled = false;
-                            FastModeBtn.IsEnabled = false;
-                            CustomModeBtn.IsEnabled = false;
+                            Dialog waitDialog = new Dialog();
                             try
                             {
+                                waitDialog = Dialog.Show(new TextDialog("解压整合包中，请稍等……"));
                                 await Task.Run(() => new FastZip().ExtractZip(openfile.FileName, serverPath, ""));
                                 DirectoryInfo[] dirs = new DirectoryInfo(serverPath).GetDirectories();
                                 if (dirs.Length == 1)
@@ -727,22 +729,19 @@ namespace MSL.forms
                             }
                             catch (Exception ex)
                             {
+                                waitDialog.Close();
                                 DialogShow.ShowMsg(this, "整合包解压失败！请确认您的整合包是.zip格式！\n错误代码：" + ex.Message, "错误");
                                 return;
                             }
-                            unzipServerTip.Visibility = Visibility.Hidden;
+                            waitDialog.Close();
                             MainGrid.Visibility = Visibility.Hidden;
                             tabCtrl.Visibility = Visibility.Visible;
-                            importPack.IsEnabled = true;
-                            FastModeBtn.IsEnabled = true;
-                            CustomModeBtn.IsEnabled = true;
                             isImportPack = true;
                             serverbase = serverPath;
                             Growl.Info("整合包解压完成！请在此界面选择Java环境，Java的版本要和导入整合包的版本相对应，详情查看界面下方的表格");
                             sserver.IsSelected = true;
                             sserver.IsEnabled = true;
                             welcome.IsEnabled = false;
-                            return5.IsEnabled = false;
                         }
                     }
                 }

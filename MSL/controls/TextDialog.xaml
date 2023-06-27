@@ -1,0 +1,16 @@
+﻿<Border x:Class="MSL.controls.TextDialog"
+             xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+             xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+             xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006" 
+             xmlns:d="http://schemas.microsoft.com/expression/blend/2008" 
+             xmlns:local="clr-namespace:MSL.controls"
+             mc:Ignorable="d" 
+             xmlns:hc="https://handyorg.github.io/handycontrol"
+            CornerRadius="10"
+            Width="400"
+            Height="200"
+            Background="{DynamicResource DialogBrush1}">
+    <hc:SimplePanel>
+        <TextBlock Name="DialogText" Foreground="{StaticResource TextBlockBrush}" Text="Please Wait" HorizontalAlignment="Center" VerticalAlignment="Center" FontSize="20"/>
+    </hc:SimplePanel>
+</Border>

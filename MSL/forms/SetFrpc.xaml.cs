@@ -10,6 +10,7 @@ using System.Net;
 using System.Net.NetworkInformation;
 using System.Text;
 using System.Threading;
+using System.Threading.Tasks;
 using System.Windows;
 using System.Windows.Controls;
 using System.Windows.Threading;
@@ -502,21 +503,25 @@ namespace MSL
             }
         }
 
-        private void gotoWeb_Click(object sender, RoutedEventArgs e)
+        private async void gotoWeb_Click(object sender, RoutedEventArgs e)
         {
             DialogShow.ShowMsg(this, "点击确定后，开服器会弹出一个输入框，同时为您打开爱发电网站，您需要在爱发电购买的时候备注自己的QQ号（纯数字，不要夹带其他内容），购买完毕后，返回开服器，将您的QQ号输入进弹出的输入框中，开服器会自动为您获取密码。\n（注：付费密码在购买后会在服务器保存30分钟，请及时返回开服器进行操作，如果超时，请自行添加QQ：483232994来手动获取）", "购买须知");
             Process.Start("https://afdian.net/a/makabaka123");
-            bool input = DialogShow.ShowInput(this, "输入您在爱发电备注的QQ号：", out string text);
+            string text = "";
+            bool input =DialogShow.ShowInput(this, "输入您在爱发电备注的QQ号：", out text);
             if (input)
             {
+                Dialog _dialog= new Dialog();
                 try
                 {
+                    _dialog= Dialog.Show(new TextDialog("获取密码中，请稍等……"));
                     JObject patientinfo = new JObject
                     {
                         ["qq"] = text
                     };
                     string sendData = JsonConvert.SerializeObject(patientinfo);
-                    string ret = Functions.Post("getpassword", 0, sendData, "https://aifadian.waheal.top");
+                    string ret = await Task.Run(()=>( Functions.Post("getpassword", 0, sendData, "https://aifadian.waheal.top")));
+                    _dialog.Close();
                     if (ret != "Err")
                     {
                         bool dialog = DialogShow.ShowMsg(this, "您的付费密码为：" + ret + " 请牢记！", "获取成功！", true, "确定", "复制&确定");
@@ -532,6 +537,7 @@ namespace MSL
                 }
                 catch
                 {
+                    _dialog.Close();
                     DialogShow.ShowMsg(this, "获取失败，请添加QQ：483232994（昵称：MSL-FRP），并发送赞助图片来手动获取密码\r\n（注：回复消息不一定及时，请耐心等待！如果没有添加成功，或者添加后长时间无人回复，请进入MSL交流群然后从群里私聊）", "获取失败！");
                 }
             }
