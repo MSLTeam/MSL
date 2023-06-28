@@ -17,7 +17,7 @@
         <ComboBox x:Name="serverlist" Margin="175,8,88,0" SelectionChanged="serverlist_SelectionChanged" Height="32" VerticalAlignment="Top"/>
         <TextBox HorizontalAlignment="Right" Height="130" Margin="0,100,10,0" TextWrapping="Wrap" Text="插件服务端——只可加插件，不可加MOD&#xA;模组服务端——只可加MOD，不可加插件&#xA;二合一服务端——插件MOD都可添加&#xA;Vanilla——Mojang原版服务端，无法加插件和MOD" VerticalAlignment="Top" Width="185" Focusable="False" IsReadOnly="True" Background="{x:Null}"/>
         <Button x:Name="openSpigot" Content="SpigotMC" Margin="0,0,10,110" VerticalAlignment="Bottom" Width="185" FontSize="14" Height="35" Background="#33000000" Click="openSpigot_Click" HorizontalAlignment="Right"/>
-        <Button x:Name="openPaper" Content="PaperNC" Margin="0,0,10,70" VerticalAlignment="Bottom" Width="185" FontSize="14" Height="35" Background="#33000000" Click="openPaper_Click" HorizontalAlignment="Right"/>
+        <Button x:Name="openPaper" Content="PaperMC" Margin="0,0,10,70" VerticalAlignment="Bottom" Width="185" FontSize="14" Height="35" Background="#33000000" Click="openPaper_Click" HorizontalAlignment="Right"/>
         <Button x:Name="openMojang" Content="Mojang" Margin="0,0,10,30" VerticalAlignment="Bottom" Width="185" FontSize="14" Height="35" Background="#33000000" Click="openMojang_Click" HorizontalAlignment="Right"/>
         <TextBlock Text="相关网站：" Foreground="{DynamicResource TextBlockBrush}" HorizontalAlignment="Right" Margin="0,0,135,150" VerticalAlignment="Bottom" FontWeight="Bold"/>
         <TextBlock Text="在此选择服务端：" Foreground="{DynamicResource TextBlockBrush}" HorizontalAlignment="Left" Margin="10,10,0,0" VerticalAlignment="Top" FontSize="20" FontWeight="Bold" Padding="5,0,0,0"/>
