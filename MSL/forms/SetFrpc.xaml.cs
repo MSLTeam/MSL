@@ -9,6 +9,7 @@ using System.IO;
 using System.Net;
 using System.Net.NetworkInformation;
 using System.Text;
+using System.Text.RegularExpressions;
 using System.Threading;
 using System.Threading.Tasks;
 using System.Windows;
@@ -213,6 +214,20 @@ namespace MSL
                 LoadingCircle loadingCircle = MainGrid.FindName("loadingBar") as LoadingCircle;
                 MainGrid.Children.Remove(loadingCircle);
                 MainGrid.UnregisterName("loadingBar");
+                if(File.Exists(AppDomain.CurrentDomain.BaseDirectory + @"MSL\frpc"))
+                {
+                    string text= File.ReadAllText(AppDomain.CurrentDomain.BaseDirectory + @"MSL\frpc");
+                    string pattern = @"user\s*=\s*(\w+)\s*meta_token\s*=\s*(\w+)";
+                    Match match = Regex.Match(text, pattern);
+
+                    if (match.Success)
+                    {
+                        textBox2.Text = match.Groups[1].Value;
+                        textBox3.Text = match.Groups[2].Value;
+
+                        // 在这里可以使用user和metaToken进行后续操作
+                    }
+                }
             }));
         }
         private void Button_Click(object sender, RoutedEventArgs e)

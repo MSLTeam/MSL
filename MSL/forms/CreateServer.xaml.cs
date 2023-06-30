@@ -885,17 +885,7 @@ namespace MSL.forms
         {
             try
             {
-                Ping pingSender = new Ping();
-                string serverAddr = MainWindow.serverLink;
-                if (serverAddr != "https://msl.waheal.top")
-                {
-                    if (serverAddr.Contains("http://")) { serverAddr = serverAddr.Remove(0, 7); }
-                    PingReply reply = pingSender.Send(serverAddr, 2000); // 替换成您要 ping 的 IP 地址
-                    if (reply.Status != IPStatus.Success)
-                    {
-                        MainWindow.serverLink = "https://msl.waheal.top";
-                    }
-                }
+                Functions.ChangeServerLink();
                 string jsonData = Functions.Get("serverlist");
                 serverTypes = JsonConvert.DeserializeObject<string[]>(jsonData);
                 Dispatcher.Invoke(new Action(delegate
@@ -978,7 +968,7 @@ namespace MSL.forms
                                             JObject patientinfo = new JObject();
                                             patientinfo["server_name"] = i;
                                             string sendData = JsonConvert.SerializeObject(patientinfo);
-                                            string resultData = Functions.Post("serverlist", 0, sendData, "https://api.waheal.top");
+                                            string resultData = Functions.Post("serverlist", 0, sendData, "http://spare-api.waheal.top");
                                             //MessageBox.Show(resultData);
                                             tempServerCore.Add(coreType, resultData);
                                             Dictionary<string, string> serverDetails = JsonConvert.DeserializeObject<Dictionary<string, string>>(resultData);
@@ -1159,14 +1149,14 @@ namespace MSL.forms
             byte[] pageData = await MyWebClient.DownloadDataTaskAsync(MainWindow.serverLink + @"/msl/otherdownload.json");
             string _javaList = Encoding.UTF8.GetString(pageData);
             */
-            string url;
-            if (MainWindow.serverLink != "https://msl.waheal.top")
+            string url= "https://api.waheal.top";
+            if (MainWindow.serverLink.Contains(MainWindow.serverLink2))
             {
-                url = MainWindow.serverLink + ":5000";
+                url =MainWindow.serverLink + ":5000";
             }
-            else
+            else if (MainWindow.serverLink == "https://spare-msl.waheal.top")
             {
-                url = "https://api.waheal.top";
+                url = "https://spare-api.waheal.top";
             }
             WebClient MyWebClient = new WebClient();
             byte[] pageData = await MyWebClient.DownloadDataTaskAsync(url + "/otherdownloads");

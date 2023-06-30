@@ -35,7 +35,8 @@ namespace MSL
         public static event DeleControl AutoOpenServer;
         public static event DeleControl AutoOpenFrpc;
         public static string serverid;
-        public static string serverLink;
+        public static string serverLink;  //这个是开服器在线连接主要使用一个变量，后续更换在线地址就是更换此变量内容
+        public static string serverLink2;  //这是开服器的备用链接地址，是数字IP，在第一次启动获取后存在这里，方便后续更改主在线变量
         public static float PhisicalMemory;
         public static bool getServerInfo = false;
         public static bool getPlayerInfo = false;
@@ -71,23 +72,31 @@ namespace MSL
                 MyWebClient.Credentials = CredentialCache.DefaultCredentials;
                 byte[] pageData = MyWebClient.DownloadData("https://waheal.oss-cn-hangzhou.aliyuncs.com/");
                 //serverLink = Encoding.UTF8.GetString(pageData);
-                string serverAddr = Encoding.UTF8.GetString(pageData);
+                serverLink2 = Encoding.UTF8.GetString(pageData);
                 Ping pingSender = new Ping();
-                PingReply reply = pingSender.Send(serverAddr, 2000); // 替换成您要 ping 的 IP 地址
+                PingReply reply = pingSender.Send("msl.waheal.top", 1000); // 替换成您要 ping 的 IP 地址
                 if (reply.Status == IPStatus.Success)
                 {
-                    serverLink = "http://" + serverAddr;
-                    //serverLink = "https://msl.waheal.top";
+                    serverLink = "https://msl.waheal.top";
                 }
                 else
                 {
-                    serverLink = "https://msl.waheal.top";
-                    Growl.Info("MSL主服务器连接超时，已切换至备用服务器！");
+                    PingReply _reply = pingSender.Send(serverLink2, 2000); // 替换成您要 ping 的 IP 地址
+                    if (_reply.Status == IPStatus.Success)
+                    {
+                        serverLink = "http://" + serverLink2;
+                    }
+                    else
+                    {
+                        serverLink = "https://spare-msl.waheal.top";
+                        //Growl.Info("MSL主服务器连接超时，已切换至备用服务器！");
+                    }
                 }
             }
             catch
             {
-                serverLink = "https://msl.waheal.top";
+                serverLink = "https://spare-msl.waheal.top";
+                Growl.Info("连接主服务器失败，已切换至备用服务器！");
             }
 
             //MessageBox.Show("GetLinkSuccess");
@@ -121,9 +130,17 @@ namespace MSL
             }
 
             //MessageBox.Show("CheckDirSuccess");
-
-            JObject jsonObject = JObject.Parse(File.ReadAllText(AppDomain.CurrentDomain.BaseDirectory + @"MSL\config.json", Encoding.UTF8));
-
+            JObject jsonObject=null;
+            try
+            {
+                jsonObject = JObject.Parse(File.ReadAllText(AppDomain.CurrentDomain.BaseDirectory + @"MSL\config.json", Encoding.UTF8));
+            }
+            catch
+            {
+                MessageBox.Show("加载配置文件失败！即将重试，若点击确定后软件出现闪退问题，请及时将此问题报告给作者！");
+                File.WriteAllText(AppDomain.CurrentDomain.BaseDirectory + @"MSL\config.json", string.Format("{{{0}}}", "\n"));
+                jsonObject = JObject.Parse(File.ReadAllText(AppDomain.CurrentDomain.BaseDirectory + @"MSL\config.json", Encoding.UTF8));
+            }
             //检测是否配置了内网映射(新版已弃用，现改为删除frpc的key)
             try
             {
@@ -325,20 +342,6 @@ namespace MSL
                     SideMenuBorder.BorderThickness = new Thickness(0);
                 }));
             }
-
-            try
-            {
-                if (jsonObject["colorfulBackground"] != null)
-                {
-                    string jsonString = File.ReadAllText(AppDomain.CurrentDomain.BaseDirectory + @"MSL\config.json", Encoding.UTF8);
-                    JObject jobject = JObject.Parse(jsonString);
-                    jobject.Remove("colorfulBackground");
-                    string convertString = Convert.ToString(jobject);
-                    File.WriteAllText(AppDomain.CurrentDomain.BaseDirectory + @"MSL\config.json", convertString, Encoding.UTF8);
-                }
-            }
-            catch
-            { }
 
             //半透明标题栏
             try
@@ -548,6 +551,7 @@ namespace MSL
                 BodyGrid.UnregisterName("loadingBar");
             }));
         }
+
         private void UpdateApp(string pageHtml, string aaa)
         {
             string strtempa1 = "* ";

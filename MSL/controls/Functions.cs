@@ -2,6 +2,7 @@
 using System.Collections.Generic;
 using System.IO;
 using System.Net;
+using System.Net.NetworkInformation;
 using System.Text;
 using System.Text.RegularExpressions;
 
@@ -11,14 +12,14 @@ namespace MSL.controls
     {
         public static string Get(string path)
         {
-            string url;
+            string url= "https://api.waheal.top";
             if (MainWindow.serverLink != "https://msl.waheal.top")
             {
-                url = MainWindow.serverLink + ":5000";
+                url =MainWindow.serverLink + ":5000";
             }
-            else
+            else if(MainWindow.serverLink == "https://spare-msl.waheal.top")
             {
-                url = "https://api.waheal.top";
+                url = "https://spare-api.waheal.top";
             }
             WebClient webClient = new WebClient();
             webClient.Credentials = CredentialCache.DefaultCredentials;
@@ -28,16 +29,16 @@ namespace MSL.controls
 
         public static string Post(string path, int contentType = 0, string parameterData = "", string customUrl = "")
         {
-            string url;
+            string url= "https://api.waheal.top";
             if (customUrl == "")
             {
                 if (MainWindow.serverLink != "https://msl.waheal.top")
                 {
-                    url = MainWindow.serverLink + ":5000";
+                    url =MainWindow.serverLink + ":5000";
                 }
-                else
+                else if (MainWindow.serverLink == "https://spare-msl.waheal.top")
                 {
-                    url = "https://api.waheal.top";
+                    url = "https://spare-api.waheal.top";
                 }
             }
             else
@@ -79,6 +80,27 @@ namespace MSL.controls
                 //string returnData = Regex.Unescape(reader.ReadToEnd());
                 string returnData = reader.ReadToEnd();
                 return returnData;
+            }
+        }
+
+        public static void ChangeServerLink()
+        {
+            if (MainWindow.serverLink != "https://spare-msl.waheal.top")
+            {
+                Ping pingSender = new Ping();
+                PingReply reply = pingSender.Send("msl.waheal.top", 1000); // 替换成您要 ping 的 IP 地址
+                if (reply.Status != IPStatus.Success)
+                {
+                    PingReply _reply = pingSender.Send(MainWindow.serverLink2, 2000); // 替换成您要 ping 的 IP 地址
+                    if (reply.Status == IPStatus.Success)
+                    {
+                        MainWindow.serverLink = "http://" + MainWindow.serverLink2;
+                    }
+                    else
+                    {
+                        MainWindow.serverLink = "https://spare-msl.waheal.top";
+                    }
+                }
             }
         }
 

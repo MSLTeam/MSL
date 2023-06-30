@@ -294,8 +294,17 @@ namespace MSL.pages
         }
         void RefreshLink()
         {
+            string url = "https://api.waheal.top";
+            if (MainWindow.serverLink.Contains(MainWindow.serverLink2))
+            {
+                url = MainWindow.serverLink + ":5000";
+            }
+            else if (MainWindow.serverLink == "https://spare-msl.waheal.top")
+            {
+                url = "https://spare-api.waheal.top";
+            }
             WebClient MyWebClient = new WebClient();
-            byte[] pageData = MyWebClient.DownloadData(MainWindow.serverLink + @"/msl/otherdownload.json");
+            byte[] pageData = MyWebClient.DownloadData(url + "/otherdownloads");
             string _javaList = Encoding.UTF8.GetString(pageData);
 
             JObject javaList0 = JObject.Parse(_javaList);
