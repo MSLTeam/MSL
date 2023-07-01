@@ -2,7 +2,6 @@
 using System.Collections.Generic;
 using System.IO;
 using System.Net;
-using System.Net.NetworkInformation;
 using System.Text;
 using System.Text.RegularExpressions;
 
@@ -15,11 +14,7 @@ namespace MSL.controls
             string url= "https://api.waheal.top";
             if (MainWindow.serverLink != "https://msl.waheal.top")
             {
-                url =MainWindow.serverLink + ":5000";
-            }
-            else if(MainWindow.serverLink == "https://spare-msl.waheal.top")
-            {
-                url = "https://spare-api.waheal.top";
+                url = MainWindow.serverLink + ":5000";
             }
             WebClient webClient = new WebClient();
             webClient.Credentials = CredentialCache.DefaultCredentials;
@@ -29,16 +24,12 @@ namespace MSL.controls
 
         public static string Post(string path, int contentType = 0, string parameterData = "", string customUrl = "")
         {
-            string url= "https://api.waheal.top";
+            string url = "https://api.waheal.top";
             if (customUrl == "")
             {
                 if (MainWindow.serverLink != "https://msl.waheal.top")
                 {
-                    url =MainWindow.serverLink + ":5000";
-                }
-                else if (MainWindow.serverLink == "https://spare-msl.waheal.top")
-                {
-                    url = "https://spare-api.waheal.top";
+                    url = MainWindow.serverLink + ":5000";
                 }
             }
             else
@@ -82,7 +73,6 @@ namespace MSL.controls
                 return returnData;
             }
         }
-
 
         public static Tuple<int, int, int, int> VersionCompare(string version)
         {
