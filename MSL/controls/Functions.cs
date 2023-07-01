@@ -83,26 +83,6 @@ namespace MSL.controls
             }
         }
 
-        public static void ChangeServerLink()
-        {
-            if (MainWindow.serverLink != "https://spare-msl.waheal.top")
-            {
-                Ping pingSender = new Ping();
-                PingReply reply = pingSender.Send("msl.waheal.top", 1000); // 替换成您要 ping 的 IP 地址
-                if (reply.Status != IPStatus.Success)
-                {
-                    PingReply _reply = pingSender.Send(MainWindow.serverLink2, 2000); // 替换成您要 ping 的 IP 地址
-                    if (reply.Status == IPStatus.Success)
-                    {
-                        MainWindow.serverLink = "http://" + MainWindow.serverLink2;
-                    }
-                    else
-                    {
-                        MainWindow.serverLink = "https://spare-msl.waheal.top";
-                    }
-                }
-            }
-        }
 
         public static Tuple<int, int, int, int> VersionCompare(string version)
         {
