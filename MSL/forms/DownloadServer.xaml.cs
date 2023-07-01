@@ -8,6 +8,7 @@ using System.IO;
 using System.Linq;
 using System.Net.NetworkInformation;
 using System.Runtime.InteropServices;
+using System.Security.Policy;
 using System.Text.RegularExpressions;
 using System.Threading;
 using System.Windows;
@@ -107,17 +108,7 @@ namespace MSL.pages
         }
         void GetServer()
         {
-            Ping pingSender = new Ping();
-            string serverAddr = MainWindow.serverLink;
-            if (serverAddr != "https://msl.waheal.top")
-            {
-                if (serverAddr.Contains("http://")) { serverAddr = serverAddr.Remove(0, 7); }
-                PingReply reply = pingSender.Send(serverAddr, 2000); // 替换成您要 ping 的 IP 地址
-                if (reply.Status != IPStatus.Success)
-                {
-                    MainWindow.serverLink = "https://msl.waheal.top";
-                }
-            }
+            Functions.ChangeServerLink();
             Dispatcher.Invoke(new Action(delegate
             {
                 serverlist.ItemsSource = null;
@@ -291,7 +282,7 @@ namespace MSL.pages
                         JObject patientinfo = new JObject();
                         patientinfo["server_name"] = serverName;
                         string sendData = JsonConvert.SerializeObject(patientinfo);
-                        string resultData = Functions.Post("serverlist", 0, sendData, "https://api.waheal.top");
+                        string resultData = Functions.Post("serverlist", 0, sendData, "http://spare-api.waheal.top");
                         JObject serverDetails = JObject.Parse(resultData);
                         List<JProperty> sortedProperties = serverDetails.Properties().OrderByDescending(p => Functions.VersionCompare(p.Name)).ToList();
                         Dispatcher.Invoke(new Action(delegate
