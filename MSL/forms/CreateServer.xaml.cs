@@ -1159,14 +1159,10 @@ namespace MSL.forms
             byte[] pageData = await MyWebClient.DownloadDataTaskAsync(MainWindow.serverLink + @"/msl/otherdownload.json");
             string _javaList = Encoding.UTF8.GetString(pageData);
             */
-            string url;
+            string url = "https://api.waheal.top";
             if (MainWindow.serverLink != "https://msl.waheal.top")
             {
                 url = MainWindow.serverLink + ":5000";
-            }
-            else
-            {
-                url = "https://api.waheal.top";
             }
             WebClient MyWebClient = new WebClient();
             byte[] pageData = await MyWebClient.DownloadDataTaskAsync(url + "/otherdownloads");

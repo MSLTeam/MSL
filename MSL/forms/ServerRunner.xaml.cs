@@ -368,7 +368,7 @@ namespace MSL
         #region 仪表盘
         private void solveProblemBtn_Click(object sender, RoutedEventArgs e)
         {
-            DialogShow.ShowMsg(this, "分析报告将在服务器关闭后生成！若使用后还是无法解决问题，请尝试进Q群询问（附带崩溃日志截图）：1145888872", "警告", true, "取消");
+            DialogShow.ShowMsg(this, "分析报告将在服务器关闭后生成！若使用后还是无法解决问题，请尝试进Q群询问（附带崩溃日志截图）：\n一群：1145888872  二群：234477679", "警告", true, "取消");
             if (MessageDialog._dialogReturn == true)
             {
                 MessageDialog._dialogReturn = false;
@@ -1384,7 +1384,7 @@ namespace MSL
                         solveProblemSystem = false;
                         if (foundProblems == null)
                         {
-                            Growl.Info("服务器已关闭！开服器未检测到相关问题，请加Q群寻求帮助（附带崩溃日志截图）：1145888872！");
+                            Growl.Info("服务器已关闭！开服器未检测到相关问题，请加Q群寻求帮助（附带崩溃日志截图）：\n一群：1145888872  二群：234477679！");
                         }
                         else
                         {
@@ -2582,19 +2582,10 @@ namespace MSL
         }
         private async Task<JObject> AsyncGetJavaDwnLink()
         {
-            /*
-            WebClient MyWebClient = new WebClient();
-            byte[] pageData = await MyWebClient.DownloadDataTaskAsync(MainWindow.serverLink + @"/msl/otherdownload.json");
-            string _javaList = Encoding.UTF8.GetString(pageData);
-            */
-            string url;
+            string url = "https://api.waheal.top";
             if (MainWindow.serverLink != "https://msl.waheal.top")
             {
                 url = MainWindow.serverLink + ":5000";
-            }
-            else
-            {
-                url = "https://api.waheal.top";
             }
             WebClient MyWebClient = new WebClient();
             byte[] pageData = await MyWebClient.DownloadDataTaskAsync(url + "/otherdownloads");

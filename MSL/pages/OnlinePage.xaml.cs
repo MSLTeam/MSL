@@ -233,7 +233,7 @@ namespace MSL.pages
                     {
                         string jsonString = File.ReadAllText(AppDomain.CurrentDomain.BaseDirectory + @"MSL\config.json", Encoding.UTF8);
                         JObject jobject = JObject.Parse(jsonString);
-                        jobject.Add("frpcversion", "5");
+                        jobject.Add("frpcversion", "6");
                         string convertString = Convert.ToString(jobject);
                         File.WriteAllText(AppDomain.CurrentDomain.BaseDirectory + @"MSL\config.json", convertString, Encoding.UTF8);
                         if (!File.Exists(AppDomain.CurrentDomain.BaseDirectory + "MSL\\frpc.exe"))
@@ -244,14 +244,14 @@ namespace MSL.pages
                             _dnfrpc = "";
                         }
                     }
-                    else if (jobject2["frpcversion"].ToString() != "5")
+                    else if (jobject2["frpcversion"].ToString() != "6")
                     {
                         RefreshLink();
                         var mwindow = (MainWindow)Window.GetWindow(this);
                         DialogShow.ShowDownload(mwindow, _dnfrpc, AppDomain.CurrentDomain.BaseDirectory + "MSL", "frpc.exe", "更新内网映射中...");
                         _dnfrpc = "";
                         JObject jobject3 = JObject.Parse(File.ReadAllText(AppDomain.CurrentDomain.BaseDirectory + "MSL\\config.json", Encoding.UTF8));
-                        jobject3["frpcversion"] = "5";
+                        jobject3["frpcversion"] = "6";
                         string convertString2 = Convert.ToString(jobject3);
                         File.WriteAllText(AppDomain.CurrentDomain.BaseDirectory + "MSL\\config.json", convertString2, Encoding.UTF8);
                     }
@@ -294,8 +294,13 @@ namespace MSL.pages
         }
         void RefreshLink()
         {
+            string url = "https://api.waheal.top";
+            if (MainWindow.serverLink != "https://msl.waheal.top")
+            {
+                url = MainWindow.serverLink + ":5000";
+            }
             WebClient MyWebClient = new WebClient();
-            byte[] pageData = MyWebClient.DownloadData(MainWindow.serverLink + @"/msl/otherdownload.json");
+            byte[] pageData = MyWebClient.DownloadData(url + "/otherdownloads");
             string _javaList = Encoding.UTF8.GetString(pageData);
 
             JObject javaList0 = JObject.Parse(_javaList);

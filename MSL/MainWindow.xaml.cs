@@ -60,8 +60,6 @@ namespace MSL
             thread.Start();
         }
 
-        //[DllImport("kernel32.dll")]
-        //public static extern uint WinExec(string lpCmdLine, uint uCmdShow);
         private void AsyncLoadEvent()
         {
             //get serverlink
@@ -77,7 +75,6 @@ namespace MSL
                 if (reply.Status == IPStatus.Success)
                 {
                     serverLink = "http://" + serverAddr;
-                    //serverLink = "https://msl.waheal.top";
                 }
                 else
                 {
@@ -326,20 +323,6 @@ namespace MSL
                 }));
             }
 
-            try
-            {
-                if (jsonObject["colorfulBackground"] != null)
-                {
-                    string jsonString = File.ReadAllText(AppDomain.CurrentDomain.BaseDirectory + @"MSL\config.json", Encoding.UTF8);
-                    JObject jobject = JObject.Parse(jsonString);
-                    jobject.Remove("colorfulBackground");
-                    string convertString = Convert.ToString(jobject);
-                    File.WriteAllText(AppDomain.CurrentDomain.BaseDirectory + @"MSL\config.json", convertString, Encoding.UTF8);
-                }
-            }
-            catch
-            { }
-
             //半透明标题栏
             try
             {
@@ -412,13 +395,6 @@ namespace MSL
             //更新
             try
             {
-                /*
-                WebClient MyWebClient = new WebClient();
-                MyWebClient.Credentials = CredentialCache.DefaultCredentials;
-                byte[] pageData = MyWebClient.DownloadData(serverLink + @"/msl/update.txt");
-                string pageHtml = Encoding.UTF8.GetString(pageData);
-                */
-
                 string pageHtml = Functions.Get("update");
                 string strtempa = "#";
                 int IndexofA = pageHtml.IndexOf(strtempa);
@@ -557,15 +533,6 @@ namespace MSL
             DialogShow.ShowDownload(this, aaa1, AppDomain.CurrentDomain.BaseDirectory, "MSL" + aaa + ".exe", "下载新版本中……");
             if (File.Exists(AppDomain.CurrentDomain.BaseDirectory + "MSL" + aaa + ".exe"))
             {
-                /*
-                string vBatFile = Path.GetDirectoryName(AppDomain.CurrentDomain.BaseDirectory) + @"\DEL.bat";
-                using (StreamWriter vStreamWriter = new StreamWriter(vBatFile, false, Encoding.Default))
-                {
-                    vStreamWriter.Write(string.Format(":del\r\n del \"" + System.Windows.Forms.Application.ExecutablePath + "\"\r\n " + "if exist \"" + System.Windows.Forms.Application.ExecutablePath + "\" goto del\r\n " + "start /d \"" + AppDomain.CurrentDomain.BaseDirectory + "\" MSL" + aaa + ".exe" + "\r\n" + " del %0\r\n", AppDomain.CurrentDomain.BaseDirectory));
-                }
-                WinExec(vBatFile, 0);
-                Process.GetCurrentProcess().Kill();
-                */
                 string oldExePath = Process.GetCurrentProcess().MainModule.ModuleName;
                 string dwnExePath = Path.Combine(AppDomain.CurrentDomain.BaseDirectory, "MSL" + aaa + ".exe");
                 string newExeDir = AppDomain.CurrentDomain.BaseDirectory;
