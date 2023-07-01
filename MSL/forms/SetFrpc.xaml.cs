@@ -224,8 +224,6 @@ namespace MSL
                     {
                         textBox2.Text = match.Groups[1].Value;
                         textBox3.Text = match.Groups[2].Value;
-
-                        // 在这里可以使用user和metaToken进行后续操作
                     }
                 }
             }));
