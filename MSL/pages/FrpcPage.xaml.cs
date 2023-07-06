@@ -236,19 +236,19 @@ namespace MSL.pages
                     Growl.Error("内网映射桥接失败！");
                     if (msg.IndexOf("port already used") + 1 != 0)
                     {
-                        frpcOutlog.Text = frpcOutlog.Text + "本地端口被占用，请不要频繁开关内网映射并等待一分钟再试。\n若仍然占用，请尝试手动结束frpc.exe或重启电脑再试。\n";
+                        frpcOutlog.Text = frpcOutlog.Text + "本地端口被占用，请不要频繁开关内网映射并等待一分钟再试。\n若一分钟后仍然占用，请尝试手动结束frpc进程或重启电脑再试。\n";
                     }
                     else if (msg.IndexOf("port not allowed") + 1 != 0)
                     {
-                        frpcOutlog.Text = frpcOutlog.Text + "远程端口被占用，请不要频繁开关内网映射并等待一分钟再试。\n若仍然占用，请尝试重新配置一下再试！\n";
+                        frpcOutlog.Text = frpcOutlog.Text + "远程端口被占用，请尝试重新配置一下再试！\n";
                     }
                     else if (msg.IndexOf("proxy name") + 1 != 0 && msg.IndexOf("already in use") + 1 != 0)
                     {
-                        frpcOutlog.Text = frpcOutlog.Text + "隧道名称已被占用！请打开任务管理器检查后台是否存在frpc.exe进程并手动结束！\n若仍然占用，请尝试重启电脑再试。\n";
+                        frpcOutlog.Text = frpcOutlog.Text + "隧道名称已被占用！请打开任务管理器检查后台是否存在frpc进程并手动结束！\n若仍然占用，请尝试重启电脑再试。\n";
                     }
                     else if (msg.IndexOf("proxy") + 1 != 0 && msg.IndexOf("already exists") + 1 != 0)
                     {
-                        frpcOutlog.Text = frpcOutlog.Text + "此QQ号已被占用！请不要频繁开关内网映射并等待一分钟再试。\n若仍然占用，请尝试手动结束frpc.exe或重启电脑再试。\n\n";
+                        frpcOutlog.Text = frpcOutlog.Text + "隧道已被占用！请不要频繁开关内网映射并等待一分钟再试。\n若一分钟后仍然占用，请尝试手动结束frpc进程或重启电脑再试。\n";
                     }
                     try
                     {
@@ -320,11 +320,11 @@ namespace MSL.pages
                     }));
                     if (ret != "Err")
                     {
-                        _text.Replace("meta_token = " + userPassword, "meta_token = " + ret);
+                        _text = _text.Replace("meta_token = " + userPassword, "meta_token = " + ret);
                         using (FileStream fs = new FileStream(AppDomain.CurrentDomain.BaseDirectory + @"MSL\frpc", FileMode.Create, FileAccess.Write))
                         using (StreamWriter sw = new StreamWriter(fs))
                         {
-                            sw.WriteLine(_text);
+                            sw.Write(_text);
                         }
                         Dispatcher.Invoke(new Action(delegate { DialogShow.ShowMsg((MainWindow)Window.GetWindow(this), "您的付费密码为：" + ret + " 旧密码已自动替换为新密码，您现在可以启动映射了！", "获取成功！"); }));
                         return;
@@ -348,11 +348,11 @@ namespace MSL.pages
                 Dispatcher.Invoke(new Action(delegate { _input = DialogShow.ShowInput((MainWindow)Window.GetWindow(this), "在此输入您手动获取到的密码", out password); }));
                 if (_input)
                 {
-                    _text.Replace("meta_token = " + userPassword, "meta_token = " + password);
+                    _text=_text.Replace("meta_token = " + userPassword, "meta_token = " + password);
                     using (FileStream fs = new FileStream(AppDomain.CurrentDomain.BaseDirectory + @"MSL\frpc", FileMode.Create, FileAccess.Write))
                     using (StreamWriter sw = new StreamWriter(fs))
                     {
-                        sw.WriteLine(_text);
+                        sw.Write(_text);
                     }
                     Growl.Success("您的密码已更新！");
                 }

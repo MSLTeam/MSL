@@ -223,7 +223,7 @@ namespace MSL
                     int n = ran.Next(int.Parse(list3[a].ToString()), int.Parse(list4[a].ToString()));
                     if (textBox1.Text == "" || textBox2.Text == "")
                     {
-                        DialogShow.ShowMsg(this,"出现错误，请确保内网端口和QQ号不为空后再试！", "错误");
+                        DialogShow.ShowMsg(this,"请确保内网端口和QQ号不为空后再试！", "错误");
                         return;
                     }
                     /*
@@ -309,7 +309,7 @@ namespace MSL
                     using (FileStream fs = new FileStream(AppDomain.CurrentDomain.BaseDirectory + @"MSL\frpc", FileMode.Create, FileAccess.Write))
                     using (StreamWriter sw = new StreamWriter(fs))
                     {
-                        sw.WriteLine(frpc);
+                        sw.Write(frpc);
                     }
 
                     DialogShow.ShowMsg(this, "映射配置成功，请您点击“启动内网映射”以启动映射！", "信息", false, "确定");
@@ -329,8 +329,7 @@ namespace MSL
                     int n = ran.Next(int.Parse(list3[a].ToString()), int.Parse(list4[a].ToString()));
                     if (textBox1.Text == "" || textBox2.Text == ""||textBox3.Password=="")
                     {
-                        DialogShow.ShowMsg(this, "出现错误，请确保内网端口、QQ号和密码不为空后再试！", "错误");
-                        MessageBox.Show("", "错误", MessageBoxButton.OK, MessageBoxImage.Error);
+                        DialogShow.ShowMsg(this, "请确保内网端口、QQ号和密码不为空后再试！", "错误");
                         return;
                     }
                     /*
