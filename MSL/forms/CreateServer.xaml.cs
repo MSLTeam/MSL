@@ -656,7 +656,7 @@ namespace MSL.forms
                             break;
                         }
                     }
-                    Dialog waitDialog = new Dialog();
+                    Dialog waitDialog = null;
                     try
                     {
                         waitDialog = Dialog.Show(new TextDialog("解压整合包中，请稍等……"));
@@ -718,7 +718,7 @@ namespace MSL.forms
                         var res = openfile.ShowDialog();
                         if (res == true)
                         {
-                            Dialog waitDialog = new Dialog();
+                            Dialog waitDialog = null;
                             try
                             {
                                 waitDialog = Dialog.Show(new TextDialog("解压整合包中，请稍等……"));

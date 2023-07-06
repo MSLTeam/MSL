@@ -174,7 +174,7 @@ namespace MSL
             {
                 WebClient MyWebClient1 = new WebClient();
                 MyWebClient1.Credentials = CredentialCache.DefaultCredentials;
-                Byte[] pageData1 = MyWebClient1.DownloadData(MainWindow.serverLink + @"/msl/frpcgg.txt");
+                byte[] pageData1 = MyWebClient1.DownloadData(MainWindow.serverLink + @"/msl/frpcgg.txt");
                 Dispatcher.Invoke(new Action(delegate
                 {
                     gonggao.Content = Encoding.UTF8.GetString(pageData1);
@@ -201,7 +201,7 @@ namespace MSL
                     if (match.Success)
                     {
                         textBox2.Text = match.Groups[1].Value;
-                        textBox3.Text = match.Groups[2].Value;
+                        textBox3.Password = match.Groups[2].Value;
                     }
                 }
             }));
@@ -223,7 +223,7 @@ namespace MSL
                     int n = ran.Next(int.Parse(list3[a].ToString()), int.Parse(list4[a].ToString()));
                     if (textBox1.Text == "" || textBox2.Text == "")
                     {
-                        MessageBox.Show("出现错误，请确保内网端口和QQ号不为空后再试!", "错误", MessageBoxButton.OK, MessageBoxImage.Error);
+                        DialogShow.ShowMsg(this,"出现错误，请确保内网端口和QQ号不为空后再试！", "错误");
                         return;
                     }
                     /*
@@ -327,9 +327,10 @@ namespace MSL
                     int a = listBox1.SelectedIndex;
                     Random ran = new Random();
                     int n = ran.Next(int.Parse(list3[a].ToString()), int.Parse(list4[a].ToString()));
-                    if (textBox1.Text == "" || textBox2.Text == "")
+                    if (textBox1.Text == "" || textBox2.Text == ""||textBox3.Password=="")
                     {
-                        MessageBox.Show("出现错误，请确保内网端口和QQ号不为空后再试：" + "w3x2", "错误", MessageBoxButton.OK, MessageBoxImage.Error);
+                        DialogShow.ShowMsg(this, "出现错误，请确保内网端口、QQ号和密码不为空后再试！", "错误");
+                        MessageBox.Show("", "错误", MessageBoxButton.OK, MessageBoxImage.Error);
                         return;
                     }
                     /*
@@ -431,7 +432,7 @@ namespace MSL
                     frpc += "server_port = " + frpPort + "\n";
                     frpc += "server_addr = " + list1[a].ToString() + "\n";
                     frpc += "user = " + textBox2.Text + "\n";
-                    frpc += "meta_token = " + textBox3.Text + "\n";
+                    frpc += "meta_token = " + textBox3.Password + "\n";
                     if (protocol != "")
                     {
                         frpc += "protocol = " + protocol + "\n";
@@ -533,7 +534,7 @@ namespace MSL
             bool input =DialogShow.ShowInput(this, "输入您在爱发电备注的QQ号：", out text);
             if (input)
             {
-                Dialog _dialog= new Dialog();
+                Dialog _dialog= null;
                 try
                 {
                     _dialog= Dialog.Show(new TextDialog("获取密码中，请稍等……"));

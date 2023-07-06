@@ -8,7 +8,9 @@ using System.IO;
 using System.Net;
 using System.Net.NetworkInformation;
 using System.Text;
+using System.Text.RegularExpressions;
 using System.Threading;
+using System.Threading.Tasks;
 using System.Windows;
 using System.Windows.Controls;
 using System.Windows.Threading;
@@ -97,7 +99,9 @@ namespace MSL.pages
                     Growl.Error("内网映射桥接失败！");
                     if (msg.IndexOf("invalid meta token") + 1 != 0)
                     {
-                        frpcOutlog.Text = frpcOutlog.Text + "QQ号密码填写错误或付费资格已过期，请重新配置或续费！\n";
+                        frpcOutlog.Text = frpcOutlog.Text + "QQ或密码填写错误或付费资格已过期，请重新配置或续费！\n";
+                        Thread thread = new Thread(BuyPaidServe);
+                        thread.Start();
                     }
                     else if (msg.IndexOf("user or meta token can not be empty") + 1 != 0)
                     {
@@ -140,9 +144,9 @@ namespace MSL.pages
                         WebClient MyWebClient = new WebClient();
                         MyWebClient.Credentials = CredentialCache.DefaultCredentials;
                         byte[] pageData = MyWebClient.DownloadData(MainWindow.serverLink + @"/msl/CC/frpcserver.txt");
-                        string @string = Encoding.UTF8.GetString(pageData);
-                        int IndexofA = @string.IndexOf(frpcserver);
-                        string Ru = @string.Substring(IndexofA + frpcserver2);
+                        string _string = Encoding.UTF8.GetString(pageData);
+                        int IndexofA = _string.IndexOf(frpcserver);
+                        string Ru = _string.Substring(IndexofA + frpcserver2);
                         string a111 = Ru.Substring(0, Ru.IndexOf("*"));
                         byte[] pageData2 = new WebClient().DownloadData(a111);
                         string pageHtml = Encoding.UTF8.GetString(pageData2);
@@ -186,9 +190,9 @@ namespace MSL.pages
                     WebClient MyWebClient = new WebClient();
                     MyWebClient.Credentials = CredentialCache.DefaultCredentials;
                     byte[] pageData = MyWebClient.DownloadData(MainWindow.serverLink + @"/msl/CC/frpcserver.txt");
-                    string @string = Encoding.UTF8.GetString(pageData);
-                    int IndexofA = @string.IndexOf(frpcserver);
-                    string Ru = @string.Substring(IndexofA + frpcserver2);
+                    string _string = Encoding.UTF8.GetString(pageData);
+                    int IndexofA = _string.IndexOf(frpcserver);
+                    string Ru = _string.Substring(IndexofA + frpcserver2);
                     string a111 = Ru.Substring(0, Ru.IndexOf("*"));
                     byte[] pageData2 = new WebClient().DownloadData(a111);
                     string pageHtml = Encoding.UTF8.GetString(pageData2);
@@ -232,15 +236,19 @@ namespace MSL.pages
                     Growl.Error("内网映射桥接失败！");
                     if (msg.IndexOf("port already used") + 1 != 0)
                     {
-                        frpcOutlog.Text = frpcOutlog.Text + "本地端口被占用，请不要频繁开关内网映射或等待一分钟再试。\n若仍然占用，请尝试手动结束frpc.exe或重启电脑再试。\n";
+                        frpcOutlog.Text = frpcOutlog.Text + "本地端口被占用，请不要频繁开关内网映射并等待一分钟再试。\n若仍然占用，请尝试手动结束frpc.exe或重启电脑再试。\n";
                     }
                     else if (msg.IndexOf("port not allowed") + 1 != 0)
                     {
-                        frpcOutlog.Text = frpcOutlog.Text + "远程端口被占用，请不要频繁开关内网映射或等待一分钟再试。\n若仍然占用，请尝试重新配置一下再试！\n";
+                        frpcOutlog.Text = frpcOutlog.Text + "远程端口被占用，请不要频繁开关内网映射并等待一分钟再试。\n若仍然占用，请尝试重新配置一下再试！\n";
                     }
                     else if (msg.IndexOf("proxy name") + 1 != 0 && msg.IndexOf("already in use") + 1 != 0)
                     {
-                        frpcOutlog.Text = frpcOutlog.Text + "此QQ号已被占用！请不要频繁开关内网映射或等待一分钟再试。\n若仍然占用，请尝试手动结束frpc.exe或重启电脑再试。\n";
+                        frpcOutlog.Text = frpcOutlog.Text + "隧道名称已被占用！请打开任务管理器检查后台是否存在frpc.exe进程并手动结束！\n若仍然占用，请尝试重启电脑再试。\n";
+                    }
+                    else if (msg.IndexOf("proxy") + 1 != 0 && msg.IndexOf("already exists") + 1 != 0)
+                    {
+                        frpcOutlog.Text = frpcOutlog.Text + "此QQ号已被占用！请不要频繁开关内网映射并等待一分钟再试。\n若仍然占用，请尝试手动结束frpc.exe或重启电脑再试。\n\n";
                     }
                     try
                     {
@@ -262,6 +270,93 @@ namespace MSL.pages
                 }
             }
             frpcOutlog.ScrollToEnd();
+        }
+
+        private void BuyPaidServe()
+        {
+            string userAccount = "";
+            string userPassword = "";
+
+            string _text = File.ReadAllText(AppDomain.CurrentDomain.BaseDirectory + @"MSL\frpc");
+            string pattern = @"user\s*=\s*(\w+)\s*meta_token\s*=\s*(\w+)";
+            Match match = Regex.Match(_text, pattern);
+
+            if (match.Success)
+            {
+                userAccount = match.Groups[1].Value;
+                userPassword = match.Groups[2].Value;
+            }
+            bool dialog = false;
+            Dispatcher.Invoke(new Action(delegate
+            {
+                dialog = DialogShow.ShowMsg((MainWindow)Window.GetWindow(this), "映射启动失败！可能是您的QQ或密码填写错误或付费资格已过期，请重新配置或进行续费！\n点击确定以进行付费节点续费步骤。", "提示", true, "取消");
+            }));
+            if (!dialog)
+            {
+                return;
+            }
+
+            Process.Start("https://afdian.net/a/makabaka123");
+            string text = "";
+            bool input= false;
+            Dispatcher.Invoke(new Action(delegate { input = DialogShow.ShowInput((MainWindow)Window.GetWindow(this), "在爱发电购买完毕后，在此输入QQ号，以获取您的密码：", out text, userAccount); }));
+            if (input)
+            {
+                Dialog _dialog = null;
+                try
+                {
+                    Dispatcher.Invoke(new Action(delegate { _dialog = Dialog.Show(new TextDialog("获取密码中，请稍等……")); }));
+                    
+                    JObject patientinfo = new JObject
+                    {
+                        ["qq"] = text
+                    };
+                    string sendData = JsonConvert.SerializeObject(patientinfo);
+                    string ret = Functions.Post("getpassword", 0, sendData, "https://aifadian.waheal.top");
+                    Dispatcher.Invoke(new Action(delegate
+                    {
+                        this.Focus(); 
+                        _dialog.Close(); 
+                    }));
+                    if (ret != "Err")
+                    {
+                        _text.Replace("meta_token = " + userPassword, "meta_token = " + ret);
+                        using (FileStream fs = new FileStream(AppDomain.CurrentDomain.BaseDirectory + @"MSL\frpc", FileMode.Create, FileAccess.Write))
+                        using (StreamWriter sw = new StreamWriter(fs))
+                        {
+                            sw.WriteLine(_text);
+                        }
+                        Dispatcher.Invoke(new Action(delegate { DialogShow.ShowMsg((MainWindow)Window.GetWindow(this), "您的付费密码为：" + ret + " 旧密码已自动替换为新密码，您现在可以启动映射了！", "获取成功！"); }));
+                        return;
+                    }
+                    else
+                    {
+                        Dispatcher.Invoke(new Action(delegate { DialogShow.ShowMsg((MainWindow)Window.GetWindow(this), "您的密码可能长时间无人获取，已经超时！请添加QQ：483232994（昵称：MSL-FRP），并发送赞助图片来手动获取密码\r\n（注：回复消息不一定及时，请耐心等待！如果没有添加成功，或者添加后长时间无人回复，请进入MSL交流群然后从群里私聊）", "获取失败！"); }));
+                    }
+                }
+                catch
+                {
+                    Dispatcher.Invoke(new Action(delegate
+                    {
+                        this.Focus();
+                        _dialog.Close();
+                        DialogShow.ShowMsg((MainWindow)Window.GetWindow(this), "获取失败，请添加QQ：483232994（昵称：MSL-FRP），并发送赞助图片来手动获取密码\r\n（注：回复消息不一定及时，请耐心等待！如果没有添加成功，或者添加后长时间无人回复，请进入MSL交流群然后从群里私聊）", "获取失败！");
+                    }));
+                }
+                bool _input = false;
+                string password = "";
+                Dispatcher.Invoke(new Action(delegate { _input = DialogShow.ShowInput((MainWindow)Window.GetWindow(this), "在此输入您手动获取到的密码", out password); }));
+                if (_input)
+                {
+                    _text.Replace("meta_token = " + userPassword, "meta_token = " + password);
+                    using (FileStream fs = new FileStream(AppDomain.CurrentDomain.BaseDirectory + @"MSL\frpc", FileMode.Create, FileAccess.Write))
+                    using (StreamWriter sw = new StreamWriter(fs))
+                    {
+                        sw.WriteLine(_text);
+                    }
+                    Growl.Success("您的密码已更新！");
+                }
+            }
         }
 
         private void setfrpc_Click(object sender, RoutedEventArgs e)
