@@ -423,7 +423,7 @@ namespace MSL.forms
 
         private void a0003_Click(object sender, RoutedEventArgs e)
         {
-            System.Windows.Forms.FolderBrowserDialog dialog = new System.Windows.Forms.FolderBrowserDialog();
+            FolderBrowserDialog dialog = new FolderBrowserDialog();
             dialog.Description = "请选择文件夹";
             if (dialog.ShowDialog() == System.Windows.Forms.DialogResult.OK)
             {
@@ -670,10 +670,12 @@ namespace MSL.forms
                     }
                     catch (Exception ex)
                     {
+                        this.Focus();
                         waitDialog.Close();
                         DialogShow.ShowMsg(this, "整合包解压失败！请确认您的整合包是.zip格式！\n错误代码：" + ex.Message, "错误");
                         return;
                     }
+                    this.Focus();
                     waitDialog.Close();
                     MainGrid.Visibility = Visibility.Hidden;
                     tabCtrl.Visibility = Visibility.Visible;
@@ -729,10 +731,12 @@ namespace MSL.forms
                             }
                             catch (Exception ex)
                             {
+                                this.Focus();
                                 waitDialog.Close();
                                 DialogShow.ShowMsg(this, "整合包解压失败！请确认您的整合包是.zip格式！\n错误代码：" + ex.Message, "错误");
                                 return;
                             }
+                            this.Focus();
                             waitDialog.Close();
                             MainGrid.Visibility = Visibility.Hidden;
                             tabCtrl.Visibility = Visibility.Visible;

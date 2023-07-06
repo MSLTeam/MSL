@@ -25,12 +25,14 @@ namespace MSL.pages
         public delegate void DelReadStdOutput(string result);
         public static Process FRPCMD = new Process();
         public event DelReadStdOutput ReadStdOutput;
+        //int paidServerCooldown = 0;
         string _dnfrpc;
         public FrpcPage()
         {
+            ReadStdOutput += new DelReadStdOutput(ReadStdOutputAction);
+            FRPCMD.OutputDataReceived += new DataReceivedEventHandler(p_OutputDataReceived);
             MainWindow.AutoOpenFrpc += AutoStartFrpc;
             InitializeComponent();
-            ReadStdOutput += new DelReadStdOutput(ReadStdOutputAction);
         }
 
         private void StartFrpc()
@@ -45,7 +47,6 @@ namespace MSL.pages
                 FRPCMD.StartInfo.UseShellExecute = false;
                 FRPCMD.StartInfo.RedirectStandardInput = true;
                 FRPCMD.StartInfo.RedirectStandardOutput = true;
-                FRPCMD.OutputDataReceived += new DataReceivedEventHandler(p_OutputDataReceived);
                 FRPCMD.Start();
                 FRPCMD.BeginOutputReadLine();
             }
@@ -69,7 +70,7 @@ namespace MSL.pages
                 FRPCMD.StartInfo.UseShellExecute = false;
                 FRPCMD.StartInfo.RedirectStandardInput = true;
                 FRPCMD.StartInfo.RedirectStandardOutput = true;
-                FRPCMD.OutputDataReceived += new DataReceivedEventHandler(p_OutputDataReceived);
+                //FRPCMD.OutputDataReceived += new DataReceivedEventHandler(p_OutputDataReceived);
                 FRPCMD.Start();
                 FRPCMD.BeginOutputReadLine();
             }
@@ -108,27 +109,20 @@ namespace MSL.pages
                     }
                     try
                     {
-                        FRPCMD.Kill();
-                        Thread.Sleep(200);
+                        if (!FRPCMD.HasExited)
+                        {
+                            FRPCMD.Kill();
+                        }
                         FRPCMD.CancelOutputRead();
-                        FRPCMD.OutputDataReceived -= new DataReceivedEventHandler(p_OutputDataReceived);
+                        FRPCMD.CancelOutputRead();
+                        //FRPCMD.OutputDataReceived -= new DataReceivedEventHandler(p_OutputDataReceived);
                         setfrpc.IsEnabled = true;
                         startfrpc.Content = "启动内网映射";
                     }
                     catch
                     {
-                        try
-                        {
-                            FRPCMD.CancelOutputRead();
-                            FRPCMD.OutputDataReceived -= new DataReceivedEventHandler(p_OutputDataReceived);
-                            setfrpc.IsEnabled = true;
-                            startfrpc.Content = "启动内网映射";
-                        }
-                        catch
-                        {
-                            setfrpc.IsEnabled = true;
-                            startfrpc.Content = "启动内网映射";
-                        }
+                        setfrpc.IsEnabled = true;
+                        startfrpc.Content = "启动内网映射";
                     }
                 }
                 if (msg.IndexOf("success") + 1 != 0)
@@ -159,7 +153,7 @@ namespace MSL.pages
                         aaa = aaa.Replace(a112, "token = " + pageHtml);
                         File.WriteAllText(AppDomain.CurrentDomain.BaseDirectory + "MSL\\frpc", aaa);
                         FRPCMD.CancelOutputRead();
-                        FRPCMD.OutputDataReceived -= p_OutputDataReceived;
+                        //FRPCMD.OutputDataReceived -= p_OutputDataReceived;
                         StartFrpc();
                     }
                     catch (Exception aa)
@@ -169,7 +163,7 @@ namespace MSL.pages
                         try
                         {
                             FRPCMD.CancelOutputRead();
-                            FRPCMD.OutputDataReceived -= p_OutputDataReceived;
+                            //FRPCMD.OutputDataReceived -= p_OutputDataReceived;
                             setfrpc.IsEnabled = true;
                             startfrpc.Content = "启动内网映射";
                         }
@@ -205,7 +199,7 @@ namespace MSL.pages
                     aaa = aaa.Replace(a112, "token = " + pageHtml);
                     File.WriteAllText(AppDomain.CurrentDomain.BaseDirectory + "MSL\\frpc", aaa);
                     FRPCMD.CancelOutputRead();
-                    FRPCMD.OutputDataReceived -= p_OutputDataReceived;
+                    //FRPCMD.OutputDataReceived -= p_OutputDataReceived;
                     StartFrpc();
                 }
                 catch (Exception aa)
@@ -214,7 +208,7 @@ namespace MSL.pages
                     try
                     {
                         FRPCMD.CancelOutputRead();
-                        FRPCMD.OutputDataReceived -= new DataReceivedEventHandler(p_OutputDataReceived);
+                        //FRPCMD.OutputDataReceived -= new DataReceivedEventHandler(p_OutputDataReceived);
                         setfrpc.IsEnabled = true;
                         startfrpc.Content = "启动内网映射";
                     }
@@ -250,29 +244,20 @@ namespace MSL.pages
                     }
                     try
                     {
-                        FRPCMD.Kill();
-                        Thread.Sleep(200);
+                        if (!FRPCMD.HasExited)
+                        {
+                            FRPCMD.Kill();
+                        }
                         FRPCMD.CancelOutputRead();
                         //ReadStdOutput = null;
-                        FRPCMD.OutputDataReceived -= new DataReceivedEventHandler(p_OutputDataReceived);
+                        //FRPCMD.OutputDataReceived -= new DataReceivedEventHandler(p_OutputDataReceived);
                         setfrpc.IsEnabled = true;
                         startfrpc.Content = "启动内网映射";
                     }
                     catch
                     {
-                        try
-                        {
-                            FRPCMD.CancelOutputRead();
-                            //ReadStdOutput = null;
-                            FRPCMD.OutputDataReceived -= new DataReceivedEventHandler(p_OutputDataReceived);
-                            setfrpc.IsEnabled = true;
-                            startfrpc.Content = "启动内网映射";
-                        }
-                        catch
-                        {
-                            setfrpc.IsEnabled = true;
-                            startfrpc.Content = "启动内网映射";
-                        }
+                        setfrpc.IsEnabled = true;
+                        startfrpc.Content = "启动内网映射";
                     }
                 }
             }
@@ -358,6 +343,13 @@ namespace MSL.pages
                     }
                 }
                 catch { }
+                /*
+                if (paidServerCooldown > 0)
+                {
+                    DialogShow.ShowMsg((MainWindow)Window.GetWindow(this),"您的节点使用状态正在重置中，请稍后再试\n剩余时间："+paidServerCooldown.ToString()+"s","警告");
+                    return;
+                }
+                */
                 StartFrpc();
                 Growl.Success("内网映射启动成功，请耐心等待桥接完成！");
                 setfrpc.IsEnabled = false;
@@ -366,33 +358,42 @@ namespace MSL.pages
             }
             else
             {
+                /*
+                if (frplab1.Text.Contains("付费"))
+                {
+                    Thread thread = new Thread(PaidServerCooldown);
+                    thread.Start();
+                }
+                */
                 try
                 {
                     FRPCMD.Kill();
-                    Thread.Sleep(200);
+                    FRPCMD.WaitForExit();
                     Growl.Success("内网映射关闭成功！");
                     FRPCMD.CancelOutputRead();
-                    FRPCMD.OutputDataReceived -= new DataReceivedEventHandler(p_OutputDataReceived);
+                    //FRPCMD.OutputDataReceived -= new DataReceivedEventHandler(p_OutputDataReceived);
                     setfrpc.IsEnabled = true;
                     startfrpc.Content = "启动内网映射";
                 }
                 catch
                 {
-                    try
-                    {
-                        FRPCMD.CancelOutputRead();
-                        FRPCMD.OutputDataReceived -= new DataReceivedEventHandler(p_OutputDataReceived);
-                        setfrpc.IsEnabled = true;
-                        startfrpc.Content = "启动内网映射";
-                    }
-                    catch
-                    {
-                        setfrpc.IsEnabled = true;
-                        startfrpc.Content = "启动内网映射";
-                    }
+                    setfrpc.IsEnabled = true;
+                    startfrpc.Content = "启动内网映射";
                 }
             }
         }
+
+        /*
+        private void PaidServerCooldown()
+        {
+            paidServerCooldown = 60;
+            while (paidServerCooldown > 0)
+            {
+                Thread.Sleep(1000);
+                paidServerCooldown--;
+            }
+        }
+        */
 
         private void copyFrpc_Click(object sender, RoutedEventArgs e)
         {

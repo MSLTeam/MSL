@@ -64,6 +64,8 @@ namespace MSL
         public ServerRunner()
         {
             ReadStdOutput += new DelReadStdOutput(ReadStdOutputAction);
+            ServerProcess.OutputDataReceived += new DataReceivedEventHandler(p_OutputDataReceived);
+            ServerProcess.ErrorDataReceived += new DataReceivedEventHandler(p_OutputDataReceived);
             ServerList.OpenServerForm += ShowWindowEvent;
             SettingsPage.ChangeSkinStyle += ChangeSkinStyle;
             InitializeComponent();
@@ -127,11 +129,10 @@ namespace MSL
             {
                 if (ServerProcess.HasExited != true)
                 {
-                    DialogShow.ShowMsg(this, "检测到您没有关闭服务器，是否隐藏此窗口？\n如要重新显示此窗口，请在服务器列表内双击该服务器（或点击开启服务器按钮）", "警告", true, "取消");
+                    bool dialog= DialogShow.ShowMsg(this, "检测到您没有关闭服务器，是否隐藏此窗口？\n如要重新显示此窗口，请在服务器列表内双击该服务器（或点击开启服务器按钮）", "警告", true, "取消");
                     e.Cancel = true;
-                    if (MessageDialog._dialogReturn == true)
+                    if (dialog)
                     {
-                        MessageDialog._dialogReturn = false;
                         Visibility = Visibility.Hidden;
                     }
                 }
@@ -141,7 +142,6 @@ namespace MSL
                     getServerInfo = false;
                     getPlayerInfo = false;
                     outlog.Document.Blocks.Clear();
-                    //GC.Collect();
                 }
             }
             catch
@@ -522,8 +522,6 @@ namespace MSL
                     ServerProcess.StartInfo.StandardOutputEncoding = Encoding.Default;
                     ServerProcess.StartInfo.StandardErrorEncoding = Encoding.Default;
                 }
-                ServerProcess.OutputDataReceived += new DataReceivedEventHandler(p_OutputDataReceived);
-                ServerProcess.ErrorDataReceived += new DataReceivedEventHandler(p_OutputDataReceived);
                 ServerProcess.Start();
                 ServerProcess.BeginOutputReadLine();
                 ServerProcess.BeginErrorReadLine();
@@ -609,8 +607,6 @@ namespace MSL
                 fastCMD.IsEnabled = false;
                 try
                 {
-                    ServerProcess.OutputDataReceived -= new DataReceivedEventHandler(p_OutputDataReceived);
-                    ServerProcess.ErrorDataReceived -= new DataReceivedEventHandler(p_OutputDataReceived);
                     ServerProcess.CancelOutputRead();
                     ServerProcess.CancelErrorRead();
                 }
@@ -2841,6 +2837,10 @@ namespace MSL
         }
         private void downloadServer_Click(object sender, RoutedEventArgs e)
         {
+            if (jVMcmd.Text.Contains("@libraries/net/minecraftforge/forge/"))
+            {
+                jVMcmd.Clear();
+            }
             DownloadServer.downloadServerJava = Rserverjava;
             DownloadServer.downloadServerBase = Rserverbase;
             DownloadServer downloadServer = new DownloadServer();

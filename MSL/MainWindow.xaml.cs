@@ -79,7 +79,7 @@ namespace MSL
                 else
                 {
                     serverLink = "https://msl.waheal.top";
-                    Growl.Info("MSL主服务器连接超时，已切换至备用服务器！");
+                    Growl.Info("MSL主服务器连接超时（可能被DDos），已切换至备用服务器！");
                 }
             }
             catch
@@ -101,13 +101,11 @@ namespace MSL
                     Process.Start("https://www.waheal.top/eula.html");
                     Dispatcher.Invoke(new Action(delegate
                     {
-                        DialogShow.ShowMsg(this, "请阅读并同意MSL开服器使用协议：https://www.waheal.top/eula.html", "提示", true, "不同意", "同意");
-                        if (!MessageDialog._dialogReturn)
+                        bool dialog= DialogShow.ShowMsg(this, "请阅读并同意MSL开服器使用协议：https://www.waheal.top/eula.html", "提示", true, "不同意", "同意");
+                        if (!dialog)
                         {
-
                             Close();
                         }
-                        MessageDialog._dialogReturn = false;
                         File.WriteAllText(AppDomain.CurrentDomain.BaseDirectory + @"MSL\config.json", string.Format("{{{0}}}", "\n"));
                     }));
                 }
@@ -118,10 +116,19 @@ namespace MSL
             }
 
             //MessageBox.Show("CheckDirSuccess");
+            JObject jsonObject = null;
+            try
+            {
+                jsonObject = JObject.Parse(File.ReadAllText(AppDomain.CurrentDomain.BaseDirectory + @"MSL\config.json", Encoding.UTF8));
+            }
+            catch(Exception ex)
+            {
+                DialogShow.ShowMsg(this, "MSL在加载配置文件时出现错误，将进行重试，若点击确定后软件突然闪退，请尝试使用管理员身份运行或将此问题报告给作者！\n错误代码："+ex.Message, "错误");
+                File.WriteAllText(AppDomain.CurrentDomain.BaseDirectory + @"MSL\config.json", string.Format("{{{0}}}", "\n"));
+                jsonObject = JObject.Parse(File.ReadAllText(AppDomain.CurrentDomain.BaseDirectory + @"MSL\config.json", Encoding.UTF8));
+            }
 
-            JObject jsonObject = JObject.Parse(File.ReadAllText(AppDomain.CurrentDomain.BaseDirectory + @"MSL\config.json", Encoding.UTF8));
-
-            //检测是否配置了内网映射(新版已弃用，现改为删除frpc的key)
+            //下面是加载配置部分
             try
             {
                 if (jsonObject["frpc"] != null)
@@ -132,15 +139,7 @@ namespace MSL
                     string convertString = Convert.ToString(jobject);
                     File.WriteAllText(AppDomain.CurrentDomain.BaseDirectory + @"MSL\config.json", convertString, Encoding.UTF8);
                 }
-            }
-            catch
-            { }
-
-            //MessageBox.Show("CheckFrpcSuccess");
-
-            //托盘图标检测
-            try
-            {
+                //MessageBox.Show("CheckFrpcSuccess");
                 if (jsonObject["notifyIcon"] == null)
                 {
                     string jsonString = File.ReadAllText(AppDomain.CurrentDomain.BaseDirectory + @"MSL\config.json", Encoding.UTF8);
@@ -156,15 +155,7 @@ namespace MSL
                         CtrlNotifyIcon();
                     }));
                 }
-            }
-            catch
-            { }
-
-            //MessageBox.Show("CheckNotifySuccess");
-
-            //侧边栏检测
-            try
-            {
+                //MessageBox.Show("CheckNotifySuccess");
                 if (jsonObject["sidemenu"] == null)
                 {
                     string jsonString = File.ReadAllText(AppDomain.CurrentDomain.BaseDirectory + @"MSL\config.json", Encoding.UTF8);
@@ -197,22 +188,7 @@ namespace MSL
                         frame.Margin = new Thickness(50, 0, 0, 0);
                     }));
                 }
-            }
-            catch
-            {
-                Dispatcher.Invoke(new Action(delegate
-                {
-                    sideMenuContextOpen.Width = 100;
-                    SideMenu.Width = 100;
-                    frame.Margin = new Thickness(100, 0, 0, 0);
-                }));
-            }
-
-            //MessageBox.Show("CheckSidemenuSuccess");
-
-            //skin
-            try
-            {
+                //MessageBox.Show("CheckSidemenuSuccess");
                 if (jsonObject["skin"] == null)
                 {
                     string jsonString = File.ReadAllText(AppDomain.CurrentDomain.BaseDirectory + @"MSL\config.json", Encoding.UTF8);
@@ -228,72 +204,40 @@ namespace MSL
                 }
                 else
                 {
-                    if (jsonObject["skin"].ToString() == "0")
+                    Dispatcher.Invoke(new Action(delegate
                     {
-                        Dispatcher.Invoke(new Action(delegate
+                        switch (jsonObject["skin"].ToString())
                         {
-                            ThemeManager.Current.UsingSystemTheme = true;
-                        }));
-                    }
-                    if (jsonObject["skin"].ToString() == "1")
-                    {
-                        Dispatcher.Invoke(new Action(delegate
-                        {
-                            BrushConverter brushConverter = new BrushConverter();
-                            ThemeManager.Current.AccentColor = (Brush)brushConverter.ConvertFromString("#0078D4");
-                        }));
-                        //Growl.Success("皮肤切换成功！");
-                    }
-                    else if (jsonObject["skin"].ToString() == "2")
-                    {
-                        Dispatcher.Invoke(new Action(delegate
-                        {
-                            ThemeManager.Current.AccentColor = Brushes.Red;
-                        }));
-                        Growl.Success("皮肤切换成功！");
-                    }
-                    else if (jsonObject["skin"].ToString() == "3")
-                    {
-                        Dispatcher.Invoke(new Action(delegate
-                        {
-                            ThemeManager.Current.AccentColor = Brushes.Green;
-                        }));
-                        Growl.Success("皮肤切换成功！");
-                    }
-                    else if (jsonObject["skin"].ToString() == "4")
-                    {
-                        Dispatcher.Invoke(new Action(delegate
-                        {
-                            ThemeManager.Current.AccentColor = Brushes.Orange;
-                        }));
-                        Growl.Success("皮肤切换成功！");
-                    }
-                    else if (jsonObject["skin"].ToString() == "5")
-                    {
-                        Dispatcher.Invoke(new Action(delegate
-                        {
-                            ThemeManager.Current.AccentColor = Brushes.Purple;
-                        }));
-                        Growl.Success("皮肤切换成功！");
-                    }
-                    else if (jsonObject["skin"].ToString() == "6")
-                    {
-                        Dispatcher.Invoke(new Action(delegate
-                        {
-                            ThemeManager.Current.AccentColor = Brushes.DeepPink;
-                        }));
-                        Growl.Success("皮肤切换成功！");
-                    }
+                            case "0":
+                                ThemeManager.Current.UsingSystemTheme = true;
+                                break;
+                            case "1":
+                                BrushConverter brushConverter = new BrushConverter();
+                                ThemeManager.Current.AccentColor = (Brush)brushConverter.ConvertFromString("#0078D4");
+                                break;
+                            case "2":
+                                ThemeManager.Current.AccentColor = Brushes.Red;
+                                break;
+                            case "3":
+                                ThemeManager.Current.AccentColor = Brushes.Green;
+                                break;
+                            case "4":
+                                ThemeManager.Current.AccentColor = Brushes.Orange;
+                                break;
+                            case "5":
+                                ThemeManager.Current.AccentColor = Brushes.Purple;
+                                break;
+                            case "6":
+                                ThemeManager.Current.AccentColor = Brushes.DeepPink;
+                                break;
+                            default:
+                                BrushConverter _brushConverter = new BrushConverter();
+                                ThemeManager.Current.AccentColor = (Brush)_brushConverter.ConvertFromString("#0078D4");
+                                break;
+                        }
+                    }));
                 }
-
-            }
-            catch
-            { }
-
-            //MessageBox.Show("SkinLoaded");
-
-            try
-            {
+                //MessageBox.Show("SkinLoaded");
                 if (jsonObject["darkTheme"] == null)
                 {
                     string jsonString = File.ReadAllText(AppDomain.CurrentDomain.BaseDirectory + @"MSL\config.json", Encoding.UTF8);
@@ -309,23 +253,12 @@ namespace MSL
                         ThemeManager.Current.ApplicationTheme = ApplicationTheme.Dark;
                     }));
                 }
-            }
-            catch
-            { }
-
-            //background
-            if (File.Exists(AppDomain.CurrentDomain.BaseDirectory + "MSL\\Background.png"))
-            {
-                Dispatcher.Invoke(new Action(delegate
+                if (File.Exists(AppDomain.CurrentDomain.BaseDirectory + "MSL\\Background.png"))
                 {
                     Background = new ImageBrush(SettingsPage.GetImage(AppDomain.CurrentDomain.BaseDirectory + "MSL\\Background.png"));
                     SideMenuBorder.BorderThickness = new Thickness(0);
-                }));
-            }
-
-            //半透明标题栏
-            try
-            {
+                }
+                //MessageBox.Show("BackgroundLoaded");
                 if (jsonObject["semitransparentTitle"] == null)
                 {
                     string jsonString = File.ReadAllText(AppDomain.CurrentDomain.BaseDirectory + @"MSL\config.json", Encoding.UTF8);
@@ -341,36 +274,7 @@ namespace MSL
                         ChangeTitleStyle(true);
                     }));
                 }
-            }
-            catch
-            { }
-
-            //MessageBox.Show("ThemeLoaded");
-
-
-            //自动获取占用和自动记录玩家功能
-            try
-            {
-                if (jsonObject["autoGetPlayerInfo"] == null)
-                {
-                    string jsonString = File.ReadAllText(AppDomain.CurrentDomain.BaseDirectory + @"MSL\config.json", Encoding.UTF8);
-                    JObject jobject = JObject.Parse(jsonString);
-                    jobject.Add("autoGetPlayerInfo", "True");
-                    string convertString = Convert.ToString(jobject);
-                    File.WriteAllText(AppDomain.CurrentDomain.BaseDirectory + @"MSL\config.json", convertString, Encoding.UTF8);
-                    getPlayerInfo = true;
-                }
-                else if (jsonObject["autoGetPlayerInfo"].ToString() == "True")
-                {
-                    getPlayerInfo = true;
-                }
-            }
-            catch (Exception ex)
-            {
-                MessageBox.Show("Err" + ex.Message);
-            }
-            try
-            {
+                //MessageBox.Show("ThemeLoaded");
                 if (jsonObject["autoGetServerInfo"] == null)
                 {
                     string jsonString = File.ReadAllText(AppDomain.CurrentDomain.BaseDirectory + @"MSL\config.json", Encoding.UTF8);
@@ -384,13 +288,25 @@ namespace MSL
                 {
                     getServerInfo = true;
                 }
+                if (jsonObject["autoGetPlayerInfo"] == null)
+                {
+                    string jsonString = File.ReadAllText(AppDomain.CurrentDomain.BaseDirectory + @"MSL\config.json", Encoding.UTF8);
+                    JObject jobject = JObject.Parse(jsonString);
+                    jobject.Add("autoGetPlayerInfo", "True");
+                    string convertString = Convert.ToString(jobject);
+                    File.WriteAllText(AppDomain.CurrentDomain.BaseDirectory + @"MSL\config.json", convertString, Encoding.UTF8);
+                    getPlayerInfo = true;
+                }
+                else if (jsonObject["autoGetPlayerInfo"].ToString() == "True")
+                {
+                    getPlayerInfo = true;
+                }
+                //MessageBox.Show("AutoGetSuccess");
             }
             catch (Exception ex)
             {
-                MessageBox.Show("Err" + ex.Message);
+                Growl.Error("MSL在加载配置文件时出现错误，此报错可能不影响软件运行，但还是建议您将其反馈给作者！\n错误代码：" + ex.Message);
             }
-
-            //MessageBox.Show("AutoGetSuccess");
 
             //更新
             try
@@ -461,7 +377,16 @@ namespace MSL
             //MessageBox.Show("CheckUpdateSuccess");
 
             //获取电脑内存
-            PhisicalMemory = GetPhisicalMemory();
+            try
+            {
+                PhisicalMemory = GetPhisicalMemory();
+            }
+            catch(Exception ex)
+            {
+                MessageBox.Show("获取系统内存失败！" + ex.Message, "错误", MessageBoxButton.OK, MessageBoxImage.Error);
+                PhisicalMemory = 0;
+            }
+
             //自动开启服务器
             try
             {
@@ -488,7 +413,7 @@ namespace MSL
             }
             catch (Exception ex)
             {
-                MessageBox.Show("Err" + ex.Message);
+                MessageBox.Show("自动启动服务器失败！" + ex.Message,"错误",MessageBoxButton.OK,MessageBoxImage.Error);
             }
             //自动开启Frpc
             try
@@ -509,7 +434,7 @@ namespace MSL
             }
             catch (Exception ex)
             {
-                MessageBox.Show("Err" + ex.Message);
+                MessageBox.Show("自动启动内网映射失败！" + ex.Message, "错误", MessageBoxButton.OK, MessageBoxImage.Error);
             }
 
             //MessageBox.Show("AutoEventSuccess");
@@ -524,6 +449,7 @@ namespace MSL
                 BodyGrid.UnregisterName("loadingBar");
             }));
         }
+
         private void UpdateApp(string pageHtml, string aaa)
         {
             string strtempa1 = "* ";
@@ -534,7 +460,7 @@ namespace MSL
             if (File.Exists(AppDomain.CurrentDomain.BaseDirectory + "MSL" + aaa + ".exe"))
             {
                 string oldExePath = Process.GetCurrentProcess().MainModule.ModuleName;
-                string dwnExePath = Path.Combine(AppDomain.CurrentDomain.BaseDirectory, "MSL" + aaa + ".exe");
+                //string dwnExePath = Path.Combine(AppDomain.CurrentDomain.BaseDirectory, "MSL" + aaa + ".exe");
                 string newExeDir = AppDomain.CurrentDomain.BaseDirectory;
 
                 // 输出CMD命令以便调试

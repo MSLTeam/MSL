@@ -263,7 +263,7 @@ namespace MSL.pages
             if (BlueSkinBtn.IsChecked == true)
             {
                 BrushConverter brushConverter = new BrushConverter();
-                ThemeManager.Current.AccentColor = (System.Windows.Media.Brush)brushConverter.ConvertFromString("#0078D4");
+                ThemeManager.Current.AccentColor = (Brush)brushConverter.ConvertFromString("#0078D4");
                 JObject jobject = JObject.Parse(File.ReadAllText(AppDomain.CurrentDomain.BaseDirectory + "MSL\\config.json", Encoding.UTF8));
                 jobject["skin"] = "1";
                 string convertString = Convert.ToString(jobject);
@@ -272,7 +272,7 @@ namespace MSL.pages
             }
             else if (RedSkinBtn.IsChecked == true)
             {
-                ThemeManager.Current.AccentColor = System.Windows.Media.Brushes.Red;
+                ThemeManager.Current.AccentColor = Brushes.Red;
                 JObject jobject = JObject.Parse(File.ReadAllText(AppDomain.CurrentDomain.BaseDirectory + "MSL\\config.json", Encoding.UTF8));
                 jobject["skin"] = "2";
                 string convertString = Convert.ToString(jobject);
@@ -281,7 +281,7 @@ namespace MSL.pages
             }
             else if (GreenSkinBtn.IsChecked == true)
             {
-                ThemeManager.Current.AccentColor = System.Windows.Media.Brushes.Green;
+                ThemeManager.Current.AccentColor = Brushes.Green;
                 JObject jobject = JObject.Parse(File.ReadAllText(AppDomain.CurrentDomain.BaseDirectory + "MSL\\config.json", Encoding.UTF8));
                 jobject["skin"] = "3";
                 string convertString = Convert.ToString(jobject);
@@ -290,7 +290,7 @@ namespace MSL.pages
             }
             else if (OrangeSkinBtn.IsChecked == true)
             {
-                ThemeManager.Current.AccentColor = System.Windows.Media.Brushes.Orange;
+                ThemeManager.Current.AccentColor = Brushes.Orange;
                 JObject jobject = JObject.Parse(File.ReadAllText(AppDomain.CurrentDomain.BaseDirectory + "MSL\\config.json", Encoding.UTF8));
                 jobject["skin"] = "4";
                 string convertString = Convert.ToString(jobject);
@@ -299,7 +299,7 @@ namespace MSL.pages
             }
             else if (PurpleSkinBtn.IsChecked == true)
             {
-                ThemeManager.Current.AccentColor = System.Windows.Media.Brushes.Purple;
+                ThemeManager.Current.AccentColor = Brushes.Purple;
                 JObject jobject = JObject.Parse(File.ReadAllText(AppDomain.CurrentDomain.BaseDirectory + "MSL\\config.json", Encoding.UTF8));
                 jobject["skin"] = "5";
                 string convertString = Convert.ToString(jobject);
@@ -308,7 +308,7 @@ namespace MSL.pages
             }
             else if (PinkSkinBtn.IsChecked == true)
             {
-                ThemeManager.Current.AccentColor = System.Windows.Media.Brushes.DeepPink;
+                ThemeManager.Current.AccentColor = Brushes.DeepPink;
                 JObject jobject = JObject.Parse(File.ReadAllText(AppDomain.CurrentDomain.BaseDirectory + "MSL\\config.json", Encoding.UTF8));
                 jobject["skin"] = "6";
                 string convertString = Convert.ToString(jobject);
@@ -369,7 +369,7 @@ namespace MSL.pages
         {
             if (autoSetTheme.IsChecked == true)
             {
-                //ThemeManager.Current.AccentColor = System.Windows.Media.Brushes.DeepPink;
+                //ThemeManager.Current.AccentColor = Brushes.DeepPink;
                 JObject jobject = JObject.Parse(File.ReadAllText(AppDomain.CurrentDomain.BaseDirectory + "MSL\\config.json", Encoding.UTF8));
                 jobject["darkTheme"] = "Auto";
                 jobject["skin"] = "0";
@@ -391,7 +391,7 @@ namespace MSL.pages
             }
             else
             {
-                //ThemeManager.Current.AccentColor = System.Windows.Media.Brushes.DeepPink;
+                //ThemeManager.Current.AccentColor = Brushes.DeepPink;
                 JObject jobject = JObject.Parse(File.ReadAllText(AppDomain.CurrentDomain.BaseDirectory + "MSL\\config.json", Encoding.UTF8));
                 jobject["darkTheme"] = "False";
                 jobject["skin"] = "1";
@@ -478,37 +478,37 @@ namespace MSL.pages
             {
                 Dispatcher.Invoke(new Action(delegate
                 {
-                    mainwindow.Background = System.Windows.Media.Brushes.LightBlue;
+                    mainwindow.Background = Brushes.LightBlue;
                     BrushConverter brushConverter = new BrushConverter();
-                    ThemeManager.Current.AccentColor = (System.Windows.Media.Brush)brushConverter.ConvertFromString("#0078D4");
+                    ThemeManager.Current.AccentColor = (Brush)brushConverter.ConvertFromString("#0078D4");
                 }));
                 Thread.Sleep(200);
                 Dispatcher.Invoke(new Action(delegate
                 {
-                    ThemeManager.Current.AccentColor = System.Windows.Media.Brushes.Red;
+                    ThemeManager.Current.AccentColor = Brushes.Red;
                 }));
                 Thread.Sleep(200);
                 Dispatcher.Invoke(new Action(delegate
                 {
-                    mainwindow.Background = System.Windows.Media.Brushes.LightGreen;
-                    ThemeManager.Current.AccentColor = System.Windows.Media.Brushes.Green;
+                    mainwindow.Background = Brushes.LightGreen;
+                    ThemeManager.Current.AccentColor = Brushes.Green;
                 }));
                 Thread.Sleep(200);
                 Dispatcher.Invoke(new Action(delegate
                 {
-                    mainwindow.Background = System.Windows.Media.Brushes.LightYellow;
-                    ThemeManager.Current.AccentColor = System.Windows.Media.Brushes.Orange;
+                    mainwindow.Background = Brushes.LightYellow;
+                    ThemeManager.Current.AccentColor = Brushes.Orange;
                 }));
                 Thread.Sleep(200);
                 Dispatcher.Invoke(new Action(delegate
                 {
-                    ThemeManager.Current.AccentColor = System.Windows.Media.Brushes.Purple;
+                    ThemeManager.Current.AccentColor = Brushes.Purple;
                 }));
                 Thread.Sleep(200);
                 Dispatcher.Invoke(new Action(delegate
                 {
-                    mainwindow.Background = System.Windows.Media.Brushes.LightPink;
-                    ThemeManager.Current.AccentColor = System.Windows.Media.Brushes.DeepPink;
+                    mainwindow.Background = Brushes.LightPink;
+                    ThemeManager.Current.AccentColor = Brushes.DeepPink;
                 }));
                 Thread.Sleep(200);
             }

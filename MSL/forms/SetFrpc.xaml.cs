@@ -48,12 +48,6 @@ namespace MSL
         {
             try
             {
-                /*
-                WebClient MyWebClient = new WebClient();
-                MyWebClient.Credentials = CredentialCache.DefaultCredentials;
-                byte[] pageData = MyWebClient.DownloadData(MainWindow.serverLink + @"/msl/CC/frpcserver.txt");
-                pageHtml = Encoding.UTF8.GetString(pageData);
-                */
                 pageHtml = Functions.Get("frplist");
                 if (pageHtml.IndexOf("\r\n") != -1)
                 {
@@ -175,22 +169,6 @@ namespace MSL
                     MessageBox.Show("连接服务器失败！", "Error", MessageBoxButton.OK, MessageBoxImage.Error);
                     Close();
                 }));
-                /*
-                try
-                {
-                    MainWindow.serverLink = "http://msl.waheal.top";
-                    WebClient MyWebClient = new WebClient();
-                    MyWebClient.Credentials = CredentialCache.DefaultCredentials;
-                    byte[] pageData = MyWebClient.DownloadData(MainWindow.serverLink + @"/msl/CC/frpcserver.txt");
-                    pageHtml = Encoding.UTF8.GetString(pageData);
-                }
-                catch
-                {
-                    MessageBox.Show("连接服务器失败！", "Error", MessageBoxButton.OK, MessageBoxImage.Error);
-                    pageHtml = "";
-                    Close();
-                }
-                */
             }
             try
             {
@@ -248,6 +226,7 @@ namespace MSL
                         MessageBox.Show("出现错误，请确保内网端口和QQ号不为空后再试!", "错误", MessageBoxButton.OK, MessageBoxImage.Error);
                         return;
                     }
+                    /*
                     if (frpcType.SelectedIndex == 0)
                     {
                         frptype = "tcp";
@@ -262,9 +241,7 @@ namespace MSL
                         string Ru2 = textBox1.Text.Substring(textBox1.Text.IndexOf("|"));
                         string a200 = Ru2.Substring(Ru2.IndexOf("|") + 1);
 
-                        if (listBox1.Items[listBox1.SelectedIndex].ToString().IndexOf("(") == -1)
-                        {
-                            string frpc = "#" + listBox1.Items[listBox1.SelectedIndex].ToString() + "\n[common]\nserver_port = " + list2[a].ToString() + "\nserver_addr = " + list1[a].ToString() + "\n" + "token = \n" + "\n[" + textBox2.Text + "TCP]\ntype = tcp" + "\nlocal_ip = 127.0.0.1\nlocal_port = " + a100 + "\nremote_port = " + n + "\n\n[" + textBox2.Text + "UDP]\ntype = udp" + "\nlocal_ip = 127.0.0.1\nlocal_port = " + a200 + "\nremote_port = " + n;
+                            string frpc = "#" + listBox1.Items[listBox1.SelectedIndex].ToString() + "\n[common]\nserver_port = " + list2[a].ToString() + "\nserver_addr = " + list1[a].ToString() + "\nuser = " + textBox2.Text + "\ntoken = \nheartbeat_timeout = 15\nheartbeat_interval = 5\nquic_keepalive_period = 5" + "\n[tcp]\ntype = tcp" + "\nlocal_ip = 127.0.0.1\nlocal_port = " + a100 + "\nremote_port = " + n + "\n\n[udp]\ntype = udp" + "\nlocal_ip = 127.0.0.1\nlocal_port = " + a200 + "\nremote_port = " + n;
                             FileStream fs = new FileStream(AppDomain.CurrentDomain.BaseDirectory + @"MSL\frpc", FileMode.Create, FileAccess.Write);
                             StreamWriter sw = new StreamWriter(fs);
                             sw.WriteLine(frpc);
@@ -272,24 +249,10 @@ namespace MSL
                             sw.Dispose();
                             sw.Close();
                             fs.Close();
-                        }
-                        else
-                        {
-                            string frpc = "#" + listBox1.Items[listBox1.SelectedIndex].ToString().Substring(0, listBox1.Items[listBox1.SelectedIndex].ToString().IndexOf("(")) + "\n[common]\nserver_port = " + list2[a].ToString() + "\nserver_addr = " + list1[a].ToString() + "\n" + "token = \n" + "\n[" + textBox2.Text + "TCP]\ntype = tcp" + "\nlocal_ip = 127.0.0.1\nlocal_port = " + a100 + "\nremote_port = " + n + "\n\n[" + textBox2.Text + "UDP]\ntype = udp" + "\nlocal_ip = 127.0.0.1\nlocal_port = " + a200 + "\nremote_port = " + n;
-                            FileStream fs = new FileStream(AppDomain.CurrentDomain.BaseDirectory + @"MSL\frpc", FileMode.Create, FileAccess.Write);
-                            StreamWriter sw = new StreamWriter(fs);
-                            sw.WriteLine(frpc);
-                            sw.Flush();
-                            sw.Dispose();
-                            sw.Close();
-                            fs.Close();
-                        }
                     }
                     else
                     {
-                        if (listBox1.Items[listBox1.SelectedIndex].ToString().IndexOf("(") == -1)
-                        {
-                            string frpc = "#" + listBox1.Items[listBox1.SelectedIndex].ToString() + "\n[common]\nserver_port = " + list2[a].ToString() + "\nserver_addr = " + list1[a].ToString() + "\n" + "token = \n" + "\n[" + textBox2.Text + "]\ntype = " + frptype + "\nlocal_ip = 127.0.0.1\nlocal_port = " + textBox1.Text + "\nremote_port = " + n;
+                            string frpc = "#" + listBox1.Items[listBox1.SelectedIndex].ToString() + "\n[common]\nserver_port = " + list2[a].ToString() + "\nserver_addr = " + list1[a].ToString() + "\nuser = " + textBox2.Text + "\ntoken = \nheartbeat_timeout = 15\nheartbeat_interval = 5\nquic_keepalive_period = 5" + "\n["+ frptype+"]\ntype = " + frptype + "\nlocal_ip = 127.0.0.1\nlocal_port = " + textBox1.Text + "\nremote_port = " + n;
                             FileStream fs = new FileStream(AppDomain.CurrentDomain.BaseDirectory + @"MSL\frpc", FileMode.Create, FileAccess.Write);
                             StreamWriter sw = new StreamWriter(fs);
                             sw.WriteLine(frpc);
@@ -297,19 +260,58 @@ namespace MSL
                             sw.Dispose();
                             sw.Close();
                             fs.Close();
-                        }
-                        else
-                        {
-                            string frpc = "#" + listBox1.Items[listBox1.SelectedIndex].ToString().Substring(0, listBox1.Items[listBox1.SelectedIndex].ToString().IndexOf("(")) + "\n[common]\nserver_port = " + list2[a].ToString() + "\nserver_addr = " + list1[a].ToString() + "\n" + "token = \n" + "\n[" + textBox2.Text + "]\ntype = " + frptype + "\nlocal_ip = 127.0.0.1\nlocal_port = " + textBox1.Text + "\nremote_port = " + n;
-                            FileStream fs = new FileStream(AppDomain.CurrentDomain.BaseDirectory + @"MSL\frpc", FileMode.Create, FileAccess.Write);
-                            StreamWriter sw = new StreamWriter(fs);
-                            sw.WriteLine(frpc);
-                            sw.Flush();
-                            sw.Dispose();
-                            sw.Close();
-                            fs.Close();
-                        }
                     }
+                    */
+                    //string frptype = "";
+                    string serverName = listBox1.Items[listBox1.SelectedIndex].ToString();
+                    if (serverName.Contains("("))
+                    {
+                        serverName = serverName.Substring(0, serverName.IndexOf("("));
+                    }
+                    if (frpcType.SelectedIndex == 0)
+                    {
+                        frptype = "tcp";
+                    }
+                    else if (frpcType.SelectedIndex == 1)
+                    {
+                        frptype = "udp";
+                    }
+                    
+                    string frpc = "#" + serverName + "\n[common]\n";
+                    frpc += "server_port = " + list2[a].ToString() + "\n";
+                    frpc += "server_addr = " + list1[a].ToString() + "\n";
+                    frpc += "user = " + textBox2.Text + "\n";
+                    frpc += "token = \n";
+                    frpc += "heartbeat_timeout = 15\n";
+                    frpc += "heartbeat_interval = 5\n";
+                    frpc += "quic_keepalive_period = 5\n\n";
+                    if (frpcType.SelectedIndex == 2)
+                    {
+                        string a100 = textBox1.Text.Substring(0, textBox1.Text.IndexOf("|"));
+                        string Ru2 = textBox1.Text.Substring(textBox1.Text.IndexOf("|"));
+                        string a200 = Ru2.Substring(Ru2.IndexOf("|") + 1);
+                        frpc += "[tcp]\ntype = tcp\n";
+                        frpc += "local_ip = 127.0.0.1\n";
+                        frpc += "local_port = " + a100 + "\n";
+                        frpc += "remote_port = " + n + "\n";
+                        frpc += "\n[udp]\ntype = udp\n";
+                        frpc += "local_ip = 127.0.0.1\n";
+                        frpc += "local_port = " + a200 + "\n";
+                        frpc += "remote_port = " + n;
+                    }
+                    else
+                    {
+                        frpc += "[" + frptype + "]\ntype = " + frptype + "\n";
+                        frpc += "local_ip = 127.0.0.1\n";
+                        frpc += "local_port = " + textBox1.Text + "\n";
+                        frpc += "remote_port = " + n;
+                    }
+                    using (FileStream fs = new FileStream(AppDomain.CurrentDomain.BaseDirectory + @"MSL\frpc", FileMode.Create, FileAccess.Write))
+                    using (StreamWriter sw = new StreamWriter(fs))
+                    {
+                        sw.WriteLine(frpc);
+                    }
+
                     DialogShow.ShowMsg(this, "映射配置成功，请您点击“启动内网映射”以启动映射！", "信息", false, "确定");
                     this.Close();
                 }
@@ -330,6 +332,7 @@ namespace MSL
                         MessageBox.Show("出现错误，请确保内网端口和QQ号不为空后再试：" + "w3x2", "错误", MessageBoxButton.OK, MessageBoxImage.Error);
                         return;
                     }
+                    /*
                     if (frpcType.SelectedIndex == 0)
                     {
                         frptype = "tcp";
@@ -348,16 +351,8 @@ namespace MSL
                             string Ru2 = textBox1.Text.Substring(textBox1.Text.IndexOf("|"));
                             string a200 = Ru2.Substring(Ru2.IndexOf("|") + 1);
 
-                            if (listBox1.Items[listBox1.SelectedIndex].ToString().IndexOf("(") == -1)
-                            {
-                                string frpc = "#" + listBox1.Items[listBox1.SelectedIndex].ToString() + "\n[common]\nserver_port = " + (int.Parse(list2[a].ToString()) + 1).ToString() + "\nserver_addr = " + list1[a].ToString() + "\n" + "user = " + textBox2.Text + "\n" + "meta_token = " + textBox3.Text + "\nprotocol = quic\n" + "\n[" + textBox2.Text + "TCP]\ntype = tcp" + "\nlocal_ip = 127.0.0.1\nlocal_port = " + a100 + "\nremote_port = " + n + "\n\n[" + textBox2.Text + "UDP]\ntype = udp" + "\nlocal_ip = 127.0.0.1\nlocal_port = " + a200 + "\nremote_port = " + n;
+                                string frpc = "#" + listBox1.Items[listBox1.SelectedIndex].ToString() + "\n[common]\nserver_port = " + (int.Parse(list2[a].ToString()) + 1).ToString() + "\nserver_addr = " + list1[a].ToString() + "\n" + "user = " + textBox2.Text + "\n" + "meta_token = " + textBox3.Text + "\nprotocol = quic\nheartbeat_timeout = 15\nheartbeat_interval = 5\nquic_keepalive_period = 5" + "\n\n[tcp]\ntype = tcp" + "\nlocal_ip = 127.0.0.1\nlocal_port = " + a100 + "\nremote_port = " + n + "\n\n[udp]\ntype = udp" + "\nlocal_ip = 127.0.0.1\nlocal_port = " + a200 + "\nremote_port = " + n;
                                 File.WriteAllText(AppDomain.CurrentDomain.BaseDirectory + @"MSL\frpc", frpc);
-                            }
-                            else
-                            {
-                                string frpc = "#" + listBox1.Items[listBox1.SelectedIndex].ToString().Substring(0, listBox1.Items[listBox1.SelectedIndex].ToString().IndexOf("(")) + "\n[common]\nserver_port = " + (int.Parse(list2[a].ToString()) + 1).ToString() + "\nserver_addr = " + list1[a].ToString() + "\n" + "user = " + textBox2.Text + "\n" + "meta_token = " + textBox3.Text + "\nprotocol = quic\n" + "\n[" + textBox2.Text + "TCP]\ntype = tcp" + "\nlocal_ip = 127.0.0.1\nlocal_port = " + a100 + "\nremote_port = " + n + "\n\n[" + textBox2.Text + "UDP]\ntype = udp" + "\nlocal_ip = 127.0.0.1\nlocal_port = " + a200 + "\nremote_port = " + n;
-                                File.WriteAllText(AppDomain.CurrentDomain.BaseDirectory + @"MSL\frpc", frpc);
-                            }
                         }
                         //付费协议=kcp
                         if (usePaidProtocol.SelectedIndex == 1)
@@ -366,16 +361,8 @@ namespace MSL
                             string Ru2 = textBox1.Text.Substring(textBox1.Text.IndexOf("|"));
                             string a200 = Ru2.Substring(Ru2.IndexOf("|") + 1);
 
-                            if (listBox1.Items[listBox1.SelectedIndex].ToString().IndexOf("(") == -1)
-                            {
-                                string frpc = "#" + listBox1.Items[listBox1.SelectedIndex].ToString() + "\n[common]\nserver_port = " + list2[a].ToString() + "\nserver_addr = " + list1[a].ToString() + "\n" + "user = " + textBox2.Text + "\n" + "meta_token = " + textBox3.Text + "\nprotocol = kcp\n" + "\n[" + textBox2.Text + "TCP]\ntype = tcp" + "\nlocal_ip = 127.0.0.1\nlocal_port = " + a100 + "\nremote_port = " + n + "\n\n[" + textBox2.Text + "UDP]\ntype = udp" + "\nlocal_ip = 127.0.0.1\nlocal_port = " + a200 + "\nremote_port = " + n;
+                                string frpc = "#" + listBox1.Items[listBox1.SelectedIndex].ToString() + "\n[common]\nserver_port = " + list2[a].ToString() + "\nserver_addr = " + list1[a].ToString() + "\n" + "user = " + textBox2.Text + "\n" + "meta_token = " + textBox3.Text + "\nprotocol = kcp\nheartbeat_timeout = 15\nheartbeat_interval = 5\nquic_keepalive_period = 5" + "\n\n[tcp]\ntype = tcp" + "\nlocal_ip = 127.0.0.1\nlocal_port = " + a100 + "\nremote_port = " + n + "\n\n[udp]\ntype = udp" + "\nlocal_ip = 127.0.0.1\nlocal_port = " + a200 + "\nremote_port = " + n;
                                 File.WriteAllText(AppDomain.CurrentDomain.BaseDirectory + @"MSL\frpc", frpc);
-                            }
-                            else
-                            {
-                                string frpc = "#" + listBox1.Items[listBox1.SelectedIndex].ToString().Substring(0, listBox1.Items[listBox1.SelectedIndex].ToString().IndexOf("(")) + "\n[common]\nserver_port = " + list2[a].ToString() + "\nserver_addr = " + list1[a].ToString() + "\n" + "user = " + textBox2.Text + "\n" + "meta_token = " + textBox3.Text + "\nprotocol = kcp\n" + "\n[" + textBox2.Text + "TCP]\ntype = tcp" + "\nlocal_ip = 127.0.0.1\nlocal_port = " + a100 + "\nremote_port = " + n + "\n\n[" + textBox2.Text + "UDP]\ntype = udp" + "\nlocal_ip = 127.0.0.1\nlocal_port = " + a200 + "\nremote_port = " + n;
-                                File.WriteAllText(AppDomain.CurrentDomain.BaseDirectory + @"MSL\frpc", frpc);
-                            }
                         }
                         //无付费协议
                         if (usePaidProtocol.SelectedIndex == 2)
@@ -384,16 +371,8 @@ namespace MSL
                             string Ru2 = textBox1.Text.Substring(textBox1.Text.IndexOf("|") + 1);
                             string a200 = Ru2.Substring(Ru2.IndexOf("|"));
 
-                            if (listBox1.Items[listBox1.SelectedIndex].ToString().IndexOf("(") == -1)
-                            {
-                                string frpc = "#" + listBox1.Items[listBox1.SelectedIndex].ToString() + "\n[common]\nserver_port = " + list2[a].ToString() + "\nserver_addr = " + list1[a].ToString() + "\n" + "user = " + textBox2.Text + "\n" + "meta_token = " + textBox3.Text + "\n" + "\n[" + textBox2.Text + "TCP]\ntype = tcp" + "\nlocal_ip = 127.0.0.1\nlocal_port = " + a100 + "\nremote_port = " + n + "\n\n[" + textBox2.Text + "UDP]\ntype = udp" + "\nlocal_ip = 127.0.0.1\nlocal_port = " + a200 + "\nremote_port = " + n;
+                                string frpc = "#" + listBox1.Items[listBox1.SelectedIndex].ToString() + "\n[common]\nserver_port = " + list2[a].ToString() + "\nserver_addr = " + list1[a].ToString() + "\n" + "user = " + textBox2.Text + "\n" + "meta_token = " + textBox3.Text + "\nheartbeat_timeout = 15\nheartbeat_interval = 5\nquic_keepalive_period = 5" + "\n\n[tcp]\ntype = tcp" + "\nlocal_ip = 127.0.0.1\nlocal_port = " + a100 + "\nremote_port = " + n + "\n\n[udp]\ntype = udp" + "\nlocal_ip = 127.0.0.1\nlocal_port = " + a200 + "\nremote_port = " + n;
                                 File.WriteAllText(AppDomain.CurrentDomain.BaseDirectory + @"MSL\frpc", frpc);
-                            }
-                            else
-                            {
-                                string frpc = "#" + listBox1.Items[listBox1.SelectedIndex].ToString().Substring(0, listBox1.Items[listBox1.SelectedIndex].ToString().IndexOf("(")) + "\n[common]\nserver_port = " + list2[a].ToString() + "\nserver_addr = " + list1[a].ToString() + "\n" + "user = " + textBox2.Text + "\n" + "meta_token = " + textBox3.Text + "\n" + "\n[" + textBox2.Text + "TCP]\ntype = tcp" + "\nlocal_ip = 127.0.0.1\nlocal_port = " + a100 + "\nremote_port = " + n + "\n\n[" + textBox2.Text + "UDP]\ntype = udp" + "\nlocal_ip = 127.0.0.1\nlocal_port = " + a200 + "\nremote_port = " + n;
-                                File.WriteAllText(AppDomain.CurrentDomain.BaseDirectory + @"MSL\frpc", frpc);
-                            }
                         }
                     }
                     else //不是双协议的情况
@@ -401,61 +380,91 @@ namespace MSL
                         //付费协议=quic
                         if (usePaidProtocol.SelectedIndex == 0)
                         {
-                            if (listBox1.Items[listBox1.SelectedIndex].ToString().IndexOf("(") == -1)
-                            {
-                                string frpc = "#" + listBox1.Items[listBox1.SelectedIndex].ToString() + "\n[common]\nserver_port = " + (int.Parse(list2[a].ToString()) + 1).ToString() + "\nserver_addr = " + list1[a].ToString() + "\n" + "user = " + textBox2.Text + "\n" + "meta_token = " + textBox3.Text + "\nprotocol = quic\n" + "\n[" + textBox2.Text + "]\ntype = " + frptype + "\nlocal_ip = 127.0.0.1\nlocal_port = " + textBox1.Text + "\nremote_port = " + n;
+                                string frpc = "#" + listBox1.Items[listBox1.SelectedIndex].ToString() + "\n[common]\nserver_port = " + (int.Parse(list2[a].ToString()) + 1).ToString() + "\nserver_addr = " + list1[a].ToString() + "\n" + "user = " + textBox2.Text + "\n" + "meta_token = " + textBox3.Text + "\nprotocol = quic\nheartbeat_timeout = 15\nheartbeat_interval = 5\nquic_keepalive_period = 5" + "\n\n[" + frptype + "]\ntype = " + frptype + "\nlocal_ip = 127.0.0.1\nlocal_port = " + textBox1.Text + "\nremote_port = " + n;
                                 File.WriteAllText(AppDomain.CurrentDomain.BaseDirectory + @"MSL\frpc", frpc);
-                            }
-                            else
-                            {
-                                string frpc = "#" + listBox1.Items[listBox1.SelectedIndex].ToString().Substring(0, listBox1.Items[listBox1.SelectedIndex].ToString().IndexOf("(")) + "\n[common]\nserver_port = " + (int.Parse(list2[a].ToString()) + 1).ToString() + "\nserver_addr = " + list1[a].ToString() + "\n" + "user = " + textBox2.Text + "\n" + "meta_token = " + textBox3.Text + "\nprotocol = quic\n" + "\n[" + textBox2.Text + "]\ntype = " + frptype + "\nlocal_ip = 127.0.0.1\nlocal_port = " + textBox1.Text + "\nremote_port = " + n;
-                                File.WriteAllText(AppDomain.CurrentDomain.BaseDirectory + @"MSL\frpc", frpc);
-                            }
                         }
                         //付费协议=kcp
                         if (usePaidProtocol.SelectedIndex == 1)
                         {
-                            if (listBox1.Items[listBox1.SelectedIndex].ToString().IndexOf("(") == -1)
-                            {
-                                string frpc = "#" + listBox1.Items[listBox1.SelectedIndex].ToString() + "\n[common]\nserver_port = " + list2[a].ToString() + "\nserver_addr = " + list1[a].ToString() + "\n" + "user = " + textBox2.Text + "\n" + "meta_token = " + textBox3.Text + "\nprotocol = kcp\n" + "\n[" + textBox2.Text + "]\ntype = " + frptype + "\nlocal_ip = 127.0.0.1\nlocal_port = " + textBox1.Text + "\nremote_port = " + n;
+                                string frpc = "#" + listBox1.Items[listBox1.SelectedIndex].ToString() + "\n[common]\nserver_port = " + list2[a].ToString() + "\nserver_addr = " + list1[a].ToString() + "\n" + "user = " + textBox2.Text + "\n" + "meta_token = " + textBox3.Text + "\nprotocol = kcp\nheartbeat_timeout = 15\nheartbeat_interval = 5\nquic_keepalive_period = 5" + "\n\n[" + frptype + "]\ntype = " + frptype + "\nlocal_ip = 127.0.0.1\nlocal_port = " + textBox1.Text + "\nremote_port = " + n;
                                 File.WriteAllText(AppDomain.CurrentDomain.BaseDirectory + @"MSL\frpc", frpc);
-                            }
-                            else
-                            {
-                                string frpc = "#" + listBox1.Items[listBox1.SelectedIndex].ToString().Substring(0, listBox1.Items[listBox1.SelectedIndex].ToString().IndexOf("(")) + "\n[common]\nserver_port = " + list2[a].ToString() + "\nserver_addr = " + list1[a].ToString() + "\n" + "user = " + textBox2.Text + "\n" + "meta_token = " + textBox3.Text + "\nprotocol = kcp\n" + "\n[" + textBox2.Text + "]\ntype = " + frptype + "\nlocal_ip = 127.0.0.1\nlocal_port = " + textBox1.Text + "\nremote_port = " + n;
-                                File.WriteAllText(AppDomain.CurrentDomain.BaseDirectory + @"MSL\frpc", frpc);
-                            }
                         }
                         //无付费协议
                         if (usePaidProtocol.SelectedIndex == 2)
                         {
-                            if (listBox1.Items[listBox1.SelectedIndex].ToString().IndexOf("(") == -1)
-                            {
-                                string frpc = "#" + listBox1.Items[listBox1.SelectedIndex].ToString() + "\n[common]\nserver_port = " + list2[a].ToString() + "\nserver_addr = " + list1[a].ToString() + "\n" + "user = " + textBox2.Text + "\n" + "meta_token = " + textBox3.Text + "\n" + "\n[" + textBox2.Text + "]\ntype = " + frptype + "\nlocal_ip = 127.0.0.1\nlocal_port = " + textBox1.Text + "\nremote_port = " + n;
+
+                                string frpc = "#" + listBox1.Items[listBox1.SelectedIndex].ToString() + "\n[common]\nserver_port = " + list2[a].ToString() + "\nserver_addr = " + list1[a].ToString() + "\n" + "user = " + textBox2.Text + "\n" + "meta_token = " + textBox3.Text + "\nheartbeat_timeout = 15\nheartbeat_interval = 5\nquic_keepalive_period = 5" + "\n\n[" + frptype + "]\ntype = " + frptype + "\nlocal_ip = 127.0.0.1\nlocal_port = " + textBox1.Text + "\nremote_port = " + n;
                                 File.WriteAllText(AppDomain.CurrentDomain.BaseDirectory + @"MSL\frpc", frpc);
-                            }
-                            else
-                            {
-                                string frpc = "#" + listBox1.Items[listBox1.SelectedIndex].ToString().Substring(0, listBox1.Items[listBox1.SelectedIndex].ToString().IndexOf("(")) + "\n[common]\nserver_port = " + list2[a].ToString() + "\nserver_addr = " + list1[a].ToString() + "\n" + "user = " + textBox2.Text + "\n" + "meta_token = " + textBox3.Text + "\n" + "\n[" + textBox2.Text + "]\ntype = " + frptype + "\nlocal_ip = 127.0.0.1\nlocal_port = " + textBox1.Text + "\nremote_port = " + n;
-                                File.WriteAllText(AppDomain.CurrentDomain.BaseDirectory + @"MSL\frpc", frpc);
-                            }
                         }
                     }
-                    /*string frpc1 = list1[a].ToString() + ":" + n;
-                    MainWindow.frpc = frpc1.Replace("\r", "");
-                    StreamReader reader = File.OpenText(AppDomain.CurrentDomain.BaseDirectory + @"MSL\config.json");
-                    JsonTextReader jsonTextReader = new JsonTextReader(reader);
-                    JObject jsonObject = (JObject)JToken.ReadFrom(jsonTextReader);
-                    jsonObject["frpc"] = MainWindow.frpc;
-                    reader.Close();
-                    string output = Newtonsoft.Json.JsonConvert.SerializeObject(jsonObject, Newtonsoft.Json.Formatting.Indented);
-                    File.WriteAllText(AppDomain.CurrentDomain.BaseDirectory + @"MSL\config.json", output);
-                    //MessageBox.Show("映射配置成功，请您点击“启动内网映射”以启动映射！\n连接IP为：\n" + MainWindow.frpc, "提示", MessageBoxButton.OK, MessageBoxImage.Information);
                     */
+                    //string frptype = "";
+                    string protocol = "";
+                    string frpPort = (int.Parse(list2[a].ToString()) + 1).ToString();
+
+                    if (frpcType.SelectedIndex == 0)
+                    {
+                        frptype = "tcp";
+                    }
+                    else if (frpcType.SelectedIndex == 1)
+                    {
+                        frptype = "udp";
+                    }
+                    // 付费协议=quic
+                    if (usePaidProtocol.SelectedIndex == 0)
+                    {
+                        protocol = "quic";
+                        frpPort = (int.Parse(list2[a].ToString()) + 1).ToString();
+                    }
+                    // 付费协议=kcp
+                    else if (usePaidProtocol.SelectedIndex == 1)
+                    {
+                        protocol = "kcp";
+                    }
+
+                    string serverName = listBox1.Items[listBox1.SelectedIndex].ToString();
+                    if (serverName.Contains("("))
+                    {
+                        serverName = serverName.Substring(0, serverName.IndexOf("("));
+                    }
+                    string frpc = "#" + serverName + "\n[common]\n";
+                    frpc += "server_port = " + frpPort + "\n";
+                    frpc += "server_addr = " + list1[a].ToString() + "\n";
+                    frpc += "user = " + textBox2.Text + "\n";
+                    frpc += "meta_token = " + textBox3.Text + "\n";
+                    if (protocol != "")
+                    {
+                        frpc += "protocol = " + protocol + "\n";
+                    }
+                    frpc += "heartbeat_timeout = 15\n";
+                    frpc += "heartbeat_interval = 5\n";
+                    frpc += "quic_keepalive_period = 5" + "\n\n";
+
+                    if (frpcType.SelectedIndex == 2)
+                    {
+                        string a100 = textBox1.Text.Substring(0, textBox1.Text.IndexOf("|"));
+                        string Ru2 = textBox1.Text.Substring(textBox1.Text.IndexOf("|"));
+                        string a200 = Ru2.Substring(Ru2.IndexOf("|") + 1);
+                        frpc += "[tcp]\ntype = tcp\n";
+                        frpc += "local_ip = 127.0.0.1\n";
+                        frpc += "local_port = " + a100 + "\n";
+                        frpc += "remote_port = " + n + "\n\n";
+                        frpc += "[udp]\ntype = udp\n";
+                        frpc += "local_ip = 127.0.0.1\n";
+                        frpc += "local_port = " + a200 + "\n";
+                        frpc += "remote_port = " + n;
+                    }
+                    else
+                    {
+                        frpc += "[" + frptype + "]\ntype = " + frptype + "\n";
+                        frpc += "local_ip = 127.0.0.1\n";
+                        frpc += "local_port = " + textBox1.Text + "\n";
+                        frpc += "remote_port = " + n;
+                    }
+
+                    File.WriteAllText(AppDomain.CurrentDomain.BaseDirectory + @"MSL\frpc", frpc);
+
                     DialogShow.ShowMsg(this, "映射配置成功，请您点击“启动内网映射”以启动映射！", "信息", false, "确定");
-                    //MessageDialog messageDialog = new MessageDialog();
-                    //messageDialog.Owner = this;
-                    //messageDialog.ShowDialog();
                     this.Close();
                 }
                 catch (Exception a)
@@ -534,6 +543,7 @@ namespace MSL
                     };
                     string sendData = JsonConvert.SerializeObject(patientinfo);
                     string ret = await Task.Run(()=> Functions.Post("getpassword", 0, sendData, "https://aifadian.waheal.top"));
+                    this.Focus();
                     _dialog.Close();
                     if (ret != "Err")
                     {
@@ -550,6 +560,7 @@ namespace MSL
                 }
                 catch
                 {
+                    this.Focus();
                     _dialog.Close();
                     DialogShow.ShowMsg(this, "获取失败，请添加QQ：483232994（昵称：MSL-FRP），并发送赞助图片来手动获取密码\r\n（注：回复消息不一定及时，请耐心等待！如果没有添加成功，或者添加后长时间无人回复，请进入MSL交流群然后从群里私聊）", "获取失败！");
                 }
