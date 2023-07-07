@@ -7,7 +7,6 @@ using System;
 using System.Collections.Generic;
 using System.Diagnostics;
 using System.IO;
-//using System.Runtime.InteropServices;
 using System.Text;
 using System.Threading;
 using System.Windows;
@@ -524,8 +523,18 @@ namespace MSL.pages
             var res = openfile.ShowDialog();
             if (res == true)
             {
-                File.Copy(openfile.FileName, AppDomain.CurrentDomain.BaseDirectory + "MSL\\Background.png", true);
-                ChangeSkinStyle();
+                try
+                {
+                    if (openfile.FileName != AppDomain.CurrentDomain.BaseDirectory + "MSL\\Background.png")
+                    {
+                        File.Copy(openfile.FileName, AppDomain.CurrentDomain.BaseDirectory + "MSL\\Background.png", true);
+                        ChangeSkinStyle();
+                    }
+                }
+                catch(Exception ex)
+                {
+                    DialogShow.ShowMsg(mainwindow, "更换背景图片失败！请重试！\n错误代码：" + ex.Message, "错误");
+                }
             }
         }
         public static BitmapImage GetImage(string imagePath)
@@ -547,8 +556,15 @@ namespace MSL.pages
 
         private void delBackImg_Click(object sender, RoutedEventArgs e)
         {
-            File.Delete(AppDomain.CurrentDomain.BaseDirectory + "MSL\\Background.png");
-            ChangeSkinStyle();
+            try
+            {
+                File.Delete(AppDomain.CurrentDomain.BaseDirectory + "MSL\\Background.png");
+                ChangeSkinStyle();
+            }
+            catch (Exception ex)
+            {
+                DialogShow.ShowMsg((MainWindow)System.Windows.Window.GetWindow(this), "清除背景图片失败！请重试！\n错误代码：" + ex.Message, "错误");
+            }
         }
 
         private void addServerToRunlist_Click(object sender, RoutedEventArgs e)
@@ -625,12 +641,6 @@ namespace MSL.pages
             //更新
             try
             {
-                /*
-                WebClient MyWebClient = new WebClient();
-                MyWebClient.Credentials = CredentialCache.DefaultCredentials;
-                byte[] pageData = MyWebClient.DownloadData(serverLink + @"/msl/update.txt");
-                string pageHtml = Encoding.UTF8.GetString(pageData);
-                */
                 var mainwindow = (MainWindow)System.Windows.Window.GetWindow(this);
                 string pageHtml = Functions.Get("update");
                 string strtempa = "#";
@@ -646,10 +656,6 @@ namespace MSL.pages
 
                 if (newVersion > version)
                 {
-                    /*
-                    byte[] _updatelog = MyWebClient.DownloadData(serverLink + @"/msl/updatelog.txt");
-                    string updatelog = Encoding.UTF8.GetString(_updatelog);
-                    */
                     string updatelog = Functions.Post("update", 1);
                     Dispatcher.Invoke(new Action(delegate
                     {
@@ -663,15 +669,6 @@ namespace MSL.pages
                             DialogShow.ShowDownload(mainwindow, aaa1, AppDomain.CurrentDomain.BaseDirectory, "MSL" + aaa + ".exe", "下载新版本中……");
                             if (File.Exists(AppDomain.CurrentDomain.BaseDirectory + "MSL" + aaa + ".exe"))
                             {
-                                /*
-                                string vBatFile = Path.GetDirectoryName(AppDomain.CurrentDomain.BaseDirectory) + @"\DEL.bat";
-                                using (StreamWriter vStreamWriter = new StreamWriter(vBatFile, false, Encoding.Default))
-                                {
-                                    vStreamWriter.Write(string.Format(":del\r\n del \"" + System.Windows.Forms.Application.ExecutablePath + "\"\r\n " + "if exist \"" + System.Windows.Forms.Application.ExecutablePath + "\" goto del\r\n " + "start /d \"" + AppDomain.CurrentDomain.BaseDirectory + "\" MSL" + aaa + ".exe" + "\r\n" + " del %0\r\n", AppDomain.CurrentDomain.BaseDirectory));
-                                }
-                                WinExec(vBatFile, 0);
-                                Process.GetCurrentProcess().Kill();
-                                */
                                 string oldExePath = Process.GetCurrentProcess().MainModule.ModuleName;
                                 string dwnExePath = Path.Combine(AppDomain.CurrentDomain.BaseDirectory, "MSL" + aaa + ".exe");
                                 string newExeDir = AppDomain.CurrentDomain.BaseDirectory;
@@ -719,13 +716,5 @@ namespace MSL.pages
                 Growl.Error("检查更新失败！");
             }
         }
-        /*
-[DllImport("MSL-BCLinker.dll", EntryPoint = "send_msg_to_bc")]
-private extern static int SendMsgToBC(string cmd, string port);
-private void bcLink_Click(object sender, RoutedEventArgs e)
-{
-   SendMsgToBC("end", "11451");
-}
-*/
     }
 }

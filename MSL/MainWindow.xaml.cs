@@ -112,7 +112,11 @@ namespace MSL
             }
             catch (Exception ex)
             {
-                DialogShow.ShowMsg(this, "MSL在初始化加载过程中出现问题，请尝试用管理员身份运行MSL……\n错误代码：" + ex.Message, "错误");
+                Dispatcher.Invoke(new Action(delegate
+                {
+                    DialogShow.ShowMsg(this, "MSL在初始化加载过程中出现问题，请尝试用管理员身份运行MSL……\n错误代码：" + ex.Message, "错误");
+                    Close();
+                }));
             }
 
             //MessageBox.Show("CheckDirSuccess");
@@ -123,7 +127,10 @@ namespace MSL
             }
             catch(Exception ex)
             {
-                DialogShow.ShowMsg(this, "MSL在加载配置文件时出现错误，将进行重试，若点击确定后软件突然闪退，请尝试使用管理员身份运行或将此问题报告给作者！\n错误代码："+ex.Message, "错误");
+                Dispatcher.Invoke(new Action(delegate
+                {
+                    DialogShow.ShowMsg(this, "MSL在加载配置文件时出现错误，将进行重试，若点击确定后软件突然闪退，请尝试使用管理员身份运行或将此问题报告给作者！\n错误代码：" + ex.Message, "错误");
+                }));
                 File.WriteAllText(AppDomain.CurrentDomain.BaseDirectory + @"MSL\config.json", string.Format("{{{0}}}", "\n"));
                 jsonObject = JObject.Parse(File.ReadAllText(AppDomain.CurrentDomain.BaseDirectory + @"MSL\config.json", Encoding.UTF8));
             }
@@ -255,8 +262,11 @@ namespace MSL
                 }
                 if (File.Exists(AppDomain.CurrentDomain.BaseDirectory + "MSL\\Background.png"))
                 {
-                    Background = new ImageBrush(SettingsPage.GetImage(AppDomain.CurrentDomain.BaseDirectory + "MSL\\Background.png"));
-                    SideMenuBorder.BorderThickness = new Thickness(0);
+                    Dispatcher.Invoke(new Action(delegate
+                    {
+                        Background = new ImageBrush(SettingsPage.GetImage(AppDomain.CurrentDomain.BaseDirectory + "MSL\\Background.png"));
+                        SideMenuBorder.BorderThickness = new Thickness(0);
+                    }));
                 }
                 //MessageBox.Show("BackgroundLoaded");
                 if (jsonObject["semitransparentTitle"] == null)
