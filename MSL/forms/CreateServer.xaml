@@ -37,9 +37,9 @@
                                 <Label Content="服务器类型（选择你想要开的服务器类型）：" HorizontalAlignment="Left" Margin="10,35,0,0" VerticalAlignment="Top" FontSize="16" BorderBrush="{x:Null}" Background="{x:Null}" Height="35"/>
                                 <ComboBox x:Name="ServerCoreCombo" HorizontalAlignment="Left" Margin="360,35,0,0" Width="330" VerticalAlignment="Top" Height="35" SelectionChanged="ServerCoreCombo_SelectionChanged">
                                     <ComboBoxItem Content="插件服务器"/>
+                                    <ComboBoxItem Content="插件模组混合服务器（Forge）"/>
                                     <ComboBoxItem Content="模组服务器（Forge）"/>
                                     <ComboBoxItem Content="模组服务器（Fabric）"/>
-                                    <ComboBoxItem Content="插件模组二合一服务器（Forge）"/>
                                     <ComboBoxItem Content="原版服务器"/>
                                     <ComboBoxItem Content="基岩版服务器"/>
                                     <ComboBoxItem Content="代理服务器"/>

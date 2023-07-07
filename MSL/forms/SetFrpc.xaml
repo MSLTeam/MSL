@@ -11,7 +11,7 @@
         Title="MSL-配置内网映射" Height="450" Width="750" Loaded="Window_Loaded" ResizeMode="NoResize" WindowStartupLocation="CenterOwner" Background="{DynamicResource BackgroundBrush}">
     <Grid x:Name="MainGrid">
         <ListBox x:Name="listBox1" Height="250" Width="260" SelectionChanged="listBox1_SelectionChanged" SelectionMode="Single" Margin="20,50,0,0" HorizontalAlignment="Left" VerticalAlignment="Top"/>
-        <Button Content="确定" Margin="630,225,0,0" Style="{StaticResource ButtonPrimary}" VerticalAlignment="Top" Width="100" Click="Button_Click" FontWeight="Normal" FontSize="18" Height="110" HorizontalAlignment="Left"/>
+        <Button Content="确定" Margin="630,255,0,0" Style="{StaticResource ButtonPrimary}" VerticalAlignment="Top" Width="100" Click="Button_Click" FontWeight="Normal" FontSize="18" Height="80" HorizontalAlignment="Left"/>
         <TextBox x:Name="textBox1" HorizontalAlignment="Left" Height="23" Margin="330,85,0,0" VerticalAlignment="Top" Width="400" Text="25565"/>
         <TextBox x:Name="textBox2" HorizontalAlignment="Left" Height="23" Margin="330,170,0,0" VerticalAlignment="Top" Width="400"/>
         <Label x:Name="lab1" Content="输入本地端口(Java版默认25565,基岩版默认19132,双协议用|分割)：" HorizontalAlignment="Left" Margin="290,50,0,0" VerticalAlignment="Top" Background="{x:Null}" BorderBrush="{x:Null}" FontSize="14"/>
@@ -34,5 +34,6 @@
             <ComboBoxItem Content="KCP加速协议"/>
             <ComboBoxItem Content="默认（无加速协议）"/>
         </ComboBox>
+        <CheckBox x:Name="enableCompression" Content="启用数据压缩" HorizontalAlignment="Left" Margin="630,230,0,0" VerticalAlignment="Top" IsChecked="True"/>
     </Grid>
 </hc:Window>

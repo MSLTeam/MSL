@@ -7,6 +7,7 @@ using System.Diagnostics;
 using System.IO;
 using System.Net;
 using System.Net.NetworkInformation;
+using System.Runtime.InteropServices;
 using System.Text;
 using System.Text.RegularExpressions;
 using System.Threading;
@@ -28,29 +29,40 @@ namespace MSL.pages
         public static Process FRPCMD = new Process();
         public event DelReadStdOutput ReadStdOutput;
         //int paidServerCooldown = 0;
-        string _dnfrpc;
+        private string _dnfrpc;
         public FrpcPage()
         {
+            InitializeComponent();
             ReadStdOutput += new DelReadStdOutput(ReadStdOutputAction);
             FRPCMD.OutputDataReceived += new DataReceivedEventHandler(p_OutputDataReceived);
             MainWindow.AutoOpenFrpc += AutoStartFrpc;
-            InitializeComponent();
         }
 
         private void StartFrpc()
         {
             try
             {
-                startfrpc.Content = "关闭内网映射";
+                Dispatcher.Invoke(new Action(delegate
+                {
+                    startfrpc.Content = "关闭内网映射";
+                }));
+                Directory.SetCurrentDirectory(AppDomain.CurrentDomain.BaseDirectory + "MSL");
                 FRPCMD.StartInfo.FileName = AppDomain.CurrentDomain.BaseDirectory + @"MSL\frpc.exe";
                 FRPCMD.StartInfo.Arguments = "-c frpc";
-                Directory.SetCurrentDirectory(AppDomain.CurrentDomain.BaseDirectory + "MSL");
                 FRPCMD.StartInfo.CreateNoWindow = true;
                 FRPCMD.StartInfo.UseShellExecute = false;
                 FRPCMD.StartInfo.RedirectStandardInput = true;
                 FRPCMD.StartInfo.RedirectStandardOutput = true;
                 FRPCMD.Start();
                 FRPCMD.BeginOutputReadLine();
+                Directory.SetCurrentDirectory(AppDomain.CurrentDomain.BaseDirectory);
+                FRPCMD.WaitForExit();
+                FRPCMD.CancelOutputRead();
+                Dispatcher.Invoke(new Action(delegate
+                {
+                    setfrpc.IsEnabled = true;
+                    startfrpc.Content = "启动内网映射";
+                }));
             }
             catch (Exception e)
             {
@@ -59,27 +71,7 @@ namespace MSL.pages
         }
         private void AutoStartFrpc()
         {
-            try
-            {
-                Dispatcher.Invoke(new Action(delegate
-                {
-                    startfrpc.Content = "关闭内网映射";
-                }));
-                FRPCMD.StartInfo.FileName = AppDomain.CurrentDomain.BaseDirectory + @"MSL\frpc.exe";
-                FRPCMD.StartInfo.Arguments = "-c frpc";
-                Directory.SetCurrentDirectory(AppDomain.CurrentDomain.BaseDirectory + "MSL");
-                FRPCMD.StartInfo.CreateNoWindow = true;
-                FRPCMD.StartInfo.UseShellExecute = false;
-                FRPCMD.StartInfo.RedirectStandardInput = true;
-                FRPCMD.StartInfo.RedirectStandardOutput = true;
-                //FRPCMD.OutputDataReceived += new DataReceivedEventHandler(p_OutputDataReceived);
-                FRPCMD.Start();
-                FRPCMD.BeginOutputReadLine();
-            }
-            catch (Exception e)
-            {
-                MessageBox.Show("出现错误，请检查是否有杀毒软件误杀并重试:" + e.Message, "错误", MessageBoxButton.OK, MessageBoxImage.Error);
-            }
+            Task.Run(() => StartFrpc());
         }//the same of above
         private void p_OutputDataReceived(object sender, DataReceivedEventArgs e)
         {
@@ -111,22 +103,9 @@ namespace MSL.pages
                     {
                         frpcOutlog.Text = frpcOutlog.Text + "连接超时，该节点可能下线，请重新配置！\n";
                     }
-                    try
+                    if (!FRPCMD.HasExited)
                     {
-                        if (!FRPCMD.HasExited)
-                        {
-                            FRPCMD.Kill();
-                        }
-                        FRPCMD.CancelOutputRead();
-                        FRPCMD.CancelOutputRead();
-                        //FRPCMD.OutputDataReceived -= new DataReceivedEventHandler(p_OutputDataReceived);
-                        setfrpc.IsEnabled = true;
-                        startfrpc.Content = "启动内网映射";
-                    }
-                    catch
-                    {
-                        setfrpc.IsEnabled = true;
-                        startfrpc.Content = "启动内网映射";
+                        Task.Run(() => StopProcess(FRPCMD));
                     }
                 }
                 if (msg.IndexOf("success") + 1 != 0)
@@ -137,6 +116,10 @@ namespace MSL.pages
                 {
                     try
                     {
+                        if (!FRPCMD.HasExited)
+                        {
+                            Task.Run(() => StopProcess(FRPCMD));
+                        }
                         frpcOutlog.Text = frpcOutlog.Text + "重新连接服务器...\n";
                         Thread.Sleep(200);
                         string frpcserver = GetFrpcIP().Substring(0, GetFrpcIP().IndexOf(".")) + "*";
@@ -156,26 +139,12 @@ namespace MSL.pages
                         string a112 = Ru2.Substring(0, Ru2.IndexOf("\n"));
                         aaa = aaa.Replace(a112, "token = " + pageHtml);
                         File.WriteAllText(AppDomain.CurrentDomain.BaseDirectory + "MSL\\frpc", aaa);
-                        FRPCMD.CancelOutputRead();
-                        //FRPCMD.OutputDataReceived -= p_OutputDataReceived;
-                        StartFrpc();
+                        Task.Run(() => StartFrpc());
                     }
                     catch (Exception aa)
                     {
                         MessageBox.Show("内网映射桥接失败！请查看是否有杀毒软件删除了frpc.exe并重启开服器再试！\n错误代码：" + aa.Message, "Error", MessageBoxButton.OK, MessageBoxImage.Hand);
                         Growl.Error("内网映射桥接失败！", "");
-                        try
-                        {
-                            FRPCMD.CancelOutputRead();
-                            //FRPCMD.OutputDataReceived -= p_OutputDataReceived;
-                            setfrpc.IsEnabled = true;
-                            startfrpc.Content = "启动内网映射";
-                        }
-                        catch
-                        {
-                            setfrpc.IsEnabled = true;
-                            startfrpc.Content = "启动内网映射";
-                        }
                     }
                 }
             }
@@ -183,6 +152,10 @@ namespace MSL.pages
             {
                 try
                 {
+                    if (!FRPCMD.HasExited)
+                    {
+                        Task.Run(() => StopProcess(FRPCMD));
+                    }
                     frpcOutlog.Text = frpcOutlog.Text + "重新连接服务器...\n";
                     Thread.Sleep(200);
                     string frpcserver = GetFrpcIP().Substring(0, GetFrpcIP().IndexOf(".")) + "*";
@@ -202,33 +175,19 @@ namespace MSL.pages
                     string a112 = Ru2.Substring(0, Ru2.IndexOf("\n"));
                     aaa = aaa.Replace(a112, "token = " + pageHtml);
                     File.WriteAllText(AppDomain.CurrentDomain.BaseDirectory + "MSL\\frpc", aaa);
-                    FRPCMD.CancelOutputRead();
-                    //FRPCMD.OutputDataReceived -= p_OutputDataReceived;
-                    StartFrpc();
+                    Task.Run(() => StartFrpc());
                 }
                 catch (Exception aa)
                 {
                     MessageBox.Show("内网映射桥接失败！请重试！\n错误代码：" + aa.Message, "Error", MessageBoxButton.OK, MessageBoxImage.Error);
-                    try
-                    {
-                        FRPCMD.CancelOutputRead();
-                        //FRPCMD.OutputDataReceived -= new DataReceivedEventHandler(p_OutputDataReceived);
-                        setfrpc.IsEnabled = true;
-                        startfrpc.Content = "启动内网映射";
-                    }
-                    catch
-                    {
-                        setfrpc.IsEnabled = true;
-                        startfrpc.Content = "启动内网映射";
-                    }
                 }
             }
             if (msg.IndexOf("start") + 1 != 0)
             {
                 if (msg.IndexOf("success") + 1 != 0)
                 {
-                    frpcOutlog.Text = frpcOutlog.Text + "内网映射桥接成功！\n";
-                    Growl.Success("内网映射桥接完成，您可复制IP进入游戏了！");
+                    frpcOutlog.Text = frpcOutlog.Text + "内网映射桥接成功！您可复制IP进入游戏了！\n";
+                    Growl.Success("内网映射桥接成功！");
                 }
                 if (msg.IndexOf("error") + 1 != 0)
                 {
@@ -250,22 +209,9 @@ namespace MSL.pages
                     {
                         frpcOutlog.Text = frpcOutlog.Text + "隧道已被占用！请不要频繁开关内网映射并等待一分钟再试。\n若一分钟后仍然占用，请尝试手动结束frpc进程或重启电脑再试。\n";
                     }
-                    try
+                    if (!FRPCMD.HasExited)
                     {
-                        if (!FRPCMD.HasExited)
-                        {
-                            FRPCMD.Kill();
-                        }
-                        FRPCMD.CancelOutputRead();
-                        //ReadStdOutput = null;
-                        //FRPCMD.OutputDataReceived -= new DataReceivedEventHandler(p_OutputDataReceived);
-                        setfrpc.IsEnabled = true;
-                        startfrpc.Content = "启动内网映射";
-                    }
-                    catch
-                    {
-                        setfrpc.IsEnabled = true;
-                        startfrpc.Content = "启动内网映射";
+                        Task.Run(() => StopProcess(FRPCMD));
                     }
                 }
             }
@@ -298,7 +244,7 @@ namespace MSL.pages
 
             Process.Start("https://afdian.net/a/makabaka123");
             string text = "";
-            bool input= false;
+            bool input = false;
             Dispatcher.Invoke(new Action(delegate { input = DialogShow.ShowInput((MainWindow)Window.GetWindow(this), "在爱发电购买完毕后，在此输入QQ号，以获取您的密码：", out text, userAccount); }));
             if (input)
             {
@@ -306,7 +252,7 @@ namespace MSL.pages
                 try
                 {
                     Dispatcher.Invoke(new Action(delegate { _dialog = Dialog.Show(new TextDialog("获取密码中，请稍等……")); }));
-                    
+
                     JObject patientinfo = new JObject
                     {
                         ["qq"] = text
@@ -315,8 +261,8 @@ namespace MSL.pages
                     string ret = Functions.Post("getpassword", 0, sendData, "https://aifadian.waheal.top");
                     Dispatcher.Invoke(new Action(delegate
                     {
-                        this.Focus(); 
-                        _dialog.Close(); 
+                        this.Focus();
+                        _dialog.Close();
                     }));
                     if (ret != "Err")
                     {
@@ -348,7 +294,7 @@ namespace MSL.pages
                 Dispatcher.Invoke(new Action(delegate { _input = DialogShow.ShowInput((MainWindow)Window.GetWindow(this), "在此输入您手动获取到的密码", out password); }));
                 if (_input)
                 {
-                    _text=_text.Replace("meta_token = " + userPassword, "meta_token = " + password);
+                    _text = _text.Replace("meta_token = " + userPassword, "meta_token = " + password);
                     using (FileStream fs = new FileStream(AppDomain.CurrentDomain.BaseDirectory + @"MSL\frpc", FileMode.Create, FileAccess.Write))
                     using (StreamWriter sw = new StreamWriter(fs))
                     {
@@ -393,7 +339,7 @@ namespace MSL.pages
             JObject javaList0 = JObject.Parse(_javaList);
             _dnfrpc = javaList0["frpc"].ToString();
         }
-        private void startfrpc_Click(object sender, RoutedEventArgs e)
+        private async void startfrpc_Click(object sender, RoutedEventArgs e)
         {
             if (startfrpc.Content.ToString() == "启动内网映射")
             {
@@ -429,66 +375,94 @@ namespace MSL.pages
                         string convertString2 = Convert.ToString(jobject3);
                         File.WriteAllText(AppDomain.CurrentDomain.BaseDirectory + "MSL\\config.json", convertString2, Encoding.UTF8);
                     }
-                    else if (!File.Exists(AppDomain.CurrentDomain.BaseDirectory + "MSL\\frpc.exe"))
+                    //内网映射检测
+                    if (!File.Exists(AppDomain.CurrentDomain.BaseDirectory + "MSL\\frpc.exe"))
                     {
                         RefreshLink();
                         var mwindow = (MainWindow)Window.GetWindow(this);
                         DialogShow.ShowDownload(mwindow, _dnfrpc, AppDomain.CurrentDomain.BaseDirectory + "MSL", "frpc.exe", "下载内网映射中...");
                         _dnfrpc = "";
                     }
-                }
-                catch { }
-                /*
-                if (paidServerCooldown > 0)
-                {
-                    DialogShow.ShowMsg((MainWindow)Window.GetWindow(this),"您的节点使用状态正在重置中，请稍后再试\n剩余时间："+paidServerCooldown.ToString()+"s","警告");
+                    Growl.Info("正在启动内网映射！");
+                    _ = Task.Run(() => StartFrpc());
+                    setfrpc.IsEnabled = false;
+                    frpcOutlog.Text = "启动中，请稍候……\n";
                     return;
                 }
-                */
-                StartFrpc();
-                Growl.Success("内网映射启动成功，请耐心等待桥接完成！");
-                setfrpc.IsEnabled = false;
-                frpcOutlog.Text = "启动中，请稍后……\n";
-                return;
+                catch (Exception ex)
+                {
+                    MessageBox.Show("出现错误，请检查是否有杀毒软件误杀并重试:" + ex.Message, "错误", MessageBoxButton.OK, MessageBoxImage.Error);
+                }
             }
             else
             {
-                /*
-                if (frplab1.Text.Contains("付费"))
-                {
-                    Thread thread = new Thread(PaidServerCooldown);
-                    thread.Start();
-                }
-                */
                 try
                 {
-                    FRPCMD.Kill();
-                    FRPCMD.WaitForExit();
-                    Growl.Success("内网映射关闭成功！");
-                    FRPCMD.CancelOutputRead();
-                    //FRPCMD.OutputDataReceived -= new DataReceivedEventHandler(p_OutputDataReceived);
-                    setfrpc.IsEnabled = true;
-                    startfrpc.Content = "启动内网映射";
+                    startfrpc.IsEnabled = false;
+                    Growl.Info("正在关闭内网映射！");
+                    await Task.Run(() => StopProcess(FRPCMD));
+                    Growl.Success("内网映射已关闭！");
+                    startfrpc.IsEnabled = true;
                 }
                 catch
                 {
-                    setfrpc.IsEnabled = true;
-                    startfrpc.Content = "启动内网映射";
+                    Growl.Error("关闭失败！请尝试手动结束frpc进程！");
                 }
             }
         }
+        [DllImport("kernel32.dll", SetLastError = true)]
+        static extern bool GenerateConsoleCtrlEvent(ConsoleCtrlEvent sigevent, int dwProcessGroupId);
 
-        /*
-        private void PaidServerCooldown()
+        [DllImport("kernel32.dll", SetLastError = true)]
+        static extern bool AttachConsole(uint dwProcessId);
+
+        [DllImport("kernel32.dll")]
+        static extern bool SetConsoleCtrlHandler(ConsoleCtrlDelegate HandlerRoutine, bool Add);
+
+        [DllImport("kernel32.dll", SetLastError = true, ExactSpelling = true)]
+        static extern bool FreeConsole();
+
+        delegate Boolean ConsoleCtrlDelegate(uint CtrlType);
+
+        public enum ConsoleCtrlEvent
         {
-            paidServerCooldown = 60;
-            while (paidServerCooldown > 0)
+            CTRL_C = 0,
+            CTRL_BREAK = 1,
+            CTRL_CLOSE = 2,
+            CTRL_LOGOFF = 5,
+            CTRL_SHUTDOWN = 6
+        }
+
+        public static async Task StopProcess(Process process)
+        {
+            if (AttachConsole((uint)process.Id))
             {
-                Thread.Sleep(1000);
-                paidServerCooldown--;
+                // NOTE: each of these functions could fail. Error-handling omitted
+                // for clarity. A real-world program should check the result of each
+                // call and handle errors appropriately.
+                SetConsoleCtrlHandler(null, true);
+                GenerateConsoleCtrlEvent(ConsoleCtrlEvent.CTRL_C, 0);
+                await Task.Run(() => ProcessExited());
+                SetConsoleCtrlHandler(null, false);
+                FreeConsole();
+            }
+            else
+            {
+                int hresult = Marshal.GetLastWin32Error();
+                Exception e = Marshal.GetExceptionForHR(hresult);
+
+                throw new InvalidOperationException(
+                    $"ERROR: failed to attach console to process {process.Id}: {e?.Message ?? hresult.ToString()}");
             }
         }
-        */
+
+        static void ProcessExited()
+        {
+            while (!FRPCMD.HasExited)
+            {
+                Thread.Sleep(1000);
+            }
+        }
 
         private void copyFrpc_Click(object sender, RoutedEventArgs e)
         {
