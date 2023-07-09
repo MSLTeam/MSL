@@ -686,7 +686,7 @@ namespace MSL
                     run.Foreground = color;
                     p.Inlines.Add(run);
                 }
-                Dispatcher.Invoke(new Action(delegate
+                Dispatcher.Invoke(() =>
                 {
                     //p.Foreground = color;
                     outlog.Document.Blocks.Add(p);
@@ -694,7 +694,7 @@ namespace MSL
                     {
                         outlog.ScrollToEnd();
                     }
-                }));
+                });
             }
             catch
             {
@@ -702,14 +702,14 @@ namespace MSL
                 Run run = new Run(msg);
                 run.Foreground = color;
                 p.Inlines.Add(run);
-                Dispatcher.Invoke(new Action(delegate
+                Dispatcher.Invoke(() =>
                 {
                     outlog.Document.Blocks.Add(p);
                     if (outlog.VerticalOffset + outlog.ViewportHeight >= outlog.ExtentHeight)
                     {
                         outlog.ScrollToEnd();
                     }
-                }));
+                });
             }
         }
 
@@ -1128,28 +1128,28 @@ namespace MSL
                     sr.Close();
                     if (text.IndexOf("online-mode=true") + 1 != 0)
                     {
-                        Dispatcher.Invoke(new Action(delegate
+                        Dispatcher.Invoke(() =>
                         {
                             ShowLog("检测到您没有关闭正版验证，如果客户端为离线登录的话，请点击“更多功能”里“关闭正版验证”按钮以关闭正版验证。否则离线账户将无法进入服务器！", Brushes.OrangeRed);
                             Growl.Info("检测到您没有关闭正版验证，您可前往“更多功能”界面点击“关闭正版验证”按钮以关闭。否则离线账户无法进入服务器！");
                             onlineModeLab.Content = "已开启";
-                        }));
+                        });
                         break;
                     }
                     else if (text.IndexOf("online-mode=false") + 1 != 0)
                     {
-                        Dispatcher.Invoke(new Action(delegate
-                        { onlineModeLab.Content = "已关闭"; })); break;
+                        Dispatcher.Invoke(() =>
+                        { onlineModeLab.Content = "已关闭"; }); break;
                     }
                 }
                 catch
                 {
-                    Dispatcher.Invoke(new Action(delegate
-                    { onlineModeLab.Content = "未知"; })); break;
+                    Dispatcher.Invoke(() =>
+                    { onlineModeLab.Content = "未知"; }); break;
                 }
             }
-            Dispatcher.Invoke(new Action(delegate
-            { if (onlineModeLab.Content.ToString() == "获取中") onlineModeLab.Content = "未知"; }));
+            Dispatcher.Invoke(() =>
+            { if (onlineModeLab.Content.ToString() == "获取中") onlineModeLab.Content = "未知"; });
         }
         private void ProblemSystemShow(string msg)
         {
@@ -1372,7 +1372,7 @@ namespace MSL
             }
             finally
             {
-                Dispatcher.Invoke(new Action(delegate
+                Dispatcher.Invoke(() =>
                 {
                     ChangeControlsState(false);
                     if (solveProblemSystem)
@@ -1404,7 +1404,7 @@ namespace MSL
                             LaunchServer();
                         }
                     }
-                }));
+                });
             }
         }
 
@@ -1814,25 +1814,25 @@ namespace MSL
                         float cpuUsage = cpuCounter.NextValue();
                         if ((int)cpuUsage <= 100)
                         {
-                            Dispatcher.Invoke(new Action(delegate
+                            Dispatcher.Invoke(() =>
                             {
                                 cpuInfoLab.Content = "CPU:" + cpuUsage.ToString("f2") + "%";
                                 cpuInfoBar.Value = (int)cpuUsage;
-                            }));
+                            });
                         }
                     }
                     catch
                     {
-                        Dispatcher.Invoke(new Action(delegate
+                        Dispatcher.Invoke(() =>
                         {
                             cpuInfoLab.Content = "无法获取CPU信息";
-                        }));
+                        });
                     }
                     var ramCounter = new PerformanceCounter("Memory", "Available MBytes");
 
                     float ramAvailable = ramCounter.NextValue() / 1024;
                     double allMemory = MainWindow.PhisicalMemory / 1024.0 / 1024.0 / 1024.0;
-                    Dispatcher.Invoke(new Action(delegate
+                    Dispatcher.Invoke(() =>
                     {
                         memoryInfoLab.Content = "总内存:" + allMemory.ToString("f2") + "G\n" + "已使用:" + (allMemory - ramAvailable).ToString("f2") + "G\n" + "可使用:" + ramAvailable.ToString("f2") + "G";
                         memoryInfoBar.Value = (allMemory - ramAvailable) / allMemory * 100;
@@ -1843,16 +1843,16 @@ namespace MSL
                             TextRange textRange = new TextRange(outlog.Document.Blocks.LastBlock.ContentStart, outlog.Document.Blocks.LastBlock.ContentEnd);
                             previewOutlog.Text = textRange.Text;
                         }
-                    }));
+                    });
                 }
                 catch
                 {
                     Growl.Error("无法获取系统占用信息！显示占用功能已自动关闭！\n通常此问题是因为系统原因造成的，不影响软件正常使用！");
-                    Dispatcher.Invoke(new Action(delegate
+                    Dispatcher.Invoke(() =>
                     {
                         previewOutlog.Text = "预览功能已关闭，请前往服务器控制台界面查看日志信息！";
                         systemInfoBtn.Content = "显示占用:关";
-                    }));
+                    });
                     getServerInfo = false;
                 }
                 Thread.Sleep(3000);
@@ -2061,6 +2061,9 @@ namespace MSL
         /// </summary>
         void ReFreshPluginsAndMods()
         {
+            lab001.Visibility = Visibility.Visible;
+            reFresh.Visibility = Visibility.Visible;
+            pluginsAndModsTab.Visibility = Visibility.Hidden;
             pluginslist.Items.Clear();
             modslist.Items.Clear();
             if (Directory.Exists(Rserverbase + @"\plugins"))
@@ -2078,92 +2081,46 @@ namespace MSL
                         pluginslist.Items.Add(new PluginInfo(f.Name));
                     }
                 }
-                if (Directory.Exists(Rserverbase + @"\mods"))
+                lab001.Visibility = Visibility.Hidden;
+                reFresh.Visibility = Visibility.Hidden;
+                pluginsAndModsTab.Visibility = Visibility.Visible;
+                pluginsTabItem.IsEnabled = true;
+                pluginsTabItem.Header = "管理服务器插件";
+            }
+            else
+            {
+                pluginsTabItem.IsEnabled = false;
+                pluginsTabItem.Header = "管理服务器插件（您的服务端可能不支持插件）";
+            }
+            if (Directory.Exists(Rserverbase + @"\mods"))
+            {
+                DirectoryInfo directoryInfo1 = new DirectoryInfo(Rserverbase + @"\mods");
+                FileInfo[] file1 = directoryInfo1.GetFiles("*.*");
+                foreach (FileInfo f1 in file1)
                 {
-                    lab001.Text = "已检测到插件和模组的文件夹，以下为插件和模组列表";
-                    lab001.Margin = new Thickness(10, 15, 0, 0);
-                    lab001.HorizontalAlignment = HorizontalAlignment.Left;
-                    lab001.VerticalAlignment = VerticalAlignment.Top;
-                    pluginListBox.Visibility = Visibility.Visible;
-                    modListBox.Visibility = Visibility.Visible;
-                    PGrid.Width = new GridLength(1, GridUnitType.Star);
-                    MGrid.Width = new GridLength(1, GridUnitType.Star);
-                    //pluginListBox.Width = 430;
-                    //modListBox.Width = 430;
-                    //pluginListBox.Margin = new Thickness(10, 55, 0, 0);
-                    //modListBox.Margin = new Thickness(450, 55, 0, 0);
-                    pluginlistPluginName.Width = 200;
-                    modlistModName.Width = 200;
-                    DirectoryInfo directoryInfo1 = new DirectoryInfo(Rserverbase + @"\mods");
-                    FileInfo[] file1 = directoryInfo1.GetFiles("*.*");
-                    foreach (FileInfo f1 in file1)
+                    if (f1.Name.EndsWith(".disabled"))
                     {
-                        if (f1.Name.EndsWith(".disabled"))
-                        {
-                            modslist.Items.Add(new ModInfo("[已禁用]" + f1.Name));
-                        }
-                        else if (f1.Name.EndsWith(".jar"))
-                        {
-                            modslist.Items.Add(new ModInfo(f1.Name));
-                        }
+                        modslist.Items.Add(new ModInfo("[已禁用]" + f1.Name));
+                    }
+                    else if (f1.Name.EndsWith(".jar"))
+                    {
+                        modslist.Items.Add(new ModInfo(f1.Name));
                     }
                 }
-                else
+                lab001.Visibility = Visibility.Hidden;
+                reFresh.Visibility = Visibility.Hidden;
+                pluginsAndModsTab.Visibility = Visibility.Visible;
+                modsTabItem.IsEnabled = true;
+                modsTabItem.Header = "管理服务器模组";
+                if (pluginsTabItem.IsEnabled==false)
                 {
-                    lab001.Text = "已检测到插件文件夹，以下为插件列表";
-                    lab001.Margin = new Thickness(10, 15, 0, 0);
-                    lab001.HorizontalAlignment = HorizontalAlignment.Left;
-                    lab001.VerticalAlignment = VerticalAlignment.Top;
-                    pluginListBox.Visibility = Visibility.Visible;
-                    modListBox.Visibility = Visibility.Hidden;
-                    PGrid.Width = new GridLength(1, GridUnitType.Star);
-                    MGrid.Width = new GridLength(0);
-                    pluginlistPluginName.Width = 400;
-                    //pluginListBox.Width = 880;
-                    //pluginListBox.Margin = new Thickness(10, 55, 0, 0);
-                    //pluginlistPluginName.Width = 500;
+                    pluginsAndModsTab.SelectedIndex = 1;
                 }
             }
             else
             {
-                if (Directory.Exists(Rserverbase + @"\mods"))
-                {
-                    lab001.Text = "已检测到模组文件夹，以下为模组列表";
-                    lab001.Margin = new Thickness(10, 15, 0, 0);
-                    lab001.HorizontalAlignment = HorizontalAlignment.Left;
-                    lab001.VerticalAlignment = VerticalAlignment.Top;
-                    pluginListBox.Visibility = Visibility.Hidden;
-                    modListBox.Visibility = Visibility.Visible;
-                    PGrid.Width = new GridLength(0);
-                    MGrid.Width = new GridLength(1, GridUnitType.Star);
-                    modlistModName.Width = 400;
-                    //modListBox.Width = 880;
-                    //modListBox.Margin = new Thickness(10, 55, 0, 0);
-                    modslist.Items.Clear();
-                    //modlistModName.Width = 500;
-                    DirectoryInfo directoryInfo = new DirectoryInfo(Rserverbase + @"\mods");
-                    FileInfo[] file = directoryInfo.GetFiles("*.*");
-                    foreach (FileInfo f in file)
-                    {
-                        if (f.Name.EndsWith(".disabled"))
-                        {
-                            modslist.Items.Add(new ModInfo("[已禁用]" + f.Name));
-                        }
-                        else if (f.Name.EndsWith(".jar"))
-                        {
-                            modslist.Items.Add(new ModInfo(f.Name));
-                        }
-                    }
-                }
-                else
-                {
-                    lab001.Text = "未检测到任何插件和模组，请重启服务器或检查该服务端是否支持";
-                    lab001.Margin = new Thickness(0);
-                    lab001.HorizontalAlignment = HorizontalAlignment.Center;
-                    lab001.VerticalAlignment = VerticalAlignment.Center;
-                    pluginListBox.Visibility = Visibility.Hidden;
-                    modListBox.Visibility = Visibility.Hidden;
-                }
+                modsTabItem.IsEnabled = false;
+                modsTabItem.Header = "管理服务器模组（您的服务端可能不支持模组）";
             }
         }
 
@@ -2181,6 +2138,15 @@ namespace MSL
             public ModInfo(string modName)
             {
                 ModName = modName;
+            }
+        }
+
+        private void addModsTip_Click(object sender, RoutedEventArgs e)
+        {
+            bool dialog=DialogShow.ShowMsg(this, "服务器需要添加的模组和客户端要添加的模组有所不同，增加方块、实体、玩法的MOD，是服务器需要安装的（也就是服务端和客户端都需要安装），而小地图、皮肤补丁、输入补丁、优化MOD、视觉显示类的MOD，服务器是一定不需要安装的（也就是只能加在客户端里）\n点击确定查看详细区分方法", "提示", true, "取消");
+            if (dialog)
+            {
+                Process.Start("https://zhidao.baidu.com/question/927720370906860259.html");
             }
         }
 
@@ -3455,24 +3421,24 @@ namespace MSL
                         if (ServerProcess.HasExited == false)
                         {
                             ServerProcess.StandardInput.WriteLine(cmd);
-                            Dispatcher.Invoke(new Action(delegate
+                            Dispatcher.Invoke(() =>
                             {
                                 if (tasksList.SelectedIndex != -1 && taskID[tasksList.SelectedIndex] == id)
                                 {
                                     timerCmdout.Content = "执行成功  时间：" + DateTime.Now.ToString("F");
                                 }
-                            }));
+                            });
                         }
                     }
                     catch
                     {
-                        Dispatcher.Invoke(new Action(delegate
+                        Dispatcher.Invoke(() =>
                         {
                             if (tasksList.SelectedIndex != -1 && taskID[tasksList.SelectedIndex] == id)
                             {
                                 timerCmdout.Content = "执行失败，请检查服务器是否开启  时间：" + DateTime.Now.ToString("F");
                             }
-                        }));
+                        });
                     }
                     Thread.Sleep(timer * 1000);
                 }

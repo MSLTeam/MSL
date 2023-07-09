@@ -20,6 +20,7 @@ namespace MSL
                 e.Handled = true; // 设置为已处理，阻止应用程序崩溃
             };
         }
+        /*
         protected override void OnStartup(StartupEventArgs e)
         {
             base.OnStartup(e);
@@ -32,7 +33,9 @@ namespace MSL
             Logger.Clear();
             Logger.LogInfo("MSL，启动！");
         }
+        */
     }
+    /*
     public class Logger
     {
         public static void Clear()
@@ -68,4 +71,5 @@ namespace MSL
             }
         }
     }
+    */
 }

@@ -118,13 +118,13 @@ namespace MSL.pages
                     MainWindow.serverLink = "https://msl.waheal.top";
                 }
             }
-            Dispatcher.Invoke(new Action(delegate
+            Dispatcher.Invoke(() =>
             {
                 serverlist.ItemsSource = null;
                 serverlist1.ItemsSource = null;
                 //serverurl.Clear();
                 serverdownurl = null;
-            }));
+            });
             try
             {
                 /*
@@ -146,7 +146,7 @@ namespace MSL.pages
                 */
                 string jsonData = Functions.Get("serverlist");
                 string[] serverTypes = JsonConvert.DeserializeObject<string[]>(jsonData);
-                Dispatcher.Invoke(new Action(delegate
+                Dispatcher.Invoke(() =>
                 {
                     /*
                     foreach (var serverType in serverTypes)
@@ -158,15 +158,15 @@ namespace MSL.pages
                     serverlist.SelectedIndex = 0;
                     getservermsg.Visibility = Visibility.Hidden;
                     lCircle.Visibility = Visibility.Hidden;
-                }));
+                });
             }
             catch (Exception a)
             {
-                Dispatcher.Invoke(new Action(delegate
+                Dispatcher.Invoke(() =>
                 {
                     getservermsg.Text = "获取服务端失败！请重试" + a.Message;
                     lCircle.Visibility = Visibility.Hidden;
-                }));
+                });
             }
             //return serverTypes;
             /*
@@ -215,18 +215,18 @@ namespace MSL.pages
                     //MessageBox.Show(jsonObject.ToString());
                     foreach (var x in jsonObject)
                     {
-                        Dispatcher.Invoke(new Action(delegate
+                        Dispatcher.Invoke(() =>
                         {
                             serverlist.Items.Add(x.Key);
-                        }));
+                        });
                         //MessageBox.Show( x.Value.ToString(), x.Key);
                     }
-                    Dispatcher.Invoke(new Action(delegate
+                    Dispatcher.Invoke(() =>
                     {
                         serverlist.SelectedIndex = 0;
                         getservermsg.Visibility = Visibility.Hidden;
                         lCircle.Visibility = Visibility.Hidden;
-                    }));
+                    });
                 }
                 catch
                 {
@@ -234,12 +234,12 @@ namespace MSL.pages
             }
             catch (Exception a)
             {
-                Dispatcher.Invoke(new Action(delegate
+                Dispatcher.Invoke(() =>
                 {
                     getservermsg.Text = "获取服务端失败！请重试" + a.Message;
                     lCircle.Visibility = Visibility.Hidden;
                     //File.Delete(AppDomain.CurrentDomain.BaseDirectory + @"MSL/serverlist.json");
-                }));
+                });
             }
             */
         }
@@ -257,7 +257,7 @@ namespace MSL.pages
             try
             {
                 int serverName = 0;
-                Dispatcher.Invoke(new Action(delegate
+                Dispatcher.Invoke(() =>
                 {
                     serverlist1.ItemsSource = null;
                     //serverurl.Clear();
@@ -266,7 +266,7 @@ namespace MSL.pages
                     lCircle.Visibility = Visibility.Visible;
                     serverName = serverlist.SelectedIndex;
                     //serverName = serverlist.SelectedItem.ToString();
-                }));
+                });
                 try
                 {
                     JObject patientinfo = new JObject();
@@ -275,14 +275,14 @@ namespace MSL.pages
                     string resultData = Functions.Post("serverlist", 0, sendData);
                     JObject serverDetails = JObject.Parse(resultData);
                     List<JProperty> sortedProperties = serverDetails.Properties().OrderByDescending(p => Functions.VersionCompare(p.Name)).ToList();
-                    Dispatcher.Invoke(new Action(delegate
+                    Dispatcher.Invoke(() =>
                     {
                         serverlist1.ItemsSource = sortedProperties.Select(p => p.Name).ToList();
                         serverdownurl = sortedProperties.Select(p => p.Value.ToString()).ToList();
                         //serverlist.SelectedIndex = 0;
                         getservermsg.Visibility = Visibility.Hidden;
                         lCircle.Visibility = Visibility.Hidden;
-                    }));
+                    });
                 }
                 catch
                 {
@@ -294,35 +294,35 @@ namespace MSL.pages
                         string resultData = Functions.Post("serverlist", 0, sendData, "https://api.waheal.top");
                         JObject serverDetails = JObject.Parse(resultData);
                         List<JProperty> sortedProperties = serverDetails.Properties().OrderByDescending(p => Functions.VersionCompare(p.Name)).ToList();
-                        Dispatcher.Invoke(new Action(delegate
+                        Dispatcher.Invoke(() =>
                         {
                             serverlist1.ItemsSource = sortedProperties.Select(p => p.Name).ToList();
                             serverdownurl = sortedProperties.Select(p => p.Value.ToString()).ToList();
                             //serverlist.SelectedIndex = 0;
                             getservermsg.Visibility = Visibility.Hidden;
                             lCircle.Visibility = Visibility.Hidden;
-                        }));
+                        });
                     }
                     catch (Exception a)
                     {
-                        Dispatcher.Invoke(new Action(delegate
+                        Dispatcher.Invoke(() =>
                         {
                             getservermsg.Text = "获取服务端失败！请重试" + a.Message;
                             lCircle.Visibility = Visibility.Hidden;
-                        }));
+                        });
                     }
                 }
             }
             catch (Exception a)
             {
-                Dispatcher.Invoke(new Action(delegate
+                Dispatcher.Invoke(() =>
                 {
                     getservermsg.Text = "获取服务端失败！请重试" + a.Message;
                     lCircle.Visibility = Visibility.Hidden;
-                }));
+                });
             }
             /*
-            Dispatcher.Invoke(new Action(delegate
+            Dispatcher.Invoke(() =>
             {
                 try
                 {
@@ -354,7 +354,7 @@ namespace MSL.pages
                 {
                     MessageBox.Show("获取下载链接失败！" + ex.Message);
                 }
-            }));
+            });
             */
         }
 

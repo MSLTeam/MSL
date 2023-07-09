@@ -469,46 +469,46 @@ namespace MSL.pages
         void PaintedEgg()
         {
             System.Windows.Window mainwindow = null;
-            Dispatcher.Invoke(new Action(delegate
+            Dispatcher.Invoke(() =>
             {
                 mainwindow = (MainWindow)System.Windows.Window.GetWindow(this);
-            }));
+            });
             while (true)
             {
-                Dispatcher.Invoke(new Action(delegate
+                Dispatcher.Invoke(() =>
                 {
                     mainwindow.Background = Brushes.LightBlue;
                     BrushConverter brushConverter = new BrushConverter();
                     ThemeManager.Current.AccentColor = (Brush)brushConverter.ConvertFromString("#0078D4");
-                }));
+                });
                 Thread.Sleep(200);
-                Dispatcher.Invoke(new Action(delegate
+                Dispatcher.Invoke(() =>
                 {
                     ThemeManager.Current.AccentColor = Brushes.Red;
-                }));
+                });
                 Thread.Sleep(200);
-                Dispatcher.Invoke(new Action(delegate
+                Dispatcher.Invoke(() =>
                 {
                     mainwindow.Background = Brushes.LightGreen;
                     ThemeManager.Current.AccentColor = Brushes.Green;
-                }));
+                });
                 Thread.Sleep(200);
-                Dispatcher.Invoke(new Action(delegate
+                Dispatcher.Invoke(() =>
                 {
                     mainwindow.Background = Brushes.LightYellow;
                     ThemeManager.Current.AccentColor = Brushes.Orange;
-                }));
+                });
                 Thread.Sleep(200);
-                Dispatcher.Invoke(new Action(delegate
+                Dispatcher.Invoke(() =>
                 {
                     ThemeManager.Current.AccentColor = Brushes.Purple;
-                }));
+                });
                 Thread.Sleep(200);
-                Dispatcher.Invoke(new Action(delegate
+                Dispatcher.Invoke(() =>
                 {
                     mainwindow.Background = Brushes.LightPink;
                     ThemeManager.Current.AccentColor = Brushes.DeepPink;
-                }));
+                });
                 Thread.Sleep(200);
             }
         }
@@ -657,7 +657,7 @@ namespace MSL.pages
                 if (newVersion > version)
                 {
                     string updatelog = Functions.Post("update", 1);
-                    Dispatcher.Invoke(new Action(delegate
+                    Dispatcher.Invoke(() =>
                     {
                         bool dialog = DialogShow.ShowMsg(mainwindow, "发现新版本，版本号为：" + aaa + "，是否进行更新？\n更新日志：\n" + updatelog, "更新", true, "取消");
                         if (dialog == true)
@@ -700,7 +700,7 @@ namespace MSL.pages
                         {
                             Growl.Error("您拒绝了更新新版本，若在此版本中遇到bug，请勿报告给作者！");
                         }
-                    }));
+                    });
                 }
                 else if (newVersion < version)
                 {

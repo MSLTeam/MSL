@@ -208,7 +208,7 @@ namespace MSL
                         GameId = 432,
                         ExcludedModIds = new List<int>(),
                         GameVersionTypeId = null
-                    }));
+                    });
                     backList.Clear();
                     imageUrls.Clear();
                     listBox.Items.Clear();
@@ -490,10 +490,10 @@ namespace MSL
 
         void DownloadFile()
         {
-            Dispatcher.Invoke(new Action(delegate
+            Dispatcher.Invoke(() =>
             {
                 label1.Content = "连接下载地址中...";
-            }));
+            });
             try
             {
                 HttpWebRequest Myrq = (HttpWebRequest)HttpWebRequest.Create(Url);
@@ -505,13 +505,13 @@ namespace MSL
                 long totalDownloadedByte = 0;
                 byte[] by = new byte[1024];
                 int osize = st.Read(by, 0, (int)by.Length);
-                Dispatcher.Invoke(new Action(delegate
+                Dispatcher.Invoke(() =>
                 {
                     if (pbar != null)
                     {
                         pbar.Maximum = (int)totalBytes;
                     }
-                }));
+                });
                 while (osize > 0)
                 {
                     totalDownloadedByte = osize + totalDownloadedByte;
@@ -520,19 +520,19 @@ namespace MSL
                     osize = st.Read(by, 0, (int)by.Length);
                     float percent = 0;
                     percent = (float)totalDownloadedByte / (float)totalBytes * 100;
-                    Dispatcher.Invoke(new Action(delegate
+                    Dispatcher.Invoke(() =>
                     {
                         if (pbar != null)
                         {
                             pbar.Value = (int)totalDownloadedByte;
                         }
                         label1.Content = "下载中，进度" + percent.ToString("f2") + "%";
-                    }));
+                    });
                     DispatcherHelper.DoEvents();
                 }
                 so.Close();
                 st.Close();
-                Dispatcher.Invoke(new Action(delegate
+                Dispatcher.Invoke(() =>
                 {
                     if (loadType == 0)
                     {
@@ -550,15 +550,15 @@ namespace MSL
                     {
                         Close();
                     }
-                }));
+                });
             }
             catch (Exception ex)
             {
-                Dispatcher.Invoke(new Action(delegate
+                Dispatcher.Invoke(() =>
                 {
                     System.Windows.MessageBox.Show(ex.Message);
                     label1.Content = "发生错误，请重试:" + ex;
-                }));
+                });
             }
         }
 

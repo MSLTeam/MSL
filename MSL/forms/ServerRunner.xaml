@@ -148,98 +148,105 @@
                 </TabItem>
                 <TabItem Header="服务器插件/MOD" Background="{DynamicResource SideMenuBrush}">
                     <Grid>
-                        <TextBlock x:Name="lab001" Text="检测中" FontSize="18" FontWeight="Bold" Foreground="{DynamicResource TextBlockBrush}" VerticalAlignment="Top" Margin="10,15,0,0" HorizontalAlignment="Left"/>
-                        <Button x:Name="reFresh" Content="刷新" Style="{StaticResource ButtonPrimary}" Height="35" Click="reFresh_Click" Width="70" FontSize="16" HorizontalAlignment="Right" VerticalAlignment="Top" Margin="0,10,270,0"/>
-                        <Button x:Name="openpluginweb" Content="下载插件" Style="{StaticResource ButtonPrimary}" Height="35" Width="80" FontSize="14" Click="openpluginweb_Click" HorizontalAlignment="Right" VerticalAlignment="Top" Margin="0,10,185,0"/>
-                        <Button x:Name="opencurseforge" Content="下载模组(CurseForge)" Style="{StaticResource ButtonPrimary}" Height="35" Click="opencurseforge_Click" Width="170" FontSize="14" HorizontalAlignment="Right" VerticalAlignment="Top" Margin="0,10,10,0"/>
-                        <Grid Margin="0,40,0,0">
-                            <Grid.ColumnDefinitions>
-                                <ColumnDefinition Width="*" x:Name="PGrid" />
-                                <ColumnDefinition Width="*" x:Name="MGrid" />
-                            </Grid.ColumnDefinitions>
-                            <Border Style="{StaticResource MagicBorder}" x:Name="pluginListBox" Grid.Column="0" VerticalAlignment="Stretch" Margin="10,10,10,10">
+                        <TabControl x:Name="pluginsAndModsTab" Style="{StaticResource TabControlInLine}" Visibility="Hidden">
+                            <TabItem x:Name="pluginsTabItem" Header="管理服务器插件">
                                 <Grid>
-                                    <Label Content="插件列表(添加的插件在服务器重启后生效)" Style="{StaticResource BorderTitle}"/>
-                                    <ListView x:Name="pluginslist" hc:Empty.ShowEmpty="true" Margin="0,35,0,0" BorderBrush="{x:Null}" Background="{x:Null}" Padding="0,0,0,0" FontSize="14">
-                                        <ListBox.ContextMenu>
-                                            <ContextMenu FontSize="14">
-                                                <MenuItem Click="reFresh_Click" Header="刷新"/>
-                                                <MenuItem x:Name="addPlugin" Click="addPlugin_Click" Header="添加插件"/>
-                                                <MenuItem x:Name="disPlugin" Click="disPlugin_Click" Header="禁用/启用所选插件"/>
-                                                <MenuItem x:Name="delPlugin" Click="delPlugin_Click" Header="删除插件"/>
-                                                <MenuItem x:Name="disAllPlugin" Click="disAllPlugin_Click" Header="禁用/启用全部插件"/>
-                                                <MenuItem x:Name="openpluginsDir" Click="openpluginsDir_Click" Header="打开插件文件夹"/>
-                                            </ContextMenu>
-                                        </ListBox.ContextMenu>
-                                        <ListView.View>
-                                            <GridView>
-                                                <GridViewColumn x:Name="pluginlistPluginName" Width="250" Header="插件名称">
-                                                    <GridViewColumn.CellTemplate>
-                                                        <DataTemplate>
-                                                            <Grid>
-                                                                <TextBlock Width="Auto" Text="{Binding PluginName}"/>
-                                                            </Grid>
-                                                        </DataTemplate>
-                                                    </GridViewColumn.CellTemplate>
-                                                </GridViewColumn>
-                                                <GridViewColumn Width="100" Header="操作">
-                                                    <GridViewColumn.CellTemplate>
-                                                        <DataTemplate>
-                                                            <Grid>
-                                                                <Button Margin="0,0,0,0" hc:IconElement.Geometry="{StaticResource WindowMinGeometry}" HorizontalAlignment="Left" hc:Poptip.Content="禁用/启用该插件" hc:Poptip.HorizontalOffset="40" hc:Poptip.Placement="Left" Click="disPlugin_Click"/>
-                                                                <Button Margin="40,0,0,0" hc:IconElement.Geometry="{StaticResource DeleteFillCircleGeometry}" HorizontalAlignment="Left" hc:Poptip.Content="删除该插件" hc:Poptip.HorizontalOffset="40" hc:Poptip.Placement="Left" Click="delPlugin_Click"/>
-                                                            </Grid>
-                                                        </DataTemplate>
-                                                    </GridViewColumn.CellTemplate>
-                                                </GridViewColumn>
-                                            </GridView>
-                                        </ListView.View>
-                                    </ListView>
-                                    <Button x:Name="addPluginBtn" Margin="0,0,12,12" Style="{StaticResource ButtonPrimary}" hc:BorderElement.CornerRadius="30" VerticalAlignment="Bottom" Height="48" Width="48" Content="+" Click="addPlugin_Click" HorizontalAlignment="Right" FontSize="24"/>
+                                    <Border Style="{StaticResource MagicBorder}" x:Name="pluginListBox" Grid.Column="0" VerticalAlignment="Stretch" Margin="10,10,10,10">
+                                        <Grid>
+                                            <Label Content="插件列表(添加的插件在服务器重启后生效)" Style="{StaticResource BorderTitle}"/>
+                                            <ListView x:Name="pluginslist" hc:Empty.ShowEmpty="true" Margin="0,35,0,0" BorderBrush="{x:Null}" Background="{x:Null}" Padding="0,0,0,0" FontSize="14">
+                                                <ListBox.ContextMenu>
+                                                    <ContextMenu FontSize="14">
+                                                        <MenuItem Click="reFresh_Click" Header="刷新"/>
+                                                        <MenuItem x:Name="addPlugin" Click="addPlugin_Click" Header="添加插件"/>
+                                                        <MenuItem x:Name="disPlugin" Click="disPlugin_Click" Header="禁用/启用所选插件"/>
+                                                        <MenuItem x:Name="delPlugin" Click="delPlugin_Click" Header="删除插件"/>
+                                                        <MenuItem x:Name="disAllPlugin" Click="disAllPlugin_Click" Header="禁用/启用全部插件"/>
+                                                        <MenuItem x:Name="openpluginsDir" Click="openpluginsDir_Click" Header="打开插件文件夹"/>
+                                                    </ContextMenu>
+                                                </ListBox.ContextMenu>
+                                                <ListView.View>
+                                                    <GridView>
+                                                        <GridViewColumn x:Name="pluginlistPluginName" Width="400" Header="插件名称">
+                                                            <GridViewColumn.CellTemplate>
+                                                                <DataTemplate>
+                                                                    <Grid>
+                                                                        <TextBlock Width="Auto" Text="{Binding PluginName}"/>
+                                                                    </Grid>
+                                                                </DataTemplate>
+                                                            </GridViewColumn.CellTemplate>
+                                                        </GridViewColumn>
+                                                        <GridViewColumn Width="100" Header="操作">
+                                                            <GridViewColumn.CellTemplate>
+                                                                <DataTemplate>
+                                                                    <Grid>
+                                                                        <Button Margin="0,0,0,0" hc:IconElement.Geometry="{StaticResource WindowMinGeometry}" HorizontalAlignment="Left" hc:Poptip.Content="禁用/启用该插件" hc:Poptip.HorizontalOffset="40" hc:Poptip.Placement="Left" Click="disPlugin_Click"/>
+                                                                        <Button Margin="40,0,0,0" hc:IconElement.Geometry="{StaticResource DeleteFillCircleGeometry}" HorizontalAlignment="Left" hc:Poptip.Content="删除该插件" hc:Poptip.HorizontalOffset="40" hc:Poptip.Placement="Left" Click="delPlugin_Click"/>
+                                                                    </Grid>
+                                                                </DataTemplate>
+                                                            </GridViewColumn.CellTemplate>
+                                                        </GridViewColumn>
+                                                    </GridView>
+                                                </ListView.View>
+                                            </ListView>
+                                            <Button x:Name="reFresh_Copy" Content="刷新" Style="{StaticResource ButtonPrimary}" Height="32" Click="reFresh_Click" Width="70" FontSize="14" VerticalAlignment="Top" HorizontalAlignment="Left" Margin="350,0,0,0"/>
+                                            <Button x:Name="openpluginweb" Content="下载插件" Height="32" Width="80" FontSize="14" Click="openpluginweb_Click" HorizontalAlignment="Left" VerticalAlignment="Top" Margin="425,0,0,0"/>
+                                            <Button x:Name="addPluginBtn" Margin="0,0,12,12" Style="{StaticResource ButtonPrimary}" hc:BorderElement.CornerRadius="30" VerticalAlignment="Bottom" Height="48" Width="48" Content="+" Click="addPlugin_Click" HorizontalAlignment="Right" FontSize="24"/>
+                                        </Grid>
+                                    </Border>
                                 </Grid>
-                            </Border>
-                            <Border Style="{StaticResource MagicBorder}" x:Name="modListBox" Grid.Column="1" Margin="10,10,10,10" VerticalAlignment="Stretch">
+                            </TabItem>
+                            <TabItem x:Name="modsTabItem" Header="管理服务器模组">
                                 <Grid>
-                                    <Label Content="模组列表(添加的模组在服务器重启后生效)" Style="{StaticResource BorderTitle}"/>
-                                    <ListView x:Name="modslist" hc:Empty.ShowEmpty="true" BorderBrush="{x:Null}" Margin="0,35,0,0" Background="{x:Null}" Padding="0,0,0,0" FontSize="14">
-                                        <ListBox.ContextMenu>
-                                            <ContextMenu FontSize="14">
-                                                <MenuItem Click="reFresh_Click" Header="刷新"/>
-                                                <MenuItem x:Name="addMod" Click="addMod_Click" Header="添加模组"/>
-                                                <MenuItem x:Name="disMod" Click="disMod_Click" Header="禁用/启用所选模组"/>
-                                                <MenuItem x:Name="delMod" Click="delMod_Click" Header="删除模组"/>
-                                                <MenuItem x:Name="disAllMod" Click="disAllMod_Click" Header="禁用/启用全部模组"/>
-                                                <MenuItem x:Name="openmodsDir" Click="openmodsDir_Click" Header="打开模组文件夹"/>
-                                            </ContextMenu>
-                                        </ListBox.ContextMenu>
-                                        <ListView.View>
-                                            <GridView>
-                                                <GridViewColumn x:Name="modlistModName" Width="250" Header="模组名称">
-                                                    <GridViewColumn.CellTemplate>
-                                                        <DataTemplate>
-                                                            <Grid>
-                                                                <TextBlock Width="Auto" Text="{Binding ModName}"/>
-                                                            </Grid>
-                                                        </DataTemplate>
-                                                    </GridViewColumn.CellTemplate>
-                                                </GridViewColumn>
-                                                <GridViewColumn Width="100" Header="操作">
-                                                    <GridViewColumn.CellTemplate>
-                                                        <DataTemplate>
-                                                            <Grid>
-                                                                <Button Margin="0,0,0,0" hc:IconElement.Geometry="{StaticResource WindowMinGeometry}" HorizontalAlignment="Left" hc:Poptip.Content="禁用/启用该模组" hc:Poptip.HorizontalOffset="40" hc:Poptip.Placement="Left" Click="disMod_Click"/>
-                                                                <Button Margin="40,0,0,0" hc:IconElement.Geometry="{StaticResource DeleteFillCircleGeometry}" HorizontalAlignment="Left" hc:Poptip.Content="删除该模组" hc:Poptip.HorizontalOffset="40" hc:Poptip.Placement="Left" Click="delMod_Click"/>
-                                                            </Grid>
-                                                        </DataTemplate>
-                                                    </GridViewColumn.CellTemplate>
-                                                </GridViewColumn>
-                                            </GridView>
-                                        </ListView.View>
-                                    </ListView>
-                                    <Button x:Name="addModBtn" Margin="0,0,12,12" Style="{StaticResource ButtonPrimary}" hc:BorderElement.CornerRadius="30" VerticalAlignment="Bottom" Height="48" Width="48" Content="+" Click="addMod_Click" HorizontalAlignment="Right" FontSize="24"/>
+                                    <Border Style="{StaticResource MagicBorder}" x:Name="modListBox" Grid.Column="1" Margin="10,10,10,10" VerticalAlignment="Stretch">
+                                        <Grid>
+                                            <Label Content="模组列表(添加的模组在服务器重启后生效)" Style="{StaticResource BorderTitle}"/>
+                                            <ListView x:Name="modslist" hc:Empty.ShowEmpty="true" BorderBrush="{x:Null}" Margin="0,35,0,0" Background="{x:Null}" Padding="0,0,0,0" FontSize="14">
+                                                <ListBox.ContextMenu>
+                                                    <ContextMenu FontSize="14">
+                                                        <MenuItem Click="reFresh_Click" Header="刷新"/>
+                                                        <MenuItem x:Name="addMod" Click="addMod_Click" Header="添加模组"/>
+                                                        <MenuItem x:Name="disMod" Click="disMod_Click" Header="禁用/启用所选模组"/>
+                                                        <MenuItem x:Name="delMod" Click="delMod_Click" Header="删除模组"/>
+                                                        <MenuItem x:Name="disAllMod" Click="disAllMod_Click" Header="禁用/启用全部模组"/>
+                                                        <MenuItem x:Name="openmodsDir" Click="openmodsDir_Click" Header="打开模组文件夹"/>
+                                                    </ContextMenu>
+                                                </ListBox.ContextMenu>
+                                                <ListView.View>
+                                                    <GridView>
+                                                        <GridViewColumn x:Name="modlistModName" Width="400" Header="模组名称">
+                                                            <GridViewColumn.CellTemplate>
+                                                                <DataTemplate>
+                                                                    <Grid>
+                                                                        <TextBlock Width="Auto" Text="{Binding ModName}"/>
+                                                                    </Grid>
+                                                                </DataTemplate>
+                                                            </GridViewColumn.CellTemplate>
+                                                        </GridViewColumn>
+                                                        <GridViewColumn Width="100" Header="操作">
+                                                            <GridViewColumn.CellTemplate>
+                                                                <DataTemplate>
+                                                                    <Grid>
+                                                                        <Button Margin="0,0,0,0" hc:IconElement.Geometry="{StaticResource WindowMinGeometry}" HorizontalAlignment="Left" hc:Poptip.Content="禁用/启用该模组" hc:Poptip.HorizontalOffset="40" hc:Poptip.Placement="Left" Click="disMod_Click"/>
+                                                                        <Button Margin="40,0,0,0" hc:IconElement.Geometry="{StaticResource DeleteFillCircleGeometry}" HorizontalAlignment="Left" hc:Poptip.Content="删除该模组" hc:Poptip.HorizontalOffset="40" hc:Poptip.Placement="Left" Click="delMod_Click"/>
+                                                                    </Grid>
+                                                                </DataTemplate>
+                                                            </GridViewColumn.CellTemplate>
+                                                        </GridViewColumn>
+                                                    </GridView>
+                                                </ListView.View>
+                                            </ListView>
+                                            <Button x:Name="reFresh_Copy2" Content="刷新" Style="{StaticResource ButtonPrimary}" Height="32" Click="reFresh_Click" Width="70" FontSize="14" VerticalAlignment="Top" HorizontalAlignment="Left" Margin="350,0,0,0"/>
+                                            <Button x:Name="addModsTip" Content="添加模组前必看" Style="{StaticResource ButtonPrimary}" Height="32" FontSize="14" VerticalAlignment="Top" HorizontalAlignment="Left" Margin="425,0,0,0" Width="135" Click="addModsTip_Click"/>
+                                            <Button x:Name="opencurseforge" Content="下载模组(CurseForge)" Click="opencurseforge_Click" Width="170" FontSize="14" HorizontalAlignment="Left" VerticalAlignment="Top" Height="32" Margin="565,0,0,0"/>
+                                            <Button x:Name="addModBtn" Margin="0,0,12,12" Style="{StaticResource ButtonPrimary}" hc:BorderElement.CornerRadius="30" VerticalAlignment="Bottom" Height="48" Width="48" Content="+" Click="addMod_Click" HorizontalAlignment="Right" FontSize="24"/>
+                                        </Grid>
+                                    </Border>
                                 </Grid>
-                            </Border>
-                        </Grid>
+                            </TabItem>
+                        </TabControl>
+                        <Button x:Name="reFresh" Content="刷新" Style="{StaticResource ButtonPrimary}" Height="32" Click="reFresh_Click" Width="70" FontSize="16" VerticalAlignment="Top" HorizontalAlignment="Right" Margin="0,10,10,0"/>
+                        <TextBlock x:Name="lab001" Text="未检测到任何插件和模组，请重启服务器并检查服务端是否支持插件和模组" FontSize="18" FontWeight="Bold" Foreground="{DynamicResource TextBlockBrush}" VerticalAlignment="Center" HorizontalAlignment="Center"/>
                     </Grid>
                 </TabItem>
                 <TabItem Header="服务器设置" Background="{DynamicResource SideMenuBrush}">

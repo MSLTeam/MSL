@@ -56,14 +56,29 @@ namespace MSL
             BodyGrid.Children.Add(loadingCircle);
             BodyGrid.RegisterName("loadingBar", loadingCircle);
             this.Topmost = false;
-            Logger.LogInfo("主窗体UI控件加载完毕！");
+            //Logger.LogInfo("主窗体UI控件加载完毕！");
             Thread thread = new Thread(AsyncLoadEvent);
             thread.Start();
-            Logger.LogInfo("异步载入线程已启动！");
+            //Logger.LogInfo("异步载入线程已启动！");
         }
 
         private void AsyncLoadEvent()
         {
+            if (!Directory.Exists("MSL"))
+            {
+                Process.Start("https://www.waheal.top/eula.html");
+                Dispatcher.Invoke(() =>
+                {
+                    bool dialog = DialogShow.ShowMsg(this, "请阅读并同意MSL开服器使用协议：https://www.waheal.top/eula.html", "提示", true, "不同意", "同意");
+                    if (!dialog)
+                    {
+                        //Logger.LogWarning("用户未同意使用协议，退出软件……");
+                        Close();
+                    }
+                });
+                Directory.CreateDirectory("MSL");
+                //Logger.LogWarning("未检测到MSL文件夹，已进行创建");
+            }
             //get serverlink
             try
             {
@@ -77,20 +92,20 @@ namespace MSL
                 if (reply.Status == IPStatus.Success)
                 {
                     serverLink = "http://" + serverAddr;
-                    Logger.LogInfo("已连接到可用的在线服务器，ID：Main");
+                    //Logger.LogInfo("已连接到可用的在线服务器，ID：Main");
                 }
                 else
                 {
                     serverLink = "https://msl.waheal.top";
                     Growl.Info("MSL主服务器连接超时（可能被DDos），已切换至备用服务器！");
-                    Logger.LogInfo("已连接到可用的在线服务器，ID：Spare");
+                    //Logger.LogInfo("已连接到可用的在线服务器，ID：Spare");
                 }
                 
             }
             catch
             {
                 serverLink = "https://msl.waheal.top";
-                Logger.LogError("在匹配在线服务器时出现错误，已连接至备用服务器，ID：Spare");
+                //Logger.LogError("在匹配在线服务器时出现错误，已连接至备用服务器，ID：Spare");
             }
 
             //MessageBox.Show("GetLinkSuccess");
@@ -100,49 +115,39 @@ namespace MSL
                 //firstLauchEvent
                 if (!File.Exists(AppDomain.CurrentDomain.BaseDirectory + @"MSL\config.json"))
                 {
-                    Logger.LogWarning("未检测到config.json文件，载入首次启动事件");
-                    Process.Start("https://www.waheal.top/eula.html");
-                    Dispatcher.Invoke(new Action(delegate
-                    {
-                        bool dialog= DialogShow.ShowMsg(this, "请阅读并同意MSL开服器使用协议：https://www.waheal.top/eula.html", "提示", true, "不同意", "同意");
-                        if (!dialog)
-                        {
-                            Logger.LogWarning("用户未同意使用协议，退出软件……");
-                            Close();
-                        }
-                        Logger.LogInfo("用户已同意使用协议，生成config.json文件……");
+                    //Logger.LogWarning("未检测到config.json文件，载入首次启动事件");
+                    
                         File.WriteAllText(AppDomain.CurrentDomain.BaseDirectory + @"MSL\config.json", string.Format("{{{0}}}", "\n"));
-                    }));
                 }
             }
             catch (Exception ex)
             {
-                Dispatcher.Invoke(new Action(delegate
+                Dispatcher.Invoke(() =>
                 {
-                    Logger.LogError("生成config.json文件失败，原因："+ex.Message);
+                    //Logger.LogError("生成config.json文件失败，原因："+ex.Message);
                     DialogShow.ShowMsg(this, "MSL在初始化加载过程中出现问题，请尝试用管理员身份运行MSL……\n错误代码：" + ex.Message, "错误");
                     Close();
-                }));
+                });
             }
 
             //MessageBox.Show("CheckDirSuccess");
-            Logger.LogInfo("开始载入配置文件……");
+            //Logger.LogInfo("开始载入配置文件……");
             JObject jsonObject = null;
             try
             {
                 jsonObject = JObject.Parse(File.ReadAllText(AppDomain.CurrentDomain.BaseDirectory + @"MSL\config.json", Encoding.UTF8));
-                Logger.LogInfo("读取config.json成功！");
+                ////Logger.LogInfo("读取config.json成功！");
             }
             catch(Exception ex)
             {
-                Logger.LogError("读取config.json失败！尝试重新载入……");
-                Dispatcher.Invoke(new Action(delegate
+                //Logger.LogError("读取config.json失败！尝试重新载入……");
+                Dispatcher.Invoke(() =>
                 {
                     DialogShow.ShowMsg(this, "MSL在加载配置文件时出现错误，将进行重试，若点击确定后软件突然闪退，请尝试使用管理员身份运行或将此问题报告给作者！\n错误代码：" + ex.Message, "错误");
-                }));
+                });
                 File.WriteAllText(AppDomain.CurrentDomain.BaseDirectory + @"MSL\config.json", string.Format("{{{0}}}", "\n"));
                 jsonObject = JObject.Parse(File.ReadAllText(AppDomain.CurrentDomain.BaseDirectory + @"MSL\config.json", Encoding.UTF8));
-                Logger.LogInfo("读取config.json成功！");
+                //Logger.LogInfo("读取config.json成功！");
             }
 
             //下面是加载配置部分
@@ -158,12 +163,12 @@ namespace MSL
                 }
                 else if (jsonObject["notifyIcon"].ToString() == "True")
                 {
-                    Dispatcher.Invoke(new Action(delegate
+                    Dispatcher.Invoke(() =>
                     {
                         CtrlNotifyIcon();
-                    }));
+                    });
                 }
-                Logger.LogInfo("读取托盘图标配置成功！");
+                //Logger.LogInfo("读取托盘图标配置成功！");
                 if (jsonObject["sidemenu"] == null)
                 {
                     string jsonString = File.ReadAllText(AppDomain.CurrentDomain.BaseDirectory + @"MSL\config.json", Encoding.UTF8);
@@ -171,32 +176,32 @@ namespace MSL
                     jobject.Add("sidemenu", "0");
                     string convertString = Convert.ToString(jobject);
                     File.WriteAllText(AppDomain.CurrentDomain.BaseDirectory + @"MSL\config.json", convertString, Encoding.UTF8);
-                    Dispatcher.Invoke(new Action(delegate
+                    Dispatcher.Invoke(() =>
                     {
                         sideMenuContextOpen.Width = 100;
                         SideMenu.Width = 100;
                         frame.Margin = new Thickness(100, 0, 0, 0);
-                    }));
+                    });
                 }
                 else if (jsonObject["sidemenu"].ToString() == "0")
                 {
-                    Dispatcher.Invoke(new Action(delegate
+                    Dispatcher.Invoke(() =>
                     {
                         sideMenuContextOpen.Width = 100;
                         SideMenu.Width = 100;
                         frame.Margin = new Thickness(100, 0, 0, 0);
-                    }));
+                    });
                 }
                 else
                 {
-                    Dispatcher.Invoke(new Action(delegate
+                    Dispatcher.Invoke(() =>
                     {
                         sideMenuContextOpen.Width = 50;
                         SideMenu.Width = 50;
                         frame.Margin = new Thickness(50, 0, 0, 0);
-                    }));
+                    });
                 }
-                Logger.LogInfo("读取侧栏配置成功！");
+                //Logger.LogInfo("读取侧栏配置成功！");
                 if (jsonObject["skin"] == null)
                 {
                     string jsonString = File.ReadAllText(AppDomain.CurrentDomain.BaseDirectory + @"MSL\config.json", Encoding.UTF8);
@@ -204,15 +209,15 @@ namespace MSL
                     jobject.Add("skin", "1");
                     string convertString = Convert.ToString(jobject);
                     File.WriteAllText(AppDomain.CurrentDomain.BaseDirectory + @"MSL\config.json", convertString, Encoding.UTF8);
-                    Dispatcher.Invoke(new Action(delegate
+                    Dispatcher.Invoke(() =>
                     {
                         BrushConverter brushConverter = new BrushConverter();
                         ThemeManager.Current.AccentColor = (Brush)brushConverter.ConvertFromString("#0078D4");
-                    }));
+                    });
                 }
                 else
                 {
-                    Dispatcher.Invoke(new Action(delegate
+                    Dispatcher.Invoke(() =>
                     {
                         switch (jsonObject["skin"].ToString())
                         {
@@ -243,9 +248,9 @@ namespace MSL
                                 ThemeManager.Current.AccentColor = (Brush)_brushConverter.ConvertFromString("#0078D4");
                                 break;
                         }
-                    }));
+                    });
                 }
-                Logger.LogInfo("读取皮肤配置成功！");
+                //Logger.LogInfo("读取皮肤配置成功！");
                 if (jsonObject["darkTheme"] == null)
                 {
                     string jsonString = File.ReadAllText(AppDomain.CurrentDomain.BaseDirectory + @"MSL\config.json", Encoding.UTF8);
@@ -256,21 +261,21 @@ namespace MSL
                 }
                 else if (jsonObject["darkTheme"].ToString() == "True")
                 {
-                    Dispatcher.Invoke(new Action(delegate
+                    Dispatcher.Invoke(() =>
                     {
                         ThemeManager.Current.ApplicationTheme = ApplicationTheme.Dark;
-                    }));
+                    });
                 }
-                Logger.LogInfo("读取暗色模式配置成功！");
+                //Logger.LogInfo("读取暗色模式配置成功！");
                 if (File.Exists(AppDomain.CurrentDomain.BaseDirectory + "MSL\\Background.png"))
                 {
-                    Dispatcher.Invoke(new Action(delegate
+                    Dispatcher.Invoke(() =>
                     {
                         Background = new ImageBrush(SettingsPage.GetImage(AppDomain.CurrentDomain.BaseDirectory + "MSL\\Background.png"));
                         SideMenuBorder.BorderThickness = new Thickness(0);
-                    }));
+                    });
                 }
-                Logger.LogInfo("加载背景图片成功！");
+                //Logger.LogInfo("加载背景图片成功！");
                 if (jsonObject["semitransparentTitle"] == null)
                 {
                     string jsonString = File.ReadAllText(AppDomain.CurrentDomain.BaseDirectory + @"MSL\config.json", Encoding.UTF8);
@@ -281,12 +286,12 @@ namespace MSL
                 }
                 else if (jsonObject["semitransparentTitle"].ToString() == "True")
                 {
-                    Dispatcher.Invoke(new Action(delegate
+                    Dispatcher.Invoke(() =>
                     {
                         ChangeTitleStyle(true);
-                    }));
+                    });
                 }
-                Logger.LogInfo("读取标题栏样式成功！");
+                //Logger.LogInfo("读取标题栏样式成功！");
                 if (jsonObject["autoGetServerInfo"] == null)
                 {
                     string jsonString = File.ReadAllText(AppDomain.CurrentDomain.BaseDirectory + @"MSL\config.json", Encoding.UTF8);
@@ -313,11 +318,11 @@ namespace MSL
                 {
                     getPlayerInfo = true;
                 }
-                Logger.LogInfo("读取自动化功能配置成功（自动打开显示占用、记录玩家功能）！");
+                //Logger.LogInfo("读取自动化功能配置成功（自动打开显示占用、记录玩家功能）！");
             }
             catch (Exception ex)
             {
-                Logger.LogError("读取配置时出现错误！错误代码："+ex.Message);
+                //Logger.LogError("读取配置时出现错误！错误代码："+ex.Message);
                 Growl.Error("MSL在加载配置文件时出现错误，此报错可能不影响软件运行，但还是建议您将其反馈给作者！\n错误代码：" + ex.Message);
             }
 
@@ -338,9 +343,9 @@ namespace MSL
 
                 if (newVersion > version)
                 {
-                    Logger.LogInfo("检测到新版本！");
+                    //Logger.LogInfo("检测到新版本！");
                     string updatelog = Functions.Post("update", 1);
-                    Dispatcher.Invoke(new Action(delegate
+                    Dispatcher.Invoke(() =>
                     {
                         if (jsonObject["autoUpdateApp"] == null)
                         {
@@ -352,21 +357,21 @@ namespace MSL
                         }
                         else if (jsonObject["autoUpdateApp"].ToString() == "True")
                         {
-                            Logger.LogInfo("自动更新功能已打开，更新新版本……");
+                            //Logger.LogInfo("自动更新功能已打开，更新新版本……");
                             UpdateApp(pageHtml, aaa);
                         }
                         bool dialog = DialogShow.ShowMsg(this, "发现新版本，版本号为：" + aaa + "，是否进行更新？\n更新日志：\n" + updatelog, "更新", true, "取消");
                         if (dialog == true)
                         {
-                            Logger.LogInfo("更新新版本……");
+                            //Logger.LogInfo("更新新版本……");
                             UpdateApp(pageHtml, aaa);
                         }
                         else
                         {
-                            Logger.LogInfo("用户拒绝更新！");
+                            //Logger.LogInfo("用户拒绝更新！");
                             Growl.Error("您拒绝了更新新版本，若在此版本中遇到bug，请勿报告给作者！");
                         }
-                    }));
+                    });
                 }
                 else if (newVersion < version)
                 {
@@ -379,7 +384,7 @@ namespace MSL
             }
             catch
             {
-                Logger.LogError("检测更新失败！");
+                //Logger.LogError("检测更新失败！");
                 Growl.Error("检查更新失败！");
             }
 
@@ -388,12 +393,12 @@ namespace MSL
             //获取电脑内存
             try
             {
-                Logger.LogInfo("读取系统内存……");
+                //Logger.LogInfo("读取系统内存……");
                 PhisicalMemory = GetPhisicalMemory();
             }
             catch(Exception ex)
             {
-                Logger.LogError("读取系统内存失败！");
+                //Logger.LogError("读取系统内存失败！");
                 MessageBox.Show("获取系统内存失败！" + ex.Message, "错误", MessageBoxButton.OK, MessageBoxImage.Error);
                 PhisicalMemory = 0;
             }
@@ -421,11 +426,11 @@ namespace MSL
                         servers = servers.Replace(serverid + ",", "");
                     }
                 }
-                Logger.LogInfo("读取自动开启（服务器）配置成功！");
+                //Logger.LogInfo("读取自动开启（服务器）配置成功！");
             }
             catch (Exception ex)
             {
-                Logger.LogError("读取自动开启（服务器）配置失败！");
+                //Logger.LogError("读取自动开启（服务器）配置失败！");
                 MessageBox.Show("自动启动服务器失败！" + ex.Message,"错误",MessageBoxButton.OK,MessageBoxImage.Error);
             }
             //自动开启Frpc
@@ -444,24 +449,24 @@ namespace MSL
                     Growl.Info("正在为你自动打开内网映射……");
                     AutoOpenFrpc();
                 }
-                Logger.LogInfo("读取自动开启（内网映射）配置成功！");
+                //Logger.LogInfo("读取自动开启（内网映射）配置成功！");
             }
             catch (Exception ex)
             {
-                Logger.LogError("读取自动开启（内网映射）配置失败！");
+                //Logger.LogError("读取自动开启（内网映射）配置失败！");
                 MessageBox.Show("自动启动内网映射失败！" + ex.Message, "错误", MessageBoxButton.OK, MessageBoxImage.Error);
             }
 
-            Logger.LogInfo("所有配置载入完毕！调整UI界面……");
-            Dispatcher.Invoke(new Action(delegate
+            //Logger.LogInfo("所有配置载入完毕！调整UI界面……");
+            Dispatcher.Invoke(() =>
             {
                 SideMenu.IsEnabled = true;
                 SideMenu.SelectedIndex = 0;
                 LoadingCircle loadingCircle = MainGrid.FindName("loadingBar") as LoadingCircle;
                 BodyGrid.Children.Remove(loadingCircle);
                 BodyGrid.UnregisterName("loadingBar");
-            }));
-            Logger.LogInfo("软件加载完毕！");
+            });
+            //Logger.LogInfo("软件加载完毕！");
         }
 
         private void UpdateApp(string pageHtml, string aaa)
@@ -519,24 +524,24 @@ namespace MSL
 
         private void Window_Closing(object sender, System.ComponentModel.CancelEventArgs e)
         {
-            Logger.LogInfo("MSL，关闭！");
+            //Logger.LogInfo("MSL，关闭！");
             if (MainNoticyIcon.Visibility == Visibility.Visible)
             {
-                Logger.LogWarning("托盘图标已打开，取消关闭事件！");
+                //Logger.LogWarning("托盘图标已打开，取消关闭事件！");
                 e.Cancel = true;
                 this.Visibility = Visibility.Hidden;
-                Logger.LogInfo("窗口已隐藏！");
+                //Logger.LogInfo("窗口已隐藏！");
                 return;
             }
             else if (CloseApp())
             {
-                Logger.LogInfo("正在结束MSL进程……！");
+                //Logger.LogInfo("正在结束MSL进程……！");
                 Application.Current.Shutdown();
                 Process.GetCurrentProcess().Kill();
             }
             else
             {
-                Logger.LogWarning("取消关闭事件！");
+                //Logger.LogWarning("取消关闭事件！");
                 e.Cancel = true;
             }
         }
@@ -546,7 +551,7 @@ namespace MSL
             {
                 if (ServerList.RunningServerIDs != "" || FrpcPage.FRPCMD.HasExited == false || OnlinePage.FRPCMD.HasExited == false)
                 {
-                    Logger.LogWarning("服务器、内网映射或联机功能正在运行中！弹出对话框询问是否关闭……");
+                    //Logger.LogWarning("服务器、内网映射或联机功能正在运行中！弹出对话框询问是否关闭……");
                     bool dialog = DialogShow.ShowMsg(this, "您的服务器、内网映射或联机功能正在运行中，关闭软件可能会让服务器进程在后台一直运行并占用资源！确定要继续关闭吗？\n注：如果想隐藏主窗口的话，请前往设置打开托盘图标", "警告", true, "取消");
                     if (dialog == true)
                     {
@@ -569,7 +574,7 @@ namespace MSL
                 {
                     if (FrpcPage.FRPCMD.HasExited == false || OnlinePage.FRPCMD.HasExited == false)
                     {
-                        Logger.LogWarning("内网映射或联机功能正在运行中！弹出对话框询问是否关闭……");
+                        //Logger.LogWarning("内网映射或联机功能正在运行中！弹出对话框询问是否关闭……");
                         bool dialog = DialogShow.ShowMsg(this, "内网映射或联机功能正在运行中，关闭软件可能会让内网映射进程在后台一直运行并占用资源！确定要继续关闭吗？\n如果想隐藏主窗口的话，请前往设置打开托盘图标", "警告", true, "取消");
                         if (dialog == true)
                         {
@@ -591,7 +596,7 @@ namespace MSL
                     {
                         if (OnlinePage.FRPCMD.HasExited == false)
                         {
-                            Logger.LogWarning("联机功能正在运行中！弹出对话框询问是否关闭……");
+                            //Logger.LogWarning("联机功能正在运行中！弹出对话框询问是否关闭……");
                             bool dialog = DialogShow.ShowMsg(this, "联机功能正在运行中，关闭软件可能会让内网映射进程在后台一直运行并占用资源！确定要继续关闭吗？\n如果想隐藏主窗口的话，请前往设置打开托盘图标", "警告", true, "取消");
                             if (dialog == true)
                             {

@@ -76,7 +76,7 @@ namespace MSL
 
                         Ping pingSender = new Ping();
                         PingReply reply = pingSender.Send(a101, 2000); // 替换成您要 ping 的 IP 地址
-                        Dispatcher.Invoke(new Action(delegate
+                        Dispatcher.Invoke(() =>
                         {
                             if (reply.Status == IPStatus.Success)
                             {
@@ -88,7 +88,7 @@ namespace MSL
                             {
                                 listBox1.Items.Add(a100 + "(已下线，检测失败)");
                             }
-                        }));
+                        });
 
                         string strtempa3 = "min_open_port=";
                         int IndexofA03 = pageHtml.IndexOf(strtempa3);
@@ -132,7 +132,7 @@ namespace MSL
 
                         Ping pingSender = new Ping();
                         PingReply reply = pingSender.Send(a101, 2000); // 替换成您要 ping 的 IP 地址
-                        Dispatcher.Invoke(new Action(delegate
+                        Dispatcher.Invoke(() =>
                         {
                             if (reply.Status == IPStatus.Success)
                             {
@@ -144,7 +144,7 @@ namespace MSL
                             {
                                 listBox1.Items.Add(a100 + "(已下线，检测失败)");
                             }
-                        }));
+                        });
 
                         string strtempa3 = "min_open_port=";
                         int IndexofA03 = pageHtml.IndexOf(strtempa3);
@@ -164,30 +164,30 @@ namespace MSL
             }
             catch
             {
-                Dispatcher.Invoke(new Action(delegate
+                Dispatcher.Invoke(() =>
                 {
                     MessageBox.Show("连接服务器失败！", "Error", MessageBoxButton.OK, MessageBoxImage.Error);
                     Close();
-                }));
+                });
             }
             try
             {
                 WebClient MyWebClient1 = new WebClient();
                 MyWebClient1.Credentials = CredentialCache.DefaultCredentials;
                 byte[] pageData1 = MyWebClient1.DownloadData(MainWindow.serverLink + @"/msl/frpcgg.txt");
-                Dispatcher.Invoke(new Action(delegate
+                Dispatcher.Invoke(() =>
                 {
                     gonggao.Content = Encoding.UTF8.GetString(pageData1);
-                }));
+                });
             }
             catch
             {
-                Dispatcher.Invoke(new Action(delegate
+                Dispatcher.Invoke(() =>
                 {
                     gonggao.Content = "无公告";
-                }));
+                });
             }
-            Dispatcher.Invoke(new Action(delegate
+            Dispatcher.Invoke(() =>
             {
                 LoadingCircle loadingCircle = MainGrid.FindName("loadingBar") as LoadingCircle;
                 MainGrid.Children.Remove(loadingCircle);
@@ -204,7 +204,7 @@ namespace MSL
                         textBox3.Password = match.Groups[2].Value;
                     }
                 }
-            }));
+            });
         }
         private void Button_Click(object sender, RoutedEventArgs e)
         {

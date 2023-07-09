@@ -318,7 +318,7 @@ namespace MSL.pages
 
         void AutoOpenServer()
         {
-            Dispatcher.Invoke(new Action(delegate
+            Dispatcher.Invoke(() =>
             {
                 try
                 {
@@ -375,7 +375,7 @@ namespace MSL.pages
                     runner.Show();
                 }
                 catch (Exception ex) { MessageBox.Show("出现错误，请检查您是否选择了服务器！\n" + ex.Message); }
-            }));
+            });
         }//the same of GetServerConfig and StartServerEvent
 
         private void serverList_SelectionChanged(object sender, SelectionChangedEventArgs e)
