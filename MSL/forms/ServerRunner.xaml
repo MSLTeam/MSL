@@ -257,8 +257,9 @@
                                     <Label Content="服务器信息：" Style="{StaticResource BorderTitle}"/>
                                     <Label Content="服务器名称:" Background="{x:Null}" BorderBrush="{x:Null}" HorizontalAlignment="Left" VerticalAlignment="Top" Margin="0,40,0,0" FontSize="14"/>
                                     <TextBox x:Name="nAme" Height="8" MaxLines="1" AutoWordSelection="True" Margin="125,40,0,34" VerticalAlignment="Top"/>
-                                    <Label Content="服务器存放地址:" BorderBrush="{x:Null}" Background="{x:Null}" HorizontalAlignment="Left" Margin="0,80,0,0" VerticalAlignment="Top" FontSize="14"/>
-                                    <TextBox x:Name="bAse" Height="8" MaxLines="1" AutoWordSelection="True" VerticalAlignment="Top" Margin="125,80,0,0"/>
+                                    <Label Content="服务器存放目录:" BorderBrush="{x:Null}" Background="{x:Null}" HorizontalAlignment="Left" Margin="0,80,0,0" VerticalAlignment="Top" FontSize="14"/>
+                                    <Button x:Name="a0" Content="浏览" Width="60" Height="28" VerticalAlignment="Top" HorizontalAlignment="Right" Margin="0,80,0,0" Click="a0_Click"/>
+                                    <TextBox x:Name="bAse" Height="8" MaxLines="1" AutoWordSelection="True" VerticalAlignment="Top" Margin="125,80,60,0"/>
                                 </Grid>
                             </Border>
                             <Border Style="{StaticResource MagicBorder}">
@@ -293,9 +294,9 @@
                                     <Button x:Name="a01" Content="浏览" Width="60" Click="a01_Click" Height="30" VerticalAlignment="Top" HorizontalAlignment="Right" Margin="0,40,160,0"/>
                                     <Button x:Name="downloadServer" hc:IconElement.Geometry="{StaticResource DownloadGeometry}" hc:IconElement.Width="15" Content="下载服务端" Width="150" Height="30" FontSize="14" Click="downloadServer_Click" VerticalAlignment="Top" HorizontalAlignment="Right" Margin="0,40,10,0"/>
                                     <Label x:Name="downout" Content="" FontSize="14" Foreground="Red" Height="40" Background="{x:Null}" BorderBrush="{x:Null}" HorizontalAlignment="Left" VerticalAlignment="Bottom"/>
-                                    <Button x:Name="refreahConfig" Content="刷新" Style="{StaticResource ButtonPrimary}" Width="86" Height="35" FontSize="14" Click="refreahConfig_Click" HorizontalAlignment="Left" VerticalAlignment="Top" Margin="190,280,0,0"/>
-                                    <Button x:Name="doneBtn1" Content="保存/应用" Style="{StaticResource ButtonPrimary}" Width="102" Click="doneBtn1_Click" Height="35" FontSize="14" HorizontalAlignment="Center" VerticalAlignment="Top" Margin="0,280,0,0"/>
-                                    <Button x:Name="getLaunchercode" Content="生成启动脚本" Style="{StaticResource ButtonPrimary}" Width="122" Height="35" FontSize="14" Click="getLaunchercode_Click" VerticalAlignment="Top" HorizontalAlignment="Right" Margin="0,280,150,0"/>
+                                    <Button x:Name="refreahConfig" Content="刷新" Style="{StaticResource ButtonPrimary}" Width="120" Height="35" FontSize="14" Click="refreahConfig_Click" HorizontalAlignment="Left" VerticalAlignment="Top" Margin="150,280,0,0"/>
+                                    <Button x:Name="doneBtn1" Content="保存/应用" Style="{StaticResource ButtonPrimary}" Width="120" Click="doneBtn1_Click" Height="35" FontSize="14" HorizontalAlignment="Center" VerticalAlignment="Top" Margin="0,280,0,0"/>
+                                    <Button x:Name="getLaunchercode" Content="生成启动脚本" Style="{StaticResource ButtonPrimary}" Width="120" Height="35" FontSize="14" Click="getLaunchercode_Click" VerticalAlignment="Top" HorizontalAlignment="Right" Margin="0,280,150,0"/>
                                 </Grid>
                             </Border>
                             <Border Style="{StaticResource MagicBorder}" Margin="10,10,10,20">

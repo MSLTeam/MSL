@@ -2,6 +2,7 @@
 using System;
 using System.ComponentModel;
 using System.IO;
+using System.Net;
 using System.Security.Permissions;
 using System.Threading;
 using System.Windows;
@@ -62,7 +63,7 @@ namespace MSL
             // Download completed event that can include occurred errors or 
             // cancelled or download completed successfully.
             downloader.DownloadFileCompleted += OnDownloadFileCompleted;
-            downloader.DownloadFileTaskAsync(downloadurl, downloadPath + @"\" + filename);
+            downloader.DownloadFileTaskAsync(downloadurl, downloadPath + "\\" + filename);
             while (isStopDwn != true)
             {
                 Thread.Sleep(1000);
@@ -77,8 +78,10 @@ namespace MSL
                 infolabel.Text = "获取下载地址……大小：" + e.TotalBytesToReceive / 1024 / 1024 + "MB";
             });
         }
+
         private void OnDownloadFileCompleted(object sender, AsyncCompletedEventArgs e)
         {
+
             if (isStopDwn == true)
             {
                 Dispatcher.Invoke(() =>
@@ -90,24 +93,120 @@ namespace MSL
                     }
                     catch { }
                 });
+                Thread.Sleep(1000);
+                downloadurl = null;
+                Dispatcher.Invoke(() =>
+                {
+                    Close();
+                });
             }
             else
             {
+                if (File.Exists(downloadPath + "\\" + filename))
+                {
+                    Dispatcher.Invoke(() =>
+                    {
+                        infolabel.Text = "下载完成！";
+                        pbar.Value = 100;
+                    });
+                    Thread.Sleep(1000);
+                    downloadurl = null;
+                    Dispatcher.Invoke(() =>
+                    {
+                        Close();
+                    });
+                }
+                else
+                {
+                    Dispatcher.Invoke(() =>
+                    {
+                        pbar.Value = 0;
+                        Thread thread = new Thread(DownloadFile);
+                        thread.Start();
+                    });
+                }
+            }
+        }
+
+        void DownloadFile()
+        {
+            Dispatcher.Invoke(() =>
+            {
+                infolabel.Text = "连接下载地址中...";
+            });
+            try
+            {
+                HttpWebRequest Myrq = (HttpWebRequest)HttpWebRequest.Create(downloadurl);
+                HttpWebResponse myrp;
+                myrp = (HttpWebResponse)Myrq.GetResponse();
+                long totalBytes = myrp.ContentLength;
+                Stream st = myrp.GetResponseStream();
+                FileStream so = new FileStream(downloadPath + "\\" + filename, FileMode.Create);
+                long totalDownloadedByte = 0;
+                byte[] by = new byte[1024];
+                int osize = st.Read(by, 0, (int)by.Length);
                 Dispatcher.Invoke(() =>
                 {
-                    infolabel.Text = "下载完成！";
-                    pbar.Value = 100;
+                    if (pbar != null)
+                    {
+                        pbar.Maximum = (int)totalBytes;
+                    }
+                });
+                while (osize > 0)
+                {
+                    if (isStopDwn)
+                    {
+                        break;
+                    }
+                    totalDownloadedByte = osize + totalDownloadedByte;
+                    DispatcherHelper.DoEvents();
+                    so.Write(by, 0, osize);
+                    osize = st.Read(by, 0, (int)by.Length);
+                    float percent = 0;
+                    percent = (float)totalDownloadedByte / (float)totalBytes * 100;
+                    Dispatcher.Invoke(() =>
+                    {
+                        if (pbar != null)
+                        {
+                            pbar.Value = (int)totalDownloadedByte;
+                        }
+                        infolabel.Text = "下载中，进度" + percent.ToString("f2") + "%";
+                    });
+                    DispatcherHelper.DoEvents();
+                }
+                so.Close();
+                st.Close();
+                Dispatcher.Invoke(() =>
+                {
+                    if (isStopDwn && File.Exists(downloadPath + "\\" + filename))
+                    {
+                        File.Delete(downloadPath + "\\" + filename);
+                    }
+                    else
+                    {
+                        infolabel.Text = "下载完成！";
+                    }
+                });
+                Thread.Sleep(1000);
+                downloadurl = null;
+                Dispatcher.Invoke(() =>
+                {
+                    Close();
                 });
             }
-            Thread.Sleep(1000);
-            downloadurl = null;
-            //Close();
-            this.Dispatcher.Invoke(new Action(
-    delegate
-    {
-        Close();
-    })
-    );
+            catch (Exception ex)
+            {
+                Dispatcher.Invoke(() =>
+                {
+                    infolabel.Text = "下载失败！" + ex.Message;
+                });
+                Thread.Sleep(1000);
+                Dispatcher.Invoke(() =>
+                {
+                    Close();
+                });
+
+            }
         }
 
         int counter = 0;

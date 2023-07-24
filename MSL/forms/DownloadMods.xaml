@@ -10,7 +10,7 @@
         NonClientAreaBackground="{DynamicResource SideMenuBrush}"
         Title="MSL-下载Mod" Height="450" Width="600" WindowStartupLocation="CenterOwner" ResizeMode="NoResize" Loaded="Window_Loaded" Background="{DynamicResource BackgroundBrush}" Closing="window_Closing">
     <Grid x:Name="BodyGrid">
-        <ListView x:Name="listBox" MouseDoubleClick="listBox_MouseDoubleClick" Background="{DynamicResource BorderBackground}" Margin="10,50,10,50">
+        <ListView x:Name="listBox" MouseDoubleClick="listBox_MouseDoubleClick" Background="{DynamicResource BorderBackground}" Margin="10,50,10,10">
             <ListView.View>
                 <GridView>
                     <GridViewColumn x:Name="listBoxColumnName" Width="500">
@@ -28,8 +28,6 @@
         </ListView>
         <TextBox x:Name="textBox1" ContextMenu="{DynamicResource UIContextMenu}" HorizontalAlignment="Left" Margin="258,10,0,0" TextWrapping="Wrap" Text="" VerticalAlignment="Top" Width="260"/>
         <Button x:Name="searchMod" Content="搜索" Margin="523,10,0,0" VerticalAlignment="Top" Click="searchMod_Click" HorizontalAlignment="Left" Width="67"/>
-        <Label x:Name="label1" Content="下载进度……" HorizontalAlignment="Left" VerticalAlignment="Bottom" Background="{x:Null}" BorderBrush="{x:Null}" Margin="0,0,0,20"/>
-        <ProgressBar x:Name="pbar" Height="15" VerticalAlignment="Bottom"/>
         <Label x:Name="lb01" Content="加载中，请耐心等待……" Margin="60,0,0,0" HorizontalAlignment="Center" VerticalAlignment="Center" Background="{x:Null}" BorderBrush="{x:Null}" Foreground="Red" Visibility="Hidden"/>
         <Label Content="搜索Mod" Margin="154,4,0,0" VerticalAlignment="Top" FontSize="18" BorderBrush="{x:Null}" Background="{x:Null}" HorizontalAlignment="Left" Height="37"/>
         <hc:LoadingCircle x:Name="lCircle" HorizontalAlignment="Center" Height="34" VerticalAlignment="Center" Width="40" Visibility="Hidden" Margin="0,0,110,0"/>

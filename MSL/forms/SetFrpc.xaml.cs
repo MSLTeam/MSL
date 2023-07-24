@@ -223,7 +223,7 @@ namespace MSL
                     int n = ran.Next(int.Parse(list3[a].ToString()), int.Parse(list4[a].ToString()));
                     if (textBox1.Text == "" || textBox2.Text == "")
                     {
-                        DialogShow.ShowMsg(this,"请确保内网端口和QQ号不为空后再试！", "错误");
+                        DialogShow.ShowMsg(this, "请确保内网端口和QQ号不为空后再试！", "错误");
                         return;
                     }
                     //string frptype = "";
@@ -245,7 +245,7 @@ namespace MSL
                     {
                         frptype = "udp";
                     }
-                    
+
                     string frpc = "#" + serverName + "\n[common]\n";
                     frpc += "server_port = " + list2[a].ToString() + "\n";
                     frpc += "server_addr = " + list1[a].ToString() + "\n";
@@ -260,11 +260,11 @@ namespace MSL
                         frpc += "local_ip = 127.0.0.1\n";
                         frpc += "local_port = " + a100 + "\n";
                         frpc += "remote_port = " + n + "\n";
-                        frpc += compressionArg+"\n";
+                        frpc += compressionArg + "\n";
                         frpc += "\n[udp]\ntype = udp\n";
                         frpc += "local_ip = 127.0.0.1\n";
                         frpc += "local_port = " + a200 + "\n";
-                        frpc += "remote_port = " + n+"\n";
+                        frpc += "remote_port = " + n + "\n";
                         frpc += compressionArg;
                     }
                     else
@@ -296,7 +296,7 @@ namespace MSL
                     int a = listBox1.SelectedIndex;
                     Random ran = new Random();
                     int n = ran.Next(int.Parse(list3[a].ToString()), int.Parse(list4[a].ToString()));
-                    if (textBox1.Text == "" || textBox2.Text == ""||textBox3.Password=="")
+                    if (textBox1.Text == "" || textBox2.Text == "" || textBox3.Password == "")
                     {
                         DialogShow.ShowMsg(this, "请确保内网端口、QQ号和密码不为空后再试！", "错误");
                         return;
@@ -438,19 +438,19 @@ namespace MSL
             DialogShow.ShowMsg(this, "点击确定后，开服器会弹出一个输入框，同时为您打开爱发电网站，您需要在爱发电购买的时候备注自己的QQ号（纯数字，不要夹带其他内容），购买完毕后，返回开服器，将您的QQ号输入进弹出的输入框中，开服器会自动为您获取密码。\n（注：付费密码在购买后会在服务器保存30分钟，请及时返回开服器进行操作，如果超时，请自行添加QQ：483232994来手动获取）", "购买须知");
             Process.Start("https://afdian.net/a/makabaka123");
             string text = "";
-            bool input =DialogShow.ShowInput(this, "输入您在爱发电备注的QQ号：", out text);
+            bool input = DialogShow.ShowInput(this, "输入您在爱发电备注的QQ号：", out text);
             if (input)
             {
-                Dialog _dialog= null;
+                Dialog _dialog = null;
                 try
                 {
-                    _dialog= Dialog.Show(new TextDialog("获取密码中，请稍等……"));
+                    _dialog = Dialog.Show(new TextDialog("获取密码中，请稍等……"));
                     JObject patientinfo = new JObject
                     {
                         ["qq"] = text
                     };
                     string sendData = JsonConvert.SerializeObject(patientinfo);
-                    string ret = await Task.Run(()=> Functions.Post("getpassword", 0, sendData, "https://aifadian.waheal.top"));
+                    string ret = await Task.Run(() => Functions.Post("getpassword", 0, sendData, "https://aifadian.waheal.top"));
                     this.Focus();
                     _dialog.Close();
                     if (ret != "Err")

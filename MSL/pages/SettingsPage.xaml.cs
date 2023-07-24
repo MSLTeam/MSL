@@ -267,7 +267,6 @@ namespace MSL.pages
                 jobject["skin"] = "1";
                 string convertString = Convert.ToString(jobject);
                 File.WriteAllText(AppDomain.CurrentDomain.BaseDirectory + "MSL\\config.json", convertString, Encoding.UTF8);
-                Growl.Success("皮肤切换成功！");
             }
             else if (RedSkinBtn.IsChecked == true)
             {
@@ -276,7 +275,6 @@ namespace MSL.pages
                 jobject["skin"] = "2";
                 string convertString = Convert.ToString(jobject);
                 File.WriteAllText(AppDomain.CurrentDomain.BaseDirectory + "MSL\\config.json", convertString, Encoding.UTF8);
-                Growl.Success("皮肤切换成功！");
             }
             else if (GreenSkinBtn.IsChecked == true)
             {
@@ -285,7 +283,6 @@ namespace MSL.pages
                 jobject["skin"] = "3";
                 string convertString = Convert.ToString(jobject);
                 File.WriteAllText(AppDomain.CurrentDomain.BaseDirectory + "MSL\\config.json", convertString, Encoding.UTF8);
-                Growl.Success("皮肤切换成功！");
             }
             else if (OrangeSkinBtn.IsChecked == true)
             {
@@ -294,7 +291,6 @@ namespace MSL.pages
                 jobject["skin"] = "4";
                 string convertString = Convert.ToString(jobject);
                 File.WriteAllText(AppDomain.CurrentDomain.BaseDirectory + "MSL\\config.json", convertString, Encoding.UTF8);
-                Growl.Success("皮肤切换成功！");
             }
             else if (PurpleSkinBtn.IsChecked == true)
             {
@@ -303,7 +299,6 @@ namespace MSL.pages
                 jobject["skin"] = "5";
                 string convertString = Convert.ToString(jobject);
                 File.WriteAllText(AppDomain.CurrentDomain.BaseDirectory + "MSL\\config.json", convertString, Encoding.UTF8);
-                Growl.Success("皮肤切换成功！");
             }
             else if (PinkSkinBtn.IsChecked == true)
             {
@@ -312,7 +307,6 @@ namespace MSL.pages
                 jobject["skin"] = "6";
                 string convertString = Convert.ToString(jobject);
                 File.WriteAllText(AppDomain.CurrentDomain.BaseDirectory + "MSL\\config.json", convertString, Encoding.UTF8);
-                Growl.Success("皮肤切换成功！");
             }
         }
 
@@ -531,7 +525,7 @@ namespace MSL.pages
                         ChangeSkinStyle();
                     }
                 }
-                catch(Exception ex)
+                catch (Exception ex)
                 {
                     DialogShow.ShowMsg(mainwindow, "更换背景图片失败！请重试！\n错误代码：" + ex.Message, "错误");
                 }

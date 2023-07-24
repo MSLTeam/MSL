@@ -298,7 +298,7 @@
       <Version>3.0.6</Version>
     </PackageReference>
     <PackageReference Include="Fody">
-      <Version>6.7.0</Version>
+      <Version>6.8.0</Version>
       <IncludeAssets>runtime; build; native; contentfiles; analyzers; buildtransitive</IncludeAssets>
       <PrivateAssets>all</PrivateAssets>
     </PackageReference>

@@ -7,12 +7,9 @@ using System.IO.Compression;
 using System.Net;
 using System.Text;
 using System.Text.RegularExpressions;
-using System.Threading;
 using System.Windows;
 using System.Windows.Forms;
 using System.Windows.Input;
-using System.Windows.Threading;
-using static MSL.DownloadWindow;
 using MessageBox = System.Windows.MessageBox;
 
 namespace MSL
@@ -23,7 +20,7 @@ namespace MSL
     public partial class DownloadMods : HandyControl.Controls.Window
     {
         string Url;
-        string Filename;
+        string Dir;
         public string serverbase;
         int loadType = 0;  //0: mods , 1: modpacks 
         List<int> modIds = new List<int>();
@@ -419,7 +416,11 @@ namespace MSL
                     lCircle.IsRunning = false;
                     lCircle.Visibility = Visibility.Hidden;
                     lb01.Visibility = Visibility.Hidden;
-                    listBoxColumnName.Header = "模组版本列表（双击下载）：";
+                    listBoxColumnName.Header = "版本列表（双击下载）：";
+                    if (listBox.Items.Count > 0)
+                    {
+                        listBox.ScrollIntoView(listBox.Items[0]);
+                    }
                 }
                 else
                 {
@@ -427,29 +428,38 @@ namespace MSL
                     {
                         if (Directory.Exists(serverbase + @"\mods"))
                         {
-                            Filename = serverbase + @"\mods\" + modVersions[listBox.SelectedIndex].ToString();
+                            Dir = serverbase + @"\mods";
                         }
                         else
                         {
                             FolderBrowserDialog dialog = new FolderBrowserDialog();
-                            dialog.Description = "请选择MOD存放文件夹";
+                            dialog.Description = "请选择模组存放文件夹";
                             if (dialog.ShowDialog() == System.Windows.Forms.DialogResult.OK)
                             {
-                                Filename = dialog.SelectedPath + @"\" + modVersions[listBox.SelectedIndex].ToString();
+                                Dir = dialog.SelectedPath;
                             }
                         }
                         Url = modVersionurl[listBox.SelectedIndex];
+                        string filename = modVersions[listBox.SelectedIndex].ToString();
+                        if (!filename.EndsWith(".jar"))
+                        {
+                            filename += ".jar";
+                        }
+
+                        DialogShow.ShowDownload(this, Url, Dir, filename, "下载中……");
+
                         //Process.Start(modVersionurl[modVersions.SelectedIndex]);
-                        Thread thread = new Thread(DownloadFile);
-                        thread.Start();
+                        //Thread thread = new Thread(DownloadFile);
+                        //thread.Start();
                     }
                     else if (loadType == 1)
                     {
-                        Filename = AppDomain.CurrentDomain.BaseDirectory + "MSL\\ServerPack.zip";
+                        Dir = AppDomain.CurrentDomain.BaseDirectory + "MSL";
                         Url = modVersionurl[listBox.SelectedIndex];
+                        DialogShow.ShowDownload(this, Url, Dir, "ServerPack.zip", "下载中……");
                         //Process.Start(modVersionurl[modVersions.SelectedIndex]);
-                        Thread thread = new Thread(DownloadFile);
-                        thread.Start();
+                        //Thread thread = new Thread(DownloadFile);
+                        //thread.Start();
                     }
                 }
             }
@@ -488,79 +498,6 @@ namespace MSL
             return datas;
         }
 
-        void DownloadFile()
-        {
-            Dispatcher.Invoke(() =>
-            {
-                label1.Content = "连接下载地址中...";
-            });
-            try
-            {
-                HttpWebRequest Myrq = (HttpWebRequest)HttpWebRequest.Create(Url);
-                HttpWebResponse myrp;
-                myrp = (HttpWebResponse)Myrq.GetResponse();
-                long totalBytes = myrp.ContentLength;
-                Stream st = myrp.GetResponseStream();
-                FileStream so = new FileStream(Filename, FileMode.Create);
-                long totalDownloadedByte = 0;
-                byte[] by = new byte[1024];
-                int osize = st.Read(by, 0, (int)by.Length);
-                Dispatcher.Invoke(() =>
-                {
-                    if (pbar != null)
-                    {
-                        pbar.Maximum = (int)totalBytes;
-                    }
-                });
-                while (osize > 0)
-                {
-                    totalDownloadedByte = osize + totalDownloadedByte;
-                    DispatcherHelper.DoEvents();
-                    so.Write(by, 0, osize);
-                    osize = st.Read(by, 0, (int)by.Length);
-                    float percent = 0;
-                    percent = (float)totalDownloadedByte / (float)totalBytes * 100;
-                    Dispatcher.Invoke(() =>
-                    {
-                        if (pbar != null)
-                        {
-                            pbar.Value = (int)totalDownloadedByte;
-                        }
-                        label1.Content = "下载中，进度" + percent.ToString("f2") + "%";
-                    });
-                    DispatcherHelper.DoEvents();
-                }
-                so.Close();
-                st.Close();
-                Dispatcher.Invoke(() =>
-                {
-                    if (loadType == 0)
-                    {
-                        if (Directory.Exists(serverbase + @"\mods"))
-                        {
-                            //MessageBox.Show(serverbase + @"\mods");
-                            label1.Content = "下载成功，模组已存放至该服务器的mods文件夹中";
-                        }
-                        else
-                        {
-                            label1.Content = "下载成功";
-                        }
-                    }
-                    else if (loadType == 1)
-                    {
-                        Close();
-                    }
-                });
-            }
-            catch (Exception ex)
-            {
-                Dispatcher.Invoke(() =>
-                {
-                    System.Windows.MessageBox.Show(ex.Message);
-                    label1.Content = "发生错误，请重试:" + ex;
-                });
-            }
-        }
 
         private void backBtn_Click(object sender, RoutedEventArgs e)
         {

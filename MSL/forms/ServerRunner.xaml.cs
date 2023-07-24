@@ -129,7 +129,7 @@ namespace MSL
             {
                 if (ServerProcess.HasExited != true)
                 {
-                    bool dialog= DialogShow.ShowMsg(this, "检测到您没有关闭服务器，是否隐藏此窗口？\n如要重新显示此窗口，请在服务器列表内双击该服务器（或点击开启服务器按钮）", "警告", true, "取消");
+                    bool dialog = DialogShow.ShowMsg(this, "检测到您没有关闭服务器，是否隐藏此窗口？\n如要重新显示此窗口，请在服务器列表内双击该服务器（或点击开启服务器按钮）", "警告", true, "取消");
                     e.Cancel = true;
                     if (dialog)
                     {
@@ -477,9 +477,16 @@ namespace MSL
                 {
                     fileforceUTF8Jvm = "-Dfile.encoding=UTF-8 ";
                 }
+
+                //这段代码将在后续版本删除******************
                 if (Rserverserver == "")
                 {
                     StartServer(RserverJVM + " " + fileforceUTF8Jvm + RserverJVMcmd + " nogui");
+                }
+                //******************************
+                if (Rserverserver.StartsWith("@libraries/"))
+                {
+                    StartServer(RserverJVM + " " + fileforceUTF8Jvm + RserverJVMcmd + " " + Rserverserver + " nogui");
                 }
                 else
                 {
@@ -2112,7 +2119,7 @@ namespace MSL
                 pluginsAndModsTab.Visibility = Visibility.Visible;
                 modsTabItem.IsEnabled = true;
                 modsTabItem.Header = "管理服务器模组";
-                if (pluginsTabItem.IsEnabled==false)
+                if (pluginsTabItem.IsEnabled == false)
                 {
                     pluginsAndModsTab.SelectedIndex = 1;
                 }
@@ -2143,7 +2150,7 @@ namespace MSL
 
         private void addModsTip_Click(object sender, RoutedEventArgs e)
         {
-            bool dialog=DialogShow.ShowMsg(this, "服务器需要添加的模组和客户端要添加的模组有所不同，增加方块、实体、玩法的MOD，是服务器需要安装的（也就是服务端和客户端都需要安装），而小地图、皮肤补丁、输入补丁、优化MOD、视觉显示类的MOD，服务器是一定不需要安装的（也就是只能加在客户端里）\n点击确定查看详细区分方法", "提示", true, "取消");
+            bool dialog = DialogShow.ShowMsg(this, "服务器需要添加的模组和客户端要添加的模组有所不同，增加方块、实体、玩法的MOD，是服务器需要安装的（也就是服务端和客户端都需要安装），而小地图、皮肤补丁、输入补丁、优化MOD、视觉显示类的MOD，服务器是一定不需要安装的（也就是只能加在客户端里）\n点击确定查看详细区分方法", "提示", true, "取消");
             if (dialog)
             {
                 Process.Start("https://zhidao.baidu.com/question/927720370906860259.html");
@@ -2666,6 +2673,15 @@ namespace MSL
                 refreahConfig.IsEnabled = true;
                 Rservername = nAme.Text;
                 Title = Rservername;
+                Rserverjava = jAva.Text;
+                if (server.Text.Contains("forge") && server.Text.Contains("installer"))
+                {
+                    bool dialog = DialogShow.ShowMsg(this, "您选择的服务端是forge安装器，是否将其展开安装？\n如果不展开安装，服务器可能无法开启！", "提示", true, "取消");
+                    if (dialog)
+                    {
+                        InstallForge();
+                    }
+                }
                 Rserverserver = server.Text;
                 await Dispatcher.InvokeAsync(() =>
                 {
@@ -2680,7 +2696,6 @@ namespace MSL
                 });
                 Rserverbase = bAse.Text;
                 RserverJVMcmd = jVMcmd.Text;
-                Rserverjava = jAva.Text;
 
                 JObject jsonObject = JObject.Parse(File.ReadAllText(AppDomain.CurrentDomain.BaseDirectory + @"MSL\ServerList.json", Encoding.UTF8));
                 JObject _json = (JObject)jsonObject[RserverId];
@@ -2702,6 +2717,52 @@ namespace MSL
                 MessageBox.Show("出现错误！请重试:\n" + err.Message, "ERROR", MessageBoxButton.OK, MessageBoxImage.Error);
                 doneBtn1.IsEnabled = true;
                 refreahConfig.IsEnabled = true;
+            }
+        }
+
+        void InstallForge()
+        {
+            string forgeVersion;
+            Match match = Regex.Match(server.Text, @"forge-([\w.-]+)-installer");
+            forgeVersion = match.Groups[1].Value.Split('-')[0];
+            Directory.SetCurrentDirectory(Rserverbase);
+            Process process = new Process();
+            process.StartInfo.FileName = Rserverjava;
+            process.StartInfo.Arguments = "-jar " + Rserverbase + @"\" + server.Text + " -installServer";
+            process.Start();
+            Directory.SetCurrentDirectory(AppDomain.CurrentDomain.BaseDirectory);
+            try
+            {
+
+                while (!process.HasExited)
+                {
+                    Thread.Sleep(1000);
+                }
+                if (File.Exists(Rserverbase + "\\libraries\\net\\minecraftforge\\forge\\" + forgeVersion + "\\win_args.txt"))
+                {
+                    server.Text = "@libraries/net/minecraftforge/forge/" + forgeVersion + "/win_args.txt %*";
+                }
+                else
+                {
+                    DirectoryInfo directoryInfo = new DirectoryInfo(Rserverbase);
+                    FileInfo[] fileInfo = directoryInfo.GetFiles();
+                    foreach (FileInfo file in fileInfo)
+                    {
+                        if (file.Name.IndexOf("forge-" + forgeVersion) + 1 != 0)
+                        {
+                            server.Text = file.FullName.Replace(Rserverbase + @"\", "");
+                            break;
+                        }
+                        else
+                        {
+                            DialogShow.ShowMsg(this, "安装失败,请多次尝试或使用代理再试！", "错误");
+                        }
+                    }
+                }
+            }
+            catch
+            {
+                DialogShow.ShowMsg(this, "安装失败！", "错误");
             }
         }
 
@@ -2770,7 +2831,15 @@ namespace MSL
                 return false;
             }
         }
-
+        private void a0_Click(object sender, RoutedEventArgs e)
+        {
+            System.Windows.Forms.FolderBrowserDialog dialog = new System.Windows.Forms.FolderBrowserDialog();
+            dialog.Description = "请选择文件夹";
+            if (dialog.ShowDialog() == System.Windows.Forms.DialogResult.OK)
+            {
+                bAse.Text = dialog.SelectedPath;
+            }
+        }
         private void a01_Click(object sender, RoutedEventArgs e)
         {
             OpenFileDialog openfile = new OpenFileDialog();
@@ -2816,9 +2885,9 @@ namespace MSL
             {
                 server.Text = DownloadServer.downloadServerName;
             }
-            else if (DownloadServer.downloadServerArgs != "")
+            else if (DownloadServer.downloadServerName.StartsWith("@libraries/"))
             {
-                jVMcmd.Text = RserverJVMcmd;
+                server.Text = DownloadServer.downloadServerName;
             }
         }
         private void useJVMauto_Click(object sender, RoutedEventArgs e)
@@ -3474,5 +3543,6 @@ namespace MSL
             }
         }
         #endregion
+
     }
 }

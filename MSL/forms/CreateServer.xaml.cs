@@ -11,7 +11,6 @@ using System.IO;
 using System.Linq;
 using System.Net;
 using System.Net.NetworkInformation;
-using System.Runtime.InteropServices;
 using System.Text;
 using System.Text.RegularExpressions;
 using System.Threading;
@@ -222,16 +221,16 @@ namespace MSL.forms
                 {
                     files.Add(file.Name);
                 }
-                if(files.Count > 1)
+                if (files.Count > 1)
                 {
-                    string filestr="";
+                    string filestr = "";
                     int i = 0;
                     foreach (var file in files)
                     {
-                        filestr += "\n"+i.ToString()+"."+ file;
+                        filestr += "\n" + i.ToString() + "." + file;
                         i++;
                     }
-                    bool ret= DialogShow.ShowInput(this, "开服器在整合包中检测到了以下jar文件，你可输选择一个作为开服核心（输入文件前对应的数字，取消为不选择以下文件）\n" + filestr,out string selectFile);
+                    bool ret = DialogShow.ShowInput(this, "开服器在整合包中检测到了以下jar文件，你可输选择一个作为开服核心（输入文件前对应的数字，取消为不选择以下文件）\n" + filestr, out string selectFile);
                     if (ret)
                     {
                         servercore = files[int.Parse(selectFile)];
@@ -240,9 +239,9 @@ namespace MSL.forms
                         sserver.IsEnabled = false;
                     }
                 }
-                else if(files.Count==1)
+                else if (files.Count == 1)
                 {
-                    bool ret= DialogShow.ShowMsg(this, "开服器在整合包中检测到了jar文件" + files[0] + "，是否选择此文件为开服核心？", "提示", true, "取消");
+                    bool ret = DialogShow.ShowMsg(this, "开服器在整合包中检测到了jar文件" + files[0] + "，是否选择此文件为开服核心？", "提示", true, "取消");
                     if (ret)
                     {
                         servercore = files[0];
@@ -769,10 +768,9 @@ namespace MSL.forms
                     sJVM.IsEnabled = true;
                     sserver.IsEnabled = false;
                 }
-                else if (DownloadServer.downloadServerArgs != "")
+                else if (DownloadServer.downloadServerName.StartsWith("@libraries/"))
                 {
-                    servercore = "";
-                    serverargs = DownloadServer.downloadServerArgs;
+                    servercore = DownloadServer.downloadServerName;
                     sJVM.IsSelected = true;
                     sJVM.IsEnabled = true;
                     sserver.IsEnabled = false;
@@ -795,9 +793,17 @@ namespace MSL.forms
                     {
                         File.Copy(txb3.Text, serverbase + @"\" + _filename, true);
                         DialogShow.ShowMsg(this, "已将服务端文件移至服务器文件夹中！您可将源文件删除！", "提示");
-                        txb3.Text = serverbase + @"\" + _filename;
+                        txb3.Text = _filename;
                     }
-                    servercore = _filename;
+                    if (txb3.Text.Contains("forge") && txb3.Text.Contains("installer"))
+                    {
+                        bool dialog = DialogShow.ShowMsg(this, "您选择的服务端是forge安装器，是否将其展开安装？\n如果不展开安装，服务器可能无法开启！", "提示", true, "取消");
+                        if (dialog)
+                        {
+                            InstallForgeCustomMode();
+                        }
+                    }
+                    servercore = txb3.Text;
                     sJVM.IsSelected = true;
                     sJVM.IsEnabled = true;
                     sserver.IsEnabled = false;
@@ -810,7 +816,51 @@ namespace MSL.forms
                 }
             }
         }
+        void InstallForgeCustomMode()
+        {
+            string forgeVersion;
+            Match match = Regex.Match(txb3.Text, @"forge-([\w.-]+)-installer");
+            forgeVersion = match.Groups[1].Value.Split('-')[0];
+            Directory.SetCurrentDirectory(serverbase);
+            Process process = new Process();
+            process.StartInfo.FileName = serverjava;
+            process.StartInfo.Arguments = "-jar " + serverbase + @"\" + txb3.Text + " -installServer";
+            process.Start();
+            Directory.SetCurrentDirectory(AppDomain.CurrentDomain.BaseDirectory);
+            try
+            {
 
+                while (!process.HasExited)
+                {
+                    Thread.Sleep(1000);
+                }
+                if (File.Exists(serverbase + "\\libraries\\net\\minecraftforge\\forge\\" + forgeVersion + "\\win_args.txt"))
+                {
+                    txb3.Text = "@libraries/net/minecraftforge/forge/" + forgeVersion + "/win_args.txt %*";
+                }
+                else
+                {
+                    DirectoryInfo directoryInfo = new DirectoryInfo(serverbase);
+                    FileInfo[] fileInfo = directoryInfo.GetFiles();
+                    foreach (FileInfo file in fileInfo)
+                    {
+                        if (file.Name.IndexOf("forge-" + forgeVersion) + 1 != 0)
+                        {
+                            txb3.Text = file.FullName.Replace(serverbase + @"\", "");
+                            break;
+                        }
+                        else
+                        {
+                            DialogShow.ShowMsg(this, "安装失败,请多次尝试或使用代理再试！", "错误");
+                        }
+                    }
+                }
+            }
+            catch
+            {
+                DialogShow.ShowMsg(this, "安装失败！", "错误");
+            }
+        }
 
         private void skip_Click(object sender, RoutedEventArgs e)
         {
@@ -1271,7 +1321,7 @@ namespace MSL.forms
                 bool installReturn = true;
                 if (filename.IndexOf("Forge") + 1 != 0)
                 {
-                    DialogShow.ShowMsg(this, "检测到您下载的是Forge端，开服器将自动进行安装操作，稍后请您不要随意移动鼠标且不要随意触碰键盘，耐心等待安装完毕！\n注：开服器已经把安装地址复制，如果Forge安装窗口弹出很久后没有任何改动的话，请手动选择第二个选项，然后把地址粘贴进去进行安装", "提示");
+                    DialogShow.ShowMsg(this, "检测到您下载的是Forge端，开服器将自动进行安装操作，稍后请您不要随意移动鼠标且不要随意触碰键盘，耐心等待安装完毕！", "提示");
                     installReturn = InstallForge();
                 }
                 if (installReturn)
@@ -1335,38 +1385,6 @@ namespace MSL.forms
         }
 
         #region InstallForge
-        /// <summary>
-        /// 找到窗口
-        /// </summary>
-        /// <param name="lpClassName">窗口类名(例：Button)</param>
-        /// <param name="lpWindowName">窗口标题</param>
-        /// <returns></returns>
-        [DllImport("user32.dll", EntryPoint = "FindWindow")]
-        private extern static IntPtr FindWindow(string lpClassName, string lpWindowName);
-
-        /// <summary>
-        /// 找到窗口
-        /// </summary>
-        /// <param name="hwndParent">父窗口句柄（如果为空，则为桌面窗口）</param>
-        /// <param name="hwndChildAfter">子窗口句柄（从该子窗口之后查找）</param>
-        /// <param name="lpszClass">窗口类名(例：Button</param>
-        /// <param name="lpszWindow">窗口标题</param>
-        /// <returns></returns>
-        [DllImport("user32.dll", EntryPoint = "FindWindowEx")]
-        private extern static IntPtr FindWindowEx(IntPtr hwndParent, IntPtr hwndChildAfter, string lpszClass, string lpszWindow);
-
-        /// <summary>
-        /// 发送消息
-        /// </summary>
-        /// <param name="hwnd">消息接受窗口句柄</param>
-        /// <param name="wMsg">消息</param>
-        /// <param name="wParam">指定附加的消息特定信息</param>
-        /// <param name="lParam">指定附加的消息特定信息</param>
-        /// <returns></returns>
-        [DllImport("user32.dll", EntryPoint = "SendMessageA")]
-        private static extern int SendMessage(IntPtr hwnd, uint wMsg, int wParam, int lParam);
-
-        const int WM_SETFOCUS = 0x07;
         bool InstallForge()
         {
             string filename = FinallyCoreCombo.Items[FinallyCoreCombo.SelectedIndex].ToString() + ".jar";
@@ -1392,85 +1410,14 @@ namespace MSL.forms
                 Match match = Regex.Match(serverDownUrl, @"forge-([\w.-]+)-installer");
                 forgeVersion = match.Groups[1].Value.Split('-')[0];
             }
+            Directory.SetCurrentDirectory(serverbase);
             Process process = new Process();
             process.StartInfo.FileName = serverjava;
-            process.StartInfo.Arguments = "-jar " + serverbase + @"\" + filename;
-            Directory.SetCurrentDirectory(serverbase);
+            process.StartInfo.Arguments = "-jar " + serverbase + @"\" + filename + " -installServer";
             process.Start();
+            Directory.SetCurrentDirectory(AppDomain.CurrentDomain.BaseDirectory);
             try
             {
-                while (!process.HasExited)
-                {
-                    IntPtr maindHwnd = FindWindow(null, "Mod system installer");//主窗口标题
-                    if (maindHwnd != IntPtr.Zero)
-                    {
-                        SendMessage(maindHwnd, WM_SETFOCUS, 0, 0);
-                        System.Windows.Clipboard.SetDataObject(serverbase);
-                        if (filename.IndexOf("1.12") + 1 != 0 || filename.IndexOf("1.13") + 1 != 0 || filename.IndexOf("1.14") + 1 != 0 || filename.IndexOf("1.15") + 1 != 0)
-                        {
-                            Thread.Sleep(200);
-                            SendKeys.SendWait("{Tab}");
-                            Thread.Sleep(200);
-                            SendKeys.SendWait("{Tab}");
-                            Thread.Sleep(200);
-                            SendKeys.SendWait("{DOWN}");
-                            Thread.Sleep(200);
-                            SendKeys.SendWait("{Tab}");
-                            Thread.Sleep(200);
-                            SendKeys.SendWait("{Tab}");
-                            Thread.Sleep(200);
-                            SendKeys.SendWait("{ENTER}");
-                            Thread.Sleep(500);
-                            SendKeys.SendWait("{DELETE}");
-                            Thread.Sleep(200);
-                            SendKeys.SendWait("^{v}");
-                            Thread.Sleep(500);
-                            SendKeys.SendWait("{Tab}");
-                            Thread.Sleep(200);
-                            SendKeys.SendWait("{Tab}");
-                            Thread.Sleep(500);
-                            SendKeys.SendWait("{ENTER}");
-                            Thread.Sleep(500);
-                            SendKeys.SendWait("{Tab}");
-                            Thread.Sleep(200);
-                            SendKeys.SendWait("{ENTER}");
-                            break;
-                        }
-                        else
-                        {
-                            Thread.Sleep(200);
-                            SendKeys.SendWait("{Tab}");
-                            Thread.Sleep(200);
-                            SendKeys.SendWait("{Tab}");
-                            Thread.Sleep(200);
-                            SendKeys.SendWait("{Tab}");
-                            Thread.Sleep(200);
-                            SendKeys.SendWait("{DOWN}");
-                            Thread.Sleep(200);
-                            SendKeys.SendWait("{Tab}");
-                            Thread.Sleep(200);
-                            SendKeys.SendWait("{Tab}");
-                            Thread.Sleep(200);
-                            SendKeys.SendWait("{ENTER}");
-                            Thread.Sleep(500);
-                            SendKeys.SendWait("{DELETE}");
-                            Thread.Sleep(200);
-                            SendKeys.SendWait("^{v}");
-                            Thread.Sleep(500);
-                            SendKeys.SendWait("{Tab}");
-                            Thread.Sleep(200);
-                            SendKeys.SendWait("{Tab}");
-                            Thread.Sleep(500);
-                            SendKeys.SendWait("{ENTER}");
-                            Thread.Sleep(500);
-                            SendKeys.SendWait("{Tab}");
-                            Thread.Sleep(200);
-                            SendKeys.SendWait("{ENTER}");
-                            break;
-                        }
-                    }
-                    Thread.Sleep(1000);
-                }
 
                 while (!process.HasExited)
                 {
@@ -1478,8 +1425,7 @@ namespace MSL.forms
                 }
                 if (File.Exists(serverbase + "\\libraries\\net\\minecraftforge\\forge\\" + forgeVersion + "\\win_args.txt"))
                 {
-                    servercore = "";
-                    serverargs = "@libraries/net/minecraftforge/forge/" + forgeVersion + "/win_args.txt %*";
+                    servercore = "@libraries/net/minecraftforge/forge/" + forgeVersion + "/win_args.txt %*";
                     return true;
                 }
                 else
@@ -1495,7 +1441,6 @@ namespace MSL.forms
                         }
                         else
                         {
-                            servercore = "";
                             return false;
                         }
                     }

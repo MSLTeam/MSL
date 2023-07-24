@@ -11,7 +11,7 @@ namespace MSL.controls
     {
         public static string Get(string path)
         {
-            string url= "https://api.waheal.top";
+            string url = "https://api.waheal.top";
             if (MainWindow.serverLink != "https://msl.waheal.top")
             {
                 url = MainWindow.serverLink + ":5000";

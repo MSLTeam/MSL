@@ -100,7 +100,7 @@ namespace MSL
                     Growl.Info("MSL主服务器连接超时（可能被DDos），已切换至备用服务器！");
                     //Logger.LogInfo("已连接到可用的在线服务器，ID：Spare");
                 }
-                
+
             }
             catch
             {
@@ -116,8 +116,8 @@ namespace MSL
                 if (!File.Exists(AppDomain.CurrentDomain.BaseDirectory + @"MSL\config.json"))
                 {
                     //Logger.LogWarning("未检测到config.json文件，载入首次启动事件");
-                    
-                        File.WriteAllText(AppDomain.CurrentDomain.BaseDirectory + @"MSL\config.json", string.Format("{{{0}}}", "\n"));
+
+                    File.WriteAllText(AppDomain.CurrentDomain.BaseDirectory + @"MSL\config.json", string.Format("{{{0}}}", "\n"));
                 }
             }
             catch (Exception ex)
@@ -138,7 +138,7 @@ namespace MSL
                 jsonObject = JObject.Parse(File.ReadAllText(AppDomain.CurrentDomain.BaseDirectory + @"MSL\config.json", Encoding.UTF8));
                 ////Logger.LogInfo("读取config.json成功！");
             }
-            catch(Exception ex)
+            catch (Exception ex)
             {
                 //Logger.LogError("读取config.json失败！尝试重新载入……");
                 Dispatcher.Invoke(() =>
@@ -396,7 +396,7 @@ namespace MSL
                 //Logger.LogInfo("读取系统内存……");
                 PhisicalMemory = GetPhisicalMemory();
             }
-            catch(Exception ex)
+            catch (Exception ex)
             {
                 //Logger.LogError("读取系统内存失败！");
                 MessageBox.Show("获取系统内存失败！" + ex.Message, "错误", MessageBoxButton.OK, MessageBoxImage.Error);
@@ -431,7 +431,7 @@ namespace MSL
             catch (Exception ex)
             {
                 //Logger.LogError("读取自动开启（服务器）配置失败！");
-                MessageBox.Show("自动启动服务器失败！" + ex.Message,"错误",MessageBoxButton.OK,MessageBoxImage.Error);
+                MessageBox.Show("自动启动服务器失败！" + ex.Message, "错误", MessageBoxButton.OK, MessageBoxImage.Error);
             }
             //自动开启Frpc
             try

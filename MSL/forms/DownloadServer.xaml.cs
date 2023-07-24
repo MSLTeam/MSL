@@ -7,12 +7,10 @@ using System.Diagnostics;
 using System.IO;
 using System.Linq;
 using System.Net.NetworkInformation;
-using System.Runtime.InteropServices;
 using System.Text.RegularExpressions;
 using System.Threading;
 using System.Windows;
 using System.Windows.Controls;
-using System.Windows.Forms;
 using System.Windows.Input;
 using System.Windows.Threading;
 using File = System.IO.File;
@@ -32,12 +30,10 @@ namespace MSL.pages
         public static string downloadServerBase;
         public static string downloadServerName;
         public static string downloadServerJava;
-        public static string downloadServerArgs;
         //public static string autoupdateserver="&";
         public DownloadServer()
         {
             downloadServerName = string.Empty;
-            downloadServerArgs = string.Empty;
             InitializeComponent();
         }
         string downPath = "";
@@ -90,7 +86,7 @@ namespace MSL.pages
                 {
                     if (filename.IndexOf("Forge") + 1 != 0)
                     {
-                        DialogShow.ShowMsg(this, "检测到您下载的是Forge端，开服器将自动进行安装操作，稍后请您不要随意移动鼠标且不要随意触碰键盘，耐心等待安装完毕！\n注：开服器已经把安装地址复制，如果Forge安装窗口弹出很久后没有任何改动的话，请手动选择第二个选项，然后把地址粘贴进去进行安装", "提示");
+                        DialogShow.ShowMsg(this, "检测到您下载的是Forge端，开服器将自动进行安装操作，稍后请您不要随意移动鼠标且不要随意触碰键盘，耐心等待安装完毕！", "提示");
                         InstallForge();
                     }
                     else
@@ -358,38 +354,6 @@ namespace MSL.pages
             */
         }
 
-        /// <summary>
-        /// 找到窗口
-        /// </summary>
-        /// <param name="lpClassName">窗口类名(例：Button)</param>
-        /// <param name="lpWindowName">窗口标题</param>
-        /// <returns></returns>
-        [DllImport("user32.dll", EntryPoint = "FindWindow")]
-        private extern static IntPtr FindWindow(string lpClassName, string lpWindowName);
-
-        /// <summary>
-        /// 找到窗口
-        /// </summary>
-        /// <param name="hwndParent">父窗口句柄（如果为空，则为桌面窗口）</param>
-        /// <param name="hwndChildAfter">子窗口句柄（从该子窗口之后查找）</param>
-        /// <param name="lpszClass">窗口类名(例：Button</param>
-        /// <param name="lpszWindow">窗口标题</param>
-        /// <returns></returns>
-        [DllImport("user32.dll", EntryPoint = "FindWindowEx")]
-        private extern static IntPtr FindWindowEx(IntPtr hwndParent, IntPtr hwndChildAfter, string lpszClass, string lpszWindow);
-
-        /// <summary>
-        /// 发送消息
-        /// </summary>
-        /// <param name="hwnd">消息接受窗口句柄</param>
-        /// <param name="wMsg">消息</param>
-        /// <param name="wParam">指定附加的消息特定信息</param>
-        /// <param name="lParam">指定附加的消息特定信息</param>
-        /// <returns></returns>
-        [DllImport("user32.dll", EntryPoint = "SendMessageA")]
-        private static extern int SendMessage(IntPtr hwnd, uint wMsg, int wParam, int lParam);
-
-        const int WM_SETFOCUS = 0x07;
         void InstallForge()
         {
             string forgeVersion;
@@ -413,85 +377,14 @@ namespace MSL.pages
                 Match match = Regex.Match(serverDownUrl, @"forge-([\w.-]+)-installer");
                 forgeVersion = match.Groups[1].Value.Split('-')[0];
             }
+            Directory.SetCurrentDirectory(downloadServerBase);
             Process process = new Process();
             process.StartInfo.FileName = downloadServerJava;
-            process.StartInfo.Arguments = "-jar " + downPath + @"\" + filename;
-            Directory.SetCurrentDirectory(downloadServerBase);
+            process.StartInfo.Arguments = "-jar " + downPath + @"\" + filename + " -installServer";
             process.Start();
+            Directory.SetCurrentDirectory(AppDomain.CurrentDomain.BaseDirectory);
             try
             {
-                while (!process.HasExited)
-                {
-                    IntPtr maindHwnd = FindWindow(null, "Mod system installer");//主窗口标题
-                    if (maindHwnd != IntPtr.Zero)
-                    {
-                        SendMessage(maindHwnd, WM_SETFOCUS, 0, 0);
-                        System.Windows.Clipboard.SetDataObject(downloadServerBase);
-                        if (filename.IndexOf("1.12") + 1 != 0 || filename.IndexOf("1.13") + 1 != 0 || filename.IndexOf("1.14") + 1 != 0 || filename.IndexOf("1.15") + 1 != 0)
-                        {
-                            Thread.Sleep(200);
-                            SendKeys.SendWait("{Tab}");
-                            Thread.Sleep(200);
-                            SendKeys.SendWait("{Tab}");
-                            Thread.Sleep(200);
-                            SendKeys.SendWait("{DOWN}");
-                            Thread.Sleep(200);
-                            SendKeys.SendWait("{Tab}");
-                            Thread.Sleep(200);
-                            SendKeys.SendWait("{Tab}");
-                            Thread.Sleep(200);
-                            SendKeys.SendWait("{ENTER}");
-                            Thread.Sleep(500);
-                            SendKeys.SendWait("{DELETE}");
-                            Thread.Sleep(200);
-                            SendKeys.SendWait("^{v}");
-                            Thread.Sleep(500);
-                            SendKeys.SendWait("{Tab}");
-                            Thread.Sleep(200);
-                            SendKeys.SendWait("{Tab}");
-                            Thread.Sleep(500);
-                            SendKeys.SendWait("{ENTER}");
-                            Thread.Sleep(500);
-                            SendKeys.SendWait("{Tab}");
-                            Thread.Sleep(200);
-                            SendKeys.SendWait("{ENTER}");
-                            break;
-                        }
-                        else
-                        {
-                            Thread.Sleep(200);
-                            SendKeys.SendWait("{Tab}");
-                            Thread.Sleep(200);
-                            SendKeys.SendWait("{Tab}");
-                            Thread.Sleep(200);
-                            SendKeys.SendWait("{Tab}");
-                            Thread.Sleep(200);
-                            SendKeys.SendWait("{DOWN}");
-                            Thread.Sleep(200);
-                            SendKeys.SendWait("{Tab}");
-                            Thread.Sleep(200);
-                            SendKeys.SendWait("{Tab}");
-                            Thread.Sleep(200);
-                            SendKeys.SendWait("{ENTER}");
-                            Thread.Sleep(500);
-                            SendKeys.SendWait("{DELETE}");
-                            Thread.Sleep(200);
-                            SendKeys.SendWait("^{v}");
-                            Thread.Sleep(500);
-                            SendKeys.SendWait("{Tab}");
-                            Thread.Sleep(200);
-                            SendKeys.SendWait("{Tab}");
-                            Thread.Sleep(500);
-                            SendKeys.SendWait("{ENTER}");
-                            Thread.Sleep(500);
-                            SendKeys.SendWait("{Tab}");
-                            Thread.Sleep(200);
-                            SendKeys.SendWait("{ENTER}");
-                            break;
-                        }
-                    }
-                    Thread.Sleep(1000);
-                }
 
                 while (!process.HasExited)
                 {
@@ -504,8 +397,7 @@ namespace MSL.pages
                 text = text.Replace("@user_jvm_args.txt", "");*/
                 if (File.Exists(downloadServerBase + "\\libraries\\net\\minecraftforge\\forge\\" + forgeVersion + "\\win_args.txt"))
                 {
-                    downloadServerName = "";
-                    downloadServerArgs = "@libraries/net/minecraftforge/forge/" + forgeVersion + "/win_args.txt %*";
+                    downloadServerName = "@libraries/net/minecraftforge/forge/" + forgeVersion + "/win_args.txt %*";
                     //CreateServer.isCreateForge = true;
                     Close();
                 }
@@ -522,17 +414,10 @@ namespace MSL.pages
                         }
                         else
                         {
-                            downloadServerName = "";
+                            DialogShow.ShowMsg(this, "下载失败,请多次尝试或使用代理再试！", "错误");
                         }
                     }
-                    if (downloadServerName == "")
-                    {
-                        DialogShow.ShowMsg(this, "下载失败,请多次尝试或使用代理再试！", "错误");
-                    }
-                    else
-                    {
-                        Close();
-                    }
+                    Close();
                 }
             }
             catch
