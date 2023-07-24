@@ -233,7 +233,16 @@ namespace MSL.forms
                     bool ret = DialogShow.ShowInput(this, "开服器在整合包中检测到了以下jar文件，你可输选择一个作为开服核心（输入文件前对应的数字，取消为不选择以下文件）\n" + filestr, out string selectFile);
                     if (ret)
                     {
-                        servercore = files[int.Parse(selectFile)];
+                        txb3.Text = files[int.Parse(selectFile)];
+                        if (txb3.Text.Contains("forge") && txb3.Text.Contains("installer"))
+                        {
+                            bool dialog = DialogShow.ShowMsg(this, "您选择的服务端是forge安装器，是否将其展开安装？\n如果不展开安装，服务器可能无法开启！", "提示", true, "取消");
+                            if (dialog)
+                            {
+                                InstallForgeCustomMode();
+                            }
+                        }
+                        servercore = txb3.Text;
                         sJVM.IsSelected = true;
                         sJVM.IsEnabled = true;
                         sserver.IsEnabled = false;
@@ -244,7 +253,16 @@ namespace MSL.forms
                     bool ret = DialogShow.ShowMsg(this, "开服器在整合包中检测到了jar文件" + files[0] + "，是否选择此文件为开服核心？", "提示", true, "取消");
                     if (ret)
                     {
-                        servercore = files[0];
+                        txb3.Text = files[0];
+                        if (txb3.Text.Contains("forge") && txb3.Text.Contains("installer"))
+                        {
+                            bool dialog = DialogShow.ShowMsg(this, "您选择的服务端是forge安装器，是否将其展开安装？\n如果不展开安装，服务器可能无法开启！", "提示", true, "取消");
+                            if (dialog)
+                            {
+                                InstallForgeCustomMode();
+                            }
+                        }
+                        servercore = txb3.Text;
                         sJVM.IsSelected = true;
                         sJVM.IsEnabled = true;
                         sserver.IsEnabled = false;
@@ -789,11 +807,14 @@ namespace MSL.forms
                         Directory.CreateDirectory(serverbase);
                     }
                     string _filename = Path.GetFileName(txb3.Text);
-                    if (Path.GetDirectoryName(txb3.Text) != serverbase)
+                    if (Path.IsPathRooted(txb3.Text))
                     {
-                        File.Copy(txb3.Text, serverbase + @"\" + _filename, true);
-                        DialogShow.ShowMsg(this, "已将服务端文件移至服务器文件夹中！您可将源文件删除！", "提示");
-                        txb3.Text = _filename;
+                        if (Path.GetDirectoryName(txb3.Text) != serverbase)
+                        {
+                            File.Copy(txb3.Text, serverbase + @"\" + _filename, true);
+                            DialogShow.ShowMsg(this, "已将服务端文件移至服务器文件夹中！您可将源文件删除！", "提示");
+                            txb3.Text = _filename;
+                        }
                     }
                     if (txb3.Text.Contains("forge") && txb3.Text.Contains("installer"))
                     {
@@ -818,47 +839,53 @@ namespace MSL.forms
         }
         void InstallForgeCustomMode()
         {
-            string forgeVersion;
-            Match match = Regex.Match(txb3.Text, @"forge-([\w.-]+)-installer");
-            forgeVersion = match.Groups[1].Value.Split('-')[0];
-            Directory.SetCurrentDirectory(serverbase);
-            Process process = new Process();
-            process.StartInfo.FileName = serverjava;
-            process.StartInfo.Arguments = "-jar " + serverbase + @"\" + txb3.Text + " -installServer";
-            process.Start();
-            Directory.SetCurrentDirectory(AppDomain.CurrentDomain.BaseDirectory);
-            try
+            bool keepTrying = true;
+            while (keepTrying)
             {
+                string forgeVersion;
+                Match match = Regex.Match(txb3.Text, @"forge-([\w.-]+)-installer");
+                forgeVersion = match.Groups[1].Value.Split('-')[0];
+                Directory.SetCurrentDirectory(serverbase);
+                Process process = new Process();
+                process.StartInfo.FileName = serverjava;
+                process.StartInfo.Arguments = "-jar " + serverbase + @"\" + txb3.Text + " -installServer";
+                process.Start();
+                Directory.SetCurrentDirectory(AppDomain.CurrentDomain.BaseDirectory);
+                try
+                {
 
-                while (!process.HasExited)
-                {
-                    Thread.Sleep(1000);
-                }
-                if (File.Exists(serverbase + "\\libraries\\net\\minecraftforge\\forge\\" + forgeVersion + "\\win_args.txt"))
-                {
-                    txb3.Text = "@libraries/net/minecraftforge/forge/" + forgeVersion + "/win_args.txt %*";
-                }
-                else
-                {
-                    DirectoryInfo directoryInfo = new DirectoryInfo(serverbase);
-                    FileInfo[] fileInfo = directoryInfo.GetFiles();
-                    foreach (FileInfo file in fileInfo)
+                    while (!process.HasExited)
                     {
-                        if (file.Name.IndexOf("forge-" + forgeVersion) + 1 != 0)
+                        Thread.Sleep(1000);
+                    }
+                    if (File.Exists(serverbase + "\\libraries\\net\\minecraftforge\\forge\\" + forgeVersion + "\\win_args.txt"))
+                    {
+                        txb3.Text = "@libraries/net/minecraftforge/forge/" + forgeVersion + "/win_args.txt %*";
+                    }
+                    else
+                    {
+                        DirectoryInfo directoryInfo = new DirectoryInfo(serverbase);
+                        FileInfo[] fileInfo = directoryInfo.GetFiles();
+                        foreach (FileInfo file in fileInfo)
                         {
-                            txb3.Text = file.FullName.Replace(serverbase + @"\", "");
-                            break;
+                            if (file.Name.IndexOf("forge-" + forgeVersion) + 1 != 0 && !file.Name.Contains("installer"))
+                            {
+                                txb3.Text = file.FullName.Replace(serverbase + @"\", "");
+                                keepTrying = false;
+                                break;
+                            }
                         }
-                        else
+                        if (keepTrying)
                         {
-                            DialogShow.ShowMsg(this, "安装失败,请多次尝试或使用代理再试！", "错误");
+                            bool dialog = DialogShow.ShowMsg(this, "安装失败,请多次尝试或使用代理再试！\n点击确定重试！", "错误", true, "取消");
+                            keepTrying = dialog;
                         }
                     }
                 }
-            }
-            catch
-            {
-                DialogShow.ShowMsg(this, "安装失败！", "错误");
+                catch
+                {
+                    DialogShow.ShowMsg(this, "安装失败！", "错误");
+                }
             }
         }
 

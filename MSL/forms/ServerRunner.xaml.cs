@@ -2722,47 +2722,53 @@ namespace MSL
 
         void InstallForge()
         {
-            string forgeVersion;
-            Match match = Regex.Match(server.Text, @"forge-([\w.-]+)-installer");
-            forgeVersion = match.Groups[1].Value.Split('-')[0];
-            Directory.SetCurrentDirectory(Rserverbase);
-            Process process = new Process();
-            process.StartInfo.FileName = Rserverjava;
-            process.StartInfo.Arguments = "-jar " + Rserverbase + @"\" + server.Text + " -installServer";
-            process.Start();
-            Directory.SetCurrentDirectory(AppDomain.CurrentDomain.BaseDirectory);
-            try
+            bool keepTrying = true;
+            while (keepTrying)
             {
+                string forgeVersion;
+                Match match = Regex.Match(server.Text, @"forge-([\w.-]+)-installer");
+                forgeVersion = match.Groups[1].Value.Split('-')[0];
+                Directory.SetCurrentDirectory(Rserverbase);
+                Process process = new Process();
+                process.StartInfo.FileName = Rserverjava;
+                process.StartInfo.Arguments = "-jar " + Rserverbase + @"\" + server.Text + " -installServer";
+                process.Start();
+                Directory.SetCurrentDirectory(AppDomain.CurrentDomain.BaseDirectory);
+                try
+                {
 
-                while (!process.HasExited)
-                {
-                    Thread.Sleep(1000);
-                }
-                if (File.Exists(Rserverbase + "\\libraries\\net\\minecraftforge\\forge\\" + forgeVersion + "\\win_args.txt"))
-                {
-                    server.Text = "@libraries/net/minecraftforge/forge/" + forgeVersion + "/win_args.txt %*";
-                }
-                else
-                {
-                    DirectoryInfo directoryInfo = new DirectoryInfo(Rserverbase);
-                    FileInfo[] fileInfo = directoryInfo.GetFiles();
-                    foreach (FileInfo file in fileInfo)
+                    while (!process.HasExited)
                     {
-                        if (file.Name.IndexOf("forge-" + forgeVersion) + 1 != 0)
+                        Thread.Sleep(1000);
+                    }
+                    if (File.Exists(Rserverbase + "\\libraries\\net\\minecraftforge\\forge\\" + forgeVersion + "\\win_args.txt"))
+                    {
+                        server.Text = "@libraries/net/minecraftforge/forge/" + forgeVersion + "/win_args.txt %*";
+                    }
+                    else
+                    {
+                        DirectoryInfo directoryInfo = new DirectoryInfo(Rserverbase);
+                        FileInfo[] fileInfo = directoryInfo.GetFiles();
+                        foreach (FileInfo file in fileInfo)
                         {
-                            server.Text = file.FullName.Replace(Rserverbase + @"\", "");
-                            break;
+                            if (file.Name.IndexOf("forge-" + forgeVersion) + 1 != 0 && !file.Name.Contains("installer"))
+                            {
+                                server.Text = file.FullName.Replace(Rserverbase + @"\", "");
+                                keepTrying = false;
+                                break;
+                            }
                         }
-                        else
+                        if (keepTrying)
                         {
-                            DialogShow.ShowMsg(this, "安装失败,请多次尝试或使用代理再试！", "错误");
+                            bool dialog = DialogShow.ShowMsg(this, "安装失败,请多次尝试或使用代理再试！\n点击确定重试！", "错误", true, "取消");
+                            keepTrying = dialog;
                         }
                     }
                 }
-            }
-            catch
-            {
-                DialogShow.ShowMsg(this, "安装失败！", "错误");
+                catch
+                {
+                    DialogShow.ShowMsg(this, "安装失败！", "错误");
+                }
             }
         }
 

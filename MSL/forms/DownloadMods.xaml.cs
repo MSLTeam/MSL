@@ -457,6 +457,7 @@ namespace MSL
                         Dir = AppDomain.CurrentDomain.BaseDirectory + "MSL";
                         Url = modVersionurl[listBox.SelectedIndex];
                         DialogShow.ShowDownload(this, Url, Dir, "ServerPack.zip", "下载中……");
+                        Close();
                         //Process.Start(modVersionurl[modVersions.SelectedIndex]);
                         //Thread thread = new Thread(DownloadFile);
                         //thread.Start();
