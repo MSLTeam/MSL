@@ -375,7 +375,7 @@ namespace MSL.pages
             else
             {
                 Match match = Regex.Match(serverDownUrl, @"forge-([\w.-]+)-installer");
-                forgeVersion = match.Groups[1].Value.Split('-')[0];
+                forgeVersion = match.Groups[1].Value;
             }
             Directory.SetCurrentDirectory(downloadServerBase);
             Process process = new Process();

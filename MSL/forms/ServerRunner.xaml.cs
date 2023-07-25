@@ -484,7 +484,7 @@ namespace MSL
                     StartServer(RserverJVM + " " + fileforceUTF8Jvm + RserverJVMcmd + " nogui");
                 }
                 //******************************
-                if (Rserverserver.StartsWith("@libraries/"))
+                else if (Rserverserver.StartsWith("@libraries/"))
                 {
                     StartServer(RserverJVM + " " + fileforceUTF8Jvm + RserverJVMcmd + " " + Rserverserver + " nogui");
                 }
@@ -2727,7 +2727,7 @@ namespace MSL
             {
                 string forgeVersion;
                 Match match = Regex.Match(server.Text, @"forge-([\w.-]+)-installer");
-                forgeVersion = match.Groups[1].Value.Split('-')[0];
+                forgeVersion = match.Groups[1].Value;
                 Directory.SetCurrentDirectory(Rserverbase);
                 Process process = new Process();
                 process.StartInfo.FileName = Rserverjava;
@@ -2744,6 +2744,7 @@ namespace MSL
                     if (File.Exists(Rserverbase + "\\libraries\\net\\minecraftforge\\forge\\" + forgeVersion + "\\win_args.txt"))
                     {
                         server.Text = "@libraries/net/minecraftforge/forge/" + forgeVersion + "/win_args.txt %*";
+                        keepTrying = false;
                     }
                     else
                     {

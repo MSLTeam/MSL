@@ -844,7 +844,7 @@ namespace MSL.forms
             {
                 string forgeVersion;
                 Match match = Regex.Match(txb3.Text, @"forge-([\w.-]+)-installer");
-                forgeVersion = match.Groups[1].Value.Split('-')[0];
+                forgeVersion = match.Groups[1].Value;
                 Directory.SetCurrentDirectory(serverbase);
                 Process process = new Process();
                 process.StartInfo.FileName = serverjava;
@@ -861,6 +861,7 @@ namespace MSL.forms
                     if (File.Exists(serverbase + "\\libraries\\net\\minecraftforge\\forge\\" + forgeVersion + "\\win_args.txt"))
                     {
                         txb3.Text = "@libraries/net/minecraftforge/forge/" + forgeVersion + "/win_args.txt %*";
+                        keepTrying = false;
                     }
                     else
                     {
@@ -1435,7 +1436,7 @@ namespace MSL.forms
             else
             {
                 Match match = Regex.Match(serverDownUrl, @"forge-([\w.-]+)-installer");
-                forgeVersion = match.Groups[1].Value.Split('-')[0];
+                forgeVersion = match.Groups[1].Value;
             }
             Directory.SetCurrentDirectory(serverbase);
             Process process = new Process();
