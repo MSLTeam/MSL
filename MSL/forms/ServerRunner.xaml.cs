@@ -983,7 +983,6 @@ namespace MSL
                 if (serverVersionLab.Content.ToString() == "获取中")
                 {
                     serverVersionLab.Content = "未知";
-                    Growl.Info("开服器未获取到服务器版本，因此无法根据版本自动切换相应的编码，若服务器出现乱码情况，请前往“更多功能”界面手动切换编码（优先更改输入编码）：1.12以下版本请使用ANSI，1.12及以上版本请使用UTF8");
                 }
                 if (gameTypeLab.Content.ToString() == "获取中")
                 {

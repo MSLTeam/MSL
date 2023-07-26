@@ -9,12 +9,19 @@ namespace MSL.controls
 {
     internal class Functions
     {
-        public static string Get(string path)
+        public static string Get(string path, string customUrl = "")
         {
             string url = "https://api.waheal.top";
-            if (MainWindow.serverLink != "https://msl.waheal.top")
+            if (customUrl == "")
             {
-                url = MainWindow.serverLink + ":5000";
+                if (MainWindow.serverLink != "https://msl.waheal.top")
+                {
+                    url = MainWindow.serverLink + ":5000";
+                }
+            }
+            else
+            {
+                url = customUrl;
             }
             WebClient webClient = new WebClient();
             webClient.Credentials = CredentialCache.DefaultCredentials;
