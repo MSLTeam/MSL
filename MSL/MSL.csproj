@@ -124,6 +124,7 @@
     <Compile Include="controls\MessageDialog.xaml.cs">
       <DependentUpon>MessageDialog.xaml</DependentUpon>
     </Compile>
+    <Compile Include="controls\OfAPI.cs" />
     <Compile Include="controls\RelayCommand.cs" />
     <Compile Include="controls\TextDialog.xaml.cs">
       <DependentUpon>TextDialog.xaml</DependentUpon>
