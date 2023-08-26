@@ -447,7 +447,7 @@ namespace MSL
                     fileforceUTF8Jvm = "-Dfile.encoding=UTF-8 ";
                 }
 
-                else if (Rserverserver.StartsWith("@libraries/"))
+                if (Rserverserver.StartsWith("@libraries/"))
                 {
                     StartServer(RserverJVM + " " + fileforceUTF8Jvm + RserverJVMcmd + " " + Rserverserver + " nogui");
                 }
