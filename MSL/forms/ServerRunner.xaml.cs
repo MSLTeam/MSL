@@ -2723,7 +2723,7 @@ namespace MSL
             }
             else
             {
-                DialogShow.ShowMsg(this, "下载Java即代表您接受Java的服务条款https://www.oracle.com/downloads/licenses/javase-license1.html", "信息", false, "确定");
+                DialogShow.ShowMsg(this, "下载Java即代表您接受Java的服务条款：\nhttps://www.oracle.com/downloads/licenses/javase-license1.html", "信息", false, "确定");
                 //MessageDialog messageDialog = new MessageDialog();
                 //messageDialog.Owner = this;
                 //messageDialog.ShowDialog();

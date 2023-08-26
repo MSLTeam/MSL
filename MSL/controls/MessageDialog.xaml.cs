@@ -12,8 +12,8 @@ namespace MSL.controls
         public MessageDialog(Window window, string dialogText, string dialogTitle, bool primaryBtnVisible, string closeText, string primaryText)
         {
             InitializeComponent();
-            //this.MaxHeight = window.ActualHeight - 50;
-            //this.MaxWidth = window.ActualWidth - 200;
+            this.MaxHeight = window.ActualHeight;
+            this.MaxWidth = window.ActualWidth-200;
             _dialogReturn = false;
             titleText.Text = dialogTitle;
             bodyText.Text = dialogText;

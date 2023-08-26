@@ -79,6 +79,21 @@ namespace MSL
                 Directory.CreateDirectory("MSL");
                 //Logger.LogWarning("未检测到MSL文件夹，已进行创建");
             }
+
+            //下面代码将在后续版本删除******
+            try
+            {
+                if (File.Exists(AppDomain.CurrentDomain.BaseDirectory + "MSL\\TabComplete.txt"))
+                {
+                    File.Delete(AppDomain.CurrentDomain.BaseDirectory + "MSL\\TabComplete.txt");
+                }
+            }
+            catch
+            {
+                Growl.Error("Err");
+            }
+            //******************************
+
             //get serverlink
             try
             {

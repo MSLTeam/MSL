@@ -2,13 +2,16 @@
                     xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
                     xmlns:hc="https://handyorg.github.io/handycontrol">
     <Storyboard x:Key="ShowPage">
-        <DoubleAnimationUsingKeyFrames BeginTime="0:0:0" Duration="0:0:1" Storyboard.TargetProperty="Opacity">
+        <DoubleAnimationUsingKeyFrames BeginTime="0:0:0" Duration="0:0:0.7" Storyboard.TargetProperty="Opacity">
             <LinearDoubleKeyFrame KeyTime="0:0:0" Value="0" />
-            <LinearDoubleKeyFrame KeyTime="0:0:0.25" Value="1" />
+            <LinearDoubleKeyFrame KeyTime="0:0:0.3" Value="1" />
         </DoubleAnimationUsingKeyFrames>
-        <DoubleAnimationUsingKeyFrames BeginTime="0:0:0" Duration="0:0:1" Storyboard.TargetProperty="(UIElement.RenderTransform).(TranslateTransform.Y)">
-            <SplineDoubleKeyFrame KeyTime="0:0:0" Value="100" KeySpline="0.2,0 0.8,0.8" />
-            <SplineDoubleKeyFrame KeyTime="0:0:0.12" Value="0" />
+        <DoubleAnimationUsingKeyFrames BeginTime="0:0:0" Duration="0:0:0.7" Storyboard.TargetProperty="(UIElement.RenderTransform).(TranslateTransform.Y)">
+            <SplineDoubleKeyFrame KeyTime="0:0:0" Value="100" KeySpline="0.7,0.7 0.7,0.7" />
+            <SplineDoubleKeyFrame KeyTime="0:0:0.08" Value="40" KeySpline="0.8,0.8 0.8,0.8" />
+            <SplineDoubleKeyFrame KeyTime="0:0:0.1" Value="20" KeySpline="0.9,0.9 0.9,0.9" />
+            <SplineDoubleKeyFrame KeyTime="0:0:0.15" Value="5" KeySpline="0.95,0.95 0.95,0.95" />
+            <SplineDoubleKeyFrame KeyTime="0:0:0.2" Value="0" KeySpline="1,1 1,1" />
         </DoubleAnimationUsingKeyFrames>
     </Storyboard>
     <!--

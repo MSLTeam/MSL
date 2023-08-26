@@ -14,7 +14,7 @@ namespace MSL
     /// <summary>
     /// DownloadWindow.xaml 的交互逻辑
     /// </summary>
-    public partial class DownloadWindow : Window
+    public partial class DownloadWindow : HandyControl.Controls.Window
     {
         //DownLoadFile dlf = new DownLoadFile();
         public static int downloadthread = 8;

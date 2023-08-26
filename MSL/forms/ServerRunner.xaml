@@ -46,6 +46,14 @@
             <TabControl x:Name="TabCtrl" SelectionChanged="TabCtrl_SelectionChanged" Background="{x:Null}" Style="{StaticResource TabControlInLine}">
                 <TabItem Header="仪表盘" Background="{DynamicResource SideMenuBrush}">
                     <Grid>
+                        <Grid.RenderTransform>
+                            <TranslateTransform/>
+                        </Grid.RenderTransform>
+                        <Grid.Triggers>
+                            <EventTrigger RoutedEvent="Loaded">
+                                <BeginStoryboard Storyboard="{StaticResource ShowPage}"/>
+                            </EventTrigger>
+                        </Grid.Triggers>
                         <Grid>
                             <Grid.ColumnDefinitions>
                                 <ColumnDefinition Width="*"/>
@@ -126,6 +134,14 @@
                 </TabItem>
                 <TabItem Header="服务器控制台" Background="{DynamicResource SideMenuBrush}">
                     <Grid>
+                        <Grid.RenderTransform>
+                            <TranslateTransform/>
+                        </Grid.RenderTransform>
+                        <Grid.Triggers>
+                            <EventTrigger RoutedEvent="Loaded">
+                                <BeginStoryboard Storyboard="{StaticResource ShowPage}"/>
+                            </EventTrigger>
+                        </Grid.Triggers>
                         <RichTextBox x:Name="outlog" Background="{DynamicResource BorderBackground}" ContextMenu="{DynamicResource UIContextMenu}" IsReadOnly="True" Block.LineHeight="1" Margin="10,10,10,47" FontSize="12" VerticalScrollBarVisibility="Visible">
                             <FlowDocument>
                                 <Paragraph>
@@ -148,6 +164,14 @@
                 </TabItem>
                 <TabItem Header="服务器插件/MOD" Background="{DynamicResource SideMenuBrush}">
                     <Grid>
+                        <Grid.RenderTransform>
+                            <TranslateTransform/>
+                        </Grid.RenderTransform>
+                        <Grid.Triggers>
+                            <EventTrigger RoutedEvent="Loaded">
+                                <BeginStoryboard Storyboard="{StaticResource ShowPage}"/>
+                            </EventTrigger>
+                        </Grid.Triggers>
                         <TabControl x:Name="pluginsAndModsTab" Style="{StaticResource TabControlInLine}" Visibility="Hidden">
                             <TabItem x:Name="pluginsTabItem" Header="管理服务器插件">
                                 <Grid>
@@ -251,6 +275,14 @@
                 </TabItem>
                 <TabItem Header="服务器设置" Background="{DynamicResource SideMenuBrush}">
                     <ScrollViewer>
+                        <ScrollViewer.RenderTransform>
+                            <TranslateTransform/>
+                        </ScrollViewer.RenderTransform>
+                        <ScrollViewer.Triggers>
+                            <EventTrigger RoutedEvent="Loaded">
+                                <BeginStoryboard Storyboard="{StaticResource ShowPage}"/>
+                            </EventTrigger>
+                        </ScrollViewer.Triggers>
                         <StackPanel>
                             <Border Style="{StaticResource MagicBorder}">
                                 <Grid>
@@ -378,6 +410,14 @@
                 </TabItem>
                 <TabItem Header="更多功能" Background="{DynamicResource SideMenuBrush}">
                     <StackPanel>
+                        <StackPanel.RenderTransform>
+                            <TranslateTransform/>
+                        </StackPanel.RenderTransform>
+                        <StackPanel.Triggers>
+                            <EventTrigger RoutedEvent="Loaded">
+                                <BeginStoryboard Storyboard="{StaticResource ShowPage}"/>
+                            </EventTrigger>
+                        </StackPanel.Triggers>
                         <Border Style="{StaticResource MagicBorder}">
                             <Grid>
                                 <Label Content="开服器功能：" Style="{StaticResource BorderTitle}"/>
@@ -398,16 +438,24 @@
                             <Grid>
                                 <Label Content="快捷指令栏：" Style="{StaticResource BorderTitle}"/>
                                 <ListBox x:Name="fastCmdList" Width="470" Margin="10,40,0,0" HorizontalAlignment="Left" Height="160" VerticalAlignment="Top" />
-                                <Button x:Name="refrushFastCmd" Content="刷新" Height="50" Width="110" Click="refrushFastCmd_Click" FontSize="18" VerticalAlignment="Top" HorizontalAlignment="Left" Margin="485,40,0,0"/>
-                                <Button x:Name="addFastCmd" Content="添加" Height="40" Width="110" Click="addFastCmd_Click" FontSize="18" VerticalAlignment="Top" HorizontalAlignment="Left" Margin="485,95,0,0"/>
-                                <Button x:Name="delFastCmd" Content="删除" Height="40" Width="110" Click="delFastCmd_Click" FontSize="18" HorizontalAlignment="Left" VerticalAlignment="Top" Margin="485,140,0,0"/>
-                                <Button x:Name="resetFastCmd" Content="重置" Height="140" Width="110" Click="resetFastCmd_Click" FontSize="18" HorizontalAlignment="Left" Margin="600,40,0,0" VerticalAlignment="Top"/>
+                                <Button x:Name="refrushFastCmd" Content="刷新" Height="70" Width="110" Click="refrushFastCmd_Click" FontSize="18" VerticalAlignment="Top" HorizontalAlignment="Left" Margin="485,40,0,0"/>
+                                <Button x:Name="addFastCmd" Content="添加" Height="40" Width="110" Click="addFastCmd_Click" FontSize="18" VerticalAlignment="Top" HorizontalAlignment="Left" Margin="485,115,0,0"/>
+                                <Button x:Name="delFastCmd" Content="删除" Height="40" Width="110" Click="delFastCmd_Click" FontSize="18" HorizontalAlignment="Left" VerticalAlignment="Top" Margin="485,160,0,0"/>
+                                <Button x:Name="resetFastCmd" Content="重置" Height="160" Width="110" Click="resetFastCmd_Click" FontSize="18" HorizontalAlignment="Left" Margin="600,40,0,0" VerticalAlignment="Top"/>
                             </Grid>
                         </Border>
                     </StackPanel>
                 </TabItem>
                 <TabItem Header="定时任务" Background="{DynamicResource SideMenuBrush}">
                     <Grid>
+                        <Grid.RenderTransform>
+                            <TranslateTransform/>
+                        </Grid.RenderTransform>
+                        <Grid.Triggers>
+                            <EventTrigger RoutedEvent="Loaded">
+                                <BeginStoryboard Storyboard="{StaticResource ShowPage}"/>
+                            </EventTrigger>
+                        </Grid.Triggers>
                         <Label Content="任务列表" Style="{StaticResource BorderTitle}" Margin="10,10,0,0"/>
                         <Label Content="操作" Style="{StaticResource BorderTitle}" VerticalAlignment="Top" HorizontalAlignment="Right" Margin="0,10,270,0"/>
                         <ListBox x:Name="tasksList" hc:Empty.ShowEmpty="true" SelectionChanged="tasksList_SelectionChanged" Canvas.Left="10" Canvas.Top="45" Margin="10,40,320,160"/>
