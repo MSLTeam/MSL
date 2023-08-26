@@ -10,9 +10,7 @@ using System.Diagnostics;
 using System.Globalization;
 using System.IO;
 using System.Linq;
-//using System.Management;
 using System.Net;
-//using System.Runtime.Remoting.Channels;
 using System.Text;
 using System.Text.RegularExpressions;
 using System.Threading;
@@ -93,35 +91,6 @@ namespace MSL
                 WindowLoadedEvent();
             }
         }
-        /*
-        private void KillPreviousServerProcess()
-        {
-            var searcher = new ManagementObjectSearcher("SELECT CommandLine, ProcessId FROM Win32_Process WHERE Name = 'java.exe'");
-
-            foreach (var obj in searcher.Get())
-            {
-                var commandLine = obj["CommandLine"] as string;
-                var processId = (uint)obj["ProcessId"];
-                MessageBox.Show(commandLine);
-                if (commandLine != null && commandLine.Contains(Rserverjava) && commandLine.Contains(Rserverserver))
-                {
-                    MessageBox.Show("111");
-                    try
-                    {
-                        var process = Process.GetProcessById((int)processId);
-                        //process.StandardInput.WriteLine("stop");
-                        process.Kill();
-                        //process.WaitForExit();
-                        break;
-                    }
-                    catch
-                    {
-                        // 忽略错误
-                    }
-                }
-            }
-        }
-        */
 
         private void Window_Closing(object sender, System.ComponentModel.CancelEventArgs e)
         {
@@ -478,12 +447,6 @@ namespace MSL
                     fileforceUTF8Jvm = "-Dfile.encoding=UTF-8 ";
                 }
 
-                //这段代码将在后续版本删除******************
-                if (Rserverserver == "")
-                {
-                    StartServer(RserverJVM + " " + fileforceUTF8Jvm + RserverJVMcmd + " nogui");
-                }
-                //******************************
                 else if (Rserverserver.StartsWith("@libraries/"))
                 {
                     StartServer(RserverJVM + " " + fileforceUTF8Jvm + RserverJVMcmd + " " + Rserverserver + " nogui");
@@ -825,29 +788,6 @@ namespace MSL
                 {
                     ShowLog("[" + DateTime.Now.ToString("T") + " 错误]" + msg.Substring(msg.IndexOf("ERROR]") + 6), Brushes.Red);
                 }
-                /*
-                else if(msg.Contains("INFO")) //If 
-                {
-                    ShowLog(msg, Brushes.Green);
-                    LogHandleInfo(msg);
-                }
-                else if (msg.Contains("WARN"))
-                {
-                    if (msg.Contains("Advanced terminal features are not available in this environment"))
-                    {
-                        return;
-                    }
-                    else
-                    {
-                        ShowLog(msg, Brushes.Orange);
-                        LogHandleWarn(msg);
-                    }
-                }
-                else if (msg.Contains("ERROR"))
-                {
-                    ShowLog(msg, Brushes.Red);
-                }
-                */
                 else
                 {
                     ShowLog(msg, Brushes.Green);
@@ -1537,8 +1477,6 @@ namespace MSL
             SendCommand();
         }
 
-        //tab补全命令列表
-        List<string> tabCompleteList = new List<string>();
         private void cmdtext_KeyDown(object sender, KeyEventArgs e)
         {
             if (e.Key == Key.Enter)
@@ -1552,14 +1490,29 @@ namespace MSL
                 {
                     try
                     {
-                        tabCompleteList.Clear();
-                        string text = File.ReadAllText(AppDomain.CurrentDomain.BaseDirectory + "MSL\\TabComplete.txt");
-                        while (text != "")
+                        //tab补全命令列表
+                        List<string> tabCompleteList = new List<string>
                         {
-                            string a = text.Substring(0, text.IndexOf("\r\n"));
-                            tabCompleteList.Add(a);
-                            text = text.Replace(a + "\r\n", "");
-                        }
+                            "gamemode creative",
+                            "gamemode survival",
+                            "gamemode spectator",
+                            "gamemode adventure",
+                            "gamerule keepInventory true",
+                            "gamerule keepInventory false",
+                            "difficulty peaceful",
+                            "difficulty easy",
+                            "difficulty normal",
+                            "difficulty hard",
+                            "say",
+                            "op",
+                            "pardon",
+                            "time set day",
+                            "time set night",
+                            "ban",
+                            "weather clear",
+                            "ban",
+                            "kick"
+                        };
                         if (cmdtext.Text.IndexOf(" ") + 1 != 0)
                         {
                             bool isReplace = true;
@@ -1683,6 +1636,7 @@ namespace MSL
                             }
                         }
                         cmdtext.SelectionStart = cmdtext.Text.Length;
+                        tabCompleteList.Clear();
                     }
                     catch
                     {
@@ -1717,18 +1671,6 @@ namespace MSL
             if (controlServer.Content.ToString() == "开服")
             {
                 LaunchServer();
-                try
-                {
-                    WebClient MyWebClient = new WebClient();
-                    MyWebClient.Credentials = CredentialCache.DefaultCredentials;
-                    byte[] pageData = MyWebClient.DownloadData(MainWindow.serverLink + @"/msl/commands.txt");
-                    string pageHtml = Encoding.UTF8.GetString(pageData);
-                    File.WriteAllText(AppDomain.CurrentDomain.BaseDirectory + "MSL\\TabComplete.txt", pageHtml);
-                }
-                catch
-                {
-                    Growl.Error("获取Tab补全信息失败！");
-                }
             }
             else
             {

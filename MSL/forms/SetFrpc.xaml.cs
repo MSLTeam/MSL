@@ -34,26 +34,14 @@ namespace MSL
             InitializeComponent();
         }
         string pageHtml;
-        private async void Window_Loaded(object sender, RoutedEventArgs e)
+        private void Window_Loaded(object sender, RoutedEventArgs e)
         {
-            try
-            {
-                WebClient MyWebClient = new WebClient();
-                MyWebClient.Credentials = CredentialCache.DefaultCredentials;
-                byte[] p = await MyWebClient.DownloadDataTaskAsync(MainWindow.serverLink + "/msl/frp");
-                if (Encoding.UTF8.GetString(p) == "0")
-                {
-                    frpProvider.Items.Remove(frpProvider.Items[1]);
-                }
-            }
-            catch { }
-            await Task.Run(() => GetFrpsInfo());
+            Task.Run(() => GetFrpsInfo());
         }
         void GetFrpsInfo(string path = "frplist", string url = "")
         {
             Dispatcher.Invoke(() =>
             {
-                frpProvider.IsEnabled = false;
                 LoadingCircle loadingCircle = new LoadingCircle();
                 loadingCircle.VerticalAlignment = VerticalAlignment.Top;
                 loadingCircle.HorizontalAlignment = HorizontalAlignment.Left;
@@ -111,13 +99,13 @@ namespace MSL
                                 }
                                 else
                                 {
-                                    listBox1.Items.Add(a100 + "(已下线，检测失败)");
+                                    listBox1.Items.Add(a100 + "(检测失败,可能被DDos或下线)");
                                 }
                             });
                         }
                         catch
                         {
-                            listBox1.Items.Add(a100 + "(已下线，检测失败)");
+                            listBox1.Items.Add(a100 + "(检测失败,可能被DDos或下线)");
                         }
 
                         string strtempa3 = "min_open_port=";
@@ -174,13 +162,13 @@ namespace MSL
                                 }
                                 else
                                 {
-                                    listBox1.Items.Add(a100 + "(已下线，检测失败)");
+                                    listBox1.Items.Add(a100 + "(检测失败,可能被DDos或下线)");
                                 }
                             });
                         }
                         catch
                         {
-                            listBox1.Items.Add(a100 + "(已下线，检测失败)");
+                            listBox1.Items.Add(a100 + "(检测失败,可能被DDos或下线)");
                         }
 
                         string strtempa3 = "min_open_port=";
@@ -250,7 +238,6 @@ namespace MSL
                         textBox3.Password = match.Groups[2].Value;
                     }
                 }
-                frpProvider.IsEnabled = true;
                 LoadingCircle loadingCircle = MainGrid.FindName("loadingBar") as LoadingCircle;
                 MainGrid.Children.Remove(loadingCircle);
                 MainGrid.UnregisterName("loadingBar");
@@ -488,77 +475,42 @@ namespace MSL
 
         private async void gotoWeb_Click(object sender, RoutedEventArgs e)
         {
-            if (frpProvider.SelectedIndex == 0)
+            DialogShow.ShowMsg(this, "点击确定后，开服器会弹出一个输入框，同时为您打开爱发电网站，您需要在爱发电购买的时候备注自己的QQ号（纯数字，不要夹带其他内容），购买完毕后，返回开服器，将您的QQ号输入进弹出的输入框中，开服器会自动为您获取密码。\n（注：付费密码在购买后会在服务器保存30分钟，请及时返回开服器进行操作，如果超时，请自行添加QQ：483232994来手动获取）", "购买须知");
+            Process.Start("https://afdian.net/a/makabaka123");
+            string text = "";
+            bool input = DialogShow.ShowInput(this, "输入您在爱发电备注的QQ号：", out text);
+            if (input)
             {
-                DialogShow.ShowMsg(this, "点击确定后，开服器会弹出一个输入框，同时为您打开爱发电网站，您需要在爱发电购买的时候备注自己的QQ号（纯数字，不要夹带其他内容），购买完毕后，返回开服器，将您的QQ号输入进弹出的输入框中，开服器会自动为您获取密码。\n（注：付费密码在购买后会在服务器保存30分钟，请及时返回开服器进行操作，如果超时，请自行添加QQ：483232994来手动获取）", "购买须知");
-                Process.Start("https://afdian.net/a/makabaka123");
-                string text = "";
-                bool input = DialogShow.ShowInput(this, "输入您在爱发电备注的QQ号：", out text);
-                if (input)
+                Dialog _dialog = null;
+                try
                 {
-                    Dialog _dialog = null;
-                    try
+                    _dialog = Dialog.Show(new TextDialog("获取密码中，请稍等……"));
+                    JObject patientinfo = new JObject
                     {
-                        _dialog = Dialog.Show(new TextDialog("获取密码中，请稍等……"));
-                        JObject patientinfo = new JObject
+                        ["qq"] = text
+                    };
+                    string sendData = JsonConvert.SerializeObject(patientinfo);
+                    string ret = await Task.Run(() => Functions.Post("getpassword", 0, sendData, "https://aifadian.waheal.top"));
+                    this.Focus();
+                    _dialog.Close();
+                    if (ret != "Err")
+                    {
+                        bool dialog = DialogShow.ShowMsg(this, "您的付费密码为：" + ret + " 请牢记！", "获取成功！", true, "确定", "复制&确定");
+                        if (dialog)
                         {
-                            ["qq"] = text
-                        };
-                        string sendData = JsonConvert.SerializeObject(patientinfo);
-                        string ret = await Task.Run(() => Functions.Post("getpassword", 0, sendData, "https://aifadian.waheal.top"));
-                        this.Focus();
-                        _dialog.Close();
-                        if (ret != "Err")
-                        {
-                            bool dialog = DialogShow.ShowMsg(this, "您的付费密码为：" + ret + " 请牢记！", "获取成功！", true, "确定", "复制&确定");
-                            if (dialog)
-                            {
-                                Clipboard.SetDataObject(ret);
-                            }
-                        }
-                        else
-                        {
-                            DialogShow.ShowMsg(this, "您的密码可能长时间无人获取，已经超时！请添加QQ：483232994（昵称：MSL-FRP），并发送赞助图片来手动获取密码\r\n（注：回复消息不一定及时，请耐心等待！如果没有添加成功，或者添加后长时间无人回复，请进入MSL交流群然后从群里私聊）", "获取失败！");
+                            Clipboard.SetDataObject(ret);
                         }
                     }
-                    catch
+                    else
                     {
-                        this.Focus();
-                        _dialog.Close();
-                        DialogShow.ShowMsg(this, "获取失败，请添加QQ：483232994（昵称：MSL-FRP），并发送赞助图片来手动获取密码\r\n（注：回复消息不一定及时，请耐心等待！如果没有添加成功，或者添加后长时间无人回复，请进入MSL交流群然后从群里私聊）", "获取失败！");
+                        DialogShow.ShowMsg(this, "您的密码可能长时间无人获取，已经超时！请添加QQ：483232994（昵称：MSL-FRP），并发送赞助图片来手动获取密码\r\n（注：回复消息不一定及时，请耐心等待！如果没有添加成功，或者添加后长时间无人回复，请进入MSL交流群然后从群里私聊）", "获取失败！");
                     }
                 }
-            }
-            else
-            {
-                DialogShow.ShowMsg(this, "请加Q：784961508来购买付费资格！", "提示");
-            }
-        }
-
-        private void frpProvider_SelectionChanged(object sender, SelectionChangedEventArgs e)
-        {
-            if (IsLoaded)
-            {
-                listBox1.SelectedIndex = -1;
-                if (frpProvider.SelectedIndex == 0)
+                catch
                 {
-                    usePaidProtocol.SelectedIndex = 0;
-                    listBox1.Items.Clear();
-                    list1.Clear();
-                    list2.Clear();
-                    list3.Clear();
-                    list4.Clear();
-                    Task.Run(() => GetFrpsInfo());
-                }
-                else
-                {
-                    usePaidProtocol.SelectedIndex = 2;
-                    listBox1.Items.Clear();
-                    list1.Clear();
-                    list2.Clear();
-                    list3.Clear();
-                    list4.Clear();
-                    Task.Run(() => GetFrpsInfo("frplist.txt", "http://yun.flsq.info:26050"));
+                    this.Focus();
+                    _dialog.Close();
+                    DialogShow.ShowMsg(this, "获取失败，请添加QQ：483232994（昵称：MSL-FRP），并发送赞助图片来手动获取密码\r\n（注：回复消息不一定及时，请耐心等待！如果没有添加成功，或者添加后长时间无人回复，请进入MSL交流群然后从群里私聊）", "获取失败！");
                 }
             }
         }
