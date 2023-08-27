@@ -172,8 +172,8 @@
                                 <BeginStoryboard Storyboard="{StaticResource ShowPage}"/>
                             </EventTrigger>
                         </Grid.Triggers>
-                        <TabControl x:Name="pluginsAndModsTab" Style="{StaticResource TabControlInLine}" Visibility="Hidden">
-                            <TabItem x:Name="pluginsTabItem" Header="管理服务器插件">
+                        <TabControl x:Name="pluginsAndModsTab" Style="{StaticResource TabControlInLine}" Visibility="Hidden" Background="{x:Null}">
+                            <TabItem x:Name="pluginsTabItem" Header="管理服务器插件" Background="{DynamicResource SideMenuBrush}">
                                 <Grid>
                                     <Border Style="{StaticResource MagicBorder}" x:Name="pluginListBox" Grid.Column="0" VerticalAlignment="Stretch" Margin="10,10,10,10">
                                         <Grid>
@@ -220,7 +220,7 @@
                                     </Border>
                                 </Grid>
                             </TabItem>
-                            <TabItem x:Name="modsTabItem" Header="管理服务器模组">
+                            <TabItem x:Name="modsTabItem" Header="管理服务器模组" Background="{DynamicResource SideMenuBrush}">
                                 <Grid>
                                     <Border Style="{StaticResource MagicBorder}" x:Name="modListBox" Grid.Column="1" Margin="10,10,10,10" VerticalAlignment="Stretch">
                                         <Grid>
@@ -285,51 +285,51 @@
                         </ScrollViewer.Triggers>
                         <StackPanel>
                             <Border Style="{StaticResource MagicBorder}">
-                                <Grid>
-                                    <Label Content="服务器信息：" Style="{StaticResource BorderTitle}"/>
-                                    <Label Content="服务器名称:" Background="{x:Null}" BorderBrush="{x:Null}" HorizontalAlignment="Left" VerticalAlignment="Top" Margin="0,40,0,0" FontSize="14"/>
-                                    <TextBox x:Name="nAme" Height="8" MaxLines="1" AutoWordSelection="True" Margin="125,40,0,34" VerticalAlignment="Top"/>
-                                    <Label Content="服务器存放目录:" BorderBrush="{x:Null}" Background="{x:Null}" HorizontalAlignment="Left" Margin="0,80,0,0" VerticalAlignment="Top" FontSize="14"/>
-                                    <Button x:Name="a0" Content="浏览" Width="60" Height="28" VerticalAlignment="Top" HorizontalAlignment="Right" Margin="0,80,0,0" Click="a0_Click"/>
-                                    <TextBox x:Name="bAse" Height="8" MaxLines="1" AutoWordSelection="True" VerticalAlignment="Top" Margin="125,80,60,0"/>
-                                </Grid>
-                            </Border>
-                            <Border Style="{StaticResource MagicBorder}">
-                                <Grid>
-                                    <Label Content="服务器设置：" Style="{StaticResource BorderTitle}"/>
-                                    <Label Content="服务端核心文件:" BorderBrush="{x:Null}" Background="{x:Null}" VerticalAlignment="Top" HorizontalAlignment="Left" Margin="0,40,0,0" FontSize="14"/>
-                                    <TextBox x:Name="server" Height="30" MaxLines="1" AutoWordSelection="True" VerticalAlignment="Top" Margin="125,40,220,0"/>
-                                    <Label Content="服务器运行内存:" Background="{x:Null}" BorderBrush="{x:Null}" VerticalAlignment="Top" HorizontalAlignment="Left" Margin="0,80,0,0" FontSize="14"/>
-                                    <Label Content="Java地址:" Background="{x:Null}" BorderBrush="{x:Null}" VerticalAlignment="Top" HorizontalAlignment="Left" Margin="0,145,0,0" FontSize="14"/>
-                                    <hc:RangeSlider x:Name="memorySlider" ValueChanged="memorySlider_ValueChanged" Height="18" VerticalAlignment="Top" Margin="125,110,180,0"/>
-                                    <TextBox x:Name="memoryInfo" Text="当前为自动分配" Foreground="Red" BorderBrush="#FFD0D0D0" TextAlignment="Center" TextChanged="memoryInfo_TextChanged" Height="32" Width="165" HorizontalAlignment="Right" VerticalAlignment="Top" Margin="0,100,10,0"/>
-                                    <Button x:Name="a03" Content="浏览" Width="60" Click="a03_Click" FontWeight="Normal" FontSize="12" Height="28" VerticalAlignment="Top" HorizontalAlignment="Right" Margin="0,145,10,0"/>
-                                    <RadioButton x:Name="useSelf" Content="手动选择Java" IsChecked="True" Width="108" VerticalAlignment="Top" HorizontalAlignment="Left" Margin="125,150,0,0"/>
-                                    <RadioButton x:Name="useDownJv" Content="开服器在线下载" VerticalAlignment="Top" HorizontalAlignment="Left" Margin="125,185,0,0"/>
-                                    <ComboBox x:Name="selectJava" Width="95" HorizontalAlignment="Left" VerticalAlignment="Top" Margin="240,180,0,0">
-                                        <ComboBoxItem Content="Java8"/>
-                                        <ComboBoxItem Content="Java11"/>
-                                        <ComboBoxItem Content="Java16"/>
-                                        <ComboBoxItem Content="Java17"/>
-                                        <ComboBoxItem Content="Java18"/>
-                                        <ComboBoxItem Content="Java19"/>
-                                    </ComboBox>
-                                    <RadioButton x:Name="usecheckedjv" Content="检查电脑上的Java" Margin="345,185,0,0" VerticalAlignment="Top" HorizontalAlignment="Left" Checked="usecheckedjv_Checked"/>
-                                    <ComboBox x:Name="selectCheckedJavaComb" Margin="470,180,0,0" HorizontalAlignment="Left" VerticalAlignment="Top" Width="100"/>
-                                    <RadioButton x:Name="useJvpath" Content="使用环境变量" VerticalAlignment="Top" HorizontalAlignment="Left" Margin="580,185,0,0" Checked="useJvpath_Checked"/>
-                                    <Label Content="服务器JVM参数:" BorderBrush="{x:Null}" Background="{x:Null}" VerticalAlignment="Top" HorizontalAlignment="Left" Margin="0,220,0,0" FontSize="14"/>
-                                    <TextBox x:Name="jVMcmd" Height="23" MaxLines="1" AutoWordSelection="True" VerticalAlignment="Top" Margin="125,220,10,0"/>
-                                    <TextBlock Text="提示：一般格式为 -参数，如 -Dlog4j2.formatMsgNoLookups=true，非必要无需填此框" Foreground="#FF0078D7" Margin="125,250,0,0" FontSize="14" HorizontalAlignment="Left" VerticalAlignment="Top"/>
-                                    <CheckBox x:Name="useJVMauto" Content="自动分配" Click="useJVMauto_Click" Width="88" VerticalAlignment="Top" HorizontalAlignment="Left" Margin="125,85,0,0"/>
-                                    <CheckBox x:Name="useJVMself" Content="手动分配" Click="useJVMself_Click" Width="85" VerticalAlignment="Top" HorizontalAlignment="Left" Margin="210,85,0,0"/>
-                                    <TextBox x:Name="jAva" MaxLines="1" AutoWordSelection="True" VerticalAlignment="Top" Margin="240,145,70,0"/>
-                                    <Button x:Name="a01" Content="浏览" Width="60" Click="a01_Click" Height="30" VerticalAlignment="Top" HorizontalAlignment="Right" Margin="0,40,160,0"/>
-                                    <Button x:Name="downloadServer" hc:IconElement.Geometry="{StaticResource DownloadGeometry}" hc:IconElement.Width="15" Content="下载服务端" Width="150" Height="30" FontSize="14" Click="downloadServer_Click" VerticalAlignment="Top" HorizontalAlignment="Right" Margin="0,40,10,0"/>
-                                    <Label x:Name="downout" Content="" FontSize="14" Foreground="Red" Height="40" Background="{x:Null}" BorderBrush="{x:Null}" HorizontalAlignment="Left" VerticalAlignment="Bottom"/>
-                                    <Button x:Name="refreahConfig" Content="刷新" Style="{StaticResource ButtonPrimary}" Width="120" Height="35" FontSize="14" Click="refreahConfig_Click" HorizontalAlignment="Left" VerticalAlignment="Top" Margin="150,280,0,0"/>
-                                    <Button x:Name="doneBtn1" Content="保存/应用" Style="{StaticResource ButtonPrimary}" Width="120" Click="doneBtn1_Click" Height="35" FontSize="14" HorizontalAlignment="Center" VerticalAlignment="Top" Margin="0,280,0,0"/>
-                                    <Button x:Name="getLaunchercode" Content="生成启动脚本" Style="{StaticResource ButtonPrimary}" Width="120" Height="35" FontSize="14" Click="getLaunchercode_Click" VerticalAlignment="Top" HorizontalAlignment="Right" Margin="0,280,150,0"/>
-                                </Grid>
+                                <StackPanel>
+                                    <Grid>
+                                        <Label Content="服务器信息：" Style="{StaticResource BorderTitle}"/>
+                                        <Label Content="服务器名称:" Background="{x:Null}" BorderBrush="{x:Null}" HorizontalAlignment="Left" VerticalAlignment="Top" Margin="0,35,0,0" FontSize="14"/>
+                                        <TextBox x:Name="nAme" Height="8" MaxLines="1" AutoWordSelection="True" Margin="125,35,0,34" VerticalAlignment="Top"/>
+                                        <Label Content="服务器存放目录:" BorderBrush="{x:Null}" Background="{x:Null}" HorizontalAlignment="Left" Margin="0,70,0,0" VerticalAlignment="Top" FontSize="14"/>
+                                        <Button x:Name="a0" Content="浏览" Width="60" Height="28" VerticalAlignment="Top" HorizontalAlignment="Right" Margin="0,70,0,0" Click="a0_Click"/>
+                                        <TextBox x:Name="bAse" Height="8" MaxLines="1" AutoWordSelection="True" VerticalAlignment="Top" Margin="125,70,60,0"/>
+                                    </Grid>
+                                    <Grid Margin="0,10,0,0">
+                                        <Label Content="服务器设置：" Style="{StaticResource BorderTitle}"/>
+                                        <Label Content="服务端核心文件:" BorderBrush="{x:Null}" Background="{x:Null}" VerticalAlignment="Top" HorizontalAlignment="Left" Margin="0,35,0,0" FontSize="14"/>
+                                        <TextBox x:Name="server" Height="30" MaxLines="1" AutoWordSelection="True" VerticalAlignment="Top" Margin="125,35,220,0"/>
+                                        <Label Content="服务器运行内存:" Background="{x:Null}" BorderBrush="{x:Null}" VerticalAlignment="Top" HorizontalAlignment="Left" Margin="0,70,0,0" FontSize="14"/>
+                                        <Label Content="Java地址:" Background="{x:Null}" BorderBrush="{x:Null}" VerticalAlignment="Top" HorizontalAlignment="Left" Margin="0,130,0,0" FontSize="14"/>
+                                        <hc:RangeSlider x:Name="memorySlider" ValueChanged="memorySlider_ValueChanged" Height="18" VerticalAlignment="Top" Margin="125,100,180,0"/>
+                                        <TextBox x:Name="memoryInfo" Text="当前为自动分配" Foreground="Red" BorderBrush="#FFD0D0D0" TextAlignment="Center" TextChanged="memoryInfo_TextChanged" Height="32" Width="165" HorizontalAlignment="Right" VerticalAlignment="Top" Margin="0,90,10,0"/>
+                                        <Button x:Name="a03" Content="浏览" Width="60" Click="a03_Click" FontWeight="Normal" FontSize="12" Height="28" VerticalAlignment="Top" HorizontalAlignment="Right" Margin="0,130,10,0"/>
+                                        <RadioButton x:Name="useSelf" Content="手动选择Java" IsChecked="True" Width="108" VerticalAlignment="Top" HorizontalAlignment="Left" Margin="125,135,0,0"/>
+                                        <RadioButton x:Name="useDownJv" Content="开服器在线下载" VerticalAlignment="Top" HorizontalAlignment="Left" Margin="125,170,0,0"/>
+                                        <ComboBox x:Name="selectJava" Width="95" HorizontalAlignment="Left" VerticalAlignment="Top" Margin="240,165,0,0">
+                                            <ComboBoxItem Content="Java8"/>
+                                            <ComboBoxItem Content="Java11"/>
+                                            <ComboBoxItem Content="Java16"/>
+                                            <ComboBoxItem Content="Java17"/>
+                                            <ComboBoxItem Content="Java18"/>
+                                            <ComboBoxItem Content="Java19"/>
+                                        </ComboBox>
+                                        <RadioButton x:Name="usecheckedjv" Content="检查电脑上的Java" Margin="345,170,0,0" VerticalAlignment="Top" HorizontalAlignment="Left" Checked="usecheckedjv_Checked"/>
+                                        <ComboBox x:Name="selectCheckedJavaComb" Margin="470,165,0,0" HorizontalAlignment="Left" VerticalAlignment="Top" Width="100"/>
+                                        <RadioButton x:Name="useJvpath" Content="使用环境变量" VerticalAlignment="Top" HorizontalAlignment="Left" Margin="580,170,0,0" Checked="useJvpath_Checked"/>
+                                        <Label Content="服务器JVM参数:" BorderBrush="{x:Null}" Background="{x:Null}" VerticalAlignment="Top" HorizontalAlignment="Left" Margin="0,200,0,0" FontSize="14"/>
+                                        <TextBox x:Name="jVMcmd" Height="23" MaxLines="1" AutoWordSelection="True" VerticalAlignment="Top" Margin="125,200,10,0"/>
+                                        <TextBlock Text="提示：一般格式为 -参数，如 -Dlog4j2.formatMsgNoLookups=true，非必要无需填此框" Foreground="#FF0078D7" Margin="125,230,0,0" FontSize="14" HorizontalAlignment="Left" VerticalAlignment="Top"/>
+                                        <CheckBox x:Name="useJVMauto" Content="自动分配" Click="useJVMauto_Click" Width="88" VerticalAlignment="Top" HorizontalAlignment="Left" Margin="125,75,0,0"/>
+                                        <CheckBox x:Name="useJVMself" Content="手动分配" Click="useJVMself_Click" Width="85" VerticalAlignment="Top" HorizontalAlignment="Left" Margin="210,75,0,0"/>
+                                        <TextBox x:Name="jAva" MaxLines="1" AutoWordSelection="True" VerticalAlignment="Top" Margin="240,130,70,0"/>
+                                        <Button x:Name="a01" Content="浏览" Width="60" Click="a01_Click" Height="30" VerticalAlignment="Top" HorizontalAlignment="Right" Margin="0,35,160,0"/>
+                                        <Button x:Name="downloadServer" hc:IconElement.Geometry="{StaticResource DownloadGeometry}" hc:IconElement.Width="15" Content="下载服务端" Width="150" Height="30" FontSize="14" Click="downloadServer_Click" VerticalAlignment="Top" HorizontalAlignment="Right" Margin="0,35,10,0"/>
+                                        <Label x:Name="downout" Content="" FontSize="14" Foreground="Red" Height="40" Background="{x:Null}" BorderBrush="{x:Null}" HorizontalAlignment="Left" VerticalAlignment="Bottom"/>
+                                        <Button x:Name="refreahConfig" Content="刷新" Style="{StaticResource ButtonPrimary}" Width="120" Height="35" FontSize="14" Click="refreahConfig_Click" HorizontalAlignment="Left" VerticalAlignment="Top" Margin="150,260,0,0"/>
+                                        <Button x:Name="doneBtn1" Content="保存/应用" Style="{StaticResource ButtonPrimary}" Width="120" Click="doneBtn1_Click" Height="35" FontSize="14" HorizontalAlignment="Center" VerticalAlignment="Top" Margin="0,260,0,0"/>
+                                        <Button x:Name="getLaunchercode" Content="生成启动脚本" Style="{StaticResource ButtonPrimary}" Width="120" Height="35" FontSize="14" Click="getLaunchercode_Click" VerticalAlignment="Top" HorizontalAlignment="Right" Margin="0,260,150,0"/>
+                                    </Grid>
+                                </StackPanel>
                             </Border>
                             <Border Style="{StaticResource MagicBorder}" Margin="10,10,10,20">
                                 <StackPanel>
@@ -456,8 +456,8 @@
                                 <BeginStoryboard Storyboard="{StaticResource ShowPage}"/>
                             </EventTrigger>
                         </Grid.Triggers>
-                        <Label Content="任务列表" Style="{StaticResource BorderTitle}" Margin="10,10,0,0"/>
-                        <Label Content="操作" Style="{StaticResource BorderTitle}" VerticalAlignment="Top" HorizontalAlignment="Right" Margin="0,10,270,0"/>
+                        <Label Content="任务列表" Style="{StaticResource BorderTitle}" Margin="10,10,0,0" Padding="10,0,0,0"/>
+                        <Label Content="操作" Style="{StaticResource BorderTitle}" VerticalAlignment="Top" HorizontalAlignment="Right" Margin="0,10,270,0" Padding="10,0,0,0"/>
                         <ListBox x:Name="tasksList" hc:Empty.ShowEmpty="true" SelectionChanged="tasksList_SelectionChanged" Canvas.Left="10" Canvas.Top="45" Margin="10,40,320,160"/>
                         <Button x:Name="addTask" Height="110" Width="300" Click="addTask_Click" Content="添加新任务" FontSize="18" HorizontalAlignment="Right" VerticalAlignment="Top" Margin="0,40,10,0"/>
                         <Button x:Name="delTask" Height="110" Width="300" Click="delTask_Click" FontSize="18" Content="删除所选任务" HorizontalAlignment="Right" VerticalAlignment="Top" Margin="0,160,10,0"/>
