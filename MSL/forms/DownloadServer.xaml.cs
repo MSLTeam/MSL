@@ -39,7 +39,21 @@ namespace MSL.pages
         string downPath = "";
         string filename = "";
         //服务端下载
+
+        private void DownloadBtn_Click(object sender, RoutedEventArgs e)
+        {
+            if (serverlist1.SelectedIndex == -1)
+            {
+                DialogShow.ShowMsg(this, "请先选择一个版本！", "警告");
+                return;
+            }
+            DownloadServerFunc();
+        }
         private void serverlist_MouseDoubleClick(object sender, MouseButtonEventArgs e)
+        {
+            DownloadServerFunc();
+        }
+        void DownloadServerFunc()
         {
             if (serverlist1.SelectedIndex != -1)
             {

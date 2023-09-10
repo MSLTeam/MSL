@@ -643,7 +643,7 @@ namespace MSL.forms
         bool isImportPack = false;
         private async void importPack_Click(object sender, RoutedEventArgs e)
         {
-            bool _dialog = DialogShow.ShowMsg(this, "请选择你要导入本地整合包还是在线整合包！", "提示", true, "导入本地整合包", "导入在线整合包");
+            bool _dialog = DialogShow.ShowMsg(this, "请选择你要导入在线整合包还是本地整合包！", "提示", true, "导入本地整合包", "导入在线整合包");
             if (_dialog)
             {
                 DownloadMods downloadMods = new DownloadMods(1);
@@ -706,7 +706,7 @@ namespace MSL.forms
             }
             else
             {
-                bool dialog = DialogShow.ShowMsg(this, "如果您要导入的是模组整合包，请确保您下载的整合包是服务器专用包（如RlCraft下载界面就有一个ServerPack的压缩包），否则可能会出现无法开服或者崩溃的问题！", "提示", true, "取消");
+                bool dialog = DialogShow.ShowMsg(this, "目前仅支持导入.zip格式的整合包文件，如果您要导入的是模组整合包，请确保您下载的整合包是服务器专用包（如RlCraft下载界面就有一个ServerPack的压缩包），否则可能会出现无法开服或者崩溃的问题！", "提示", true, "取消");
                 if (dialog == true)
                 {
                     string input;

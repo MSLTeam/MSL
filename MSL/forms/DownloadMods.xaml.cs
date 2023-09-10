@@ -2,6 +2,7 @@
 using MSL.controls;
 using System;
 using System.Collections.Generic;
+using System.Diagnostics;
 using System.IO;
 using System.IO.Compression;
 using System.Net;
@@ -78,6 +79,7 @@ namespace MSL
                     for (int i = 0; i < featuredMods.Data.Popular.Count; i++)
                     {
                         //listBox.Items.Add(featuredMods.Data.Popular[i].Name);
+                        /*
                         try
                         {
                             if (featuredMods.Data.Popular[i].Name.IndexOf("(") + 1 != 0)
@@ -124,11 +126,12 @@ namespace MSL
                         }
                         catch
                         {
+                        */
                             listBox.Items.Add(new MODsInfo(featuredMods.Data.Popular[i].Logo.ThumbnailUrl, featuredMods.Data.Popular[i].Name));
                             imageUrls.Add(featuredMods.Data.Popular[i].Logo.ThumbnailUrl);
                             backList.Add(featuredMods.Data.Popular[i].Name);
                             //listBox.Items.Add(featuredMods.Data.Popular[i].Name);
-                        }
+                        //}
                         modIds.Add(featuredMods.Data.Popular[i].Id);
                         modUrls.Add(featuredMods.Data.Popular[i].Links.WebsiteUrl.ToString());
                     }
@@ -144,6 +147,7 @@ namespace MSL
                     modUrls.Clear();
                     for (int i = 0; i < modpacks.Data.Count; i++)
                     {
+                        /*
                         try
                         {
                             if (modpacks.Data[i].Name.IndexOf("(") + 1 != 0)
@@ -189,12 +193,12 @@ namespace MSL
                             }
                         }
                         catch
-                        {
+                        {*/
                             listBox.Items.Add(new MODsInfo(modpacks.Data[i].Logo.ThumbnailUrl, modpacks.Data[i].Name));
                             imageUrls.Add(modpacks.Data[i].Logo.ThumbnailUrl);
                             backList.Add(modpacks.Data[i].Name);
                             //listBox.Items.Add(featuredMods.Data.Popular[i].Name);
-                        }
+                        //}
 
                         modIds.Add(modpacks.Data[i].Id);
                         modUrls.Add(modpacks.Data[i].Links.WebsiteUrl.ToString());
@@ -241,6 +245,7 @@ namespace MSL
                 lCircle.IsRunning = true;
                 lCircle.Visibility = Visibility.Visible;
                 lb01.Visibility = Visibility.Visible;
+                /*
                 if (Regex.IsMatch(textBox1.Text, @"[\u4e00-\u9fa5]"))
                 {
                     DialogShow.ShowMsg(this, "检测到您输入了中文，为确保搜索准确性，是否让开服器将其自动翻译为英文？", "提示", true, "取消");
@@ -260,7 +265,7 @@ namespace MSL
                         textBox1.Text = textBox1.Text.Replace("</em>", "");
                     }
                 }
-
+                */
                 WebClient webClient = new WebClient();
                 webClient.Credentials = CredentialCache.DefaultCredentials;
                 byte[] pageData = webClient.DownloadData(MainWindow.serverLink + @"/msl/CC/cruseforgetoken");
@@ -279,7 +284,7 @@ namespace MSL
                 for (int i = 0; i < searchedMods.Data.Count; i++)
                 {
                     //listBox.Items.Add(searchedMods.Data[i].Name);
-
+                    /*
                     try
                     {
                         if (searchedMods.Data[i].Name.IndexOf("(") + 1 != 0)
@@ -330,12 +335,12 @@ namespace MSL
 
                     }
                     catch
-                    {
+                    {*/
                         listBox.Items.Add(new MODsInfo(searchedMods.Data[i].Logo.ThumbnailUrl, searchedMods.Data[i].Name));
                         imageUrls.Add(searchedMods.Data[i].Logo.ThumbnailUrl);
                         backList.Add(searchedMods.Data[i].Name);
                         //listBox.Items.Add(searchedMods.Data[i].Name);
-                    }
+                    //}
 
                     modIds.Add(searchedMods.Data[i].Id);
                     //fileIds.Add(searchedMods.Data[i].MainFileId);
@@ -469,6 +474,8 @@ namespace MSL
                 MessageBox.Show("获取MOD失败！您的系统版本可能过旧，请再次尝试或前往浏览器自行下载！", "错误", MessageBoxButton.OK, MessageBoxImage.Error);
             }
         }
+
+        /*
         public string GetHtml(string Url)
         {
             string datas = "";
@@ -498,7 +505,7 @@ namespace MSL
             }
             return datas;
         }
-
+        */
 
         private void backBtn_Click(object sender, RoutedEventArgs e)
         {
@@ -520,6 +527,11 @@ namespace MSL
             imageUrls.Clear();
             backList.Clear();
             GC.Collect();
+        }
+
+        private void Modrinth_Click(object sender, RoutedEventArgs e)
+        {
+            Process.Start("https://modrinth.com/");
         }
     }
 }

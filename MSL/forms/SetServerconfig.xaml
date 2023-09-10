@@ -8,7 +8,7 @@
         xmlns:local="clr-namespace:MSL"
         mc:Ignorable="d"
         NonClientAreaBackground="{DynamicResource SideMenuBrush}"
-        Title="MSL-配置文件修改" Height="500" Width="800" MinHeight="500" MinWidth="800" Loaded="Window_Loaded" Closing="Window_Closing" WindowStartupLocation="CenterOwner" Background="{DynamicResource BackgroundBrush}">
+        Title="MSL-配置文件修改" Height="450" Width="750" MinHeight="450" MinWidth="750" Loaded="Window_Loaded" Closing="Window_Closing" WindowStartupLocation="CenterOwner" Background="{DynamicResource BackgroundBrush}">
     <Grid>
         <TabControl Background="{x:Null}">
             <TabItem x:Name="server" Header="server.properties" Background="{x:Null}">

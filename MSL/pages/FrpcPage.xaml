@@ -23,10 +23,10 @@
             <TextBlock Text="您的公网IP为：" HorizontalAlignment="Left" Margin="10,75,0,0" VerticalAlignment="Top" FontSize="16" Foreground="{DynamicResource TextBlockBrush}"/>
             <TextBlock x:Name="frplab3" Text="无" HorizontalAlignment="Left" Margin="130,75,0,0" VerticalAlignment="Top" FontSize="16" Foreground="{DynamicResource TextBlockBrush}"/>
             <Button x:Name="copyFrpc" Content="复制" HorizontalAlignment="Right" FontSize="14"  Margin="0,75,20,0" VerticalAlignment="Top" Width="100" Height="35" FontWeight="Normal" IsEnabled="False" Click="copyFrpc_Click"/>
-            <Button x:Name="setfrpc" Content="配置" HorizontalAlignment="Right" Margin="0,150,10,0" VerticalAlignment="Top" Width="143" Height="64" FontSize="20" Click="setfrpc_Click"/>
-            <Button x:Name="startfrpc" Content="启动内网映射" Style="{StaticResource ButtonPrimary}" HorizontalAlignment="Right" Margin="0,250,10,0" Width="143" Height="62" FontSize="16" IsEnabled="False" Click="startfrpc_Click" VerticalAlignment="Top"/>
+            <Button x:Name="setfrpc" Content="配置" HorizontalAlignment="Right" Margin="0,150,10,0" VerticalAlignment="Top" Width="140" Height="60" FontSize="20" Click="setfrpc_Click"/>
+            <Button x:Name="startfrpc" Content="启动内网映射" Style="{StaticResource ButtonPrimary}" HorizontalAlignment="Right" Margin="0,250,10,0" Width="140" Height="60" FontSize="16" IsEnabled="False" Click="startfrpc_Click" VerticalAlignment="Top"/>
             <TextBox x:Name="frpcOutlog" ContextMenu="{DynamicResource UIContextMenu}" Margin="10,120,160,0" TextWrapping="Wrap" Text="日志" IsReadOnly="True" HorizontalScrollBarVisibility="Visible" VerticalScrollBarVisibility="Auto" VerticalContentAlignment="Top" Padding="10"/>
-            <Label Content="映射服务由&#xA;QQ：483232994提供" HorizontalAlignment="Right" VerticalAlignment="Bottom" Height="58" Width="153" Background="{x:Null}" BorderBrush="{x:Null}"/>
+            <Label Content="映射服务由&#xA;QQ：483232994提供" HorizontalAlignment="Right" VerticalAlignment="Bottom" Height="45" Background="{x:Null}" BorderBrush="{x:Null}"/>
         </Grid>
     </Border>
 </Page>
