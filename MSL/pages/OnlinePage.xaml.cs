@@ -62,7 +62,7 @@ namespace MSL.pages
             try
             {
                 Ping pingSender = new Ping();
-                PingReply reply = pingSender.Send("yun2.flsq.info", 2000); // 替换成您要 ping 的 IP 地址
+                PingReply reply = pingSender.Send("154.12.32.180", 2000); // 替换成您要 ping 的 IP 地址
                 if (reply.Status == IPStatus.Success)
                 {
                     // 节点在线，可以获取延迟等信息
@@ -134,7 +134,7 @@ namespace MSL.pages
             {
                 if (createRoom.Content.ToString() != "关闭房间")
                 {
-                    string a = "[common]\r\nserver_port = 30000\r\nserver_addr = yun1.flsq.info\r\n\r\n[" + masterQQ.Text + "]\r\ntype = xtcp\r\nlocal_ip = 127.0.0.1\r\nlocal_port = " + masterPort.Text + "\r\nsk = " + masterKey.Text + "\r\n";
+                    string a = "[common]\r\nserver_port = 7000\r\nserver_addr = 154.12.32.180\r\n\r\n[" + masterQQ.Text + "]\r\ntype = xtcp\r\nlocal_ip = 127.0.0.1\r\nlocal_port = " + masterPort.Text + "\r\nsk = " + masterKey.Text + "\r\n";
                     File.WriteAllText(AppDomain.CurrentDomain.BaseDirectory + "MSL\\P2Pfrpc", a);
                     isMaster = true;
                     visiterExp.IsEnabled = false;
@@ -180,7 +180,7 @@ namespace MSL.pages
             {
                 if (joinRoom.Content.ToString() != "退出房间")
                 {
-                    string a = "[common]\r\nserver_port = 30000\r\nserver_addr = yun1.flsq.info\r\n\r\n[p2p_ssh_visitor]\r\ntype = xtcp\r\nrole = visitor\r\nbind_addr = 127.0.0.1\r\nbind_port = " + visiterPort.Text + "\r\nserver_name = " + visiterQQ.Text + "\r\nsk = " + visiterKey.Text + "\r\n";
+                    string a = "[common]\r\nserver_port = 7000\r\nserver_addr = 154.12.32.180\r\n\r\n[p2p_ssh_visitor]\r\ntype = xtcp\r\nrole = visitor\r\nbind_addr = 127.0.0.1\r\nbind_port = " + visiterPort.Text + "\r\nserver_name = " + visiterQQ.Text + "\r\nsk = " + visiterKey.Text + "\r\n";
                     File.WriteAllText(AppDomain.CurrentDomain.BaseDirectory + "MSL\\P2Pfrpc", a);
                     isMaster = false;
                     masterExp.IsEnabled = false;

@@ -200,7 +200,7 @@ namespace MSL
                 {
                     WebClient MyWebClient1 = new WebClient();
                     MyWebClient1.Credentials = CredentialCache.DefaultCredentials;
-                    byte[] pageData1 = MyWebClient1.DownloadData(MainWindow.serverLink + "/msl/frpcgg.txt");
+                    byte[] pageData1 = MyWebClient1.DownloadData(MainWindow.serverLink + "/msl/frpnotice");
                     Dispatcher.Invoke(() =>
                     {
                         gonggao.Content = Encoding.UTF8.GetString(pageData1);
@@ -210,7 +210,7 @@ namespace MSL
                 {
                     WebClient MyWebClient1 = new WebClient();
                     MyWebClient1.Credentials = CredentialCache.DefaultCredentials;
-                    byte[] pageData1 = MyWebClient1.DownloadData(url+"/frpnotice.txt");
+                    byte[] pageData1 = MyWebClient1.DownloadData(url+ "/frpnotice");
                     Dispatcher.Invoke(() =>
                     {
                         gonggao.Content = Encoding.UTF8.GetString(pageData1);
@@ -490,7 +490,7 @@ namespace MSL
                         ["qq"] = text
                     };
                     string sendData = JsonConvert.SerializeObject(patientinfo);
-                    string ret = await Task.Run(() => Functions.Post("getpassword", 0, sendData, "https://aifadian.waheal.top"));
+                    string ret = await Task.Run(() => Functions.Post("getpassword", 0, sendData, "http://111.180.189.249:6000"));
                     this.Focus();
                     _dialog.Close();
                     if (ret != "Err")

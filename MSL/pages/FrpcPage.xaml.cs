@@ -260,7 +260,7 @@ namespace MSL.pages
                         ["qq"] = text
                     };
                     string sendData = JsonConvert.SerializeObject(patientinfo);
-                    string ret = Functions.Post("getpassword", 0, sendData, "https://aifadian.waheal.top");
+                    string ret = Functions.Post("getpassword", 0, sendData, "http://http://111.180.189.249:6000");
                     Dispatcher.Invoke(() =>
                     {
                         this.Focus();
