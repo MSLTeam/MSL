@@ -16,7 +16,7 @@ namespace MSL.controls
             {
                 if (MainWindow.serverLink != "https://msl.waheal.top")
                 {
-                    url = MainWindow.serverLink + ":5000";
+                    url = MainWindow.serverLink;// + "/api";
                 }
             }
             else
@@ -36,7 +36,7 @@ namespace MSL.controls
             {
                 if (MainWindow.serverLink != "https://msl.waheal.top")
                 {
-                    url = MainWindow.serverLink + ":5000";
+                    url = MainWindow.serverLink;// + "/api";
                 }
             }
             else

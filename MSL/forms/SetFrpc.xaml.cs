@@ -485,12 +485,7 @@ namespace MSL
                 try
                 {
                     _dialog = Dialog.Show(new TextDialog("获取密码中，请稍等……"));
-                    JObject patientinfo = new JObject
-                    {
-                        ["qq"] = text
-                    };
-                    string sendData = JsonConvert.SerializeObject(patientinfo);
-                    string ret = await Task.Run(() => Functions.Post("getpassword", 0, sendData, "http://111.180.189.249:6000"));
+                    string ret = await Task.Run(() => Functions.Post("getpassword", 1, text, "http://111.180.189.249:7004"));
                     this.Focus();
                     _dialog.Close();
                     if (ret != "Err")

@@ -254,13 +254,7 @@ namespace MSL.pages
                 try
                 {
                     Dispatcher.Invoke(() => { _dialog = Dialog.Show(new TextDialog("获取密码中，请稍等……")); });
-
-                    JObject patientinfo = new JObject
-                    {
-                        ["qq"] = text
-                    };
-                    string sendData = JsonConvert.SerializeObject(patientinfo);
-                    string ret = Functions.Post("getpassword", 0, sendData, "http://http://111.180.189.249:6000");
+                    string ret = Functions.Post("getpassword", 1, text, "http://http://111.180.189.249:7004");
                     Dispatcher.Invoke(() =>
                     {
                         this.Focus();
