@@ -93,7 +93,7 @@ namespace MSL.pages
                 {
                     frpcOutlog.Text = frpcOutlog.Text + "内网映射桥接失败！\n";
                     Growl.Error("内网映射桥接失败！");
-                    if (msg.Contains("密码错误"))
+                    if (msg.Contains("付费资格已过期"))
                     {
                         Thread thread = new Thread(BuyPaidServe);
                         thread.Start();
@@ -233,7 +233,7 @@ namespace MSL.pages
             bool dialog = false;
             Dispatcher.Invoke(() =>
             {
-                dialog = DialogShow.ShowMsg((MainWindow)Window.GetWindow(this), "映射启动失败！可能是您的QQ或密码填写错误或付费资格已过期，请重新配置或进行续费！\n点击确定以进行付费节点续费步骤。", "提示", true, "取消");
+                dialog = DialogShow.ShowMsg((MainWindow)Window.GetWindow(this), "您的付费资格已过期，请进行续费！\n点击确定开始付费节点续费操作。", "提示", true, "取消");
             });
             if (!dialog)
             {
