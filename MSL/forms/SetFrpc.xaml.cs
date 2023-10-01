@@ -490,10 +490,11 @@ namespace MSL
                     _dialog.Close();
                     if (ret != "Err")
                     {
-                        bool dialog = DialogShow.ShowMsg(this, "您的付费密码为：" + ret + " 请牢记！", "获取成功！", true, "确定", "复制&确定");
+                        bool dialog = DialogShow.ShowMsg(this, "您的付费密码为：" + ret + " 是否将其填入密码框内？", "获取成功！", true, "取消", "确定");
                         if (dialog)
                         {
-                            Clipboard.SetDataObject(ret);
+                            textBox3.Password= ret;
+                            //Clipboard.SetDataObject(ret);
                         }
                     }
                     else

@@ -53,6 +53,7 @@ namespace MSL.pages
                 FRPCMD.StartInfo.UseShellExecute = false;
                 FRPCMD.StartInfo.RedirectStandardInput = true;
                 FRPCMD.StartInfo.RedirectStandardOutput = true;
+                FRPCMD.StartInfo.StandardOutputEncoding = Encoding.UTF8;
                 FRPCMD.Start();
                 FRPCMD.BeginOutputReadLine();
                 Directory.SetCurrentDirectory(AppDomain.CurrentDomain.BaseDirectory);
@@ -92,15 +93,10 @@ namespace MSL.pages
                 {
                     frpcOutlog.Text = frpcOutlog.Text + "内网映射桥接失败！\n";
                     Growl.Error("内网映射桥接失败！");
-                    if (msg.IndexOf("invalid meta token") + 1 != 0)
+                    if (msg.Contains("密码错误"))
                     {
-                        frpcOutlog.Text = frpcOutlog.Text + "QQ或密码填写错误或付费资格已过期，请重新配置或续费！\n";
                         Thread thread = new Thread(BuyPaidServe);
                         thread.Start();
-                    }
-                    else if (msg.IndexOf("user or meta token can not be empty") + 1 != 0)
-                    {
-                        frpcOutlog.Text = frpcOutlog.Text + "用户名或密码不能为空！\n";
                     }
                     else if (msg.IndexOf("i/o timeout") + 1 != 0)
                     {
