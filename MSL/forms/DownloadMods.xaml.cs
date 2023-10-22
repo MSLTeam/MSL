@@ -459,7 +459,7 @@ namespace MSL
                     }
                     else if (loadType == 1)
                     {
-                        Dir = AppDomain.CurrentDomain.BaseDirectory + "MSL";
+                        Dir = "MSL";
                         Url = modVersionurl[listBox.SelectedIndex];
                         DialogShow.ShowDownload(this, Url, Dir, "ServerPack.zip", "下载中……");
                         Close();

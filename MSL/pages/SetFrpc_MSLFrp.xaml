@@ -1,21 +1,15 @@
-﻿<hc:Window x:Class="MSL.SetFrpc"
-        xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
-        xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
-        xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
-        xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
-        xmlns:hc="https://handyorg.github.io/handycontrol"
-        xmlns:controls="clr-namespace:MSL.controls"
-        xmlns:local="clr-namespace:MSL"
-        mc:Ignorable="d"
-        NonClientAreaBackground="{DynamicResource SideMenuBrush}"
-        Title="MSL-配置内网映射" Height="450" Width="750" Loaded="Window_Loaded" ResizeMode="NoResize" WindowStartupLocation="CenterOwner" Background="{DynamicResource BackgroundBrush}">
+﻿<Page x:Class="MSL.pages.SetFrpc_MSLFrp"
+      xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+      xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+      xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006" 
+      xmlns:d="http://schemas.microsoft.com/expression/blend/2008" 
+      xmlns:hc="https://handyorg.github.io/handycontrol"
+      xmlns:local="clr-namespace:MSL.pages"
+      mc:Ignorable="d" 
+      d:DesignHeight="450" d:DesignWidth="800"
+      Title="SetFrpc_MSLFrp" Loaded="Page_Loaded">
+
     <Grid x:Name="MainGrid">
-        <ComboBox x:Name="frpProvider" Margin="420,15,0,0" SelectedIndex="0" SelectionChanged="frpProvider_SelectionChanged" VerticalAlignment="Top" Height="30" HorizontalAlignment="Left" Width="310">
-            <ComboBoxItem Content="MSL-Frp"/>
-            <ComboBoxItem Content="OpenFrp(实验性支持)"/>
-            <ComboBoxItem Content="OpenFrp(使用现有隧道)"/>
-            <ComboBoxItem Content="OpenFrp(手动输入隧道ID和token)"/>
-        </ComboBox>
         <ListBox x:Name="serversList" Height="250" Width="270" SelectionChanged="serversList_SelectionChanged" SelectionMode="Single" Margin="20,50,0,0" HorizontalAlignment="Left" VerticalAlignment="Top"/>
         <Button Content="确定" Margin="630,255,0,0" Style="{StaticResource ButtonPrimary}" VerticalAlignment="Top" Width="100" Click="Button_Click" FontWeight="Normal" FontSize="18" Height="80" HorizontalAlignment="Left"/>
         <TextBox x:Name="portBox" HorizontalAlignment="Left" Height="23" Margin="330,85,0,0" VerticalAlignment="Top" Width="400" Text="25565"/>
@@ -25,11 +19,11 @@
         <Label Content="节点列表：" HorizontalAlignment="Left" VerticalAlignment="Top" FontSize="20" Margin="10,10,0,0" Background="{x:Null}" BorderBrush="{x:Null}" Height="40" Padding="10,0,10,5" FontWeight="Bold"/>
         <Label x:Name="gonggao" Content="加载中" HorizontalAlignment="Left" Margin="20,305,0,0" VerticalAlignment="Top" FontSize="16" Height="95" Width="595" HorizontalContentAlignment="Left" VerticalContentAlignment="Top"/>
         <Label Content="（请务必选择节点）" HorizontalAlignment="Left" Margin="110,15,0,0" VerticalAlignment="Top" FontSize="16" BorderBrush="{x:Null}" Background="{x:Null}" Height="35" Padding="0,0,0,5"/>
-        <hc:PasswordBox x:Name="passwordBox" HorizontalAlignment="Left" Height="23" Margin="330,195,0,0" VerticalAlignment="Top" Width="400" ShowEyeButton="True" Visibility="Hidden"/>
-        <Label x:Name="paidPasswordLabel" Content="输入您的付费密码：" HorizontalAlignment="Left" Margin="290,165,0,0" FontSize="14" VerticalAlignment="Top" Background="{x:Null}" BorderBrush="{x:Null}" Visibility="Hidden"/>
-        <Label Content="传输协议：" HorizontalAlignment="Left" Margin="290,235,0,0" VerticalAlignment="Top" BorderBrush="{x:Null}" Background="{x:Null}" Width="86" FontSize="14"/>
+        <hc:PasswordBox x:Name="passwordBox" HorizontalAlignment="Left" Height="23" Margin="330,185,0,0" VerticalAlignment="Top" Width="400" ShowEyeButton="True" Visibility="Hidden"/>
+        <Label x:Name="paidPasswordLabel" Content="输入您的付费密码：" HorizontalAlignment="Left" Margin="290,155,0,0" FontSize="14" VerticalAlignment="Top" Background="{x:Null}" BorderBrush="{x:Null}" Visibility="Hidden"/>
+        <Label Content="传输协议：" HorizontalAlignment="Left" Margin="290,225,0,0" VerticalAlignment="Top" BorderBrush="{x:Null}" Background="{x:Null}" Width="86" FontSize="14"/>
         <Button x:Name="gotoAifadian" Content="购买付费节点" Margin="630,340,0,0" VerticalAlignment="Top" Click="gotoWeb_Click" HorizontalAlignment="Left" Width="100" Height="60"/>
-        <ComboBox x:Name="frpcType" HorizontalAlignment="Left" Margin="370,235,0,0" VerticalAlignment="Top" Width="245" SelectionChanged="frpcType_SelectionChanged">
+        <ComboBox x:Name="frpcType" HorizontalAlignment="Left" Margin="370,225,0,0" VerticalAlignment="Top" Width="245" SelectionChanged="frpcType_SelectionChanged">
             <ComboBoxItem IsSelected="True" Content="TCP（Java版）"/>
             <ComboBoxItem Content="UDP（基岩版）"/>
             <ComboBoxItem Content="TCP和UDP双协议（互通服用）"/>
@@ -41,6 +35,5 @@
             <ComboBoxItem Content="默认（无加速协议）"/>
         </ComboBox>
         <CheckBox x:Name="enableCompression" Content="启用数据压缩" HorizontalAlignment="Left" Margin="630,230,0,0" VerticalAlignment="Top" IsChecked="True"/>
-        <Label Content="提供商列表：" HorizontalAlignment="Left" VerticalAlignment="Top" FontSize="20" Margin="290,11,0,0" Background="{x:Null}" BorderBrush="{x:Null}" Height="40" Padding="10,0,10,5" FontWeight="Bold"/>
     </Grid>
-</hc:Window>
+</Page>

@@ -33,20 +33,20 @@ namespace MSL
     /// </summary>
     public partial class ServerRunner : Window
     {
-        public delegate void DelReadStdOutput(string result);
+        private delegate void DelReadStdOutput(string result);
+        private event DelReadStdOutput ReadStdOutput;
         public static event DeleControl SaveConfigEvent;
         public static event DeleControl ServerStateChange;
         public static event DeleControl GotoFrpcEvent;
         public Process ServerProcess = new Process();
-        string ShieldLog;
-        public event DelReadStdOutput ReadStdOutput;
-        bool autoserver = false;
-        bool getServerInfo = MainWindow.getServerInfo;
-        int getServerInfoLine = 0;
-        bool getPlayerInfo = MainWindow.getPlayerInfo;
-        bool solveProblemSystem;
-        string foundProblems;
-        string DownjavaName;
+        private string ShieldLog;
+        private bool autoserver = false;
+        private bool getServerInfo = MainWindow.getServerInfo;
+        private int getServerInfoLine = 0;
+        private bool getPlayerInfo = MainWindow.getPlayerInfo;
+        private bool solveProblemSystem;
+        private string foundProblems;
+        private string DownjavaName;
         public static string DownServer;
         public string RserverId;
         public string Rservername;
@@ -127,7 +127,7 @@ namespace MSL
         {
             ChangeSkinStyle();
             //Get Server's Information
-            JObject jsonObject = JObject.Parse(File.ReadAllText(AppDomain.CurrentDomain.BaseDirectory + @"MSL\ServerList.json", Encoding.UTF8));
+            JObject jsonObject = JObject.Parse(File.ReadAllText(@"MSL\ServerList.json", Encoding.UTF8));
             JObject _json = (JObject)jsonObject[RserverId];
             if (_json["core"].ToString().IndexOf("bungeecord", StringComparison.OrdinalIgnoreCase) != -1 || _json["core"].ToString().IndexOf("waterfall", StringComparison.OrdinalIgnoreCase) != -1)//is the server Bungeecord,it will send a message and close window
             {
@@ -177,20 +177,27 @@ namespace MSL
                 this.Icon = new BitmapImage(new Uri(Rserverbase + "\\server-icon.png"));
                 //IconBox.Source = new BitmapImage(new Uri(Rserverbase + "\\server-icon.png"));
             }
-            if (Rserverjava != "Java" && Rserverjava != "java" && !File.Exists(Rserverjava))
+            if (Rserverjava != "Java" && Rserverjava != "java")
             {
-                string[] pathParts = Rserverjava.Split('\\');
-                if (pathParts.Length >= 4 && pathParts[pathParts.Length - 4] == "MSL")
+                if (!Path.IsPathRooted(Rserverjava))
                 {
-                    // 路径的倒数第四个是 MSL
-                    isChangeConfig = true;
-                    string baseDirectory = AppDomain.CurrentDomain.BaseDirectory; // 获取当前应用程序的基目录
-                    Rserverjava = Path.Combine(baseDirectory, "MSL", string.Join("\\", pathParts.Skip(pathParts.Length - 3))); // 拼接 MSL 目录下的路径
+                    Rserverjava = AppDomain.CurrentDomain.BaseDirectory + Rserverjava;
                 }
-                else
+                if (!File.Exists(Rserverjava))
                 {
-                    // 路径的倒数第四个不是 MSL
-                    Growl.Error("您的Java目录似乎有误，是从别的位置转移到此处吗？请手动前往服务器设置界面进行更改！");
+                    string[] pathParts = Rserverjava.Split('\\');
+                    if (pathParts.Length >= 4 && pathParts[pathParts.Length - 4] == "MSL")
+                    {
+                        // 路径的倒数第四个是 MSL
+                        isChangeConfig = true;
+                        string baseDirectory = AppDomain.CurrentDomain.BaseDirectory; // 获取当前应用程序的基目录
+                        Rserverjava = Path.Combine(baseDirectory, "MSL", string.Join("\\", pathParts.Skip(pathParts.Length - 3))); // 拼接 MSL 目录下的路径
+                    }
+                    else
+                    {
+                        // 路径的倒数第四个不是 MSL
+                        Growl.Error("您的Java目录似乎有误，是从别的位置转移到此处吗？请手动前往服务器设置界面进行更改！");
+                    }
                 }
             }
             if (isChangeConfig)
@@ -198,7 +205,7 @@ namespace MSL
                 _json["java"].Replace(Rserverjava);
                 _json["base"].Replace(Rserverbase);
                 jsonObject[RserverId].Replace(_json);
-                File.WriteAllText(AppDomain.CurrentDomain.BaseDirectory + @"MSL\ServerList.json", Convert.ToString(jsonObject), Encoding.UTF8);
+                File.WriteAllText(@"MSL\ServerList.json", Convert.ToString(jsonObject), Encoding.UTF8);
             }
 
 
@@ -243,7 +250,7 @@ namespace MSL
         {
             try
             {
-                JObject jsonObject = JObject.Parse(File.ReadAllText(AppDomain.CurrentDomain.BaseDirectory + @"MSL\config.json", Encoding.UTF8));
+                JObject jsonObject = JObject.Parse(File.ReadAllText(@"MSL\config.json", Encoding.UTF8));
                 if (jsonObject["semitransparentTitle"].ToString() == "True")
                 {
                     ChangeTitleStyle(true);
@@ -252,9 +259,9 @@ namespace MSL
                 {
                     ChangeTitleStyle(false);
                 }
-                if (File.Exists(AppDomain.CurrentDomain.BaseDirectory + "MSL\\Background.png"))//check background and set it
+                if (File.Exists("MSL\\Background.png"))//check background and set it
                 {
-                    Background = new ImageBrush(SettingsPage.GetImage(AppDomain.CurrentDomain.BaseDirectory + "MSL\\Background.png"));
+                    Background = new ImageBrush(SettingsPage.GetImage("MSL\\Background.png"));
                 }
                 else
                 {
@@ -453,7 +460,7 @@ namespace MSL
                 }
                 else
                 {
-                    StartServer(RserverJVM + " " + fileforceUTF8Jvm + RserverJVMcmd + " -jar \"" + Rserverbase + @"\" + Rserverserver + "\" nogui");
+                    StartServer(RserverJVM + " " + fileforceUTF8Jvm + RserverJVMcmd + " -jar \"" + Rserverserver + "\" nogui");
                 }
                 //GC.Collect();
             }
@@ -470,9 +477,9 @@ namespace MSL
             try
             {
                 Directory.CreateDirectory(Rserverbase);
+                Directory.SetCurrentDirectory(Rserverbase);
                 ServerProcess.StartInfo.FileName = Rserverjava;
                 ServerProcess.StartInfo.Arguments = StartFileArg;
-                Directory.SetCurrentDirectory(Rserverbase);
                 //string ServerProcessId = Guid.NewGuid().ToString();
                 //MessageBox.Show(ServerProcessId);
                 // 在启动服务器进程时设置环境变量
@@ -839,12 +846,12 @@ namespace MSL
                     {
                         if (isConfirmed)
                         {
-                            JObject jsonObject = JObject.Parse(File.ReadAllText(AppDomain.CurrentDomain.BaseDirectory + @"MSL\ServerList.json", Encoding.UTF8));
+                            JObject jsonObject = JObject.Parse(File.ReadAllText(@"MSL\ServerList.json", Encoding.UTF8));
                             JObject _json = (JObject)jsonObject[RserverId];
                             outputCmdEncoding.Content = "输出编码:" + encoding;
                             _json["encoding_out"] = encoding;
                             jsonObject[RserverId] = _json;
-                            File.WriteAllText(AppDomain.CurrentDomain.BaseDirectory + "MSL\\Serverlist.json", Convert.ToString(jsonObject), Encoding.UTF8);
+                            File.WriteAllText("MSL\\Serverlist.json", Convert.ToString(jsonObject), Encoding.UTF8);
                             Growl.Success("更改完毕，请重启服务器使其生效！");
                         }
                         return true;
@@ -2409,32 +2416,32 @@ namespace MSL
                 {
                     useJvpath.IsChecked = true;
                 }
-                else if (jAva.Text == AppDomain.CurrentDomain.BaseDirectory + @"MSL\Java8\bin\java.exe")
+                else if (jAva.Text == @"MSL\Java8\bin\java.exe")
                 {
                     useDownJv.IsChecked = true;
                     selectJava.SelectedIndex = 0;
                 }
-                else if (jAva.Text == AppDomain.CurrentDomain.BaseDirectory + @"MSL\Java11\bin\java.exe")
+                else if (jAva.Text == @"MSL\Java11\bin\java.exe")
                 {
                     useDownJv.IsChecked = true;
                     selectJava.SelectedIndex = 1;
                 }
-                else if (jAva.Text == AppDomain.CurrentDomain.BaseDirectory + @"MSL\Java16\bin\java.exe")
+                else if (jAva.Text == @"MSL\Java16\bin\java.exe")
                 {
                     useDownJv.IsChecked = true;
                     selectJava.SelectedIndex = 2;
                 }
-                else if (jAva.Text == AppDomain.CurrentDomain.BaseDirectory + @"MSL\Java17\bin\java.exe")
+                else if (jAva.Text == @"MSL\Java17\bin\java.exe")
                 {
                     useDownJv.IsChecked = true;
                     selectJava.SelectedIndex = 3;
                 }
-                else if (jAva.Text == AppDomain.CurrentDomain.BaseDirectory + @"MSL\Java18\bin\java.exe")
+                else if (jAva.Text == @"MSL\Java18\bin\java.exe")
                 {
                     useDownJv.IsChecked = true;
                     selectJava.SelectedIndex = 4;
                 }
-                else if (jAva.Text == AppDomain.CurrentDomain.BaseDirectory + @"MSL\Java19\bin\java.exe")
+                else if (jAva.Text == @"MSL\Java19\bin\java.exe")
                 {
                     useDownJv.IsChecked = true;
                     selectJava.SelectedIndex = 5;
@@ -2597,7 +2604,7 @@ namespace MSL
                 {
                     if (!Path.IsPathRooted(jAva.Text))
                     {
-                        jAva.Text = AppDomain.CurrentDomain.BaseDirectory + jAva.Text;
+                        jAva.Text = jAva.Text;
                     }
                 }
                 else if (usecheckedjv.IsChecked == true)
@@ -2638,7 +2645,7 @@ namespace MSL
                 Rserverbase = bAse.Text;
                 RserverJVMcmd = jVMcmd.Text;
 
-                JObject jsonObject = JObject.Parse(File.ReadAllText(AppDomain.CurrentDomain.BaseDirectory + @"MSL\ServerList.json", Encoding.UTF8));
+                JObject jsonObject = JObject.Parse(File.ReadAllText(@"MSL\ServerList.json", Encoding.UTF8));
                 JObject _json = (JObject)jsonObject[RserverId];
                 _json["name"].Replace(Rservername);
                 _json["java"].Replace(Rserverjava);
@@ -2647,7 +2654,7 @@ namespace MSL
                 _json["memory"].Replace(RserverJVM);
                 _json["args"].Replace(RserverJVMcmd);
                 jsonObject[RserverId].Replace(_json);
-                File.WriteAllText(AppDomain.CurrentDomain.BaseDirectory + @"MSL\ServerList.json", Convert.ToString(jsonObject), Encoding.UTF8);
+                File.WriteAllText(@"MSL\ServerList.json", Convert.ToString(jsonObject), Encoding.UTF8);
                 LoadSettings();
                 SaveConfigEvent();
 
@@ -2716,8 +2723,8 @@ namespace MSL
 
         private int DownloadJava(string fileName, string downUrl)
         {
-            jAva.Text = AppDomain.CurrentDomain.BaseDirectory + @"MSL\" + fileName + @"\bin\java.exe";
-            if (File.Exists(AppDomain.CurrentDomain.BaseDirectory + @"MSL\" + fileName + @"\bin\java.exe"))
+            jAva.Text = @"MSL\" + fileName + @"\bin\java.exe";
+            if (File.Exists(@"MSL\" + fileName + @"\bin\java.exe"))
             {
                 return 2;
             }
@@ -2729,7 +2736,7 @@ namespace MSL
                 //messageDialog.ShowDialog();
                 DownjavaName = fileName;
                 //DownloadWindow.downloadurl = RserverLink +@"/msl/Java8.exe";
-                bool downDialog = DialogShow.ShowDownload(this, downUrl, AppDomain.CurrentDomain.BaseDirectory + "MSL", "Java.zip", "下载" + fileName + "中……");
+                bool downDialog = DialogShow.ShowDownload(this, downUrl, "MSL", "Java.zip", "下载" + fileName + "中……");
                 if (downDialog)
                 {
                     return 1;
@@ -2746,7 +2753,7 @@ namespace MSL
             try
             {
                 string javaDirName = "";
-                using (ZipFile zip = new ZipFile(AppDomain.CurrentDomain.BaseDirectory + @"MSL\Java.zip"))
+                using (ZipFile zip = new ZipFile(@"MSL\Java.zip"))
                 {
                     foreach (ZipEntry entry in zip)
                     {
@@ -2762,13 +2769,13 @@ namespace MSL
                     }
                 }
                 FastZip fastZip = new FastZip();
-                await Task.Run(() => fastZip.ExtractZip(AppDomain.CurrentDomain.BaseDirectory + @"MSL\Java.zip", AppDomain.CurrentDomain.BaseDirectory + "MSL", ""));
-                File.Delete(AppDomain.CurrentDomain.BaseDirectory + @"MSL\Java.zip");
-                if (AppDomain.CurrentDomain.BaseDirectory + @"MSL\" + javaDirName != AppDomain.CurrentDomain.BaseDirectory + @"MSL\" + DownjavaName)
+                await Task.Run(() => fastZip.ExtractZip(@"MSL\Java.zip", "MSL", ""));
+                File.Delete(@"MSL\Java.zip");
+                if (@"MSL\" + javaDirName != @"MSL\" + DownjavaName)
                 {
-                    Functions.MoveFolder(AppDomain.CurrentDomain.BaseDirectory + @"MSL\" + javaDirName, AppDomain.CurrentDomain.BaseDirectory + @"MSL\" + DownjavaName);
+                    Functions.MoveFolder(@"MSL\" + javaDirName, @"MSL\" + DownjavaName);
                 }
-                while (!File.Exists(AppDomain.CurrentDomain.BaseDirectory + @"MSL\" + DownjavaName + @"\bin\java.exe"))
+                while (!File.Exists(@"MSL\" + DownjavaName + @"\bin\java.exe"))
                 {
                     await Task.Delay(1000);
                 }
@@ -3036,7 +3043,7 @@ namespace MSL
         }
         private void inputCmdEncoding_Click(object sender, RoutedEventArgs e)
         {
-            JObject jsonObject = JObject.Parse(File.ReadAllText(AppDomain.CurrentDomain.BaseDirectory + @"MSL\ServerList.json", Encoding.UTF8));
+            JObject jsonObject = JObject.Parse(File.ReadAllText(@"MSL\ServerList.json", Encoding.UTF8));
             JObject _json = (JObject)jsonObject[RserverId];
             if (inputCmdEncoding.Content.ToString() == "输入编码:ANSI")
             {
@@ -3049,12 +3056,12 @@ namespace MSL
                 _json["encoding_in"] = "ANSI";
             }
             jsonObject[RserverId] = _json;
-            File.WriteAllText(AppDomain.CurrentDomain.BaseDirectory + "MSL\\Serverlist.json", Convert.ToString(jsonObject), Encoding.UTF8);
+            File.WriteAllText("MSL\\Serverlist.json", Convert.ToString(jsonObject), Encoding.UTF8);
             Growl.Success("编码更改已生效！");
         }
         private void outputCmdEncoding_Click(object sender, RoutedEventArgs e)
         {
-            JObject jsonObject = JObject.Parse(File.ReadAllText(AppDomain.CurrentDomain.BaseDirectory + @"MSL\ServerList.json", Encoding.UTF8));
+            JObject jsonObject = JObject.Parse(File.ReadAllText(@"MSL\ServerList.json", Encoding.UTF8));
             JObject _json = (JObject)jsonObject[RserverId];
             if (outputCmdEncoding.Content.ToString() == "输出编码:ANSI")
             {
@@ -3067,7 +3074,7 @@ namespace MSL
                 _json["encoding_out"] = "ANSI";
             }
             jsonObject[RserverId] = _json;
-            File.WriteAllText(AppDomain.CurrentDomain.BaseDirectory + "MSL\\Serverlist.json", Convert.ToString(jsonObject), Encoding.UTF8);
+            File.WriteAllText("MSL\\Serverlist.json", Convert.ToString(jsonObject), Encoding.UTF8);
             try
             {
                 if (ServerProcess.HasExited)
@@ -3086,7 +3093,7 @@ namespace MSL
         }
         private void fileforceUTF8encoding_Click(object sender, RoutedEventArgs e)
         {
-            JObject jsonObject = JObject.Parse(File.ReadAllText(AppDomain.CurrentDomain.BaseDirectory + @"MSL\ServerList.json", Encoding.UTF8));
+            JObject jsonObject = JObject.Parse(File.ReadAllText(@"MSL\ServerList.json", Encoding.UTF8));
             JObject _json = (JObject)jsonObject[RserverId];
             if (fileforceUTF8encoding.Content.ToString().Contains("开"))
             {
@@ -3099,7 +3106,7 @@ namespace MSL
                 _json["fileforceUTF8"] = "True";
             }
             jsonObject[RserverId] = _json;
-            File.WriteAllText(AppDomain.CurrentDomain.BaseDirectory + "MSL\\Serverlist.json", Convert.ToString(jsonObject), Encoding.UTF8);
+            File.WriteAllText("MSL\\Serverlist.json", Convert.ToString(jsonObject), Encoding.UTF8);
         }
         private void onlineMode_Click(object sender, RoutedEventArgs e)
         {
@@ -3225,7 +3232,7 @@ namespace MSL
         }
         void GetFastCmd()
         {
-            JObject jsonObject = JObject.Parse(File.ReadAllText(AppDomain.CurrentDomain.BaseDirectory + @"MSL\ServerList.json", Encoding.UTF8));
+            JObject jsonObject = JObject.Parse(File.ReadAllText(@"MSL\ServerList.json", Encoding.UTF8));
             JObject _json = (JObject)jsonObject[RserverId];
             if (_json["fastcmd"] == null)
             {
@@ -3256,14 +3263,14 @@ namespace MSL
         }
         void SetFastCmd()
         {
-            JObject jsonObject = JObject.Parse(File.ReadAllText(AppDomain.CurrentDomain.BaseDirectory + @"MSL\ServerList.json", Encoding.UTF8));
+            JObject jsonObject = JObject.Parse(File.ReadAllText(@"MSL\ServerList.json", Encoding.UTF8));
             JObject _json = (JObject)jsonObject[RserverId];
             if (_json["fastcmd"] == null)
             {
                 JArray fastcmdArray = new JArray(fastCmdList.Items.Cast<string>().Skip(1));
                 _json.Add("fastcmd", fastcmdArray);
                 jsonObject[RserverId] = _json;
-                File.WriteAllText(AppDomain.CurrentDomain.BaseDirectory + "MSL\\Serverlist.json", Convert.ToString(jsonObject), Encoding.UTF8);
+                File.WriteAllText("MSL\\Serverlist.json", Convert.ToString(jsonObject), Encoding.UTF8);
                 GetFastCmd();
             }
             else
@@ -3271,7 +3278,7 @@ namespace MSL
                 JArray fastcmdArray = new JArray(fastCmdList.Items.Cast<string>().Skip(1));
                 _json["fastcmd"].Replace(fastcmdArray);
                 jsonObject[RserverId] = _json;
-                File.WriteAllText(AppDomain.CurrentDomain.BaseDirectory + "MSL\\Serverlist.json", Convert.ToString(jsonObject), Encoding.UTF8);
+                File.WriteAllText("MSL\\Serverlist.json", Convert.ToString(jsonObject), Encoding.UTF8);
                 GetFastCmd();
             }
             /*
@@ -3291,7 +3298,7 @@ namespace MSL
         }
         private void resetFastCmd_Click(object sender, RoutedEventArgs e)
         {
-            JObject jsonObject = JObject.Parse(File.ReadAllText(AppDomain.CurrentDomain.BaseDirectory + @"MSL\ServerList.json", Encoding.UTF8));
+            JObject jsonObject = JObject.Parse(File.ReadAllText(@"MSL\ServerList.json", Encoding.UTF8));
             JObject _json = (JObject)jsonObject[RserverId];
             if (_json["fastcmd"] == null)
             {
@@ -3301,7 +3308,7 @@ namespace MSL
             {
                 _json.Remove("fastcmd");
                 jsonObject[RserverId] = _json;
-                File.WriteAllText(AppDomain.CurrentDomain.BaseDirectory + "MSL\\Serverlist.json", Convert.ToString(jsonObject), Encoding.UTF8);
+                File.WriteAllText("MSL\\Serverlist.json", Convert.ToString(jsonObject), Encoding.UTF8);
                 DialogShow.ShowMsg(this, "要使重置生效需重启此窗口，请您手动关闭此窗口并打开", "提示");
             }
         }

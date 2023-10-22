@@ -105,11 +105,11 @@ namespace MSL.pages
         {
             try
             {
-                //string line = File.ReadAllText(AppDomain.CurrentDomain.BaseDirectory + @"MSL\ServerList.ini");
+                //string line = File.ReadAllText(@"MSL\ServerList.ini");
                 serverList.Items.Clear();
                 serverid.Clear();
 
-                JObject jsonObject = JObject.Parse(File.ReadAllText(AppDomain.CurrentDomain.BaseDirectory + @"MSL\ServerList.json", Encoding.UTF8));
+                JObject jsonObject = JObject.Parse(File.ReadAllText(@"MSL\ServerList.json", Encoding.UTF8));
                 foreach (var item in jsonObject)
                 {
                     serverid.Add(item.Key);
@@ -170,7 +170,7 @@ namespace MSL.pages
                     return;
                 }
                 /*
-                JObject jsonObject = JObject.Parse(File.ReadAllText(AppDomain.CurrentDomain.BaseDirectory + @"MSL\ServerList.json", Encoding.UTF8));
+                JObject jsonObject = JObject.Parse(File.ReadAllText(@"MSL\ServerList.json", Encoding.UTF8));
                 JObject _json = (JObject)jsonObject[serverid[serverList.SelectedIndex]];
                 if (_json["core"].ToString().IndexOf("Bungeecord") + 1 != 0 || _json["core"].ToString().IndexOf("bungeecord") + 1 != 0)
                 {
@@ -242,7 +242,7 @@ namespace MSL.pages
                 {
                     //_server.ServerIcon = "/images/150px-Impulse_Command_Block.png";
                     MessageDialog._dialogReturn = false;
-                    JObject jsonObject = JObject.Parse(File.ReadAllText(AppDomain.CurrentDomain.BaseDirectory + @"MSL\ServerList.json", Encoding.UTF8));
+                    JObject jsonObject = JObject.Parse(File.ReadAllText(@"MSL\ServerList.json", Encoding.UTF8));
                     JObject _json = (JObject)jsonObject[serverid[serverList.SelectedIndex]];
                     FileSystem.DeleteDirectory(_json["base"].ToString(), UIOption.OnlyErrorDialogs, RecycleOption.SendToRecycleBin);
                     //Directory.Delete(_json["base"].ToString(), true);
@@ -255,9 +255,9 @@ namespace MSL.pages
             }
             try
             {
-                JObject jsonObject = JObject.Parse(File.ReadAllText(AppDomain.CurrentDomain.BaseDirectory + @"MSL\ServerList.json", Encoding.UTF8));
+                JObject jsonObject = JObject.Parse(File.ReadAllText(@"MSL\ServerList.json", Encoding.UTF8));
                 jsonObject.Remove(serverid[serverList.SelectedIndex]);
-                File.WriteAllText(AppDomain.CurrentDomain.BaseDirectory + @"MSL\ServerList.json", Convert.ToString(jsonObject), Encoding.UTF8);
+                File.WriteAllText(@"MSL\ServerList.json", Convert.ToString(jsonObject), Encoding.UTF8);
                 Growl.Success("删除服务器成功！");
                 GetServerConfig();
             }
@@ -273,7 +273,7 @@ namespace MSL.pages
         {
             try
             {
-                JObject jsonObject = JObject.Parse(File.ReadAllText(AppDomain.CurrentDomain.BaseDirectory + @"MSL\ServerList.json", Encoding.UTF8));
+                JObject jsonObject = JObject.Parse(File.ReadAllText(@"MSL\ServerList.json", Encoding.UTF8));
                 JObject _json = (JObject)jsonObject[serverid[serverList.SelectedIndex]];
                 Process process = new Process();
                 process.StartInfo.FileName = "cmd.exe";
@@ -288,7 +288,7 @@ namespace MSL.pages
         {
             try
             {
-                JObject jsonObject = JObject.Parse(File.ReadAllText(AppDomain.CurrentDomain.BaseDirectory + @"MSL\ServerList.json", Encoding.UTF8));
+                JObject jsonObject = JObject.Parse(File.ReadAllText(@"MSL\ServerList.json", Encoding.UTF8));
                 JObject _json = (JObject)jsonObject[serverid[serverList.SelectedIndex]];
                 Growl.Info("正在为您打开服务器文件夹……");
                 Process.Start(_json["base"].ToString());
@@ -325,7 +325,7 @@ namespace MSL.pages
                     serverList.Items.Clear();
                     serverid.Clear();
 
-                    JObject jsonObject = JObject.Parse(File.ReadAllText(AppDomain.CurrentDomain.BaseDirectory + @"MSL\ServerList.json", Encoding.UTF8));
+                    JObject jsonObject = JObject.Parse(File.ReadAllText(@"MSL\ServerList.json", Encoding.UTF8));
                     foreach (var item in jsonObject)
                     {
                         serverid.Add(item.Key);

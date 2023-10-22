@@ -138,6 +138,9 @@
     <Compile Include="pages\About.xaml.cs">
       <DependentUpon>About.xaml</DependentUpon>
     </Compile>
+    <Compile Include="pages\FrpcPage.xaml.cs">
+      <DependentUpon>FrpcPage.xaml</DependentUpon>
+    </Compile>
     <Compile Include="pages\OnlinePage.xaml.cs">
       <DependentUpon>OnlinePage.xaml</DependentUpon>
     </Compile>
@@ -146,9 +149,6 @@
     </Compile>
     <Compile Include="forms\DownloadServer.xaml.cs">
       <DependentUpon>DownloadServer.xaml</DependentUpon>
-    </Compile>
-    <Compile Include="pages\FrpcPage.xaml.cs">
-      <DependentUpon>FrpcPage.xaml</DependentUpon>
     </Compile>
     <Compile Include="pages\Home.xaml.cs">
       <DependentUpon>Home.xaml</DependentUpon>
@@ -220,6 +220,10 @@
       <SubType>Designer</SubType>
       <Generator>MSBuild:Compile</Generator>
     </Page>
+    <Page Include="pages\FrpcPage.xaml">
+      <Generator>MSBuild:Compile</Generator>
+      <SubType>Designer</SubType>
+    </Page>
     <Page Include="pages\OnlinePage.xaml">
       <SubType>Designer</SubType>
       <Generator>MSBuild:Compile</Generator>
@@ -229,10 +233,6 @@
       <Generator>MSBuild:Compile</Generator>
     </Page>
     <Page Include="forms\DownloadServer.xaml">
-      <SubType>Designer</SubType>
-      <Generator>MSBuild:Compile</Generator>
-    </Page>
-    <Page Include="pages\FrpcPage.xaml">
       <SubType>Designer</SubType>
       <Generator>MSBuild:Compile</Generator>
     </Page>

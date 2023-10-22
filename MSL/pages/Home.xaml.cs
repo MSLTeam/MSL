@@ -51,14 +51,14 @@ namespace MSL.pages
                 string noticeversion = Encoding.UTF8.GetString(pageData1);
                 */
                 string noticeversion = Functions.Get("notice");
-                JObject jsonObject = JObject.Parse(File.ReadAllText(AppDomain.CurrentDomain.BaseDirectory + @"MSL\config.json", Encoding.UTF8));
+                JObject jsonObject = JObject.Parse(File.ReadAllText(@"MSL\config.json", Encoding.UTF8));
                 if (jsonObject["notice"] == null)
                 {
-                    string jsonString = File.ReadAllText(AppDomain.CurrentDomain.BaseDirectory + @"MSL\config.json", Encoding.UTF8);
+                    string jsonString = File.ReadAllText(@"MSL\config.json", Encoding.UTF8);
                     JObject jobject = JObject.Parse(jsonString);
                     jobject.Add("notice", "0");
                     string convertString = Convert.ToString(jobject);
-                    File.WriteAllText(AppDomain.CurrentDomain.BaseDirectory + @"MSL\config.json", convertString, Encoding.UTF8);
+                    File.WriteAllText(@"MSL\config.json", convertString, Encoding.UTF8);
                     noticeversion1 = "0";
                 }
                 else
@@ -166,11 +166,11 @@ namespace MSL.pages
 
                     try
                     {
-                        string jsonString = File.ReadAllText(AppDomain.CurrentDomain.BaseDirectory + @"MSL\config.json", Encoding.UTF8);
+                        string jsonString = File.ReadAllText(@"MSL\config.json", Encoding.UTF8);
                         JObject jobject = JObject.Parse(jsonString);
                         jobject["notice"] = noticeversion.ToString();
                         string convertString = Convert.ToString(jobject);
-                        File.WriteAllText(AppDomain.CurrentDomain.BaseDirectory + @"MSL\config.json", convertString, Encoding.UTF8);
+                        File.WriteAllText(@"MSL\config.json", convertString, Encoding.UTF8);
                     }
                     catch (Exception a)
                     {
@@ -304,7 +304,7 @@ namespace MSL.pages
             try
             {
                 int i = 0;
-                JObject _jsonObject = JObject.Parse(File.ReadAllText(AppDomain.CurrentDomain.BaseDirectory + @"MSL\config.json", Encoding.UTF8));
+                JObject _jsonObject = JObject.Parse(File.ReadAllText(@"MSL\config.json", Encoding.UTF8));
                 if (_jsonObject["selectedServer"] != null)
                 {
                     //MessageBox.Show(_jsonObject["selectedServer"].ToString());
@@ -316,7 +316,7 @@ namespace MSL.pages
                 }
                 ServerList.serverid.Clear();
                 startServerDropdown.Items.Clear();
-                JObject jsonObject = JObject.Parse(File.ReadAllText(AppDomain.CurrentDomain.BaseDirectory + @"MSL\ServerList.json", Encoding.UTF8));
+                JObject jsonObject = JObject.Parse(File.ReadAllText(@"MSL\ServerList.json", Encoding.UTF8));
                 foreach (var item in jsonObject)
                 {
                     ServerList.serverid.Add(item.Key);
@@ -370,7 +370,7 @@ namespace MSL.pages
         private void startServerDropdown_SelectionChanged(object sender, SelectionChangedEventArgs e)
         {
             selectedItemTextBlock.Text = startServerDropdown.SelectedItem?.ToString();
-            JObject _jsonObject = JObject.Parse(File.ReadAllText(AppDomain.CurrentDomain.BaseDirectory + @"MSL\config.json", Encoding.UTF8));
+            JObject _jsonObject = JObject.Parse(File.ReadAllText(@"MSL\config.json", Encoding.UTF8));
             if (_jsonObject["selectedServer"] == null)
             {
                 _jsonObject.Add("selectedServer", startServerDropdown.SelectedIndex.ToString());
@@ -379,7 +379,7 @@ namespace MSL.pages
             {
                 _jsonObject["selectedServer"].Replace(startServerDropdown.SelectedIndex.ToString());
             }
-            File.WriteAllText(AppDomain.CurrentDomain.BaseDirectory + @"MSL\config.json", Convert.ToString(_jsonObject), Encoding.UTF8);
+            File.WriteAllText(@"MSL\config.json", Convert.ToString(_jsonObject), Encoding.UTF8);
             startServer.IsDropDownOpen = false;
         }
     }

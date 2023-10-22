@@ -13,6 +13,7 @@ using System.Windows;
 using System.Windows.Controls;
 using System.Windows.Input;
 using System.Windows.Threading;
+using Windows.ApplicationModel.Contacts;
 using File = System.IO.File;
 
 namespace MSL.pages
@@ -137,23 +138,6 @@ namespace MSL.pages
             });
             try
             {
-                /*
-                string url;
-                if (MainWindow.serverLink != "https://msl.waheal.top")
-                {
-                    url = MainWindow.serverLink + ":5000";
-                }
-                else
-                {
-                    url = "https://api.waheal.top";
-                }
-                WebClient webClient = new WebClient();
-                //webClient.Encoding = Encoding.UTF8;
-                webClient.Credentials = CredentialCache.DefaultCredentials;
-                //byte[] pageData = webClient.DownloadData(MainWindow.serverLink + @"/msl/CC/getserver.txt");
-                byte[] pageData = webClient.DownloadData(url);
-                string jsonData = Encoding.UTF8.GetString(pageData);
-                */
                 string jsonData = Functions.Get("serverlist");
                 string[] serverTypes = JsonConvert.DeserializeObject<string[]>(jsonData);
                 Dispatcher.Invoke(() =>
@@ -178,80 +162,6 @@ namespace MSL.pages
                     lCircle.Visibility = Visibility.Hidden;
                 });
             }
-            //return serverTypes;
-            /*
-            try
-            {
-                string pageHtml1 = "";
-                try
-                {
-                    WebClient MyWebClient1 = new WebClient();
-                    MyWebClient1.Credentials = CredentialCache.DefaultCredentials;
-                    byte[] pageData1 = MyWebClient1.DownloadData(MainWindow.serverLink + @"/msl/CC/getserver.txt");
-                    pageHtml1 = Encoding.UTF8.GetString(pageData1);
-                }
-                catch
-                {
-                    try
-                    {
-                        MainWindow.serverLink = "http://msl.waheal.top";
-                        WebClient MyWebClient = new WebClient();
-                        MyWebClient.Credentials = CredentialCache.DefaultCredentials;
-                        byte[] pageData = MyWebClient.DownloadData(MainWindow.serverLink + @"/msl/CC/getserver.txt");
-                        pageHtml1 = Encoding.UTF8.GetString(pageData);
-                    }
-                    catch
-                    {
-                        MessageBox.Show("连接服务器失败！", "Error", MessageBoxButton.OK, MessageBoxImage.Error);
-                        pageHtml1 = "";
-                        Close();
-                    }
-                }
-                //MessageBox.Show(pageHtml1);
-                int IndexofA0 = pageHtml1.IndexOf("*");
-                string Ru0 = pageHtml1.Substring(IndexofA0 + 1);
-                string pageHtml = Ru0.Substring(0, Ru0.IndexOf("*"));
-                //MessageBox.Show(pageHtml);
-                try
-                {
-                    mserversurl = pageHtml;
-                    WebClient MyWebClient = new WebClient();
-                    MyWebClient.Credentials = CredentialCache.DefaultCredentials;
-                    byte[] pageData = MyWebClient.DownloadData(mserversurl);
-                    string aa = Encoding.UTF8.GetString(pageData);
-                    //MessageBox.Show(servers);
-                    //分类服务端
-                    JObject jsonObject = JObject.Parse(aa);
-                    //MessageBox.Show(jsonObject.ToString());
-                    foreach (var x in jsonObject)
-                    {
-                        Dispatcher.Invoke(() =>
-                        {
-                            serverlist.Items.Add(x.Key);
-                        });
-                        //MessageBox.Show( x.Value.ToString(), x.Key);
-                    }
-                    Dispatcher.Invoke(() =>
-                    {
-                        serverlist.SelectedIndex = 0;
-                        getservermsg.Visibility = Visibility.Hidden;
-                        lCircle.Visibility = Visibility.Hidden;
-                    });
-                }
-                catch
-                {
-                }
-            }
-            catch (Exception a)
-            {
-                Dispatcher.Invoke(() =>
-                {
-                    getservermsg.Text = "获取服务端失败！请重试" + a.Message;
-                    lCircle.Visibility = Visibility.Hidden;
-                    //File.Delete(AppDomain.CurrentDomain.BaseDirectory + @"MSL/serverlist.json");
-                });
-            }
-            */
         }
 
         private void serverlist_SelectionChanged(object sender, SelectionChangedEventArgs e)
@@ -279,8 +189,10 @@ namespace MSL.pages
                 });
                 try
                 {
-                    JObject patientinfo = new JObject();
-                    patientinfo["server_name"] = serverName;
+                    JObject patientinfo = new JObject
+                    {
+                        ["server_name"] = serverName
+                    };
                     string sendData = JsonConvert.SerializeObject(patientinfo);
                     string resultData = Functions.Post("serverlist", 0, sendData);
                     JObject serverDetails = JObject.Parse(resultData);
@@ -298,8 +210,10 @@ namespace MSL.pages
                 {
                     try
                     {
-                        JObject patientinfo = new JObject();
-                        patientinfo["server_name"] = serverName;
+                        JObject patientinfo = new JObject
+                        {
+                            ["server_name"] = serverName
+                        };
                         string sendData = JsonConvert.SerializeObject(patientinfo);
                         string resultData = Functions.Post("serverlist", 0, sendData, "https://api.waheal.top");
                         JObject serverDetails = JObject.Parse(resultData);
@@ -331,41 +245,6 @@ namespace MSL.pages
                     lCircle.Visibility = Visibility.Hidden;
                 });
             }
-            /*
-            Dispatcher.Invoke(() =>
-            {
-                try
-                {
-                    //MessageBox.Show(mserversurl);
-                    //StreamReader reader = File.OpenText(AppDomain.CurrentDomain.BaseDirectory + @"MSL/serverlist.json");
-                    autoupdate = serverlist.SelectedItem.ToString();
-                    WebClient MyWebClient = new WebClient();
-                    MyWebClient.Credentials = CredentialCache.DefaultCredentials;
-                    byte[] pageData = MyWebClient.DownloadData(mserversurl);
-
-                    string pageHtml = Encoding.UTF8.GetString(pageData);
-                    //MessageBox.Show(servers);
-                    //分类服务端
-                    JObject jsonObject = JObject.Parse(pageHtml);
-                    //MessageBox.Show(serverlist.SelectedItem.ToString());
-                    string abc = serverlist.SelectedItem.ToString();
-                    JObject jsonObject1 = (JObject)jsonObject[abc];
-                    serverlist1.Items.Clear();
-                    serverdownurl.Clear();
-                    foreach (var x in jsonObject1)
-                    {
-                        serverlist1.Items.Add(x.Key);
-                        serverdownurl.Add(x.Value.ToString());
-                        //MessageBox.Show(x.Value.ToString(), x.Key);
-                    }
-                    pageHtml = null;
-                }
-                catch (Exception ex)
-                {
-                    MessageBox.Show("获取下载链接失败！" + ex.Message);
-                }
-            });
-            */
         }
 
         void InstallForge()
@@ -391,10 +270,15 @@ namespace MSL.pages
                 Match match = Regex.Match(serverDownUrl, @"forge-([\w.-]+)-installer");
                 forgeVersion = match.Groups[1].Value;
             }
+            if (!Path.IsPathRooted(downloadServerJava) && File.Exists(downloadServerJava))
+            {
+                downloadServerJava = AppDomain.CurrentDomain.BaseDirectory + downloadServerJava;
+            }
             Directory.SetCurrentDirectory(downloadServerBase);
             Process process = new Process();
             process.StartInfo.FileName = downloadServerJava;
-            process.StartInfo.Arguments = "-jar " + downPath + @"\" + filename + " -installServer";
+            process.StartInfo.Arguments = "-jar " + filename + " -installServer";
+            //process.StartInfo.Arguments = "-jar " + filename + " -mirror https://bmclapi2.bangbang93.com/maven/ -installServer";
             process.Start();
             Directory.SetCurrentDirectory(AppDomain.CurrentDomain.BaseDirectory);
             try
@@ -404,11 +288,6 @@ namespace MSL.pages
                 {
                     Thread.Sleep(1000);
                 }
-                /*
-                string text = File.ReadAllText(downloadPath + @"\" + "run.bat");
-                text = text.Substring(text.IndexOf("java"), text.IndexOf("*") + 1- text.IndexOf("java"));
-                text = text.Replace("java", "");
-                text = text.Replace("@user_jvm_args.txt", "");*/
                 if (File.Exists(downloadServerBase + "\\libraries\\net\\minecraftforge\\forge\\" + forgeVersion + "\\win_args.txt"))
                 {
                     downloadServerName = "@libraries/net/minecraftforge/forge/" + forgeVersion + "/win_args.txt %*";

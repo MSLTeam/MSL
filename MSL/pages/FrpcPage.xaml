@@ -26,7 +26,6 @@
             <Button x:Name="setfrpc" Content="配置" HorizontalAlignment="Right" Margin="0,150,10,0" VerticalAlignment="Top" Width="140" Height="60" FontSize="20" Click="setfrpc_Click"/>
             <Button x:Name="startfrpc" Content="启动内网映射" Style="{StaticResource ButtonPrimary}" HorizontalAlignment="Right" Margin="0,250,10,0" Width="140" Height="60" FontSize="16" IsEnabled="False" Click="startfrpc_Click" VerticalAlignment="Top"/>
             <TextBox x:Name="frpcOutlog" ContextMenu="{DynamicResource UIContextMenu}" Margin="10,120,160,0" TextWrapping="Wrap" Text="日志" IsReadOnly="True" HorizontalScrollBarVisibility="Visible" VerticalScrollBarVisibility="Auto" VerticalContentAlignment="Top" Padding="10"/>
-            <Label Content="映射服务由&#xA;QQ：483232994提供" HorizontalAlignment="Right" VerticalAlignment="Bottom" Height="45" Background="{x:Null}" BorderBrush="{x:Null}"/>
         </Grid>
     </Border>
 </Page>

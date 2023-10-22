@@ -30,14 +30,14 @@ namespace MSL.controls
                 return false;
             }
         }
-        public static bool ShowInput(System.Windows.Window window, string dialogText, out string userInput, string textboxText = "")
+        public static bool ShowInput(System.Windows.Window window, string dialogText, out string userInput, string textboxText = "",bool passwordMode=false)
         {
             userInput = string.Empty;
             try
             {
                 window.Focus();
                 var dialog = Dialog.Show(string.Empty);
-                InputDialog inputDialog = new InputDialog(window, dialogText, textboxText);
+                InputDialog inputDialog = new InputDialog(window, dialogText, textboxText,passwordMode);
                 inputDialog.Owner = window;
                 inputDialog.ShowDialog();
                 window.Focus();

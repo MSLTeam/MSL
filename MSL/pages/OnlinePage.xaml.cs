@@ -36,9 +36,9 @@ namespace MSL.pages
 
         private void Page_Loaded(object sender, RoutedEventArgs e)
         {
-            if (File.Exists(AppDomain.CurrentDomain.BaseDirectory + "MSL\\P2Pfrpc"))
+            if (File.Exists("MSL\\P2Pfrpc"))
             {
-                string a = File.ReadAllText(AppDomain.CurrentDomain.BaseDirectory + "MSL\\P2Pfrpc");
+                string a = File.ReadAllText("MSL\\P2Pfrpc");
                 if (a.IndexOf("role = visitor") + 1 != 0)
                 {
                     visiterExp.IsExpanded = true;
@@ -91,9 +91,9 @@ namespace MSL.pages
         private void masterExp_Expanded(object sender, RoutedEventArgs e)
         {
             visiterExp.IsExpanded = false;
-            if (File.Exists(AppDomain.CurrentDomain.BaseDirectory + "MSL\\P2Pfrpc"))
+            if (File.Exists("MSL\\P2Pfrpc"))
             {
-                string a = File.ReadAllText(AppDomain.CurrentDomain.BaseDirectory + "MSL\\P2Pfrpc");
+                string a = File.ReadAllText("MSL\\P2Pfrpc");
                 if (a.IndexOf("role = visitor") + 1 == 0)
                 {
                     string pattern = @"\[(\w+)\]\s*type\s*=\s*xtcp\s*local_ip\s*=\s*(\S+)\s*local_port\s*=\s*(\d+)\s*sk\s*=\s*(\S+)";
@@ -110,9 +110,9 @@ namespace MSL.pages
         private void visiterExp_Expanded(object sender, RoutedEventArgs e)
         {
             masterExp.IsExpanded = false;
-            if (File.Exists(AppDomain.CurrentDomain.BaseDirectory + "MSL\\P2Pfrpc"))
+            if (File.Exists("MSL\\P2Pfrpc"))
             {
-                string a = File.ReadAllText(AppDomain.CurrentDomain.BaseDirectory + "MSL\\P2Pfrpc");
+                string a = File.ReadAllText("MSL\\P2Pfrpc");
                 if (a.IndexOf("role = visitor") + 1 != 0)
                 {
                     string pattern = @"server_name\s*=\s*(\S+)\s*sk\s*=\s*(\S+)\s*bind_port\s*=\s*(\d+)";
@@ -135,7 +135,7 @@ namespace MSL.pages
                 if (createRoom.Content.ToString() != "关闭房间")
                 {
                     string a = "[common]\r\nserver_port = 7000\r\nserver_addr = 47.243.96.125\r\n\r\n[" + masterQQ.Text + "]\r\ntype = xtcp\r\nlocal_ip = 127.0.0.1\r\nlocal_port = " + masterPort.Text + "\r\nsk = " + masterKey.Text + "\r\n";
-                    File.WriteAllText(AppDomain.CurrentDomain.BaseDirectory + "MSL\\P2Pfrpc", a);
+                    File.WriteAllText("MSL\\P2Pfrpc", a);
                     isMaster = true;
                     visiterExp.IsEnabled = false;
                     StartFrpc();
@@ -181,7 +181,7 @@ namespace MSL.pages
                 if (joinRoom.Content.ToString() != "退出房间")
                 {
                     string a = "[common]\r\nserver_port = 7000\r\nserver_addr = 47.243.96.125\r\n\r\n[p2p_ssh_visitor]\r\ntype = xtcp\r\nrole = visitor\r\nbind_addr = 127.0.0.1\r\nbind_port = " + visiterPort.Text + "\r\nserver_name = " + visiterQQ.Text + "\r\nsk = " + visiterKey.Text + "\r\n";
-                    File.WriteAllText(AppDomain.CurrentDomain.BaseDirectory + "MSL\\P2Pfrpc", a);
+                    File.WriteAllText("MSL\\P2Pfrpc", a);
                     isMaster = false;
                     masterExp.IsEnabled = false;
                     StartFrpc();
@@ -226,21 +226,21 @@ namespace MSL.pages
             {//内网映射版本检测
                 try
                 {
-                    StreamReader reader = File.OpenText(AppDomain.CurrentDomain.BaseDirectory + "MSL\\config.json");
+                    StreamReader reader = File.OpenText("MSL\\config.json");
                     JObject jobject2 = (JObject)JToken.ReadFrom(new JsonTextReader(reader));
                     reader.Close();
                     if (jobject2["frpcversion"] == null)
                     {
-                        string jsonString = File.ReadAllText(AppDomain.CurrentDomain.BaseDirectory + @"MSL\config.json", Encoding.UTF8);
+                        string jsonString = File.ReadAllText(@"MSL\config.json", Encoding.UTF8);
                         JObject jobject = JObject.Parse(jsonString);
                         jobject.Add("frpcversion", "6");
                         string convertString = Convert.ToString(jobject);
-                        File.WriteAllText(AppDomain.CurrentDomain.BaseDirectory + @"MSL\config.json", convertString, Encoding.UTF8);
-                        if (!File.Exists(AppDomain.CurrentDomain.BaseDirectory + "MSL\\frpc.exe"))
+                        File.WriteAllText(@"MSL\config.json", convertString, Encoding.UTF8);
+                        if (!File.Exists("MSL\\frpc.exe"))
                         {
                             RefreshLink();
                             var mwindow = (MainWindow)Window.GetWindow(this);
-                            DialogShow.ShowDownload(mwindow, _dnfrpc, AppDomain.CurrentDomain.BaseDirectory + "MSL", "frpc.exe", "下载内网映射中...");
+                            DialogShow.ShowDownload(mwindow, _dnfrpc, "MSL", "frpc.exe", "下载内网映射中...");
                             _dnfrpc = "";
                         }
                     }
@@ -248,18 +248,18 @@ namespace MSL.pages
                     {
                         RefreshLink();
                         var mwindow = (MainWindow)Window.GetWindow(this);
-                        DialogShow.ShowDownload(mwindow, _dnfrpc, AppDomain.CurrentDomain.BaseDirectory + "MSL", "frpc.exe", "更新内网映射中...");
+                        DialogShow.ShowDownload(mwindow, _dnfrpc, "MSL", "frpc.exe", "更新内网映射中...");
                         _dnfrpc = "";
-                        JObject jobject3 = JObject.Parse(File.ReadAllText(AppDomain.CurrentDomain.BaseDirectory + "MSL\\config.json", Encoding.UTF8));
+                        JObject jobject3 = JObject.Parse(File.ReadAllText("MSL\\config.json", Encoding.UTF8));
                         jobject3["frpcversion"] = "6";
                         string convertString2 = Convert.ToString(jobject3);
-                        File.WriteAllText(AppDomain.CurrentDomain.BaseDirectory + "MSL\\config.json", convertString2, Encoding.UTF8);
+                        File.WriteAllText("MSL\\config.json", convertString2, Encoding.UTF8);
                     }
-                    else if (!File.Exists(AppDomain.CurrentDomain.BaseDirectory + "MSL\\frpc.exe"))
+                    else if (!File.Exists("MSL\\frpc.exe"))
                     {
                         RefreshLink();
                         var mwindow = (MainWindow)Window.GetWindow(this);
-                        DialogShow.ShowDownload(mwindow, _dnfrpc, AppDomain.CurrentDomain.BaseDirectory + "MSL", "frpc.exe", "下载内网映射中...");
+                        DialogShow.ShowDownload(mwindow, _dnfrpc, "MSL", "frpc.exe", "下载内网映射中...");
                         _dnfrpc = "";
                     }
                 }
@@ -276,9 +276,9 @@ namespace MSL.pages
                     joinRoom.Content = "退出房间";
                 }
                 frpcOutlog.Text = "";
-                FRPCMD.StartInfo.FileName = AppDomain.CurrentDomain.BaseDirectory + @"MSL\frpc.exe";
+                FRPCMD.StartInfo.FileName = @"MSL\frpc.exe";
                 FRPCMD.StartInfo.Arguments = "-c P2Pfrpc";
-                Directory.SetCurrentDirectory(AppDomain.CurrentDomain.BaseDirectory + "MSL");
+                Directory.SetCurrentDirectory("MSL");
                 FRPCMD.StartInfo.CreateNoWindow = true;
                 FRPCMD.StartInfo.UseShellExecute = false;
                 FRPCMD.StartInfo.RedirectStandardInput = true;

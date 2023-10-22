@@ -15,7 +15,8 @@
         <Grid Margin="25" Grid.Row="0">
             <TextBlock Foreground="{DynamicResource TextBlockBrush}" Text="输入" FontSize="24" VerticalAlignment="Top" HorizontalAlignment="Left"/>
             <TextBlock x:Name="bodyText" Foreground="{DynamicResource TextBlockBrush}" Text="BodyText" TextWrapping="Wrap"  FontSize="14" HorizontalAlignment="Left" VerticalAlignment="Bottom" Margin="0,45,0,40"/>
-            <TextBox x:Name="textBox" MinWidth="200" VerticalAlignment="Bottom" />
+            <hc:PasswordBox x:Name="passBox" MinWidth="200" VerticalAlignment="Bottom" ShowEyeButton="True" KeyUp="passBox_KeyUp" />
+            <TextBox x:Name="textBox" MinWidth="200" VerticalAlignment="Bottom" KeyUp="textBox_KeyUp" />
         </Grid>
         <Grid Grid.Row="1" Background="{DynamicResource DialogBrush2}">
             <Grid.ColumnDefinitions>

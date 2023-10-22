@@ -80,20 +80,6 @@ namespace MSL
                 //Logger.LogWarning("未检测到MSL文件夹，已进行创建");
             }
 
-            //下面代码将在后续版本删除******
-            try
-            {
-                if (File.Exists(AppDomain.CurrentDomain.BaseDirectory + "MSL\\TabComplete.txt"))
-                {
-                    File.Delete(AppDomain.CurrentDomain.BaseDirectory + "MSL\\TabComplete.txt");
-                }
-            }
-            catch
-            {
-                Growl.Error("Err");
-            }
-            //******************************
-
             //get serverlink
             try
             {
@@ -107,32 +93,29 @@ namespace MSL
                 if (reply.Status == IPStatus.Success)
                 {
                     serverLink = "http://" + serverAddr;
-                    //Logger.LogInfo("已连接到可用的在线服务器，ID：Main");
+                    //Logger.LogInfo("已连接到可用的在线服务器");
                 }
                 else
                 {
                     serverLink = "https://msl.waheal.top";
                     Growl.Info("MSL主服务器连接超时（可能被DDos），已切换至备用服务器！");
-                    //Logger.LogInfo("已连接到可用的在线服务器，ID：Spare");
+                    //Logger.LogError("在匹配在线服务器时出现错误，已连接至备用服务器");
                 }
 
             }
             catch
             {
                 serverLink = "https://msl.waheal.top";
-                //Logger.LogError("在匹配在线服务器时出现错误，已连接至备用服务器，ID：Spare");
+                //Logger.LogError("在匹配在线服务器时出现错误，已连接至备用服务器");
             }
-
-            //MessageBox.Show("GetLinkSuccess");
 
             try
             {
                 //firstLauchEvent
-                if (!File.Exists(AppDomain.CurrentDomain.BaseDirectory + @"MSL\config.json"))
+                if (!File.Exists(@"MSL\config.json"))
                 {
                     //Logger.LogWarning("未检测到config.json文件，载入首次启动事件");
-
-                    File.WriteAllText(AppDomain.CurrentDomain.BaseDirectory + @"MSL\config.json", string.Format("{{{0}}}", "\n"));
+                    File.WriteAllText(@"MSL\config.json", string.Format("{{{0}}}", "\n"));
                 }
             }
             catch (Exception ex)
@@ -145,12 +128,11 @@ namespace MSL
                 });
             }
 
-            //MessageBox.Show("CheckDirSuccess");
             //Logger.LogInfo("开始载入配置文件……");
             JObject jsonObject = null;
             try
             {
-                jsonObject = JObject.Parse(File.ReadAllText(AppDomain.CurrentDomain.BaseDirectory + @"MSL\config.json", Encoding.UTF8));
+                jsonObject = JObject.Parse(File.ReadAllText(@"MSL\config.json", Encoding.UTF8));
                 ////Logger.LogInfo("读取config.json成功！");
             }
             catch (Exception ex)
@@ -160,8 +142,8 @@ namespace MSL
                 {
                     DialogShow.ShowMsg(this, "MSL在加载配置文件时出现错误，将进行重试，若点击确定后软件突然闪退，请尝试使用管理员身份运行或将此问题报告给作者！\n错误代码：" + ex.Message, "错误");
                 });
-                File.WriteAllText(AppDomain.CurrentDomain.BaseDirectory + @"MSL\config.json", string.Format("{{{0}}}", "\n"));
-                jsonObject = JObject.Parse(File.ReadAllText(AppDomain.CurrentDomain.BaseDirectory + @"MSL\config.json", Encoding.UTF8));
+                File.WriteAllText(@"MSL\config.json", string.Format("{{{0}}}", "\n"));
+                jsonObject = JObject.Parse(File.ReadAllText(@"MSL\config.json", Encoding.UTF8));
                 //Logger.LogInfo("读取config.json成功！");
             }
 
@@ -170,11 +152,11 @@ namespace MSL
             {
                 if (jsonObject["notifyIcon"] == null)
                 {
-                    string jsonString = File.ReadAllText(AppDomain.CurrentDomain.BaseDirectory + @"MSL\config.json", Encoding.UTF8);
+                    string jsonString = File.ReadAllText(@"MSL\config.json", Encoding.UTF8);
                     JObject jobject = JObject.Parse(jsonString);
                     jobject.Add("notifyIcon", "False");
                     string convertString = Convert.ToString(jobject);
-                    File.WriteAllText(AppDomain.CurrentDomain.BaseDirectory + @"MSL\config.json", convertString, Encoding.UTF8);
+                    File.WriteAllText(@"MSL\config.json", convertString, Encoding.UTF8);
                 }
                 else if (jsonObject["notifyIcon"].ToString() == "True")
                 {
@@ -186,11 +168,11 @@ namespace MSL
                 //Logger.LogInfo("读取托盘图标配置成功！");
                 if (jsonObject["sidemenu"] == null)
                 {
-                    string jsonString = File.ReadAllText(AppDomain.CurrentDomain.BaseDirectory + @"MSL\config.json", Encoding.UTF8);
+                    string jsonString = File.ReadAllText(@"MSL\config.json", Encoding.UTF8);
                     JObject jobject = JObject.Parse(jsonString);
                     jobject.Add("sidemenu", "0");
                     string convertString = Convert.ToString(jobject);
-                    File.WriteAllText(AppDomain.CurrentDomain.BaseDirectory + @"MSL\config.json", convertString, Encoding.UTF8);
+                    File.WriteAllText(@"MSL\config.json", convertString, Encoding.UTF8);
                     Dispatcher.Invoke(() =>
                     {
                         sideMenuContextOpen.Width = 100;
@@ -219,11 +201,11 @@ namespace MSL
                 //Logger.LogInfo("读取侧栏配置成功！");
                 if (jsonObject["skin"] == null)
                 {
-                    string jsonString = File.ReadAllText(AppDomain.CurrentDomain.BaseDirectory + @"MSL\config.json", Encoding.UTF8);
+                    string jsonString = File.ReadAllText(@"MSL\config.json", Encoding.UTF8);
                     JObject jobject = JObject.Parse(jsonString);
                     jobject.Add("skin", "1");
                     string convertString = Convert.ToString(jobject);
-                    File.WriteAllText(AppDomain.CurrentDomain.BaseDirectory + @"MSL\config.json", convertString, Encoding.UTF8);
+                    File.WriteAllText(@"MSL\config.json", convertString, Encoding.UTF8);
                     Dispatcher.Invoke(() =>
                     {
                         BrushConverter brushConverter = new BrushConverter();
@@ -268,11 +250,11 @@ namespace MSL
                 //Logger.LogInfo("读取皮肤配置成功！");
                 if (jsonObject["darkTheme"] == null)
                 {
-                    string jsonString = File.ReadAllText(AppDomain.CurrentDomain.BaseDirectory + @"MSL\config.json", Encoding.UTF8);
+                    string jsonString = File.ReadAllText(@"MSL\config.json", Encoding.UTF8);
                     JObject jobject = JObject.Parse(jsonString);
                     jobject.Add("darkTheme", "False");
                     string convertString = Convert.ToString(jobject);
-                    File.WriteAllText(AppDomain.CurrentDomain.BaseDirectory + @"MSL\config.json", convertString, Encoding.UTF8);
+                    File.WriteAllText(@"MSL\config.json", convertString, Encoding.UTF8);
                 }
                 else if (jsonObject["darkTheme"].ToString() == "True")
                 {
@@ -282,22 +264,22 @@ namespace MSL
                     });
                 }
                 //Logger.LogInfo("读取暗色模式配置成功！");
-                if (File.Exists(AppDomain.CurrentDomain.BaseDirectory + "MSL\\Background.png"))
+                if (File.Exists("MSL\\Background.png"))
                 {
                     Dispatcher.Invoke(() =>
                     {
-                        Background = new ImageBrush(SettingsPage.GetImage(AppDomain.CurrentDomain.BaseDirectory + "MSL\\Background.png"));
+                        Background = new ImageBrush(SettingsPage.GetImage("MSL\\Background.png"));
                         SideMenuBorder.BorderThickness = new Thickness(0);
                     });
                 }
                 //Logger.LogInfo("加载背景图片成功！");
                 if (jsonObject["semitransparentTitle"] == null)
                 {
-                    string jsonString = File.ReadAllText(AppDomain.CurrentDomain.BaseDirectory + @"MSL\config.json", Encoding.UTF8);
+                    string jsonString = File.ReadAllText(@"MSL\config.json", Encoding.UTF8);
                     JObject jobject = JObject.Parse(jsonString);
                     jobject.Add("semitransparentTitle", "False");
                     string convertString = Convert.ToString(jobject);
-                    File.WriteAllText(AppDomain.CurrentDomain.BaseDirectory + @"MSL\config.json", convertString, Encoding.UTF8);
+                    File.WriteAllText(@"MSL\config.json", convertString, Encoding.UTF8);
                 }
                 else if (jsonObject["semitransparentTitle"].ToString() == "True")
                 {
@@ -309,11 +291,11 @@ namespace MSL
                 //Logger.LogInfo("读取标题栏样式成功！");
                 if (jsonObject["autoGetServerInfo"] == null)
                 {
-                    string jsonString = File.ReadAllText(AppDomain.CurrentDomain.BaseDirectory + @"MSL\config.json", Encoding.UTF8);
+                    string jsonString = File.ReadAllText(@"MSL\config.json", Encoding.UTF8);
                     JObject jobject = JObject.Parse(jsonString);
                     jobject.Add("autoGetServerInfo", "True");
                     string convertString = Convert.ToString(jobject);
-                    File.WriteAllText(AppDomain.CurrentDomain.BaseDirectory + @"MSL\config.json", convertString, Encoding.UTF8);
+                    File.WriteAllText(@"MSL\config.json", convertString, Encoding.UTF8);
                     getServerInfo = true;
                 }
                 else if (jsonObject["autoGetServerInfo"].ToString() == "True")
@@ -322,11 +304,11 @@ namespace MSL
                 }
                 if (jsonObject["autoGetPlayerInfo"] == null)
                 {
-                    string jsonString = File.ReadAllText(AppDomain.CurrentDomain.BaseDirectory + @"MSL\config.json", Encoding.UTF8);
+                    string jsonString = File.ReadAllText(@"MSL\config.json", Encoding.UTF8);
                     JObject jobject = JObject.Parse(jsonString);
                     jobject.Add("autoGetPlayerInfo", "True");
                     string convertString = Convert.ToString(jobject);
-                    File.WriteAllText(AppDomain.CurrentDomain.BaseDirectory + @"MSL\config.json", convertString, Encoding.UTF8);
+                    File.WriteAllText(@"MSL\config.json", convertString, Encoding.UTF8);
                     getPlayerInfo = true;
                 }
                 else if (jsonObject["autoGetPlayerInfo"].ToString() == "True")
@@ -364,11 +346,11 @@ namespace MSL
                     {
                         if (jsonObject["autoUpdateApp"] == null)
                         {
-                            string jsonString = File.ReadAllText(AppDomain.CurrentDomain.BaseDirectory + @"MSL\config.json", Encoding.UTF8);
+                            string jsonString = File.ReadAllText(@"MSL\config.json", Encoding.UTF8);
                             JObject jobject = JObject.Parse(jsonString);
                             jobject.Add("autoUpdateApp", "False");
                             string convertString = Convert.ToString(jobject);
-                            File.WriteAllText(AppDomain.CurrentDomain.BaseDirectory + @"MSL\config.json", convertString, Encoding.UTF8);
+                            File.WriteAllText(@"MSL\config.json", convertString, Encoding.UTF8);
                         }
                         else if (jsonObject["autoUpdateApp"].ToString() == "True")
                         {
@@ -402,9 +384,6 @@ namespace MSL
                 //Logger.LogError("检测更新失败！");
                 Growl.Error("检查更新失败！");
             }
-
-            //MessageBox.Show("CheckUpdateSuccess");
-
             //获取电脑内存
             try
             {
@@ -417,17 +396,16 @@ namespace MSL
                 MessageBox.Show("获取系统内存失败！" + ex.Message, "错误", MessageBoxButton.OK, MessageBoxImage.Error);
                 PhisicalMemory = 0;
             }
-
             //自动开启服务器
             try
             {
                 if (jsonObject["autoOpenServer"] == null)
                 {
-                    string jsonString = File.ReadAllText(AppDomain.CurrentDomain.BaseDirectory + @"MSL\config.json", Encoding.UTF8);
+                    string jsonString = File.ReadAllText(@"MSL\config.json", Encoding.UTF8);
                     JObject jobject = JObject.Parse(jsonString);
                     jobject.Add("autoOpenServer", "False");
                     string convertString = Convert.ToString(jobject);
-                    File.WriteAllText(AppDomain.CurrentDomain.BaseDirectory + @"MSL\config.json", convertString, Encoding.UTF8);
+                    File.WriteAllText(@"MSL\config.json", convertString, Encoding.UTF8);
                 }
                 else if (jsonObject["autoOpenServer"].ToString() != "False")
                 {
@@ -453,11 +431,11 @@ namespace MSL
             {
                 if (jsonObject["autoOpenFrpc"] == null)
                 {
-                    string jsonString = File.ReadAllText(AppDomain.CurrentDomain.BaseDirectory + @"MSL\config.json", Encoding.UTF8);
+                    string jsonString = File.ReadAllText(@"MSL\config.json", Encoding.UTF8);
                     JObject jobject = JObject.Parse(jsonString);
                     jobject.Add("autoOpenFrpc", "False");
                     string convertString = Convert.ToString(jobject);
-                    File.WriteAllText(AppDomain.CurrentDomain.BaseDirectory + @"MSL\config.json", convertString, Encoding.UTF8);
+                    File.WriteAllText(@"MSL\config.json", convertString, Encoding.UTF8);
                 }
                 else if (jsonObject["autoOpenFrpc"].ToString() == "True")
                 {
@@ -491,15 +469,12 @@ namespace MSL
             string Ru1 = pageHtml.Substring(IndexofA1 + 2);
             string aaa1 = Ru1.Substring(0, Ru1.IndexOf(" *"));
             DialogShow.ShowDownload(this, aaa1, AppDomain.CurrentDomain.BaseDirectory, "MSL" + aaa + ".exe", "下载新版本中……");
-            if (File.Exists(AppDomain.CurrentDomain.BaseDirectory + "MSL" + aaa + ".exe"))
+            if (File.Exists("MSL" + aaa + ".exe"))
             {
                 string oldExePath = Process.GetCurrentProcess().MainModule.ModuleName;
-                //string dwnExePath = Path.Combine(AppDomain.CurrentDomain.BaseDirectory, "MSL" + aaa + ".exe");
                 string newExeDir = AppDomain.CurrentDomain.BaseDirectory;
 
-                // 输出CMD命令以便调试
                 string cmdCommand = "/C choice /C Y /N /D Y /T 1 & Del \"" + oldExePath + "\" & Ren \"" + "MSL" + aaa + ".exe" + "\" \"MSL.exe\" & start \"\" \"MSL.exe\"";
-                //MessageBox.Show(cmdCommand);
 
                 // 关闭当前运行中的应用程序
                 Application.Current.Shutdown();
@@ -662,7 +637,7 @@ namespace MSL
         {
             try
             {
-                JObject jsonObject = JObject.Parse(File.ReadAllText(AppDomain.CurrentDomain.BaseDirectory + @"MSL\config.json", Encoding.UTF8));
+                JObject jsonObject = JObject.Parse(File.ReadAllText(@"MSL\config.json", Encoding.UTF8));
                 if (jsonObject["semitransparentTitle"].ToString() == "True")
                 {
                     ChangeTitleStyle(true);
@@ -671,10 +646,10 @@ namespace MSL
                 {
                     ChangeTitleStyle(false);
                 }
-                if (File.Exists(AppDomain.CurrentDomain.BaseDirectory + "MSL\\Background.png"))//check background and set it
+                if (File.Exists("MSL\\Background.png"))//check background and set it
                 {
                     SideMenuBorder.BorderThickness = new Thickness(0);
-                    Background = new ImageBrush(SettingsPage.GetImage(AppDomain.CurrentDomain.BaseDirectory + "MSL\\Background.png"));
+                    Background = new ImageBrush(SettingsPage.GetImage("MSL\\Background.png"));
                 }
                 else
                 {
@@ -719,22 +694,22 @@ namespace MSL
                 sideMenuContextOpen.Width = 100;
                 SideMenu.Width = 100;
                 frame.Margin = new Thickness(100, 0, 0, 0);
-                string jsonString = File.ReadAllText(AppDomain.CurrentDomain.BaseDirectory + @"MSL\config.json", System.Text.Encoding.UTF8);
+                string jsonString = File.ReadAllText(@"MSL\config.json", System.Text.Encoding.UTF8);
                 JObject jobject = JObject.Parse(jsonString);
                 jobject["sidemenu"] = "0";
                 string convertString = Convert.ToString(jobject);
-                File.WriteAllText(AppDomain.CurrentDomain.BaseDirectory + @"MSL\config.json", convertString, System.Text.Encoding.UTF8);
+                File.WriteAllText(@"MSL\config.json", convertString, System.Text.Encoding.UTF8);
             }
             else
             {
                 sideMenuContextOpen.Width = 50;
                 SideMenu.Width = 50;
                 frame.Margin = new Thickness(50, 0, 0, 0);
-                string jsonString = File.ReadAllText(AppDomain.CurrentDomain.BaseDirectory + @"MSL\config.json", System.Text.Encoding.UTF8);
+                string jsonString = File.ReadAllText(@"MSL\config.json", System.Text.Encoding.UTF8);
                 JObject jobject = JObject.Parse(jsonString);
                 jobject["sidemenu"] = "1";
                 string convertString = Convert.ToString(jobject);
-                File.WriteAllText(AppDomain.CurrentDomain.BaseDirectory + @"MSL\config.json", convertString, System.Text.Encoding.UTF8);
+                File.WriteAllText(@"MSL\config.json", convertString, System.Text.Encoding.UTF8);
             }
         }
 

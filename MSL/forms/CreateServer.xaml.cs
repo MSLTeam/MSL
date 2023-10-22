@@ -47,26 +47,26 @@ namespace MSL.forms
         {
             for (int a = 1; a != 0; a++)
             {
-                if (Directory.Exists(AppDomain.CurrentDomain.BaseDirectory + @"MSL\Server") && !(Directory.GetDirectories(AppDomain.CurrentDomain.BaseDirectory + @"MSL\Server").Length > 0 || Directory.GetFiles(AppDomain.CurrentDomain.BaseDirectory + @"MSL\Server").Length > 0))
+                if (Directory.Exists(@"MSL\Server") && !(Directory.GetDirectories(@"MSL\Server").Length > 0 || Directory.GetFiles(@"MSL\Server").Length > 0))
                 {
-                    txb6.Text = AppDomain.CurrentDomain.BaseDirectory + @"MSL\Server";
+                    txb6.Text = @"MSL\Server";
                     return;
                 }
-                else if (!Directory.Exists(AppDomain.CurrentDomain.BaseDirectory + @"MSL\Server"))
+                else if (!Directory.Exists(@"MSL\Server"))
                 {
-                    //MessageBox.Show(AppDomain.CurrentDomain.BaseDirectory + @"MSL\Server");
-                    txb6.Text = AppDomain.CurrentDomain.BaseDirectory + @"MSL\Server";
+                    //MessageBox.Show(@"MSL\Server");
+                    txb6.Text = @"MSL\Server";
                     return;
                 }
-                else if (Directory.Exists(AppDomain.CurrentDomain.BaseDirectory + @"MSL\Server" + a.ToString()) && !(Directory.GetDirectories(AppDomain.CurrentDomain.BaseDirectory + @"MSL\Server" + a.ToString()).Length > 0 || Directory.GetFiles(AppDomain.CurrentDomain.BaseDirectory + @"MSL\Server" + a.ToString()).Length > 0))
+                else if (Directory.Exists(@"MSL\Server" + a.ToString()) && !(Directory.GetDirectories(@"MSL\Server" + a.ToString()).Length > 0 || Directory.GetFiles(@"MSL\Server" + a.ToString()).Length > 0))
                 {
-                    txb6.Text = AppDomain.CurrentDomain.BaseDirectory + @"MSL\Server" + a.ToString();
+                    txb6.Text = @"MSL\Server" + a.ToString();
                     return;
                 }
-                else if (!Directory.Exists(AppDomain.CurrentDomain.BaseDirectory + @"MSL\Server" + a.ToString()))
+                else if (!Directory.Exists(@"MSL\Server" + a.ToString()))
                 {
-                    //MessageBox.Show(AppDomain.CurrentDomain.BaseDirectory + @"MSL\Server" + a.ToString());
-                    txb6.Text = AppDomain.CurrentDomain.BaseDirectory + @"MSL\Server" + a.ToString();
+                    //MessageBox.Show(@"MSL\Server" + a.ToString());
+                    txb6.Text = @"MSL\Server" + a.ToString();
                     return;
                 }
             }
@@ -276,11 +276,11 @@ namespace MSL.forms
         }
         private int DownloadJava(string fileName, string downUrl)
         {
-            if (!File.Exists(AppDomain.CurrentDomain.BaseDirectory + @"MSL\" + fileName + @"\bin\java.exe"))
+            if (!File.Exists(@"MSL\" + fileName + @"\bin\java.exe"))
             {
                 DialogShow.ShowMsg(this, "下载Java即代表您接受Java的服务条款：\nhttps://www.oracle.com/downloads/licenses/javase-license1.html", "信息", false, "确定");
                 DownjavaName = fileName;
-                bool downDialog = DialogShow.ShowDownload(this, downUrl, AppDomain.CurrentDomain.BaseDirectory + "MSL", "Java.zip", "下载" + fileName + "中……");
+                bool downDialog = DialogShow.ShowDownload(this, downUrl, "MSL", "Java.zip", "下载" + fileName + "中……");
                 if (downDialog)
                 {
                     return 1;
@@ -292,7 +292,7 @@ namespace MSL.forms
             }
             else
             {
-                serverjava = AppDomain.CurrentDomain.BaseDirectory + @"MSL\" + fileName + @"\bin\java.exe";
+                serverjava = @"MSL\" + fileName + @"\bin\java.exe";
                 return 2;
             }
         }
@@ -301,7 +301,7 @@ namespace MSL.forms
             try
             {
                 string javaDirName = "";
-                using (ZipFile zip = new ZipFile(AppDomain.CurrentDomain.BaseDirectory + @"MSL\Java.zip"))
+                using (ZipFile zip = new ZipFile(@"MSL\Java.zip"))
                 {
                     foreach (ZipEntry entry in zip)
                     {
@@ -317,17 +317,17 @@ namespace MSL.forms
                     }
                 }
                 FastZip fastZip = new FastZip();
-                await Task.Run(() => fastZip.ExtractZip(AppDomain.CurrentDomain.BaseDirectory + @"MSL\Java.zip", AppDomain.CurrentDomain.BaseDirectory + "MSL", ""));
-                File.Delete(AppDomain.CurrentDomain.BaseDirectory + @"MSL\Java.zip");
-                if (AppDomain.CurrentDomain.BaseDirectory + @"MSL\" + javaDirName != AppDomain.CurrentDomain.BaseDirectory + @"MSL\" + DownjavaName)
+                await Task.Run(() => fastZip.ExtractZip(@"MSL\Java.zip", "MSL", ""));
+                File.Delete(@"MSL\Java.zip");
+                if (@"MSL\" + javaDirName != @"MSL\" + DownjavaName)
                 {
-                    Functions.MoveFolder(AppDomain.CurrentDomain.BaseDirectory + @"MSL\" + javaDirName, AppDomain.CurrentDomain.BaseDirectory + @"MSL\" + DownjavaName);
+                    Functions.MoveFolder(@"MSL\" + javaDirName, @"MSL\" + DownjavaName);
                 }
-                while (!File.Exists(AppDomain.CurrentDomain.BaseDirectory + @"MSL\" + DownjavaName + @"\bin\java.exe"))
+                while (!File.Exists(@"MSL\" + DownjavaName + @"\bin\java.exe"))
                 {
                     await Task.Delay(1000);
                 }
-                serverjava = AppDomain.CurrentDomain.BaseDirectory + @"MSL\" + DownjavaName + @"\bin\java.exe";
+                serverjava = @"MSL\" + DownjavaName + @"\bin\java.exe";
                 return true;
             }
             catch (Exception ex)
@@ -375,9 +375,9 @@ namespace MSL.forms
                     Directory.CreateDirectory(serverbase);
                 }
 
-                if (!File.Exists(AppDomain.CurrentDomain.BaseDirectory + @"MSL\ServerList.json"))
+                if (!File.Exists(@"MSL\ServerList.json"))
                 {
-                    File.WriteAllText(AppDomain.CurrentDomain.BaseDirectory + @"MSL\ServerList.json", string.Format("{{{0}}}", "\n"));
+                    File.WriteAllText(@"MSL\ServerList.json", string.Format("{{{0}}}", "\n"));
                 }
                 JObject _json = new JObject
                 {
@@ -388,7 +388,7 @@ namespace MSL.forms
                     { "memory", servermemory },
                     { "args", serverargs }
                 };
-                JObject jsonObject = JObject.Parse(File.ReadAllText(AppDomain.CurrentDomain.BaseDirectory + @"MSL\ServerList.json", Encoding.UTF8));
+                JObject jsonObject = JObject.Parse(File.ReadAllText(@"MSL\ServerList.json", Encoding.UTF8));
                 List<string> keys = jsonObject.Properties().Select(p => p.Name).ToList();
                 var _keys = keys.Select(x => Convert.ToInt32(x));
                 int[] ikeys = _keys.ToArray();
@@ -408,7 +408,7 @@ namespace MSL.forms
                     }
                 }
                 jsonObject.Add(i.ToString(), _json);
-                File.WriteAllText(AppDomain.CurrentDomain.BaseDirectory + @"MSL\ServerList.json", Convert.ToString(jsonObject), Encoding.UTF8);
+                File.WriteAllText(@"MSL\ServerList.json", Convert.ToString(jsonObject), Encoding.UTF8);
                 DialogShow.ShowMsg(this, "创建完毕，请点击“开启服务器”按钮以开服", "信息");
                 Close();
             }
@@ -632,7 +632,7 @@ namespace MSL.forms
             }
             else
             {
-                txb6.Text = AppDomain.CurrentDomain.BaseDirectory + txb6.Text;
+                txb6.Text = txb6.Text;
                 serverbase = txb6.Text;
             }
             sserver.IsSelected = true;
@@ -649,7 +649,7 @@ namespace MSL.forms
                 DownloadMods downloadMods = new DownloadMods(1);
                 downloadMods.Owner = this;
                 downloadMods.ShowDialog();
-                if (!File.Exists(AppDomain.CurrentDomain.BaseDirectory + "MSL\\ServerPack.zip"))
+                if (!File.Exists("MSL\\ServerPack.zip"))
                 {
                     DialogShow.ShowMsg(this, "下载失败！", "错误");
                     return;
@@ -662,14 +662,14 @@ namespace MSL.forms
                     string serverPath = "";
                     for (int a = 1; a != 0; a++)
                     {
-                        if (!Directory.Exists(AppDomain.CurrentDomain.BaseDirectory + "MSL\\Server"))
+                        if (!Directory.Exists("MSL\\Server"))
                         {
-                            serverPath = AppDomain.CurrentDomain.BaseDirectory + "MSL\\Server";
+                            serverPath = "MSL\\Server";
                             break;
                         }
-                        if (!Directory.Exists(AppDomain.CurrentDomain.BaseDirectory + "MSL\\Server" + a.ToString()))
+                        if (!Directory.Exists("MSL\\Server" + a.ToString()))
                         {
-                            serverPath = AppDomain.CurrentDomain.BaseDirectory + "MSL\\Server" + a.ToString();
+                            serverPath = "MSL\\Server" + a.ToString();
                             break;
                         }
                     }
@@ -677,13 +677,13 @@ namespace MSL.forms
                     try
                     {
                         waitDialog = Dialog.Show(new TextDialog("解压整合包中，请稍等……"));
-                        await Task.Run(() => new FastZip().ExtractZip(AppDomain.CurrentDomain.BaseDirectory + "MSL\\ServerPack.zip", serverPath, ""));
+                        await Task.Run(() => new FastZip().ExtractZip("MSL\\ServerPack.zip", serverPath, ""));
                         DirectoryInfo[] dirs = new DirectoryInfo(serverPath).GetDirectories();
                         if (dirs.Length == 1)
                         {
                             Functions.MoveFolder(dirs[0].FullName, serverPath);
                         }
-                        File.Delete(AppDomain.CurrentDomain.BaseDirectory + "MSL\\ServerPack.zip");
+                        File.Delete("MSL\\ServerPack.zip");
                     }
                     catch (Exception ex)
                     {
@@ -717,19 +717,19 @@ namespace MSL.forms
                         string serverPath = "";
                         for (int a = 1; a != 0; a++)
                         {
-                            if (!Directory.Exists(AppDomain.CurrentDomain.BaseDirectory + "MSL\\Server"))
+                            if (!Directory.Exists("MSL\\Server"))
                             {
-                                serverPath = AppDomain.CurrentDomain.BaseDirectory + "MSL\\Server";
+                                serverPath = "MSL\\Server";
                                 break;
                             }
-                            if (!Directory.Exists(AppDomain.CurrentDomain.BaseDirectory + "MSL\\Server" + a.ToString()))
+                            if (!Directory.Exists("MSL\\Server" + a.ToString()))
                             {
-                                serverPath = AppDomain.CurrentDomain.BaseDirectory + "MSL\\Server" + a.ToString();
+                                serverPath = "MSL\\Server" + a.ToString();
                                 break;
                             }
                         }
                         OpenFileDialog openfile = new OpenFileDialog();
-                        openfile.InitialDirectory = AppDomain.CurrentDomain.BaseDirectory + "MSL";
+                        openfile.InitialDirectory = "MSL";
                         openfile.Title = "请选择整合包压缩文件";
                         openfile.Filter = "ZIP文件|*.zip|所有文件类型|*.*";
                         var res = openfile.ShowDialog();
@@ -845,10 +845,15 @@ namespace MSL.forms
                 string forgeVersion;
                 Match match = Regex.Match(txb3.Text, @"forge-([\w.-]+)-installer");
                 forgeVersion = match.Groups[1].Value;
+                string _java = serverjava;
+                if (!Path.IsPathRooted(serverjava))
+                {
+                    _java = AppDomain.CurrentDomain.BaseDirectory + serverjava;
+                }
                 Directory.SetCurrentDirectory(serverbase);
                 Process process = new Process();
-                process.StartInfo.FileName = serverjava;
-                process.StartInfo.Arguments = "-jar " + serverbase + @"\" + txb3.Text + " -installServer";
+                process.StartInfo.FileName = _java;
+                process.StartInfo.Arguments = "-jar " + txb3.Text + " -installServer";
                 process.Start();
                 Directory.SetCurrentDirectory(AppDomain.CurrentDomain.BaseDirectory);
                 try
@@ -1357,9 +1362,9 @@ namespace MSL.forms
                     FastInstallProcess.Text = "当前进度:完成！";
                     try
                     {
-                        if (!File.Exists(AppDomain.CurrentDomain.BaseDirectory + @"MSL\ServerList.json"))
+                        if (!File.Exists(@"MSL\ServerList.json"))
                         {
-                            File.WriteAllText(AppDomain.CurrentDomain.BaseDirectory + @"MSL\ServerList.json", string.Format("{{{0}}}", "\n"));
+                            File.WriteAllText(@"MSL\ServerList.json", string.Format("{{{0}}}", "\n"));
                         }
                         JObject _json = new JObject
                         {
@@ -1370,7 +1375,7 @@ namespace MSL.forms
                         { "memory", servermemory },
                         { "args", serverargs }
                         };
-                        JObject jsonObject = JObject.Parse(File.ReadAllText(AppDomain.CurrentDomain.BaseDirectory + @"MSL\ServerList.json", Encoding.UTF8));
+                        JObject jsonObject = JObject.Parse(File.ReadAllText(@"MSL\ServerList.json", Encoding.UTF8));
                         List<string> keys = jsonObject.Properties().Select(p => p.Name).ToList();
                         var _keys = keys.Select(x => Convert.ToInt32(x));
                         int[] ikeys = _keys.ToArray();
@@ -1389,7 +1394,7 @@ namespace MSL.forms
                             }
                         }
                         jsonObject.Add(i.ToString(), _json);
-                        File.WriteAllText(AppDomain.CurrentDomain.BaseDirectory + @"MSL\ServerList.json", Convert.ToString(jsonObject), Encoding.UTF8);
+                        File.WriteAllText(@"MSL\ServerList.json", Convert.ToString(jsonObject), Encoding.UTF8);
                         DialogShow.ShowMsg(this, "创建完毕，请点击“开启服务器”按钮以开服", "信息");
                         Close();
                     }
@@ -1438,10 +1443,15 @@ namespace MSL.forms
                 Match match = Regex.Match(serverDownUrl, @"forge-([\w.-]+)-installer");
                 forgeVersion = match.Groups[1].Value;
             }
+            string _java = serverjava;
+            if (!Path.IsPathRooted(serverjava))
+            {
+                _java = AppDomain.CurrentDomain.BaseDirectory + serverjava;
+            }
             Directory.SetCurrentDirectory(serverbase);
             Process process = new Process();
-            process.StartInfo.FileName = serverjava;
-            process.StartInfo.Arguments = "-jar " + serverbase + @"\" + filename + " -installServer";
+            process.StartInfo.FileName = _java;
+            process.StartInfo.Arguments = "-jar " + filename + " -installServer";
             process.Start();
             Directory.SetCurrentDirectory(AppDomain.CurrentDomain.BaseDirectory);
             try
