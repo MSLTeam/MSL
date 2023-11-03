@@ -12,9 +12,8 @@
     <Grid x:Name="MainGrid">
         <ComboBox x:Name="frpProvider" Margin="420,15,0,0" SelectedIndex="0" SelectionChanged="frpProvider_SelectionChanged" VerticalAlignment="Top" Height="30" HorizontalAlignment="Left" Width="310">
             <ComboBoxItem Content="MSL-Frp"/>
-            <ComboBoxItem Content="OpenFrp(实验性支持)"/>
+            <ComboBoxItem Content="OpenFrp(创建新隧道)"/>
             <ComboBoxItem Content="OpenFrp(使用现有隧道)"/>
-            <ComboBoxItem Content="OpenFrp(手动输入隧道ID和token)"/>
         </ComboBox>
         <ListBox x:Name="serversList" Height="250" Width="270" SelectionChanged="serversList_SelectionChanged" SelectionMode="Single" Margin="20,50,0,0" HorizontalAlignment="Left" VerticalAlignment="Top"/>
         <Button Content="确定" Margin="630,255,0,0" Style="{StaticResource ButtonPrimary}" VerticalAlignment="Top" Width="100" Click="Button_Click" FontWeight="Normal" FontSize="18" Height="80" HorizontalAlignment="Left"/>
@@ -41,6 +40,6 @@
             <ComboBoxItem Content="默认（无加速协议）"/>
         </ComboBox>
         <CheckBox x:Name="enableCompression" Content="启用数据压缩" HorizontalAlignment="Left" Margin="630,230,0,0" VerticalAlignment="Top" IsChecked="True"/>
-        <Label Content="提供商列表：" HorizontalAlignment="Left" VerticalAlignment="Top" FontSize="20" Margin="290,11,0,0" Background="{x:Null}" BorderBrush="{x:Null}" Height="40" Padding="10,0,10,5" FontWeight="Bold"/>
+        <Label Content="服务商列表：" HorizontalAlignment="Left" VerticalAlignment="Top" FontSize="20" Margin="290,11,0,0" Background="{x:Null}" BorderBrush="{x:Null}" Height="40" Padding="10,0,10,5" FontWeight="Bold"/>
     </Grid>
 </hc:Window>
