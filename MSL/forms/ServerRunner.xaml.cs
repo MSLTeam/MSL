@@ -2416,32 +2416,32 @@ namespace MSL
                 {
                     useJvpath.IsChecked = true;
                 }
-                else if (jAva.Text == @"MSL\Java8\bin\java.exe")
+                else if (jAva.Text == AppDomain.CurrentDomain.BaseDirectory + @"MSL\Java8\bin\java.exe")
                 {
                     useDownJv.IsChecked = true;
                     selectJava.SelectedIndex = 0;
                 }
-                else if (jAva.Text == @"MSL\Java11\bin\java.exe")
+                else if (jAva.Text == AppDomain.CurrentDomain.BaseDirectory + @"MSL\Java11\bin\java.exe")
                 {
                     useDownJv.IsChecked = true;
                     selectJava.SelectedIndex = 1;
                 }
-                else if (jAva.Text == @"MSL\Java16\bin\java.exe")
+                else if (jAva.Text == AppDomain.CurrentDomain.BaseDirectory + @"MSL\Java16\bin\java.exe")
                 {
                     useDownJv.IsChecked = true;
                     selectJava.SelectedIndex = 2;
                 }
-                else if (jAva.Text == @"MSL\Java17\bin\java.exe")
+                else if (jAva.Text == AppDomain.CurrentDomain.BaseDirectory + @"MSL\Java17\bin\java.exe")
                 {
                     useDownJv.IsChecked = true;
                     selectJava.SelectedIndex = 3;
                 }
-                else if (jAva.Text == @"MSL\Java18\bin\java.exe")
+                else if (jAva.Text == AppDomain.CurrentDomain.BaseDirectory + @"MSL\Java18\bin\java.exe")
                 {
                     useDownJv.IsChecked = true;
                     selectJava.SelectedIndex = 4;
                 }
-                else if (jAva.Text == @"MSL\Java19\bin\java.exe")
+                else if (jAva.Text == AppDomain.CurrentDomain.BaseDirectory + @"MSL\Java19\bin\java.exe")
                 {
                     useDownJv.IsChecked = true;
                     selectJava.SelectedIndex = 5;
@@ -2723,7 +2723,7 @@ namespace MSL
 
         private int DownloadJava(string fileName, string downUrl)
         {
-            jAva.Text = @"MSL\" + fileName + @"\bin\java.exe";
+            jAva.Text = AppDomain.CurrentDomain.BaseDirectory + "MSL\\" + fileName + "\\bin\\java.exe";
             if (File.Exists(@"MSL\" + fileName + @"\bin\java.exe"))
             {
                 return 2;
@@ -2731,11 +2731,7 @@ namespace MSL
             else
             {
                 DialogShow.ShowMsg(this, "下载Java即代表您接受Java的服务条款：\nhttps://www.oracle.com/downloads/licenses/javase-license1.html", "信息", false, "确定");
-                //MessageDialog messageDialog = new MessageDialog();
-                //messageDialog.Owner = this;
-                //messageDialog.ShowDialog();
                 DownjavaName = fileName;
-                //DownloadWindow.downloadurl = RserverLink +@"/msl/Java8.exe";
                 bool downDialog = DialogShow.ShowDownload(this, downUrl, "MSL", "Java.zip", "下载" + fileName + "中……");
                 if (downDialog)
                 {
@@ -2888,8 +2884,8 @@ namespace MSL
                         {
                             string a = memoryInfo.Text.Substring(0, memoryInfo.Text.IndexOf(","));
                             string b = memoryInfo.Text.Substring(memoryInfo.Text.IndexOf(","));
-                            string resultA = System.Text.RegularExpressions.Regex.Replace(a, @"[^0-9]+", "");
-                            string resultB = System.Text.RegularExpressions.Regex.Replace(b, @"[^0-9]+", "");
+                            string resultA = Regex.Replace(a, @"[^0-9]+", "");
+                            string resultB = Regex.Replace(b, @"[^0-9]+", "");
                             memorySlider.ValueStart = double.Parse(resultA);
                             memorySlider.ValueEnd = double.Parse(resultB);
                         }

@@ -49,24 +49,24 @@ namespace MSL.forms
             {
                 if (Directory.Exists(@"MSL\Server") && !(Directory.GetDirectories(@"MSL\Server").Length > 0 || Directory.GetFiles(@"MSL\Server").Length > 0))
                 {
-                    txb6.Text = @"MSL\Server";
+                    txb6.Text = AppDomain.CurrentDomain.BaseDirectory + "MSL\\Server";
                     return;
                 }
                 else if (!Directory.Exists(@"MSL\Server"))
                 {
                     //MessageBox.Show(@"MSL\Server");
-                    txb6.Text = @"MSL\Server";
+                    txb6.Text = AppDomain.CurrentDomain.BaseDirectory + "MSL\\Server";
                     return;
                 }
                 else if (Directory.Exists(@"MSL\Server" + a.ToString()) && !(Directory.GetDirectories(@"MSL\Server" + a.ToString()).Length > 0 || Directory.GetFiles(@"MSL\Server" + a.ToString()).Length > 0))
                 {
-                    txb6.Text = @"MSL\Server" + a.ToString();
+                    txb6.Text = AppDomain.CurrentDomain.BaseDirectory + "MSL\\Server" + a.ToString();
                     return;
                 }
                 else if (!Directory.Exists(@"MSL\Server" + a.ToString()))
                 {
                     //MessageBox.Show(@"MSL\Server" + a.ToString());
-                    txb6.Text = @"MSL\Server" + a.ToString();
+                    txb6.Text = AppDomain.CurrentDomain.BaseDirectory + "MSL\\Server" + a.ToString();
                     return;
                 }
             }
@@ -292,7 +292,7 @@ namespace MSL.forms
             }
             else
             {
-                serverjava = @"MSL\" + fileName + @"\bin\java.exe";
+                serverjava = AppDomain.CurrentDomain.BaseDirectory + "MSL\\" + fileName + "\\bin\\java.exe";
                 return 2;
             }
         }
@@ -327,7 +327,7 @@ namespace MSL.forms
                 {
                     await Task.Delay(1000);
                 }
-                serverjava = @"MSL\" + DownjavaName + @"\bin\java.exe";
+                serverjava = AppDomain.CurrentDomain.BaseDirectory + "MSL\\" + DownjavaName + "\\bin\\java.exe";
                 return true;
             }
             catch (Exception ex)
@@ -628,7 +628,7 @@ namespace MSL.forms
             }
             if (Path.IsPathRooted(txb6.Text))
             {
-                serverbase = txb6.Text;
+                serverbase = AppDomain.CurrentDomain.BaseDirectory + txb6.Text;
             }
             else
             {
@@ -664,12 +664,12 @@ namespace MSL.forms
                     {
                         if (!Directory.Exists("MSL\\Server"))
                         {
-                            serverPath = "MSL\\Server";
+                            serverPath = AppDomain.CurrentDomain.BaseDirectory + "MSL\\Server";
                             break;
                         }
                         if (!Directory.Exists("MSL\\Server" + a.ToString()))
                         {
-                            serverPath = "MSL\\Server" + a.ToString();
+                            serverPath = AppDomain.CurrentDomain.BaseDirectory + "MSL\\Server" + a.ToString();
                             break;
                         }
                     }
@@ -719,12 +719,12 @@ namespace MSL.forms
                         {
                             if (!Directory.Exists("MSL\\Server"))
                             {
-                                serverPath = "MSL\\Server";
+                                serverPath = AppDomain.CurrentDomain.BaseDirectory + "MSL\\Server";
                                 break;
                             }
                             if (!Directory.Exists("MSL\\Server" + a.ToString()))
                             {
-                                serverPath = "MSL\\Server" + a.ToString();
+                                serverPath = AppDomain.CurrentDomain.BaseDirectory + "MSL\\Server" + a.ToString();
                                 break;
                             }
                         }
@@ -807,15 +807,17 @@ namespace MSL.forms
                         Directory.CreateDirectory(serverbase);
                     }
                     string _filename = Path.GetFileName(txb3.Text);
-                    if (Path.IsPathRooted(txb3.Text))
+                    if (!Path.IsPathRooted(txb3.Text))
                     {
-                        if (Path.GetDirectoryName(txb3.Text) != serverbase)
+                        txb3.Text = AppDomain.CurrentDomain.BaseDirectory + txb3.Text;
+                    }
+                    if (Path.GetDirectoryName(txb3.Text) != serverbase)
                         {
                             File.Copy(txb3.Text, serverbase + @"\" + _filename, true);
                             DialogShow.ShowMsg(this, "已将服务端文件移至服务器文件夹中！您可将源文件删除！", "提示");
                             txb3.Text = _filename;
                         }
-                    }
+                    
                     if (txb3.Text.Contains("forge") && txb3.Text.Contains("installer"))
                     {
                         bool dialog = DialogShow.ShowMsg(this, "您选择的服务端是forge安装器，是否将其展开安装？\n如果不展开安装，服务器可能无法开启！", "提示", true, "取消");
@@ -845,14 +847,9 @@ namespace MSL.forms
                 string forgeVersion;
                 Match match = Regex.Match(txb3.Text, @"forge-([\w.-]+)-installer");
                 forgeVersion = match.Groups[1].Value;
-                string _java = serverjava;
-                if (!Path.IsPathRooted(serverjava))
-                {
-                    _java = AppDomain.CurrentDomain.BaseDirectory + serverjava;
-                }
                 Directory.SetCurrentDirectory(serverbase);
                 Process process = new Process();
-                process.StartInfo.FileName = _java;
+                process.StartInfo.FileName = serverjava;
                 process.StartInfo.Arguments = "-jar " + txb3.Text + " -installServer";
                 process.Start();
                 Directory.SetCurrentDirectory(AppDomain.CurrentDomain.BaseDirectory);
@@ -1443,14 +1440,9 @@ namespace MSL.forms
                 Match match = Regex.Match(serverDownUrl, @"forge-([\w.-]+)-installer");
                 forgeVersion = match.Groups[1].Value;
             }
-            string _java = serverjava;
-            if (!Path.IsPathRooted(serverjava))
-            {
-                _java = AppDomain.CurrentDomain.BaseDirectory + serverjava;
-            }
             Directory.SetCurrentDirectory(serverbase);
             Process process = new Process();
-            process.StartInfo.FileName = _java;
+            process.StartInfo.FileName = serverjava;
             process.StartInfo.Arguments = "-jar " + filename + " -installServer";
             process.Start();
             Directory.SetCurrentDirectory(AppDomain.CurrentDomain.BaseDirectory);
