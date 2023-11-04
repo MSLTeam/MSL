@@ -428,7 +428,7 @@ namespace MSL.forms
         private void a0002_Click(object sender, RoutedEventArgs e)
         {
             OpenFileDialog openfile = new OpenFileDialog();
-            openfile.InitialDirectory = serverbase;
+            openfile.InitialDirectory = AppDomain.CurrentDomain.BaseDirectory;
             openfile.Title = "请选择文件";
             openfile.Filter = "JAR文件|*.jar|所有文件类型|*.*";
             var res = openfile.ShowDialog();

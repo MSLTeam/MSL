@@ -1945,8 +1945,24 @@ namespace MSL
             { }
             if (File.Exists(Rserverbase + "\\server-icon.png"))
             {
-                bool dialogret = DialogShow.ShowMsg(this, "此功能会覆盖原来的旧图标，是否要继续？", "警告", true, "取消");
-                if (!dialogret)
+                bool dialogret = DialogShow.ShowMsg(this, "检测到服务器已有图标，是否删除它？", "警告", true, "取消");
+                if (dialogret)
+                {
+                    try
+                    {
+                        File.Delete(Rserverbase + "\\server-icon.png");
+                    }
+                    catch (Exception ex)
+                    {
+                        DialogShow.ShowMsg(this, "图标删除失败！请检查服务器是否关闭！\n错误代码：" + ex.Message, "错误");
+                    }
+                    bool _dialogret = DialogShow.ShowMsg(this, "原图标已删除，是否继续更换操作？", "提示", true, "取消");
+                    if (!_dialogret)
+                    {
+                        return;
+                    }
+                }
+                else
                 {
                     return;
                 }
