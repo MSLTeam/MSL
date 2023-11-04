@@ -626,7 +626,7 @@ namespace MSL.forms
                     return;
                 }
             }
-            if (Path.IsPathRooted(txb6.Text))
+            if (!Path.IsPathRooted(txb6.Text))
             {
                 serverbase = AppDomain.CurrentDomain.BaseDirectory + txb6.Text;
             }
@@ -812,12 +812,12 @@ namespace MSL.forms
                         txb3.Text = AppDomain.CurrentDomain.BaseDirectory + txb3.Text;
                     }
                     if (Path.GetDirectoryName(txb3.Text) != serverbase)
-                        {
-                            File.Copy(txb3.Text, serverbase + @"\" + _filename, true);
-                            DialogShow.ShowMsg(this, "已将服务端文件移至服务器文件夹中！您可将源文件删除！", "提示");
-                            txb3.Text = _filename;
-                        }
-                    
+                    {
+                        File.Copy(txb3.Text, serverbase + @"\" + _filename, true);
+                        DialogShow.ShowMsg(this, "已将服务端文件移至服务器文件夹中！您可将源文件删除！", "提示");
+                        txb3.Text = _filename;
+                    }
+
                     if (txb3.Text.Contains("forge") && txb3.Text.Contains("installer"))
                     {
                         bool dialog = DialogShow.ShowMsg(this, "您选择的服务端是forge安装器，是否将其展开安装？\n如果不展开安装，服务器可能无法开启！", "提示", true, "取消");
