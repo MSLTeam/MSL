@@ -445,7 +445,7 @@ namespace MSL.pages
             string url = "https://api.waheal.top";
             if (MainWindow.serverLink != "https://msl.waheal.top")
             {
-                url = MainWindow.serverLink + ":5000";
+                url = MainWindow.serverLink;
             }
             WebClient MyWebClient = new WebClient();
             byte[] pageData = MyWebClient.DownloadData(url + "/otherdownloads");

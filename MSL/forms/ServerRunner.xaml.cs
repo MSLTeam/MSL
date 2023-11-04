@@ -2518,7 +2518,7 @@ namespace MSL
             string url = "https://api.waheal.top";
             if (MainWindow.serverLink != "https://msl.waheal.top")
             {
-                url = MainWindow.serverLink + ":5000";
+                url = MainWindow.serverLink;
             }
             WebClient MyWebClient = new WebClient();
             byte[] pageData = await MyWebClient.DownloadDataTaskAsync(url + "/otherdownloads");
@@ -2580,6 +2580,12 @@ namespace MSL
                                     break;
                                 case 5:
                                     dwnJava = DownloadJava("Java19", javaList["Java19"].ToString());
+                                    break;
+                                case 6:
+                                    dwnJava = DownloadJava("Java20", javaList["Java20"].ToString());
+                                    break;
+                                case 7:
+                                    dwnJava = DownloadJava("Java21", javaList["Java21"].ToString());
                                     break;
                                 default:
                                     Growl.Error("请选择一个版本以下载！");

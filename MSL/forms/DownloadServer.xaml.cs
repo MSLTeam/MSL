@@ -123,6 +123,7 @@ namespace MSL.pages
             if (serverAddr != "https://msl.waheal.top")
             {
                 if (serverAddr.Contains("http://")) { serverAddr = serverAddr.Remove(0, 7); }
+                if (serverAddr.Contains(":")) { serverAddr = serverAddr.Substring(0, serverAddr.IndexOf(":")); }
                 PingReply reply = pingSender.Send(serverAddr, 2000); // 替换成您要 ping 的 IP 地址
                 if (reply.Status != IPStatus.Success)
                 {

@@ -83,13 +83,14 @@ namespace MSL
             //get serverlink
             try
             {
-                WebClient MyWebClient = new WebClient();
-                MyWebClient.Credentials = CredentialCache.DefaultCredentials;
-                byte[] pageData = MyWebClient.DownloadData("https://waheal.oss-cn-hangzhou.aliyuncs.com/");
-                //serverLink = Encoding.UTF8.GetString(pageData);
-                string serverAddr = Encoding.UTF8.GetString(pageData);
+                string serverAddr = Functions.Get("", "https://msl-server.oss-cn-hangzhou.aliyuncs.com");
+                string _addr=serverAddr;
+                if (_addr.Contains(":"))
+                {
+                    _addr=_addr.Substring(0, _addr.IndexOf(":"));
+                }
                 Ping pingSender = new Ping();
-                PingReply reply = pingSender.Send(serverAddr, 2000); // 替换成您要 ping 的 IP 地址
+                PingReply reply = pingSender.Send(_addr, 2000); // 替换成您要 ping 的 IP 地址
                 if (reply.Status == IPStatus.Success)
                 {
                     serverLink = "http://" + serverAddr;

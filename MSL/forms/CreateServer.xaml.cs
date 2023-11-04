@@ -147,6 +147,12 @@ namespace MSL.forms
                                     case 5:
                                         dwnJava = DownloadJava("Java19", javaList["Java19"].ToString());
                                         break;
+                                    case 6:
+                                        dwnJava = DownloadJava("Java20", javaList["Java20"].ToString());
+                                        break;
+                                    case 7:
+                                        dwnJava = DownloadJava("Java21", javaList["Java21"].ToString());
+                                        break;
                                     default:
                                         Growl.Error("请选择一个版本以下载！");
                                         break;
@@ -974,6 +980,7 @@ namespace MSL.forms
                 if (serverAddr != "https://msl.waheal.top")
                 {
                     if (serverAddr.Contains("http://")) { serverAddr = serverAddr.Remove(0, 7); }
+                    if (serverAddr.Contains(":")) { serverAddr = serverAddr.Substring(0, serverAddr.IndexOf(":")); }
                     PingReply reply = pingSender.Send(serverAddr, 2000); // 替换成您要 ping 的 IP 地址
                     if (reply.Status != IPStatus.Success)
                     {
@@ -1246,7 +1253,7 @@ namespace MSL.forms
             string url = "https://api.waheal.top";
             if (MainWindow.serverLink != "https://msl.waheal.top")
             {
-                url = MainWindow.serverLink + ":5000";
+                url = MainWindow.serverLink;
             }
             WebClient MyWebClient = new WebClient();
             byte[] pageData = await MyWebClient.DownloadDataTaskAsync(url + "/otherdownloads");
@@ -1288,6 +1295,12 @@ namespace MSL.forms
                             break;
                         case 5:
                             dwnJava = DownloadJava("Java19", javaList["Java19"].ToString());
+                            break;
+                        case 6:
+                            dwnJava = DownloadJava("Java20", javaList["Java20"].ToString());
+                            break;
+                        case 7:
+                            dwnJava = DownloadJava("Java21", javaList["Java21"].ToString());
                             break;
                         default:
                             Growl.Error("请选择一个版本以下载！");

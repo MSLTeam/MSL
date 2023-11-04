@@ -312,6 +312,8 @@
                                             <ComboBoxItem Content="Java17"/>
                                             <ComboBoxItem Content="Java18"/>
                                             <ComboBoxItem Content="Java19"/>
+                                            <ComboBoxItem Content="Java20"/>
+                                            <ComboBoxItem Content="Java21"/>
                                         </ComboBox>
                                         <RadioButton x:Name="usecheckedjv" Content="检查电脑上的Java" Margin="345,170,0,0" VerticalAlignment="Top" HorizontalAlignment="Left" Checked="usecheckedjv_Checked"/>
                                         <ComboBox x:Name="selectCheckedJavaComb" Margin="470,165,0,0" HorizontalAlignment="Left" VerticalAlignment="Top" Width="100"/>
