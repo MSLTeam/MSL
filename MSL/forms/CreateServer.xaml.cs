@@ -1049,7 +1049,7 @@ namespace MSL.forms
                                         JObject patientinfo = new JObject();
                                         patientinfo["server_name"] = i;
                                         string sendData = JsonConvert.SerializeObject(patientinfo);
-                                        string resultData = Functions.Post("serverlist", 0, sendData);
+                                        var resultData = Functions.Post("serverlist", 0, sendData);
                                         //MessageBox.Show(resultData);
                                         tempServerCore.Add(coreType, resultData);
                                         Dictionary<string, string> serverDetails = JsonConvert.DeserializeObject<Dictionary<string, string>>(resultData);
@@ -1069,7 +1069,7 @@ namespace MSL.forms
                                             JObject patientinfo = new JObject();
                                             patientinfo["server_name"] = i;
                                             string sendData = JsonConvert.SerializeObject(patientinfo);
-                                            string resultData = Functions.Post("serverlist", 0, sendData, "https://api.waheal.top");
+                                            var resultData = Functions.Post("serverlist", 0, sendData, "https://api.waheal.top");
                                             //MessageBox.Show(resultData);
                                             tempServerCore.Add(coreType, resultData);
                                             Dictionary<string, string> serverDetails = JsonConvert.DeserializeObject<Dictionary<string, string>>(resultData);

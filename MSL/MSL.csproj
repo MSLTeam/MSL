@@ -141,6 +141,12 @@
     <Compile Include="pages\FrpcPage.xaml.cs">
       <DependentUpon>FrpcPage.xaml</DependentUpon>
     </Compile>
+    <Compile Include="pages\frpProviders\MSLFrp.xaml.cs">
+      <DependentUpon>MSLFrp.xaml</DependentUpon>
+    </Compile>
+    <Compile Include="pages\frpProviders\OpenFrp.xaml.cs">
+      <DependentUpon>OpenFrp.xaml</DependentUpon>
+    </Compile>
     <Compile Include="pages\OnlinePage.xaml.cs">
       <DependentUpon>OnlinePage.xaml</DependentUpon>
     </Compile>
@@ -223,6 +229,14 @@
     <Page Include="pages\FrpcPage.xaml">
       <Generator>MSBuild:Compile</Generator>
       <SubType>Designer</SubType>
+    </Page>
+    <Page Include="pages\frpProviders\MSLFrp.xaml">
+      <SubType>Designer</SubType>
+      <Generator>MSBuild:Compile</Generator>
+    </Page>
+    <Page Include="pages\frpProviders\OpenFrp.xaml">
+      <SubType>Designer</SubType>
+      <Generator>MSBuild:Compile</Generator>
     </Page>
     <Page Include="pages\OnlinePage.xaml">
       <SubType>Designer</SubType>

@@ -71,7 +71,7 @@ namespace MSL.pages
                     byte[] pageData = MyWebClient.DownloadData(MainWindow.serverLink + @"/msl/notice.json");
                     string notice = Encoding.UTF8.GetString(pageData);
                     */
-                    string notice = Functions.Post("notice");
+                    var notice = Functions.Post("notice");
                     JObject keyValues = JObject.Parse(notice);
 
                     if (keyValues["notice"] != null)
@@ -190,8 +190,7 @@ namespace MSL.pages
                         byte[] pageData = MyWebClient.DownloadData(MainWindow.serverLink + @"/msl/notice.json");
                         string notice = Encoding.UTF8.GetString(pageData);
                         */
-                        string notice = Functions.Post("notice");
-
+                        var notice = Functions.Post("notice");
                         JObject keyValues = JObject.Parse(notice);
                         if (keyValues["notice"] != null)
                         {

@@ -101,7 +101,7 @@ namespace MSL.pages
                         });
                         _dnfrpc = "";
                     }
-                    
+
                     Directory.SetCurrentDirectory("MSL");
                     FRPCMD.StartInfo.FileName = @"frpc.exe";
                     FRPCMD.StartInfo.Arguments = "-c frpc";
@@ -373,7 +373,7 @@ namespace MSL.pages
                 try
                 {
                     Dispatcher.Invoke(() => { _dialog = Dialog.Show(new TextDialog("获取密码中，请稍等……")); });
-                    string ret = Functions.Post("getpassword", 1, text, "http://http://111.180.189.249:7004");
+                    var ret = Functions.Post("getpassword", 1, text, "http://http://111.180.189.249:7004");
                     Dispatcher.Invoke(() =>
                     {
                         this.Focus();
@@ -537,104 +537,108 @@ namespace MSL.pages
         {
             try
             {
-                Dispatcher.Invoke(() =>
+                JObject jobject = JObject.Parse(File.ReadAllText(@"MSL\config.json", Encoding.UTF8));
+                if (jobject["frpcServer"] == null)
                 {
-                    JObject jobject = JObject.Parse(File.ReadAllText(@"MSL\config.json", Encoding.UTF8));
-                    if (jobject["frpcServer"] == null)
-                    {
-                        jobject["frpcServer"] = "0";
-                        string convertString = Convert.ToString(jobject);
-                        File.WriteAllText(@"MSL\config.json", convertString, Encoding.UTF8);
-                    }
-                    if (jobject["frpcServer"].ToString() == "0")
+                    jobject["frpcServer"] = "0";
+                    string convertString = Convert.ToString(jobject);
+                    File.WriteAllText(@"MSL\config.json", convertString, Encoding.UTF8);
+                }
+                if (jobject["frpcServer"].ToString() == "0")
+                {
+                    Dispatcher.Invoke(() =>
                     {
                         copyFrpc.IsEnabled = true;
                         startfrpc.IsEnabled = true;
                         frplab1.Text = "检测节点信息中……";
-                        string configText = File.ReadAllText(@"MSL\frpc");
-                        // 读取每一行
-                        string[] lines = configText.Split('\n');
+                    });
+                    string configText = File.ReadAllText(@"MSL\frpc");
+                    // 读取每一行
+                    string[] lines = configText.Split('\n');
 
-                        // 节点名称
-                        string nodeName = lines[0].TrimStart('#').Trim();
+                    // 节点名称
+                    string nodeName = lines[0].TrimStart('#').Trim();
 
-                        // 服务器地址
-                        string serverAddr = "";
-                        int serverPort = 0;
-                        string remotePort = "";
-                        string frpcType = "";
-                        bool readServerInfo = true;  // 是否继续读取服务器信息
-                        for (int i = 0; i < lines.Length; i++)
+                    // 服务器地址
+                    string serverAddr = "";
+                    int serverPort = 0;
+                    string remotePort = "";
+                    string frpcType = "";
+                    bool readServerInfo = true;  // 是否继续读取服务器信息
+                    for (int i = 0; i < lines.Length; i++)
+                    {
+                        if (lines[i].StartsWith("type") && frpcType != "")
                         {
-                            if (lines[i].StartsWith("type") && frpcType != "")
-                            {
-                                // 遇到第二个type时停止读取服务器信息
-                                readServerInfo = false;
-                                break;
-                            }
-                            else if (lines[i].StartsWith("type") && readServerInfo)
-                            {
-                                frpcType = lines[i].Split('=')[1].Trim();
-                            }
-                            else if (lines[i].StartsWith("server_addr") && readServerInfo)
-                            {
-                                serverAddr = lines[i].Split('=')[1].Trim();
-                            }
-                            else if (lines[i].StartsWith("server_port") && readServerInfo)
-                            {
-                                serverPort = int.Parse(lines[i].Split('=')[1].Trim());
-                            }
-                            else if (lines[i].StartsWith("remote_port") && readServerInfo)
-                            {
-                                remotePort = lines[i].Split('=')[1].Trim();
-                            }
+                            // 遇到第二个type时停止读取服务器信息
+                            readServerInfo = false;
+                            break;
                         }
+                        else if (lines[i].StartsWith("type") && readServerInfo)
+                        {
+                            frpcType = lines[i].Split('=')[1].Trim();
+                        }
+                        else if (lines[i].StartsWith("server_addr") && readServerInfo)
+                        {
+                            serverAddr = lines[i].Split('=')[1].Trim();
+                        }
+                        else if (lines[i].StartsWith("server_port") && readServerInfo)
+                        {
+                            serverPort = int.Parse(lines[i].Split('=')[1].Trim());
+                        }
+                        else if (lines[i].StartsWith("remote_port") && readServerInfo)
+                        {
+                            remotePort = lines[i].Split('=')[1].Trim();
+                        }
+                    }
 
-                        Dispatcher.Invoke(() =>
+                    Dispatcher.Invoke(() =>
+                    {
+                        if (!readServerInfo)
                         {
-                            if (!readServerInfo)
-                            {
-                                frplab3.Text = "Java版：" + serverAddr + ":" + remotePort + "\n基岩版：IP:" + serverAddr + " 端口:" + remotePort;
-                            }
-                            else
-                            {
-                                if (frpcType == "udp")
-                                {
-                                    frplab3.Text = "IP:" + serverAddr + " 端口:" + remotePort;
-                                }
-                                else
-                                {
-                                    frplab3.Text = serverAddr + ":" + remotePort;
-                                }
-                            }
-                        });
-                        Ping pingSender = new Ping();
-                        PingReply reply = pingSender.Send(serverAddr, 2000); // 替换成您要 ping 的 IP 地址
-                        if (reply.Status == IPStatus.Success)
-                        {
-                            // 节点在线，可以获取延迟等信息
-                            int roundTripTime = (int)reply.RoundtripTime;
-                            Dispatcher.Invoke(() =>
-                            {
-                                frplab1.Text = nodeName + "  延迟：" + roundTripTime + "ms";
-                            });
+                            frplab3.Text = "Java版：" + serverAddr + ":" + remotePort + "\n基岩版：IP:" + serverAddr + " 端口:" + remotePort;
                         }
                         else
                         {
-                            // 节点离线
-                            Dispatcher.Invoke(() =>
+                            if (frpcType == "udp")
                             {
-                                frplab1.Text = nodeName + "  节点离线，请重新配置！";
-                            });
+                                frplab3.Text = "IP:" + serverAddr + " 端口:" + remotePort;
+                            }
+                            else
+                            {
+                                frplab3.Text = serverAddr + ":" + remotePort;
+                            }
                         }
+                    });
+                    Ping pingSender = new Ping();
+                    PingReply reply = pingSender.Send(serverAddr, 2000); // 替换成您要 ping 的 IP 地址
+                    if (reply.Status == IPStatus.Success)
+                    {
+                        // 节点在线，可以获取延迟等信息
+                        int roundTripTime = (int)reply.RoundtripTime;
+                        Dispatcher.Invoke(() =>
+                        {
+                            frplab1.Text = nodeName + "  延迟：" + roundTripTime + "ms";
+                        });
                     }
                     else
+                    {
+                        // 节点离线
+                        Dispatcher.Invoke(() =>
+                        {
+                            frplab1.Text = nodeName + "  节点离线，请重新配置！";
+                        });
+                    }
+                }
+                else
+                {
+                    Dispatcher.Invoke(() =>
                     {
                         startfrpc.IsEnabled = true;
                         frplab1.Text = "您正在使用OpenFrp的节点";
                         frplab3.Text = "请启动内网映射以查看IP";
-                    }
-                });
+                    });
+                }
+
             }
             catch
             {
@@ -643,25 +647,6 @@ namespace MSL.pages
                     frplab1.Text = "获取节点信息失败，建议重新配置！";
                 });
             }
-        }
-        string GetFrpcIP()
-        {
-            string configText = File.ReadAllText(@"MSL\frpc");
-            // 读取每一行
-            string[] lines = configText.Split('\n');
-
-            // 服务器地址
-            string serverAddr = "";
-            bool readServerInfo = true;  // 是否继续读取服务器信息
-            for (int i = 0; i < lines.Length; i++)
-            {
-                if (lines[i].StartsWith("server_addr") && readServerInfo)
-                {
-                    serverAddr = lines[i].Split('=')[1].Trim();
-                    break;
-                }
-            }
-            return serverAddr;
         }
 
         private void Page_Loaded(object sender, RoutedEventArgs e)

@@ -342,7 +342,7 @@ namespace MSL
                 if (newVersion > version)
                 {
                     //Logger.LogInfo("检测到新版本！");
-                    string updatelog = Functions.Post("update", 1);
+                    var updatelog = Functions.Post("update", 1);
                     Dispatcher.Invoke(() =>
                     {
                         if (jsonObject["autoUpdateApp"] == null)

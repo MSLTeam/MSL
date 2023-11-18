@@ -650,7 +650,7 @@ namespace MSL.pages
 
                 if (newVersion > version)
                 {
-                    string updatelog = Functions.Post("update", 1);
+                    var updatelog = Functions.Post("update", 1);
                     Dispatcher.Invoke(() =>
                     {
                         bool dialog = DialogShow.ShowMsg(mainwindow, "发现新版本，版本号为：" + aaa + "，是否进行更新？\n更新日志：\n" + updatelog, "更新", true, "取消");

@@ -7,6 +7,7 @@ using System.Diagnostics;
 using System.IO;
 using System.Linq;
 using System.Net.NetworkInformation;
+using System.Text;
 using System.Text.RegularExpressions;
 using System.Threading;
 using System.Windows;
@@ -195,7 +196,7 @@ namespace MSL.pages
                         ["server_name"] = serverName
                     };
                     string sendData = JsonConvert.SerializeObject(patientinfo);
-                    string resultData = Functions.Post("serverlist", 0, sendData);
+                    var resultData = Functions.Post("serverlist", 0, sendData);
                     JObject serverDetails = JObject.Parse(resultData);
                     List<JProperty> sortedProperties = serverDetails.Properties().OrderByDescending(p => Functions.VersionCompare(p.Name)).ToList();
                     Dispatcher.Invoke(() =>
@@ -216,7 +217,7 @@ namespace MSL.pages
                             ["server_name"] = serverName
                         };
                         string sendData = JsonConvert.SerializeObject(patientinfo);
-                        string resultData = Functions.Post("serverlist", 0, sendData, "https://api.waheal.top");
+                        var resultData = Functions.Post("serverlist", 0, sendData, "https://api.waheal.top");
                         JObject serverDetails = JObject.Parse(resultData);
                         List<JProperty> sortedProperties = serverDetails.Properties().OrderByDescending(p => Functions.VersionCompare(p.Name)).ToList();
                         Dispatcher.Invoke(() =>
