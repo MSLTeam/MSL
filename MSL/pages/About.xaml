@@ -23,7 +23,7 @@
                     <Label x:Name="AppVersionLab" Content="关于开服器" Style="{StaticResource BorderTitle}"/>
                     <Image Source="/MSL;component/icon.ico" Margin="0,25,550,0" HorizontalAlignment="Center" VerticalAlignment="Center" Width="80" Height="80"/>
                     <StackPanel HorizontalAlignment="Center" VerticalAlignment="Center" Margin="100,35,0,0">
-                        <TextBlock FontSize="14" VerticalAlignment="Center" HorizontalAlignment="Center" Foreground="{DynamicResource TextBlockBrush}" Text="Minecraft Server Launcher(MSL) Copyright © 2021-2023 By Waheal&#xA;开服器的正常运行离不开下面的下载源/站点，特此感谢：&#xA;CruseForge —— 模组、模组整合包下载源API&#xA;BMCLAPI —— Forge服务端下载源&#xA;以及其他服务端官方和第三方下载源……&#xA;&#xA;同时感谢所有使用MSL的用户，以及给MSL提出过改进建议和Bug的用户&#xA;感谢各位的支持与信任！"/>
+                        <TextBlock FontSize="14" VerticalAlignment="Center" HorizontalAlignment="Center" Foreground="{DynamicResource TextBlockBrush}" Text="Minecraft Server Launcher(MSL) Copyright © 2021-2024 By Waheal&#xA;开服器的正常运行离不开下面的下载源/站点，特此感谢：&#xA;CruseForge —— 模组、模组整合包下载源API&#xA;BMCLAPI —— Forge服务端下载源&#xA;以及其他服务端官方和第三方下载源……&#xA;&#xA;同时感谢所有使用MSL的用户，以及给MSL提出过改进建议和Bug的用户&#xA;感谢各位的支持与信任！"/>
                         <hc:Shield Subject="官方文档：https://docs.waheal.top/" Status="打开网站" Command="hc:ControlCommands.OpenLink" CommandParameter="https://docs.waheal.top/" HorizontalAlignment="Left" VerticalAlignment="Bottom" Margin="0,5,0,0"/>
                     </StackPanel>
                     

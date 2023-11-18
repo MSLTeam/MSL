@@ -92,6 +92,11 @@ namespace MSL.pages.frpProviders
             {
                 LoginGrid.Visibility = Visibility.Hidden;
                 MainGrid.Visibility = Visibility.Visible;
+                addProxieBtn.IsEnabled = false;
+                delProxieBtn.IsEnabled = false;
+                toggleProxies.IsEnabled = false;
+                toggleAddProxiesGroup.IsEnabled = false;
+                doneBtn.IsEnabled = false;
                 try
                 {
                     LoadingCircle loadingCircle = new LoadingCircle();
@@ -169,7 +174,7 @@ namespace MSL.pages.frpProviders
                     {
                         Dispatcher.Invoke(() =>
                         {
-                            DialogShow.ShowMsg(window, "你的账户看起来一条隧道也没有……", "错误");
+                            DialogShow.ShowMsg(window, "你的账户看起来一条隧道也没有……", "提示");
                         });
                     }
                 }
@@ -197,6 +202,11 @@ namespace MSL.pages.frpProviders
             }
             Dispatcher.Invoke(() =>
             {
+                addProxieBtn.IsEnabled = true;
+                delProxieBtn.IsEnabled = true;
+                toggleProxies.IsEnabled = true;
+                toggleAddProxiesGroup.IsEnabled = true;
+                doneBtn.IsEnabled = true;
                 try
                 {
                     LoadingCircle loadingCircle = MainGrid.FindName("loadingBar") as LoadingCircle;
@@ -282,7 +292,7 @@ namespace MSL.pages.frpProviders
             apiControl.UserSign(Window.GetWindow(this));
         }
 
-        private async void addProxieBtn_Click(object sender, RoutedEventArgs e)
+        private void addProxieBtn_Click(object sender, RoutedEventArgs e)
         {
             Window window = Window.GetWindow(this);
             try
@@ -294,6 +304,7 @@ namespace MSL.pages.frpProviders
                     return;
                 }
                 addProxieBtn.IsEnabled=false;
+                delProxieBtn.IsEnabled = false;
                 logoutBtn.IsEnabled = false;
                 toggleProxies.IsEnabled = false;
                 toggleAddProxiesGroup.IsEnabled = false;
@@ -313,12 +324,23 @@ namespace MSL.pages.frpProviders
                     DialogShow.ShowMsg(window, "请先选择一个节点", "错误");
                     return;
                 }
-                bool createReturn = await Task.Run(() => control.CreateProxy(type, portBox.Text, zip, selected_node_id, remotePortBox.Text, window));
-                if (createReturn)
+                bool input_name = DialogShow.ShowInput(window, "隧道名称(不支持中文)", out string proxy_name);
+                if (input_name)
                 {
-                    toggleProxies.SelectedIndex = 0;
+                    string returnMsg = "";
+                    bool createReturn = control.CreateProxy(type, portBox.Text, zip, selected_node_id, remotePortBox.Text, proxy_name,out returnMsg);
+                    if (createReturn)
+                    {
+                        DialogShow.ShowMsg(window, "隧道创建成功！", "提示");
+                        toggleProxies.SelectedIndex = 0;
+                    }
+                    else
+                    {
+                        DialogShow.ShowMsg(window, "创建失败！"+returnMsg, "错误");
+                    }
                 }
                 addProxieBtn.IsEnabled = true;
+                delProxieBtn.IsEnabled = true;
                 logoutBtn.IsEnabled = true;
                 toggleProxies.IsEnabled = true;
                 toggleAddProxiesGroup.IsEnabled = true;
@@ -379,6 +401,7 @@ namespace MSL.pages.frpProviders
                     return;
                 }
                 delProxieBtn.IsEnabled = false;
+                addProxieBtn.IsEnabled = false;
                 logoutBtn.IsEnabled = false;
                 toggleProxies.IsEnabled = false;
                 doneBtn.IsEnabled = false;
@@ -386,7 +409,16 @@ namespace MSL.pages.frpProviders
                 string id = nodelist[o.ToString()];
                 serversList.Items.Clear();
                 APIControl control = new APIControl();
-                await Task.Run(() => control.DeleteProxy(id, window));
+                string returnMsg="";
+                bool delReturn = await Task.Run(() => control.DeleteProxy(id, out returnMsg));
+                if(delReturn)
+                {
+                    DialogShow.ShowMsg(window, "删除成功！", "提示");
+                }
+                else
+                {
+                    DialogShow.ShowMsg(window, "删除失败！"+returnMsg, "错误");
+                }
                 Dictionary<string, string> process = control.GetUserNodes();
                 if (process.Count != 0)
                 {
@@ -397,6 +429,7 @@ namespace MSL.pages.frpProviders
                     }
                 }
                 delProxieBtn.IsEnabled = true;
+                addProxieBtn.IsEnabled = true;
                 logoutBtn.IsEnabled = true;
                 toggleProxies.IsEnabled = true;
                 doneBtn.IsEnabled = true;

@@ -4,7 +4,6 @@ using Newtonsoft.Json.Linq;
 using System;
 using System.Collections.Generic;
 using System.Diagnostics;
-using System.Linq;
 using System.Net.NetworkInformation;
 using System.Net;
 using System.Text;
@@ -12,13 +11,6 @@ using System.Text.RegularExpressions;
 using System.Threading.Tasks;
 using System.Windows;
 using System.Windows.Controls;
-using System.Windows.Data;
-using System.Windows.Documents;
-using System.Windows.Input;
-using System.Windows.Media;
-using System.Windows.Media.Imaging;
-using System.Windows.Navigation;
-using System.Windows.Shapes;
 using MessageBox = System.Windows.MessageBox;
 using System.IO;
 using Window = System.Windows.Window;
@@ -76,6 +68,7 @@ namespace MSL.pages.frpProviders
                 catch
                 {}
                 serversList.Items.Clear();
+                gonggao.Content = "加载中……";
             });
 
             try

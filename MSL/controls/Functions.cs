@@ -412,83 +412,64 @@ namespace MSL.controls
             }
         }
 
-        public bool CreateProxy(string type, string port, bool EnableZip, int nodeid, string remote_port, Window window)
+        public bool CreateProxy(string type, string port, bool EnableZip, int nodeid, string remote_port, string proxy_name,out string returnMsg)
         {
-            bool input_name = DialogShow.ShowInput(window, "隧道名称(不支持中文)", out string proxy_name);
-            if (input_name)
+            HttpWebRequest request = (HttpWebRequest)WebRequest.Create("https://of-dev-api.bfsea.xyz/frp/api/newProxy");
+            request.Method = "POST";
+            request.ContentType = "application/json";
+            request.Headers.Add(authId);
+            string json = JsonConvert.SerializeObject(new CreateProxy()
             {
-                HttpWebRequest request = (HttpWebRequest)WebRequest.Create("https://of-dev-api.bfsea.xyz/frp/api/newProxy");
-                request.Method = "POST";
-                request.ContentType = "application/json";
-                request.Headers.Add(authId);
-                string json = JsonConvert.SerializeObject(new CreateProxy()
-                {
-                    session = sessionId,
-                    node_id = nodeid,
-                    name = proxy_name,
-                    type = type,
-                    local_addr = "127.0.0.1",
-                    local_port = port,
-                    remote_port = remote_port,
-                    domain_bind = "",
-                    dataGzip = EnableZip,
-                    dataEncrypt = false,
-                    url_route = "",
-                    host_rewrite = "",
-                    request_from = "",
-                    request_pass = "",
-                    custom = ""
-                });//转换json格式
-                byte[] byteArray = Encoding.UTF8.GetBytes(json);
-                request.ContentLength = byteArray.Length;
-                Stream dataStream = request.GetRequestStream();
-                dataStream.Write(byteArray, 0, byteArray.Length);
+                session = sessionId,
+                node_id = nodeid,
+                name = proxy_name,
+                type = type,
+                local_addr = "127.0.0.1",
+                local_port = port,
+                remote_port = remote_port,
+                domain_bind = "",
+                dataGzip = EnableZip,
+                dataEncrypt = false,
+                url_route = "",
+                host_rewrite = "",
+                request_from = "",
+                request_pass = "",
+                custom = ""
+            });//转换json格式
+            byte[] byteArray = Encoding.UTF8.GetBytes(json);
+            request.ContentLength = byteArray.Length;
+            Stream dataStream = request.GetRequestStream();
+            dataStream.Write(byteArray, 0, byteArray.Length);
+            dataStream.Close();
+            try
+            {
+                HttpWebResponse response = (HttpWebResponse)request.GetResponse();
+                dataStream = response.GetResponseStream();
+                StreamReader reader = new StreamReader(dataStream);
+                string responseMessage = reader.ReadToEnd();
+                var deserializedMessage = JObject.Parse(responseMessage);
+                reader.Close();
                 dataStream.Close();
-                try
+                response.Close();
+                if ((bool)deserializedMessage["flag"] == true)
                 {
-                    HttpWebResponse response = (HttpWebResponse)request.GetResponse();
-                    dataStream = response.GetResponseStream();
-                    StreamReader reader = new StreamReader(dataStream);
-                    string responseMessage = reader.ReadToEnd();
-                    var deserializedMessage = JObject.Parse(responseMessage);
-                    reader.Close();
-                    dataStream.Close();
-                    response.Close();
-                    if ((bool)deserializedMessage["flag"] == true)
-                    {
-                        DialogShow.ShowMsg(window, "创建隧道成功\n", "创建成功");
-                        return true;
-                    }
-                    else
-                    {
-                        DialogShow.ShowMsg(window, "创建隧道失败：\n" + deserializedMessage["msg"].ToString(), "创建失败");
-                        return false;
-                    }
+                    returnMsg = "";
+                    return true;
                 }
-                catch (WebException ex)
+                else
                 {
-                    if (ex.Response != null)
-                    {
-                        using (var errorResponse = (HttpWebResponse)ex.Response)
-                        {
-                            using (var reader = new StreamReader(errorResponse.GetResponseStream()))
-                            {
-                                string error = reader.ReadToEnd();
-                                DialogShow.ShowMsg(window, error, "创建隧道失败");
-                            }
-                        }
-                    }
+                    returnMsg = deserializedMessage["msg"].ToString();
                     return false;
                 }
             }
-            else
+            catch (Exception ex)
             {
-                DialogShow.ShowMsg(window, "请确保输入了隧道名称", "创建失败");
+                returnMsg = ex.Message;
                 return false;
             }
         }
 
-        public void DeleteProxy(string id, Window window)
+        public bool DeleteProxy(string id, out string returnMsg)
         {
             HttpWebRequest request = (HttpWebRequest)WebRequest.Create("https://of-dev-api.bfsea.xyz/frp/api/removeProxy");
             request.Method = "POST";
@@ -516,26 +497,19 @@ namespace MSL.controls
                 response.Close();
                 if ((bool)deserializedMessage["flag"] == true)
                 {
-                    DialogShow.ShowMsg(window, "删除隧道成功\n", "删除成功");
+                    returnMsg = "";
+                    return true;
                 }
                 else
                 {
-                    DialogShow.ShowMsg(window, "删除隧道失败：\n" + deserializedMessage["msg"].ToString(), "删除失败");
+                    returnMsg = deserializedMessage["msg"].ToString();
+                    return false;
                 }
             }
-            catch (WebException ex)
+            catch (Exception ex)
             {
-                if (ex.Response != null)
-                {
-                    using (var errorResponse = (HttpWebResponse)ex.Response)
-                    {
-                        using (var reader = new StreamReader(errorResponse.GetResponseStream()))
-                        {
-                            string error = reader.ReadToEnd();
-                            DialogShow.ShowMsg(window, error, "删除隧道失败");
-                        }
-                    }
-                }
+                returnMsg = ex.Message;
+                return false;
             }
         }
     }
