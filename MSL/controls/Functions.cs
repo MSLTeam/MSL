@@ -12,6 +12,7 @@ using System.Net.Mime;
 using System.Security.Policy;
 using System.Net.Http;
 using System.Threading.Tasks;
+using System.Drawing.Drawing2D;
 
 namespace MSL.controls
 {
@@ -356,6 +357,7 @@ namespace MSL.controls
             HttpContent content = new StringContent(json, Encoding.UTF8, "application/json");
             // 发送 POST 请求到登录 API 地址
             HttpResponseMessage loginResponse = await client.PostAsync("https://openid.17a.icu/api/public/login", content);
+            //MessageBox.Show("111");
             // 检查响应状态码是否为 OK
             if (loginResponse.IsSuccessStatusCode)
             {
@@ -364,8 +366,27 @@ namespace MSL.controls
                 await loginResponse.Content.ReadAsStringAsync();
                 // 显示响应内容
                 //MessageBox.Show(loginData);
+                string authUrl;
+                try
+                {
+                    WebClient webClient = new WebClient
+                    {
+                        Credentials = CredentialCache.DefaultCredentials
+                    };
+                    byte[] pageData = await webClient.DownloadDataTaskAsync("https://of-dev-api.bfsea.xyz/oauth2/login");
+                    authUrl = JObject.Parse(Encoding.UTF8.GetString(pageData))["data"].ToString();
+                    if (!authUrl.Contains("https://openid.17a.icu/api/")&& authUrl.Contains("https://openid.17a.icu/"))
+                    {
+                        authUrl = authUrl.Replace("https://openid.17a.icu/", "https://openid.17a.icu/api/");
+                    }
+                }
+                catch(Exception ex)
+                {
+                    return $"Pre-Login request failed: {ex.Message}";
+                }
+                //MessageBox.Show(authUrl);
                 // 发送 GET 请求到授权 API 地址
-                HttpResponseMessage authResponse = await client.GetAsync("https://openid.17a.icu/api/oauth2/authorize?response_type=code&redirect_uri=http:%2F%2Fconsole.openfrp.net%2Foauth_callback&client_id=openfrp");
+                HttpResponseMessage authResponse = await client.GetAsync(authUrl);
                 // 检查响应状态码是否为 OK
                 if (authResponse.IsSuccessStatusCode)
                 {
@@ -382,6 +403,10 @@ namespace MSL.controls
                     {
                         // 读取响应内容
                         string _loginData = await _loginResponse.Content.ReadAsStringAsync();
+                        if ((bool)JObject.Parse(_loginData)["flag"] == false)
+                        {
+                            return JObject.Parse(_loginData)["msg"].ToString();
+                        }
                         // 显示响应内容
                         //MessageBox.Show(_loginData);
                         sessionId = JObject.Parse(_loginData)["data"].ToString();

@@ -92,6 +92,8 @@ namespace MSL.pages.frpProviders
             {
                 LoginGrid.Visibility = Visibility.Hidden;
                 MainGrid.Visibility = Visibility.Visible;
+                signBtn.IsEnabled = false;
+                logoutBtn.IsEnabled = false;
                 addProxieBtn.IsEnabled = false;
                 delProxieBtn.IsEnabled = false;
                 toggleProxies.IsEnabled = false;
@@ -109,7 +111,9 @@ namespace MSL.pages.frpProviders
                 catch
                 { }
             });
+            //MessageBox.Show("111");
             string usr_info = await control.Login(APIControl.userAccount, APIControl.userPass);
+            //MessageBox.Show("11");
             JObject userdata = null;
             try
             {
@@ -120,6 +124,10 @@ namespace MSL.pages.frpProviders
                 Dispatcher.Invoke(() =>
                 {
                     DialogShow.ShowMsg(window, "登录失败！请检查您的用户名或密码是否正确！\n"+ usr_info, "错误！");
+                    APIControl.sessionId = string.Empty;
+                    APIControl.authId = string.Empty;
+                    APIControl.userAccount = string.Empty;
+                    APIControl.userPass = string.Empty;
                     LoginGrid.Visibility = Visibility.Visible;
                     MainGrid.Visibility = Visibility.Hidden;
                     try
