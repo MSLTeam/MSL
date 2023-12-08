@@ -355,8 +355,9 @@ namespace MSL.controls
             string json = JsonConvert.SerializeObject(logininfo);
             // 创建一个 StringContent 对象，指定内容类型为 application/json
             HttpContent content = new StringContent(json, Encoding.UTF8, "application/json");
+            //MessageBox.Show("111");
             // 发送 POST 请求到登录 API 地址
-            HttpResponseMessage loginResponse = await client.PostAsync("https://openid.17a.icu/api/public/login", content);
+            HttpResponseMessage loginResponse = await client.PostAsync("https://openid.17a.ink/api/public/login", content);
             //MessageBox.Show("111");
             // 检查响应状态码是否为 OK
             if (loginResponse.IsSuccessStatusCode)
@@ -375,9 +376,9 @@ namespace MSL.controls
                     };
                     byte[] pageData = await webClient.DownloadDataTaskAsync("https://of-dev-api.bfsea.xyz/oauth2/login");
                     authUrl = JObject.Parse(Encoding.UTF8.GetString(pageData))["data"].ToString();
-                    if (!authUrl.Contains("https://openid.17a.icu/api/")&& authUrl.Contains("https://openid.17a.icu/"))
+                    if (!authUrl.Contains("https://openid.17a.ink/api/")&& authUrl.Contains("https://openid.17a.ink/"))
                     {
-                        authUrl = authUrl.Replace("https://openid.17a.icu/", "https://openid.17a.icu/api/");
+                        authUrl = authUrl.Replace("https://openid.17a.ink/", "https://openid.17a.ink/api/");
                     }
                 }
                 catch(Exception ex)

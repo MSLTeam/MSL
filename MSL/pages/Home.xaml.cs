@@ -90,78 +90,10 @@ namespace MSL.pages
                     {
                         noticeLabText = "获取公告失败！请检查网络连接是否正常或联系作者进行解决！";
                     }
-                    JObject keyValues1 = (JObject)keyValues["recommends"];
-                    if (keyValues["recommends"] != null)
+                    JObject keyValues1 = (JObject)keyValues["recommendations"];
+                    if (keyValues["recommendations"] != null)
                     {
-                        Dispatcher.Invoke(() =>
-                        {
-                            recommendBorder.Visibility = Visibility.Visible;
-                            for (int x = 1; x < 100; x++)
-                            {
-                                TextBlock textBlock = RecommendGrid.FindName("RecText" + x.ToString()) as TextBlock;
-                                if (textBlock != null)
-                                {
-                                    RecommendGrid.Children.Remove(textBlock);
-                                    RecommendGrid.UnregisterName("RecText" + x.ToString());
-                                    Image img = RecommendGrid.FindName("RecImg" + x.ToString()) as Image;
-                                    if (img != null)
-                                    {
-                                        RecommendGrid.Children.Remove(img);
-                                        RecommendGrid.UnregisterName("RecImg" + x.ToString());
-                                    }
-                                }
-                                else
-                                {
-                                    break;
-                                }
-                            }
-                        });
-                        int i = 0;
-                        foreach (var x in keyValues1)
-                        {
-                            i++;
-                            Dispatcher.Invoke(() =>
-                            {
-                                Image image = new Image();
-                                if (i == 1)
-                                {
-                                    image.Margin = new Thickness(5, 35 * i, 5, 5);
-                                }
-                                else
-                                {
-                                    image.Margin = new Thickness(5, 35 + (53 * (i - 1)), 5, 5);
-                                }
-                                image.HorizontalAlignment = HorizontalAlignment.Left;
-                                image.VerticalAlignment = VerticalAlignment.Top;
-                                image.Width = 48;
-                                image.Height = 48;
-                                if (x.Value.ToString().StartsWith("*"))
-                                {
-                                    image.Source = new BitmapImage(new Uri("pack://application:,,,/icon.ico"));
-                                }
-                                else
-                                {
-                                    image.Source = new BitmapImage(new Uri(MainWindow.serverLink + "/msl/recommendImg/" + i.ToString() + ".png"));
-                                }
-                                RecommendGrid.Children.Add(image);
-                                RecommendGrid.RegisterName("RecImg" + i.ToString(), image);
-
-                                TextBlock textBlock = new TextBlock();
-                                textBlock.Text = x.Value.ToString();
-                                textBlock.SetResourceReference(ForegroundProperty, "TextBlockBrush");
-                                if (i == 1)
-                                {
-                                    textBlock.Margin = new Thickness(58, 35 * i, 5, 5);
-                                }
-                                else
-                                {
-                                    textBlock.Margin = new Thickness(58, 35 + (53 * (i - 1)), 5, 5);
-                                }
-                                //textBlock.Margin = new Thickness(63, (35 + 10) * i, 5, 5);
-                                RecommendGrid.Children.Add(textBlock);
-                                RecommendGrid.RegisterName("RecText" + i.ToString(), textBlock);
-                            });
-                        }
+                        LoadRecommendations(keyValues1);
                     }
 
                     try
@@ -200,78 +132,10 @@ namespace MSL.pages
                         {
                             noticeLabText = "获取公告失败！请检查网络连接是否正常或联系作者进行解决！";
                         }
-                        JObject keyValues1 = (JObject)keyValues["recommends"];
-                        if (keyValues["recommends"] != null)
+                        JObject keyValues1 = (JObject)keyValues["recommendations"];
+                        if (keyValues["recommendations"] != null)
                         {
-                            Dispatcher.Invoke(() =>
-                            {
-                                recommendBorder.Visibility = Visibility.Visible;
-                                for (int x = 1; x < 100; x++)
-                                {
-                                    TextBlock textBlock = RecommendGrid.FindName("RecText" + x.ToString()) as TextBlock;
-                                    if (textBlock != null)
-                                    {
-                                        RecommendGrid.Children.Remove(textBlock);
-                                        RecommendGrid.UnregisterName("RecText" + x.ToString());
-                                        Image img = RecommendGrid.FindName("RecImg" + x.ToString()) as Image;
-                                        if (img != null)
-                                        {
-                                            RecommendGrid.Children.Remove(img);
-                                            RecommendGrid.UnregisterName("RecImg" + x.ToString());
-                                        }
-                                    }
-                                    else
-                                    {
-                                        break;
-                                    }
-                                }
-                            });
-                            int i = 0;
-                            foreach (var x in keyValues1)
-                            {
-                                i++;
-                                Dispatcher.Invoke(() =>
-                                {
-                                    Image image = new Image();
-                                    if (i == 1)
-                                    {
-                                        image.Margin = new Thickness(5, 35 * i, 5, 5);
-                                    }
-                                    else
-                                    {
-                                        image.Margin = new Thickness(5, 35 + (53 * (i - 1)), 5, 5);
-                                    }
-                                    image.HorizontalAlignment = HorizontalAlignment.Left;
-                                    image.VerticalAlignment = VerticalAlignment.Top;
-                                    image.Width = 48;
-                                    image.Height = 48;
-                                    if (x.Value.ToString().StartsWith("*"))
-                                    {
-                                        image.Source = new BitmapImage(new Uri("pack://application:,,,/icon.ico"));
-                                    }
-                                    else
-                                    {
-                                        image.Source = new BitmapImage(new Uri(MainWindow.serverLink + "/msl/recommendImg/" + i.ToString() + ".png"));
-                                    }
-                                    RecommendGrid.Children.Add(image);
-                                    RecommendGrid.RegisterName("RecImg" + i.ToString(), image);
-
-                                    TextBlock textBlock = new TextBlock();
-                                    textBlock.Text = x.Value.ToString();
-                                    textBlock.SetResourceReference(ForegroundProperty, "TextBlockBrush");
-                                    if (i == 1)
-                                    {
-                                        textBlock.Margin = new Thickness(58, 35 * i, 5, 5);
-                                    }
-                                    else
-                                    {
-                                        textBlock.Margin = new Thickness(58, 35 + (53 * (i - 1)), 5, 5);
-                                    }
-                                    //textBlock.Margin = new Thickness(63, (35 + 10) * i, 5, 5);
-                                    RecommendGrid.Children.Add(textBlock);
-                                    RecommendGrid.RegisterName("RecText" + i.ToString(), textBlock);
-                                });
-                            }
+                            LoadRecommendations(keyValues1);
                         }
                     }
                 }
@@ -297,6 +161,79 @@ namespace MSL.pages
                 }
 
             });
+        }
+
+        void LoadRecommendations(JObject keyValues1)
+        {
+            Dispatcher.Invoke(() =>
+            {
+                recommendBorder.Visibility = Visibility.Visible;
+                for (int x = 1; x < 100; x++)
+                {
+                    TextBlock textBlock = RecommendGrid.FindName("RecText" + x.ToString()) as TextBlock;
+                    if (textBlock != null)
+                    {
+                        RecommendGrid.Children.Remove(textBlock);
+                        RecommendGrid.UnregisterName("RecText" + x.ToString());
+                        Image img = RecommendGrid.FindName("RecImg" + x.ToString()) as Image;
+                        if (img != null)
+                        {
+                            RecommendGrid.Children.Remove(img);
+                            RecommendGrid.UnregisterName("RecImg" + x.ToString());
+                        }
+                    }
+                    else
+                    {
+                        break;
+                    }
+                }
+            });
+            int i = 0;
+            foreach (var x in keyValues1)
+            {
+                i++;
+                Dispatcher.Invoke(() =>
+                {
+                    Image image = new Image();
+                    if (i == 1)
+                    {
+                        image.Margin = new Thickness(5, 35 * i, 5, 5);
+                    }
+                    else
+                    {
+                        image.Margin = new Thickness(5, 35 + (53 * (i - 1)), 5, 5);
+                    }
+                    image.HorizontalAlignment = HorizontalAlignment.Left;
+                    image.VerticalAlignment = VerticalAlignment.Top;
+                    image.Width = 48;
+                    image.Height = 48;
+                    if (x.Value.ToString().StartsWith("*"))
+                    {
+                        image.Source = new BitmapImage(new Uri("pack://application:,,,/icon.ico"));
+                    }
+                    else
+                    {
+                        image.Source = new BitmapImage(new Uri(MainWindow.serverLink + "/msl/recommendImg/" + i.ToString() + ".png"));
+                    }
+                    RecommendGrid.Children.Add(image);
+                    RecommendGrid.RegisterName("RecImg" + i.ToString(), image);
+
+                    TextBlock textBlock = new TextBlock();
+                    textBlock.Text = x.Value.ToString();
+                    textBlock.SetResourceReference(ForegroundProperty, "TextBlockBrush");
+                    if (i == 1)
+                    {
+                        textBlock.Margin = new Thickness(58, 35 * i, 5, 5);
+                    }
+                    else
+                    {
+                        textBlock.Margin = new Thickness(58, 35 + (53 * (i - 1)), 5, 5);
+                    }
+                    //textBlock.Margin = new Thickness(63, (35 + 10) * i, 5, 5);
+                    RecommendGrid.Children.Add(textBlock);
+                    RecommendGrid.RegisterName("RecText" + i.ToString(), textBlock);
+                });
+            }
         }
         void GetServerConfig()
         {

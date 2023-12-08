@@ -276,9 +276,9 @@ namespace MSL.pages
                     joinRoom.Content = "退出房间";
                 }
                 frpcOutlog.Text = "";
+                Directory.SetCurrentDirectory("MSL");
                 FRPCMD.StartInfo.FileName = @"MSL\frpc.exe";
                 FRPCMD.StartInfo.Arguments = "-c P2Pfrpc";
-                Directory.SetCurrentDirectory("MSL");
                 FRPCMD.StartInfo.CreateNoWindow = true;
                 FRPCMD.StartInfo.UseShellExecute = false;
                 FRPCMD.StartInfo.RedirectStandardInput = true;
@@ -286,6 +286,7 @@ namespace MSL.pages
                 FRPCMD.OutputDataReceived += new DataReceivedEventHandler(p_OutputDataReceived);
                 FRPCMD.Start();
                 FRPCMD.BeginOutputReadLine();
+                Directory.SetCurrentDirectory(AppDomain.CurrentDomain.BaseDirectory);
             }
             catch (Exception e)
             {

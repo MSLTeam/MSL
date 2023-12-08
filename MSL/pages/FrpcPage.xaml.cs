@@ -127,7 +127,7 @@ namespace MSL.pages
                     {
                         JObject jo = (JObject)JsonConvert.DeserializeObject(Functions.Get("get?key=software", "https://of-dev-api.bfsea.xyz/commonQuery"));
                         string latest = jo["data"]["latest"].ToString();
-                        string latest_url = $"https://d.of.gs/client{latest}frpc_windows_386.zip";
+                        string latest_url = $"https://d.of.gs/client{latest}frpc_windows_amd64.zip";
                         Dispatcher.Invoke(() =>
                         {
                             var mwindow = (MainWindow)Window.GetWindow(this);
