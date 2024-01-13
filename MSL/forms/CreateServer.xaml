@@ -14,14 +14,14 @@
             <Label Content="将通过几个步骤为您创建服务器……" FontSize="18" Background="{x:Null}" BorderBrush="{x:Null}" VerticalAlignment="Top" Height="40" HorizontalAlignment="Left" FontWeight="Bold"/>
             <Border Style="{StaticResource MagicBorder}" Padding="5" Margin="10,40,10,0">
                 <Grid>
-                    <Label Content="首先，需要您选择一个创建模式以继续：" Style="{StaticResource BorderTitle}"/>
-                    <Button x:Name="FastModeBtn" Content="快速模式（适合小白）" FontSize="18" hc:BorderElement.CornerRadius="30" Style="{StaticResource ButtonPrimary}" Margin="80,50,0,0" Click="FastModeBtn_Click" Width="250" Height="80" VerticalAlignment="Top" HorizontalAlignment="Left"/>
-                    <Button x:Name="CustomModeBtn" Content="自定义模式（适合老手）" FontSize="18" hc:BorderElement.CornerRadius="30" Margin="80,150,0,0" Width="250" Height="80" Click="CustomModeBtn_Click" VerticalAlignment="Top" HorizontalAlignment="Left"/>
-                    <Button Name="importPack" Content="导入整合包模式" FontSize="18" hc:BorderElement.CornerRadius="30" Margin="80,250,0,20" VerticalAlignment="Top" Width="250" Click="importPack_Click" HorizontalAlignment="Left" Height="80"/>
-                    <TextBlock Foreground="Red" Text="快速模式：开服器自动为您选择服务器目录，并根据您想要开的服务器类型自动判断Java版本和服务端核心并进行下载" FontSize="16" HorizontalAlignment="Left" VerticalAlignment="Top" Margin="350,60,0,0" TextWrapping="Wrap" Width="300"/>
-                    <TextBlock Foreground="Red" Text="自定义模式：您将手动进行Java版本选择，服务端核心选择等操作，可操作性高，可以更改服务器运行内存和启动参数" FontSize="16" HorizontalAlignment="Left" VerticalAlignment="Top" Margin="350,160,0,0" TextWrapping="Wrap" Width="300"/>
-                    <TextBlock Foreground="Red" Text="导入整合包模式：想要在线下载一个服务器整合包来进行导入？或是自己备有一个整合包文件？那就使用此模式吧！" FontSize="16" HorizontalAlignment="Left" VerticalAlignment="Top" Margin="350,260,0,0" TextWrapping="Wrap" Width="300"/>
-                    <Image Source="/icon.ico" VerticalAlignment="Bottom" HorizontalAlignment="Right" Width="80"/>
+                    <Label Content="请选择一个创建模式以继续：" Style="{StaticResource BorderTitle}" FontWeight="Normal" Margin="10,10,3,3" FontSize="16"/>
+                    <Button x:Name="FastModeBtn" Content="快速模式（适合小白）" FontSize="18" hc:BorderElement.CornerRadius="15" Style="{StaticResource ButtonPrimary}" Margin="80,50,0,0" Click="FastModeBtn_Click" Width="250" Height="80" VerticalAlignment="Top" HorizontalAlignment="Left"/>
+                    <Button x:Name="CustomModeBtn" Content="自定义模式（适合老手）" FontSize="18" hc:BorderElement.CornerRadius="15" Margin="80,150,0,0" Width="250" Height="80" Click="CustomModeBtn_Click" VerticalAlignment="Top" HorizontalAlignment="Left"/>
+                    <Button Name="importPack" Content="导入整合包模式" FontSize="18" hc:BorderElement.CornerRadius="15" Margin="80,250,0,20" VerticalAlignment="Top" Width="250" Click="importPack_Click" HorizontalAlignment="Left" Height="80"/>
+                    <TextBlock Text="快速模式：开服器自动为您选择服务器目录，并根据您想要开的服务器类型自动判断Java版本和服务端核心并进行下载" FontSize="16" HorizontalAlignment="Left" VerticalAlignment="Top" Margin="350,60,0,0" TextWrapping="Wrap" Width="300"/>
+                    <TextBlock Text="自定义模式：您将手动进行Java版本选择，服务端核心选择等操作，可操作性高，可以更改服务器运行内存和启动参数" FontSize="16" HorizontalAlignment="Left" VerticalAlignment="Top" Margin="350,160,0,0" TextWrapping="Wrap" Width="300"/>
+                    <TextBlock Text="导入整合包模式：想要在线下载一个服务器整合包来进行导入？或是自己备有一个整合包文件？那就使用此模式吧！" FontSize="16" HorizontalAlignment="Left" VerticalAlignment="Top" Margin="350,260,0,0" TextWrapping="Wrap" Width="300"/>
+                    <Image Source="/icon.ico" VerticalAlignment="Bottom" HorizontalAlignment="Right" Width="64"/>
                 </Grid>
             </Border>
         </Grid>
@@ -29,14 +29,14 @@
             <ScrollViewer Margin="0,0,0,65">
                 <StackPanel>
                     <Label Content="将通过几个步骤为您创建服务器……" FontSize="18" Background="{x:Null}" BorderBrush="{x:Null}" VerticalAlignment="Top" Height="40" HorizontalAlignment="Left" FontWeight="Bold"/>
-                    <Border Style="{StaticResource MagicBorder}" Padding="5" Margin="10,0,10,0">
+                    <Border Style="{StaticResource MagicBorder}" Margin="10,0,10,0">
                         <Grid>
                             <Label Content="服务器名称" Style="{StaticResource BorderTitle}"/>
                             <Label Content="服务器名称（将在服务器列表中显示该名称）：" HorizontalAlignment="Left" Margin="10,35,0,0" VerticalAlignment="Top" FontSize="16" BorderBrush="{x:Null}" Background="{x:Null}" Height="35"/>
                             <TextBox x:Name="ServerNameBox" HorizontalAlignment="Left" Margin="360,35,0,0" TextWrapping="Wrap" Text="MyServer" VerticalAlignment="Top" Width="330" Height="35"/>
                         </Grid>
                     </Border>
-                    <Border Style="{StaticResource MagicBorder}" Padding="5" >
+                    <Border Style="{StaticResource MagicBorder}">
                         <Grid>
                             <Label Content="服务器类型" Style="{StaticResource BorderTitle}"/>
                             <Label Content="服务器类型（选择你想要开的服务器类型）：" HorizontalAlignment="Left" Margin="10,35,0,0" VerticalAlignment="Top" FontSize="16" BorderBrush="{x:Null}" Background="{x:Null}" Height="35"/>
@@ -52,7 +52,7 @@
                             <TextBlock x:Name="ServerCoreDescrip" Text="加载中，请稍等……" Foreground="Red" VerticalAlignment="Top" HorizontalAlignment="Left" Margin="20,80,30,0" TextWrapping="Wrap"/>
                         </Grid>
                     </Border>
-                    <Border Style="{StaticResource MagicBorder}" Padding="5"  Margin="10,10,10,10">
+                    <Border Style="{StaticResource MagicBorder}" Margin="10,10,10,10">
                         <Grid>
                             <Label Content="服务器版本" Style="{StaticResource BorderTitle}"/>
                             <Label Content="服务器版本（选择你想要开的服务器版本）：" HorizontalAlignment="Left" Margin="10,35,0,0" VerticalAlignment="Top" FontSize="16" BorderBrush="{x:Null}" Background="{x:Null}" Height="35"/>
@@ -62,14 +62,14 @@
                 </StackPanel>
             </ScrollViewer>
             <Grid VerticalAlignment="Bottom" Margin="0,0,0,10">
-                <Button Content="上一步" hc:BorderElement.CornerRadius="20" Width="150" Click="skip_Click" Height="45" FontSize="22" Margin="0,0,300,0"/>
-                <Button x:Name="FastModeNextBtn" Content="下一步" IsEnabled="False" Style="{StaticResource ButtonPrimary}" hc:BorderElement.CornerRadius="20" Width="150" Click="FastModeNextBtn_Click" Height="45" FontSize="22" Margin="200,0,0,0"/>
+                <Button Content="上一步" Width="150" Click="skip_Click" Height="45" FontSize="18" Margin="0,0,300,0"/>
+                <Button x:Name="FastModeNextBtn" Content="下一步" IsEnabled="False" Style="{StaticResource ButtonPrimary}" Width="150" Click="FastModeNextBtn_Click" Height="45" FontSize="18" Margin="200,0,0,0"/>
             </Grid>
         </Grid>
         <Grid x:Name="InstallGrid" Visibility="Hidden">
             <StackPanel>
                 <Label Content="根据您的选择，MSL为您选出了以下版本的Java和服务端核心&#xA;请点击确定按钮以安装……" FontSize="18" Background="{x:Null}" BorderBrush="{x:Null}" VerticalAlignment="Top" Height="60" HorizontalAlignment="Left" FontWeight="Bold"/>
-                <Border Style="{StaticResource MagicBorder}" Padding="5"  Margin="10,10,10,10">
+                <Border Style="{StaticResource MagicBorder}" Margin="10,0,10,10">
                     <Grid>
                         <Label Content="Java版本" Style="{StaticResource BorderTitle}"/>
                         <Label Content="Java版本（此版本为MSL评估的最优版本，&#xA;如果您后续要加载的插件或模组&#xA;有要求Java版本的话，请在此处更改）：" HorizontalAlignment="Left" Margin="10,35,0,0" VerticalAlignment="Top" FontSize="16" BorderBrush="{x:Null}" Background="{x:Null}" Height="90"/>
@@ -86,7 +86,7 @@
                         <TextBlock x:Name="FinallyJavaDescrip" Foreground="Red" HorizontalAlignment="Left" VerticalAlignment="Top" Margin="330,100,0,0"/>
                     </Grid>
                 </Border>
-                <Border Style="{StaticResource MagicBorder}" Padding="5"  Margin="10,10,10,10">
+                <Border Style="{StaticResource MagicBorder}" Margin="10,0,10,10">
                     <Grid>
                         <Label Content="服务端核心" Style="{StaticResource BorderTitle}"/>
                         <Label Content="服务端核心（若不会选择，保持默认即可）：" HorizontalAlignment="Left" Margin="10,35,0,0" VerticalAlignment="Top" FontSize="16" BorderBrush="{x:Null}" Background="{x:Null}" Height="35"/>
@@ -96,102 +96,122 @@
                 <TextBlock x:Name="FastInstallProcess" Text="" Foreground="Red" Margin="15,0,0,0" />
             </StackPanel>
             <Grid VerticalAlignment="Bottom" Margin="0,0,0,10">
-                <Button x:Name="FastModeReturnBtn" Content="上一步" hc:BorderElement.CornerRadius="20" Width="150" Click="FastModeReturnBtn_Click" Height="45" FontSize="22" Margin="0,0,300,0"/>
-                <Button x:Name="FastModeInstallBtn" Content="确定" Style="{StaticResource ButtonPrimary}" hc:BorderElement.CornerRadius="20" Width="150" Click="FastModeInstallBtn_Click" Height="45" FontSize="22" Margin="200,0,0,0"/>
+                <Button x:Name="FastModeReturnBtn" Content="上一步" Width="150" Click="FastModeReturnBtn_Click" Height="45" FontSize="18" Margin="0,0,300,0"/>
+                <Button x:Name="FastModeInstallBtn" Content="确定" Style="{StaticResource ButtonPrimary}" Width="150" Click="FastModeInstallBtn_Click" Height="45" FontSize="18" Margin="200,0,0,0"/>
             </Grid>
         </Grid>
         <TabControl x:Name="tabCtrl" Visibility="Hidden" Background="{x:Null}">
             <TabItem x:Name="welcome" Header="基本信息" FontSize="14" Background="{x:Null}">
-                <Grid x:Name="welcome1">
+                <StackPanel>
                     <Label Content="将通过几个步骤为您创建服务器……" FontSize="18" Background="{x:Null}" BorderBrush="{x:Null}" VerticalAlignment="Top" Height="40" HorizontalAlignment="Left" FontWeight="Bold"/>
-                    <Button x:Name="next" Content="下一步" Style="{StaticResource ButtonPrimary}" hc:BorderElement.CornerRadius="20" Margin="320,310,0,0" VerticalAlignment="Top" Width="150" Click="next_Click" Height="48" FontSize="22" HorizontalAlignment="Left"/>
-                    <Button x:Name="skip" Content="上一步" Margin="110,310,0,0" hc:BorderElement.CornerRadius="20" VerticalAlignment="Top" Width="150" Click="skip_Click" Height="48" FontSize="22" HorizontalAlignment="Left"/>
-                    <Border Margin="10,40,10,0" VerticalAlignment="Top" CornerRadius="10" BorderBrush="{DynamicResource BorderBrush}" BorderThickness="1" Background="{DynamicResource BorderBackground}">
+                    <Border Style="{StaticResource MagicBorder}" Margin="10,0,10,0">
                         <Grid>
-                            <Label Content="服务器名称" HorizontalAlignment="Left" VerticalAlignment="Top" FontSize="18" Background="{x:Null}" BorderBrush="{x:Null}" Height="40" FontWeight="Bold"/>
-                            <Label Content="服务器名称（将在服务器列表中显示该名称）：" HorizontalAlignment="Left" Margin="25,40,0,10" VerticalAlignment="Top" FontSize="16" BorderBrush="{x:Null}" Background="{x:Null}" Height="39"/>
-                            <TextBox x:Name="serverNameBox" HorizontalAlignment="Left" Margin="388,40,0,0" TextWrapping="Wrap" Text="MyServer" VerticalAlignment="Top" Width="330" Height="39"/>
+                            <Label Content="服务器名称" HorizontalAlignment="Left" Style="{StaticResource BorderTitle}"/>
+                            <TextBlock Text="服务器名称（将在服务器列表中显示该名称）：" Foreground="{DynamicResource TextBlockBrush}" Margin="25,35,0,10" FontSize="16" HorizontalAlignment="Left" VerticalAlignment="Top"/>
+                            <TextBox x:Name="serverNameBox" Margin="370,30,0,0" TextWrapping="Wrap" Text="MyServer" VerticalAlignment="Top" Height="32"/>
                         </Grid>
                     </Border>
-                    <Border Margin="10,140,10,0" VerticalAlignment="Top" CornerRadius="10" BorderBrush="{DynamicResource BorderBrush}" BorderThickness="1" Background="{DynamicResource BorderBackground}" Padding="0,0,0,10">
+                    <Border Style="{StaticResource MagicBorder}">
                         <Grid>
-                            <Label Content="服务器目录" HorizontalAlignment="Left" VerticalAlignment="Top" FontSize="18" Background="{x:Null}" BorderBrush="{x:Null}" Height="40" FontWeight="Bold"/>
-                            <Label Content="在此选择服务器目录（用于安放服务器的相关文件）：" Margin="25,40,0,0" VerticalAlignment="Top" FontSize="16" Background="{x:Null}" BorderBrush="{x:Null}" Height="42" HorizontalAlignment="Left"/>
-                            <TextBox x:Name="txb6" HorizontalAlignment="Left" Height="32" Margin="25,80,0,0" VerticalAlignment="Top" Width="630" MaxLines="1"/>
-                            <Button x:Name="a0003" Content="浏览" Margin="655,80,0,0" VerticalAlignment="Top" Width="66" Click="a0003_Click" FontWeight="Normal" Height="32" HorizontalAlignment="Left"/>
-                            <TextBlock Text="选择提示：请不要选择桌面或磁盘根目录，否则会生成许多存储文件且会造成误删问题" HorizontalAlignment="Left" Margin="25,115,0,5" VerticalAlignment="Top" FontSize="14" Foreground="Red" />
+                            <Label Content="服务器目录" HorizontalAlignment="Left" Style="{StaticResource BorderTitle}"/>
+                            <TextBlock Text="在此选择服务器目录（用于安放服务器的相关文件）：" Foreground="{DynamicResource TextBlockBrush}" Margin="25,40,0,0" FontSize="16" HorizontalAlignment="Left" VerticalAlignment="Top"/>
+                            <TextBox x:Name="txb6" Margin="25,70,60,0" VerticalAlignment="Top" MaxLines="1"/>
+                            <Button x:Name="a0003" Content="浏览" Margin="0,70,0,0" VerticalAlignment="Top" Click="a0003_Click" FontWeight="Normal" HorizontalAlignment="Right" Width="60"/>
+                            <TextBlock Text="选择提示：请不要选择桌面或磁盘根目录，否则会生成许多存储文件且会造成误删问题" HorizontalAlignment="Left" Margin="25,105,0,5" VerticalAlignment="Top" FontSize="14" Foreground="Red" />
                         </Grid>
                     </Border>
-                </Grid>
+                    <Grid Margin="0,20,0,0">
+                        <Button x:Name="skip" Content="上一步" Margin="0,0,250,0" VerticalAlignment="Center" Width="150" Click="skip_Click" Height="48" FontSize="18" HorizontalAlignment="Center"/>
+                        <Button x:Name="next" Content="下一步" Style="{StaticResource ButtonPrimary}" Margin="200,0,0,0" VerticalAlignment="Center" Width="150" Click="next_Click" Height="48" FontSize="18" HorizontalAlignment="Center"/>
+                    </Grid>
+                </StackPanel>
             </TabItem>
-            <TabItem x:Name="sserver" Header="Java及服务端" IsEnabled="False" FontSize="14" Background="{x:Null}">
-                <Grid>
-                    <Grid x:Name="servergrid" Background="{DynamicResource BackgroundBrush}">
-                        <Label HorizontalAlignment="Left" Margin="20,65,0,0" VerticalAlignment="Top" Content="在此选择一个服务端核心（建议选择“使用开服器下载”）"/>
-                        <RadioButton x:Name="usedownloadserver" Content="使用开服器下载一个服务端" IsChecked="True" Margin="20,105,0,0" VerticalAlignment="Top" HorizontalAlignment="Left" FontSize="16" Checked="usedownloadserver_Checked"/>
-                        <RadioButton x:Name="useServerself" Content="备有服务端，选择地址" Margin="20,135,0,0" VerticalAlignment="Top" Checked="useServerself_Checked" HorizontalAlignment="Left" FontSize="16"/>
-                        <Button x:Name="return2" Content="上一步" hc:BorderElement.CornerRadius="15" Margin="150,220,0,0" Width="100" Click="return2_Click" Height="45" FontSize="14" HorizontalAlignment="Left" VerticalAlignment="Top"/>
-                        <TextBox x:Name="txb3" HorizontalAlignment="Left" Margin="20,165,0,0" VerticalAlignment="Top" Width="645" MaxLines="1" FontSize="16" Height="35" IsEnabled="False"/>
-                        <Button x:Name="next2" Content="下一步" Style="{StaticResource ButtonPrimary}" hc:BorderElement.CornerRadius="15" HorizontalAlignment="Left" Margin="320,220,0,0" Width="100" Click="next2_Click" Height="45" FontSize="14" VerticalAlignment="Top"/>
-                        <Button x:Name="a0002" Content="浏览" IsEnabled="False" Margin="670,165,0,0" Width="66" Click="a0002_Click" FontWeight="Normal" HorizontalAlignment="Left" Height="35" FontSize="16" VerticalAlignment="Top"/>
-                        <Label Content="服务端" HorizontalAlignment="Left" Margin="10,10,0,0" VerticalAlignment="Top" FontSize="30" Background="{x:Null}" BorderBrush="{x:Null}" Height="50" FontWeight="Bold"/>
+            <TabItem x:Name="sjava" Header="Java" IsEnabled="False" FontSize="14" Background="{x:Null}">
+                <StackPanel>
+                    <Border Style="{StaticResource MagicBorder}">
+                        <Grid x:Name="javagrid">
+                            <Label Content="Java环境" Style="{StaticResource BorderTitle}"/>
+                            <TextBlock Text="在此选择一个Java环境" Foreground="{DynamicResource TextBlockBrush}" Margin="20,35,0,0" HorizontalAlignment="Left" VerticalAlignment="Top" FontSize="16"/>
+                            <RadioButton x:Name="usedownloadjv" Content="开服器下载（推荐）" IsChecked="True" Margin="20,70,0,0" VerticalAlignment="Top" HorizontalAlignment="Left" FontSize="14" Checked="usedownloadjv_Checked"/>
+                            <RadioButton x:Name="usecheckedjv" Content="检查电脑上的Java" Margin="20,110,0,0" VerticalAlignment="Top" HorizontalAlignment="Left" FontSize="14" Checked="usecheckedjv_Checked"/>
+                            <ComboBox x:Name="selectJavaComb" Margin="180,65,0,0" HorizontalAlignment="Left" VerticalAlignment="Top" Width="150" SelectedIndex="0">
+                                <ComboBoxItem Content="Java8"/>
+                                <ComboBoxItem Content="Java11"/>
+                                <ComboBoxItem Content="Java16"/>
+                                <ComboBoxItem Content="Java17"/>
+                                <ComboBoxItem Content="Java18"/>
+                                <ComboBoxItem Content="Java19"/>
+                                <ComboBoxItem Content="Java20"/>
+                                <ComboBoxItem Content="Java21"/>
+                            </ComboBox>
+                            <RadioButton x:Name="usejvPath" Content="使用环境变量" HorizontalAlignment="Left" Margin="20,150,0,0" VerticalAlignment="Top" FontSize="14" Checked="usejvPath_Checked"/>
+                            <RadioButton x:Name="useJVself" Content="选择地址" Margin="20,190,0,0" VerticalAlignment="Top" Checked="useJVself_Checked" HorizontalAlignment="Left" FontSize="14"/>
+                            <ComboBox x:Name="selectCheckedJavaComb" Margin="180,105,0,0" HorizontalAlignment="Left" VerticalAlignment="Top" Width="150"/>
+                            <TextBox x:Name="txjava" Margin="115,185,60,0" VerticalAlignment="Top" IsEnabled="False" MaxLines="1"/>
+                            <Button x:Name="a0002_Copy" Content="浏览" IsEnabled="False" Margin="0,185,0,0" VerticalAlignment="Top" Width="60" FontWeight="Normal" Click="a0002_Copy_Click" HorizontalAlignment="Right"/>
+                            <TextBlock Text="帮助：不同版本该如何选择Java？ &#xA;1.8之前：可以使用Java7-Java8&#xA;1.8-1.12.2 可以使用Java8-Java11 &#xA;1.13-1.17.1 可以使用Java11-Java17 &#xA;1.18-最新版 可以使用Java18-Java19" HorizontalAlignment="Right" VerticalAlignment="Top" FontSize="16" Foreground="Red"/>
+                        </Grid>
+                    </Border>
+                    <Grid Margin="0,20,0,0">
+                        <Button x:Name="return5" Content="上一步" Margin="0,0,250,0" VerticalAlignment="Center" Width="150" Click="return5_Click" Height="48" FontSize="18" HorizontalAlignment="Center"/>
+                        <Button x:Name="next3" Content="下一步" Style="{StaticResource ButtonPrimary}" Margin="200,0,0,0" VerticalAlignment="Center" Width="150" Click="next3_Click" Height="48" FontSize="18" HorizontalAlignment="Center"/>
                     </Grid>
-                    <Grid x:Name="javagrid" Background="{DynamicResource BackgroundBrush}">
-                        <Label Content="Java环境" HorizontalAlignment="Left" Margin="10,10,0,0" VerticalAlignment="Top" FontSize="30" Background="{x:Null}" BorderBrush="{x:Null}" Height="50" FontWeight="Bold"/>
-                        <Label HorizontalAlignment="Left" Margin="20,65,0,0" VerticalAlignment="Top" Content="在此选择一个Java环境（建议选择让开服器下载，因为有时服务器无法开启就是因为Java环境错误或不完整）"/>
-                        <RadioButton x:Name="usedownloadjv" Content="开服器为您下载" IsChecked="True" Margin="20,105,0,0" VerticalAlignment="Top" HorizontalAlignment="Left" FontSize="16" Checked="usedownloadjv_Checked"/>
-                        <ComboBox x:Name="selectJavaComb" Margin="160,100,0,0" HorizontalAlignment="Left" VerticalAlignment="Top" Width="150" SelectedIndex="0">
-                            <ComboBoxItem Content="Java8"/>
-                            <ComboBoxItem Content="Java11"/>
-                            <ComboBoxItem Content="Java16"/>
-                            <ComboBoxItem Content="Java17"/>
-                            <ComboBoxItem Content="Java18"/>
-                            <ComboBoxItem Content="Java19"/>
-                            <ComboBoxItem Content="Java20"/>
-                            <ComboBoxItem Content="Java21"/>
-                        </ComboBox>
-                        <RadioButton x:Name="usecheckedjv" Content="检查电脑上的Java" Margin="20,140,0,0" VerticalAlignment="Top" HorizontalAlignment="Left" FontSize="16" Checked="usecheckedjv_Checked"/>
-                        <ComboBox x:Name="selectCheckedJavaComb" Margin="180,135,0,0" HorizontalAlignment="Left" VerticalAlignment="Top" Width="150"/>
-                        <RadioButton x:Name="usejvPath" Content="使用环境变量" HorizontalAlignment="Left" Margin="20,175,0,0" VerticalAlignment="Top" FontSize="16" Checked="usejvPath_Checked"/>
-                        <RadioButton x:Name="useJVself" Content="选择地址" Margin="20,210,0,0" VerticalAlignment="Top" Checked="useJVself_Checked" HorizontalAlignment="Left" FontSize="16"/>
-                        <TextBox x:Name="txjava" HorizontalAlignment="Left" Height="30" Margin="115,205,0,0" VerticalAlignment="Top" Width="540" IsEnabled="False" MaxLines="1"/>
-                        <Button x:Name="a0002_Copy" Content="浏览" IsEnabled="False" Margin="660,205,0,0" VerticalAlignment="Top" Width="78" FontWeight="Normal" Click="a0002_Copy_Click" Height="30" HorizontalAlignment="Left"/>
-                        <Label x:Name="outlog" Content="" HorizontalAlignment="Left" Margin="20,245,0,0" VerticalAlignment="Top" FontSize="14" Foreground="Red" Background="{x:Null}" BorderBrush="{x:Null}"/>
-                        <Button x:Name="return5" Content="上一步" hc:BorderElement.CornerRadius="15" Margin="180,270,0,0" VerticalAlignment="Top" Width="90" Click="return5_Click" FontWeight="Normal" Height="40" FontSize="14" HorizontalAlignment="Left"/>
-                        <Button x:Name="next3" Content="下一步" Style="{StaticResource ButtonPrimary}" hc:BorderElement.CornerRadius="15" Margin="0,270,0,0" VerticalAlignment="Top" Width="94" Click="next3_Click" Height="40" FontSize="14"/>
-                        <Label x:Name="jvhelp" Content="帮助：不同版本该如何选择Java？ &#xA;1.8之前：可以使用Java7-Java8&#xA;1.8-1.12.2 可以使用Java8-Java11 &#xA;1.13-1.17.1 可以使用Java11-Java17 &#xA;1.18-最新版 可以使用Java18-Java19" HorizontalAlignment="Right" Height="110" VerticalAlignment="Bottom" FontSize="15" Foreground="Red" BorderBrush="Red" Margin="0,0,10,10"/>
+                    <Label x:Name="outlog" Content="" HorizontalAlignment="Left" Margin="10,10,0,0" VerticalAlignment="Top" FontSize="14" Foreground="Red" Background="{x:Null}" BorderBrush="{x:Null}"/>
+                </StackPanel>
+            </TabItem><TabItem x:Name="sserver" Header="服务端" IsEnabled="False" FontSize="14" Background="{x:Null}">
+                <StackPanel>
+                    <Border Style="{StaticResource MagicBorder}">
+                        <Grid x:Name="servergrid">
+                            <Label Content="服务端" Style="{StaticResource BorderTitle}"/>
+                            <TextBlock Text="在此选择一个服务端核心" Foreground="{DynamicResource TextBlockBrush}" Margin="20,35,0,0" HorizontalAlignment="Left" VerticalAlignment="Top" FontSize="16" />
+                            <RadioButton x:Name="usedownloadserver" Content="使用开服器下载（推荐）" IsChecked="True" Margin="20,70,0,0" VerticalAlignment="Top" HorizontalAlignment="Left" FontSize="14" Checked="usedownloadserver_Checked"/>
+                            <RadioButton x:Name="useServerself" Content="备有服务端，选择地址" Margin="20,110,0,0" VerticalAlignment="Top" Checked="useServerself_Checked" HorizontalAlignment="Left" FontSize="14"/>
+                            <TextBox x:Name="txb3" Margin="20,135,60,0" VerticalAlignment="Top" MaxLines="1" FontSize="14" IsEnabled="False"/>
+                            <Button x:Name="a0002" Content="浏览" IsEnabled="False" Margin="0,135,0,0" Width="60" Click="a0002_Click" FontWeight="Normal" HorizontalAlignment="Right" VerticalAlignment="Top"/>
+                        </Grid>
+                    </Border>
+                    <Grid Margin="0,20,0,0">
+                        <Button x:Name="return2" Content="上一步" Margin="0,0,250,0" VerticalAlignment="Center" Width="150" Click="return2_Click" Height="48" FontSize="18" HorizontalAlignment="Center"/>
+                        <Button x:Name="next2" Content="下一步" Style="{StaticResource ButtonPrimary}" Margin="200,0,0,0" VerticalAlignment="Center" Width="150" Click="next2_Click" Height="48" FontSize="18" HorizontalAlignment="Center"/>
                     </Grid>
-                </Grid>
+                </StackPanel>
             </TabItem>
             <TabItem x:Name="sJVM" Header="开服内存及启动参数" IsEnabled="False" FontSize="14" Background="{x:Null}">
                 <Grid>
-                    <Border Margin="10,10,10,0" VerticalAlignment="Top" CornerRadius="10" BorderBrush="{DynamicResource BorderBrush}" BorderThickness="1" Background="{DynamicResource BorderBackground}">
-                        <Grid>
-                            <Label Content="开服内存" HorizontalAlignment="Left" VerticalAlignment="Top" FontSize="18" Background="{x:Null}" BorderBrush="{x:Null}" Height="40" FontWeight="Bold"/>
-                            <Label Content="在此设置开服需要分配的内存" HorizontalAlignment="Left" Margin="40,35,0,0" VerticalAlignment="Top" FontSize="18" BorderBrush="{x:Null}" Background="{x:Null}" Height="35"/>
-                            <RadioButton x:Name="usedefault" Content="自动分配" Margin="38,80,0,0" VerticalAlignment="Top" IsChecked="True" Checked="usedefault_Checked" HorizontalAlignment="Left"/>
-                            <RadioButton x:Name="useJVM" Content="手动设置" Margin="38,110,0,0" VerticalAlignment="Top" Checked="useJVM_Checked" HorizontalAlignment="Left"/>
-                            <TextBox x:Name="txb4" HorizontalAlignment="Left" Height="23" Margin="203,105,0,0" TextWrapping="Wrap" VerticalAlignment="Top" Width="120" IsEnabled="False" FontFamily="Microsoft YaHei UI"/>
-                            <TextBox x:Name="txb5" HorizontalAlignment="Left" Height="23" Margin="460,105,0,0" TextWrapping="Wrap" VerticalAlignment="Top" Width="120" IsEnabled="False" FontFamily="Microsoft YaHei UI"/>
-                            <Label Content="最小" HorizontalAlignment="Left" Margin="144,105,0,0" VerticalAlignment="Top" FontSize="16" Background="{x:Null}" BorderBrush="{x:Null}" Height="32"/>
-                            <Label Content="最大" HorizontalAlignment="Left" Margin="401,105,0,0" VerticalAlignment="Top" FontSize="16" Background="{x:Null}" BorderBrush="{x:Null}" Height="32"/>
-                            <Label Content="MB" HorizontalAlignment="Left" Margin="328,105,0,0" VerticalAlignment="Top" FontSize="16" BorderBrush="{x:Null}" Background="{x:Null}"/>
-                            <Label Content="MB" HorizontalAlignment="Left" Margin="585,105,0,0" VerticalAlignment="Top" FontSize="16" BorderBrush="{x:Null}" Background="{x:Null}"/>
-                            <Label Content="开服内存  手动设置提示：内存分配建议为电脑运行内存的80%    单位换算：1GB=1024MB" HorizontalAlignment="Left" Margin="62,140,0,5" VerticalAlignment="Top" FontSize="14" Foreground="Red" Background="{x:Null}" BorderBrush="{x:Null}"/>
-                        </Grid>
-                    </Border>
-                    <Border Margin="10,200,10,0" VerticalAlignment="Top" CornerRadius="10" BorderBrush="{DynamicResource BorderBrush}" BorderThickness="1" Background="{DynamicResource BorderBackground}">
-                        <Grid>
-                            <Label Content="启动参数" HorizontalAlignment="Left" VerticalAlignment="Top" FontSize="18" Background="{x:Null}" BorderBrush="{x:Null}" Height="40" FontWeight="Bold"/>
-                            <Label Content="(非必要勿选择或填写此栏内容，如出现无法开服的情况请删除启动参数)" HorizontalAlignment="Left" Margin="94,2,0,0" VerticalAlignment="Top" Foreground="Red" FontSize="16" BorderBrush="{x:Null}" Background="{x:Null}" Height="36"/>
-                            <CheckBox x:Name="usebasicfastJvm" Content="基本优化参数（Java11及以上勿选）" Margin="48,40,0,0" VerticalAlignment="Top" Checked="usebasicfastJvm_Checked" HorizontalAlignment="Left"/>
-                            <CheckBox x:Name="usefastJvm" Content="高级优化参数（需分配内存为4G）" Margin="310,40,188,0" VerticalAlignment="Top" Checked="usefastJvm_Checked"/>
-                            <TextBox x:Name="txb7" HorizontalAlignment="Left" Margin="40,65,0,10" TextWrapping="NoWrap" Text="" VerticalAlignment="Top" Width="676"/>
-                        </Grid>
-                    </Border>
-                    <Button x:Name="return3" Content="上一步" hc:BorderElement.CornerRadius="15" Margin="174,315,0,0" VerticalAlignment="Top" Width="86" Click="return3_Click" FontWeight="Normal" Height="40" FontSize="14" HorizontalAlignment="Left"/>
-                    <Button x:Name="done" Content="确定" Style="{StaticResource ButtonPrimary}" hc:BorderElement.CornerRadius="15" Margin="0,315,0,0" VerticalAlignment="Top" Width="92" Click="done_Click" FontWeight="Normal" Height="40" FontSize="14"/>
+                    <ScrollViewer Margin="0,0,0,68">
+                        <StackPanel>
+                            <Border Style="{StaticResource MagicBorder}">
+                                <Grid>
+                                    <Label Content="开服内存" Style="{StaticResource BorderTitle}"/>
+                                    <TextBlock Text="在此设置开服需要分配的内存" Foreground="{DynamicResource TextBlockBrush}" HorizontalAlignment="Left" VerticalAlignment="Top" Margin="20,35,0,0" FontSize="16" />
+                                    <RadioButton x:Name="usedefault" Content="自动分配" Margin="20,70,0,0" VerticalAlignment="Top" IsChecked="True" Checked="usedefault_Checked" HorizontalAlignment="Left"/>
+                                    <RadioButton x:Name="useJVM" Content="手动设置" Margin="20,110,0,0" VerticalAlignment="Top" Checked="useJVM_Checked" HorizontalAlignment="Left"/>
+                                    <TextBox x:Name="txb4" HorizontalAlignment="Left" Margin="170,105,0,0" TextWrapping="Wrap" VerticalAlignment="Top" Width="120" IsEnabled="False" FontFamily="Microsoft YaHei UI"/>
+                                    <TextBox x:Name="txb5" HorizontalAlignment="Left" Margin="403,105,0,0" TextWrapping="Wrap" VerticalAlignment="Top" Width="120" IsEnabled="False" FontFamily="Microsoft YaHei UI"/>
+                                    <Label Content="最小" HorizontalAlignment="Left" Margin="120,105,0,0" VerticalAlignment="Top" FontSize="14" Background="{x:Null}" BorderBrush="{x:Null}"/>
+                                    <Label Content="最大" HorizontalAlignment="Left" Margin="353,105,0,0" VerticalAlignment="Top" FontSize="14" Background="{x:Null}" BorderBrush="{x:Null}"/>
+                                    <Label Content="MB" HorizontalAlignment="Left" Margin="290,105,0,0" VerticalAlignment="Top" FontSize="14" BorderBrush="{x:Null}" Background="{x:Null}"/>
+                                    <Label Content="MB" HorizontalAlignment="Left" Margin="523,105,0,0" VerticalAlignment="Top" FontSize="16" BorderBrush="{x:Null}" Background="{x:Null}"/>
+                                    <TextBlock Text="开服内存  手动设置提示：内存分配建议为电脑运行内存的80%    单位换算：1GB=1024MB" HorizontalAlignment="Left" Margin="38,138,0,0" VerticalAlignment="Top" FontSize="14" Foreground="Red"/>
+                                </Grid>
+                            </Border>
+                            <Border Style="{StaticResource MagicBorder}">
+                                <Grid>
+                                    <Label Content="启动参数" Style="{StaticResource BorderTitle}"/>
+                                    <Label Content="(非必要勿选择或填写此栏内容，如出现无法开服的情况请删除启动参数)" HorizontalAlignment="Left" Margin="80,2,0,0" VerticalAlignment="Top" Foreground="Red" FontSize="14" BorderBrush="{x:Null}" Background="{x:Null}" Padding="0,0,0,0"/>
+                                    <CheckBox x:Name="usebasicfastJvm" Content="基本优化参数（Java11及以上勿选）" Margin="20,40,0,0" VerticalAlignment="Top" Checked="usebasicfastJvm_Checked" HorizontalAlignment="Left"/>
+                                    <CheckBox x:Name="usefastJvm" Content="高级优化参数（需分配内存为4G）" Margin="310,40,188,0" VerticalAlignment="Top" Checked="usefastJvm_Checked"/>
+                                    <TextBox x:Name="txb7" Margin="20,65,0,0" Text="" TextWrapping="Wrap" VerticalAlignment="Top"/>
+                                </Grid>
+                            </Border>
+                        </StackPanel>
+                    </ScrollViewer>
+                    <Grid Margin="0,0,0,10" VerticalAlignment="Bottom">
+                        <Button x:Name="return3" Content="上一步" Margin="0,0,250,0" VerticalAlignment="Center" Width="150" Click="return3_Click" Height="48" FontSize="18" HorizontalAlignment="Center"/>
+                        <Button x:Name="done" Content="确定" Style="{StaticResource ButtonPrimary}" Margin="200,0,0,0" VerticalAlignment="Center" Width="150" Click="done_Click" Height="48" FontSize="18" HorizontalAlignment="Center"/>
+                    </Grid>
                 </Grid>
+                
             </TabItem>
         </TabControl>
         <ScrollViewer VerticalScrollBarVisibility="Hidden" HorizontalAlignment="Right" VerticalAlignment="Top">

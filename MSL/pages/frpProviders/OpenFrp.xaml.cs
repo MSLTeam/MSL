@@ -33,7 +33,7 @@ namespace MSL.pages.frpProviders
         private void Page_Loaded(object sender, RoutedEventArgs e)
         {
             cts = new CancellationTokenSource();
-            if (APIControl.sessionId != "" && APIControl.authId != "")
+            if (APIControl.authId != "")
             {
                 Task.Run(() => GetFrpsInfo(cts.Token));
                 return;
@@ -124,7 +124,7 @@ namespace MSL.pages.frpProviders
                 Dispatcher.Invoke(() =>
                 {
                     DialogShow.ShowMsg(window, "登录失败！请检查您的用户名或密码是否正确！\n"+ usr_info, "错误！");
-                    APIControl.sessionId = string.Empty;
+                    //APIControl.sessionId = string.Empty;
                     APIControl.authId = string.Empty;
                     APIControl.userAccount = string.Empty;
                     APIControl.userPass = string.Empty;
@@ -528,7 +528,7 @@ namespace MSL.pages.frpProviders
 
         private void logoutBtn_Click(object sender, RoutedEventArgs e)
         {
-            APIControl.sessionId = string.Empty;
+            //APIControl.sessionId = string.Empty;
             APIControl.authId = string.Empty;
             APIControl.userAccount = string.Empty;
             APIControl.userPass = string.Empty;

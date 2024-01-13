@@ -203,20 +203,23 @@ namespace MSL.controls
     {
         public static string userAccount = "";
         public static string userPass = "";
-        public static string sessionId="";
+        //public static string sessionId="";
         public static string authId = "";
 
         public Dictionary<string, string> GetUserNodes()
         {
+            /*
             JObject userinfo = new JObject
             {
                 ["session"] = sessionId
             };
+            */
             WebHeaderCollection header = new WebHeaderCollection
             {
                 authId
             };
-            var responseMessage = Functions.Post("getUserProxies", 0, JsonConvert.SerializeObject(userinfo), "https://of-dev-api.bfsea.xyz/frp/api", header);
+            //var responseMessage = Functions.Post("getUserProxies", 0, JsonConvert.SerializeObject(userinfo), "https://of-dev-api.bfsea.xyz/frp/api", header);
+            var responseMessage = Functions.Post("getUserProxies", 0, string.Empty, "https://of-dev-api.bfsea.xyz/frp/api", header);
             try
             {
                 Dictionary<string, string> Nodes = new Dictionary<string, string>();
@@ -247,15 +250,18 @@ namespace MSL.controls
 
         public (Dictionary<string, string>, JArray) GetNodeList(Window window)
         {
+            /*
             JObject userinfo = new JObject
             {
                 ["session"] = sessionId
             };
+            */
             WebHeaderCollection header = new WebHeaderCollection
             {
                 authId
             };
-            var responseMessage = Functions.Post("getNodeList", 0, JsonConvert.SerializeObject(userinfo), "https://of-dev-api.bfsea.xyz/frp/api", header);
+            //var responseMessage = Functions.Post("getNodeList", 0, JsonConvert.SerializeObject(userinfo), "https://of-dev-api.bfsea.xyz/frp/api", header);
+            var responseMessage = Functions.Post("getNodeList", 0, string.Empty, "https://of-dev-api.bfsea.xyz/frp/api", header);
             
             try
             {
@@ -301,15 +307,27 @@ namespace MSL.controls
 
         public void UserSign(Window window)
         {
+            /*
             JObject userinfo = new JObject
             {
                 ["session"] = sessionId
             };
+            */
             WebHeaderCollection header = new WebHeaderCollection
             {
                 authId
             };
-            var responseMessage = Functions.Post("userSign", 0, JsonConvert.SerializeObject(userinfo), "https://of-dev-api.bfsea.xyz/frp/api", header);
+            //var responseMessage = Functions.Post("userSign", 0, JsonConvert.SerializeObject(userinfo), "https://of-dev-api.bfsea.xyz/frp/api", header);
+            string responseMessage = "";
+            try
+            {
+                Functions.Post("userSign", 0, string.Empty, "https://of-dev-api.bfsea.xyz/frp/api", header);
+            }
+            catch
+            {
+                DialogShow.ShowMsg(window, "签到失败！请登录OpenFrp官网进行签到！","错误");
+                return;
+            }
             try
             {
                 if ((bool)JObject.Parse(responseMessage)["flag"] == true&&JObject.Parse(responseMessage)["msg"].ToString() == "OK")
@@ -329,15 +347,18 @@ namespace MSL.controls
 
         public string GetUserInfo()
         {
+            /*
             JObject userinfo = new JObject
             {
                 ["session"] = sessionId
             };
+            */
             WebHeaderCollection header = new WebHeaderCollection
             {
                 authId
             };
-            string responseMessage = Functions.Post("getUserInfo", 0, JsonConvert.SerializeObject(userinfo), "https://of-dev-api.bfsea.xyz/frp/api", header);
+            //string responseMessage = Functions.Post("getUserInfo", 0, JsonConvert.SerializeObject(userinfo), "https://of-dev-api.bfsea.xyz/frp/api", header);
+            string responseMessage = Functions.Post("getUserInfo", 0, string.Empty, "https://of-dev-api.bfsea.xyz/frp/api", header);
             return responseMessage;
         }
 
@@ -355,10 +376,8 @@ namespace MSL.controls
             string json = JsonConvert.SerializeObject(logininfo);
             // 创建一个 StringContent 对象，指定内容类型为 application/json
             HttpContent content = new StringContent(json, Encoding.UTF8, "application/json");
-            //MessageBox.Show("111");
             // 发送 POST 请求到登录 API 地址
             HttpResponseMessage loginResponse = await client.PostAsync("https://openid.17a.ink/api/public/login", content);
-            //MessageBox.Show("111");
             // 检查响应状态码是否为 OK
             if (loginResponse.IsSuccessStatusCode)
             {
@@ -383,7 +402,7 @@ namespace MSL.controls
                 }
                 catch(Exception ex)
                 {
-                    return $"Pre-Login request failed: {ex.Message}";
+                    return $"Get-Login-Url request failed: {ex.Message}";
                 }
                 //MessageBox.Show(authUrl);
                 // 发送 GET 请求到授权 API 地址
@@ -403,14 +422,14 @@ namespace MSL.controls
                     if (authResponse.IsSuccessStatusCode)
                     {
                         // 读取响应内容
-                        string _loginData = await _loginResponse.Content.ReadAsStringAsync();
-                        if ((bool)JObject.Parse(_loginData)["flag"] == false)
-                        {
-                            return JObject.Parse(_loginData)["msg"].ToString();
-                        }
+                        //string _loginData = await _loginResponse.Content.ReadAsStringAsync();
+                        //if ((bool)JObject.Parse(_loginData)["flag"] == false)
+                        //{
+                        //    return JObject.Parse(_loginData)["msg"].ToString();
+                        //}
                         // 显示响应内容
                         //MessageBox.Show(_loginData);
-                        sessionId = JObject.Parse(_loginData)["data"].ToString();
+                        //sessionId = JObject.Parse(_loginData)["data"].ToString();
                         //MessageBox.Show(_loginResponse.Headers.ToString());
 
                         authId= _loginResponse.Headers.ToString().Substring(_loginResponse.Headers.ToString().IndexOf("Authorization:"), _loginResponse.Headers.ToString().Substring(_loginResponse.Headers.ToString().IndexOf("Authorization:")).IndexOf("\n")-1);
@@ -446,7 +465,7 @@ namespace MSL.controls
             request.Headers.Add(authId);
             string json = JsonConvert.SerializeObject(new CreateProxy()
             {
-                session = sessionId,
+                //session = sessionId,
                 node_id = nodeid,
                 name = proxy_name,
                 type = type,
@@ -504,7 +523,7 @@ namespace MSL.controls
             JObject json =new JObject()
             {
                 ["proxy_id"]=id,
-                ["session"] = sessionId
+                //["session"] = sessionId
             };//转换json格式
             byte[] byteArray = Encoding.UTF8.GetBytes(JsonConvert.SerializeObject(json));
             request.ContentLength = byteArray.Length;

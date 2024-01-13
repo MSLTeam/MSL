@@ -77,9 +77,9 @@ namespace MSL.forms
             if (useJVself.IsChecked == true)
             {
                 serverjava = txjava.Text;
-                //MainWindow.serverserver = txb3.Text;
-                javagrid.Visibility = Visibility.Hidden;
-                servergrid.Visibility = Visibility.Visible;
+                sserver.IsSelected = true;
+                sserver.IsEnabled = true;
+                sjava.IsEnabled = false;
                 await Dispatcher.InvokeAsync(() =>
                 {
                     CheckServerPackCore();
@@ -88,9 +88,9 @@ namespace MSL.forms
             else if (usejvPath.IsChecked == true)
             {
                 serverjava = "Java";
-                //MainWindow.serverserver = txb3.Text;
-                javagrid.Visibility = Visibility.Hidden;
-                servergrid.Visibility = Visibility.Visible;
+                sserver.IsSelected = true;
+                sserver.IsEnabled = true;
+                sjava.IsEnabled = false;
                 await Dispatcher.InvokeAsync(() =>
                 {
                     CheckServerPackCore();
@@ -100,8 +100,9 @@ namespace MSL.forms
             {
                 string a = selectCheckedJavaComb.Items[selectCheckedJavaComb.SelectedIndex].ToString();
                 serverjava = a.Substring(a.IndexOf(":") + 1);
-                javagrid.Visibility = Visibility.Hidden;
-                servergrid.Visibility = Visibility.Visible;
+                sserver.IsSelected = true;
+                sserver.IsEnabled = true;
+                sjava.IsEnabled = false;
                 await Dispatcher.InvokeAsync(() =>
                 {
                     CheckServerPackCore();
@@ -167,8 +168,9 @@ namespace MSL.forms
                                     outlog.Content = "完成";
                                     next3.IsEnabled = true;
                                     return5.IsEnabled = true;
-                                    javagrid.Visibility = Visibility.Hidden;
-                                    servergrid.Visibility = Visibility.Visible;
+                                    sserver.IsSelected = true;
+                                    sserver.IsEnabled = true;
+                                    sjava.IsEnabled = false;
                                     await Dispatcher.InvokeAsync(() =>
                                     {
                                         CheckServerPackCore();
@@ -176,6 +178,8 @@ namespace MSL.forms
                                 }
                                 else
                                 {
+                                    next3.IsEnabled = true;
+                                    return5.IsEnabled = true;
                                     return;
                                 }
                             }
@@ -184,8 +188,9 @@ namespace MSL.forms
                                 outlog.Content = "完成";
                                 next3.IsEnabled = true;
                                 return5.IsEnabled = true;
-                                javagrid.Visibility = Visibility.Hidden;
-                                servergrid.Visibility = Visibility.Visible;
+                                sserver.IsSelected = true;
+                                sserver.IsEnabled = true;
+                                sjava.IsEnabled = false;
                                 await Dispatcher.InvokeAsync(() =>
                                 {
                                     CheckServerPackCore();
@@ -345,8 +350,9 @@ namespace MSL.forms
         }
         private void return2_Click(object sender, RoutedEventArgs e)
         {
-            javagrid.Visibility = Visibility.Visible;
-            servergrid.Visibility = Visibility.Hidden;
+            sjava.IsSelected = true;
+            sjava.IsEnabled = true;
+            sserver.IsEnabled = false;
         }
         private void usedefault_Checked(object sender, RoutedEventArgs e)
         {
@@ -462,12 +468,12 @@ namespace MSL.forms
                 tabCtrl.Visibility = Visibility.Hidden;
                 welcome.IsSelected = true;
                 welcome.IsEnabled = true;
-                sserver.IsEnabled = false;
+                sjava.IsEnabled = false;
                 return;
             }
             welcome.IsSelected = true;
             welcome.IsEnabled = true;
-            sserver.IsEnabled = false;
+            sjava.IsEnabled = false;
         }
 
         private void a0002_Copy_Click(object sender, RoutedEventArgs e)
@@ -641,8 +647,8 @@ namespace MSL.forms
                 txb6.Text = txb6.Text;
                 serverbase = txb6.Text;
             }
-            sserver.IsSelected = true;
-            sserver.IsEnabled = true;
+            sjava.IsSelected = true;
+            sjava.IsEnabled = true;
             welcome.IsEnabled = false;
         }
 

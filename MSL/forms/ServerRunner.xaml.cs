@@ -3283,22 +3283,11 @@ namespace MSL
         {
             JObject jsonObject = JObject.Parse(File.ReadAllText(@"MSL\ServerList.json", Encoding.UTF8));
             JObject _json = (JObject)jsonObject[RserverId];
-            if (_json["fastcmd"] == null)
-            {
-                JArray fastcmdArray = new JArray(fastCmdList.Items.Cast<string>().Skip(1));
-                _json.Add("fastcmd", fastcmdArray);
-                jsonObject[RserverId] = _json;
-                File.WriteAllText("MSL\\Serverlist.json", Convert.ToString(jsonObject), Encoding.UTF8);
-                GetFastCmd();
-            }
-            else
-            {
-                JArray fastcmdArray = new JArray(fastCmdList.Items.Cast<string>().Skip(1));
-                _json["fastcmd"].Replace(fastcmdArray);
-                jsonObject[RserverId] = _json;
-                File.WriteAllText("MSL\\Serverlist.json", Convert.ToString(jsonObject), Encoding.UTF8);
-                GetFastCmd();
-            }
+            JArray fastcmdArray = new JArray(fastCmdList.Items.Cast<string>().Skip(1));
+            _json["fastcmd"] = fastcmdArray;
+            jsonObject[RserverId] = _json;
+            File.WriteAllText("MSL\\Serverlist.json", Convert.ToString(jsonObject), Encoding.UTF8);
+            GetFastCmd();
             /*
             fastCmdList.Items.Clear();
             fastCMD.Items.Add("/（指令）");
@@ -3383,10 +3372,13 @@ namespace MSL
             {
                 taskID.Add(taskID.Max() + 1);
             }
+            //MessageBox.Show(taskID.Max().ToString());
+            tasksList.ItemsSource = taskID.ToArray();
             stopTasks.Add(taskID.Max(), true);
             taskTimers.Add(taskID.Max(), 10);
             taskCmds.Add(taskID.Max(), "say Hello World!");
-            tasksList.Items.Add(taskID.Max());
+            //tasksList.Items.Add(taskID.Max());
+            loadOrSaveTaskConfig.Content = "保存任务配置";
         }
 
         private void delTask_Click(object sender, RoutedEventArgs e)
@@ -3398,14 +3390,21 @@ namespace MSL
                     DialogShow.ShowMsg(this, "请先停止任务！", "警告");
                     return;
                 }
-                int i = tasksList.SelectedIndex;
-                stopTasks.Remove(taskID[i]);
-                taskTimers.Remove(taskID[i]);
-                taskCmds.Remove(taskID[i]);
-                tasksList.Items.Remove(taskID[i]);
-                //勿删，否则会崩溃
-                Thread.Sleep(200);
-                taskID.Remove(taskID[i]);
+
+                int selectedIndex = tasksList.SelectedIndex;
+                int selectedTaskID = taskID[selectedIndex];
+
+                stopTasks.Remove(selectedTaskID);
+                taskTimers.Remove(selectedTaskID);
+                taskCmds.Remove(selectedTaskID);
+
+                taskID.RemoveAt(selectedIndex);
+                tasksList.ItemsSource = taskID.ToArray();
+
+                if (tasksList.Items.Count == 0)
+                {
+                    loadOrSaveTaskConfig.Content = "加载任务配置";
+                }
             }
         }
 
@@ -3426,7 +3425,15 @@ namespace MSL
                 timercmdCmd.Text = taskCmds[taskID[tasksList.SelectedIndex]];
             }
         }
+        private void timercmdTime_TextChanged(object sender, TextChangedEventArgs e)
+        {
+            taskTimers[taskID[tasksList.SelectedIndex]] = int.Parse(timercmdTime.Text);
+        }
 
+        private void timercmdCmd_TextChanged(object sender, TextChangedEventArgs e)
+        {
+            taskCmds[taskID[tasksList.SelectedIndex]] = timercmdCmd.Text;
+        }
         private void startTimercmd_Click(object sender, RoutedEventArgs e)
         {
             try
@@ -3434,10 +3441,8 @@ namespace MSL
                 if (startTimercmd.Content.ToString() == "启动定时任务")
                 {
                     stopTasks[taskID[tasksList.SelectedIndex]] = false;
-                    taskTimers[taskID[tasksList.SelectedIndex]] = int.Parse(timercmdTime.Text);
-                    taskCmds[taskID[tasksList.SelectedIndex]] = timercmdCmd.Text;
                     int i = taskID[tasksList.SelectedIndex];
-                    Task.Run(() => ScheduledTasks(i, taskTimers[i], taskCmds[i]));
+                    Task.Run(() => TimedTasks(i, taskTimers[i], taskCmds[i]));
                     startTimercmd.Content = "停止定时任务";
                 }
                 else
@@ -3452,7 +3457,7 @@ namespace MSL
             }
         }
 
-        void ScheduledTasks(int id, int timer, string cmd)
+        void TimedTasks(int id, int timer, string cmd)
         {
             try
             {
@@ -3490,6 +3495,90 @@ namespace MSL
                 return;
             }
         }
+
+        private void loadOrSaveTaskConfig_Click(object sender, RoutedEventArgs e)
+        {
+            if (loadOrSaveTaskConfig.Content.ToString() == "加载任务配置")
+            {
+                JObject jsonObject = JObject.Parse(File.ReadAllText(@"MSL\ServerList.json", Encoding.UTF8));
+                JObject _json = (JObject)jsonObject[RserverId];
+
+                if (_json["timedtasks"] != null)
+                {
+                    // Access data
+                    //JArray taskNameFromFile = (JArray)_json["timedtasks"]["taskName"];
+                    JArray taskIDFromFile = (JArray)_json["timedtasks"]["taskID"];
+                    JObject taskTimersFromFile = (JObject)_json["timedtasks"]["taskTimers"];
+                    JObject taskCmdsFromFile = (JObject)_json["timedtasks"]["taskCmds"];
+                    JObject stopTasksFromFile = (JObject)_json["timedtasks"]["stopTasks"];
+
+                    // Process data and clear existing lists
+                    //tasksList.Items.Clear();
+                    taskID.Clear();
+                    taskTimers.Clear();
+                    taskCmds.Clear();
+                    stopTasks.Clear();
+
+                    // Process taskName
+                    /*
+                    foreach (var taskname in taskNameFromFile)
+                    {
+                        tasksList.Items.Add(taskname);
+                    }*/
+
+                    // Process taskID
+                    foreach (var taskid in taskIDFromFile)
+                    {
+                        taskID.Add((int)taskid);
+                    }
+
+                    // Process taskTimers
+                    foreach (var tasktimer in taskTimersFromFile)
+                    {
+                        taskTimers.Add(int.Parse(tasktimer.Key), (int)tasktimer.Value);
+                    }
+
+                    // Process taskCmds
+                    foreach (var taskcmd in taskCmdsFromFile)
+                    {
+                        taskCmds.Add(int.Parse(taskcmd.Key), (string)taskcmd.Value);
+                    }
+
+                    // Process stopTasks
+                    foreach (var stoptask in stopTasksFromFile)
+                    {
+                        stopTasks.Add(int.Parse(stoptask.Key), (bool)stoptask.Value);
+                    }
+                    tasksList.ItemsSource = taskID.ToArray();
+                }
+                loadOrSaveTaskConfig.Content = "保存任务配置";
+            }
+            else
+            {
+                JObject data = new JObject(
+            new JProperty("taskName", new JArray(tasksList.Items)),
+            new JProperty("taskID", new JArray(taskID)),
+            new JProperty("taskTimers", new JObject(taskTimers.Select(kv => new JProperty(kv.Key.ToString(), kv.Value)))),
+            new JProperty("taskCmds", new JObject(taskCmds.Select(kv => new JProperty(kv.Key.ToString(), kv.Value)))),
+            new JProperty("stopTasks", new JObject(stopTasks.Select(kv => new JProperty(kv.Key.ToString(), kv.Value))))
+        );
+                JObject jsonObject = JObject.Parse(File.ReadAllText(@"MSL\ServerList.json", Encoding.UTF8));
+                JObject _json = (JObject)jsonObject[RserverId];
+                _json["timedtasks"] = data;
+                jsonObject[RserverId] = _json;
+                File.WriteAllText("MSL\\Serverlist.json", Convert.ToString(jsonObject), Encoding.UTF8);
+            }
+        }
+
+        private void delTaskConfig_Click(object sender, RoutedEventArgs e)
+        {
+            JObject jsonObject = JObject.Parse(File.ReadAllText(@"MSL\ServerList.json", Encoding.UTF8));
+            JObject _json = (JObject)jsonObject[RserverId];
+            _json.Remove("timedtasks");
+            jsonObject[RserverId] = _json;
+            File.WriteAllText("MSL\\Serverlist.json", Convert.ToString(jsonObject), Encoding.UTF8);
+
+        }
         #endregion
 
         #region window event
@@ -3516,6 +3605,5 @@ namespace MSL
             }
         }
         #endregion
-
     }
 }
