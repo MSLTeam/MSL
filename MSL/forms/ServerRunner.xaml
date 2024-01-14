@@ -463,8 +463,8 @@
                         <ListBox x:Name="tasksList" hc:Empty.ShowEmpty="true" SelectionChanged="tasksList_SelectionChanged" Canvas.Left="10" Canvas.Top="45" Margin="10,40,320,160"/>
                         <Button x:Name="addTask" Height="80" Width="300" Click="addTask_Click" Content="添加新任务" FontSize="18" HorizontalAlignment="Right" VerticalAlignment="Top" Margin="0,40,10,0"/>
                         <Button x:Name="delTask" Height="80" Width="300" Click="delTask_Click" FontSize="18" Content="删除所选任务" HorizontalAlignment="Right" VerticalAlignment="Top" Margin="0,125,10,0"/>
-                        <Button x:Name="loadOrSaveTaskConfig" Height="55" Width="150" Click="loadOrSaveTaskConfig_Click" FontSize="18" Content="加载任务配置" HorizontalAlignment="Right" VerticalAlignment="Top" Margin="0,210,160,0"/>
-                        <Button x:Name="delTaskConfig" Height="55" Width="150" Click="delTaskConfig_Click" FontSize="18" Content="删除任务配置" HorizontalAlignment="Right" VerticalAlignment="Top" Margin="0,210,10,0"/>
+                        <Button x:Name="loadOrSaveTaskConfig" Height="60" Width="150" Click="loadOrSaveTaskConfig_Click" FontSize="18" Content="加载任务配置" HorizontalAlignment="Right" VerticalAlignment="Top" Margin="0,210,160,0"/>
+                        <Button x:Name="delTaskConfig" Height="60" Width="150" Click="delTaskConfig_Click" FontSize="18" Content="删除任务配置" HorizontalAlignment="Right" VerticalAlignment="Top" Margin="0,210,10,0"/>
                         <Border Style="{StaticResource MagicBorder}" VerticalAlignment="Bottom" Margin="10,10,10,10">
                             <Grid>
                                 <Label Content="任务设置(请先添加任务，然后选中想要运行的任务进行更改)" Style="{StaticResource BorderTitle}" />

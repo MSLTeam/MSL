@@ -72,8 +72,8 @@
                 <Border Style="{StaticResource MagicBorder}" Margin="10,0,10,10">
                     <Grid>
                         <Label Content="Java版本" Style="{StaticResource BorderTitle}"/>
-                        <Label Content="Java版本（此版本为MSL评估的最优版本，&#xA;如果您后续要加载的插件或模组&#xA;有要求Java版本的话，请在此处更改）：" HorizontalAlignment="Left" Margin="10,35,0,0" VerticalAlignment="Top" FontSize="16" BorderBrush="{x:Null}" Background="{x:Null}" Height="90"/>
-                        <ComboBox x:Name="FinallyJavaCombo" HorizontalAlignment="Left" Margin="360,50,0,0" Width="330" VerticalAlignment="Top" Height="40">
+                        <Label Content="Java版本（此版本为MSL评估的最优版本，&#xA;如果您后续要加载的插件或模组&#xA;有要求Java版本的话，请在此处更改）：" HorizontalAlignment="Left" Margin="10,30,0,0" VerticalAlignment="Top" FontSize="16" BorderBrush="{x:Null}" Background="{x:Null}" Height="90"/>
+                        <ComboBox x:Name="FinallyJavaCombo" HorizontalAlignment="Left" Margin="360,60,0,0" Width="330" VerticalAlignment="Top" Height="35">
                             <ComboBoxItem Content="Java8"/>
                             <ComboBoxItem Content="Java11"/>
                             <ComboBoxItem Content="Java16"/>
@@ -83,7 +83,7 @@
                             <ComboBoxItem Content="Java20"/>
                             <ComboBoxItem Content="Java21"/>
                         </ComboBox>
-                        <TextBlock x:Name="FinallyJavaDescrip" Foreground="Red" HorizontalAlignment="Left" VerticalAlignment="Top" Margin="330,100,0,0"/>
+                        <TextBlock x:Name="FinallyJavaDescrip" Foreground="Red" HorizontalAlignment="Left" VerticalAlignment="Top" Margin="20,120,0,0"/>
                     </Grid>
                 </Border>
                 <Border Style="{StaticResource MagicBorder}" Margin="10,0,10,10">

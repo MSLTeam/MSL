@@ -155,12 +155,8 @@ namespace MSL.pages
             StartServerEvent();
         }
 
-        void StartServerEvent()
+        private void StartServerEvent()
         {
-            if (serverList.SelectedIndex == -1)
-            {
-                return;
-            }
             try
             {
                 if (RunningServerIDs.IndexOf(serverid[serverList.SelectedIndex].ToString() + " ") + 1 != 0)
@@ -196,6 +192,11 @@ namespace MSL.pages
 
         private void setServer_Click(object sender, RoutedEventArgs e)
         {
+            SetServerEvent();
+        }
+
+        private void SetServerEvent()
+        {
             try
             {
                 if (RunningServerIDs.IndexOf(serverid[serverList.SelectedIndex].ToString() + " ") + 1 != 0)
@@ -218,7 +219,8 @@ namespace MSL.pages
         {
             DelServerEvent();
         }
-        void DelServerEvent()
+
+        private void DelServerEvent()
         {
             var mainwindow = (MainWindow)Window.GetWindow(this);
             DialogShow.ShowMsg(mainwindow, "您确定要删除该服务器吗？", "提示", true, "取消");
@@ -413,6 +415,19 @@ namespace MSL.pages
             }
             StartServerEvent();
             // your code to handle the button click goes here...
+        }
+        private void setServerBtn_Click(object sender, RoutedEventArgs e)
+        {
+            Button btn = sender as Button;
+            if (btn != null)
+            {
+                ListViewItem item = FindAncestor<ListViewItem>(btn);
+                if (item != null)
+                {
+                    item.IsSelected = true;
+                }
+            }
+            SetServerEvent();
         }
         private void delServerBtn_Click(object sender, RoutedEventArgs e)
         {

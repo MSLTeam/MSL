@@ -60,10 +60,11 @@
                             <GridViewColumn Width="150" Header="操作">
                                 <GridViewColumn.CellTemplate>
                                     <DataTemplate>
-                                        <Grid>
-                                            <Button Margin="0,0,0,0" hc:IconElement.Geometry="{StaticResource CheckedGeometry}" HorizontalAlignment="Left" hc:Poptip.Content="开启该服务器" hc:Poptip.HorizontalOffset="40" hc:Poptip.Placement="Left" Click="startServerBtn_Click"/>
-                                            <Button Margin="40,0,0,0" hc:IconElement.Geometry="{StaticResource DeleteFillCircleGeometry}" HorizontalAlignment="Left" hc:Poptip.Content="删除该服务器" hc:Poptip.HorizontalOffset="40" hc:Poptip.Placement="Left" Click="delServerBtn_Click"/>
-                                        </Grid>
+                                        <StackPanel Orientation="Horizontal">
+                                            <Button Margin="0,0,0,0" hc:IconElement.Geometry="{StaticResource SuccessGeometry}" HorizontalAlignment="Left" hc:Poptip.Content="开启该服务器" hc:Poptip.HorizontalOffset="40" hc:Poptip.Placement="Left" Click="startServerBtn_Click"/>
+                                            <Button Margin="5,0,0,0" hc:IconElement.Geometry="{StaticResource ConfigGeometry}" HorizontalAlignment="Left" hc:Poptip.Content="服务器设置" hc:Poptip.HorizontalOffset="40" hc:Poptip.Placement="Left" Click="setServerBtn_Click"/>
+                                            <Button Margin="5,0,0,0" hc:IconElement.Geometry="{StaticResource DeleteFillCircleGeometry}" HorizontalAlignment="Left" hc:Poptip.Content="删除该服务器" hc:Poptip.HorizontalOffset="40" hc:Poptip.Placement="Left" Click="delServerBtn_Click"/>
+                                        </StackPanel>
                                     </DataTemplate>
                                 </GridViewColumn.CellTemplate>
                             </GridViewColumn>

@@ -86,7 +86,6 @@ namespace MSL
             }
             else
             {
-                //KillPreviousServerProcess();
                 LaunchServerOnLoad();
                 WindowLoadedEvent();
             }
@@ -175,7 +174,6 @@ namespace MSL
             else if (File.Exists(Rserverbase + "\\server-icon.png"))//check server-icon,if exist,set icon to server-icon
             {
                 this.Icon = new BitmapImage(new Uri(Rserverbase + "\\server-icon.png"));
-                //IconBox.Source = new BitmapImage(new Uri(Rserverbase + "\\server-icon.png"));
             }
             if (Rserverjava != "Java" && Rserverjava != "java")
             {
@@ -3551,6 +3549,7 @@ namespace MSL
                     }
                     tasksList.ItemsSource = taskID.ToArray();
                 }
+                Growl.Success("加载成功！");
                 loadOrSaveTaskConfig.Content = "保存任务配置";
             }
             else
@@ -3567,6 +3566,7 @@ namespace MSL
                 _json["timedtasks"] = data;
                 jsonObject[RserverId] = _json;
                 File.WriteAllText("MSL\\Serverlist.json", Convert.ToString(jsonObject), Encoding.UTF8);
+                Growl.Success("保存成功！");
             }
         }
 
@@ -3577,7 +3577,7 @@ namespace MSL
             _json.Remove("timedtasks");
             jsonObject[RserverId] = _json;
             File.WriteAllText("MSL\\Serverlist.json", Convert.ToString(jsonObject), Encoding.UTF8);
-
+            Growl.Success("删除成功！");
         }
         #endregion
 
