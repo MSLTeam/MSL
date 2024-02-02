@@ -3388,7 +3388,6 @@ namespace MSL
                     DialogShow.ShowMsg(this, "请先停止任务！", "警告");
                     return;
                 }
-
                 int selectedIndex = tasksList.SelectedIndex;
                 int selectedTaskID = taskID[selectedIndex];
 
@@ -3422,15 +3421,26 @@ namespace MSL
                 timercmdTime.Text = taskTimers[taskID[tasksList.SelectedIndex]].ToString();
                 timercmdCmd.Text = taskCmds[taskID[tasksList.SelectedIndex]];
             }
+            else
+            {
+                timercmdTime.Text = "";
+                timercmdCmd.Text = "";
+            }
         }
         private void timercmdTime_TextChanged(object sender, TextChangedEventArgs e)
         {
-            taskTimers[taskID[tasksList.SelectedIndex]] = int.Parse(timercmdTime.Text);
+            if (tasksList.SelectedIndex != -1)
+            {
+                taskTimers[taskID[tasksList.SelectedIndex]] = int.Parse(timercmdTime.Text);
+            }
         }
 
         private void timercmdCmd_TextChanged(object sender, TextChangedEventArgs e)
         {
-            taskCmds[taskID[tasksList.SelectedIndex]] = timercmdCmd.Text;
+            if (tasksList.SelectedIndex != -1)
+            {
+                taskCmds[taskID[tasksList.SelectedIndex]] = timercmdCmd.Text;
+            }
         }
         private void startTimercmd_Click(object sender, RoutedEventArgs e)
         {
@@ -3550,7 +3560,10 @@ namespace MSL
                     tasksList.ItemsSource = taskID.ToArray();
                 }
                 Growl.Success("加载成功！");
-                loadOrSaveTaskConfig.Content = "保存任务配置";
+                if (tasksList.Items.Count != 0)
+                {
+                    loadOrSaveTaskConfig.Content = "保存任务配置";
+                }
             }
             else
             {

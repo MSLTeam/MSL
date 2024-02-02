@@ -341,6 +341,12 @@ namespace MSL.pages
 
         private void PaidServe()
         {
+            Window window = null;
+            Dispatcher.Invoke(() =>
+            {
+                window = (MainWindow)Window.GetWindow(this);
+            });
+            
             string userAccount = "";
             string userPassword = "";
 
@@ -353,16 +359,123 @@ namespace MSL.pages
                 userAccount = match.Groups[1].Value;
                 userPassword = match.Groups[2].Value;
             }
-            bool dialog = false;
             Dispatcher.Invoke(() =>
             {
-                dialog = DialogShow.ShowMsg((MainWindow)Window.GetWindow(this), "您的付费资格已过期，请进行续费！\n点击确定开始付费节点续费操作。", "提示", true, "取消");
+                if (!DialogShow.ShowMsg(window, "您的付费资格已过期，请进行续费！\n点击确定开始付费节点续费操作。", "提示", true, "取消"))
+                {
+                    return;
+                }
             });
-            if (!dialog)
-            {
-                return;
-            }
+            
 
+            Process.Start("https://afdian.net/a/makabaka123");
+            Dispatcher.Invoke(() =>
+            {
+                if (!DialogShow.ShowMsg(window, "请在弹出的浏览器网站中进行购买，购买完毕后点击确定进行下一步操作……", "购买须知", true, "取消购买", "确定"))
+                {
+                    return;
+                }
+            });
+
+            string order = "";
+            string qq = "";
+            Dispatcher.Invoke(() =>
+            {
+                bool input = DialogShow.ShowInput(window, "输入爱发电订单号：\n（头像→订单→找到发电项目→复制项目下方订单号）", out order);
+                if (!input)
+                {
+                    return;
+                }
+                if (Regex.IsMatch(order, "[^0-9]") || order.Length < 5)
+                {
+                    DialogShow.ShowMsg(window, "请输入合法订单号：仅含数字且长度不小于5位！", "获取失败！");
+                    return;
+                }
+                bool _input = DialogShow.ShowInput(window, "输入账号(QQ号)：", out qq);
+                if (!_input)
+                {
+                    return;
+                }
+                if (Regex.IsMatch(qq, "[^0-9]") || qq.Length < 5)
+                {
+                    DialogShow.ShowMsg(window, "请输入合法账号：仅含数字且长度不小于5位！", "获取失败！");
+                    return;
+                }
+            });
+            
+            Dialog _dialog = null;
+            try
+            {
+                Dispatcher.Invoke(() => { _dialog = Dialog.Show(new TextDialog("发送请求中，请稍等……")); });
+                JObject keyValuePairs = new JObject()
+                {
+                    ["order"] = order,
+                    ["qq"] = qq,
+                };
+                var ret = Functions.Post("getpassword", 0, JsonConvert.SerializeObject(keyValuePairs), "http://111.180.189.249:7004");
+                Dispatcher.Invoke(() =>
+                {
+                    this.Focus();
+                    _dialog.Close();
+                });
+                JObject keyValues = JObject.Parse(ret);
+                if (keyValues != null && int.Parse(keyValues["status"].ToString()) == 0)
+                {
+                    Dispatcher.Invoke(() =>
+                    {
+                        DialogShow.ShowMsg(window, "您的付费密码为：" + keyValues["password"].ToString() + "\n注册时间：" + keyValues["registration"].ToString() + "\n本次续费：" + keyValues["days"].ToString() + "天\n到期时间：" + keyValues["expiration"].ToString(), "续费成功！");
+                        /*
+                        string passwd = keyValues["password"].ToString();
+                        bool dialog = DialogShow.ShowMsg(window, "您的付费密码为：" + passwd + "\n注册时间：" + keyValues["registration"].ToString() + "\n本次续费：" + keyValues["days"].ToString() + "天\n到期时间：" + keyValues["expiration"].ToString(), "续费成功！", true, "确定", "复制密码");
+                        if (dialog)
+                        {
+                            //passwordBox.Password = passwd;
+                            Clipboard.SetDataObject(ret);
+                        }
+                        */
+                    });
+                }
+                else if (keyValues != null)
+                {
+                    Dispatcher.Invoke(() =>
+                    {
+                        DialogShow.ShowMsg(window, keyValues["reason"].ToString(), "获取失败！");
+                    });
+                }
+                else
+                {
+                    Dispatcher.Invoke(() =>
+                    {
+                        DialogShow.ShowMsg(window, "返回内容为空！", "获取失败！");
+                    });
+                }
+            }
+            catch
+            {
+                Dispatcher.Invoke(() =>
+                {
+                    this.Focus();
+                    _dialog.Close();
+                    DialogShow.ShowMsg((MainWindow)Window.GetWindow(this), "获取失败，请添加QQ：483232994（昵称：MSL-FRP），并发送发电成功截图+订单号来手动获取密码\r\n（注：回复消息不一定及时，请耐心等待！如果没有添加成功，或者添加后长时间无人回复，请进入MSL交流群然后从群里私聊）", "获取失败！");
+                });
+            }
+            /*
+            bool __input = false;
+            string password = "";
+            Dispatcher.Invoke(() => { __input = DialogShow.ShowInput((MainWindow)Window.GetWindow(this), "在此输入新密码（若新旧密码一致请忽略此步骤）", out password); });
+            if (__input)
+            {
+                _text = _text.Replace("meta_token = " + userPassword, "meta_token = " + password);
+                using (FileStream fs = new FileStream(@"MSL\frpc", FileMode.Create, FileAccess.Write))
+                using (StreamWriter sw = new StreamWriter(fs))
+                {
+                    sw.Write(_text);
+                }
+                Growl.Success("您的密码已更新！");
+            }
+            */
+
+            /*
             Process.Start("https://afdian.net/a/makabaka123");
             string text = "";
             bool input = false;
@@ -404,20 +517,8 @@ namespace MSL.pages
                         DialogShow.ShowMsg((MainWindow)Window.GetWindow(this), "获取失败，请添加QQ：483232994（昵称：MSL-FRP），并发送赞助图片来手动获取密码\r\n（注：回复消息不一定及时，请耐心等待！如果没有添加成功，或者添加后长时间无人回复，请进入MSL交流群然后从群里私聊）", "获取失败！");
                     });
                 }
-                bool _input = false;
-                string password = "";
-                Dispatcher.Invoke(() => { _input = DialogShow.ShowInput((MainWindow)Window.GetWindow(this), "在此输入您手动获取到的密码", out password); });
-                if (_input)
-                {
-                    _text = _text.Replace("meta_token = " + userPassword, "meta_token = " + password);
-                    using (FileStream fs = new FileStream(@"MSL\frpc", FileMode.Create, FileAccess.Write))
-                    using (StreamWriter sw = new StreamWriter(fs))
-                    {
-                        sw.Write(_text);
-                    }
-                    Growl.Success("您的密码已更新！");
-                }
             }
+            */
         }
 
         private void setfrpc_Click(object sender, RoutedEventArgs e)

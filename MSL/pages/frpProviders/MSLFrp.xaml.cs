@@ -15,6 +15,7 @@ using MessageBox = System.Windows.MessageBox;
 using System.IO;
 using Window = System.Windows.Window;
 using System.Threading;
+using Newtonsoft.Json;
 
 namespace MSL.pages.frpProviders
 {
@@ -574,39 +575,69 @@ namespace MSL.pages.frpProviders
             if (gotoAifadian.Content.ToString() == "购买付费节点")
             {
                 Window window= Window.GetWindow(this);
-                DialogShow.ShowMsg(window, "点击确定后，开服器会弹出一个输入框，同时为您打开爱发电网站，您需要在爱发电购买的时候备注自己的QQ号（纯数字，不要夹带其他内容），购买完毕后，返回开服器，将您的QQ号输入进弹出的输入框中，开服器会自动为您获取密码。\n（注：付费密码在购买后会在服务器保存30分钟，请及时返回开服器进行操作，如果超时，请自行添加QQ：483232994来手动获取）", "购买须知");
                 Process.Start("https://afdian.net/a/makabaka123");
-                string text = "";
-                bool input = DialogShow.ShowInput(window, "输入您在爱发电备注的QQ号：", out text);
-                if (input)
+                if(!DialogShow.ShowMsg(window, "请在弹出的浏览器网站中进行购买，购买完毕后点击确定进行下一步操作……", "购买须知", true, "取消购买", "确定"))
                 {
-                    Dialog _dialog = null;
-                    try
+                    return;
+                }
+                
+                bool input = DialogShow.ShowInput(window, "输入爱发电订单号：\n（头像→订单→找到发电项目→复制项目下方订单号）", out string order);
+                if (!input)
+                {
+                    return;
+                }
+                if (Regex.IsMatch(order, "[^0-9]") || order.Length < 5)
+                {
+                    DialogShow.ShowMsg(window, "请输入合法订单号：仅含数字且长度不小于5位！", "获取失败！");
+                    return;
+                }
+                bool _input = DialogShow.ShowInput(window, "输入账号(QQ号)：", out string qq);
+                if (!_input)
+                {
+                    return;
+                }
+                if (Regex.IsMatch(qq, "[^0-9]") || qq.Length < 5)
+                {
+                    DialogShow.ShowMsg(window, "请输入合法账号：仅含数字且长度不小于5位！", "获取失败！");
+                    return;
+                }
+                Dialog _dialog = null;
+                try
+                {
+                    _dialog = Dialog.Show(new TextDialog("发送请求中，请稍等……"));
+                    JObject keyValuePairs = new JObject()
                     {
-                        _dialog = Dialog.Show(new TextDialog("获取密码中，请稍等……"));
-                        var ret = await Task.Run(() => Functions.Post("getpassword", 1, text, "http://111.180.189.249:7004"));
-                        window.Focus();
-                        _dialog.Close();
-                        if (ret != "Err")
+                        ["order"] = order,
+                        ["qq"] = qq,
+                    };
+                    var ret = await Task.Run(() => Functions.Post("getpassword", 0, JsonConvert.SerializeObject(keyValuePairs), "http://111.180.189.249:7004"));
+                    window.Focus();
+                    _dialog.Close();
+                    JObject keyValues = JObject.Parse(ret);
+                    if(keyValues != null && int.Parse(keyValues["status"].ToString()) == 0)
+                    {
+                        string passwd= keyValues["password"].ToString();
+                        bool dialog = DialogShow.ShowMsg(window, "您的付费密码为：" + passwd + "\n注册时间："+keyValues["registration"].ToString()+"\n付费时长："+ keyValues["days"].ToString() + "天\n到期时间："+ keyValues["expiration"].ToString(), "购买成功！", true, "确定", "复制密码");
+                        if (dialog)
                         {
-                            bool dialog = DialogShow.ShowMsg(window, "您的付费密码为：" + ret + " 请牢记！\n是否将其填入密码框内？", "获取成功！", true, "取消", "确定");
-                            if (dialog)
-                            {
-                                passwordBox.Password = ret;
-                                //Clipboard.SetDataObject(ret);
-                            }
-                        }
-                        else
-                        {
-                            DialogShow.ShowMsg(window, "您的密码可能长时间无人获取，已经超时！请添加QQ：483232994（昵称：MSL-FRP），并发送赞助图片来手动获取密码\r\n（注：回复消息不一定及时，请耐心等待！如果没有添加成功，或者添加后长时间无人回复，请进入MSL交流群然后从群里私聊）", "获取失败！");
+                            //passwordBox.Password = passwd;
+                            Clipboard.SetDataObject(passwd);
                         }
                     }
-                    catch
+                    else if(keyValues != null)
                     {
-                        window.Focus();
-                        _dialog.Close();
-                        DialogShow.ShowMsg(window, "获取失败，请添加QQ：483232994（昵称：MSL-FRP），并发送赞助图片来手动获取密码\r\n（注：回复消息不一定及时，请耐心等待！如果没有添加成功，或者添加后长时间无人回复，请进入MSL交流群然后从群里私聊）", "获取失败！");
+                        DialogShow.ShowMsg(window, keyValues["reason"].ToString(), "获取失败！");
                     }
+                    else
+                    {
+                        DialogShow.ShowMsg(window, "返回内容为空！", "获取失败！");
+                    }
+                }
+                catch
+                {
+                    window.Focus();
+                    _dialog.Close();
+                    DialogShow.ShowMsg(window, "获取失败，请添加QQ：483232994（昵称：MSL-FRP），并发送发电成功截图+订单号来手动获取密码\n（注：回复消息不一定及时，请耐心等待！如果没有添加成功，或者添加后长时间无人回复，请进入MSL交流群然后从群里私聊）", "获取失败！");
                 }
             }
             else

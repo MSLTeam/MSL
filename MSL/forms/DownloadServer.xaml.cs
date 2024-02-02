@@ -1,4 +1,5 @@
-﻿using MSL.controls;
+﻿using HandyControl.Controls;
+using MSL.controls;
 using Newtonsoft.Json;
 using Newtonsoft.Json.Linq;
 using System;
@@ -119,17 +120,16 @@ namespace MSL.pages
         }
         void GetServer()
         {
-            Ping pingSender = new Ping();
-            string serverAddr = MainWindow.serverLink;
-            if (serverAddr != "https://msl.waheal.top")
+            try
             {
-                if (serverAddr.Contains("http://")) { serverAddr = serverAddr.Remove(0, 7); }
-                if (serverAddr.Contains(":")) { serverAddr = serverAddr.Substring(0, serverAddr.IndexOf(":")); }
-                PingReply reply = pingSender.Send(serverAddr, 2000); // 替换成您要 ping 的 IP 地址
-                if (reply.Status != IPStatus.Success)
+                if (Functions.Get("") != "200")
                 {
                     MainWindow.serverLink = "https://msl.waheal.top";
                 }
+            }
+            catch
+            {
+                MainWindow.serverLink = "https://msl.waheal.top";
             }
             Dispatcher.Invoke(() =>
             {

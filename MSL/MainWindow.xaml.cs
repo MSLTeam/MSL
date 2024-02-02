@@ -82,26 +82,20 @@ namespace MSL
             //get serverlink
             try
             {
-                string serverAddr = Functions.Get("", "https://msl-server.oss-cn-hangzhou.aliyuncs.com");
-                string _addr=serverAddr;
-                if (_addr.Contains(":"))
+                serverLink = "http://" + Functions.Get("", "https://msl-server.oss-cn-hangzhou.aliyuncs.com");
+                try
                 {
-                    _addr=_addr.Substring(0, _addr.IndexOf(":"));
+                    if (Functions.Get("")!="200")
+                    {
+                        serverLink = "https://msl.waheal.top";
+                        Growl.Info("MSL主服务器连接超时（可能被DDos），已切换至备用服务器！");
+                    }
                 }
-                Ping pingSender = new Ping();
-                PingReply reply = pingSender.Send(_addr, 2000); // 替换成您要 ping 的 IP 地址
-                if (reply.Status == IPStatus.Success)
-                {
-                    serverLink = "http://" + serverAddr;
-                    //Logger.LogInfo("已连接到可用的在线服务器");
-                }
-                else
+                catch
                 {
                     serverLink = "https://msl.waheal.top";
                     Growl.Info("MSL主服务器连接超时（可能被DDos），已切换至备用服务器！");
-                    //Logger.LogError("在匹配在线服务器时出现错误，已连接至备用服务器");
                 }
-
             }
             catch
             {

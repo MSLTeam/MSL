@@ -6,6 +6,8 @@ using System.Diagnostics;
 using System.IO;
 using System.IO.Compression;
 using System.Net;
+using System.Net.Sockets;
+using System.Net.WebSockets;
 using System.Text;
 using System.Text.RegularExpressions;
 using System.Windows;
@@ -60,7 +62,6 @@ namespace MSL
                 string token = Encoding.UTF8.GetString(pageData);
                 int index = token.IndexOf("\r\n");
                 string _token = token.Substring(0, index);
-                //string _email = token.Substring(index + 2);
                 var cfApiClient = new CurseForge.APIClient.ApiClient(_token);
                 if (loadType == 0)
                 {
@@ -78,60 +79,9 @@ namespace MSL
                     modUrls.Clear();
                     for (int i = 0; i < featuredMods.Data.Popular.Count; i++)
                     {
-                        //listBox.Items.Add(featuredMods.Data.Popular[i].Name);
-                        /*
-                        try
-                        {
-                            if (featuredMods.Data.Popular[i].Name.IndexOf("(") + 1 != 0)
-                            {
-                                string aaa = featuredMods.Data.Popular[i].Name.Substring(0, featuredMods.Data.Popular[0].Name.IndexOf("("));
-                                //MessageBox.Show(GetHtml("https://search.mcmod.cn/s?key=" + aaa + "&filter=1&mold="));
-
-                                string pageHtml = GetHtml("https://search.mcmod.cn/s?key=" + aaa + "&filter=1&mold=0");
-                                int IndexofA = pageHtml.IndexOf("耗时:");
-                                string Ru = pageHtml.Substring(IndexofA);
-                                string aa = Ru.Substring(0, Ru.IndexOf("</div><div class=\"foot\">"));
-
-
-                                int IndexofB = aa.IndexOf("html\">");
-                                string Ru2 = aa.Substring(IndexofB + 6);
-                                string a = Ru2.Substring(0, Ru2.IndexOf(" ("));
-
-                                a = a.Replace("<em>", "");
-                                a = a.Replace("</em>", "");
-
-                                listBox.Items.Add(new MODsInfo(featuredMods.Data.Popular[i].Logo.ThumbnailUrl, featuredMods.Data.Popular[i].Name + "(" + a + ")"));
-                                imageUrls.Add(featuredMods.Data.Popular[i].Logo.ThumbnailUrl);
-                                backList.Add(featuredMods.Data.Popular[i].Name + "(" + a + ")");
-                            }
-                            else
-                            {
-                                string pageHtml = GetHtml("https://search.mcmod.cn/s?key=" + featuredMods.Data.Popular[i].Name + "&filter=1&mold=0");
-                                int IndexofA = pageHtml.IndexOf("耗时:");
-                                string Ru = pageHtml.Substring(IndexofA);
-                                string aa = Ru.Substring(0, Ru.IndexOf("</div><div class=\"foot\">"));
-
-
-                                int IndexofB = aa.IndexOf("html\">");
-                                string Ru2 = aa.Substring(IndexofB + 6);
-                                string a = Ru2.Substring(0, Ru2.IndexOf(" ("));
-
-                                a = a.Replace("<em>", "");
-                                a = a.Replace("</em>", "");
-
-                                listBox.Items.Add(new MODsInfo(featuredMods.Data.Popular[i].Logo.ThumbnailUrl, featuredMods.Data.Popular[i].Name + "(" + a + ")"));
-                                imageUrls.Add(featuredMods.Data.Popular[i].Logo.ThumbnailUrl);
-                                backList.Add(featuredMods.Data.Popular[i].Name + "(" + a + ")");
-                            }
-                        }
-                        catch
-                        {
-                        */
-                            listBox.Items.Add(new MODsInfo(featuredMods.Data.Popular[i].Logo.ThumbnailUrl, featuredMods.Data.Popular[i].Name));
-                            imageUrls.Add(featuredMods.Data.Popular[i].Logo.ThumbnailUrl);
-                            backList.Add(featuredMods.Data.Popular[i].Name);
-                            //listBox.Items.Add(featuredMods.Data.Popular[i].Name);
-                        //}
+                        listBox.Items.Add(new MODsInfo(featuredMods.Data.Popular[i].Logo.ThumbnailUrl, featuredMods.Data.Popular[i].Name));
+                        imageUrls.Add(featuredMods.Data.Popular[i].Logo.ThumbnailUrl);
+                        backList.Add(featuredMods.Data.Popular[i].Name);
                         modIds.Add(featuredMods.Data.Popular[i].Id);
                         modUrls.Add(featuredMods.Data.Popular[i].Links.WebsiteUrl.ToString());
                     }
@@ -147,86 +97,15 @@ namespace MSL
                     modUrls.Clear();
                     for (int i = 0; i < modpacks.Data.Count; i++)
                     {
-                        /*
-                        try
-                        {
-                            if (modpacks.Data[i].Name.IndexOf("(") + 1 != 0)
-                            {
-                                string aaa = modpacks.Data[i].Name.Substring(0, modpacks.Data[0].Name.IndexOf("("));
-                                //MessageBox.Show(GetHtml("https://search.mcmod.cn/s?key=" + aaa + "&filter=1&mold="));
 
-                                string pageHtml = GetHtml("https://search.mcmod.cn/s?key=" + aaa + "&filter=1&mold=0");
-                                int IndexofA = pageHtml.IndexOf("耗时:");
-                                string Ru = pageHtml.Substring(IndexofA);
-                                string aa = Ru.Substring(0, Ru.IndexOf("</div><div class=\"foot\">"));
-
-
-                                int IndexofB = aa.IndexOf("html\">");
-                                string Ru2 = aa.Substring(IndexofB + 6);
-                                string a = Ru2.Substring(0, Ru2.IndexOf(" ("));
-
-                                a = a.Replace("<em>", "");
-                                a = a.Replace("</em>", "");
-
-                                listBox.Items.Add(new MODsInfo(modpacks.Data[i].Logo.ThumbnailUrl, modpacks.Data[i].Name + "(" + a + ")"));
-                                imageUrls.Add(modpacks.Data[i].Logo.ThumbnailUrl);
-                                backList.Add(modpacks.Data[i].Name + "(" + a + ")");
-                            }
-                            else
-                            {
-                                string pageHtml = GetHtml("https://search.mcmod.cn/s?key=" + modpacks.Data[i].Name + "&filter=1&mold=0");
-                                int IndexofA = pageHtml.IndexOf("耗时:");
-                                string Ru = pageHtml.Substring(IndexofA);
-                                string aa = Ru.Substring(0, Ru.IndexOf("</div><div class=\"foot\">"));
-
-
-                                int IndexofB = aa.IndexOf("html\">");
-                                string Ru2 = aa.Substring(IndexofB + 6);
-                                string a = Ru2.Substring(0, Ru2.IndexOf(" ("));
-
-                                a = a.Replace("<em>", "");
-                                a = a.Replace("</em>", "");
-
-                                listBox.Items.Add(new MODsInfo(modpacks.Data[i].Logo.ThumbnailUrl, modpacks.Data[i].Name + "(" + a + ")"));
-                                imageUrls.Add(modpacks.Data[i].Logo.ThumbnailUrl);
-                                backList.Add(modpacks.Data[i].Name + "(" + a + ")");
-                            }
-                        }
-                        catch
-                        {*/
-                            listBox.Items.Add(new MODsInfo(modpacks.Data[i].Logo.ThumbnailUrl, modpacks.Data[i].Name));
-                            imageUrls.Add(modpacks.Data[i].Logo.ThumbnailUrl);
-                            backList.Add(modpacks.Data[i].Name);
-                            //listBox.Items.Add(featuredMods.Data.Popular[i].Name);
-                        //}
+                        listBox.Items.Add(new MODsInfo(modpacks.Data[i].Logo.ThumbnailUrl, modpacks.Data[i].Name));
+                        imageUrls.Add(modpacks.Data[i].Logo.ThumbnailUrl);
+                        backList.Add(modpacks.Data[i].Name);
 
                         modIds.Add(modpacks.Data[i].Id);
                         modUrls.Add(modpacks.Data[i].Links.WebsiteUrl.ToString());
                     }
-                    /*
-                     var featuredMods = await cfApiClient.GetFeaturedModsAsync(new GetFeaturedModsRequestBody
-                    {
-                        GameId = 432,
-                        ExcludedModIds = new List<int>(),
-                        GameVersionTypeId = null
-                    });
-                    backList.Clear();
-                    imageUrls.Clear();
-                    listBox.Items.Clear();
-                    modIds.Clear();
-                    modVersionurl.Clear();
-                    modUrls.Clear();
-                    for (int i = 0; i < featuredMods.Data.Featured.Count; i++)
-                    {
-                        listBox.Items.Add(new MODsInfo(featuredMods.Data.Featured[i].Logo.ThumbnailUrl, featuredMods.Data.Featured[i].Name));
-                        imageUrls.Add(featuredMods.Data.Featured[i].Logo.ThumbnailUrl);
-                        backList.Add(featuredMods.Data.Featured[i].Name);
-                        modIds.Add(featuredMods.Data.Featured[i].Id);
-                        modUrls.Add(featuredMods.Data.Featured[i].Links.WebsiteUrl.ToString());
-                    }
-                     */
                 }
-                //listBox. = modAssets;
                 lCircle.IsRunning = false;
                 lCircle.Visibility = Visibility.Hidden;
                 lb01.Visibility = Visibility.Hidden;
@@ -235,7 +114,8 @@ namespace MSL
             }
             catch (Exception ex)
             {
-                MessageBox.Show("获取MOD失败！您的系统版本可能过旧，请再次尝试或前往浏览器自行下载！" + ex.ToString(), "错误", MessageBoxButton.OK, MessageBoxImage.Error);
+                DialogShow.ShowMsg(this, "获取模组/整合包失败！请重试或尝试连接代理后再试！\n" + ex.Message, "错误");
+                Close();
             }
         }
         private async void searchMod_Click(object sender, RoutedEventArgs e)
@@ -245,27 +125,6 @@ namespace MSL
                 lCircle.IsRunning = true;
                 lCircle.Visibility = Visibility.Visible;
                 lb01.Visibility = Visibility.Visible;
-                /*
-                if (Regex.IsMatch(textBox1.Text, @"[\u4e00-\u9fa5]"))
-                {
-                    DialogShow.ShowMsg(this, "检测到您输入了中文，为确保搜索准确性，是否让开服器将其自动翻译为英文？", "提示", true, "取消");
-                    //MessageDialog messageDialog = new MessageDialog();
-                    //messageDialog.Owner = this;
-                    //messageDialog.ShowDialog();
-                    if (MessageDialog._dialogReturn == true)
-                    {
-                        MessageDialog._dialogReturn = false;
-                        string pageHtml = GetHtml("https://search.mcmod.cn/s?key=" + textBox1.Text + "&filter=1&mold=0");
-                        int IndexofA = pageHtml.IndexOf("耗时:");
-                        string Ru = pageHtml.Substring(IndexofA);
-                        string aa = Ru.Substring(Ru.IndexOf("</em>"), Ru.IndexOf("</a></div>"));
-
-                        textBox1.Text = aa.Substring(aa.IndexOf("(") + 1, aa.IndexOf(")") - (aa.IndexOf("(") + 1));
-                        textBox1.Text = textBox1.Text.Replace("<em>", "");
-                        textBox1.Text = textBox1.Text.Replace("</em>", "");
-                    }
-                }
-                */
                 WebClient webClient = new WebClient();
                 webClient.Credentials = CredentialCache.DefaultCredentials;
                 byte[] pageData = webClient.DownloadData(MainWindow.serverLink + @"/msl/CC/cruseforgetoken");
@@ -283,70 +142,14 @@ namespace MSL
                 imageUrls.Clear();
                 for (int i = 0; i < searchedMods.Data.Count; i++)
                 {
-                    //listBox.Items.Add(searchedMods.Data[i].Name);
-                    /*
-                    try
-                    {
-                        if (searchedMods.Data[i].Name.IndexOf("(") + 1 != 0)
-                        {
-                            string aaa = searchedMods.Data[i].Name.Substring(0, searchedMods.Data[i].Name.IndexOf("("));
-                            //MessageBox.Show(GetHtml("https://search.mcmod.cn/s?key=" + aaa + "&filter=1&mold="));
 
-                            string pageHtml = GetHtml("https://search.mcmod.cn/s?key=" + aaa + "&filter=1&mold=0");
-                            int IndexofA = pageHtml.IndexOf("耗时:");
-                            string Ru = pageHtml.Substring(IndexofA);
-                            string aa = Ru.Substring(0, Ru.IndexOf("</div><div class=\"foot\">"));
-
-
-                            int IndexofB = aa.IndexOf("html\">");
-                            string Ru2 = aa.Substring(IndexofB + 6);
-                            string a = Ru2.Substring(0, Ru2.IndexOf(" ("));
-
-                            a = a.Replace("<em>", "");
-                            a = a.Replace("</em>", "");
-
-                            //listBox.ItemsSource = (System.Collections.IEnumerable)searchedMods.Data[i].Logo;
-                            //listBox.Items.Add(searchedMods.Data[i].Name + "(" + a + ")");
-                            listBox.Items.Add(new MODsInfo(searchedMods.Data[i].Logo.ThumbnailUrl, searchedMods.Data[i].Name + "(" + a + ")"));
-                            imageUrls.Add(searchedMods.Data[i].Logo.ThumbnailUrl);
-                            backList.Add(searchedMods.Data[i].Name + "(" + a + ")");
-                        }
-                        else
-                        {
-                            //MessageBox.Show(GetHtml("https://search.mcmod.cn/s?key=" + featuredMods.Data.Popular[i].Name + "&filter=1&mold="));
-                            string pageHtml = GetHtml("https://search.mcmod.cn/s?key=" + searchedMods.Data[i].Name + "&filter=1&mold=0");
-                            int IndexofA = pageHtml.IndexOf("耗时:");
-                            string Ru = pageHtml.Substring(IndexofA);
-                            string aa = Ru.Substring(0, Ru.IndexOf("</div><div class=\"foot\">"));
-
-
-                            int IndexofB = aa.IndexOf("html\">");
-                            string Ru2 = aa.Substring(IndexofB + 6);
-                            string a = Ru2.Substring(0, Ru2.IndexOf(" ("));
-
-                            a = a.Replace("<em>", "");
-                            a = a.Replace("</em>", "");
-
-                            listBox.Items.Add(new MODsInfo(searchedMods.Data[i].Logo.ThumbnailUrl, searchedMods.Data[i].Name + "(" + a + ")"));
-                            imageUrls.Add(searchedMods.Data[i].Logo.ThumbnailUrl);
-                            backList.Add(searchedMods.Data[i].Name + "(" + a + ")");
-
-                        }
-
-                    }
-                    catch
-                    {*/
-                        listBox.Items.Add(new MODsInfo(searchedMods.Data[i].Logo.ThumbnailUrl, searchedMods.Data[i].Name));
-                        imageUrls.Add(searchedMods.Data[i].Logo.ThumbnailUrl);
-                        backList.Add(searchedMods.Data[i].Name);
-                        //listBox.Items.Add(searchedMods.Data[i].Name);
-                    //}
+                    listBox.Items.Add(new MODsInfo(searchedMods.Data[i].Logo.ThumbnailUrl, searchedMods.Data[i].Name));
+                    imageUrls.Add(searchedMods.Data[i].Logo.ThumbnailUrl);
+                    backList.Add(searchedMods.Data[i].Name);
 
                     modIds.Add(searchedMods.Data[i].Id);
-                    //fileIds.Add(searchedMods.Data[i].MainFileId);
                     modUrls.Add(searchedMods.Data[i].Links.WebsiteUrl.ToString());
                 }
-                //MessageBox.Show(GetHtml("https://search.mcmod.cn/s?key=" + searchedMods.Data[0].Name + "&filter=1&mold="));
                 lCircle.IsRunning = false;
                 lCircle.Visibility = Visibility.Hidden;
                 lb01.Visibility = Visibility.Hidden;
@@ -452,10 +255,6 @@ namespace MSL
                         }
 
                         DialogShow.ShowDownload(this, Url, Dir, filename, "下载中……");
-
-                        //Process.Start(modVersionurl[modVersions.SelectedIndex]);
-                        //Thread thread = new Thread(DownloadFile);
-                        //thread.Start();
                     }
                     else if (loadType == 1)
                     {
@@ -463,9 +262,6 @@ namespace MSL
                         Url = modVersionurl[listBox.SelectedIndex];
                         DialogShow.ShowDownload(this, Url, Dir, "ServerPack.zip", "下载中……");
                         Close();
-                        //Process.Start(modVersionurl[modVersions.SelectedIndex]);
-                        //Thread thread = new Thread(DownloadFile);
-                        //thread.Start();
                     }
                 }
             }
@@ -474,38 +270,6 @@ namespace MSL
                 MessageBox.Show("获取MOD失败！您的系统版本可能过旧，请再次尝试或前往浏览器自行下载！", "错误", MessageBoxButton.OK, MessageBoxImage.Error);
             }
         }
-
-        /*
-        public string GetHtml(string Url)
-        {
-            string datas = "";
-            //远程访问
-            WebRequest request = WebRequest.Create(Url);
-            request.Method = "GET";
-            request.Headers.Add("Accept-Encoding", "gzip,deflate");
-
-            HttpWebResponse response = (HttpWebResponse)request.GetResponse();
-            StreamReader reader;
-            //抓取的网页是压缩状态
-            if (response.ContentEncoding.ToLower() == "gzip")
-            {
-                using (Stream stream = response.GetResponseStream())
-                {
-                    using (var zipStream = new GZipStream(stream, CompressionMode.Decompress))
-                    {
-                        reader = new StreamReader(zipStream, Encoding.GetEncoding("UTF-8"));
-                        datas = reader.ReadToEnd();
-                    }
-                }
-            }
-            else
-            {
-                reader = new StreamReader(response.GetResponseStream(), Encoding.GetEncoding("UTF-8"));
-                datas = reader.ReadToEnd();
-            }
-            return datas;
-        }
-        */
 
         private void backBtn_Click(object sender, RoutedEventArgs e)
         {

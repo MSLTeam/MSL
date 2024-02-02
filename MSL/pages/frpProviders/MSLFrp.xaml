@@ -15,7 +15,7 @@
         <TextBox x:Name="portBox" HorizontalAlignment="Left" Height="23" Margin="330,65,0,0" VerticalAlignment="Top" Width="400" Text="25565"/>
         <TextBox x:Name="accountBox" HorizontalAlignment="Left" Height="23" Margin="330,150,0,0" VerticalAlignment="Top" Width="400"/>
         <Label x:Name="lab1" Content="输入本地端口(Java版默认25565,基岩版默认19132,双协议用|分割)：" HorizontalAlignment="Left" Margin="290,30,0,0" VerticalAlignment="Top" Background="{x:Null}" BorderBrush="{x:Null}" FontSize="14"/>
-        <Label x:Name="lab2" Content="输入您的QQ号：" HorizontalAlignment="Left" Margin="290,115,0,0" VerticalAlignment="Top" BorderBrush="{x:Null}" Background="{x:Null}" FontSize="14"/>
+        <Label x:Name="lab2" Content="输入账号（QQ号）：" HorizontalAlignment="Left" Margin="290,115,0,0" VerticalAlignment="Top" BorderBrush="{x:Null}" Background="{x:Null}" FontSize="14"/>
         <Label Content="节点列表：" HorizontalAlignment="Left" VerticalAlignment="Top" FontSize="20" Margin="10,0,0,0" Background="{x:Null}" BorderBrush="{x:Null}" Height="40" Padding="10,0,10,5" FontWeight="Bold"/>
         <Label x:Name="gonggao" Content="加载中" HorizontalAlignment="Left" Margin="20,285,0,0" VerticalAlignment="Top" FontSize="16" Height="95" Width="595" HorizontalContentAlignment="Left" VerticalContentAlignment="Top"/>
         <Label Content="（请务必选择节点）" HorizontalAlignment="Left" Margin="110,5,0,0" VerticalAlignment="Top" FontSize="16" BorderBrush="{x:Null}" Background="{x:Null}" Height="35" Padding="0,0,0,5"/>
