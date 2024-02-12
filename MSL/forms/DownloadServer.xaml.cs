@@ -1,5 +1,4 @@
-﻿using HandyControl.Controls;
-using MSL.controls;
+﻿using MSL.controls;
 using Newtonsoft.Json;
 using Newtonsoft.Json.Linq;
 using System;
@@ -7,15 +6,12 @@ using System.Collections.Generic;
 using System.Diagnostics;
 using System.IO;
 using System.Linq;
-using System.Net.NetworkInformation;
-using System.Text;
 using System.Text.RegularExpressions;
 using System.Threading;
 using System.Windows;
 using System.Windows.Controls;
 using System.Windows.Input;
 using System.Windows.Threading;
-using Windows.ApplicationModel.Contacts;
 using File = System.IO.File;
 
 namespace MSL.pages
@@ -25,15 +21,11 @@ namespace MSL.pages
     /// </summary>
     public partial class DownloadServer : HandyControl.Controls.Window
     {
-        //public static event DeleControl DownComplete;
-        //List<string> serverurl = new List<string>();
         List<string> serverdownurl = new List<string>();
-        //string autoupdate;
-        //string mserversurl;
         public static string downloadServerBase;
         public static string downloadServerName;
         public static string downloadServerJava;
-        //public static string autoupdateserver="&";
+
         public DownloadServer()
         {
             downloadServerName = string.Empty;
@@ -251,73 +243,79 @@ namespace MSL.pages
 
         void InstallForge()
         {
-            string forgeVersion;
-            string serverDownUrl = serverdownurl[serverlist1.SelectedIndex].ToString();
-
-            if (serverDownUrl.Contains("bmcl"))
-            {
-                Match match = Regex.Match(serverDownUrl, @"&version=([\w.-]+)&category");
-                if (serverlist1.SelectedItem.ToString().Contains("-"))
-                {
-                    string version = serverlist1.SelectedItem.ToString().Split('-')[0];
-                    forgeVersion = version + "-" + match.Groups[1].Value;
-                }
-                else
-                {
-                    forgeVersion = serverlist1.SelectedItem.ToString() + "-" + match.Groups[1].Value;
-                }
-            }
-            else
-            {
-                Match match = Regex.Match(serverDownUrl, @"forge-([\w.-]+)-installer");
-                forgeVersion = match.Groups[1].Value;
-            }
-            if (!Path.IsPathRooted(downloadServerJava) && File.Exists(downloadServerJava))
-            {
-                downloadServerJava = AppDomain.CurrentDomain.BaseDirectory + downloadServerJava;
-            }
-            Directory.SetCurrentDirectory(downloadServerBase);
-            Process process = new Process();
-            process.StartInfo.FileName = downloadServerJava;
-            process.StartInfo.Arguments = "-jar " + filename + " -installServer";
-            //process.StartInfo.Arguments = "-jar " + filename + " -mirror https://bmclapi2.bangbang93.com/maven/ -installServer";
-            process.Start();
-            Directory.SetCurrentDirectory(AppDomain.CurrentDomain.BaseDirectory);
             try
             {
+                string forgeVersion;
+                string serverDownUrl = serverdownurl[serverlist1.SelectedIndex].ToString();
 
-                while (!process.HasExited)
+                if (serverDownUrl.Contains("bmcl"))
                 {
-                    Thread.Sleep(1000);
-                }
-                if (File.Exists(downloadServerBase + "\\libraries\\net\\minecraftforge\\forge\\" + forgeVersion + "\\win_args.txt"))
-                {
-                    downloadServerName = "@libraries/net/minecraftforge/forge/" + forgeVersion + "/win_args.txt %*";
-                    //CreateServer.isCreateForge = true;
-                    Close();
+                    Match match = Regex.Match(serverDownUrl, @"&version=([\w.-]+)&category");
+                    if (serverlist1.SelectedItem.ToString().Contains("-"))
+                    {
+                        string version = serverlist1.SelectedItem.ToString().Split('-')[0];
+                        forgeVersion = version + "-" + match.Groups[1].Value;
+                    }
+                    else
+                    {
+                        forgeVersion = serverlist1.SelectedItem.ToString() + "-" + match.Groups[1].Value;
+                    }
                 }
                 else
                 {
-                    DirectoryInfo directoryInfo = new DirectoryInfo(downloadServerBase);
-                    FileInfo[] fileInfo = directoryInfo.GetFiles();
-                    foreach (FileInfo file in fileInfo)
+                    Match match = Regex.Match(serverDownUrl, @"forge-([\w.-]+)-installer");
+                    forgeVersion = match.Groups[1].Value;
+                }
+                if (!Path.IsPathRooted(downloadServerJava) && File.Exists(downloadServerJava))
+                {
+                    downloadServerJava = AppDomain.CurrentDomain.BaseDirectory + downloadServerJava;
+                }
+                Directory.SetCurrentDirectory(downloadServerBase);
+                Process process = new Process();
+                process.StartInfo.FileName = downloadServerJava;
+                process.StartInfo.Arguments = "-jar " + filename + " -installServer";
+                //process.StartInfo.Arguments = "-jar " + filename + " -mirror https://bmclapi2.bangbang93.com/maven/ -installServer";
+                process.Start();
+                Directory.SetCurrentDirectory(AppDomain.CurrentDomain.BaseDirectory);
+                try
+                {
+                    while (!process.HasExited)
                     {
-                        if (file.Name.IndexOf("forge-" + forgeVersion) + 1 != 0)
-                        {
-                            downloadServerName = file.FullName.Replace(downloadServerBase + @"\", "");
-                            break;
-                        }
-                        else
-                        {
-                            DialogShow.ShowMsg(this, "下载失败,请多次尝试或使用代理再试！", "错误");
-                        }
+                        Thread.Sleep(1000);
                     }
-                    Close();
+                    if (File.Exists(downloadServerBase + "\\libraries\\net\\minecraftforge\\forge\\" + forgeVersion + "\\win_args.txt"))
+                    {
+                        downloadServerName = "@libraries/net/minecraftforge/forge/" + forgeVersion + "/win_args.txt %*";
+                        //CreateServer.isCreateForge = true;
+                        Close();
+                    }
+                    else
+                    {
+                        DirectoryInfo directoryInfo = new DirectoryInfo(downloadServerBase);
+                        FileInfo[] fileInfo = directoryInfo.GetFiles();
+                        foreach (FileInfo file in fileInfo)
+                        {
+                            if (file.Name.IndexOf("forge-" + forgeVersion) + 1 != 0)
+                            {
+                                downloadServerName = file.FullName.Replace(downloadServerBase + @"\", "");
+                                break;
+                            }
+                            else
+                            {
+                                DialogShow.ShowMsg(this, "下载失败,请多次尝试或使用代理再试！", "错误");
+                            }
+                        }
+                        Close();
+                    }
+                }
+                catch
+                {
+                    DialogShow.ShowMsg(this, "下载失败！", "错误");
                 }
             }
-            catch
+            catch(Exception ex)
             {
-                DialogShow.ShowMsg(this, "下载失败！", "错误");
+                DialogShow.ShowMsg(this, "出现错误！\n"+ex.Message, "错误");
             }
         }
 

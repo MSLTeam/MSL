@@ -13,6 +13,9 @@ using System.Security.Policy;
 using System.Net.Http;
 using System.Threading.Tasks;
 using System.Drawing.Drawing2D;
+using System.Diagnostics;
+using System.Linq;
+using HandyControl.Controls;
 
 namespace MSL.controls
 {
@@ -176,6 +179,109 @@ namespace MSL.controls
                 throw new DirectoryNotFoundException("源目录不存在！");
             }
         }
+
+        public static async Task<(bool, string)> CheckJavaAvailabilityAsync(string application)
+        {
+            try
+            {
+                string javaInfo = null;
+                Process process = new Process();
+                process.StartInfo.FileName = application;
+                process.StartInfo.Arguments = "-version";
+                process.StartInfo.UseShellExecute = false;
+                process.StartInfo.CreateNoWindow = true;
+                process.StartInfo.RedirectStandardOutput = true;
+                process.StartInfo.RedirectStandardError = true;
+                process.Start();
+
+                string output = await process.StandardError.ReadToEndAsync();
+
+                await Task.Run(() => process.WaitForExit());
+
+                Match match = Regex.Match(output, @"java version \""([\d\._]+)\""");
+                Match _match = Regex.Match(output, @"openjdk version \""([\d\._]+)\""");
+                if (match.Success)
+                {
+                    javaInfo = "Java " + match.Groups[1].Value;
+                    return (true, javaInfo);
+                }
+                else if (_match.Success)
+                {
+                    javaInfo = "OpenJDK " + _match.Groups[1].Value;
+                    return (true, javaInfo);
+                }
+                else
+                {
+                    return (false, null);
+                }
+            }
+            catch
+            {
+                return (false, null);
+            }
+        }
+
+        public static List<string> CheckJava()
+        {
+            string[] javaPaths = new string[]
+{
+    @"Program Files\Java",
+    @"Program Files (x86)\Java",
+    @"Java"
+};
+            DriveInfo[] drives = DriveInfo.GetDrives();
+            List<string> strings = new List<string>();
+            foreach (DriveInfo drive in drives)
+            {
+                string driveLetter = drive.Name.Substring(0, 1);
+                foreach (string _javaPath in javaPaths)
+                {
+                    string javaPath = string.Format(@"{0}:\{1}", driveLetter, _javaPath);
+                    if (Directory.Exists(javaPath))
+                    {
+                        string[] directories = Directory.GetDirectories(javaPath);
+                        foreach (string directory in directories)
+                        {
+                            string jvPath = CheckJavaDirectory(directory);
+                            if (jvPath != null)
+                            {
+                                strings.Add(jvPath);
+                            }
+                        }
+                        string[] files = Directory.GetFiles(javaPath, "release", SearchOption.TopDirectoryOnly);
+                        foreach (string file in files)
+                        {
+                            string jvPath = CheckJavaRelease(file);
+                            if(jvPath!= null)
+                            {
+                                strings.Add(jvPath);
+                            }
+                        }
+                    }
+                }
+            }
+            return strings;
+        }
+        private static string CheckJavaDirectory(string directory)
+        {
+            string[] files = Directory.GetFiles(directory, "release", SearchOption.TopDirectoryOnly);
+            foreach (string file in files)
+            {
+                return CheckJavaRelease(file);
+            }
+            return null;
+        }
+        private static string CheckJavaRelease(string releaseFile)
+        {
+            string releaseContent = File.ReadAllText(releaseFile);
+            Match match = Regex.Match(releaseContent, @"JAVA_VERSION=""([\d\._a-zA-Z]+)""");
+            if (match.Success)
+            {
+                string javaVersion = match.Groups[1].Value;
+                return "Java" + javaVersion + ":" + Path.GetDirectoryName(releaseFile) + "\\bin\\java.exe";
+            }
+            return null;
+        }
     }
 
     #region OpenFrp Api
@@ -248,7 +354,7 @@ namespace MSL.controls
             }
         }
 
-        public (Dictionary<string, string>, JArray) GetNodeList(Window window)
+        public (Dictionary<string, string>, JArray) GetNodeList(System.Windows.Window window)
         {
             /*
             JObject userinfo = new JObject
@@ -305,7 +411,7 @@ namespace MSL.controls
             }
         }
 
-        public void UserSign(Window window)
+        public void UserSign(System.Windows.Window window)
         {
             /*
             JObject userinfo = new JObject

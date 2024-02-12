@@ -124,11 +124,9 @@
     <Compile Include="controls\MessageDialog.xaml.cs">
       <DependentUpon>MessageDialog.xaml</DependentUpon>
     </Compile>
-    <Compile Include="controls\RelayCommand.cs" />
     <Compile Include="controls\TextDialog.xaml.cs">
       <DependentUpon>TextDialog.xaml</DependentUpon>
     </Compile>
-    <Compile Include="controls\WindowViewModel.cs" />
     <Compile Include="forms\CreateServer.xaml.cs">
       <DependentUpon>CreateServer.xaml</DependentUpon>
     </Compile>

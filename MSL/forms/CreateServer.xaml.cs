@@ -76,6 +76,23 @@ namespace MSL.forms
         {
             if (useJVself.IsChecked == true)
             {
+                outlog.Content = "正在检查所选Java可用性，请稍等……";
+                txjava.IsEnabled = false;
+                a0002_Copy.IsEnabled = false;
+                (bool javaAvailability, string javainfo) = await Functions.CheckJavaAvailabilityAsync(txjava.Text);
+                txjava.IsEnabled = true;
+                a0002_Copy.IsEnabled = true;
+                if (javaAvailability)
+                {
+                    outlog.Content = "所选Java版本：" + javainfo;
+                }
+                else
+                {
+                    outlog.Content = "检测Java可用性失败";
+                    DialogShow.ShowMsg(this, "检测Java可用性失败，您的Java似乎不可用！请检查是否选择正确！", "错误");
+                    usedownloadjv.IsChecked = true;
+                    return;
+                }
                 serverjava = txjava.Text;
                 sserver.IsSelected = true;
                 sserver.IsEnabled = true;
@@ -501,44 +518,46 @@ namespace MSL.forms
             txjava.IsEnabled = false;
             a0002_Copy.IsEnabled = false;
             selectCheckedJavaComb.Items.Clear();
-            CheckJava();
-        }
-        private void usejvPath_Checked(object sender, RoutedEventArgs e)
-        {
-            txjava.IsEnabled = false;
-            a0002_Copy.IsEnabled = false;
-            try
+            List<string> strings =Functions.CheckJava();
+            if (strings != null)
             {
-                Process process = new Process();
-                process.StartInfo.FileName = "java";
-                process.StartInfo.Arguments = "-version";
-                process.StartInfo.UseShellExecute = false;
-                process.StartInfo.CreateNoWindow = true;
-                process.StartInfo.RedirectStandardOutput = true;
-                process.StartInfo.RedirectStandardError = true;
-                process.Start();
-
-                string output = process.StandardError.ReadToEnd();
-                process.WaitForExit();
-
-                Match match = Regex.Match(output, @"java version \""([\d\._]+)\""");
-                if (match.Success)
+                foreach (string str in strings)
                 {
-                    outlog.Content = "环境变量可用性检查完毕，您的环境变量正常！";
-                    usejvPath.Content = "使用环境变量:" + "Java" + match.Groups[1].Value;
-                }
-                else
-                {
-                    DialogShow.ShowMsg(this, "检测环境变量失败，您的环境变量似乎不存在！", "错误");
-                    usedownloadjv.IsChecked = true;
+                    selectCheckedJavaComb.Items.Add(str);
                 }
             }
-            catch
+            
+            if (selectCheckedJavaComb.Items.Count > 0)
             {
+                outlog.Content = "检测完毕！";
+                selectCheckedJavaComb.SelectedIndex = 0;
+            }
+            else
+            {
+                outlog.Content = "检测完毕，暂未找到Java";
+                usedownloadjv.IsChecked = true;
+            }
+        }
+
+        private async void usejvPath_Checked(object sender, RoutedEventArgs e)
+        {
+            outlog.Content = "正在检查环境变量可用性，请稍等……";
+            txjava.IsEnabled = false;
+            a0002_Copy.IsEnabled = false;
+            (bool javaAvailability, string javainfo) = await Functions.CheckJavaAvailabilityAsync("java");
+            if (javaAvailability)
+            {
+                outlog.Content = "环境变量可用性检查完毕，您的环境变量正常！";
+                usejvPath.Content = "使用环境变量：" + javainfo;
+            }
+            else
+            {
+                outlog.Content = "检测环境变量失败";
                 DialogShow.ShowMsg(this, "检测环境变量失败，您的环境变量似乎不存在！", "错误");
                 usedownloadjv.IsChecked = true;
             }
         }
+
         private void useJVself_Checked(object sender, RoutedEventArgs e)
         {
             txjava.IsEnabled = true;
@@ -557,67 +576,11 @@ namespace MSL.forms
             txb3.IsEnabled = true;
             a0002.IsEnabled = true;
         }
-        void CheckJava()
-        {
-            string[] javaPaths = new string[]
-{
-    @"Program Files\Java",
-    @"Program Files (x86)\Java",
-    @"Java"
-};
-            DriveInfo[] drives = DriveInfo.GetDrives();
-            foreach (DriveInfo drive in drives)
-            {
-                string driveLetter = drive.Name.Substring(0, 1);
-                foreach (string _javaPath in javaPaths)
-                {
-                    string javaPath = string.Format(@"{0}:\{1}", driveLetter, _javaPath);
-                    if (Directory.Exists(javaPath))
-                    {
-                        string[] directories = Directory.GetDirectories(javaPath);
-                        foreach (string directory in directories)
-                        {
-                            CheckJavaDirectory(directory);
-                        }
-                        string[] files = Directory.GetFiles(javaPath, "release", SearchOption.TopDirectoryOnly);
-                        foreach (string file in files)
-                        {
-                            CheckJavaRelease(file);
-                        }
-                    }
-                }
-            }
-            if (selectCheckedJavaComb.Items.Count > 0)
-            {
-                outlog.Content = "检测完毕！";
-                selectCheckedJavaComb.SelectedIndex = 0;
-            }
-            else
-            {
-                outlog.Content = "检测完毕，暂未找到Java";
-                usedownloadjv.IsChecked = true;
-            }
-        }
+        
 
-        void CheckJavaDirectory(string directory)
-        {
-            string[] files = Directory.GetFiles(directory, "release", SearchOption.TopDirectoryOnly);
-            foreach (string file in files)
-            {
-                CheckJavaRelease(file);
-            }
-        }
+        
 
-        void CheckJavaRelease(string releaseFile)
-        {
-            string releaseContent = File.ReadAllText(releaseFile);
-            Match match = Regex.Match(releaseContent, @"JAVA_VERSION=""([\d\._a-zA-Z]+)""");
-            if (match.Success)
-            {
-                string javaVersion = match.Groups[1].Value;
-                selectCheckedJavaComb.Items.Add("Java" + javaVersion + ":" + Path.GetDirectoryName(releaseFile) + "\\bin\\java.exe");
-            }
-        }
+        
 
         private void next_Click(object sender, RoutedEventArgs e)
         {

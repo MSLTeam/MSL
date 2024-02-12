@@ -21,4 +21,42 @@
         <Setter Property="Padding" Value="0"/>
         <Setter Property="Margin" Value="3"/>
     </Style>
+    <ControlTemplate x:Key="SideMenuTemplate" TargetType="{x:Type ListBoxItem}">
+        <Border CornerRadius="5" Background="{DynamicResource SideMenuItemBrush}" x:Name="Border">
+            <Grid>
+                <Rectangle Fill="{DynamicResource SideMenuItemBrush}" RadiusX="5" RadiusY="5" HorizontalAlignment="Left" Width="3" Height="24" x:Name="Rect"/>
+                <ContentPresenter RecognizesAccessKey="True" Margin="{TemplateBinding Padding}"/>
+            </Grid>
+        </Border>
+        <ControlTemplate.Triggers>
+            <MultiDataTrigger>
+                <MultiDataTrigger.Conditions>
+                    <Condition Binding="{Binding IsMouseOver, RelativeSource={RelativeSource Self}}" Value="True"/>
+                    <Condition Binding="{Binding IsSelected, RelativeSource={RelativeSource Self}}" Value="False"/>
+                </MultiDataTrigger.Conditions>
+                <MultiDataTrigger.EnterActions>
+                    <BeginStoryboard>
+                        <Storyboard>
+                            <ColorAnimation Storyboard.TargetName="Rect" Storyboard.TargetProperty="Fill.Color" To="Gray" Duration="0:0:0.2"/>
+                            <ColorAnimation Storyboard.TargetName="Border" Storyboard.TargetProperty="Background.Color" To="Gray" Duration="0:0:0.0"/>
+                            <DoubleAnimation Storyboard.TargetName="Border" Storyboard.TargetProperty="(Border.Background).Opacity" Duration="0:0:0.1" To="0.5"/>
+                        </Storyboard>
+                    </BeginStoryboard>
+                </MultiDataTrigger.EnterActions>
+                <MultiDataTrigger.ExitActions>
+                    <BeginStoryboard>
+                        <Storyboard>
+                            <ColorAnimation Storyboard.TargetName="Rect" Storyboard.TargetProperty="Fill.Color" Duration="0:0:0.5"/>
+                            <ColorAnimation Storyboard.TargetName="Border" Storyboard.TargetProperty="Background.Color" Duration="0:0:0.5"/>
+                            <DoubleAnimation Storyboard.TargetName="Border" Storyboard.TargetProperty="(Border.Background).Opacity" Duration="0:0:0.5"/>
+                        </Storyboard>
+                    </BeginStoryboard>
+                </MultiDataTrigger.ExitActions>
+            </MultiDataTrigger>
+            <Trigger Property="IsSelected" Value="True">
+                <Setter TargetName="Rect" Property="Fill" Value="{DynamicResource PrimaryBrush}"/>
+                <Setter TargetName="Border" Property="Background" Value="{DynamicResource BorderBackground}"/>
+            </Trigger>
+        </ControlTemplate.Triggers>
+    </ControlTemplate>
 </ResourceDictionary>

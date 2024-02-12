@@ -67,12 +67,8 @@ namespace MSL.pages
         {
             for (int id = 0; id < serverList.Items.Count; id++)
             {
-                //MessageBox.Show(id.ToString());
-
                 ServerInfo _server = serverList.Items[id] as ServerInfo;
-                //MessageBox.Show(RunningServerIDs);
-                //MessageBox.Show(serverid[id]);
-                if (RunningServerIDs.IndexOf(serverid[id] + " ") + 1 != 0)
+                if (RunningServerIDs.IndexOf(serverid[id] + "_1 ") + 1 != 0)
                 {
                     _server.ServerState = "运行中";
                     _server.ServerStateFore = Brushes.Red;
@@ -159,32 +155,16 @@ namespace MSL.pages
         {
             try
             {
-                if (RunningServerIDs.IndexOf(serverid[serverList.SelectedIndex].ToString() + " ") + 1 != 0)
+                if (RunningServerIDs.Contains(serverid[serverList.SelectedIndex].ToString()))
                 {
                     MainWindow.serverid = serverid[serverList.SelectedIndex];
                     OpenServerForm();
                     return;
                 }
-                /*
-                JObject jsonObject = JObject.Parse(File.ReadAllText(@"MSL\ServerList.json", Encoding.UTF8));
-                JObject _json = (JObject)jsonObject[serverid[serverList.SelectedIndex]];
-                if (_json["core"].ToString().IndexOf("Bungeecord") + 1 != 0 || _json["core"].ToString().IndexOf("bungeecord") + 1 != 0)
-                {
-                    MessageBox.Show("开服器暂不支持Bungeecord服务端的运行，请右键点击“用命令行开服”选项来开服！");
-                    return;
-                }
-                */
                 ServerRunner runner = new ServerRunner
                 {
                     RserverId = serverid[serverList.SelectedIndex],
                 };
-                /*
-                runner.Rserverjava = _json["java"].ToString();
-                runner.Rserverbase = _json["base"].ToString();
-                runner.Rserverserver = _json["core"].ToString();
-                runner.RserverJVM = _json["memory"].ToString();
-                runner.RserverJVMcmd = _json["args"].ToString();
-                */
                 runner.Show();
             }
             catch (Exception ex) { MessageBox.Show("出现错误，请检查您是否选择了服务器！\n" + ex.Message); }
@@ -199,7 +179,7 @@ namespace MSL.pages
         {
             try
             {
-                if (RunningServerIDs.IndexOf(serverid[serverList.SelectedIndex].ToString() + " ") + 1 != 0)
+                if (RunningServerIDs.Contains(serverid[serverList.SelectedIndex].ToString()))
                 {
                     MainWindow.serverid = serverid[serverList.SelectedIndex];
                     OpenServerForm();

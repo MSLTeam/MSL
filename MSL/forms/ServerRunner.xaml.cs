@@ -31,7 +31,7 @@ namespace MSL
     /// <summary>
     /// ServerRunner.xaml 的交互逻辑
     /// </summary>
-    public partial class ServerRunner : Window
+    public partial class ServerRunner
     {
         private delegate void DelReadStdOutput(string result);
         private event DelReadStdOutput ReadStdOutput;
@@ -70,6 +70,7 @@ namespace MSL
         }
         private void Window_Loaded(object sender, RoutedEventArgs e)
         {
+            ServerList.RunningServerIDs += RserverId + "_0 ";
             WindowLoadingEvent();
             GetFastCmd();
             if (ServerList.ControlSetPMTab == true)
@@ -95,6 +96,10 @@ namespace MSL
         {
             try
             {
+                if(ServerList.RunningServerIDs.Contains(RserverId+"_0 "))
+                {
+                    ServerList.RunningServerIDs = ServerList.RunningServerIDs.Replace(RserverId + "_0 ", "");
+                }
                 if (ServerProcess.HasExited != true)
                 {
                     bool dialog = DialogShow.ShowMsg(this, "检测到您没有关闭服务器，是否隐藏此窗口？\n如要重新显示此窗口，请在服务器列表内双击该服务器（或点击开启服务器按钮）", "警告", true, "取消");
@@ -273,24 +278,18 @@ namespace MSL
         {
             if (isOpen)
             {
-                TitleGrid.SetResourceReference(BackgroundProperty, "SideMenuBrush");
+                this.SetResourceReference(NonClientAreaBackgroundProperty, "SideMenuBrush");
                 TitleBox.SetResourceReference(ForegroundProperty, "TextBlockBrush");
-                MaxBtn.SetResourceReference(ForegroundProperty, "TextBlockBrush");
-                MinBtn.SetResourceReference(ForegroundProperty, "TextBlockBrush");
-                CloseBtn.SetResourceReference(ForegroundProperty, "TextBlockBrush");
+                this.SetResourceReference(CloseButtonForegroundProperty, "TextBlockBrush");
+                this.SetResourceReference(OtherButtonForegroundProperty, "TextBlockBrush");
             }
             else
             {
-                TitleGrid.SetResourceReference(BackgroundProperty, "PrimaryBrush");
+                this.SetResourceReference(NonClientAreaBackgroundProperty, "PrimaryBrush");
                 TitleBox.Foreground = Brushes.White;
-                MaxBtn.Foreground = Brushes.White;
-                MinBtn.Foreground = Brushes.White;
-                CloseBtn.Foreground = Brushes.White;
+                CloseButtonForeground = Brushes.White;
+                OtherButtonForeground = Brushes.White;
             }
-        }
-        private void DelBackground()
-        {
-            SetResourceReference(BackgroundProperty, "BackgroundBrush");
         }
         #endregion
 
@@ -543,7 +542,7 @@ namespace MSL
         {
             if (isEnable)
             {
-                ServerList.RunningServerIDs = ServerList.RunningServerIDs + RserverId + " ";
+                ServerList.RunningServerIDs = ServerList.RunningServerIDs.Replace(RserverId + "_0 ", RserverId + "_1 ");
                 ServerStateChange();
 
                 getServerInfoLine = 0;
@@ -567,7 +566,7 @@ namespace MSL
             }
             else
             {
-                ServerList.RunningServerIDs = ServerList.RunningServerIDs.Replace(RserverId + " ", "");
+                ServerList.RunningServerIDs = ServerList.RunningServerIDs.Replace(RserverId + "_1 ", "");
                 ServerStateChange();
 
                 Growl.Info("服务器已关闭！");
@@ -2587,6 +2586,8 @@ namespace MSL
                                     break;
                                 default:
                                     Growl.Error("请选择一个版本以下载！");
+                                    doneBtn1.IsEnabled = true;
+                                    refreahConfig.IsEnabled = true;
                                     return;
                             }
                         });
@@ -2597,6 +2598,8 @@ namespace MSL
                             if (!unzipJava)
                             {
                                 DialogShow.ShowMsg(this, "安装失败，请查看是否有杀毒软件进行拦截！请确保添加信任或关闭杀毒软件后进行重新安装！", "错误");
+                                doneBtn1.IsEnabled = true;
+                                refreahConfig.IsEnabled = true;
                                 return;
                             }
                             downout.Content = "完成";
@@ -2617,6 +2620,8 @@ namespace MSL
                     catch
                     {
                         Growl.Error("出现错误，请检查网络连接！");
+                        doneBtn1.IsEnabled = true;
+                        refreahConfig.IsEnabled = true;
                         return;
                     }
                 }
@@ -2624,7 +2629,20 @@ namespace MSL
                 {
                     if (!Path.IsPathRooted(jAva.Text))
                     {
-                        jAva.Text = jAva.Text;
+                        jAva.Text = AppDomain.CurrentDomain.BaseDirectory.ToString()+ jAva.Text;
+                    }
+                    Growl.Info("正在检查所选Java可用性，请稍等……");
+                    (bool javaAvailability, string javainfo) = await Functions.CheckJavaAvailabilityAsync(jAva.Text);
+                    if (javaAvailability)
+                    {
+                        Growl.Success("检测完毕，Java可用！\n"+"版本：" + javainfo);
+                    }
+                    else
+                    {
+                        DialogShow.ShowMsg(this, "检测Java可用性失败，您的Java似乎不可用！请检查是否选择正确！", "错误");
+                        doneBtn1.IsEnabled = true;
+                        refreahConfig.IsEnabled = true;
+                        return;
                     }
                 }
                 else if (usecheckedjv.IsChecked == true)
@@ -2914,76 +2932,33 @@ namespace MSL
                 }
             }
         }
-        private void useJvpath_Checked(object sender, RoutedEventArgs e)
+        private async void useJvpath_Checked(object sender, RoutedEventArgs e)
         {
-            try
+            Growl.Info("正在检查环境变量可用性，请稍等……");
+            (bool javaAvailability, string javainfo) = await Functions.CheckJavaAvailabilityAsync("java");
+            if (javaAvailability)
             {
-                Process process = new Process();
-                process.StartInfo.FileName = "java";
-                process.StartInfo.Arguments = "-version";
-                process.StartInfo.UseShellExecute = false;
-                process.StartInfo.CreateNoWindow = true;
-                process.StartInfo.RedirectStandardOutput = true;
-                process.StartInfo.RedirectStandardError = true;
-                process.Start();
-
-                string output = process.StandardError.ReadToEnd();
-                process.WaitForExit();
-
-                Match match = Regex.Match(output, @"java version \""([\d\._]+)\""");
-                if (match.Success)
-                {
-                    downout.Content = "您的环境变量正常！";
-                    useJvpath.Content = "使用环境变量:" + "Java" + match.Groups[1].Value;
-                }
-                else
-                {
-                    DialogShow.ShowMsg(this, "检测环境变量失败，您的环境变量似乎不存在！", "错误");
-                    useSelf.IsChecked = true;
-                }
+                Growl.Success("检查完毕，您的环境变量正常！");
+                useJvpath.Content = "使用环境变量：" + javainfo;
             }
-            catch
+            else
             {
-                DialogShow.ShowMsg(this, "检测环境变量失败，您的环境变量似乎不存在！", "错误");
-                useSelf.IsChecked = true;
+                DialogShow.ShowMsg(this, "检测失败，您的环境变量似乎不存在！", "错误");
             }
         }
 
         private void usecheckedjv_Checked(object sender, RoutedEventArgs e)
         {
             selectCheckedJavaComb.Items.Clear();
-            CheckJava();
-        }
-        void CheckJava()
-        {
-            string[] javaPaths = new string[]
-{
-    @"Program Files\Java",
-    @"Program Files (x86)\Java",
-    @"Java"
-};
-            DriveInfo[] drives = DriveInfo.GetDrives();
-            foreach (DriveInfo drive in drives)
+            List<string> strings = Functions.CheckJava();
+            if (strings != null)
             {
-                string driveLetter = drive.Name.Substring(0, 1);
-                foreach (string _javaPath in javaPaths)
+                foreach (string str in strings)
                 {
-                    string javaPath = string.Format(@"{0}:\{1}", driveLetter, _javaPath);
-                    if (Directory.Exists(javaPath))
-                    {
-                        string[] directories = Directory.GetDirectories(javaPath);
-                        foreach (string directory in directories)
-                        {
-                            CheckJavaDirectory(directory);
-                        }
-                        string[] files = Directory.GetFiles(javaPath, "release", SearchOption.TopDirectoryOnly);
-                        foreach (string file in files)
-                        {
-                            CheckJavaRelease(file);
-                        }
-                    }
+                    selectCheckedJavaComb.Items.Add(str);
                 }
             }
+
             if (selectCheckedJavaComb.Items.Count > 0)
             {
                 downout.Content = "检测完毕！";
@@ -2991,29 +2966,11 @@ namespace MSL
             }
             else
             {
-                downout.Content = "检测完毕，暂未找到Java";
+                downout.Content = "暂未找到Java";
                 useSelf.IsChecked = true;
             }
         }
-        void CheckJavaDirectory(string directory)
-        {
-            string[] files = Directory.GetFiles(directory, "release", SearchOption.TopDirectoryOnly);
-            foreach (string file in files)
-            {
-                CheckJavaRelease(file);
-            }
-        }
-
-        void CheckJavaRelease(string releaseFile)
-        {
-            string releaseContent = File.ReadAllText(releaseFile);
-            Match match = Regex.Match(releaseContent, @"JAVA_VERSION=""([\d\._a-zA-Z]+)""");
-            if (match.Success)
-            {
-                string javaVersion = match.Groups[1].Value;
-                selectCheckedJavaComb.Items.Add("Java" + javaVersion + ":" + Path.GetDirectoryName(releaseFile) + "\\bin\\java.exe");
-            }
-        }
+        
         private void setServerconfig_Click(object sender, RoutedEventArgs e)
         {
             SetServerconfig.serverbase = Rserverbase;
@@ -3603,19 +3560,6 @@ namespace MSL
         private void Window_Deactivated(object sender, EventArgs e)
         {
             Growl.SetGrowlParent(GrowlPanel, false);
-        }
-
-        private void Window_SizeChanged(object sender, SizeChangedEventArgs e)
-        {
-            if (this.WindowState == WindowState.Maximized)
-            {
-                MainGrid.Margin = new Thickness(7);
-
-            }
-            else
-            {
-                MainGrid.Margin = new Thickness(0);
-            }
         }
         #endregion
     }

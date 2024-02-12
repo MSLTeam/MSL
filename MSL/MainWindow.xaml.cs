@@ -23,7 +23,7 @@ namespace MSL
     /// <summary>
     /// xaml 的交互逻辑
     /// </summary>
-    public partial class MainWindow : Window
+    public partial class MainWindow
     {
         readonly Home _homePage = new Home();
         readonly ServerList _listPage = new ServerList();
@@ -52,8 +52,8 @@ namespace MSL
         {
             this.Topmost = true;
             LoadingCircle loadingCircle = new LoadingCircle();
-            BodyGrid.Children.Add(loadingCircle);
-            BodyGrid.RegisterName("loadingBar", loadingCircle);
+            MainGrid.Children.Add(loadingCircle);
+            MainGrid.RegisterName("loadingBar", loadingCircle);
             this.Topmost = false;
             //Logger.LogInfo("主窗体UI控件加载完毕！");
             Thread thread = new Thread(AsyncLoadEvent);
@@ -450,8 +450,8 @@ namespace MSL
                 SideMenu.IsEnabled = true;
                 SideMenu.SelectedIndex = 0;
                 LoadingCircle loadingCircle = MainGrid.FindName("loadingBar") as LoadingCircle;
-                BodyGrid.Children.Remove(loadingCircle);
-                BodyGrid.UnregisterName("loadingBar");
+                MainGrid.Children.Remove(loadingCircle);
+                MainGrid.UnregisterName("loadingBar");
             });
             //Logger.LogInfo("软件加载完毕！");
         }
@@ -659,19 +659,17 @@ namespace MSL
         {
             if (isOpen)
             {
-                TitleGrid.SetResourceReference(BackgroundProperty, "SideMenuBrush");
+                this.SetResourceReference(NonClientAreaBackgroundProperty, "SideMenuBrush");
                 TitleBox.SetResourceReference(ForegroundProperty, "TextBlockBrush");
-                MaxBtn.SetResourceReference(ForegroundProperty, "TextBlockBrush");
-                MinBtn.SetResourceReference(ForegroundProperty, "TextBlockBrush");
-                CloseBtn.SetResourceReference(ForegroundProperty, "TextBlockBrush");
+                this.SetResourceReference(CloseButtonForegroundProperty, "TextBlockBrush");
+                this.SetResourceReference(OtherButtonForegroundProperty, "TextBlockBrush");
             }
             else
             {
-                TitleGrid.SetResourceReference(BackgroundProperty, "PrimaryBrush");
+                this.SetResourceReference(NonClientAreaBackgroundProperty, "PrimaryBrush");
                 TitleBox.Foreground = Brushes.White;
-                MaxBtn.Foreground = Brushes.White;
-                MinBtn.Foreground = Brushes.White;
-                CloseBtn.Foreground = Brushes.White;
+                CloseButtonForeground = Brushes.White;
+                OtherButtonForeground = Brushes.White;
             }
         }
         public static void SetDynamicResourceKey(DependencyObject obj, DependencyProperty prop, object resourceKey)
@@ -740,19 +738,6 @@ namespace MSL
                 case 5:
                     frame.Content = _aboutPage;
                     break;
-            }
-        }
-
-        private void Window_SizeChanged(object sender, SizeChangedEventArgs e)
-        {
-            if (this.WindowState == WindowState.Maximized)
-            {
-                MainGrid.Margin = new Thickness(7);
-
-            }
-            else
-            {
-                MainGrid.Margin = new Thickness(0);
             }
         }
 
