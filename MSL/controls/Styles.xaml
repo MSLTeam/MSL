@@ -16,7 +16,7 @@
         <Setter Property="VerticalAlignment" Value="Top"/>
         <Setter Property="BorderBrush" Value="{x:Null}"/>
         <Setter Property="Background" Value="{x:Null}"/>
-        <Setter Property="Foreground" Value="{DynamicResource TextBlockBrush}"/>
+        <Setter Property="Foreground" Value="{DynamicResource PrimaryTextBrush}"/>
         <Setter Property="FontWeight" Value="Bold"/>
         <Setter Property="Padding" Value="0"/>
         <Setter Property="Margin" Value="3"/>

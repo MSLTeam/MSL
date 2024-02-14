@@ -12,10 +12,10 @@
     <Grid x:Name="MainGrid">
         <TabControl Background="{x:Null}">
             <TabItem Header="MSL-FRP" Background="{DynamicResource SideMenuBrush}">
-                <Frame Source="/pages/frpProviders/MSLFrp.xaml"/>
+                <Frame Source="/pages/frpProviders/MSLFrp.xaml" BorderBrush="{x:Null}"/>
             </TabItem>
             <TabItem Header="OpenFRP" Background="{DynamicResource SideMenuBrush}">
-                <Frame Source="/pages/frpProviders/OpenFrp.xaml"/>
+                <Frame Source="/pages/frpProviders/OpenFrp.xaml" BorderBrush="{x:Null}"/>
             </TabItem>
         </TabControl>
     </Grid>

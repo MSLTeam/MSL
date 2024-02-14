@@ -40,7 +40,7 @@
             <Button x:Name="logoutBtn" Content="登出" Margin="630,5,0,0" VerticalAlignment="Top" HorizontalAlignment="Left" Width="100" Height="30" Click="logoutBtn_Click"/>
         </Grid>
         <Grid x:Name="LoginGrid" Visibility="Hidden">
-            <TextBlock Text="使用OpenFrp服务之前，请先登录您的OpenFrp账户" HorizontalAlignment="Center" VerticalAlignment="Center" Margin="0,0,0,70" FontSize="16" Foreground="{DynamicResource TextBlockBrush}"/>
+            <TextBlock Text="使用OpenFrp服务之前，请先登录您的OpenFrp账户" HorizontalAlignment="Center" VerticalAlignment="Center" Margin="0,0,0,70" FontSize="16" Foreground="{DynamicResource PrimaryTextBrush}"/>
             <Button x:Name="userLogin" Content="登录我的OpenFrp账户" Margin="200,0,0,0" Click="userLogin_Click"/>
             <Button x:Name="userRegister" Content="我没有OpenFrp账户，点击注册" Margin="0,0,200,0" Click="userRegister_Click"/>
         </Grid>

@@ -7,7 +7,6 @@ using System;
 using System.Diagnostics;
 using System.IO;
 using System.Management;
-using System.Net.NetworkInformation;
 using System.Text;
 using System.Threading;
 using System.Windows;
@@ -15,7 +14,6 @@ using System.Windows.Media;
 using System.Windows.Threading;
 using Brush = System.Windows.Media.Brush;
 using MessageBox = System.Windows.MessageBox;
-using Window = System.Windows.Window;
 
 namespace MSL
 {
@@ -88,13 +86,13 @@ namespace MSL
                     if (Functions.Get("")!="200")
                     {
                         serverLink = "https://msl.waheal.top";
-                        Growl.Info("MSL主服务器连接超时（可能被DDos），已切换至备用服务器！");
+                        DialogShow.GrowlInfo("MSL主服务器连接超时（可能被DDos），已切换至备用服务器！");
                     }
                 }
                 catch
                 {
                     serverLink = "https://msl.waheal.top";
-                    Growl.Info("MSL主服务器连接超时（可能被DDos），已切换至备用服务器！");
+                    DialogShow.GrowlInfo("MSL主服务器连接超时（可能被DDos），已切换至备用服务器！");
                 }
             }
             catch
@@ -314,7 +312,7 @@ namespace MSL
             catch (Exception ex)
             {
                 //Logger.LogError("读取配置时出现错误！错误代码："+ex.Message);
-                Growl.Error("MSL在加载配置文件时出现错误，此报错可能不影响软件运行，但还是建议您将其反馈给作者！\n错误代码：" + ex.Message);
+                DialogShow.GrowlErr("MSL在加载配置文件时出现错误，此报错可能不影响软件运行，但还是建议您将其反馈给作者！\n错误代码：" + ex.Message);
             }
 
             //更新
@@ -360,23 +358,23 @@ namespace MSL
                         else
                         {
                             //Logger.LogInfo("用户拒绝更新！");
-                            Growl.Error("您拒绝了更新新版本，若在此版本中遇到bug，请勿报告给作者！");
+                            DialogShow.GrowlErr("您拒绝了更新新版本，若在此版本中遇到bug，请勿报告给作者！");
                         }
                     });
                 }
                 else if (newVersion < version)
                 {
-                    Growl.Info("当前版本高于正式版本，若使用中遇到BUG，请及时反馈！");
+                    DialogShow.GrowlInfo("当前版本高于正式版本，若使用中遇到BUG，请及时反馈！");
                 }
                 else
                 {
-                    Growl.Success("您使用的开服器已是最新版本！");
+                    DialogShow.GrowlSuccess("您使用的开服器已是最新版本！");
                 }
             }
             catch
             {
                 //Logger.LogError("检测更新失败！");
-                Growl.Error("检查更新失败！");
+                DialogShow.GrowlErr("检查更新失败！");
             }
             //获取电脑内存
             try
@@ -404,7 +402,7 @@ namespace MSL
                 else if (jsonObject["autoOpenServer"].ToString() != "False")
                 {
                     string servers = jsonObject["autoOpenServer"].ToString();
-                    Growl.Info("正在为你自动打开相应服务器……");
+                    DialogShow.GrowlInfo("正在为你自动打开相应服务器……");
                     while (servers != "")
                     {
                         int aserver = servers.IndexOf(",");
@@ -433,7 +431,7 @@ namespace MSL
                 }
                 else if (jsonObject["autoOpenFrpc"].ToString() == "True")
                 {
-                    Growl.Info("正在为你自动打开内网映射……");
+                    DialogShow.GrowlInfo("正在为你自动打开内网映射……");
                     AutoOpenFrpc();
                 }
                 //Logger.LogInfo("读取自动开启（内网映射）配置成功！");
@@ -660,9 +658,9 @@ namespace MSL
             if (isOpen)
             {
                 this.SetResourceReference(NonClientAreaBackgroundProperty, "SideMenuBrush");
-                TitleBox.SetResourceReference(ForegroundProperty, "TextBlockBrush");
-                this.SetResourceReference(CloseButtonForegroundProperty, "TextBlockBrush");
-                this.SetResourceReference(OtherButtonForegroundProperty, "TextBlockBrush");
+                TitleBox.SetResourceReference(ForegroundProperty, "PrimaryTextBrush");
+                this.SetResourceReference(CloseButtonForegroundProperty, "PrimaryTextBrush");
+                this.SetResourceReference(OtherButtonForegroundProperty, "PrimaryTextBrush");
             }
             else
             {
@@ -686,22 +684,22 @@ namespace MSL
                 sideMenuContextOpen.Width = 100;
                 SideMenu.Width = 100;
                 frame.Margin = new Thickness(100, 0, 0, 0);
-                string jsonString = File.ReadAllText(@"MSL\config.json", System.Text.Encoding.UTF8);
+                string jsonString = File.ReadAllText(@"MSL\config.json", Encoding.UTF8);
                 JObject jobject = JObject.Parse(jsonString);
                 jobject["sidemenu"] = "0";
                 string convertString = Convert.ToString(jobject);
-                File.WriteAllText(@"MSL\config.json", convertString, System.Text.Encoding.UTF8);
+                File.WriteAllText(@"MSL\config.json", convertString, Encoding.UTF8);
             }
             else
             {
                 sideMenuContextOpen.Width = 50;
                 SideMenu.Width = 50;
                 frame.Margin = new Thickness(50, 0, 0, 0);
-                string jsonString = File.ReadAllText(@"MSL\config.json", System.Text.Encoding.UTF8);
+                string jsonString = File.ReadAllText(@"MSL\config.json", Encoding.UTF8);
                 JObject jobject = JObject.Parse(jsonString);
                 jobject["sidemenu"] = "1";
                 string convertString = Convert.ToString(jobject);
-                File.WriteAllText(@"MSL\config.json", convertString, System.Text.Encoding.UTF8);
+                File.WriteAllText(@"MSL\config.json", convertString, Encoding.UTF8);
             }
         }
 

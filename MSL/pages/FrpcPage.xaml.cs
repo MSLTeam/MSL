@@ -46,7 +46,7 @@ namespace MSL.pages
                 Dispatcher.Invoke(() =>
                 {
                     startfrpc.Content = "关闭内网映射";
-                    Growl.Info("正在启动内网映射！");
+                    DialogShow.GrowlInfo("正在启动内网映射！");
                     setfrpc.IsEnabled = false;
                     startfrpc.IsEnabled = false;
                     frpcOutlog.Text = "启动中，请稍候……\n";
@@ -169,7 +169,7 @@ namespace MSL.pages
                 }
                 Dispatcher.Invoke(() =>
                 {
-                    Growl.Success("内网映射已关闭！");
+                    DialogShow.GrowlSuccess("内网映射已关闭！");
                     startfrpc.IsEnabled = true;
                 });
             }
@@ -211,7 +211,7 @@ namespace MSL.pages
                 if (msg.IndexOf("failed") + 1 != 0)
                 {
                     frpcOutlog.Text = frpcOutlog.Text + "内网映射桥接失败！\n";
-                    Growl.Error("内网映射桥接失败！");
+                    DialogShow.GrowlErr("内网映射桥接失败！");
                     if (msg.Contains("付费资格已过期"))
                     {
                         Thread thread = new Thread(PaidServe);
@@ -230,90 +230,18 @@ namespace MSL.pages
                 {
                     frpcOutlog.Text = frpcOutlog.Text + "登录服务器成功！\n";
                 }
-                /*
-                if (msg.IndexOf("match") + 1 != 0 && msg.IndexOf("token") + 1 != 0)
-                {
-                    try
-                    {
-                        if (!FRPCMD.HasExited)
-                        {
-                            Task.Run(() => StopProcess(FRPCMD));
-                        }
-                        frpcOutlog.Text = frpcOutlog.Text + "重新连接服务器...\n";
-                        Thread.Sleep(200);
-                        string frpcserver = GetFrpcIP().Substring(0, GetFrpcIP().IndexOf(".")) + "*";
-                        int frpcserver2 = GetFrpcIP().IndexOf(".") + 1;
-                        WebClient MyWebClient = new WebClient();
-                        MyWebClient.Credentials = CredentialCache.DefaultCredentials;
-                        byte[] pageData = MyWebClient.DownloadData(MainWindow.serverLink + @"/msl/CC/frpcserver.txt");
-                        string _string = Encoding.UTF8.GetString(pageData);
-                        int IndexofA = _string.IndexOf(frpcserver);
-                        string Ru = _string.Substring(IndexofA + frpcserver2);
-                        string a111 = Ru.Substring(0, Ru.IndexOf("*"));
-                        byte[] pageData2 = new WebClient().DownloadData(a111);
-                        string pageHtml = Encoding.UTF8.GetString(pageData2);
-                        string aaa = File.ReadAllText("MSL\\frpc");
-                        int IndexofA2 = aaa.IndexOf("token = ");
-                        string Ru2 = aaa.Substring(IndexofA2);
-                        string a112 = Ru2.Substring(0, Ru2.IndexOf("\n"));
-                        aaa = aaa.Replace(a112, "token = " + pageHtml);
-                        File.WriteAllText("MSL\\frpc", aaa);
-                        Task.Run(() => StartFrpc());
-                    }
-                    catch
-                    {
-                        Growl.Error("内网映射桥接失败！");
-                    }
-                }
-                */
             }
-            /*
-            if (msg.IndexOf("reconnect") + 1 != 0 && msg.IndexOf("error") + 1 != 0 && msg.IndexOf("token") + 1 != 0)
-            {
-                try
-                {
-                    if (!FRPCMD.HasExited)
-                    {
-                        Task.Run(() => StopProcess(FRPCMD));
-                    }
-                    frpcOutlog.Text = frpcOutlog.Text + "重新连接服务器...\n";
-                    Thread.Sleep(200);
-                    string frpcserver = GetFrpcIP().Substring(0, GetFrpcIP().IndexOf(".")) + "*";
-                    int frpcserver2 = GetFrpcIP().IndexOf(".") + 1;
-                    WebClient MyWebClient = new WebClient();
-                    MyWebClient.Credentials = CredentialCache.DefaultCredentials;
-                    byte[] pageData = MyWebClient.DownloadData(MainWindow.serverLink + @"/msl/CC/frpcserver.txt");
-                    string _string = Encoding.UTF8.GetString(pageData);
-                    int IndexofA = _string.IndexOf(frpcserver);
-                    string Ru = _string.Substring(IndexofA + frpcserver2);
-                    string a111 = Ru.Substring(0, Ru.IndexOf("*"));
-                    byte[] pageData2 = new WebClient().DownloadData(a111);
-                    string pageHtml = Encoding.UTF8.GetString(pageData2);
-                    string aaa = File.ReadAllText("MSL\\frpc");
-                    int IndexofA2 = aaa.IndexOf("token = ");
-                    string Ru2 = aaa.Substring(IndexofA2);
-                    string a112 = Ru2.Substring(0, Ru2.IndexOf("\n"));
-                    aaa = aaa.Replace(a112, "token = " + pageHtml);
-                    File.WriteAllText("MSL\\frpc", aaa);
-                    Task.Run(() => StartFrpc());
-                }
-                catch
-                {
-                    Growl.Error("内网映射桥接失败！");
-                }
-            }
-            */
             if (msg.IndexOf("start") + 1 != 0)
             {
                 if (msg.IndexOf("success") + 1 != 0)
                 {
                     frpcOutlog.Text = frpcOutlog.Text + "内网映射桥接成功！您可复制IP进入游戏了！\n";
-                    Growl.Success("内网映射桥接成功！");
+                    DialogShow.GrowlSuccess("内网映射桥接成功！");
                 }
                 if (msg.IndexOf("error") + 1 != 0)
                 {
                     frpcOutlog.Text = frpcOutlog.Text + "内网映射桥接失败！\n";
-                    Growl.Error("内网映射桥接失败！");
+                    DialogShow.GrowlErr("内网映射桥接失败！");
                     if (msg.IndexOf("port already used") + 1 != 0)
                     {
                         frpcOutlog.Text = frpcOutlog.Text + "本地端口被占用，请不要频繁开关内网映射并等待一分钟再试。\n若一分钟后仍然占用，请尝试手动结束frpc进程或重启电脑再试。\n";
@@ -424,15 +352,6 @@ namespace MSL.pages
                     Dispatcher.Invoke(() =>
                     {
                         DialogShow.ShowMsg(window, "您的付费密码为：" + keyValues["password"].ToString() + "\n注册时间：" + keyValues["registration"].ToString() + "\n本次续费：" + keyValues["days"].ToString() + "天\n到期时间：" + keyValues["expiration"].ToString(), "续费成功！");
-                        /*
-                        string passwd = keyValues["password"].ToString();
-                        bool dialog = DialogShow.ShowMsg(window, "您的付费密码为：" + passwd + "\n注册时间：" + keyValues["registration"].ToString() + "\n本次续费：" + keyValues["days"].ToString() + "天\n到期时间：" + keyValues["expiration"].ToString(), "续费成功！", true, "确定", "复制密码");
-                        if (dialog)
-                        {
-                            //passwordBox.Password = passwd;
-                            Clipboard.SetDataObject(ret);
-                        }
-                        */
                     });
                 }
                 else if (keyValues != null)
@@ -459,66 +378,6 @@ namespace MSL.pages
                     DialogShow.ShowMsg((MainWindow)Window.GetWindow(this), "获取失败，请添加QQ：483232994（昵称：MSL-FRP），并发送发电成功截图+订单号来手动获取密码\r\n（注：回复消息不一定及时，请耐心等待！如果没有添加成功，或者添加后长时间无人回复，请进入MSL交流群然后从群里私聊）", "获取失败！");
                 });
             }
-            /*
-            bool __input = false;
-            string password = "";
-            Dispatcher.Invoke(() => { __input = DialogShow.ShowInput((MainWindow)Window.GetWindow(this), "在此输入新密码（若新旧密码一致请忽略此步骤）", out password); });
-            if (__input)
-            {
-                _text = _text.Replace("meta_token = " + userPassword, "meta_token = " + password);
-                using (FileStream fs = new FileStream(@"MSL\frpc", FileMode.Create, FileAccess.Write))
-                using (StreamWriter sw = new StreamWriter(fs))
-                {
-                    sw.Write(_text);
-                }
-                Growl.Success("您的密码已更新！");
-            }
-            */
-
-            /*
-            Process.Start("https://afdian.net/a/makabaka123");
-            string text = "";
-            bool input = false;
-            Dispatcher.Invoke(() => { input = DialogShow.ShowInput((MainWindow)Window.GetWindow(this), "在爱发电购买完毕后，在此输入QQ号，以获取您的密码：", out text, userAccount); });
-            if (input)
-            {
-                Dialog _dialog = null;
-                try
-                {
-                    Dispatcher.Invoke(() => { _dialog = Dialog.Show(new TextDialog("获取密码中，请稍等……")); });
-                    var ret = Functions.Post("getpassword", 1, text, "http://http://111.180.189.249:7004");
-                    Dispatcher.Invoke(() =>
-                    {
-                        this.Focus();
-                        _dialog.Close();
-                    });
-                    if (ret != "Err")
-                    {
-                        _text = _text.Replace("meta_token = " + userPassword, "meta_token = " + ret);
-                        using (FileStream fs = new FileStream(@"MSL\frpc", FileMode.Create, FileAccess.Write))
-                        using (StreamWriter sw = new StreamWriter(fs))
-                        {
-                            sw.Write(_text);
-                        }
-                        Dispatcher.Invoke(() => { DialogShow.ShowMsg((MainWindow)Window.GetWindow(this), "您的付费密码为：" + ret + " 旧密码已自动替换为新密码，您现在可以启动映射了！", "获取成功！"); });
-                        return;
-                    }
-                    else
-                    {
-                        Dispatcher.Invoke(() => { DialogShow.ShowMsg((MainWindow)Window.GetWindow(this), "您的密码可能长时间无人获取，已经超时！请添加QQ：483232994（昵称：MSL-FRP），并发送赞助图片来手动获取密码\r\n（注：回复消息不一定及时，请耐心等待！如果没有添加成功，或者添加后长时间无人回复，请进入MSL交流群然后从群里私聊）", "获取失败！"); });
-                    }
-                }
-                catch
-                {
-                    Dispatcher.Invoke(() =>
-                    {
-                        this.Focus();
-                        _dialog.Close();
-                        DialogShow.ShowMsg((MainWindow)Window.GetWindow(this), "获取失败，请添加QQ：483232994（昵称：MSL-FRP），并发送赞助图片来手动获取密码\r\n（注：回复消息不一定及时，请耐心等待！如果没有添加成功，或者添加后长时间无人回复，请进入MSL交流群然后从群里私聊）", "获取失败！");
-                    });
-                }
-            }
-            */
         }
 
         private void setfrpc_Click(object sender, RoutedEventArgs e)
@@ -566,12 +425,12 @@ namespace MSL.pages
                 try
                 {
                     startfrpc.IsEnabled = false;
-                    Growl.Info("正在关闭内网映射！");
+                    DialogShow.GrowlInfo("正在关闭内网映射！");
                     Task.Run(() => StopProcess(FRPCMD));
                 }
                 catch
                 {
-                    Growl.Error("关闭失败！请尝试手动结束frpc进程！");
+                    DialogShow.GrowlErr("关闭失败！请尝试手动结束frpc进程！");
                 }
             }
         }
@@ -769,7 +628,7 @@ namespace MSL.pages
             }
             catch
             {
-                MessageBox.Show("出现错误，请重试:" + "m0x3");
+                MessageBox.Show("出现错误，请重试");
             }
         }
     }

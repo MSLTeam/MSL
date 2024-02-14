@@ -172,7 +172,7 @@ namespace MSL.forms
                                         dwnJava = DownloadJava("Java21", javaList["Java21"].ToString());
                                         break;
                                     default:
-                                        Growl.Error("请选择一个版本以下载！");
+                                        DialogShow.GrowlErr("请选择一个版本以下载！");
                                         break;
                                 }
                             });
@@ -223,7 +223,7 @@ namespace MSL.forms
                         }
                         catch
                         {
-                            Growl.Error("出现错误，请检查网络连接！");
+                            DialogShow.GrowlErr("出现错误，请检查网络连接！");
                         }
                     }
                 }
@@ -298,7 +298,7 @@ namespace MSL.forms
                 }
                 else if (files.Count == 0)
                 {
-                    Growl.Info("开服器未在整合包中找到核心文件，请您进行下载或手动选择已有核心，核心的版本要和整合包对应的游戏版本一致");
+                    DialogShow.GrowlInfo("开服器未在整合包中找到核心文件，请您进行下载或手动选择已有核心，核心的版本要和整合包对应的游戏版本一致");
                 }
             }
         }
@@ -673,7 +673,7 @@ namespace MSL.forms
                     tabCtrl.Visibility = Visibility.Visible;
                     isImportPack = true;
                     serverbase = serverPath;
-                    Growl.Info("整合包解压完成！请在此界面选择Java环境，Java的版本要和导入整合包的版本相对应，详情查看界面下方的表格");
+                    DialogShow.GrowlInfo("整合包解压完成！请在此界面选择Java环境，Java的版本要和导入整合包的版本相对应，详情查看界面下方的表格");
                     sserver.IsSelected = true;
                     sserver.IsEnabled = true;
                     welcome.IsEnabled = false;
@@ -734,7 +734,7 @@ namespace MSL.forms
                             tabCtrl.Visibility = Visibility.Visible;
                             isImportPack = true;
                             serverbase = serverPath;
-                            Growl.Info("整合包解压完成！请在此界面选择Java环境，Java的版本要和导入整合包的版本相对应，详情查看界面下方的表格");
+                            DialogShow.GrowlInfo("整合包解压完成！请在此界面选择Java环境，Java的版本要和导入整合包的版本相对应，详情查看界面下方的表格");
                             sserver.IsSelected = true;
                             sserver.IsEnabled = true;
                             welcome.IsEnabled = false;
@@ -964,7 +964,7 @@ namespace MSL.forms
             }
             catch (Exception a)
             {
-                Growl.Info("获取服务端失败！请重试" + a.Message);
+                DialogShow.GrowlInfo("获取服务端失败！请重试" + a.Message);
             }
         }
         List<string> typeVersions = new List<string>();
@@ -1271,7 +1271,7 @@ namespace MSL.forms
                             dwnJava = DownloadJava("Java21", javaList["Java21"].ToString());
                             break;
                         default:
-                            Growl.Error("请选择一个版本以下载！");
+                            DialogShow.GrowlErr("请选择一个版本以下载！");
                             break;
                     }
                 });
@@ -1311,7 +1311,7 @@ namespace MSL.forms
             }
             catch
             {
-                Growl.Error("出现错误，请检查网络连接！");
+                DialogShow.GrowlErr("出现错误，请检查网络连接！");
                 FastModeInstallBtn.IsEnabled = true;
             }
         }

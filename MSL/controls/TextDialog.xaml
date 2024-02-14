@@ -11,6 +11,6 @@
             Height="200"
             Background="{DynamicResource DialogBrush2}">
     <hc:SimplePanel>
-        <TextBlock Name="DialogText" Foreground="{StaticResource TextBlockBrush}" Text="Please Wait" HorizontalAlignment="Center" VerticalAlignment="Center" FontSize="20"/>
+        <TextBlock Name="DialogText" Foreground="{StaticResource PrimaryTextBrush}" Text="Please Wait" HorizontalAlignment="Center" VerticalAlignment="Center" FontSize="20"/>
     </hc:SimplePanel>
 </Border>

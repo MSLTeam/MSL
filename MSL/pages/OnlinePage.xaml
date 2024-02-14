@@ -51,7 +51,7 @@
                         </Grid>
                     </Expander>
                 </StackPanel>
-                <TextBox x:Name="frpcOutlog" Grid.Row="1" ContextMenu="{DynamicResource UIContextMenu}" Margin="10,10,10,10" TextWrapping="Wrap" Text="日志" IsReadOnly="True" HorizontalScrollBarVisibility="Visible" VerticalScrollBarVisibility="Auto" VerticalContentAlignment="Top" Padding="10"/>
+                <TextBox x:Name="frpcOutlog" Grid.Row="1" Margin="10,10,10,10" TextWrapping="Wrap" Text="日志" IsReadOnly="True" HorizontalScrollBarVisibility="Visible" VerticalScrollBarVisibility="Auto" VerticalContentAlignment="Top" Padding="10"/>
             </Grid>
             
             

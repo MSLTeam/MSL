@@ -89,13 +89,13 @@ namespace MSL.pages
             window.ShowDialog();
             mainwindow.Focus();
             GetServerConfig();
-            Growl.Success("刷新成功！");
+            DialogShow.GrowlSuccess("刷新成功！");
         }
 
         private void refreshList_Click(object sender, RoutedEventArgs e)
         {
             GetServerConfig();
-            Growl.Success("刷新成功！");
+            DialogShow.GrowlSuccess("刷新成功！");
         }
         private void GetServerConfig()
         {
@@ -212,7 +212,7 @@ namespace MSL.pages
             ServerInfo _server = serverList.SelectedItem as ServerInfo;
             if (_server.ServerState == "运行中")
             {
-                Growl.Error("服务器仍在运行中，请先关闭服务器！");
+                DialogShow.GrowlErr("服务器仍在运行中，请先关闭服务器！");
                 return;
             }
             try
@@ -228,7 +228,7 @@ namespace MSL.pages
                     JObject _json = (JObject)jsonObject[serverid[serverList.SelectedIndex]];
                     FileSystem.DeleteDirectory(_json["base"].ToString(), UIOption.OnlyErrorDialogs, RecycleOption.SendToRecycleBin);
                     //Directory.Delete(_json["base"].ToString(), true);
-                    Growl.Success("服务器目录已成功移至回收站！");
+                    DialogShow.GrowlSuccess("服务器目录已成功移至回收站！");
                 }
             }
             catch (Exception ex)
@@ -240,12 +240,12 @@ namespace MSL.pages
                 JObject jsonObject = JObject.Parse(File.ReadAllText(@"MSL\ServerList.json", Encoding.UTF8));
                 jsonObject.Remove(serverid[serverList.SelectedIndex]);
                 File.WriteAllText(@"MSL\ServerList.json", Convert.ToString(jsonObject), Encoding.UTF8);
-                Growl.Success("删除服务器成功！");
+                DialogShow.GrowlSuccess("删除服务器成功！");
                 GetServerConfig();
             }
             catch
             {
-                Growl.Error("删除服务器失败！");
+                DialogShow.GrowlErr("删除服务器失败！");
                 DialogShow.ShowMsg(mainwindow, "服务器删除失败！", "警告", false, "确定");
                 GetServerConfig();
             }
@@ -272,7 +272,7 @@ namespace MSL.pages
             {
                 JObject jsonObject = JObject.Parse(File.ReadAllText(@"MSL\ServerList.json", Encoding.UTF8));
                 JObject _json = (JObject)jsonObject[serverid[serverList.SelectedIndex]];
-                Growl.Info("正在为您打开服务器文件夹……");
+                DialogShow.GrowlInfo("正在为您打开服务器文件夹……");
                 Process.Start(_json["base"].ToString());
             }
             catch (Exception ex) { MessageBox.Show("出现错误，请检查您是否选择了服务器！\n" + ex.Message); }

@@ -45,19 +45,19 @@
                                 <Label Content="服务器基本信息" Style="{StaticResource BorderTitle}"/>
                                 <Viewbox Stretch="Uniform" Margin="0,35,0,0">
                                     <Canvas Width="224" Height="267.76">
-                                        <TextBlock Text="服务器状态" Foreground="{DynamicResource TextBlockBrush}" FontSize="16" Margin="10,5,0,0"/>
+                                        <TextBlock Text="服务器状态" Foreground="{DynamicResource PrimaryTextBrush}" FontSize="16" Margin="10,5,0,0"/>
                                         <Label x:Name="serverStateLab" Content="已关闭" HorizontalAlignment="Left" Height="32" Margin="100,0,0,0" VerticalAlignment="Top" Foreground="Green" FontSize="16" Width="120"/>
-                                        <TextBlock Text="服务器版本" Margin="10,45,0,0" Foreground="{DynamicResource TextBlockBrush}" FontSize="16" />
+                                        <TextBlock Text="服务器版本" Margin="10,45,0,0" Foreground="{DynamicResource PrimaryTextBrush}" FontSize="16" />
                                         <Label x:Name="serverVersionLab" Content="获取中" HorizontalAlignment="Left" Height="32" Margin="100,40,0,0" VerticalAlignment="Top" FontSize="16" Width="120"/>
-                                        <TextBlock Text="正版验证" Margin="15,85,0,0" Foreground="{DynamicResource TextBlockBrush}" FontSize="16" />
+                                        <TextBlock Text="正版验证" Margin="15,85,0,0" Foreground="{DynamicResource PrimaryTextBrush}" FontSize="16" />
                                         <Label x:Name="onlineModeLab" Content="获取中" HorizontalAlignment="Left" Height="32" Margin="100,80,0,0" VerticalAlignment="Top" FontSize="16" Width="120"/>
-                                        <TextBlock Text="游戏模式" Margin="15,125,0,0" Foreground="{DynamicResource TextBlockBrush}" FontSize="16" />
+                                        <TextBlock Text="游戏模式" Margin="15,125,0,0" Foreground="{DynamicResource PrimaryTextBrush}" FontSize="16" />
                                         <Label x:Name="gameTypeLab" Content="获取中" HorizontalAlignment="Left" Height="32" Margin="100,120,0,0" FontSize="16" VerticalAlignment="Top" Width="120"/>
-                                        <TextBlock Text="服务器IP" Margin="15,165,0,0" Foreground="{DynamicResource TextBlockBrush}" FontSize="16" />
+                                        <TextBlock Text="服务器IP" Margin="15,165,0,0" Foreground="{DynamicResource PrimaryTextBrush}" FontSize="16" />
                                         <Label x:Name="serverIPLab" Content="获取中" HorizontalAlignment="Left" Height="32" Margin="100,160,0,0" VerticalAlignment="Top" Width="120" FontSize="16"/>
-                                        <TextBlock Text="本地进入IP" Margin="10,205,0,0" Foreground="{DynamicResource TextBlockBrush}" FontSize="16" />
+                                        <TextBlock Text="本地进入IP" Margin="10,205,0,0" Foreground="{DynamicResource PrimaryTextBrush}" FontSize="16" />
                                         <Label x:Name="localServerIPLab" Content="获取中" HorizontalAlignment="Left" Height="32" Margin="100,200,0,0" VerticalAlignment="Top" Width="120" FontSize="16"/>
-                                        <TextBlock Text="远程进入IP" Margin="10,245,0,0" Foreground="{DynamicResource TextBlockBrush}" FontSize="16" />
+                                        <TextBlock Text="远程进入IP" Margin="10,245,0,0" Foreground="{DynamicResource PrimaryTextBrush}" FontSize="16" />
                                         <Button x:Name="gotoFrpc" HorizontalAlignment="Left" Margin="100,240,0,0" VerticalAlignment="Top" Height="32" Content="点击查看" FontSize="16" Click="gotoFrpc_Click" Width="120"/>
                                     </Canvas>
                                 </Viewbox>
@@ -122,7 +122,7 @@
                             <BeginStoryboard Storyboard="{StaticResource ShowPage}"/>
                         </EventTrigger>
                     </Grid.Triggers>
-                    <RichTextBox x:Name="outlog" Background="{DynamicResource BorderBackground}" ContextMenu="{DynamicResource UIContextMenu}" IsReadOnly="True" Block.LineHeight="1" Margin="10,10,10,47" FontSize="12" VerticalScrollBarVisibility="Visible">
+                    <RichTextBox x:Name="outlog" Background="{DynamicResource BorderBackground}" IsReadOnly="True" Block.LineHeight="1" Margin="10,10,10,47" FontSize="12" VerticalScrollBarVisibility="Visible">
                         <FlowDocument>
                             <Paragraph>
                                 <Run Text="在此显示输出......"/>
@@ -152,105 +152,98 @@
                             <BeginStoryboard Storyboard="{StaticResource ShowPage}"/>
                         </EventTrigger>
                     </Grid.Triggers>
-                    <TabControl x:Name="pluginsAndModsTab" Style="{StaticResource TabControlInLine}" Visibility="Hidden" Background="{x:Null}">
+                    <TabControl x:Name="pluginsAndModsTab" TabStripPlacement="Left" Margin="0,5,0,0" Visibility="Hidden" Background="{x:Null}">
                         <TabItem x:Name="pluginsTabItem" Header="管理服务器插件" Background="{DynamicResource SideMenuBrush}">
-                            <Grid>
-                                <Border Style="{StaticResource MagicBorder}" x:Name="pluginListBox" Grid.Column="0" VerticalAlignment="Stretch" Margin="10,10,10,10">
-                                    <Grid>
-                                        <Label Content="插件列表(添加的插件在服务器重启后生效)" Style="{StaticResource BorderTitle}"/>
-                                        <ListView x:Name="pluginslist" hc:Empty.ShowEmpty="true" Margin="0,35,0,0" BorderBrush="{x:Null}" Background="{x:Null}" Padding="0,0,0,0" FontSize="14">
-                                            <ListBox.ContextMenu>
-                                                <ContextMenu FontSize="14">
-                                                    <MenuItem Click="reFresh_Click" Header="刷新"/>
-                                                    <MenuItem x:Name="addPlugin" Click="addPlugin_Click" Header="添加插件"/>
-                                                    <MenuItem x:Name="disPlugin" Click="disPlugin_Click" Header="禁用/启用所选插件"/>
-                                                    <MenuItem x:Name="delPlugin" Click="delPlugin_Click" Header="删除插件"/>
-                                                    <MenuItem x:Name="disAllPlugin" Click="disAllPlugin_Click" Header="禁用/启用全部插件"/>
-                                                    <MenuItem x:Name="openpluginsDir" Click="openpluginsDir_Click" Header="打开插件文件夹"/>
-                                                </ContextMenu>
-                                            </ListBox.ContextMenu>
-                                            <ListView.View>
-                                                <GridView>
-                                                    <GridViewColumn x:Name="pluginlistPluginName" Width="400" Header="插件名称">
-                                                        <GridViewColumn.CellTemplate>
-                                                            <DataTemplate>
-                                                                <Grid>
-                                                                    <TextBlock Width="Auto" Text="{Binding PluginName}"/>
-                                                                </Grid>
-                                                            </DataTemplate>
-                                                        </GridViewColumn.CellTemplate>
-                                                    </GridViewColumn>
-                                                    <GridViewColumn Width="100" Header="操作">
-                                                        <GridViewColumn.CellTemplate>
-                                                            <DataTemplate>
-                                                                <Grid>
-                                                                    <Button Margin="0,0,0,0" hc:IconElement.Geometry="{StaticResource WindowMinGeometry}" HorizontalAlignment="Left" hc:Poptip.Content="禁用/启用该插件" hc:Poptip.HorizontalOffset="40" hc:Poptip.Placement="Left" Click="disPlugin_Click"/>
-                                                                    <Button Margin="40,0,0,0" hc:IconElement.Geometry="{StaticResource DeleteFillCircleGeometry}" HorizontalAlignment="Left" hc:Poptip.Content="删除该插件" hc:Poptip.HorizontalOffset="40" hc:Poptip.Placement="Left" Click="delPlugin_Click"/>
-                                                                </Grid>
-                                                            </DataTemplate>
-                                                        </GridViewColumn.CellTemplate>
-                                                    </GridViewColumn>
-                                                </GridView>
-                                            </ListView.View>
-                                        </ListView>
-                                        <Button x:Name="reFresh_Copy" Content="刷新" Style="{StaticResource ButtonPrimary}" Height="32" Click="reFresh_Click" Width="70" FontSize="14" VerticalAlignment="Top" HorizontalAlignment="Left" Margin="350,0,0,0"/>
-                                        <Button x:Name="openpluginweb" Content="下载插件" Height="32" Width="80" FontSize="14" Click="openpluginweb_Click" HorizontalAlignment="Left" VerticalAlignment="Top" Margin="425,0,0,0"/>
-                                        <Button x:Name="addPluginBtn" Margin="0,0,12,12" Style="{StaticResource ButtonPrimary}" hc:BorderElement.CornerRadius="30" VerticalAlignment="Bottom" Height="48" Width="48" Content="+" Click="addPlugin_Click" HorizontalAlignment="Right" FontSize="24"/>
-                                    </Grid>
-                                </Border>
+                            <Grid Margin="10">
+                                <Label Content="插件列表(添加的插件在服务器重启后生效)" Style="{StaticResource BorderTitle}"/>
+                                <ListView x:Name="pluginslist" hc:Empty.ShowEmpty="true" Margin="0,35,0,0" BorderBrush="{x:Null}" Background="{x:Null}" Padding="0,0,0,0" FontSize="14">
+                                    <ListBox.ContextMenu>
+                                        <ContextMenu FontSize="14">
+                                            <MenuItem Click="reFresh_Click" Header="刷新"/>
+                                            <MenuItem x:Name="addPlugin" Click="addPlugin_Click" Header="添加插件"/>
+                                            <MenuItem x:Name="disPlugin" Click="disPlugin_Click" Header="禁用/启用所选插件"/>
+                                            <MenuItem x:Name="delPlugin" Click="delPlugin_Click" Header="删除插件"/>
+                                            <MenuItem x:Name="disAllPlugin" Click="disAllPlugin_Click" Header="禁用/启用全部插件"/>
+                                            <MenuItem x:Name="openpluginsDir" Click="openpluginsDir_Click" Header="打开插件文件夹"/>
+                                        </ContextMenu>
+                                    </ListBox.ContextMenu>
+                                    <ListView.View>
+                                        <GridView>
+                                            <GridViewColumn x:Name="pluginlistPluginName" Width="400" Header="插件名称">
+                                                <GridViewColumn.CellTemplate>
+                                                    <DataTemplate>
+                                                        <Grid>
+                                                            <TextBlock Width="Auto" Text="{Binding PluginName}"/>
+                                                        </Grid>
+                                                    </DataTemplate>
+                                                </GridViewColumn.CellTemplate>
+                                            </GridViewColumn>
+                                            <GridViewColumn Width="100" Header="操作">
+                                                <GridViewColumn.CellTemplate>
+                                                    <DataTemplate>
+                                                        <Grid>
+                                                            <Button Margin="0,0,0,0" hc:IconElement.Geometry="{StaticResource WindowMinGeometry}" HorizontalAlignment="Left" hc:Poptip.Content="禁用/启用该插件" hc:Poptip.HorizontalOffset="40" hc:Poptip.Placement="Left" Click="disPlugin_Click"/>
+                                                            <Button Margin="40,0,0,0" hc:IconElement.Geometry="{StaticResource DeleteFillCircleGeometry}" HorizontalAlignment="Left" hc:Poptip.Content="删除该插件" hc:Poptip.HorizontalOffset="40" hc:Poptip.Placement="Left" Click="delPlugin_Click"/>
+                                                        </Grid>
+                                                    </DataTemplate>
+                                                </GridViewColumn.CellTemplate>
+                                            </GridViewColumn>
+                                        </GridView>
+                                    </ListView.View>
+                                </ListView>
+                                <Button x:Name="reFresh_Copy" Content="刷新" Style="{StaticResource ButtonPrimary}" Height="32" Click="reFresh_Click" Width="70" FontSize="14" VerticalAlignment="Top" HorizontalAlignment="Left" Margin="350,0,0,0"/>
+                                <Button x:Name="openpluginweb" Content="下载插件" Height="32" Width="80" FontSize="14" Click="openpluginweb_Click" HorizontalAlignment="Left" VerticalAlignment="Top" Margin="425,0,0,0"/>
+                                <Button x:Name="addPluginBtn" Margin="0,0,12,12" Style="{StaticResource ButtonPrimary}" hc:BorderElement.CornerRadius="30" VerticalAlignment="Bottom" Height="48" Width="48" Content="+" Click="addPlugin_Click" HorizontalAlignment="Right" FontSize="24"/>
                             </Grid>
                         </TabItem>
                         <TabItem x:Name="modsTabItem" Header="管理服务器模组" Background="{DynamicResource SideMenuBrush}">
-                            <Grid>
-                                <Border Style="{StaticResource MagicBorder}" x:Name="modListBox" Grid.Column="1" Margin="10,10,10,10" VerticalAlignment="Stretch">
-                                    <Grid>
-                                        <Label Content="模组列表(添加的模组在服务器重启后生效)" Style="{StaticResource BorderTitle}"/>
-                                        <ListView x:Name="modslist" hc:Empty.ShowEmpty="true" BorderBrush="{x:Null}" Margin="0,35,0,0" Background="{x:Null}" Padding="0,0,0,0" FontSize="14">
-                                            <ListBox.ContextMenu>
-                                                <ContextMenu FontSize="14">
-                                                    <MenuItem Click="reFresh_Click" Header="刷新"/>
-                                                    <MenuItem x:Name="addMod" Click="addMod_Click" Header="添加模组"/>
-                                                    <MenuItem x:Name="disMod" Click="disMod_Click" Header="禁用/启用所选模组"/>
-                                                    <MenuItem x:Name="delMod" Click="delMod_Click" Header="删除模组"/>
-                                                    <MenuItem x:Name="disAllMod" Click="disAllMod_Click" Header="禁用/启用全部模组"/>
-                                                    <MenuItem x:Name="openmodsDir" Click="openmodsDir_Click" Header="打开模组文件夹"/>
-                                                </ContextMenu>
-                                            </ListBox.ContextMenu>
-                                            <ListView.View>
-                                                <GridView>
-                                                    <GridViewColumn x:Name="modlistModName" Width="400" Header="模组名称">
-                                                        <GridViewColumn.CellTemplate>
-                                                            <DataTemplate>
-                                                                <Grid>
-                                                                    <TextBlock Width="Auto" Text="{Binding ModName}"/>
-                                                                </Grid>
-                                                            </DataTemplate>
-                                                        </GridViewColumn.CellTemplate>
-                                                    </GridViewColumn>
-                                                    <GridViewColumn Width="100" Header="操作">
-                                                        <GridViewColumn.CellTemplate>
-                                                            <DataTemplate>
-                                                                <Grid>
-                                                                    <Button Margin="0,0,0,0" hc:IconElement.Geometry="{StaticResource WindowMinGeometry}" HorizontalAlignment="Left" hc:Poptip.Content="禁用/启用该模组" hc:Poptip.HorizontalOffset="40" hc:Poptip.Placement="Left" Click="disMod_Click"/>
-                                                                    <Button Margin="40,0,0,0" hc:IconElement.Geometry="{StaticResource DeleteFillCircleGeometry}" HorizontalAlignment="Left" hc:Poptip.Content="删除该模组" hc:Poptip.HorizontalOffset="40" hc:Poptip.Placement="Left" Click="delMod_Click"/>
-                                                                </Grid>
-                                                            </DataTemplate>
-                                                        </GridViewColumn.CellTemplate>
-                                                    </GridViewColumn>
-                                                </GridView>
-                                            </ListView.View>
-                                        </ListView>
-                                        <Button x:Name="reFresh_Copy2" Content="刷新" Style="{StaticResource ButtonPrimary}" Height="32" Click="reFresh_Click" Width="70" FontSize="14" VerticalAlignment="Top" HorizontalAlignment="Left" Margin="350,0,0,0"/>
-                                        <Button x:Name="addModsTip" Content="添加模组前必看" Style="{StaticResource ButtonPrimary}" Height="32" FontSize="14" VerticalAlignment="Top" HorizontalAlignment="Left" Margin="425,0,0,0" Width="135" Click="addModsTip_Click"/>
-                                        <Button x:Name="opencurseforge" Content="下载模组(CurseForge)" Click="opencurseforge_Click" Width="170" FontSize="14" HorizontalAlignment="Left" VerticalAlignment="Top" Height="32" Margin="565,0,0,0"/>
-                                        <Button x:Name="addModBtn" Margin="0,0,12,12" Style="{StaticResource ButtonPrimary}" hc:BorderElement.CornerRadius="30" VerticalAlignment="Bottom" Height="48" Width="48" Content="+" Click="addMod_Click" HorizontalAlignment="Right" FontSize="24"/>
-                                    </Grid>
-                                </Border>
+                            <Grid Margin="10">
+                                <Label Content="模组列表(添加的模组在服务器重启后生效)" Style="{StaticResource BorderTitle}"/>
+                                <ListView x:Name="modslist" hc:Empty.ShowEmpty="true" BorderBrush="{x:Null}" Margin="0,35,0,0" Background="{x:Null}" Padding="0,0,0,0" FontSize="14">
+                                    <ListBox.ContextMenu>
+                                        <ContextMenu FontSize="14">
+                                            <MenuItem Click="reFresh_Click" Header="刷新"/>
+                                            <MenuItem x:Name="addMod" Click="addMod_Click" Header="添加模组"/>
+                                            <MenuItem x:Name="disMod" Click="disMod_Click" Header="禁用/启用所选模组"/>
+                                            <MenuItem x:Name="delMod" Click="delMod_Click" Header="删除模组"/>
+                                            <MenuItem x:Name="disAllMod" Click="disAllMod_Click" Header="禁用/启用全部模组"/>
+                                            <MenuItem x:Name="openmodsDir" Click="openmodsDir_Click" Header="打开模组文件夹"/>
+                                        </ContextMenu>
+                                    </ListBox.ContextMenu>
+                                    <ListView.View>
+                                        <GridView>
+                                            <GridViewColumn x:Name="modlistModName" Width="400" Header="模组名称">
+                                                <GridViewColumn.CellTemplate>
+                                                    <DataTemplate>
+                                                        <Grid>
+                                                            <TextBlock Width="Auto" Text="{Binding ModName}"/>
+                                                        </Grid>
+                                                    </DataTemplate>
+                                                </GridViewColumn.CellTemplate>
+                                            </GridViewColumn>
+                                            <GridViewColumn Width="100" Header="操作">
+                                                <GridViewColumn.CellTemplate>
+                                                    <DataTemplate>
+                                                        <Grid>
+                                                            <Button Margin="0,0,0,0" hc:IconElement.Geometry="{StaticResource WindowMinGeometry}" HorizontalAlignment="Left" hc:Poptip.Content="禁用/启用该模组" hc:Poptip.HorizontalOffset="40" hc:Poptip.Placement="Left" Click="disMod_Click"/>
+                                                            <Button Margin="40,0,0,0" hc:IconElement.Geometry="{StaticResource DeleteFillCircleGeometry}" HorizontalAlignment="Left" hc:Poptip.Content="删除该模组" hc:Poptip.HorizontalOffset="40" hc:Poptip.Placement="Left" Click="delMod_Click"/>
+                                                        </Grid>
+                                                    </DataTemplate>
+                                                </GridViewColumn.CellTemplate>
+                                            </GridViewColumn>
+                                        </GridView>
+                                    </ListView.View>
+                                </ListView>
+                                <Button x:Name="reFresh_Copy2" Content="刷新" Style="{StaticResource ButtonPrimary}" Height="32" Click="reFresh_Click" Width="70" FontSize="14" VerticalAlignment="Top" HorizontalAlignment="Left" Margin="350,0,0,0"/>
+                                <Button x:Name="addModsTip" Content="添加模组前必看" Style="{StaticResource ButtonPrimary}" Height="32" FontSize="14" VerticalAlignment="Top" HorizontalAlignment="Left" Margin="425,0,0,0" Width="135" Click="addModsTip_Click"/>
+                                <Button x:Name="opencurseforge" Content="下载模组" Click="opencurseforge_Click" Width="80" FontSize="14" HorizontalAlignment="Left" VerticalAlignment="Top" Height="32" Margin="565,0,0,0"/>
+                                <Button x:Name="addModBtn" Margin="0,0,12,12" Style="{StaticResource ButtonPrimary}" hc:BorderElement.CornerRadius="30" VerticalAlignment="Bottom" Height="48" Width="48" Content="+" Click="addMod_Click" HorizontalAlignment="Right" FontSize="24"/>
                             </Grid>
                         </TabItem>
                     </TabControl>
                     <Button x:Name="reFresh" Content="刷新" Style="{StaticResource ButtonPrimary}" Height="32" Click="reFresh_Click" Width="70" FontSize="16" VerticalAlignment="Top" HorizontalAlignment="Right" Margin="0,10,10,0"/>
-                    <TextBlock x:Name="lab001" Text="未检测到任何插件和模组，请重启服务器并检查服务端是否支持插件和模组" FontSize="18" FontWeight="Bold" Foreground="{DynamicResource TextBlockBrush}" VerticalAlignment="Center" HorizontalAlignment="Center"/>
+                    <TextBlock x:Name="lab001" Text="未检测到任何插件或模组，请重启服务器并检查服务端是否支持插件和模组" FontSize="18" FontWeight="Bold" Foreground="{DynamicResource PrimaryTextBrush}" VerticalAlignment="Center" HorizontalAlignment="Center"/>
+                    <TextBlock x:Name="lab002" Text="注：若某个标签栏为灰色且无法点击，说明开服器未检测到相应的 插件/模组 文件夹，可能该服务端不支持 插件/模组，或 插件/模组 文件夹未生成。请更换服务端核心或重启一次服务器再试。" FontSize="12" Foreground="{DynamicResource PrimaryBrush}" VerticalAlignment="Bottom" HorizontalAlignment="Left" Width="100" TextWrapping="Wrap" Margin="5"/>
                 </Grid>
             </TabItem>
             <TabItem Header="服务器设置" Background="{DynamicResource SideMenuBrush}">
@@ -264,76 +257,100 @@
                         </EventTrigger>
                     </ScrollViewer.Triggers>
                     <StackPanel>
+                        <StackPanel.Resources>
+                            <ResourceDictionary>
+                                <Style TargetType="Label">
+                                    <Setter Property="Foreground" Value="{DynamicResource PrimaryTextBrush}"/>
+                                    <Setter Property="Background" Value="{x:Null}"/>
+                                    <Setter Property="BorderBrush" Value="{x:Null}"/>
+                                    <Setter Property="HorizontalAlignment" Value="Left"/>
+                                    <Setter Property="VerticalAlignment" Value="Top"/>
+                                    <Setter Property="FontSize" Value="14"/>
+                                </Style>
+                            </ResourceDictionary>
+                        </StackPanel.Resources>
                         <Border Style="{StaticResource MagicBorder}">
                             <StackPanel>
                                 <Grid>
                                     <Label Content="服务器信息：" Style="{StaticResource BorderTitle}"/>
-                                    <Label Content="服务器名称:" Background="{x:Null}" BorderBrush="{x:Null}" HorizontalAlignment="Left" VerticalAlignment="Top" Margin="0,35,0,0" FontSize="14"/>
-                                    <TextBox x:Name="nAme" Height="8" MaxLines="1" AutoWordSelection="True" Margin="125,35,0,34" VerticalAlignment="Top"/>
-                                    <Label Content="服务器存放目录:" BorderBrush="{x:Null}" Background="{x:Null}" HorizontalAlignment="Left" Margin="0,70,0,0" VerticalAlignment="Top" FontSize="14"/>
-                                    <Button x:Name="a0" Content="浏览" Width="60" Height="28" VerticalAlignment="Top" HorizontalAlignment="Right" Margin="0,70,0,0" Click="a0_Click"/>
-                                    <TextBox x:Name="bAse" Height="8" MaxLines="1" AutoWordSelection="True" VerticalAlignment="Top" Margin="125,70,60,0"/>
+                                    <Label Content="服务器名称:" Margin="0,35,0,0"/>
+                                    <TextBox x:Name="nAme" MaxLines="1" AutoWordSelection="True" Margin="125,35,0,34" VerticalAlignment="Top"/>
+                                    <Label Content="服务器存放目录:" Margin="0,70,0,0" />
+                                    <Button x:Name="a0" Content="浏览" Width="60" VerticalAlignment="Top" HorizontalAlignment="Right" Margin="0,70,0,0" Click="a0_Click"/>
+                                    <TextBox x:Name="bAse" MaxLines="1" AutoWordSelection="True" VerticalAlignment="Top" Margin="125,70,60,0"/>
                                 </Grid>
-                                <Grid Margin="0,10,0,0">
+                                <StackPanel Margin="0,10,0,0">
                                     <Label Content="服务器设置：" Style="{StaticResource BorderTitle}"/>
-                                    <Label Content="服务端核心文件:" BorderBrush="{x:Null}" Background="{x:Null}" VerticalAlignment="Top" HorizontalAlignment="Left" Margin="0,35,0,0" FontSize="14"/>
-                                    <TextBox x:Name="server" Height="30" MaxLines="1" AutoWordSelection="True" VerticalAlignment="Top" Margin="125,35,220,0"/>
-                                    <Label Content="服务器运行内存:" Background="{x:Null}" BorderBrush="{x:Null}" VerticalAlignment="Top" HorizontalAlignment="Left" Margin="0,70,0,0" FontSize="14"/>
-                                    <Label Content="Java地址:" Background="{x:Null}" BorderBrush="{x:Null}" VerticalAlignment="Top" HorizontalAlignment="Left" Margin="0,130,0,0" FontSize="14"/>
-                                    <hc:RangeSlider x:Name="memorySlider" ValueChanged="memorySlider_ValueChanged" Height="18" VerticalAlignment="Top" Margin="125,100,180,0"/>
-                                    <TextBox x:Name="memoryInfo" Text="当前为自动分配" Foreground="Red" BorderBrush="#FFD0D0D0" TextAlignment="Center" TextChanged="memoryInfo_TextChanged" Height="32" Width="165" HorizontalAlignment="Right" VerticalAlignment="Top" Margin="0,90,10,0"/>
-                                    <Button x:Name="a03" Content="浏览" Width="60" Click="a03_Click" FontWeight="Normal" FontSize="12" Height="28" VerticalAlignment="Top" HorizontalAlignment="Right" Margin="0,130,10,0"/>
-                                    <RadioButton x:Name="useSelf" Content="手动选择Java" IsChecked="True" Width="108" VerticalAlignment="Top" HorizontalAlignment="Left" Margin="125,135,0,0"/>
-                                    <RadioButton x:Name="useDownJv" Content="开服器在线下载" VerticalAlignment="Top" HorizontalAlignment="Left" Margin="125,170,0,0"/>
-                                    <ComboBox x:Name="selectJava" Width="95" HorizontalAlignment="Left" VerticalAlignment="Top" Margin="240,165,0,0">
-                                        <ComboBoxItem Content="Java8"/>
-                                        <ComboBoxItem Content="Java11"/>
-                                        <ComboBoxItem Content="Java16"/>
-                                        <ComboBoxItem Content="Java17"/>
-                                        <ComboBoxItem Content="Java18"/>
-                                        <ComboBoxItem Content="Java19"/>
-                                        <ComboBoxItem Content="Java20"/>
-                                        <ComboBoxItem Content="Java21"/>
-                                    </ComboBox>
-                                    <RadioButton x:Name="usecheckedjv" Content="检查电脑上的Java" Margin="345,170,0,0" VerticalAlignment="Top" HorizontalAlignment="Left" Checked="usecheckedjv_Checked"/>
-                                    <ComboBox x:Name="selectCheckedJavaComb" Margin="470,165,0,0" HorizontalAlignment="Left" VerticalAlignment="Top" Width="100"/>
-                                    <RadioButton x:Name="useJvpath" Content="使用环境变量" VerticalAlignment="Top" HorizontalAlignment="Left" Margin="580,170,0,0" Checked="useJvpath_Checked"/>
-                                    <Label Content="服务器JVM参数:" BorderBrush="{x:Null}" Background="{x:Null}" VerticalAlignment="Top" HorizontalAlignment="Left" Margin="0,200,0,0" FontSize="14"/>
-                                    <TextBox x:Name="jVMcmd" Height="23" MaxLines="1" AutoWordSelection="True" VerticalAlignment="Top" Margin="125,200,10,0"/>
-                                    <TextBlock Text="提示：一般格式为 -参数，如 -Dlog4j2.formatMsgNoLookups=true，非必要无需填此框" Foreground="#FF0078D7" Margin="125,230,0,0" FontSize="14" HorizontalAlignment="Left" VerticalAlignment="Top"/>
-                                    <CheckBox x:Name="useJVMauto" Content="自动分配" Click="useJVMauto_Click" Width="88" VerticalAlignment="Top" HorizontalAlignment="Left" Margin="125,75,0,0"/>
-                                    <CheckBox x:Name="useJVMself" Content="手动分配" Click="useJVMself_Click" Width="85" VerticalAlignment="Top" HorizontalAlignment="Left" Margin="210,75,0,0"/>
-                                    <TextBox x:Name="jAva" MaxLines="1" AutoWordSelection="True" VerticalAlignment="Top" Margin="240,130,70,0"/>
-                                    <Button x:Name="a01" Content="浏览" Width="60" Click="a01_Click" Height="30" VerticalAlignment="Top" HorizontalAlignment="Right" Margin="0,35,160,0"/>
-                                    <Button x:Name="downloadServer" hc:IconElement.Geometry="{StaticResource DownloadGeometry}" hc:IconElement.Width="15" Content="下载服务端" Width="150" Height="30" FontSize="14" Click="downloadServer_Click" VerticalAlignment="Top" HorizontalAlignment="Right" Margin="0,35,10,0"/>
-                                    <Label x:Name="downout" Content="" FontSize="14" Foreground="Red" Height="40" Background="{x:Null}" BorderBrush="{x:Null}" HorizontalAlignment="Left" VerticalAlignment="Bottom"/>
-                                    <Button x:Name="refreahConfig" Content="刷新" Style="{StaticResource ButtonPrimary}" Width="120" Height="35" FontSize="14" Click="refreahConfig_Click" HorizontalAlignment="Left" VerticalAlignment="Top" Margin="150,260,0,0"/>
-                                    <Button x:Name="doneBtn1" Content="保存/应用" Style="{StaticResource ButtonPrimary}" Width="120" Click="doneBtn1_Click" Height="35" FontSize="14" HorizontalAlignment="Center" VerticalAlignment="Top" Margin="0,260,0,0"/>
-                                    <Button x:Name="getLaunchercode" Content="生成启动脚本" Style="{StaticResource ButtonPrimary}" Width="120" Height="35" FontSize="14" Click="getLaunchercode_Click" VerticalAlignment="Top" HorizontalAlignment="Right" Margin="0,260,150,0"/>
-                                </Grid>
+                                    <Grid Margin="0,5,0,0">
+                                        <Label Content="Java地址:"/>
+                                        <RadioButton x:Name="useSelf" Content="手动选择Java" IsChecked="True" VerticalAlignment="Top" HorizontalAlignment="Left" Margin="125,5,0,0"/>
+                                        <TextBox x:Name="jAva" MaxLines="1" AutoWordSelection="True" VerticalAlignment="Top" Margin="250,0,60,0"/>
+                                        <Button x:Name="a03" Content="浏览" Width="60" Click="a03_Click" FontWeight="Normal" FontSize="12" Height="28" VerticalAlignment="Top" HorizontalAlignment="Right"/>
+                                        <RadioButton x:Name="useDownJv" Content="开服器在线下载" VerticalAlignment="Top" HorizontalAlignment="Left" Margin="125,40,0,0"/>
+                                        <ComboBox x:Name="selectJava" Width="200" HorizontalAlignment="Left" VerticalAlignment="Top" Margin="250,35,0,0">
+                                            <ComboBoxItem Content="Java8"/>
+                                            <ComboBoxItem Content="Java11"/>
+                                            <ComboBoxItem Content="Java16"/>
+                                            <ComboBoxItem Content="Java17"/>
+                                            <ComboBoxItem Content="Java18"/>
+                                            <ComboBoxItem Content="Java19"/>
+                                            <ComboBoxItem Content="Java20"/>
+                                            <ComboBoxItem Content="Java21"/>
+                                        </ComboBox>
+                                        <RadioButton x:Name="usecheckedjv" Content="检查电脑上的Java" Margin="125,75,0,0" VerticalAlignment="Top" HorizontalAlignment="Left" Checked="usecheckedjv_Checked"/>
+                                        <ComboBox x:Name="selectCheckedJavaComb" Margin="250,70,0,0" HorizontalAlignment="Left" VerticalAlignment="Top" Width="200"/>
+                                        <RadioButton x:Name="useJvpath" Content="使用环境变量" VerticalAlignment="Top" HorizontalAlignment="Left" Margin="125,110,0,0" Checked="useJvpath_Checked"/>
+                                    </Grid>
+                                    <hc:Divider Margin="0,10,0,10"/>
+                                    <Grid>
+                                        <Label Content="服务端核心文件:"/>
+                                        <TextBox x:Name="server" MaxLines="1" AutoWordSelection="True" Margin="125,0,210,0"/>
+                                        <Button x:Name="a01" Content="浏览" Width="60" Click="a01_Click" HorizontalAlignment="Right" Margin="0,0,150,0"/>
+                                        <Button x:Name="downloadServer" hc:IconElement.Geometry="{StaticResource DownloadGeometry}" hc:IconElement.Width="15" Content="下载服务端" Width="150" Click="downloadServer_Click" HorizontalAlignment="Right"/>
+                                    </Grid>
+                                    <hc:Divider Margin="0,10,0,10"/>
+                                    <Grid>
+                                        <Label Content="服务器运行内存:"/>
+                                        <ToggleButton x:Name="autoSetMemory" Content="让Java自动分配" VerticalAlignment="Top" HorizontalAlignment="Left" Margin="125,0,0,0" Style="{StaticResource ToggleButtonSwitch}" Click="autoSetMemory_Click"/>
+                                        <hc:RangeSlider x:Name="memorySlider" ValueChanged="memorySlider_ValueChanged" Height="18" VerticalAlignment="Top" Margin="125,35,180,5"/>
+                                        <TextBox x:Name="memoryInfo" Text="当前为自动分配" Foreground="{DynamicResource PrimaryBrush}" TextAlignment="Center" TextChanged="memoryInfo_TextChanged" Width="165" HorizontalAlignment="Right" VerticalAlignment="Bottom"/>
+                                    </Grid>
+                                    <hc:Divider Margin="0,10,0,10"/>
+                                    <Grid>
+                                        <Label Content="服务器JVM参数:"/>
+                                        <TextBox x:Name="jVMcmd" Height="23" MaxLines="1" AutoWordSelection="True" VerticalAlignment="Top" Margin="125,0,0,0"/>
+                                        <TextBlock Text="提示：一般格式为 -参数，如 -Dlog4j2.formatMsgNoLookups=true，非必要无需填此框" Foreground="#FF0078D7" Margin="125,30,0,0" FontSize="14" HorizontalAlignment="Left" VerticalAlignment="Top"/>
+                                    </Grid>
+                                    <hc:Divider Margin="0,10,0,10"/>
+                                    <Grid>
+                                        <Button x:Name="refreahConfig" Content="刷新" Style="{StaticResource ButtonPrimary}" Width="120" Height="35" FontSize="14" Click="refreahConfig_Click" HorizontalAlignment="Left" Margin="150,0,0,0"/>
+                                        <Button x:Name="doneBtn1" Content="保存/应用" Style="{StaticResource ButtonPrimary}" Width="120" Click="doneBtn1_Click" Height="35" FontSize="14" HorizontalAlignment="Center" />
+                                        <Button x:Name="getLaunchercode" Content="生成启动脚本" Style="{StaticResource ButtonPrimary}" Width="120" Height="35" FontSize="14" Click="getLaunchercode_Click" HorizontalAlignment="Right" Margin="0,0,150,0"/>
+                                    </Grid>
+                                </StackPanel>
                             </StackPanel>
                         </Border>
                         <Border Style="{StaticResource MagicBorder}" Margin="10,10,10,20">
                             <StackPanel>
                                 <Label x:Name="changeServerPropertiesLab" Style="{StaticResource BorderTitle}" Content="更改服务器配置"/>
                                 <Grid x:Name="changeServerProperties" Margin="0,10,0,0">
-                                    <Label Content="正版验证：" Margin="10,5,0,0" Background="{x:Null}" BorderBrush="{x:Null}" HorizontalAlignment="Left" VerticalAlignment="Top" FontSize="14"/>
+                                    <Label Content="正版验证：" Margin="10,5,0,0" />
                                     <TextBox x:Name="onlineModeText" Margin="100,4,580,0" TextWrapping="Wrap" Text="" VerticalAlignment="Top"/>
-                                    <Label Content="游戏模式：" Margin="10,40,0,0" Background="{x:Null}" BorderBrush="{x:Null}" HorizontalAlignment="Left" VerticalAlignment="Top" FontSize="14"/>
+                                    <Label Content="游戏模式：" Margin="10,40,0,0" />
                                     <TextBox x:Name="gameModeText" Margin="100,39,580,0" TextWrapping="Wrap" Text="" VerticalAlignment="Top"/>
-                                    <Label Content="游戏难度：" Margin="10,75,0,0" Background="{x:Null}" BorderBrush="{x:Null}" HorizontalAlignment="Left" VerticalAlignment="Top" FontSize="14"/>
+                                    <Label Content="游戏难度：" Margin="10,75,0,0" />
                                     <TextBox x:Name="gameDifficultyText" Margin="100,74,580,0" TextWrapping="Wrap" Text="" VerticalAlignment="Top"/>
-                                    <Label Content="游戏人数：" Margin="10,110,0,0" Background="{x:Null}" BorderBrush="{x:Null}" HorizontalAlignment="Left" VerticalAlignment="Top" FontSize="14"/>
+                                    <Label Content="游戏人数：" Margin="10,110,0,0" />
                                     <TextBox x:Name="gamePlayerText" Margin="100,109,580,0" TextWrapping="Wrap" Text="" VerticalAlignment="Top"/>
-                                    <Label Content="服务器端口：" Margin="10,145,0,0" Background="{x:Null}" BorderBrush="{x:Null}" HorizontalAlignment="Left" VerticalAlignment="Top" FontSize="14"/>
+                                    <Label Content="服务器端口：" Margin="10,145,0,0" />
                                     <TextBox x:Name="gamePortText" Margin="100,144,580,0" TextWrapping="Wrap" Text="" VerticalAlignment="Top"/>
-                                    <Label Content="命令方块：" Margin="10,180,0,0" Background="{x:Null}" BorderBrush="{x:Null}" HorizontalAlignment="Left" VerticalAlignment="Top" FontSize="14"/>
+                                    <Label Content="命令方块：" Margin="10,180,0,0" />
                                     <TextBox x:Name="commandBlockText" Margin="100,179,580,0" TextWrapping="Wrap" Text="" VerticalAlignment="Top"/>
-                                    <Label Content="视距：" Margin="10,215,0,0" Background="{x:Null}" BorderBrush="{x:Null}" HorizontalAlignment="Left" VerticalAlignment="Top" FontSize="14"/>
+                                    <Label Content="视距：" Margin="10,215,0,0" />
                                     <TextBox x:Name="viewDistanceText" Margin="100,214,580,0" TextWrapping="Wrap" Text="" VerticalAlignment="Top"/>
-                                    <Label Content="PVP：" Margin="10,250,0,0" Background="{x:Null}" BorderBrush="{x:Null}" HorizontalAlignment="Left" VerticalAlignment="Top" FontSize="14"/>
+                                    <Label Content="PVP：" Margin="10,250,0,0" />
                                     <TextBox x:Name="gamePvpText" Margin="100,249,580,0" TextWrapping="Wrap" Text="" VerticalAlignment="Top"/>
-                                    <Label Content="主世界地图：" Margin="10,285,0,0" Background="{x:Null}" BorderBrush="{x:Null}" HorizontalAlignment="Left" VerticalAlignment="Top" FontSize="14"/>
+                                    <Label Content="主世界地图：" Margin="10,285,0,0" />
                                     <TextBox x:Name="gameWorldText" Margin="100,284,580,0" TextWrapping="Wrap" Text="" VerticalAlignment="Top"/>
                                     <Grid HorizontalAlignment="Right">
                                         <TextBlock Margin="180,12,0,0" TextWrapping="Wrap" Text="注：正版验证（online-mode），若开启（true），盗版/离线用户将无法进入该服务器，关闭请输入false" VerticalAlignment="Top"/>
@@ -408,7 +425,7 @@
                             <Button x:Name="onlineMode" Content="关闭正版验证" Margin="154,40,0,0" Click="onlineMode_Click" FontSize="16" Height="35" Width="160" HorizontalAlignment="Left" VerticalAlignment="Top"/>
                             <Button x:Name="closeOutlog" Content="日志输出:开" Margin="154,120,0,0" FontSize="16" Height="35" Click="closeOutlog_Click" Width="130" HorizontalAlignment="Left" VerticalAlignment="Top"/>
                             <Button x:Name="closeOutlog_Copy" Content="屏蔽关键字日志:关" Margin="289,120,0,0" FontSize="16" Height="35" Click="closeOutlog_Copy_Click" Width="160" VerticalAlignment="Top" HorizontalAlignment="Left"/>
-                            <Button x:Name="autoStartserver" Content="关服自动开服:禁用" Margin="319,40,0,0" Width="160" Click="autostartServer_Click" FontSize="16" Height="35" HorizontalAlignment="Left" VerticalAlignment="Top"/>
+                            <Button x:Name="autoStartserver" Content="关服自动重启:禁用" Margin="319,40,0,0" Width="160" Click="autostartServer_Click" FontSize="16" Height="35" HorizontalAlignment="Left" VerticalAlignment="Top"/>
                             <Button x:Name="inputCmdEncoding" Content="输入编码:UTF8" Margin="154,80,0,0" Width="160" FontSize="16" Height="35" HorizontalAlignment="Left" VerticalAlignment="Top" Click="inputCmdEncoding_Click"/>
                             <Button x:Name="outputCmdEncoding" Content="输出编码:UTF8" Margin="319,80,0,0" Width="160" FontSize="16" Height="35" HorizontalAlignment="Left" VerticalAlignment="Top" Click="outputCmdEncoding_Click"/>
                             <Button x:Name="shieldStackOut" Content="屏蔽堆栈追踪:开" Margin="454,120,0,0" FontSize="16" Height="35" Click="shieldStackOut_Click" Width="160" HorizontalAlignment="Left" VerticalAlignment="Top"/>

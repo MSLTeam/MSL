@@ -26,7 +26,7 @@
                 </GridView>
             </ListView.View>
         </ListView>
-        <TextBox x:Name="textBox1" ContextMenu="{DynamicResource UIContextMenu}" Margin="230,10,320,0" TextWrapping="Wrap" Text="" VerticalAlignment="Top"/>
+        <TextBox x:Name="textBox1" Margin="230,10,320,0" TextWrapping="Wrap" Text="" VerticalAlignment="Top"/>
         <Button x:Name="searchMod" Content="搜索" Margin="0,10,220,0" VerticalAlignment="Top" Click="searchMod_Click" HorizontalAlignment="Right" Width="100" FontSize="14"/>
         <Label x:Name="lb01" Content="加载中，请耐心等待……" Margin="60,0,0,0" HorizontalAlignment="Center" VerticalAlignment="Center" Background="{x:Null}" BorderBrush="{x:Null}" Foreground="Red" Visibility="Hidden"/>
         <Label Content="搜索Mod:" Margin="130,10,0,0" VerticalAlignment="Top" FontSize="16" BorderBrush="{x:Null}" Background="{x:Null}" HorizontalAlignment="Left" Padding="10,0,10,0"/>

@@ -65,12 +65,12 @@ namespace MSL.pages
                     jobject["notifyIcon"] = "False";
                     string convertString = Convert.ToString(jobject);
                     File.WriteAllText(@"MSL\config.json", convertString, System.Text.Encoding.UTF8);
-                    Growl.Success("关闭成功！");
+                    DialogShow.GrowlSuccess("关闭成功！");
                     return;
                 }
                 catch
                 {
-                    Growl.Error("关闭失败！");
+                    DialogShow.GrowlErr("关闭失败！");
                     return;
                 }
             }
@@ -85,12 +85,12 @@ namespace MSL.pages
                     jobject["notifyIcon"] = "True";
                     string convertString = Convert.ToString(jobject);
                     File.WriteAllText(@"MSL\config.json", convertString, System.Text.Encoding.UTF8);
-                    Growl.Success("打开成功！");
+                    DialogShow.GrowlSuccess("打开成功！");
                     return;
                 }
                 catch
                 {
-                    Growl.Error("打开失败！");
+                    DialogShow.GrowlErr("打开失败！");
                     return;
                 }
             }
@@ -198,7 +198,7 @@ namespace MSL.pages
             }
             catch
             {
-                Growl.Error("加载配置时发生错误！此错误不影响使用，您可继续使用或将其反馈给作者！");
+                DialogShow.GrowlErr("加载配置时发生错误！此错误不影响使用，您可继续使用或将其反馈给作者！");
             }
         }
 
@@ -213,7 +213,7 @@ namespace MSL.pages
             {
                 if (openserversOnStartList.Text == "")
                 {
-                    Growl.Error("请先将服务器添加至启动列表！");
+                    DialogShow.GrowlErr("请先将服务器添加至启动列表！");
                     openserversOnStart.IsChecked = false;
                     return;
                 }
@@ -222,7 +222,7 @@ namespace MSL.pages
                 jobject["autoOpenServer"] = openserversOnStartList.Text;
                 string convertString = Convert.ToString(jobject);
                 File.WriteAllText(@"MSL\config.json", convertString, System.Text.Encoding.UTF8);
-                Growl.Success("开启成功！");
+                DialogShow.GrowlSuccess("开启成功！");
             }
             else
             {
@@ -231,7 +231,7 @@ namespace MSL.pages
                 jobject["autoOpenServer"] = "False";
                 string convertString = Convert.ToString(jobject);
                 File.WriteAllText(@"MSL\config.json", convertString, System.Text.Encoding.UTF8);
-                Growl.Success("关闭成功！");
+                DialogShow.GrowlSuccess("关闭成功！");
             }
         }
 
@@ -244,7 +244,7 @@ namespace MSL.pages
                 jobject["autoOpenFrpc"] = "True";
                 string convertString = Convert.ToString(jobject);
                 File.WriteAllText(@"MSL\config.json", convertString, System.Text.Encoding.UTF8);
-                Growl.Success("开启成功！");
+                DialogShow.GrowlSuccess("开启成功！");
             }
             else
             {
@@ -253,7 +253,7 @@ namespace MSL.pages
                 jobject["autoOpenFrpc"] = "False";
                 string convertString = Convert.ToString(jobject);
                 File.WriteAllText(@"MSL\config.json", convertString, System.Text.Encoding.UTF8);
-                Growl.Success("关闭成功！");
+                DialogShow.GrowlSuccess("关闭成功！");
             }
         }
 
@@ -319,7 +319,7 @@ namespace MSL.pages
                 jobject["autoGetPlayerInfo"] = "True";
                 string convertString = Convert.ToString(jobject);
                 File.WriteAllText(@"MSL\config.json", convertString, System.Text.Encoding.UTF8);
-                Growl.Success("开启成功！");
+                DialogShow.GrowlSuccess("开启成功！");
                 MainWindow.getPlayerInfo = true;
             }
             else
@@ -329,7 +329,7 @@ namespace MSL.pages
                 jobject["autoGetPlayerInfo"] = "False";
                 string convertString = Convert.ToString(jobject);
                 File.WriteAllText(@"MSL\config.json", convertString, System.Text.Encoding.UTF8);
-                Growl.Success("关闭成功！");
+                DialogShow.GrowlSuccess("关闭成功！");
                 MainWindow.getPlayerInfo = false;
             }
         }
@@ -343,7 +343,7 @@ namespace MSL.pages
                 jobject["autoGetServerInfo"] = "True";
                 string convertString = Convert.ToString(jobject);
                 File.WriteAllText(@"MSL\config.json", convertString, System.Text.Encoding.UTF8);
-                Growl.Success("开启成功！");
+                DialogShow.GrowlSuccess("开启成功！");
                 MainWindow.getServerInfo = true;
             }
             else
@@ -353,7 +353,7 @@ namespace MSL.pages
                 jobject["autoGetServerInfo"] = "False";
                 string convertString = Convert.ToString(jobject);
                 File.WriteAllText(@"MSL\config.json", convertString, System.Text.Encoding.UTF8);
-                Growl.Success("关闭成功！");
+                DialogShow.GrowlSuccess("关闭成功！");
                 MainWindow.getServerInfo = false;
             }
         }
@@ -369,7 +369,7 @@ namespace MSL.pages
                 string convertString = Convert.ToString(jobject);
                 File.WriteAllText("MSL\\config.json", convertString, Encoding.UTF8);
 
-                Growl.Success("开启成功！");
+                DialogShow.GrowlSuccess("开启成功！");
                 ThemeManager.Current.UsingSystemTheme = true;
                 BlueSkinBtn.IsChecked = false;
                 darkTheme.IsChecked = false;
@@ -391,7 +391,7 @@ namespace MSL.pages
                 string convertString = Convert.ToString(jobject);
                 File.WriteAllText("MSL\\config.json", convertString, Encoding.UTF8);
 
-                Growl.Success("关闭成功！");
+                DialogShow.GrowlSuccess("关闭成功！");
                 ThemeManager.Current.UsingSystemTheme = false;
                 ThemeManager.Current.ApplicationTheme = ApplicationTheme.Light;
                 BlueSkinBtn.IsChecked = true;
@@ -414,7 +414,7 @@ namespace MSL.pages
                 jobject["darkTheme"] = "True";
                 string convertString = Convert.ToString(jobject);
                 File.WriteAllText("MSL\\config.json", convertString, Encoding.UTF8);
-                Growl.Success("开启成功！");
+                DialogShow.GrowlSuccess("开启成功！");
                 ThemeManager.Current.ApplicationTheme = ApplicationTheme.Dark;
             }
             else
@@ -423,7 +423,7 @@ namespace MSL.pages
                 jobject["darkTheme"] = "False";
                 string convertString = Convert.ToString(jobject);
                 File.WriteAllText("MSL\\config.json", convertString, Encoding.UTF8);
-                Growl.Success("关闭成功！");
+                DialogShow.GrowlSuccess("关闭成功！");
                 ThemeManager.Current.ApplicationTheme = ApplicationTheme.Light;
             }
         }
@@ -435,7 +435,7 @@ namespace MSL.pages
                 jobject["semitransparentTitle"] = "True";
                 string convertString = Convert.ToString(jobject);
                 File.WriteAllText("MSL\\config.json", convertString, Encoding.UTF8);
-                Growl.Success("开启成功！");
+                DialogShow.GrowlSuccess("开启成功！");
                 ChangeSkinStyle();
             }
             else
@@ -444,7 +444,7 @@ namespace MSL.pages
                 jobject["semitransparentTitle"] = "False";
                 string convertString = Convert.ToString(jobject);
                 File.WriteAllText("MSL\\config.json", convertString, Encoding.UTF8);
-                Growl.Success("关闭成功！");
+                DialogShow.GrowlSuccess("关闭成功！");
                 ChangeSkinStyle();
             }
         }
@@ -569,7 +569,7 @@ namespace MSL.pages
             }
             catch
             {
-                Growl.Error("出现错误，您是否选择了一个服务器？");
+                DialogShow.GrowlErr("出现错误，您是否选择了一个服务器？");
             }
         }
 
@@ -617,7 +617,7 @@ namespace MSL.pages
                 jobject["autoUpdateApp"] = "True";
                 string convertString = Convert.ToString(jobject);
                 File.WriteAllText(@"MSL\config.json", convertString, System.Text.Encoding.UTF8);
-                Growl.Success("开启成功！");
+                DialogShow.GrowlSuccess("开启成功！");
             }
             else
             {
@@ -626,7 +626,7 @@ namespace MSL.pages
                 jobject["autoUpdateApp"] = "False";
                 string convertString = Convert.ToString(jobject);
                 File.WriteAllText(@"MSL\config.json", convertString, System.Text.Encoding.UTF8);
-                Growl.Success("关闭成功！");
+                DialogShow.GrowlSuccess("关闭成功！");
             }
         }
 
@@ -692,22 +692,22 @@ namespace MSL.pages
                         }
                         else
                         {
-                            Growl.Error("您拒绝了更新新版本，若在此版本中遇到bug，请勿报告给作者！");
+                            DialogShow.GrowlErr("您拒绝了更新新版本，若在此版本中遇到bug，请勿报告给作者！");
                         }
                     });
                 }
                 else if (newVersion < version)
                 {
-                    Growl.Info("当前版本高于正式版本，若使用中遇到BUG，请及时反馈！");
+                    DialogShow.GrowlInfo("当前版本高于正式版本，若使用中遇到BUG，请及时反馈！");
                 }
                 else
                 {
-                    Growl.Success("您使用的开服器已是最新版本！");
+                    DialogShow.GrowlSuccess("您使用的开服器已是最新版本！");
                 }
             }
             catch
             {
-                Growl.Error("检查更新失败！");
+                DialogShow.GrowlErr("检查更新失败！");
             }
         }
     }

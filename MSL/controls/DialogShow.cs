@@ -1,4 +1,5 @@
 ﻿using HandyControl.Controls;
+using HandyControl.Data;
 
 namespace MSL.controls
 {
@@ -82,7 +83,31 @@ namespace MSL.controls
             {
                 return false;
             }
+        }
 
+        public static void GrowlSuccess(string msg, bool showtime = false)
+        {
+            Growl.Success(new GrowlInfo
+            {
+                Message = msg,
+                ShowDateTime = showtime
+            });
+        }
+        public static void GrowlInfo(string msg, bool showtime = false)
+        {
+            Growl.Info(new GrowlInfo
+            {
+                Message = msg,
+                ShowDateTime = showtime
+            });
+        }
+        public static void GrowlErr(string msg, bool showtime = false)
+        {
+            Growl.Error(new GrowlInfo
+            {
+                Message = msg,
+                ShowDateTime = showtime
+            });
         }
     }
 }

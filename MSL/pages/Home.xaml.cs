@@ -220,7 +220,7 @@ namespace MSL.pages
 
                     TextBlock textBlock = new TextBlock();
                     textBlock.Text = x.Value.ToString();
-                    textBlock.SetResourceReference(ForegroundProperty, "TextBlockBrush");
+                    textBlock.SetResourceReference(ForegroundProperty, "PrimaryTextBrush");
                     if (i == 1)
                     {
                         textBlock.Margin = new Thickness(58, 35 * i, 5, 5);

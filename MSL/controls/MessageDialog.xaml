@@ -13,9 +13,9 @@
             <RowDefinition/>
         </Grid.RowDefinitions>
         <Grid Margin="25" Grid.Row="0">
-            <TextBlock x:Name="titleText" Foreground="{DynamicResource TextBlockBrush}" TextWrapping="NoWrap" Text="TitleText" FontSize="24" VerticalAlignment="Top" HorizontalAlignment="Left"/>
+            <TextBlock x:Name="titleText" Foreground="{DynamicResource PrimaryTextBrush}" TextWrapping="NoWrap" Text="TitleText" FontSize="24" VerticalAlignment="Top" HorizontalAlignment="Left"/>
             <ScrollViewer Margin="0,45,0,0">
-                <TextBlock x:Name="bodyText" Foreground="{DynamicResource TextBlockBrush}" TextWrapping="Wrap" Text="BodyText" FontSize="14" HorizontalAlignment="Left" VerticalAlignment="Top"/>
+                <TextBlock x:Name="bodyText" Foreground="{DynamicResource PrimaryTextBrush}" TextWrapping="Wrap" Text="BodyText" FontSize="14" HorizontalAlignment="Left" VerticalAlignment="Top"/>
             </ScrollViewer>
             
         </Grid>

@@ -18,9 +18,9 @@
         <Button x:Name="openSpigot" Content="SpigotMC" Margin="0,0,10,90" VerticalAlignment="Bottom" Width="185" FontSize="14" Height="35" Background="#33000000" Click="openSpigot_Click" HorizontalAlignment="Right"/>
         <Button x:Name="openPaper" Content="PaperMC" Margin="0,0,10,50" VerticalAlignment="Bottom" Width="185" FontSize="14" Height="35" Background="#33000000" Click="openPaper_Click" HorizontalAlignment="Right"/>
         <Button x:Name="openMojang" Content="Mojang" Margin="0,0,10,10" VerticalAlignment="Bottom" Width="185" FontSize="14" Height="35" Background="#33000000" Click="openMojang_Click" HorizontalAlignment="Right"/>
-        <TextBlock Text="相关网站：" Foreground="{DynamicResource TextBlockBrush}" HorizontalAlignment="Right" Margin="0,0,135,130" VerticalAlignment="Bottom" FontWeight="Bold"/>
-        <TextBlock Text="在此选择服务端：" Foreground="{DynamicResource TextBlockBrush}" HorizontalAlignment="Left" Margin="10,10,0,0" VerticalAlignment="Top" FontSize="20" FontWeight="Bold" Padding="5,0,0,0"/>
-        <TextBlock Text="我该如何选择服务端？" Foreground="{DynamicResource TextBlockBrush}" HorizontalAlignment="Right" Margin="0,100,75,0" VerticalAlignment="Top" FontWeight="Bold"/>
+        <TextBlock Text="相关网站：" Foreground="{DynamicResource PrimaryTextBrush}" HorizontalAlignment="Right" Margin="0,0,135,130" VerticalAlignment="Bottom" FontWeight="Bold"/>
+        <TextBlock Text="在此选择服务端：" Foreground="{DynamicResource PrimaryTextBrush}" HorizontalAlignment="Left" Margin="10,10,0,0" VerticalAlignment="Top" FontSize="20" FontWeight="Bold" Padding="5,0,0,0"/>
+        <TextBlock Text="我该如何选择服务端？" Foreground="{DynamicResource PrimaryTextBrush}" HorizontalAlignment="Right" Margin="0,100,75,0" VerticalAlignment="Top" FontWeight="Bold"/>
         <Button x:Name="RefreshBtn" Content="刷新" Margin="0,8,10,0" VerticalAlignment="Top" Click="RefreshBtn_Click" Height="32" Width="73" HorizontalAlignment="Right"/>
         <Button x:Name="DownloadBtn" Content="下载" Style="{StaticResource ButtonPrimary}" Margin="0,50,10,0" VerticalAlignment="Top" Height="40" Width="185" HorizontalAlignment="Right" Click="DownloadBtn_Click" FontSize="14"/>
         <hc:LoadingCircle x:Name="lCircle" HorizontalAlignment="Left" Margin="170,0,0,0" VerticalAlignment="Center"/>

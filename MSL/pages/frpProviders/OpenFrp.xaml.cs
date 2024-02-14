@@ -296,8 +296,12 @@ namespace MSL.pages.frpProviders
 
         private void signBtn_Click(object sender, RoutedEventArgs e)
         {
+            /*
             APIControl apiControl = new APIControl();
             apiControl.UserSign(Window.GetWindow(this));
+            */
+            DialogShow.ShowMsg(Window.GetWindow(this), "目前暂不支持在软件内签到，请前往OpenFrp官网进行签到！","提示");
+            Process.Start("https://www.openfrp.net/");
         }
 
         private void addProxieBtn_Click(object sender, RoutedEventArgs e)

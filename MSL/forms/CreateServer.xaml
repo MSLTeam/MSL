@@ -107,14 +107,14 @@
                     <Border Style="{StaticResource MagicBorder}" Margin="10,0,10,0">
                         <Grid>
                             <Label Content="服务器名称" HorizontalAlignment="Left" Style="{StaticResource BorderTitle}"/>
-                            <TextBlock Text="服务器名称（将在服务器列表中显示该名称）：" Foreground="{DynamicResource TextBlockBrush}" Margin="25,35,0,10" FontSize="16" HorizontalAlignment="Left" VerticalAlignment="Top"/>
+                            <TextBlock Text="服务器名称（将在服务器列表中显示该名称）：" Foreground="{DynamicResource PrimaryTextBrush}" Margin="25,35,0,10" FontSize="16" HorizontalAlignment="Left" VerticalAlignment="Top"/>
                             <TextBox x:Name="serverNameBox" Margin="370,30,0,0" TextWrapping="Wrap" Text="MyServer" VerticalAlignment="Top" Height="32"/>
                         </Grid>
                     </Border>
                     <Border Style="{StaticResource MagicBorder}">
                         <Grid>
                             <Label Content="服务器目录" HorizontalAlignment="Left" Style="{StaticResource BorderTitle}"/>
-                            <TextBlock Text="在此选择服务器目录（用于安放服务器的相关文件）：" Foreground="{DynamicResource TextBlockBrush}" Margin="25,40,0,0" FontSize="16" HorizontalAlignment="Left" VerticalAlignment="Top"/>
+                            <TextBlock Text="在此选择服务器目录（用于安放服务器的相关文件）：" Foreground="{DynamicResource PrimaryTextBrush}" Margin="25,40,0,0" FontSize="16" HorizontalAlignment="Left" VerticalAlignment="Top"/>
                             <TextBox x:Name="txb6" Margin="25,70,60,0" VerticalAlignment="Top" MaxLines="1"/>
                             <Button x:Name="a0003" Content="浏览" Margin="0,70,0,0" VerticalAlignment="Top" Click="a0003_Click" FontWeight="Normal" HorizontalAlignment="Right" Width="60"/>
                             <TextBlock Text="选择提示：请不要选择桌面或磁盘根目录，否则会生成许多存储文件且会造成误删问题" HorizontalAlignment="Left" Margin="25,105,0,5" VerticalAlignment="Top" FontSize="14" Foreground="Red" />
@@ -131,7 +131,7 @@
                     <Border Style="{StaticResource MagicBorder}">
                         <Grid x:Name="javagrid">
                             <Label Content="Java环境" Style="{StaticResource BorderTitle}"/>
-                            <TextBlock Text="在此选择一个Java环境" Foreground="{DynamicResource TextBlockBrush}" Margin="20,35,0,0" HorizontalAlignment="Left" VerticalAlignment="Top" FontSize="16"/>
+                            <TextBlock Text="在此选择一个Java环境" Foreground="{DynamicResource PrimaryTextBrush}" Margin="20,35,0,0" HorizontalAlignment="Left" VerticalAlignment="Top" FontSize="16"/>
                             <RadioButton x:Name="usedownloadjv" Content="开服器下载（推荐）" IsChecked="True" Margin="20,70,0,0" VerticalAlignment="Top" HorizontalAlignment="Left" FontSize="14" Checked="usedownloadjv_Checked"/>
                             <RadioButton x:Name="usecheckedjv" Content="检查电脑上的Java" Margin="20,110,0,0" VerticalAlignment="Top" HorizontalAlignment="Left" FontSize="14" Checked="usecheckedjv_Checked"/>
                             <ComboBox x:Name="selectJavaComb" Margin="180,65,0,0" HorizontalAlignment="Left" VerticalAlignment="Top" Width="150" SelectedIndex="0">
@@ -158,12 +158,13 @@
                     </Grid>
                     <Label x:Name="outlog" Content="" HorizontalAlignment="Left" Margin="10,10,0,0" VerticalAlignment="Top" FontSize="14" Foreground="Red" Background="{x:Null}" BorderBrush="{x:Null}"/>
                 </StackPanel>
-            </TabItem><TabItem x:Name="sserver" Header="服务端" IsEnabled="False" FontSize="14" Background="{x:Null}">
+            </TabItem>
+            <TabItem x:Name="sserver" Header="服务端" IsEnabled="False" FontSize="14" Background="{x:Null}">
                 <StackPanel>
                     <Border Style="{StaticResource MagicBorder}">
                         <Grid x:Name="servergrid">
                             <Label Content="服务端" Style="{StaticResource BorderTitle}"/>
-                            <TextBlock Text="在此选择一个服务端核心" Foreground="{DynamicResource TextBlockBrush}" Margin="20,35,0,0" HorizontalAlignment="Left" VerticalAlignment="Top" FontSize="16" />
+                            <TextBlock Text="在此选择一个服务端核心" Foreground="{DynamicResource PrimaryTextBrush}" Margin="20,35,0,0" HorizontalAlignment="Left" VerticalAlignment="Top" FontSize="16" />
                             <RadioButton x:Name="usedownloadserver" Content="使用开服器下载（推荐）" IsChecked="True" Margin="20,70,0,0" VerticalAlignment="Top" HorizontalAlignment="Left" FontSize="14" Checked="usedownloadserver_Checked"/>
                             <RadioButton x:Name="useServerself" Content="备有服务端，选择地址" Margin="20,110,0,0" VerticalAlignment="Top" Checked="useServerself_Checked" HorizontalAlignment="Left" FontSize="14"/>
                             <TextBox x:Name="txb3" Margin="20,135,60,0" VerticalAlignment="Top" MaxLines="1" FontSize="14" IsEnabled="False"/>
@@ -183,7 +184,7 @@
                             <Border Style="{StaticResource MagicBorder}">
                                 <Grid>
                                     <Label Content="开服内存" Style="{StaticResource BorderTitle}"/>
-                                    <TextBlock Text="在此设置开服需要分配的内存" Foreground="{DynamicResource TextBlockBrush}" HorizontalAlignment="Left" VerticalAlignment="Top" Margin="20,35,0,0" FontSize="16" />
+                                    <TextBlock Text="在此设置开服需要分配的内存" Foreground="{DynamicResource PrimaryTextBrush}" HorizontalAlignment="Left" VerticalAlignment="Top" Margin="20,35,0,0" FontSize="16" />
                                     <RadioButton x:Name="usedefault" Content="自动分配" Margin="20,70,0,0" VerticalAlignment="Top" IsChecked="True" Checked="usedefault_Checked" HorizontalAlignment="Left"/>
                                     <RadioButton x:Name="useJVM" Content="手动设置" Margin="20,110,0,0" VerticalAlignment="Top" Checked="useJVM_Checked" HorizontalAlignment="Left"/>
                                     <TextBox x:Name="txb4" HorizontalAlignment="Left" Margin="170,105,0,0" TextWrapping="Wrap" VerticalAlignment="Top" Width="120" IsEnabled="False" FontFamily="Microsoft YaHei UI"/>
@@ -211,7 +212,6 @@
                         <Button x:Name="done" Content="确定" Style="{StaticResource ButtonPrimary}" Margin="200,0,0,0" VerticalAlignment="Center" Width="150" Click="done_Click" Height="48" FontSize="18" HorizontalAlignment="Center"/>
                     </Grid>
                 </Grid>
-                
             </TabItem>
         </TabControl>
         <ScrollViewer VerticalScrollBarVisibility="Hidden" HorizontalAlignment="Right" VerticalAlignment="Top">

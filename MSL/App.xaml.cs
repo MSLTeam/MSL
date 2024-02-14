@@ -1,4 +1,6 @@
-﻿using System.Windows;
+﻿using System.Globalization;
+using System.Threading;
+using System.Windows;
 
 namespace MSL
 {
@@ -16,6 +18,7 @@ namespace MSL
                 e.Handled = true; // 设置为已处理，阻止应用程序崩溃
             };
         }
+
         /*
         protected override void OnStartup(StartupEventArgs e)
         {

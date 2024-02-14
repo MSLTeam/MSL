@@ -20,7 +20,7 @@
         <Border x:Name="noticeBorder" Margin="10,10,10,200" Padding="10" Style="{StaticResource MagicBorder}" SizeChanged="noticeBorder_SizeChanged">
             <Grid>
                 <Image x:Name="noticeImage" Margin="0,35,0,0"/>
-                <TextBox x:Name="noticeLab" TextBlock.LineHeight="24" ContextMenu="{DynamicResource UIContextMenu}" IsReadOnly="True" VerticalScrollBarVisibility="Auto" TextWrapping="Wrap" VerticalContentAlignment="Top" BorderThickness="0" Background="{x:Null}" Margin="5,35,5,5" FontSize="14"/>
+                <TextBox x:Name="noticeLab" TextBlock.LineHeight="24" IsReadOnly="True" VerticalScrollBarVisibility="Auto" TextWrapping="Wrap" VerticalContentAlignment="Top" BorderThickness="0" Background="{x:Null}" Margin="5,35,5,5" FontSize="14"/>
                 <Label Content="公告：" Style="{StaticResource BorderTitle}"/>
             </Grid>
         </Border>
