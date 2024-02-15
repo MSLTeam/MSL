@@ -2,7 +2,7 @@
 
 # Minecraft Server Launcher（MSL）
 
-我的世界MSL开服器，重新出发，美观实用！
+我的世界开服器，重新出发，美观实用！
 
 # 视频介绍：
 https://www.bilibili.com/video/BV1D34y127m8
@@ -21,12 +21,12 @@ https://wwyo.lanzouy.com/b02vailjc
 密码:6666
 
 ## QQ群：
-①：1145888872
+①：1145888872  
 ②：234477679
 
 有什么问题也可以在QQ群询问哦~
 
 # 文档
-https://docs.waheal.top
+[https://docs.waheal.top](https://github.com/MSLTeam/MSL/wiki)
 
 ## 作者的爱发电：https://afdian.net/@makabaka123 感谢支持！
