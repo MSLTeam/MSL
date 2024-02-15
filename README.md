@@ -1,8 +1,8 @@
 <img src="https://www.waheal.top/assets/img/logo.ico">
 
-# Minecraft Server Launcher（MSL）
+# Mine Server Launcher（MSL）
 
-MSL开服器，重新出发，美观实用！
+我的世界MSL开服器，重新出发，美观实用！
 
 # 视频介绍：
 https://www.bilibili.com/video/BV1D34y127m8
@@ -26,6 +26,6 @@ https://wwyo.lanzouy.com/b02vailjc
 有什么问题也可以在QQ群询问哦~
 
 # Wiki 文档
-https://github.com/Waheal/Minecraft-Server-Launcher/wiki
+https://github.com/Waheal/MSL/wiki
 
 ## 作者的爱发电：https://afdian.net/@makabaka123 感谢支持！
