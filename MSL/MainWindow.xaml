@@ -16,7 +16,7 @@
         CloseButtonForeground="White" OtherButtonForeground="White"
         ShowTitle="False" Icon="icon.ico"
         WindowStartupLocation="CenterScreen" Loaded="Window_Loaded" Closing="Window_Closing"
-        Title="Minecraft Server Launcher" ResizeMode="CanResize"
+        Title="Mine Server Launcher" ResizeMode="CanResize"
         Activated="Window_Activated" Deactivated="Window_Deactivated">
     <hc:Window.NonClientAreaContent>
         <StackPanel VerticalAlignment="Stretch" Height="40" Orientation="Horizontal" IsHitTestVisible="False">
@@ -78,7 +78,7 @@
             <StackPanel x:Name="GrowlPanel" hc:Growl.GrowlParent="True" VerticalAlignment="Top" Margin="0,10,10,10" />
         </ScrollViewer>
 
-        <hc:NotifyIcon x:Name="MainNoticyIcon" Text="Minecraft Server Launcher" Visibility="Hidden" MouseDoubleClick="MainNoticyIcon_MouseDoubleClick">
+        <hc:NotifyIcon x:Name="MainNoticyIcon" Text="Mine Server Launcher" Visibility="Hidden" MouseDoubleClick="MainNoticyIcon_MouseDoubleClick">
             <hc:NotifyIcon.ContextMenu>
                 <ContextMenu>
                     <MenuItem Command="hc:ControlCommands.PushMainWindow2Top" Header="打开主界面"/>
