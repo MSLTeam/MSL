@@ -674,8 +674,8 @@ namespace MSL.forms
                     isImportPack = true;
                     serverbase = serverPath;
                     DialogShow.GrowlInfo("整合包解压完成！请在此界面选择Java环境，Java的版本要和导入整合包的版本相对应，详情查看界面下方的表格");
-                    sserver.IsSelected = true;
-                    sserver.IsEnabled = true;
+                    sjava.IsSelected = true;
+                    sjava.IsEnabled = true;
                     welcome.IsEnabled = false;
                 }
             }
@@ -735,8 +735,8 @@ namespace MSL.forms
                             isImportPack = true;
                             serverbase = serverPath;
                             DialogShow.GrowlInfo("整合包解压完成！请在此界面选择Java环境，Java的版本要和导入整合包的版本相对应，详情查看界面下方的表格");
-                            sserver.IsSelected = true;
-                            sserver.IsEnabled = true;
+                            sjava.IsSelected = true;
+                            sjava.IsEnabled = true;
                             welcome.IsEnabled = false;
                         }
                     }

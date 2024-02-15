@@ -581,7 +581,6 @@ namespace MSL
                 ServerProcess.BeginErrorReadLine();
                 Thread thread = new Thread(CheckServerExit);
                 thread.Start();
-                Directory.SetCurrentDirectory(AppDomain.CurrentDomain.BaseDirectory);
             }
             catch (Exception e)
             {
@@ -616,6 +615,10 @@ namespace MSL
                 DialogShow.ShowMsg(this, "出现错误，开服器已检测完毕，请根据检测信息对服务器设置进行更改！", "错误", false, "确定");
                 TabCtrl.SelectedIndex = 1;
                 ChangeControlsState(false);
+            }
+            finally
+            {
+                Directory.SetCurrentDirectory(AppDomain.CurrentDomain.BaseDirectory);
             }
         }
         void ChangeControlsState(bool isEnable = true)
