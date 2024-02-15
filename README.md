@@ -13,7 +13,7 @@ https://www.bilibili.com/video/BV1na41167sV
 
 # 软件相关信息
 ## 运行环境： 
-.NET Framework 4.8 或 4.7.2
+.NET Framework 4.7.2 及以上版本
 
 # 下载地址：
 ## 蓝奏云：
@@ -21,7 +21,8 @@ https://wwyo.lanzouy.com/b02vailjc
 密码:6666
 
 ## QQ群：
-1145888872
+①：1145888872
+②：234477679
 
 有什么问题也可以在QQ群询问哦~
 
