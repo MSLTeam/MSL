@@ -581,9 +581,9 @@ namespace MSL.pages
                 RegistryKey regKey = Registry.CurrentUser.OpenSubKey("SOFTWARE\\Microsoft\\Windows\\CurrentVersion\\Run", true);
 
                 // 如果启动项中不存在该应用程序，则添加该应用程序
-                if (regKey.GetValue("Mine Server Launcher") == null)
+                if (regKey.GetValue("Minecraft Server Launcher") == null)
                 {
-                    regKey.SetValue("Mine Server Launcher", System.Reflection.Assembly.GetExecutingAssembly().Location);
+                    regKey.SetValue("Minecraft Server Launcher", System.Reflection.Assembly.GetExecutingAssembly().Location);
                 }
                 string jsonString = File.ReadAllText(@"MSL\config.json", System.Text.Encoding.UTF8);
                 JObject jobject = JObject.Parse(jsonString);
@@ -597,9 +597,9 @@ namespace MSL.pages
                 RegistryKey regKey = Registry.CurrentUser.OpenSubKey("SOFTWARE\\Microsoft\\Windows\\CurrentVersion\\Run", true);
 
                 // 如果启动项中存在该应用程序，则删除该应用程序
-                if (regKey.GetValue("Mine Server Launcher") != null)
+                if (regKey.GetValue("Minecraft Server Launcher") != null)
                 {
-                    regKey.DeleteValue("Mine Server Launcher");
+                    regKey.DeleteValue("Minecraft Server Launcher");
                 }
                 string jsonString = File.ReadAllText(@"MSL\config.json", System.Text.Encoding.UTF8);
                 JObject jobject = JObject.Parse(jsonString);
