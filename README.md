@@ -27,6 +27,6 @@ https://wwyo.lanzouy.com/b02vailjc
 有什么问题也可以在QQ群询问哦~
 
 # 文档
-[https://docs.waheal.top](https://github.com/MSLTeam/MSL/wiki)
+https://github.com/MSLTeam/MSL/wiki
 
 ## 作者的爱发电：https://afdian.net/@makabaka123 感谢支持！
