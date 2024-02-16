@@ -23,7 +23,6 @@ using System.Windows.Input;
 using System.Windows.Media;
 using System.Windows.Media.Imaging;
 using System.Windows.Threading;
-using static System.Net.Mime.MediaTypeNames;
 using MessageBox = System.Windows.MessageBox;
 using Path = System.IO.Path;
 using Window = System.Windows.Window;
@@ -35,21 +34,20 @@ namespace MSL
     /// </summary>
     public partial class ServerRunner
     {
-        private delegate void DelReadStdOutput(string result);
-        private event DelReadStdOutput ReadStdOutput;
         public static event DeleControl SaveConfigEvent;
         public static event DeleControl ServerStateChange;
         public static event DeleControl GotoFrpcEvent;
         public Process ServerProcess = new Process();
+        private delegate void DelReadStdOutput(string result);
+        private event DelReadStdOutput ReadStdOutput;
         private string ShieldLog = null;
-        private bool autoserver = false;
+        private bool autoRestart = false;
         private bool getServerInfo = MainWindow.getServerInfo;
         private int getServerInfoLine = 0;
         private bool getPlayerInfo = MainWindow.getPlayerInfo;
         private bool solveProblemSystem;
         private string foundProblems;
         private string DownjavaName;
-        public static string DownServer;
         public string RserverId;
         public string Rservername;
         public string Rserverjava;
@@ -63,15 +61,17 @@ namespace MSL
         /// </summary>
         public ServerRunner()
         {
-            ReadStdOutput += new DelReadStdOutput(ReadStdOutputAction);
             ServerProcess.OutputDataReceived += new DataReceivedEventHandler(p_OutputDataReceived);
             ServerProcess.ErrorDataReceived += new DataReceivedEventHandler(p_OutputDataReceived);
+            ServerProcess.Exited += new EventHandler(ServerExitEvent);
+            ReadStdOutput += new DelReadStdOutput(ReadStdOutputAction);
             ServerList.OpenServerForm += ShowWindowEvent;
             SettingsPage.ChangeSkinStyle += ChangeSkinStyle;
             InitializeComponent();
         }
         private async void Window_Loaded(object sender, RoutedEventArgs e)
         {
+            ChangeSkinStyle();
             //TabCtrl.Visibility = Visibility.Hidden;
             TabCtrl.SelectedIndex = -1;
             LoadingCircle loadingCircle = new LoadingCircle();
@@ -110,7 +110,7 @@ namespace MSL
         {
             try
             {
-                if(ServerList.RunningServerIDs.Contains(RserverId+"_0 "))
+                if (ServerList.RunningServerIDs.Contains(RserverId + "_0 "))
                 {
                     ServerList.RunningServerIDs = ServerList.RunningServerIDs.Replace(RserverId + "_0 ", "");
                 }
@@ -144,7 +144,6 @@ namespace MSL
 
         private void WindowLoadingEvent()
         {
-            ChangeSkinStyle();
             //Get Server's Information
             JObject jsonObject = JObject.Parse(File.ReadAllText(@"MSL\ServerList.json", Encoding.UTF8));
             JObject _json = (JObject)jsonObject[RserverId];
@@ -164,7 +163,7 @@ namespace MSL
             RserverJVMcmd = _json["args"].ToString();
             if (_json["autostartServer"] != null && _json["autostartServer"].ToString() == "True")
             {
-                autoserver = true;
+                autoRestart = true;
             }
             bool _closeOutlog=false;
             if (_json["closeOutlog"] != null && _json["closeOutlog"].ToString() == "True")
@@ -203,7 +202,7 @@ namespace MSL
 
             Dispatcher.Invoke(() =>
             {
-                if (autoserver)
+                if (autoRestart)
                 {
                     autoStartserver.Content = "关服自动重启:启用";
                 }
@@ -566,6 +565,7 @@ namespace MSL
                 ServerProcess.StartInfo.RedirectStandardInput = true;
                 ServerProcess.StartInfo.RedirectStandardOutput = true;
                 ServerProcess.StartInfo.RedirectStandardError = true;
+                ServerProcess.EnableRaisingEvents = true;
                 if (outputCmdEncoding.Content.ToString() == "输出编码:UTF8")
                 {
                     ServerProcess.StartInfo.StandardOutputEncoding = Encoding.UTF8;
@@ -579,8 +579,6 @@ namespace MSL
                 ServerProcess.Start();
                 ServerProcess.BeginOutputReadLine();
                 ServerProcess.BeginErrorReadLine();
-                Thread thread = new Thread(CheckServerExit);
-                thread.Start();
             }
             catch (Exception e)
             {
@@ -649,7 +647,7 @@ namespace MSL
             }
             else
             {
-                ServerList.RunningServerIDs = ServerList.RunningServerIDs.Replace(RserverId + "_1 ", "");
+                ServerList.RunningServerIDs = ServerList.RunningServerIDs.Replace(RserverId + "_1 ", RserverId + "_0 ");
                 ServerStateChange();
 
                 DialogShow.GrowlInfo("服务器已关闭！");
@@ -935,13 +933,17 @@ namespace MSL
                                 _json["encoding_out"] = encoding;
                                 jsonObject[RserverId] = _json;
                                 File.WriteAllText("MSL\\Serverlist.json", Convert.ToString(jsonObject), Encoding.UTF8);
-                                ServerProcess.Kill();
-                                autoserver = true;
+                                try
+                                {
+                                    ServerProcess.Kill();
+                                }
+                                catch { }
+                                autoRestart = true;
                                 DialogShow.GrowlSuccess("更改完毕！");
                                 Task.Run(() =>
                                 {
-                                    Thread.Sleep(2000);
-                                    autoserver = false;
+                                    Thread.Sleep(1000);
+                                    autoRestart = false;
                                 });
                             }
                             return true;
@@ -1258,6 +1260,10 @@ namespace MSL
                     foundProblems += "*不匹配的Java版本：\n";
                     foundProblems += "请使用" + msg.Substring(msg.IndexOf("Java"), 7) + "！\n";
                 }
+                else if(msg.Contains("Invalid or corrupt jarfile"))
+                {
+                    foundProblems += "*服务端核心不完整，请重新下载！\n";
+                }
                 else if (msg.Contains("OutOfMemoryError"))
                 {
                     foundProblems += "*服务器内存分配过低或过高！\n";
@@ -1406,51 +1412,54 @@ namespace MSL
             }
         }
 
-        private void CheckServerExit()
+        private void ServerExitEvent(object sender, EventArgs e)
         {
-            try
+            Dispatcher.Invoke(() =>
             {
-                while (!ServerProcess.HasExited)
+                ChangeControlsState(false);
+                if (solveProblemSystem)
                 {
-                    Thread.Sleep(1000);
-                }
-            }
-            finally
-            {
-                Dispatcher.Invoke(() =>
-                {
-                    ChangeControlsState(false);
-                    if (solveProblemSystem)
+                    solveProblemSystem = false;
+                    if (foundProblems == null)
                     {
-                        solveProblemSystem = false;
-                        if (foundProblems == null)
-                        {
-                            DialogShow.GrowlInfo("服务器已关闭！开服器未检测到相关问题，请加Q群寻求帮助（附带崩溃日志截图）：\n一群：1145888872  二群：234477679！");
-                        }
-                        else
-                        {
-                            DialogShow.GrowlInfo("服务器已关闭！即将为您展示分析报告！");
-                            DialogShow.ShowMsg(this, foundProblems, "服务器分析报告");
-                            foundProblems = null;
-                        }
+                        DialogShow.GrowlInfo("服务器已关闭！开服器未检测到相关问题，请加Q群寻求帮助（附带崩溃日志截图）：\n一群：1145888872  二群：234477679！");
                     }
-                    else if (autoserver == true)
+                    else
                     {
+                        DialogShow.GrowlInfo("服务器已关闭！即将为您展示分析报告！");
+                        DialogShow.ShowMsg(this, foundProblems, "服务器分析报告");
+                        foundProblems = null;
+                    }
+                }
+                else if (autoRestart == true)
+                {
+                    LaunchServer();
+                }
+                else if (ServerProcess.ExitCode != 0 && getServerInfoLine <= 101)
+                {
+                    DialogShow.ShowMsg(this, "您的服务器疑似异常关闭，是否使用崩溃分析系统进行检测？", "提示", true, "取消");
+                    if (MessageDialog._dialogReturn)
+                    {
+                        MessageDialog._dialogReturn = false;
+                        TabCtrl.SelectedIndex = 1;
+                        solveProblemSystem = true;
                         LaunchServer();
                     }
-                    else if (getServerInfoLine <= 100)
+                }
+                /*
+                else if (getServerInfoLine <= 100)
+                {
+                    DialogShow.ShowMsg(this, "您的服务器疑似异常关闭，是否使用崩溃分析系统进行检测？", "提示", true, "取消");
+                    if (MessageDialog._dialogReturn)
                     {
-                        DialogShow.ShowMsg(this, "您的服务器疑似异常关闭，是否使用崩溃分析系统进行检测？", "提示", true, "取消");
-                        if (MessageDialog._dialogReturn)
-                        {
-                            MessageDialog._dialogReturn = false;
-                            TabCtrl.SelectedIndex = 1;
-                            solveProblemSystem = true;
-                            LaunchServer();
-                        }
+                        MessageDialog._dialogReturn = false;
+                        TabCtrl.SelectedIndex = 1;
+                        solveProblemSystem = true;
+                        LaunchServer();
                     }
-                });
-            }
+                }
+                */
+            });
         }
 
 
@@ -1769,11 +1778,16 @@ namespace MSL
         {
             if (controlServer.Content.ToString() == "开服")
             {
+                if (getServerInfoLine == 103)
+                {
+                    getServerInfoLine = 102;
+                    return;
+                }
                 LaunchServer();
             }
             else
             {
-                getServerInfoLine = 101;
+                getServerInfoLine = 102;
                 DialogShow.GrowlInfo("关服中，请耐心等待……\n双击按钮可强制关服（不建议）");
                 ServerProcess.StandardInput.WriteLine("stop");
             }
@@ -1785,6 +1799,7 @@ namespace MSL
             {
                 if (controlServer.Content.ToString() == "关服")
                 {
+                    getServerInfoLine = 103;
                     ServerProcess.Kill();
                 }
             }
@@ -3084,13 +3099,13 @@ namespace MSL
             JObject _json = (JObject)jsonObject[RserverId];
             if (autoStartserver.Content.ToString() == "关服自动重启:禁用")
             {
-                autoserver = true;
+                autoRestart = true;
                 autoStartserver.Content = "关服自动重启:启用";
                 _json["autostartServer"] = "True";
             }
             else
             {
-                autoserver = false;
+                autoRestart = false;
                 autoStartserver.Content = "关服自动重启:禁用";
                 _json["autostartServer"] = "False";
             }

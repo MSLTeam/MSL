@@ -286,7 +286,7 @@ namespace MSL.pages
         {
             try
             {
-                if (RunningServerIDs.IndexOf(serverid[serverList.SelectedIndex].ToString() + " ") + 1 != 0)
+                if (RunningServerIDs.Contains(serverid[serverList.SelectedIndex].ToString()))
                 {
                     MainWindow.serverid = serverid[serverList.SelectedIndex];
                     OpenServerForm();
@@ -348,7 +348,7 @@ namespace MSL.pages
                 }
                 try
                 {
-                    if (RunningServerIDs.IndexOf(serverid[serverList.SelectedIndex].ToString() + " ") + 1 != 0)
+                    if (RunningServerIDs.Contains(serverid[serverList.SelectedIndex].ToString()))
                     {
                         MainWindow.serverid = serverid[serverList.SelectedIndex];
                         OpenServerForm();

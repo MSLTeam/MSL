@@ -481,6 +481,7 @@ namespace MSL
 
                 // 退出当前进程
                 Process.GetCurrentProcess().Kill();
+                //Environment.Exit(0);
             }
             else
             {
@@ -519,7 +520,9 @@ namespace MSL
             {
                 //Logger.LogInfo("正在结束MSL进程……！");
                 Application.Current.Shutdown();
-                Process.GetCurrentProcess().Kill();
+                //Process.GetCurrentProcess().CloseMainWindow();
+                //Environment.Exit(0);
+                
             }
             else
             {
@@ -531,7 +534,7 @@ namespace MSL
         {
             try
             {
-                if (ServerList.RunningServerIDs != "" || FrpcPage.FRPCMD.HasExited == false || OnlinePage.FRPCMD.HasExited == false)
+                if (ServerList.RunningServerIDs.Contains("_1") || FrpcPage.FRPCMD.HasExited == false || OnlinePage.FRPCMD.HasExited == false)
                 {
                     //Logger.LogWarning("服务器、内网映射或联机功能正在运行中！弹出对话框询问是否关闭……");
                     bool dialog = DialogShow.ShowMsg(this, "您的服务器、内网映射或联机功能正在运行中，关闭软件可能会让服务器进程在后台一直运行并占用资源！确定要继续关闭吗？\n注：如果想隐藏主窗口的话，请前往设置打开托盘图标", "警告", true, "取消");
@@ -670,12 +673,6 @@ namespace MSL
                 OtherButtonForeground = Brushes.White;
             }
         }
-        public static void SetDynamicResourceKey(DependencyObject obj, DependencyProperty prop, object resourceKey)
-        {
-            var dynamicResource = new DynamicResourceExtension(resourceKey);
-            var resourceReferenceExpression = dynamicResource.ProvideValue(null);
-            obj.SetValue(prop, resourceReferenceExpression);
-        }
 
         private void sideMenuContextOpen_Click(object sender, RoutedEventArgs e)
         {
@@ -749,7 +746,8 @@ namespace MSL
             if (CloseApp())
             {
                 Application.Current.Shutdown();
-                Process.GetCurrentProcess().Kill();
+                //Environment.Exit(0);
+                //Process.GetCurrentProcess().Kill();
             }
             else
             {
