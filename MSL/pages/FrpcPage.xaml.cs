@@ -116,6 +116,7 @@ namespace MSL.pages
                     {
                         startfrpc.IsEnabled = true;
                     });
+                    Directory.SetCurrentDirectory(AppDomain.CurrentDomain.BaseDirectory);
                     FRPCMD.WaitForExit();
                     FRPCMD.CancelOutputRead();
                 }
@@ -162,6 +163,7 @@ namespace MSL.pages
                     {
                         startfrpc.IsEnabled = true;
                     });
+                    Directory.SetCurrentDirectory(AppDomain.CurrentDomain.BaseDirectory);
                     FRPCMD.WaitForExit();
                     FRPCMD.CancelOutputRead();
                 }
@@ -181,7 +183,6 @@ namespace MSL.pages
             }
             finally
             {
-                Directory.SetCurrentDirectory(AppDomain.CurrentDomain.BaseDirectory);
                 Dispatcher.Invoke(() =>
                 {
                     setfrpc.IsEnabled = true;
