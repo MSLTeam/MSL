@@ -915,43 +915,71 @@ namespace MSL
                 if (outlogEncodingAsk)
                 {
                     outlogEncodingAsk = false;
-                    string encoding = "UTF8";
-                    if (outputCmdEncoding.Content.ToString().Contains("UTF8"))
+                    Dispatcher.Invoke(() =>
                     {
-                        encoding = "ANSI";
-                    }
-                    Growl.Ask(new GrowlInfo
-                    {
-                        Message = "MSL检测到您的服务器输出了乱码日志，是否将服务器输出编码更改为“" + encoding + "”？\n点击确定后将自动更改编码并重启服务器",
-                        ActionBeforeClose = isConfirmed =>
-                        {
-                            if (isConfirmed)
-                            {
-                                JObject jsonObject = JObject.Parse(File.ReadAllText(@"MSL\ServerList.json", Encoding.UTF8));
-                                JObject _json = (JObject)jsonObject[RserverId];
-                                outputCmdEncoding.Content = "输出编码:" + encoding;
-                                _json["encoding_out"] = encoding;
-                                jsonObject[RserverId] = _json;
-                                File.WriteAllText("MSL\\Serverlist.json", Convert.ToString(jsonObject), Encoding.UTF8);
-                                try
-                                {
-                                    ServerProcess.Kill();
-                                }
-                                catch { }
-                                autoRestart = true;
-                                DialogShow.GrowlSuccess("更改完毕！");
-                                Task.Run(() =>
-                                {
-                                    Thread.Sleep(1000);
-                                    autoRestart = false;
-                                });
-                            }
-                            return true;
-                        },
-                        ShowDateTime = false
+                        ChangeEncodingAndRestart();
                     });
                 }
             }
+        }
+
+        private void ChangeEncodingAndRestart()
+        {
+            string encoding = "UTF8";
+            if (outputCmdEncoding.Content.ToString().Contains("UTF8"))
+            {
+                encoding = "ANSI";
+            }
+            Growl.Ask(new GrowlInfo
+            {
+                Message = "MSL检测到您的服务器输出了乱码日志，是否将服务器输出编码更改为“" + encoding + "”？\n点击确定后将自动更改编码并重启服务器",
+                ActionBeforeClose = isConfirmed =>
+                {
+                    if (isConfirmed)
+                    {
+                        JObject jsonObject = JObject.Parse(File.ReadAllText(@"MSL\ServerList.json", Encoding.UTF8));
+                        JObject _json = (JObject)jsonObject[RserverId];
+                        _json["encoding_out"] = encoding;
+                        jsonObject[RserverId] = _json;
+                        File.WriteAllText("MSL\\Serverlist.json", Convert.ToString(jsonObject), Encoding.UTF8);
+                        outputCmdEncoding.Content = "输出编码:" + encoding;
+                        DialogShow.GrowlSuccess("更改完毕！");
+                        getServerInfoLine = 102;
+                        try
+                        {
+                            ServerProcess.Kill();
+                        }
+                        catch { }
+                        Task.Run(() =>
+                        {
+                            while (true)
+                            {
+                                try
+                                {
+                                    if (ServerProcess.HasExited)
+                                    {
+                                        Dispatcher.Invoke(() =>
+                                        {
+                                            LaunchServer();
+                                        });
+                                        break;
+                                    }
+                                    else
+                                    {
+                                        Thread.Sleep(500);
+                                    }
+                                }
+                                catch
+                                { Thread.Sleep(500); }
+                            }
+                            
+                        });
+                    }
+                    return true;
+                },
+
+                ShowDateTime = false
+            });
         }
 
         private void LogHandleInfo(string msg)
