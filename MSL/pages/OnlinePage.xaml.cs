@@ -286,11 +286,14 @@ namespace MSL.pages
                 FRPCMD.OutputDataReceived += new DataReceivedEventHandler(p_OutputDataReceived);
                 FRPCMD.Start();
                 FRPCMD.BeginOutputReadLine();
-                Directory.SetCurrentDirectory(AppDomain.CurrentDomain.BaseDirectory);
             }
             catch (Exception e)
             {
                 MessageBox.Show("出现错误，请检查是否有杀毒软件误杀并重试:" + e.Message, "错误", MessageBoxButton.OK, MessageBoxImage.Error);
+            }
+            finally
+            {
+                Directory.SetCurrentDirectory(AppDomain.CurrentDomain.BaseDirectory);
             }
         }
         void RefreshLink()

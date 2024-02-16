@@ -112,7 +112,6 @@ namespace MSL.pages
                     FRPCMD.StartInfo.StandardOutputEncoding = Encoding.UTF8;
                     FRPCMD.Start();
                     FRPCMD.BeginOutputReadLine();
-                    Directory.SetCurrentDirectory(AppDomain.CurrentDomain.BaseDirectory);
                     Dispatcher.Invoke(() =>
                     {
                         startfrpc.IsEnabled = true;
@@ -159,7 +158,6 @@ namespace MSL.pages
                     FRPCMD.StartInfo.StandardOutputEncoding = Encoding.UTF8;
                     FRPCMD.Start();
                     FRPCMD.BeginOutputReadLine();
-                    Directory.SetCurrentDirectory(AppDomain.CurrentDomain.BaseDirectory);
                     Dispatcher.Invoke(() =>
                     {
                         startfrpc.IsEnabled = true;
@@ -183,6 +181,7 @@ namespace MSL.pages
             }
             finally
             {
+                Directory.SetCurrentDirectory(AppDomain.CurrentDomain.BaseDirectory);
                 Dispatcher.Invoke(() =>
                 {
                     setfrpc.IsEnabled = true;

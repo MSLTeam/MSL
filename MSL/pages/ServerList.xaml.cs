@@ -264,6 +264,10 @@ namespace MSL.pages
                 process.Start();
             }
             catch (Exception ex) { MessageBox.Show("出现错误，请检查您是否选择了服务器！\n" + ex.Message); }
+            finally
+            {
+                Directory.SetCurrentDirectory(AppDomain.CurrentDomain.BaseDirectory);
+            }
         }
 
         private void openServerDir_Click(object sender, RoutedEventArgs e)

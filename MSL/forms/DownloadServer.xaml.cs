@@ -315,6 +315,7 @@ namespace MSL.pages
             }
             catch(Exception ex)
             {
+                Directory.SetCurrentDirectory(AppDomain.CurrentDomain.BaseDirectory);
                 DialogShow.ShowMsg(this, "出现错误！\n"+ex.Message, "错误");
             }
         }
