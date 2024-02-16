@@ -520,9 +520,9 @@ namespace MSL
             {
                 //Logger.LogInfo("正在结束MSL进程……！");
                 Application.Current.Shutdown();
-                //Process.GetCurrentProcess().CloseMainWindow();
+                //Process.GetCurrentProcess().Kill();
                 //Environment.Exit(0);
-                
+
             }
             else
             {
@@ -746,8 +746,8 @@ namespace MSL
             if (CloseApp())
             {
                 Application.Current.Shutdown();
-                //Environment.Exit(0);
                 //Process.GetCurrentProcess().Kill();
+                //Environment.Exit(0);
             }
             else
             {
