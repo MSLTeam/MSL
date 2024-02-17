@@ -165,7 +165,7 @@ namespace MSL
             {
                 autoRestart = true;
             }
-            bool _closeOutlog=false;
+            bool _closeOutlog = false;
             if (_json["closeOutlog"] != null && _json["closeOutlog"].ToString() == "True")
             {
                 _closeOutlog = true;
@@ -174,27 +174,27 @@ namespace MSL
             {
                 ShieldLog = _json["shieldLog"].ToString();
             }
-            bool _shieldStackOut=true;
+            bool _shieldStackOut = true;
             if (_json["shieldStackOut"] != null && _json["shieldStackOut"].ToString() == "False")
             {
-                _shieldStackOut= false;
+                _shieldStackOut = false;
             }
-            bool _autoClearOutlog=true;
+            bool _autoClearOutlog = true;
             if (_json["autoClearOutlog"] != null && _json["autoClearOutlog"].ToString() == "False")
             {
                 _autoClearOutlog = false;
             }
-            string _encoding_in=null;
+            string _encoding_in = null;
             if (_json["encoding_in"] != null)
             {
                 _encoding_in = "输入编码:" + _json["encoding_in"].ToString();
             }
-            string _encoding_out=null;
+            string _encoding_out = null;
             if (_json["encoding_out"] != null)
             {
-                _encoding_out= "输出编码:" + _json["encoding_out"].ToString();
+                _encoding_out = "输出编码:" + _json["encoding_out"].ToString();
             }
-            bool _fileforceUTF8=false;
+            bool _fileforceUTF8 = false;
             if (_json["fileforceUTF8"] != null && _json["fileforceUTF8"].ToString() == "True")
             {
                 _fileforceUTF8 = true;
@@ -950,7 +950,7 @@ namespace MSL
                                     await Task.Delay(200);
                                     autoRestart = false;
                                 });
-                                
+
                             }
                             return true;
                         },
@@ -1266,7 +1266,7 @@ namespace MSL
                     foundProblems += "*不匹配的Java版本：\n";
                     foundProblems += "请使用" + msg.Substring(msg.IndexOf("Java"), 7) + "！\n";
                 }
-                else if(msg.Contains("Invalid or corrupt jarfile"))
+                else if (msg.Contains("Invalid or corrupt jarfile"))
                 {
                     foundProblems += "*服务端核心不完整，请重新下载！\n";
                 }
@@ -1590,6 +1590,7 @@ namespace MSL
         {
             SendCommand();
         }
+        //int multiComplete;
 
         private void cmdtext_KeyDown(object sender, KeyEventArgs e)
         {
@@ -1597,6 +1598,151 @@ namespace MSL
             {
                 SendCommand();
             }
+            else if (e.Key == Key.Tab)
+            {
+                e.Handled = true;
+                if (fastCMD.SelectedIndex == 0)
+                {
+                    try
+                    {
+                        //tab补全命令列表
+                        List<string> tabCompleteList = new List<string>
+                        {
+                            "gamemode creative",
+                            "gamemode survival",
+                            "gamemode spectator",
+                            "gamemode adventure",
+                            "gamerule keepInventory true",
+                            "gamerule keepInventory false",
+                            "difficulty peaceful",
+                            "difficulty easy",
+                            "difficulty normal",
+                            "difficulty hard",
+                            "say",
+                            "op",
+                            "pardon",
+                            "time set day",
+                            "time set night",
+                            "ban",
+                            "weather clear",
+                            "ban",
+                            "kick"
+                        };
+                        //获取输入的文本
+                        string input = cmdtext.Text;
+                        //判断是否为空
+                        if (!string.IsNullOrEmpty(input))
+                        {
+                            //初始化替换标志和候选列表
+                            bool isReplace = true;
+                            List<string> candidates = new List<string>();
+                            //获取最后一个空格之前的文本
+                            string prefix = input;
+                            if(input.Contains(" "))
+                            {
+                                prefix=input.Substring(0, input.LastIndexOf(" ") + 1);
+                            }
+                            //遍历命令列表
+                            foreach (string command in tabCompleteList)
+                            {
+                                //如果命令以输入的文本开头
+                                if (command.StartsWith(input))
+                                {
+                                    //获取命令的剩余部分
+                                    string suffix = command.Replace(input, "");
+                                    //如果剩余部分包含空格
+                                    if (suffix.Contains(" "))
+                                    {
+                                        //如果是第一次匹配
+                                        if (isReplace)
+                                        {
+                                            //替换输入的文本为命令的第一个空格之前的部分
+                                            cmdtext.Text = input + suffix.Substring(0, suffix.IndexOf(" "));
+                                        }
+                                        if (!candidates.Contains(command.Substring(0, command.IndexOf(" "))))
+                                        {
+                                            //添加候选项为命令的第一个空格之前的部分
+                                            candidates.Add(command.Substring(0, command.IndexOf(" ")));
+                                        }
+                                    }
+                                    else
+                                    {
+                                        //如果是第一次匹配
+                                        if (isReplace)
+                                        {
+                                            //替换输入的文本为命令
+                                            cmdtext.Text = command;
+                                        }
+                                        if (!candidates.Contains(command))
+                                        {
+                                            //添加候选项为命令
+                                            candidates.Add(command);
+                                        }
+                                    }
+                                    //设置替换标志为false
+                                    isReplace = false;
+                                }
+                            }
+                            //如果有候选项
+                            if (candidates.Count > 0)
+                            {
+                                if (candidates.Count == 1&&prefix!=input)
+                                {
+                                    candidates.Clear();
+                                    //遍历命令列表
+                                    foreach (string command in tabCompleteList)
+                                    {
+                                        //如果命令以输入的文本开头
+                                        if (command.StartsWith(prefix))
+                                        {
+                                            //添加候选项为命令
+                                            candidates.Add(command.Replace(prefix,""));
+                                        }
+                                    }
+                                    if (candidates.Count != 1)
+                                    {
+                                        //显示候选项，用逗号分隔
+                                        ShowLog(string.Join(",", candidates), Brushes.Green);
+                                        int multiComplete = 0;
+                                        foreach (string command in candidates)
+                                        {
+                                            if (cmdtext.Text.Replace(prefix,"") == command)
+                                            {
+                                                multiComplete++;
+                                                break;
+                                            }
+                                            multiComplete++;
+                                        }
+                                        if (candidates.Count < multiComplete + 1)
+                                        {
+                                            multiComplete = 0;
+                                        }
+                                        
+                                        cmdtext.Text = prefix+candidates[multiComplete];
+                                    }
+                                }
+                                else
+                                {
+                                    //显示候选项，用逗号分隔
+                                    ShowLog(string.Join(",", candidates), Brushes.Green);
+                                }
+                            }
+                        }
+                        //清空命令列表
+                        tabCompleteList.Clear();
+                    }
+                    catch
+                    {
+                        DialogShow.GrowlErr("命令补全失败！");
+                    }
+                    finally
+                    {
+                        //设置光标位置为文本末尾
+                        cmdtext.SelectionStart = cmdtext.Text.Length;
+                    }
+                }
+            }
+            /*
             if (e.Key == Key.Tab)
             {
                 e.Handled = true;
@@ -1758,7 +1904,9 @@ namespace MSL
                     }
                 }
             }
+            */
         }
+
         private void cmdtext_KeyUp(object sender, KeyEventArgs e)
         {
             if (e.Key == Key.Up)
@@ -2544,40 +2692,29 @@ namespace MSL
                 {
                     useJvpath.IsChecked = true;
                 }
-                else if (jAva.Text == AppDomain.CurrentDomain.BaseDirectory + @"MSL\Java8\bin\java.exe")
-                {
-                    useDownJv.IsChecked = true;
-                    selectJava.SelectedIndex = 0;
-                }
-                else if (jAva.Text == AppDomain.CurrentDomain.BaseDirectory + @"MSL\Java11\bin\java.exe")
-                {
-                    useDownJv.IsChecked = true;
-                    selectJava.SelectedIndex = 1;
-                }
-                else if (jAva.Text == AppDomain.CurrentDomain.BaseDirectory + @"MSL\Java16\bin\java.exe")
-                {
-                    useDownJv.IsChecked = true;
-                    selectJava.SelectedIndex = 2;
-                }
-                else if (jAva.Text == AppDomain.CurrentDomain.BaseDirectory + @"MSL\Java17\bin\java.exe")
-                {
-                    useDownJv.IsChecked = true;
-                    selectJava.SelectedIndex = 3;
-                }
-                else if (jAva.Text == AppDomain.CurrentDomain.BaseDirectory + @"MSL\Java18\bin\java.exe")
-                {
-                    useDownJv.IsChecked = true;
-                    selectJava.SelectedIndex = 4;
-                }
-                else if (jAva.Text == AppDomain.CurrentDomain.BaseDirectory + @"MSL\Java19\bin\java.exe")
-                {
-                    useDownJv.IsChecked = true;
-                    selectJava.SelectedIndex = 5;
-                }
                 else
                 {
-                    useSelf.IsChecked = true;
+                    Dictionary<string, int> javaVersions = new Dictionary<string, int>
+                    {
+                        { AppDomain.CurrentDomain.BaseDirectory + @"MSL\Java8\bin\java.exe", 0 },
+                        { AppDomain.CurrentDomain.BaseDirectory + @"MSL\Java11\bin\java.exe", 1 },
+                        { AppDomain.CurrentDomain.BaseDirectory + @"MSL\Java16\bin\java.exe", 2 },
+                        { AppDomain.CurrentDomain.BaseDirectory + @"MSL\Java17\bin\java.exe", 3 },
+                        { AppDomain.CurrentDomain.BaseDirectory + @"MSL\Java18\bin\java.exe", 4 },
+                        { AppDomain.CurrentDomain.BaseDirectory + @"MSL\Java19\bin\java.exe", 5 }
+                    };
+
+                    if (javaVersions.TryGetValue(jAva.Text, out int selectedIndex))
+                    {
+                        useDownJv.IsChecked = true;
+                        selectJava.SelectedIndex = selectedIndex;
+                    }
+                    else
+                    {
+                        useSelf.IsChecked = true;
+                    }
                 }
+
                 if (RserverJVM == "")
                 {
                     memorySlider.IsEnabled = false;
@@ -2590,27 +2727,27 @@ namespace MSL
                     autoSetMemory.IsChecked = false;
                     try
                     {
-                        int IndexofA6 = RserverJVM.IndexOf("-Xms");
-                        string Ru6 = RserverJVM.Substring(IndexofA6 + 4);
-                        string a600 = Ru6.Substring(0, Ru6.IndexOf("M"));
-                        int IndexofA7 = RserverJVM.IndexOf("-Xmx");
-                        string Ru7 = RserverJVM.Substring(IndexofA7 + 4);
-                        string a700 = Ru7.Substring(0, Ru7.IndexOf("M"));
+                        int minMemoryIndex = RserverJVM.IndexOf("-Xms");
+                        string minMemorySubstring = RserverJVM.Substring(minMemoryIndex + 4);
+                        string minMemoryValue = minMemorySubstring.Substring(0, minMemorySubstring.IndexOf("M"));
 
-                        memorySlider.ValueStart = int.Parse(a600);
-                        memorySlider.ValueEnd = int.Parse(a700);
-                        memoryInfo.Text = "最小:" + a600 + "M," + "最大:" + a700 + "M";
+                        int maxMemoryIndex = RserverJVM.IndexOf("-Xmx");
+                        string maxMemorySubstring = RserverJVM.Substring(maxMemoryIndex + 4);
+                        string maxMemoryValue = maxMemorySubstring.Substring(0, maxMemorySubstring.IndexOf("M"));
 
+                        memorySlider.ValueStart = int.Parse(minMemoryValue);
+                        memorySlider.ValueEnd = int.Parse(maxMemoryValue);
+                        memoryInfo.Text = "最小:" + minMemoryValue + "M," + "最大:" + maxMemoryValue + "M";
                     }
                     catch
                     {
-                        int IndexofA7 = RserverJVM.IndexOf("-Xmx");
-                        string Ru7 = RserverJVM.Substring(IndexofA7 + 4);
-                        string a700 = Ru7.Substring(0, Ru7.IndexOf("M"));
+                        int maxMemoryIndex = RserverJVM.IndexOf("-Xmx");
+                        string maxMemorySubstring = RserverJVM.Substring(maxMemoryIndex + 4);
+                        string maxMemoryValue = maxMemorySubstring.Substring(0, maxMemorySubstring.IndexOf("M"));
 
                         memorySlider.ValueStart = 0;
-                        memorySlider.ValueEnd = int.Parse(a700);
-                        memoryInfo.Text = "最小:0M," + "最大:" + a700 + "M";
+                        memorySlider.ValueEnd = int.Parse(maxMemoryValue);
+                        memoryInfo.Text = "最小:0M," + "最大:" + maxMemoryValue + "M";
                     }
                 }
             }
@@ -2645,7 +2782,7 @@ namespace MSL
             {
                 if (ServerProcess.HasExited == false)
                 {
-                    DialogShow.ShowMsg(this, "您没有关闭服务器，无法更改服务器设置！", "错误", false, "确定");
+                    DialogShow.ShowMsg(this, "服务器运行时无法更改服务器设置！", "错误", false, "确定");
                     return;
                 }
             }
@@ -2741,13 +2878,13 @@ namespace MSL
                 {
                     if (!Path.IsPathRooted(jAva.Text))
                     {
-                        jAva.Text = AppDomain.CurrentDomain.BaseDirectory.ToString()+ jAva.Text;
+                        jAva.Text = AppDomain.CurrentDomain.BaseDirectory.ToString() + jAva.Text;
                     }
                     DialogShow.GrowlInfo("正在检查所选Java可用性，请稍等……");
                     (bool javaAvailability, string javainfo) = await Functions.CheckJavaAvailabilityAsync(jAva.Text);
                     if (javaAvailability)
                     {
-                        DialogShow.GrowlSuccess("检测完毕，Java可用！\n"+"版本：" + javainfo);
+                        DialogShow.GrowlSuccess("检测完毕，Java可用！\n" + "版本：" + javainfo);
                     }
                     else
                     {
