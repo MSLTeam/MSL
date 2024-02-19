@@ -948,12 +948,12 @@ namespace MSL.forms
                 {
                     if (Functions.Get("") != "200")
                     {
-                        MainWindow.serverLink = "https://msl.waheal.top";
+                        MainWindow.serverLink = "waheal.top";
                     }
                 }
                 catch
                 {
-                    MainWindow.serverLink = "https://msl.waheal.top";
+                    MainWindow.serverLink = "waheal.top";
                 }
                 string jsonData = Functions.Get("serverlist");
                 serverTypes = JsonConvert.DeserializeObject<string[]>(jsonData);
@@ -1213,15 +1213,10 @@ namespace MSL.forms
 
         private async Task<string> AsyncGetJavaDwnLink()
         {
-            /*
-            WebClient MyWebClient = new WebClient();
-            byte[] pageData = await MyWebClient.DownloadDataTaskAsync(MainWindow.serverLink + @"/msl/otherdownload.json");
-            string _javaList = Encoding.UTF8.GetString(pageData);
-            */
             string url = "https://api.waheal.top";
-            if (MainWindow.serverLink != "https://msl.waheal.top")
+            if (MainWindow.serverLink != "waheal.top")
             {
-                url = MainWindow.serverLink;
+                url = "https://api." + MainWindow.serverLink;
             }
             WebClient MyWebClient = new WebClient();
             byte[] pageData = await MyWebClient.DownloadDataTaskAsync(url + "/otherdownloads");

@@ -116,12 +116,12 @@ namespace MSL.pages
             {
                 if (Functions.Get("") != "200")
                 {
-                    MainWindow.serverLink = "https://msl.waheal.top";
+                    MainWindow.serverLink = "waheal.top";
                 }
             }
             catch
             {
-                MainWindow.serverLink = "https://msl.waheal.top";
+                MainWindow.serverLink = "waheal.top";
             }
             Dispatcher.Invoke(() =>
             {

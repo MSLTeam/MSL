@@ -63,10 +63,10 @@ namespace MSL
         {
             if (!Directory.Exists("MSL"))
             {
-                Process.Start("https://www.waheal.top/eula.html");
+                Process.Start("https://www.mslmc.cn/eula");
                 Dispatcher.Invoke(() =>
                 {
-                    bool dialog = DialogShow.ShowMsg(this, "请阅读并同意MSL开服器使用协议：https://www.waheal.top/eula.html", "提示", true, "不同意", "同意");
+                    bool dialog = DialogShow.ShowMsg(this, "请阅读并同意MSL开服器使用协议：https://www.mslmc.cn/eula", "提示", true, "不同意", "同意");
                     if (!dialog)
                     {
                         //Logger.LogWarning("用户未同意使用协议，退出软件……");
@@ -80,24 +80,24 @@ namespace MSL
             //get serverlink
             try
             {
-                serverLink = "http://" + Functions.Get("", "https://msl-server.oss-cn-hangzhou.aliyuncs.com");
+                serverLink = Functions.Get("", "https://waheal.oss-cn-hangzhou.aliyuncs.com/");
                 try
                 {
                     if (Functions.Get("")!="200")
                     {
-                        serverLink = "https://msl.waheal.top";
+                        serverLink = "waheal.top";
                         DialogShow.GrowlInfo("MSL主服务器连接超时（可能被DDos），已切换至备用服务器！");
                     }
                 }
                 catch
                 {
-                    serverLink = "https://msl.waheal.top";
+                    serverLink = "waheal.top";
                     DialogShow.GrowlInfo("MSL主服务器连接超时（可能被DDos），已切换至备用服务器！");
                 }
             }
             catch
             {
-                serverLink = "https://msl.waheal.top";
+                serverLink = "waheal.top";
                 //Logger.LogError("在匹配在线服务器时出现错误，已连接至备用服务器");
             }
 

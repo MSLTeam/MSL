@@ -150,7 +150,7 @@ namespace MSL.pages.frpProviders
             {
                 WebClient MyWebClient1 = new WebClient();
                 MyWebClient1.Credentials = CredentialCache.DefaultCredentials;
-                byte[] pageData1 = MyWebClient1.DownloadData(MainWindow.serverLink + "/msl/frpnotice");
+                byte[] pageData1 = MyWebClient1.DownloadData("https://msl." + MainWindow.serverLink + "/frpnotice");
                 Dispatcher.Invoke(() =>
                 {
                     gonggao.Content = Encoding.UTF8.GetString(pageData1);

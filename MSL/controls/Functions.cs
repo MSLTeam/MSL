@@ -26,9 +26,9 @@ namespace MSL.controls
             string url = "https://api.waheal.top";
             if (customUrl == "")
             {
-                if (MainWindow.serverLink != "https://msl.waheal.top")
+                if (MainWindow.serverLink != "waheal.top")
                 {
-                    url = MainWindow.serverLink;// + "/api";
+                    url = "https://api." + MainWindow.serverLink;// + "/api";
                 }
             }
             else
@@ -46,9 +46,9 @@ namespace MSL.controls
             string url = "https://api.waheal.top";
             if (customUrl == "")
             {
-                if (MainWindow.serverLink != "https://msl.waheal.top")
+                if (MainWindow.serverLink != "waheal.top")
                 {
-                    url = MainWindow.serverLink;// + "/api";
+                    url = "https://api."+MainWindow.serverLink;// + "/api";
                 }
             }
             else

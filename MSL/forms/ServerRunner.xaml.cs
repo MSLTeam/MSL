@@ -2763,9 +2763,9 @@ namespace MSL
         private async Task<JObject> AsyncGetJavaDwnLink()
         {
             string url = "https://api.waheal.top";
-            if (MainWindow.serverLink != "https://msl.waheal.top")
+            if (MainWindow.serverLink != "waheal.top")
             {
-                url = MainWindow.serverLink;
+                url = "https://api." + MainWindow.serverLink;
             }
             WebClient MyWebClient = new WebClient();
             byte[] pageData = await MyWebClient.DownloadDataTaskAsync(url + "/otherdownloads");

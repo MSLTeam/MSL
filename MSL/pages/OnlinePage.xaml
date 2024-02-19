@@ -20,7 +20,7 @@
 
         <Grid>
             <Label Style="{StaticResource BorderTitle}" Content="点对点联机功能"/>
-            <hc:Shield Subject="联机教程" Status="点击打开网站" Margin="150,5,0,0" Command="hc:ControlCommands.OpenLink" CommandParameter="https://docs.waheal.top/#/?id=msl%e7%82%b9%e5%af%b9%e7%82%b9%e8%81%94%e6%9c%ba%e6%95%99%e7%a8%8b" HorizontalAlignment="Left" VerticalAlignment="Top" Height="25"/>
+            <hc:Shield Subject="联机教程" Status="点击打开网站" Margin="150,5,0,0" Command="hc:ControlCommands.OpenLink" CommandParameter="https://www.mslmc.cn/onlinemode" HorizontalAlignment="Left" VerticalAlignment="Top" Height="25"/>
             <TextBlock x:Name="serverState" Text="服务器状态：检测中" Foreground="Red" Margin="10,35,0,0" VerticalAlignment="Top" HorizontalAlignment="Left" FontSize="16"/>
             <Grid Margin="0,65,0,0">
                 <Grid.RowDefinitions>

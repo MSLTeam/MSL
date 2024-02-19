@@ -44,12 +44,6 @@ namespace MSL.pages
             string noticeversion1;
             try
             {
-                /*
-                WebClient MyWebClient = new WebClient();
-                MyWebClient.Credentials = CredentialCache.DefaultCredentials;
-                byte[] pageData1 = MyWebClient.DownloadData(MainWindow.serverLink + @"/msl/noticeversion.txt");
-                string noticeversion = Encoding.UTF8.GetString(pageData1);
-                */
                 string noticeversion = Functions.Get("notice");
                 JObject jsonObject = JObject.Parse(File.ReadAllText(@"MSL\config.json", Encoding.UTF8));
                 if (jsonObject["notice"] == null)
@@ -67,10 +61,6 @@ namespace MSL.pages
                 }
                 if (noticeversion1 != noticeversion)
                 {
-                    /*
-                    byte[] pageData = MyWebClient.DownloadData(MainWindow.serverLink + @"/msl/notice.json");
-                    string notice = Encoding.UTF8.GetString(pageData);
-                    */
                     var notice = Functions.Post("notice");
                     JObject keyValues = JObject.Parse(notice);
 
@@ -118,10 +108,6 @@ namespace MSL.pages
                     });
                     if (noticevisible == Visibility.Visible)
                     {
-                        /*
-                        byte[] pageData = MyWebClient.DownloadData(MainWindow.serverLink + @"/msl/notice.json");
-                        string notice = Encoding.UTF8.GetString(pageData);
-                        */
                         var notice = Functions.Post("notice");
                         JObject keyValues = JObject.Parse(notice);
                         if (keyValues["notice"] != null)
@@ -151,7 +137,7 @@ namespace MSL.pages
                 {
                     noticeLab.Visibility = Visibility.Hidden;
                     noticeLab.Text = "";
-                    noticeImage.Source = new BitmapImage(new Uri(MainWindow.serverLink + "/msl/notice.png"));
+                    noticeImage.Source = new BitmapImage(new Uri("https://msl." + MainWindow.serverLink + "/notice.png"));
                 }
                 else
                 {
@@ -213,7 +199,7 @@ namespace MSL.pages
                     }
                     else
                     {
-                        image.Source = new BitmapImage(new Uri(MainWindow.serverLink + "/msl/recommendImg/" + i.ToString() + ".png"));
+                        image.Source = new BitmapImage(new Uri("https://msl." + MainWindow.serverLink + "/recommendImg/" + i.ToString() + ".png"));
                     }
                     RecommendGrid.Children.Add(image);
                     RecommendGrid.RegisterName("RecImg" + i.ToString(), image);

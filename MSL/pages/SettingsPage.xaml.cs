@@ -204,7 +204,7 @@ namespace MSL.pages
 
         private void useidea_Click(object sender, RoutedEventArgs e)
         {
-            Process.Start("https://docs.waheal.top/#/?id=msl%e5%bc%80%e6%9c%8d%e6%95%99%e7%a8%8b");
+            Process.Start("https://www.mslmc.cn/");
         }
 
         private void openserversOnStart_Click(object sender, RoutedEventArgs e)
