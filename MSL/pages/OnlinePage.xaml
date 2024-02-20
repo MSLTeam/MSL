@@ -20,7 +20,7 @@
 
         <Grid>
             <Label Style="{StaticResource BorderTitle}" Content="点对点联机功能"/>
-            <hc:Shield Subject="联机教程" Status="点击打开网站" Margin="150,5,0,0" Command="hc:ControlCommands.OpenLink" CommandParameter="https://www.mslmc.cn/p2p.html" HorizontalAlignment="Left" VerticalAlignment="Top" Height="25"/>
+            <hc:Shield Subject="联机教程" Status="点击打开网站" Margin="150,5,0,0" Command="hc:ControlCommands.OpenLink" CommandParameter="https://www.mslmc.cn/docs/p2p.html" HorizontalAlignment="Left" VerticalAlignment="Top" Height="25"/>
             <TextBlock x:Name="serverState" Text="服务器状态：检测中" Foreground="Red" Margin="10,35,0,0" VerticalAlignment="Top" HorizontalAlignment="Left" FontSize="16"/>
             <Grid Margin="0,65,0,0">
                 <Grid.RowDefinitions>

@@ -204,7 +204,7 @@ namespace MSL.pages
 
         private void useidea_Click(object sender, RoutedEventArgs e)
         {
-            Process.Start("https://www.mslmc.cn/");
+            Process.Start("https://www.mslmc.cn/docs/");
         }
 
         private void openserversOnStart_Click(object sender, RoutedEventArgs e)
