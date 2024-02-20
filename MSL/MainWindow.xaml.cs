@@ -71,6 +71,7 @@ namespace MSL
                     {
                         //Logger.LogWarning("用户未同意使用协议，退出软件……");
                         Close();
+                        Environment.Exit(0);
                     }
                 });
                 Directory.CreateDirectory("MSL");
