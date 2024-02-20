@@ -63,10 +63,10 @@ namespace MSL
         {
             if (!Directory.Exists("MSL"))
             {
-                Process.Start("https://www.mslmc.cn/eula");
+                Process.Start("https://www.mslmc.cn/eula.html");
                 Dispatcher.Invoke(() =>
                 {
-                    bool dialog = DialogShow.ShowMsg(this, "请阅读并同意MSL开服器使用协议：https://www.mslmc.cn/eula", "提示", true, "不同意", "同意");
+                    bool dialog = DialogShow.ShowMsg(this, "请阅读并同意MSL开服器使用协议：https://www.mslmc.cn/eula.html", "提示", true, "不同意", "同意");
                     if (!dialog)
                     {
                         //Logger.LogWarning("用户未同意使用协议，退出软件……");
