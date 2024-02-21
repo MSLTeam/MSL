@@ -1,4 +1,4 @@
-<img src="https://www.waheal.top/assets/img/logo.ico">
+<img src="MSL/icon.ico">
 
 # Minecraft Server Launcher（MSL）
 
