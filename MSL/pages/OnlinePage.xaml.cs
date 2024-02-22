@@ -303,12 +303,13 @@ namespace MSL.pages
             {
                 url = "https://api." + MainWindow.serverLink;
             }
-            WebClient MyWebClient = new WebClient();
-            byte[] pageData = MyWebClient.DownloadData(url + "/otherdownloads");
-            string _javaList = Encoding.UTF8.GetString(pageData);
+            //WebClient MyWebClient = new WebClient();
+            //byte[] pageData = MyWebClient.DownloadData(url + "/otherdownloads");
+            //string _javaList = Encoding.UTF8.GetString(pageData);
 
-            JObject javaList0 = JObject.Parse(_javaList);
-            _dnfrpc = javaList0["frpc"].ToString();
+            //JObject javaList0 = JObject.Parse(_javaList);
+            //_dnfrpc = javaList0["frpc"].ToString();
+            _dnfrpc = Functions.Get("/download/frpc/MSLFrp/amd64", MainWindow.serverLinkNew);
         }
 
         private void p_OutputDataReceived(object sender, DataReceivedEventArgs e)
