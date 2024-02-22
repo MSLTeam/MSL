@@ -125,9 +125,10 @@ namespace MSL.pages
                     //内网映射检测
                     if (!File.Exists("MSL\\frpc_of.exe"))
                     {
-                        JObject jo = (JObject)JsonConvert.DeserializeObject(Functions.Get("get?key=software", "https://of-dev-api.bfsea.xyz/commonQuery"));
-                        string latest = jo["data"]["latest"].ToString();
-                        string latest_url = $"https://d.of.gs/client{latest}frpc_windows_amd64.zip";
+                        //JObject jo = (JObject)JsonConvert.DeserializeObject(Functions.Get("get?key=software", "https://of-dev-api.bfsea.xyz/commonQuery"));
+                        // string latest = jo["data"]["latest"].ToString();
+                        //string latest_url = $"https://d.of.gs/client{latest}frpc_windows_amd64.zip";
+                        string latest_url = Functions.Get("download/frpc/OpenFrp/amd64", "https://mslapi.xiaoyulu.cn/v2");
                         Dispatcher.Invoke(() =>
                         {
                             var mwindow = (MainWindow)Window.GetWindow(this);
@@ -407,12 +408,13 @@ namespace MSL.pages
             {
                 url = "https://api." + MainWindow.serverLink;
             }
-            WebClient MyWebClient = new WebClient();
-            byte[] pageData = MyWebClient.DownloadData(url + "/otherdownloads");
-            string _javaList = Encoding.UTF8.GetString(pageData);
+            //WebClient MyWebClient = new WebClient();
+            //byte[] pageData = MyWebClient.DownloadData(url + "/otherdownloads");
+            //string _javaList = Encoding.UTF8.GetString(pageData);
 
-            JObject javaList0 = JObject.Parse(_javaList);
-            _dnfrpc = javaList0["frpc"].ToString();
+            //JObject javaList0 = JObject.Parse(_javaList);
+            //_dnfrpc = javaList0["frpc"].ToString();
+            _dnfrpc = Functions.Get("/download/frpc/MSLFrp/amd64","https://mslapi.xiaoyulu.cn/v2");
         }
         private void startfrpc_Click(object sender, RoutedEventArgs e)
         {
