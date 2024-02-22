@@ -74,7 +74,7 @@ namespace MSL.pages.frpProviders
 
             try
             {
-                string mslFrpInfo= Functions.Get("frplist");
+                string mslFrpInfo= Functions.Get("query/MSLFrps",MainWindow.serverLinkNew);
                 if (mslFrpInfo.IndexOf("\n") != -1)
                 {
                     while (mslFrpInfo.IndexOf("#") != -1)
@@ -148,12 +148,13 @@ namespace MSL.pages.frpProviders
             }
             try
             {
-                WebClient MyWebClient1 = new WebClient();
-                MyWebClient1.Credentials = CredentialCache.DefaultCredentials;
-                byte[] pageData1 = MyWebClient1.DownloadData("https://msl." + MainWindow.serverLink + "/frpnotice");
+               // WebClient MyWebClient1 = new WebClient();
+               // MyWebClient1.Credentials = CredentialCache.DefaultCredentials;
+               // byte[] pageData1 = MyWebClient1.DownloadData("https://msl." + MainWindow.serverLink + "/frpnotice");
+
                 Dispatcher.Invoke(() =>
                 {
-                    gonggao.Content = Encoding.UTF8.GetString(pageData1);
+                    gonggao.Content = Functions.Get("query/MSLFrps/notice", MainWindow.serverLinkNew);
                 });
             }
             catch
