@@ -175,7 +175,8 @@ namespace MSL.pages
                 }
             });
 
-            string[] recommendationList = recommendations.Split('\n');
+            // Parse the JSON array from the string
+            JArray recommendationList = JArray.Parse(recommendations);
             int i = 0;
             foreach (var recommendation in recommendationList)
             {
@@ -195,7 +196,7 @@ namespace MSL.pages
                     image.VerticalAlignment = VerticalAlignment.Top;
                     image.Width = 48;
                     image.Height = 48;
-                    if (recommendation.StartsWith("*"))
+                    if (recommendation.ToString().StartsWith("*"))
                     {
                         image.Source = new BitmapImage(new Uri("pack://application:,,,/icon.ico"));
                     }
@@ -208,7 +209,7 @@ namespace MSL.pages
                     RecommendGrid.RegisterName("RecImg" + i.ToString(), image);
 
                     TextBlock textBlock = new TextBlock();
-                    textBlock.Text = recommendation;
+                    textBlock.Text = recommendation.ToString();
                     textBlock.SetResourceReference(ForegroundProperty, "PrimaryTextBrush");
                     if (i == 1)
                     {
@@ -223,6 +224,7 @@ namespace MSL.pages
                 });
             }
         }
+
 
         void GetServerConfig()
         {
