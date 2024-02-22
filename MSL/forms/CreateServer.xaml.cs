@@ -918,25 +918,25 @@ namespace MSL.forms
         Dictionary<string, List<string>> serverCoreTypes = new Dictionary<string, List<string>>
             {
                 {"pluginsCore",new List<string>()
-                    {"Paper","Purpur","Spigot","CraftBukkit","Folia","Leaves"}
+                    {"paper","purpur","spigot","bukkit","folia","leaves"}
                 },
                 {"pluginsAndModsCore",new List<string>()
-                    {"Arclight","Mohist","Catserver"}
+                    {"arclight","mohist","catserver"}
                 },
                 {"modsCore_Forge",new List<string>()
-                    {"Forge"}
+                    {"forge","neoforge"}
                 },
                 {"modsCore_Fabric",new List<string>()
-                    {"Fabric"}
+                    {"fabric","quilt"}
                 },
                 {"vanillaCore",new List<string>()
-                    {"Vanilla"}
+                    {"vanilla"}
                 },
                 {"bedrockCore",new List<string>()
-                    {"Nukkit"}
+                    {"nukkitx"}
                 },
                 {"proxyCore",new List<string>()
-                    {"Velocity","BungeeCord"}
+                    {"velocity","bungeecord","lightfall"}
                 }
             };
         string[] serverTypes;
@@ -955,7 +955,7 @@ namespace MSL.forms
                 {
                     MainWindow.serverLink = "waheal.top";
                 }
-                string jsonData = Functions.Get("serverlist");
+                string jsonData = Functions.Get("query/available_server_types", MainWindow.serverLinkNew);
                 serverTypes = JsonConvert.DeserializeObject<string[]>(jsonData);
                 Dispatcher.Invoke(() =>
                 {
@@ -1014,14 +1014,11 @@ namespace MSL.forms
                                     //MessageBox.Show(_serverType);
                                     try
                                     {
-                                        JObject patientinfo = new JObject();
-                                        patientinfo["server_name"] = i;
-                                        string sendData = JsonConvert.SerializeObject(patientinfo);
-                                        var resultData = Functions.Post("serverlist", 0, sendData);
-                                        //MessageBox.Show(resultData);
+                                        var resultData = Functions.Get("query/available_versions/" + _serverType, MainWindow.serverLinkNew);
+                                       // MessageBox.Show(resultData);
                                         tempServerCore.Add(coreType, resultData);
-                                        Dictionary<string, string> serverDetails = JsonConvert.DeserializeObject<Dictionary<string, string>>(resultData);
-                                        foreach (var item in serverDetails.Keys)
+                                        List<string> serverVersions = JsonConvert.DeserializeObject<List<string>>(resultData);
+                                        foreach (var item in serverVersions)
                                         {
                                             //MessageBox.Show(item);
                                             if (!typeVersions.Contains(item) && !item.StartsWith("*"))
@@ -1034,10 +1031,11 @@ namespace MSL.forms
                                     {
                                         try
                                         {
-                                            JObject patientinfo = new JObject();
-                                            patientinfo["server_name"] = i;
-                                            string sendData = JsonConvert.SerializeObject(patientinfo);
-                                            var resultData = Functions.Post("serverlist", 0, sendData, "https://api.waheal.top");
+                                            // JObject patientinfo = new JObject();
+                                            // patientinfo["server_name"] = i;
+                                            // string sendData = JsonConvert.SerializeObject(patientinfo);
+                                            //var resultData = Functions.Post("serverlist", 0, sendData, "https://api.waheal.top");
+                                            var resultData = Functions.Get("query/available_versions/" + coreType, MainWindow.serverLinkNew);
                                             //MessageBox.Show(resultData);
                                             tempServerCore.Add(coreType, resultData);
                                             Dictionary<string, string> serverDetails = JsonConvert.DeserializeObject<Dictionary<string, string>>(resultData);
@@ -1146,16 +1144,17 @@ namespace MSL.forms
 
             foreach (var _item in tempServerCore)
             {
-                Dictionary<string, string> serverDetails = JsonConvert.DeserializeObject<Dictionary<string, string>>(_item.Value);
-                foreach (var item in serverDetails)
+                List<string> serverVersions = JsonConvert.DeserializeObject<List<string>>(_item.Value);
+                foreach (var version in serverVersions)
                 {
-                    if (item.Key == ServerVersionCombo.SelectedItem.ToString() && !FinallyCoreCombo.Items.Contains(_item.Key + "-" + item.Key))
+                    if (version == ServerVersionCombo.SelectedItem.ToString() && !FinallyCoreCombo.Items.Contains(_item.Key + "-" + version))
                     {
-                        FinallyCoreCombo.Items.Add(_item.Key + "-" + item.Key);
-                        downloadCoreUrl.Add(item.Value);
+                        FinallyCoreCombo.Items.Add(_item.Key + "-" + version);
+                        // downloadCoreUrl.Add(item.Value); 
                     }
                 }
             }
+
             string versionString = ServerVersionCombo.Items[ServerVersionCombo.SelectedIndex].ToString();
             if (versionString != "Latest")
             {
@@ -1313,7 +1312,8 @@ namespace MSL.forms
         void FastModeInstallCore()
         {
             string filename = FinallyCoreCombo.Items[FinallyCoreCombo.SelectedIndex].ToString() + ".jar";
-            bool dwnDialog = DialogShow.ShowDownload(this, downloadCoreUrl[FinallyCoreCombo.SelectedIndex], serverbase, filename, "下载服务端中……");
+            string dlUrl = Functions.Get("download/server/" + FinallyCoreCombo.SelectedItem.ToString().Replace("-","/"),MainWindow.serverLinkNew);
+            bool dwnDialog = DialogShow.ShowDownload(this, dlUrl, serverbase, filename, "下载服务端中……");
             if (!dwnDialog)
             {
                 DialogShow.ShowMsg(this, "下载取消！", "提示");

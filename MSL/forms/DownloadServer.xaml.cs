@@ -33,6 +33,8 @@ namespace MSL.pages
         }
         string downPath = "";
         string filename = "";
+        string downServer = "";
+        string downVersion = "";
         //服务端下载
 
         private void DownloadBtn_Click(object sender, RoutedEventArgs e)
@@ -50,13 +52,15 @@ namespace MSL.pages
         }
         void DownloadServerFunc()
         {
+
+                downVersion = serverlist1.SelectedItem.ToString();
+                downServer = serverlist.SelectedItem.ToString();
+
             if (serverlist1.SelectedIndex != -1)
             {
                 int url = serverlist1.SelectedIndex;
-                //string filename = serverlist.SelectedItem.ToString();
-                string downUrl = serverdownurl[url].ToString();
 
-                //MessageBox.Show(downUrl);
+                string downUrl = Functions.Get("download/server/" + downServer + "/" + downVersion,MainWindow.serverLinkNew);
 
                 if (serverlist.SelectedItem.ToString().IndexOf("（") + 1 != 0)
                 {
@@ -93,7 +97,7 @@ namespace MSL.pages
                 }
                 if (File.Exists(downPath + @"\" + filename))
                 {
-                    if (filename.IndexOf("Forge") + 1 != 0)
+                    if (filename.IndexOf("forge") + 1 != 0)
                     {
                         DialogShow.ShowMsg(this, "检测到您下载的是Forge端，开服器将自动进行安装操作，稍后请您不要随意移动鼠标且不要随意触碰键盘，耐心等待安装完毕！", "提示");
                         InstallForge();
@@ -132,7 +136,7 @@ namespace MSL.pages
             });
             try
             {
-                string jsonData = Functions.Get("serverlist");
+                string jsonData = Functions.Get("query/available_server_types",MainWindow.serverLinkNew);
                 string[] serverTypes = JsonConvert.DeserializeObject<string[]>(jsonData);
                 Dispatcher.Invoke(() =>
                 {
@@ -170,7 +174,7 @@ namespace MSL.pages
         {
             try
             {
-                int serverName = 0;
+                string serverName = "paper";
                 Dispatcher.Invoke(() =>
                 {
                     serverlist1.ItemsSource = null;
@@ -178,48 +182,38 @@ namespace MSL.pages
                     serverdownurl = null;
                     getservermsg.Visibility = Visibility.Visible;
                     lCircle.Visibility = Visibility.Visible;
-                    serverName = serverlist.SelectedIndex;
+                    serverName = serverlist.SelectedItem.ToString();
                     //serverName = serverlist.SelectedItem.ToString();
                 });
                 try
                 {
-                    JObject patientinfo = new JObject
-                    {
-                        ["server_name"] = serverName
-                    };
-                    string sendData = JsonConvert.SerializeObject(patientinfo);
-                    var resultData = Functions.Post("serverlist", 0, sendData);
-                    JObject serverDetails = JObject.Parse(resultData);
-                    List<JProperty> sortedProperties = serverDetails.Properties().OrderByDescending(p => Functions.VersionCompare(p.Name)).ToList();
+                    var resultData = Functions.Get("query/available_versions/" + serverName, MainWindow.serverLinkNew);
+                    string server_des = Functions.Get("query/servers_description/" + serverName, MainWindow.serverLinkNew);
+                    JArray serverVersions = JArray.Parse(resultData);
+                    List<string> sortedVersions = serverVersions.ToObject<List<string>>().OrderByDescending(v => Functions.VersionCompare(v)).ToList();
                     Dispatcher.Invoke(() =>
                     {
-                        serverlist1.ItemsSource = sortedProperties.Select(p => p.Name).ToList();
-                        serverdownurl = sortedProperties.Select(p => p.Value.ToString()).ToList();
-                        //serverlist.SelectedIndex = 0;
+                        serverlist1.ItemsSource = sortedVersions;
                         getservermsg.Visibility = Visibility.Hidden;
                         lCircle.Visibility = Visibility.Hidden;
+                        server_d.Text = "你选择的是：" +server_des;
                     });
+
                 }
                 catch
                 {
                     try
                     {
-                        JObject patientinfo = new JObject
-                        {
-                            ["server_name"] = serverName
-                        };
-                        string sendData = JsonConvert.SerializeObject(patientinfo);
-                        var resultData = Functions.Post("serverlist", 0, sendData, "https://api.waheal.top");
-                        JObject serverDetails = JObject.Parse(resultData);
-                        List<JProperty> sortedProperties = serverDetails.Properties().OrderByDescending(p => Functions.VersionCompare(p.Name)).ToList();
+                        var resultData = Functions.Get("query/available_versions/" + serverName, MainWindow.serverLinkNew);
+                        JArray serverVersions = JArray.Parse(resultData);
+                        List<string> sortedVersions = serverVersions.ToObject<List<string>>().OrderByDescending(v => Functions.VersionCompare(v)).ToList();
                         Dispatcher.Invoke(() =>
                         {
-                            serverlist1.ItemsSource = sortedProperties.Select(p => p.Name).ToList();
-                            serverdownurl = sortedProperties.Select(p => p.Value.ToString()).ToList();
-                            //serverlist.SelectedIndex = 0;
+                            serverlist1.ItemsSource = sortedVersions;
                             getservermsg.Visibility = Visibility.Hidden;
                             lCircle.Visibility = Visibility.Hidden;
                         });
+
                     }
                     catch (Exception a)
                     {

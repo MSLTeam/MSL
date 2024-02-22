@@ -33,6 +33,7 @@ namespace MSL
         public static event DeleControl AutoOpenFrpc;
         public static string serverid;
         public static string serverLink;
+        public static string serverLinkNew = "https://mslapi.xiaoyulu.cn/v2";
         public static float PhisicalMemory;
         public static bool getServerInfo = false;
         public static bool getPlayerInfo = false;
@@ -319,11 +320,13 @@ namespace MSL
             //更新
             try
             {
-                string pageHtml = Functions.Get("update");
-                string strtempa = "#";
-                int IndexofA = pageHtml.IndexOf(strtempa);
-                string Ru = pageHtml.Substring(IndexofA + 1);
-                string aaa = Ru.Substring(0, Ru.IndexOf("#"));
+                string pageHtml = "";
+                //string pageHtml = Functions.Get("update");
+                //string strtempa = "#";
+                //int IndexofA = pageHtml.IndexOf(strtempa);
+                //string Ru = pageHtml.Substring(IndexofA + 1);
+                //string aaa = Ru.Substring(0, Ru.IndexOf("#"));
+                string aaa = Functions.Get("query/update",MainWindow.serverLinkNew);
                 if (aaa.Contains("v"))
                 {
                     aaa = aaa.Replace("v", "");
@@ -334,7 +337,7 @@ namespace MSL
                 if (newVersion > version)
                 {
                     //Logger.LogInfo("检测到新版本！");
-                    var updatelog = Functions.Post("update", 1);
+                    var updatelog = Functions.Get("query/update/log", MainWindow.serverLinkNew);
                     Dispatcher.Invoke(() =>
                     {
                         if (jsonObject["autoUpdateApp"] == null)
@@ -457,10 +460,10 @@ namespace MSL
 
         private void UpdateApp(string pageHtml, string aaa)
         {
-            string strtempa1 = "* ";
-            int IndexofA1 = pageHtml.IndexOf(strtempa1);
-            string Ru1 = pageHtml.Substring(IndexofA1 + 2);
-            string aaa1 = Ru1.Substring(0, Ru1.IndexOf(" *"));
+            //string strtempa1 = "* ";
+            //int IndexofA1 = pageHtml.IndexOf(strtempa1);
+            //string Ru1 = pageHtml.Substring(IndexofA1 + 2);
+            string aaa1 = Functions.Get("download/update",MainWindow.serverLinkNew);
             DialogShow.ShowDownload(this, aaa1, AppDomain.CurrentDomain.BaseDirectory, "MSL" + aaa + ".exe", "下载新版本中……");
             if (File.Exists("MSL" + aaa + ".exe"))
             {

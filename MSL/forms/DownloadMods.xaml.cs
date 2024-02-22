@@ -3,6 +3,7 @@ using MSL.controls;
 using System;
 using System.Collections.Generic;
 using System.Diagnostics;
+using System.Drawing.Drawing2D;
 using System.IO;
 using System.IO.Compression;
 using System.Net;
@@ -125,10 +126,13 @@ namespace MSL
                 lCircle.IsRunning = true;
                 lCircle.Visibility = Visibility.Visible;
                 lb01.Visibility = Visibility.Visible;
-                WebClient webClient = new WebClient();
-                webClient.Credentials = CredentialCache.DefaultCredentials;
-                byte[] pageData = webClient.DownloadData("https://msl." + MainWindow.serverLink + @"/CC/cruseforgetoken");
-                string token = Encoding.UTF8.GetString(pageData);
+                //WebClient webClient = new WebClient();
+                //webClient.Credentials = CredentialCache.DefaultCredentials;
+                //byte[] pageData = webClient.DownloadData("https://msl." + MainWindow.serverLink + @"/CC/cruseforgetoken");
+                //string token = Encoding.UTF8.GetString(pageData);
+                string base64EncodedData = Functions.Get("query/cf_token",MainWindow.serverLinkNew); // 从服务器获取b64编码的token
+                byte[] base64EncodedBytes = Convert.FromBase64String(base64EncodedData);
+                string token = Encoding.UTF8.GetString(base64EncodedBytes);
                 int index = token.IndexOf("\r\n");
                 string _token = token.Substring(0, index);
                 //string _email = token.Substring(index + 2);
