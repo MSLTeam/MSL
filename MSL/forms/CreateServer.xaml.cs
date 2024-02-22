@@ -955,7 +955,7 @@ namespace MSL.forms
                 {
                     MainWindow.serverLink = "waheal.top";
                 }
-                string jsonData = Functions.Get("query/available_server_types", "https://mslapi.xiaoyulu.cn/v2");
+                string jsonData = Functions.Get("query/available_server_types", MainWindow.serverLinkNew);
                 serverTypes = JsonConvert.DeserializeObject<string[]>(jsonData);
                 Dispatcher.Invoke(() =>
                 {
@@ -1014,7 +1014,7 @@ namespace MSL.forms
                                     //MessageBox.Show(_serverType);
                                     try
                                     {
-                                        var resultData = Functions.Get("query/available_versions/" + _serverType, "https://mslapi.xiaoyulu.cn/v2");
+                                        var resultData = Functions.Get("query/available_versions/" + _serverType, MainWindow.serverLinkNew);
                                        // MessageBox.Show(resultData);
                                         tempServerCore.Add(coreType, resultData);
                                         List<string> serverVersions = JsonConvert.DeserializeObject<List<string>>(resultData);
@@ -1035,7 +1035,7 @@ namespace MSL.forms
                                             // patientinfo["server_name"] = i;
                                             // string sendData = JsonConvert.SerializeObject(patientinfo);
                                             //var resultData = Functions.Post("serverlist", 0, sendData, "https://api.waheal.top");
-                                            var resultData = Functions.Get("query/available_versions/" + coreType, "https://mslapi.xiaoyulu.cn/v2");
+                                            var resultData = Functions.Get("query/available_versions/" + coreType, MainWindow.serverLinkNew);
                                             //MessageBox.Show(resultData);
                                             tempServerCore.Add(coreType, resultData);
                                             Dictionary<string, string> serverDetails = JsonConvert.DeserializeObject<Dictionary<string, string>>(resultData);
@@ -1312,7 +1312,7 @@ namespace MSL.forms
         void FastModeInstallCore()
         {
             string filename = FinallyCoreCombo.Items[FinallyCoreCombo.SelectedIndex].ToString() + ".jar";
-            string dlUrl = Functions.Get("download/server/" + FinallyCoreCombo.SelectedItem.ToString().Replace("-","/"),"https://mslapi.xiaoyulu.cn/v2");
+            string dlUrl = Functions.Get("download/server/" + FinallyCoreCombo.SelectedItem.ToString().Replace("-","/"),MainWindow.serverLinkNew);
             bool dwnDialog = DialogShow.ShowDownload(this, dlUrl, serverbase, filename, "下载服务端中……");
             if (!dwnDialog)
             {

@@ -60,7 +60,7 @@ namespace MSL.pages
             {
                 int url = serverlist1.SelectedIndex;
 
-                string downUrl = Functions.Get("download/server/" + downServer + "/" + downVersion,"https://mslapi.xiaoyulu.cn/v2");
+                string downUrl = Functions.Get("download/server/" + downServer + "/" + downVersion,MainWindow.serverLinkNew);
 
                 if (serverlist.SelectedItem.ToString().IndexOf("（") + 1 != 0)
                 {
@@ -136,7 +136,7 @@ namespace MSL.pages
             });
             try
             {
-                string jsonData = Functions.Get("query/available_server_types","https://mslapi.xiaoyulu.cn/v2");
+                string jsonData = Functions.Get("query/available_server_types",MainWindow.serverLinkNew);
                 string[] serverTypes = JsonConvert.DeserializeObject<string[]>(jsonData);
                 Dispatcher.Invoke(() =>
                 {
@@ -187,7 +187,7 @@ namespace MSL.pages
                 });
                 try
                 {
-                    var resultData = Functions.Get("query/available_versions/" + serverName, "https://mslapi.xiaoyulu.cn/v2");
+                    var resultData = Functions.Get("query/available_versions/" + serverName, MainWindow.serverLinkNew);
                     JArray serverVersions = JArray.Parse(resultData);
                     List<string> sortedVersions = serverVersions.ToObject<List<string>>().OrderByDescending(v => Functions.VersionCompare(v)).ToList();
                     Dispatcher.Invoke(() =>
@@ -202,7 +202,7 @@ namespace MSL.pages
                 {
                     try
                     {
-                        var resultData = Functions.Get("query/available_versions/" + serverName, "https://mslapi.xiaoyulu.cn/v2");
+                        var resultData = Functions.Get("query/available_versions/" + serverName, MainWindow.serverLinkNew);
                         JArray serverVersions = JArray.Parse(resultData);
                         List<string> sortedVersions = serverVersions.ToObject<List<string>>().OrderByDescending(v => Functions.VersionCompare(v)).ToList();
                         Dispatcher.Invoke(() =>

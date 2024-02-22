@@ -128,7 +128,7 @@ namespace MSL.pages
                         //JObject jo = (JObject)JsonConvert.DeserializeObject(Functions.Get("get?key=software", "https://of-dev-api.bfsea.xyz/commonQuery"));
                         // string latest = jo["data"]["latest"].ToString();
                         //string latest_url = $"https://d.of.gs/client{latest}frpc_windows_amd64.zip";
-                        string latest_url = Functions.Get("download/frpc/OpenFrp/amd64", "https://mslapi.xiaoyulu.cn/v2");
+                        string latest_url = Functions.Get("download/frpc/OpenFrp/amd64", MainWindow.serverLinkNew);
                         Dispatcher.Invoke(() =>
                         {
                             var mwindow = (MainWindow)Window.GetWindow(this);
@@ -414,7 +414,7 @@ namespace MSL.pages
 
             //JObject javaList0 = JObject.Parse(_javaList);
             //_dnfrpc = javaList0["frpc"].ToString();
-            _dnfrpc = Functions.Get("/download/frpc/MSLFrp/amd64","https://mslapi.xiaoyulu.cn/v2");
+            _dnfrpc = Functions.Get("/download/frpc/MSLFrp/amd64",MainWindow.serverLinkNew);
         }
         private void startfrpc_Click(object sender, RoutedEventArgs e)
         {
