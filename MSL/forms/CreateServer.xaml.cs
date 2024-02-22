@@ -924,10 +924,10 @@ namespace MSL.forms
                     {"arclight","mohist","catserver"}
                 },
                 {"modsCore_Forge",new List<string>()
-                    {"forge"}
+                    {"forge","neoforge"}
                 },
                 {"modsCore_Fabric",new List<string>()
-                    {"fabric"}
+                    {"fabric","quilt"}
                 },
                 {"vanillaCore",new List<string>()
                     {"vanilla"}
