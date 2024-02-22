@@ -188,6 +188,7 @@ namespace MSL.pages
                 try
                 {
                     var resultData = Functions.Get("query/available_versions/" + serverName, MainWindow.serverLinkNew);
+                    string server_des = Functions.Get("query/servers_description/" + serverName, MainWindow.serverLinkNew);
                     JArray serverVersions = JArray.Parse(resultData);
                     List<string> sortedVersions = serverVersions.ToObject<List<string>>().OrderByDescending(v => Functions.VersionCompare(v)).ToList();
                     Dispatcher.Invoke(() =>
@@ -195,6 +196,7 @@ namespace MSL.pages
                         serverlist1.ItemsSource = sortedVersions;
                         getservermsg.Visibility = Visibility.Hidden;
                         lCircle.Visibility = Visibility.Hidden;
+                        server_d.Text = "你选择的是：" +server_des;
                     });
 
                 }
