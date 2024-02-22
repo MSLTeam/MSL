@@ -44,7 +44,7 @@ namespace MSL.pages
             string noticeversion1;
             try
             {
-                string noticeversion = Functions.Get("notice");
+                string noticeversion = Functions.Get("query/notice/id", MainWindow.serverLinkNew);
                 JObject jsonObject = JObject.Parse(File.ReadAllText(@"MSL\config.json", Encoding.UTF8));
                 if (jsonObject["notice"] == null)
                 {
@@ -61,12 +61,12 @@ namespace MSL.pages
                 }
                 if (noticeversion1 != noticeversion)
                 {
-                    var notice = Functions.Post("notice");
-                    JObject keyValues = JObject.Parse(notice);
+                    var notice = Functions.Get("query/notice/main", MainWindow.serverLinkNew);
+                    var recommendations = Functions.Get("query/notice/tips", MainWindow.serverLinkNew);
 
-                    if (keyValues["notice"] != null)
+                    if (!string.IsNullOrEmpty(notice))
                     {
-                        noticeLabText = keyValues["notice"].ToString();
+                        noticeLabText = notice;
                         if (noticeLabText != "")
                         {
                             Dispatcher.Invoke(() =>
@@ -80,10 +80,10 @@ namespace MSL.pages
                     {
                         noticeLabText = "获取公告失败！请检查网络连接是否正常或联系作者进行解决！";
                     }
-                    JObject keyValues1 = (JObject)keyValues["recommendations"];
-                    if (keyValues["recommendations"] != null)
+
+                    if (!string.IsNullOrEmpty(recommendations))
                     {
-                        LoadRecommendations(keyValues1);
+                        LoadRecommendations(recommendations);
                     }
 
                     try
@@ -108,20 +108,19 @@ namespace MSL.pages
                     });
                     if (noticevisible == Visibility.Visible)
                     {
-                        var notice = Functions.Post("notice");
-                        JObject keyValues = JObject.Parse(notice);
-                        if (keyValues["notice"] != null)
+                        var notice = Functions.Get("query/notice/main", MainWindow.serverLinkNew);
+                        if (!string.IsNullOrEmpty(notice))
                         {
-                            noticeLabText = keyValues["notice"].ToString();
+                            noticeLabText = notice;
                         }
                         else
                         {
                             noticeLabText = "获取公告失败！请检查网络连接是否正常或联系作者进行解决！";
                         }
-                        JObject keyValues1 = (JObject)keyValues["recommendations"];
-                        if (keyValues["recommendations"] != null)
+                        var recommendations = Functions.Get("query/notice/tips", MainWindow.serverLinkNew);
+                        if (!string.IsNullOrEmpty(recommendations))
                         {
-                            LoadRecommendations(keyValues1);
+                            LoadRecommendations(recommendations);
                         }
                     }
                 }
@@ -137,7 +136,7 @@ namespace MSL.pages
                 {
                     noticeLab.Visibility = Visibility.Hidden;
                     noticeLab.Text = "";
-                    noticeImage.Source = new BitmapImage(new Uri("https://msl." + MainWindow.serverLink + "/notice.png"));
+                    noticeImage.Source = new BitmapImage(new Uri("https://msl." + MainWindow.serverLinkNew + "/notice.png"));
                 }
                 else
                 {
@@ -149,7 +148,8 @@ namespace MSL.pages
             });
         }
 
-        void LoadRecommendations(JObject keyValues1)
+
+        void LoadRecommendations(string recommendations)
         {
             Dispatcher.Invoke(() =>
             {
@@ -174,8 +174,10 @@ namespace MSL.pages
                     }
                 }
             });
+
+            string[] recommendationList = recommendations.Split('\n');
             int i = 0;
-            foreach (var x in keyValues1)
+            foreach (var recommendation in recommendationList)
             {
                 i++;
                 Dispatcher.Invoke(() =>
@@ -193,19 +195,20 @@ namespace MSL.pages
                     image.VerticalAlignment = VerticalAlignment.Top;
                     image.Width = 48;
                     image.Height = 48;
-                    if (x.Value.ToString().StartsWith("*"))
+                    if (recommendation.StartsWith("*"))
                     {
                         image.Source = new BitmapImage(new Uri("pack://application:,,,/icon.ico"));
                     }
                     else
                     {
-                        image.Source = new BitmapImage(new Uri("https://msl." + MainWindow.serverLink + "/recommendImg/" + i.ToString() + ".png"));
+                        image.Source = new BitmapImage(new Uri("pack://application:,,,/icon.ico"));
+                        //image.Source = new BitmapImage(new Uri("https://msl." + MainWindow.serverLinkNew + "/recommendImg/" + i.ToString() + ".png"));
                     }
                     RecommendGrid.Children.Add(image);
                     RecommendGrid.RegisterName("RecImg" + i.ToString(), image);
 
                     TextBlock textBlock = new TextBlock();
-                    textBlock.Text = x.Value.ToString();
+                    textBlock.Text = recommendation;
                     textBlock.SetResourceReference(ForegroundProperty, "PrimaryTextBrush");
                     if (i == 1)
                     {
@@ -215,12 +218,12 @@ namespace MSL.pages
                     {
                         textBlock.Margin = new Thickness(58, 35 + (53 * (i - 1)), 5, 5);
                     }
-                    //textBlock.Margin = new Thickness(63, (35 + 10) * i, 5, 5);
                     RecommendGrid.Children.Add(textBlock);
                     RecommendGrid.RegisterName("RecText" + i.ToString(), textBlock);
                 });
             }
         }
+
         void GetServerConfig()
         {
             try
