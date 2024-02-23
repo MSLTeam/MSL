@@ -136,7 +136,12 @@ namespace MSL.pages
                 {
                     noticeLab.Visibility = Visibility.Hidden;
                     noticeLab.Text = "";
-                    noticeImage.Source = new BitmapImage(new Uri("https://msl." + MainWindow.serverLink + "/notice.png"));
+                    string _serverLink = MainWindow.serverLink;
+                    if (_serverLink.Contains("/"))
+                    {
+                        _serverLink = _serverLink.Substring(0, _serverLink.IndexOf("/"));
+                    }
+                    noticeImage.Source = new BitmapImage(new Uri("https://msl." + _serverLink + "/notice.png"));
                 }
                 else
                 {
@@ -202,8 +207,12 @@ namespace MSL.pages
                     }
                     else
                     {
-                        image.Source = new BitmapImage(new Uri("pack://application:,,,/icon.ico"));
-                        //image.Source = new BitmapImage(new Uri("https://msl." + MainWindow.serverLink + "/recommendImg/" + i.ToString() + ".png"));
+                        string _serverLink = MainWindow.serverLink;
+                        if (_serverLink.Contains("/"))
+                        {
+                            _serverLink = _serverLink.Substring(0, _serverLink.IndexOf("/"));
+                        }
+                        image.Source = new BitmapImage(new Uri("https://msl." + _serverLink + "/recommendImg/" + i.ToString() + ".png"));
                     }
                     RecommendGrid.Children.Add(image);
                     RecommendGrid.RegisterName("RecImg" + i.ToString(), image);

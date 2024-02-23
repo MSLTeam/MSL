@@ -105,11 +105,11 @@ namespace MSL.pages.frpProviders
                                 {
                                     // 节点在线，可以获取延迟等信息
                                     int roundTripTime = (int)reply.RoundtripTime;
-                                    serversList.Items.Add(serverAddress + "(延迟：" + roundTripTime + "ms)");
+                                    serversList.Items.Add("[" + serverInfo + "]" + serverName + "(延迟：" + roundTripTime + "ms)");
                                 }
                                 else
                                 {
-                                    serversList.Items.Add(serverAddress + "(检测失败,可能被DDos或下线)");
+                                    serversList.Items.Add("[" + serverInfo + "]" + serverName + "(检测失败,可能被DDos或下线)");
                                 }
                             });
                         }
