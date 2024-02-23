@@ -2977,6 +2977,11 @@ namespace MSL
                         server.Text = "@libraries/net/minecraftforge/forge/" + forgeVersion + "/win_args.txt %*";
                         keepTrying = false;
                     }
+                    else if (File.Exists(Rserverbase + "\\libraries\\net\\neoforged\\neoforge\\" + forgeVersion + "\\win_args.txt"))
+                    {
+                        server.Text = "@libraries/net/neoforged/neoforge/" + forgeVersion + "/win_args.txt %*";
+                        keepTrying = false;
+                    }
                     else
                     {
                         DirectoryInfo directoryInfo = new DirectoryInfo(Rserverbase);

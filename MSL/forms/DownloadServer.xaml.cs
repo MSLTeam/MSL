@@ -21,7 +21,6 @@ namespace MSL.pages
     /// </summary>
     public partial class DownloadServer : HandyControl.Controls.Window
     {
-        List<string> serverdownurl = new List<string>();
         public static string downloadServerBase;
         public static string downloadServerName;
         public static string downloadServerJava;
@@ -97,10 +96,10 @@ namespace MSL.pages
                 }
                 if (File.Exists(downPath + @"\" + filename))
                 {
-                    if (filename.IndexOf("forge") + 1 != 0)
+                    if (filename.Contains("forge"))
                     {
                         DialogShow.ShowMsg(this, "检测到您下载的是Forge端，开服器将自动进行安装操作，稍后请您不要随意移动鼠标且不要随意触碰键盘，耐心等待安装完毕！", "提示");
-                        InstallForge();
+                        InstallForge(downUrl);
                     }
                     else
                     {
@@ -133,8 +132,6 @@ namespace MSL.pages
             {
                 serverlist.ItemsSource = null;
                 serverlist1.ItemsSource = null;
-                //serverurl.Clear();
-                serverdownurl = null;
             });
             try
             {
@@ -142,11 +139,6 @@ namespace MSL.pages
                 string[] serverTypes = JsonConvert.DeserializeObject<string[]>(jsonData);
                 Dispatcher.Invoke(() =>
                 {
-                    /*
-                    foreach (var serverType in serverTypes)
-                    {
-                        serverlist.Items.Add(serverType);
-                    }*/
                     serverlist.ItemsSource = serverTypes;
 
                     serverlist.SelectedIndex = 0;
@@ -181,7 +173,6 @@ namespace MSL.pages
                 {
                     serverlist1.ItemsSource = null;
                     //serverurl.Clear();
-                    serverdownurl = null;
                     getservermsg.Visibility = Visibility.Visible;
                     lCircle.Visibility = Visibility.Visible;
                     serverName = serverlist.SelectedItem.ToString();
@@ -237,16 +228,15 @@ namespace MSL.pages
             }
         }
 
-        void InstallForge()
+        void InstallForge(string downurl)
         {
             try
             {
                 string forgeVersion;
-                string serverDownUrl = serverdownurl[serverlist1.SelectedIndex].ToString();
 
-                if (serverDownUrl.Contains("bmcl"))
+                if (downurl.Contains("bmcl"))
                 {
-                    Match match = Regex.Match(serverDownUrl, @"&version=([\w.-]+)&category");
+                    Match match = Regex.Match(downurl, @"&version=([\w.-]+)&category");
                     if (serverlist1.SelectedItem.ToString().Contains("-"))
                     {
                         string version = serverlist1.SelectedItem.ToString().Split('-')[0];
@@ -259,7 +249,7 @@ namespace MSL.pages
                 }
                 else
                 {
-                    Match match = Regex.Match(serverDownUrl, @"forge-([\w.-]+)-installer");
+                    Match match = Regex.Match(downurl, @"forge-([\w.-]+)-installer");
                     forgeVersion = match.Groups[1].Value;
                 }
                 if (!Path.IsPathRooted(downloadServerJava) && File.Exists(downloadServerJava))
@@ -283,6 +273,11 @@ namespace MSL.pages
                     {
                         downloadServerName = "@libraries/net/minecraftforge/forge/" + forgeVersion + "/win_args.txt %*";
                         //CreateServer.isCreateForge = true;
+                        Close();
+                    }
+                    else if (File.Exists(downloadServerBase + "\\libraries\\net\\neoforged\\neoforge\\" + forgeVersion + "\\win_args.txt"))
+                    {
+                        downloadServerName = "@libraries/net/neoforged/neoforge/" + forgeVersion + "/win_args.txt %*";
                         Close();
                     }
                     else
@@ -309,10 +304,10 @@ namespace MSL.pages
                     DialogShow.ShowMsg(this, "下载失败！", "错误");
                 }
             }
-            catch(Exception ex)
+            catch (Exception ex)
             {
                 Directory.SetCurrentDirectory(AppDomain.CurrentDomain.BaseDirectory);
-                DialogShow.ShowMsg(this, "出现错误！\n"+ex.Message, "错误");
+                DialogShow.ShowMsg(this, "出现错误！\n" + ex.Message, "错误");
             }
         }
         private void openChooseServerDocs_Click(object sender, RoutedEventArgs e)

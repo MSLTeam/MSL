@@ -16,7 +16,7 @@
         <ListBox x:Name="serverlist1" Margin="10,50,200,10" SelectionMode="Single" MouseDoubleClick="serverlist_MouseDoubleClick"/>
         <Button x:Name="RefreshBtn" Content="刷新" Margin="0,8,10,0" VerticalAlignment="Top" Click="RefreshBtn_Click" Height="32" Width="73" HorizontalAlignment="Right"/>
         <Button x:Name="DownloadBtn" Content="下载" Style="{StaticResource ButtonPrimary}" Margin="0,50,10,0" VerticalAlignment="Top" Height="45" Width="185" HorizontalAlignment="Right" Click="DownloadBtn_Click" FontSize="14"/>
-        <TextBox x:Name="server_d" HorizontalAlignment="Right" Margin="0,100,10,200" TextWrapping="Wrap" VerticalScrollBarVisibility="Visible" Text="服务端描述" Width="185" Focusable="False" IsReadOnly="True" Background="{x:Null}"/>
+        <TextBox x:Name="server_d" HorizontalAlignment="Right" Margin="0,120,10,200" TextWrapping="Wrap" VerticalScrollBarVisibility="Visible" Text="服务端描述" Width="185" Focusable="False" IsReadOnly="True" Background="{x:Null}" FontSize="14"/>
         <Button x:Name="openChooseServerDocs" Content="不会选择服务端？点我" Margin="0,0,10,150" VerticalAlignment="Bottom" Width="185" FontSize="14" Height="45" Background="#33000000" HorizontalAlignment="Right" Click="openChooseServerDocs_Click"/>
         <TextBlock Text="相关网站：" Foreground="{DynamicResource PrimaryTextBrush}" HorizontalAlignment="Right" Margin="0,0,135,130" VerticalAlignment="Bottom" FontWeight="Bold"/>
         <Button x:Name="openSpigot" Content="SpigotMC" Margin="0,0,10,90" VerticalAlignment="Bottom" Width="185" FontSize="14" Height="35" Background="#33000000" Click="openSpigot_Click" HorizontalAlignment="Right"/>
@@ -24,5 +24,6 @@
         <Button x:Name="openMojang" Content="Mojang" Margin="0,0,10,10" VerticalAlignment="Bottom" Width="185" FontSize="14" Height="35" Background="#33000000" Click="openMojang_Click" HorizontalAlignment="Right"/>
         <TextBlock x:Name="getservermsg" HorizontalAlignment="Left" Margin="230,0,0,0" TextWrapping="Wrap" Text="加载中，请稍等..." VerticalAlignment="Center" FontSize="14" Foreground="Red"/>
         <hc:LoadingCircle x:Name="lCircle" HorizontalAlignment="Left" Margin="170,0,0,0" VerticalAlignment="Center"/>
+        <TextBlock Text="所选服务端介绍：" Foreground="{DynamicResource PrimaryTextBrush}" HorizontalAlignment="Right" Margin="0,100,100,0" VerticalAlignment="Top" FontWeight="Bold"/>
     </Grid>
 </hc:Window>

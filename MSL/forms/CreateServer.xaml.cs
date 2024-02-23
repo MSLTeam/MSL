@@ -819,6 +819,11 @@ namespace MSL.forms
                         txb3.Text = "@libraries/net/minecraftforge/forge/" + forgeVersion + "/win_args.txt %*";
                         keepTrying = false;
                     }
+                    else if (File.Exists(serverbase + "\\libraries\\net\\neoforged\\neoforge\\" + forgeVersion + "\\win_args.txt"))
+                    {
+                        servercore = "@libraries/net/neoforged/neoforge/" + forgeVersion + "/win_args.txt %*";
+                        keepTrying = false;
+                    }
                     else
                     {
                         DirectoryInfo directoryInfo = new DirectoryInfo(serverbase);
@@ -1094,7 +1099,6 @@ namespace MSL.forms
             });
         }
 
-        List<string> downloadCoreUrl = new List<string>();
         Dictionary<string, string> tempServerCore = new Dictionary<string, string>();
         private async void FastModeNextBtn_Click(object sender, RoutedEventArgs e)
         {
@@ -1116,7 +1120,6 @@ namespace MSL.forms
                 }
             }
             serverbase = txb6.Text;
-            downloadCoreUrl.Clear();
             FinallyCoreCombo.Items.Clear();
             FastModeNextBtn.IsEnabled = false;
 
@@ -1301,10 +1304,10 @@ namespace MSL.forms
             {
                 servercore = filename;
                 bool installReturn = true;
-                if (filename.IndexOf("Forge") + 1 != 0)
+                if (filename.IndexOf("forge") + 1 != 0)
                 {
                     DialogShow.ShowMsg(this, "检测到您下载的是Forge端，开服器将自动进行安装操作，稍后请您不要随意移动鼠标且不要随意触碰键盘，耐心等待安装完毕！", "提示");
-                    installReturn = InstallForge();
+                    installReturn = InstallForge(dlUrl);
                 }
                 if (installReturn)
                 {
@@ -1367,15 +1370,14 @@ namespace MSL.forms
         }
 
         #region InstallForge
-        bool InstallForge()
+        bool InstallForge(string downloadUrl)
         {
             string filename = FinallyCoreCombo.Items[FinallyCoreCombo.SelectedIndex].ToString() + ".jar";
             string forgeVersion;
-            string serverDownUrl = downloadCoreUrl[FinallyCoreCombo.SelectedIndex].ToString();
 
-            if (serverDownUrl.Contains("bmcl"))
+            if (downloadUrl.Contains("bmcl"))
             {
-                Match match = Regex.Match(serverDownUrl, @"&version=([\w.-]+)&category");
+                Match match = Regex.Match(downloadUrl, @"&version=([\w.-]+)&category");
                 string version = FinallyCoreCombo.SelectedItem.ToString().Split('-')[1];
                 if (version.Contains("-"))
                 {
@@ -1389,7 +1391,7 @@ namespace MSL.forms
             }
             else
             {
-                Match match = Regex.Match(serverDownUrl, @"forge-([\w.-]+)-installer");
+                Match match = Regex.Match(downloadUrl, @"forge-([\w.-]+)-installer");
                 forgeVersion = match.Groups[1].Value;
             }
             Directory.SetCurrentDirectory(serverbase);
@@ -1408,6 +1410,11 @@ namespace MSL.forms
                 if (File.Exists(serverbase + "\\libraries\\net\\minecraftforge\\forge\\" + forgeVersion + "\\win_args.txt"))
                 {
                     servercore = "@libraries/net/minecraftforge/forge/" + forgeVersion + "/win_args.txt %*";
+                    return true;
+                }
+                else if (File.Exists(serverbase + "\\libraries\\net\\neoforged\\neoforge\\" + forgeVersion + "\\win_args.txt"))
+                {
+                    servercore = "@libraries/net/neoforged/neoforge/" + forgeVersion + "/win_args.txt %*";
                     return true;
                 }
                 else
