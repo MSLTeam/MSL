@@ -309,7 +309,7 @@ namespace MSL.pages
 
             //JObject javaList0 = JObject.Parse(_javaList);
             //_dnfrpc = javaList0["frpc"].ToString();
-            _dnfrpc = Functions.Get("/download/frpc/MSLFrp/amd64", MainWindow.serverLinkNew);
+            _dnfrpc = Functions.Get("/download/frpc/MSLFrp/amd64");
         }
 
         private void p_OutputDataReceived(object sender, DataReceivedEventArgs e)

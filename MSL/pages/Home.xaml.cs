@@ -44,7 +44,7 @@ namespace MSL.pages
             string noticeversion1;
             try
             {
-                string noticeversion = Functions.Get("query/notice/id", MainWindow.serverLinkNew);
+                string noticeversion = Functions.Get("query/notice/id");
                 JObject jsonObject = JObject.Parse(File.ReadAllText(@"MSL\config.json", Encoding.UTF8));
                 if (jsonObject["notice"] == null)
                 {
@@ -61,8 +61,8 @@ namespace MSL.pages
                 }
                 if (noticeversion1 != noticeversion)
                 {
-                    var notice = Functions.Get("query/notice/main", MainWindow.serverLinkNew);
-                    var recommendations = Functions.Get("query/notice/tips", MainWindow.serverLinkNew);
+                    var notice = Functions.Get("query/notice/main");
+                    var recommendations = Functions.Get("query/notice/tips");
 
                     if (!string.IsNullOrEmpty(notice))
                     {
@@ -108,7 +108,7 @@ namespace MSL.pages
                     });
                     if (noticevisible == Visibility.Visible)
                     {
-                        var notice = Functions.Get("query/notice/main", MainWindow.serverLinkNew);
+                        var notice = Functions.Get("query/notice/main");
                         if (!string.IsNullOrEmpty(notice))
                         {
                             noticeLabText = notice;
@@ -117,7 +117,7 @@ namespace MSL.pages
                         {
                             noticeLabText = "获取公告失败！请检查网络连接是否正常或联系作者进行解决！";
                         }
-                        var recommendations = Functions.Get("query/notice/tips", MainWindow.serverLinkNew);
+                        var recommendations = Functions.Get("query/notice/tips");
                         if (!string.IsNullOrEmpty(recommendations))
                         {
                             LoadRecommendations(recommendations);
@@ -136,7 +136,7 @@ namespace MSL.pages
                 {
                     noticeLab.Visibility = Visibility.Hidden;
                     noticeLab.Text = "";
-                    noticeImage.Source = new BitmapImage(new Uri("https://msl." + MainWindow.serverLinkNew + "/notice.png"));
+                    noticeImage.Source = new BitmapImage(new Uri("https://msl." + MainWindow.serverLink + "/notice.png"));
                 }
                 else
                 {
@@ -203,7 +203,7 @@ namespace MSL.pages
                     else
                     {
                         image.Source = new BitmapImage(new Uri("pack://application:,,,/icon.ico"));
-                        //image.Source = new BitmapImage(new Uri("https://msl." + MainWindow.serverLinkNew + "/recommendImg/" + i.ToString() + ".png"));
+                        //image.Source = new BitmapImage(new Uri("https://msl." + MainWindow.serverLink + "/recommendImg/" + i.ToString() + ".png"));
                     }
                     RecommendGrid.Children.Add(image);
                     RecommendGrid.RegisterName("RecImg" + i.ToString(), image);

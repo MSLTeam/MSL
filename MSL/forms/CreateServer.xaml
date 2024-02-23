@@ -73,16 +73,7 @@
                     <Grid>
                         <Label Content="Java版本" Style="{StaticResource BorderTitle}"/>
                         <Label Content="Java版本（此版本为MSL评估的最优版本，&#xA;如果您后续要加载的插件或模组&#xA;有要求Java版本的话，请在此处更改）：" HorizontalAlignment="Left" Margin="10,30,0,0" VerticalAlignment="Top" FontSize="16" BorderBrush="{x:Null}" Background="{x:Null}" Height="90"/>
-                        <ComboBox x:Name="FinallyJavaCombo" HorizontalAlignment="Left" Margin="360,60,0,0" Width="330" VerticalAlignment="Top" Height="35">
-                            <ComboBoxItem Content="Java8"/>
-                            <ComboBoxItem Content="Java11"/>
-                            <ComboBoxItem Content="Java16"/>
-                            <ComboBoxItem Content="Java17"/>
-                            <ComboBoxItem Content="Java18"/>
-                            <ComboBoxItem Content="Java19"/>
-                            <ComboBoxItem Content="Java20"/>
-                            <ComboBoxItem Content="Java21"/>
-                        </ComboBox>
+                        <ComboBox x:Name="FinallyJavaCombo" HorizontalAlignment="Left" Margin="360,60,0,0" Width="330" VerticalAlignment="Top" Height="35"/>
                         <TextBlock x:Name="FinallyJavaDescrip" Foreground="Red" HorizontalAlignment="Left" VerticalAlignment="Top" Margin="20,120,0,0"/>
                     </Grid>
                 </Border>
@@ -134,16 +125,7 @@
                             <TextBlock Text="在此选择一个Java环境" Foreground="{DynamicResource PrimaryTextBrush}" Margin="20,35,0,0" HorizontalAlignment="Left" VerticalAlignment="Top" FontSize="16"/>
                             <RadioButton x:Name="usedownloadjv" Content="开服器下载（推荐）" IsChecked="True" Margin="20,70,0,0" VerticalAlignment="Top" HorizontalAlignment="Left" FontSize="14" Checked="usedownloadjv_Checked"/>
                             <RadioButton x:Name="usecheckedjv" Content="检查电脑上的Java" Margin="20,110,0,0" VerticalAlignment="Top" HorizontalAlignment="Left" FontSize="14" Checked="usecheckedjv_Checked"/>
-                            <ComboBox x:Name="selectJavaComb" Margin="180,65,0,0" HorizontalAlignment="Left" VerticalAlignment="Top" Width="150" SelectedIndex="0">
-                                <ComboBoxItem Content="Java8"/>
-                                <ComboBoxItem Content="Java11"/>
-                                <ComboBoxItem Content="Java16"/>
-                                <ComboBoxItem Content="Java17"/>
-                                <ComboBoxItem Content="Java18"/>
-                                <ComboBoxItem Content="Java19"/>
-                                <ComboBoxItem Content="Java20"/>
-                                <ComboBoxItem Content="Java21"/>
-                            </ComboBox>
+                            <ComboBox x:Name="selectJavaComb" Margin="180,65,0,0" HorizontalAlignment="Left" VerticalAlignment="Top" Width="150" SelectedIndex="0"/>
                             <RadioButton x:Name="usejvPath" Content="使用环境变量" HorizontalAlignment="Left" Margin="20,150,0,0" VerticalAlignment="Top" FontSize="14" Checked="usejvPath_Checked"/>
                             <RadioButton x:Name="useJVself" Content="选择地址" Margin="20,190,0,0" VerticalAlignment="Top" Checked="useJVself_Checked" HorizontalAlignment="Left" FontSize="14"/>
                             <ComboBox x:Name="selectCheckedJavaComb" Margin="180,105,0,0" HorizontalAlignment="Left" VerticalAlignment="Top" Width="150"/>

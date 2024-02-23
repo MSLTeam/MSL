@@ -291,6 +291,27 @@ namespace MSL
                 jsonObject[RserverId].Replace(_json);
                 File.WriteAllText(@"MSL\ServerList.json", Convert.ToString(jsonObject), Encoding.UTF8);
             }
+            try
+            {
+                string response = Functions.Get("query/java");
+                JArray jArray = JArray.Parse(response);
+                List<string> strings = new List<string>();
+                foreach (var j in jArray)
+                {
+                    Dispatcher.Invoke(() =>
+                    {
+                        selectJava.Items.Add(j.ToString());
+                    });
+                }
+                Dispatcher.Invoke(() =>
+                {
+                    selectJava.SelectedIndex = 0;
+                });
+            }
+            catch
+            {
+                DialogShow.GrowlErr("出现错误，获取Java版本列表失败！");
+            }
         }//窗体加载后，运行此方法，主要为改变UI、检测服务器是否完整
 
         private void WindowLoadedEvent()
@@ -2694,14 +2715,35 @@ namespace MSL
                 }
                 else
                 {
+                    // 使用正则表达式来提取Java版本
+                    Regex pattern = new Regex(@"(Java\d+)");
+                    Match m = pattern.Match(jAva.Text);
+                    string javaVersion = m.Groups[1].Value;
+
+                    // 和selectJava.Items里的每一项比对
+                    bool found = false;
+                    foreach (var item in selectJava.Items)
+                    {
+                        if (item.ToString() == javaVersion)
+                        {
+                            // 如果有相等的，就把selectJava切换到相应的栏
+                            useDownJv.IsChecked = true;
+                            selectJava.SelectedItem = item;
+                            found = true;
+                            break;
+                        }
+                    }
+                    if (!found)
+                    {
+                        useSelf.IsChecked = true;
+                    }
+                    /*
                     Dictionary<string, int> javaVersions = new Dictionary<string, int>
                     {
                         { AppDomain.CurrentDomain.BaseDirectory + @"MSL\Java8\bin\java.exe", 0 },
                         { AppDomain.CurrentDomain.BaseDirectory + @"MSL\Java11\bin\java.exe", 1 },
-                        { AppDomain.CurrentDomain.BaseDirectory + @"MSL\Java16\bin\java.exe", 2 },
-                        { AppDomain.CurrentDomain.BaseDirectory + @"MSL\Java17\bin\java.exe", 3 },
-                        { AppDomain.CurrentDomain.BaseDirectory + @"MSL\Java18\bin\java.exe", 4 },
-                        { AppDomain.CurrentDomain.BaseDirectory + @"MSL\Java19\bin\java.exe", 5 }
+                        { AppDomain.CurrentDomain.BaseDirectory + @"MSL\Java17\bin\java.exe", 2 },
+                        { AppDomain.CurrentDomain.BaseDirectory + @"MSL\Java21\bin\java.exe", 3 }
                     };
 
                     if (javaVersions.TryGetValue(jAva.Text, out int selectedIndex))
@@ -2713,6 +2755,7 @@ namespace MSL
                     {
                         useSelf.IsChecked = true;
                     }
+                    */
                 }
 
                 if (RserverJVM == "")
@@ -2760,21 +2803,6 @@ namespace MSL
         {
             LoadSettings();
         }
-        private async Task<JObject> AsyncGetJavaDwnLink()
-        {
-            string url = "https://api.waheal.top";
-            if (MainWindow.serverLink != "waheal.top")
-            {
-                url = "https://api." + MainWindow.serverLink;
-            }
-            WebClient MyWebClient = new WebClient();
-            byte[] pageData = await MyWebClient.DownloadDataTaskAsync(url + "/otherdownloads");
-            string _javaList = Encoding.UTF8.GetString(pageData);
-
-            JObject javaList0 = JObject.Parse(_javaList);
-            JObject javaList = (JObject)javaList0["java"];
-            return javaList;
-        }
 
         private async void doneBtn1_Click(object sender, RoutedEventArgs e)
         {
@@ -2802,44 +2830,12 @@ namespace MSL
                 if (useDownJv.IsChecked == true)
                 {
                     DialogShow.GrowlInfo("获取Java地址……");
-                    JObject javaList = await AsyncGetJavaDwnLink();
                     int dwnJava = 0;
                     try
                     {
                         await Dispatcher.InvokeAsync(() =>
                         {
-                            switch (selectJava.SelectedIndex)
-                            {
-                                case 0:
-                                    dwnJava = DownloadJava("Java8", javaList["Java8"].ToString());
-                                    break;
-                                case 1:
-                                    dwnJava = DownloadJava("Java11", javaList["Java11"].ToString());
-                                    break;
-                                case 2:
-                                    dwnJava = DownloadJava("Java16", javaList["Java16"].ToString());
-                                    break;
-                                case 3:
-                                    dwnJava = DownloadJava("Java17", javaList["Java17"].ToString());
-                                    break;
-                                case 4:
-                                    dwnJava = DownloadJava("Java18", javaList["Java18"].ToString());
-                                    break;
-                                case 5:
-                                    dwnJava = DownloadJava("Java19", javaList["Java19"].ToString());
-                                    break;
-                                case 6:
-                                    dwnJava = DownloadJava("Java20", javaList["Java20"].ToString());
-                                    break;
-                                case 7:
-                                    dwnJava = DownloadJava("Java21", javaList["Java21"].ToString());
-                                    break;
-                                default:
-                                    DialogShow.GrowlErr("请选择一个版本以下载！");
-                                    doneBtn1.IsEnabled = true;
-                                    refreahConfig.IsEnabled = true;
-                                    return;
-                            }
+                            dwnJava = DownloadJava(selectJava.SelectedItem.ToString(), Functions.Get("download/java/" + selectJava.SelectedItem.ToString()));
                         });
                         if (dwnJava == 1)
                         {

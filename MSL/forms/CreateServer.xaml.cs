@@ -9,8 +9,6 @@ using System.Collections.Generic;
 using System.Diagnostics;
 using System.IO;
 using System.Linq;
-using System.Net;
-using System.Net.NetworkInformation;
 using System.Text;
 using System.Text.RegularExpressions;
 using System.Threading;
@@ -94,9 +92,6 @@ namespace MSL.forms
                     return;
                 }
                 serverjava = txjava.Text;
-                sserver.IsSelected = true;
-                sserver.IsEnabled = true;
-                sjava.IsEnabled = false;
                 await Dispatcher.InvokeAsync(() =>
                 {
                     CheckServerPackCore();
@@ -105,9 +100,6 @@ namespace MSL.forms
             else if (usejvPath.IsChecked == true)
             {
                 serverjava = "Java";
-                sserver.IsSelected = true;
-                sserver.IsEnabled = true;
-                sjava.IsEnabled = false;
                 await Dispatcher.InvokeAsync(() =>
                 {
                     CheckServerPackCore();
@@ -117,9 +109,6 @@ namespace MSL.forms
             {
                 string a = selectCheckedJavaComb.Items[selectCheckedJavaComb.SelectedIndex].ToString();
                 serverjava = a.Substring(a.IndexOf(":") + 1);
-                sserver.IsSelected = true;
-                sserver.IsEnabled = true;
-                sjava.IsEnabled = false;
                 await Dispatcher.InvokeAsync(() =>
                 {
                     CheckServerPackCore();
@@ -129,13 +118,7 @@ namespace MSL.forms
             {
                 try
                 {
-                    outlog.Content = "当前进度:获取Java下载地址……";
-                    string _javaList = await AsyncGetJavaDwnLink();
-
-                    JObject javaList0 = JObject.Parse(_javaList);
-                    JObject javaList = (JObject)javaList0["java"];
                     outlog.Content = "当前进度:下载Java……";
-
                     next3.IsEnabled = false;
                     return5.IsEnabled = false;
                     if (usedownloadjv.IsChecked == true)
@@ -145,36 +128,7 @@ namespace MSL.forms
                             int dwnJava = 0;
                             await Dispatcher.InvokeAsync(() =>
                             {
-                                switch (selectJavaComb.SelectedIndex)
-                                {
-                                    case 0:
-                                        dwnJava = DownloadJava("Java8", javaList["Java8"].ToString());
-                                        break;
-                                    case 1:
-                                        dwnJava = DownloadJava("Java11", javaList["Java11"].ToString());
-                                        break;
-                                    case 2:
-                                        dwnJava = DownloadJava("Java16", javaList["Java16"].ToString());
-                                        break;
-                                    case 3:
-                                        dwnJava = DownloadJava("Java17", javaList["Java17"].ToString());
-                                        break;
-                                    case 4:
-                                        dwnJava = DownloadJava("Java18", javaList["Java18"].ToString());
-                                        break;
-                                    case 5:
-                                        dwnJava = DownloadJava("Java19", javaList["Java19"].ToString());
-                                        break;
-                                    case 6:
-                                        dwnJava = DownloadJava("Java20", javaList["Java20"].ToString());
-                                        break;
-                                    case 7:
-                                        dwnJava = DownloadJava("Java21", javaList["Java21"].ToString());
-                                        break;
-                                    default:
-                                        DialogShow.GrowlErr("请选择一个版本以下载！");
-                                        break;
-                                }
+                                dwnJava = DownloadJava(selectJavaComb.SelectedItem.ToString(), Functions.Get("download/java/" + selectJavaComb.SelectedItem.ToString()));
                             });
                             if (dwnJava == 1)
                             {
@@ -183,11 +137,6 @@ namespace MSL.forms
                                 if (unzipJava)
                                 {
                                     outlog.Content = "完成";
-                                    next3.IsEnabled = true;
-                                    return5.IsEnabled = true;
-                                    sserver.IsSelected = true;
-                                    sserver.IsEnabled = true;
-                                    sjava.IsEnabled = false;
                                     await Dispatcher.InvokeAsync(() =>
                                     {
                                         CheckServerPackCore();
@@ -203,11 +152,6 @@ namespace MSL.forms
                             else if (dwnJava == 2)
                             {
                                 outlog.Content = "完成";
-                                next3.IsEnabled = true;
-                                return5.IsEnabled = true;
-                                sserver.IsSelected = true;
-                                sserver.IsEnabled = true;
-                                sjava.IsEnabled = false;
                                 await Dispatcher.InvokeAsync(() =>
                                 {
                                     CheckServerPackCore();
@@ -223,20 +167,27 @@ namespace MSL.forms
                         }
                         catch
                         {
+                            next3.IsEnabled = true;
+                            return5.IsEnabled = true;
                             DialogShow.GrowlErr("出现错误，请检查网络连接！");
+                            return;
                         }
                     }
+                    next3.IsEnabled = true;
+                    return5.IsEnabled = true;
+                    
                 }
                 catch
                 {
                     next3.IsEnabled = true;
                     return5.IsEnabled = true;
-                    await Dispatcher.InvokeAsync(() =>
-                    {
-                        DialogShow.ShowMsg(this, "出现错误！请检查您的网络连接！", "信息", false, "确定");
-                    });
+                    DialogShow.ShowMsg(this, "出现错误！请检查您的网络连接！", "信息", false, "确定");
+                    return;
                 }
             }
+            sserver.IsSelected = true;
+            sserver.IsEnabled = true;
+            sjava.IsEnabled = false;
         }
         void CheckServerPackCore()
         {
@@ -576,13 +527,8 @@ namespace MSL.forms
             txb3.IsEnabled = true;
             a0002.IsEnabled = true;
         }
-        
 
-        
-
-        
-
-        private void next_Click(object sender, RoutedEventArgs e)
+        private async void next_Click(object sender, RoutedEventArgs e)
         {
             servername = serverNameBox.Text;
             if (new Regex("[\u4E00-\u9FA5]").IsMatch(txb6.Text))
@@ -610,6 +556,17 @@ namespace MSL.forms
                 txb6.Text = txb6.Text;
                 serverbase = txb6.Text;
             }
+
+            List<string> strings = await AsyncGetJavaVersion();
+            if (strings != null)
+            {
+                selectJavaComb.ItemsSource = strings.ToList();
+            }
+            else
+            {
+                DialogShow.GrowlErr("出现错误，获取Java版本列表失败！");
+            }
+
             sjava.IsSelected = true;
             sjava.IsEnabled = true;
             welcome.IsEnabled = false;
@@ -673,6 +630,17 @@ namespace MSL.forms
                     tabCtrl.Visibility = Visibility.Visible;
                     isImportPack = true;
                     serverbase = serverPath;
+
+                    List<string> strings = await AsyncGetJavaVersion();
+                    if (strings != null)
+                    {
+                        selectJavaComb.ItemsSource = strings.ToList();
+                    }
+                    else
+                    {
+                        DialogShow.GrowlErr("出现错误，获取Java版本列表失败！");
+                    }
+
                     DialogShow.GrowlInfo("整合包解压完成！请在此界面选择Java环境，Java的版本要和导入整合包的版本相对应，详情查看界面下方的表格");
                     sjava.IsSelected = true;
                     sjava.IsEnabled = true;
@@ -734,6 +702,17 @@ namespace MSL.forms
                             tabCtrl.Visibility = Visibility.Visible;
                             isImportPack = true;
                             serverbase = serverPath;
+
+                            List<string> strings = await AsyncGetJavaVersion();
+                            if (strings != null)
+                            {
+                                selectJavaComb.ItemsSource = strings.ToList();
+                            }
+                            else
+                            {
+                                DialogShow.GrowlErr("出现错误，获取Java版本列表失败！");
+                            }
+
                             DialogShow.GrowlInfo("整合包解压完成！请在此界面选择Java环境，Java的版本要和导入整合包的版本相对应，详情查看界面下方的表格");
                             sjava.IsSelected = true;
                             sjava.IsEnabled = true;
@@ -944,6 +923,7 @@ namespace MSL.forms
         {
             try
             {
+                /*
                 try
                 {
                     if (Functions.Get("") != "200")
@@ -955,7 +935,8 @@ namespace MSL.forms
                 {
                     MainWindow.serverLink = "waheal.top";
                 }
-                string jsonData = Functions.Get("query/available_server_types", MainWindow.serverLinkNew);
+                */
+                string jsonData = Functions.Get("query/available_server_types");
                 serverTypes = JsonConvert.DeserializeObject<string[]>(jsonData);
                 Dispatcher.Invoke(() =>
                 {
@@ -1014,7 +995,7 @@ namespace MSL.forms
                                     //MessageBox.Show(_serverType);
                                     try
                                     {
-                                        var resultData = Functions.Get("query/available_versions/" + _serverType, MainWindow.serverLinkNew);
+                                        var resultData = Functions.Get("query/available_versions/" + _serverType);
                                        // MessageBox.Show(resultData);
                                         tempServerCore.Add(coreType, resultData);
                                         List<string> serverVersions = JsonConvert.DeserializeObject<List<string>>(resultData);
@@ -1035,7 +1016,7 @@ namespace MSL.forms
                                             // patientinfo["server_name"] = i;
                                             // string sendData = JsonConvert.SerializeObject(patientinfo);
                                             //var resultData = Functions.Post("serverlist", 0, sendData, "https://api.waheal.top");
-                                            var resultData = Functions.Get("query/available_versions/" + coreType, MainWindow.serverLinkNew);
+                                            var resultData = Functions.Get("query/available_versions/" + coreType);
                                             //MessageBox.Show(resultData);
                                             tempServerCore.Add(coreType, resultData);
                                             Dictionary<string, string> serverDetails = JsonConvert.DeserializeObject<Dictionary<string, string>>(resultData);
@@ -1115,7 +1096,7 @@ namespace MSL.forms
 
         List<string> downloadCoreUrl = new List<string>();
         Dictionary<string, string> tempServerCore = new Dictionary<string, string>();
-        private void FastModeNextBtn_Click(object sender, RoutedEventArgs e)
+        private async void FastModeNextBtn_Click(object sender, RoutedEventArgs e)
         {
             servername = ServerNameBox.Text;
             if (new Regex("[\u4E00-\u9FA5]").IsMatch(txb6.Text))
@@ -1155,8 +1136,18 @@ namespace MSL.forms
                 }
             }
 
+            List<string> strings = await AsyncGetJavaVersion();
+            if (strings != null)
+            {
+                FinallyJavaCombo.ItemsSource = strings.ToList();
+            }
+            else
+            {
+                DialogShow.GrowlErr("出现错误，获取Java版本列表失败！");
+            }
+
             string versionString = ServerVersionCombo.Items[ServerVersionCombo.SelectedIndex].ToString();
-            if (versionString != "Latest")
+            if (versionString != "latest")
             {
                 if (versionString.Contains("-"))
                 {
@@ -1190,19 +1181,19 @@ namespace MSL.forms
                 {
                     //1.12< _version <=1.17
                     FinallyJavaDescrip.Text = "根据您的选择，最适合您服务器的Java版本为：Java11-Java17（或更高）";
-                    FinallyJavaCombo.SelectedIndex = 3;
+                    FinallyJavaCombo.SelectedIndex = 1;
                 }
                 else
                 {
                     //_version >1.17
                     FinallyJavaDescrip.Text = "根据您的选择，最适合您服务器的Java版本为：Java18-Java19（或更高）";
-                    FinallyJavaCombo.SelectedIndex = 5;
+                    FinallyJavaCombo.SelectedIndex = 2;
                 }
             }
             else
             {
                 FinallyJavaDescrip.Text = "根据您的选择，最适合您服务器的Java版本为：Java8-Java19（或更高）";
-                FinallyJavaCombo.SelectedIndex = 5;
+                FinallyJavaCombo.SelectedIndex = 2;
             }
             FinallyCoreCombo.SelectedIndex = 0;
             FastModeNextBtn.IsEnabled = true;
@@ -1210,17 +1201,35 @@ namespace MSL.forms
             InstallGrid.Visibility = Visibility.Visible;
         }
 
-        private async Task<string> AsyncGetJavaDwnLink()
+        private async Task<List<string>> AsyncGetJavaVersion()
         {
-            string url = "https://api.waheal.top";
-            if (MainWindow.serverLink != "waheal.top")
+            Dialog dialog;
+            dialog = Dialog.Show(new TextDialog("获取Java版本列表中，请稍等……"));
+            await Task.Delay(200);
+            try
             {
-                url = "https://api." + MainWindow.serverLink;
+                string response = string.Empty;
+                await Task.Run(() =>
+                {
+                    response = Functions.Get("query/java");
+                });
+                await Task.Delay(200);
+                JArray jArray = JArray.Parse(response);
+                List<string> strings = new List<string>();
+                foreach (var j in jArray)
+                {
+                    strings.Add(j.ToString());
+                }
+                this.Focus();
+                dialog.Close();
+                return strings;
             }
-            WebClient MyWebClient = new WebClient();
-            byte[] pageData = await MyWebClient.DownloadDataTaskAsync(url + "/otherdownloads");
-            string _javaList = Encoding.UTF8.GetString(pageData);
-            return _javaList;
+            catch
+            {
+                this.Focus();
+                dialog.Close();
+                return null;
+            }
         }
 
         private async void FastModeInstallBtn_Click(object sender, RoutedEventArgs e)
@@ -1230,44 +1239,11 @@ namespace MSL.forms
                 FastModeInstallBtn.IsEnabled = false;
                 FastInstallProcess.Text = "当前进度:获取Java下载地址……";
                 //Thread.Sleep(1000);
-                string _javaList = await AsyncGetJavaDwnLink();
-
-                JObject javaList0 = JObject.Parse(_javaList);
-                JObject javaList = (JObject)javaList0["java"];
                 FastInstallProcess.Text = "当前进度:下载Java……";
                 int dwnJava = 0;
                 await Dispatcher.InvokeAsync(() =>
                 {
-                    switch (FinallyJavaCombo.SelectedIndex)
-                    {
-                        case 0:
-                            dwnJava = DownloadJava("Java8", javaList["Java8"].ToString());
-                            break;
-                        case 1:
-                            dwnJava = DownloadJava("Java11", javaList["Java11"].ToString());
-                            break;
-                        case 2:
-                            dwnJava = DownloadJava("Java16", javaList["Java16"].ToString());
-                            break;
-                        case 3:
-                            dwnJava = DownloadJava("Java17", javaList["Java17"].ToString());
-                            break;
-                        case 4:
-                            dwnJava = DownloadJava("Java18", javaList["Java18"].ToString());
-                            break;
-                        case 5:
-                            dwnJava = DownloadJava("Java19", javaList["Java19"].ToString());
-                            break;
-                        case 6:
-                            dwnJava = DownloadJava("Java20", javaList["Java20"].ToString());
-                            break;
-                        case 7:
-                            dwnJava = DownloadJava("Java21", javaList["Java21"].ToString());
-                            break;
-                        default:
-                            DialogShow.GrowlErr("请选择一个版本以下载！");
-                            break;
-                    }
+                    dwnJava = DownloadJava(FinallyJavaCombo.SelectedItem.ToString(), Functions.Get("download/java/" + FinallyJavaCombo.SelectedItem.ToString()));
                 });
                 if (dwnJava == 1)
                 {
@@ -1312,7 +1288,7 @@ namespace MSL.forms
         void FastModeInstallCore()
         {
             string filename = FinallyCoreCombo.Items[FinallyCoreCombo.SelectedIndex].ToString() + ".jar";
-            string dlUrl = Functions.Get("download/server/" + FinallyCoreCombo.SelectedItem.ToString().Replace("-","/"),MainWindow.serverLinkNew);
+            string dlUrl = Functions.Get("download/server/" + FinallyCoreCombo.SelectedItem.ToString().Replace("-","/"));
             bool dwnDialog = DialogShow.ShowDownload(this, dlUrl, serverbase, filename, "下载服务端中……");
             if (!dwnDialog)
             {

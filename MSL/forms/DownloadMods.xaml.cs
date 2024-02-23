@@ -3,14 +3,9 @@ using MSL.controls;
 using System;
 using System.Collections.Generic;
 using System.Diagnostics;
-using System.Drawing.Drawing2D;
 using System.IO;
-using System.IO.Compression;
-using System.Net;
-using System.Net.Sockets;
-using System.Net.WebSockets;
 using System.Text;
-using System.Text.RegularExpressions;
+using System.Threading.Tasks;
 using System.Windows;
 using System.Windows.Forms;
 using System.Windows.Input;
@@ -37,8 +32,6 @@ namespace MSL
         {
             InitializeComponent();
             loadType = loadtype;
-            //Width += 16;
-            //Height += 24;
         }
         class MODsInfo
         {
@@ -51,19 +44,37 @@ namespace MSL
                 this.State = state;
             }
         }
+
+        CurseForge.APIClient.ApiClient cfApiClient = null;
+
         private async void Window_Loaded(object sender, RoutedEventArgs e)
         {
             try
             {
                 lCircle.Visibility = Visibility.Visible;
                 lb01.Visibility = Visibility.Visible;
-                WebClient webClient = new WebClient();
-                webClient.Credentials = CredentialCache.DefaultCredentials;
-                byte[] pageData = await webClient.DownloadDataTaskAsync("https://msl."+MainWindow.serverLink + @"/CC/cruseforgetoken");
-                string token = Encoding.UTF8.GetString(pageData);
-                int index = token.IndexOf("\r\n");
-                string _token = token.Substring(0, index);
-                var cfApiClient = new CurseForge.APIClient.ApiClient(_token);
+                string token = string.Empty;
+                await Task.Run(() =>
+                {
+                    string _token = Functions.Get("query/cf_token");
+                    try
+                    {
+                        byte[] data = Convert.FromBase64String(_token);
+                        string decodedString = Encoding.UTF8.GetString(data);
+                        token = decodedString;
+                    }
+                    catch (Exception ex)
+                    {
+                        MessageBox.Show("出现错误！请及时向开发者反馈！\n" + ex.Message);
+                    }
+                });
+                backList.Clear();
+                imageUrls.Clear();
+                listBox.Items.Clear();
+                modIds.Clear();
+                modVersionurl.Clear();
+                modUrls.Clear();
+                cfApiClient = new CurseForge.APIClient.ApiClient(token);
                 if (loadType == 0)
                 {
                     var featuredMods = await cfApiClient.GetFeaturedModsAsync(new GetFeaturedModsRequestBody
@@ -72,12 +83,6 @@ namespace MSL
                         ExcludedModIds = new List<int>(),
                         GameVersionTypeId = null
                     });
-                    backList.Clear();
-                    imageUrls.Clear();
-                    listBox.Items.Clear();
-                    modIds.Clear();
-                    modVersionurl.Clear();
-                    modUrls.Clear();
                     for (int i = 0; i < featuredMods.Data.Popular.Count; i++)
                     {
                         listBox.Items.Add(new MODsInfo(featuredMods.Data.Popular[i].Logo.ThumbnailUrl, featuredMods.Data.Popular[i].Name));
@@ -90,12 +95,7 @@ namespace MSL
                 else if (loadType == 1)
                 {
                     var modpacks = await cfApiClient.SearchModsAsync(432, null, 5128);
-                    backList.Clear();
-                    imageUrls.Clear();
-                    listBox.Items.Clear();
-                    modIds.Clear();
-                    modVersionurl.Clear();
-                    modUrls.Clear();
+                    
                     for (int i = 0; i < modpacks.Data.Count; i++)
                     {
 
@@ -126,18 +126,7 @@ namespace MSL
                 lCircle.IsRunning = true;
                 lCircle.Visibility = Visibility.Visible;
                 lb01.Visibility = Visibility.Visible;
-                //WebClient webClient = new WebClient();
-                //webClient.Credentials = CredentialCache.DefaultCredentials;
-                //byte[] pageData = webClient.DownloadData("https://msl." + MainWindow.serverLink + @"/CC/cruseforgetoken");
-                //string token = Encoding.UTF8.GetString(pageData);
-                string base64EncodedData = Functions.Get("query/cf_token",MainWindow.serverLinkNew); // 从服务器获取b64编码的token
-                byte[] base64EncodedBytes = Convert.FromBase64String(base64EncodedData);
-                string token = Encoding.UTF8.GetString(base64EncodedBytes);
-                int index = token.IndexOf("\r\n");
-                string _token = token.Substring(0, index);
-                //string _email = token.Substring(index + 2);
-                var cfApiClient = new CurseForge.APIClient.ApiClient(_token);
-                var searchedMods = await cfApiClient.SearchModsAsync(432, null, null, null, textBox1.Text);
+                var searchedMods = await cfApiClient.SearchModsAsync(432, null, null, null, null, null, textBox1.Text);
                 backList.Clear();
                 listBox.Items.Clear();
                 modIds.Clear();
@@ -179,15 +168,6 @@ namespace MSL
                     lb01.Visibility = Visibility.Visible;
                     try
                     {
-                        WebClient webClient = new WebClient();
-                        webClient.Credentials = CredentialCache.DefaultCredentials;
-                        byte[] pageData = webClient.DownloadData("https://msl." + MainWindow.serverLink + @"/CC/cruseforgetoken");
-                        string token = Encoding.UTF8.GetString(pageData);
-                        int index = token.IndexOf("\r\n");
-                        string _token = token.Substring(0, index);
-                        //string _email = token.Substring(index + 2);
-
-                        var cfApiClient = new CurseForge.APIClient.ApiClient(_token);
                         var selectedModId = modIds[listBox.SelectedIndex];
                         var modFiles = await cfApiClient.GetModFilesAsync(selectedModId);
 
@@ -222,7 +202,6 @@ namespace MSL
                                 }
                             }
                         }
-
                     }
                     catch (Exception ex) { MessageBox.Show(ex.ToString()); }
                     lCircle.IsRunning = false;

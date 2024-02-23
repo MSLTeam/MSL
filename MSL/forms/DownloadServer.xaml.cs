@@ -58,9 +58,9 @@ namespace MSL.pages
 
             if (serverlist1.SelectedIndex != -1)
             {
-                int url = serverlist1.SelectedIndex;
+                //int url = serverlist1.SelectedIndex;
 
-                string downUrl = Functions.Get("download/server/" + downServer + "/" + downVersion,MainWindow.serverLinkNew);
+                string downUrl = Functions.Get("download/server/" + downServer + "/" + downVersion);
 
                 if (serverlist.SelectedItem.ToString().IndexOf("（") + 1 != 0)
                 {
@@ -116,6 +116,7 @@ namespace MSL.pages
         }
         void GetServer()
         {
+            /*
             try
             {
                 if (Functions.Get("") != "200")
@@ -127,6 +128,7 @@ namespace MSL.pages
             {
                 MainWindow.serverLink = "waheal.top";
             }
+            */
             Dispatcher.Invoke(() =>
             {
                 serverlist.ItemsSource = null;
@@ -136,7 +138,7 @@ namespace MSL.pages
             });
             try
             {
-                string jsonData = Functions.Get("query/available_server_types",MainWindow.serverLinkNew);
+                string jsonData = Functions.Get("query/available_server_types");
                 string[] serverTypes = JsonConvert.DeserializeObject<string[]>(jsonData);
                 Dispatcher.Invoke(() =>
                 {
@@ -187,8 +189,8 @@ namespace MSL.pages
                 });
                 try
                 {
-                    var resultData = Functions.Get("query/available_versions/" + serverName, MainWindow.serverLinkNew);
-                    string server_des = Functions.Get("query/servers_description/" + serverName, MainWindow.serverLinkNew);
+                    var resultData = Functions.Get("query/available_versions/" + serverName);
+                    string server_des = Functions.Get("query/servers_description/" + serverName);
                     JArray serverVersions = JArray.Parse(resultData);
                     List<string> sortedVersions = serverVersions.ToObject<List<string>>().OrderByDescending(v => Functions.VersionCompare(v)).ToList();
                     Dispatcher.Invoke(() =>
@@ -204,7 +206,7 @@ namespace MSL.pages
                 {
                     try
                     {
-                        var resultData = Functions.Get("query/available_versions/" + serverName, MainWindow.serverLinkNew);
+                        var resultData = Functions.Get("query/available_versions/" + serverName);
                         JArray serverVersions = JArray.Parse(resultData);
                         List<string> sortedVersions = serverVersions.ToObject<List<string>>().OrderByDescending(v => Functions.VersionCompare(v)).ToList();
                         Dispatcher.Invoke(() =>
@@ -312,6 +314,10 @@ namespace MSL.pages
                 Directory.SetCurrentDirectory(AppDomain.CurrentDomain.BaseDirectory);
                 DialogShow.ShowMsg(this, "出现错误！\n"+ex.Message, "错误");
             }
+        }
+        private void openChooseServerDocs_Click(object sender, RoutedEventArgs e)
+        {
+            Process.Start("https://www.mslmc.cn/docs/other/choose-server-tips.html");
         }
 
         private void openSpigot_Click(object sender, RoutedEventArgs e)

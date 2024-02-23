@@ -2,6 +2,7 @@
 using HandyControl.Themes;
 using MSL.controls;
 using MSL.pages;
+using Newtonsoft.Json;
 using Newtonsoft.Json.Linq;
 using System;
 using System.Diagnostics;
@@ -33,7 +34,6 @@ namespace MSL
         public static event DeleControl AutoOpenFrpc;
         public static string serverid;
         public static string serverLink;
-        public static string serverLinkNew = "https://mslapi.xiaoyulu.cn/v2";
         public static float PhisicalMemory;
         public static bool getServerInfo = false;
         public static bool getPlayerInfo = false;
@@ -82,10 +82,10 @@ namespace MSL
             //get serverlink
             try
             {
-                serverLink = Functions.Get("", "https://waheal.oss-cn-hangzhou.aliyuncs.com/");
+                serverLink = Functions.Get("", "https://msl-server.oss-cn-hangzhou.aliyuncs.com/");
                 try
                 {
-                    if (Functions.Get("")!="200")
+                    if (((int)((JObject)JsonConvert.DeserializeObject(Functions.Get("")))["status"]) != 200)
                     {
                         serverLink = "waheal.top";
                         DialogShow.GrowlInfo("MSL主服务器连接超时（可能被DDos），已切换至备用服务器！");
@@ -326,7 +326,7 @@ namespace MSL
                 //int IndexofA = pageHtml.IndexOf(strtempa);
                 //string Ru = pageHtml.Substring(IndexofA + 1);
                 //string aaa = Ru.Substring(0, Ru.IndexOf("#"));
-                string aaa = Functions.Get("query/update",MainWindow.serverLinkNew);
+                string aaa = Functions.Get("query/update");
                 if (aaa.Contains("v"))
                 {
                     aaa = aaa.Replace("v", "");
@@ -337,7 +337,7 @@ namespace MSL
                 if (newVersion > version)
                 {
                     //Logger.LogInfo("检测到新版本！");
-                    var updatelog = Functions.Get("query/update/log", MainWindow.serverLinkNew);
+                    var updatelog = Functions.Get("query/update/log");
                     Dispatcher.Invoke(() =>
                     {
                         if (jsonObject["autoUpdateApp"] == null)
@@ -463,7 +463,7 @@ namespace MSL
             //string strtempa1 = "* ";
             //int IndexofA1 = pageHtml.IndexOf(strtempa1);
             //string Ru1 = pageHtml.Substring(IndexofA1 + 2);
-            string aaa1 = Functions.Get("download/update",MainWindow.serverLinkNew);
+            string aaa1 = Functions.Get("download/update");
             DialogShow.ShowDownload(this, aaa1, AppDomain.CurrentDomain.BaseDirectory, "MSL" + aaa + ".exe", "下载新版本中……");
             if (File.Exists("MSL" + aaa + ".exe"))
             {
@@ -520,15 +520,7 @@ namespace MSL
                 //Logger.LogInfo("窗口已隐藏！");
                 return;
             }
-            else if (CloseApp())
-            {
-                //Logger.LogInfo("正在结束MSL进程……！");
-                Application.Current.Shutdown();
-                //Process.GetCurrentProcess().Kill();
-                //Environment.Exit(0);
-
-            }
-            else
+            else if (!CloseApp())
             {
                 //Logger.LogWarning("取消关闭事件！");
                 e.Cancel = true;
@@ -753,10 +745,12 @@ namespace MSL
                 //Process.GetCurrentProcess().Kill();
                 //Environment.Exit(0);
             }
-            else
-            {
-                return;
-            }
+        }
+
+        private void Window_Closed(object sender, EventArgs e)
+        {
+            //Application.Current.Shutdown();
+            Environment.Exit(0);
         }
     }
 }

@@ -22,9 +22,7 @@ namespace MSL
         public static string filename;
         public static string downloadurl;
         public static bool isStopDwn;
-        //DispatcherTimer timer1 = new DispatcherTimer();
-        //DispatcherTimer timer2 = new DispatcherTimer();
-        //static Thread thread;
+
         public DownloadWindow(string _downloadurl, string _downloadPath, string _filename, string downloadinfo)
         {
             InitializeComponent();

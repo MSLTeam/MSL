@@ -16,6 +16,8 @@ using System.IO;
 using Window = System.Windows.Window;
 using System.Threading;
 using Newtonsoft.Json;
+using System.Web.UI;
+using Page = System.Windows.Controls.Page;
 
 namespace MSL.pages.frpProviders
 {
@@ -74,68 +76,47 @@ namespace MSL.pages.frpProviders
 
             try
             {
-                string mslFrpInfo= Functions.Get("query/MSLFrps",MainWindow.serverLinkNew);
-                if (mslFrpInfo.IndexOf("\n") != -1)
+                string mslFrpInfo = Functions.Get("query/MSLFrps");
+                JObject valuePairs = (JObject)JsonConvert.DeserializeObject(mslFrpInfo);
+                foreach (var valuePair in valuePairs)
                 {
-                    while (mslFrpInfo.IndexOf("#") != -1)
+                    string serverInfo = valuePair.Key;
+                    JObject serverDetails = (JObject)valuePair.Value;
+                    foreach (var value in serverDetails)
                     {
-                        string strtempa = "#";
-                        int IndexofA = mslFrpInfo.IndexOf(strtempa);
-                        string Ru = mslFrpInfo.Substring(IndexofA + 1);
-                        string a100 = Ru.Substring(0, Ru.IndexOf("\n"));
+                        string serverName = value.Key;
+                        string serverAddress = value.Value["server_addr"].ToString();
+                        string serverPort = value.Value["server_port"].ToString();
+                        string minPort = value.Value["min_open_port"].ToString();
+                        string maxPort = value.Value["max_open_port"].ToString();
 
-                        int IndexofA3 = mslFrpInfo.IndexOf("#");
-                        string Ru3 = mslFrpInfo.Substring(IndexofA3 + 1);
-                        mslFrpInfo = Ru3;
-
-                        string strtempa1 = "server_addr=";
-                        int IndexofA1 = mslFrpInfo.IndexOf(strtempa1);
-                        string Ru1 = mslFrpInfo.Substring(IndexofA1 + 12);
-                        string a101 = Ru1.Substring(0, Ru1.IndexOf("\n"));
-                        list1.Add(a101);
-
-                        string strtempa2 = "server_port=";
-                        int IndexofA2 = mslFrpInfo.IndexOf(strtempa2);
-                        string Ru2 = mslFrpInfo.Substring(IndexofA2 + 12);
-                        string a102 = Ru2.Substring(0, Ru2.IndexOf("\n"));
-                        list2.Add(a102);
+                        list1.Add(serverAddress);
+                        list2.Add(serverPort);
+                        list3.Add(minPort);
+                        list4.Add(maxPort);
 
                         try
                         {
                             Ping pingSender = new Ping();
-                            PingReply reply = pingSender.Send(a101, 2000); // 替换成您要 ping 的 IP 地址
+                            PingReply reply = pingSender.Send(serverAddress, 2000); // 替换成您要 ping 的 IP 地址
                             await Dispatcher.InvokeAsync(() =>
                             {
                                 if (reply.Status == IPStatus.Success)
                                 {
                                     // 节点在线，可以获取延迟等信息
                                     int roundTripTime = (int)reply.RoundtripTime;
-                                    serversList.Items.Add(a100 + "(延迟：" + roundTripTime + "ms)");
+                                    serversList.Items.Add(serverAddress + "(延迟：" + roundTripTime + "ms)");
                                 }
                                 else
                                 {
-                                    serversList.Items.Add(a100 + "(检测失败,可能被DDos或下线)");
+                                    serversList.Items.Add(serverAddress + "(检测失败,可能被DDos或下线)");
                                 }
                             });
                         }
                         catch
                         {
-                            serversList.Items.Add(a100 + "(检测失败,可能被DDos或下线)");
+                            serversList.Items.Add(serverAddress + "(检测失败,可能被DDos或下线)");
                         }
-
-                        string strtempa3 = "min_open_port=";
-                        int IndexofA03 = mslFrpInfo.IndexOf(strtempa3);
-                        string Ru03 = mslFrpInfo.Substring(IndexofA03 + 14);
-                        string a103 = Ru03.Substring(0, Ru03.IndexOf("\n"));
-                        //MessageBox.Show(a103);
-                        list3.Add(a103);
-
-                        string strtemp4 = "max_open_port=";
-                        int IndexofA4 = mslFrpInfo.IndexOf(strtemp4);
-                        string Ru4 = mslFrpInfo.Substring(IndexofA4 + 14);
-                        string a104 = Ru4.Substring(0, Ru4.IndexOf("\n"));
-                        //MessageBox.Show(a104);
-                        list4.Add(a104);
                     }
                 }
             }
@@ -148,13 +129,9 @@ namespace MSL.pages.frpProviders
             }
             try
             {
-               // WebClient MyWebClient1 = new WebClient();
-               // MyWebClient1.Credentials = CredentialCache.DefaultCredentials;
-               // byte[] pageData1 = MyWebClient1.DownloadData("https://msl." + MainWindow.serverLink + "/frpnotice");
-
                 Dispatcher.Invoke(() =>
                 {
-                    gonggao.Content = Functions.Get("query/MSLFrps/notice", MainWindow.serverLinkNew);
+                    gonggao.Content = Functions.Get("query/MSLFrps/notice");
                 });
             }
             catch

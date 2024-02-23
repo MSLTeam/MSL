@@ -11,19 +11,18 @@
       NonClientAreaBackground="{DynamicResource SideMenuBrush}"
       Title="MSL-下载服务端" Loaded="Page_Loaded" Background="{DynamicResource BackgroundBrush}" ResizeMode="NoResize" WindowStartupLocation="CenterOwner" ShowInTaskbar="False">
     <Grid x:Name="BodyGrid">
-        <ListBox x:Name="serverlist1" Margin="10,50,200,10" SelectionMode="Single" MouseDoubleClick="serverlist_MouseDoubleClick"/>
-        <TextBlock x:Name="getservermsg" HorizontalAlignment="Left" Margin="230,0,0,0" TextWrapping="Wrap" Text="加载中，请耐心等待..." VerticalAlignment="Center" FontSize="14" Foreground="Red"/>
+        <TextBlock Text="在此选择服务端：" Foreground="{DynamicResource PrimaryTextBrush}" HorizontalAlignment="Left" Margin="10,10,0,0" VerticalAlignment="Top" FontSize="20" FontWeight="Bold" Padding="5,0,0,0"/>
         <ComboBox x:Name="serverlist" Margin="175,8,88,0" SelectionChanged="serverlist_SelectionChanged" Height="32" VerticalAlignment="Top"/>
-        <TextBox HorizontalAlignment="Right" Height="80" Margin="0,120,10,0" TextWrapping="Wrap" VerticalScrollBarVisibility="Visible" Text="插件服务端——只可加插件，不可加MOD&#xA;模组服务端——只可加MOD，不可加插件&#xA;混合服务端——插件MOD都可添加&#xA;Vanilla——Mojang原版服务端，无法加插件和MOD" VerticalAlignment="Top" Width="185" Focusable="False" IsReadOnly="True" Background="{x:Null}"/>
-        <TextBox HorizontalAlignment="Right" Height="60" Margin="0,210,10,0" TextWrapping="Wrap" VerticalScrollBarVisibility="Visible" Text="服务端描述" VerticalAlignment="Top" Width="185" Focusable="False" IsReadOnly="True" Background="{x:Null}" x:Name="server_d"/>
+        <ListBox x:Name="serverlist1" Margin="10,50,200,10" SelectionMode="Single" MouseDoubleClick="serverlist_MouseDoubleClick"/>
+        <Button x:Name="RefreshBtn" Content="刷新" Margin="0,8,10,0" VerticalAlignment="Top" Click="RefreshBtn_Click" Height="32" Width="73" HorizontalAlignment="Right"/>
+        <Button x:Name="DownloadBtn" Content="下载" Style="{StaticResource ButtonPrimary}" Margin="0,50,10,0" VerticalAlignment="Top" Height="45" Width="185" HorizontalAlignment="Right" Click="DownloadBtn_Click" FontSize="14"/>
+        <TextBox x:Name="server_d" HorizontalAlignment="Right" Margin="0,100,10,200" TextWrapping="Wrap" VerticalScrollBarVisibility="Visible" Text="服务端描述" Width="185" Focusable="False" IsReadOnly="True" Background="{x:Null}"/>
+        <Button x:Name="openChooseServerDocs" Content="不会选择服务端？点我" Margin="0,0,10,150" VerticalAlignment="Bottom" Width="185" FontSize="14" Height="45" Background="#33000000" HorizontalAlignment="Right" Click="openChooseServerDocs_Click"/>
+        <TextBlock Text="相关网站：" Foreground="{DynamicResource PrimaryTextBrush}" HorizontalAlignment="Right" Margin="0,0,135,130" VerticalAlignment="Bottom" FontWeight="Bold"/>
         <Button x:Name="openSpigot" Content="SpigotMC" Margin="0,0,10,90" VerticalAlignment="Bottom" Width="185" FontSize="14" Height="35" Background="#33000000" Click="openSpigot_Click" HorizontalAlignment="Right"/>
         <Button x:Name="openPaper" Content="PaperMC" Margin="0,0,10,50" VerticalAlignment="Bottom" Width="185" FontSize="14" Height="35" Background="#33000000" Click="openPaper_Click" HorizontalAlignment="Right"/>
         <Button x:Name="openMojang" Content="Mojang" Margin="0,0,10,10" VerticalAlignment="Bottom" Width="185" FontSize="14" Height="35" Background="#33000000" Click="openMojang_Click" HorizontalAlignment="Right"/>
-        <TextBlock Text="相关网站：" Foreground="{DynamicResource PrimaryTextBrush}" HorizontalAlignment="Right" Margin="0,0,135,130" VerticalAlignment="Bottom" FontWeight="Bold"/>
-        <TextBlock Text="在此选择服务端：" Foreground="{DynamicResource PrimaryTextBrush}" HorizontalAlignment="Left" Margin="10,10,0,0" VerticalAlignment="Top" FontSize="20" FontWeight="Bold" Padding="5,0,0,0"/>
-        <TextBlock Text="我该如何选择服务端？" Foreground="{DynamicResource PrimaryTextBrush}" HorizontalAlignment="Right" Margin="0,100,75,0" VerticalAlignment="Top" FontWeight="Bold" />
-        <Button x:Name="RefreshBtn" Content="刷新" Margin="0,8,10,0" VerticalAlignment="Top" Click="RefreshBtn_Click" Height="32" Width="73" HorizontalAlignment="Right"/>
-        <Button x:Name="DownloadBtn" Content="下载" Style="{StaticResource ButtonPrimary}" Margin="0,50,10,0" VerticalAlignment="Top" Height="40" Width="185" HorizontalAlignment="Right" Click="DownloadBtn_Click" FontSize="14"/>
+        <TextBlock x:Name="getservermsg" HorizontalAlignment="Left" Margin="230,0,0,0" TextWrapping="Wrap" Text="加载中，请稍等..." VerticalAlignment="Center" FontSize="14" Foreground="Red"/>
         <hc:LoadingCircle x:Name="lCircle" HorizontalAlignment="Left" Margin="170,0,0,0" VerticalAlignment="Center"/>
     </Grid>
 </hc:Window>
