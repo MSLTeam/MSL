@@ -41,14 +41,14 @@ namespace MSL.controls
             return Encoding.UTF8.GetString(pageData);
         }
 
-        public static string Post(string path, int contentType = 0, string parameterData = "", string customUrl = "",WebHeaderCollection header=null)
+        public static string Post(string path, int contentType = 0, string parameterData = "", string customUrl = "", WebHeaderCollection header = null)
         {
             string url = "https://api.waheal.top";
             if (customUrl == "")
             {
                 if (MainWindow.serverLink != "waheal.top")
                 {
-                    url = "https://api."+MainWindow.serverLink;// + "/api";
+                    url = "https://api." + MainWindow.serverLink;// + "/api";
                 }
             }
             else
@@ -79,7 +79,7 @@ namespace MSL.controls
 
             if (header != null)
             {
-                myRequest.Headers=header;
+                myRequest.Headers = header;
             }
 
             // 发送请求
@@ -221,22 +221,18 @@ namespace MSL.controls
             }
         }
 
-        public static List<string> CheckJava()
+        /*
+
+        public static List<string> CheckJava(bool isDeepCheck = false)
         {
-            string[] javaPaths = new string[]
-{
-    @"Program Files\Java",
-    @"Program Files (x86)\Java",
-    @"Java"
-};
-            DriveInfo[] drives = DriveInfo.GetDrives();
-            List<string> strings = new List<string>();
-            foreach (DriveInfo drive in drives)
+            if (isDeepCheck)
             {
-                string driveLetter = drive.Name.Substring(0, 1);
-                foreach (string _javaPath in javaPaths)
+                DriveInfo[] drives = DriveInfo.GetDrives();
+                List<string> strings = new List<string>();
+                foreach (DriveInfo drive in drives)
                 {
-                    string javaPath = string.Format(@"{0}:\{1}", driveLetter, _javaPath);
+                    string driveLetter = drive.Name.Substring(0, 1);
+                    string javaPath = string.Format(@"{0}:\", driveLetter);
                     if (Directory.Exists(javaPath))
                     {
                         string[] directories = Directory.GetDirectories(javaPath);
@@ -252,24 +248,72 @@ namespace MSL.controls
                         foreach (string file in files)
                         {
                             string jvPath = CheckJavaRelease(file);
-                            if(jvPath!= null)
+                            if (jvPath != null)
                             {
                                 strings.Add(jvPath);
                             }
                         }
                     }
                 }
+                return strings;
             }
-            return strings;
+            else
+            {
+                string[] javaPaths = new string[]
+                {
+                    @"Program Files\Java",
+                    @"Program Files (x86)\Java",
+                    @"Java"
+                };
+                DriveInfo[] drives = DriveInfo.GetDrives();
+                List<string> strings = new List<string>();
+                foreach (DriveInfo drive in drives)
+                {
+                    string driveLetter = drive.Name.Substring(0, 1);
+                    foreach (string _javaPath in javaPaths)
+                    {
+                        string javaPath = string.Format(@"{0}:\{1}", driveLetter, _javaPath);
+                        if (Directory.Exists(javaPath))
+                        {
+                            string[] directories = Directory.GetDirectories(javaPath);
+                            foreach (string directory in directories)
+                            {
+                                string jvPath = CheckJavaDirectory(directory);
+                                if (jvPath != null)
+                                {
+                                    strings.Add(jvPath);
+                                }
+                            }
+                            string[] files = Directory.GetFiles(javaPath, "release", SearchOption.TopDirectoryOnly);
+                            foreach (string file in files)
+                            {
+                                string jvPath = CheckJavaRelease(file);
+                                if (jvPath != null)
+                                {
+                                    strings.Add(jvPath);
+                                }
+                            }
+                        }
+                    }
+                }
+                return strings;
+            }
         }
         private static string CheckJavaDirectory(string directory)
         {
-            string[] files = Directory.GetFiles(directory, "release", SearchOption.TopDirectoryOnly);
-            foreach (string file in files)
+            try
             {
-                return CheckJavaRelease(file);
+                string[] files = Directory.GetFiles(directory, "release", SearchOption.TopDirectoryOnly);
+                foreach (string file in files)
+                {
+                    return CheckJavaRelease(file);
+                }
+                return null;
             }
-            return null;
+            catch
+            {
+                return null;
+            }
         }
         private static string CheckJavaRelease(string releaseFile)
         {
@@ -280,6 +324,127 @@ namespace MSL.controls
                 string javaVersion = match.Groups[1].Value;
                 return "Java" + javaVersion + ":" + Path.GetDirectoryName(releaseFile) + "\\bin\\java.exe";
             }
+            return null;
+        }
+        */
+
+        public static List<string> CheckJava(bool isDeepCheck = false)
+        {
+            // 预定的文件夹
+            string[] javaPaths = new string[]
+            {
+                @"Program Files\Java",
+                @"Program Files (x86)\Java",
+                @"Java"
+            };
+            // 黑名单文件夹
+            string[] blackList = new string[]
+            {
+                "Windows",
+                "AppData",
+                "ProgramData",
+                "System Volume Information",
+                "$Recycle.Bin",
+                "Recovery"
+            };
+            // 存储检测到的 Java 安装
+            HashSet<string> javaInstalls = new HashSet<string>();
+            // 获取所有磁盘
+            DriveInfo[] drives = DriveInfo.GetDrives();
+            // 使用并行处理来加速扫描过程
+            Parallel.ForEach(drives, drive =>
+            {
+                // 获取磁盘的驱动器字母
+                string driveLetter = drive.Name.Substring(0, 1);
+                // 如果是浅度扫描模式，只搜索预定的文件夹
+                if (!isDeepCheck)
+                {
+                    foreach (string _javaPath in javaPaths)
+                    {
+                        // 拼接完整的文件夹路径
+                        string javaPath = Path.Combine(driveLetter + ":", _javaPath);
+                        // 搜索该文件夹下的所有子文件夹和 release 文件
+                        SearchJava(javaPath, javaInstalls, blackList);
+                    }
+                }
+                // 如果是深度扫描模式，搜索所有文件夹
+                else
+                {
+                    // 拼接完整的磁盘路径
+                    string diskPath = Path.Combine(driveLetter + ":", "");
+                    // 搜索该磁盘下的所有子文件夹和 release 文件
+                    SearchJava(diskPath, javaInstalls, blackList);
+                }
+            });
+            // 输出检测到的 Java 安装
+            List<string> strings = new List<string>();
+            foreach (string javaInstall in javaInstalls)
+            {
+                strings.Add(javaInstall);
+                //Console.WriteLine(javaInstall);
+            }
+            return strings;
+        }
+
+
+        // 搜索指定文件夹下的所有子文件夹和 release 文件
+        private static void SearchJava(string folderPath, HashSet<string> javaInstalls, string[] blackList)
+        {
+            try
+            {
+                // 如果文件夹存在
+                if (Directory.Exists(folderPath))
+                {
+                    // 获取文件夹的名称
+                    string folderName = Path.GetFileName(folderPath);
+                    // 如果文件夹在黑名单中，跳过该文件夹
+                    if (blackList.Contains(folderName))
+                    {
+                        return;
+                    }
+                    // 获取文件夹下的所有子文件夹
+                    string[] subFolders = Directory.GetDirectories(folderPath);
+                    // 对每个子文件夹递归调用该方法
+                    foreach (string subFolder in subFolders)
+                    {
+                        SearchJava(subFolder, javaInstalls, blackList);
+                    }
+                    // 获取文件夹下的所有 release 文件
+                    string[] releaseFiles = Directory.GetFiles(folderPath, "release", SearchOption.TopDirectoryOnly);
+                    // 对每个 release 文件检查是否是 Java 安装
+                    foreach (string releaseFile in releaseFiles)
+                    {
+                        string javaInstall = CheckJavaRelease(releaseFile);
+                        // 如果是 Java 安装，添加到集合中
+                        if (javaInstall != null)
+                        {
+                            javaInstalls.Add(javaInstall);
+                        }
+                    }
+                }
+            }
+            catch// (Exception ex)
+            {
+                // 处理异常，输出日志或调试信息
+                //Console.WriteLine("Exception occurred while searching {0}: {1}", folderPath, ex.Message);
+                //throw ex.InnerException;
+            }
+        }
+
+        // 检查指定的 release 文件是否是 Java 安装
+        private static string CheckJavaRelease(string releaseFile)
+        {
+            // 读取 release 文件的内容
+            string releaseContent = File.ReadAllText(releaseFile);
+            // 使用正则表达式匹配 Java 版本
+            Match match = Regex.Match(releaseContent, @"JAVA_VERSION=""([\d\._a-zA-Z]+)""");
+            // 如果匹配成功，返回 Java 版本和可执行文件的路径
+            if (match.Success)
+            {
+                string javaVersion = match.Groups[1].Value;
+                return "Java" + javaVersion + ":" + Path.Combine(Path.GetDirectoryName(releaseFile), "bin", "java.exe");
+            }
+            // 如果匹配失败，返回 null
             return null;
         }
     }
@@ -368,7 +533,7 @@ namespace MSL.controls
             };
             //var responseMessage = Functions.Post("getNodeList", 0, JsonConvert.SerializeObject(userinfo), "https://of-dev-api.bfsea.xyz/frp/api", header);
             var responseMessage = Functions.Post("getNodeList", 0, string.Empty, "https://of-dev-api.bfsea.xyz/frp/api", header);
-            
+
             try
             {
                 Dictionary<string, string> Nodes = new Dictionary<string, string>();
@@ -431,12 +596,12 @@ namespace MSL.controls
             }
             catch
             {
-                DialogShow.ShowMsg(window, "签到失败！请登录OpenFrp官网进行签到！","错误");
+                DialogShow.ShowMsg(window, "签到失败！请登录OpenFrp官网进行签到！", "错误");
                 return;
             }
             try
             {
-                if ((bool)JObject.Parse(responseMessage)["flag"] == true&&JObject.Parse(responseMessage)["msg"].ToString() == "OK")
+                if ((bool)JObject.Parse(responseMessage)["flag"] == true && JObject.Parse(responseMessage)["msg"].ToString() == "OK")
                 {
                     DialogShow.ShowMsg(window, JObject.Parse(responseMessage)["data"].ToString(), "签到成功");
                 }
@@ -445,7 +610,7 @@ namespace MSL.controls
                     DialogShow.ShowMsg(window, "签到失败", "签到失败");
                 }
             }
-            catch(Exception ex)
+            catch (Exception ex)
             {
                 DialogShow.ShowMsg(window, "签到失败,产生的错误:\n" + ex.Message, "签到失败");
             }
@@ -501,12 +666,12 @@ namespace MSL.controls
                     };
                     byte[] pageData = await webClient.DownloadDataTaskAsync("https://of-dev-api.bfsea.xyz/oauth2/login");
                     authUrl = JObject.Parse(Encoding.UTF8.GetString(pageData))["data"].ToString();
-                    if (!authUrl.Contains("https://openid.17a.ink/api/")&& authUrl.Contains("https://openid.17a.ink/"))
+                    if (!authUrl.Contains("https://openid.17a.ink/api/") && authUrl.Contains("https://openid.17a.ink/"))
                     {
                         authUrl = authUrl.Replace("https://openid.17a.ink/", "https://openid.17a.ink/api/");
                     }
                 }
-                catch(Exception ex)
+                catch (Exception ex)
                 {
                     return $"Get-Login-Url request failed: {ex.Message}";
                 }
@@ -538,9 +703,9 @@ namespace MSL.controls
                         //sessionId = JObject.Parse(_loginData)["data"].ToString();
                         //MessageBox.Show(_loginResponse.Headers.ToString());
 
-                        authId= _loginResponse.Headers.ToString().Substring(_loginResponse.Headers.ToString().IndexOf("Authorization:"), _loginResponse.Headers.ToString().Substring(_loginResponse.Headers.ToString().IndexOf("Authorization:")).IndexOf("\n")-1);
+                        authId = _loginResponse.Headers.ToString().Substring(_loginResponse.Headers.ToString().IndexOf("Authorization:"), _loginResponse.Headers.ToString().Substring(_loginResponse.Headers.ToString().IndexOf("Authorization:")).IndexOf("\n") - 1);
                         //MessageBox.Show(authId);
-                        string ret= GetUserInfo();
+                        string ret = GetUserInfo();
                         return ret;
                     }
                     else
@@ -563,7 +728,7 @@ namespace MSL.controls
             }
         }
 
-        public bool CreateProxy(string type, string port, bool EnableZip, int nodeid, string remote_port, string proxy_name,out string returnMsg)
+        public bool CreateProxy(string type, string port, bool EnableZip, int nodeid, string remote_port, string proxy_name, out string returnMsg)
         {
             HttpWebRequest request = (HttpWebRequest)WebRequest.Create("https://of-dev-api.bfsea.xyz/frp/api/newProxy");
             request.Method = "POST";
@@ -626,9 +791,9 @@ namespace MSL.controls
             request.Method = "POST";
             request.ContentType = "application/json";
             request.Headers.Add(authId);
-            JObject json =new JObject()
+            JObject json = new JObject()
             {
-                ["proxy_id"]=id,
+                ["proxy_id"] = id,
                 //["session"] = sessionId
             };//转换json格式
             byte[] byteArray = Encoding.UTF8.GetBytes(JsonConvert.SerializeObject(json));

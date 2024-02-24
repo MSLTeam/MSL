@@ -464,20 +464,34 @@ namespace MSL.forms
                 a0002_Copy.IsEnabled = false;
             }
         }
-        private void usecheckedjv_Checked(object sender, RoutedEventArgs e)
+        private async void usecheckedjv_Checked(object sender, RoutedEventArgs e)
         {
             txjava.IsEnabled = false;
             a0002_Copy.IsEnabled = false;
-            selectCheckedJavaComb.Items.Clear();
-            List<string> strings =Functions.CheckJava();
+            //selectCheckedJavaComb.Items.Clear();
+            List<string> strings = null;
+            bool dialog = DialogShow.ShowMsg(this, "即将开始检测电脑上的Java，此过程可能需要一些时间，请耐心等待。\n目前有两种检测模式，一种是简单检测，只检测一些关键目录，用时较少，普通用户可优先使用此模式。\n第二种是深度检测，将检测所有磁盘的所有目录，耗时可能会很久，请慎重选择！", "提示", true, "开始深度检测", "开始简单检测");
+            Dialog waitDialog = Dialog.Show(new TextDialog("检测中，请稍等……"));
+            if (dialog)
+            {
+                await Task.Run(() => { Thread.Sleep(200); strings = Functions.CheckJava(); });
+            }
+            else
+            {
+                await Task.Run(() => { Thread.Sleep(200); strings = Functions.CheckJava(true); });
+            }
+            this.Focus();
+            waitDialog.Close();
             if (strings != null)
             {
+                /*
                 foreach (string str in strings)
                 {
                     selectCheckedJavaComb.Items.Add(str);
                 }
+                */
+                selectCheckedJavaComb.ItemsSource= strings.ToList();
             }
-            
             if (selectCheckedJavaComb.Items.Count > 0)
             {
                 outlog.Content = "检测完毕！";
@@ -1149,6 +1163,7 @@ namespace MSL.forms
                 DialogShow.GrowlErr("出现错误，获取Java版本列表失败！");
             }
 
+            string javaVersion = string.Empty;
             string versionString = ServerVersionCombo.Items[ServerVersionCombo.SelectedIndex].ToString();
             if (versionString != "latest")
             {
@@ -1165,38 +1180,51 @@ namespace MSL.forms
                 Version _version = new Version(versionString);
                 Version targetVersion1 = new Version("1.7");
                 Version targetVersion2 = new Version("1.12");
-                Version targetVersion3 = new Version("1.17");
-
+                Version targetVersion3 = new Version("1.16");
 
                 if (_version <= targetVersion1)
                 {
                     //_version <=1.7
                     FinallyJavaDescrip.Text = "根据您的选择，最适合您服务器的Java版本为：Java7-Java8";
-                    FinallyJavaCombo.SelectedIndex = 0;
+                    javaVersion = "Java8";
+                    //FinallyJavaCombo.SelectedIndex = 0;
                 }
                 else if (_version <= targetVersion2)
                 {
                     //1.7< _version <=1.12
                     FinallyJavaDescrip.Text = "根据您的选择，最适合您服务器的Java版本为：Java8-Java11";
-                    FinallyJavaCombo.SelectedIndex = 0;
+                    javaVersion = "Java8";
+                    //FinallyJavaCombo.SelectedIndex = 0;
                 }
                 else if (_version <= targetVersion3)
                 {
-                    //1.12< _version <=1.17
+                    //1.12< _version <=1.16
                     FinallyJavaDescrip.Text = "根据您的选择，最适合您服务器的Java版本为：Java11-Java17（或更高）";
-                    FinallyJavaCombo.SelectedIndex = 1;
+                    javaVersion = "Java11";
+                    //FinallyJavaCombo.SelectedIndex = 1;
                 }
                 else
                 {
-                    //_version >1.17
-                    FinallyJavaDescrip.Text = "根据您的选择，最适合您服务器的Java版本为：Java18-Java19（或更高）";
-                    FinallyJavaCombo.SelectedIndex = 2;
+                    //_version >1.16
+                    FinallyJavaDescrip.Text = "根据您的选择，最适合您服务器的Java版本为：Java17及以上（或更高）";
+                    javaVersion = "Java17";
+                    //FinallyJavaCombo.SelectedIndex = 2;
                 }
             }
             else
             {
-                FinallyJavaDescrip.Text = "根据您的选择，最适合您服务器的Java版本为：Java8-Java19（或更高）";
-                FinallyJavaCombo.SelectedIndex = 2;
+                FinallyJavaDescrip.Text = "根据您的选择，最适合您服务器的Java版本为：Java8-Java21（或更高）";
+                javaVersion = "Java21";
+                //FinallyJavaCombo.SelectedIndex = 3;
+            }
+            FinallyJavaCombo.SelectedIndex = FinallyJavaCombo.Items.Count - 1;
+            foreach (var item in FinallyJavaCombo.Items)
+            {
+                if (item.ToString() == javaVersion)
+                {
+                    FinallyJavaCombo.SelectedItem = item;
+                    break;
+                }
             }
             FinallyCoreCombo.SelectedIndex = 0;
             FastModeNextBtn.IsEnabled = true;

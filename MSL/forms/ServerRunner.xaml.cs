@@ -291,27 +291,6 @@ namespace MSL
                 jsonObject[RserverId].Replace(_json);
                 File.WriteAllText(@"MSL\ServerList.json", Convert.ToString(jsonObject), Encoding.UTF8);
             }
-            try
-            {
-                string response = Functions.Get("query/java");
-                JArray jArray = JArray.Parse(response);
-                List<string> strings = new List<string>();
-                foreach (var j in jArray)
-                {
-                    Dispatcher.Invoke(() =>
-                    {
-                        selectJava.Items.Add(j.ToString());
-                    });
-                }
-                Dispatcher.Invoke(() =>
-                {
-                    selectJava.SelectedIndex = 0;
-                });
-            }
-            catch
-            {
-                DialogShow.GrowlErr("出现错误，获取Java版本列表失败！");
-            }
         }//窗体加载后，运行此方法，主要为改变UI、检测服务器是否完整
 
         private void WindowLoadedEvent()
@@ -2709,54 +2688,10 @@ namespace MSL
                 jVMcmd.Text = RserverJVMcmd;
                 jAva.Text = Rserverjava;
 
-                if (jAva.Text == "Java")
+                Task.Run(() =>
                 {
-                    useJvpath.IsChecked = true;
-                }
-                else
-                {
-                    // 使用正则表达式来提取Java版本
-                    Regex pattern = new Regex(@"(Java\d+)");
-                    Match m = pattern.Match(jAva.Text);
-                    string javaVersion = m.Groups[1].Value;
-
-                    // 和selectJava.Items里的每一项比对
-                    bool found = false;
-                    foreach (var item in selectJava.Items)
-                    {
-                        if (item.ToString() == javaVersion)
-                        {
-                            // 如果有相等的，就把selectJava切换到相应的栏
-                            useDownJv.IsChecked = true;
-                            selectJava.SelectedItem = item;
-                            found = true;
-                            break;
-                        }
-                    }
-                    if (!found)
-                    {
-                        useSelf.IsChecked = true;
-                    }
-                    /*
-                    Dictionary<string, int> javaVersions = new Dictionary<string, int>
-                    {
-                        { AppDomain.CurrentDomain.BaseDirectory + @"MSL\Java8\bin\java.exe", 0 },
-                        { AppDomain.CurrentDomain.BaseDirectory + @"MSL\Java11\bin\java.exe", 1 },
-                        { AppDomain.CurrentDomain.BaseDirectory + @"MSL\Java17\bin\java.exe", 2 },
-                        { AppDomain.CurrentDomain.BaseDirectory + @"MSL\Java21\bin\java.exe", 3 }
-                    };
-
-                    if (javaVersions.TryGetValue(jAva.Text, out int selectedIndex))
-                    {
-                        useDownJv.IsChecked = true;
-                        selectJava.SelectedIndex = selectedIndex;
-                    }
-                    else
-                    {
-                        useSelf.IsChecked = true;
-                    }
-                    */
-                }
+                    LoadJavaInfo();
+                });
 
                 if (RserverJVM == "")
                 {
@@ -2798,6 +2733,63 @@ namespace MSL
             {
                 MessageBox.Show("Error!!!");
             }
+        }
+
+        private void LoadJavaInfo()
+        {
+            try
+            {
+                string response = Functions.Get("query/java");
+                JArray jArray = JArray.Parse(response);
+                List<string> strings = new List<string>();
+                foreach (var j in jArray)
+                {
+                    Dispatcher.Invoke(() =>
+                    {
+                        selectJava.Items.Add(j.ToString());
+                    });
+                }
+                Dispatcher.Invoke(() =>
+                {
+                    selectJava.SelectedIndex = 0;
+                });
+            }
+            catch
+            {
+                DialogShow.GrowlErr("出现错误，获取Java版本列表失败！");
+            }
+            Dispatcher.Invoke(() =>
+            {
+                if (jAva.Text == "Java")
+                {
+                    useJvpath.IsChecked = true;
+                }
+                else
+                {
+                    // 使用正则表达式来提取Java版本
+                    Regex pattern = new Regex(@"(Java\d+)");
+                    Match m = pattern.Match(jAva.Text);
+                    string javaVersion = m.Groups[1].Value;
+
+                    // 和selectJava.Items里的每一项比对
+                    bool found = false;
+                    foreach (var item in selectJava.Items)
+                    {
+                        if (item.ToString() == javaVersion)
+                        {
+                            // 如果有相等的，就把selectJava切换到相应的栏
+                            useDownJv.IsChecked = true;
+                            selectJava.SelectedItem = item;
+                            found = true;
+                            break;
+                        }
+                    }
+                    if (!found)
+                    {
+                        useSelf.IsChecked = true;
+                    }
+                }
+            });
         }
         private void refreahConfig_Click(object sender, RoutedEventArgs e)
         {
@@ -3186,16 +3178,30 @@ namespace MSL
 
         private async void usecheckedjv_Checked(object sender, RoutedEventArgs e)
         {
-            DialogShow.GrowlInfo("检查中，请稍等……");
-            selectCheckedJavaComb.Items.Clear();
-            List<string> strings = new List<string>();
-            await Task.Run(() => { Thread.Sleep(200); strings = Functions.CheckJava(); });
+            //selectCheckedJavaComb.Items.Clear();
+            List<string> strings = null;
+            bool dialog = DialogShow.ShowMsg(this, "即将开始检测电脑上的Java，此过程可能需要一些时间，请耐心等待。\n目前有两种检测模式，一种是简单检测，只检测一些关键目录，用时较少，普通用户可优先使用此模式。\n第二种是深度检测，将检测所有磁盘的所有目录，耗时可能会很久，请慎重选择！", "提示", true, "开始深度检测", "开始简单检测");
+            Dialog waitDialog = Dialog.Show(new TextDialog("检测中，请稍等……"));
+            if (dialog)
+            {
+                await Task.Run(() => { Thread.Sleep(200); strings = Functions.CheckJava(); });
+            }
+            else
+            {
+                await Task.Run(() => { Thread.Sleep(200); strings = Functions.CheckJava(true); });
+            }
+            this.Focus();
+            waitDialog.Close();
+
             if (strings != null)
             {
+                /*
                 foreach (string str in strings)
                 {
                     selectCheckedJavaComb.Items.Add(str);
                 }
+                */
+                selectCheckedJavaComb.ItemsSource=strings.ToList();
             }
             if (selectCheckedJavaComb.Items.Count > 0)
             {
