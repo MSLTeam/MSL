@@ -359,10 +359,12 @@ namespace MSL.controls
                 // 如果是浅度扫描模式，只搜索预定的文件夹
                 if (!isDeepCheck)
                 {
+                    // 对每个预定的文件夹，拼接完整的文件夹路径
                     foreach (string _javaPath in javaPaths)
                     {
                         // 拼接完整的文件夹路径
-                        string javaPath = Path.Combine(driveLetter + ":", _javaPath);
+                        string javaPath = Path.Combine(driveLetter + ":\\", _javaPath);
+                        //Console.WriteLine(javaPath);
                         // 搜索该文件夹下的所有子文件夹和 release 文件
                         SearchJava(javaPath, javaInstalls, blackList);
                     }
@@ -371,7 +373,7 @@ namespace MSL.controls
                 else
                 {
                     // 拼接完整的磁盘路径
-                    string diskPath = Path.Combine(driveLetter + ":", "");
+                    string diskPath = Path.Combine(driveLetter + ":\\");
                     // 搜索该磁盘下的所有子文件夹和 release 文件
                     SearchJava(diskPath, javaInstalls, blackList);
                 }
