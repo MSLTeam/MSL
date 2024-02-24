@@ -102,8 +102,9 @@ namespace MSL.pages
                         _dnfrpc = "";
                     }
 
-                    Directory.SetCurrentDirectory("MSL");
-                    FRPCMD.StartInfo.FileName = @"frpc.exe";
+                    //Directory.SetCurrentDirectory("MSL");
+                    FRPCMD.StartInfo.WorkingDirectory = "MSL";
+                    FRPCMD.StartInfo.FileName = FRPCMD.StartInfo.WorkingDirectory + "\\frpc.exe";
                     FRPCMD.StartInfo.Arguments = "-c frpc";
                     FRPCMD.StartInfo.CreateNoWindow = true;
                     FRPCMD.StartInfo.UseShellExecute = false;
@@ -116,7 +117,7 @@ namespace MSL.pages
                     {
                         startfrpc.IsEnabled = true;
                     });
-                    Directory.SetCurrentDirectory(AppDomain.CurrentDomain.BaseDirectory);
+                    //Directory.SetCurrentDirectory(AppDomain.CurrentDomain.BaseDirectory);
                     FRPCMD.WaitForExit();
                     FRPCMD.CancelOutputRead();
                 }
@@ -150,8 +151,9 @@ namespace MSL.pages
 
                         });
                     }
-                    Directory.SetCurrentDirectory("MSL");
-                    FRPCMD.StartInfo.FileName = @"frpc_of.exe";
+                    //Directory.SetCurrentDirectory("MSL");
+                    FRPCMD.StartInfo.WorkingDirectory = "MSL";
+                    FRPCMD.StartInfo.FileName = FRPCMD.StartInfo.WorkingDirectory + "\\frpc_of.exe";
                     FRPCMD.StartInfo.Arguments = File.ReadAllText("frpc");
                     FRPCMD.StartInfo.CreateNoWindow = true;
                     FRPCMD.StartInfo.UseShellExecute = false;
@@ -164,7 +166,7 @@ namespace MSL.pages
                     {
                         startfrpc.IsEnabled = true;
                     });
-                    Directory.SetCurrentDirectory(AppDomain.CurrentDomain.BaseDirectory);
+                    //Directory.SetCurrentDirectory(AppDomain.CurrentDomain.BaseDirectory);
                     FRPCMD.WaitForExit();
                     FRPCMD.CancelOutputRead();
                 }

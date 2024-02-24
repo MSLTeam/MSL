@@ -815,12 +815,13 @@ namespace MSL.forms
                 string forgeVersion;
                 Match match = Regex.Match(txb3.Text, @"forge-([\w.-]+)-installer");
                 forgeVersion = match.Groups[1].Value;
-                Directory.SetCurrentDirectory(serverbase);
+                //Directory.SetCurrentDirectory(serverbase);
                 Process process = new Process();
+                process.StartInfo.WorkingDirectory = serverbase;
                 process.StartInfo.FileName = serverjava;
                 process.StartInfo.Arguments = "-jar " + txb3.Text + " -installServer";
                 process.Start();
-                Directory.SetCurrentDirectory(AppDomain.CurrentDomain.BaseDirectory);
+                //Directory.SetCurrentDirectory(AppDomain.CurrentDomain.BaseDirectory);
                 try
                 {
 
@@ -1422,12 +1423,13 @@ namespace MSL.forms
                 Match match = Regex.Match(downloadUrl, @"forge-([\w.-]+)-installer");
                 forgeVersion = match.Groups[1].Value;
             }
-            Directory.SetCurrentDirectory(serverbase);
+            //Directory.SetCurrentDirectory(serverbase);
             Process process = new Process();
+            process.StartInfo.WorkingDirectory = serverbase;
             process.StartInfo.FileName = serverjava;
             process.StartInfo.Arguments = "-jar " + filename + " -installServer";
             process.Start();
-            Directory.SetCurrentDirectory(AppDomain.CurrentDomain.BaseDirectory);
+            //Directory.SetCurrentDirectory(AppDomain.CurrentDomain.BaseDirectory);
             try
             {
 

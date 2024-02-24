@@ -276,8 +276,9 @@ namespace MSL.pages
                     joinRoom.Content = "退出房间";
                 }
                 frpcOutlog.Text = "";
-                Directory.SetCurrentDirectory("MSL");
-                FRPCMD.StartInfo.FileName = @"MSL\frpc.exe";
+                //Directory.SetCurrentDirectory("MSL");
+                FRPCMD.StartInfo.WorkingDirectory = "MSL";
+                FRPCMD.StartInfo.FileName = FRPCMD.StartInfo.WorkingDirectory + "\\frpc.exe";
                 FRPCMD.StartInfo.Arguments = "-c P2Pfrpc";
                 FRPCMD.StartInfo.CreateNoWindow = true;
                 FRPCMD.StartInfo.UseShellExecute = false;
@@ -290,10 +291,6 @@ namespace MSL.pages
             catch (Exception e)
             {
                 MessageBox.Show("出现错误，请检查是否有杀毒软件误杀并重试:" + e.Message, "错误", MessageBoxButton.OK, MessageBoxImage.Error);
-            }
-            finally
-            {
-                Directory.SetCurrentDirectory(AppDomain.CurrentDomain.BaseDirectory);
             }
         }
         void RefreshLink()

@@ -258,16 +258,13 @@ namespace MSL.pages
                 JObject jsonObject = JObject.Parse(File.ReadAllText(@"MSL\ServerList.json", Encoding.UTF8));
                 JObject _json = (JObject)jsonObject[serverid[serverList.SelectedIndex]];
                 Process process = new Process();
+                process.StartInfo.WorkingDirectory = _json["base"].ToString();
                 process.StartInfo.FileName = "cmd.exe";
                 process.StartInfo.Arguments = "/K " + "@ \"" + _json["java"] + "\" " + _json["memory"] + " " + _json["args"] + " -jar \"" + _json["core"] + "\" nogui&pause&exit";
-                Directory.SetCurrentDirectory(_json["base"].ToString());
+                //Directory.SetCurrentDirectory(_json["base"].ToString());
                 process.Start();
             }
             catch (Exception ex) { MessageBox.Show("出现错误，请检查您是否选择了服务器！\n" + ex.Message); }
-            finally
-            {
-                Directory.SetCurrentDirectory(AppDomain.CurrentDomain.BaseDirectory);
-            }
         }
 
         private void openServerDir_Click(object sender, RoutedEventArgs e)

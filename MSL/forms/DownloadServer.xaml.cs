@@ -256,13 +256,14 @@ namespace MSL.pages
                 {
                     downloadServerJava = AppDomain.CurrentDomain.BaseDirectory + downloadServerJava;
                 }
-                Directory.SetCurrentDirectory(downloadServerBase);
+                //Directory.SetCurrentDirectory(downloadServerBase);
                 Process process = new Process();
+                process.StartInfo.WorkingDirectory = downloadServerBase;
                 process.StartInfo.FileName = downloadServerJava;
                 process.StartInfo.Arguments = "-jar " + filename + " -installServer";
                 //process.StartInfo.Arguments = "-jar " + filename + " -mirror https://bmclapi2.bangbang93.com/maven/ -installServer";
                 process.Start();
-                Directory.SetCurrentDirectory(AppDomain.CurrentDomain.BaseDirectory);
+                //Directory.SetCurrentDirectory(AppDomain.CurrentDomain.BaseDirectory);
                 try
                 {
                     while (!process.HasExited)
@@ -306,7 +307,7 @@ namespace MSL.pages
             }
             catch (Exception ex)
             {
-                Directory.SetCurrentDirectory(AppDomain.CurrentDomain.BaseDirectory);
+                //Directory.SetCurrentDirectory(AppDomain.CurrentDomain.BaseDirectory);
                 DialogShow.ShowMsg(this, "出现错误！\n" + ex.Message, "错误");
             }
         }

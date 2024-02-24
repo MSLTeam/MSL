@@ -553,13 +553,10 @@ namespace MSL
             try
             {
                 Directory.CreateDirectory(Rserverbase);
-                Directory.SetCurrentDirectory(Rserverbase);
+                //Directory.SetCurrentDirectory(Rserverbase);
+                ServerProcess.StartInfo.WorkingDirectory = Rserverbase;
                 ServerProcess.StartInfo.FileName = Rserverjava;
                 ServerProcess.StartInfo.Arguments = StartFileArg;
-                //string ServerProcessId = Guid.NewGuid().ToString();
-                //MessageBox.Show(ServerProcessId);
-                // 在启动服务器进程时设置环境变量
-                //ServerProcess.StartInfo.EnvironmentVariables["SERVER_PROCESS_ID"] = ServerProcessId;
                 ServerProcess.StartInfo.CreateNoWindow = true;
                 ServerProcess.StartInfo.UseShellExecute = false;
                 ServerProcess.StartInfo.RedirectStandardInput = true;
@@ -583,23 +580,13 @@ namespace MSL
             catch (Exception e)
             {
                 ShowLog("出现错误，正在检查问题...", Brushes.Red);
-                string a = Rserverjava;
-                if (File.Exists(a))
+                if (File.Exists(Rserverjava))
                 {
                     ShowLog("Java路径正常", Brushes.Green);
                 }
                 else
                 {
                     ShowLog("Java路径有误", Brushes.Red);
-                }
-                string b = Rserverserver;
-                if (File.Exists(b))
-                {
-                    ShowLog("服务端路径正常", Brushes.Green);
-                }
-                else
-                {
-                    ShowLog("服务端路径有误", Brushes.Red);
                 }
                 if (Directory.Exists(Rserverbase))
                 {
@@ -609,14 +596,19 @@ namespace MSL
                 {
                     ShowLog("服务器目录有误", Brushes.Red);
                 }
+                if (File.Exists(Rserverbase + "\\" + Rserverserver))
+                {
+                    ShowLog("服务端路径正常", Brushes.Green);
+                }
+                else
+                {
+                    ShowLog("服务端路径有误", Brushes.Red);
+                }
+
                 ShowLog("错误代码：" + e.Message, Brushes.Red);
                 DialogShow.ShowMsg(this, "出现错误，开服器已检测完毕，请根据检测信息对服务器设置进行更改！", "错误", false, "确定");
                 TabCtrl.SelectedIndex = 1;
                 ChangeControlsState(false);
-            }
-            finally
-            {
-                Directory.SetCurrentDirectory(AppDomain.CurrentDomain.BaseDirectory);
             }
         }
         void ChangeControlsState(bool isEnable = true)
@@ -2738,9 +2730,13 @@ namespace MSL
         {
             try
             {
+                Dispatcher.Invoke(() =>
+                {
+                    selectJava.Items.Clear();
+                });
                 string response = Functions.Get("query/java");
                 JArray jArray = JArray.Parse(response);
-                List<string> strings = new List<string>();
+                //List<string> strings = new List<string>();
                 foreach (var j in jArray)
                 {
                     Dispatcher.Invoke(() =>
@@ -2950,12 +2946,13 @@ namespace MSL
                 string forgeVersion;
                 Match match = Regex.Match(server.Text, @"forge-([\w.-]+)-installer");
                 forgeVersion = match.Groups[1].Value;
-                Directory.SetCurrentDirectory(Rserverbase);
+                //Directory.SetCurrentDirectory(Rserverbase);
                 Process process = new Process();
+                process.StartInfo.WorkingDirectory = Rserverbase;
                 process.StartInfo.FileName = Rserverjava;
                 process.StartInfo.Arguments = "-jar " + Rserverbase + @"\" + server.Text + " -installServer";
                 process.Start();
-                Directory.SetCurrentDirectory(AppDomain.CurrentDomain.BaseDirectory);
+                //Directory.SetCurrentDirectory(AppDomain.CurrentDomain.BaseDirectory);
                 try
                 {
 
