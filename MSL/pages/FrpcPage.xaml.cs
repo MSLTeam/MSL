@@ -1,4 +1,5 @@
 ﻿using HandyControl.Controls;
+using HandyControl.Data;
 using ICSharpCode.SharpZipLib.Zip;
 using MSL.controls;
 using Newtonsoft.Json;
@@ -104,7 +105,7 @@ namespace MSL.pages
 
                     //Directory.SetCurrentDirectory("MSL");
                     FRPCMD.StartInfo.WorkingDirectory = "MSL";
-                    FRPCMD.StartInfo.FileName = FRPCMD.StartInfo.WorkingDirectory + "\\frpc.exe";
+                    FRPCMD.StartInfo.FileName = "MSL\\frpc.exe";
                     FRPCMD.StartInfo.Arguments = "-c frpc";
                     FRPCMD.StartInfo.CreateNoWindow = true;
                     FRPCMD.StartInfo.UseShellExecute = false;
@@ -153,8 +154,8 @@ namespace MSL.pages
                     }
                     //Directory.SetCurrentDirectory("MSL");
                     FRPCMD.StartInfo.WorkingDirectory = "MSL";
-                    FRPCMD.StartInfo.FileName = FRPCMD.StartInfo.WorkingDirectory + "\\frpc_of.exe";
-                    FRPCMD.StartInfo.Arguments = File.ReadAllText("frpc");
+                    FRPCMD.StartInfo.FileName = "MSL\\frpc_of.exe";
+                    FRPCMD.StartInfo.Arguments = File.ReadAllText("MSL\\frpc");
                     FRPCMD.StartInfo.CreateNoWindow = true;
                     FRPCMD.StartInfo.UseShellExecute = false;
                     FRPCMD.StartInfo.RedirectStandardInput = true;
@@ -265,6 +266,34 @@ namespace MSL.pages
                     {
                         Task.Run(() => StopProcess(FRPCMD));
                     }
+                }
+            }
+            if(msg.Contains(" 发现新版本"))
+            {
+                JObject jobject = JObject.Parse(File.ReadAllText(@"MSL\config.json", Encoding.UTF8));
+                if (jobject["frpcServer"].ToString() == "1")
+                {
+                    Growl.Ask(new GrowlInfo
+                    {
+                        Message = "发现OpenFrp桥接软件新版本，是否更新？",
+                        ActionBeforeClose = isConfirmed =>
+                        {
+                            if (isConfirmed)
+                            {
+                                Dispatcher.InvokeAsync(async () =>
+                                {
+                                    await Task.Run(() => StopProcess(FRPCMD));
+                                    await Task.Delay(1000);
+                                    await Task.Run(() => File.Delete("MSL\\frpc_of.exe"));
+                                    _ = Task.Run(() => StartFrpc());
+                                    
+                                });
+                                
+                            }
+                            return true;
+                        },
+                        ShowDateTime = false
+                    });
                 }
             }
             frpcOutlog.ScrollToEnd();
