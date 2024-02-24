@@ -2667,8 +2667,7 @@ namespace MSL
         }
         private void openpluginweb_Click(object sender, RoutedEventArgs e)
         {
-            DialogShow.ShowMsg(this, "由于没有相关API，开服器无法提供一键下载功能，即将为您打开MCBBS和Spigot网站，请您自行寻找并下载", "提示");
-            Process.Start("https://www.mcbbs.net/forum-servermod-1.html");
+            DialogShow.ShowMsg(this, "开服器暂时无法提供插件下载功能，即将为您打开Spigot网站，请您自行寻找插件并下载（下载后点击右下角“+”将其添加入服务器）。", "提示");
             Process.Start("https://www.spigotmc.org/resources/");
         }
         #endregion
