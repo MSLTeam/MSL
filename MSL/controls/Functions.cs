@@ -345,6 +345,7 @@ namespace MSL.controls
                 "ProgramData",
                 "System Volume Information",
                 "$Recycle.Bin",
+                "$RECYCLE.BIN",
                 "Recovery"
             };
             // 存储检测到的 Java 安装
