@@ -41,6 +41,32 @@ namespace MSL.controls
             return Encoding.UTF8.GetString(pageData);
         }
 
+        public static string GetSha256(string path, string customUrl = "")
+        {
+            string url = "https://api.waheal.top";
+            if (customUrl == "")
+            {
+                if (MainWindow.serverLink != "waheal.top")
+                {
+                    url = "https://api." + MainWindow.serverLink;
+                }
+            }
+            else
+            {
+                url = customUrl;
+            }
+            WebClient webClient = new WebClient();
+            webClient.Credentials = CredentialCache.DefaultCredentials;
+            webClient.DownloadData(url + "/" + path);
+            string sha256Value = "";
+            if (webClient.ResponseHeaders["sha256"] != null)
+            {
+                sha256Value = webClient.ResponseHeaders["sha256"];
+            }
+            return sha256Value;
+        }
+
+
         public static string Post(string path, int contentType = 0, string parameterData = "", string customUrl = "", WebHeaderCollection header = null)
         {
             string url = "https://api.waheal.top";

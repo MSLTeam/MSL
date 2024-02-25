@@ -59,13 +59,13 @@ namespace MSL.controls
             }
         }
 
-        public static bool ShowDownload(System.Windows.Window window, string downloadurl, string downloadPath, string filename, string downloadinfo)
+        public static bool ShowDownload(System.Windows.Window window, string downloadurl, string downloadPath, string filename, string downloadinfo,string sha256 = "")
         {
             try
             {
                 window.Focus();
                 var dialog = Dialog.Show(string.Empty);
-                DownloadWindow download = new DownloadWindow(downloadurl, downloadPath, filename, downloadinfo);
+                DownloadWindow download = new DownloadWindow(downloadurl, downloadPath, filename, downloadinfo,sha256);
                 download.Owner = window;
                 download.ShowDialog();
                 window.Focus();

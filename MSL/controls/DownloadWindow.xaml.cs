@@ -3,6 +3,7 @@ using System;
 using System.ComponentModel;
 using System.IO;
 using System.Net;
+using System.Security.Cryptography;
 using System.Security.Permissions;
 using System.Threading;
 using System.Windows;
@@ -21,15 +22,25 @@ namespace MSL
         public static string downloadPath;
         public static string filename;
         public static string downloadurl;
+        public static string expectedSha256;
         public static bool isStopDwn;
 
-        public DownloadWindow(string _downloadurl, string _downloadPath, string _filename, string downloadinfo)
+        public DownloadWindow(string _downloadurl, string _downloadPath, string _filename, string downloadinfo,string sha256 = "")
         {
             InitializeComponent();
 
             downloadurl = _downloadurl;
             downloadPath = _downloadPath;
             filename = _filename;
+            if (sha256 != "" )
+            {
+                expectedSha256 = sha256;
+            }
+            else
+            {
+                expectedSha256 = "";
+            }
+
 
             taskinfo.Text = downloadinfo;
             isStopDwn = false;
@@ -77,6 +88,7 @@ namespace MSL
             });
         }
 
+        //下载完成的事件
         private void OnDownloadFileCompleted(object sender, AsyncCompletedEventArgs e)
         {
 
@@ -102,17 +114,58 @@ namespace MSL
             {
                 if (File.Exists(downloadPath + "\\" + filename))
                 {
-                    Dispatcher.Invoke(() =>
+                    if (expectedSha256 == "")
                     {
-                        infolabel.Text = "下载完成！";
-                        pbar.Value = 100;
-                    });
-                    Thread.Sleep(1000);
-                    downloadurl = null;
-                    Dispatcher.Invoke(() =>
+                        Dispatcher.Invoke(() =>
+                        {
+                            infolabel.Text = "下载完成！";
+                            pbar.Value = 100;
+                        });
+                        Thread.Sleep(1000);
+                        downloadurl = null;
+                        Dispatcher.Invoke(() =>
+                        {
+                            Close();
+                        });
+                    }
+                    else
                     {
-                        Close();
-                    });
+                        //有传入sha256，进行校验
+                        if (VerifyFileSHA256(downloadPath + "\\" + filename, expectedSha256) == true)
+                        {
+                            Dispatcher.Invoke(() =>
+                            {
+                                infolabel.Text = "下载完成！";
+                                pbar.Value = 100;
+                            });
+                            Thread.Sleep(1000);
+                            downloadurl = null;
+                            Dispatcher.Invoke(() =>
+                            {
+                                Close();
+                            });
+
+                        }
+                        else
+                        {
+                            Dispatcher.Invoke(() =>
+                            {
+                                infolabel.Text = "校验完整性失败！请重新下载！";
+                                try
+                                {
+                                    File.Delete(downloadPath + @"\" + filename);
+                                }
+                                catch { }
+                            });
+                            Thread.Sleep(1000);
+                            downloadurl = null;
+                            Dispatcher.Invoke(() =>
+                            {
+                                Close();
+                            });
+                        }
+                    }
+
                 }
                 else
                 {
@@ -254,6 +307,19 @@ namespace MSL
         {
             isStopDwn = true;
             Close();
+        }
+
+        //用于校验sha256的函数
+        public bool VerifyFileSHA256(string filePath, string expectedHash)
+        {
+            using (FileStream stream = File.OpenRead(filePath)) //文件流
+            {
+                SHA256Managed sha = new SHA256Managed();
+                byte[] hash = sha.ComputeHash(stream);
+                string calculatedHash = BitConverter.ToString(hash).Replace("-", String.Empty);
+
+                return String.Equals(calculatedHash, expectedHash, StringComparison.OrdinalIgnoreCase);
+            }
         }
     }
 }
