@@ -17,6 +17,7 @@ using System.Windows;
 using System.Windows.Controls;
 using System.Windows.Forms;
 using System.Windows.Threading;
+using Windows.Media.Protection.PlayReady;
 using MessageBox = System.Windows.MessageBox;
 using OpenFileDialog = Microsoft.Win32.OpenFileDialog;
 using Path = System.IO.Path;
@@ -913,36 +914,17 @@ namespace MSL.forms
             Thread thread = new Thread(FastModeGetCore);
             thread.Start();
         }
+        //用于分类的字典
+        public static Dictionary<string, List<string>> serverCoreTypes;
 
-        Dictionary<string, List<string>> serverCoreTypes = new Dictionary<string, List<string>>
-            {
-                {"pluginsCore",new List<string>()
-                    {"paper","purpur","spigot","bukkit","folia","leaves","pufferfish","pufferfish_purpur","pufferfishplus","pufferfishplus_purpur"}
-                },
-                {"pluginsAndModsCore",new List<string>()
-                    {"arclight","mohist","catserver"}
-                },
-                {"modsCore_Forge",new List<string>()
-                    {"forge","neoforge"}
-                },
-                {"modsCore_Fabric",new List<string>()
-                    {"fabric","quilt"}
-                },
-                {"vanillaCore",new List<string>()
-                    {"vanilla"}
-                },
-                {"bedrockCore",new List<string>()
-                    {"nukkitx"}
-                },
-                {"proxyCore",new List<string>()
-                    {"velocity","bungeecord","lightfall"}
-                }
-            };
         string[] serverTypes;
         void FastModeGetCore()
         {
             try
             {
+                //获取分类
+                var responseString = Functions.Get("query/server_classify");
+                serverCoreTypes = JsonConvert.DeserializeObject<Dictionary<string, List<string>>>(responseString);
                 /*
                 try
                 {
