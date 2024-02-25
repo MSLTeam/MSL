@@ -917,7 +917,7 @@ namespace MSL.forms
         Dictionary<string, List<string>> serverCoreTypes = new Dictionary<string, List<string>>
             {
                 {"pluginsCore",new List<string>()
-                    {"paper","purpur","spigot","bukkit","folia","leaves"}
+                    {"paper","purpur","spigot","bukkit","folia","leaves","pufferfish","pufferfish_purpur","pufferfishplus","pufferfishplus_purpur"}
                 },
                 {"pluginsAndModsCore",new List<string>()
                     {"arclight","mohist","catserver"}
