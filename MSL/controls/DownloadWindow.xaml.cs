@@ -133,6 +133,7 @@ namespace MSL
                         //有传入sha256，进行校验
                         if (VerifyFileSHA256(downloadPath + "\\" + filename, expectedSha256) == true)
                         {
+                            //成功
                             Dispatcher.Invoke(() =>
                             {
                                 infolabel.Text = "下载完成！";
@@ -148,6 +149,7 @@ namespace MSL
                         }
                         else
                         {
+                            //失败
                             Dispatcher.Invoke(() =>
                             {
                                 infolabel.Text = "校验完整性失败！请重新下载！";
