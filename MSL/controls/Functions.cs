@@ -21,7 +21,7 @@ namespace MSL.controls
 {
     internal class Functions
     {
-        public static string Get(string path, string customUrl = "")
+        public static string Get(string path, string customUrl = "",bool hideHeader=false)
         {
             string url = "https://api.waheal.top";
             if (customUrl == "")
@@ -36,7 +36,10 @@ namespace MSL.controls
                 url = customUrl;
             }
             WebClient webClient = new WebClient();
-            webClient.Headers.Add("User-Agent", "MSL/" + new Version(System.Reflection.Assembly.GetExecutingAssembly().GetName().Version.ToString()));
+            if (!hideHeader)
+            {
+                webClient.Headers.Add("User-Agent", "MSL/" + new Version(System.Reflection.Assembly.GetExecutingAssembly().GetName().Version.ToString()));
+            }
             webClient.Credentials = CredentialCache.DefaultCredentials;
             byte[] pageData = webClient.DownloadData(url + "/" + path);
             return Encoding.UTF8.GetString(pageData);

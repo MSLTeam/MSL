@@ -914,17 +914,14 @@ namespace MSL.forms
             Thread thread = new Thread(FastModeGetCore);
             thread.Start();
         }
+
         //用于分类的字典
         public static Dictionary<string, List<string>> serverCoreTypes;
-
         string[] serverTypes;
-        void FastModeGetCore()
+        private void FastModeGetCore()
         {
             try
             {
-                //获取分类
-                var responseString = Functions.Get("query/server_classify");
-                serverCoreTypes = JsonConvert.DeserializeObject<Dictionary<string, List<string>>>(responseString);
                 /*
                 try
                 {
@@ -938,6 +935,9 @@ namespace MSL.forms
                     MainWindow.serverLink = "waheal.top";
                 }
                 */
+                //获取分类
+                var responseString = Functions.Get("query/server_classify");
+                serverCoreTypes = JsonConvert.DeserializeObject<Dictionary<string, List<string>>>(responseString);
                 string jsonData = Functions.Get("query/available_server_types");
                 serverTypes = JsonConvert.DeserializeObject<string[]>(jsonData);
                 Dispatcher.Invoke(() =>
