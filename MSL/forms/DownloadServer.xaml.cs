@@ -60,6 +60,7 @@ namespace MSL.pages
                 //int url = serverlist1.SelectedIndex;
 
                 string downUrl = Functions.Get("download/server/" + downServer + "/" + downVersion);
+                string sha256 = Functions.GetSha256("download/server/" + downServer + "/" + downVersion);
 
                 if (serverlist.SelectedItem.ToString().IndexOf("（") + 1 != 0)
                 {
@@ -88,7 +89,7 @@ namespace MSL.pages
                         filename = serverlist.SelectedItem.ToString() + "-" + serverlist1.SelectedItem.ToString() + ".jar";
                     }
                 }
-                bool dwnDialog = DialogShow.ShowDownload(this, downUrl, downPath, filename, "下载服务端中……");
+                bool dwnDialog = DialogShow.ShowDownload(this, downUrl, downPath, filename, "下载服务端中……",sha256);
                 if (!dwnDialog)
                 {
                     DialogShow.ShowMsg(this, "下载取消！", "提示");
@@ -109,7 +110,7 @@ namespace MSL.pages
                 }
                 else
                 {
-                    DialogShow.ShowMsg(this, "下载失败！", "错误");
+                    DialogShow.ShowMsg(this, "下载失败！（文件无法下载/下载后校验完整性失败）\n请重试！", "错误");
                 }
             }
         }

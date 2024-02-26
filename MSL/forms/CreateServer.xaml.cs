@@ -1302,8 +1302,9 @@ namespace MSL.forms
         void FastModeInstallCore()
         {
             string filename = FinallyCoreCombo.Items[FinallyCoreCombo.SelectedIndex].ToString() + ".jar";
-            string dlUrl = Functions.Get("download/server/" + FinallyCoreCombo.SelectedItem.ToString().Replace("-","/"));
-            bool dwnDialog = DialogShow.ShowDownload(this, dlUrl, serverbase, filename, "下载服务端中……");
+            string dlUrl = Functions.Get("download/server/" + FinallyCoreCombo.SelectedItem.ToString().Replace("-","/"));//第一次请求，获取链接
+            string sha256 = Functions.GetSha256("download/server/" + FinallyCoreCombo.SelectedItem.ToString().Replace("-", "/"));//第二次请求，获取sha256
+            bool dwnDialog = DialogShow.ShowDownload(this, dlUrl, serverbase, filename, "下载服务端中……",sha256); //从这里请求服务端下载
             if (!dwnDialog)
             {
                 DialogShow.ShowMsg(this, "下载取消！", "提示");
@@ -1375,7 +1376,7 @@ namespace MSL.forms
             }
             else
             {
-                DialogShow.ShowMsg(this, "下载失败！", "错误");
+                DialogShow.ShowMsg(this, "下载失败！（文件无法下载/下载后校验完整性失败）\n请重试！", "错误");
                 FastModeInstallBtn.IsEnabled = true;
             }
         }
