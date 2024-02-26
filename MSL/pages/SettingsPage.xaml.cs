@@ -636,11 +636,7 @@ namespace MSL.pages
             try
             {
                 var mainwindow = (MainWindow)System.Windows.Window.GetWindow(this);
-                string pageHtml = Functions.Get("update");
-                string strtempa = "#";
-                int IndexofA = pageHtml.IndexOf(strtempa);
-                string Ru = pageHtml.Substring(IndexofA + 1);
-                string aaa = Ru.Substring(0, Ru.IndexOf("#"));
+                string aaa = Functions.Get("query/update");
                 if (aaa.Contains("v"))
                 {
                     aaa = aaa.Replace("v", "");
@@ -650,16 +646,13 @@ namespace MSL.pages
 
                 if (newVersion > version)
                 {
-                    var updatelog = Functions.Post("update", 1);
+                    var updatelog = Functions.Get("query/update/log");
                     Dispatcher.Invoke(() =>
                     {
                         bool dialog = DialogShow.ShowMsg(mainwindow, "发现新版本，版本号为：" + aaa + "，是否进行更新？\n更新日志：\n" + updatelog, "更新", true, "取消");
                         if (dialog == true)
                         {
-                            string strtempa1 = "* ";
-                            int IndexofA1 = pageHtml.IndexOf(strtempa1);
-                            string Ru1 = pageHtml.Substring(IndexofA1 + 2);
-                            string aaa1 = Ru1.Substring(0, Ru1.IndexOf(" *"));
+                            string aaa1 = Functions.Get("download/update");
                             DialogShow.ShowDownload(mainwindow, aaa1, AppDomain.CurrentDomain.BaseDirectory, "MSL" + aaa + ".exe", "下载新版本中……");
                             if (File.Exists("MSL" + aaa + ".exe"))
                             {

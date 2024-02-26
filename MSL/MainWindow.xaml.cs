@@ -82,7 +82,7 @@ namespace MSL
             //get serverlink
             try
             {
-                serverLink = Functions.Get("", "https://msl-server.oss-cn-hangzhou.aliyuncs.com/");
+                serverLink = Functions.Get("", "https://msl-server.oss-cn-hangzhou.aliyuncs.com/",true);
                 try
                 {
                     if (((int)((JObject)JsonConvert.DeserializeObject(Functions.Get("")))["status"]) != 200)
@@ -320,7 +320,6 @@ namespace MSL
             //更新
             try
             {
-                string pageHtml = "";
                 //string pageHtml = Functions.Get("update");
                 //string strtempa = "#";
                 //int IndexofA = pageHtml.IndexOf(strtempa);
@@ -351,13 +350,13 @@ namespace MSL
                         else if (jsonObject["autoUpdateApp"].ToString() == "True")
                         {
                             //Logger.LogInfo("自动更新功能已打开，更新新版本……");
-                            UpdateApp(pageHtml, aaa);
+                            UpdateApp(aaa);
                         }
                         bool dialog = DialogShow.ShowMsg(this, "发现新版本，版本号为：" + aaa + "，是否进行更新？\n更新日志：\n" + updatelog, "更新", true, "取消");
                         if (dialog == true)
                         {
                             //Logger.LogInfo("更新新版本……");
-                            UpdateApp(pageHtml, aaa);
+                            UpdateApp(aaa);
                         }
                         else
                         {
@@ -458,7 +457,7 @@ namespace MSL
             //Logger.LogInfo("软件加载完毕！");
         }
 
-        private void UpdateApp(string pageHtml, string aaa)
+        private void UpdateApp(string aaa)
         {
             //string strtempa1 = "* ";
             //int IndexofA1 = pageHtml.IndexOf(strtempa1);
