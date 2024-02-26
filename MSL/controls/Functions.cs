@@ -104,6 +104,15 @@ namespace MSL.controls
                 myRequest.MaximumAutomaticRedirections = 1;
                 myRequest.AllowAutoRedirect = true;
             }
+            else if (contentType == 2)
+            {
+                myRequest.Method = "POST";
+                myRequest.Accept = "application/x-www-form-urlencoded";
+                myRequest.ContentType = "application/x-www-form-urlencoded; charset=UTF-8";
+                myRequest.ContentLength = buf.Length;
+                myRequest.MaximumAutomaticRedirections = 1;
+                myRequest.AllowAutoRedirect = true;
+            }
 
             if (header != null)
             {
