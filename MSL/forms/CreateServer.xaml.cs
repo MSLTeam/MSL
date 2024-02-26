@@ -1376,7 +1376,7 @@ namespace MSL.forms
             }
             else
             {
-                DialogShow.ShowMsg(this, "下载失败！", "错误");
+                DialogShow.ShowMsg(this, "下载失败！（文件无法下载/下载后校验完整性失败）\n请重试！", "错误");
                 FastModeInstallBtn.IsEnabled = true;
             }
         }
