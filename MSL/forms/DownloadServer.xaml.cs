@@ -59,8 +59,7 @@ namespace MSL.pages
             {
                 //int url = serverlist1.SelectedIndex;
 
-                string downUrl = Functions.Get("download/server/" + downServer + "/" + downVersion);
-                string sha256 = Functions.GetSha256("download/server/" + downServer + "/" + downVersion);
+                string downUrl = Functions.Get("download/server/" + downServer + "/" + downVersion, out string sha256Exp);
 
                 if (serverlist.SelectedItem.ToString().IndexOf("（") + 1 != 0)
                 {
@@ -89,7 +88,7 @@ namespace MSL.pages
                         filename = serverlist.SelectedItem.ToString() + "-" + serverlist1.SelectedItem.ToString() + ".jar";
                     }
                 }
-                bool dwnDialog = DialogShow.ShowDownload(this, downUrl, downPath, filename, "下载服务端中……",sha256);
+                bool dwnDialog = DialogShow.ShowDownload(this, downUrl, downPath, filename, "下载服务端中……",sha256Exp);
                 if (!dwnDialog)
                 {
                     DialogShow.ShowMsg(this, "下载取消！", "提示");
@@ -136,7 +135,7 @@ namespace MSL.pages
             });
             try
             {
-                string jsonData = Functions.Get("query/available_server_types");
+                string jsonData = Functions.Get("query/available_server_types", out string sha256Exp);
                 string[] serverTypes = JsonConvert.DeserializeObject<string[]>(jsonData);
                 Dispatcher.Invoke(() =>
                 {
@@ -181,8 +180,8 @@ namespace MSL.pages
                 });
                 try
                 {
-                    var resultData = Functions.Get("query/available_versions/" + serverName);
-                    string server_des = Functions.Get("query/servers_description/" + serverName);
+                    var resultData = Functions.Get("query/available_versions/" + serverName, out string sha256Exp);
+                    string server_des = Functions.Get("query/servers_description/" + serverName, out string sha256Exp2);
                     JArray serverVersions = JArray.Parse(resultData);
                     List<string> sortedVersions = serverVersions.ToObject<List<string>>().OrderByDescending(v => Functions.VersionCompare(v)).ToList();
                     Dispatcher.Invoke(() =>
@@ -198,7 +197,7 @@ namespace MSL.pages
                 {
                     try
                     {
-                        var resultData = Functions.Get("query/available_versions/" + serverName);
+                        var resultData = Functions.Get("query/available_versions/" + serverName, out string sha256Exp2);
                         JArray serverVersions = JArray.Parse(resultData);
                         List<string> sortedVersions = serverVersions.ToObject<List<string>>().OrderByDescending(v => Functions.VersionCompare(v)).ToList();
                         Dispatcher.Invoke(() =>

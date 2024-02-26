@@ -129,7 +129,7 @@ namespace MSL.forms
                             int dwnJava = 0;
                             await Dispatcher.InvokeAsync(() =>
                             {
-                                dwnJava = DownloadJava(selectJavaComb.SelectedItem.ToString(), Functions.Get("download/java/" + selectJavaComb.SelectedItem.ToString()));
+                                dwnJava = DownloadJava(selectJavaComb.SelectedItem.ToString(), Functions.Get("download/java/" + selectJavaComb.SelectedItem.ToString(), out string sha256Exp));
                             });
                             if (dwnJava == 1)
                             {
@@ -936,9 +936,9 @@ namespace MSL.forms
                 }
                 */
                 //获取分类
-                var responseString = Functions.Get("query/server_classify");
+                var responseString = Functions.Get("query/server_classify", out string sha256Exp);
                 serverCoreTypes = JsonConvert.DeserializeObject<Dictionary<string, List<string>>>(responseString);
-                string jsonData = Functions.Get("query/available_server_types");
+                string jsonData = Functions.Get("query/available_server_types", out string sha256Exp2);
                 serverTypes = JsonConvert.DeserializeObject<string[]>(jsonData);
                 Dispatcher.Invoke(() =>
                 {
@@ -997,7 +997,7 @@ namespace MSL.forms
                                     //MessageBox.Show(_serverType);
                                     try
                                     {
-                                        var resultData = Functions.Get("query/available_versions/" + _serverType);
+                                        var resultData = Functions.Get("query/available_versions/" + _serverType, out string sha256Exp);
                                        // MessageBox.Show(resultData);
                                         tempServerCore.Add(coreType, resultData);
                                         List<string> serverVersions = JsonConvert.DeserializeObject<List<string>>(resultData);
@@ -1018,7 +1018,7 @@ namespace MSL.forms
                                             // patientinfo["server_name"] = i;
                                             // string sendData = JsonConvert.SerializeObject(patientinfo);
                                             //var resultData = Functions.Post("serverlist", 0, sendData, "https://api.waheal.top");
-                                            var resultData = Functions.Get("query/available_versions/" + coreType);
+                                            var resultData = Functions.Get("query/available_versions/" + coreType, out string sha256Exp);
                                             //MessageBox.Show(resultData);
                                             tempServerCore.Add(coreType, resultData);
                                             Dictionary<string, string> serverDetails = JsonConvert.DeserializeObject<Dictionary<string, string>>(resultData);
@@ -1225,7 +1225,7 @@ namespace MSL.forms
                 string response = string.Empty;
                 await Task.Run(() =>
                 {
-                    response = Functions.Get("query/java");
+                    response = Functions.Get("query/java", out string sha256Exp);
                 });
                 await Task.Delay(200);
                 JArray jArray = JArray.Parse(response);
@@ -1257,7 +1257,7 @@ namespace MSL.forms
                 int dwnJava = 0;
                 await Dispatcher.InvokeAsync(() =>
                 {
-                    dwnJava = DownloadJava(FinallyJavaCombo.SelectedItem.ToString(), Functions.Get("download/java/" + FinallyJavaCombo.SelectedItem.ToString()));
+                    dwnJava = DownloadJava(FinallyJavaCombo.SelectedItem.ToString(), Functions.Get("download/java/" + FinallyJavaCombo.SelectedItem.ToString(), out string sha256Exp));
                 });
                 if (dwnJava == 1)
                 {
@@ -1302,9 +1302,8 @@ namespace MSL.forms
         void FastModeInstallCore()
         {
             string filename = FinallyCoreCombo.Items[FinallyCoreCombo.SelectedIndex].ToString() + ".jar";
-            string dlUrl = Functions.Get("download/server/" + FinallyCoreCombo.SelectedItem.ToString().Replace("-","/"));//第一次请求，获取链接
-            string sha256 = Functions.GetSha256("download/server/" + FinallyCoreCombo.SelectedItem.ToString().Replace("-", "/"));//第二次请求，获取sha256
-            bool dwnDialog = DialogShow.ShowDownload(this, dlUrl, serverbase, filename, "下载服务端中……",sha256); //从这里请求服务端下载
+            string dlUrl = Functions.Get("download/server/" + FinallyCoreCombo.SelectedItem.ToString().Replace("-","/"), out string sha256Exp);//获取链接
+            bool dwnDialog = DialogShow.ShowDownload(this, dlUrl, serverbase, filename, "下载服务端中……",sha256Exp); //从这里请求服务端下载
             if (!dwnDialog)
             {
                 DialogShow.ShowMsg(this, "下载取消！", "提示");

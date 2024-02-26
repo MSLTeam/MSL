@@ -2735,7 +2735,7 @@ namespace MSL
                 {
                     selectJava.Items.Clear();
                 });
-                string response = Functions.Get("query/java");
+                string response = Functions.Get("query/java", out string sha256Exp);
                 JArray jArray = JArray.Parse(response);
                 //List<string> strings = new List<string>();
                 foreach (var j in jArray)
@@ -2823,7 +2823,7 @@ namespace MSL
                     {
                         await Dispatcher.InvokeAsync(() =>
                         {
-                            dwnJava = DownloadJava(selectJava.SelectedItem.ToString(), Functions.Get("download/java/" + selectJava.SelectedItem.ToString()));
+                            dwnJava = DownloadJava(selectJava.SelectedItem.ToString(), Functions.Get("download/java/" + selectJava.SelectedItem.ToString(), out string sha256Exp));
                         });
                         if (dwnJava == 1)
                         {
