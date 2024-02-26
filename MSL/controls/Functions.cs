@@ -36,6 +36,7 @@ namespace MSL.controls
                 url = customUrl;
             }
             WebClient webClient = new WebClient();
+            webClient.Headers.Add("User-Agent", "MSL/" + new Version(System.Reflection.Assembly.GetExecutingAssembly().GetName().Version.ToString()));
             webClient.Credentials = CredentialCache.DefaultCredentials;
             byte[] pageData = webClient.DownloadData(url + "/" + path);
             return Encoding.UTF8.GetString(pageData);
@@ -56,6 +57,7 @@ namespace MSL.controls
                 url = customUrl;
             }
             WebClient webClient = new WebClient();
+            webClient.Headers.Add("User-Agent", "MSL/" + new Version(System.Reflection.Assembly.GetExecutingAssembly().GetName().Version.ToString()));
             webClient.Credentials = CredentialCache.DefaultCredentials;
             webClient.DownloadData(url + "/" + path);
             string sha256Value = "";
