@@ -14,12 +14,14 @@ using System.Windows.Shapes;
 
 namespace MSL.controls
 {
+
     /// <summary>
     /// InstallForgeDialog.xaml 的交互逻辑
     /// </summary>
     public partial class InstallForgeDialog : HandyControl.Controls.Window
     {
-        public InstallForgeDialog()
+        public static bool isStopDwn;
+        public InstallForgeDialog(string forgePath)
         {
             InitializeComponent();
         }

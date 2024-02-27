@@ -59,18 +59,18 @@ namespace MSL.controls
             }
         }
 
-        public static bool ShowInstallForge(System.Windows.Window window)
+        public static bool ShowInstallForge(System.Windows.Window window,string forgePath)
         {
             try
             {
                 window.Focus();
                 var dialog = Dialog.Show(string.Empty);
-                InstallForgeDialog installforge = new InstallForgeDialog();
+                InstallForgeDialog installforge = new InstallForgeDialog(forgePath);
                 installforge.Owner = window;
                 installforge.ShowDialog();
                 window.Focus();
                 dialog.Close();
-                if (DownloadWindow.isStopDwn)
+                if (InstallForgeDialog.isStopDwn)
                 {
                     return false;
                 }
@@ -85,7 +85,7 @@ namespace MSL.controls
             }
         }
 
-        public static bool ShowInstallForge(System.Windows.Window window, string downloadurl, string downloadPath, string filename, string downloadinfo, string sha256 = "")
+        public static bool ShowDownload(System.Windows.Window window, string downloadurl, string downloadPath, string filename, string downloadinfo, string sha256 = "")
         {
             try
             {
