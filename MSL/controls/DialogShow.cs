@@ -1,5 +1,6 @@
 ﻿using HandyControl.Controls;
 using HandyControl.Data;
+using System;
 
 namespace MSL.controls
 {
@@ -53,24 +54,25 @@ namespace MSL.controls
                     return false;
                 }
             }
-            catch
+            catch(Exception err)
             {
+                
                 return false;
             }
         }
 
-        public static bool ShowInstallForge(System.Windows.Window window,string forgePath)
+        public static bool ShowInstallForge(System.Windows.Window window,string forgePath,string downPath)
         {
             try
             {
                 window.Focus();
                 var dialog = Dialog.Show(string.Empty);
-                InstallForgeDialog installforge = new InstallForgeDialog(forgePath);
+                InstallForgeDialog installforge = new InstallForgeDialog(forgePath, downPath);
                 installforge.Owner = window;
                 installforge.ShowDialog();
                 window.Focus();
                 dialog.Close();
-                if (InstallForgeDialog.isStopDwn)
+                if (InstallForgeDialog.suc)
                 {
                     return false;
                 }
@@ -105,8 +107,9 @@ namespace MSL.controls
                     return true;
                 }
             }
-            catch
+            catch(Exception err)
             {
+                //MessageBox.Show(err.ToString());
                 return false;
             }
         }
