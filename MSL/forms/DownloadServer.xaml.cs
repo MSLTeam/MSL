@@ -264,6 +264,7 @@ namespace MSL.pages
                 //process.StartInfo.Arguments = "-jar " + filename + " -mirror https://bmclapi2.bangbang93.com/maven/ -installServer";
                 process.Start();
                 //Directory.SetCurrentDirectory(AppDomain.CurrentDomain.BaseDirectory);
+                //检测安装成功与否
                 try
                 {
                     while (!process.HasExited)

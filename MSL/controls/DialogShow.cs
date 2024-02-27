@@ -59,13 +59,39 @@ namespace MSL.controls
             }
         }
 
-        public static bool ShowDownload(System.Windows.Window window, string downloadurl, string downloadPath, string filename, string downloadinfo,string sha256 = "")
+        public static bool ShowInstallForge(System.Windows.Window window)
         {
             try
             {
                 window.Focus();
                 var dialog = Dialog.Show(string.Empty);
-                DownloadWindow download = new DownloadWindow(downloadurl, downloadPath, filename, downloadinfo,sha256);
+                InstallForgeDialog installforge = new InstallForgeDialog();
+                installforge.Owner = window;
+                installforge.ShowDialog();
+                window.Focus();
+                dialog.Close();
+                if (DownloadWindow.isStopDwn)
+                {
+                    return false;
+                }
+                else
+                {
+                    return true;
+                }
+            }
+            catch
+            {
+                return false;
+            }
+        }
+
+        public static bool ShowInstallForge(System.Windows.Window window, string downloadurl, string downloadPath, string filename, string downloadinfo, string sha256 = "")
+        {
+            try
+            {
+                window.Focus();
+                var dialog = Dialog.Show(string.Empty);
+                DownloadWindow download = new DownloadWindow(downloadurl, downloadPath, filename, downloadinfo, sha256);
                 download.Owner = window;
                 download.ShowDialog();
                 window.Focus();
