@@ -261,10 +261,19 @@ namespace MSL.pages
                 //Directory.SetCurrentDirectory(downloadServerBase);
                 Process process = new Process();
                 process.StartInfo.WorkingDirectory = downloadServerBase;
-                process.StartInfo.FileName = downloadServerJava;
-                process.StartInfo.Arguments = "-jar " + filename + " -installServer";
-                //process.StartInfo.Arguments = "-jar " + filename + " -mirror https://bmclapi2.bangbang93.com/maven/ -installServer";
+                process.StartInfo.FileName = "cmd";
+                if (downloadServerJava == "Java")
+                {
+                    process.StartInfo.Arguments = "/c java -jar " + filename + " -installServer";
+                }
+                else
+                {
+                    process.StartInfo.Arguments = @"/c """ + downloadServerJava +  @""" -jar " + filename + " -installServer";
+                }
+                
+                //process.StartInfo.Arguments = "-jar " + filename + " -installServer";
                 process.Start();
+                //process.StartInfo.Arguments = "-jar " + filename + " -mirror https://bmclapi2.bangbang93.com/maven/ -installServer";
                 //Directory.SetCurrentDirectory(AppDomain.CurrentDomain.BaseDirectory);
                 //检测安装成功与否
                 try
