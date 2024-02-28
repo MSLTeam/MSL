@@ -2,12 +2,14 @@
 using Newtonsoft.Json.Linq;
 using System;
 using System.Collections.Generic;
+using System.Diagnostics;
 using System.IO;
 using System.Linq;
 using System.Text;
 using System.Threading;
 using System.Threading.Tasks;
 using System.Windows;
+using System.Windows.Controls.Primitives;
 
 
 namespace MSL.controls
@@ -79,6 +81,7 @@ namespace MSL.controls
             JArray libraries = (JArray)versionlJobj["libraries"];//获取lib数组
             int libALLCount = libraries.Count + libraries2.Count;//总数
             int libCount = 0;//用于计数
+            
             foreach (JObject lib in libraries)//遍历数组，进行文件下载
             {
                 libCount++;
@@ -116,7 +119,7 @@ namespace MSL.controls
             }
             log_in("下载Forge运行Lib成功！");
             status_change("正在编译Forge···");
-            log_in("正在编译Forge···");
+            log_in("正在编译Forge···"); 
             //接下来开始编译咯~
             JArray processors = (JArray)installJobj["processors"]; //获取processors数组
             foreach (JObject processor in processors)
@@ -131,17 +134,70 @@ namespace MSL.controls
                     JArray classpath = (JArray)processor["classpath"];
                     foreach (string path in classpath.Values<string>())
                     {
+
                         buildarg = buildarg + libPath+ "/" +NameToPath(path) + ";";
                     }
                     buildarg = buildarg + @""" ";//结束cp处理
-                    buildarg = buildarg + "net.minecraftforge.installertools.ConsoleTool ";//主类
+                    if (buildarg.Contains("installertools"))//主类
+                    {
+                        buildarg = buildarg + "net.minecraftforge.installertools.ConsoleTool ";
+                    }
+                    else if(buildarg.Contains("ForgeAutoRenamingTool"))
+                    {
+                        buildarg = buildarg + "net.minecraftforge.fart.Main ";
+                    }
+                    else
+                    {
+                        buildarg = buildarg + "net.minecraftforge.binarypatcher.ConsoleTool ";
+                    }
+                    
                     //处理args
                     JArray args = (JArray)processor["args"];
                     foreach (string arg in args.Values<string>())
                     {
-                        buildarg = buildarg + @"""" + replaceStr(arg) + @""" ";
+                        if (arg.StartsWith("[") && arg.EndsWith("]")) //在[]中，表明要转换
+                        {
+                            buildarg = buildarg + @"""" + libPath + "\\" + replaceStr(NameToPath(arg)) + @""" ";
+                        }
+                        else
+                        {
+                            buildarg = buildarg + @"""" + replaceStr(arg) + @""" ";
+                        }
+                    
                     }
-                    MessageBox.Show(buildarg);
+                    log_in("启动参数：" + buildarg);
+                    //启动编译
+                    Process process = new Process();
+                    process.StartInfo.FileName = "java"; //java路径
+                    process.StartInfo.Arguments = buildarg;
+                    process.StartInfo.CreateNoWindow = true;
+                    process.StartInfo.WorkingDirectory= tempPath;
+                    process.StartInfo.UseShellExecute = false;
+                    process.StartInfo.RedirectStandardOutput = true;
+                    process.StartInfo.RedirectStandardError = true;
+
+                    process.OutputDataReceived += (sender, e) =>
+                    {
+                        if (!String.IsNullOrEmpty(e.Data))
+                        {
+                            log_in(e.Data);
+                        }
+                    };
+
+                    process.ErrorDataReceived += (sender, e) =>
+                    {
+                        if (!String.IsNullOrEmpty(e.Data))
+                        {
+                            log_in("Error: " + e.Data);
+                        }
+                    };
+
+                    process.Start();
+
+                    process.BeginOutputReadLine();
+                    process.BeginErrorReadLine();
+
+                    process.WaitForExit();
 
                 }
             } 
@@ -186,14 +242,15 @@ namespace MSL.controls
             str = str.Replace("{INSTALLER}", forgePath);
             str = str.Replace("{ROOT}", installPath);
             str = str.Replace("{MINECRAFT_JAR}", installJobj["serverJarPath"].ToString().Replace("{LIBRARY_DIR}", libPath).Replace("{MINECRAFT_VERSION}", installJobj["minecraft"].ToString()));
-            str = str.Replace("{MAPPINGS}", installJobj["data"]["MAPPINGS"]["server"].ToString());
-            str = str.Replace("{MC_UNPACKED}", installJobj["data"]["MC_UNPACKED"]["server"].ToString());
+            str = str.Replace("{MAPPINGS}",libPath + "\\" + NameToPath(installJobj["data"]["MAPPINGS"]["server"].ToString()));
+            str = str.Replace("{MC_UNPACKED}", libPath + "\\" + NameToPath(installJobj["data"]["MC_UNPACKED"]["server"].ToString()));
             str = str.Replace("{SIDE}", "server");
-            str = str.Replace("{MOJMAPS}", installJobj["data"]["MOJMAPS"]["server"].ToString());
-            str = str.Replace("{MERGED_MAPPINGS}", installJobj["data"]["MERGED_MAPPINGS"]["server"].ToString());
-            str = str.Replace("{MC_SRG}", installJobj["data"]["MC_SRG"]["server"].ToString());
-            str = str.Replace("{PATCHED}", installJobj["data"]["PATCHED"]["server"].ToString());
-            str = str.Replace("{BINPATCH}", installJobj["data"]["BINPATCH"]["server"].ToString());
+            str = str.Replace("{MOJMAPS}", libPath + "\\" + NameToPath(installJobj["data"]["MOJMAPS"]["server"].ToString()));
+            str = str.Replace("{MERGED_MAPPINGS}", libPath + "\\" + NameToPath(installJobj["data"]["MERGED_MAPPINGS"]["server"].ToString()));
+            str = str.Replace("{MC_SRG}", libPath + "\\" + NameToPath(installJobj["data"]["MC_SRG"]["server"].ToString()));
+            str = str.Replace("{PATCHED}", libPath + "\\" + NameToPath(installJobj["data"]["PATCHED"]["server"].ToString()));
+            str = str.Replace("{BINPATCH}", tempPath+"\\" + installJobj["data"]["BINPATCH"]["server"].ToString());
+          
             return str;
         }
 
@@ -215,6 +272,19 @@ namespace MSL.controls
         //路径转换函数，参考：https://rechalow.gitee.io/lmaml/FirstChapter/GetCpLibraries.html
         public string NameToPath(string name)
         {
+            string extentTag = "";
+
+            if (name.StartsWith("[") && name.EndsWith("]")) //部分包含在[]中，干掉
+            {
+                name = name.Substring(1, name.Length - 2);
+            }
+            if (name.Contains("@"))
+            {
+                string[] parts = name.Split('@');
+
+                name = parts[0]; //第一部分，按照原版处理
+                extentTag = parts[1]; //这里等下添加后缀
+            }
             List<string> c1 = new List<string>();
             List<string> c2 = new List<string>();
             List<string> all = new List<string>();
@@ -264,6 +334,10 @@ namespace MSL.controls
                     sb.Append(i);
                 }
 
+                if (extentTag != "")
+                {
+                    return sb.ToString().Replace(".jar","") + "." +extentTag;
+                }
                 return sb.ToString();
             }
             finally
