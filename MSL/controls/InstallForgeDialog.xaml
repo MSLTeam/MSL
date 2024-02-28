@@ -5,7 +5,7 @@
         xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
         xmlns:local="clr-namespace:MSL.controls"
         mc:Ignorable="d"
-        Title="InstallForgeDialog" Height="300" Width="500" ShowNonClientArea="False" xmlns:hc="https://handyorg.github.io/handycontrol"  WindowStartupLocation="CenterOwner" ResizeMode="NoResize"  ShowInTaskbar="False">
+        Title="InstallForgeDialog" Height="300" Width="600" ShowNonClientArea="False" xmlns:hc="https://handyorg.github.io/handycontrol"  WindowStartupLocation="CenterOwner" ResizeMode="NoResize"  ShowInTaskbar="False">
     <Grid>
         <Grid Background="{DynamicResource DialogBrush2}">
             <Grid.RowDefinitions>
@@ -14,7 +14,7 @@
                 <RowDefinition Height="auto"/>
             </Grid.RowDefinitions>
             <TextBlock Grid.Row="0" Foreground="{DynamicResource PrimaryTextBrush}" HorizontalAlignment="Center" Margin="15,15,0,0" TextWrapping="Wrap" Text="正在为你安装Forge···请稍等🌹" VerticalAlignment="Top" FontWeight="Bold" FontSize="16"/>
-            <hc:TextBox Grid.Row="1" Margin="15" x:Name="log" TextAlignment="Center"/>
+            <hc:TextBox Grid.Row="1" Margin="15" x:Name="log" TextAlignment="Center" TextWrapping="Wrap"/>
             <TextBlock Grid.Row="2" HorizontalAlignment="Center" Margin="15,0,0,15" TextWrapping="Wrap" Text="等待安装开始···" VerticalAlignment="Top" FontSize="16" x:Name="status"/>
         </Grid>
     </Grid>

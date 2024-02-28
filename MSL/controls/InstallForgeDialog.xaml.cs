@@ -1,9 +1,13 @@
 ﻿using ICSharpCode.SharpZipLib.Zip;
 using Newtonsoft.Json.Linq;
 using System;
+using System.Collections.Generic;
 using System.IO;
+using System.Linq;
+using System.Text;
 using System.Threading;
 using System.Threading.Tasks;
+using System.Windows;
 
 
 namespace MSL.controls
@@ -71,15 +75,19 @@ namespace MSL.controls
             status_change("正在下载Forge运行Lib···");
             log_in("正在下载Forge运行Lib···");
             var versionlJobj = GetJsonObj(tempPath + "/version.json");
+            JArray libraries2 = (JArray)installJobj["libraries"];//获取lib数组 这是install那个json
             JArray libraries = (JArray)versionlJobj["libraries"];//获取lib数组
+            int libALLCount = libraries.Count + libraries2.Count;//总数
+            int libCount = 0;//用于计数
             foreach (JObject lib in libraries)//遍历数组，进行文件下载
             {
-                string _dlurl= lib["downloads"]["artifact"]["url"].ToString();
+                libCount++;
+                string _dlurl= replaceStr(lib["downloads"]["artifact"]["url"].ToString());
                 string _savepath = libPath + "/" + lib["downloads"]["artifact"]["path"].ToString();
                 log_in("[LIB]正在下载："+ lib["downloads"]["artifact"]["path"].ToString());
                 Dispatcher.Invoke(() =>
                 {
-                    bool dwnDialog = DialogShow.ShowDownload(this, _dlurl, Path.GetDirectoryName(_savepath), Path.GetFileName(_savepath), "下载LIB中···");
+                    bool dwnDialog = DialogShow.ShowDownload(this, _dlurl, Path.GetDirectoryName(_savepath), Path.GetFileName(_savepath), "下载LIB("+ libCount + "/" + libALLCount+")中···");
                     if (!dwnDialog)
                     {
                         //下载失败，跑路了！
@@ -89,15 +97,15 @@ namespace MSL.controls
                 });
             }
             //2024.02.27 下午11：25 写的时候bmclapi炸了，导致被迫暂停，望周知（
-            JArray libraries2 = (JArray)installJobj["libraries"];//获取lib数组 这是install那个json
             foreach (JObject lib in libraries2)//遍历数组，进行文件下载
             {
-                string _dlurl = lib["downloads"]["artifact"]["url"].ToString();
+                libCount++;
+                string _dlurl = replaceStr(lib["downloads"]["artifact"]["url"].ToString());
                 string _savepath = libPath + "/" + lib["downloads"]["artifact"]["path"].ToString();
                 log_in("[LIB]正在下载：" + lib["downloads"]["artifact"]["path"].ToString());
                 Dispatcher.Invoke(() =>
                 {
-                    bool dwnDialog = DialogShow.ShowDownload(this, _dlurl, Path.GetDirectoryName(_savepath), Path.GetFileName(_savepath), "下载LIB中···");
+                    bool dwnDialog = DialogShow.ShowDownload(this, _dlurl, Path.GetDirectoryName(_savepath), Path.GetFileName(_savepath), "下载LIB(" + libCount + "/" + libALLCount + ")中···");
                     if (!dwnDialog)
                     {
                         //下载失败，跑路了！
@@ -106,6 +114,37 @@ namespace MSL.controls
                     }
                 });
             }
+            log_in("下载Forge运行Lib成功！");
+            status_change("正在编译Forge···");
+            log_in("正在编译Forge···");
+            //接下来开始编译咯~
+            JArray processors = (JArray)installJobj["processors"]; //获取processors数组
+            foreach (JObject processor in processors)
+            {
+                string buildarg;
+                JArray sides = (JArray)processor["sides"]; //获取sides数组
+                if (sides == null || sides.Values<string>().Contains("server"))
+                {
+                    buildarg = @"-cp """;
+                    //处理classpath
+                    buildarg = buildarg + libPath + "/" + NameToPath((string)processor["jar"]) + ";";
+                    JArray classpath = (JArray)processor["classpath"];
+                    foreach (string path in classpath.Values<string>())
+                    {
+                        buildarg = buildarg + libPath+ "/" +NameToPath(path) + ";";
+                    }
+                    buildarg = buildarg + @""" ";//结束cp处理
+                    buildarg = buildarg + "net.minecraftforge.installertools.ConsoleTool ";//主类
+                    //处理args
+                    JArray args = (JArray)processor["args"];
+                    foreach (string arg in args.Values<string>())
+                    {
+                        buildarg = buildarg + @"""" + replaceStr(arg) + @""" ";
+                    }
+                    MessageBox.Show(buildarg);
+
+                }
+            } 
         }
 
         void log_in(string logStr)
@@ -113,6 +152,7 @@ namespace MSL.controls
             Dispatcher.Invoke(() =>
             {
                 log.Text = log.Text + "\n" +logStr;
+                log.ScrollToEnd();
             });
         }
 
@@ -142,6 +182,18 @@ namespace MSL.controls
             //改成镜像源的部分
             str = str.Replace("https://maven.minecraftforge.net", "https://bmclapi2.bangbang93.com/maven");
             str = str.Replace("https://libraries.minecraft.net", "https://bmclapi2.bangbang93.com/maven");
+            //构建时候的变量
+            str = str.Replace("{INSTALLER}", forgePath);
+            str = str.Replace("{ROOT}", installPath);
+            str = str.Replace("{MINECRAFT_JAR}", installJobj["serverJarPath"].ToString().Replace("{LIBRARY_DIR}", libPath).Replace("{MINECRAFT_VERSION}", installJobj["minecraft"].ToString()));
+            str = str.Replace("{MAPPINGS}", installJobj["data"]["MAPPINGS"]["server"].ToString());
+            str = str.Replace("{MC_UNPACKED}", installJobj["data"]["MC_UNPACKED"]["server"].ToString());
+            str = str.Replace("{SIDE}", "server");
+            str = str.Replace("{MOJMAPS}", installJobj["data"]["MOJMAPS"]["server"].ToString());
+            str = str.Replace("{MERGED_MAPPINGS}", installJobj["data"]["MERGED_MAPPINGS"]["server"].ToString());
+            str = str.Replace("{MC_SRG}", installJobj["data"]["MC_SRG"]["server"].ToString());
+            str = str.Replace("{PATCHED}", installJobj["data"]["PATCHED"]["server"].ToString());
+            str = str.Replace("{BINPATCH}", installJobj["data"]["BINPATCH"]["server"].ToString());
             return str;
         }
 
@@ -159,6 +211,70 @@ namespace MSL.controls
                 return false;
             }
         }
+
+        //路径转换函数，参考：https://rechalow.gitee.io/lmaml/FirstChapter/GetCpLibraries.html
+        public string NameToPath(string name)
+        {
+            List<string> c1 = new List<string>();
+            List<string> c2 = new List<string>();
+            List<string> all = new List<string>();
+            StringBuilder sb = new StringBuilder();
+
+            try
+            {
+                string n1 = name.Substring(0, name.IndexOf(":"));
+                string n2 = name.Substring(name.IndexOf(":") + 1);
+
+                c1.AddRange(n1.Split('.'));
+                foreach (var i in c1)
+                {
+                    all.Add(i + "/");
+                }
+
+                c2.AddRange(n2.Split(':'));
+                for (int i = 0; i < c2.Count; i++)
+                {
+                    if (c2.Count >= 3)
+                    {
+                        if (i < c2.Count - 1)
+                        {
+                            all.Add(c2[i] + "/");
+                        }
+                    }
+                    else
+                    {
+                        all.Add(c2[i] + "/");
+                    }
+                }
+
+                for (int i = 0; i < c2.Count; i++)
+                {
+                    if (i < c2.Count - 1)
+                    {
+                        all.Add(c2[i] + "-");
+                    }
+                    else
+                    {
+                        all.Add(c2[i] + ".jar");
+                    }
+                }
+
+                foreach (var i in all)
+                {
+                    sb.Append(i);
+                }
+
+                return sb.ToString();
+            }
+            finally
+            {
+                c1 = null;
+                c2 = null;
+                all = null;
+                sb = null;
+            }
+        }
+
     }
 }
 
