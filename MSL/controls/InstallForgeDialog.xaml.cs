@@ -5,6 +5,8 @@ using System.Collections.Generic;
 using System.Diagnostics;
 using System.IO;
 using System.Linq;
+using System.Net;
+using System.Security.Cryptography;
 using System.Text;
 using System.Threading;
 using System.Threading.Tasks;
@@ -25,7 +27,8 @@ namespace MSL.controls
         public string installPath;
         public string tempPath;
         public string libPath;
-        public InstallForgeDialog(string forge,string downPath)
+        public string javaPath;
+        public InstallForgeDialog(string forge,string downPath,string java)
         {
             InitializeComponent();
             log_in("准备开始安装Forge···");
@@ -34,6 +37,7 @@ namespace MSL.controls
             installPath = downPath;
             tempPath = downPath + "/temp";
             libPath = downPath + "/libraries";
+            javaPath = java;
             Thread thread = new Thread(Install);//新建线程开始安装
             thread.Start();
         }
@@ -74,6 +78,44 @@ namespace MSL.controls
                 }
             });
             log_in("下载原版服务端核心成功！");
+            log_in("正在解压原版LIB！");
+            //解压原版服务端中的lib
+            if (!Directory.Exists(tempPath + "/vanilla"))
+            {
+                Directory.CreateDirectory(tempPath + "/vanilla");
+            }
+            bool result = ExtractJar(serverJarPath, tempPath + "/vanilla");
+            if (result)
+            {
+                try
+                {
+                    // 指定源文件夹和目标文件夹
+                    string sourceDirectory = Path.Combine(tempPath + "/vanilla", "META-INF", "libraries");
+                    string targetDirectory = installPath;
+
+                    // 确保目标文件夹存在
+                    Directory.CreateDirectory(targetDirectory);
+
+                    // 获取源文件夹中的所有文件
+                    string[] files = Directory.GetFiles(sourceDirectory);
+
+                    // 复制所有文件到目标文件夹
+                    foreach (string file in files)
+                    {
+                        string name = Path.GetFileName(file);
+                        string dest = Path.Combine(targetDirectory, name);
+                        File.Copy(file, dest);
+                    }
+                }
+                catch (Exception ex)
+                {
+                    log_in("原版LIB解压失败！" + ex);
+                    return ;
+                }
+            }
+            //复制shim jar（鬼知道什么版本加进来的哦！）
+            File.Copy(tempPath +  "/maven/"+ NameToPath(installJobj["path"].ToString()),installPath + "/" + Path.GetFileName(libPath + "/" + NameToPath(installJobj["path"].ToString())));
+            //下载运行库
             status_change("正在下载Forge运行Lib···");
             log_in("正在下载Forge运行Lib···");
             var versionlJobj = GetJsonObj(tempPath + "/version.json");
@@ -87,8 +129,13 @@ namespace MSL.controls
                 libCount++;
                 string _dlurl= replaceStr(lib["downloads"]["artifact"]["url"].ToString());
                 string _savepath = libPath + "/" + lib["downloads"]["artifact"]["path"].ToString();
+                string _sha1 = lib["downloads"]["artifact"]["sha1"].ToString();
                 log_in("[LIB]正在下载："+ lib["downloads"]["artifact"]["path"].ToString());
-                Dispatcher.Invoke(() =>
+
+                    bool dlStatus = DownloadFile(_dlurl, _savepath, _sha1);
+                status_change("正在下载Forge运行Lib···(" + libCount + "/" + libALLCount +")");
+
+                /*Dispatcher.Invoke(() =>
                 {
                     bool dwnDialog = DialogShow.ShowDownload(this, _dlurl, Path.GetDirectoryName(_savepath), Path.GetFileName(_savepath), "下载LIB("+ libCount + "/" + libALLCount+")中···");
                     if (!dwnDialog)
@@ -97,7 +144,7 @@ namespace MSL.controls
                         log_in(lib["downloads"]["artifact"]["path"].ToString() + "下载失败！安装失败！");
                         return;
                     }
-                });
+                }); */ //调用downloader的下载窗口太慢了！
             }
             //2024.02.27 下午11：25 写的时候bmclapi炸了，导致被迫暂停，望周知（
             foreach (JObject lib in libraries2)//遍历数组，进行文件下载
@@ -105,7 +152,28 @@ namespace MSL.controls
                 libCount++;
                 string _dlurl = replaceStr(lib["downloads"]["artifact"]["url"].ToString());
                 string _savepath = libPath + "/" + lib["downloads"]["artifact"]["path"].ToString();
+                string _sha1 = lib["downloads"]["artifact"]["sha1"].ToString();
                 log_in("[LIB]正在下载：" + lib["downloads"]["artifact"]["path"].ToString());
+                if (!_dlurl.Contains("mcp")) //mcp那个zip会用js redirect，所以只能用downloader，真神奇！
+                {
+                    bool dlStatus = DownloadFile(_dlurl, _savepath, _sha1);
+                    status_change("正在下载Forge运行Lib···(" + libCount + "/" + libALLCount + ")");
+                }
+                else
+                {
+                    Dispatcher.Invoke(() =>
+                    {
+                        status_change("正在下载Forge运行Lib···(" + libCount + "/" + libALLCount + ")");
+                        bool dwnDialog = DialogShow.ShowDownload(this, _dlurl, Path.GetDirectoryName(_savepath), Path.GetFileName(_savepath), "下载LIB(" + libCount + "/" + libALLCount + ")中···");
+                        if (!dwnDialog)
+                        {
+                            //下载失败，跑路了！
+                            log_in(lib["downloads"]["artifact"]["path"].ToString() + "下载失败！安装失败！");
+                            return;
+                        }
+                    });
+                }
+                /*
                 Dispatcher.Invoke(() =>
                 {
                     bool dwnDialog = DialogShow.ShowDownload(this, _dlurl, Path.GetDirectoryName(_savepath), Path.GetFileName(_savepath), "下载LIB(" + libCount + "/" + libALLCount + ")中···");
@@ -115,15 +183,18 @@ namespace MSL.controls
                         log_in(lib["downloads"]["artifact"]["path"].ToString() + "下载失败！安装失败！");
                         return;
                     }
-                });
-            }
+                }); */
+            } 
             log_in("下载Forge运行Lib成功！");
             status_change("正在编译Forge···");
-            log_in("正在编译Forge···"); 
+            log_in("正在编译Forge···");
+            string batData = "";
             //接下来开始编译咯~
             JArray processors = (JArray)installJobj["processors"]; //获取processors数组
+            int i = 0;
             foreach (JObject processor in processors)
             {
+                i++;
                 string buildarg;
                 JArray sides = (JArray)processor["sides"]; //获取sides数组
                 if (sides == null || sides.Values<string>().Contains("server"))
@@ -166,12 +237,23 @@ namespace MSL.controls
                     
                     }
                     log_in("启动参数：" + buildarg);
-                    //启动编译
+                    //启动编译,算了，不启动了，麻瓜
+                    if (javaPath == "Java")
+                    {
+                        batData = batData + "\n" + "java " + buildarg;
+                    }
+                    else
+                    {
+                        batData = batData + "\n" + @"""" + javaPath + @""" " + buildarg;
+                    }
+                    
+
+                    /*
                     Process process = new Process();
                     process.StartInfo.FileName = "java"; //java路径
                     process.StartInfo.Arguments = buildarg;
                     process.StartInfo.CreateNoWindow = true;
-                    process.StartInfo.WorkingDirectory= tempPath;
+                    process.StartInfo.WorkingDirectory= installPath;
                     process.StartInfo.UseShellExecute = false;
                     process.StartInfo.RedirectStandardOutput = true;
                     process.StartInfo.RedirectStandardError = true;
@@ -197,10 +279,27 @@ namespace MSL.controls
                     process.BeginOutputReadLine();
                     process.BeginErrorReadLine();
 
-                    process.WaitForExit();
+                    process.WaitForExit(); */ //麻瓜
 
                 }
-            } 
+            }
+            //输出并启动bat
+            using (StreamWriter sw = new StreamWriter(installPath +  "/install.bat"))
+            {
+                sw.WriteLine("@echo off");
+                sw.WriteLine(@"title ""MSL is compiling Forge""");
+                sw.WriteLine(batData);
+            }
+            Process process = new Process();
+            process.StartInfo.WorkingDirectory = installPath;
+            process.StartInfo.FileName = "cmd";
+            process.StartInfo.Arguments = "/c install.bat";
+            //由于未知原因，监听日志会假死（可能是日志太多了？），直接使用cmd窗口
+            process.Start();
+
+            process.WaitForExit();
+            log_in("安装结束！");
+            status_change("结束！");
         }
 
         void log_in(string logStr)
@@ -269,7 +368,7 @@ namespace MSL.controls
             }
         }
 
-        //路径转换函数，参考：https://rechalow.gitee.io/lmaml/FirstChapter/GetCpLibraries.html
+        //路径转换函数，参考：https://rechalow.gitee.io/lmaml/FirstChapter/GetCpLibraries.html 非常感谢！
         public string NameToPath(string name)
         {
             string extentTag = "";
@@ -347,6 +446,59 @@ namespace MSL.controls
                 all = null;
                 sb = null;
             }
+        }
+
+        //下面是有关下载的东东（由于小文件调用原有下载窗口特别慢，就不用了qaq）
+
+        private const int MaxRetryCount = 3; //这是最大重试次数
+
+        public bool DownloadFile(string url, string targetPath, string expectedSha1)
+        {
+            log_in("开始下载：" + url);
+            for (int i = 0; i < MaxRetryCount; i++)
+            {
+                try
+                {
+                    //检查下文件夹在不在
+                    string directory = Path.GetDirectoryName(targetPath);
+                    if (!Directory.Exists(directory))
+                    {
+                        Directory.CreateDirectory(directory);
+                    }
+
+                    //下载
+                    using (WebClient client = new WebClient())
+                    {
+                        client.Headers.Add("User-Agent", "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/58.0.3029.110 Safari/537");
+                        client.DownloadFile(url, targetPath);
+                    }
+
+                    //校验SHA1
+                    using (FileStream fs = new FileStream(targetPath, FileMode.Open))
+                    using (BufferedStream bs = new BufferedStream(fs))
+                    {
+                        using (SHA1Managed sha1 = new SHA1Managed())
+                        {
+                            byte[] hash = sha1.ComputeHash(bs);
+                            string formatted = BitConverter.ToString(hash).Replace("-", "").ToLowerInvariant();
+
+                            if (formatted == expectedSha1)
+                            {
+                                return true;
+                            }
+                        }
+                    }
+                }
+                catch (Exception err)
+                {
+                    //处理下载失败
+                    log_in("下载失败！" + err);
+                    continue;
+                }
+            }
+
+            //重试爆表了
+            return false;
         }
 
     }

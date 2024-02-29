@@ -61,13 +61,13 @@ namespace MSL.controls
             }
         }
 
-        public static bool ShowInstallForge(System.Windows.Window window,string forgePath,string downPath)
+        public static bool ShowInstallForge(System.Windows.Window window,string forgePath,string downPath,string java)
         {
             try
             {
                 window.Focus();
                 var dialog = Dialog.Show(string.Empty);
-                InstallForgeDialog installforge = new InstallForgeDialog(forgePath, downPath);
+                InstallForgeDialog installforge = new InstallForgeDialog(forgePath, downPath,java);
                 installforge.Owner = window;
                 installforge.ShowDialog();
                 window.Focus();
