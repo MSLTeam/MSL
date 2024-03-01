@@ -66,7 +66,7 @@ namespace MSL
                 {
                     File.WriteAllText(serverbase + @"\spigot.yml", item003.Text);
                 }
-                DialogShow.ShowMsg(this, "配置已成功保存，请重启服务器以使设置生效！", "提示");
+                Shows.ShowMsg(this, "配置已成功保存，请重启服务器以使设置生效！", "提示");
             }
         }
     }

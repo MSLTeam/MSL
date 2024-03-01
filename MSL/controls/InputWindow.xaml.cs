@@ -4,13 +4,13 @@ using System.Windows.Media.Animation;
 namespace MSL.controls
 {
     /// <summary>
-    /// MessageDialog.xaml 的交互逻辑
+    /// MessageWindow.xaml 的交互逻辑
     /// </summary>
-    public partial class InputDialog : HandyControl.Controls.Window
+    public partial class InputWindow : HandyControl.Controls.Window
     {
         public static bool _dialogReturn;
         public static string _textReturn;
-        public InputDialog(Window window, string dialogText, string textboxText,bool passwordMode=false)
+        public InputWindow(Window window, string dialogText, string textboxText,bool passwordMode=false)
         {
             InitializeComponent();
             this.MaxHeight = window.ActualHeight;

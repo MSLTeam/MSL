@@ -1,10 +1,9 @@
 ﻿using HandyControl.Controls;
 using HandyControl.Data;
-using System;
 
 namespace MSL.controls
 {
-    public class DialogShow
+    internal class Shows
     {
         public static bool ShowMsg(System.Windows.Window window, string dialogText, string dialogTitle, bool primaryBtnVisible = false, string closeText = "确定", string primaryText = "确定")
         {
@@ -12,12 +11,14 @@ namespace MSL.controls
             {
                 window.Focus();
                 var dialog = Dialog.Show(string.Empty);
-                MessageDialog messageDialog = new MessageDialog(window, dialogText, dialogTitle, primaryBtnVisible, closeText, primaryText);
-                messageDialog.Owner = window;
-                messageDialog.ShowDialog();
+                MessageWindow MessageWindow = new MessageWindow(window, dialogText, dialogTitle, primaryBtnVisible, closeText, primaryText)
+                {
+                    Owner = window
+                };
+                MessageWindow.ShowDialog();
                 window.Focus();
                 dialog.Close();
-                if (MessageDialog._dialogReturn)
+                if (MessageWindow._dialogReturn)
                 {
                     return true;
                 }
@@ -39,14 +40,16 @@ namespace MSL.controls
             {
                 window.Focus();
                 var dialog = Dialog.Show(string.Empty);
-                InputDialog inputDialog = new InputDialog(window, dialogText, textboxText,passwordMode);
-                inputDialog.Owner = window;
-                inputDialog.ShowDialog();
+                InputWindow InputWindow = new InputWindow(window, dialogText, textboxText, passwordMode)
+                {
+                    Owner = window
+                };
+                InputWindow.ShowDialog();
                 window.Focus();
                 dialog.Close();
-                if (InputDialog._dialogReturn)
+                if (InputWindow._dialogReturn)
                 {
-                    userInput = InputDialog._textReturn;
+                    userInput = InputWindow._textReturn;
                     return true;
                 }
                 else
@@ -54,7 +57,7 @@ namespace MSL.controls
                     return false;
                 }
             }
-            catch(Exception err)
+            catch
             {
                 
                 return false;
@@ -67,8 +70,10 @@ namespace MSL.controls
             {
                 window.Focus();
                 var dialog = Dialog.Show(string.Empty);
-                InstallForgeDialog installforge = new InstallForgeDialog(forgePath, downPath,java);
-                installforge.Owner = window;
+                InstallForgeDialog installforge = new InstallForgeDialog(forgePath, downPath, java)
+                {
+                    Owner = window
+                };
                 installforge.ShowDialog();
                 window.Focus();
                 dialog.Close();
@@ -87,7 +92,7 @@ namespace MSL.controls
             }
         }
 
-        public static bool ShowDownload(System.Windows.Window window, string downloadurl, string downloadPath, string filename, string downloadinfo, string sha256 = "")
+        public static bool ShowDownloader(System.Windows.Window window, string downloadurl, string downloadPath, string filename, string downloadinfo, string sha256 = "")
         {
             try
             {
@@ -107,9 +112,8 @@ namespace MSL.controls
                     return true;
                 }
             }
-            catch(Exception err)
+            catch
             {
-                //MessageBox.Show(err.ToString());
                 return false;
             }
         }
@@ -137,6 +141,37 @@ namespace MSL.controls
                 Message = msg,
                 ShowDateTime = showtime
             });
+        }
+    }
+
+    internal class ShowDialog
+    {
+        private Window window;
+        private Dialog dialog;
+        public void ShowTextDialog(Window _window, string text)
+        {
+            window = _window;
+            dialog = Dialog.Show(new TextDialog(text));
+        }
+        public void CloseTextDialog()
+        {
+            window.Focus();
+            dialog.Close();
+        }
+
+        public void ShowMsgDialog(Window _window, string text, string title)
+        {
+            window = _window;
+            MessageDialog msgDialog = new MessageDialog(_window, text, title);
+            msgDialog.CloseDialog += CloseMsgDialog;
+            dialog = Dialog.Show(msgDialog);
+
+        }
+        public void CloseMsgDialog()
+        {
+            
+            window.Focus();
+            dialog.Close();
         }
     }
 }

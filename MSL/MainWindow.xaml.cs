@@ -67,7 +67,7 @@ namespace MSL
                 Process.Start("https://www.mslmc.cn/eula.html");
                 Dispatcher.Invoke(() =>
                 {
-                    bool dialog = DialogShow.ShowMsg(this, "请阅读并同意MSL开服器使用协议：https://www.mslmc.cn/eula.html", "提示", true, "不同意", "同意");
+                    bool dialog = Shows.ShowMsg(this, "请阅读并同意MSL开服器使用协议：https://www.mslmc.cn/eula.html", "提示", true, "不同意", "同意");
                     if (!dialog)
                     {
                         //Logger.LogWarning("用户未同意使用协议，退出软件……");
@@ -88,13 +88,13 @@ namespace MSL
                     if (((int)((JObject)JsonConvert.DeserializeObject(Functions.Get("", out string sha256Exp2)))["status"]) != 200)
                     {
                         serverLink = "waheal.top";
-                        DialogShow.GrowlInfo("MSL主服务器连接超时（可能被DDos），已切换至备用服务器！");
+                        Shows.GrowlInfo("MSL主服务器连接超时（可能被DDos），已切换至备用服务器！");
                     }
                 }
                 catch
                 {
                     serverLink = "waheal.top";
-                    DialogShow.GrowlInfo("MSL主服务器连接超时（可能被DDos），已切换至备用服务器！");
+                    Shows.GrowlInfo("MSL主服务器连接超时（可能被DDos），已切换至备用服务器！");
                 }
             }
             catch
@@ -117,11 +117,12 @@ namespace MSL
                 Dispatcher.Invoke(() =>
                 {
                     //Logger.LogError("生成config.json文件失败，原因："+ex.Message);
-                    DialogShow.ShowMsg(this, "MSL在初始化加载过程中出现问题，请尝试用管理员身份运行MSL……\n错误代码：" + ex.Message, "错误");
+                    Shows.ShowMsg(this, "MSL在初始化加载过程中出现问题，请尝试用管理员身份运行MSL……\n错误代码：" + ex.Message, "错误");
                     Close();
                 });
             }
-
+            
+            //showDialog.CloseMsgDialog();
             //Logger.LogInfo("开始载入配置文件……");
             JObject jsonObject = null;
             try
@@ -134,7 +135,7 @@ namespace MSL
                 //Logger.LogError("读取config.json失败！尝试重新载入……");
                 Dispatcher.Invoke(() =>
                 {
-                    DialogShow.ShowMsg(this, "MSL在加载配置文件时出现错误，将进行重试，若点击确定后软件突然闪退，请尝试使用管理员身份运行或将此问题报告给作者！\n错误代码：" + ex.Message, "错误");
+                    Shows.ShowMsg(this, "MSL在加载配置文件时出现错误，将进行重试，若点击确定后软件突然闪退，请尝试使用管理员身份运行或将此问题报告给作者！\n错误代码：" + ex.Message, "错误");
                 });
                 File.WriteAllText(@"MSL\config.json", string.Format("{{{0}}}", "\n"));
                 jsonObject = JObject.Parse(File.ReadAllText(@"MSL\config.json", Encoding.UTF8));
@@ -314,7 +315,7 @@ namespace MSL
             catch (Exception ex)
             {
                 //Logger.LogError("读取配置时出现错误！错误代码："+ex.Message);
-                DialogShow.GrowlErr("MSL在加载配置文件时出现错误，此报错可能不影响软件运行，但还是建议您将其反馈给作者！\n错误代码：" + ex.Message);
+                Shows.GrowlErr("MSL在加载配置文件时出现错误，此报错可能不影响软件运行，但还是建议您将其反馈给作者！\n错误代码：" + ex.Message);
             }
 
             //更新
@@ -352,7 +353,7 @@ namespace MSL
                             //Logger.LogInfo("自动更新功能已打开，更新新版本……");
                             UpdateApp(aaa);
                         }
-                        bool dialog = DialogShow.ShowMsg(this, "发现新版本，版本号为：" + aaa + "，是否进行更新？\n更新日志：\n" + updatelog, "更新", true, "取消");
+                        bool dialog = Shows.ShowMsg(this, "发现新版本，版本号为：" + aaa + "，是否进行更新？\n更新日志：\n" + updatelog, "更新", true, "取消");
                         if (dialog == true)
                         {
                             //Logger.LogInfo("更新新版本……");
@@ -361,23 +362,23 @@ namespace MSL
                         else
                         {
                             //Logger.LogInfo("用户拒绝更新！");
-                            DialogShow.GrowlErr("您拒绝了更新新版本，若在此版本中遇到bug，请勿报告给作者！");
+                            Shows.GrowlErr("您拒绝了更新新版本，若在此版本中遇到bug，请勿报告给作者！");
                         }
                     });
                 }
                 else if (newVersion < version)
                 {
-                    DialogShow.GrowlInfo("当前版本高于正式版本，若使用中遇到BUG，请及时反馈！");
+                    Shows.GrowlInfo("当前版本高于正式版本，若使用中遇到BUG，请及时反馈！");
                 }
                 else
                 {
-                    DialogShow.GrowlSuccess("您使用的开服器已是最新版本！");
+                    Shows.GrowlSuccess("您使用的开服器已是最新版本！");
                 }
             }
             catch
             {
                 //Logger.LogError("检测更新失败！");
-                DialogShow.GrowlErr("检查更新失败！");
+                Shows.GrowlErr("检查更新失败！");
             }
             //获取电脑内存
             try
@@ -405,7 +406,7 @@ namespace MSL
                 else if (jsonObject["autoOpenServer"].ToString() != "False")
                 {
                     string servers = jsonObject["autoOpenServer"].ToString();
-                    DialogShow.GrowlInfo("正在为你自动打开相应服务器……");
+                    Shows.GrowlInfo("正在为你自动打开相应服务器……");
                     while (servers != "")
                     {
                         int aserver = servers.IndexOf(",");
@@ -434,7 +435,7 @@ namespace MSL
                 }
                 else if (jsonObject["autoOpenFrpc"].ToString() == "True")
                 {
-                    DialogShow.GrowlInfo("正在为你自动打开内网映射……");
+                    Shows.GrowlInfo("正在为你自动打开内网映射……");
                     AutoOpenFrpc();
                 }
                 //Logger.LogInfo("读取自动开启（内网映射）配置成功！");
@@ -463,7 +464,7 @@ namespace MSL
             //int IndexofA1 = pageHtml.IndexOf(strtempa1);
             //string Ru1 = pageHtml.Substring(IndexofA1 + 2);
             string aaa1 = Functions.Get("download/update", out string sha256Exp2);
-            DialogShow.ShowDownload(this, aaa1, AppDomain.CurrentDomain.BaseDirectory, "MSL" + aaa + ".exe", "下载新版本中……");
+            Shows.ShowDownloader(this, aaa1, AppDomain.CurrentDomain.BaseDirectory, "MSL" + aaa + ".exe", "下载新版本中……");
             if (File.Exists("MSL" + aaa + ".exe"))
             {
                 string oldExePath = Process.GetCurrentProcess().MainModule.ModuleName;
@@ -532,7 +533,7 @@ namespace MSL
                 if (ServerList.RunningServerIDs.Contains("_1") || FrpcPage.FRPCMD.HasExited == false || OnlinePage.FRPCMD.HasExited == false)
                 {
                     //Logger.LogWarning("服务器、内网映射或联机功能正在运行中！弹出对话框询问是否关闭……");
-                    bool dialog = DialogShow.ShowMsg(this, "您的服务器、内网映射或联机功能正在运行中，关闭软件可能会让服务器进程在后台一直运行并占用资源！确定要继续关闭吗？\n注：如果想隐藏主窗口的话，请前往设置打开托盘图标", "警告", true, "取消");
+                    bool dialog = Shows.ShowMsg(this, "您的服务器、内网映射或联机功能正在运行中，关闭软件可能会让服务器进程在后台一直运行并占用资源！确定要继续关闭吗？\n注：如果想隐藏主窗口的话，请前往设置打开托盘图标", "警告", true, "取消");
                     if (dialog == true)
                     {
                         return true;
@@ -555,7 +556,7 @@ namespace MSL
                     if (FrpcPage.FRPCMD.HasExited == false || OnlinePage.FRPCMD.HasExited == false)
                     {
                         //Logger.LogWarning("内网映射或联机功能正在运行中！弹出对话框询问是否关闭……");
-                        bool dialog = DialogShow.ShowMsg(this, "内网映射或联机功能正在运行中，关闭软件可能会让内网映射进程在后台一直运行并占用资源！确定要继续关闭吗？\n如果想隐藏主窗口的话，请前往设置打开托盘图标", "警告", true, "取消");
+                        bool dialog = Shows.ShowMsg(this, "内网映射或联机功能正在运行中，关闭软件可能会让内网映射进程在后台一直运行并占用资源！确定要继续关闭吗？\n如果想隐藏主窗口的话，请前往设置打开托盘图标", "警告", true, "取消");
                         if (dialog == true)
                         {
                             return true;
@@ -577,7 +578,7 @@ namespace MSL
                         if (OnlinePage.FRPCMD.HasExited == false)
                         {
                             //Logger.LogWarning("联机功能正在运行中！弹出对话框询问是否关闭……");
-                            bool dialog = DialogShow.ShowMsg(this, "联机功能正在运行中，关闭软件可能会让内网映射进程在后台一直运行并占用资源！确定要继续关闭吗？\n如果想隐藏主窗口的话，请前往设置打开托盘图标", "警告", true, "取消");
+                            bool dialog = Shows.ShowMsg(this, "联机功能正在运行中，关闭软件可能会让内网映射进程在后台一直运行并占用资源！确定要继续关闭吗？\n如果想隐藏主窗口的话，请前往设置打开托盘图标", "警告", true, "取消");
                             if (dialog == true)
                             {
                                 return true;

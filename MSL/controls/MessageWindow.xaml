@@ -1,4 +1,4 @@
-﻿<hc:Window x:Class="MSL.controls.InputDialog"
+﻿<hc:Window x:Class="MSL.controls.MessageWindow"
              xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
              xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
              xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006" 
@@ -10,13 +10,13 @@
     <Grid x:Name="MainGrid" Background="{DynamicResource DialogBrush1}">
         <Grid.RowDefinitions>
             <RowDefinition/>
-            <RowDefinition/>
+            <RowDefinition Height="70"/>
         </Grid.RowDefinitions>
         <Grid Margin="25" Grid.Row="0">
-            <TextBlock Foreground="{DynamicResource PrimaryTextBrush}" Text="输入" FontSize="24" VerticalAlignment="Top" HorizontalAlignment="Left"/>
-            <TextBlock x:Name="bodyText" Foreground="{DynamicResource PrimaryTextBrush}" Text="BodyText" TextWrapping="Wrap"  FontSize="14" HorizontalAlignment="Left" VerticalAlignment="Bottom" Margin="0,45,0,40"/>
-            <hc:PasswordBox x:Name="passBox" MinWidth="200" VerticalAlignment="Bottom" ShowEyeButton="True" KeyUp="passBox_KeyUp" />
-            <TextBox x:Name="textBox" MinWidth="200" VerticalAlignment="Bottom" KeyUp="textBox_KeyUp" />
+            <TextBlock x:Name="titleText" Foreground="{DynamicResource PrimaryTextBrush}" TextWrapping="NoWrap" Text="TitleText" FontSize="24" VerticalAlignment="Top" HorizontalAlignment="Left"/>
+            <ScrollViewer Margin="0,45,0,0">
+                <TextBlock x:Name="bodyText" Foreground="{DynamicResource PrimaryTextBrush}" TextWrapping="Wrap" Text="BodyText" FontSize="14" HorizontalAlignment="Left" VerticalAlignment="Top"/>
+            </ScrollViewer>
         </Grid>
         <Grid Grid.Row="1" Background="{DynamicResource DialogBrush2}">
             <Grid.ColumnDefinitions>

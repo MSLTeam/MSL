@@ -77,7 +77,7 @@
                     <ToggleButton x:Name="autoSetTheme" Margin="100,35,0,0" Style="{StaticResource ToggleButtonSwitch}" HorizontalAlignment="Left" VerticalAlignment="Top" Click="autoSetTheme_Click" IsChecked="True" Content="使用系统样式" Height="25"/>
                     <ToggleButton x:Name="darkTheme" Margin="250,35,0,0" Style="{StaticResource ToggleButtonSwitch}" HorizontalAlignment="Left" VerticalAlignment="Top" Click="darkTheme_Click" IsEnabled="False" Content="暗色模式" Height="25"/>
                     <ToggleButton x:Name="semitransparentTitle" Margin="380,35,0,0" Style="{StaticResource ToggleButtonSwitch}" HorizontalAlignment="Left" VerticalAlignment="Top" Content="半透明标题栏" Height="25" Click="semitransparentTitle_Click"/>
-                    <RadioButton Name="BlueSkinBtn" Margin="10,75,0,0" Content="蓝色皮肤(默认)" Click="ChangeSkin" Foreground="Blue"/>
+                    <RadioButton Name="BlueSkinBtn" Margin="10,75,0,0" Content="蓝色皮肤(默认)" Click="ChangeSkin" Foreground="#0078D4"/>
                     <RadioButton Name="RedSkinBtn" Margin="130,75,0,0"  Content="红色皮肤" Checked="ChangeSkin" Foreground="Red"/>
                     <RadioButton Name="GreenSkinBtn" Margin="230,75,0,0" Content="绿色皮肤" Checked="ChangeSkin" Foreground="Green"/>
                     <RadioButton Name="OrangeSkinBtn" Margin="330,75,0,0" Content="橙色皮肤" Checked="ChangeSkin" Foreground="Orange"/>

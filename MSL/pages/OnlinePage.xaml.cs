@@ -51,7 +51,9 @@ namespace MSL.pages
             else
             {
                 var mainwindow = (MainWindow)Window.GetWindow(this);
-                DialogShow.ShowMsg(mainwindow, "注意：此功能目前不稳定，无法穿透所有类型的NAT，若联机失败，请尝试开服务器并使用内网映射联机！\r\n该功能可能需要正版账户，若无法联机，请从网络上寻找解决方法或尝试开服务器并使用内网映射联机！", "警告");
+                //Shows.ShowMsg(mainwindow, "注意：此功能目前不稳定，无法穿透所有类型的NAT，若联机失败，请尝试开服务器并使用内网映射联机！\r\n该功能可能需要正版账户，若无法联机，请从网络上寻找解决方法或尝试开服务器并使用内网映射联机！", "警告");
+                ShowDialog showDialog = new ShowDialog();
+                showDialog.ShowMsgDialog(mainwindow, "注意：此功能目前不稳定，无法穿透所有类型的NAT，若联机失败，请尝试开服务器并使用内网映射联机！\r\n该功能可能需要正版账户，若无法联机，请从网络上寻找解决方法或尝试开服务器并使用内网映射联机！", "警告");
                 masterExp.IsExpanded = true;
             }
             Thread thread = new Thread(GetFrpcInfo);
@@ -145,7 +147,7 @@ namespace MSL.pages
                     FRPCMD.Kill();
                     Thread.Sleep(200);
                     visiterExp.IsEnabled = true;
-                    DialogShow.GrowlSuccess("关闭成功！");
+                    Shows.GrowlSuccess("关闭成功！");
                     FRPCMD.CancelOutputRead();
                     FRPCMD.OutputDataReceived -= new DataReceivedEventHandler(p_OutputDataReceived);
                     createRoom.Content = "点击创建房间";
@@ -191,7 +193,7 @@ namespace MSL.pages
                     FRPCMD.Kill();
                     Thread.Sleep(200);
                     masterExp.IsEnabled = true;
-                    DialogShow.GrowlSuccess("关闭成功！");
+                    Shows.GrowlSuccess("关闭成功！");
                     FRPCMD.CancelOutputRead();
                     FRPCMD.OutputDataReceived -= new DataReceivedEventHandler(p_OutputDataReceived);
                     joinRoom.Content = "点击加入房间";
@@ -240,7 +242,7 @@ namespace MSL.pages
                         {
                             RefreshLink();
                             var mwindow = (MainWindow)Window.GetWindow(this);
-                            DialogShow.ShowDownload(mwindow, _dnfrpc, "MSL", "frpc.exe", "下载内网映射中...");
+                            Shows.ShowDownloader(mwindow, _dnfrpc, "MSL", "frpc.exe", "下载内网映射中...");
                             _dnfrpc = "";
                         }
                     }
@@ -248,7 +250,7 @@ namespace MSL.pages
                     {
                         RefreshLink();
                         var mwindow = (MainWindow)Window.GetWindow(this);
-                        DialogShow.ShowDownload(mwindow, _dnfrpc, "MSL", "frpc.exe", "更新内网映射中...");
+                        Shows.ShowDownloader(mwindow, _dnfrpc, "MSL", "frpc.exe", "更新内网映射中...");
                         _dnfrpc = "";
                         JObject jobject3 = JObject.Parse(File.ReadAllText("MSL\\config.json", Encoding.UTF8));
                         jobject3["frpcversion"] = "6";
@@ -259,7 +261,7 @@ namespace MSL.pages
                     {
                         RefreshLink();
                         var mwindow = (MainWindow)Window.GetWindow(this);
-                        DialogShow.ShowDownload(mwindow, _dnfrpc, "MSL", "frpc.exe", "下载内网映射中...");
+                        Shows.ShowDownloader(mwindow, _dnfrpc, "MSL", "frpc.exe", "下载内网映射中...");
                         _dnfrpc = "";
                     }
                 }
@@ -323,7 +325,7 @@ namespace MSL.pages
             {
                 if (msg.IndexOf("failed") + 1 != 0)
                 {
-                    DialogShow.GrowlErr("桥接失败！");
+                    Shows.GrowlErr("桥接失败！");
                     try
                     {
                         FRPCMD.Kill();
@@ -362,12 +364,12 @@ namespace MSL.pages
                 if (msg.IndexOf("success") + 1 != 0)
                 {
                     frpcOutlog.Text = frpcOutlog.Text + "桥接成功！\n";
-                    DialogShow.GrowlSuccess("桥接完成！");
+                    Shows.GrowlSuccess("桥接完成！");
                 }
                 if (msg.IndexOf("error") + 1 != 0)
                 {
                     frpcOutlog.Text = frpcOutlog.Text + "桥接失败！\n";
-                    DialogShow.GrowlErr("桥接失败！");
+                    Shows.GrowlErr("桥接失败！");
                     try
                     {
                         FRPCMD.Kill();

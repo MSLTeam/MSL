@@ -67,7 +67,7 @@ namespace MSL.pages.frpProviders
                 bool input_account = false;
                 Dispatcher.Invoke(() =>
                 {
-                    input_account = DialogShow.ShowInput(window, "请输入OpenFrp的账户名/邮箱", out APIControl.userAccount);
+                    input_account = Shows.ShowInput(window, "请输入OpenFrp的账户名/邮箱", out APIControl.userAccount);
                 });
 
                 if (input_account)
@@ -75,7 +75,7 @@ namespace MSL.pages.frpProviders
                     bool input_paswd = false;
                     Dispatcher.Invoke(() =>
                     {
-                        input_paswd = DialogShow.ShowInput(window, "请输入" + APIControl.userAccount + "的密码", out APIControl.userPass, "", true);
+                        input_paswd = Shows.ShowInput(window, "请输入" + APIControl.userAccount + "的密码", out APIControl.userPass, "", true);
                     });
 
                     if (!input_paswd)
@@ -123,7 +123,7 @@ namespace MSL.pages.frpProviders
             {
                 Dispatcher.Invoke(() =>
                 {
-                    DialogShow.ShowMsg(window, "登录失败！请检查您的用户名或密码是否正确！\n"+ usr_info, "错误！");
+                    Shows.ShowMsg(window, "登录失败！请检查您的用户名或密码是否正确！\n"+ usr_info, "错误！");
                     //APIControl.sessionId = string.Empty;
                     APIControl.authId = string.Empty;
                     APIControl.userAccount = string.Empty;
@@ -182,7 +182,7 @@ namespace MSL.pages.frpProviders
                     {
                         Dispatcher.Invoke(() =>
                         {
-                            DialogShow.ShowMsg(window, "你的账户看起来一条隧道也没有……", "提示");
+                            Shows.ShowMsg(window, "你的账户看起来一条隧道也没有……", "提示");
                         });
                     }
                 }
@@ -238,13 +238,13 @@ namespace MSL.pages.frpProviders
             Window window = Window.GetWindow(this);
             if (toggleProxies.SelectedIndex != 0 || serversList.SelectedIndex == -1)
             {
-                DialogShow.ShowMsg(window, "请确保您选择了一个隧道", "错误");
+                Shows.ShowMsg(window, "请确保您选择了一个隧道", "错误");
                 toggleProxies.SelectedIndex = 0;
                 return;
             }
             if (portBox.Text == "")
             {
-                DialogShow.ShowMsg(window, "请确保内网端口不为空", "错误");
+                Shows.ShowMsg(window, "请确保内网端口不为空", "错误");
                 return;
             }
             
@@ -261,7 +261,7 @@ namespace MSL.pages.frpProviders
             jobject["frpcServer"] = "1";
             string convertString = Convert.ToString(jobject);
             File.WriteAllText(@"MSL\config.json", convertString, Encoding.UTF8);
-            DialogShow.ShowMsg(window, "映射配置成功，请您点击“启动内网映射”以启动映射！", "信息", false, "确定");
+            Shows.ShowMsg(window, "映射配置成功，请您点击“启动内网映射”以启动映射！", "信息", false, "确定");
             window.Close();
 
         }
@@ -300,7 +300,7 @@ namespace MSL.pages.frpProviders
             APIControl apiControl = new APIControl();
             apiControl.UserSign(Window.GetWindow(this));
             */
-            DialogShow.ShowMsg(Window.GetWindow(this), "目前暂不支持在软件内签到，请前往OpenFrp官网进行签到！","提示");
+            Shows.ShowMsg(Window.GetWindow(this), "目前暂不支持在软件内签到，请前往OpenFrp官网进行签到！","提示");
             Process.Start("https://www.openfrp.net/");
         }
 
@@ -311,7 +311,7 @@ namespace MSL.pages.frpProviders
             {
                 if (toggleProxies.SelectedIndex != 1 || serversList.SelectedIndex == -1)
                 {
-                    DialogShow.ShowMsg(window, "请先选择一个节点", "错误");
+                    Shows.ShowMsg(window, "请先选择一个节点", "错误");
                     toggleProxies.SelectedIndex = 1;
                     return;
                 }
@@ -333,22 +333,22 @@ namespace MSL.pages.frpProviders
                 if (selected_node != null) selected_node_id = Convert.ToInt16(nodelist[selected_node]);
                 else
                 {
-                    DialogShow.ShowMsg(window, "请先选择一个节点", "错误");
+                    Shows.ShowMsg(window, "请先选择一个节点", "错误");
                     return;
                 }
-                bool input_name = DialogShow.ShowInput(window, "隧道名称(不支持中文)", out string proxy_name);
+                bool input_name = Shows.ShowInput(window, "隧道名称(不支持中文)", out string proxy_name);
                 if (input_name)
                 {
                     string returnMsg = "";
                     bool createReturn = control.CreateProxy(type, portBox.Text, zip, selected_node_id, remotePortBox.Text, proxy_name,out returnMsg);
                     if (createReturn)
                     {
-                        DialogShow.ShowMsg(window, "隧道创建成功！", "提示");
+                        Shows.ShowMsg(window, "隧道创建成功！", "提示");
                         toggleProxies.SelectedIndex = 0;
                     }
                     else
                     {
-                        DialogShow.ShowMsg(window, "创建失败！"+returnMsg, "错误");
+                        Shows.ShowMsg(window, "创建失败！"+returnMsg, "错误");
                     }
                 }
                 addProxieBtn.IsEnabled = true;
@@ -360,7 +360,7 @@ namespace MSL.pages.frpProviders
             }
             catch (Exception ex)
             {
-                DialogShow.ShowMsg(window, "出现错误！" + ex.Message, "错误");
+                Shows.ShowMsg(window, "出现错误！" + ex.Message, "错误");
             }
         }
 
@@ -408,7 +408,7 @@ namespace MSL.pages.frpProviders
             {
                 if (toggleProxies.SelectedIndex != 0 || serversList.SelectedIndex == -1)
                 {
-                    DialogShow.ShowMsg(window, "请先选择一个隧道", "错误");
+                    Shows.ShowMsg(window, "请先选择一个隧道", "错误");
                     toggleProxies.SelectedIndex = 0;
                     return;
                 }
@@ -425,11 +425,11 @@ namespace MSL.pages.frpProviders
                 bool delReturn = await Task.Run(() => control.DeleteProxy(id, out returnMsg));
                 if(delReturn)
                 {
-                    DialogShow.ShowMsg(window, "删除成功！", "提示");
+                    Shows.ShowMsg(window, "删除成功！", "提示");
                 }
                 else
                 {
-                    DialogShow.ShowMsg(window, "删除失败！"+returnMsg, "错误");
+                    Shows.ShowMsg(window, "删除失败！"+returnMsg, "错误");
                 }
                 Dictionary<string, string> process = control.GetUserNodes();
                 if (process.Count != 0)
@@ -448,7 +448,7 @@ namespace MSL.pages.frpProviders
             }
             catch(Exception ex)
             {
-                DialogShow.ShowMsg(window, "出现错误！"+ex.Message, "错误");
+                Shows.ShowMsg(window, "出现错误！"+ex.Message, "错误");
             }
         }
 
@@ -464,7 +464,7 @@ namespace MSL.pages.frpProviders
                 Window window = Window.GetWindow(this);
                 if (toggleProxies.SelectedIndex != 1 || serversList.SelectedIndex == -1)
                 {
-                    DialogShow.ShowMsg(window, "请先选择一个节点", "错误");
+                    Shows.ShowMsg(window, "请先选择一个节点", "错误");
                     toggleProxies.SelectedIndex = 1;
                     return;
                 }
@@ -474,7 +474,7 @@ namespace MSL.pages.frpProviders
                 if (selected_node != null) selected_node_id = Convert.ToInt16(nodelist[selected_node]);
                 else
                 {
-                    DialogShow.ShowMsg(window, "请先选择一个节点", "错误");
+                    Shows.ShowMsg(window, "请先选择一个节点", "错误");
                     return;
                 }
                 foreach (var node in jArray)

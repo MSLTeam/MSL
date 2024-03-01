@@ -6,16 +6,10 @@ using System.IO;
 using System.Net;
 using System.Text;
 using System.Text.RegularExpressions;
-using System.Windows;
-using Windows.UI.ViewManagement;
-using System.Net.Mime;
-using System.Security.Policy;
 using System.Net.Http;
 using System.Threading.Tasks;
-using System.Drawing.Drawing2D;
 using System.Diagnostics;
 using System.Linq;
-using HandyControl.Controls;
 
 namespace MSL.controls
 {
@@ -243,113 +237,6 @@ namespace MSL.controls
             }
         }
 
-        /*
-
-        public static List<string> CheckJava(bool isDeepCheck = false)
-        {
-            if (isDeepCheck)
-            {
-                DriveInfo[] drives = DriveInfo.GetDrives();
-                List<string> strings = new List<string>();
-                foreach (DriveInfo drive in drives)
-                {
-                    string driveLetter = drive.Name.Substring(0, 1);
-                    string javaPath = string.Format(@"{0}:\", driveLetter);
-                    if (Directory.Exists(javaPath))
-                    {
-                        string[] directories = Directory.GetDirectories(javaPath);
-                        foreach (string directory in directories)
-                        {
-                            string jvPath = CheckJavaDirectory(directory);
-                            if (jvPath != null)
-                            {
-                                strings.Add(jvPath);
-                            }
-                        }
-                        string[] files = Directory.GetFiles(javaPath, "release", SearchOption.TopDirectoryOnly);
-                        foreach (string file in files)
-                        {
-                            string jvPath = CheckJavaRelease(file);
-                            if (jvPath != null)
-                            {
-                                strings.Add(jvPath);
-                            }
-                        }
-                    }
-                }
-                return strings;
-            }
-            else
-            {
-                string[] javaPaths = new string[]
-                {
-                    @"Program Files\Java",
-                    @"Program Files (x86)\Java",
-                    @"Java"
-                };
-                DriveInfo[] drives = DriveInfo.GetDrives();
-                List<string> strings = new List<string>();
-                foreach (DriveInfo drive in drives)
-                {
-                    string driveLetter = drive.Name.Substring(0, 1);
-                    foreach (string _javaPath in javaPaths)
-                    {
-                        string javaPath = string.Format(@"{0}:\{1}", driveLetter, _javaPath);
-                        if (Directory.Exists(javaPath))
-                        {
-                            string[] directories = Directory.GetDirectories(javaPath);
-                            foreach (string directory in directories)
-                            {
-                                string jvPath = CheckJavaDirectory(directory);
-                                if (jvPath != null)
-                                {
-                                    strings.Add(jvPath);
-                                }
-                            }
-                            string[] files = Directory.GetFiles(javaPath, "release", SearchOption.TopDirectoryOnly);
-                            foreach (string file in files)
-                            {
-                                string jvPath = CheckJavaRelease(file);
-                                if (jvPath != null)
-                                {
-                                    strings.Add(jvPath);
-                                }
-                            }
-                        }
-                    }
-                }
-                return strings;
-            }
-        }
-        private static string CheckJavaDirectory(string directory)
-        {
-            try
-            {
-                string[] files = Directory.GetFiles(directory, "release", SearchOption.TopDirectoryOnly);
-                foreach (string file in files)
-                {
-                    return CheckJavaRelease(file);
-                }
-                return null;
-            }
-            catch
-            {
-                return null;
-            }
-        }
-        private static string CheckJavaRelease(string releaseFile)
-        {
-            string releaseContent = File.ReadAllText(releaseFile);
-            Match match = Regex.Match(releaseContent, @"JAVA_VERSION=""([\d\._a-zA-Z]+)""");
-            if (match.Success)
-            {
-                string javaVersion = match.Groups[1].Value;
-                return "Java" + javaVersion + ":" + Path.GetDirectoryName(releaseFile) + "\\bin\\java.exe";
-            }
-            return null;
-        }
-        */
-
         public static List<string> CheckJava(bool isDeepCheck = false)
         {
             // 预定的文件夹
@@ -476,7 +363,7 @@ namespace MSL.controls
 
     #region OpenFrp Api
 
-    class CreateProxy
+    partial class CreateProxy
     {
         public string session { get; set; }
         public int node_id { get; set; }
@@ -593,7 +480,7 @@ namespace MSL.controls
                         using (var reader = new StreamReader(errorResponse.GetResponseStream()))
                         {
                             string error = reader.ReadToEnd();
-                            DialogShow.ShowMsg(window, error, "获取用户信息失败");
+                            Shows.ShowMsg(window, error, "获取用户信息失败");
                         }
                     }
                 }
@@ -621,23 +508,23 @@ namespace MSL.controls
             }
             catch
             {
-                DialogShow.ShowMsg(window, "签到失败！请登录OpenFrp官网进行签到！", "错误");
+                Shows.ShowMsg(window, "签到失败！请登录OpenFrp官网进行签到！", "错误");
                 return;
             }
             try
             {
                 if ((bool)JObject.Parse(responseMessage)["flag"] == true && JObject.Parse(responseMessage)["msg"].ToString() == "OK")
                 {
-                    DialogShow.ShowMsg(window, JObject.Parse(responseMessage)["data"].ToString(), "签到成功");
+                    Shows.ShowMsg(window, JObject.Parse(responseMessage)["data"].ToString(), "签到成功");
                 }
                 else
                 {
-                    DialogShow.ShowMsg(window, "签到失败", "签到失败");
+                    Shows.ShowMsg(window, "签到失败", "签到失败");
                 }
             }
             catch (Exception ex)
             {
-                DialogShow.ShowMsg(window, "签到失败,产生的错误:\n" + ex.Message, "签到失败");
+                Shows.ShowMsg(window, "签到失败,产生的错误:\n" + ex.Message, "签到失败");
             }
         }
 

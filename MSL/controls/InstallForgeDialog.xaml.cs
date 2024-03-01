@@ -69,7 +69,7 @@ namespace MSL.controls
             string vanillaUrl = Functions.Get("download/server/vanilla/"+ installJobj["minecraft"].ToString(), out _);
             Dispatcher.Invoke(() => //下载
             {
-                bool dwnDialog = DialogShow.ShowDownload(this, vanillaUrl, Path.GetDirectoryName(serverJarPath), Path.GetFileName(serverJarPath), "下载原版核心中···");
+                bool dwnDialog = Shows.ShowDownloader(this, vanillaUrl, Path.GetDirectoryName(serverJarPath), Path.GetFileName(serverJarPath), "下载原版核心中···");
                 if (!dwnDialog)
                 {
                     //下载失败，跑路了！
@@ -137,7 +137,7 @@ namespace MSL.controls
 
                 /*Dispatcher.Invoke(() =>
                 {
-                    bool dwnDialog = DialogShow.ShowDownload(this, _dlurl, Path.GetDirectoryName(_savepath), Path.GetFileName(_savepath), "下载LIB("+ libCount + "/" + libALLCount+")中···");
+                    bool dwnDialog = DialogShow.ShowDownloader(this, _dlurl, Path.GetDirectoryName(_savepath), Path.GetFileName(_savepath), "下载LIB("+ libCount + "/" + libALLCount+")中···");
                     if (!dwnDialog)
                     {
                         //下载失败，跑路了！
@@ -147,7 +147,7 @@ namespace MSL.controls
                 }); */ //调用downloader的下载窗口太慢了！
             }
             //2024.02.27 下午11：25 写的时候bmclapi炸了，导致被迫暂停，望周知（
-            foreach (JObject lib in libraries2)//遍历数组，进行文件下载
+            foreach (JObject lib in libraries2.Cast<JObject>())//遍历数组，进行文件下载
             {
                 libCount++;
                 string _dlurl = replaceStr(lib["downloads"]["artifact"]["url"].ToString());
@@ -164,7 +164,7 @@ namespace MSL.controls
                     Dispatcher.Invoke(() =>
                     {
                         status_change("正在下载Forge运行Lib···(" + libCount + "/" + libALLCount + ")");
-                        bool dwnDialog = DialogShow.ShowDownload(this, _dlurl, Path.GetDirectoryName(_savepath), Path.GetFileName(_savepath), "下载LIB(" + libCount + "/" + libALLCount + ")中···");
+                        bool dwnDialog = Shows.ShowDownloader(this, _dlurl, Path.GetDirectoryName(_savepath), Path.GetFileName(_savepath), "下载LIB(" + libCount + "/" + libALLCount + ")中···");
                         if (!dwnDialog)
                         {
                             //下载失败，跑路了！
@@ -176,7 +176,7 @@ namespace MSL.controls
                 /*
                 Dispatcher.Invoke(() =>
                 {
-                    bool dwnDialog = DialogShow.ShowDownload(this, _dlurl, Path.GetDirectoryName(_savepath), Path.GetFileName(_savepath), "下载LIB(" + libCount + "/" + libALLCount + ")中···");
+                    bool dwnDialog = DialogShow.ShowDownloader(this, _dlurl, Path.GetDirectoryName(_savepath), Path.GetFileName(_savepath), "下载LIB(" + libCount + "/" + libALLCount + ")中···");
                     if (!dwnDialog)
                     {
                         //下载失败，跑路了！
@@ -208,18 +208,18 @@ namespace MSL.controls
 
                         buildarg = buildarg + libPath+ "/" +NameToPath(path) + ";";
                     }
-                    buildarg = buildarg + @""" ";//结束cp处理
+                    buildarg += @""" ";//结束cp处理
                     if (buildarg.Contains("installertools"))//主类
                     {
-                        buildarg = buildarg + "net.minecraftforge.installertools.ConsoleTool ";
+                        buildarg += "net.minecraftforge.installertools.ConsoleTool ";
                     }
                     else if(buildarg.Contains("ForgeAutoRenamingTool"))
                     {
-                        buildarg = buildarg + "net.minecraftforge.fart.Main ";
+                        buildarg += "net.minecraftforge.fart.Main ";
                     }
                     else
                     {
-                        buildarg = buildarg + "net.minecraftforge.binarypatcher.ConsoleTool ";
+                        buildarg += "net.minecraftforge.binarypatcher.ConsoleTool ";
                     }
                     
                     //处理args
@@ -362,7 +362,7 @@ namespace MSL.controls
                 fastZip.ExtractZip(jarPath, extractPath, null);
                 return true;
             }
-            catch (Exception ex)
+            catch// (Exception ex)
             {
                 return false;
             }
@@ -439,6 +439,11 @@ namespace MSL.controls
                 }
                 return sb.ToString();
             }
+            catch
+            {
+                return null;
+            }
+            /*
             finally
             {
                 c1 = null;
@@ -446,6 +451,7 @@ namespace MSL.controls
                 all = null;
                 sb = null;
             }
+            */
         }
 
         //下面是有关下载的东东（由于小文件调用原有下载窗口特别慢，就不用了qaq）
@@ -496,7 +502,6 @@ namespace MSL.controls
                     continue;
                 }
             }
-
             //重试爆表了
             return false;
         }

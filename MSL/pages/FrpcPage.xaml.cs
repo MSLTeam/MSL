@@ -47,7 +47,7 @@ namespace MSL.pages
                 Dispatcher.Invoke(() =>
                 {
                     startfrpc.Content = "关闭内网映射";
-                    DialogShow.GrowlInfo("正在启动内网映射！");
+                    Shows.GrowlInfo("正在启动内网映射！");
                     setfrpc.IsEnabled = false;
                     startfrpc.IsEnabled = false;
                     frpcOutlog.Text = "启动中，请稍候……\n";
@@ -73,7 +73,7 @@ namespace MSL.pages
                             Dispatcher.Invoke(() =>
                             {
                                 var mwindow = (MainWindow)Window.GetWindow(this);
-                                DialogShow.ShowDownload(mwindow, _dnfrpc, "MSL", "frpc.exe", "下载内网映射中...");
+                                Shows.ShowDownloader(mwindow, _dnfrpc, "MSL", "frpc.exe", "下载内网映射中...");
                             });
                             _dnfrpc = "";
                         }
@@ -84,7 +84,7 @@ namespace MSL.pages
                         Dispatcher.Invoke(() =>
                         {
                             var mwindow = (MainWindow)Window.GetWindow(this);
-                            DialogShow.ShowDownload(mwindow, _dnfrpc, "MSL", "frpc.exe", "更新内网映射中...");
+                            Shows.ShowDownloader(mwindow, _dnfrpc, "MSL", "frpc.exe", "更新内网映射中...");
                         });
                         _dnfrpc = "";
                         jobject["frpcversion"] = "6";
@@ -98,7 +98,7 @@ namespace MSL.pages
                         Dispatcher.Invoke(() =>
                         {
                             var mwindow = (MainWindow)Window.GetWindow(this);
-                            DialogShow.ShowDownload(mwindow, _dnfrpc, "MSL", "frpc.exe", "下载内网映射中...");
+                            Shows.ShowDownloader(mwindow, _dnfrpc, "MSL", "frpc.exe", "下载内网映射中...");
                         });
                         _dnfrpc = "";
                     }
@@ -134,7 +134,7 @@ namespace MSL.pages
                         Dispatcher.Invoke(() =>
                         {
                             var mwindow = (MainWindow)Window.GetWindow(this);
-                            DialogShow.ShowDownload(mwindow, latest_url, "MSL", "frpc_of.zip", "下载内网映射中...");
+                            Shows.ShowDownloader(mwindow, latest_url, "MSL", "frpc_of.zip", "下载内网映射中...");
                             string fileName = "";
                             using (ZipFile zip = new ZipFile(@"MSL\frpc_of.zip"))
                             {
@@ -173,7 +173,7 @@ namespace MSL.pages
                 }
                 Dispatcher.Invoke(() =>
                 {
-                    DialogShow.GrowlSuccess("内网映射已关闭！");
+                    Shows.GrowlSuccess("内网映射已关闭！");
                     startfrpc.IsEnabled = true;
                 });
             }
@@ -215,7 +215,7 @@ namespace MSL.pages
                 if (msg.IndexOf("failed") + 1 != 0)
                 {
                     frpcOutlog.Text = frpcOutlog.Text + "内网映射桥接失败！\n";
-                    DialogShow.GrowlErr("内网映射桥接失败！");
+                    Shows.GrowlErr("内网映射桥接失败！");
                     if (msg.Contains("付费资格已过期"))
                     {
                         Thread thread = new Thread(PaidServe);
@@ -240,12 +240,12 @@ namespace MSL.pages
                 if (msg.IndexOf("success") + 1 != 0)
                 {
                     frpcOutlog.Text = frpcOutlog.Text + "内网映射桥接成功！您可复制IP进入游戏了！\n";
-                    DialogShow.GrowlSuccess("内网映射桥接成功！");
+                    Shows.GrowlSuccess("内网映射桥接成功！");
                 }
                 if (msg.IndexOf("error") + 1 != 0)
                 {
                     frpcOutlog.Text = frpcOutlog.Text + "内网映射桥接失败！\n";
-                    DialogShow.GrowlErr("内网映射桥接失败！");
+                    Shows.GrowlErr("内网映射桥接失败！");
                     if (msg.IndexOf("port already used") + 1 != 0)
                     {
                         frpcOutlog.Text = frpcOutlog.Text + "本地端口被占用，请不要频繁开关内网映射并等待一分钟再试。\n若一分钟后仍然占用，请尝试手动结束frpc进程或重启电脑再试。\n";
@@ -321,7 +321,7 @@ namespace MSL.pages
             }
             Dispatcher.Invoke(() =>
             {
-                if (!DialogShow.ShowMsg(window, "您的付费资格已过期，请进行续费！\n点击确定开始付费节点续费操作。", "提示", true, "取消"))
+                if (!Shows.ShowMsg(window, "您的付费资格已过期，请进行续费！\n点击确定开始付费节点续费操作。", "提示", true, "取消"))
                 {
                     return;
                 }
@@ -331,7 +331,7 @@ namespace MSL.pages
             Process.Start("https://afdian.net/a/makabaka123");
             Dispatcher.Invoke(() =>
             {
-                if (!DialogShow.ShowMsg(window, "请在弹出的浏览器网站中进行购买，购买完毕后点击确定进行下一步操作……", "购买须知", true, "取消购买", "确定"))
+                if (!Shows.ShowMsg(window, "请在弹出的浏览器网站中进行购买，购买完毕后点击确定进行下一步操作……", "购买须知", true, "取消购买", "确定"))
                 {
                     return;
                 }
@@ -341,24 +341,24 @@ namespace MSL.pages
             string qq = "";
             Dispatcher.Invoke(() =>
             {
-                bool input = DialogShow.ShowInput(window, "输入爱发电订单号：\n（头像→订单→找到发电项目→复制项目下方订单号）", out order);
+                bool input = Shows.ShowInput(window, "输入爱发电订单号：\n（头像→订单→找到发电项目→复制项目下方订单号）", out order);
                 if (!input)
                 {
                     return;
                 }
                 if (Regex.IsMatch(order, "[^0-9]") || order.Length < 5)
                 {
-                    DialogShow.ShowMsg(window, "请输入合法订单号：仅含数字且长度不小于5位！", "获取失败！");
+                    Shows.ShowMsg(window, "请输入合法订单号：仅含数字且长度不小于5位！", "获取失败！");
                     return;
                 }
-                bool _input = DialogShow.ShowInput(window, "输入账号(QQ号)：", out qq);
+                bool _input = Shows.ShowInput(window, "输入账号(QQ号)：", out qq);
                 if (!_input)
                 {
                     return;
                 }
                 if (Regex.IsMatch(qq, "[^0-9]") || qq.Length < 5)
                 {
-                    DialogShow.ShowMsg(window, "请输入合法账号：仅含数字且长度不小于5位！", "获取失败！");
+                    Shows.ShowMsg(window, "请输入合法账号：仅含数字且长度不小于5位！", "获取失败！");
                     return;
                 }
             });
@@ -383,21 +383,21 @@ namespace MSL.pages
                 {
                     Dispatcher.Invoke(() =>
                     {
-                        DialogShow.ShowMsg(window, "您的付费密码为：" + keyValues["password"].ToString() + "\n注册时间：" + keyValues["registration"].ToString() + "\n本次续费：" + keyValues["days"].ToString() + "天\n到期时间：" + keyValues["expiration"].ToString(), "续费成功！");
+                        Shows.ShowMsg(window, "您的付费密码为：" + keyValues["password"].ToString() + "\n注册时间：" + keyValues["registration"].ToString() + "\n本次续费：" + keyValues["days"].ToString() + "天\n到期时间：" + keyValues["expiration"].ToString(), "续费成功！");
                     });
                 }
                 else if (keyValues != null)
                 {
                     Dispatcher.Invoke(() =>
                     {
-                        DialogShow.ShowMsg(window, keyValues["reason"].ToString(), "获取失败！");
+                        Shows.ShowMsg(window, keyValues["reason"].ToString(), "获取失败！");
                     });
                 }
                 else
                 {
                     Dispatcher.Invoke(() =>
                     {
-                        DialogShow.ShowMsg(window, "返回内容为空！", "获取失败！");
+                        Shows.ShowMsg(window, "返回内容为空！", "获取失败！");
                     });
                 }
             }
@@ -407,7 +407,7 @@ namespace MSL.pages
                 {
                     this.Focus();
                     _dialog.Close();
-                    DialogShow.ShowMsg((MainWindow)Window.GetWindow(this), "获取失败，请添加QQ：483232994（昵称：MSL-FRP），并发送发电成功截图+订单号来手动获取密码\r\n（注：回复消息不一定及时，请耐心等待！如果没有添加成功，或者添加后长时间无人回复，请进入MSL交流群然后从群里私聊）", "获取失败！");
+                    Shows.ShowMsg((MainWindow)Window.GetWindow(this), "获取失败，请添加QQ：483232994（昵称：MSL-FRP），并发送发电成功截图+订单号来手动获取密码\r\n（注：回复消息不一定及时，请耐心等待！如果没有添加成功，或者添加后长时间无人回复，请进入MSL交流群然后从群里私聊）", "获取失败！");
                 });
             }
         }
@@ -458,12 +458,12 @@ namespace MSL.pages
                 try
                 {
                     startfrpc.IsEnabled = false;
-                    DialogShow.GrowlInfo("正在关闭内网映射！");
+                    Shows.GrowlInfo("正在关闭内网映射！");
                     Task.Run(() => StopProcess(FRPCMD));
                 }
                 catch
                 {
-                    DialogShow.GrowlErr("关闭失败！请尝试手动结束frpc进程！");
+                    Shows.GrowlErr("关闭失败！请尝试手动结束frpc进程！");
                 }
             }
         }

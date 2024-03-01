@@ -119,11 +119,10 @@
       <Generator>MSBuild:Compile</Generator>
       <SubType>Designer</SubType>
     </ApplicationDefinition>
-    <Compile Include="controls\DialogShow.cs" />
     <Compile Include="controls\Functions.cs" />
     <Compile Include="controls\ImagePathConverter.cs" />
-    <Compile Include="controls\InputDialog.xaml.cs">
-      <DependentUpon>InputDialog.xaml</DependentUpon>
+    <Compile Include="controls\InputWindow.xaml.cs">
+      <DependentUpon>InputWindow.xaml</DependentUpon>
     </Compile>
     <Compile Include="controls\InstallForgeDialog.xaml.cs">
       <DependentUpon>InstallForgeDialog.xaml</DependentUpon>
@@ -131,6 +130,10 @@
     <Compile Include="controls\MessageDialog.xaml.cs">
       <DependentUpon>MessageDialog.xaml</DependentUpon>
     </Compile>
+    <Compile Include="controls\MessageWindow.xaml.cs">
+      <DependentUpon>MessageWindow.xaml</DependentUpon>
+    </Compile>
+    <Compile Include="controls\Shows.cs" />
     <Compile Include="controls\TextDialog.xaml.cs">
       <DependentUpon>TextDialog.xaml</DependentUpon>
     </Compile>
@@ -184,7 +187,7 @@
       <SubType>Designer</SubType>
       <Generator>MSBuild:Compile</Generator>
     </Page>
-    <Page Include="controls\InputDialog.xaml">
+    <Page Include="controls\InputWindow.xaml">
       <Generator>MSBuild:Compile</Generator>
       <SubType>Designer</SubType>
     </Page>
@@ -195,6 +198,10 @@
     <Page Include="controls\MessageDialog.xaml">
       <SubType>Designer</SubType>
       <Generator>MSBuild:Compile</Generator>
+    </Page>
+    <Page Include="controls\MessageWindow.xaml">
+      <Generator>MSBuild:Compile</Generator>
+      <SubType>Designer</SubType>
     </Page>
     <Page Include="controls\Styles.xaml">
       <SubType>Designer</SubType>

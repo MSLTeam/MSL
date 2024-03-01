@@ -72,7 +72,7 @@ namespace MSL.pages
                             Dispatcher.Invoke(() =>
                             {
                                 var mainwindow = (MainWindow)System.Windows.Window.GetWindow(this);
-                                DialogShow.ShowMsg(mainwindow, noticeLabText, "公告", false, "确定");
+                                Shows.ShowMsg(mainwindow, noticeLabText, "公告", false, "确定");
                             });
                         }
                     }
