@@ -28,7 +28,12 @@ namespace MSL
         public DownloadWindow(string _downloadurl, string _downloadPath, string _filename, string downloadinfo,string sha256 = "")
         {
             InitializeComponent();
+            //检查文件夹存在不，不存在就来一个！
 
+            if (!Directory.Exists(_downloadPath))
+            {
+                Directory.CreateDirectory(_downloadPath);
+            }
             downloadurl = _downloadurl;
             downloadPath = _downloadPath;
             filename = _filename;

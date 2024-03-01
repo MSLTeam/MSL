@@ -44,7 +44,7 @@ namespace MSL.pages
             string noticeversion1;
             try
             {
-                string noticeversion = Functions.Get("query/notice/id");
+                string noticeversion = Functions.Get("query/notice/id", out string sha256Exp2);
                 JObject jsonObject = JObject.Parse(File.ReadAllText(@"MSL\config.json", Encoding.UTF8));
                 if (jsonObject["notice"] == null)
                 {
@@ -61,8 +61,8 @@ namespace MSL.pages
                 }
                 if (noticeversion1 != noticeversion)
                 {
-                    var notice = Functions.Get("query/notice/main");
-                    var recommendations = Functions.Get("query/notice/tips");
+                    var notice = Functions.Get("query/notice/main", out string sha256Exp);
+                    var recommendations = Functions.Get("query/notice/tips", out string sha256Exp3);
 
                     if (!string.IsNullOrEmpty(notice))
                     {
@@ -108,7 +108,7 @@ namespace MSL.pages
                     });
                     if (noticevisible == Visibility.Visible)
                     {
-                        var notice = Functions.Get("query/notice/main");
+                        var notice = Functions.Get("query/notice/main", out string sha256Exp3);
                         if (!string.IsNullOrEmpty(notice))
                         {
                             noticeLabText = notice;
@@ -117,7 +117,7 @@ namespace MSL.pages
                         {
                             noticeLabText = "获取公告失败！请检查网络连接是否正常或联系作者进行解决！";
                         }
-                        var recommendations = Functions.Get("query/notice/tips");
+                        var recommendations = Functions.Get("query/notice/tips", out string sha256Exp5);
                         if (!string.IsNullOrEmpty(recommendations))
                         {
                             LoadRecommendations(recommendations);

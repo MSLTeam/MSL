@@ -4,6 +4,7 @@ using ICSharpCode.SharpZipLib.Zip;
 using Microsoft.Win32;
 using MSL.controls;
 using MSL.pages;
+using Newtonsoft.Json;
 using Newtonsoft.Json.Linq;
 using System;
 using System.Collections.Generic;
@@ -420,7 +421,7 @@ namespace MSL
         #region 仪表盘
         private void solveProblemBtn_Click(object sender, RoutedEventArgs e)
         {
-            DialogShow.ShowMsg(this, "分析报告将在服务器关闭后生成！若使用后还是无法解决问题，请尝试进Q群询问（附带崩溃日志截图）：\n一群：1145888872  二群：234477679", "警告", true, "取消");
+            DialogShow.ShowMsg(this, "分析报告将在服务器关闭后生成！若使用后还是无法解决问题，请尝试进Q群询问（附带日志链接，日志链接可以点击分享日志按钮生成）：\n一群：1145888872  二群：234477679", "警告", true, "取消");
             if (MessageDialog._dialogReturn == true)
             {
                 MessageDialog._dialogReturn = false;
@@ -2734,7 +2735,7 @@ namespace MSL
                 {
                     selectJava.Items.Clear();
                 });
-                string response = Functions.Get("query/java");
+                string response = Functions.Get("query/java", out string sha256Exp);
                 JArray jArray = JArray.Parse(response);
                 //List<string> strings = new List<string>();
                 foreach (var j in jArray)
@@ -2822,7 +2823,7 @@ namespace MSL
                     {
                         await Dispatcher.InvokeAsync(() =>
                         {
-                            dwnJava = DownloadJava(selectJava.SelectedItem.ToString(), Functions.Get("download/java/" + selectJava.SelectedItem.ToString()));
+                            dwnJava = DownloadJava(selectJava.SelectedItem.ToString(), Functions.Get("download/java/" + selectJava.SelectedItem.ToString(), out string sha256Exp));
                         });
                         if (dwnJava == 1)
                         {
@@ -3817,5 +3818,56 @@ namespace MSL
         }
         #endregion
 
+        #region 上传日志到mclo.gs
+        string logs = "";
+        private void shareLog_Click(object sender, RoutedEventArgs e)
+        {
+            //遍历获取logs
+            foreach (var block in outlog.Document.Blocks)
+            {
+                if (block is Paragraph paragraph)
+                {
+                    foreach (var inline in paragraph.Inlines)
+                    {
+                        if (inline is Run run)
+                        {
+                            logs += run.Text;
+                        }
+                    }
+                }
+            }
+            //启动线程上传日志
+            Thread thread = new Thread(UploadLogs);
+            thread.Start();
+            Growl.Info("正在上传···");
+        }
+
+        private void UploadLogs()
+        {
+            string path = "1/log";
+            string customUrl = "https://api.mclo.gs";
+            int contentType = 2;
+            //请求内容
+            string parameterData = "content=" + logs;
+
+            string response = Functions.Post(path, contentType, parameterData, customUrl);
+            //解析返回的东东
+            var jsonResponse = JsonConvert.DeserializeObject<dynamic>(response);
+
+            if (jsonResponse.success == true)
+            {
+                Dispatcher.Invoke(() =>
+                {
+                    Clipboard.Clear();
+                    Clipboard.SetText(jsonResponse.url.ToString());
+                });
+                Growl.Success("日志地址: " + jsonResponse.url + "\n已经复制到剪贴板啦！\n如果遇到问题且不会看日志,\n请把链接粘贴在群中求助，\n记得详细描述你的问题哦！");
+            }
+            else
+            {
+                Growl.Error("请求失败: " + jsonResponse.error);
+            }
+        }
+        #endregion
     }
 }

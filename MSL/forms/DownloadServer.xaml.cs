@@ -59,8 +59,7 @@ namespace MSL.pages
             {
                 //int url = serverlist1.SelectedIndex;
 
-                string downUrl = Functions.Get("download/server/" + downServer + "/" + downVersion);
-                string sha256 = Functions.GetSha256("download/server/" + downServer + "/" + downVersion);
+                string downUrl = Functions.Get("download/server/" + downServer + "/" + downVersion, out string sha256Exp);
 
                 if (serverlist.SelectedItem.ToString().IndexOf("（") + 1 != 0)
                 {
@@ -89,7 +88,7 @@ namespace MSL.pages
                         filename = serverlist.SelectedItem.ToString() + "-" + serverlist1.SelectedItem.ToString() + ".jar";
                     }
                 }
-                bool dwnDialog = DialogShow.ShowDownload(this, downUrl, downPath, filename, "下载服务端中……",sha256);
+                bool dwnDialog = DialogShow.ShowDownload(this, downUrl, downPath, filename, "下载服务端中……",sha256Exp);
                 if (!dwnDialog)
                 {
                     DialogShow.ShowMsg(this, "下载取消！", "提示");
@@ -100,7 +99,9 @@ namespace MSL.pages
                     if (filename.Contains("forge"))
                     {
                         DialogShow.ShowMsg(this, "检测到您下载的是Forge端，开服器将自动进行安装操作，稍后请您不要随意移动鼠标且不要随意触碰键盘，耐心等待安装完毕！", "提示");
-                        InstallForge(downUrl);
+                        //InstallForge(downUrl);
+                        //调用新版forge安装器
+                        bool installForge = DialogShow.ShowInstallForge(this, downPath + @"\" + filename,downPath,downloadServerJava);
                     }
                     else
                     {
@@ -136,7 +137,7 @@ namespace MSL.pages
             });
             try
             {
-                string jsonData = Functions.Get("query/available_server_types");
+                string jsonData = Functions.Get("query/available_server_types", out string sha256Exp);
                 string[] serverTypes = JsonConvert.DeserializeObject<string[]>(jsonData);
                 Dispatcher.Invoke(() =>
                 {
@@ -181,8 +182,8 @@ namespace MSL.pages
                 });
                 try
                 {
-                    var resultData = Functions.Get("query/available_versions/" + serverName);
-                    string server_des = Functions.Get("query/servers_description/" + serverName);
+                    var resultData = Functions.Get("query/available_versions/" + serverName, out string sha256Exp);
+                    string server_des = Functions.Get("query/servers_description/" + serverName, out string sha256Exp2);
                     JArray serverVersions = JArray.Parse(resultData);
                     List<string> sortedVersions = serverVersions.ToObject<List<string>>().OrderByDescending(v => Functions.VersionCompare(v)).ToList();
                     Dispatcher.Invoke(() =>
@@ -198,7 +199,7 @@ namespace MSL.pages
                 {
                     try
                     {
-                        var resultData = Functions.Get("query/available_versions/" + serverName);
+                        var resultData = Functions.Get("query/available_versions/" + serverName, out string sha256Exp2);
                         JArray serverVersions = JArray.Parse(resultData);
                         List<string> sortedVersions = serverVersions.ToObject<List<string>>().OrderByDescending(v => Functions.VersionCompare(v)).ToList();
                         Dispatcher.Invoke(() =>
@@ -260,11 +261,21 @@ namespace MSL.pages
                 //Directory.SetCurrentDirectory(downloadServerBase);
                 Process process = new Process();
                 process.StartInfo.WorkingDirectory = downloadServerBase;
-                process.StartInfo.FileName = downloadServerJava;
-                process.StartInfo.Arguments = "-jar " + filename + " -installServer";
-                //process.StartInfo.Arguments = "-jar " + filename + " -mirror https://bmclapi2.bangbang93.com/maven/ -installServer";
+                process.StartInfo.FileName = "cmd";
+                if (downloadServerJava == "Java")
+                {
+                    process.StartInfo.Arguments = "/c java -jar " + filename + " -installServer";
+                }
+                else
+                {
+                    process.StartInfo.Arguments = @"/c """ + downloadServerJava +  @""" -jar " + filename + " -installServer";
+                }
+                
+                //process.StartInfo.Arguments = "-jar " + filename + " -installServer";
                 process.Start();
+                //process.StartInfo.Arguments = "-jar " + filename + " -mirror https://bmclapi2.bangbang93.com/maven/ -installServer";
                 //Directory.SetCurrentDirectory(AppDomain.CurrentDomain.BaseDirectory);
+                //检测安装成功与否
                 try
                 {
                     while (!process.HasExited)
@@ -309,7 +320,8 @@ namespace MSL.pages
             catch (Exception ex)
             {
                 //Directory.SetCurrentDirectory(AppDomain.CurrentDomain.BaseDirectory);
-                DialogShow.ShowMsg(this, "出现错误！\n" + ex.Message, "错误");
+                DialogShow.ShowMsg(this, "出现错误！\n" + ex.ToString(), "错误");
+
             }
         }
         private void openChooseServerDocs_Click(object sender, RoutedEventArgs e)

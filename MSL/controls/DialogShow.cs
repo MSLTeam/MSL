@@ -1,5 +1,6 @@
 ﻿using HandyControl.Controls;
 using HandyControl.Data;
+using System;
 
 namespace MSL.controls
 {
@@ -53,19 +54,46 @@ namespace MSL.controls
                     return false;
                 }
             }
+            catch(Exception err)
+            {
+                
+                return false;
+            }
+        }
+
+        public static bool ShowInstallForge(System.Windows.Window window,string forgePath,string downPath,string java)
+        {
+            try
+            {
+                window.Focus();
+                var dialog = Dialog.Show(string.Empty);
+                InstallForgeDialog installforge = new InstallForgeDialog(forgePath, downPath,java);
+                installforge.Owner = window;
+                installforge.ShowDialog();
+                window.Focus();
+                dialog.Close();
+                if (InstallForgeDialog.suc)
+                {
+                    return false;
+                }
+                else
+                {
+                    return true;
+                }
+            }
             catch
             {
                 return false;
             }
         }
 
-        public static bool ShowDownload(System.Windows.Window window, string downloadurl, string downloadPath, string filename, string downloadinfo,string sha256 = "")
+        public static bool ShowDownload(System.Windows.Window window, string downloadurl, string downloadPath, string filename, string downloadinfo, string sha256 = "")
         {
             try
             {
                 window.Focus();
                 var dialog = Dialog.Show(string.Empty);
-                DownloadWindow download = new DownloadWindow(downloadurl, downloadPath, filename, downloadinfo,sha256);
+                DownloadWindow download = new DownloadWindow(downloadurl, downloadPath, filename, downloadinfo, sha256);
                 download.Owner = window;
                 download.ShowDialog();
                 window.Focus();
@@ -79,8 +107,9 @@ namespace MSL.controls
                     return true;
                 }
             }
-            catch
+            catch(Exception err)
             {
+                //MessageBox.Show(err.ToString());
                 return false;
             }
         }

@@ -125,6 +125,9 @@
     <Compile Include="controls\InputDialog.xaml.cs">
       <DependentUpon>InputDialog.xaml</DependentUpon>
     </Compile>
+    <Compile Include="controls\InstallForgeDialog.xaml.cs">
+      <DependentUpon>InstallForgeDialog.xaml</DependentUpon>
+    </Compile>
     <Compile Include="controls\MessageDialog.xaml.cs">
       <DependentUpon>MessageDialog.xaml</DependentUpon>
     </Compile>
@@ -184,6 +187,10 @@
     <Page Include="controls\InputDialog.xaml">
       <Generator>MSBuild:Compile</Generator>
       <SubType>Designer</SubType>
+    </Page>
+    <Page Include="controls\InstallForgeDialog.xaml">
+      <SubType>Designer</SubType>
+      <Generator>MSBuild:Compile</Generator>
     </Page>
     <Page Include="controls\MessageDialog.xaml">
       <SubType>Designer</SubType>
