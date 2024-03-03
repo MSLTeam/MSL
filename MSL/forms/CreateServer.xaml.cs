@@ -129,7 +129,7 @@ namespace MSL.forms
                             int dwnJava = 0;
                             await Dispatcher.InvokeAsync(() =>
                             {
-                                dwnJava = DownloadJava(selectJavaComb.SelectedItem.ToString(), Functions.Get("download/java/" + selectJavaComb.SelectedItem.ToString(), out string sha256Exp));
+                                dwnJava = DownloadJava(selectJavaComb.SelectedItem.ToString(), Functions.Get("download/java/" + selectJavaComb.SelectedItem.ToString(), out string _));
                             });
                             if (dwnJava == 1)
                             {
@@ -936,9 +936,9 @@ namespace MSL.forms
                 }
                 */
                 //获取分类
-                var responseString = Functions.Get("query/server_classify", out string sha256Exp);
+                var responseString = Functions.Get("query/server_classify", out string _);
                 serverCoreTypes = JsonConvert.DeserializeObject<Dictionary<string, List<string>>>(responseString);
-                string jsonData = Functions.Get("query/available_server_types", out string sha256Exp2);
+                string jsonData = Functions.Get("query/available_server_types", out string _);
                 serverTypes = JsonConvert.DeserializeObject<string[]>(jsonData);
                 Dispatcher.Invoke(() =>
                 {
@@ -997,7 +997,7 @@ namespace MSL.forms
                                     //MessageBox.Show(_serverType);
                                     try
                                     {
-                                        var resultData = Functions.Get("query/available_versions/" + _serverType, out string sha256Exp);
+                                        var resultData = Functions.Get("query/available_versions/" + _serverType, out string _);
                                        // MessageBox.Show(resultData);
                                         tempServerCore.Add(coreType, resultData);
                                         List<string> serverVersions = JsonConvert.DeserializeObject<List<string>>(resultData);
@@ -1018,7 +1018,7 @@ namespace MSL.forms
                                             // patientinfo["server_name"] = i;
                                             // string sendData = JsonConvert.SerializeObject(patientinfo);
                                             //var resultData = Functions.Post("serverlist", 0, sendData, "https://api.waheal.top");
-                                            var resultData = Functions.Get("query/available_versions/" + coreType, out string sha256Exp);
+                                            var resultData = Functions.Get("query/available_versions/" + coreType, out string _);
                                             //MessageBox.Show(resultData);
                                             tempServerCore.Add(coreType, resultData);
                                             Dictionary<string, string> serverDetails = JsonConvert.DeserializeObject<Dictionary<string, string>>(resultData);
@@ -1229,7 +1229,7 @@ namespace MSL.forms
                 string response = string.Empty;
                 await Task.Run(() =>
                 {
-                    response = Functions.Get("query/java", out string sha256Exp);
+                    response = Functions.Get("query/java", out string _);
                 });
                 await Task.Delay(200);
                 JArray jArray = JArray.Parse(response);
@@ -1267,7 +1267,7 @@ namespace MSL.forms
                 int dwnJava = 0;
                 await Dispatcher.InvokeAsync(() =>
                 {
-                    dwnJava = DownloadJava(FinallyJavaCombo.SelectedItem.ToString(), Functions.Get("download/java/" + FinallyJavaCombo.SelectedItem.ToString(), out string sha256Exp));
+                    dwnJava = DownloadJava(FinallyJavaCombo.SelectedItem.ToString(), Functions.Get("download/java/" + FinallyJavaCombo.SelectedItem.ToString(), out string _));
                 });
                 if (dwnJava == 1)
                 {
