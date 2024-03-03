@@ -3831,7 +3831,7 @@ namespace MSL
                     {
                         if (inline is Run run)
                         {
-                            logs += run.Text;
+                            logs += run.Text + "\n";
                         }
                     }
                 }
