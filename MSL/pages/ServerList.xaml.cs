@@ -172,6 +172,7 @@ namespace MSL.pages
                 {
                     MainWindow.serverid = serverid[serverList.SelectedIndex];
                     OpenServerForm();
+                    MessageBox.Show(RunningServerIDs.ToString());
                     return;
                 }
                 ServerRunner runner = new ServerRunner
@@ -179,6 +180,7 @@ namespace MSL.pages
                     RserverId = serverid[serverList.SelectedIndex],
                 };
                 runner.Show();
+                MessageBox.Show("s" + RunningServerIDs.ToString());
             }
             catch (Exception ex) { MessageBox.Show("出现错误，请检查您是否选择了服务器！\n" + ex.Message); }
         }
