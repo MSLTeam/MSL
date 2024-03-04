@@ -76,7 +76,7 @@ namespace MSL.pages.frpProviders
 
             try
             {
-                string mslFrpInfo = Functions.Get("query/MSLFrps", out string sha256Exp2);
+                string mslFrpInfo = Functions.Get("query/MSLFrps", out string _);
                 JObject valuePairs = (JObject)JsonConvert.DeserializeObject(mslFrpInfo);
                 foreach (var valuePair in valuePairs)
                 {
@@ -131,7 +131,7 @@ namespace MSL.pages.frpProviders
             {
                 Dispatcher.Invoke(() =>
                 {
-                    gonggao.Content = Functions.Get("query/MSLFrps/notice", out string sha256Exp2);
+                    gonggao.Content = Functions.Get("query/MSLFrps/notice", out string _);
                 });
             }
             catch

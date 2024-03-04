@@ -649,7 +649,7 @@ namespace MSL.pages
             try
             {
                 var mainwindow = (MainWindow)System.Windows.Window.GetWindow(this);
-                string aaa = Functions.Get("query/update", out string sha256Exp3);
+                string aaa = Functions.Get("query/update", out string _);
                 if (aaa.Contains("v"))
                 {
                     aaa = aaa.Replace("v", "");
@@ -659,13 +659,13 @@ namespace MSL.pages
 
                 if (newVersion > version)
                 {
-                    var updatelog = Functions.Get("query/update/log", out string sha256Exp2);
+                    var updatelog = Functions.Get("query/update/log", out string _);
                     Dispatcher.Invoke(() =>
                     {
                         bool dialog = Shows.ShowMsg(mainwindow, "发现新版本，版本号为：" + aaa + "，是否进行更新？\n更新日志：\n" + updatelog, "更新", true, "取消");
                         if (dialog == true)
                         {
-                            string aaa1 = Functions.Get("download/update", out string sha256Exp);
+                            string aaa1 = Functions.Get("download/update", out string _);
                             Shows.ShowDownloader(mainwindow, aaa1, AppDomain.CurrentDomain.BaseDirectory, "MSL" + aaa + ".exe", "下载新版本中……");
                             if (File.Exists("MSL" + aaa + ".exe"))
                             {

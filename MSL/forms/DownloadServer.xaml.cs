@@ -99,9 +99,9 @@ namespace MSL.pages
                     if (filename.Contains("forge"))
                     {
                         Shows.ShowMsg(this, "检测到您下载的是Forge端，开服器将自动进行安装操作，稍后请您不要随意移动鼠标且不要随意触碰键盘，耐心等待安装完毕！", "提示");
-                        InstallForge(downUrl);
+                        //InstallForge(downUrl);
                         //调用新版forge安装器
-                        //bool installForge = Shows.ShowInstallForge(this, downPath + @"\" + filename,downPath,downloadServerJava);
+                        bool installForge = Shows.ShowInstallForge(this, downPath + @"\" + filename,downPath,downloadServerJava);
                     }
                     else
                     {
@@ -137,7 +137,7 @@ namespace MSL.pages
             });
             try
             {
-                string jsonData = Functions.Get("query/available_server_types", out string sha256Exp);
+                string jsonData = Functions.Get("query/available_server_types", out string _);
                 string[] serverTypes = JsonConvert.DeserializeObject<string[]>(jsonData);
                 Dispatcher.Invoke(() =>
                 {
@@ -182,8 +182,8 @@ namespace MSL.pages
                 });
                 try
                 {
-                    var resultData = Functions.Get("query/available_versions/" + serverName, out string sha256Exp);
-                    string server_des = Functions.Get("query/servers_description/" + serverName, out string sha256Exp2);
+                    var resultData = Functions.Get("query/available_versions/" + serverName, out string _);
+                    string server_des = Functions.Get("query/servers_description/" + serverName, out string _);
                     JArray serverVersions = JArray.Parse(resultData);
                     List<string> sortedVersions = serverVersions.ToObject<List<string>>().OrderByDescending(v => Functions.VersionCompare(v)).ToList();
                     Dispatcher.Invoke(() =>
@@ -199,7 +199,7 @@ namespace MSL.pages
                 {
                     try
                     {
-                        var resultData = Functions.Get("query/available_versions/" + serverName, out string sha256Exp2);
+                        var resultData = Functions.Get("query/available_versions/" + serverName, out string _);
                         JArray serverVersions = JArray.Parse(resultData);
                         List<string> sortedVersions = serverVersions.ToObject<List<string>>().OrderByDescending(v => Functions.VersionCompare(v)).ToList();
                         Dispatcher.Invoke(() =>
