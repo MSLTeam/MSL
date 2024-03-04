@@ -13,7 +13,6 @@ using System.Threading;
 using System.Windows;
 using System.Windows.Media;
 using System.Windows.Threading;
-using Windows.Gaming.Input.ForceFeedback;
 using Brush = System.Windows.Media.Brush;
 using MessageBox = System.Windows.MessageBox;
 
@@ -23,7 +22,7 @@ namespace MSL
     /// <summary>
     /// xaml 的交互逻辑
     /// </summary>
-    public partial class MainWindow
+    public partial class MainWindow : HandyControl.Controls.Window
     {
         readonly Home _homePage = new Home();
         readonly ServerList _listPage = new ServerList();

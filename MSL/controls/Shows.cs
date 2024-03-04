@@ -98,12 +98,14 @@ namespace MSL.controls
             {
                 window.Focus();
                 var dialog = Dialog.Show(string.Empty);
-                DownloadWindow download = new DownloadWindow(downloadurl, downloadPath, filename, downloadinfo, sha256);
-                download.Owner = window;
+                DownloadWindow download = new DownloadWindow(downloadurl, downloadPath, filename, downloadinfo, sha256)
+                {
+                    Owner = window
+                };
                 download.ShowDialog();
                 window.Focus();
                 dialog.Close();
-                if (DownloadWindow.isStopDwn)
+                if (download.isStopDwn)
                 {
                     return false;
                 }

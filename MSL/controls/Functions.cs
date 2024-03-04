@@ -22,7 +22,7 @@ namespace MSL.controls
         public static string[] GetWithSha256(string path, string customUrl = "", bool hideHeader = false)
         {
             string context = WebGet(path, out string sha256, customUrl, hideHeader);
-            string[] strings = null;
+            string[] strings = new string[2];
             strings[0] = context;
             strings[1] = sha256;
             return strings;

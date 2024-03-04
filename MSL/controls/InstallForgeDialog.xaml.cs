@@ -638,9 +638,12 @@ namespace MSL.controls
                 File.Copy(filePath, Path.Combine(target, fileName), true);
             }
         }
+
+        private void CancelButton_Click(object sender, RoutedEventArgs e)
+        {
+
+        }
     }
-
-
 }
 
 

@@ -10,7 +10,7 @@
     <Grid Background="{DynamicResource DialogBrush2}">
         <TextBlock x:Name="infolabel" Foreground="{DynamicResource PrimaryTextBrush}" HorizontalAlignment="Left" Margin="15,15,0,0" TextWrapping="Wrap" Text="加载中……" VerticalAlignment="Top"/>
         <ProgressBar x:Name="pbar" Style="{StaticResource ProgressBarFlat}" Height="5" Margin="15,0,15,0" VerticalAlignment="Center" Background="#E5C8C8C8"/>
-        <Button x:Name="button1" Style="{StaticResource ButtonPrimary}" Content="取消" HorizontalAlignment="Right" Margin="0,0,15,10" VerticalAlignment="Bottom" Width="75" Click="button1_Click" FontSize="14" FontWeight="Normal" MouseDoubleClick="button1_MouseDoubleClick"/>
-        <TextBlock x:Name="taskinfo" Foreground="{DynamicResource PrimaryTextBrush}" Text="当前任务：" HorizontalAlignment="Left" Margin="15,0,0,15" VerticalAlignment="Bottom" FontSize="14"/>
+        <Button x:Name="button1" Style="{StaticResource ButtonPrimary}" Content="取消" HorizontalAlignment="Right" Margin="0,0,15,10" VerticalAlignment="Bottom" Width="75" Click="button1_Click" FontSize="14" MouseDoubleClick="button1_MouseDoubleClick"/>
+        <TextBlock x:Name="taskinfo" Foreground="{DynamicResource PrimaryTextBrush}" Text="当前任务：" HorizontalAlignment="Left" Margin="15,0,0,15" VerticalAlignment="Bottom"/>
     </Grid>
 </hc:Window>

@@ -33,7 +33,7 @@ namespace MSL
     /// <summary>
     /// ServerRunner.xaml 的交互逻辑
     /// </summary>
-    public partial class ServerRunner
+    public partial class ServerRunner : HandyControl.Controls.Window
     {
         public static event DeleControl SaveConfigEvent;
         public static event DeleControl ServerStateChange;
@@ -449,6 +449,138 @@ namespace MSL
                 {
                     Shows.GrowlErr("操作失败！");
                 }
+            }
+        }
+
+        private void gotoFrpc_Click(object sender, RoutedEventArgs e)
+        {
+            string ipAddress = string.Empty;
+
+            // 获取本地计算机的IP地址列表
+            IPAddress[] localIPs = Dns.GetHostAddresses(Dns.GetHostName());
+            // 正则表达式匹配内网地址的模式
+            string privateIpPattern = @"^(10\.|192\.168\.|172\.(1[6-9]|2[0-9]|3[0-1])\.)";
+            // 遍历IP地址列表
+            foreach (IPAddress localIP in localIPs)
+            {
+                // 检查IPv4地址是否为公网IP
+                if (localIP.AddressFamily == System.Net.Sockets.AddressFamily.InterNetwork &&
+                    !IPAddress.IsLoopback(localIP) &&
+                    !Regex.IsMatch(localIP.ToString(), privateIpPattern))
+                {
+                    ipAddress = localServerIPLab.Content.ToString();
+
+                    if (ipAddress.Contains(":"))
+                    {
+                        Shows.ShowMsg(this, "您的公网IP为：" + localIP.ToString() + "\n您的服务器远程进入地址为：" + localIP.ToString() + ":" + ipAddress.Substring(ipAddress.IndexOf(":") + 1, ipAddress.Length - ipAddress.IndexOf(":") - 1) + "\n注意：记得检查您的防火墙是否关闭，否则远程玩家无法进入服务器！", "信息");
+                    }
+                    else
+                    {
+                        Shows.ShowMsg(this, "您的公网IP为：" + localIP.ToString() + "\n您的服务器远程进入地址为：" + localIP.ToString() + "\n注意：记得检查您的防火墙是否关闭，否则远程玩家无法进入服务器！", "信息");
+                    }
+                    return;
+                }
+            }
+
+            // 返回IP地址，如果没有找到公网IP，则返回"none"
+            //return string.IsNullOrEmpty(ipAddress) ? "none" : ipAddress;
+            Shows.ShowMsg(this, "服务器开启后，通常远程的小伙伴是无法进入的，您需要进行内网映射才可让他人进入。开服器内置有免费的内网映射，您可点击主界面左侧的“内网映射”按钮查看详情并进行配置。", "注意");
+            GotoFrpcEvent();
+        }
+
+        private void systemInfoBtn_Click(object sender, RoutedEventArgs e)
+        {
+            if (systemInfoBtn.Content.ToString() == "显示占用:关")
+            {
+                Shows.GrowlInfo("加载相关信息中，请稍等……");
+                getServerInfo = true;
+                //outlog.Margin = new Thickness(10, 10, 125, 47);
+                systemInfoBtn.Content = "显示占用:开";
+                Thread thread = new Thread(GetSystemInfo);
+                thread.Start();
+            }
+            else
+            {
+                Shows.ShowMsg(this, "关闭此功能后，输出预览功能也将同时关闭！", "注意");
+                //outlog.Margin = new Thickness(10, 10, 10, 47);
+                getServerInfo = false;
+                systemInfoBtn.Content = "显示占用:关";
+                previewOutlog.Text = "预览功能已关闭，请前往服务器控制台界面查看日志信息！";
+            }
+        }
+
+        void GetSystemInfo()
+        {
+            while (getServerInfo == true)
+            {
+                try
+                {
+                    try
+                    {
+                        var cpuCounter = new PerformanceCounter("Processor Information", "% Processor Utility", "_Total");
+                        cpuCounter.NextValue();
+                        float cpuUsage = cpuCounter.NextValue();
+                        if ((int)cpuUsage <= 100)
+                        {
+                            Dispatcher.Invoke(() =>
+                            {
+                                cpuInfoLab.Content = "CPU:" + cpuUsage.ToString("f2") + "%";
+                                cpuInfoBar.Value = (int)cpuUsage;
+                            });
+                        }
+                    }
+                    catch
+                    {
+                        Dispatcher.Invoke(() =>
+                        {
+                            cpuInfoLab.Content = "无法获取CPU信息";
+                        });
+                    }
+                    var ramCounter = new PerformanceCounter("Memory", "Available MBytes");
+
+                    float ramAvailable = ramCounter.NextValue() / 1024;
+                    double allMemory = MainWindow.PhisicalMemory / 1024.0 / 1024.0 / 1024.0;
+                    Dispatcher.Invoke(() =>
+                    {
+                        memoryInfoLab.Content = "总内存:" + allMemory.ToString("f2") + "G\n" + "已使用:" + (allMemory - ramAvailable).ToString("f2") + "G\n" + "可使用:" + ramAvailable.ToString("f2") + "G";
+                        memoryInfoBar.Value = (allMemory - ramAvailable) / allMemory * 100;
+                        availableMemoryInfoBar.Value = ramAvailable / allMemory * 100;
+
+                        if (outlog.Document.Blocks.LastBlock != null)
+                        {
+                            TextRange textRange = new TextRange(outlog.Document.Blocks.LastBlock.ContentStart, outlog.Document.Blocks.LastBlock.ContentEnd);
+                            previewOutlog.Text = textRange.Text;
+                        }
+                    });
+                }
+                catch
+                {
+                    Shows.GrowlErr("无法获取系统占用信息！显示占用功能已自动关闭！\n通常此问题是因为系统原因造成的，不影响软件正常使用！");
+                    Dispatcher.Invoke(() =>
+                    {
+                        previewOutlog.Text = "预览功能已关闭，请前往服务器控制台界面查看日志信息！";
+                        systemInfoBtn.Content = "显示占用:关";
+                    });
+                    getServerInfo = false;
+                }
+                Thread.Sleep(3000);
+            }
+        }
+        private void playerInfoBtn_Click(object sender, RoutedEventArgs e)
+        {
+            if (playerInfoBtn.Content.ToString() == "记录玩家:关")
+            {
+                Shows.GrowlSuccess("已开启");
+                getPlayerInfo = true;
+                //outlog.Margin = new Thickness(10, 10, 125, 47);
+                playerInfoBtn.Content = "记录玩家:开";
+            }
+            else
+            {
+                Shows.GrowlSuccess("已关闭");
+                //outlog.Margin = new Thickness(10, 10, 10, 47);
+                getPlayerInfo = false;
+                playerInfoBtn.Content = "记录玩家:关";
             }
         }
 
@@ -1743,169 +1875,6 @@ namespace MSL
                     }
                 }
             }
-            /*
-            if (e.Key == Key.Tab)
-            {
-                e.Handled = true;
-                if (fastCMD.SelectedIndex == 0)
-                {
-                    try
-                    {
-                        //tab补全命令列表
-                        List<string> tabCompleteList = new List<string>
-                        {
-                            "gamemode creative",
-                            "gamemode survival",
-                            "gamemode spectator",
-                            "gamemode adventure",
-                            "gamerule keepInventory true",
-                            "gamerule keepInventory false",
-                            "difficulty peaceful",
-                            "difficulty easy",
-                            "difficulty normal",
-                            "difficulty hard",
-                            "say",
-                            "op",
-                            "pardon",
-                            "time set day",
-                            "time set night",
-                            "ban",
-                            "weather clear",
-                            "ban",
-                            "kick"
-                        };
-                        if (cmdtext.Text.IndexOf(" ") + 1 != 0)
-                        {
-                            bool isReplace = true;
-                            string _a = cmdtext.Text;
-                            string a = "";
-                            string d = "";
-                            if (!cmdtext.Text.EndsWith(" "))
-                            {
-                                a = cmdtext.Text.Substring(0, cmdtext.Text.LastIndexOf(" ") + 1);
-                            }
-                            foreach (string n in tabCompleteList)
-                            {
-                                if (n.IndexOf(_a) == 0)
-                                {
-                                    string b = n.Replace(_a, "");
-                                    string c = "";
-                                    if (a != "")
-                                    {
-                                        c = n.Replace(a, "");
-                                    }
-                                    if (b.IndexOf(" ") + 1 != 0)
-                                    {
-                                        if (isReplace)
-                                        {
-                                            cmdtext.Text = cmdtext.Text + b.Substring(0, b.IndexOf(" "));
-                                        }
-                                        if (c != "")
-                                        {
-                                            if (d.IndexOf(c.Substring(0, c.IndexOf(" ")) + ", ") + 1 == 0)
-                                            {
-                                                d += c.Substring(0, c.IndexOf(" ")) + ", ";
-                                            }
-                                        }
-                                        else
-                                        {
-                                            if (d.IndexOf(b.Substring(0, b.IndexOf(" ")) + ", ") + 1 == 0)
-                                            {
-                                                d += b.Substring(0, b.IndexOf(" ")) + ", ";
-                                            }
-                                        }
-                                    }
-                                    else
-                                    {
-                                        if (isReplace)
-                                        {
-                                            cmdtext.Text = cmdtext.Text + b;
-                                        }
-                                        if (c != "")
-                                        {
-                                            if (d.IndexOf(c + ", ") + 1 == 0)
-                                            {
-                                                d += c + ", ";
-                                            }
-                                        }
-                                        else
-                                        {
-                                            if (d.IndexOf(b + ", ") + 1 == 0)
-                                            {
-                                                d += b + ", ";
-                                            }
-                                        }
-                                    }
-                                    isReplace = false;
-                                }
-                            }
-                            if (d != "")
-                            {
-                                ShowLog(d.Substring(0, d.Length - 2), Brushes.Green);
-                            }
-                        }
-                        else
-                        {
-                            int a = cmdtext.Text.Length;
-                            bool endWhile = false;
-                            string c = "";
-                            while (a != 0)
-                            {
-                                string b = cmdtext.Text.Substring(0, a);
-                                foreach (string n in tabCompleteList)
-                                {
-                                    if (n.IndexOf(b) == 0)
-                                    {
-                                        if (n.IndexOf(" ") + 1 != 0)
-                                        {
-                                            if (!endWhile)
-                                            {
-                                                cmdtext.Text = n.Substring(0, n.IndexOf(" "));
-                                            }
-                                            if (c.IndexOf(n.Substring(0, n.IndexOf(" ")) + ", ") + 1 == 0)
-                                            {
-                                                c += n.Substring(0, n.IndexOf(" ")) + ", ";
-                                            }
-                                        }
-                                        else
-                                        {
-                                            if (!endWhile)
-                                            {
-                                                cmdtext.Text = n;
-                                            }
-                                            if (c.IndexOf(n + ", ") + 1 == 0)
-                                            {
-                                                c += n + ", ";
-                                            }
-                                        }
-                                        endWhile = true;
-                                        //break;
-                                    }
-                                }
-                                if (endWhile)
-                                {
-                                    break;
-                                }
-                                else
-                                {
-                                    a--;
-                                }
-                            }
-                            if (c != "")
-                            {
-                                ShowLog(c.Substring(0, c.Length - 2), Brushes.Green);
-                            }
-                        }
-                        cmdtext.SelectionStart = cmdtext.Text.Length;
-                        tabCompleteList.Clear();
-                    }
-                    catch
-                    {
-                        DialogShow.GrowlErr("命令补全失败！");
-                    }
-                }
-            }
-            */
         }
 
         private void cmdtext_KeyUp(object sender, KeyEventArgs e)
@@ -1961,137 +1930,58 @@ namespace MSL
             catch { }
         }
 
-        private void gotoFrpc_Click(object sender, RoutedEventArgs e)
+        #region 上传日志到mclo.gs
+        string logs = "";
+        private void shareLog_Click(object sender, RoutedEventArgs e)
         {
-            string ipAddress = string.Empty;
-
-            // 获取本地计算机的IP地址列表
-            IPAddress[] localIPs = Dns.GetHostAddresses(Dns.GetHostName());
-            // 正则表达式匹配内网地址的模式
-            string privateIpPattern = @"^(10\.|192\.168\.|172\.(1[6-9]|2[0-9]|3[0-1])\.)";
-            // 遍历IP地址列表
-            foreach (IPAddress localIP in localIPs)
+            //遍历获取logs
+            foreach (var block in outlog.Document.Blocks)
             {
-                // 检查IPv4地址是否为公网IP
-                if (localIP.AddressFamily == System.Net.Sockets.AddressFamily.InterNetwork &&
-                    !IPAddress.IsLoopback(localIP) &&
-                    !Regex.IsMatch(localIP.ToString(), privateIpPattern))
+                if (block is Paragraph paragraph)
                 {
-                    ipAddress = localServerIPLab.Content.ToString();
-
-                    if (ipAddress.Contains(":"))
+                    foreach (var inline in paragraph.Inlines)
                     {
-                        Shows.ShowMsg(this, "您的公网IP为：" + localIP.ToString() + "\n您的服务器远程进入地址为：" + localIP.ToString() + ":" + ipAddress.Substring(ipAddress.IndexOf(":") + 1, ipAddress.Length - ipAddress.IndexOf(":") - 1) + "\n注意：记得检查您的防火墙是否关闭，否则远程玩家无法进入服务器！", "信息");
+                        if (inline is Run run)
+                        {
+                            logs += run.Text + "\n";
+                        }
                     }
-                    else
-                    {
-                        Shows.ShowMsg(this, "您的公网IP为：" + localIP.ToString() + "\n您的服务器远程进入地址为：" + localIP.ToString() + "\n注意：记得检查您的防火墙是否关闭，否则远程玩家无法进入服务器！", "信息");
-                    }
-                    return;
                 }
             }
-
-            // 返回IP地址，如果没有找到公网IP，则返回"none"
-            //return string.IsNullOrEmpty(ipAddress) ? "none" : ipAddress;
-            Shows.ShowMsg(this, "服务器开启后，通常远程的小伙伴是无法进入的，您需要进行内网映射才可让他人进入。开服器内置有免费的内网映射，您可点击主界面左侧的“内网映射”按钮查看详情并进行配置。", "注意");
-            GotoFrpcEvent();
+            //启动线程上传日志
+            Thread thread = new Thread(UploadLogs);
+            thread.Start();
+            Growl.Info("正在上传···");
         }
 
-        private void systemInfoBtn_Click(object sender, RoutedEventArgs e)
+        private void UploadLogs()
         {
-            if (systemInfoBtn.Content.ToString() == "显示占用:关")
+            string path = "1/log";
+            string customUrl = "https://api.mclo.gs";
+            int contentType = 2;
+            //请求内容
+            string parameterData = "content=" + logs;
+
+            string response = Functions.Post(path, contentType, parameterData, customUrl);
+            //解析返回的东东
+            var jsonResponse = JsonConvert.DeserializeObject<dynamic>(response);
+
+            if (jsonResponse.success == true)
             {
-                Shows.GrowlInfo("加载相关信息中，请稍等……");
-                getServerInfo = true;
-                //outlog.Margin = new Thickness(10, 10, 125, 47);
-                systemInfoBtn.Content = "显示占用:开";
-                Thread thread = new Thread(GetSystemInfo);
-                thread.Start();
+                Dispatcher.Invoke(() =>
+                {
+                    Clipboard.Clear();
+                    Clipboard.SetText(jsonResponse.url.ToString());
+                });
+                Growl.Success("日志地址: " + jsonResponse.url + "\n已经复制到剪贴板啦！\n如果遇到问题且不会看日志,\n请把链接粘贴在群中求助，\n记得详细描述你的问题哦！");
             }
             else
             {
-                Shows.ShowMsg(this, "关闭此功能后，输出预览功能也将同时关闭！", "注意");
-                //outlog.Margin = new Thickness(10, 10, 10, 47);
-                getServerInfo = false;
-                systemInfoBtn.Content = "显示占用:关";
-                previewOutlog.Text = "预览功能已关闭，请前往服务器控制台界面查看日志信息！";
+                Growl.Error("请求失败: " + jsonResponse.error);
             }
         }
-
-        void GetSystemInfo()
-        {
-            while (getServerInfo == true)
-            {
-                try
-                {
-                    try
-                    {
-                        var cpuCounter = new PerformanceCounter("Processor Information", "% Processor Utility", "_Total");
-                        cpuCounter.NextValue();
-                        float cpuUsage = cpuCounter.NextValue();
-                        if ((int)cpuUsage <= 100)
-                        {
-                            Dispatcher.Invoke(() =>
-                            {
-                                cpuInfoLab.Content = "CPU:" + cpuUsage.ToString("f2") + "%";
-                                cpuInfoBar.Value = (int)cpuUsage;
-                            });
-                        }
-                    }
-                    catch
-                    {
-                        Dispatcher.Invoke(() =>
-                        {
-                            cpuInfoLab.Content = "无法获取CPU信息";
-                        });
-                    }
-                    var ramCounter = new PerformanceCounter("Memory", "Available MBytes");
-
-                    float ramAvailable = ramCounter.NextValue() / 1024;
-                    double allMemory = MainWindow.PhisicalMemory / 1024.0 / 1024.0 / 1024.0;
-                    Dispatcher.Invoke(() =>
-                    {
-                        memoryInfoLab.Content = "总内存:" + allMemory.ToString("f2") + "G\n" + "已使用:" + (allMemory - ramAvailable).ToString("f2") + "G\n" + "可使用:" + ramAvailable.ToString("f2") + "G";
-                        memoryInfoBar.Value = (allMemory - ramAvailable) / allMemory * 100;
-                        availableMemoryInfoBar.Value = ramAvailable / allMemory * 100;
-
-                        if (outlog.Document.Blocks.LastBlock != null)
-                        {
-                            TextRange textRange = new TextRange(outlog.Document.Blocks.LastBlock.ContentStart, outlog.Document.Blocks.LastBlock.ContentEnd);
-                            previewOutlog.Text = textRange.Text;
-                        }
-                    });
-                }
-                catch
-                {
-                    Shows.GrowlErr("无法获取系统占用信息！显示占用功能已自动关闭！\n通常此问题是因为系统原因造成的，不影响软件正常使用！");
-                    Dispatcher.Invoke(() =>
-                    {
-                        previewOutlog.Text = "预览功能已关闭，请前往服务器控制台界面查看日志信息！";
-                        systemInfoBtn.Content = "显示占用:关";
-                    });
-                    getServerInfo = false;
-                }
-                Thread.Sleep(3000);
-            }
-        }
-        private void playerInfoBtn_Click(object sender, RoutedEventArgs e)
-        {
-            if (playerInfoBtn.Content.ToString() == "记录玩家:关")
-            {
-                Shows.GrowlSuccess("已开启");
-                getPlayerInfo = true;
-                //outlog.Margin = new Thickness(10, 10, 125, 47);
-                playerInfoBtn.Content = "记录玩家:开";
-            }
-            else
-            {
-                Shows.GrowlSuccess("已关闭");
-                //outlog.Margin = new Thickness(10, 10, 10, 47);
-                getPlayerInfo = false;
-                playerInfoBtn.Content = "记录玩家:关";
-            }
-        }
+        #endregion
+        
         #endregion
 
         #region 服务器功能调整
@@ -3823,58 +3713,6 @@ namespace MSL
         private void Window_Deactivated(object sender, EventArgs e)
         {
             Growl.SetGrowlParent(GrowlPanel, false);
-        }
-        #endregion
-
-        #region 上传日志到mclo.gs
-        string logs = "";
-        private void shareLog_Click(object sender, RoutedEventArgs e)
-        {
-            //遍历获取logs
-            foreach (var block in outlog.Document.Blocks)
-            {
-                if (block is Paragraph paragraph)
-                {
-                    foreach (var inline in paragraph.Inlines)
-                    {
-                        if (inline is Run run)
-                        {
-                            logs += run.Text + "\n";
-                        }
-                    }
-                }
-            }
-            //启动线程上传日志
-            Thread thread = new Thread(UploadLogs);
-            thread.Start();
-            Growl.Info("正在上传···");
-        }
-
-        private void UploadLogs()
-        {
-            string path = "1/log";
-            string customUrl = "https://api.mclo.gs";
-            int contentType = 2;
-            //请求内容
-            string parameterData = "content=" + logs;
-
-            string response = Functions.Post(path, contentType, parameterData, customUrl);
-            //解析返回的东东
-            var jsonResponse = JsonConvert.DeserializeObject<dynamic>(response);
-
-            if (jsonResponse.success == true)
-            {
-                Dispatcher.Invoke(() =>
-                {
-                    Clipboard.Clear();
-                    Clipboard.SetText(jsonResponse.url.ToString());
-                });
-                Growl.Success("日志地址: " + jsonResponse.url + "\n已经复制到剪贴板啦！\n如果遇到问题且不会看日志,\n请把链接粘贴在群中求助，\n记得详细描述你的问题哦！");
-            }
-            else
-            {
-                Growl.Error("请求失败: " + jsonResponse.error);
-            }
         }
         #endregion
     }

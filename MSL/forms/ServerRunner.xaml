@@ -148,7 +148,7 @@
                             <ComboBoxItem Content="/say（全服说话）" FontFamily="Microsoft YaHei UI"/>
                             <ComboBoxItem Content="/pardon（解除封禁）" FontFamily="Microsoft YaHei UI"/>
                         </ComboBox>
-                        <TextBox x:Name="cmdtext" Grid.Column="1" Margin="0,0,5,10" Text="服务器已关闭" KeyDown="cmdtext_KeyDown" Visibility="Visible" IsEnabled="False" VerticalAlignment="Center" />
+                        <TextBox x:Name="cmdtext" Grid.Column="1" Margin="0,0,5,10" Text="服务器已关闭" KeyDown="cmdtext_KeyDown" Visibility="Visible" IsEnabled="False" VerticalAlignment="Center" KeyUp="cmdtext_KeyUp" />
                         <Button x:Name="sendcmd" Grid.Column="2" Content="发送" Style="{StaticResource ButtonPrimary}" HorizontalAlignment="Right" Margin="0,0,5,10" VerticalAlignment="Center" Click="sendcmd_Click" FontWeight="Normal" Visibility="Visible" FontSize="12" Height="32" Width="58" IsEnabled="False"/>
                         <Button x:Name="controlServer" Grid.Column="3" Content="开服" Margin="0,0,5,10" VerticalAlignment="Center" Height="32" Click="controlServer_Click" MouseDoubleClick="controlServer_MouseDoubleClick" Width="52" HorizontalAlignment="Right"/>
                         <Button x:Name="shareLog" Grid.Column="4" Content="分享日志" Margin="0,0,10,10" VerticalAlignment="Center" Height="32" Click="shareLog_Click" MouseDoubleClick="controlServer_MouseDoubleClick" Width="68" HorizontalAlignment="Right"/>

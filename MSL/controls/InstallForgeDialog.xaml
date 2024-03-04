@@ -13,9 +13,10 @@
                 <RowDefinition Height="*"/>
                 <RowDefinition Height="auto"/>
             </Grid.RowDefinitions>
-            <TextBlock Grid.Row="0" Foreground="{DynamicResource PrimaryTextBrush}" HorizontalAlignment="Center" Margin="15,15,0,0" TextWrapping="Wrap" Text="正在为你安装Forge···请稍等🌹" VerticalAlignment="Top" FontWeight="Bold" FontSize="16"/>
+            <TextBlock Grid.Row="0" Foreground="{DynamicResource PrimaryTextBrush}" HorizontalAlignment="Center" Margin="15,15,0,0" TextWrapping="Wrap" Text="正在安装Forge，请耐心等待……" VerticalAlignment="Top" FontSize="16"/>
             <hc:TextBox Grid.Row="1" Margin="15" x:Name="log" TextAlignment="Center" TextWrapping="Wrap"/>
-            <TextBlock Grid.Row="2" Foreground="{DynamicResource PrimaryTextBrush}" HorizontalAlignment="Center" Margin="15,0,0,15" TextWrapping="Wrap" Text="等待安装开始···" VerticalAlignment="Top" FontSize="16" x:Name="status"/>
+            <TextBlock Grid.Row="2" Foreground="{DynamicResource PrimaryTextBrush}" HorizontalAlignment="Center" Margin="15,0,0,15" TextWrapping="Wrap" Text="等待安装开始……" VerticalAlignment="Top" FontSize="16" x:Name="status"/>
+            <Button Grid.Row="2" x:Name="CancelButton" Style="{StaticResource ButtonPrimary}" Content="取消" HorizontalAlignment="Right" Margin="0,0,15,10" VerticalAlignment="Bottom" Width="75" FontSize="14" Click="CancelButton_Click"/>
         </Grid>
     </Grid>
 </hc:Window>

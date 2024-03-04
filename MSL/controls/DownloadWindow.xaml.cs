@@ -17,18 +17,17 @@ namespace MSL
     /// </summary>
     public partial class DownloadWindow : HandyControl.Controls.Window
     {
-        //DownLoadFile dlf = new DownLoadFile();
         public static int downloadthread = 8;
-        public static string downloadPath;
-        public static string filename;
-        public static string downloadurl;
-        public static string expectedSha256;
-        public static bool isStopDwn;
+        public bool isStopDwn;
+        private readonly string downloadPath;
+        private readonly string filename;
+        private readonly string downloadurl;
+        private readonly string expectedSha256;
+        private DownloadService downloader;
 
         public DownloadWindow(string _downloadurl, string _downloadPath, string _filename, string downloadinfo,string sha256 = "")
         {
             InitializeComponent();
-            //检查文件夹存在不，不存在就来一个！
 
             if (!Directory.Exists(_downloadPath))
             {
@@ -46,20 +45,19 @@ namespace MSL
                 expectedSha256 = "";
             }
 
-
             taskinfo.Text = downloadinfo;
             isStopDwn = false;
             Thread thread = new Thread(Downloader);
             thread.Start();
         }
-        void Downloader()
+        private void Downloader()
         {
             var downloadOpt = new DownloadConfiguration()
             {
                 ChunkCount = downloadthread, // file parts to download, default value is 1
                 ParallelDownload = true // download parts of file as parallel or not. Default value is false
             };
-            var downloader = new DownloadService(downloadOpt);
+            downloader = new DownloadService(downloadOpt);
             // Provide `FileName` and `TotalBytesToReceive` at the start of each downloads
             downloader.DownloadStarted += OnDownloadStarted;
 
@@ -78,11 +76,6 @@ namespace MSL
             // cancelled or download completed successfully.
             downloader.DownloadFileCompleted += OnDownloadFileCompleted;
             downloader.DownloadFileTaskAsync(downloadurl, downloadPath + "\\" + filename);
-            while (isStopDwn != true)
-            {
-                Thread.Sleep(1000);
-            }
-            downloader.CancelAsync();
         }
 
         private void OnDownloadStarted(object sender, DownloadStartedEventArgs e)
@@ -104,12 +97,11 @@ namespace MSL
                     infolabel.Text = "取消成功！";
                     try
                     {
-                        File.Delete(downloadPath + @"\" + filename);
+                        File.Delete(downloadPath + "\\" + filename);
                     }
                     catch { }
                 });
                 Thread.Sleep(1000);
-                downloadurl = null;
                 Dispatcher.Invoke(() =>
                 {
                     Close();
@@ -127,7 +119,6 @@ namespace MSL
                             pbar.Value = 100;
                         });
                         Thread.Sleep(1000);
-                        downloadurl = null;
                         Dispatcher.Invoke(() =>
                         {
                             Close();
@@ -145,7 +136,6 @@ namespace MSL
                                 pbar.Value = 100;
                             });
                             Thread.Sleep(1000);
-                            downloadurl = null;
                             Dispatcher.Invoke(() =>
                             {
                                 Close();
@@ -160,12 +150,11 @@ namespace MSL
                                 infolabel.Text = "校验完整性失败！请重新下载！";
                                 try
                                 {
-                                    File.Delete(downloadPath + @"\" + filename);
+                                    File.Delete(downloadPath + "\\" + filename);
                                 }
                                 catch { }
                             });
                             Thread.Sleep(1000);
-                            downloadurl = null;
                             Dispatcher.Invoke(() =>
                             {
                                 Close();
@@ -246,7 +235,6 @@ namespace MSL
                     }
                 });
                 Thread.Sleep(1000);
-                downloadurl = null;
                 Dispatcher.Invoke(() =>
                 {
                     Close();
@@ -306,7 +294,7 @@ namespace MSL
 
         private void button1_Click(object sender, RoutedEventArgs e)
         {
-            //Downloader.CancelAsync();
+            downloader.CancelAsync();
             isStopDwn = true;
         }
 
