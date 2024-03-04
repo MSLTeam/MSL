@@ -306,7 +306,7 @@ namespace MSL.pages
             {
                 window = (MainWindow)Window.GetWindow(this);
             });
-            
+
             string userAccount = "";
             string userPassword = "";
 
@@ -319,50 +319,70 @@ namespace MSL.pages
                 userAccount = match.Groups[1].Value;
                 userPassword = match.Groups[2].Value;
             }
+            bool _ret = false;
             Dispatcher.Invoke(() =>
             {
                 if (!Shows.ShowMsg(window, "您的付费资格已过期，请进行续费！\n点击确定开始付费节点续费操作。", "提示", true, "取消"))
                 {
-                    return;
+                    _ret = true;
                 }
             });
-            
+            if (_ret)
+            {
+                return;
+            }
 
             Process.Start("https://afdian.net/a/makabaka123");
             Dispatcher.Invoke(() =>
             {
                 if (!Shows.ShowMsg(window, "请在弹出的浏览器网站中进行购买，购买完毕后点击确定进行下一步操作……", "购买须知", true, "取消购买", "确定"))
                 {
-                    return;
+                    _ret = true;
                 }
             });
+            if (_ret)
+            {
+                return;
+            }
 
             string order = "";
             string qq = "";
+            bool input = false;
             Dispatcher.Invoke(() =>
             {
-                bool input = Shows.ShowInput(window, "输入爱发电订单号：\n（头像→订单→找到发电项目→复制项目下方订单号）", out order);
-                if (!input)
-                {
-                    return;
-                }
-                if (Regex.IsMatch(order, "[^0-9]") || order.Length < 5)
+                input = Shows.ShowInput(window, "输入爱发电订单号：\n（头像→订单→找到发电项目→复制项目下方订单号）", out order);
+            });
+            if (!input)
+            {
+                return;
+            }
+            if (Regex.IsMatch(order, "[^0-9]") || order.Length < 5)
+            {
+                Dispatcher.Invoke(() =>
                 {
                     Shows.ShowMsg(window, "请输入合法订单号：仅含数字且长度不小于5位！", "获取失败！");
-                    return;
-                }
-                bool _input = Shows.ShowInput(window, "输入账号(QQ号)：", out qq);
-                if (!_input)
-                {
-                    return;
-                }
-                if (Regex.IsMatch(qq, "[^0-9]") || qq.Length < 5)
-                {
-                    Shows.ShowMsg(window, "请输入合法账号：仅含数字且长度不小于5位！", "获取失败！");
-                    return;
-                }
+                });
+                return;
+            }
+            bool _input = false;
+            Dispatcher.Invoke(() =>
+            {
+                 _input= Shows.ShowInput(window, "输入账号(QQ号)：", out qq);
             });
             
+            if (!_input)
+            {
+                return;
+            }
+            if (Regex.IsMatch(qq, "[^0-9]") || qq.Length < 5)
+            {
+                Dispatcher.Invoke(() =>
+                {
+                    Shows.ShowMsg(window, "请输入合法账号：仅含数字且长度不小于5位！", "获取失败！");
+                });
+                return;
+            }
+
             Dialog _dialog = null;
             try
             {
