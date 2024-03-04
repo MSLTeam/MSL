@@ -258,7 +258,7 @@ namespace MSL
         int counter = 0;
         private void OnDownloadProgressChanged(object sender, Downloader.DownloadProgressChangedEventArgs e)
         {
-            if (counter <= 200)
+            if (counter < 256)
             {
                 counter++;
             }
@@ -271,8 +271,6 @@ namespace MSL
                     pbar.Value = e.ProgressPercentage;
                 });
             }
-
-            //Thread.Sleep(1000);
         }
 
         public static class DispatcherHelper
