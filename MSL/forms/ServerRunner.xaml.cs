@@ -49,7 +49,7 @@ namespace MSL
         private bool solveProblemSystem;
         private string foundProblems;
         private string DownjavaName;
-        public string RserverId;
+        public string RserverID;
         public string Rservername;
         public string Rserverjava;
         public string Rserverserver;
@@ -78,7 +78,7 @@ namespace MSL
             LoadingCircle loadingCircle = new LoadingCircle();
             MainGrid.Children.Add(loadingCircle);
             MainGrid.RegisterName("loadingBar", loadingCircle);
-            ServerList.RunningServerIDs += RserverId + "_0 ";
+            ServerList.runningServers.Add(RserverID,0);
             await Task.Delay(100);
             await Task.Run(() => { WindowLoadingEvent(); });
             GetFastCmd();
@@ -111,9 +111,9 @@ namespace MSL
         {
             try
             {
-                if (ServerList.RunningServerIDs.Contains(RserverId + "_0 "))
+                if (ServerList.runningServers.ContainsKey(RserverID))
                 {
-                    ServerList.RunningServerIDs = ServerList.RunningServerIDs.Replace(RserverId + "_0 ", "");
+                    ServerList.runningServers.Remove(RserverID);
                 }
                 if (ServerProcess.HasExited != true)
                 {
@@ -126,7 +126,7 @@ namespace MSL
                 }
                 else
                 {
-                    RserverId = null;
+                    RserverID = null;
                     getServerInfo = false;
                     getPlayerInfo = false;
                     outlog.Document.Blocks.Clear();
@@ -135,7 +135,7 @@ namespace MSL
             }
             catch
             {
-                RserverId = null;
+                RserverID = null;
                 getServerInfo = false;
                 getPlayerInfo = false;
                 outlog.Document.Blocks.Clear();
@@ -147,7 +147,7 @@ namespace MSL
         {
             //Get Server's Information
             JObject jsonObject = JObject.Parse(File.ReadAllText(@"MSL\ServerList.json", Encoding.UTF8));
-            JObject _json = (JObject)jsonObject[RserverId];
+            JObject _json = (JObject)jsonObject[RserverID];
             if (_json["core"].ToString().IndexOf("bungeecord", StringComparison.OrdinalIgnoreCase) != -1 || _json["core"].ToString().IndexOf("waterfall", StringComparison.OrdinalIgnoreCase) != -1)//is the server Bungeecord,it will send a message and close window
             {
                 Dispatcher.Invoke(() =>
@@ -289,7 +289,7 @@ namespace MSL
             {
                 _json["java"].Replace(Rserverjava);
                 _json["base"].Replace(Rserverbase);
-                jsonObject[RserverId].Replace(_json);
+                jsonObject[RserverID].Replace(_json);
                 File.WriteAllText(@"MSL\ServerList.json", Convert.ToString(jsonObject), Encoding.UTF8);
             }
         }//窗体加载后，运行此方法，主要为改变UI、检测服务器是否完整
@@ -315,7 +315,7 @@ namespace MSL
 
         private void ShowWindowEvent()
         {
-            if (RserverId == MainWindow.serverid)
+            if (RserverID == MainWindow.serverIDs)
             {
                 if (WindowState == WindowState.Minimized)
                 {
@@ -616,7 +616,11 @@ namespace MSL
         {
             if (isEnable)
             {
-                ServerList.RunningServerIDs = ServerList.RunningServerIDs.Replace(RserverId + "_0 ", RserverId + "_1 ");
+                if (ServerList.runningServers.ContainsKey(RserverID))
+                {
+                    ServerList.runningServers.Remove(RserverID);
+                    ServerList.runningServers.Add(RserverID, 1);
+                }
                 ServerStateChange();
 
                 getServerInfoLine = 0;
@@ -640,7 +644,11 @@ namespace MSL
             }
             else
             {
-                ServerList.RunningServerIDs = ServerList.RunningServerIDs.Replace(RserverId + "_1 ", RserverId + "_0 ");
+                if (ServerList.runningServers.ContainsKey(RserverID))
+                {
+                    ServerList.runningServers.Remove(RserverID);
+                    ServerList.runningServers.Add(RserverID, 0);
+                }
                 ServerStateChange();
 
                 Shows.GrowlInfo("服务器已关闭！");
@@ -921,9 +929,9 @@ namespace MSL
                             if (isConfirmed)
                             {
                                 JObject jsonObject = JObject.Parse(File.ReadAllText(@"MSL\ServerList.json", Encoding.UTF8));
-                                JObject _json = (JObject)jsonObject[RserverId];
+                                JObject _json = (JObject)jsonObject[RserverID];
                                 _json["encoding_out"] = encoding;
-                                jsonObject[RserverId] = _json;
+                                jsonObject[RserverID] = _json;
                                 File.WriteAllText("MSL\\Serverlist.json", Convert.ToString(jsonObject), Encoding.UTF8);
                                 Dispatcher.Invoke(() =>
                                 {
@@ -2735,7 +2743,7 @@ namespace MSL
                 {
                     selectJava.Items.Clear();
                 });
-                string response = Functions.Get("query/java", out string sha256Exp);
+                string response = Functions.Get("query/java");
                 JArray jArray = JArray.Parse(response);
                 //List<string> strings = new List<string>();
                 foreach (var j in jArray)
@@ -2823,7 +2831,7 @@ namespace MSL
                     {
                         await Dispatcher.InvokeAsync(() =>
                         {
-                            dwnJava = DownloadJava(selectJava.SelectedItem.ToString(), Functions.Get("download/java/" + selectJava.SelectedItem.ToString(), out string sha256Exp));
+                            dwnJava = DownloadJava(selectJava.SelectedItem.ToString(), Functions.Get("download/java/" + selectJava.SelectedItem.ToString()));
                         });
                         if (dwnJava == 1)
                         {
@@ -2917,14 +2925,14 @@ namespace MSL
                 RserverJVMcmd = jVMcmd.Text;
 
                 JObject jsonObject = JObject.Parse(File.ReadAllText(@"MSL\ServerList.json", Encoding.UTF8));
-                JObject _json = (JObject)jsonObject[RserverId];
+                JObject _json = (JObject)jsonObject[RserverID];
                 _json["name"].Replace(Rservername);
                 _json["java"].Replace(Rserverjava);
                 _json["base"].Replace(Rserverbase);
                 _json["core"].Replace(Rserverserver);
                 _json["memory"].Replace(RserverJVM);
                 _json["args"].Replace(RserverJVMcmd);
-                jsonObject[RserverId].Replace(_json);
+                jsonObject[RserverID].Replace(_json);
                 File.WriteAllText(@"MSL\ServerList.json", Convert.ToString(jsonObject), Encoding.UTF8);
                 LoadSettings();
                 SaveConfigEvent();
@@ -3243,7 +3251,7 @@ namespace MSL
         private void autostartServer_Click(object sender, RoutedEventArgs e)
         {
             JObject jsonObject = JObject.Parse(File.ReadAllText(@"MSL\ServerList.json", Encoding.UTF8));
-            JObject _json = (JObject)jsonObject[RserverId];
+            JObject _json = (JObject)jsonObject[RserverID];
             if (autoStartserver.Content.ToString() == "关服自动重启:禁用")
             {
                 autoRestart = true;
@@ -3256,13 +3264,13 @@ namespace MSL
                 autoStartserver.Content = "关服自动重启:禁用";
                 _json["autostartServer"] = "False";
             }
-            jsonObject[RserverId] = _json;
+            jsonObject[RserverID] = _json;
             File.WriteAllText("MSL\\Serverlist.json", Convert.ToString(jsonObject), Encoding.UTF8);
         }
         private void inputCmdEncoding_Click(object sender, RoutedEventArgs e)
         {
             JObject jsonObject = JObject.Parse(File.ReadAllText(@"MSL\ServerList.json", Encoding.UTF8));
-            JObject _json = (JObject)jsonObject[RserverId];
+            JObject _json = (JObject)jsonObject[RserverID];
             if (inputCmdEncoding.Content.ToString() == "输入编码:ANSI")
             {
                 inputCmdEncoding.Content = "输入编码:UTF8";
@@ -3273,14 +3281,14 @@ namespace MSL
                 inputCmdEncoding.Content = "输入编码:ANSI";
                 _json["encoding_in"] = "ANSI";
             }
-            jsonObject[RserverId] = _json;
+            jsonObject[RserverID] = _json;
             File.WriteAllText("MSL\\Serverlist.json", Convert.ToString(jsonObject), Encoding.UTF8);
             Shows.GrowlSuccess("编码更改已生效！");
         }
         private void outputCmdEncoding_Click(object sender, RoutedEventArgs e)
         {
             JObject jsonObject = JObject.Parse(File.ReadAllText(@"MSL\ServerList.json", Encoding.UTF8));
-            JObject _json = (JObject)jsonObject[RserverId];
+            JObject _json = (JObject)jsonObject[RserverID];
             if (outputCmdEncoding.Content.ToString() == "输出编码:ANSI")
             {
                 outputCmdEncoding.Content = "输出编码:UTF8";
@@ -3291,7 +3299,7 @@ namespace MSL
                 outputCmdEncoding.Content = "输出编码:ANSI";
                 _json["encoding_out"] = "ANSI";
             }
-            jsonObject[RserverId] = _json;
+            jsonObject[RserverID] = _json;
             File.WriteAllText("MSL\\Serverlist.json", Convert.ToString(jsonObject), Encoding.UTF8);
             try
             {
@@ -3312,7 +3320,7 @@ namespace MSL
         private void fileforceUTF8encoding_Click(object sender, RoutedEventArgs e)
         {
             JObject jsonObject = JObject.Parse(File.ReadAllText(@"MSL\ServerList.json", Encoding.UTF8));
-            JObject _json = (JObject)jsonObject[RserverId];
+            JObject _json = (JObject)jsonObject[RserverID];
             if (fileforceUTF8encoding.Content.ToString().Contains("开"))
             {
                 fileforceUTF8encoding.Content = "强制服务器文件UTF8编码:关";
@@ -3323,7 +3331,7 @@ namespace MSL
                 fileforceUTF8encoding.Content = "强制服务器文件UTF8编码:开";
                 _json["fileforceUTF8"] = "True";
             }
-            jsonObject[RserverId] = _json;
+            jsonObject[RserverID] = _json;
             File.WriteAllText("MSL\\Serverlist.json", Convert.ToString(jsonObject), Encoding.UTF8);
         }
         private void onlineMode_Click(object sender, RoutedEventArgs e)
@@ -3382,7 +3390,7 @@ namespace MSL
         private void closeOutlog_Click(object sender, RoutedEventArgs e)
         {
             JObject jsonObject = JObject.Parse(File.ReadAllText(@"MSL\ServerList.json", Encoding.UTF8));
-            JObject _json = (JObject)jsonObject[RserverId];
+            JObject _json = (JObject)jsonObject[RserverID];
             if (closeOutlog.Content.ToString() == "日志输出:开")
             {
                 closeOutlog.Content = "日志输出:关";
@@ -3393,14 +3401,14 @@ namespace MSL
                 closeOutlog.Content = "日志输出:开";
                 _json["closeOutlog"] = "False";
             }
-            jsonObject[RserverId] = _json;
+            jsonObject[RserverID] = _json;
             File.WriteAllText("MSL\\Serverlist.json", Convert.ToString(jsonObject), Encoding.UTF8);
         }
 
         private void closeOutlog_Copy_Click(object sender, RoutedEventArgs e)
         {
             JObject jsonObject = JObject.Parse(File.ReadAllText(@"MSL\ServerList.json", Encoding.UTF8));
-            JObject _json = (JObject)jsonObject[RserverId];
+            JObject _json = (JObject)jsonObject[RserverID];
             if (closeOutlog_Copy.Content.ToString() == "屏蔽关键字日志:关")
             {
                 bool input = Shows.ShowInput(this, "输入你想屏蔽的关键字，\n开服器将不会输出含有此关键字的日志", out string text);
@@ -3417,13 +3425,13 @@ namespace MSL
                 closeOutlog_Copy.Content = "屏蔽关键字日志:关";
                 _json.Remove("shieldLog");
             }
-            jsonObject[RserverId] = _json;
+            jsonObject[RserverID] = _json;
             File.WriteAllText("MSL\\Serverlist.json", Convert.ToString(jsonObject), Encoding.UTF8);
         }
         private void shieldStackOut_Click(object sender, RoutedEventArgs e)
         {
             JObject jsonObject = JObject.Parse(File.ReadAllText(@"MSL\ServerList.json", Encoding.UTF8));
-            JObject _json = (JObject)jsonObject[RserverId];
+            JObject _json = (JObject)jsonObject[RserverID];
             if (shieldStackOut.Content.ToString() == "屏蔽堆栈追踪:开")
             {
                 shieldStackOut.Content = "屏蔽堆栈追踪:关";
@@ -3434,13 +3442,13 @@ namespace MSL
                 shieldStackOut.Content = "屏蔽堆栈追踪:开";
                 _json["shieldStackOut"] = "True";
             }
-            jsonObject[RserverId] = _json;
+            jsonObject[RserverID] = _json;
             File.WriteAllText("MSL\\Serverlist.json", Convert.ToString(jsonObject), Encoding.UTF8);
         }
         private void autoClearOutlog_Click(object sender, RoutedEventArgs e)
         {
             JObject jsonObject = JObject.Parse(File.ReadAllText(@"MSL\ServerList.json", Encoding.UTF8));
-            JObject _json = (JObject)jsonObject[RserverId];
+            JObject _json = (JObject)jsonObject[RserverID];
             if (autoClearOutlog.Content.ToString() == "自动清屏:开")
             {
                 bool msgreturn = Shows.ShowMsg(this, "关闭此功能后，服务器输出界面超过1000行日志后将不再清屏，这样可能会造成性能损失，您确定要继续吗？", "警告", true, "取消");
@@ -3455,13 +3463,13 @@ namespace MSL
                 autoClearOutlog.Content = "自动清屏:开";
                 _json["autoClearOutlog"] = "True";
             }
-            jsonObject[RserverId] = _json;
+            jsonObject[RserverID] = _json;
             File.WriteAllText("MSL\\Serverlist.json", Convert.ToString(jsonObject), Encoding.UTF8);
         }
         void GetFastCmd()
         {
             JObject jsonObject = JObject.Parse(File.ReadAllText(@"MSL\ServerList.json", Encoding.UTF8));
-            JObject _json = (JObject)jsonObject[RserverId];
+            JObject _json = (JObject)jsonObject[RserverID];
             if (_json["fastcmd"] == null)
             {
                 fastCmdList.Items.Clear();
@@ -3492,10 +3500,10 @@ namespace MSL
         void SetFastCmd()
         {
             JObject jsonObject = JObject.Parse(File.ReadAllText(@"MSL\ServerList.json", Encoding.UTF8));
-            JObject _json = (JObject)jsonObject[RserverId];
+            JObject _json = (JObject)jsonObject[RserverID];
             JArray fastcmdArray = new JArray(fastCmdList.Items.Cast<string>().Skip(1));
             _json["fastcmd"] = fastcmdArray;
-            jsonObject[RserverId] = _json;
+            jsonObject[RserverID] = _json;
             File.WriteAllText("MSL\\Serverlist.json", Convert.ToString(jsonObject), Encoding.UTF8);
             GetFastCmd();
             /*
@@ -3516,7 +3524,7 @@ namespace MSL
         private void resetFastCmd_Click(object sender, RoutedEventArgs e)
         {
             JObject jsonObject = JObject.Parse(File.ReadAllText(@"MSL\ServerList.json", Encoding.UTF8));
-            JObject _json = (JObject)jsonObject[RserverId];
+            JObject _json = (JObject)jsonObject[RserverID];
             if (_json["fastcmd"] == null)
             {
                 return;
@@ -3524,7 +3532,7 @@ namespace MSL
             else
             {
                 _json.Remove("fastcmd");
-                jsonObject[RserverId] = _json;
+                jsonObject[RserverID] = _json;
                 File.WriteAllText("MSL\\Serverlist.json", Convert.ToString(jsonObject), Encoding.UTF8);
                 Shows.ShowMsg(this, "要使重置生效需重启此窗口，请您手动关闭此窗口并打开", "提示");
             }
@@ -3721,7 +3729,7 @@ namespace MSL
             if (loadOrSaveTaskConfig.Content.ToString() == "加载任务配置")
             {
                 JObject jsonObject = JObject.Parse(File.ReadAllText(@"MSL\ServerList.json", Encoding.UTF8));
-                JObject _json = (JObject)jsonObject[RserverId];
+                JObject _json = (JObject)jsonObject[RserverID];
 
                 if (_json["timedtasks"] != null)
                 {
@@ -3787,9 +3795,9 @@ namespace MSL
             new JProperty("stopTasks", new JObject(stopTasks.Select(kv => new JProperty(kv.Key.ToString(), kv.Value))))
         );
                 JObject jsonObject = JObject.Parse(File.ReadAllText(@"MSL\ServerList.json", Encoding.UTF8));
-                JObject _json = (JObject)jsonObject[RserverId];
+                JObject _json = (JObject)jsonObject[RserverID];
                 _json["timedtasks"] = data;
-                jsonObject[RserverId] = _json;
+                jsonObject[RserverID] = _json;
                 File.WriteAllText("MSL\\Serverlist.json", Convert.ToString(jsonObject), Encoding.UTF8);
                 Shows.GrowlSuccess("保存成功！");
             }
@@ -3798,9 +3806,9 @@ namespace MSL
         private void delTaskConfig_Click(object sender, RoutedEventArgs e)
         {
             JObject jsonObject = JObject.Parse(File.ReadAllText(@"MSL\ServerList.json", Encoding.UTF8));
-            JObject _json = (JObject)jsonObject[RserverId];
+            JObject _json = (JObject)jsonObject[RserverID];
             _json.Remove("timedtasks");
-            jsonObject[RserverId] = _json;
+            jsonObject[RserverID] = _json;
             File.WriteAllText("MSL\\Serverlist.json", Convert.ToString(jsonObject), Encoding.UTF8);
             Shows.GrowlSuccess("删除成功！");
         }

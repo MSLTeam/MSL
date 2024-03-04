@@ -13,6 +13,7 @@ using System.Threading;
 using System.Windows;
 using System.Windows.Media;
 using System.Windows.Threading;
+using Windows.Gaming.Input.ForceFeedback;
 using Brush = System.Windows.Media.Brush;
 using MessageBox = System.Windows.MessageBox;
 
@@ -32,7 +33,7 @@ namespace MSL
         readonly About _aboutPage = new About();
         public static event DeleControl AutoOpenServer;
         public static event DeleControl AutoOpenFrpc;
-        public static string serverid;
+        public static string serverIDs;
         public static string serverLink;
         public static float PhisicalMemory;
         public static bool getServerInfo = false;
@@ -82,10 +83,10 @@ namespace MSL
             //get serverlink
             try
             {
-                serverLink = Functions.Get("", out string sha256Exp, "https://msl-server.oss-cn-hangzhou.aliyuncs.com/",true);
+                serverLink = Functions.Get("", "https://msl-server.oss-cn-hangzhou.aliyuncs.com/",true);
                 try
                 {
-                    if (((int)((JObject)JsonConvert.DeserializeObject(Functions.Get("", out string sha256Exp2)))["status"]) != 200)
+                    if (((int)((JObject)JsonConvert.DeserializeObject(Functions.Get("")))["status"]) != 200)
                     {
                         serverLink = "waheal.top";
                         Shows.GrowlInfo("MSL主服务器连接超时（可能被DDos），已切换至备用服务器！");
@@ -326,7 +327,7 @@ namespace MSL
                 //int IndexofA = pageHtml.IndexOf(strtempa);
                 //string Ru = pageHtml.Substring(IndexofA + 1);
                 //string aaa = Ru.Substring(0, Ru.IndexOf("#"));
-                string aaa = Functions.Get("query/update", out string sha256Exp);
+                string aaa = Functions.Get("query/update");
                 if (aaa.Contains("v"))
                 {
                     aaa = aaa.Replace("v", "");
@@ -337,7 +338,7 @@ namespace MSL
                 if (newVersion > version)
                 {
                     //Logger.LogInfo("检测到新版本！");
-                    var updatelog = Functions.Get("query/update/log", out string sha256Exp2);
+                    var updatelog = Functions.Get("query/update/log");
                     Dispatcher.Invoke(() =>
                     {
                         if (jsonObject["autoUpdateApp"] == null)
@@ -410,9 +411,9 @@ namespace MSL
                     while (servers != "")
                     {
                         int aserver = servers.IndexOf(",");
-                        serverid = servers.Substring(0, aserver);
+                        serverIDs = servers.Substring(0, aserver);
                         AutoOpenServer();
-                        servers = servers.Replace(serverid + ",", "");
+                        servers = servers.Replace(serverIDs + ",", "");
                     }
                 }
                 //Logger.LogInfo("读取自动开启（服务器）配置成功！");
@@ -463,7 +464,7 @@ namespace MSL
             //string strtempa1 = "* ";
             //int IndexofA1 = pageHtml.IndexOf(strtempa1);
             //string Ru1 = pageHtml.Substring(IndexofA1 + 2);
-            string aaa1 = Functions.Get("download/update", out string sha256Exp2);
+            string aaa1 = Functions.Get("download/update");
             Shows.ShowDownloader(this, aaa1, AppDomain.CurrentDomain.BaseDirectory, "MSL" + aaa + ".exe", "下载新版本中……");
             if (File.Exists("MSL" + aaa + ".exe"))
             {
@@ -526,11 +527,24 @@ namespace MSL
                 e.Cancel = true;
             }
         }
+
+        private bool CheckServerRunning()
+        {
+            foreach(var item in ServerList.runningServers)
+            {
+                if (item.Value == 1)
+                {
+                    return true;
+                }
+            }
+            return false;
+        }
+
         private bool CloseApp()
         {
             try
             {
-                if (ServerList.RunningServerIDs.Contains("_1") || FrpcPage.FRPCMD.HasExited == false || OnlinePage.FRPCMD.HasExited == false)
+                if (CheckServerRunning() || FrpcPage.FRPCMD.HasExited == false || OnlinePage.FRPCMD.HasExited == false)
                 {
                     //Logger.LogWarning("服务器、内网映射或联机功能正在运行中！弹出对话框询问是否关闭……");
                     bool dialog = Shows.ShowMsg(this, "您的服务器、内网映射或联机功能正在运行中，关闭软件可能会让服务器进程在后台一直运行并占用资源！确定要继续关闭吗？\n注：如果想隐藏主窗口的话，请前往设置打开托盘图标", "警告", true, "取消");

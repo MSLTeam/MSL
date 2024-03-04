@@ -56,7 +56,7 @@ namespace MSL
                 string token = string.Empty;
                 await Task.Run(() =>
                 {
-                    string _token = Functions.Get("query/cf_token", out string sha256Exp);
+                    string _token = Functions.Get("query/cf_token");
                     try
                     {
                         byte[] data = Convert.FromBase64String(_token);

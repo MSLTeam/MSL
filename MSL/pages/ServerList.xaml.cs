@@ -27,8 +27,9 @@ namespace MSL.pages
         public static event DeleControl OpenServerForm;
         public static bool ControlSetServerTab = false;
         public static bool ControlSetPMTab = false;
-        public static List<string> serverid = new List<string>();
-        public static string RunningServerIDs = "";
+        public static List<string> serverIDs = new List<string>();
+        public static Dictionary<string, int> runningServers = new Dictionary<string, int>();
+        //public static string RunningserverIDss = "";
 
         class ServerInfo
         {
@@ -67,16 +68,17 @@ namespace MSL.pages
             for (int id = 0; id < serverList.Items.Count; id++)
             {
                 ServerInfo _server = serverList.Items[id] as ServerInfo;
-                if (RunningServerIDs.IndexOf(serverid[id] + "_1 ") + 1 != 0)
+                if (runningServers.TryGetValue(serverIDs[id], out int status))
                 {
-                    _server.ServerState = "运行中";
-                    _server.ServerStateFore = Brushes.Red;
+                    if (status == 1)
+                    {
+                        _server.ServerState = "运行中";
+                        _server.ServerStateFore = Brushes.Red;
+                        continue;
+                    }
                 }
-                else
-                {
-                    _server.ServerState = "未运行";
-                    _server.ServerStateFore = Brushes.MediumSeaGreen;
-                }
+                _server.ServerState = "未运行";
+                _server.ServerStateFore = Brushes.MediumSeaGreen;
             }
         }
 
@@ -100,14 +102,13 @@ namespace MSL.pages
         {
             try
             {
-                //string line = File.ReadAllText(@"MSL\ServerList.ini");
                 serverList.Items.Clear();
-                serverid.Clear();
+                serverIDs.Clear();
 
                 JObject jsonObject = JObject.Parse(File.ReadAllText(@"MSL\ServerList.json", Encoding.UTF8));
                 foreach (var item in jsonObject)
                 {
-                    serverid.Add(item.Key);
+                    serverIDs.Add(item.Key);
                     if (File.Exists(item.Value["base"].ToString() + "\\server-icon.png"))
                     {
                         await Dispatcher.InvokeAsync(() =>
@@ -164,21 +165,30 @@ namespace MSL.pages
             StartServerEvent();
         }
 
+        private ServerRunner CheckServerRunStatus()
+        {
+            if(runningServers.ContainsKey(serverIDs[serverList.SelectedIndex].ToString()))
+            {
+                MainWindow.serverIDs = serverIDs[serverList.SelectedIndex];
+                OpenServerForm();
+                return null;
+            }
+            else
+            {
+                ServerRunner runner = new ServerRunner
+                {
+                    RserverID = serverIDs[serverList.SelectedIndex],
+                };
+                return runner;
+            }
+        }
+
         private void StartServerEvent()
         {
             try
             {
-                if (RunningServerIDs.Contains(serverid[serverList.SelectedIndex].ToString()))
-                {
-                    MainWindow.serverid = serverid[serverList.SelectedIndex];
-                    OpenServerForm();
-                    return;
-                }
-                ServerRunner runner = new ServerRunner
-                {
-                    RserverId = serverid[serverList.SelectedIndex],
-                };
-                runner.Show();
+                var runner = CheckServerRunStatus();
+                runner?.Show();
             }
             catch (Exception ex) { MessageBox.Show("出现错误，请检查您是否选择了服务器！\n" + ex.Message); }
         }
@@ -192,18 +202,9 @@ namespace MSL.pages
         {
             try
             {
-                if (RunningServerIDs.Contains(serverid[serverList.SelectedIndex].ToString()))
-                {
-                    MainWindow.serverid = serverid[serverList.SelectedIndex];
-                    OpenServerForm();
-                    return;
-                }
-                ServerRunner runner = new ServerRunner
-                {
-                    RserverId = serverid[serverList.SelectedIndex],
-                };
+                var runner = CheckServerRunStatus();
                 ControlSetServerTab = true;
-                runner.Show();
+                runner?.Show();
             }
             catch (Exception ex) { MessageBox.Show("出现错误，请检查您是否选择了服务器！\n" + ex.Message); }
         }
@@ -230,14 +231,12 @@ namespace MSL.pages
             }
             try
             {
-
-                //serverList.Items.Remove(serverList.SelectedItem);
                 Shows.ShowMsg(mainwindow, "是否删除该服务器的目录？（服务器目录中的所有文件都会被移至回收站）", "提示", true, "取消");
                 if (MessageWindow._dialogReturn)
                 {
                     MessageWindow._dialogReturn = false;
                     JObject jsonObject = JObject.Parse(File.ReadAllText(@"MSL\ServerList.json", Encoding.UTF8));
-                    JObject _json = (JObject)jsonObject[serverid[serverList.SelectedIndex]];
+                    JObject _json = (JObject)jsonObject[serverIDs[serverList.SelectedIndex]];
                     FileSystem.DeleteDirectory(_json["base"].ToString(), UIOption.OnlyErrorDialogs, RecycleOption.SendToRecycleBin);
                     //Directory.Delete(_json["base"].ToString(), true);
                     Shows.GrowlSuccess("服务器目录已成功移至回收站！");
@@ -250,7 +249,7 @@ namespace MSL.pages
             try
             {
                 JObject jsonObject = JObject.Parse(File.ReadAllText(@"MSL\ServerList.json", Encoding.UTF8));
-                jsonObject.Remove(serverid[serverList.SelectedIndex]);
+                jsonObject.Remove(serverIDs[serverList.SelectedIndex]);
                 File.WriteAllText(@"MSL\ServerList.json", Convert.ToString(jsonObject), Encoding.UTF8);
                 Shows.GrowlSuccess("删除服务器成功！");
                 GetServerConfig();
@@ -268,12 +267,11 @@ namespace MSL.pages
             try
             {
                 JObject jsonObject = JObject.Parse(File.ReadAllText(@"MSL\ServerList.json", Encoding.UTF8));
-                JObject _json = (JObject)jsonObject[serverid[serverList.SelectedIndex]];
+                JObject _json = (JObject)jsonObject[serverIDs[serverList.SelectedIndex]];
                 Process process = new Process();
                 process.StartInfo.WorkingDirectory = _json["base"].ToString();
                 process.StartInfo.FileName = "cmd.exe";
                 process.StartInfo.Arguments = "/K " + "@ \"" + _json["java"] + "\" " + _json["memory"] + " " + _json["args"] + " -jar \"" + _json["core"] + "\" nogui&pause&exit";
-                //Directory.SetCurrentDirectory(_json["base"].ToString());
                 process.Start();
             }
             catch (Exception ex) { MessageBox.Show("出现错误，请检查您是否选择了服务器！\n" + ex.Message); }
@@ -284,7 +282,7 @@ namespace MSL.pages
             try
             {
                 JObject jsonObject = JObject.Parse(File.ReadAllText(@"MSL\ServerList.json", Encoding.UTF8));
-                JObject _json = (JObject)jsonObject[serverid[serverList.SelectedIndex]];
+                JObject _json = (JObject)jsonObject[serverIDs[serverList.SelectedIndex]];
                 Shows.GrowlInfo("正在为您打开服务器文件夹……");
                 Process.Start(_json["base"].ToString());
             }
@@ -295,18 +293,9 @@ namespace MSL.pages
         {
             try
             {
-                if (RunningServerIDs.Contains(serverid[serverList.SelectedIndex].ToString()))
-                {
-                    MainWindow.serverid = serverid[serverList.SelectedIndex];
-                    OpenServerForm();
-                    return;
-                }
-                ServerRunner runner = new ServerRunner
-                {
-                    RserverId = serverid[serverList.SelectedIndex],
-                };
+                var runner = CheckServerRunStatus();
                 ControlSetPMTab = true;
-                runner.Show();
+                runner?.Show();
             }
             catch (Exception ex) { MessageBox.Show("出现错误，请检查您是否选择了服务器！\n" + ex.Message); }
         }
@@ -318,12 +307,12 @@ namespace MSL.pages
                 try
                 {
                     serverList.Items.Clear();
-                    serverid.Clear();
+                    serverIDs.Clear();
 
                     JObject jsonObject = JObject.Parse(File.ReadAllText(@"MSL\ServerList.json", Encoding.UTF8));
                     foreach (var item in jsonObject)
                     {
-                        serverid.Add(item.Key);
+                        serverIDs.Add(item.Key);
                         if (File.Exists(item.Value["base"].ToString() + "\\server-icon.png"))
                         {
                             serverList.Items.Add(new ServerInfo(item.Value["name"].ToString(), item.Value["base"].ToString() + "\\server-icon.png", "未运行", Brushes.Green));
@@ -346,9 +335,9 @@ namespace MSL.pages
                     MessageBox.Show("err");
                 }
                 int i = 0;
-                foreach (string x in serverid)
+                foreach (string x in serverIDs)
                 {
-                    if (x == MainWindow.serverid)
+                    if (x == MainWindow.serverIDs)
                     {
                         serverList.SelectedIndex = i;
                         break;
@@ -357,17 +346,8 @@ namespace MSL.pages
                 }
                 try
                 {
-                    if (RunningServerIDs.Contains(serverid[serverList.SelectedIndex].ToString()))
-                    {
-                        MainWindow.serverid = serverid[serverList.SelectedIndex];
-                        OpenServerForm();
-                        return;
-                    }
-                    ServerRunner runner = new ServerRunner
-                    {
-                        RserverId = serverid[serverList.SelectedIndex],
-                    };
-                    runner.Show();
+                    var runner = CheckServerRunStatus();
+                    runner?.Show();
                 }
                 catch (Exception ex) { MessageBox.Show("出现错误，请检查您是否选择了服务器！\n" + ex.Message); }
             });
@@ -407,7 +387,6 @@ namespace MSL.pages
                 }
             }
             StartServerEvent();
-            // your code to handle the button click goes here...
         }
         private void setServerBtn_Click(object sender, RoutedEventArgs e)
         {
@@ -434,7 +413,6 @@ namespace MSL.pages
                 }
             }
             DelServerEvent();
-            // your code to handle the button click goes here...
         }
         public static T FindAncestor<T>(DependencyObject current) where T : DependencyObject
         {

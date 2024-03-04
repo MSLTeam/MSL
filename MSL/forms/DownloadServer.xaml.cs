@@ -59,7 +59,9 @@ namespace MSL.pages
             {
                 //int url = serverlist1.SelectedIndex;
 
-                string downUrl = Functions.Get("download/server/" + downServer + "/" + downVersion, out string sha256Exp);
+                string[] downContext = Functions.GetWithSha256("download/server/" + downServer + "/" + downVersion);
+                string downUrl = downContext[0];
+                string sha256Exp= downContext[1];
 
                 if (serverlist.SelectedItem.ToString().IndexOf("（") + 1 != 0)
                 {
@@ -137,7 +139,7 @@ namespace MSL.pages
             });
             try
             {
-                string jsonData = Functions.Get("query/available_server_types", out string sha256Exp);
+                string jsonData = Functions.Get("query/available_server_types");
                 string[] serverTypes = JsonConvert.DeserializeObject<string[]>(jsonData);
                 Dispatcher.Invoke(() =>
                 {
@@ -182,8 +184,8 @@ namespace MSL.pages
                 });
                 try
                 {
-                    var resultData = Functions.Get("query/available_versions/" + serverName, out string sha256Exp);
-                    string server_des = Functions.Get("query/servers_description/" + serverName, out string sha256Exp2);
+                    var resultData = Functions.Get("query/available_versions/" + serverName);
+                    string server_des = Functions.Get("query/servers_description/" + serverName);
                     JArray serverVersions = JArray.Parse(resultData);
                     List<string> sortedVersions = serverVersions.ToObject<List<string>>().OrderByDescending(v => Functions.VersionCompare(v)).ToList();
                     Dispatcher.Invoke(() =>
@@ -199,7 +201,7 @@ namespace MSL.pages
                 {
                     try
                     {
-                        var resultData = Functions.Get("query/available_versions/" + serverName, out string sha256Exp2);
+                        var resultData = Functions.Get("query/available_versions/" + serverName);
                         JArray serverVersions = JArray.Parse(resultData);
                         List<string> sortedVersions = serverVersions.ToObject<List<string>>().OrderByDescending(v => Functions.VersionCompare(v)).ToList();
                         Dispatcher.Invoke(() =>

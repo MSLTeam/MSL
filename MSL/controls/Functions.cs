@@ -15,9 +15,20 @@ namespace MSL.controls
 {
     internal class Functions
     {
-        public static string Get(string path, out string sha256,  string customUrl = "",bool hideHeader=false)
+        public static string Get(string path, string customUrl = "", bool hideHeader = false)
         {
-
+            return WebGet(path, out _, customUrl, hideHeader);
+        }
+        public static string[] GetWithSha256(string path, string customUrl = "", bool hideHeader = false)
+        {
+            string context = WebGet(path, out string sha256, customUrl, hideHeader);
+            string[] strings = null;
+            strings[0] = context;
+            strings[1] = sha256;
+            return strings;
+        }
+        private static string WebGet(string path, out string sha256, string customUrl = "", bool hideHeader = false)
+        {
             string url = "https://api.waheal.top";
             if (customUrl == "")
             {
@@ -44,9 +55,6 @@ namespace MSL.controls
             }
             return Encoding.UTF8.GetString(pageData);
         }
-
-
-
 
         public static string Post(string path, int contentType = 0, string parameterData = "", string customUrl = "", WebHeaderCollection header = null)
         {

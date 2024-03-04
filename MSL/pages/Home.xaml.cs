@@ -44,7 +44,7 @@ namespace MSL.pages
             string noticeversion1;
             try
             {
-                string noticeversion = Functions.Get("query/notice/id", out string sha256Exp2);
+                string noticeversion = Functions.Get("query/notice/id");
                 JObject jsonObject = JObject.Parse(File.ReadAllText(@"MSL\config.json", Encoding.UTF8));
                 if (jsonObject["notice"] == null)
                 {
@@ -61,8 +61,8 @@ namespace MSL.pages
                 }
                 if (noticeversion1 != noticeversion)
                 {
-                    var notice = Functions.Get("query/notice/main", out string sha256Exp);
-                    var recommendations = Functions.Get("query/notice/tips", out string sha256Exp3);
+                    var notice = Functions.Get("query/notice/main");
+                    var recommendations = Functions.Get("query/notice/tips");
 
                     if (!string.IsNullOrEmpty(notice))
                     {
@@ -108,7 +108,7 @@ namespace MSL.pages
                     });
                     if (noticevisible == Visibility.Visible)
                     {
-                        var notice = Functions.Get("query/notice/main", out string sha256Exp3);
+                        var notice = Functions.Get("query/notice/main");
                         if (!string.IsNullOrEmpty(notice))
                         {
                             noticeLabText = notice;
@@ -117,7 +117,7 @@ namespace MSL.pages
                         {
                             noticeLabText = "获取公告失败！请检查网络连接是否正常或联系作者进行解决！";
                         }
-                        var recommendations = Functions.Get("query/notice/tips", out string sha256Exp5);
+                        var recommendations = Functions.Get("query/notice/tips");
                         if (!string.IsNullOrEmpty(recommendations))
                         {
                             LoadRecommendations(recommendations);
@@ -250,12 +250,12 @@ namespace MSL.pages
                         i = _i;
                     }
                 }
-                ServerList.serverid.Clear();
+                ServerList.serverIDs.Clear();
                 startServerDropdown.Items.Clear();
                 JObject jsonObject = JObject.Parse(File.ReadAllText(@"MSL\ServerList.json", Encoding.UTF8));
                 foreach (var item in jsonObject)
                 {
-                    ServerList.serverid.Add(item.Key);
+                    ServerList.serverIDs.Add(item.Key);
                     startServerDropdown.Items.Add(item.Value["name"]);
                 }
                 startServerDropdown.SelectedIndex = i;
@@ -288,7 +288,7 @@ namespace MSL.pages
             }
             else
             {
-                MainWindow.serverid = ServerList.serverid[startServerDropdown.SelectedIndex];
+                MainWindow.serverIDs = ServerList.serverIDs[startServerDropdown.SelectedIndex];
                 AutoOpenServer();
             }
         }

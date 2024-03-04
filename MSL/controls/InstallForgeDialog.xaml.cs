@@ -66,7 +66,7 @@ namespace MSL.controls
             log_in("正在下载原版服务端核心···");
             var installJobj = GetJsonObj(tempPath + "/install_profile.json");
             string serverJarPath = replaceStr(installJobj["serverJarPath"].ToString());
-            string vanillaUrl = Functions.Get("download/server/vanilla/"+ installJobj["minecraft"].ToString(), out _);
+            string vanillaUrl = Functions.Get("download/server/vanilla/"+ installJobj["minecraft"].ToString());
             Dispatcher.Invoke(() => //下载
             {
                 bool dwnDialog = Shows.ShowDownloader(this, vanillaUrl, Path.GetDirectoryName(serverJarPath), Path.GetFileName(serverJarPath), "下载原版核心中···");
