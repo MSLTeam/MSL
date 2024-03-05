@@ -101,9 +101,9 @@ namespace MSL.pages
                     if (filename.Contains("forge"))
                     {
                         Shows.ShowMsg(this, "检测到您下载的是Forge端，开服器将自动进行安装操作，稍后请您不要随意移动鼠标且不要随意触碰键盘，耐心等待安装完毕！", "提示");
-                        InstallForge(downUrl);
+                        //InstallForge(downUrl);
                         //调用新版forge安装器
-                        //bool installForge = Shows.ShowInstallForge(this, downPath + @"\" + filename,downPath,downloadServerJava);
+                        bool installForge = Shows.ShowInstallForge(this, downPath + @"\" + filename,downPath,downloadServerJava);
                     }
                     else
                     {
