@@ -309,7 +309,7 @@ namespace MSL.controls
                 CopyJarFiles(tempPath + "/maven/net/", installPath);
             }else if(versionType == 5)
             {
-                CopyJarFiles2(tempPath, installPath);
+                CopyJarFiles(tempPath, installPath,2);
             }
 
 
@@ -726,32 +726,30 @@ namespace MSL.controls
         }
 
         //复制jar 用于低版本
-        void CopyJarFiles(string source, string target)
+        void CopyJarFiles(string source, string target ,int mode = 1)
         {
-            foreach (string filePath in Directory.GetFiles(source, "*.jar", SearchOption.AllDirectories))
+            if(mode == 1)
             {
-                string fileName = Path.GetFileName(filePath);
-                File.Copy(filePath, Path.Combine(target, fileName), true);
+                foreach (string filePath in Directory.GetFiles(source, "*.jar", SearchOption.AllDirectories))
+                {
+                    string fileName = Path.GetFileName(filePath);
+                    File.Copy(filePath, Path.Combine(target, fileName), true);
+                }
             }
+            else
+            {
+                //遍历所有jar文件
+                foreach (var file in Directory.GetFiles(target, "*.jar"))
+                {
+                    //获取文件名
+                    var fileName = Path.GetFileName(file);
+                    //复制文件到目标目录
+                    File.Copy(file, Path.Combine(target, fileName), true);
+                }
+            }
+
         }
 
-        //这个版本不遍历子目录
-        public void CopyJarFiles2(string sourceDir, string destDir)
-        {
-            //获取源目录下的所有jar文件
-            var jarFiles = Directory.GetFiles(sourceDir, "*.jar");
-
-            //遍历所有jar文件
-            foreach (var file in jarFiles)
-            {
-                //获取文件名
-                var fileName = Path.GetFileName(file);
-                //目标文件路径
-                var destFile = Path.Combine(destDir, fileName);
-                //复制文件到目标目录
-                File.Copy(file, destFile, true);
-            }
-        }
 
         private void CancelButton_Click(object sender, RoutedEventArgs e)
         {
