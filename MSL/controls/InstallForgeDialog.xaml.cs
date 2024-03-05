@@ -443,7 +443,11 @@ namespace MSL.controls
             }
             log_in("安装结束！");
             status_change("结束！");
-
+            suc = true;
+            Dispatcher.Invoke(() =>
+            {
+                Close();
+            });
         }
 
         void log_in(string logStr)
