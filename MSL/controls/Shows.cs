@@ -79,11 +79,11 @@ namespace MSL.controls
                 dialog.Close();
                 if (InstallForgeDialog.suc)
                 {
-                    return false;
+                    return true;
                 }
                 else
                 {
-                    return true;
+                    return false;
                 }
             }
             catch

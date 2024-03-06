@@ -6,6 +6,7 @@ using System.Collections.Generic;
 using System.Diagnostics;
 using System.IO;
 using System.Linq;
+using System.Security.Policy;
 using System.Text.RegularExpressions;
 using System.Threading;
 using System.Windows;
@@ -98,15 +99,25 @@ namespace MSL.pages
                 }
                 if (File.Exists(downPath + @"\" + filename))
                 {
-                    if (filename.Contains("forge"))
+                    if (filename.IndexOf("forge") + 1 != 0)
                     {
                         Shows.ShowMsg(this, "检测到您下载的是Forge端，开服器将自动进行安装操作，稍后请您不要随意移动鼠标且不要随意触碰键盘，耐心等待安装完毕！", "提示");
-                        //InstallForge(downUrl);
-                        //调用新版forge安装器
-                        bool installForge = Shows.ShowInstallForge(this, downPath + @"\" + filename,downPath,downloadServerJava);
-                        if (installForge)
+                        if (filename.IndexOf("neoforge") + 1 != 0)
                         {
-                            InstallForge(downUrl,2);
+                            InstallForge(downUrl, false);
+                        }
+                        else
+                        {
+                            //调用新版forge安装器
+                            bool installForge = Shows.ShowInstallForge(this, downPath + "\\" + filename, downPath, downloadServerJava);
+                            if (installForge)
+                            {
+                                InstallForge(downUrl);
+                            }
+                            else
+                            {
+                                InstallForge(downUrl, false);
+                            }
                         }
                     }
                     else
@@ -236,7 +247,7 @@ namespace MSL.pages
             }
         }
 
-        private void InstallForge(string downurl, int mode=1)
+        private void InstallForge(string downurl, bool fastMode = true)
         {
             try
             {
@@ -265,10 +276,10 @@ namespace MSL.pages
                     downloadServerJava = AppDomain.CurrentDomain.BaseDirectory + downloadServerJava;
                 }
 
-                Process process = new Process();
-                if (mode == 1)
+                
+                if (!fastMode)
                 {
-                    
+                    Process process = new Process();
                     process.StartInfo.WorkingDirectory = downloadServerBase;
                     process.StartInfo.FileName = "cmd";
                     if (downloadServerJava == "Java")
@@ -280,25 +291,19 @@ namespace MSL.pages
                         process.StartInfo.Arguments = @"/c """ + downloadServerJava + @""" -jar " + filename + " -installServer";
                     }
                     process.Start();
+
+                    while (!process.HasExited)
+                    {
+                        Thread.Sleep(1000);
+                    }
                 }
 
-                
-                
                 //检测安装成功与否
                 try
                 {
-                    if (mode == 1)
-                    {
-                        while (!process.HasExited)
-                        {
-                            Thread.Sleep(1000);
-                        }
-                    }
-
                     if (File.Exists(downloadServerBase + "\\libraries\\net\\minecraftforge\\forge\\" + forgeVersion + "\\win_args.txt"))
                     {
                         downloadServerName = "@libraries/net/minecraftforge/forge/" + forgeVersion + "/win_args.txt %*";
-                        //CreateServer.isCreateForge = true;
                         Close();
                     }
                     else if (File.Exists(downloadServerBase + "\\libraries\\net\\neoforged\\neoforge\\" + forgeVersion + "\\win_args.txt"))
@@ -310,17 +315,19 @@ namespace MSL.pages
                     {
                         DirectoryInfo directoryInfo = new DirectoryInfo(downloadServerBase);
                         FileInfo[] fileInfo = directoryInfo.GetFiles();
+                        bool checkResult = false;
                         foreach (FileInfo file in fileInfo)
                         {
                             if (file.Name.IndexOf("forge-" + forgeVersion) + 1 != 0)
                             {
                                 downloadServerName = file.FullName.Replace(downloadServerBase + @"\", "");
+                                checkResult = true;
                                 break;
                             }
-                            else
-                            {
-                                Shows.ShowMsg(this, "下载失败,请多次尝试或使用代理再试！", "错误");
-                            }
+                        }
+                        if (!checkResult)
+                        {
+                            Shows.ShowMsg(this, "下载失败,请多次尝试或使用代理再试！", "错误");
                         }
                         Close();
                     }
@@ -332,9 +339,7 @@ namespace MSL.pages
             }
             catch (Exception ex)
             {
-                //Directory.SetCurrentDirectory(AppDomain.CurrentDomain.BaseDirectory);
                 Shows.ShowMsg(this, "出现错误！\n" + ex.ToString(), "错误");
-
             }
         }
         private void openChooseServerDocs_Click(object sender, RoutedEventArgs e)

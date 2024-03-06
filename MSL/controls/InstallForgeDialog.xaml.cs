@@ -23,23 +23,25 @@ namespace MSL.controls
     public partial class InstallForgeDialog : HandyControl.Controls.Window
     {
         public static bool suc;
-        public string forgePath;
-        public string installPath;
-        public string tempPath;
-        public string libPath;
-        public string javaPath;
-        public int versionType; //由于Forge安装器的json有4种格式（太6了），在此进行规定：①1.20.3-Latest ②？-1.20.2
+        private readonly string forgePath;
+        private readonly string installPath;
+        private readonly string tempPath;
+        private readonly string libPath;
+        private readonly string javaPath;
+        private int versionType; //由于Forge安装器的json有4种格式（太6了），在此进行规定：①1.20.3-Latest ②？-1.20.2
+        private readonly Thread thread;
+
         public InstallForgeDialog(string forge,string downPath,string java)
         {
             InitializeComponent();
-            log_in("准备开始安装Forge···");
+            Log_in("准备开始安装Forge···");
             suc = false;//初始化suc
             forgePath = forge;//传递路径过来
             installPath = downPath;
             tempPath = downPath + "/temp";
             libPath = downPath + "/libraries";
             javaPath = java;
-            Thread thread = new Thread(Install);//新建线程开始安装
+            thread = new Thread(Install);//新建线程开始安装
             thread.Start();
         }
 
@@ -52,16 +54,16 @@ namespace MSL.controls
             {
                 Directory.CreateDirectory(tempPath);
             }
-            status_change("正在解压Forge安装器···");
-            log_in("开始解压forge安装器！");
+            Status_change("正在解压Forge安装器···");
+            Log_in("开始解压forge安装器！");
             bool unzip = ExtractJar(forgePath, tempPath);//解压
             if (!unzip)
             {
                 //解压失败，不干了！
-                log_in("forge安装器解压失败！安装失败！");
+                Log_in("forge安装器解压失败！安装失败！");
                 return;
             }
-            log_in("解压forge安装器成功！");
+            Log_in("解压forge安装器成功！");
 
             var installJobj = GetJsonObj(tempPath + "/install_profile.json");
             //在这里检测一下版本，用以区分安装流程
@@ -72,7 +74,7 @@ namespace MSL.controls
                     //1.20.3-Latest
                     versionType = 1;
                 }
-                else if (CompareMinecraftVersions(installJobj["minecraft"].ToString(), "1.18") > 0 && CompareMinecraftVersions(installJobj["minecraft"].ToString(), "1.20.3") < 0)
+                else if (CompareMinecraftVersions(installJobj["minecraft"].ToString(), "1.18") >= 0 && CompareMinecraftVersions(installJobj["minecraft"].ToString(), "1.20.3") < 0)
                 {
                     //1.18-1.20.2
                     versionType = 2;
@@ -82,12 +84,12 @@ namespace MSL.controls
                     //1.17.1
                     versionType = 3;
                 }
-                else if (CompareMinecraftVersions(installJobj["minecraft"].ToString(), "1.12") > 0 && CompareMinecraftVersions(installJobj["minecraft"].ToString(), "1.17.1") < 0)
+                else if (CompareMinecraftVersions(installJobj["minecraft"].ToString(), "1.12") >= 0 && CompareMinecraftVersions(installJobj["minecraft"].ToString(), "1.17.1") < 0)
                 {
                     //1.12-1.16.5
                     versionType = 4;
                 }
-                else
+                else// if(CompareMinecraftVersions(installJobj["minecraft"].ToString(), "1.7") >= 0 && CompareMinecraftVersions(installJobj["minecraft"].ToString(), "1.12") < 0)
                 {
                     //剩下版本应该都是1.11.2以下了 json格式大变（
                     versionType = 5;
@@ -102,13 +104,13 @@ namespace MSL.controls
 
 
             //第二步，下载原版核心
-            status_change("正在下载原版服务端核心···");
-            log_in("正在下载原版服务端核心···");
+            Status_change("正在下载原版服务端核心···");
+            Log_in("正在下载原版服务端核心···");
             string serverJarPath;
             string vanillaUrl;
             if (versionType <= 3)
             {
-                serverJarPath = replaceStr(installJobj["serverJarPath"].ToString());
+                serverJarPath = ReplaceStr(installJobj["serverJarPath"].ToString());
                 vanillaUrl = Functions.Get("download/server/vanilla/" + installJobj["minecraft"].ToString());
             }
             else if(versionType == 5)
@@ -121,8 +123,6 @@ namespace MSL.controls
                 serverJarPath = installPath + "/minecraft_server." + installJobj["minecraft"].ToString() + ".jar";
                 vanillaUrl = Functions.Get("download/server/vanilla/" + installJobj["minecraft"].ToString());
             }
-
-            
             
             Dispatcher.Invoke(() => //下载
             {
@@ -130,13 +130,12 @@ namespace MSL.controls
                 if (!dwnDialog)
                 {
                     //下载失败，跑路了！
-                    log_in("原版核心下载失败！安装失败！");
+                    Log_in("原版核心下载失败！安装失败！");
                     return;
                 }
             });
-            log_in("下载原版服务端核心成功！");
-            log_in("正在解压原版LIB！");
-
+            Log_in("下载原版服务端核心成功！");
+            Log_in("正在解压原版LIB！");
 
             if (versionType <=2) //①②需要解压？
             {
@@ -170,7 +169,7 @@ namespace MSL.controls
                     }
                     catch (Exception ex)
                     {
-                        log_in("原版LIB解压失败！" + ex);
+                        Log_in("原版LIB解压失败！" + ex);
                         return;
                     }
                 }
@@ -179,8 +178,8 @@ namespace MSL.controls
 
 
             //下载运行库
-            status_change("正在下载Forge运行Lib···");
-            log_in("正在下载Forge运行Lib···");
+            Status_change("正在下载Forge运行Lib···");
+            Log_in("正在下载Forge运行Lib···");
             if (versionType != 5) //分为高版本和低版本
             {
                 //这里是1.12+版本的处理逻辑
@@ -193,13 +192,13 @@ namespace MSL.controls
                 foreach (JObject lib in libraries)//遍历数组，进行文件下载
                 {
                     libCount++;
-                    string _dlurl = replaceStr(lib["downloads"]["artifact"]["url"].ToString());
+                    string _dlurl = ReplaceStr(lib["downloads"]["artifact"]["url"].ToString());
                     string _savepath = libPath + "/" + lib["downloads"]["artifact"]["path"].ToString();
                     string _sha1 = lib["downloads"]["artifact"]["sha1"].ToString();
-                    log_in("[LIB]正在下载：" + lib["downloads"]["artifact"]["path"].ToString());
+                    Log_in("[LIB]正在下载：" + lib["downloads"]["artifact"]["path"].ToString());
 
                     bool dlStatus = DownloadFile(_dlurl, _savepath, _sha1);
-                    status_change("正在下载Forge运行Lib···(" + libCount + "/" + libALLCount + ")");
+                    Status_change("正在下载Forge运行Lib···(" + libCount + "/" + libALLCount + ")");
 
                     /*Dispatcher.Invoke(() =>
                     {
@@ -216,25 +215,25 @@ namespace MSL.controls
                 foreach (JObject lib in libraries2.Cast<JObject>())//遍历数组，进行文件下载
                 {
                     libCount++;
-                    string _dlurl = replaceStr(lib["downloads"]["artifact"]["url"].ToString());
+                    string _dlurl = ReplaceStr(lib["downloads"]["artifact"]["url"].ToString());
                     string _savepath = libPath + "/" + lib["downloads"]["artifact"]["path"].ToString();
                     string _sha1 = lib["downloads"]["artifact"]["sha1"].ToString();
-                    log_in("[LIB]正在下载：" + lib["downloads"]["artifact"]["path"].ToString());
+                    Log_in("[LIB]正在下载：" + lib["downloads"]["artifact"]["path"].ToString());
                     if (!_dlurl.Contains("mcp")) //mcp那个zip会用js redirect，所以只能用downloader，真神奇！
                     {
                         bool dlStatus = DownloadFile(_dlurl, _savepath, _sha1);
-                        status_change("正在下载Forge运行Lib···(" + libCount + "/" + libALLCount + ")");
+                        Status_change("正在下载Forge运行Lib···(" + libCount + "/" + libALLCount + ")");
                     }
                     else
                     {
                         Dispatcher.Invoke(() =>
                         {
-                            status_change("正在下载Forge运行Lib···(" + libCount + "/" + libALLCount + ")");
+                            Status_change("正在下载Forge运行Lib···(" + libCount + "/" + libALLCount + ")");
                             bool dwnDialog = Shows.ShowDownloader(this, _dlurl, Path.GetDirectoryName(_savepath), Path.GetFileName(_savepath), "下载LIB(" + libCount + "/" + libALLCount + ")中···");
                             if (!dwnDialog)
                             {
                                 //下载失败，跑路了！
-                                log_in(lib["downloads"]["artifact"]["path"].ToString() + "下载失败！安装失败！");
+                                Log_in(lib["downloads"]["artifact"]["path"].ToString() + "下载失败！安装失败！");
                                 return;
                             }
                         });
@@ -262,30 +261,30 @@ namespace MSL.controls
                     libCount++;
                     string _dlurl;
                     if (SafeGetValue(lib, "url") == ""){
-                        _dlurl = replaceStr("https://maven.minecraftforge.net/" + NameToPath( SafeGetValue(lib, "name")));
+                        _dlurl = ReplaceStr("https://maven.minecraftforge.net/" + NameToPath( SafeGetValue(lib, "name")));
                     }
                     else
                     {
-                        _dlurl = replaceStr(SafeGetValue(lib, "url") + NameToPath(SafeGetValue(lib, "name")));
+                        _dlurl = ReplaceStr(SafeGetValue(lib, "url") + NameToPath(SafeGetValue(lib, "name")));
                     }
                     
                     string _savepath = libPath + "/" + NameToPath(SafeGetValue(lib, "name"));
-                    log_in("[LIB]正在下载：" + NameToPath(SafeGetValue(lib, "name")));
+                    Log_in("[LIB]正在下载：" + NameToPath(SafeGetValue(lib, "name")));
                     if (!_dlurl.Contains("mcp")) //mcp那个zip会用js redirect，所以只能用downloader，真神奇！
                     {
                         bool dlStatus = DownloadFile(_dlurl, _savepath);
-                        status_change("正在下载Forge运行Lib···(" + libCount + "/" + libALLCount + ")");
+                        Status_change("正在下载Forge运行Lib···(" + libCount + "/" + libALLCount + ")");
                     }
                     else
                     {
                         Dispatcher.Invoke(() =>
                         {
-                            status_change("正在下载Forge运行Lib···(" + libCount + "/" + libALLCount + ")");
+                            Status_change("正在下载Forge运行Lib···(" + libCount + "/" + libALLCount + ")");
                             bool dwnDialog = Shows.ShowDownloader(this, _dlurl, Path.GetDirectoryName(_savepath), Path.GetFileName(_savepath), "下载LIB(" + libCount + "/" + libALLCount + ")中···");
                             if (!dwnDialog)
                             {
                                 //下载失败，跑路了！
-                                log_in(NameToPath(SafeGetValue(lib, "name")) + "下载失败！安装失败！");
+                                Log_in(NameToPath(SafeGetValue(lib, "name")) + "下载失败！安装失败！");
                                 return;
                             }
                         });
@@ -293,21 +292,33 @@ namespace MSL.controls
                 }
             }
          
-            log_in("下载Forge运行Lib成功！");
-            status_change("正在编译Forge···");
-            log_in("正在编译Forge···");
+            Log_in("下载Forge运行Lib成功！");
+            Status_change("正在编译Forge···");
+            Log_in("正在编译Forge···");
             string batData = "";
 
             if (versionType == 1) //只有①需要复制这玩意
             {
-                //复制shim jar（鬼知道什么版本加进来的哦！）
-                File.Copy(tempPath + "/maven/" + NameToPath(installJobj["path"].ToString()), installPath + "/" + Path.GetFileName(libPath + "/" + NameToPath(installJobj["path"].ToString())));
+                try
+                {
+                    string src = installPath + "/" + Path.GetFileName(libPath + "/" + NameToPath(installJobj["path"].ToString()));
+                    //复制shim jar（鬼知道什么版本加进来的哦！）
+                    if (!File.Exists(src))
+                    {
+                        File.Copy(tempPath + "/maven/" + NameToPath(installJobj["path"].ToString()), src);
+                    }
+                }
+                catch
+                {
+                    Log_in("复制Shim.jar失败！");
+                }
             }
             else if (versionType == 4)
             {
                 MergeDirectories(tempPath + "/maven/net/", libPath + "/net/");
                 CopyJarFiles(tempPath + "/maven/net/", installPath);
-            }else if(versionType == 5)
+            }
+            else if(versionType == 5)
             {
                 CopyJarFiles(tempPath, installPath,2);
             }
@@ -319,7 +330,7 @@ namespace MSL.controls
             {
                 JArray processors = (JArray)installJobj["processors"]; //获取processors数组
                 int i = 0;
-                foreach (JObject processor in processors)
+                foreach (JObject processor in processors.Cast<JObject>())
                 {
                     i++;
                     string buildarg;
@@ -369,15 +380,15 @@ namespace MSL.controls
                         {
                             if (arg.StartsWith("[") && arg.EndsWith("]")) //在[]中，表明要转换
                             {
-                                buildarg = buildarg + @"""" + libPath + "\\" + replaceStr(NameToPath(arg)) + @""" ";
+                                buildarg = buildarg + @"""" + libPath + "\\" + ReplaceStr(NameToPath(arg)) + @""" ";
                             }
                             else
                             {
-                                buildarg = buildarg + @"""" + replaceStr(arg) + @""" ";
+                                buildarg = buildarg + @"""" + ReplaceStr(arg) + @""" ";
                             }
 
                         }
-                        log_in("启动参数：" + buildarg);
+                        Log_in("启动参数：" + buildarg);
                         //启动编译,算了，不启动了，麻瓜
                         if (javaPath == "Java")
                         {
@@ -435,14 +446,12 @@ namespace MSL.controls
                 process.StartInfo.WorkingDirectory = installPath;
                 process.StartInfo.FileName = "cmd";
                 process.StartInfo.Arguments = "/c install.bat";
-                //由于未知原因，监听日志会假死（可能是日志太多了？），直接使用cmd窗口
+                //监听日志会假死，直接使用cmd窗口
                 process.Start();
-
                 process.WaitForExit();
-
             }
-            log_in("安装结束！");
-            status_change("结束！");
+            Log_in("安装结束！");
+            Status_change("结束！");
             suc = true;
             Dispatcher.Invoke(() =>
             {
@@ -450,7 +459,7 @@ namespace MSL.controls
             });
         }
 
-        void log_in(string logStr)
+        private void Log_in(string logStr)
         {
             Dispatcher.Invoke(() =>
             {
@@ -459,7 +468,7 @@ namespace MSL.controls
             });
         }
 
-        void status_change(string textStr)
+        private void Status_change(string textStr)
         {
             Dispatcher.Invoke(() =>
             {
@@ -468,7 +477,7 @@ namespace MSL.controls
         }
 
         //获取json对象
-        public JObject GetJsonObj(string file)
+        private JObject GetJsonObj(string file)
         {
             string jsonPath = Path.Combine(Directory.GetCurrentDirectory(), file);
             var json = File.ReadAllText(jsonPath);
@@ -477,7 +486,7 @@ namespace MSL.controls
         }
 
         //替换json变量的东东
-        public string replaceStr(string str)
+        private string ReplaceStr(string str)
         {
             string mcv;
             var installJobj = GetJsonObj(tempPath + "/install_profile.json");
@@ -522,7 +531,7 @@ namespace MSL.controls
         }
 
         //解压jar的函数
-        public bool ExtractJar(string jarPath, string extractPath)
+        private bool ExtractJar(string jarPath, string extractPath)
         {
             try
             {
@@ -537,7 +546,7 @@ namespace MSL.controls
         }
 
         //路径转换函数，参考：https://rechalow.gitee.io/lmaml/FirstChapter/GetCpLibraries.html 非常感谢！
-        public string NameToPath(string name)
+        private string NameToPath(string name)
         {
             string extentTag = "";
 
@@ -626,9 +635,9 @@ namespace MSL.controls
 
         private const int MaxRetryCount = 3; //这是最大重试次数
 
-        public bool DownloadFile(string url, string targetPath, string expectedSha1 = "")
+        private bool DownloadFile(string url, string targetPath, string expectedSha1 = "")
         {
-            log_in("开始下载：" + url);
+            Log_in("开始下载：" + url);
             for (int i = 0; i < MaxRetryCount; i++)
             {
                 try
@@ -674,7 +683,7 @@ namespace MSL.controls
                 catch (Exception err)
                 {
                     //处理下载失败
-                    log_in("下载失败！" + err);
+                    Log_in("下载失败！" + err);
                     continue;
                 }
             }
@@ -683,7 +692,7 @@ namespace MSL.controls
         }
 
         //MC版本号判断函数，前>后：1 ，后>前：-1，相等：0
-        public int CompareMinecraftVersions(string version1, string version2)
+        private int CompareMinecraftVersions(string version1, string version2)
         {
             var v1 = version1.Split('.').Select(int.Parse).ToArray();
             var v2 = version2.Split('.').Select(int.Parse).ToArray();
@@ -701,7 +710,7 @@ namespace MSL.controls
         }
 
         //非常安全的获取json key（
-        public string SafeGetValue(JObject jobj, string key)
+        private string SafeGetValue(JObject jobj, string key)
         {
             string[] keys = key.Split('.');
             JToken temp = jobj;
@@ -720,7 +729,7 @@ namespace MSL.controls
         }
 
         //合并目录 低版本
-        void MergeDirectories(string source, string target)
+        private void MergeDirectories(string source, string target)
         {
             foreach (string dirPath in Directory.GetDirectories(source, "*", SearchOption.AllDirectories))
                 Directory.CreateDirectory(dirPath.Replace(source, target));
@@ -730,7 +739,7 @@ namespace MSL.controls
         }
 
         //复制jar 用于低版本
-        void CopyJarFiles(string source, string target ,int mode = 1)
+        private void CopyJarFiles(string source, string target ,int mode = 1)
         {
             if(mode == 1)
             {
@@ -754,10 +763,12 @@ namespace MSL.controls
 
         }
 
-
         private void CancelButton_Click(object sender, RoutedEventArgs e)
         {
-
+            //关闭线程
+            thread.Abort();
+            suc = true;
+            Close();
         }
     }
 }
