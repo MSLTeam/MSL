@@ -101,9 +101,13 @@ namespace MSL.pages
                     if (filename.Contains("forge"))
                     {
                         Shows.ShowMsg(this, "检测到您下载的是Forge端，开服器将自动进行安装操作，稍后请您不要随意移动鼠标且不要随意触碰键盘，耐心等待安装完毕！", "提示");
-                        InstallForge(downUrl);
+                        //InstallForge(downUrl);
                         //调用新版forge安装器
-                        //bool installForge = Shows.ShowInstallForge(this, downPath + @"\" + filename,downPath,downloadServerJava);
+                        bool installForge = Shows.ShowInstallForge(this, downPath + @"\" + filename,downPath,downloadServerJava);
+                        if (installForge)
+                        {
+                            InstallForge(downUrl,2);
+                        }
                     }
                     else
                     {
@@ -232,7 +236,7 @@ namespace MSL.pages
             }
         }
 
-        private void InstallForge(string downurl)
+        private void InstallForge(string downurl, int mode=1)
         {
             try
             {
@@ -260,30 +264,37 @@ namespace MSL.pages
                 {
                     downloadServerJava = AppDomain.CurrentDomain.BaseDirectory + downloadServerJava;
                 }
-                //Directory.SetCurrentDirectory(downloadServerBase);
+
                 Process process = new Process();
-                process.StartInfo.WorkingDirectory = downloadServerBase;
-                process.StartInfo.FileName = "cmd";
-                if (downloadServerJava == "Java")
+                if (mode == 1)
                 {
-                    process.StartInfo.Arguments = "/c java -jar " + filename + " -installServer";
+                    
+                    process.StartInfo.WorkingDirectory = downloadServerBase;
+                    process.StartInfo.FileName = "cmd";
+                    if (downloadServerJava == "Java")
+                    {
+                        process.StartInfo.Arguments = "/c java -jar " + filename + " -installServer";
+                    }
+                    else
+                    {
+                        process.StartInfo.Arguments = @"/c """ + downloadServerJava + @""" -jar " + filename + " -installServer";
+                    }
+                    process.Start();
                 }
-                else
-                {
-                    process.StartInfo.Arguments = @"/c """ + downloadServerJava +  @""" -jar " + filename + " -installServer";
-                }
+
                 
-                //process.StartInfo.Arguments = "-jar " + filename + " -installServer";
-                process.Start();
-                //process.StartInfo.Arguments = "-jar " + filename + " -mirror https://bmclapi2.bangbang93.com/maven/ -installServer";
-                //Directory.SetCurrentDirectory(AppDomain.CurrentDomain.BaseDirectory);
+                
                 //检测安装成功与否
                 try
                 {
-                    while (!process.HasExited)
+                    if (mode == 1)
                     {
-                        Thread.Sleep(1000);
+                        while (!process.HasExited)
+                        {
+                            Thread.Sleep(1000);
+                        }
                     }
+
                     if (File.Exists(downloadServerBase + "\\libraries\\net\\minecraftforge\\forge\\" + forgeVersion + "\\win_args.txt"))
                     {
                         downloadServerName = "@libraries/net/minecraftforge/forge/" + forgeVersion + "/win_args.txt %*";
