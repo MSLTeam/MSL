@@ -429,9 +429,10 @@ namespace MSL.controls
 
                     }
                 }
-                using (StreamWriter sw = new StreamWriter(installPath + "/install.bat", false, Encoding.GetEncoding("GBK")))
+                using (StreamWriter sw = new StreamWriter(installPath + "/install.bat", false, Encoding.UTF8))
                 {
                     sw.WriteLine("@echo off");
+                    sw.WriteLine("chcp 65001");
                     sw.WriteLine(@"title ""MSL正在编译Forge""");
                     sw.WriteLine(batData);
                 }
