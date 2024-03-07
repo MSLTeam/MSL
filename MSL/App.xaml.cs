@@ -1,7 +1,4 @@
-﻿using System.Diagnostics;
-using System;
-using System.Globalization;
-using System.IO.Pipes;
+﻿using System;
 using System.IO;
 using System.Threading;
 using System.Windows;
@@ -23,23 +20,67 @@ namespace MSL
                 e.Handled = true; // 设置为已处理，阻止应用程序崩溃
             };
         }
+
         //以创建Mutex的方式防止同目录多开，避免奇奇怪怪的文件占用错误
         private Mutex _mutex;
-
         protected override void OnStartup(StartupEventArgs e)
         {
             string mutexId = Path.GetDirectoryName(Assembly.GetExecutingAssembly().Location).Replace('\\', '/');
-            bool createdNew;
 
-            _mutex = new Mutex(true, mutexId, out createdNew);
+            _mutex = new Mutex(true, mutexId, out bool createdNew);
 
             if (!createdNew)
             {
-                MessageBox.Show("请不要在同一目录下多次运行MSL！\n若你没看见有运行中的MSL，请检查后台！\n（也可能是MSL卡后台了，遇到bug请反馈！）", "错误", MessageBoxButton.OK, MessageBoxImage.Error);
-                Environment.Exit(0);
+                System.Diagnostics.Process progress1 = GetExistProcess();
+                if (progress1 != null)
+                {
+                    ShowMainWindow(progress1);
+                    Environment.Exit(0);
+                }
             }
-
             base.OnStartup(e);
+        }
+
+        /// <summary>
+        /// 获取运行中的MSL软件进程
+        /// </summary>
+        /// <returns></returns>
+        private static System.Diagnostics.Process GetExistProcess()
+        {
+            System.Diagnostics.Process currentProcess = System.Diagnostics.Process.GetCurrentProcess();
+            foreach (System.Diagnostics.Process process1 in System.Diagnostics.Process.GetProcessesByName(currentProcess.ProcessName))
+            {
+                if ((process1.Id != currentProcess.Id) &&
+                     (Assembly.GetExecutingAssembly().Location == currentProcess.MainModule.FileName))
+                {
+                    return process1;
+                }
+            }
+            return null;
+        }
+
+        #region DllImport...
+
+        [System.Runtime.InteropServices.DllImport("User32.dll")]
+        private static extern bool SetForegroundWindow(IntPtr hWnd);
+        [System.Runtime.InteropServices.DllImport("User32.dll")]
+        private static extern bool ShowWindowAsync(IntPtr hWnd, int cmdShow);
+
+        private const int SW_SHOW = 1;
+        #endregion
+
+        /// <summary>
+        /// 最前端显示主窗体
+        /// </summary>
+        /// <param name="process"></param>
+        private void ShowMainWindow(System.Diagnostics.Process process)
+        {
+            IntPtr mainWindowHandle1 = process.MainWindowHandle;
+            if (mainWindowHandle1 != IntPtr.Zero)
+            {
+                ShowWindowAsync(mainWindowHandle1, SW_SHOW);
+                SetForegroundWindow(mainWindowHandle1);
+            }
         }
 
         protected override void OnExit(ExitEventArgs e)
@@ -47,6 +88,7 @@ namespace MSL
             _mutex?.ReleaseMutex();
             base.OnExit(e);
         }
+
         /*
         protected override void OnStartup(StartupEventArgs e)
         {

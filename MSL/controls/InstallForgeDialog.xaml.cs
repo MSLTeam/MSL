@@ -9,9 +9,7 @@ using System.Net;
 using System.Security.Cryptography;
 using System.Text;
 using System.Threading;
-using System.Threading.Tasks;
 using System.Windows;
-using System.Windows.Controls.Primitives;
 
 
 namespace MSL.controls
@@ -175,8 +173,6 @@ namespace MSL.controls
                 }
             }
 
-
-
             //下载运行库
             Status_change("正在下载Forge运行Lib···");
             Log_in("正在下载Forge运行Lib···");
@@ -323,8 +319,6 @@ namespace MSL.controls
                 CopyJarFiles(tempPath, installPath,2);
             }
 
-
-
             //接下来开始编译咯~
             if (versionType != 5) //低版本不编译
             {
@@ -451,7 +445,8 @@ namespace MSL.controls
                 process.WaitForExit();
             }
             Log_in("安装结束！");
-            Status_change("结束！");
+            Status_change("结束！本窗口将自动关闭！");
+            Thread.Sleep(1500);
             suc = true;
             Dispatcher.Invoke(() =>
             {
@@ -632,9 +627,7 @@ namespace MSL.controls
         }
 
         //下面是有关下载的东东（由于小文件调用原有下载窗口特别慢，就不用了qaq）
-
         private const int MaxRetryCount = 3; //这是最大重试次数
-
         private bool DownloadFile(string url, string targetPath, string expectedSha1 = "")
         {
             Log_in("开始下载：" + url);
@@ -678,7 +671,6 @@ namespace MSL.controls
                     {
                         return true;
                     }
-
                 }
                 catch (Exception err)
                 {
@@ -760,7 +752,6 @@ namespace MSL.controls
                     File.Copy(file, Path.Combine(target, fileName), true);
                 }
             }
-
         }
 
         private void CancelButton_Click(object sender, RoutedEventArgs e)

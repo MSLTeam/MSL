@@ -8,7 +8,7 @@
         xmlns:local="clr-namespace:MSL"
         mc:Ignorable="d"
         NonClientAreaBackground="{DynamicResource SideMenuBrush}"
-        Title="MSL-下载Mod" Height="450" Width="750" WindowStartupLocation="CenterOwner" ResizeMode="NoResize" Loaded="Window_Loaded" Background="{DynamicResource BackgroundBrush}" Closing="window_Closing">
+        Title="下载Mod" Height="450" Width="750" WindowStartupLocation="CenterOwner" ResizeMode="NoResize" Loaded="Window_Loaded" Background="{DynamicResource BackgroundBrush}" Closing="window_Closing">
     <Grid x:Name="BodyGrid">
         <ListView x:Name="listBox" MouseDoubleClick="listBox_MouseDoubleClick" Background="{DynamicResource BorderBackground}" Margin="10,50,10,10">
             <ListView.View>
