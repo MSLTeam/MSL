@@ -24,7 +24,7 @@
                     <ColumnDefinition/>
                 </Grid.ColumnDefinitions>
                 <!--<Button x:Name="primaryBtn" Content="确定" Style="{StaticResource ButtonPrimary}" HorizontalAlignment="Stretch" Margin="25,20,5,20" FontSize="14" Click="primaryBtn_Click" Height="30"/>-->
-                <Button x:Name="closeBtn" Content="取消" HorizontalAlignment="Stretch" Margin="5,20,25,10" FontSize="14" Click="closeBtn_Click" Grid.Column="1" Height="30"/>
+                <Button x:Name="closeBtn" Content="确定" HorizontalAlignment="Stretch" Margin="5,20,25,10" FontSize="14" Click="closeBtn_Click" Grid.Column="1" Height="30"/>
             </Grid>
         </Border>
     </Grid>

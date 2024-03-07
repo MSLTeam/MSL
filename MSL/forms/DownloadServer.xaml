@@ -9,7 +9,7 @@
       mc:Ignorable="d" 
       Height="450" Width="750"
       NonClientAreaBackground="{DynamicResource SideMenuBrush}"
-      Title="MSL-下载服务端" Loaded="Page_Loaded" Background="{DynamicResource BackgroundBrush}" ResizeMode="NoResize" WindowStartupLocation="CenterOwner" ShowInTaskbar="False">
+      Title="下载服务端" Loaded="Page_Loaded" Background="{DynamicResource BackgroundBrush}" ResizeMode="NoResize" WindowStartupLocation="CenterOwner">
     <Grid x:Name="BodyGrid">
         <TextBlock Text="在此选择服务端：" Foreground="{DynamicResource PrimaryTextBrush}" HorizontalAlignment="Left" Margin="10,10,0,0" VerticalAlignment="Top" FontSize="20" FontWeight="Bold" Padding="5,0,0,0"/>
         <ComboBox x:Name="serverlist" Margin="175,8,88,0" SelectionChanged="serverlist_SelectionChanged" Height="32" VerticalAlignment="Top"/>

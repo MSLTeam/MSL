@@ -6,7 +6,7 @@
         xmlns:hc="https://handyorg.github.io/handycontrol"
         xmlns:controls="clr-namespace:MSL.controls"
         xmlns:local="clr-namespace:MSL.forms"
-        mc:Ignorable="d" Title="MSL-创建服务器"
+        mc:Ignorable="d" Title="创建服务器"
         NonClientAreaBackground="{DynamicResource SideMenuBrush}"
         Height="450" Width="750" ResizeMode="NoResize" WindowStartupLocation="CenterOwner" Background="{DynamicResource BackgroundBrush}" Activated="Window_Activated" Deactivated="Window_Deactivated" Loaded="Window_Loaded">
     <Grid x:Name="BodyGrid">

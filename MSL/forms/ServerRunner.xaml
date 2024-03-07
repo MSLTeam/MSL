@@ -122,7 +122,7 @@
                             <BeginStoryboard Storyboard="{StaticResource ShowPage}"/>
                         </EventTrigger>
                     </Grid.Triggers>
-                    <RichTextBox x:Name="outlog" Background="{DynamicResource BorderBackground}" IsReadOnly="True" Block.LineHeight="1" Margin="10,10,10,47" FontSize="12" VerticalScrollBarVisibility="Visible">
+                    <RichTextBox x:Name="outlog" Background="{DynamicResource BorderBackground}" IsReadOnly="True" Block.LineHeight="1" Margin="10,10,10,47" ContextMenu="{StaticResource UIContextMenu}" VerticalScrollBarVisibility="Visible">
                         <FlowDocument>
                             <Paragraph>
                                 <Run Text="在此显示输出......"/>
