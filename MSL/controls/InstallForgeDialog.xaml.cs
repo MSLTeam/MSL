@@ -429,11 +429,10 @@ namespace MSL.controls
 
                     }
                 }
-                //输出并启动bat
-                using (StreamWriter sw = new StreamWriter(installPath + "/install.bat"))
+                using (StreamWriter sw = new StreamWriter(installPath + "/install.bat", false, Encoding.GetEncoding("GBK")))
                 {
                     sw.WriteLine("@echo off");
-                    sw.WriteLine(@"title ""MSL is compiling Forge""");
+                    sw.WriteLine(@"title ""MSL正在编译Forge""");
                     sw.WriteLine(batData);
                 }
                 Process process = new Process();
@@ -744,7 +743,7 @@ namespace MSL.controls
             else
             {
                 //遍历所有jar文件
-                foreach (var file in Directory.GetFiles(target, "*.jar"))
+                foreach (var file in Directory.GetFiles(source, "*.jar"))
                 {
                     //获取文件名
                     var fileName = Path.GetFileName(file);
