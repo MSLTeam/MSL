@@ -446,6 +446,14 @@ namespace MSL.controls
             }
             Log_in("安装结束！");
             Status_change("结束！本窗口将自动关闭！");
+            try
+            {
+                File.Delete(installPath + "/install.bat");
+                Directory.Delete(tempPath, true);
+            }catch (Exception ex)
+            {
+                //没log
+            }
             Thread.Sleep(1500);
             suc = true;
             Dispatcher.Invoke(() =>
