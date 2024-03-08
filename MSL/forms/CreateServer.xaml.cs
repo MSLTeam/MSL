@@ -1361,6 +1361,10 @@ namespace MSL.forms
                         FastModeInstallBtn.IsEnabled = true;
                     }
                 }
+                else
+                {
+                    FastModeInstallBtn.IsEnabled = true;
+                }
             }
             else
             {
