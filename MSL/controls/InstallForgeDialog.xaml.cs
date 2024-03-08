@@ -293,7 +293,7 @@ namespace MSL.controls
             Log_in("正在编译Forge···");
             string batData = "";
 
-            if (versionType == 1) //只有①需要复制这玩意
+            if (versionType == 1 && forgePath.Contains("neoforge") == false) //只有①需要复制这玩意
             {
                 try
                 {
@@ -343,30 +343,56 @@ namespace MSL.controls
                         buildarg += @""" ";//结束cp处理
 
                         //添加主类（为什么不能从json获取呢：？）（要解包才能获取，懒得了qaq）
-                        if (buildarg.Contains("installertools"))
+                        if (forgePath.Contains("neoforge"))
                         {
-                            buildarg += "net.minecraftforge.installertools.ConsoleTool ";
-                        }
-                        else if (buildarg.Contains("ForgeAutoRenamingTool"))
-                        {
-                            buildarg += "net.minecraftforge.fart.Main ";
-                        }
-                        else if (buildarg.Contains("jarsplitter"))
-                        {
-                            buildarg += "net.minecraftforge.jarsplitter.ConsoleTool ";
-                        }
-                        else if (buildarg.Contains("vignette"))
-                        {
-                            buildarg += "org.cadixdev.vignette.VignetteMain ";
-                        }
-                        else if (buildarg.Contains("SpecialSource"))
-                        {
-                            buildarg += "net.md_5.specialsource.SpecialSource ";
+                            //neoforge
+                            if (buildarg.Contains("binarypatcher"))
+                            {
+                                buildarg += "net.neoforged.binarypatcher.ConsoleTool ";
+                                
+                            }
+                            else if (buildarg.Contains("AutoRenamingTool"))
+                            {
+                                buildarg += "net.minecraftforge.fart.Main ";
+                            }
+                            else if (buildarg.Contains("jarsplitter"))
+                            {
+                                buildarg += "net.neoforged.jarsplitter.ConsoleTool ";
+                            }
+                            else
+                            {
+                                buildarg += "net.neoforged.installertools.ConsoleTool ";
+                            }
                         }
                         else
                         {
-                            buildarg += "net.minecraftforge.binarypatcher.ConsoleTool ";
+                            //被嫌弃的forge
+                            if (buildarg.Contains("installertools"))
+                            {
+                                buildarg += "net.minecraftforge.installertools.ConsoleTool ";
+                            }
+                            else if (buildarg.Contains("ForgeAutoRenamingTool"))
+                            {
+                                buildarg += "net.minecraftforge.fart.Main ";
+                            }
+                            else if (buildarg.Contains("jarsplitter"))
+                            {
+                                buildarg += "net.minecraftforge.jarsplitter.ConsoleTool ";
+                            }
+                            else if (buildarg.Contains("vignette"))
+                            {
+                                buildarg += "org.cadixdev.vignette.VignetteMain ";
+                            }
+                            else if (buildarg.Contains("SpecialSource"))
+                            {
+                                buildarg += "net.md_5.specialsource.SpecialSource ";
+                            }
+                            else
+                            {
+                                buildarg += "net.minecraftforge.binarypatcher.ConsoleTool ";
+                            }
                         }
+                        
 
                         //处理args
                         JArray args = (JArray)processor["args"];
@@ -504,6 +530,9 @@ namespace MSL.controls
             }
             str = str.Replace("{MINECRAFT_VERSION}", mcv);
             //改成镜像源的部分
+            str = str.Replace("https://maven.neoforged.net/releases/net/neoforged/forge", "https://bmclapi2.bangbang93.com/maven/net/neoforged/forge");
+            str = str.Replace("https://maven.neoforged.net/releases/net/neoforged/neoforge", "https://bmclapi2.bangbang93.com/maven/net/neoforged/neoforge");
+            //str = str.Replace("https://maven.neoforged.net/releases", "https://bmclapi2.bangbang93.com/maven");
             str = str.Replace("https://maven.minecraftforge.net", "https://bmclapi2.bangbang93.com/maven");
             str = str.Replace("https://files.minecraftforge.net/maven", "https://bmclapi2.bangbang93.com/maven");
             str = str.Replace("https://libraries.minecraft.net", "https://bmclapi2.bangbang93.com/maven");
