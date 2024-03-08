@@ -7,7 +7,7 @@
         xmlns:hc="https://handyorg.github.io/handycontrol"
         mc:Ignorable="d"
         Height="100" Width="400" WindowStartupLocation="CenterOwner" ResizeMode="NoResize" ShowNonClientArea="False" ShowInTaskbar="False">
-    <Grid Background="{DynamicResource DialogBrush2}">
+    <Grid Background="{DynamicResource SecondaryRegionBrush}">
         <TextBlock x:Name="infolabel" Foreground="{DynamicResource PrimaryTextBrush}" HorizontalAlignment="Left" Margin="15,15,0,0" TextWrapping="Wrap" Text="加载中……" VerticalAlignment="Top"/>
         <ProgressBar x:Name="pbar" Style="{StaticResource ProgressBarFlat}" Height="5" Margin="15,0,15,0" VerticalAlignment="Center" Background="#E5C8C8C8"/>
         <Button x:Name="button1" Style="{StaticResource ButtonPrimary}" Content="取消" HorizontalAlignment="Right" Margin="0,0,15,10" VerticalAlignment="Bottom" Width="75" Click="button1_Click" FontSize="14" MouseDoubleClick="button1_MouseDoubleClick"/>

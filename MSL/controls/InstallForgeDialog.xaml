@@ -7,7 +7,7 @@
         mc:Ignorable="d"
         Title="InstallForgeDialog" Height="300" Width="600" ShowNonClientArea="False" xmlns:hc="https://handyorg.github.io/handycontrol"  WindowStartupLocation="CenterOwner" ResizeMode="NoResize"  ShowInTaskbar="False">
     <Grid>
-        <Grid Background="{DynamicResource DialogBrush2}">
+        <Grid Background="{DynamicResource SecondaryRegionBrush}">
             <Grid.RowDefinitions>
                 <RowDefinition Height="auto"/>
                 <RowDefinition Height="*"/>

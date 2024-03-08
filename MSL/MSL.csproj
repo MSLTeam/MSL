@@ -380,5 +380,8 @@
   <ItemGroup>
     <Resource Include="images\150px-Impulse_Command_Block.png" />
   </ItemGroup>
+  <ItemGroup>
+    <Content Include="controls\HandyControl.dll" />
+  </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
 </Project>

@@ -7,7 +7,7 @@
         xmlns:local="clr-namespace:MSL.controls"
         mc:Ignorable="d" 
         CornerRadius="10"
-        Background="{DynamicResource DialogBrush2}">
+        Background="{DynamicResource SecondaryRegionBrush}">
     <hc:SimplePanel>
         <TextBlock Name="DialogText" Foreground="{StaticResource PrimaryTextBrush}" Text="Please Wait" HorizontalAlignment="Center" VerticalAlignment="Center" FontSize="20" Margin="50"/>
     </hc:SimplePanel>
