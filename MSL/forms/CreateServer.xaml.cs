@@ -192,7 +192,7 @@ namespace MSL.forms
             sserver.IsEnabled = true;
             sjava.IsEnabled = false;
         }
-        void CheckServerPackCore()
+        private void CheckServerPackCore()
         {
             if (isImportPack)
             {
@@ -221,17 +221,16 @@ namespace MSL.forms
                             bool dialog = Shows.ShowMsg(this, "您选择的服务端是forge安装器，是否将其展开安装？\n如果不展开安装，服务器可能无法开启！", "提示", true, "取消");
                             if (dialog)
                             {
-                                    //调用新版forge安装器
-                                    bool installForge = Shows.ShowInstallForge(this, serverbase + "\\" + txb3.Text, serverbase, serverjava);
-                                    if (installForge)
-                                    {
-                                        InstallForge("");
-                                    }
-                                    else
-                                    {
-                                        InstallForge("", false, true);
-                                    }
-
+                                //调用新版forge安装器
+                                bool installForge = Shows.ShowInstallForge(this, serverbase + "\\" + txb3.Text, serverbase, serverjava);
+                                if (installForge)
+                                {
+                                    InstallForge("");
+                                }
+                                else
+                                {
+                                    InstallForge("", false, true);
+                                }
                             }
                         }
                         txb3.Text = servercore;
@@ -251,22 +250,15 @@ namespace MSL.forms
                             bool dialog = Shows.ShowMsg(this, "您选择的服务端是forge安装器，是否将其展开安装？\n如果不展开安装，服务器可能无法开启！", "提示", true, "取消");
                             if (dialog)
                             {
-                                if (txb3.Text.Contains("neoforge"))
+                                //调用新版forge安装器
+                                bool installForge = Shows.ShowInstallForge(this, serverbase + "\\" + txb3.Text, serverbase, serverjava);
+                                if (installForge)
                                 {
-                                    InstallForge("", false, true);
+                                    InstallForge("");
                                 }
                                 else
                                 {
-                                    //调用新版forge安装器
-                                    bool installForge = Shows.ShowInstallForge(this, serverbase + "\\" + txb3.Text, serverbase, serverjava);
-                                    if (installForge)
-                                    {
-                                        InstallForge("");
-                                    }
-                                    else
-                                    {
-                                        InstallForge("", false, true);
-                                    }
+                                    InstallForge("", false, true);
                                 }
                             }
                         }
@@ -820,22 +812,15 @@ namespace MSL.forms
                         bool dialog = Shows.ShowMsg(this, "您选择的服务端是forge安装器，是否将其展开安装？\n如果不展开安装，服务器可能无法开启！", "提示", true, "取消");
                         if (dialog)
                         {
-                            if (txb3.Text.Contains("neoforge"))
+                            //调用新版forge安装器
+                            bool installForge = Shows.ShowInstallForge(this, serverbase + "\\" + txb3.Text, serverbase, serverjava);
+                            if (installForge)
                             {
-                                InstallForge("", false, true);
+                                InstallForge("");
                             }
                             else
                             {
-                                //调用新版forge安装器
-                                bool installForge = Shows.ShowInstallForge(this, serverbase + "\\" + txb3.Text, serverbase, serverjava);
-                                if (installForge)
-                                {
-                                    InstallForge("");
-                                }
-                                else
-                                {
-                                    InstallForge("", false, true);
-                                }
+                                InstallForge("", false, true);
                             }
                         }
                     }
@@ -1316,24 +1301,16 @@ namespace MSL.forms
                 if (filename.IndexOf("forge") + 1 != 0)
                 {
                     Shows.ShowMsg(this, "检测到您下载的是Forge端，开服器将自动进行安装操作，稍后请您不要随意移动鼠标且不要随意触碰键盘，耐心等待安装完毕！", "提示");
-                    if (filename.IndexOf("neoforge") + 1 != 0)
+                    //调用新版forge安装器
+                    bool installForge = Shows.ShowInstallForge(this, serverbase + "\\" + filename, serverbase, serverjava);
+                    if (installForge)
                     {
-                        InstallForge(dlUrl, false);
+                        installReturn = InstallForge(dlUrl);
                     }
                     else
                     {
-                        //调用新版forge安装器
-                        bool installForge = Shows.ShowInstallForge(this, serverbase + "\\" + filename, serverbase, serverjava);
-                        if (installForge)
-                        {
-                            InstallForge(dlUrl);
-                        }
-                        else
-                        {
-                            InstallForge(dlUrl, false);
-                        }
+                        installReturn = InstallForge(dlUrl, false);
                     }
-                    
                     //Shows.ShowMsg(this, "检测到您下载的是Forge端，开服器将自动进行安装操作，稍后请您不要随意移动鼠标且不要随意触碰键盘，耐心等待安装完毕！", "提示");
                     //installReturn = InstallForge(dlUrl);
                 }
@@ -1384,11 +1361,6 @@ namespace MSL.forms
                         FastModeInstallBtn.IsEnabled = true;
                     }
                 }
-                else
-                {
-                    Shows.ShowMsg(this, "下载失败,请多次尝试或使用代理再试！", "错误");
-                    FastModeInstallBtn.IsEnabled = true;
-                }
             }
             else
             {
@@ -1398,7 +1370,7 @@ namespace MSL.forms
         }
 
         #region InstallForge
-        private void InstallForge(string downloadUrl, bool fastMode = true,bool customMode=false)
+        private bool InstallForge(string downloadUrl, bool fastMode = true,bool customMode=false)
         {
             try
             {
@@ -1459,10 +1431,12 @@ namespace MSL.forms
                     if (File.Exists(serverbase + "\\libraries\\net\\minecraftforge\\forge\\" + forgeVersion + "\\win_args.txt"))
                     {
                         servercore = "@libraries/net/minecraftforge/forge/" + forgeVersion + "/win_args.txt %*";
+                        return true;
                     }
                     else if (File.Exists(serverbase + "\\libraries\\net\\neoforged\\neoforge\\" + forgeVersion + "\\win_args.txt"))
                     {
                         servercore = "@libraries/net/neoforged/neoforge/" + forgeVersion + "/win_args.txt %*";
+                        return true;
                     }
                     else
                     {
@@ -1481,17 +1455,21 @@ namespace MSL.forms
                         if (!checkResult)
                         {
                             Shows.ShowMsg(this, "下载失败,请多次尝试或使用代理再试！", "错误");
+                            return false;
                         }
+                        return true;
                     }
                 }
                 catch
                 {
                     Shows.ShowMsg(this, "下载失败！", "错误");
+                    return false;
                 }
             }
             catch (Exception ex)
             {
                 Shows.ShowMsg(this, "出现错误！\n" + ex.ToString(), "错误");
+                return false;
             }
         }
         #endregion
