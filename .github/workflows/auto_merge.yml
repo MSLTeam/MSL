@@ -1,0 +1,21 @@
+name: Auto merge master to dev
+
+on:
+  push:
+    branches:
+      - master
+
+jobs:
+  merge:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v2
+        with:
+          fetch-depth: 0
+
+      - name: 合并master到dev分支
+        run: |
+          git checkout dev
+          git merge master --no-edit
+          git push origin dev
