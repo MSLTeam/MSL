@@ -16,9 +16,9 @@ namespace MSL.controls
 {
 
     /// <summary>
-    /// InstallForgeDialog.xaml 的交互逻辑
+    /// InstallForgeWindow.xaml 的交互逻辑
     /// </summary>
-    public partial class InstallForgeDialog : HandyControl.Controls.Window
+    public partial class InstallForgeWindow : HandyControl.Controls.Window
     {
         public static bool suc;
         private readonly string forgePath;
@@ -29,7 +29,7 @@ namespace MSL.controls
         private int versionType; //由于Forge安装器的json有4种格式（太6了），在此进行规定：①1.20.3-Latest ②？-1.20.2
         private readonly Thread thread;
 
-        public InstallForgeDialog(string forge,string downPath,string java)
+        public InstallForgeWindow(string forge,string downPath,string java)
         {
             InitializeComponent();
             Log_in("准备开始安装Forge···");
@@ -476,7 +476,7 @@ namespace MSL.controls
             {
                 File.Delete(installPath + "/install.bat");
                 Directory.Delete(tempPath, true);
-            }catch (Exception ex)
+            }catch// (Exception ex)
             {
                 //没log
             }

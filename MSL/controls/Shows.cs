@@ -70,14 +70,14 @@ namespace MSL.controls
             {
                 window.Focus();
                 var dialog = Dialog.Show(string.Empty);
-                InstallForgeDialog installforge = new InstallForgeDialog(forgePath, downPath, java)
+                InstallForgeWindow installforge = new InstallForgeWindow(forgePath, downPath, java)
                 {
                     Owner = window
                 };
                 installforge.ShowDialog();
                 window.Focus();
                 dialog.Close();
-                if (InstallForgeDialog.suc)
+                if (InstallForgeWindow.suc)
                 {
                     return true;
                 }
