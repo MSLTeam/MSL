@@ -7,7 +7,7 @@
              xmlns:hc="https://handyorg.github.io/handycontrol"
              mc:Ignorable="d" SizeToContent="WidthAndHeight" ResizeMode="NoResize" ShowNonClientArea="False"
              WindowStartupLocation="CenterOwner" ShowInTaskbar="False">
-    <Grid x:Name="MainGrid" Background="{DynamicResource DialogBrush1}">
+    <Grid x:Name="MainGrid" Background="{DynamicResource RegionBrush}">
         <Grid.RowDefinitions>
             <RowDefinition/>
             <RowDefinition Height="70"/>
@@ -18,7 +18,7 @@
             <hc:PasswordBox x:Name="passBox" MinWidth="200" VerticalAlignment="Bottom" ShowEyeButton="True" KeyUp="passBox_KeyUp" />
             <TextBox x:Name="textBox" MinWidth="200" VerticalAlignment="Bottom" KeyUp="textBox_KeyUp" />
         </Grid>
-        <Grid Grid.Row="1" Background="{DynamicResource DialogBrush2}">
+        <Grid Grid.Row="1" Background="{DynamicResource SecondaryRegionBrush}">
             <Grid.ColumnDefinitions>
                 <ColumnDefinition/>
                 <ColumnDefinition/>

@@ -4,7 +4,7 @@
              xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006" 
              xmlns:d="http://schemas.microsoft.com/expression/blend/2008" 
              xmlns:local="clr-namespace:MSL.controls"
-             mc:Ignorable="d" CornerRadius="10" Background="{DynamicResource DialogBrush1}">
+             mc:Ignorable="d" CornerRadius="10" Background="{DynamicResource RegionBrush}">
     <Grid x:Name="MainGrid">
         <Grid.RowDefinitions>
             <RowDefinition/>
@@ -17,8 +17,8 @@
             </ScrollViewer>
 
         </Grid>
-        <Border Grid.Row="1" CornerRadius="10" Background="{DynamicResource DialogBrush2}">
-            <Grid Background="{DynamicResource DialogBrush2}" Margin="0,0,0,10">
+        <Border Grid.Row="1" CornerRadius="10" Background="{DynamicResource SecondaryRegionBrush}">
+            <Grid Background="{DynamicResource SecondaryRegionBrush}" Margin="0,0,0,10">
                 <Grid.ColumnDefinitions>
                     <ColumnDefinition/>
                     <ColumnDefinition/>

@@ -12,7 +12,7 @@
         Background="{DynamicResource BackgroundBrush}"
         NonClientAreaBackground="{DynamicResource PrimaryBrush}"
         NonClientAreaHeight="35"
-        CloseButtonForeground="White" OtherButtonForeground="White"
+        CloseButtonForeground="White" OtherButtonForeground="White" OtherButtonHoverForeground="White"
         ShowTitle="False" Icon="icon.ico"
         WindowStartupLocation="CenterScreen" Loaded="Window_Loaded" Closing="Window_Closing"  Closed="Window_Closed"
         Title="Minecraft Server Launcher" ResizeMode="CanResize"
