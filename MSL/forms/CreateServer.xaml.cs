@@ -221,12 +221,6 @@ namespace MSL.forms
                             bool dialog = Shows.ShowMsg(this, "您选择的服务端是forge安装器，是否将其展开安装？\n如果不展开安装，服务器可能无法开启！", "提示", true, "取消");
                             if (dialog)
                             {
-                                if (txb3.Text.Contains("neoforge"))
-                                {
-                                    InstallForge("", false, true);
-                                }
-                                else
-                                {
                                     //调用新版forge安装器
                                     bool installForge = Shows.ShowInstallForge(this, serverbase + "\\" + txb3.Text, serverbase, serverjava);
                                     if (installForge)
@@ -237,7 +231,7 @@ namespace MSL.forms
                                     {
                                         InstallForge("", false, true);
                                     }
-                                }
+
                             }
                         }
                         txb3.Text = servercore;
