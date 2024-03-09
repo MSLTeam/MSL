@@ -22,7 +22,7 @@ body:
         - label: 我确认我提交的问题没有人提交过.
           required: true
   - type: textarea
-    id: 描述 Bug
+    id: Bug
     attributes:
       label: 描述 Bug
       description: 仔细描述BUG。
