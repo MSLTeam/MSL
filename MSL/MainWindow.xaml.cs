@@ -82,7 +82,7 @@ namespace MSL
             //get serverlink
             try
             {
-                serverLink = Functions.Get("", "https://msl-server.oss-cn-hangzhou.aliyuncs.com/",true);
+                serverLink = Functions.Get("", "https://msl-server.oss-cn-hangzhou.aliyuncs.com/", true);
                 try
                 {
                     if (((int)((JObject)JsonConvert.DeserializeObject(Functions.Get("")))["status"]) != 200)
@@ -121,7 +121,7 @@ namespace MSL
                     Close();
                 });
             }
-            
+
             //showDialog.CloseMsgDialog();
             //Logger.LogInfo("开始载入配置文件……");
             JObject jsonObject = null;
@@ -529,7 +529,7 @@ namespace MSL
 
         private bool CheckServerRunning()
         {
-            foreach(var item in ServerList.runningServers)
+            foreach (var item in ServerList.runningServers)
             {
                 if (item.Value == 1)
                 {

@@ -1,5 +1,4 @@
 ﻿using System.Windows;
-using System.Windows.Media.Animation;
 
 namespace MSL.controls
 {
@@ -10,7 +9,7 @@ namespace MSL.controls
     {
         public static bool _dialogReturn;
         public static string _textReturn;
-        public InputWindow(Window window, string dialogText, string textboxText,bool passwordMode=false)
+        public InputWindow(Window window, string dialogText, string textboxText, bool passwordMode = false)
         {
             InitializeComponent();
             this.MaxHeight = window.ActualHeight;
@@ -18,16 +17,16 @@ namespace MSL.controls
             _dialogReturn = false;
             bodyText.Text = dialogText;
             textBox.Text = textboxText;
-            if(passwordMode)
+            if (passwordMode)
             {
-                passBox.Visibility= Visibility.Visible;
-                textBox.Visibility= Visibility.Hidden;
+                passBox.Visibility = Visibility.Visible;
+                textBox.Visibility = Visibility.Hidden;
                 passBox.Focus();
             }
             else
             {
-                passBox.Visibility= Visibility.Hidden;
-                textBox.Visibility= Visibility.Visible;
+                passBox.Visibility = Visibility.Hidden;
+                textBox.Visibility = Visibility.Visible;
                 textBox.Focus();
             }
         }

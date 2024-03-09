@@ -167,7 +167,7 @@ namespace MSL.pages
 
         private ServerRunner CheckServerRunStatus()
         {
-            if(runningServers.ContainsKey(serverIDs[serverList.SelectedIndex].ToString()))
+            if (runningServers.ContainsKey(serverIDs[serverList.SelectedIndex].ToString()))
             {
                 MainWindow.serverIDs = serverIDs[serverList.SelectedIndex];
                 OpenServerForm();

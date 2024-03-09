@@ -6,7 +6,6 @@ using System.Collections.Generic;
 using System.Diagnostics;
 using System.IO;
 using System.Linq;
-using System.Security.Policy;
 using System.Text.RegularExpressions;
 using System.Threading;
 using System.Windows;
@@ -53,8 +52,8 @@ namespace MSL.pages
         void DownloadServerFunc()
         {
 
-                downVersion = serverlist1.SelectedItem.ToString();
-                downServer = serverlist.SelectedItem.ToString();
+            downVersion = serverlist1.SelectedItem.ToString();
+            downServer = serverlist.SelectedItem.ToString();
 
             if (serverlist1.SelectedIndex != -1)
             {
@@ -62,7 +61,7 @@ namespace MSL.pages
 
                 string[] downContext = Functions.GetWithSha256("download/server/" + downServer + "/" + downVersion);
                 string downUrl = downContext[0];
-                string sha256Exp= downContext[1];
+                string sha256Exp = downContext[1];
 
                 if (serverlist.SelectedItem.ToString().IndexOf("（") + 1 != 0)
                 {
@@ -91,7 +90,7 @@ namespace MSL.pages
                         filename = serverlist.SelectedItem.ToString() + "-" + serverlist1.SelectedItem.ToString() + ".jar";
                     }
                 }
-                bool dwnDialog = Shows.ShowDownloader(this, downUrl, downPath, filename, "下载服务端中……",sha256Exp);
+                bool dwnDialog = Shows.ShowDownloader(this, downUrl, downPath, filename, "下载服务端中……", sha256Exp);
                 if (!dwnDialog)
                 {
                     Shows.ShowMsg(this, "下载取消！", "提示");
@@ -102,15 +101,15 @@ namespace MSL.pages
                     if (filename.IndexOf("forge") + 1 != 0)
                     {
                         Shows.ShowMsg(this, "检测到您下载的是Forge端，开服器将自动进行安装操作，稍后请您不要随意移动鼠标且不要随意触碰键盘，耐心等待安装完毕！", "提示");
-                            bool installForge = Shows.ShowInstallForge(this, downPath + "\\" + filename, downPath, downloadServerJava);
-                            if (installForge)
-                            {
-                                InstallForge(downUrl);
-                            }
-                            else
-                            {
-                                InstallForge(downUrl, false);
-                            }
+                        bool installForge = Shows.ShowInstallForge(this, downPath + "\\" + filename, downPath, downloadServerJava);
+                        if (installForge)
+                        {
+                            InstallForge(downUrl);
+                        }
+                        else
+                        {
+                            InstallForge(downUrl, false);
+                        }
 
                     }
                     else
@@ -201,7 +200,7 @@ namespace MSL.pages
                         serverlist1.ItemsSource = sortedVersions;
                         getservermsg.Visibility = Visibility.Hidden;
                         lCircle.Visibility = Visibility.Hidden;
-                        server_d.Text = "你选择的是：" +server_des;
+                        server_d.Text = "你选择的是：" + server_des;
                     });
 
                 }
@@ -269,7 +268,7 @@ namespace MSL.pages
                     downloadServerJava = AppDomain.CurrentDomain.BaseDirectory + downloadServerJava;
                 }
 
-                
+
                 if (!fastMode)
                 {
                     Process process = new Process();

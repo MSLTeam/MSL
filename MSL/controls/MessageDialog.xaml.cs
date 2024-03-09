@@ -1,6 +1,4 @@
-﻿using System.Threading;
-using System.Threading.Tasks;
-using System.Windows;
+﻿using System.Windows;
 
 namespace MSL.controls
 {
@@ -11,7 +9,7 @@ namespace MSL.controls
     {
         public event DeleControl CloseDialog;
         //private readonly Window owner;
-        public MessageDialog(Window window,string dialogText,string dialogTitle)
+        public MessageDialog(Window window, string dialogText, string dialogTitle)
         {
             InitializeComponent();
             this.MaxHeight = window.ActualHeight;

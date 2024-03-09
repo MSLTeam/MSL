@@ -7,7 +7,6 @@ using Newtonsoft.Json.Linq;
 using System;
 using System.Diagnostics;
 using System.IO;
-using System.Net;
 using System.Net.NetworkInformation;
 using System.Runtime.InteropServices;
 using System.Text;
@@ -268,7 +267,7 @@ namespace MSL.pages
                     }
                 }
             }
-            if(msg.Contains(" 发现新版本"))
+            if (msg.Contains(" 发现新版本"))
             {
                 JObject jobject = JObject.Parse(File.ReadAllText(@"MSL\config.json", Encoding.UTF8));
                 if (jobject["frpcServer"].ToString() == "1")
@@ -286,9 +285,9 @@ namespace MSL.pages
                                     await Task.Delay(1000);
                                     await Task.Run(() => File.Delete("MSL\\frpc_of.exe"));
                                     _ = Task.Run(() => StartFrpc());
-                                    
+
                                 });
-                                
+
                             }
                             return true;
                         },
@@ -367,9 +366,9 @@ namespace MSL.pages
             bool _input = false;
             Dispatcher.Invoke(() =>
             {
-                 _input= Shows.ShowInput(window, "输入账号(QQ号)：", out qq);
+                _input = Shows.ShowInput(window, "输入账号(QQ号)：", out qq);
             });
-            
+
             if (!_input)
             {
                 return;

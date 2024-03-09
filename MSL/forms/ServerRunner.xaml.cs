@@ -78,7 +78,7 @@ namespace MSL
             LoadingCircle loadingCircle = new LoadingCircle();
             MainGrid.Children.Add(loadingCircle);
             MainGrid.RegisterName("loadingBar", loadingCircle);
-            ServerList.runningServers.Add(RserverID,0);
+            ServerList.runningServers.Add(RserverID, 0);
             await Task.Delay(100);
             await Task.Run(() => { WindowLoadingEvent(); });
             GetFastCmd();
@@ -111,10 +111,6 @@ namespace MSL
         {
             try
             {
-                if (ServerList.runningServers.ContainsKey(RserverID))
-                {
-                    ServerList.runningServers.Remove(RserverID);
-                }
                 if (ServerProcess.HasExited != true)
                 {
                     bool dialog = Shows.ShowMsg(this, "检测到您没有关闭服务器，是否隐藏此窗口？\n如要重新显示此窗口，请在服务器列表内双击该服务器（或点击开启服务器按钮）", "警告", true, "取消");
@@ -126,6 +122,7 @@ namespace MSL
                 }
                 else
                 {
+                    ServerList.runningServers.Remove(RserverID);
                     RserverID = null;
                     getServerInfo = false;
                     getPlayerInfo = false;
@@ -135,6 +132,7 @@ namespace MSL
             }
             catch
             {
+                ServerList.runningServers.Remove(RserverID);
                 RserverID = null;
                 getServerInfo = false;
                 getPlayerInfo = false;
@@ -1771,9 +1769,9 @@ namespace MSL
                             List<string> candidates = new List<string>();
                             //获取最后一个空格之前的文本
                             string prefix = input;
-                            if(input.Contains(" "))
+                            if (input.Contains(" "))
                             {
-                                prefix=input.Substring(0, input.LastIndexOf(" ") + 1);
+                                prefix = input.Substring(0, input.LastIndexOf(" ") + 1);
                             }
                             //遍历命令列表
                             foreach (string command in tabCompleteList)
@@ -1819,7 +1817,7 @@ namespace MSL
                             //如果有候选项
                             if (candidates.Count > 0)
                             {
-                                if (candidates.Count == 1&&prefix!=input)
+                                if (candidates.Count == 1 && prefix != input)
                                 {
                                     candidates.Clear();
                                     //遍历命令列表
@@ -1829,7 +1827,7 @@ namespace MSL
                                         if (command.StartsWith(prefix))
                                         {
                                             //添加候选项为命令
-                                            candidates.Add(command.Replace(prefix,""));
+                                            candidates.Add(command.Replace(prefix, ""));
                                         }
                                     }
                                     if (candidates.Count != 1)
@@ -1839,7 +1837,7 @@ namespace MSL
                                         int multiComplete = 0;
                                         foreach (string command in candidates)
                                         {
-                                            if (cmdtext.Text.Replace(prefix,"") == command)
+                                            if (cmdtext.Text.Replace(prefix, "") == command)
                                             {
                                                 multiComplete++;
                                                 break;
@@ -1850,8 +1848,8 @@ namespace MSL
                                         {
                                             multiComplete = 0;
                                         }
-                                        
-                                        cmdtext.Text = prefix+candidates[multiComplete];
+
+                                        cmdtext.Text = prefix + candidates[multiComplete];
                                     }
                                 }
                                 else
@@ -1981,7 +1979,7 @@ namespace MSL
             }
         }
         #endregion
-        
+
         #endregion
 
         #region 服务器功能调整
@@ -3098,7 +3096,7 @@ namespace MSL
                     selectCheckedJavaComb.Items.Add(str);
                 }
                 */
-                selectCheckedJavaComb.ItemsSource=strings.ToList();
+                selectCheckedJavaComb.ItemsSource = strings.ToList();
             }
             if (selectCheckedJavaComb.Items.Count > 0)
             {

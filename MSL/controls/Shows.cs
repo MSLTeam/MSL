@@ -33,7 +33,7 @@ namespace MSL.controls
                 return false;
             }
         }
-        public static bool ShowInput(System.Windows.Window window, string dialogText, out string userInput, string textboxText = "",bool passwordMode=false)
+        public static bool ShowInput(System.Windows.Window window, string dialogText, out string userInput, string textboxText = "", bool passwordMode = false)
         {
             userInput = string.Empty;
             try
@@ -59,12 +59,12 @@ namespace MSL.controls
             }
             catch
             {
-                
+
                 return false;
             }
         }
 
-        public static bool ShowInstallForge(System.Windows.Window window,string forgePath,string downPath,string java)
+        public static bool ShowInstallForge(System.Windows.Window window, string forgePath, string downPath, string java)
         {
             try
             {
@@ -171,7 +171,7 @@ namespace MSL.controls
         }
         public void CloseMsgDialog()
         {
-            
+
             window.Focus();
             dialog.Close();
         }

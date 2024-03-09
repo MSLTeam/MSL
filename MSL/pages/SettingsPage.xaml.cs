@@ -1,5 +1,4 @@
-﻿using HandyControl.Controls;
-using HandyControl.Themes;
+﻿using HandyControl.Themes;
 using Microsoft.Win32;
 using MSL.controls;
 using Newtonsoft.Json.Linq;
@@ -142,7 +141,7 @@ namespace MSL.pages
                 }
                 if (jsonObject["skin"] != null)
                 {
-                    if(jsonObject["skin"].ToString() == "0")
+                    if (jsonObject["skin"].ToString() == "0")
                     {
                         autoSetTheme.IsChecked = true;
                         BlueSkinBtn.IsEnabled = false;

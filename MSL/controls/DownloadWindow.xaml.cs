@@ -25,7 +25,7 @@ namespace MSL
         private readonly string expectedSha256;
         private DownloadService downloader;
 
-        public DownloadWindow(string _downloadurl, string _downloadPath, string _filename, string downloadinfo,string sha256 = "")
+        public DownloadWindow(string _downloadurl, string _downloadPath, string _filename, string downloadinfo, string sha256 = "")
         {
             InitializeComponent();
 
@@ -36,7 +36,7 @@ namespace MSL
             downloadurl = _downloadurl;
             downloadPath = _downloadPath;
             filename = _filename;
-            if (sha256 != "" )
+            if (sha256 != "")
             {
                 expectedSha256 = sha256;
             }

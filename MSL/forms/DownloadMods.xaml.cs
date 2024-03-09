@@ -95,7 +95,7 @@ namespace MSL
                 else if (loadType == 1)
                 {
                     var modpacks = await cfApiClient.SearchModsAsync(432, null, 5128);
-                    
+
                     for (int i = 0; i < modpacks.Data.Count; i++)
                     {
 

@@ -1,5 +1,4 @@
-﻿using CurseForge.APIClient.Models.Mods;
-using HandyControl.Controls;
+﻿using HandyControl.Controls;
 using ICSharpCode.SharpZipLib.Zip;
 using MSL.controls;
 using MSL.pages;
@@ -10,7 +9,6 @@ using System.Collections.Generic;
 using System.Diagnostics;
 using System.IO;
 using System.Linq;
-using System.Security.Policy;
 using System.Text;
 using System.Text.RegularExpressions;
 using System.Threading;
@@ -19,7 +17,6 @@ using System.Windows;
 using System.Windows.Controls;
 using System.Windows.Forms;
 using System.Windows.Threading;
-using Windows.Media.Protection.PlayReady;
 using MessageBox = System.Windows.MessageBox;
 using OpenFileDialog = Microsoft.Win32.OpenFileDialog;
 using Path = System.IO.Path;
@@ -31,14 +28,13 @@ namespace MSL.forms
     /// </summary>
     public partial class CreateServer : HandyControl.Controls.Window
     {
-        string DownjavaName;
-
-        string servername;
-        string serverjava;
-        string serverbase;
-        string servercore;
-        string servermemory;
-        string serverargs;
+        private string DownjavaName;
+        private string servername;
+        private string serverjava;
+        private string serverbase;
+        private string servercore;
+        private string servermemory;
+        private string serverargs;
 
         public CreateServer()
         {
@@ -55,7 +51,6 @@ namespace MSL.forms
                 }
                 else if (!Directory.Exists(@"MSL\Server"))
                 {
-                    //MessageBox.Show(@"MSL\Server");
                     txb6.Text = AppDomain.CurrentDomain.BaseDirectory + "MSL\\Server";
                     return;
                 }
@@ -66,7 +61,6 @@ namespace MSL.forms
                 }
                 else if (!Directory.Exists(@"MSL\Server" + a.ToString()))
                 {
-                    //MessageBox.Show(@"MSL\Server" + a.ToString());
                     txb6.Text = AppDomain.CurrentDomain.BaseDirectory + "MSL\\Server" + a.ToString();
                     return;
                 }
@@ -75,14 +69,13 @@ namespace MSL.forms
 
         private async void next3_Click(object sender, RoutedEventArgs e)
         {
+            bool noNext = false;
+            next3.IsEnabled = false;
+            return5.IsEnabled = false;
             if (useJVself.IsChecked == true)
             {
                 outlog.Content = "正在检查所选Java可用性，请稍等……";
-                txjava.IsEnabled = false;
-                a0002_Copy.IsEnabled = false;
                 (bool javaAvailability, string javainfo) = await Functions.CheckJavaAvailabilityAsync(txjava.Text);
-                txjava.IsEnabled = true;
-                a0002_Copy.IsEnabled = true;
                 if (javaAvailability)
                 {
                     outlog.Content = "所选Java版本：" + javainfo;
@@ -92,7 +85,7 @@ namespace MSL.forms
                     outlog.Content = "检测Java可用性失败";
                     Shows.ShowMsg(this, "检测Java可用性失败，您的Java似乎不可用！请检查是否选择正确！", "错误");
                     usedownloadjv.IsChecked = true;
-                    return;
+                    noNext = true;
                 }
                 serverjava = txjava.Text;
                 await Dispatcher.InvokeAsync(() =>
@@ -119,11 +112,10 @@ namespace MSL.forms
             }
             else if (usedownloadjv.IsChecked == true)
             {
+
                 try
                 {
                     outlog.Content = "当前进度:下载Java……";
-                    next3.IsEnabled = false;
-                    return5.IsEnabled = false;
                     if (usedownloadjv.IsChecked == true)
                     {
                         try
@@ -147,9 +139,7 @@ namespace MSL.forms
                                 }
                                 else
                                 {
-                                    next3.IsEnabled = true;
-                                    return5.IsEnabled = true;
-                                    return;
+                                    noNext = true;
                                 }
                             }
                             else if (dwnJava == 2)
@@ -163,34 +153,30 @@ namespace MSL.forms
                             else
                             {
                                 Shows.ShowMsg(this, "下载取消！", "提示");
-                                next3.IsEnabled = true;
-                                return5.IsEnabled = true;
-                                return;
+                                noNext = true;
                             }
                         }
                         catch
                         {
-                            next3.IsEnabled = true;
-                            return5.IsEnabled = true;
                             Shows.GrowlErr("出现错误，请检查网络连接！");
-                            return;
+                            noNext = true;
                         }
                     }
-                    next3.IsEnabled = true;
-                    return5.IsEnabled = true;
-                    
                 }
                 catch
                 {
-                    next3.IsEnabled = true;
-                    return5.IsEnabled = true;
                     Shows.ShowMsg(this, "出现错误！请检查您的网络连接！", "信息", false, "确定");
-                    return;
+                    noNext = true;
                 }
             }
-            sserver.IsSelected = true;
-            sserver.IsEnabled = true;
-            sjava.IsEnabled = false;
+            next3.IsEnabled = true;
+            return5.IsEnabled = true;
+            if (!noNext)
+            {
+                sserver.IsSelected = true;
+                sserver.IsEnabled = true;
+                sjava.IsEnabled = false;
+            }
         }
         private void CheckServerPackCore()
         {
@@ -221,15 +207,20 @@ namespace MSL.forms
                             bool dialog = Shows.ShowMsg(this, "您选择的服务端是forge安装器，是否将其展开安装？\n如果不展开安装，服务器可能无法开启！", "提示", true, "取消");
                             if (dialog)
                             {
+                                bool installReturn;
                                 //调用新版forge安装器
                                 bool installForge = Shows.ShowInstallForge(this, serverbase + "\\" + txb3.Text, serverbase, serverjava);
                                 if (installForge)
                                 {
-                                    InstallForge("");
+                                    installReturn = InstallForge("");
                                 }
                                 else
                                 {
-                                    InstallForge("", false, true);
+                                    installReturn = InstallForge("", false, true);
+                                }
+                                if (!installReturn)
+                                {
+                                    return;
                                 }
                             }
                         }
@@ -250,15 +241,20 @@ namespace MSL.forms
                             bool dialog = Shows.ShowMsg(this, "您选择的服务端是forge安装器，是否将其展开安装？\n如果不展开安装，服务器可能无法开启！", "提示", true, "取消");
                             if (dialog)
                             {
+                                bool installReturn;
                                 //调用新版forge安装器
                                 bool installForge = Shows.ShowInstallForge(this, serverbase + "\\" + txb3.Text, serverbase, serverjava);
                                 if (installForge)
                                 {
-                                    InstallForge("");
+                                    installReturn = InstallForge("");
                                 }
                                 else
                                 {
-                                    InstallForge("", false, true);
+                                    installReturn = InstallForge("", false, true);
+                                }
+                                if (!installReturn)
+                                {
+                                    return;
                                 }
                             }
                         }
@@ -511,7 +507,7 @@ namespace MSL.forms
                     selectCheckedJavaComb.Items.Add(str);
                 }
                 */
-                selectCheckedJavaComb.ItemsSource= strings.ToList();
+                selectCheckedJavaComb.ItemsSource = strings.ToList();
             }
             if (selectCheckedJavaComb.Items.Count > 0)
             {
@@ -706,10 +702,12 @@ namespace MSL.forms
                                 break;
                             }
                         }
-                        OpenFileDialog openfile = new OpenFileDialog();
-                        openfile.InitialDirectory = "MSL";
-                        openfile.Title = "请选择整合包压缩文件";
-                        openfile.Filter = "ZIP文件|*.zip|所有文件类型|*.*";
+                        OpenFileDialog openfile = new OpenFileDialog
+                        {
+                            InitialDirectory = "MSL",
+                            Title = "请选择整合包压缩文件",
+                            Filter = "ZIP文件|*.zip|所有文件类型|*.*"
+                        };
                         var res = openfile.ShowDialog();
                         if (res == true)
                         {
@@ -812,24 +810,29 @@ namespace MSL.forms
                         bool dialog = Shows.ShowMsg(this, "您选择的服务端是forge安装器，是否将其展开安装？\n如果不展开安装，服务器可能无法开启！", "提示", true, "取消");
                         if (dialog)
                         {
+                            bool installReturn;
                             //调用新版forge安装器
                             bool installForge = Shows.ShowInstallForge(this, serverbase + "\\" + txb3.Text, serverbase, serverjava);
                             if (installForge)
                             {
-                                InstallForge("");
+                                installReturn = InstallForge("");
                             }
                             else
                             {
-                                InstallForge("", false, true);
+                                installReturn = InstallForge("", false, true);
+                            }
+                            if (!installReturn)
+                            {
+                                return;
                             }
                         }
                     }
-                    txb3.Text=servercore;
+                    txb3.Text = servercore;
                     sJVM.IsSelected = true;
                     sJVM.IsEnabled = true;
                     sserver.IsEnabled = false;
-                    next3.IsEnabled = true;
-                    return5.IsEnabled = true;
+                    //next3.IsEnabled = true;
+                    //return5.IsEnabled = true;
                 }
                 catch (Exception ex)
                 {
@@ -969,7 +972,7 @@ namespace MSL.forms
                                     try
                                     {
                                         var resultData = Functions.Get("query/available_versions/" + _serverType);
-                                       // MessageBox.Show(resultData);
+                                        // MessageBox.Show(resultData);
                                         tempServerCore.Add(coreType, resultData);
                                         List<string> serverVersions = JsonConvert.DeserializeObject<List<string>>(resultData);
                                         foreach (var item in serverVersions)
@@ -1190,10 +1193,6 @@ namespace MSL.forms
         {
             ShowDialog dialog = new ShowDialog();
             dialog.ShowTextDialog(this, "获取Java版本列表中，请稍等……");
-            /*
-            Dialog dialog;
-            dialog = Dialog.Show(new TextDialog("获取Java版本列表中，请稍等……"));
-            */
             await Task.Delay(200);
             try
             {
@@ -1209,19 +1208,11 @@ namespace MSL.forms
                 {
                     strings.Add(j.ToString());
                 }
-                /*
-                this.Focus();
-                dialog.Close();
-                */
                 dialog.CloseTextDialog();
                 return strings;
             }
             catch
             {
-                /*
-                this.Focus();
-                dialog.Close();
-                */
                 dialog.CloseTextDialog();
                 return null;
             }
@@ -1232,8 +1223,6 @@ namespace MSL.forms
             try
             {
                 FastModeInstallBtn.IsEnabled = false;
-                FastInstallProcess.Text = "当前进度:获取Java下载地址……";
-                //Thread.Sleep(1000);
                 FastInstallProcess.Text = "当前进度:下载Java……";
                 int dwnJava = 0;
                 await Dispatcher.InvokeAsync(() =>
@@ -1283,10 +1272,10 @@ namespace MSL.forms
         void FastModeInstallCore()
         {
             string filename = FinallyCoreCombo.Items[FinallyCoreCombo.SelectedIndex].ToString() + ".jar";
-            string[] dlContext = Functions.GetWithSha256("download/server/" + FinallyCoreCombo.SelectedItem.ToString().Replace("-","/"));//获取链接
+            string[] dlContext = Functions.GetWithSha256("download/server/" + FinallyCoreCombo.SelectedItem.ToString().Replace("-", "/"));//获取链接
             string dlUrl = dlContext[0];
             string sha256Exp = dlContext[1];
-            bool dwnDialog = Shows.ShowDownloader(this, dlUrl, serverbase, filename, "下载服务端中……",sha256Exp); //从这里请求服务端下载
+            bool dwnDialog = Shows.ShowDownloader(this, dlUrl, serverbase, filename, "下载服务端中……", sha256Exp); //从这里请求服务端下载
             if (!dwnDialog)
             {
                 Shows.ShowMsg(this, "下载取消！", "提示");
@@ -1311,8 +1300,6 @@ namespace MSL.forms
                     {
                         installReturn = InstallForge(dlUrl, false);
                     }
-                    //Shows.ShowMsg(this, "检测到您下载的是Forge端，开服器将自动进行安装操作，稍后请您不要随意移动鼠标且不要随意触碰键盘，耐心等待安装完毕！", "提示");
-                    //installReturn = InstallForge(dlUrl);
                 }
                 if (installReturn)
                 {
@@ -1374,7 +1361,7 @@ namespace MSL.forms
         }
 
         #region InstallForge
-        private bool InstallForge(string downloadUrl, bool fastMode = true,bool customMode=false)
+        private bool InstallForge(string downloadUrl, bool fastMode = true, bool customMode = false)
         {
             try
             {

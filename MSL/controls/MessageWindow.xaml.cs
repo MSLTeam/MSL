@@ -1,5 +1,4 @@
 ﻿using System.Windows;
-using System.Windows.Media.Animation;
 
 namespace MSL.controls
 {
@@ -13,7 +12,7 @@ namespace MSL.controls
         {
             InitializeComponent();
             this.MaxHeight = window.ActualHeight;
-            this.MaxWidth = window.ActualWidth-200;
+            this.MaxWidth = window.ActualWidth - 200;
             _dialogReturn = false;
             titleText.Text = dialogTitle;
             bodyText.Text = dialogText;

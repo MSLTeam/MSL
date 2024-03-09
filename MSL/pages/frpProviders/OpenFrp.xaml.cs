@@ -4,15 +4,14 @@ using Newtonsoft.Json.Linq;
 using System;
 using System.Collections.Generic;
 using System.Diagnostics;
+using System.IO;
 using System.Text;
+using System.Threading;
 using System.Threading.Tasks;
 using System.Windows;
 using System.Windows.Controls;
 using MessageBox = System.Windows.MessageBox;
-using System.IO;
 using Window = System.Windows.Window;
-using System.Threading;
-using System.Xml.Linq;
 
 namespace MSL.pages.frpProviders
 {
@@ -123,7 +122,7 @@ namespace MSL.pages.frpProviders
             {
                 Dispatcher.Invoke(() =>
                 {
-                    Shows.ShowMsg(window, "登录失败！请检查您的用户名或密码是否正确！\n"+ usr_info, "错误！");
+                    Shows.ShowMsg(window, "登录失败！请检查您的用户名或密码是否正确！\n" + usr_info, "错误！");
                     //APIControl.sessionId = string.Empty;
                     APIControl.authId = string.Empty;
                     APIControl.userAccount = string.Empty;
@@ -154,7 +153,7 @@ namespace MSL.pages.frpProviders
             {
                 userInfo.Content = showusrinfo;
                 signBtn.IsEnabled = true;
-                logoutBtn.IsEnabled=true;
+                logoutBtn.IsEnabled = true;
             });
             try
             {
@@ -164,7 +163,7 @@ namespace MSL.pages.frpProviders
                     serversList.Items.Clear();
                     loadMode = toggleProxies.SelectedIndex;
                 });
-                if(loadMode== 0)
+                if (loadMode == 0)
                 {
                     Dictionary<string, string> process = control.GetUserNodes();
                     if (process.Count != 0)
@@ -247,7 +246,7 @@ namespace MSL.pages.frpProviders
                 Shows.ShowMsg(window, "请确保内网端口不为空", "错误");
                 return;
             }
-            
+
             //现有隧道
             object o = serversList.SelectedValue;
             if (Equals(o, null))
@@ -300,7 +299,7 @@ namespace MSL.pages.frpProviders
             APIControl apiControl = new APIControl();
             apiControl.UserSign(Window.GetWindow(this));
             */
-            Shows.ShowMsg(Window.GetWindow(this), "目前暂不支持在软件内签到，请前往OpenFrp官网进行签到！","提示");
+            Shows.ShowMsg(Window.GetWindow(this), "目前暂不支持在软件内签到，请前往OpenFrp官网进行签到！", "提示");
             Process.Start("https://www.openfrp.net/");
         }
 
@@ -315,12 +314,12 @@ namespace MSL.pages.frpProviders
                     toggleProxies.SelectedIndex = 1;
                     return;
                 }
-                addProxieBtn.IsEnabled=false;
+                addProxieBtn.IsEnabled = false;
                 delProxieBtn.IsEnabled = false;
                 logoutBtn.IsEnabled = false;
                 toggleProxies.IsEnabled = false;
                 toggleAddProxiesGroup.IsEnabled = false;
-                doneBtn.IsEnabled=false;
+                doneBtn.IsEnabled = false;
                 APIControl control = new APIControl();
                 string type;
                 if (frpcType.SelectedIndex == 0) type = "tcp";
@@ -340,7 +339,7 @@ namespace MSL.pages.frpProviders
                 if (input_name)
                 {
                     string returnMsg = "";
-                    bool createReturn = control.CreateProxy(type, portBox.Text, zip, selected_node_id, remotePortBox.Text, proxy_name,out returnMsg);
+                    bool createReturn = control.CreateProxy(type, portBox.Text, zip, selected_node_id, remotePortBox.Text, proxy_name, out returnMsg);
                     if (createReturn)
                     {
                         Shows.ShowMsg(window, "隧道创建成功！", "提示");
@@ -348,7 +347,7 @@ namespace MSL.pages.frpProviders
                     }
                     else
                     {
-                        Shows.ShowMsg(window, "创建失败！"+returnMsg, "错误");
+                        Shows.ShowMsg(window, "创建失败！" + returnMsg, "错误");
                     }
                 }
                 addProxieBtn.IsEnabled = true;
@@ -375,7 +374,7 @@ namespace MSL.pages.frpProviders
             Window window = Window.GetWindow(this);
             if (toggleProxies.SelectedIndex == 0)
             {
-                Dictionary<string, string> process = await Task.Run(()=> control.GetUserNodes());
+                Dictionary<string, string> process = await Task.Run(() => control.GetUserNodes());
                 if (process.Count != 0)
                 {
                     nodelist = process;
@@ -421,15 +420,15 @@ namespace MSL.pages.frpProviders
                 string id = nodelist[o.ToString()];
                 serversList.Items.Clear();
                 APIControl control = new APIControl();
-                string returnMsg="";
+                string returnMsg = "";
                 bool delReturn = await Task.Run(() => control.DeleteProxy(id, out returnMsg));
-                if(delReturn)
+                if (delReturn)
                 {
                     Shows.ShowMsg(window, "删除成功！", "提示");
                 }
                 else
                 {
-                    Shows.ShowMsg(window, "删除失败！"+returnMsg, "错误");
+                    Shows.ShowMsg(window, "删除失败！" + returnMsg, "错误");
                 }
                 Dictionary<string, string> process = control.GetUserNodes();
                 if (process.Count != 0)
@@ -446,9 +445,9 @@ namespace MSL.pages.frpProviders
                 toggleProxies.IsEnabled = true;
                 doneBtn.IsEnabled = true;
             }
-            catch(Exception ex)
+            catch (Exception ex)
             {
-                Shows.ShowMsg(window, "出现错误！"+ex.Message, "错误");
+                Shows.ShowMsg(window, "出现错误！" + ex.Message, "错误");
             }
         }
 
@@ -459,7 +458,7 @@ namespace MSL.pages.frpProviders
 
         void RandRemotePort(bool tips)
         {
-            if(tips)
+            if (tips)
             {
                 Window window = Window.GetWindow(this);
                 if (toggleProxies.SelectedIndex != 1 || serversList.SelectedIndex == -1)
@@ -520,11 +519,11 @@ namespace MSL.pages.frpProviders
             else
             {
                 toggleAddProxiesGroup.Content = "收起";
-                toggleAddProxiesGroup.Margin=new Thickness(300,145,0,0);
+                toggleAddProxiesGroup.Margin = new Thickness(300, 145, 0, 0);
                 delProxieBtn.Margin = new Thickness(515, 145, 0, 0);
                 signBtn.Margin = new Thickness(630, 145, 0, 0);
                 userInfo.Height = 135;
-                addProxiesGroup.Visibility= Visibility.Visible;
+                addProxiesGroup.Visibility = Visibility.Visible;
                 toggleProxies.SelectedIndex = 1;
                 RandRemotePort(false);
             }
