@@ -2794,8 +2794,30 @@ namespace MSL
                     bool dialog = Shows.ShowMsg(this, "您选择的服务端是forge安装器，是否将其展开安装？\n如果不展开安装，服务器可能无法开启！", "提示", true, "取消");
                     if (dialog)
                     {
+                        string installReturn = null;
+                        //调用新版forge安装器
+                        bool installForge = Shows.ShowInstallForge(this, Rserverbase + "\\" + server.Text, Rserverbase, Rserverjava);
+                        if (installForge)
+                        {
+                            installReturn = Functions.InstallForge(Rserverjava, Rserverbase, server.Text);
+                        }
+                        else
+                        {
+                            installReturn = Functions.InstallForge(Rserverjava, Rserverbase, server.Text, false);
+                        }
+                        if (installReturn == null)
+                        {
+                            Shows.ShowMsg(this, "下载失败！", "错误");
+                            return;
+                        }
+                        server.Text = installReturn;
+                    }
+                    /*
+                    if (dialog)
+                    {
                         InstallForge();
                     }
+                    */
                 }
                 Rserverserver = server.Text;
                 await Dispatcher.InvokeAsync(() =>
@@ -2835,6 +2857,7 @@ namespace MSL
             }
         }
 
+        /*
         void InstallForge()
         {
             bool keepTrying = true;
@@ -2893,6 +2916,7 @@ namespace MSL
                 }
             }
         }
+        */
 
         private int DownloadJava(string fileName, string downUrl)
         {

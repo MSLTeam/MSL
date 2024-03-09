@@ -9,6 +9,7 @@ using System.Net;
 using System.Net.Http;
 using System.Text;
 using System.Text.RegularExpressions;
+using System.Threading;
 using System.Threading.Tasks;
 
 namespace MSL.controls
@@ -366,6 +367,150 @@ namespace MSL.controls
             }
             // 如果匹配失败，返回 null
             return null;
+        }
+
+        /// <summary>
+        /// 安装Forge函数
+        /// </summary>
+        /// <param name="_java">Java路径</param>
+        /// <param name="_base">目录/安装目录</param>
+        /// <param name="filename">安装器文件</param>
+        /// <param name="fastMode">是否使用了自动安装模式（快速模式）</param>
+        /// <returns></returns>
+        public static string InstallForge(string _java, string _base, string filename, bool fastMode = true/*, bool customMode = false*/)
+        {
+            try
+            {
+                string forgeVersion;
+                /*
+                if (customMode)
+                {
+                    Match match = Regex.Match(txb3.Text, @"forge-([\w.-]+)-installer");
+                    forgeVersion = match.Groups[1].Value;
+                    //Directory.SetCurrentDirectory(serverbase);
+                    Process process = new Process();
+                    process.StartInfo.WorkingDirectory = serverbase;
+                    process.StartInfo.FileName = serverjava;
+                    process.StartInfo.Arguments = "-jar " + txb3.Text + " -installServer";
+                    process.Start();
+                }
+                else
+                {
+                    //string filename = FinallyCoreCombo.Items[FinallyCoreCombo.SelectedIndex].ToString() + ".jar";
+
+                    if (downloadUrl.Contains("bmcl"))
+                    {
+                        Match match = Regex.Match(downloadUrl, @"&version=([\w.-]+)&category");
+                        string version = FinallyCoreCombo.SelectedItem.ToString().Split('-')[1];
+                        if (version.Contains("-"))
+                        {
+                            string _version = version.Split('-')[0];
+                            forgeVersion = _version + "-" + match.Groups[1].Value;
+                        }
+                        else
+                        {
+                            forgeVersion = version + "-" + match.Groups[1].Value;
+                        }
+                    }
+                    else
+                    {
+                        Match match = Regex.Match(downloadUrl, @"forge-([\w.-]+)-installer");
+                        forgeVersion = match.Groups[1].Value;
+                    }
+
+                    if (!fastMode)
+                    {
+                        Process process = new Process();
+                        process.StartInfo.WorkingDirectory = serverbase;
+                        process.StartInfo.FileName = serverjava;
+                        process.StartInfo.Arguments = "-jar " + filename + " -installServer";
+                        process.Start();
+
+
+                        while (!process.HasExited)
+                        {
+                            Thread.Sleep(1000);
+                        }
+                    }
+                }
+            */
+                if (!fastMode)
+                {
+                    Process process = new Process();
+                    process.StartInfo.WorkingDirectory = _base;
+                    process.StartInfo.FileName = _java;
+                    process.StartInfo.Arguments = "-jar " + filename + " -installServer";
+                    process.Start();
+
+                    while (!process.HasExited)
+                    {
+                        Thread.Sleep(1000);
+                    }
+                }
+                try
+                {
+                    if (Directory.Exists(_base + "\\libraries\\net\\minecraftforge\\forge"))
+                    {
+                        //bool checkResult = false;
+                        string[] subFolders = Directory.GetDirectories(_base + "\\libraries\\net\\minecraftforge\\forge");
+                        foreach (string subFolder in subFolders)
+                        {
+                            if (File.Exists(subFolder + "\\win_args.txt"))
+                            {
+                                forgeVersion = Path.GetFileName(subFolder);
+                                return "@libraries/net/minecraftforge/forge/" + forgeVersion + "/win_args.txt %*";
+                                //checkResult = true;
+                                //break;
+                            }
+                        }
+                        return null;
+                    }
+                    else if (Directory.Exists(_base + "\\libraries\\net\\neoforged\\neoforge"))
+                    {
+                        //bool checkResult = false;
+                        string[] subFolders = Directory.GetDirectories(_base + "\\libraries\\net\\neoforged\\neoforge");
+                        foreach (string subFolder in subFolders)
+                        {
+                            if (File.Exists(subFolder + "\\win_args.txt"))
+                            {
+                                forgeVersion = Path.GetFileName(subFolder);
+                                return "@libraries/net/neoforged/neoforge/" + forgeVersion + "/win_args.txt %*";
+                                //checkResult = true;
+                                //break;
+                            }
+                        }
+                        return null;
+                    }
+                    else
+                    {
+                        DirectoryInfo directoryInfo = new DirectoryInfo(_base);
+                        FileInfo[] fileInfo = directoryInfo.GetFiles();
+                        //bool checkResult = false;
+                        foreach (FileInfo file in fileInfo)
+                        {
+                            if (file.Name.Contains("forge-") && (file.Name != filename) && (!file.Name.Contains("installer")))
+                            {
+                                return file.FullName.Replace(_base + @"\", "");
+                                //checkResult = true;
+                                //break;
+                            }
+                        }
+                        return null;
+                    }
+                }
+                catch
+                {
+                    return null;
+                    //Shows.ShowMsg(this, "下载失败！", "错误");
+                    //return false;
+                }
+            }
+            catch// (Exception ex)
+            {
+                return null;
+                //Shows.ShowMsg(this, "出现错误！\n" + ex.ToString(), "错误");
+                //return false;
+            }
         }
     }
 

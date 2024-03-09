@@ -6,7 +6,6 @@ using Newtonsoft.Json;
 using Newtonsoft.Json.Linq;
 using System;
 using System.Collections.Generic;
-using System.Diagnostics;
 using System.IO;
 using System.Linq;
 using System.Text;
@@ -207,24 +206,26 @@ namespace MSL.forms
                             bool dialog = Shows.ShowMsg(this, "您选择的服务端是forge安装器，是否将其展开安装？\n如果不展开安装，服务器可能无法开启！", "提示", true, "取消");
                             if (dialog)
                             {
-                                bool installReturn;
+                                string installReturn;
                                 //调用新版forge安装器
                                 bool installForge = Shows.ShowInstallForge(this, serverbase + "\\" + txb3.Text, serverbase, serverjava);
                                 if (installForge)
                                 {
-                                    installReturn = InstallForge("");
+                                    installReturn = Functions.InstallForge(serverjava, serverbase, txb3.Text);
                                 }
                                 else
                                 {
-                                    installReturn = InstallForge("", false, true);
+                                    installReturn = Functions.InstallForge(serverjava, serverbase, txb3.Text, false);
                                 }
-                                if (!installReturn)
+                                if (installReturn == null)
                                 {
+                                    Shows.ShowMsg(this, "下载失败！", "错误");
                                     return;
                                 }
+                                txb3.Text = installReturn;
                             }
                         }
-                        txb3.Text = servercore;
+                        servercore = txb3.Text;
                         sJVM.IsSelected = true;
                         sJVM.IsEnabled = true;
                         sserver.IsEnabled = false;
@@ -241,24 +242,26 @@ namespace MSL.forms
                             bool dialog = Shows.ShowMsg(this, "您选择的服务端是forge安装器，是否将其展开安装？\n如果不展开安装，服务器可能无法开启！", "提示", true, "取消");
                             if (dialog)
                             {
-                                bool installReturn;
+                                string installReturn;
                                 //调用新版forge安装器
                                 bool installForge = Shows.ShowInstallForge(this, serverbase + "\\" + txb3.Text, serverbase, serverjava);
                                 if (installForge)
                                 {
-                                    installReturn = InstallForge("");
+                                    installReturn = Functions.InstallForge(serverjava, serverbase, txb3.Text);
                                 }
                                 else
                                 {
-                                    installReturn = InstallForge("", false, true);
+                                    installReturn = Functions.InstallForge(serverjava, serverbase, txb3.Text, false);
                                 }
-                                if (!installReturn)
+                                if (installReturn == null)
                                 {
+                                    Shows.ShowMsg(this, "下载失败！", "错误");
                                     return;
                                 }
+                                txb3.Text = installReturn;
                             }
                         }
-                        txb3.Text = servercore;
+                        servercore = txb3.Text;
                         sJVM.IsSelected = true;
                         sJVM.IsEnabled = true;
                         sserver.IsEnabled = false;
@@ -810,24 +813,26 @@ namespace MSL.forms
                         bool dialog = Shows.ShowMsg(this, "您选择的服务端是forge安装器，是否将其展开安装？\n如果不展开安装，服务器可能无法开启！", "提示", true, "取消");
                         if (dialog)
                         {
-                            bool installReturn;
+                            string installReturn = null;
                             //调用新版forge安装器
                             bool installForge = Shows.ShowInstallForge(this, serverbase + "\\" + txb3.Text, serverbase, serverjava);
                             if (installForge)
                             {
-                                installReturn = InstallForge("");
+                                installReturn = Functions.InstallForge(serverjava, serverbase, txb3.Text);
                             }
                             else
                             {
-                                installReturn = InstallForge("", false, true);
+                                installReturn = Functions.InstallForge(serverjava, serverbase, txb3.Text, false);
                             }
-                            if (!installReturn)
+                            if (installReturn == null)
                             {
+                                Shows.ShowMsg(this, "下载失败！", "错误");
                                 return;
                             }
+                            txb3.Text = installReturn;
                         }
                     }
-                    txb3.Text = servercore;
+                    servercore = txb3.Text;
                     sJVM.IsSelected = true;
                     sJVM.IsEnabled = true;
                     sserver.IsEnabled = false;
@@ -1286,23 +1291,24 @@ namespace MSL.forms
             if (File.Exists(serverbase + "\\" + filename))
             {
                 servercore = filename;
-                bool installReturn = true;
-                if (filename.IndexOf("forge") + 1 != 0)
+                string installReturn = null;
+                if (filename.Contains("forge"))
                 {
-                    Shows.ShowMsg(this, "检测到您下载的是Forge端，开服器将自动进行安装操作，稍后请您不要随意移动鼠标且不要随意触碰键盘，耐心等待安装完毕！", "提示");
+                    Shows.ShowMsg(this, "检测到您下载的是Forge端，开服器将自动进行安装操作，稍后请您不要随意操作，耐心等待安装完毕！", "提示");
                     //调用新版forge安装器
                     bool installForge = Shows.ShowInstallForge(this, serverbase + "\\" + filename, serverbase, serverjava);
                     if (installForge)
                     {
-                        installReturn = InstallForge(dlUrl);
+                        installReturn = Functions.InstallForge(serverjava, serverbase, FinallyCoreCombo.Items[FinallyCoreCombo.SelectedIndex].ToString() + ".jar");
                     }
                     else
                     {
-                        installReturn = InstallForge(dlUrl, false);
+                        installReturn = Functions.InstallForge(serverjava, serverbase, FinallyCoreCombo.Items[FinallyCoreCombo.SelectedIndex].ToString() + ".jar", false);
                     }
                 }
-                if (installReturn)
+                if (installReturn != null)
                 {
+                    servercore = installReturn;
                     FastInstallProcess.Text = "当前进度:完成！";
                     try
                     {
@@ -1350,6 +1356,7 @@ namespace MSL.forms
                 }
                 else
                 {
+                    Shows.ShowMsg(this, "下载失败！", "错误");
                     FastModeInstallBtn.IsEnabled = true;
                 }
             }
@@ -1359,111 +1366,6 @@ namespace MSL.forms
                 FastModeInstallBtn.IsEnabled = true;
             }
         }
-
-        #region InstallForge
-        private bool InstallForge(string downloadUrl, bool fastMode = true, bool customMode = false)
-        {
-            try
-            {
-                string forgeVersion;
-                if (customMode)
-                {
-                    Match match = Regex.Match(txb3.Text, @"forge-([\w.-]+)-installer");
-                    forgeVersion = match.Groups[1].Value;
-                    //Directory.SetCurrentDirectory(serverbase);
-                    Process process = new Process();
-                    process.StartInfo.WorkingDirectory = serverbase;
-                    process.StartInfo.FileName = serverjava;
-                    process.StartInfo.Arguments = "-jar " + txb3.Text + " -installServer";
-                    process.Start();
-                }
-                else
-                {
-                    string filename = FinallyCoreCombo.Items[FinallyCoreCombo.SelectedIndex].ToString() + ".jar";
-
-                    if (downloadUrl.Contains("bmcl"))
-                    {
-                        Match match = Regex.Match(downloadUrl, @"&version=([\w.-]+)&category");
-                        string version = FinallyCoreCombo.SelectedItem.ToString().Split('-')[1];
-                        if (version.Contains("-"))
-                        {
-                            string _version = version.Split('-')[0];
-                            forgeVersion = _version + "-" + match.Groups[1].Value;
-                        }
-                        else
-                        {
-                            forgeVersion = version + "-" + match.Groups[1].Value;
-                        }
-                    }
-                    else
-                    {
-                        Match match = Regex.Match(downloadUrl, @"forge-([\w.-]+)-installer");
-                        forgeVersion = match.Groups[1].Value;
-                    }
-
-                    if (!fastMode)
-                    {
-                        Process process = new Process();
-                        process.StartInfo.WorkingDirectory = serverbase;
-                        process.StartInfo.FileName = serverjava;
-                        process.StartInfo.Arguments = "-jar " + filename + " -installServer";
-                        process.Start();
-
-
-                        while (!process.HasExited)
-                        {
-                            Thread.Sleep(1000);
-                        }
-                    }
-                }
-
-                try
-                {
-                    if (File.Exists(serverbase + "\\libraries\\net\\minecraftforge\\forge\\" + forgeVersion + "\\win_args.txt"))
-                    {
-                        servercore = "@libraries/net/minecraftforge/forge/" + forgeVersion + "/win_args.txt %*";
-                        return true;
-                    }
-                    else if (File.Exists(serverbase + "\\libraries\\net\\neoforged\\neoforge\\" + forgeVersion + "\\win_args.txt"))
-                    {
-                        servercore = "@libraries/net/neoforged/neoforge/" + forgeVersion + "/win_args.txt %*";
-                        return true;
-                    }
-                    else
-                    {
-                        DirectoryInfo directoryInfo = new DirectoryInfo(serverbase);
-                        FileInfo[] fileInfo = directoryInfo.GetFiles();
-                        bool checkResult = false;
-                        foreach (FileInfo file in fileInfo)
-                        {
-                            if (file.Name.IndexOf("forge-" + forgeVersion) + 1 != 0)
-                            {
-                                servercore = file.FullName.Replace(serverbase + @"\", "");
-                                checkResult = true;
-                                break;
-                            }
-                        }
-                        if (!checkResult)
-                        {
-                            Shows.ShowMsg(this, "下载失败,请多次尝试或使用代理再试！", "错误");
-                            return false;
-                        }
-                        return true;
-                    }
-                }
-                catch
-                {
-                    Shows.ShowMsg(this, "下载失败！", "错误");
-                    return false;
-                }
-            }
-            catch (Exception ex)
-            {
-                Shows.ShowMsg(this, "出现错误！\n" + ex.ToString(), "错误");
-                return false;
-            }
-        }
-        #endregion
 
         private void CustomModeBtn_Click(object sender, RoutedEventArgs e)
         {

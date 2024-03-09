@@ -4,9 +4,7 @@ using Newtonsoft.Json.Linq;
 using System;
 using System.Collections.Generic;
 using System.Diagnostics;
-using System.IO;
 using System.Linq;
-using System.Text.RegularExpressions;
 using System.Threading;
 using System.Windows;
 using System.Windows.Controls;
@@ -100,8 +98,9 @@ namespace MSL.pages
                 {
                     if (filename.IndexOf("forge") + 1 != 0)
                     {
-                        Shows.ShowMsg(this, "检测到您下载的是Forge端，开服器将自动进行安装操作，稍后请您不要随意移动鼠标且不要随意触碰键盘，耐心等待安装完毕！", "提示");
+                        Shows.ShowMsg(this, "检测到您下载的是Forge端，开服器将自动进行安装操作，稍后请您不要随意操作，耐心等待安装完毕！", "提示");
                         bool installForge = Shows.ShowInstallForge(this, downPath + "\\" + filename, downPath, downloadServerJava);
+                        /*
                         if (installForge)
                         {
                             InstallForge(downUrl);
@@ -110,7 +109,23 @@ namespace MSL.pages
                         {
                             InstallForge(downUrl, false);
                         }
-
+                        */
+                        string installReturn;
+                        if (installForge)
+                        {
+                            installReturn = Functions.InstallForge(downloadServerJava, downloadServerBase, filename);
+                        }
+                        else
+                        {
+                            installReturn = Functions.InstallForge(downloadServerJava, downloadServerBase, filename, false);
+                        }
+                        if (installReturn == null)
+                        {
+                            Shows.ShowMsg(this, "下载失败！", "错误");
+                            return;
+                        }
+                        downloadServerName = installReturn;
+                        Close();
                     }
                     else
                     {
@@ -239,6 +254,7 @@ namespace MSL.pages
             }
         }
 
+        /*
         private void InstallForge(string downurl, bool fastMode = true)
         {
             try
@@ -334,6 +350,8 @@ namespace MSL.pages
                 Shows.ShowMsg(this, "出现错误！\n" + ex.ToString(), "错误");
             }
         }
+        */
+
         private void openChooseServerDocs_Click(object sender, RoutedEventArgs e)
         {
             Process.Start("https://www.mslmc.cn/docs/other/choose-server-tips.html");
