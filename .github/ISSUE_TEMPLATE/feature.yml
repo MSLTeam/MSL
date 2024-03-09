@@ -1,5 +1,5 @@
 name: 功能请求
-description: 向我们报告一个Bug以帮助我们改进MSL
+description: 向我们报告一个功能请求以帮助我们改进MSL
 title: "[Feat]: "
 labels: ["功能请求enhancement"]
 assignees:
