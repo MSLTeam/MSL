@@ -2,6 +2,8 @@ name: Bug提交
 description: 向我们报告一个Bug以帮助我们改进MSL
 title: "[Bug]: "
 labels: ["漏洞bug"]
+assignees:
+  - octocat
 body:
   - type: markdown
     attributes:
