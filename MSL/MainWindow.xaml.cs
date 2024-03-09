@@ -673,7 +673,7 @@ namespace MSL
                 TitleBox.SetResourceReference(ForegroundProperty, "PrimaryTextBrush");
                 this.SetResourceReference(CloseButtonForegroundProperty, "PrimaryTextBrush");
                 this.SetResourceReference(OtherButtonForegroundProperty, "PrimaryTextBrush");
-                this.SetResourceReference(OtherButtonHoverBackgroundProperty, "PrimaryTextBrush");
+                this.SetResourceReference(OtherButtonHoverForegroundProperty, "PrimaryTextBrush");
             }
             else
             {
@@ -681,7 +681,7 @@ namespace MSL
                 TitleBox.Foreground = Brushes.White;
                 CloseButtonForeground = Brushes.White;
                 OtherButtonForeground = Brushes.White;
-                OtherButtonHoverBackground = Brushes.White;
+                OtherButtonHoverForeground = Brushes.White;
             }
         }
 
