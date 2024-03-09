@@ -1306,6 +1306,10 @@ namespace MSL.forms
                         installReturn = Functions.InstallForge(serverjava, serverbase, FinallyCoreCombo.Items[FinallyCoreCombo.SelectedIndex].ToString() + ".jar", false);
                     }
                 }
+                else
+                {
+                    installReturn = serverbase + "\\" + filename;
+                }
                 if (installReturn != null)
                 {
                     servercore = installReturn;
