@@ -57,9 +57,8 @@ namespace MSL
         public string RserverJVMcmd;
         public string Rserverbase;
 
-        /// <summary>
-        /// /////////主要代码
-        /// </summary>
+
+        /////////主要代码
         public ServerRunner()
         {
             ServerProcess.OutputDataReceived += new DataReceivedEventHandler(p_OutputDataReceived);
@@ -360,6 +359,7 @@ namespace MSL
                 TitleBox.SetResourceReference(ForegroundProperty, "PrimaryTextBrush");
                 this.SetResourceReference(CloseButtonForegroundProperty, "PrimaryTextBrush");
                 this.SetResourceReference(OtherButtonForegroundProperty, "PrimaryTextBrush");
+                this.SetResourceReference(OtherButtonHoverBackgroundProperty, "PrimaryTextBrush");
             }
             else
             {
@@ -367,6 +367,7 @@ namespace MSL
                 TitleBox.Foreground = Brushes.White;
                 CloseButtonForeground = Brushes.White;
                 OtherButtonForeground = Brushes.White;
+                OtherButtonHoverBackground = Brushes.White;
             }
         }
         #endregion
@@ -601,9 +602,9 @@ namespace MSL
         #endregion
 
         #region 服务器输出
-        /// <summary>
-        /// ///////////这里是服务器输出
-        /// </summary>
+
+        ///////////这里是服务器输出
+        
         private async void LaunchServerOnLoad()
         {
             while (!IsLoaded)
@@ -1983,9 +1984,9 @@ namespace MSL
         #endregion
 
         #region 服务器功能调整
-        /// <summary>
-        /// /////////这里是服务器功能调整
-        /// </summary>
+
+        /////////这里是服务器功能调整
+
         string config;
         void GetServerConfig()
         {
@@ -2177,9 +2178,9 @@ namespace MSL
         #endregion
 
         #region 插件mod管理
-        /// <summary>
-        /// ///////////这里是插件mod管理
-        /// </summary>
+
+        ///////////这里是插件mod管理
+
         void ReFreshPluginsAndMods()
         {
             lab001.Visibility = Visibility.Visible;
@@ -2562,9 +2563,9 @@ namespace MSL
         #endregion
 
         #region 服务器设置
-        /// <summary>
-        /// //////////////////////这里是服务器设置界面
-        /// </summary>
+
+        //////////////////////这里是服务器设置界面
+
         void LoadSettings()
         {
             try
@@ -3159,9 +3160,9 @@ namespace MSL
         #endregion
 
         #region 更多功能
-        /// <summary>
-        /// ////////这里是更多功能界面
-        /// </summary>
+
+        ////////这里是更多功能界面
+
         private void autostartServer_Click(object sender, RoutedEventArgs e)
         {
             JObject jsonObject = JObject.Parse(File.ReadAllText(@"MSL\ServerList.json", Encoding.UTF8));
@@ -3487,9 +3488,9 @@ namespace MSL
         #endregion
 
         #region 定时任务
-        /// <summary>
-        /// ///////////这是定时任务
-        /// </summary>
+
+        ///////////这是定时任务
+
         List<int> taskID = new List<int>();
         Dictionary<int, int> taskTimers = new Dictionary<int, int>();
         Dictionary<int, string> taskCmds = new Dictionary<int, string>();

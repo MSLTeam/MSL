@@ -1360,7 +1360,7 @@ namespace MSL.forms
             }
             else
             {
-                Shows.ShowMsg(this, "下载失败！（文件服务端文件不存在）\n请重试！", "错误");
+                Shows.ShowMsg(this, "下载失败！（服务端文件不存在）\n请重试！", "错误");
                 FastModeInstallBtn.IsEnabled = true;
             }
         }
