@@ -1291,9 +1291,9 @@ namespace MSL.forms
             if (File.Exists(serverbase + "\\" + filename))
             {
                 servercore = filename;
-                string installReturn = null;
                 if (filename.Contains("forge"))
                 {
+                    string installReturn = null;
                     Shows.ShowMsg(this, "检测到您下载的是Forge端，开服器将自动进行安装操作，稍后请您不要随意操作，耐心等待安装完毕！", "提示");
                     //调用新版forge安装器
                     bool installForge = Shows.ShowInstallForge(this, serverbase + "\\" + filename, serverbase, serverjava);
@@ -1305,22 +1305,22 @@ namespace MSL.forms
                     {
                         installReturn = Functions.InstallForge(serverjava, serverbase, FinallyCoreCombo.Items[FinallyCoreCombo.SelectedIndex].ToString() + ".jar", false);
                     }
-                }
-                else
-                {
-                    installReturn = serverbase + "\\" + filename;
-                }
-                if (installReturn != null)
-                {
-                    servercore = installReturn;
-                    FastInstallProcess.Text = "当前进度:完成！";
-                    try
+                    if (installReturn == null)
                     {
-                        if (!File.Exists(@"MSL\ServerList.json"))
-                        {
-                            File.WriteAllText(@"MSL\ServerList.json", string.Format("{{{0}}}", "\n"));
-                        }
-                        JObject _json = new JObject
+                        Shows.ShowMsg(this, "下载失败！", "错误");
+                        FastModeInstallBtn.IsEnabled = true;
+                        return;
+                    }
+                    servercore = installReturn;
+                }
+                FastInstallProcess.Text = "当前进度:完成！";
+                try
+                {
+                    if (!File.Exists(@"MSL\ServerList.json"))
+                    {
+                        File.WriteAllText(@"MSL\ServerList.json", string.Format("{{{0}}}", "\n"));
+                    }
+                    JObject _json = new JObject
                         {
                         { "name", servername },
                         { "java", serverjava },
@@ -1329,44 +1329,38 @@ namespace MSL.forms
                         { "memory", servermemory },
                         { "args", serverargs }
                         };
-                        JObject jsonObject = JObject.Parse(File.ReadAllText(@"MSL\ServerList.json", Encoding.UTF8));
-                        List<string> keys = jsonObject.Properties().Select(p => p.Name).ToList();
-                        var _keys = keys.Select(x => Convert.ToInt32(x));
-                        int[] ikeys = _keys.ToArray();
-                        Array.Sort(ikeys);
-                        int i = 0;
+                    JObject jsonObject = JObject.Parse(File.ReadAllText(@"MSL\ServerList.json", Encoding.UTF8));
+                    List<string> keys = jsonObject.Properties().Select(p => p.Name).ToList();
+                    var _keys = keys.Select(x => Convert.ToInt32(x));
+                    int[] ikeys = _keys.ToArray();
+                    Array.Sort(ikeys);
+                    int i = 0;
 
-                        foreach (int key in ikeys)
-                        {
-                            if (i == key)
-                            {
-                                i++;
-                            }
-                            else
-                            {
-                                break;
-                            }
-                        }
-                        jsonObject.Add(i.ToString(), _json);
-                        File.WriteAllText(@"MSL\ServerList.json", Convert.ToString(jsonObject), Encoding.UTF8);
-                        Shows.ShowMsg(this, "创建完毕，请点击“开启服务器”按钮以开服", "信息");
-                        Close();
-                    }
-                    catch (Exception ex)
+                    foreach (int key in ikeys)
                     {
-                        MessageBox.Show("出现错误，请重试：" + ex.Message, "Error", MessageBoxButton.OK, MessageBoxImage.Error);
-                        FastModeInstallBtn.IsEnabled = true;
+                        if (i == key)
+                        {
+                            i++;
+                        }
+                        else
+                        {
+                            break;
+                        }
                     }
+                    jsonObject.Add(i.ToString(), _json);
+                    File.WriteAllText(@"MSL\ServerList.json", Convert.ToString(jsonObject), Encoding.UTF8);
+                    Shows.ShowMsg(this, "创建完毕，请点击“开启服务器”按钮以开服", "信息");
+                    Close();
                 }
-                else
+                catch (Exception ex)
                 {
-                    Shows.ShowMsg(this, "下载失败！", "错误");
+                    MessageBox.Show("出现错误，请重试：" + ex.Message, "Error", MessageBoxButton.OK, MessageBoxImage.Error);
                     FastModeInstallBtn.IsEnabled = true;
                 }
             }
             else
             {
-                Shows.ShowMsg(this, "下载失败！（文件无法下载/下载后校验完整性失败）\n请重试！", "错误");
+                Shows.ShowMsg(this, "下载失败！（文件服务端文件不存在）\n请重试！", "错误");
                 FastModeInstallBtn.IsEnabled = true;
             }
         }

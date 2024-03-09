@@ -1058,11 +1058,11 @@ namespace MSL
                         {
                             if (isConfirmed)
                             {
-                                JObject jsonObject = JObject.Parse(File.ReadAllText(@"MSL\ServerList.json", Encoding.UTF8));
+                                JObject jsonObject = JObject.Parse(File.ReadAllText("MSL\\ServerList.json", Encoding.UTF8));
                                 JObject _json = (JObject)jsonObject[RserverID];
                                 _json["encoding_out"] = encoding;
                                 jsonObject[RserverID] = _json;
-                                File.WriteAllText("MSL\\Serverlist.json", Convert.ToString(jsonObject), Encoding.UTF8);
+                                File.WriteAllText("MSL\\ServerList.json", Convert.ToString(jsonObject), Encoding.UTF8);
                                 Dispatcher.Invoke(() =>
                                 {
                                     outputCmdEncoding.Content = "输出编码:" + encoding;
@@ -3179,7 +3179,7 @@ namespace MSL
                 _json["autostartServer"] = "False";
             }
             jsonObject[RserverID] = _json;
-            File.WriteAllText("MSL\\Serverlist.json", Convert.ToString(jsonObject), Encoding.UTF8);
+            File.WriteAllText("MSL\\ServerList.json", Convert.ToString(jsonObject), Encoding.UTF8);
         }
         private void inputCmdEncoding_Click(object sender, RoutedEventArgs e)
         {
@@ -3196,7 +3196,7 @@ namespace MSL
                 _json["encoding_in"] = "ANSI";
             }
             jsonObject[RserverID] = _json;
-            File.WriteAllText("MSL\\Serverlist.json", Convert.ToString(jsonObject), Encoding.UTF8);
+            File.WriteAllText("MSL\\ServerList.json", Convert.ToString(jsonObject), Encoding.UTF8);
             Shows.GrowlSuccess("编码更改已生效！");
         }
         private void outputCmdEncoding_Click(object sender, RoutedEventArgs e)
@@ -3214,7 +3214,7 @@ namespace MSL
                 _json["encoding_out"] = "ANSI";
             }
             jsonObject[RserverID] = _json;
-            File.WriteAllText("MSL\\Serverlist.json", Convert.ToString(jsonObject), Encoding.UTF8);
+            File.WriteAllText("MSL\\ServerList.json", Convert.ToString(jsonObject), Encoding.UTF8);
             try
             {
                 if (ServerProcess.HasExited)
@@ -3246,7 +3246,7 @@ namespace MSL
                 _json["fileforceUTF8"] = "True";
             }
             jsonObject[RserverID] = _json;
-            File.WriteAllText("MSL\\Serverlist.json", Convert.ToString(jsonObject), Encoding.UTF8);
+            File.WriteAllText("MSL\\ServerList.json", Convert.ToString(jsonObject), Encoding.UTF8);
         }
         private void onlineMode_Click(object sender, RoutedEventArgs e)
         {
@@ -3316,7 +3316,7 @@ namespace MSL
                 _json["closeOutlog"] = "False";
             }
             jsonObject[RserverID] = _json;
-            File.WriteAllText("MSL\\Serverlist.json", Convert.ToString(jsonObject), Encoding.UTF8);
+            File.WriteAllText("MSL\\ServerList.json", Convert.ToString(jsonObject), Encoding.UTF8);
         }
 
         private void closeOutlog_Copy_Click(object sender, RoutedEventArgs e)
@@ -3340,7 +3340,7 @@ namespace MSL
                 _json.Remove("shieldLog");
             }
             jsonObject[RserverID] = _json;
-            File.WriteAllText("MSL\\Serverlist.json", Convert.ToString(jsonObject), Encoding.UTF8);
+            File.WriteAllText("MSL\\ServerList.json", Convert.ToString(jsonObject), Encoding.UTF8);
         }
         private void shieldStackOut_Click(object sender, RoutedEventArgs e)
         {
@@ -3357,7 +3357,7 @@ namespace MSL
                 _json["shieldStackOut"] = "True";
             }
             jsonObject[RserverID] = _json;
-            File.WriteAllText("MSL\\Serverlist.json", Convert.ToString(jsonObject), Encoding.UTF8);
+            File.WriteAllText("MSL\\ServerList.json", Convert.ToString(jsonObject), Encoding.UTF8);
         }
         private void autoClearOutlog_Click(object sender, RoutedEventArgs e)
         {
@@ -3378,7 +3378,7 @@ namespace MSL
                 _json["autoClearOutlog"] = "True";
             }
             jsonObject[RserverID] = _json;
-            File.WriteAllText("MSL\\Serverlist.json", Convert.ToString(jsonObject), Encoding.UTF8);
+            File.WriteAllText("MSL\\ServerList.json", Convert.ToString(jsonObject), Encoding.UTF8);
         }
         void GetFastCmd()
         {
@@ -3418,7 +3418,7 @@ namespace MSL
             JArray fastcmdArray = new JArray(fastCmdList.Items.Cast<string>().Skip(1));
             _json["fastcmd"] = fastcmdArray;
             jsonObject[RserverID] = _json;
-            File.WriteAllText("MSL\\Serverlist.json", Convert.ToString(jsonObject), Encoding.UTF8);
+            File.WriteAllText("MSL\\ServerList.json", Convert.ToString(jsonObject), Encoding.UTF8);
             GetFastCmd();
             /*
             fastCmdList.Items.Clear();
@@ -3447,7 +3447,7 @@ namespace MSL
             {
                 _json.Remove("fastcmd");
                 jsonObject[RserverID] = _json;
-                File.WriteAllText("MSL\\Serverlist.json", Convert.ToString(jsonObject), Encoding.UTF8);
+                File.WriteAllText("MSL\\ServerList.json", Convert.ToString(jsonObject), Encoding.UTF8);
                 Shows.ShowMsg(this, "要使重置生效需重启此窗口，请您手动关闭此窗口并打开", "提示");
             }
         }
@@ -3712,7 +3712,7 @@ namespace MSL
                 JObject _json = (JObject)jsonObject[RserverID];
                 _json["timedtasks"] = data;
                 jsonObject[RserverID] = _json;
-                File.WriteAllText("MSL\\Serverlist.json", Convert.ToString(jsonObject), Encoding.UTF8);
+                File.WriteAllText("MSL\\ServerList.json", Convert.ToString(jsonObject), Encoding.UTF8);
                 Shows.GrowlSuccess("保存成功！");
             }
         }
@@ -3723,7 +3723,7 @@ namespace MSL
             JObject _json = (JObject)jsonObject[RserverID];
             _json.Remove("timedtasks");
             jsonObject[RserverID] = _json;
-            File.WriteAllText("MSL\\Serverlist.json", Convert.ToString(jsonObject), Encoding.UTF8);
+            File.WriteAllText("MSL\\ServerList.json", Convert.ToString(jsonObject), Encoding.UTF8);
             Shows.GrowlSuccess("删除成功！");
         }
         #endregion
