@@ -13,7 +13,7 @@ body:
     id: check
     attributes:
       label: 检查
-      description: 警告: 在进一步操作之前，请检查下列选项。如果您忽视此模板或者没有提供关键信息，您的 Issue 将直接被关闭
+      description: 警告:在进一步操作之前，请检查下列选项。如果您忽视此模板或者没有提供关键信息，您的 Issue 将直接被关闭
       options:
         - label: 我确认我使用的是 [最新版本](https://files.mslmc.cn/MSL.exe) 的MSL.
           required: true
