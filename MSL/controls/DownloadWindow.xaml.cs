@@ -298,6 +298,7 @@ namespace MSL
 
         private void button1_MouseDoubleClick(object sender, MouseButtonEventArgs e)
         {
+            downloader.CancelAsync();
             isStopDwn = true;
             Close();
         }
