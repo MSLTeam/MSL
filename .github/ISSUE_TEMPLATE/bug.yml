@@ -1,0 +1,56 @@
+name: Bug提交
+description: 向我们报告一个Bug以帮助我们改进MSL
+title: "[Bug]: "
+labels: ["漏洞bug"]
+body:
+  - type: markdown
+    attributes:
+      value: |
+        感谢您向我们提交BUG！
+  - type: checkboxes
+    id: check
+    attributes:
+      label: 检查
+      description: 警告: 在进一步操作之前，请检查下列选项。如果您忽视此模板或者没有提供关键信息，您的 Issue 将直接被关闭
+      options:
+        - label: 我确认我使用的是 [最新版本](https://files.mslmc.cn/MSL.exe) 的MSL.
+          required: true
+        - label: 我确认我已经安装了[.net framework 4.7.2运行环境](https://www.mslmc.cn/docs/start.html).
+          required: true
+        - label: 我确认我提交的问题没有人提交过.
+          required: true
+  - type: textarea
+    id: 描述 Bug
+    attributes:
+      label: 描述 Bug
+      description: 仔细描述BUG。
+      placeholder: 仔细描述BUG。
+      value: "A bug happened!"
+    validations:
+      required: true
+  - type: textarea
+    id: steps
+    attributes:
+      label: 如何复现BUG？
+      description: 如何复现BUG？请详细描述步骤！
+    validations:
+      required: true
+  - type: dropdown
+    id: version
+    attributes:
+      label: Windows版本
+      description: 你正在使用什么Windows版本？
+      options:
+        - Windows 11
+        - Windows 10
+        - Windows 10 LTSC
+        - Windows 7
+        - Windows Server 2022
+        - Windows Server 2016
+        - Windows Server 2012
+        - Windows Server 2008
+        - Windows 8.1
+        - Other
+      default: 0
+    validations:
+      required: true
