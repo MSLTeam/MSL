@@ -1,6 +1,6 @@
 ﻿<ResourceDictionary xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
                     xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml">
-    <ContextMenu x:Key="UIContextMenu" TextBlock.LineHeight="12">
+    <ContextMenu x:Key="UIContextMenu" TextBlock.LineHeight="12" TextBlock.TextAlignment="Left">
         <MenuItem Command="SelectAll"/>
         <MenuItem Command="Cut"/>
         <MenuItem Command="Copy"/>

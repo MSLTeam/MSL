@@ -324,7 +324,7 @@
                                     <Grid>
                                         <Label Content="服务器JVM参数:"/>
                                         <TextBox x:Name="jVMcmd" Height="23" MaxLines="1" AutoWordSelection="True" VerticalAlignment="Top" Margin="125,0,0,0"/>
-                                        <TextBlock Text="提示：一般格式为 -参数，如 -Dlog4j2.formatMsgNoLookups=true，非必要无需填此框" Foreground="#FF0078D7" Margin="125,30,0,0" FontSize="14" HorizontalAlignment="Left" VerticalAlignment="Top"/>
+                                        <TextBlock Text="提示：一般格式为 -参数，如 -Dlog4j2.formatMsgNoLookups=true，非必要无需填此框" Foreground="{DynamicResource PrimaryBrush}" Margin="125,30,0,0" FontSize="14" HorizontalAlignment="Left" VerticalAlignment="Top"/>
                                     </Grid>
                                     <hc:Divider Margin="0,10,0,10"/>
                                     <Grid>
