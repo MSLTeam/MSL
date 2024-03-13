@@ -9,6 +9,7 @@ namespace MSL.controls
         {
             try
             {
+                window.Focus();
                 var dialog = Dialog.Show(null);
                 MessageWindow messageWindow = new MessageWindow(window, dialogText, dialogTitle, primaryBtnVisible, closeText, primaryText, false)
                 {
@@ -37,6 +38,7 @@ namespace MSL.controls
         {
             try
             {
+                window.Focus();
                 var dialog = Dialog.Show(null);
                 MessageWindow messageWindow = new MessageWindow(window, dialogText, dialogTitle, primaryBtnVisible, closeText, primaryText, true)
                 {
@@ -72,6 +74,7 @@ namespace MSL.controls
             userInput = string.Empty;
             try
             {
+                window.Focus();
                 var dialog = Dialog.Show(null);
                 InputWindow inputWindow = new InputWindow(window, dialogText, textboxText, passwordMode)
                 {
@@ -101,6 +104,7 @@ namespace MSL.controls
         {
             try
             {
+                window.Focus();
                 var dialog = Dialog.Show(null);
                 InstallForgeWindow installforge = new InstallForgeWindow(forgePath, downPath, java)
                 {
@@ -128,6 +132,7 @@ namespace MSL.controls
         {
             try
             {
+                window.Focus();
                 var dialog = Dialog.Show(null);
                 DownloadWindow download = new DownloadWindow(downloadurl, downloadPath, filename, downloadinfo, sha256)
                 {
