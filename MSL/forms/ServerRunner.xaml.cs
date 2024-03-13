@@ -419,10 +419,9 @@ namespace MSL
         #region 仪表盘
         private void solveProblemBtn_Click(object sender, RoutedEventArgs e)
         {
-            Shows.ShowMsg(this, "分析报告将在服务器关闭后生成！若使用后还是无法解决问题，请尝试进Q群询问（附带日志链接，日志链接可以点击分享日志按钮生成）：\n一群：1145888872  二群：234477679", "警告", true, "取消");
-            if (MessageWindow._dialogReturn == true)
+            bool dialogRet = Shows.ShowMsg(this, "分析报告将在服务器关闭后生成！若使用后还是无法解决问题，请尝试进Q群询问（附带日志链接，日志链接可以点击分享日志按钮生成）：\n一群：1145888872  二群：234477679", "警告", true, "取消");
+            if (dialogRet)
             {
-                MessageWindow._dialogReturn = false;
                 TabCtrl.SelectedIndex = 1;
                 solveProblemSystem = true;
                 LaunchServer();
@@ -435,10 +434,9 @@ namespace MSL
         }
         private void kickPlayer_Click(object sender, RoutedEventArgs e)
         {
-            Shows.ShowMsg(this, "确定要踢出这个玩家吗？", "警告", true, "取消");
-            if (MessageWindow._dialogReturn == true)
+            bool dialogRet = Shows.ShowMsg(this, "确定要踢出这个玩家吗？", "警告", true, "取消");
+            if (dialogRet)
             {
-                MessageWindow._dialogReturn = false;
                 try
                 {
                     ServerProcess.StandardInput.WriteLine("kick " + serverPlayerList.SelectedItem.ToString().Substring(0, serverPlayerList.SelectedItem.ToString().IndexOf("[")));
@@ -584,10 +582,9 @@ namespace MSL
 
         private void banPlayer_Click(object sender, RoutedEventArgs e)
         {
-            Shows.ShowMsg(this, "确定要封禁这个玩家吗？封禁后该玩家将永远无法进入服务器！\n（原版解封指令：pardon +玩家名字，若添加插件，请使用插件的解封指令）", "警告", true, "取消");
-            if (MessageWindow._dialogReturn == true)
+            bool dialogRet = Shows.ShowMsg(this, "确定要封禁这个玩家吗？封禁后该玩家将永远无法进入服务器！\n（原版解封指令：pardon +玩家名字，若添加插件，请使用插件的解封指令）", "警告", true, "取消");
+            if (dialogRet)
             {
-                MessageWindow._dialogReturn = false;
                 try
                 {
                     ServerProcess.StandardInput.WriteLine("ban " + serverPlayerList.SelectedItem.ToString().Substring(0, serverPlayerList.SelectedItem.ToString().IndexOf("[")));
@@ -1570,10 +1567,9 @@ namespace MSL
                 }
                 else if (ServerProcess.ExitCode != 0 && getServerInfoLine <= 101)
                 {
-                    Shows.ShowMsg(this, "您的服务器疑似异常关闭，是否使用崩溃分析系统进行检测？", "提示", true, "取消");
-                    if (MessageWindow._dialogReturn)
+                    bool dialogRet = Shows.ShowMsg(this, "您的服务器疑似异常关闭，是否使用崩溃分析系统进行检测？", "提示", true, "取消");
+                    if (dialogRet)
                     {
-                        MessageWindow._dialogReturn = false;
                         TabCtrl.SelectedIndex = 1;
                         solveProblemSystem = true;
                         LaunchServer();
@@ -1583,19 +1579,6 @@ namespace MSL
                 {
                     LaunchServer();
                 }
-                /*
-                else if (getServerInfoLine <= 100)
-                {
-                    DialogShow.ShowMsg(this, "您的服务器疑似异常关闭，是否使用崩溃分析系统进行检测？", "提示", true, "取消");
-                    if (MessageWindow._dialogReturn)
-                    {
-                        MessageWindow._dialogReturn = false;
-                        TabCtrl.SelectedIndex = 1;
-                        solveProblemSystem = true;
-                        LaunchServer();
-                    }
-                }
-                */
             });
         }
 
@@ -2857,66 +2840,6 @@ namespace MSL
             }
         }
 
-        /*
-        void InstallForge()
-        {
-            bool keepTrying = true;
-            while (keepTrying)
-            {
-                string forgeVersion;
-                Match match = Regex.Match(server.Text, @"forge-([\w.-]+)-installer");
-                forgeVersion = match.Groups[1].Value;
-                //Directory.SetCurrentDirectory(Rserverbase);
-                Process process = new Process();
-                process.StartInfo.WorkingDirectory = Rserverbase;
-                process.StartInfo.FileName = Rserverjava;
-                process.StartInfo.Arguments = "-jar " + Rserverbase + @"\" + server.Text + " -installServer";
-                process.Start();
-                //Directory.SetCurrentDirectory(AppDomain.CurrentDomain.BaseDirectory);
-                try
-                {
-
-                    while (!process.HasExited)
-                    {
-                        Thread.Sleep(1000);
-                    }
-                    if (File.Exists(Rserverbase + "\\libraries\\net\\minecraftforge\\forge\\" + forgeVersion + "\\win_args.txt"))
-                    {
-                        server.Text = "@libraries/net/minecraftforge/forge/" + forgeVersion + "/win_args.txt %*";
-                        keepTrying = false;
-                    }
-                    else if (File.Exists(Rserverbase + "\\libraries\\net\\neoforged\\neoforge\\" + forgeVersion + "\\win_args.txt"))
-                    {
-                        server.Text = "@libraries/net/neoforged/neoforge/" + forgeVersion + "/win_args.txt %*";
-                        keepTrying = false;
-                    }
-                    else
-                    {
-                        DirectoryInfo directoryInfo = new DirectoryInfo(Rserverbase);
-                        FileInfo[] fileInfo = directoryInfo.GetFiles();
-                        foreach (FileInfo file in fileInfo)
-                        {
-                            if (file.Name.IndexOf("forge-" + forgeVersion) + 1 != 0 && !file.Name.Contains("installer"))
-                            {
-                                server.Text = file.FullName.Replace(Rserverbase + @"\", "");
-                                keepTrying = false;
-                                break;
-                            }
-                        }
-                        if (keepTrying)
-                        {
-                            bool dialog = Shows.ShowMsg(this, "安装失败,请多次尝试或使用代理再试！\n点击确定重试！", "错误", true, "取消");
-                            keepTrying = dialog;
-                        }
-                    }
-                }
-                catch
-                {
-                    Shows.ShowMsg(this, "安装失败！", "错误");
-                }
-            }
-        }
-        */
 
         private int DownloadJava(string fileName, string downUrl)
         {
@@ -3097,11 +3020,15 @@ namespace MSL
 
         private async void usecheckedjv_Checked(object sender, RoutedEventArgs e)
         {
-            //selectCheckedJavaComb.Items.Clear();
             List<string> strings = null;
-            bool dialog = Shows.ShowMsg(this, "即将开始检测电脑上的Java，此过程可能需要一些时间，请耐心等待。\n目前有两种检测模式，一种是简单检测，只检测一些关键目录，用时较少，普通用户可优先使用此模式。\n第二种是深度检测，将检测所有磁盘的所有目录，耗时可能会很久，请慎重选择！", "提示", true, "开始深度检测", "开始简单检测");
+            int dialog = Shows.ShowMsgWithClose(this, "即将开始检测电脑上的Java，此过程可能需要一些时间，请耐心等待。\n目前有两种检测模式，一种是简单检测，只检测一些关键目录，用时较少，普通用户可优先使用此模式。\n第二种是深度检测，将检测所有磁盘的所有目录，耗时可能会很久，请慎重选择！", "提示", true, "开始深度检测", "开始简单检测");
+            if (dialog == 2)
+            {
+                useSelf.IsChecked = true;
+                return;
+            }
             Dialog waitDialog = Dialog.Show(new TextDialog("检测中，请稍等……"));
-            if (dialog)
+            if (dialog == 1)
             {
                 await Task.Run(() => { Thread.Sleep(200); strings = Functions.CheckJava(); });
             }
@@ -3114,12 +3041,6 @@ namespace MSL
 
             if (strings != null)
             {
-                /*
-                foreach (string str in strings)
-                {
-                    selectCheckedJavaComb.Items.Add(str);
-                }
-                */
                 selectCheckedJavaComb.ItemsSource = strings.ToList();
             }
             if (selectCheckedJavaComb.Items.Count > 0)

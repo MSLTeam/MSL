@@ -35,11 +35,10 @@ namespace MSL.pages
         }
         private void setdefault_Click(object sender, RoutedEventArgs e)
         {
-            var mainwindow = (MainWindow)System.Windows.Window.GetWindow(this);
-            Shows.ShowMsg(mainwindow, "恢复默认设置会清除MSL文件夹内的所有文件，请您谨慎选择！", "警告", true, "取消");
-            if (MessageWindow._dialogReturn)
+            var mainwindow = (MainWindow)Window.GetWindow(this);
+            bool dialogRet = Shows.ShowMsg(mainwindow, "恢复默认设置会清除MSL文件夹内的所有文件，请您谨慎选择！", "警告", true, "取消");
+            if (dialogRet)
             {
-                MessageWindow._dialogReturn = false;
                 try
                 {
                     Directory.Delete(@"MSL", true);

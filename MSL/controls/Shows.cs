@@ -9,16 +9,15 @@ namespace MSL.controls
         {
             try
             {
-                window.Focus();
-                var dialog = Dialog.Show(string.Empty);
-                MessageWindow MessageWindow = new MessageWindow(window, dialogText, dialogTitle, primaryBtnVisible, closeText, primaryText)
+                var dialog = Dialog.Show(null);
+                MessageWindow messageWindow = new MessageWindow(window, dialogText, dialogTitle, primaryBtnVisible, closeText, primaryText, false)
                 {
                     Owner = window
                 };
-                MessageWindow.ShowDialog();
+                messageWindow.ShowDialog();
                 window.Focus();
                 dialog.Close();
-                if (MessageWindow._dialogReturn)
+                if (messageWindow._dialogReturn)
                 {
                     return true;
                 }
@@ -33,23 +32,57 @@ namespace MSL.controls
                 return false;
             }
         }
+
+        public static int ShowMsgWithClose(System.Windows.Window window, string dialogText, string dialogTitle, bool primaryBtnVisible = false, string closeText = "确定", string primaryText = "确定")
+        {
+            try
+            {
+                var dialog = Dialog.Show(null);
+                MessageWindow messageWindow = new MessageWindow(window, dialogText, dialogTitle, primaryBtnVisible, closeText, primaryText, true)
+                {
+                    Owner = window
+                };
+                messageWindow.ShowDialog();
+                window.Focus();
+                dialog.Close();
+                if (messageWindow._closeBtnReturn)
+                {
+                    return 2;
+                }
+                else
+                {
+                    if (messageWindow._dialogReturn)
+                    {
+                        return 1;
+                    }
+                    else
+                    {
+                        return 0;
+                    }
+                }
+            }
+            catch
+            {
+                return 2;
+            }
+        }
+
         public static bool ShowInput(System.Windows.Window window, string dialogText, out string userInput, string textboxText = "", bool passwordMode = false)
         {
             userInput = string.Empty;
             try
             {
-                window.Focus();
-                var dialog = Dialog.Show(string.Empty);
-                InputWindow InputWindow = new InputWindow(window, dialogText, textboxText, passwordMode)
+                var dialog = Dialog.Show(null);
+                InputWindow inputWindow = new InputWindow(window, dialogText, textboxText, passwordMode)
                 {
                     Owner = window
                 };
-                InputWindow.ShowDialog();
+                inputWindow.ShowDialog();
                 window.Focus();
                 dialog.Close();
-                if (InputWindow._dialogReturn)
+                if (inputWindow._dialogReturn)
                 {
-                    userInput = InputWindow._textReturn;
+                    userInput = inputWindow._textReturn;
                     return true;
                 }
                 else
@@ -68,8 +101,7 @@ namespace MSL.controls
         {
             try
             {
-                window.Focus();
-                var dialog = Dialog.Show(string.Empty);
+                var dialog = Dialog.Show(null);
                 InstallForgeWindow installforge = new InstallForgeWindow(forgePath, downPath, java)
                 {
                     Owner = window
@@ -77,7 +109,7 @@ namespace MSL.controls
                 installforge.ShowDialog();
                 window.Focus();
                 dialog.Close();
-                if (InstallForgeWindow.suc)
+                if (installforge.suc)
                 {
                     return true;
                 }
@@ -96,8 +128,7 @@ namespace MSL.controls
         {
             try
             {
-                window.Focus();
-                var dialog = Dialog.Show(string.Empty);
+                var dialog = Dialog.Show(null);
                 DownloadWindow download = new DownloadWindow(downloadurl, downloadPath, filename, downloadinfo, sha256)
                 {
                     Owner = window
@@ -171,7 +202,6 @@ namespace MSL.controls
         }
         public void CloseMsgDialog()
         {
-
             window.Focus();
             dialog.Close();
         }

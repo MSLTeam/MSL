@@ -140,8 +140,8 @@ namespace MSL.pages
                 await Dispatcher.InvokeAsync(() =>
                 {
                     var mainwindow = (MainWindow)Window.GetWindow(this);
-                    Shows.ShowMsg(mainwindow, "开服器检测到配置文件出现了错误，是第一次使用吗？\n是否创建一个新的服务器？", "警告", true, "取消");
-                    if (MessageWindow._dialogReturn == true)
+                    bool dialogRet = Shows.ShowMsg(mainwindow, "开服器检测到配置文件出现了错误，是第一次使用吗？\n是否创建一个新的服务器？", "警告", true, "取消");
+                    if (dialogRet)
                     {
                         Window wn = new forms.CreateServer
                         {
@@ -217,12 +217,11 @@ namespace MSL.pages
         private void DelServerEvent()
         {
             var mainwindow = (MainWindow)Window.GetWindow(this);
-            Shows.ShowMsg(mainwindow, "您确定要删除该服务器吗？", "提示", true, "取消");
-            if (!MessageWindow._dialogReturn)
+            bool dialogRet = Shows.ShowMsg(mainwindow, "您确定要删除该服务器吗？", "提示", true, "取消");
+            if (!dialogRet)
             {
                 return;
             }
-            MessageWindow._dialogReturn = false;
             ServerInfo _server = serverList.SelectedItem as ServerInfo;
             if (_server.ServerState == "运行中")
             {
@@ -231,10 +230,9 @@ namespace MSL.pages
             }
             try
             {
-                Shows.ShowMsg(mainwindow, "是否删除该服务器的目录？（服务器目录中的所有文件都会被移至回收站）", "提示", true, "取消");
-                if (MessageWindow._dialogReturn)
+                bool _dialogRet = Shows.ShowMsg(mainwindow, "是否删除该服务器的目录？（服务器目录中的所有文件都会被移至回收站）", "提示", true, "取消");
+                if (_dialogRet)
                 {
-                    MessageWindow._dialogReturn = false;
                     JObject jsonObject = JObject.Parse(File.ReadAllText(@"MSL\ServerList.json", Encoding.UTF8));
                     JObject _json = (JObject)jsonObject[serverIDs[serverList.SelectedIndex]];
                     FileSystem.DeleteDirectory(_json["base"].ToString(), UIOption.OnlyErrorDialogs, RecycleOption.SendToRecycleBin);

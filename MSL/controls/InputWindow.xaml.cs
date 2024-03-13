@@ -7,8 +7,8 @@ namespace MSL.controls
     /// </summary>
     public partial class InputWindow : HandyControl.Controls.Window
     {
-        public static bool _dialogReturn;
-        public static string _textReturn;
+        public bool _dialogReturn;
+        public string _textReturn;
         public InputWindow(Window window, string dialogText, string textboxText, bool passwordMode = false)
         {
             InitializeComponent();

@@ -170,7 +170,7 @@ namespace MSL.forms
             }
             next3.IsEnabled = true;
             return5.IsEnabled = true;
-            if (!noNext)
+            if (!noNext && !isImportPack)
             {
                 sserver.IsSelected = true;
                 sserver.IsEnabled = true;
@@ -486,13 +486,17 @@ namespace MSL.forms
         }
         private async void usecheckedjv_Checked(object sender, RoutedEventArgs e)
         {
+            List<string> strings = null;
+            int dialog = Shows.ShowMsgWithClose(this, "即将开始检测电脑上的Java，此过程可能需要一些时间，请耐心等待。\n目前有两种检测模式，一种是简单检测，只检测一些关键目录，用时较少，普通用户可优先使用此模式。\n第二种是深度检测，将检测所有磁盘的所有目录，耗时可能会很久，请慎重选择！", "提示", true, "开始深度检测", "开始简单检测");
+            if (dialog == 2)
+            {
+                usedownloadjv.IsChecked = true;
+                return;
+            }
             txjava.IsEnabled = false;
             a0002_Copy.IsEnabled = false;
-            //selectCheckedJavaComb.Items.Clear();
-            List<string> strings = null;
-            bool dialog = Shows.ShowMsg(this, "即将开始检测电脑上的Java，此过程可能需要一些时间，请耐心等待。\n目前有两种检测模式，一种是简单检测，只检测一些关键目录，用时较少，普通用户可优先使用此模式。\n第二种是深度检测，将检测所有磁盘的所有目录，耗时可能会很久，请慎重选择！", "提示", true, "开始深度检测", "开始简单检测");
             Dialog waitDialog = Dialog.Show(new TextDialog("检测中，请稍等……"));
-            if (dialog)
+            if (dialog == 1)
             {
                 await Task.Run(() => { Thread.Sleep(200); strings = Functions.CheckJava(); });
             }
@@ -504,12 +508,6 @@ namespace MSL.forms
             waitDialog.Close();
             if (strings != null)
             {
-                /*
-                foreach (string str in strings)
-                {
-                    selectCheckedJavaComb.Items.Add(str);
-                }
-                */
                 selectCheckedJavaComb.ItemsSource = strings.ToList();
             }
             if (selectCheckedJavaComb.Items.Count > 0)

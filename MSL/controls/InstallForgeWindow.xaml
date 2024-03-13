@@ -3,9 +3,10 @@
         xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
         xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
         xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+        xmlns:hc="https://handyorg.github.io/handycontrol"
         xmlns:local="clr-namespace:MSL.controls"
         mc:Ignorable="d"
-        Title="InstallForgeWindow" Height="300" Width="600" ShowNonClientArea="False" xmlns:hc="https://handyorg.github.io/handycontrol"  WindowStartupLocation="CenterOwner" ResizeMode="NoResize"  ShowInTaskbar="False">
+        Height="300" Width="600" ShowNonClientArea="False" WindowStartupLocation="CenterOwner" ResizeMode="NoResize" ShowInTaskbar="False">
     <Grid>
         <Grid Background="{DynamicResource SecondaryRegionBrush}">
             <Grid.RowDefinitions>

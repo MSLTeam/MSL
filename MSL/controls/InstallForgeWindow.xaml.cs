@@ -20,7 +20,7 @@ namespace MSL.controls
     /// </summary>
     public partial class InstallForgeWindow : HandyControl.Controls.Window
     {
-        public static bool suc;
+        public bool suc;
         private readonly string forgePath;
         private readonly string installPath;
         private readonly string tempPath;

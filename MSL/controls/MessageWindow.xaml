@@ -5,14 +5,15 @@
              xmlns:d="http://schemas.microsoft.com/expression/blend/2008" 
              xmlns:local="clr-namespace:MSL.controls"
              xmlns:hc="https://handyorg.github.io/handycontrol"
-             mc:Ignorable="d" SizeToContent="WidthAndHeight" ResizeMode="NoResize" ShowNonClientArea="False"
-             WindowStartupLocation="CenterOwner" ShowInTaskbar="False">
+             mc:Ignorable="d" SizeToContent="WidthAndHeight" ResizeMode="NoResize"
+             ShowMaxButton="False" ShowMinButton="False" ShowIcon="False" ShowTitle="False" ShowCloseButton="False" ShowInTaskbar="False"
+             WindowStartupLocation="CenterOwner">
     <Grid x:Name="MainGrid" Background="{DynamicResource RegionBrush}">
         <Grid.RowDefinitions>
             <RowDefinition/>
             <RowDefinition Height="70"/>
         </Grid.RowDefinitions>
-        <Grid Margin="25" Grid.Row="0">
+        <Grid Margin="25,0,25,25" Grid.Row="0">
             <TextBlock x:Name="titleText" Foreground="{DynamicResource PrimaryTextBrush}" TextWrapping="NoWrap" Text="TitleText" FontSize="24" VerticalAlignment="Top" HorizontalAlignment="Left"/>
             <ScrollViewer Margin="0,45,0,0">
                 <TextBlock x:Name="bodyText" Foreground="{DynamicResource PrimaryTextBrush}" TextWrapping="Wrap" Text="BodyText" FontSize="14" HorizontalAlignment="Left" VerticalAlignment="Top"/>
