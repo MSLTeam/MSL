@@ -4,6 +4,8 @@
 
 我的世界开服器，重新出发，美观实用！
 
+# [官网](mslmc.cn)
+
 # 视频介绍：
 https://www.bilibili.com/video/BV1D34y127m8
 
