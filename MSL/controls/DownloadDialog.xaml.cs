@@ -6,6 +6,7 @@ using System.Net;
 using System.Security.Cryptography;
 using System.Security.Permissions;
 using System.Threading;
+using System.Threading.Tasks;
 using System.Windows;
 using System.Windows.Input;
 using System.Windows.Threading;
@@ -13,19 +14,21 @@ using System.Windows.Threading;
 namespace MSL
 {
     /// <summary>
-    /// DownloadWindow.xaml 的交互逻辑
+    /// DownloadDialog.xaml 的交互逻辑
     /// </summary>
-    public partial class DownloadWindow : HandyControl.Controls.Window
+    public partial class DownloadDialog
     {
+        public event DeleControl CloseDialog;
+        public bool _dialogReturn = true;
         public static int downloadthread = 8;
-        public bool isStopDwn;
         private readonly string downloadPath;
         private readonly string filename;
         private readonly string downloadurl;
-        private readonly string expectedSha256;
+        private readonly string expectedSha256 = "";
         private DownloadService downloader;
+        private DispatcherTimer updateUITimer;
 
-        public DownloadWindow(string _downloadurl, string _downloadPath, string _filename, string downloadinfo, string sha256 = "")
+        public DownloadDialog(string _downloadurl, string _downloadPath, string _filename, string downloadinfo, string sha256 = "")
         {
             InitializeComponent();
 
@@ -40,13 +43,7 @@ namespace MSL
             {
                 expectedSha256 = sha256;
             }
-            else
-            {
-                expectedSha256 = "";
-            }
-
             taskinfo.Text = downloadinfo;
-            isStopDwn = false;
             Thread thread = new Thread(Downloader);
             thread.Start();
         }
@@ -76,6 +73,7 @@ namespace MSL
             // cancelled or download completed successfully.
             downloader.DownloadFileCompleted += OnDownloadFileCompleted;
             downloader.DownloadFileTaskAsync(downloadurl, downloadPath + "\\" + filename);
+
         }
 
         private void OnDownloadStarted(object sender, DownloadStartedEventArgs e)
@@ -83,14 +81,21 @@ namespace MSL
             Dispatcher.Invoke(() =>
             {
                 infolabel.Text = "获取下载地址……大小：" + e.TotalBytesToReceive / 1024 / 1024 + "MB";
+                // 初始化DispatcherTimer
+                updateUITimer = new DispatcherTimer
+                {
+                    Interval = TimeSpan.FromMilliseconds(500)
+                };
+                updateUITimer.Tick += UpdateUITick;
+                updateUITimer.Start();
             });
         }
 
         //下载完成的事件
         private void OnDownloadFileCompleted(object sender, AsyncCompletedEventArgs e)
         {
-
-            if (isStopDwn == true)
+            updateUITimer.Stop();
+            if (!_dialogReturn)
             {
                 Dispatcher.Invoke(() =>
                 {
@@ -104,24 +109,24 @@ namespace MSL
                 Thread.Sleep(1000);
                 Dispatcher.Invoke(() =>
                 {
-                    Close();
+                    CloseDialog();
                 });
             }
             else
             {
                 if (File.Exists(downloadPath + "\\" + filename))
                 {
+                    Dispatcher.Invoke(() =>
+                    {
+                        infolabel.Text = "下载完成！";
+                        pbar.Value = 100;
+                    });
                     if (expectedSha256 == "")
                     {
-                        Dispatcher.Invoke(() =>
-                        {
-                            infolabel.Text = "下载完成！";
-                            pbar.Value = 100;
-                        });
                         Thread.Sleep(1000);
                         Dispatcher.Invoke(() =>
                         {
-                            Close();
+                            CloseDialog();
                         });
                     }
                     else
@@ -129,16 +134,10 @@ namespace MSL
                         //有传入sha256，进行校验
                         if (VerifyFileSHA256(downloadPath + "\\" + filename, expectedSha256) == true)
                         {
-                            //成功
-                            Dispatcher.Invoke(() =>
-                            {
-                                infolabel.Text = "下载完成！";
-                                pbar.Value = 100;
-                            });
                             Thread.Sleep(1000);
                             Dispatcher.Invoke(() =>
                             {
-                                Close();
+                                CloseDialog();
                             });
 
                         }
@@ -157,7 +156,7 @@ namespace MSL
                             Thread.Sleep(1000);
                             Dispatcher.Invoke(() =>
                             {
-                                Close();
+                                CloseDialog();
                             });
                         }
                     }
@@ -175,103 +174,99 @@ namespace MSL
             }
         }
 
-        void DownloadFile()
+        private void DownloadFile()
         {
-            Dispatcher.Invoke(() =>
+            // 使用Task异步执行下载任务
+            Task.Run(() =>
             {
-                infolabel.Text = "连接下载地址中...";
-            });
-            try
-            {
-                HttpWebRequest Myrq = (HttpWebRequest)HttpWebRequest.Create(downloadurl);
-                HttpWebResponse myrp;
-                myrp = (HttpWebResponse)Myrq.GetResponse();
-                long totalBytes = myrp.ContentLength;
-                Stream st = myrp.GetResponseStream();
-                FileStream so = new FileStream(downloadPath + "\\" + filename, FileMode.Create);
-                long totalDownloadedByte = 0;
-                byte[] by = new byte[1024];
-                int osize = st.Read(by, 0, (int)by.Length);
-                Dispatcher.Invoke(() =>
+                try
                 {
-                    if (pbar != null)
+                    HttpWebRequest request = (HttpWebRequest)WebRequest.Create(downloadurl);
+                    using (HttpWebResponse response = (HttpWebResponse)request.GetResponse())
                     {
-                        pbar.Maximum = (int)totalBytes;
+                        long totalBytes = response.ContentLength;
+                        using (Stream responseStream = response.GetResponseStream())
+                        using (FileStream fileStream = new FileStream(Path.Combine(downloadPath, filename), FileMode.Create))
+                        {
+                            byte[] buffer = new byte[1024];
+                            int bytesRead;
+                            long totalDownloadedByte = 0;
+                            // 创建Progress<T>来报告进度
+                            var progress = new Progress<int>(percent =>
+                            {
+                                Dispatcher.Invoke(() =>
+                                {
+                                    if (pbar != null)
+                                    {
+                                        pbar.Value = percent;
+                                        infolabel.Text = $"下载中，进度{percent}%";
+                                    }
+                                });
+                            });
+
+                            while ((bytesRead = responseStream.Read(buffer, 0, buffer.Length)) > 0)
+                            {
+                                if (!_dialogReturn) break;
+                                fileStream.Write(buffer, 0, bytesRead);
+                                totalDownloadedByte += bytesRead;
+                                // 计算并报告进度
+                                int percentComplete = (int)(totalDownloadedByte * 100 / totalBytes);
+                                ((IProgress<int>)progress).Report(percentComplete);
+                            }
+                        }
                     }
-                });
-                while (osize > 0)
-                {
-                    if (isStopDwn)
-                    {
-                        break;
-                    }
-                    totalDownloadedByte = osize + totalDownloadedByte;
-                    DispatcherHelper.DoEvents();
-                    so.Write(by, 0, osize);
-                    osize = st.Read(by, 0, (int)by.Length);
-                    float percent = 0;
-                    percent = (float)totalDownloadedByte / (float)totalBytes * 100;
+                    // 下载完成后更新UI
                     Dispatcher.Invoke(() =>
                     {
-                        if (pbar != null)
+                        if (!_dialogReturn && File.Exists(Path.Combine(downloadPath, filename)))
                         {
-                            pbar.Value = (int)totalDownloadedByte;
+                            File.Delete(Path.Combine(downloadPath, filename));
                         }
-                        infolabel.Text = "下载中，进度" + percent.ToString("f2") + "%";
+                        else
+                        {
+                            infolabel.Text = "下载完成！";
+                        }
                     });
-                    DispatcherHelper.DoEvents();
                 }
-                so.Close();
-                st.Close();
-                Dispatcher.Invoke(() =>
+                catch (Exception ex)
                 {
-                    if (isStopDwn && File.Exists(downloadPath + "\\" + filename))
+                    // 异常处理
+                    Dispatcher.Invoke(() =>
                     {
-                        File.Delete(downloadPath + "\\" + filename);
-                    }
-                    else
-                    {
-                        infolabel.Text = "下载完成！";
-                    }
-                });
-                Thread.Sleep(1000);
-                Dispatcher.Invoke(() =>
-                {
-                    Close();
-                });
-            }
-            catch (Exception ex)
+                        infolabel.Text = "下载失败！" + ex.Message;
+                    });
+                }
+            }).ContinueWith(t =>
             {
-                Dispatcher.Invoke(() =>
-                {
-                    infolabel.Text = "下载失败！" + ex.Message;
-                });
-                Thread.Sleep(1000);
-                Dispatcher.Invoke(() =>
-                {
-                    Close();
-                });
+                // 关闭对话框
+                Dispatcher.Invoke(CloseDialog);
+            });
+        }
 
+        private long receivedBytes;
+        private long totalBytesToReceive;
+        private double progressPercentage;
+        private double bytesPerSecondSpeed;
+
+        private void UpdateUITick(object sender, EventArgs e)
+        {
+            // 更新UI的方法
+            if (pbar != null && infolabel != null)
+            {
+                infolabel.Text = $"已下载：{receivedBytes / 1024 / 1024}MB/{totalBytesToReceive / 1024 / 1024}MB 进度：{progressPercentage:f2}% 速度：{bytesPerSecondSpeed / 1024 / 1024:f2}MB/s";
+                pbar.Value = progressPercentage;
             }
         }
 
-        int counter = 0;
         private void OnDownloadProgressChanged(object sender, Downloader.DownloadProgressChangedEventArgs e)
         {
-            if (counter < 256)
-            {
-                counter++;
-            }
-            else
-            {
-                counter = 0;
-                Dispatcher.Invoke(() =>
-                {
-                    infolabel.Text = "已下载：" + e.ReceivedBytesSize / 1024 / 1024 + "MB/" + e.TotalBytesToReceive / 1024 / 1024 + "MB" + " 进度：" + e.ProgressPercentage.ToString("f2") + "%" + " 速度：" + (e.BytesPerSecondSpeed / 1024 / 1024).ToString("f2") + "MB/s";
-                    pbar.Value = e.ProgressPercentage;
-                });
-            }
+            // 更新变量，供UpdateUITick使用
+            receivedBytes = e.ReceivedBytesSize;
+            totalBytesToReceive = e.TotalBytesToReceive;
+            progressPercentage = e.ProgressPercentage;
+            bytesPerSecondSpeed = e.BytesPerSecondSpeed;
         }
+
 
         public static class DispatcherHelper
         {
@@ -293,14 +288,14 @@ namespace MSL
         private void button1_Click(object sender, RoutedEventArgs e)
         {
             downloader.CancelAsync();
-            isStopDwn = true;
+            _dialogReturn = false;
         }
 
         private void button1_MouseDoubleClick(object sender, MouseButtonEventArgs e)
         {
             downloader.CancelAsync();
-            isStopDwn = true;
-            Close();
+            _dialogReturn = false;
+            CloseDialog();
         }
 
         //用于校验sha256的函数
@@ -310,9 +305,9 @@ namespace MSL
             {
                 SHA256Managed sha = new SHA256Managed();
                 byte[] hash = sha.ComputeHash(stream);
-                string calculatedHash = BitConverter.ToString(hash).Replace("-", String.Empty);
+                string calculatedHash = BitConverter.ToString(hash).Replace("-", string.Empty);
 
-                return String.Equals(calculatedHash, expectedHash, StringComparison.OrdinalIgnoreCase);
+                return string.Equals(calculatedHash, expectedHash, StringComparison.OrdinalIgnoreCase);
             }
         }
     }

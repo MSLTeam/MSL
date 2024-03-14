@@ -256,8 +256,8 @@
                         </TabItem>
                     </TabControl>
                     <Button x:Name="reFresh" Content="刷新" Style="{StaticResource ButtonPrimary}" Height="32" Click="reFresh_Click" Width="70" FontSize="16" VerticalAlignment="Top" HorizontalAlignment="Right" Margin="0,10,10,0"/>
-                    <TextBlock x:Name="lab001" Text="未检测到任何插件或模组，请重启服务器并检查服务端是否支持插件和模组" FontSize="18" FontWeight="Bold" Foreground="{DynamicResource PrimaryTextBrush}" VerticalAlignment="Center" HorizontalAlignment="Center"/>
-                    <TextBlock x:Name="lab002" Text="注：灰色标签栏说明服务端不支持此功能，或相应的文件夹未生成。请更换服务端核心并重启服务器再试。" FontSize="12" Foreground="{DynamicResource PrimaryBrush}" VerticalAlignment="Bottom" HorizontalAlignment="Left" Width="100" TextWrapping="Wrap" Margin="5"/>
+                    <TextBlock x:Name="lab001" Text="未检测到任何插件或模组，请重启服务器并检查此服务端是否支持插件或模组" FontSize="18" FontWeight="Bold" Foreground="{DynamicResource PrimaryTextBrush}" VerticalAlignment="Center" HorizontalAlignment="Center"/>
+                    <TextBlock x:Name="lab002" Text="注：若标签栏为灰色且无法点击，说明此服务端不支持此功能，或相应的文件夹未生成。请更换服务端核心并重启服务器再试。" FontSize="12" Foreground="{DynamicResource PrimaryBrush}" VerticalAlignment="Bottom" HorizontalAlignment="Left" Width="100" TextWrapping="Wrap" Margin="5"/>
                 </Grid>
             </TabItem>
             <TabItem Header="服务器设置" Background="{DynamicResource SideMenuBrush}">

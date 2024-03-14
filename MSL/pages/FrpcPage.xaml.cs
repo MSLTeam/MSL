@@ -29,7 +29,6 @@ namespace MSL.pages
         private delegate void DelReadStdOutput(string result);
         public static Process FRPCMD = new Process();
         private event DelReadStdOutput ReadStdOutput;
-        //int paidServerCooldown = 0;
         private string _dnfrpc;
         public FrpcPage()
         {
@@ -39,7 +38,7 @@ namespace MSL.pages
             MainWindow.AutoOpenFrpc += AutoStartFrpc;
         }
 
-        private void StartFrpc()
+        private async void StartFrpc()
         {
             try
             {
@@ -69,10 +68,10 @@ namespace MSL.pages
                         if (!File.Exists("MSL\\frpc.exe"))
                         {
                             RefreshLink();
-                            Dispatcher.Invoke(() =>
+                            await Dispatcher.Invoke(async () =>
                             {
                                 var mwindow = (MainWindow)Window.GetWindow(this);
-                                Shows.ShowDownloader(mwindow, _dnfrpc, "MSL", "frpc.exe", "下载内网映射中...");
+                                await Shows.ShowDownloader(mwindow, _dnfrpc, "MSL", "frpc.exe", "下载内网映射中...");
                             });
                             _dnfrpc = "";
                         }
@@ -80,10 +79,10 @@ namespace MSL.pages
                     else if (jobject["frpcversion"].ToString() != "6")
                     {
                         RefreshLink();
-                        Dispatcher.Invoke(() =>
+                        await Dispatcher.Invoke(async () =>
                         {
                             var mwindow = (MainWindow)Window.GetWindow(this);
-                            Shows.ShowDownloader(mwindow, _dnfrpc, "MSL", "frpc.exe", "更新内网映射中...");
+                            await Shows.ShowDownloader(mwindow, _dnfrpc, "MSL", "frpc.exe", "更新内网映射中...");
                         });
                         _dnfrpc = "";
                         jobject["frpcversion"] = "6";
@@ -94,15 +93,14 @@ namespace MSL.pages
                     if (!File.Exists("MSL\\frpc.exe"))
                     {
                         RefreshLink();
-                        Dispatcher.Invoke(() =>
+                        await Dispatcher.Invoke(async () =>
                         {
                             var mwindow = (MainWindow)Window.GetWindow(this);
-                            Shows.ShowDownloader(mwindow, _dnfrpc, "MSL", "frpc.exe", "下载内网映射中...");
+                            await Shows.ShowDownloader(mwindow, _dnfrpc, "MSL", "frpc.exe", "下载内网映射中...");
                         });
                         _dnfrpc = "";
                     }
 
-                    //Directory.SetCurrentDirectory("MSL");
                     FRPCMD.StartInfo.WorkingDirectory = "MSL";
                     FRPCMD.StartInfo.FileName = "MSL\\frpc.exe";
                     FRPCMD.StartInfo.Arguments = "-c frpc";
@@ -117,7 +115,6 @@ namespace MSL.pages
                     {
                         startfrpc.IsEnabled = true;
                     });
-                    //Directory.SetCurrentDirectory(AppDomain.CurrentDomain.BaseDirectory);
                     FRPCMD.WaitForExit();
                     FRPCMD.CancelOutputRead();
                 }
@@ -126,14 +123,11 @@ namespace MSL.pages
                     //内网映射检测
                     if (!File.Exists("MSL\\frpc_of.exe"))
                     {
-                        //JObject jo = (JObject)JsonConvert.DeserializeObject(Functions.Get("get?key=software", "https://of-dev-api.bfsea.xyz/commonQuery"));
-                        // string latest = jo["data"]["latest"].ToString();
-                        //string latest_url = $"https://d.of.gs/client{latest}frpc_windows_amd64.zip";
                         string latest_url = Functions.Get("download/frpc/OpenFrp/amd64");
-                        Dispatcher.Invoke(() =>
+                        await Dispatcher.Invoke(async () =>
                         {
                             var mwindow = (MainWindow)Window.GetWindow(this);
-                            Shows.ShowDownloader(mwindow, latest_url, "MSL", "frpc_of.zip", "下载内网映射中...");
+                            await Shows.ShowDownloader(mwindow, latest_url, "MSL", "frpc_of.zip", "下载内网映射中...");
                             string fileName = "";
                             using (ZipFile zip = new ZipFile(@"MSL\frpc_of.zip"))
                             {
@@ -151,7 +145,6 @@ namespace MSL.pages
 
                         });
                     }
-                    //Directory.SetCurrentDirectory("MSL");
                     FRPCMD.StartInfo.WorkingDirectory = "MSL";
                     FRPCMD.StartInfo.FileName = "MSL\\frpc_of.exe";
                     FRPCMD.StartInfo.Arguments = File.ReadAllText("MSL\\frpc");
@@ -166,7 +159,6 @@ namespace MSL.pages
                     {
                         startfrpc.IsEnabled = true;
                     });
-                    //Directory.SetCurrentDirectory(AppDomain.CurrentDomain.BaseDirectory);
                     FRPCMD.WaitForExit();
                     FRPCMD.CancelOutputRead();
                 }
@@ -359,7 +351,7 @@ namespace MSL.pages
             {
                 Dispatcher.Invoke(() =>
                 {
-                    Shows.ShowMsg(window, "请输入合法订单号：仅含数字且长度不小于5位！", "获取失败！");
+                    Shows.ShowMsgDialog(window, "请输入合法订单号：仅含数字且长度不小于5位！", "获取失败！");
                 });
                 return;
             }
@@ -377,7 +369,7 @@ namespace MSL.pages
             {
                 Dispatcher.Invoke(() =>
                 {
-                    Shows.ShowMsg(window, "请输入合法账号：仅含数字且长度不小于5位！", "获取失败！");
+                    Shows.ShowMsgDialog(window, "请输入合法账号：仅含数字且长度不小于5位！", "获取失败！");
                 });
                 return;
             }
@@ -402,21 +394,21 @@ namespace MSL.pages
                 {
                     Dispatcher.Invoke(() =>
                     {
-                        Shows.ShowMsg(window, "您的付费密码为：" + keyValues["password"].ToString() + "\n注册时间：" + keyValues["registration"].ToString() + "\n本次续费：" + keyValues["days"].ToString() + "天\n到期时间：" + keyValues["expiration"].ToString(), "续费成功！");
+                        Shows.ShowMsgDialog(window, "您的付费密码为：" + keyValues["password"].ToString() + "\n注册时间：" + keyValues["registration"].ToString() + "\n本次续费：" + keyValues["days"].ToString() + "天\n到期时间：" + keyValues["expiration"].ToString(), "续费成功！");
                     });
                 }
                 else if (keyValues != null)
                 {
                     Dispatcher.Invoke(() =>
                     {
-                        Shows.ShowMsg(window, keyValues["reason"].ToString(), "获取失败！");
+                        Shows.ShowMsgDialog(window, keyValues["reason"].ToString(), "获取失败！");
                     });
                 }
                 else
                 {
                     Dispatcher.Invoke(() =>
                     {
-                        Shows.ShowMsg(window, "返回内容为空！", "获取失败！");
+                        Shows.ShowMsgDialog(window, "返回内容为空！", "获取失败！");
                     });
                 }
             }
@@ -426,7 +418,7 @@ namespace MSL.pages
                 {
                     this.Focus();
                     _dialog.Close();
-                    Shows.ShowMsg((MainWindow)Window.GetWindow(this), "获取失败，请添加QQ：483232994（昵称：MSL-FRP），并发送发电成功截图+订单号来手动获取密码\r\n（注：回复消息不一定及时，请耐心等待！如果没有添加成功，或者添加后长时间无人回复，请进入MSL交流群然后从群里私聊）", "获取失败！");
+                    Shows.ShowMsgDialog((MainWindow)Window.GetWindow(this), "获取失败，请添加QQ：483232994（昵称：MSL-FRP），并发送发电成功截图+订单号来手动获取密码\r\n（注：回复消息不一定及时，请耐心等待！如果没有添加成功，或者添加后长时间无人回复，请进入MSL交流群然后从群里私聊）", "获取失败！");
                 });
             }
         }

@@ -6,7 +6,7 @@
              xmlns:local="clr-namespace:MSL.controls"
              xmlns:hc="https://handyorg.github.io/handycontrol"
              mc:Ignorable="d" SizeToContent="WidthAndHeight" ResizeMode="NoResize"
-             ShowNonClientArea="False" ShowInTaskbar="False"
+             ShowNonClientArea="False" Title="输入"
              WindowStartupLocation="CenterOwner">
     <Grid x:Name="MainGrid" Background="{DynamicResource RegionBrush}">
         <Grid.RowDefinitions>

@@ -416,7 +416,6 @@ namespace MSL.controls
                     }
                     else if (Directory.Exists(_base + "\\libraries\\net\\neoforged\\neoforge"))
                     {
-                        //bool checkResult = false;
                         string[] subFolders = Directory.GetDirectories(_base + "\\libraries\\net\\neoforged\\neoforge");
                         foreach (string subFolder in subFolders)
                         {
@@ -424,8 +423,6 @@ namespace MSL.controls
                             {
                                 forgeVersion = Path.GetFileName(subFolder);
                                 return "@libraries/net/neoforged/neoforge/" + forgeVersion + "/win_args.txt %*";
-                                //checkResult = true;
-                                //break;
                             }
                         }
                         checkRootBase = true;
@@ -434,14 +431,18 @@ namespace MSL.controls
                     {
                         DirectoryInfo directoryInfo = new DirectoryInfo(_base);
                         FileInfo[] fileInfo = directoryInfo.GetFiles();
-                        //bool checkResult = false;
                         foreach (FileInfo file in fileInfo)
                         {
                             if (file.Name.Contains("forge") && (file.Name != filename) && (!file.Name.Contains("installer")) && (!file.Name.Contains("universal")) && (!file.Name.Contains("server")))
                             {
                                 return file.FullName.Replace(_base + @"\", "");
-                                //checkResult = true;
-                                //break;
+                            }
+                        }
+                        foreach (FileInfo file in fileInfo)
+                        {
+                            if (file.Name.Contains("forge") && (file.Name != filename) && (!file.Name.Contains("installer")) && (!file.Name.Contains("server")))
+                            {
+                                return file.FullName.Replace(_base + @"\", "");
                             }
                         }
                     }
@@ -451,14 +452,12 @@ namespace MSL.controls
                 {
                     //Console.WriteLine(ex.Message);
                     return null;
-                    //return false;
                 }
             }
             catch// (Exception ex)
             {
                 //Console.WriteLine(ex.Message);
                 return null;
-                //return false;
             }
         }
     }
@@ -582,7 +581,7 @@ namespace MSL.controls
                         using (var reader = new StreamReader(errorResponse.GetResponseStream()))
                         {
                             string error = reader.ReadToEnd();
-                            Shows.ShowMsg(window, error, "获取用户信息失败");
+                            Shows.ShowMsgDialog(window, error, "获取用户信息失败");
                         }
                     }
                 }
@@ -610,23 +609,23 @@ namespace MSL.controls
             }
             catch
             {
-                Shows.ShowMsg(window, "签到失败！请登录OpenFrp官网进行签到！", "错误");
+                Shows.ShowMsgDialog(window, "签到失败！请登录OpenFrp官网进行签到！", "错误");
                 return;
             }
             try
             {
                 if ((bool)JObject.Parse(responseMessage)["flag"] == true && JObject.Parse(responseMessage)["msg"].ToString() == "OK")
                 {
-                    Shows.ShowMsg(window, JObject.Parse(responseMessage)["data"].ToString(), "签到成功");
+                    Shows.ShowMsgDialog(window, JObject.Parse(responseMessage)["data"].ToString(), "签到成功");
                 }
                 else
                 {
-                    Shows.ShowMsg(window, "签到失败", "签到失败");
+                    Shows.ShowMsgDialog(window, "签到失败", "签到失败");
                 }
             }
             catch (Exception ex)
             {
-                Shows.ShowMsg(window, "签到失败,产生的错误:\n" + ex.Message, "签到失败");
+                Shows.ShowMsgDialog(window, "签到失败,产生的错误:\n" + ex.Message, "签到失败");
             }
         }
 

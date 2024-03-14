@@ -237,13 +237,13 @@ namespace MSL
                             filename += ".jar";
                         }
 
-                        Shows.ShowDownloader(this, Url, Dir, filename, "下载中……");
+                        await Shows.ShowDownloader(this, Url, Dir, filename, "下载中……");
                     }
                     else if (loadType == 1)
                     {
                         Dir = "MSL";
                         Url = modVersionurl[listBox.SelectedIndex];
-                        Shows.ShowDownloader(this, Url, Dir, "ServerPack.zip", "下载中……");
+                        await Shows.ShowDownloader(this, Url, Dir, "ServerPack.zip", "下载中……");
                         Close();
                     }
                 }
@@ -266,13 +266,13 @@ namespace MSL
 
         private void window_Closing(object sender, System.ComponentModel.CancelEventArgs e)
         {
-            listBox.Items.Clear();
             modIds.Clear();
             modVersions.Clear();
             modVersionurl.Clear();
             modUrls.Clear();
             imageUrls.Clear();
             backList.Clear();
+            //listBox.Items.Clear();
             GC.Collect();
         }
 

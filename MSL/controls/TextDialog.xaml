@@ -1,14 +1,34 @@
-﻿<Border x:Class="MSL.controls.TextDialog"
+﻿<UserControl x:Class="MSL.controls.TextDialog"
         xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
         xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
         xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006" 
         xmlns:d="http://schemas.microsoft.com/expression/blend/2008" 
         xmlns:hc="https://handyorg.github.io/handycontrol"
         xmlns:local="clr-namespace:MSL.controls"
-        mc:Ignorable="d" 
-        CornerRadius="10"
-        Background="{DynamicResource SecondaryRegionBrush}">
-    <hc:SimplePanel>
-        <TextBlock Name="DialogText" Foreground="{StaticResource PrimaryTextBrush}" Text="Please Wait" HorizontalAlignment="Center" VerticalAlignment="Center" FontSize="20" Margin="50"/>
-    </hc:SimplePanel>
-</Border>
+        mc:Ignorable="d">
+    <UserControl.Triggers>
+        <EventTrigger RoutedEvent="FrameworkElement.Loaded">
+            <BeginStoryboard>
+                <Storyboard>
+                    <!-- 缩放动画 -->
+                    <DoubleAnimation Storyboard.TargetName="MainBorder"
+                             Storyboard.TargetProperty="RenderTransform.ScaleX"
+                             From="1.1" To="1" Duration="0:0:0.15"/>
+                    <DoubleAnimation Storyboard.TargetName="MainBorder"
+                             Storyboard.TargetProperty="RenderTransform.ScaleY"
+                             From="1.1" To="1" Duration="0:0:0.15"/>
+                    <!-- 淡入动画 -->
+                    <DoubleAnimation Storyboard.TargetName="MainBorder"
+                             Storyboard.TargetProperty="Opacity"
+                             From="0" To="1" Duration="0:0:0.2"/>
+                </Storyboard>
+            </BeginStoryboard>
+        </EventTrigger>
+    </UserControl.Triggers>
+    <Border x:Name="MainBorder" CornerRadius="10" Background="{DynamicResource SecondaryRegionBrush}" BorderBrush="{DynamicResource BorderBrush}" BorderThickness="1" RenderTransformOrigin="0.5,0.5">
+        <Border.RenderTransform>
+            <ScaleTransform/>
+        </Border.RenderTransform>
+        <TextBlock Name="DialogText" Foreground="{StaticResource PrimaryTextBrush}" Text="Text" HorizontalAlignment="Center" VerticalAlignment="Center" FontSize="20" Margin="50"/>
+    </Border>
+</UserControl>

@@ -38,16 +38,22 @@ namespace MSL.pages
         {
             if (serverlist1.SelectedIndex == -1)
             {
-                Shows.ShowMsg(this, "请先选择一个版本！", "警告");
+                Shows.ShowMsgDialog(this, "请先选择一个版本！", "警告");
                 return;
             }
             DownloadServerFunc();
         }
+
         private void serverlist_MouseDoubleClick(object sender, MouseButtonEventArgs e)
         {
+            if (serverlist1.SelectedIndex == -1)
+            {
+                Shows.ShowMsgDialog(this, "请先选择一个版本！", "警告");
+                return;
+            }
             DownloadServerFunc();
         }
-        void DownloadServerFunc()
+        private async void DownloadServerFunc()
         {
 
             downVersion = serverlist1.SelectedItem.ToString();
@@ -88,28 +94,18 @@ namespace MSL.pages
                         filename = serverlist.SelectedItem.ToString() + "-" + serverlist1.SelectedItem.ToString() + ".jar";
                     }
                 }
-                bool dwnDialog = Shows.ShowDownloader(this, downUrl, downPath, filename, "下载服务端中……", sha256Exp);
+                bool dwnDialog = await Shows.ShowDownloader(this, downUrl, downPath, filename, "下载服务端中……", sha256Exp);
                 if (!dwnDialog)
                 {
-                    Shows.ShowMsg(this, "下载取消！", "提示");
+                    Shows.ShowMsgDialog(this, "下载取消！", "提示");
                     return;
                 }
                 if (File.Exists(downPath + @"\" + filename))
                 {
                     if (filename.IndexOf("forge") + 1 != 0)
                     {
-                        Shows.ShowMsg(this, "检测到您下载的是Forge端，开服器将自动进行安装操作，稍后请您不要随意操作，耐心等待安装完毕！", "提示");
+                        await Shows.ShowMsgDialog(this, "检测到您下载的是Forge端，开服器将自动进行安装操作，稍后请您不要随意操作，耐心等待安装完毕！", "提示", false);
                         bool installForge = Shows.ShowInstallForge(this, downPath + "\\" + filename, downPath, downloadServerJava);
-                        /*
-                        if (installForge)
-                        {
-                            InstallForge(downUrl);
-                        }
-                        else
-                        {
-                            InstallForge(downUrl, false);
-                        }
-                        */
                         string installReturn;
                         if (installForge)
                         {
@@ -121,7 +117,7 @@ namespace MSL.pages
                         }
                         if (installReturn == null)
                         {
-                            Shows.ShowMsg(this, "下载失败！", "错误");
+                            Shows.ShowMsgDialog(this, "下载失败！", "错误");
                             return;
                         }
                         downloadServerName = installReturn;
@@ -135,25 +131,13 @@ namespace MSL.pages
                 }
                 else
                 {
-                    Shows.ShowMsg(this, "下载失败！（文件无法下载/下载后校验完整性失败）\n请重试！", "错误");
+                    Shows.ShowMsgDialog(this, "下载失败！（文件无法下载/下载后校验完整性失败）\n请重试！", "错误");
                 }
             }
         }
-        void GetServer()
+
+        private void GetServer()
         {
-            /*
-            try
-            {
-                if (Functions.Get("") != "200")
-                {
-                    MainWindow.serverLink = "waheal.top";
-                }
-            }
-            catch
-            {
-                MainWindow.serverLink = "waheal.top";
-            }
-            */
             Dispatcher.Invoke(() =>
             {
                 serverlist.ItemsSource = null;
@@ -335,19 +319,19 @@ namespace MSL.pages
                         }
                         if (!checkResult)
                         {
-                            Shows.ShowMsg(this, "下载失败,请多次尝试或使用代理再试！", "错误");
+                            Shows.ShowMsgDialog(this, "下载失败,请多次尝试或使用代理再试！", "错误");
                         }
                         Close();
                     }
                 }
                 catch
                 {
-                    Shows.ShowMsg(this, "下载失败！", "错误");
+                    Shows.ShowMsgDialog(this, "下载失败！", "错误");
                 }
             }
             catch (Exception ex)
             {
-                Shows.ShowMsg(this, "出现错误！\n" + ex.ToString(), "错误");
+                Shows.ShowMsgDialog(this, "出现错误！\n" + ex.ToString(), "错误");
             }
         }
         */

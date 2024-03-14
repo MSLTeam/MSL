@@ -1,17 +1,19 @@
 ﻿using HandyControl.Controls;
 using HandyControl.Data;
+using System.Threading.Tasks;
+using Window = System.Windows.Window;
 
 namespace MSL.controls
 {
     internal class Shows
     {
-        public static bool ShowMsg(System.Windows.Window window, string dialogText, string dialogTitle, bool primaryBtnVisible = false, string closeText = "确定", string primaryText = "确定")
+        public static bool ShowMsg(Window window, string dialogText, string dialogTitle, bool primaryBtnVisible = false, string closeText = "确定", string primaryText = "确定")
         {
             try
             {
                 window.Focus();
                 var dialog = Dialog.Show(null);
-                MessageWindow messageWindow = new MessageWindow(window, dialogText, dialogTitle, primaryBtnVisible, closeText, primaryText, false)
+                MessageWindow messageWindow = new MessageWindow(window, dialogText, dialogTitle, primaryBtnVisible, closeText, primaryText)
                 {
                     Owner = window
                 };
@@ -34,13 +36,13 @@ namespace MSL.controls
             }
         }
 
-        public static int ShowMsgWithClose(System.Windows.Window window, string dialogText, string dialogTitle, bool primaryBtnVisible = false, string closeText = "确定", string primaryText = "确定")
+        public static int ShowMsgWithClose(Window window, string dialogText, string dialogTitle, bool primaryBtnVisible = false, string closeText = "确定", string primaryText = "确定")
         {
             try
             {
                 window.Focus();
                 var dialog = Dialog.Show(null);
-                MessageWindow messageWindow = new MessageWindow(window, dialogText, dialogTitle, primaryBtnVisible, closeText, primaryText, true)
+                MessageWindow messageWindow = new MessageWindow(window, dialogText, dialogTitle, primaryBtnVisible, closeText, primaryText)
                 {
                     Owner = window
                 };
@@ -69,7 +71,7 @@ namespace MSL.controls
             }
         }
 
-        public static bool ShowInput(System.Windows.Window window, string dialogText, out string userInput, string textboxText = "", bool passwordMode = false)
+        public static bool ShowInput(Window window, string dialogText, out string userInput, string textboxText = "", bool passwordMode = false)
         {
             userInput = string.Empty;
             try
@@ -100,7 +102,7 @@ namespace MSL.controls
             }
         }
 
-        public static bool ShowInstallForge(System.Windows.Window window, string forgePath, string downPath, string java)
+        public static bool ShowInstallForge(Window window, string forgePath, string downPath, string java)
         {
             try
             {
@@ -128,13 +130,21 @@ namespace MSL.controls
             }
         }
 
-        public static bool ShowDownloader(System.Windows.Window window, string downloadurl, string downloadPath, string filename, string downloadinfo, string sha256 = "")
+        public static async Task<bool> ShowDownloader(Window window, string downloadurl, string downloadPath, string filename, string downloadinfo, string sha256 = "")
+        {
+            ShowDialogs showDialogs = new ShowDialogs();
+            bool _ret = await showDialogs.ShowDownloadDialog(window, downloadurl, downloadPath, filename, downloadinfo, sha256);
+            return _ret;
+        }
+
+        /*
+        public static bool ShowDownloader(Window window, string downloadurl, string downloadPath, string filename, string downloadinfo, string sha256 = "")
         {
             try
             {
                 window.Focus();
                 var dialog = Dialog.Show(null);
-                DownloadWindow download = new DownloadWindow(downloadurl, downloadPath, filename, downloadinfo, sha256)
+                DownloadDialog download = new DownloadDialog(downloadurl, downloadPath, filename, downloadinfo, sha256)
                 {
                     Owner = window
                 };
@@ -155,6 +165,7 @@ namespace MSL.controls
                 return false;
             }
         }
+        */
 
         public static void GrowlSuccess(string msg, bool showtime = false)
         {
@@ -180,35 +191,79 @@ namespace MSL.controls
                 ShowDateTime = showtime
             });
         }
+
+        public static void ShowMsgDialog(Window _window, string text, string title)
+        {
+            ShowDialogs showDialogs = new ShowDialogs();
+            showDialogs.ShowMsgDialog(_window, text, title);
+        }
+
+        public static async Task<bool> ShowMsgDialog(Window _window, string text, string title, bool showPrimaryBtn, string closeBtnContext = "取消", string primaryBtnContext = "确定")
+        {
+            ShowDialogs showDialogs = new ShowDialogs();
+            bool _ret = await showDialogs.ShowMsgDialog(_window, text, title, showPrimaryBtn, closeBtnContext, primaryBtnContext);
+            return _ret;
+        }
     }
 
-    internal class ShowDialog
+    internal class ShowDialogs
     {
         private Window window;
         private Dialog dialog;
+
         public void ShowTextDialog(Window _window, string text)
         {
             window = _window;
+            window.Focus();
             dialog = Dialog.Show(new TextDialog(text));
         }
+
         public void CloseTextDialog()
         {
             window.Focus();
             dialog.Close();
         }
 
+        private TaskCompletionSource<bool> _tcs;
         public void ShowMsgDialog(Window _window, string text, string title)
         {
             window = _window;
-            MessageDialog msgDialog = new MessageDialog(_window, text, title);
+            MessageDialog msgDialog = new MessageDialog(_window, text, title, false);
             msgDialog.CloseDialog += CloseMsgDialog;
+            window.Focus();
             dialog = Dialog.Show(msgDialog);
-
+            _tcs = new TaskCompletionSource<bool>();
         }
-        public void CloseMsgDialog()
+
+        public async Task<bool> ShowMsgDialog(Window _window, string text, string title, bool showPrimaryBtn, string closeBtnContext = "取消", string primaryBtnContext = "确定")
+        {
+            window = _window;
+            MessageDialog msgDialog = new MessageDialog(_window, text, title, showPrimaryBtn, closeBtnContext, primaryBtnContext);
+            msgDialog.CloseDialog += CloseMsgDialog;
+            window.Focus();
+            dialog = Dialog.Show(msgDialog);
+            _tcs = new TaskCompletionSource<bool>();
+            await _tcs.Task;
+            return msgDialog._dialogReturn;
+        }
+
+        public async Task<bool> ShowDownloadDialog(Window _window, string downloadurl, string downloadPath, string filename, string downloadinfo, string sha256 = "")
+        {
+            window = _window;
+            DownloadDialog dwnDialog = new DownloadDialog(downloadurl, downloadPath, filename, downloadinfo, sha256);
+            dwnDialog.CloseDialog += CloseMsgDialog;
+            window.Focus();
+            dialog = Dialog.Show(dwnDialog);
+            _tcs = new TaskCompletionSource<bool>();
+            await _tcs.Task;
+            return dwnDialog._dialogReturn;
+        }
+
+        private void CloseMsgDialog()
         {
             window.Focus();
             dialog.Close();
+            _tcs.SetResult(true);
         }
     }
 }

@@ -13,7 +13,6 @@ using System.Windows.Media;
 using System.Windows.Media.Imaging;
 using System.Windows.Threading;
 using MessageBox = System.Windows.MessageBox;
-using MessageWindow = MSL.controls.MessageWindow;
 
 namespace MSL.pages
 {
@@ -24,19 +23,18 @@ namespace MSL.pages
     {
         public static event DeleControl C_NotifyIcon;
         public static event DeleControl ChangeSkinStyle;
-        List<string> _runServerList = new List<string>();
+        readonly List<string> _runServerList = new List<string>();
         public SettingsPage()
         {
             InitializeComponent();
         }
         private void mulitDownthread_Click(object sender, RoutedEventArgs e)
         {
-            DownloadWindow.downloadthread = int.Parse(downthreadCount.Text);
+            DownloadDialog.downloadthread = int.Parse(downthreadCount.Text);
         }
-        private void setdefault_Click(object sender, RoutedEventArgs e)
+        private async void setdefault_Click(object sender, RoutedEventArgs e)
         {
-            var mainwindow = (MainWindow)Window.GetWindow(this);
-            bool dialogRet = Shows.ShowMsg(mainwindow, "恢复默认设置会清除MSL文件夹内的所有文件，请您谨慎选择！", "警告", true, "取消");
+            bool dialogRet = await Shows.ShowMsgDialog((MainWindow)Window.GetWindow(this), "恢复默认设置会清除MSL文件夹内的所有文件，请您谨慎选择！", "警告", true);
             if (dialogRet)
             {
                 try
@@ -60,7 +58,7 @@ namespace MSL.pages
                 {
                     string jsonString = File.ReadAllText(@"MSL\config.json", System.Text.Encoding.UTF8);
                     JObject jobject = JObject.Parse(jsonString);
-                    jobject["notifyIcon"] = "False";
+                    jobject["notifyIcon"] = false;
                     string convertString = Convert.ToString(jobject);
                     File.WriteAllText(@"MSL\config.json", convertString, System.Text.Encoding.UTF8);
                     Shows.GrowlSuccess("关闭成功！");
@@ -80,7 +78,7 @@ namespace MSL.pages
                 {
                     string jsonString = File.ReadAllText(@"MSL\config.json", System.Text.Encoding.UTF8);
                     JObject jobject = JObject.Parse(jsonString);
-                    jobject["notifyIcon"] = "True";
+                    jobject["notifyIcon"] = true;
                     string convertString = Convert.ToString(jobject);
                     File.WriteAllText(@"MSL\config.json", convertString, System.Text.Encoding.UTF8);
                     Shows.GrowlSuccess("打开成功！");
@@ -98,32 +96,32 @@ namespace MSL.pages
             try
             {
                 JObject jsonObject = JObject.Parse(File.ReadAllText(@"MSL\config.json", Encoding.UTF8));
-                if (jsonObject["notifyIcon"] != null && jsonObject["notifyIcon"].ToString() == "True")
+                if (jsonObject["notifyIcon"] != null && (bool)jsonObject["notifyIcon"] == true)
                 {
                     notifyIconbtn.Content = "托盘图标:打开";
                 }
-                if (jsonObject["autoRunApp"] != null && jsonObject["autoRunApp"].ToString() == "True")
+                if (jsonObject["autoRunApp"] != null && (bool)jsonObject["autoRunApp"] == true)
                 {
                     autoRunApp.IsChecked = true;
                 }
-                if (jsonObject["autoUpdateApp"] != null && jsonObject["autoUpdateApp"].ToString() == "True")
+                if (jsonObject["autoUpdateApp"] != null && (bool)jsonObject["autoUpdateApp"] == true)
                 {
                     autoUpdateApp.IsChecked = true;
                 }
-                if (jsonObject["autoOpenServer"] != null && jsonObject["autoOpenServer"].ToString() != "False")
+                if (jsonObject["autoOpenServer"] != null && (bool)jsonObject["autoOpenServer"] != false)
                 {
                     openserversOnStart.IsChecked = true;
                     openserversOnStartList.Text = jsonObject["autoOpenServer"].ToString();
                 }
-                if (jsonObject["autoOpenFrpc"] != null && jsonObject["autoOpenFrpc"].ToString() == "True")
+                if (jsonObject["autoOpenFrpc"] != null && (bool)jsonObject["autoOpenFrpc"] == true)
                 {
                     openfrpOnStart.IsChecked = true;
                 }
-                if (jsonObject["autoGetPlayerInfo"] != null && jsonObject["autoGetPlayerInfo"].ToString() == "True")
+                if (jsonObject["autoGetPlayerInfo"] != null && (bool)jsonObject["autoGetPlayerInfo"] == true)
                 {
                     autoGetPlayerInfo.IsChecked = true;
                 }
-                if (jsonObject["autoGetServerInfo"] != null && jsonObject["autoGetServerInfo"].ToString() == "True")
+                if (jsonObject["autoGetServerInfo"] != null && (bool)jsonObject["autoGetServerInfo"] == true)
                 {
                     autoGetServerInfo.IsChecked = true;
                 }
@@ -140,7 +138,7 @@ namespace MSL.pages
                 }
                 if (jsonObject["skin"] != null)
                 {
-                    if (jsonObject["skin"].ToString() == "0")
+                    if ((int)jsonObject["skin"] == 0)
                     {
                         autoSetTheme.IsChecked = true;
                         BlueSkinBtn.IsEnabled = false;
@@ -158,36 +156,36 @@ namespace MSL.pages
                         OrangeSkinBtn.IsEnabled = true;
                         PurpleSkinBtn.IsEnabled = true;
                         PinkSkinBtn.IsEnabled = true;
-                        switch (jsonObject["skin"].ToString())
+                        switch ((int)jsonObject["skin"])
                         {
-                            case "1":
+                            case 1:
                                 autoSetTheme.IsChecked = false;
                                 BlueSkinBtn.IsChecked = true;
                                 break;
-                            case "2":
+                            case 2:
                                 autoSetTheme.IsChecked = false;
                                 RedSkinBtn.IsChecked = true;
                                 break;
-                            case "3":
+                            case 3:
                                 autoSetTheme.IsChecked = false;
                                 GreenSkinBtn.IsChecked = true;
                                 break;
-                            case "4":
+                            case 4:
                                 autoSetTheme.IsChecked = false;
                                 OrangeSkinBtn.IsChecked = true;
                                 break;
-                            case "5":
+                            case 5:
                                 autoSetTheme.IsChecked = false;
                                 PurpleSkinBtn.IsChecked = true;
                                 break;
-                            case "6":
+                            case 6:
                                 autoSetTheme.IsChecked = false;
                                 PinkSkinBtn.IsChecked = true;
                                 break;
                         }
                     }
                 }
-                if (jsonObject["semitransparentTitle"] != null && jsonObject["semitransparentTitle"].ToString() == "True")
+                if (jsonObject["semitransparentTitle"] != null && (bool)jsonObject["semitransparentTitle"] == true)
                 {
                     semitransparentTitle.IsChecked = true;
                 }
@@ -239,7 +237,7 @@ namespace MSL.pages
             {
                 string jsonString = File.ReadAllText(@"MSL\config.json", System.Text.Encoding.UTF8);
                 JObject jobject = JObject.Parse(jsonString);
-                jobject["autoOpenServer"] = "False";
+                jobject["autoOpenServer"] = false;
                 string convertString = Convert.ToString(jobject);
                 File.WriteAllText(@"MSL\config.json", convertString, System.Text.Encoding.UTF8);
                 Shows.GrowlSuccess("关闭成功！");
@@ -252,7 +250,7 @@ namespace MSL.pages
             {
                 string jsonString = File.ReadAllText(@"MSL\config.json", System.Text.Encoding.UTF8);
                 JObject jobject = JObject.Parse(jsonString);
-                jobject["autoOpenFrpc"] = "True";
+                jobject["autoOpenFrpc"] = true;
                 string convertString = Convert.ToString(jobject);
                 File.WriteAllText(@"MSL\config.json", convertString, System.Text.Encoding.UTF8);
                 Shows.GrowlSuccess("开启成功！");
@@ -261,7 +259,7 @@ namespace MSL.pages
             {
                 string jsonString = File.ReadAllText(@"MSL\config.json", System.Text.Encoding.UTF8);
                 JObject jobject = JObject.Parse(jsonString);
-                jobject["autoOpenFrpc"] = "False";
+                jobject["autoOpenFrpc"] = false;
                 string convertString = Convert.ToString(jobject);
                 File.WriteAllText(@"MSL\config.json", convertString, System.Text.Encoding.UTF8);
                 Shows.GrowlSuccess("关闭成功！");
@@ -275,7 +273,7 @@ namespace MSL.pages
                 BrushConverter brushConverter = new BrushConverter();
                 ThemeManager.Current.AccentColor = (Brush)brushConverter.ConvertFromString("#0078D4");
                 JObject jobject = JObject.Parse(File.ReadAllText("MSL\\config.json", Encoding.UTF8));
-                jobject["skin"] = "1";
+                jobject["skin"] = 1;
                 string convertString = Convert.ToString(jobject);
                 File.WriteAllText("MSL\\config.json", convertString, Encoding.UTF8);
             }
@@ -283,7 +281,7 @@ namespace MSL.pages
             {
                 ThemeManager.Current.AccentColor = Brushes.Red;
                 JObject jobject = JObject.Parse(File.ReadAllText("MSL\\config.json", Encoding.UTF8));
-                jobject["skin"] = "2";
+                jobject["skin"] = 2;
                 string convertString = Convert.ToString(jobject);
                 File.WriteAllText("MSL\\config.json", convertString, Encoding.UTF8);
             }
@@ -291,7 +289,7 @@ namespace MSL.pages
             {
                 ThemeManager.Current.AccentColor = Brushes.Green;
                 JObject jobject = JObject.Parse(File.ReadAllText("MSL\\config.json", Encoding.UTF8));
-                jobject["skin"] = "3";
+                jobject["skin"] = 3;
                 string convertString = Convert.ToString(jobject);
                 File.WriteAllText("MSL\\config.json", convertString, Encoding.UTF8);
             }
@@ -299,7 +297,7 @@ namespace MSL.pages
             {
                 ThemeManager.Current.AccentColor = Brushes.Orange;
                 JObject jobject = JObject.Parse(File.ReadAllText("MSL\\config.json", Encoding.UTF8));
-                jobject["skin"] = "4";
+                jobject["skin"] = 4;
                 string convertString = Convert.ToString(jobject);
                 File.WriteAllText("MSL\\config.json", convertString, Encoding.UTF8);
             }
@@ -307,7 +305,7 @@ namespace MSL.pages
             {
                 ThemeManager.Current.AccentColor = Brushes.Purple;
                 JObject jobject = JObject.Parse(File.ReadAllText("MSL\\config.json", Encoding.UTF8));
-                jobject["skin"] = "5";
+                jobject["skin"] = 5;
                 string convertString = Convert.ToString(jobject);
                 File.WriteAllText("MSL\\config.json", convertString, Encoding.UTF8);
             }
@@ -315,7 +313,7 @@ namespace MSL.pages
             {
                 ThemeManager.Current.AccentColor = Brushes.DeepPink;
                 JObject jobject = JObject.Parse(File.ReadAllText("MSL\\config.json", Encoding.UTF8));
-                jobject["skin"] = "6";
+                jobject["skin"] = 6;
                 string convertString = Convert.ToString(jobject);
                 File.WriteAllText("MSL\\config.json", convertString, Encoding.UTF8);
             }
@@ -327,7 +325,7 @@ namespace MSL.pages
             {
                 string jsonString = File.ReadAllText(@"MSL\config.json", System.Text.Encoding.UTF8);
                 JObject jobject = JObject.Parse(jsonString);
-                jobject["autoGetPlayerInfo"] = "True";
+                jobject["autoGetPlayerInfo"] = true;
                 string convertString = Convert.ToString(jobject);
                 File.WriteAllText(@"MSL\config.json", convertString, System.Text.Encoding.UTF8);
                 Shows.GrowlSuccess("开启成功！");
@@ -337,7 +335,7 @@ namespace MSL.pages
             {
                 string jsonString = File.ReadAllText(@"MSL\config.json", System.Text.Encoding.UTF8);
                 JObject jobject = JObject.Parse(jsonString);
-                jobject["autoGetPlayerInfo"] = "False";
+                jobject["autoGetPlayerInfo"] = false;
                 string convertString = Convert.ToString(jobject);
                 File.WriteAllText(@"MSL\config.json", convertString, System.Text.Encoding.UTF8);
                 Shows.GrowlSuccess("关闭成功！");
@@ -351,7 +349,7 @@ namespace MSL.pages
             {
                 string jsonString = File.ReadAllText(@"MSL\config.json", System.Text.Encoding.UTF8);
                 JObject jobject = JObject.Parse(jsonString);
-                jobject["autoGetServerInfo"] = "True";
+                jobject["autoGetServerInfo"] = true;
                 string convertString = Convert.ToString(jobject);
                 File.WriteAllText(@"MSL\config.json", convertString, System.Text.Encoding.UTF8);
                 Shows.GrowlSuccess("开启成功！");
@@ -361,7 +359,7 @@ namespace MSL.pages
             {
                 string jsonString = File.ReadAllText(@"MSL\config.json", System.Text.Encoding.UTF8);
                 JObject jobject = JObject.Parse(jsonString);
-                jobject["autoGetServerInfo"] = "False";
+                jobject["autoGetServerInfo"] = false;
                 string convertString = Convert.ToString(jobject);
                 File.WriteAllText(@"MSL\config.json", convertString, System.Text.Encoding.UTF8);
                 Shows.GrowlSuccess("关闭成功！");
@@ -376,7 +374,7 @@ namespace MSL.pages
                 //ThemeManager.Current.AccentColor = Brushes.DeepPink;
                 JObject jobject = JObject.Parse(File.ReadAllText("MSL\\config.json", Encoding.UTF8));
                 jobject["darkTheme"] = "Auto";
-                jobject["skin"] = "0";
+                jobject["skin"] = 0;
                 string convertString = Convert.ToString(jobject);
                 File.WriteAllText("MSL\\config.json", convertString, Encoding.UTF8);
 
@@ -398,7 +396,7 @@ namespace MSL.pages
                 //ThemeManager.Current.AccentColor = Brushes.DeepPink;
                 JObject jobject = JObject.Parse(File.ReadAllText("MSL\\config.json", Encoding.UTF8));
                 jobject["darkTheme"] = "False";
-                jobject["skin"] = "1";
+                jobject["skin"] = 1;
                 string convertString = Convert.ToString(jobject);
                 File.WriteAllText("MSL\\config.json", convertString, Encoding.UTF8);
 
@@ -443,7 +441,7 @@ namespace MSL.pages
             if (semitransparentTitle.IsChecked == true)
             {
                 JObject jobject = JObject.Parse(File.ReadAllText("MSL\\config.json", Encoding.UTF8));
-                jobject["semitransparentTitle"] = "True";
+                jobject["semitransparentTitle"] = true;
                 string convertString = Convert.ToString(jobject);
                 File.WriteAllText("MSL\\config.json", convertString, Encoding.UTF8);
                 Shows.GrowlSuccess("开启成功！");
@@ -452,7 +450,7 @@ namespace MSL.pages
             else
             {
                 JObject jobject = JObject.Parse(File.ReadAllText("MSL\\config.json", Encoding.UTF8));
-                jobject["semitransparentTitle"] = "False";
+                jobject["semitransparentTitle"] = false;
                 string convertString = Convert.ToString(jobject);
                 File.WriteAllText("MSL\\config.json", convertString, Encoding.UTF8);
                 Shows.GrowlSuccess("关闭成功！");
@@ -462,7 +460,7 @@ namespace MSL.pages
 
         private void paintedEgg_Click(object sender, RoutedEventArgs e)
         {
-            var mainwindow = (MainWindow)System.Windows.Window.GetWindow(this);
+            var mainwindow = (MainWindow)Window.GetWindow(this);
             bool dialog = Shows.ShowMsg(mainwindow, "点击此按钮后软件出现任何问题作者概不负责，你确定要继续吗？\n（光敏性癫痫警告！若您患有光敏性癫痫，请不要点击确定！）", "警告", true, "取消");
             if (dialog)
             {
@@ -473,10 +471,10 @@ namespace MSL.pages
         }
         void PaintedEgg()
         {
-            System.Windows.Window mainwindow = null;
+            Window mainwindow = null;
             Dispatcher.Invoke(() =>
             {
-                mainwindow = (MainWindow)System.Windows.Window.GetWindow(this);
+                mainwindow = (MainWindow)Window.GetWindow(this);
             });
             while (true)
             {
@@ -520,7 +518,7 @@ namespace MSL.pages
 
         private void changeBackImg_Click(object sender, RoutedEventArgs e)
         {
-            var mainwindow = (MainWindow)System.Windows.Window.GetWindow(this);
+            var mainwindow = (MainWindow)Window.GetWindow(this);
             OpenFileDialog openfile = new OpenFileDialog();
             openfile.InitialDirectory = AppDomain.CurrentDomain.BaseDirectory;
             openfile.Title = "请选择文件";
@@ -538,7 +536,7 @@ namespace MSL.pages
                 }
                 catch (Exception ex)
                 {
-                    Shows.ShowMsg(mainwindow, "更换背景图片失败！请重试！\n错误代码：" + ex.Message, "错误");
+                    Shows.ShowMsgDialog(mainwindow, "更换背景图片失败！请重试！\n错误代码：" + ex.Message, "错误");
                 }
             }
         }
@@ -568,7 +566,7 @@ namespace MSL.pages
             }
             catch (Exception ex)
             {
-                Shows.ShowMsg((MainWindow)System.Windows.Window.GetWindow(this), "清除背景图片失败！请重试！\n错误代码：" + ex.Message, "错误");
+                Shows.ShowMsgDialog((MainWindow)Window.GetWindow(this), "清除背景图片失败！请重试！\n错误代码：" + ex.Message, "错误");
             }
         }
 
@@ -598,7 +596,7 @@ namespace MSL.pages
                 }
                 string jsonString = File.ReadAllText(@"MSL\config.json", System.Text.Encoding.UTF8);
                 JObject jobject = JObject.Parse(jsonString);
-                jobject["autoRunApp"] = "True";
+                jobject["autoRunApp"] = true;
                 string convertString = Convert.ToString(jobject);
                 File.WriteAllText(@"MSL\config.json", convertString, System.Text.Encoding.UTF8);
             }
@@ -614,7 +612,7 @@ namespace MSL.pages
                 }
                 string jsonString = File.ReadAllText(@"MSL\config.json", System.Text.Encoding.UTF8);
                 JObject jobject = JObject.Parse(jsonString);
-                jobject["autoRunApp"] = "False";
+                jobject["autoRunApp"] = false;
                 string convertString = Convert.ToString(jobject);
                 File.WriteAllText(@"MSL\config.json", convertString, System.Text.Encoding.UTF8);
             }
@@ -625,7 +623,7 @@ namespace MSL.pages
             {
                 string jsonString = File.ReadAllText(@"MSL\config.json", System.Text.Encoding.UTF8);
                 JObject jobject = JObject.Parse(jsonString);
-                jobject["autoUpdateApp"] = "True";
+                jobject["autoUpdateApp"] = true;
                 string convertString = Convert.ToString(jobject);
                 File.WriteAllText(@"MSL\config.json", convertString, System.Text.Encoding.UTF8);
                 Shows.GrowlSuccess("开启成功！");
@@ -634,7 +632,7 @@ namespace MSL.pages
             {
                 string jsonString = File.ReadAllText(@"MSL\config.json", System.Text.Encoding.UTF8);
                 JObject jobject = JObject.Parse(jsonString);
-                jobject["autoUpdateApp"] = "False";
+                jobject["autoUpdateApp"] = false;
                 string convertString = Convert.ToString(jobject);
                 File.WriteAllText(@"MSL\config.json", convertString, System.Text.Encoding.UTF8);
                 Shows.GrowlSuccess("关闭成功！");
@@ -646,7 +644,7 @@ namespace MSL.pages
             //更新
             try
             {
-                var mainwindow = (MainWindow)System.Windows.Window.GetWindow(this);
+                var mainwindow = (MainWindow)Window.GetWindow(this);
                 string aaa = Functions.Get("query/update");
                 if (aaa.Contains("v"))
                 {
@@ -658,13 +656,13 @@ namespace MSL.pages
                 if (newVersion > version)
                 {
                     var updatelog = Functions.Get("query/update/log");
-                    Dispatcher.Invoke(() =>
+                    Dispatcher.Invoke(async () =>
                     {
                         bool dialog = Shows.ShowMsg(mainwindow, "发现新版本，版本号为：" + aaa + "，是否进行更新？\n更新日志：\n" + updatelog, "更新", true, "取消");
                         if (dialog == true)
                         {
                             string aaa1 = Functions.Get("download/update");
-                            Shows.ShowDownloader(mainwindow, aaa1, AppDomain.CurrentDomain.BaseDirectory, "MSL" + aaa + ".exe", "下载新版本中……");
+                            await Shows.ShowDownloader(mainwindow, aaa1, AppDomain.CurrentDomain.BaseDirectory, "MSL" + aaa + ".exe", "下载新版本中……");
                             if (File.Exists("MSL" + aaa + ".exe"))
                             {
                                 string oldExePath = Process.GetCurrentProcess().MainModule.ModuleName;

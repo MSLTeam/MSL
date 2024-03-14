@@ -9,7 +9,7 @@ using System.Diagnostics;
 using System.IO;
 using System.Management;
 using System.Text;
-using System.Threading;
+using System.Threading.Tasks;
 using System.Windows;
 using System.Windows.Media;
 using System.Windows.Threading;
@@ -20,16 +20,16 @@ namespace MSL
 {
     public delegate void DeleControl();
     /// <summary>
-    /// xaml 的交互逻辑
+    /// MainWindow.xaml 的交互逻辑
     /// </summary>
     public partial class MainWindow : HandyControl.Controls.Window
     {
-        readonly Home _homePage = new Home();
-        readonly ServerList _listPage = new ServerList();
-        readonly FrpcPage _frpcPage = new FrpcPage();
-        readonly OnlinePage _onlinePage = new OnlinePage();
-        readonly SettingsPage _setPage = new SettingsPage();
-        readonly About _aboutPage = new About();
+        private readonly Home _homePage = new Home();
+        private readonly ServerList _listPage = new ServerList();
+        private readonly FrpcPage _frpcPage = new FrpcPage();
+        private readonly OnlinePage _onlinePage = new OnlinePage();
+        private readonly SettingsPage _setPage = new SettingsPage();
+        private readonly About _aboutPage = new About();
         public static event DeleControl AutoOpenServer;
         public static event DeleControl AutoOpenFrpc;
         public static string serverIDs;
@@ -42,12 +42,15 @@ namespace MSL
         {
             InitializeComponent();
             Home.GotoFrpcEvent += GotoOnlinePage;
+            Home.CreateServerEvent += GotoCreatePage;
+            ServerList.CreateServerEvent += GotoCreatePage;
+            CreateServer.CreateComplete += GotoListPage;
             SettingsPage.C_NotifyIcon += CtrlNotifyIcon;
             ServerRunner.GotoFrpcEvent += GotoFrpcPage;
             SettingsPage.ChangeSkinStyle += ChangeSkinStyle;
         }
 
-        private void Window_Loaded(object sender, RoutedEventArgs e)
+        private async void Window_Loaded(object sender, RoutedEventArgs e)
         {
             this.Topmost = true;
             LoadingCircle loadingCircle = new LoadingCircle();
@@ -55,19 +58,18 @@ namespace MSL
             MainGrid.RegisterName("loadingBar", loadingCircle);
             this.Topmost = false;
             //Logger.LogInfo("主窗体UI控件加载完毕！");
-            Thread thread = new Thread(AsyncLoadEvent);
-            thread.Start();
+            await Task.Run(AsyncLoadEvent);
             //Logger.LogInfo("异步载入线程已启动！");
         }
 
-        private void AsyncLoadEvent()
+        private async void AsyncLoadEvent()
         {
             if (!Directory.Exists("MSL"))
             {
                 Process.Start("https://www.mslmc.cn/eula.html");
-                Dispatcher.Invoke(() =>
+                await Dispatcher.Invoke(async () =>
                 {
-                    bool dialog = Shows.ShowMsg(this, "请阅读并同意MSL开服器使用协议：https://www.mslmc.cn/eula.html", "提示", true, "不同意", "同意");
+                    bool dialog = await Shows.ShowMsgDialog(this, "请阅读并同意MSL开服器使用协议：https://www.mslmc.cn/eula.html", "提示", true, "不同意", "同意");
                     if (!dialog)
                     {
                         //Logger.LogWarning("用户未同意使用协议，退出软件……");
@@ -122,7 +124,6 @@ namespace MSL
                 });
             }
 
-            //showDialog.CloseMsgDialog();
             //Logger.LogInfo("开始载入配置文件……");
             JObject jsonObject = null;
             try
@@ -149,11 +150,11 @@ namespace MSL
                 {
                     string jsonString = File.ReadAllText(@"MSL\config.json", Encoding.UTF8);
                     JObject jobject = JObject.Parse(jsonString);
-                    jobject.Add("notifyIcon", "False");
+                    jobject.Add("notifyIcon", false);
                     string convertString = Convert.ToString(jobject);
                     File.WriteAllText(@"MSL\config.json", convertString, Encoding.UTF8);
                 }
-                else if (jsonObject["notifyIcon"].ToString() == "True")
+                else if ((bool)jsonObject["notifyIcon"] == true)
                 {
                     Dispatcher.Invoke(() =>
                     {
@@ -161,11 +162,11 @@ namespace MSL
                     });
                 }
                 //Logger.LogInfo("读取托盘图标配置成功！");
-                if (jsonObject["sidemenu"] == null)
+                if (jsonObject["sidemenuExpanded"] == null)
                 {
                     string jsonString = File.ReadAllText(@"MSL\config.json", Encoding.UTF8);
                     JObject jobject = JObject.Parse(jsonString);
-                    jobject.Add("sidemenu", "0");
+                    jobject.Add("sidemenuExpanded", true);
                     string convertString = Convert.ToString(jobject);
                     File.WriteAllText(@"MSL\config.json", convertString, Encoding.UTF8);
                     Dispatcher.Invoke(() =>
@@ -175,7 +176,7 @@ namespace MSL
                         frame.Margin = new Thickness(100, 0, 0, 0);
                     });
                 }
-                else if (jsonObject["sidemenu"].ToString() == "0")
+                else if ((bool)jsonObject["sidemenuExpanded"] == true)
                 {
                     Dispatcher.Invoke(() =>
                     {
@@ -198,7 +199,7 @@ namespace MSL
                 {
                     string jsonString = File.ReadAllText(@"MSL\config.json", Encoding.UTF8);
                     JObject jobject = JObject.Parse(jsonString);
-                    jobject.Add("skin", "1");
+                    jobject.Add("skin", 1);
                     string convertString = Convert.ToString(jobject);
                     File.WriteAllText(@"MSL\config.json", convertString, Encoding.UTF8);
                     Dispatcher.Invoke(() =>
@@ -211,28 +212,28 @@ namespace MSL
                 {
                     Dispatcher.Invoke(() =>
                     {
-                        switch (jsonObject["skin"].ToString())
+                        switch ((int)jsonObject["skin"])
                         {
-                            case "0":
+                            case 0:
                                 ThemeManager.Current.UsingSystemTheme = true;
                                 break;
-                            case "1":
+                            case 1:
                                 BrushConverter brushConverter = new BrushConverter();
                                 ThemeManager.Current.AccentColor = (Brush)brushConverter.ConvertFromString("#0078D4");
                                 break;
-                            case "2":
+                            case 2:
                                 ThemeManager.Current.AccentColor = Brushes.Red;
                                 break;
-                            case "3":
+                            case 3:
                                 ThemeManager.Current.AccentColor = Brushes.Green;
                                 break;
-                            case "4":
+                            case 4:
                                 ThemeManager.Current.AccentColor = Brushes.Orange;
                                 break;
-                            case "5":
+                            case 5:
                                 ThemeManager.Current.AccentColor = Brushes.Purple;
                                 break;
-                            case "6":
+                            case 6:
                                 ThemeManager.Current.AccentColor = Brushes.DeepPink;
                                 break;
                             default:
@@ -272,11 +273,11 @@ namespace MSL
                 {
                     string jsonString = File.ReadAllText(@"MSL\config.json", Encoding.UTF8);
                     JObject jobject = JObject.Parse(jsonString);
-                    jobject.Add("semitransparentTitle", "False");
+                    jobject.Add("semitransparentTitle", false);
                     string convertString = Convert.ToString(jobject);
                     File.WriteAllText(@"MSL\config.json", convertString, Encoding.UTF8);
                 }
-                else if (jsonObject["semitransparentTitle"].ToString() == "True")
+                else if ((bool)jsonObject["semitransparentTitle"] == true)
                 {
                     Dispatcher.Invoke(() =>
                     {
@@ -288,12 +289,12 @@ namespace MSL
                 {
                     string jsonString = File.ReadAllText(@"MSL\config.json", Encoding.UTF8);
                     JObject jobject = JObject.Parse(jsonString);
-                    jobject.Add("autoGetServerInfo", "True");
+                    jobject.Add("autoGetServerInfo", true);
                     string convertString = Convert.ToString(jobject);
                     File.WriteAllText(@"MSL\config.json", convertString, Encoding.UTF8);
                     getServerInfo = true;
                 }
-                else if (jsonObject["autoGetServerInfo"].ToString() == "True")
+                else if ((bool)jsonObject["autoGetServerInfo"] == true)
                 {
                     getServerInfo = true;
                 }
@@ -301,31 +302,29 @@ namespace MSL
                 {
                     string jsonString = File.ReadAllText(@"MSL\config.json", Encoding.UTF8);
                     JObject jobject = JObject.Parse(jsonString);
-                    jobject.Add("autoGetPlayerInfo", "True");
+                    jobject.Add("autoGetPlayerInfo", true);
                     string convertString = Convert.ToString(jobject);
                     File.WriteAllText(@"MSL\config.json", convertString, Encoding.UTF8);
                     getPlayerInfo = true;
                 }
-                else if (jsonObject["autoGetPlayerInfo"].ToString() == "True")
+                else if ((bool)jsonObject["autoGetPlayerInfo"] == true)
                 {
                     getPlayerInfo = true;
                 }
                 //Logger.LogInfo("读取自动化功能配置成功（自动打开显示占用、记录玩家功能）！");
             }
-            catch (Exception ex)
+            catch// (Exception ex)
             {
                 //Logger.LogError("读取配置时出现错误！错误代码："+ex.Message);
-                Shows.GrowlErr("MSL在加载配置文件时出现错误，此报错可能不影响软件运行，但还是建议您将其反馈给作者！\n错误代码：" + ex.Message);
+                //Shows.GrowlErr("MSL在加载配置文件时出现错误，此报错可能不影响软件运行，但还是建议您将其反馈给作者！\n错误代码：" + ex.Message);
+                File.WriteAllText(@"MSL\config.json", string.Format("{{{0}}}", "\n"));
+                jsonObject = JObject.Parse(File.ReadAllText(@"MSL\config.json", Encoding.UTF8));
+                Shows.GrowlInfo("配置文件已更新！");
             }
 
             //更新
             try
             {
-                //string pageHtml = Functions.Get("update");
-                //string strtempa = "#";
-                //int IndexofA = pageHtml.IndexOf(strtempa);
-                //string Ru = pageHtml.Substring(IndexofA + 1);
-                //string aaa = Ru.Substring(0, Ru.IndexOf("#"));
                 string aaa = Functions.Get("query/update");
                 if (aaa.Contains("v"))
                 {
@@ -338,7 +337,7 @@ namespace MSL
                 {
                     //Logger.LogInfo("检测到新版本！");
                     var updatelog = Functions.Get("query/update/log");
-                    Dispatcher.Invoke(() =>
+                    await Dispatcher.Invoke(async () =>
                     {
                         if (jsonObject["autoUpdateApp"] == null)
                         {
@@ -353,7 +352,7 @@ namespace MSL
                             //Logger.LogInfo("自动更新功能已打开，更新新版本……");
                             UpdateApp(aaa);
                         }
-                        bool dialog = Shows.ShowMsg(this, "发现新版本，版本号为：" + aaa + "，是否进行更新？\n更新日志：\n" + updatelog, "更新", true, "取消");
+                        bool dialog = await Shows.ShowMsgDialog(this, "发现新版本，版本号为：" + aaa + "，是否进行更新？\n更新日志：\n" + updatelog, "更新", true);
                         if (dialog == true)
                         {
                             //Logger.LogInfo("更新新版本……");
@@ -399,11 +398,11 @@ namespace MSL
                 {
                     string jsonString = File.ReadAllText(@"MSL\config.json", Encoding.UTF8);
                     JObject jobject = JObject.Parse(jsonString);
-                    jobject.Add("autoOpenServer", "False");
+                    jobject.Add("autoOpenServer", false);
                     string convertString = Convert.ToString(jobject);
                     File.WriteAllText(@"MSL\config.json", convertString, Encoding.UTF8);
                 }
-                else if (jsonObject["autoOpenServer"].ToString() != "False")
+                else if ((bool)jsonObject["autoOpenServer"] != false)
                 {
                     string servers = jsonObject["autoOpenServer"].ToString();
                     Shows.GrowlInfo("正在为你自动打开相应服务器……");
@@ -429,11 +428,11 @@ namespace MSL
                 {
                     string jsonString = File.ReadAllText(@"MSL\config.json", Encoding.UTF8);
                     JObject jobject = JObject.Parse(jsonString);
-                    jobject.Add("autoOpenFrpc", "False");
+                    jobject.Add("autoOpenFrpc", false);
                     string convertString = Convert.ToString(jobject);
                     File.WriteAllText(@"MSL\config.json", convertString, Encoding.UTF8);
                 }
-                else if (jsonObject["autoOpenFrpc"].ToString() == "True")
+                else if ((bool)jsonObject["autoOpenFrpc"] == true)
                 {
                     Shows.GrowlInfo("正在为你自动打开内网映射……");
                     AutoOpenFrpc();
@@ -458,13 +457,13 @@ namespace MSL
             //Logger.LogInfo("软件加载完毕！");
         }
 
-        private void UpdateApp(string aaa)
+        private async void UpdateApp(string aaa)
         {
             //string strtempa1 = "* ";
             //int IndexofA1 = pageHtml.IndexOf(strtempa1);
             //string Ru1 = pageHtml.Substring(IndexofA1 + 2);
             string aaa1 = Functions.Get("download/update");
-            Shows.ShowDownloader(this, aaa1, AppDomain.CurrentDomain.BaseDirectory, "MSL" + aaa + ".exe", "下载新版本中……");
+            await Shows.ShowDownloader(this, aaa1, AppDomain.CurrentDomain.BaseDirectory, "MSL" + aaa + ".exe", "下载新版本中……");
             if (File.Exists("MSL" + aaa + ".exe"))
             {
                 string oldExePath = Process.GetCurrentProcess().MainModule.ModuleName;
@@ -614,7 +613,7 @@ namespace MSL
             }
         }
 
-        void CtrlNotifyIcon()//C_NotifyIcon
+        private void CtrlNotifyIcon()//C_NotifyIcon
         {
             if (MainNoticyIcon.Visibility == Visibility.Hidden)
             {
@@ -626,23 +625,36 @@ namespace MSL
             }
         }
 
-        void GotoFrpcPage()
+        private void GotoFrpcPage()
         {
-            this.Focus();
             frame.Content = _frpcPage;
             SideMenu.SelectedIndex = 2;
         }
-        void GotoOnlinePage()
+
+        private void GotoOnlinePage()
         {
             frame.Content = _onlinePage;
             SideMenu.SelectedIndex = 3;
         }
-        void ChangeSkinStyle()
+
+        private void GotoCreatePage()
+        {
+            frame.Content = new CreateServer();
+            SideMenu.SelectedIndex = -1;
+        }
+
+        private void GotoListPage()
+        {
+            frame.Content = _listPage;
+            SideMenu.SelectedIndex = 1;
+        }
+
+        private void ChangeSkinStyle()
         {
             try
             {
                 JObject jsonObject = JObject.Parse(File.ReadAllText(@"MSL\config.json", Encoding.UTF8));
-                if (jsonObject["semitransparentTitle"].ToString() == "True")
+                if ((bool)jsonObject["semitransparentTitle"] == true)
                 {
                     ChangeTitleStyle(true);
                 }
@@ -665,7 +677,8 @@ namespace MSL
             catch
             { }
         }
-        void ChangeTitleStyle(bool isOpen)
+
+        private void ChangeTitleStyle(bool isOpen)
         {
             if (isOpen)
             {
@@ -694,7 +707,7 @@ namespace MSL
                 frame.Margin = new Thickness(100, 0, 0, 0);
                 string jsonString = File.ReadAllText(@"MSL\config.json", Encoding.UTF8);
                 JObject jobject = JObject.Parse(jsonString);
-                jobject["sidemenu"] = "0";
+                jobject["sidemenuExpanded"] = true;
                 string convertString = Convert.ToString(jobject);
                 File.WriteAllText(@"MSL\config.json", convertString, Encoding.UTF8);
             }
@@ -705,22 +718,11 @@ namespace MSL
                 frame.Margin = new Thickness(50, 0, 0, 0);
                 string jsonString = File.ReadAllText(@"MSL\config.json", Encoding.UTF8);
                 JObject jobject = JObject.Parse(jsonString);
-                jobject["sidemenu"] = "1";
+                jobject["sidemenuExpanded"] = false;
                 string convertString = Convert.ToString(jobject);
                 File.WriteAllText(@"MSL\config.json", convertString, Encoding.UTF8);
             }
         }
-
-        private void Window_Activated(object sender, EventArgs e)
-        {
-            Growl.SetGrowlParent(GrowlPanel, true);
-        }
-
-        private void Window_Deactivated(object sender, EventArgs e)
-        {
-            Growl.SetGrowlParent(GrowlPanel, false);
-        }
-
 
         private void SideMenu_SelectionChanged(object sender, System.Windows.Controls.SelectionChangedEventArgs e)
         {
@@ -766,6 +768,16 @@ namespace MSL
         {
             //Application.Current.Shutdown();
             Environment.Exit(0);
+        }
+
+        private void Window_Activated(object sender, EventArgs e)
+        {
+            Growl.SetGrowlParent(GrowlPanel, true);
+        }
+
+        private void Window_Deactivated(object sender, EventArgs e)
+        {
+            Growl.SetGrowlParent(GrowlPanel, false);
         }
     }
 }

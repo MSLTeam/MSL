@@ -5,8 +5,8 @@
         xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
         xmlns:hc="https://handyorg.github.io/handycontrol"
         xmlns:local="clr-namespace:MSL.controls"
-        mc:Ignorable="d"
-        Height="300" Width="600" ShowNonClientArea="False" WindowStartupLocation="CenterOwner" ResizeMode="NoResize" ShowInTaskbar="False">
+        mc:Ignorable="d" Title="安装Forge……"
+        Height="300" Width="600" ShowNonClientArea="False" WindowStartupLocation="CenterOwner" ResizeMode="NoResize">
     <Grid>
         <Grid Background="{DynamicResource SecondaryRegionBrush}">
             <Grid.RowDefinitions>

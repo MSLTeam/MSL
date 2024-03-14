@@ -7,14 +7,14 @@
         xmlns:controls="clr-namespace:MSL.controls"
         xmlns:local="clr-namespace:MSL"
         mc:Ignorable="d"
-        NonClientAreaBackground="{DynamicResource SideMenuBrush}" Background="{DynamicResource BackgroundBrush}"
+        NonClientAreaBackground="{DynamicResource BackgroundBrush}" Background="{DynamicResource BackgroundBrush}"
         Title="配置内网映射" Height="450" Width="750" ResizeMode="NoResize" WindowStartupLocation="CenterOwner">
     <Grid x:Name="MainGrid">
         <TabControl Background="{x:Null}">
-            <TabItem Header="MSL-Frp" Background="{DynamicResource SideMenuBrush}">
+            <TabItem Header="MSL-Frp" Background="Transparent">
                 <Frame Source="/pages/frpProviders/MSLFrp.xaml" BorderBrush="{x:Null}"/>
             </TabItem>
-            <TabItem Header="OpenFrp" Background="{DynamicResource SideMenuBrush}">
+            <TabItem Header="OpenFrp" Background="Transparent">
                 <Frame Source="/pages/frpProviders/OpenFrp.xaml" BorderBrush="{x:Null}"/>
             </TabItem>
         </TabControl>

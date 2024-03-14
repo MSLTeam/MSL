@@ -12,7 +12,6 @@ using System.Windows.Input;
 using System.Windows.Media;
 using System.Windows.Threading;
 using MessageBox = System.Windows.Forms.MessageBox;
-using MessageWindow = MSL.controls.MessageWindow;
 using RoutedEventArgs = System.Windows.RoutedEventArgs;
 using Window = System.Windows.Window;
 
@@ -25,11 +24,11 @@ namespace MSL.pages
     public partial class ServerList : Page
     {
         public static event DeleControl OpenServerForm;
+        public static event DeleControl CreateServerEvent;
         public static bool ControlSetServerTab = false;
         public static bool ControlSetPMTab = false;
         public static List<string> serverIDs = new List<string>();
         public static Dictionary<string, int> runningServers = new Dictionary<string, int>();
-        //public static string RunningserverIDss = "";
 
         class ServerInfo
         {
@@ -58,12 +57,13 @@ namespace MSL.pages
         {
             GetServerConfig();
         }
-        void RefreshConfig()
+
+        private void RefreshConfig()
         {
             GetServerConfig();
         }
 
-        void StateCheck()
+        private void StateCheck()
         {
             for (int id = 0; id < serverList.Items.Count; id++)
             {
@@ -84,13 +84,7 @@ namespace MSL.pages
 
         private void addServer_Click(object sender, RoutedEventArgs e)
         {
-            forms.CreateServer window = new forms.CreateServer();
-            var mainwindow = (MainWindow)Window.GetWindow(this);
-            window.Owner = mainwindow;
-            window.ShowDialog();
-            mainwindow.Focus();
-            GetServerConfig();
-            Shows.GrowlSuccess("刷新成功！");
+            CreateServerEvent();
         }
 
         private void refreshList_Click(object sender, RoutedEventArgs e)
@@ -137,18 +131,13 @@ namespace MSL.pages
             }
             catch
             {
-                await Dispatcher.InvokeAsync(() =>
+                await Dispatcher.InvokeAsync(async () =>
                 {
                     var mainwindow = (MainWindow)Window.GetWindow(this);
-                    bool dialogRet = Shows.ShowMsg(mainwindow, "开服器检测到配置文件出现了错误，是第一次使用吗？\n是否创建一个新的服务器？", "警告", true, "取消");
+                    bool dialogRet = await Shows.ShowMsgDialog(mainwindow, "开服器检测到配置文件出现了错误，是第一次使用吗？\n是否创建一个新的服务器？", "警告", true, "取消");
                     if (dialogRet)
                     {
-                        Window wn = new forms.CreateServer
-                        {
-                            Owner = mainwindow
-                        };
-                        wn.ShowDialog();
-                        GetServerConfig();
+                        CreateServerEvent();
                     }
                 });
             }
@@ -158,7 +147,6 @@ namespace MSL.pages
         {
             StartServerEvent();
         }
-
 
         private void startServer_Click(object sender, RoutedEventArgs e)
         {
@@ -242,7 +230,7 @@ namespace MSL.pages
             }
             catch (Exception ex)
             {
-                Shows.ShowMsg(mainwindow, "服务器目录删除失败！\n" + ex.Message, "警告", false, "确定");
+                Shows.ShowMsgDialog(mainwindow, "服务器目录删除失败！\n" + ex.Message, "警告");
             }
             try
             {
@@ -255,7 +243,7 @@ namespace MSL.pages
             catch
             {
                 Shows.GrowlErr("删除服务器失败！");
-                Shows.ShowMsg(mainwindow, "服务器删除失败！", "警告", false, "确定");
+                Shows.ShowMsgDialog(mainwindow, "服务器删除失败！", "警告");
                 GetServerConfig();
             }
         }

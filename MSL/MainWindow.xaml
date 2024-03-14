@@ -85,6 +85,5 @@
                 </ContextMenu>
             </hc:NotifyIcon.ContextMenu>
         </hc:NotifyIcon>
-
     </Grid>
 </hc:Window>

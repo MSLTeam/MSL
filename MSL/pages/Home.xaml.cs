@@ -15,8 +15,9 @@ namespace MSL.pages
     /// <summary>
     /// Home.xaml 的交互逻辑
     /// </summary>
-    public partial class Home : System.Windows.Controls.Page
+    public partial class Home : Page
     {
+        public static event DeleControl CreateServerEvent;
         public static event DeleControl AutoOpenServer;
         public static event DeleControl GotoFrpcEvent;
         public Home()
@@ -31,7 +32,7 @@ namespace MSL.pages
             //welcomelabel.Content = "MSL开服器 版本：" + MainWindow.update;
             GetServerConfig();
         }
-        void GetNotice()
+        private void GetNotice()
         {
             //公告
             //version
@@ -71,8 +72,7 @@ namespace MSL.pages
                         {
                             Dispatcher.Invoke(() =>
                             {
-                                var mainwindow = (MainWindow)System.Windows.Window.GetWindow(this);
-                                Shows.ShowMsg(mainwindow, noticeLabText, "公告", false, "确定");
+                                Shows.ShowMsgDialog((MainWindow)Window.GetWindow(this), noticeLabText, "公告");
                             });
                         }
                     }
@@ -153,8 +153,7 @@ namespace MSL.pages
             });
         }
 
-
-        void LoadRecommendations(string recommendations)
+        private void LoadRecommendations(string recommendations)
         {
             Dispatcher.Invoke(() =>
             {
@@ -234,8 +233,7 @@ namespace MSL.pages
             }
         }
 
-
-        void GetServerConfig()
+        private void GetServerConfig()
         {
             try
             {
@@ -280,11 +278,8 @@ namespace MSL.pages
             }
             if (startServerDropdown.SelectedIndex == -1)
             {
-                var mainwindow = (MainWindow)System.Windows.Window.GetWindow(this);
-                System.Windows.Window wn = new forms.CreateServer();
-                wn.Owner = mainwindow;
-                wn.ShowDialog();
-                GetServerConfig();
+                CreateServerEvent();
+                //GetServerConfig();
             }
             else
             {

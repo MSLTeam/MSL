@@ -44,7 +44,7 @@ namespace MSL.controls
         }
 
         //安装forge的主方法
-        private void Install()
+        private async void Install()
         {
             //第一步，解压Installer
             //创建一个文件夹存放解压的installer
@@ -122,9 +122,9 @@ namespace MSL.controls
                 vanillaUrl = Functions.Get("download/server/vanilla/" + installJobj["minecraft"].ToString());
             }
 
-            Dispatcher.Invoke(() => //下载
+            await Dispatcher.Invoke(async () => //下载
             {
-                bool dwnDialog = Shows.ShowDownloader(this, vanillaUrl, Path.GetDirectoryName(serverJarPath), Path.GetFileName(serverJarPath), "下载原版核心中···");
+                bool dwnDialog = await Shows.ShowDownloader(this, vanillaUrl, Path.GetDirectoryName(serverJarPath), Path.GetFileName(serverJarPath), "下载原版核心中···");
                 if (!dwnDialog)
                 {
                     //下载失败，跑路了！
@@ -222,10 +222,10 @@ namespace MSL.controls
                     }
                     else
                     {
-                        Dispatcher.Invoke(() =>
+                        await Dispatcher.Invoke(async () =>
                         {
                             Status_change("正在下载Forge运行Lib···(" + libCount + "/" + libALLCount + ")");
-                            bool dwnDialog = Shows.ShowDownloader(this, _dlurl, Path.GetDirectoryName(_savepath), Path.GetFileName(_savepath), "下载LIB(" + libCount + "/" + libALLCount + ")中···");
+                            bool dwnDialog = await Shows.ShowDownloader(this, _dlurl, Path.GetDirectoryName(_savepath), Path.GetFileName(_savepath), "下载LIB(" + libCount + "/" + libALLCount + ")中···");
                             if (!dwnDialog)
                             {
                                 //下载失败，跑路了！
@@ -275,10 +275,10 @@ namespace MSL.controls
                     }
                     else
                     {
-                        Dispatcher.Invoke(() =>
+                        await Dispatcher.Invoke(async () =>
                         {
                             Status_change("正在下载Forge运行Lib···(" + libCount + "/" + libALLCount + ")");
-                            bool dwnDialog = Shows.ShowDownloader(this, _dlurl, Path.GetDirectoryName(_savepath), Path.GetFileName(_savepath), "下载LIB(" + libCount + "/" + libALLCount + ")中···");
+                            bool dwnDialog = await Shows.ShowDownloader(this, _dlurl, Path.GetDirectoryName(_savepath), Path.GetFileName(_savepath), "下载LIB(" + libCount + "/" + libALLCount + ")中···");
                             if (!dwnDialog)
                             {
                                 //下载失败，跑路了！

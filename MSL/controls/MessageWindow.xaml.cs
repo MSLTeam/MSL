@@ -7,14 +7,13 @@ namespace MSL.controls
     /// </summary>
     public partial class MessageWindow : HandyControl.Controls.Window
     {
-        public bool _dialogReturn;
+        public bool _dialogReturn = false;
         public bool _closeBtnReturn = true;
-        public MessageWindow(Window window, string dialogText, string dialogTitle, bool primaryBtnVisible, string closeText, string primaryText, bool showCloseBtn)
+        public MessageWindow(Window window, string dialogText, string dialogTitle, bool primaryBtnVisible, string closeText, string primaryText)
         {
             InitializeComponent();
             this.MaxHeight = window.ActualHeight;
             this.MaxWidth = window.ActualWidth - 200;
-            _dialogReturn = false;
             Title = dialogTitle;
             titleText.Text = dialogTitle;
             bodyText.Text = dialogText;
@@ -23,10 +22,6 @@ namespace MSL.controls
             if (!primaryBtnVisible)
             {
                 primaryBtn.Visibility = Visibility.Hidden;
-            }
-            if (showCloseBtn)
-            {
-                ShowCloseButton = true;
             }
         }
 

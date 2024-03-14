@@ -1,4 +1,6 @@
-﻿using System.Windows;
+﻿using System;
+using System.Windows;
+using System.Windows.Media.Animation;
 
 namespace MSL.controls
 {
@@ -8,36 +10,62 @@ namespace MSL.controls
     public partial class MessageDialog
     {
         public event DeleControl CloseDialog;
-        //private readonly Window owner;
-        public MessageDialog(Window window, string dialogText, string dialogTitle)
+        public bool _dialogReturn;
+
+        public MessageDialog(Window window, string dialogText, string dialogTitle, bool showPrimaryBtn, string closeBtnContext = "取消", string primaryBtnContext = "确定")
         {
             InitializeComponent();
             this.MaxHeight = window.ActualHeight;
             this.MaxWidth = window.ActualWidth - 200;
-            //owner = window;
             bodyText.Text = dialogText;
             titleText.Text = dialogTitle;
-            //Task.Run(ChangeSize);
-        }
-
-        /*
-        private void ChangeSize()
-        {
-            while(true)
+            if (!showPrimaryBtn)
             {
-                Dispatcher.Invoke(() =>
-                {
-                    this.Height = owner.ActualHeight - 40;
-                    this.Width = owner.ActualWidth;
-                });
-                Thread.Sleep(1000);
+                PrimaryBtn.Visibility = Visibility.Hidden;
+            }
+            else
+            {
+                CloseBtn.Content = closeBtnContext;
+                PrimaryBtn.Content = primaryBtnContext;
             }
         }
-        */
 
-        private void closeBtn_Click(object sender, RoutedEventArgs e)
+        private void CloseBtn_Click(object sender, RoutedEventArgs e)
         {
-            CloseDialog();
+            Close();
+        }
+
+        private void PrimaryBtn_Click(object sender, RoutedEventArgs e)
+        {
+            _dialogReturn = true;
+            Close();
+        }
+
+        private void Close()
+        {
+            Storyboard storyboard = new Storyboard();
+            DoubleAnimation scaleDownX = new DoubleAnimation(1, 1.1, TimeSpan.FromSeconds(0.15));
+            DoubleAnimation scaleDownY = new DoubleAnimation(1, 1.1, TimeSpan.FromSeconds(0.15));
+            DoubleAnimation fadeOut = new DoubleAnimation(1, 0, TimeSpan.FromSeconds(0.15));
+
+            storyboard.Children.Add(scaleDownX);
+            storyboard.Children.Add(scaleDownY);
+            storyboard.Children.Add(fadeOut);
+
+            Storyboard.SetTarget(scaleDownX, MainBorder);
+            Storyboard.SetTarget(scaleDownY, MainBorder);
+            Storyboard.SetTarget(fadeOut, MainBorder);
+
+            Storyboard.SetTargetProperty(scaleDownX, new PropertyPath("RenderTransform.ScaleX"));
+            Storyboard.SetTargetProperty(scaleDownY, new PropertyPath("RenderTransform.ScaleY"));
+            Storyboard.SetTargetProperty(fadeOut, new PropertyPath("Opacity"));
+
+            storyboard.Completed += (s, a) =>
+            {
+                this.Visibility = Visibility.Collapsed;
+                CloseDialog();
+            };
+            storyboard.Begin();
         }
     }
 }
