@@ -26,7 +26,7 @@ namespace MSL.controls
         private readonly string tempPath;
         private readonly string libPath;
         private readonly string javaPath;
-        private int versionType; //由于Forge安装器的json有4种格式（太6了），在此进行规定：①1.20.3-Latest ②？-1.20.2
+        private int versionType; //由于Forge安装器的json有4（不止）种格式（太6了），我不知道
         private readonly Thread thread;
 
         public InstallForgeWindow(string forge, string downPath, string java)
@@ -196,16 +196,6 @@ namespace MSL.controls
                     bool dlStatus = DownloadFile(_dlurl, _savepath, _sha1);
                     Status_change("正在下载Forge运行Lib···(" + libCount + "/" + libALLCount + ")");
 
-                    /*Dispatcher.Invoke(() =>
-                    {
-                        bool dwnDialog = DialogShow.ShowDownloader(this, _dlurl, Path.GetDirectoryName(_savepath), Path.GetFileName(_savepath), "下载LIB("+ libCount + "/" + libALLCount+")中···");
-                        if (!dwnDialog)
-                        {
-                            //下载失败，跑路了！
-                            log_in(lib["downloads"]["artifact"]["path"].ToString() + "下载失败！安装失败！");
-                            return;
-                        }
-                    }); */ //调用downloader的下载窗口太慢了！
                 }
                 //2024.02.27 下午11：25 写的时候bmclapi炸了，导致被迫暂停，望周知（
                 foreach (JObject lib in libraries2.Cast<JObject>())//遍历数组，进行文件下载
@@ -234,17 +224,6 @@ namespace MSL.controls
                             }
                         });
                     }
-                    /*
-                    Dispatcher.Invoke(() =>
-                    {
-                        bool dwnDialog = DialogShow.ShowDownloader(this, _dlurl, Path.GetDirectoryName(_savepath), Path.GetFileName(_savepath), "下载LIB(" + libCount + "/" + libALLCount + ")中···");
-                        if (!dwnDialog)
-                        {
-                            //下载失败，跑路了！
-                            log_in(lib["downloads"]["artifact"]["path"].ToString() + "下载失败！安装失败！");
-                            return;
-                        }
-                    }); */
                 }
             }
             else
@@ -421,39 +400,6 @@ namespace MSL.controls
                             batData = batData + "\n" + @"""" + javaPath + @""" " + buildarg;
                         }
 
-
-                        /*
-                        Process process = new Process();
-                        process.StartInfo.FileName = "java"; //java路径
-                        process.StartInfo.Arguments = buildarg;
-                        process.StartInfo.CreateNoWindow = true;
-                        process.StartInfo.WorkingDirectory= installPath;
-                        process.StartInfo.UseShellExecute = false;
-                        process.StartInfo.RedirectStandardOutput = true;
-                        process.StartInfo.RedirectStandardError = true;
-
-                        process.OutputDataReceived += (sender, e) =>
-                        {
-                            if (!String.IsNullOrEmpty(e.Data))
-                            {
-                                log_in(e.Data);
-                            }
-                        };
-
-                        process.ErrorDataReceived += (sender, e) =>
-                        {
-                            if (!String.IsNullOrEmpty(e.Data))
-                            {
-                                log_in("Error: " + e.Data);
-                            }
-                        };
-
-                        process.Start();
-
-                        process.BeginOutputReadLine();
-                        process.BeginErrorReadLine();
-
-                        process.WaitForExit(); */ //麻瓜
 
                     }
                 }
@@ -741,7 +687,7 @@ namespace MSL.controls
             return 0;
         }
 
-        //非常安全的获取json key（
+        //非常安全的获取json key（有效防止空指针（嗯
         private string SafeGetValue(JObject jobj, string key)
         {
             string[] keys = key.Split('.');
