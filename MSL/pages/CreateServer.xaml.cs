@@ -749,15 +749,22 @@ namespace MSL.pages
                         Directory.CreateDirectory(serverbase);
                     }
                     string _filename = Path.GetFileName(txb3.Text);
-                    if (!Path.IsPathRooted(txb3.Text) && File.Exists(AppDomain.CurrentDomain.BaseDirectory + txb3.Text))
+                    if (File.Exists(serverbase + "\\" + _filename))
                     {
-                        txb3.Text = AppDomain.CurrentDomain.BaseDirectory + txb3.Text;
-                    }
-                    if (Path.GetDirectoryName(txb3.Text) != serverbase)
-                    {
-                        File.Copy(txb3.Text, serverbase + "\\" + _filename, true);
-                        await Shows.ShowMsgDialogAsync((MainWindow)Window.GetWindow(this), "已将服务端核心复制到了服务器文件夹之中！您现在可以将源文件删除了！", "提示");
                         txb3.Text = _filename;
+                    }
+                    else
+                    {
+                        if (!Path.IsPathRooted(txb3.Text) && File.Exists(AppDomain.CurrentDomain.BaseDirectory + txb3.Text))
+                        {
+                            txb3.Text = AppDomain.CurrentDomain.BaseDirectory + txb3.Text;
+                        }
+                        if (Path.GetDirectoryName(txb3.Text) != serverbase)
+                        {
+                            File.Copy(txb3.Text, serverbase + "\\" + _filename, true);
+                            await Shows.ShowMsgDialogAsync((MainWindow)Window.GetWindow(this), "已将服务端核心复制到了服务器文件夹之中，您现在可以将源文件删除了！", "提示");
+                            txb3.Text = _filename;
+                        }
                     }
 
                     if (txb3.Text.Contains("forge") && txb3.Text.Contains("installer"))
