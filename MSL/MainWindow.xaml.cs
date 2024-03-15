@@ -45,8 +45,7 @@ namespace MSL
             Home.GotoFrpcEvent += GotoOnlinePage;
             Home.CreateServerEvent += GotoCreatePage;
             ServerList.CreateServerEvent += GotoCreatePage;
-            CreateServer.CreateComplete += GotoListPage;
-            CreateServer.CancelCreate += GotoListPage;
+            CreateServer.GotoServerList += GotoListPage;
             SettingsPage.C_NotifyIcon += CtrlNotifyIcon;
             ServerRunner.GotoFrpcEvent += GotoFrpcPage;
             SettingsPage.ChangeSkinStyle += ChangeSkinStyle;
@@ -459,7 +458,7 @@ namespace MSL
             {
                 LoadAnnounce();
             });
-            
+
         }
 
         private async void UpdateApp(string aaa)

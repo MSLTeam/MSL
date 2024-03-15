@@ -27,8 +27,7 @@ namespace MSL.pages
     /// </summary>
     public partial class CreateServer : Page
     {
-        public static event DeleControl CreateComplete;
-        public static event DeleControl CancelCreate;
+        public static event DeleControl GotoServerList;
         private string DownjavaName;
         private string servername;
         private string serverjava;
@@ -281,7 +280,6 @@ namespace MSL.pages
             }
             else if (usedownloadjv.IsChecked == true)
             {
-
                 try
                 {
                     outlog.Content = "当前进度:下载Java……";
@@ -297,7 +295,10 @@ namespace MSL.pages
                             if (dwnJava == 1)
                             {
                                 outlog.Content = "当前进度:解压Java……";
+                                ShowDialogs showDialogs = new ShowDialogs();
+                                showDialogs.ShowTextDialog(Window.GetWindow(this), "解压Java中……");
                                 bool unzipJava = await UnzipJava();
+                                showDialogs.CloseTextDialog();
                                 if (unzipJava)
                                 {
                                     outlog.Content = "完成";
@@ -867,7 +868,7 @@ namespace MSL.pages
                 jsonObject.Add(i.ToString(), _json);
                 File.WriteAllText(@"MSL\ServerList.json", Convert.ToString(jsonObject), Encoding.UTF8);
                 await Shows.ShowMsgDialogAsync((MainWindow)Window.GetWindow(this), "创建完毕，请点击“开启服务器”按钮以开服", "信息");
-                CreateComplete();
+                GotoServerList();
             }
             catch (Exception ex)
             {
@@ -1186,6 +1187,7 @@ namespace MSL.pages
         {
             try
             {
+                FastModeReturnBtn.IsEnabled = false;
                 FastModeInstallBtn.IsEnabled = false;
                 FastInstallProcess.Text = "当前进度:下载Java……";
                 int dwnJava = 0;
@@ -1196,7 +1198,10 @@ namespace MSL.pages
                 if (dwnJava == 1)
                 {
                     FastInstallProcess.Text = "当前进度:解压Java……";
+                    ShowDialogs showDialogs = new ShowDialogs();
+                    showDialogs.ShowTextDialog(Window.GetWindow(this), "解压Java中……");
                     bool unzipJava = await UnzipJava();
+                    showDialogs.CloseTextDialog();
                     if (unzipJava)
                     {
                         FastInstallProcess.Text = "当前进度:下载服务端……";
@@ -1207,6 +1212,7 @@ namespace MSL.pages
                     }
                     else
                     {
+                        FastModeReturnBtn.IsEnabled = true;
                         FastModeInstallBtn.IsEnabled = true;
                         return;
                     }
@@ -1223,6 +1229,7 @@ namespace MSL.pages
                 {
                     Shows.ShowMsgDialog((MainWindow)Window.GetWindow(this), "下载取消！", "提示");
                     FastInstallProcess.Text = "取消安装！";
+                    FastModeReturnBtn.IsEnabled = true;
                     FastModeInstallBtn.IsEnabled = true;
                     return;
                 }
@@ -1230,6 +1237,7 @@ namespace MSL.pages
             catch
             {
                 Shows.GrowlErr("出现错误，请检查网络连接！");
+                FastModeReturnBtn.IsEnabled = true;
                 FastModeInstallBtn.IsEnabled = true;
             }
         }
@@ -1244,6 +1252,7 @@ namespace MSL.pages
             {
                 Shows.ShowMsgDialog((MainWindow)Window.GetWindow(this), "下载取消！", "提示");
                 FastInstallProcess.Text = "取消安装！";
+                FastModeReturnBtn.IsEnabled = true;
                 FastModeInstallBtn.IsEnabled = true;
                 return;
             }
@@ -1267,6 +1276,7 @@ namespace MSL.pages
                     if (installReturn == null)
                     {
                         Shows.ShowMsgDialog((MainWindow)Window.GetWindow(this), "下载失败！", "错误");
+                        FastModeReturnBtn.IsEnabled = true;
                         FastModeInstallBtn.IsEnabled = true;
                         return;
                     }
@@ -1309,17 +1319,19 @@ namespace MSL.pages
                     jsonObject.Add(i.ToString(), _json);
                     File.WriteAllText(@"MSL\ServerList.json", Convert.ToString(jsonObject), Encoding.UTF8);
                     await Shows.ShowMsgDialogAsync((MainWindow)Window.GetWindow(this), "创建完毕，请点击“开启服务器”按钮以开服", "信息");
-                    CreateComplete();
+                    GotoServerList();
                 }
                 catch (Exception ex)
                 {
                     MessageBox.Show("出现错误，请重试：" + ex.Message, "Error", MessageBoxButton.OK, MessageBoxImage.Error);
+                    FastModeReturnBtn.IsEnabled = true;
                     FastModeInstallBtn.IsEnabled = true;
                 }
             }
             else
             {
                 Shows.ShowMsgDialog((MainWindow)Window.GetWindow(this), "下载失败！（服务端文件不存在）\n请重试！", "错误");
+                FastModeReturnBtn.IsEnabled = true;
                 FastModeInstallBtn.IsEnabled = true;
             }
         }
@@ -1337,7 +1349,7 @@ namespace MSL.pages
 
         private void CancelBtn_Click(object sender, RoutedEventArgs e)
         {
-            CancelCreate();
+            GotoServerList();
         }
     }
 }

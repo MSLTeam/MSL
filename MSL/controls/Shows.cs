@@ -1,6 +1,5 @@
 ﻿using HandyControl.Controls;
 using HandyControl.Data;
-using System.Security.Cryptography;
 using System.Threading.Tasks;
 using Window = System.Windows.Window;
 

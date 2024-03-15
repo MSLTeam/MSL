@@ -3377,7 +3377,7 @@ namespace MSL
             try
             {
                 string text = await Shows.ShowInput(this, "请输入指令（格式为：/指令）\n若要输入的指令不是完整指令，请自行在最后添加空格");
-                if (text!=null)
+                if (text != null)
                 {
                     fastCmdList.Items.Add(text);
                     SetFastCmd();
