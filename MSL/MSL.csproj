@@ -121,20 +121,20 @@
     </ApplicationDefinition>
     <Compile Include="controls\Functions.cs" />
     <Compile Include="controls\ImagePathConverter.cs" />
-    <Compile Include="controls\InputWindow.xaml.cs">
-      <DependentUpon>InputWindow.xaml</DependentUpon>
+    <Compile Include="controls\dialogs\InputDialog.xaml.cs">
+      <DependentUpon>InputDialog.xaml</DependentUpon>
     </Compile>
-    <Compile Include="controls\InstallForgeWindow.xaml.cs">
-      <DependentUpon>InstallForgeWindow.xaml</DependentUpon>
+    <Compile Include="controls\dialogs\InstallForgeDialog.xaml.cs">
+      <DependentUpon>InstallForgeDialog.xaml</DependentUpon>
     </Compile>
-    <Compile Include="controls\MessageDialog.xaml.cs">
+    <Compile Include="controls\dialogs\MessageDialog.xaml.cs">
       <DependentUpon>MessageDialog.xaml</DependentUpon>
     </Compile>
     <Compile Include="controls\MessageWindow.xaml.cs">
       <DependentUpon>MessageWindow.xaml</DependentUpon>
     </Compile>
     <Compile Include="controls\Shows.cs" />
-    <Compile Include="controls\TextDialog.xaml.cs">
+    <Compile Include="controls\dialogs\TextDialog.xaml.cs">
       <DependentUpon>TextDialog.xaml</DependentUpon>
     </Compile>
     <Compile Include="pages\CreateServer.xaml.cs">
@@ -187,15 +187,15 @@
       <SubType>Designer</SubType>
       <Generator>MSBuild:Compile</Generator>
     </Page>
-    <Page Include="controls\InputWindow.xaml">
+    <Page Include="controls\dialogs\InputDialog.xaml">
       <Generator>MSBuild:Compile</Generator>
       <SubType>Designer</SubType>
     </Page>
-    <Page Include="controls\InstallForgeWindow.xaml">
+    <Page Include="controls\dialogs\InstallForgeDialog.xaml">
       <SubType>Designer</SubType>
       <Generator>MSBuild:Compile</Generator>
     </Page>
-    <Page Include="controls\MessageDialog.xaml">
+    <Page Include="controls\dialogs\MessageDialog.xaml">
       <SubType>Designer</SubType>
       <Generator>MSBuild:Compile</Generator>
     </Page>
@@ -207,7 +207,7 @@
       <SubType>Designer</SubType>
       <Generator>MSBuild:Compile</Generator>
     </Page>
-    <Page Include="controls\TextDialog.xaml">
+    <Page Include="controls\dialogs\TextDialog.xaml">
       <SubType>Designer</SubType>
       <Generator>MSBuild:Compile</Generator>
     </Page>
@@ -219,7 +219,7 @@
       <SubType>Designer</SubType>
       <Generator>MSBuild:Compile</Generator>
     </Page>
-    <Page Include="controls\DownloadDialog.xaml">
+    <Page Include="controls\dialogs\DownloadDialog.xaml">
       <Generator>MSBuild:Compile</Generator>
       <SubType>Designer</SubType>
     </Page>
@@ -231,7 +231,7 @@
       <DependentUpon>App.xaml</DependentUpon>
       <SubType>Code</SubType>
     </Compile>
-    <Compile Include="controls\DownloadDialog.xaml.cs">
+    <Compile Include="controls\dialogs\DownloadDialog.xaml.cs">
       <DependentUpon>DownloadDialog.xaml</DependentUpon>
     </Compile>
     <Compile Include="MainWindow.xaml.cs">

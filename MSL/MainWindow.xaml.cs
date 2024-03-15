@@ -30,10 +30,11 @@ namespace MSL
         private readonly OnlinePage _onlinePage = new OnlinePage();
         private readonly SettingsPage _setPage = new SettingsPage();
         private readonly About _aboutPage = new About();
+        public static event DeleControl LoadAnnounce;
         public static event DeleControl AutoOpenServer;
         public static event DeleControl AutoOpenFrpc;
         public static string serverIDs;
-        public static string serverLink;
+        public static string serverLink = null;
         public static float PhisicalMemory;
         public static bool getServerInfo = false;
         public static bool getPlayerInfo = false;
@@ -53,56 +54,22 @@ namespace MSL
         private async void Window_Loaded(object sender, RoutedEventArgs e)
         {
             this.Topmost = true;
-            LoadingCircle loadingCircle = new LoadingCircle();
-            MainGrid.Children.Add(loadingCircle);
-            MainGrid.RegisterName("loadingBar", loadingCircle);
+            //LoadingCircle loadingCircle = new LoadingCircle();
+            //MainGrid.Children.Add(loadingCircle);
+            //MainGrid.RegisterName("loadingBar", loadingCircle);
             this.Topmost = false;
-            //Logger.LogInfo("主窗体UI控件加载完毕！");
-            await Task.Run(AsyncLoadEvent);
-            //Logger.LogInfo("异步载入线程已启动！");
-        }
-
-        private async void AsyncLoadEvent()
-        {
             if (!Directory.Exists("MSL"))
             {
                 Process.Start("https://www.mslmc.cn/eula.html");
-                await Dispatcher.Invoke(async () =>
+                bool dialog = await Shows.ShowMsgDialogAsync(this, "请阅读并同意MSL开服器使用协议：https://www.mslmc.cn/eula.html", "提示", true, "不同意", "同意");
+                if (!dialog)
                 {
-                    bool dialog = await Shows.ShowMsgDialog(this, "请阅读并同意MSL开服器使用协议：https://www.mslmc.cn/eula.html", "提示", true, "不同意", "同意");
-                    if (!dialog)
-                    {
-                        //Logger.LogWarning("用户未同意使用协议，退出软件……");
-                        Close();
-                        Environment.Exit(0);
-                    }
-                });
+                    //Logger.LogWarning("用户未同意使用协议，退出软件……");
+                    Close();
+                    Environment.Exit(0);
+                }
                 Directory.CreateDirectory("MSL");
                 //Logger.LogWarning("未检测到MSL文件夹，已进行创建");
-            }
-
-            //get serverlink
-            try
-            {
-                serverLink = Functions.Get("", "https://msl-server.oss-cn-hangzhou.aliyuncs.com/", true);
-                try
-                {
-                    if (((int)((JObject)JsonConvert.DeserializeObject(Functions.Get("")))["status"]) != 200)
-                    {
-                        serverLink = "waheal.top";
-                        Shows.GrowlInfo("MSL主服务器连接超时（可能被DDos），已切换至备用服务器！");
-                    }
-                }
-                catch
-                {
-                    serverLink = "waheal.top";
-                    Shows.GrowlInfo("MSL主服务器连接超时（可能被DDos），已切换至备用服务器！");
-                }
-            }
-            catch
-            {
-                serverLink = "waheal.top";
-                //Logger.LogError("在匹配在线服务器时出现错误，已连接至备用服务器");
             }
 
             try
@@ -116,16 +83,13 @@ namespace MSL
             }
             catch (Exception ex)
             {
-                Dispatcher.Invoke(() =>
-                {
-                    //Logger.LogError("生成config.json文件失败，原因："+ex.Message);
-                    Shows.ShowMsg(this, "MSL在初始化加载过程中出现问题，请尝试用管理员身份运行MSL……\n错误代码：" + ex.Message, "错误");
-                    Close();
-                });
+                //Logger.LogError("生成config.json文件失败，原因："+ex.Message);
+                await Shows.ShowMsgDialogAsync(this, "MSL在初始化加载过程中出现问题，请尝试用管理员身份运行MSL……\n错误代码：" + ex.Message, "错误");
+                Close();
             }
 
             //Logger.LogInfo("开始载入配置文件……");
-            JObject jsonObject = null;
+            JObject jsonObject;
             try
             {
                 jsonObject = JObject.Parse(File.ReadAllText(@"MSL\config.json", Encoding.UTF8));
@@ -134,15 +98,22 @@ namespace MSL
             catch (Exception ex)
             {
                 //Logger.LogError("读取config.json失败！尝试重新载入……");
-                Dispatcher.Invoke(() =>
-                {
-                    Shows.ShowMsg(this, "MSL在加载配置文件时出现错误，将进行重试，若点击确定后软件突然闪退，请尝试使用管理员身份运行或将此问题报告给作者！\n错误代码：" + ex.Message, "错误");
-                });
+                await Shows.ShowMsgDialogAsync(this, "MSL在加载配置文件时出现错误，将进行重试，若点击确定后软件突然闪退，请尝试使用管理员身份运行或将此问题报告给作者！\n错误代码：" + ex.Message, "错误");
                 File.WriteAllText(@"MSL\config.json", string.Format("{{{0}}}", "\n"));
                 jsonObject = JObject.Parse(File.ReadAllText(@"MSL\config.json", Encoding.UTF8));
                 //Logger.LogInfo("读取config.json成功！");
             }
+            //Logger.LogInfo("主窗体UI控件加载完毕！");
+            await Task.Run(() =>
+            {
+                AsyncLoadEvent(jsonObject);
+                OnlineService(jsonObject);
+                //Logger.LogInfo("异步载入线程已启动！");
+            });
+        }
 
+        private void AsyncLoadEvent(JObject jsonObject)
+        {
             //下面是加载配置部分
             try
             {
@@ -313,72 +284,15 @@ namespace MSL
                 }
                 //Logger.LogInfo("读取自动化功能配置成功（自动打开显示占用、记录玩家功能）！");
             }
-            catch// (Exception ex)
+            catch (Exception ex)
             {
                 //Logger.LogError("读取配置时出现错误！错误代码："+ex.Message);
-                //Shows.GrowlErr("MSL在加载配置文件时出现错误，此报错可能不影响软件运行，但还是建议您将其反馈给作者！\n错误代码：" + ex.Message);
+                Shows.GrowlErr("MSL在加载配置文件时出现错误，此报错可能不影响软件运行，但还是建议您将其反馈给作者！\n错误代码：" + ex.Message);
                 File.WriteAllText(@"MSL\config.json", string.Format("{{{0}}}", "\n"));
-                jsonObject = JObject.Parse(File.ReadAllText(@"MSL\config.json", Encoding.UTF8));
-                Shows.GrowlInfo("配置文件已更新！");
+                //jsonObject = JObject.Parse(File.ReadAllText(@"MSL\config.json", Encoding.UTF8));
+                //Shows.GrowlInfo("配置文件已更新！");
             }
 
-            //更新
-            try
-            {
-                string aaa = Functions.Get("query/update");
-                if (aaa.Contains("v"))
-                {
-                    aaa = aaa.Replace("v", "");
-                }
-                Version newVersion = new Version(aaa);
-                Version version = new Version(System.Reflection.Assembly.GetExecutingAssembly().GetName().Version.ToString());
-
-                if (newVersion > version)
-                {
-                    //Logger.LogInfo("检测到新版本！");
-                    var updatelog = Functions.Get("query/update/log");
-                    await Dispatcher.Invoke(async () =>
-                    {
-                        if (jsonObject["autoUpdateApp"] == null)
-                        {
-                            string jsonString = File.ReadAllText(@"MSL\config.json", Encoding.UTF8);
-                            JObject jobject = JObject.Parse(jsonString);
-                            jobject.Add("autoUpdateApp", "False");
-                            string convertString = Convert.ToString(jobject);
-                            File.WriteAllText(@"MSL\config.json", convertString, Encoding.UTF8);
-                        }
-                        else if (jsonObject["autoUpdateApp"].ToString() == "True")
-                        {
-                            //Logger.LogInfo("自动更新功能已打开，更新新版本……");
-                            UpdateApp(aaa);
-                        }
-                        bool dialog = await Shows.ShowMsgDialog(this, "发现新版本，版本号为：" + aaa + "，是否进行更新？\n更新日志：\n" + updatelog, "更新", true);
-                        if (dialog == true)
-                        {
-                            //Logger.LogInfo("更新新版本……");
-                            UpdateApp(aaa);
-                        }
-                        else
-                        {
-                            //Logger.LogInfo("用户拒绝更新！");
-                            Shows.GrowlErr("您拒绝了更新新版本，若在此版本中遇到bug，请勿报告给作者！");
-                        }
-                    });
-                }
-                else if (newVersion < version)
-                {
-                    Shows.GrowlInfo("当前版本高于正式版本，若使用中遇到BUG，请及时反馈！");
-                }
-                else
-                {
-                    Shows.GrowlSuccess("您使用的开服器已是最新版本！");
-                }
-            }
-            catch
-            {
-                //Logger.LogError("检测更新失败！");
-                Shows.GrowlErr("检查更新失败！");
-            }
             //获取电脑内存
             try
             {
@@ -448,20 +362,112 @@ namespace MSL
             //Logger.LogInfo("所有配置载入完毕！调整UI界面……");
             Dispatcher.Invoke(() =>
             {
-                SideMenu.IsEnabled = true;
+                //SideMenu.IsEnabled = true;
                 SideMenu.SelectedIndex = 0;
-                LoadingCircle loadingCircle = MainGrid.FindName("loadingBar") as LoadingCircle;
-                MainGrid.Children.Remove(loadingCircle);
-                MainGrid.UnregisterName("loadingBar");
+                //LoadingCircle loadingCircle = MainGrid.FindName("loadingBar") as LoadingCircle;
+                //MainGrid.Children.Remove(loadingCircle);
+                //MainGrid.UnregisterName("loadingBar");
             });
             //Logger.LogInfo("软件加载完毕！");
         }
 
+        private async void OnlineService(JObject jsonObject)
+        {
+            //get serverlink
+            try
+            {
+                serverLink = Functions.Get("", "https://msl-server.oss-cn-hangzhou.aliyuncs.com/", true);
+                try
+                {
+                    if (((int)((JObject)JsonConvert.DeserializeObject(Functions.Get("")))["status"]) != 200)
+                    {
+                        serverLink = "waheal.top";
+                        Shows.GrowlInfo("MSL主服务器连接超时（可能被DDos），已切换至备用服务器！");
+                    }
+                }
+                catch
+                {
+                    serverLink = "waheal.top";
+                    Shows.GrowlInfo("MSL主服务器连接超时（可能被DDos），已切换至备用服务器！");
+                }
+            }
+            catch
+            {
+                serverLink = "waheal.top";
+                //Logger.LogError("在匹配在线服务器时出现错误，已连接至备用服务器");
+            }
+
+            //更新
+            try
+            {
+                string aaa = Functions.Get("query/update");
+                if (aaa.Contains("v"))
+                {
+                    aaa = aaa.Replace("v", "");
+                }
+                Version newVersion = new Version(aaa);
+                Version version = new Version(System.Reflection.Assembly.GetExecutingAssembly().GetName().Version.ToString());
+
+                if (newVersion > version)
+                {
+                    //Logger.LogInfo("检测到新版本！");
+                    var updatelog = Functions.Get("query/update/log");
+                    if (jsonObject["autoUpdateApp"] == null)
+                    {
+                        string jsonString = File.ReadAllText(@"MSL\config.json", Encoding.UTF8);
+                        JObject jobject = JObject.Parse(jsonString);
+                        jobject.Add("autoUpdateApp", "False");
+                        string convertString = Convert.ToString(jobject);
+                        File.WriteAllText(@"MSL\config.json", convertString, Encoding.UTF8);
+                    }
+                    else if (jsonObject["autoUpdateApp"].ToString() == "True")
+                    {
+                        //Logger.LogInfo("自动更新功能已打开，更新新版本……");
+                        UpdateApp(aaa);
+                    }
+                    await Dispatcher.Invoke(async () =>
+                    {
+                        bool dialog = await Shows.ShowMsgDialogAsync(this, "发现新版本，版本号为：" + aaa + "，是否进行更新？\n更新日志：\n" + updatelog, "更新", true);
+                        if (dialog == true)
+                        {
+                            //Logger.LogInfo("更新新版本……");
+                            UpdateApp(aaa);
+                        }
+                        else
+                        {
+                            //Logger.LogInfo("用户拒绝更新！");
+                            Shows.GrowlErr("您拒绝了更新新版本，若在此版本中遇到bug，请勿报告给作者！");
+                        }
+                    });
+                }
+                else if (newVersion < version)
+                {
+                    Shows.GrowlInfo("当前版本高于正式版本，若使用中遇到BUG，请及时反馈！");
+                }
+                else
+                {
+                    Shows.GrowlSuccess("您使用的开服器已是最新版本！");
+                }
+            }
+            catch
+            {
+                //Logger.LogError("检测更新失败！");
+                Shows.GrowlErr("检查更新失败！");
+            }
+            await Dispatcher.InvokeAsync(() =>
+            {
+                LoadAnnounce();
+            });
+            
+        }
+
         private async void UpdateApp(string aaa)
         {
-            //string strtempa1 = "* ";
-            //int IndexofA1 = pageHtml.IndexOf(strtempa1);
-            //string Ru1 = pageHtml.Substring(IndexofA1 + 2);
+            if (ProcessRunningCheck())
+            {
+                Shows.ShowMsgDialog(this, "您的服务器/内网映射/点对点联机正在运行中，若此时更新，会造成后台残留，请将前者关闭后再进行更新！", "警告");
+                return;
+            }
             string aaa1 = Functions.Get("download/update");
             await Shows.ShowDownloader(this, aaa1, AppDomain.CurrentDomain.BaseDirectory, "MSL" + aaa + ".exe", "下载新版本中……");
             if (File.Exists("MSL" + aaa + ".exe"))
@@ -519,14 +525,18 @@ namespace MSL
                 //Logger.LogInfo("窗口已隐藏！");
                 return;
             }
-            else if (!CloseApp())
+            else if (ProcessRunningCheck())
             {
-                //Logger.LogWarning("取消关闭事件！");
-                e.Cancel = true;
+                int dialog = Shows.ShowMsg(this, "您的服务器、内网映射或联机功能正在运行中，关闭软件可能会让服务器进程在后台一直运行并占用资源！确定要继续关闭吗？\n注：如果想隐藏主窗口的话，请前往设置打开托盘图标", "警告", true, "取消");
+                if (dialog != 1)
+                {
+                    e.Cancel = true;
+                    //Logger.LogWarning("取消关闭事件！");
+                }
             }
         }
 
-        private bool CheckServerRunning()
+        private static bool CheckServerRunning()
         {
             foreach (var item in ServerList.runningServers)
             {
@@ -538,27 +548,18 @@ namespace MSL
             return false;
         }
 
-        private bool CloseApp()
+        public static bool ProcessRunningCheck()
         {
             try
             {
                 if (CheckServerRunning() || FrpcPage.FRPCMD.HasExited == false || OnlinePage.FRPCMD.HasExited == false)
                 {
-                    //Logger.LogWarning("服务器、内网映射或联机功能正在运行中！弹出对话框询问是否关闭……");
-                    bool dialog = Shows.ShowMsg(this, "您的服务器、内网映射或联机功能正在运行中，关闭软件可能会让服务器进程在后台一直运行并占用资源！确定要继续关闭吗？\n注：如果想隐藏主窗口的话，请前往设置打开托盘图标", "警告", true, "取消");
-                    if (dialog == true)
-                    {
-                        return true;
-                    }
-                    else
-                    {
-                        return false;
-                    }
-
+                    //Logger.LogWarning("服务器、内网映射或联机功能正在运行中！");
+                    return true;
                 }
                 else
                 {
-                    return true;
+                    return false;
                 }
             }
             catch
@@ -567,20 +568,12 @@ namespace MSL
                 {
                     if (FrpcPage.FRPCMD.HasExited == false || OnlinePage.FRPCMD.HasExited == false)
                     {
-                        //Logger.LogWarning("内网映射或联机功能正在运行中！弹出对话框询问是否关闭……");
-                        bool dialog = Shows.ShowMsg(this, "内网映射或联机功能正在运行中，关闭软件可能会让内网映射进程在后台一直运行并占用资源！确定要继续关闭吗？\n如果想隐藏主窗口的话，请前往设置打开托盘图标", "警告", true, "取消");
-                        if (dialog == true)
-                        {
-                            return true;
-                        }
-                        else
-                        {
-                            return false;
-                        }
+                        //Logger.LogWarning("内网映射或联机功能正在运行中！");
+                        return true;
                     }
                     else
                     {
-                        return true;
+                        return false;
                     }
                 }
                 catch
@@ -589,25 +582,17 @@ namespace MSL
                     {
                         if (OnlinePage.FRPCMD.HasExited == false)
                         {
-                            //Logger.LogWarning("联机功能正在运行中！弹出对话框询问是否关闭……");
-                            bool dialog = Shows.ShowMsg(this, "联机功能正在运行中，关闭软件可能会让内网映射进程在后台一直运行并占用资源！确定要继续关闭吗？\n如果想隐藏主窗口的话，请前往设置打开托盘图标", "警告", true, "取消");
-                            if (dialog == true)
-                            {
-                                return true;
-                            }
-                            else
-                            {
-                                return false;
-                            }
+                            //Logger.LogWarning("联机功能正在运行中！");
+                            return true;
                         }
                         else
                         {
-                            return true;
+                            return false;
                         }
                     }
                     catch
                     {
-                        return true;
+                        return false;
                     }
                 }
             }
@@ -756,7 +741,7 @@ namespace MSL
 
         private void NotifyClose_Click(object sender, RoutedEventArgs e)
         {
-            if (CloseApp())
+            if (ProcessRunningCheck())
             {
                 Application.Current.Shutdown();
                 //Process.GetCurrentProcess().Kill();

@@ -82,15 +82,11 @@ namespace MSL.pages
         }
 
         private bool isImportPack = false;
-        private async void importPack_Click(object sender, RoutedEventArgs e)
+        private async void ImportPack_SelectionChanged(object sender, SelectionChangedEventArgs e)
         {
-            int _dialog = Shows.ShowMsgWithClose((MainWindow)Window.GetWindow(this), "请选择你要导入在线整合包还是本地整合包！", "提示", true, "导入本地整合包", "导入在线整合包");
-            if (_dialog == 2)
+            if (ImportPack.SelectedIndex == 1)
             {
-                return;
-            }
-            if (_dialog == 1)
-            {
+                ImportPack.SelectedIndex = 0;
                 DownloadMods downloadMods = new DownloadMods(1)
                 {
                     Owner = (MainWindow)Window.GetWindow(this)
@@ -101,8 +97,8 @@ namespace MSL.pages
                     Shows.ShowMsgDialog((MainWindow)Window.GetWindow(this), "下载失败！", "错误");
                     return;
                 }
-                bool result = Shows.ShowInput((MainWindow)Window.GetWindow(this), "服务器名称：", out string input, "ImportedServer");
-                if (result)
+                string input = await Shows.ShowInput((MainWindow)Window.GetWindow(this), "服务器名称：", "MyServer");
+                if (input != null)
                 {
                     servername = input;
                     string serverPath = "";
@@ -161,14 +157,14 @@ namespace MSL.pages
                     welcome.IsEnabled = false;
                 }
             }
-            else
+            else if (ImportPack.SelectedIndex == 2)
             {
-                bool dialog = await Shows.ShowMsgDialog((MainWindow)Window.GetWindow(this), "目前仅支持导入.zip格式的整合包文件，如果您要导入的是模组整合包，请确保您下载的整合包是服务器专用包（如RlCraft下载界面就有一个ServerPack的压缩包），否则可能会出现无法开服或者崩溃的问题！", "提示", true, "取消");
+                ImportPack.SelectedIndex = 0;
+                bool dialog = await Shows.ShowMsgDialogAsync((MainWindow)Window.GetWindow(this), "目前仅支持导入.zip格式的整合包文件，如果您要导入的是模组整合包，请确保您下载的整合包是服务器专用包（如RLCraft下载界面就有一个ServerPack的压缩包），否则可能会出现无法开服或者崩溃的问题！", "提示", true, "取消");
                 if (dialog == true)
                 {
-                    string input;
-                    bool result = Shows.ShowInput((MainWindow)Window.GetWindow(this), "服务器名称：", out input, "ImportedServer");
-                    if (result)
+                    string input = await Shows.ShowInput((MainWindow)Window.GetWindow(this), "服务器名称：", "MyServer");
+                    if (input != null)
                     {
                         servername = input;
                         string serverPath = "";
@@ -370,18 +366,18 @@ namespace MSL.pages
                         filestr += "\n" + i.ToString() + "." + file;
                         i++;
                     }
-                    bool ret = Shows.ShowInput((MainWindow)Window.GetWindow(this), "开服器在整合包中检测到了以下jar文件，你可输选择一个作为开服核心（输入文件前对应的数字，取消为不选择以下文件）\n" + filestr, out string selectFile);
-                    if (ret)
+                    string selectFile = await Shows.ShowInput((MainWindow)Window.GetWindow(this), "开服器在整合包中检测到了以下jar文件，你可输选择一个作为开服核心（输入文件前对应的数字，取消为不选择以下文件）\n" + filestr);
+                    if (selectFile != null)
                     {
                         txb3.Text = files[int.Parse(selectFile)];
                         if (txb3.Text.Contains("forge") && txb3.Text.Contains("installer"))
                         {
-                            bool dialog = await Shows.ShowMsgDialog((MainWindow)Window.GetWindow(this), "您选择的服务端是forge安装器，是否将其展开安装？\n如果不展开安装，服务器可能无法开启！", "提示", true, "取消");
+                            bool dialog = await Shows.ShowMsgDialogAsync((MainWindow)Window.GetWindow(this), "您选择的服务端是forge安装器，是否将其展开安装？\n如果不展开安装，服务器可能无法开启！", "提示", true, "取消");
                             if (dialog)
                             {
                                 string installReturn;
                                 //调用新版forge安装器
-                                bool installForge = Shows.ShowInstallForge((MainWindow)Window.GetWindow(this), serverbase + "\\" + txb3.Text, serverbase, serverjava);
+                                bool installForge = await Shows.ShowInstallForge((MainWindow)Window.GetWindow(this), serverbase + "\\" + txb3.Text, serverbase, serverjava);
                                 if (installForge)
                                 {
                                     installReturn = Functions.InstallForge(serverjava, serverbase, txb3.Text);
@@ -406,18 +402,18 @@ namespace MSL.pages
                 }
                 else if (files.Count == 1)
                 {
-                    bool ret = await Shows.ShowMsgDialog((MainWindow)Window.GetWindow(this), "开服器在整合包中检测到了jar文件" + files[0] + "，是否选择此文件为开服核心？", "提示", true, "取消");
+                    bool ret = await Shows.ShowMsgDialogAsync((MainWindow)Window.GetWindow(this), "开服器在整合包中检测到了jar文件" + files[0] + "，是否选择此文件为开服核心？", "提示", true, "取消");
                     if (ret)
                     {
                         txb3.Text = files[0];
                         if (txb3.Text.Contains("forge") && txb3.Text.Contains("installer"))
                         {
-                            bool dialog = await Shows.ShowMsgDialog((MainWindow)Window.GetWindow(this), "您选择的服务端是forge安装器，是否将其展开安装？\n如果不展开安装，服务器可能无法开启！", "提示", true, "取消");
+                            bool dialog = await Shows.ShowMsgDialogAsync((MainWindow)Window.GetWindow(this), "您选择的服务端是forge安装器，是否将其展开安装？\n如果不展开安装，服务器可能无法开启！", "提示", true, "取消");
                             if (dialog)
                             {
                                 string installReturn;
                                 //调用新版forge安装器
-                                bool installForge = Shows.ShowInstallForge((MainWindow)Window.GetWindow(this), serverbase + "\\" + txb3.Text, serverbase, serverjava);
+                                bool installForge = await Shows.ShowInstallForge((MainWindow)Window.GetWindow(this), serverbase + "\\" + txb3.Text, serverbase, serverjava);
                                 if (installForge)
                                 {
                                     installReturn = Functions.InstallForge(serverjava, serverbase, txb3.Text);
@@ -450,7 +446,7 @@ namespace MSL.pages
         {
             if (!File.Exists(@"MSL\" + fileName + @"\bin\java.exe"))
             {
-                await Shows.ShowMsgDialog((MainWindow)Window.GetWindow(this), "下载Java即代表您接受Java的服务条款：\nhttps://www.oracle.com/downloads/licenses/javase-license1.html", "信息", false);
+                await Shows.ShowMsgDialogAsync((MainWindow)Window.GetWindow(this), "下载Java即代表您接受Java的服务条款：\nhttps://www.oracle.com/downloads/licenses/javase-license1.html", "信息");
                 DownjavaName = fileName;
 
                 bool downDialog = await Shows.ShowDownloader((MainWindow)Window.GetWindow(this), downUrl, "MSL", "Java.zip", "下载" + fileName + "中……");
@@ -601,7 +597,7 @@ namespace MSL.pages
         private async void usecheckedjv_Checked(object sender, RoutedEventArgs e)
         {
             List<string> strings = null;
-            int dialog = Shows.ShowMsgWithClose((MainWindow)Window.GetWindow(this), "即将开始检测电脑上的Java，此过程可能需要一些时间，请耐心等待。\n目前有两种检测模式，一种是简单检测，只检测一些关键目录，用时较少，普通用户可优先使用此模式。\n第二种是深度检测，将检测所有磁盘的所有目录，耗时可能会很久，请慎重选择！", "提示", true, "开始深度检测", "开始简单检测");
+            int dialog = Shows.ShowMsg((MainWindow)Window.GetWindow(this), "即将开始检测电脑上的Java，此过程可能需要一些时间，请耐心等待。\n目前有两种检测模式，一种是简单检测，只检测一些关键目录，用时较少，普通用户可优先使用此模式。\n第二种是深度检测，将检测所有磁盘的所有目录，耗时可能会很久，请慎重选择！", "提示", true, "开始深度检测", "开始简单检测");
             if (dialog == 2)
             {
                 usedownloadjv.IsChecked = true;
@@ -679,7 +675,7 @@ namespace MSL.pages
             servername = serverNameBox.Text;
             if (new Regex("[\u4E00-\u9FA5]").IsMatch(txb6.Text))
             {
-                bool result = await Shows.ShowMsgDialog((MainWindow)Window.GetWindow(this), "使用带有中文的路径可能造成编码错误，导致无法开服，您确定要继续吗？", "警告", true, "取消");
+                bool result = await Shows.ShowMsgDialogAsync((MainWindow)Window.GetWindow(this), "使用带有中文的路径可能造成编码错误，导致无法开服，您确定要继续吗？", "警告", true, "取消");
                 if (result == false)
                 {
                     return;
@@ -687,7 +683,7 @@ namespace MSL.pages
             }
             else if (txb6.Text.IndexOf(" ") + 1 != 0)
             {
-                bool result = await Shows.ShowMsgDialog((MainWindow)Window.GetWindow(this), "使用带有空格的路径可能造成编码错误，导致无法开服，您确定要继续吗？", "警告", true, "取消");
+                bool result = await Shows.ShowMsgDialogAsync((MainWindow)Window.GetWindow(this), "使用带有空格的路径可能造成编码错误，导致无法开服，您确定要继续吗？", "警告", true, "取消");
                 if (result == false)
                 {
                     return;
@@ -751,25 +747,25 @@ namespace MSL.pages
                         Directory.CreateDirectory(serverbase);
                     }
                     string _filename = Path.GetFileName(txb3.Text);
-                    if (!Path.IsPathRooted(txb3.Text))
+                    if (!Path.IsPathRooted(txb3.Text) && File.Exists(AppDomain.CurrentDomain.BaseDirectory + txb3.Text))
                     {
                         txb3.Text = AppDomain.CurrentDomain.BaseDirectory + txb3.Text;
                     }
                     if (Path.GetDirectoryName(txb3.Text) != serverbase)
                     {
                         File.Copy(txb3.Text, serverbase + "\\" + _filename, true);
-                        await Shows.ShowMsgDialog((MainWindow)Window.GetWindow(this), "已将服务端文件移至服务器文件夹中！您可将源文件删除！", "提示", false);
+                        await Shows.ShowMsgDialogAsync((MainWindow)Window.GetWindow(this), "已将服务端核心复制到了服务器文件夹之中！您现在可以将源文件删除了！", "提示");
                         txb3.Text = _filename;
                     }
 
                     if (txb3.Text.Contains("forge") && txb3.Text.Contains("installer"))
                     {
-                        bool dialog = await Shows.ShowMsgDialog((MainWindow)Window.GetWindow(this), "您选择的服务端是forge安装器，是否将其展开安装？\n如果不展开安装，服务器可能无法开启！", "提示", true, "取消");
+                        bool dialog = await Shows.ShowMsgDialogAsync((MainWindow)Window.GetWindow(this), "您选择的服务端是forge安装器，是否将其展开安装？\n如果不展开安装，服务器可能无法开启！", "提示", true, "取消");
                         if (dialog)
                         {
                             string installReturn = null;
                             //调用新版forge安装器
-                            bool installForge = Shows.ShowInstallForge((MainWindow)Window.GetWindow(this), serverbase + "\\" + txb3.Text, serverbase, serverjava);
+                            bool installForge = await Shows.ShowInstallForge((MainWindow)Window.GetWindow(this), serverbase + "\\" + txb3.Text, serverbase, serverjava);
                             if (installForge)
                             {
                                 installReturn = Functions.InstallForge(serverjava, serverbase, txb3.Text);
@@ -869,7 +865,7 @@ namespace MSL.pages
                 }
                 jsonObject.Add(i.ToString(), _json);
                 File.WriteAllText(@"MSL\ServerList.json", Convert.ToString(jsonObject), Encoding.UTF8);
-                await Shows.ShowMsgDialog((MainWindow)Window.GetWindow(this), "创建完毕，请点击“开启服务器”按钮以开服", "信息", false);
+                await Shows.ShowMsgDialogAsync((MainWindow)Window.GetWindow(this), "创建完毕，请点击“开启服务器”按钮以开服", "信息");
                 CreateComplete();
             }
             catch (Exception ex)
@@ -1047,7 +1043,7 @@ namespace MSL.pages
             servername = ServerNameBox.Text;
             if (new Regex("[\u4E00-\u9FA5]").IsMatch(txb6.Text))
             {
-                bool result = await Shows.ShowMsgDialog((MainWindow)Window.GetWindow(this), "开服器被放置于带有中文的目录里，中文目录可能会造成编码错误导致无法开服，您确定要继续吗？", "警告", true, "取消");
+                bool result = await Shows.ShowMsgDialogAsync((MainWindow)Window.GetWindow(this), "开服器被放置于带有中文的目录里，中文目录可能会造成编码错误导致无法开服，您确定要继续吗？", "警告", true, "取消");
                 if (result == false)
                 {
                     return;
@@ -1055,7 +1051,7 @@ namespace MSL.pages
             }
             else if (txb6.Text.IndexOf(" ") + 1 != 0)
             {
-                bool result = await Shows.ShowMsgDialog((MainWindow)Window.GetWindow(this), "开服器被放置于带有空格的目录里，这种目录可能会造成编码错误导致无法开服，您确定要继续吗？", "警告", true, "取消");
+                bool result = await Shows.ShowMsgDialogAsync((MainWindow)Window.GetWindow(this), "开服器被放置于带有空格的目录里，这种目录可能会造成编码错误导致无法开服，您确定要继续吗？", "警告", true, "取消");
                 if (result == false)
                 {
                     return;
@@ -1256,9 +1252,9 @@ namespace MSL.pages
                 if (filename.Contains("forge"))
                 {
                     string installReturn = null;
-                    await Shows.ShowMsgDialog((MainWindow)Window.GetWindow(this), "检测到您下载的是Forge端，开服器将自动进行安装操作，稍后请您不要随意操作，耐心等待安装完毕！", "提示", false);
+                    await Shows.ShowMsgDialogAsync((MainWindow)Window.GetWindow(this), "检测到您下载的是Forge端，开服器将自动进行安装操作，稍后请您不要随意操作，耐心等待安装完毕！", "提示", false);
                     //调用新版forge安装器
-                    bool installForge = Shows.ShowInstallForge((MainWindow)Window.GetWindow(this), serverbase + "\\" + filename, serverbase, serverjava);
+                    bool installForge = await Shows.ShowInstallForge((MainWindow)Window.GetWindow(this), serverbase + "\\" + filename, serverbase, serverjava);
                     if (installForge)
                     {
                         installReturn = Functions.InstallForge(serverjava, serverbase, FinallyCoreCombo.Items[FinallyCoreCombo.SelectedIndex].ToString() + ".jar");
@@ -1311,7 +1307,7 @@ namespace MSL.pages
                     }
                     jsonObject.Add(i.ToString(), _json);
                     File.WriteAllText(@"MSL\ServerList.json", Convert.ToString(jsonObject), Encoding.UTF8);
-                    await Shows.ShowMsgDialog((MainWindow)Window.GetWindow(this), "创建完毕，请点击“开启服务器”按钮以开服", "信息", false);
+                    await Shows.ShowMsgDialogAsync((MainWindow)Window.GetWindow(this), "创建完毕，请点击“开启服务器”按钮以开服", "信息");
                     CreateComplete();
                 }
                 catch (Exception ex)

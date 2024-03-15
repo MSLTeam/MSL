@@ -8,7 +8,6 @@
       mc:Ignorable="d" 
       d:DesignHeight="400" d:DesignWidth="750"
       Title="MSLFrp" Loaded="Page_Loaded" Unloaded="Page_Unloaded">
-
     <Grid x:Name="MainGrid">
         <ListBox x:Name="serversList" Height="245" Width="270" SelectionChanged="serversList_SelectionChanged" SelectionMode="Single" Margin="20,35,0,0" HorizontalAlignment="Left" VerticalAlignment="Top"/>
         <Button Content="确定" Margin="630,255,0,0" Style="{StaticResource ButtonPrimary}" VerticalAlignment="Top" Width="100" Click="Button_Click" FontWeight="Normal" FontSize="18" Height="70" HorizontalAlignment="Left"/>

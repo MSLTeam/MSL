@@ -2,10 +2,12 @@
                     xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
                     xmlns:hc="https://handyorg.github.io/handycontrol">
     <Storyboard x:Key="ShowPage">
+        <!-- 淡入动画 -->
         <DoubleAnimationUsingKeyFrames BeginTime="0:0:0" Duration="0:0:0.7" Storyboard.TargetProperty="Opacity">
             <LinearDoubleKeyFrame KeyTime="0:0:0" Value="0" />
             <LinearDoubleKeyFrame KeyTime="0:0:0.3" Value="1" />
         </DoubleAnimationUsingKeyFrames>
+        <!-- 滑入动画 -->
         <DoubleAnimationUsingKeyFrames BeginTime="0:0:0" Duration="0:0:0.7" Storyboard.TargetProperty="(UIElement.RenderTransform).(TranslateTransform.Y)">
             <SplineDoubleKeyFrame KeyTime="0:0:0" Value="100" KeySpline="0.7,0.7 0.7,0.7" />
             <SplineDoubleKeyFrame KeyTime="0:0:0.08" Value="40" KeySpline="0.8,0.8 0.8,0.8" />
@@ -13,5 +15,15 @@
             <SplineDoubleKeyFrame KeyTime="0:0:0.15" Value="5" KeySpline="0.95,0.95 0.95,0.95" />
             <SplineDoubleKeyFrame KeyTime="0:0:0.2" Value="0" KeySpline="1,1 1,1" />
         </DoubleAnimationUsingKeyFrames>
+    </Storyboard>
+    <Storyboard x:Key="ShowUserControl">
+        <!-- 缩放动画 -->
+        <DoubleAnimation Storyboard.TargetProperty="RenderTransform.ScaleX"
+                         From="1.1" To="1" Duration="0:0:0.15"/>
+        <DoubleAnimation Storyboard.TargetProperty="RenderTransform.ScaleY"
+                         From="1.1" To="1" Duration="0:0:0.15"/>
+        <!-- 淡入动画 -->
+        <DoubleAnimation Storyboard.TargetProperty="Opacity"
+                         From="0" To="1" Duration="0:0:0.2"/>
     </Storyboard>
 </ResourceDictionary>

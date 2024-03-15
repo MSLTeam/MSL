@@ -8,7 +8,6 @@
       mc:Ignorable="d" 
       d:DesignHeight="400" d:DesignWidth="750"
       Title="OpenFrp" Loaded="Page_Loaded" Unloaded="Page_Unloaded">
-
     <Grid>
         <Grid x:Name="MainGrid">
             <ComboBox x:Name="toggleProxies" Margin="20,5,0,0" Height="30" Width="270" HorizontalAlignment="Left" VerticalAlignment="Top" SelectedIndex="0" SelectionChanged="toggleProxies_SelectionChanged">

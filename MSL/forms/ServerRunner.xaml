@@ -23,7 +23,7 @@
         </StackPanel>
     </hc:Window.NonClientAreaContent>
     <Grid x:Name="MainGrid">
-        <TabControl x:Name="TabCtrl" SelectionChanged="TabCtrl_SelectionChanged" Background="{x:Null}" Style="{StaticResource TabControlInLine}">
+        <TabControl x:Name="TabCtrl" SelectionChanged="TabCtrl_SelectionChanged" Background="{x:Null}" Style="{StaticResource TabControlInLine}" BorderThickness="0">
             <TabItem Header="仪表盘" Background="{DynamicResource SideMenuBrush}">
                 <Grid>
                     <Grid.RenderTransform>
@@ -140,7 +140,7 @@
                             <ColumnDefinition Width="Auto"/>
                         </Grid.ColumnDefinitions>
 
-                        <ComboBox Grid.Column="0" x:Name="fastCMD" HorizontalAlignment="Left" Margin="10,0,5,10" VerticalAlignment="Center" SelectedIndex="0" IsEnabled="False" Width="104" Height="32">
+                        <ComboBox Grid.Column="0" x:Name="fastCMD" HorizontalAlignment="Left" Margin="10,0,5,10" SelectedIndex="0" IsEnabled="False" Width="100" Height="32">
                             <ComboBoxItem Content="/（指令）" FontFamily="Microsoft YaHei UI"/>
                             <ComboBoxItem Content="/op（给管理员）" FontFamily="Microsoft YaHei UI"/>
                             <ComboBoxItem Content="/deop（去除管理员）" FontFamily="Microsoft YaHei UI"/>
@@ -148,12 +148,11 @@
                             <ComboBoxItem Content="/say（全服说话）" FontFamily="Microsoft YaHei UI"/>
                             <ComboBoxItem Content="/pardon（解除封禁）" FontFamily="Microsoft YaHei UI"/>
                         </ComboBox>
-                        <TextBox x:Name="cmdtext" Grid.Column="1" Margin="0,0,5,10" Text="服务器已关闭" KeyDown="cmdtext_KeyDown" Visibility="Visible" IsEnabled="False" VerticalAlignment="Center" KeyUp="cmdtext_KeyUp" />
-                        <Button x:Name="sendcmd" Grid.Column="2" Content="发送" Style="{StaticResource ButtonPrimary}" HorizontalAlignment="Right" Margin="0,0,5,10" VerticalAlignment="Center" Click="sendcmd_Click" FontWeight="Normal" Visibility="Visible" FontSize="12" Height="32" Width="58" IsEnabled="False"/>
-                        <Button x:Name="controlServer" Grid.Column="3" Content="开服" Margin="0,0,5,10" VerticalAlignment="Center" Height="32" Click="controlServer_Click" MouseDoubleClick="controlServer_MouseDoubleClick" Width="52" HorizontalAlignment="Right"/>
-                        <Button x:Name="shareLog" Grid.Column="4" Content="分享日志" Margin="0,0,10,10" VerticalAlignment="Center" Height="32" Click="shareLog_Click" MouseDoubleClick="controlServer_MouseDoubleClick" Width="68" HorizontalAlignment="Right"/>
+                        <TextBox x:Name="cmdtext" Grid.Column="1" Margin="0,0,5,10" Text="服务器已关闭" KeyDown="cmdtext_KeyDown" IsEnabled="False" KeyUp="cmdtext_KeyUp" />
+                        <Button x:Name="sendcmd" Grid.Column="2" Content="发送" Style="{StaticResource ButtonPrimary}" Width="60" Height="32" Margin="0,0,5,10" Click="sendcmd_Click" IsEnabled="False"/>
+                        <Button x:Name="controlServer" Grid.Column="3" Content="开服" Margin="0,0,5,10" Width="60" Height="32" Click="controlServer_Click" MouseDoubleClick="controlServer_MouseDoubleClick"/>
+                        <Button x:Name="shareLog" Grid.Column="4" Content="分享日志" Margin="0,0,10,10" Height="32" Click="shareLog_Click" MouseDoubleClick="controlServer_MouseDoubleClick"/>
                     </Grid>
-
                 </Grid>
             </TabItem>
             <TabItem Header="服务器插件/MOD" Background="{DynamicResource SideMenuBrush}">
@@ -166,7 +165,7 @@
                             <BeginStoryboard Storyboard="{StaticResource ShowPage}"/>
                         </EventTrigger>
                     </Grid.Triggers>
-                    <TabControl x:Name="pluginsAndModsTab" TabStripPlacement="Left" Margin="0,5,0,0" Visibility="Hidden" Background="{x:Null}">
+                    <TabControl x:Name="pluginsAndModsTab" TabStripPlacement="Left" Visibility="Hidden" Background="{x:Null}">
                         <TabItem x:Name="pluginsTabItem" Header="管理服务器插件" Background="{DynamicResource SideMenuBrush}">
                             <Grid Margin="10">
                                 <Label Content="插件列表(添加的插件在服务器重启后生效)" Style="{StaticResource BorderTitle}"/>
@@ -257,7 +256,7 @@
                     </TabControl>
                     <Button x:Name="reFresh" Content="刷新" Style="{StaticResource ButtonPrimary}" Height="32" Click="reFresh_Click" Width="70" FontSize="16" VerticalAlignment="Top" HorizontalAlignment="Right" Margin="0,10,10,0"/>
                     <TextBlock x:Name="lab001" Text="未检测到任何插件或模组，请重启服务器并检查此服务端是否支持插件或模组" FontSize="18" FontWeight="Bold" Foreground="{DynamicResource PrimaryTextBrush}" VerticalAlignment="Center" HorizontalAlignment="Center"/>
-                    <TextBlock x:Name="lab002" Text="注：若标签栏为灰色且无法点击，说明此服务端不支持此功能，或相应的文件夹未生成。请更换服务端核心并重启服务器再试。" FontSize="12" Foreground="{DynamicResource PrimaryBrush}" VerticalAlignment="Bottom" HorizontalAlignment="Left" Width="100" TextWrapping="Wrap" Margin="5"/>
+                    <Button x:Name="mpHelp" Content="获取帮助" Click="mpHelp_Click" Background="{DynamicResource SideMenuBrush}" HorizontalAlignment="Left" VerticalAlignment="Top" Width="104" Margin="0,56,0,0" BorderBrush="{x:Null}"/>
                 </Grid>
             </TabItem>
             <TabItem Header="服务器设置" Background="{DynamicResource SideMenuBrush}">
@@ -441,11 +440,11 @@
                     <Border Style="{StaticResource MagicBorder}">
                         <Grid>
                             <Label Content="快捷指令栏：" Style="{StaticResource BorderTitle}"/>
-                            <ListBox x:Name="fastCmdList" Width="470" Margin="10,40,0,0" HorizontalAlignment="Left" Height="160" VerticalAlignment="Top" />
-                            <Button x:Name="refrushFastCmd" Content="刷新" Height="70" Width="110" Click="refrushFastCmd_Click" FontSize="18" VerticalAlignment="Top" HorizontalAlignment="Left" Margin="485,40,0,0"/>
-                            <Button x:Name="addFastCmd" Content="添加" Height="40" Width="110" Click="addFastCmd_Click" FontSize="18" VerticalAlignment="Top" HorizontalAlignment="Left" Margin="485,115,0,0"/>
-                            <Button x:Name="delFastCmd" Content="删除" Height="40" Width="110" Click="delFastCmd_Click" FontSize="18" HorizontalAlignment="Left" VerticalAlignment="Top" Margin="485,160,0,0"/>
-                            <Button x:Name="resetFastCmd" Content="重置" Height="160" Width="110" Click="resetFastCmd_Click" FontSize="18" HorizontalAlignment="Left" Margin="600,40,0,0" VerticalAlignment="Top"/>
+                            <ListBox x:Name="fastCmdList" Margin="10,40,250,0" Height="160" VerticalAlignment="Top" />
+                            <Button x:Name="refrushFastCmd" Content="刷新" Height="70" Width="110" Click="refrushFastCmd_Click" FontSize="18" VerticalAlignment="Top" HorizontalAlignment="Right" Margin="0,40,130,0"/>
+                            <Button x:Name="addFastCmd" Content="添加" Height="40" Width="110" Click="addFastCmd_Click" FontSize="18" VerticalAlignment="Top" HorizontalAlignment="Right" Margin="0,115,130,0"/>
+                            <Button x:Name="delFastCmd" Content="删除" Height="40" Width="110" Click="delFastCmd_Click" FontSize="18" HorizontalAlignment="Right" VerticalAlignment="Top" Margin="0,160,130,0"/>
+                            <Button x:Name="resetFastCmd" Content="重置" Height="160" Width="110" Click="resetFastCmd_Click" FontSize="18" HorizontalAlignment="Right" Margin="0,40,10,0" VerticalAlignment="Top"/>
                         </Grid>
                     </Border>
                 </StackPanel>
@@ -465,8 +464,8 @@
                     <ListBox x:Name="tasksList" hc:Empty.ShowEmpty="true" SelectionChanged="tasksList_SelectionChanged" Canvas.Left="10" Canvas.Top="45" Margin="10,40,320,160"/>
                     <Button x:Name="addTask" Height="80" Width="300" Click="addTask_Click" Content="添加新任务" FontSize="18" HorizontalAlignment="Right" VerticalAlignment="Top" Margin="0,40,10,0"/>
                     <Button x:Name="delTask" Height="80" Width="300" Click="delTask_Click" FontSize="18" Content="删除所选任务" HorizontalAlignment="Right" VerticalAlignment="Top" Margin="0,125,10,0"/>
-                    <Button x:Name="loadOrSaveTaskConfig" Height="60" Width="150" Click="loadOrSaveTaskConfig_Click" FontSize="18" Content="加载任务配置" HorizontalAlignment="Right" VerticalAlignment="Top" Margin="0,210,160,0"/>
-                    <Button x:Name="delTaskConfig" Height="60" Width="150" Click="delTaskConfig_Click" FontSize="18" Content="删除任务配置" HorizontalAlignment="Right" VerticalAlignment="Top" Margin="0,210,10,0"/>
+                    <Button x:Name="loadOrSaveTaskConfig" Height="60" Width="145" Click="loadOrSaveTaskConfig_Click" FontSize="18" Content="加载任务配置" HorizontalAlignment="Right" VerticalAlignment="Top" Margin="0,210,165,0"/>
+                    <Button x:Name="delTaskConfig" Height="60" Width="145" Click="delTaskConfig_Click" FontSize="18" Content="删除任务配置" HorizontalAlignment="Right" VerticalAlignment="Top" Margin="0,210,10,0"/>
                     <Border Style="{StaticResource MagicBorder}" VerticalAlignment="Bottom" Margin="10,10,10,10">
                         <Grid>
                             <Label Content="任务设置(请先添加任务，然后选中想要运行的任务进行更改)" Style="{StaticResource BorderTitle}" />

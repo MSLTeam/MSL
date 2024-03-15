@@ -23,15 +23,30 @@ namespace MSL.pages
         public Home()
         {
             InitializeComponent();
+            MainWindow.LoadAnnounce += LoadAnnounce;
         }
 
         private void Page_Loaded(object sender, RoutedEventArgs e)
         {
-            Thread thread = new Thread(GetNotice);
-            thread.Start();
-            //welcomelabel.Content = "MSL开服器 版本：" + MainWindow.update;
+            if (MainWindow.serverLink == null)
+            {
+                noticeLab.Text = "加载中，请稍候……";
+            }
+            else
+            {
+                Thread thread = new Thread(GetNotice);
+                thread.Start();
+            }
             GetServerConfig();
         }
+
+        private void LoadAnnounce()
+        {
+            noticeLab.Text = "";
+            Thread thread = new Thread(GetNotice);
+            thread.Start();
+        }
+
         private void GetNotice()
         {
             //公告

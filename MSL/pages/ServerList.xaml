@@ -6,8 +6,7 @@
       xmlns:hc="https://handyorg.github.io/handycontrol"
       xmlns:controls="clr-namespace:MSL.controls"
       xmlns:local="clr-namespace:MSL.pages"
-      mc:Ignorable="d" 
-      d:DesignHeight="460" d:DesignWidth="750"
+      mc:Ignorable="d" d:DesignHeight="460" d:DesignWidth="750"
       Title="ServerList" Loaded="Page_Loaded">
     <Page.RenderTransform>
         <TranslateTransform/>

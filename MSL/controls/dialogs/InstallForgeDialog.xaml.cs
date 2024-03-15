@@ -16,11 +16,12 @@ namespace MSL.controls
 {
 
     /// <summary>
-    /// InstallForgeWindow.xaml 的交互逻辑
+    /// InstallForgeDialog.xaml 的交互逻辑
     /// </summary>
-    public partial class InstallForgeWindow : HandyControl.Controls.Window
+    public partial class InstallForgeDialog
     {
-        public bool suc;
+        public event DeleControl CloseDialog;
+        public bool _dialogReturn=false;
         private readonly string forgePath;
         private readonly string installPath;
         private readonly string tempPath;
@@ -29,11 +30,10 @@ namespace MSL.controls
         private int versionType; //由于Forge安装器的json有4种格式（太6了），在此进行规定：①1.20.3-Latest ②？-1.20.2
         private readonly Thread thread;
 
-        public InstallForgeWindow(string forge, string downPath, string java)
+        public InstallForgeDialog(string forge, string downPath, string java)
         {
             InitializeComponent();
             Log_in("准备开始安装Forge···");
-            suc = false;//初始化suc
             forgePath = forge;//传递路径过来
             installPath = downPath;
             tempPath = downPath + "/temp";
@@ -124,7 +124,7 @@ namespace MSL.controls
 
             await Dispatcher.Invoke(async () => //下载
             {
-                bool dwnDialog = await Shows.ShowDownloader(this, vanillaUrl, Path.GetDirectoryName(serverJarPath), Path.GetFileName(serverJarPath), "下载原版核心中···");
+                bool dwnDialog = await Shows.ShowDownloader(Window.GetWindow(this), vanillaUrl, Path.GetDirectoryName(serverJarPath), Path.GetFileName(serverJarPath), "下载原版核心中···");
                 if (!dwnDialog)
                 {
                     //下载失败，跑路了！
@@ -196,16 +196,6 @@ namespace MSL.controls
                     bool dlStatus = DownloadFile(_dlurl, _savepath, _sha1);
                     Status_change("正在下载Forge运行Lib···(" + libCount + "/" + libALLCount + ")");
 
-                    /*Dispatcher.Invoke(() =>
-                    {
-                        bool dwnDialog = DialogShow.ShowDownloader(this, _dlurl, Path.GetDirectoryName(_savepath), Path.GetFileName(_savepath), "下载LIB("+ libCount + "/" + libALLCount+")中···");
-                        if (!dwnDialog)
-                        {
-                            //下载失败，跑路了！
-                            log_in(lib["downloads"]["artifact"]["path"].ToString() + "下载失败！安装失败！");
-                            return;
-                        }
-                    }); */ //调用downloader的下载窗口太慢了！
                 }
                 //2024.02.27 下午11：25 写的时候bmclapi炸了，导致被迫暂停，望周知（
                 foreach (JObject lib in libraries2.Cast<JObject>())//遍历数组，进行文件下载
@@ -225,7 +215,7 @@ namespace MSL.controls
                         await Dispatcher.Invoke(async () =>
                         {
                             Status_change("正在下载Forge运行Lib···(" + libCount + "/" + libALLCount + ")");
-                            bool dwnDialog = await Shows.ShowDownloader(this, _dlurl, Path.GetDirectoryName(_savepath), Path.GetFileName(_savepath), "下载LIB(" + libCount + "/" + libALLCount + ")中···");
+                            bool dwnDialog = await Shows.ShowDownloader(Window.GetWindow(this), _dlurl, Path.GetDirectoryName(_savepath), Path.GetFileName(_savepath), "下载LIB(" + libCount + "/" + libALLCount + ")中···");
                             if (!dwnDialog)
                             {
                                 //下载失败，跑路了！
@@ -234,17 +224,6 @@ namespace MSL.controls
                             }
                         });
                     }
-                    /*
-                    Dispatcher.Invoke(() =>
-                    {
-                        bool dwnDialog = DialogShow.ShowDownloader(this, _dlurl, Path.GetDirectoryName(_savepath), Path.GetFileName(_savepath), "下载LIB(" + libCount + "/" + libALLCount + ")中···");
-                        if (!dwnDialog)
-                        {
-                            //下载失败，跑路了！
-                            log_in(lib["downloads"]["artifact"]["path"].ToString() + "下载失败！安装失败！");
-                            return;
-                        }
-                    }); */
                 }
             }
             else
@@ -278,7 +257,7 @@ namespace MSL.controls
                         await Dispatcher.Invoke(async () =>
                         {
                             Status_change("正在下载Forge运行Lib···(" + libCount + "/" + libALLCount + ")");
-                            bool dwnDialog = await Shows.ShowDownloader(this, _dlurl, Path.GetDirectoryName(_savepath), Path.GetFileName(_savepath), "下载LIB(" + libCount + "/" + libALLCount + ")中···");
+                            bool dwnDialog = await Shows.ShowDownloader(Window.GetWindow(this), _dlurl, Path.GetDirectoryName(_savepath), Path.GetFileName(_savepath), "下载LIB(" + libCount + "/" + libALLCount + ")中···");
                             if (!dwnDialog)
                             {
                                 //下载失败，跑路了！
@@ -420,48 +399,13 @@ namespace MSL.controls
                         {
                             batData = batData + "\n" + @"""" + javaPath + @""" " + buildarg;
                         }
-
-
-                        /*
-                        Process process = new Process();
-                        process.StartInfo.FileName = "java"; //java路径
-                        process.StartInfo.Arguments = buildarg;
-                        process.StartInfo.CreateNoWindow = true;
-                        process.StartInfo.WorkingDirectory= installPath;
-                        process.StartInfo.UseShellExecute = false;
-                        process.StartInfo.RedirectStandardOutput = true;
-                        process.StartInfo.RedirectStandardError = true;
-
-                        process.OutputDataReceived += (sender, e) =>
-                        {
-                            if (!String.IsNullOrEmpty(e.Data))
-                            {
-                                log_in(e.Data);
-                            }
-                        };
-
-                        process.ErrorDataReceived += (sender, e) =>
-                        {
-                            if (!String.IsNullOrEmpty(e.Data))
-                            {
-                                log_in("Error: " + e.Data);
-                            }
-                        };
-
-                        process.Start();
-
-                        process.BeginOutputReadLine();
-                        process.BeginErrorReadLine();
-
-                        process.WaitForExit(); */ //麻瓜
-
                     }
                 }
                 using (StreamWriter sw = new StreamWriter(installPath + "/install.bat", false, Encoding.UTF8))
                 {
                     sw.WriteLine("@echo off");
                     sw.WriteLine("chcp 65001");
-                    sw.WriteLine(@"title ""MSL正在编译Forge""");
+                    sw.WriteLine(@"title ""正在编译Forge""");
                     sw.WriteLine(batData);
                 }
                 Process process = new Process();
@@ -473,7 +417,7 @@ namespace MSL.controls
                 process.WaitForExit();
             }
             Log_in("安装结束！");
-            Status_change("结束！本窗口将自动关闭！");
+            Status_change("结束！本对话框将自动关闭！");
             try
             {
                 File.Delete(installPath + "/install.bat");
@@ -484,10 +428,10 @@ namespace MSL.controls
                 //没log
             }
             Thread.Sleep(1500);
-            suc = true;
+            _dialogReturn = true;
             Dispatcher.Invoke(() =>
             {
-                Close();
+                CloseDialog();
             });
         }
 
@@ -655,15 +599,6 @@ namespace MSL.controls
             {
                 return null;
             }
-            /*
-            finally
-            {
-                c1 = null;
-                c2 = null;
-                all = null;
-                sb = null;
-            }
-            */
         }
 
         //下面是有关下载的东东（由于小文件调用原有下载窗口特别慢，就不用了qaq）
@@ -798,8 +733,8 @@ namespace MSL.controls
         {
             //关闭线程
             thread.Abort();
-            suc = true;
-            Close();
+            _dialogReturn = true;
+            CloseDialog();
         }
     }
 }

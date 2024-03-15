@@ -290,7 +290,7 @@ namespace MSL.pages
             frpcOutlog.ScrollToEnd();
         }
 
-        private void PaidServe()
+        private async void PaidServe()
         {
             Window window = null;
             Dispatcher.Invoke(() =>
@@ -311,9 +311,9 @@ namespace MSL.pages
                 userPassword = match.Groups[2].Value;
             }
             bool _ret = false;
-            Dispatcher.Invoke(() =>
+            await Dispatcher.Invoke(async () =>
             {
-                if (!Shows.ShowMsg(window, "您的付费资格已过期，请进行续费！\n点击确定开始付费节点续费操作。", "提示", true, "取消"))
+                if (!await Shows.ShowMsgDialogAsync(window, "您的付费资格已过期，请进行续费！\n点击确定开始付费节点续费操作。", "提示", true, "取消"))
                 {
                     _ret = true;
                 }
@@ -324,9 +324,9 @@ namespace MSL.pages
             }
 
             Process.Start("https://afdian.net/a/makabaka123");
-            Dispatcher.Invoke(() =>
+            await Dispatcher.Invoke(async () =>
             {
-                if (!Shows.ShowMsg(window, "请在弹出的浏览器网站中进行购买，购买完毕后点击确定进行下一步操作……", "购买须知", true, "取消购买", "确定"))
+                if (!await Shows.ShowMsgDialogAsync(window, "请在弹出的浏览器网站中进行购买，购买完毕后点击确定进行下一步操作……", "购买须知", true, "取消购买", "确定"))
                 {
                     _ret = true;
                 }
@@ -336,14 +336,13 @@ namespace MSL.pages
                 return;
             }
 
-            string order = "";
-            string qq = "";
-            bool input = false;
-            Dispatcher.Invoke(() =>
+            string order = null;
+            string qq = null;
+            await Dispatcher.Invoke(async () =>
             {
-                input = Shows.ShowInput(window, "输入爱发电订单号：\n（头像→订单→找到发电项目→复制项目下方订单号）", out order);
+                order = await Shows.ShowInput(window, "输入爱发电订单号：\n（头像→订单→找到发电项目→复制项目下方订单号）");
             });
-            if (!input)
+            if (order == null)
             {
                 return;
             }
@@ -355,13 +354,12 @@ namespace MSL.pages
                 });
                 return;
             }
-            bool _input = false;
-            Dispatcher.Invoke(() =>
+            await Dispatcher.Invoke(async () =>
             {
-                _input = Shows.ShowInput(window, "输入账号(QQ号)：", out qq);
+                qq = await Shows.ShowInput(window, "输入账号(QQ号)：");
             });
 
-            if (!_input)
+            if (qq == null)
             {
                 return;
             }

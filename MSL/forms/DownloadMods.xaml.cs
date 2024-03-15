@@ -18,16 +18,16 @@ namespace MSL
     /// </summary>
     public partial class DownloadMods : HandyControl.Controls.Window
     {
-        string Url;
-        string Dir;
+        private string Url;
+        private string Dir;
         public string serverbase;
-        int loadType = 0;  //0: mods , 1: modpacks 
-        List<int> modIds = new List<int>();
-        List<string> modVersions = new List<string>();
-        List<string> modVersionurl = new List<string>();
-        List<string> modUrls = new List<string>();
-        List<string> imageUrls = new List<string>();
-        List<string> backList = new List<string>();
+        private readonly int loadType = 0;  //0: mods , 1: modpacks 
+        private readonly List<int> modIds = new List<int>();
+        private readonly List<string> modVersions = new List<string>();
+        private readonly List<string> modVersionurl = new List<string>();
+        private readonly List<string> modUrls = new List<string>();
+        private readonly List<string> imageUrls = new List<string>();
+        private readonly List<string> backList = new List<string>();
         public DownloadMods(int loadtype = 0)
         {
             InitializeComponent();
@@ -110,12 +110,12 @@ namespace MSL
                 lCircle.IsRunning = false;
                 lCircle.Visibility = Visibility.Hidden;
                 lb01.Visibility = Visibility.Hidden;
-                backBtn.IsEnabled = false;
+                searchMod.IsEnabled = true;
                 listBoxColumnName.Header = "模组列表（双击获取该模组的版本）：";
             }
             catch (Exception ex)
             {
-                Shows.ShowMsg(this, "获取模组/整合包失败！请重试或尝试连接代理后再试！\n" + ex.Message, "错误");
+                await Shows.ShowMsgDialogAsync(this, "获取模组/整合包失败！请重试或尝试连接代理后再试！\n" + ex.Message, "错误");
                 Close();
             }
         }
@@ -123,6 +123,8 @@ namespace MSL
         {
             try
             {
+                searchMod.IsEnabled = false;
+                backBtn.IsEnabled = false;
                 lCircle.IsRunning = true;
                 lCircle.Visibility = Visibility.Visible;
                 lb01.Visibility = Visibility.Visible;
@@ -146,7 +148,7 @@ namespace MSL
                 lCircle.IsRunning = false;
                 lCircle.Visibility = Visibility.Hidden;
                 lb01.Visibility = Visibility.Hidden;
-                backBtn.IsEnabled = false;
+                searchMod.IsEnabled = true;
                 listBoxColumnName.Header = "模组列表（双击获取该模组的版本）：";
             }
             catch
@@ -162,10 +164,12 @@ namespace MSL
                 {
                     string imageurl = imageUrls[listBox.SelectedIndex];
                     //MessageBox.Show(imageurl);
-                    backBtn.IsEnabled = true;
-                    lCircle.IsRunning = true;
-                    lCircle.Visibility = Visibility.Visible;
-                    lb01.Visibility = Visibility.Visible;
+                    searchMod.IsEnabled = false;
+                    backBtn.IsEnabled = false;
+                    backBtn.Content = "加载中……";
+                    //lCircle.IsRunning = true;
+                    //lCircle.Visibility = Visibility.Visible;
+                    //lb01.Visibility = Visibility.Visible;
                     try
                     {
                         var selectedModId = modIds[listBox.SelectedIndex];
@@ -174,6 +178,7 @@ namespace MSL
                         listBox.Items.Clear();
                         modVersions.Clear();
 
+                        listBoxColumnName.Header = "版本列表（双击下载）：";
                         if (loadType == 0)
                         {
                             for (int i = 0; i < modFiles.Data.Count; i++)
@@ -204,17 +209,24 @@ namespace MSL
                         }
                     }
                     catch (Exception ex) { MessageBox.Show(ex.ToString()); }
-                    lCircle.IsRunning = false;
-                    lCircle.Visibility = Visibility.Hidden;
-                    lb01.Visibility = Visibility.Hidden;
-                    listBoxColumnName.Header = "版本列表（双击下载）：";
+                    //lCircle.IsRunning = false;
+                    //lCircle.Visibility = Visibility.Hidden;
+                    //lb01.Visibility = Visibility.Hidden;
+
                     if (listBox.Items.Count > 0)
                     {
                         listBox.ScrollIntoView(listBox.Items[0]);
                     }
+                    searchMod.IsEnabled = true;
+                    backBtn.IsEnabled = true;
+                    backBtn.Content = "返回";
                 }
                 else
                 {
+                    if (listBox.Items.Count == 0)
+                    {
+                        return;
+                    }
                     if (loadType == 0)
                     {
                         if (Directory.Exists(serverbase + @"\mods"))
@@ -223,8 +235,10 @@ namespace MSL
                         }
                         else
                         {
-                            FolderBrowserDialog dialog = new FolderBrowserDialog();
-                            dialog.Description = "请选择模组存放文件夹";
+                            FolderBrowserDialog dialog = new FolderBrowserDialog
+                            {
+                                Description = "请选择模组存放文件夹"
+                            };
                             if (dialog.ShowDialog() == System.Windows.Forms.DialogResult.OK)
                             {
                                 Dir = dialog.SelectedPath;
@@ -237,14 +251,21 @@ namespace MSL
                             filename += ".jar";
                         }
 
-                        await Shows.ShowDownloader(this, Url, Dir, filename, "下载中……");
+                        bool dwnRet = await Shows.ShowDownloader(this, Url, Dir, filename, "下载中……");
+                        if (dwnRet)
+                        {
+                            Shows.ShowMsgDialog(this, "下载完成！", "提升");
+                        }
                     }
                     else if (loadType == 1)
                     {
                         Dir = "MSL";
                         Url = modVersionurl[listBox.SelectedIndex];
-                        await Shows.ShowDownloader(this, Url, Dir, "ServerPack.zip", "下载中……");
-                        Close();
+                        bool dwnRet = await Shows.ShowDownloader(this, Url, Dir, "ServerPack.zip", "下载中……");
+                        if (dwnRet)
+                        {
+                            Close();
+                        }
                     }
                 }
             }
@@ -264,7 +285,7 @@ namespace MSL
             listBoxColumnName.Header = "模组列表（双击获取该模组的版本）：";
         }
 
-        private void window_Closing(object sender, System.ComponentModel.CancelEventArgs e)
+        private void Window_Closing(object sender, System.ComponentModel.CancelEventArgs e)
         {
             modIds.Clear();
             modVersions.Clear();

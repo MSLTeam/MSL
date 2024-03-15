@@ -30,7 +30,7 @@
                         <ImageBrush ImageSource="/images/sidemenuextend.png" Stretch="Uniform"/>
                     </Button.Background>
                 </Button>
-                <ListBox x:Name="SideMenu" SelectionMode="Single" Width="50" HorizontalAlignment="Left" SelectionChanged="SideMenu_SelectionChanged" IsEnabled="False" Background="{x:Null}" BorderBrush="{x:Null}" Padding="2,0,2,0" >
+                <ListBox x:Name="SideMenu" SelectionMode="Single" Width="50" HorizontalAlignment="Left" SelectionChanged="SideMenu_SelectionChanged" Background="{x:Null}" BorderBrush="{x:Null}" Padding="2,0,2,0" >
                     <ListBoxItem Template="{StaticResource SideMenuTemplate}" Height="38" Margin="0,0,0,10" Foreground="{DynamicResource PrimaryTextBrush}">
                         <DockPanel >
                             <Image Source="/images/150px-Grass_Block_JE7_BE6.png" Width="22" Height="22"/>

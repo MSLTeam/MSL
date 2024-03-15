@@ -104,8 +104,8 @@ namespace MSL.pages
                 {
                     if (filename.IndexOf("forge") + 1 != 0)
                     {
-                        await Shows.ShowMsgDialog(this, "检测到您下载的是Forge端，开服器将自动进行安装操作，稍后请您不要随意操作，耐心等待安装完毕！", "提示", false);
-                        bool installForge = Shows.ShowInstallForge(this, downPath + "\\" + filename, downPath, downloadServerJava);
+                        await Shows.ShowMsgDialogAsync(this, "检测到您下载的是Forge端，开服器将自动进行安装操作，稍后请您不要随意操作，耐心等待安装完毕！", "提示");
+                        bool installForge = await Shows.ShowInstallForge(this, downPath + "\\" + filename, downPath, downloadServerJava);
                         string installReturn;
                         if (installForge)
                         {

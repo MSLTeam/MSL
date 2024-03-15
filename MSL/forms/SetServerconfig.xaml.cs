@@ -50,7 +50,7 @@ namespace MSL
             }
         }
 
-        private void Window_Closing(object sender, System.ComponentModel.CancelEventArgs e)
+        private async void Window_Closing(object sender, System.ComponentModel.CancelEventArgs e)
         {
             if (nosafeClose == false)
             {
@@ -66,7 +66,7 @@ namespace MSL
                 {
                     File.WriteAllText(serverbase + @"\spigot.yml", item003.Text);
                 }
-                Shows.ShowMsg(this, "配置已成功保存，请重启服务器以使设置生效！", "提示");
+                await Shows.ShowMsgDialogAsync(this, "配置已成功保存，请重启服务器以使设置生效！", "提示");
             }
         }
     }

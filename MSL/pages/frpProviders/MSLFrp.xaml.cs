@@ -171,7 +171,7 @@ namespace MSL.pages.frpProviders
             }
         }
 
-        private void Button_Click(object sender, RoutedEventArgs e)
+        private async void Button_Click(object sender, RoutedEventArgs e)
         {
             Window window = Window.GetWindow(this);
             if (serversList.SelectedIndex == -1)
@@ -235,7 +235,7 @@ namespace MSL.pages.frpProviders
                     jobject["frpcServer"] = "0";
                     string convertString = Convert.ToString(jobject);
                     File.WriteAllText(@"MSL\config.json", convertString, Encoding.UTF8);
-                    Shows.ShowMsg(window, "映射配置成功，请您点击“启动内网映射”以启动映射！", "信息");
+                    await Shows.ShowMsgDialogAsync(window, "映射配置成功，请您点击“启动内网映射”以启动映射！", "信息");
                 }
                 catch (Exception a) { MessageBox.Show(a.ToString(), "错误", MessageBoxButton.OK, MessageBoxImage.Error); return; }
             }
@@ -319,7 +319,7 @@ namespace MSL.pages.frpProviders
                     jobject["frpcServer"] = "0";
                     string convertString = Convert.ToString(jobject);
                     File.WriteAllText(@"MSL\config.json", convertString, Encoding.UTF8);
-                    Shows.ShowMsg(window, "映射配置成功，请您点击“启动内网映射”以启动映射！", "信息");
+                    await Shows.ShowMsgDialogAsync(window, "映射配置成功，请您点击“启动内网映射”以启动映射！", "信息");
                 }
                 catch (Exception a)
                 {
@@ -552,13 +552,13 @@ namespace MSL.pages.frpProviders
             {
                 Window window = Window.GetWindow(this);
                 Process.Start("https://afdian.net/a/makabaka123");
-                if (!Shows.ShowMsg(window, "请在弹出的浏览器网站中进行购买，购买完毕后点击确定进行下一步操作……", "购买须知", true, "取消购买", "确定"))
+                if (!await Shows.ShowMsgDialogAsync(window, "请在弹出的浏览器网站中进行购买，购买完毕后点击确定进行下一步操作……", "购买须知", true, "取消购买", "确定"))
                 {
                     return;
                 }
 
-                bool input = Shows.ShowInput(window, "输入爱发电订单号：\n（头像→订单→找到发电项目→复制项目下方订单号）", out string order);
-                if (!input)
+                string order = await Shows.ShowInput(window, "输入爱发电订单号：\n（头像→订单→找到发电项目→复制项目下方订单号）");
+                if (order == null)
                 {
                     return;
                 }
@@ -567,8 +567,8 @@ namespace MSL.pages.frpProviders
                     Shows.ShowMsgDialog(window, "请输入合法订单号：仅含数字且长度不小于5位！", "获取失败！");
                     return;
                 }
-                bool _input = Shows.ShowInput(window, "输入账号(QQ号)：", out string qq);
-                if (!_input)
+                string qq = await Shows.ShowInput(window, "输入账号(QQ号)：");
+                if (qq == null)
                 {
                     return;
                 }
@@ -593,7 +593,7 @@ namespace MSL.pages.frpProviders
                     if (keyValues != null && int.Parse(keyValues["status"].ToString()) == 0)
                     {
                         string passwd = keyValues["password"].ToString();
-                        bool dialog = Shows.ShowMsg(window, "您的付费密码为：" + passwd + "\n注册时间：" + keyValues["registration"].ToString() + "\n付费时长：" + keyValues["days"].ToString() + "天\n到期时间：" + keyValues["expiration"].ToString(), "购买成功！", true, "确定", "复制密码");
+                        bool dialog = await Shows.ShowMsgDialogAsync(window, "您的付费密码为：" + passwd + "\n注册时间：" + keyValues["registration"].ToString() + "\n付费时长：" + keyValues["days"].ToString() + "天\n到期时间：" + keyValues["expiration"].ToString(), "购买成功！", true, "确定", "复制密码");
                         if (dialog)
                         {
                             //passwordBox.Password = passwd;

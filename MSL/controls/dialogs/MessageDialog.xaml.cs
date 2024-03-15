@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Windows;
+using System.Windows.Controls;
 using System.Windows.Media.Animation;
 
 namespace MSL.controls
@@ -12,7 +13,7 @@ namespace MSL.controls
         public event DeleControl CloseDialog;
         public bool _dialogReturn;
 
-        public MessageDialog(Window window, string dialogText, string dialogTitle, bool showPrimaryBtn, string closeBtnContext = "取消", string primaryBtnContext = "确定")
+        public MessageDialog(Window window, string dialogText, string dialogTitle, bool showPrimaryBtn, string closeBtnContext, string primaryBtnContext)
         {
             InitializeComponent();
             this.MaxHeight = window.ActualHeight;
@@ -52,20 +53,24 @@ namespace MSL.controls
             storyboard.Children.Add(scaleDownY);
             storyboard.Children.Add(fadeOut);
 
-            Storyboard.SetTarget(scaleDownX, MainBorder);
-            Storyboard.SetTarget(scaleDownY, MainBorder);
-            Storyboard.SetTarget(fadeOut, MainBorder);
-
-            Storyboard.SetTargetProperty(scaleDownX, new PropertyPath("RenderTransform.ScaleX"));
-            Storyboard.SetTargetProperty(scaleDownY, new PropertyPath("RenderTransform.ScaleY"));
-            Storyboard.SetTargetProperty(fadeOut, new PropertyPath("Opacity"));
-
-            storyboard.Completed += (s, a) =>
+            if (Template.FindName("contentPresenter", this) is ContentPresenter contentPresenter)
             {
-                this.Visibility = Visibility.Collapsed;
-                CloseDialog();
-            };
-            storyboard.Begin();
+                Storyboard.SetTarget(scaleDownX, contentPresenter);
+                Storyboard.SetTarget(scaleDownY, contentPresenter);
+                Storyboard.SetTarget(fadeOut, contentPresenter);
+
+                Storyboard.SetTargetProperty(scaleDownX, new PropertyPath("RenderTransform.ScaleX"));
+                Storyboard.SetTargetProperty(scaleDownY, new PropertyPath("RenderTransform.ScaleY"));
+                Storyboard.SetTargetProperty(fadeOut, new PropertyPath("Opacity"));
+
+                storyboard.Completed += (s, a) =>
+                {
+                    Visibility = Visibility.Collapsed;
+                    CloseDialog();
+                };
+
+                storyboard.Begin();
+            }
         }
     }
 }

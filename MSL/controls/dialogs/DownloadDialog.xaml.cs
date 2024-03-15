@@ -8,7 +8,9 @@ using System.Security.Permissions;
 using System.Threading;
 using System.Threading.Tasks;
 using System.Windows;
+using System.Windows.Controls;
 using System.Windows.Input;
+using System.Windows.Media.Animation;
 using System.Windows.Threading;
 
 namespace MSL
@@ -109,7 +111,7 @@ namespace MSL
                 Thread.Sleep(1000);
                 Dispatcher.Invoke(() =>
                 {
-                    CloseDialog();
+                    Close();
                 });
             }
             else
@@ -126,7 +128,7 @@ namespace MSL
                         Thread.Sleep(1000);
                         Dispatcher.Invoke(() =>
                         {
-                            CloseDialog();
+                            Close();
                         });
                     }
                     else
@@ -137,7 +139,7 @@ namespace MSL
                             Thread.Sleep(1000);
                             Dispatcher.Invoke(() =>
                             {
-                                CloseDialog();
+                                Close();
                             });
 
                         }
@@ -156,7 +158,7 @@ namespace MSL
                             Thread.Sleep(1000);
                             Dispatcher.Invoke(() =>
                             {
-                                CloseDialog();
+                                Close();
                             });
                         }
                     }
@@ -239,7 +241,7 @@ namespace MSL
             }).ContinueWith(t =>
             {
                 // 关闭对话框
-                Dispatcher.Invoke(CloseDialog);
+                Dispatcher.Invoke(Close);
             });
         }
 
@@ -295,7 +297,7 @@ namespace MSL
         {
             downloader.CancelAsync();
             _dialogReturn = false;
-            CloseDialog();
+            Close();
         }
 
         //用于校验sha256的函数
@@ -308,6 +310,36 @@ namespace MSL
                 string calculatedHash = BitConverter.ToString(hash).Replace("-", string.Empty);
 
                 return string.Equals(calculatedHash, expectedHash, StringComparison.OrdinalIgnoreCase);
+            }
+        }
+        private void Close()
+        {
+            Storyboard storyboard = new Storyboard();
+            DoubleAnimation scaleDownX = new DoubleAnimation(1, 1.1, TimeSpan.FromSeconds(0.15));
+            DoubleAnimation scaleDownY = new DoubleAnimation(1, 1.1, TimeSpan.FromSeconds(0.15));
+            DoubleAnimation fadeOut = new DoubleAnimation(1, 0, TimeSpan.FromSeconds(0.15));
+
+            storyboard.Children.Add(scaleDownX);
+            storyboard.Children.Add(scaleDownY);
+            storyboard.Children.Add(fadeOut);
+
+            if (Template.FindName("contentPresenter", this) is ContentPresenter contentPresenter)
+            {
+                Storyboard.SetTarget(scaleDownX, contentPresenter);
+                Storyboard.SetTarget(scaleDownY, contentPresenter);
+                Storyboard.SetTarget(fadeOut, contentPresenter);
+
+                Storyboard.SetTargetProperty(scaleDownX, new PropertyPath("RenderTransform.ScaleX"));
+                Storyboard.SetTargetProperty(scaleDownY, new PropertyPath("RenderTransform.ScaleY"));
+                Storyboard.SetTargetProperty(fadeOut, new PropertyPath("Opacity"));
+
+                storyboard.Completed += (s, a) =>
+                {
+                    Visibility = Visibility.Collapsed;
+                    CloseDialog();
+                };
+
+                storyboard.Begin();
             }
         }
     }

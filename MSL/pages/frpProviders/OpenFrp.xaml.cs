@@ -63,21 +63,19 @@ namespace MSL.pages.frpProviders
             APIControl control = new APIControl();
             if (APIControl.userAccount == "" || APIControl.userPass == "")
             {
-                bool input_account = false;
-                Dispatcher.Invoke(() =>
+                await Dispatcher.Invoke(async () =>
                 {
-                    input_account = Shows.ShowInput(window, "请输入OpenFrp的账户名/邮箱", out APIControl.userAccount);
+                    APIControl.userAccount = await Shows.ShowInput(window, "请输入OpenFrp的账户名/邮箱");
                 });
 
-                if (input_account)
+                if (APIControl.userAccount != null)
                 {
-                    bool input_paswd = false;
-                    Dispatcher.Invoke(() =>
+                    await Dispatcher.Invoke(async () =>
                     {
-                        input_paswd = Shows.ShowInput(window, "请输入" + APIControl.userAccount + "的密码", out APIControl.userPass, "", true);
+                        APIControl.userPass = await Shows.ShowInput(window, "请输入" + APIControl.userAccount + "的密码", "", true);
                     });
 
-                    if (!input_paswd)
+                    if (APIControl.userPass == null)
                     {
                         return;
                     }
@@ -232,7 +230,7 @@ namespace MSL.pages.frpProviders
             }
         }
 
-        private void Button_Click(object sender, RoutedEventArgs e)
+        private async void Button_Click(object sender, RoutedEventArgs e)
         {
             Window window = Window.GetWindow(this);
             if (toggleProxies.SelectedIndex != 0 || serversList.SelectedIndex == -1)
@@ -260,7 +258,7 @@ namespace MSL.pages.frpProviders
             jobject["frpcServer"] = "1";
             string convertString = Convert.ToString(jobject);
             File.WriteAllText(@"MSL\config.json", convertString, Encoding.UTF8);
-            Shows.ShowMsg(window, "映射配置成功，请您点击“启动内网映射”以启动映射！", "信息");
+            await Shows.ShowMsgDialogAsync(window, "映射配置成功，请您点击“启动内网映射”以启动映射！", "信息");
             window.Close();
 
         }
@@ -293,17 +291,17 @@ namespace MSL.pages.frpProviders
             Task.Run(() => GetFrpsInfo(cts.Token));
         }
 
-        private void signBtn_Click(object sender, RoutedEventArgs e)
+        private async void signBtn_Click(object sender, RoutedEventArgs e)
         {
             /*
             APIControl apiControl = new APIControl();
             apiControl.UserSign(Window.GetWindow(this));
             */
-            Shows.ShowMsg(Window.GetWindow(this), "目前暂不支持在软件内签到，请前往OpenFrp官网进行签到！", "提示");
+            await Shows.ShowMsgDialogAsync(Window.GetWindow(this), "目前暂不支持在软件内签到，请前往OpenFrp官网进行签到！", "提示");
             Process.Start("https://www.openfrp.net/");
         }
 
-        private void addProxieBtn_Click(object sender, RoutedEventArgs e)
+        private async void addProxieBtn_Click(object sender, RoutedEventArgs e)
         {
             Window window = Window.GetWindow(this);
             try
@@ -335,8 +333,8 @@ namespace MSL.pages.frpProviders
                     Shows.ShowMsgDialog(window, "请先选择一个节点", "错误");
                     return;
                 }
-                bool input_name = Shows.ShowInput(window, "隧道名称(不支持中文)", out string proxy_name);
-                if (input_name)
+                string proxy_name = await Shows.ShowInput(window, "隧道名称(不支持中文)");
+                if (proxy_name != null)
                 {
                     string returnMsg = "";
                     bool createReturn = control.CreateProxy(type, portBox.Text, zip, selected_node_id, remotePortBox.Text, proxy_name, out returnMsg);
