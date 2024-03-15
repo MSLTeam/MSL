@@ -1,6 +1,13 @@
 <img src="MSL/icon.ico">
 
 # Minecraft Server Launcher（MSL）
+![GitHub Release](https://img.shields.io/github/v/release/MSLTeam/MSL)
+![GitHub License](https://img.shields.io/github/license/MSLTeam/MSL)
+![GitHub Downloads (all assets, all releases)](https://img.shields.io/github/downloads/MSLTeam/MSL/total)
+![GitHub Issues or Pull Requests](https://img.shields.io/github/issues/MSLTeam/MSL)
+![GitHub Repo stars](https://img.shields.io/github/stars/MSLTeam/MSL)
+
+
 
 我的世界开服器，重新出发，美观实用！
 
