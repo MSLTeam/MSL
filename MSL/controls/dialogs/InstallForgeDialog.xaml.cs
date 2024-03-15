@@ -27,7 +27,7 @@ namespace MSL.controls
         private readonly string tempPath;
         private readonly string libPath;
         private readonly string javaPath;
-        private int versionType; //由于Forge安装器的json有4种格式（太6了），在此进行规定：①1.20.3-Latest ②？-1.20.2
+        private int versionType; //由于Forge安装器的json有4（不止）种格式（太6了），我不知道
         private readonly Thread thread;
 
         public InstallForgeDialog(string forge, string downPath, string java)
@@ -676,7 +676,7 @@ namespace MSL.controls
             return 0;
         }
 
-        //非常安全的获取json key（
+        //非常安全的获取json key（有效防止空指针（嗯
         private string SafeGetValue(JObject jobj, string key)
         {
             string[] keys = key.Split('.');

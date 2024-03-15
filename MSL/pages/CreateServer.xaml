@@ -20,6 +20,7 @@
     <Grid x:Name="BodyGrid">
         <Grid x:Name="MainGrid" Visibility="Visible">
             <Label Content="将通过几个步骤为您创建服务器……" Style="{StaticResource BorderTitle}" Margin="10" Height="25"/>
+            <Button x:Name="CancelBtn" Content="返回服务器列表" hc:BorderElement.CornerRadius="5" Margin="0,5,10,0" Style="{StaticResource ButtonPrimary}" Click="CancelBtn_Click"  HorizontalAlignment="Right" VerticalAlignment="Top" Background="#FF6A9AFF" BorderBrush="{x:Null}"/>
             <Border Style="{StaticResource MagicBorder}" Margin="10,40,10,10" VerticalAlignment="Stretch">
                 <Grid>
                     <Grid.RowDefinitions>

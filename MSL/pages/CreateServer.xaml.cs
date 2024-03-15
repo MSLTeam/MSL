@@ -28,6 +28,7 @@ namespace MSL.pages
     public partial class CreateServer : Page
     {
         public static event DeleControl CreateComplete;
+        public static event DeleControl CancelCreate;
         private string DownjavaName;
         private string servername;
         private string serverjava;
@@ -1332,6 +1333,11 @@ namespace MSL.pages
         private void Page_Unloaded(object sender, RoutedEventArgs e)
         {
             GC.Collect();
+        }
+
+        private void CancelBtn_Click(object sender, RoutedEventArgs e)
+        {
+            CancelCreate();
         }
     }
 }
