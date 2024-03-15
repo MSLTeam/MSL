@@ -45,6 +45,7 @@ namespace MSL
             Home.CreateServerEvent += GotoCreatePage;
             ServerList.CreateServerEvent += GotoCreatePage;
             CreateServer.CreateComplete += GotoListPage;
+            CreateServer.CancelCreate += GotoListPage;
             SettingsPage.C_NotifyIcon += CtrlNotifyIcon;
             ServerRunner.GotoFrpcEvent += GotoFrpcPage;
             SettingsPage.ChangeSkinStyle += ChangeSkinStyle;
