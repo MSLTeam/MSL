@@ -7,7 +7,6 @@
         xmlns:local="clr-namespace:MSL.pages"
         mc:Ignorable="d" Title="CreateServer"
         d:DesignHeight="460" d:DesignWidth="750"
-        Background="{DynamicResource BackgroundBrush}"
         Loaded="Page_Loaded" Unloaded="Page_Unloaded">
     <Page.RenderTransform>
         <TranslateTransform/>
@@ -107,8 +106,8 @@
                 <Button x:Name="FastModeInstallBtn" Content="确定" Style="{StaticResource ButtonPrimary}" Width="150" Click="FastModeInstallBtn_Click" Height="45" FontSize="18" Margin="200,0,0,0"/>
             </Grid>
         </StackPanel>
-        <TabControl x:Name="tabCtrl" Visibility="Hidden" Background="{x:Null}" BorderThickness="0">
-            <TabItem x:Name="welcome" Header="基本信息" FontSize="14" Background="{x:Null}">
+        <TabControl x:Name="tabCtrl" Visibility="Hidden" Background="{x:Null}" BorderThickness="0" Style="{StaticResource TabControlInLine}">
+            <TabItem x:Name="welcome" Header="基本信息" FontSize="14" Background="{DynamicResource SideMenuBrush}">
                 <StackPanel>
                     <Label Content="将通过几个步骤为您创建服务器……" FontSize="18" Background="{x:Null}" BorderBrush="{x:Null}" VerticalAlignment="Top" Height="40" HorizontalAlignment="Left" FontWeight="Bold"/>
                     <Border Style="{StaticResource MagicBorder}" Margin="10,0,10,0">
@@ -133,7 +132,7 @@
                     </Grid>
                 </StackPanel>
             </TabItem>
-            <TabItem x:Name="sjava" Header="Java" IsEnabled="False" FontSize="14" Background="{x:Null}">
+            <TabItem x:Name="sjava" Header="Java" IsEnabled="False" FontSize="14" Background="{DynamicResource SideMenuBrush}">
                 <StackPanel>
                     <Border Style="{StaticResource MagicBorder}">
                         <Grid x:Name="javagrid">
@@ -171,7 +170,7 @@
                     <Label x:Name="outlog" Content="" HorizontalAlignment="Left" Margin="10,10,0,0" VerticalAlignment="Top" FontSize="14" Foreground="{DynamicResource PrimaryBrush}" Background="{x:Null}" BorderBrush="{x:Null}"/>
                 </StackPanel>
             </TabItem>
-            <TabItem x:Name="sserver" Header="服务端" IsEnabled="False" FontSize="14" Background="{x:Null}">
+            <TabItem x:Name="sserver" Header="服务端" IsEnabled="False" FontSize="14" Background="{DynamicResource SideMenuBrush}">
                 <StackPanel>
                     <Border Style="{StaticResource MagicBorder}">
                         <Grid x:Name="servergrid">
@@ -189,7 +188,7 @@
                     </Grid>
                 </StackPanel>
             </TabItem>
-            <TabItem x:Name="sJVM" Header="开服内存及启动参数" IsEnabled="False" FontSize="14" Background="{x:Null}">
+            <TabItem x:Name="sJVM" Header="开服内存及启动参数" IsEnabled="False" FontSize="14" Background="{DynamicResource SideMenuBrush}">
                 <Grid>
                     <ScrollViewer>
                         <StackPanel>
