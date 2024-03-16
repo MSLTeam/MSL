@@ -133,8 +133,8 @@ namespace MSL.pages
             {
                 await Dispatcher.InvokeAsync(async () =>
                 {
-                    var mainwindow = (MainWindow)Window.GetWindow(this);
-                    bool dialogRet = await Shows.ShowMsgDialogAsync(mainwindow, "开服器检测到配置文件出现了错误，是第一次使用吗？\n是否创建一个新的服务器？", "警告", true, "取消");
+                    var mainwindow = Window.GetWindow(this);
+                    bool dialogRet = await Shows.ShowMsgDialogAsync("开服器检测到配置文件出现了错误，是第一次使用吗？\n是否创建一个新的服务器？", "警告", true, "取消");
                     if (dialogRet)
                     {
                         CreateServerEvent();
@@ -204,8 +204,8 @@ namespace MSL.pages
 
         private async void DelServerEvent()
         {
-            var mainwindow = (MainWindow)Window.GetWindow(this);
-            bool dialogRet = await Shows.ShowMsgDialogAsync(mainwindow, "您确定要删除该服务器吗？", "提示", true, "取消");
+            var mainwindow = Window.GetWindow(this);
+            bool dialogRet = await Shows.ShowMsgDialogAsync("您确定要删除该服务器吗？", "提示", true, "取消");
             if (!dialogRet)
             {
                 return;
@@ -218,7 +218,7 @@ namespace MSL.pages
             }
             try
             {
-                bool _dialogRet = await Shows.ShowMsgDialogAsync(mainwindow, "是否删除该服务器的目录？（服务器目录中的所有文件都会被移至回收站）", "提示", true, "取消");
+                bool _dialogRet = await Shows.ShowMsgDialogAsync("是否删除该服务器的目录？（服务器目录中的所有文件都会被移至回收站）", "提示", true, "取消");
                 if (_dialogRet)
                 {
                     JObject jsonObject = JObject.Parse(File.ReadAllText(@"MSL\ServerList.json", Encoding.UTF8));
@@ -230,7 +230,7 @@ namespace MSL.pages
             }
             catch (Exception ex)
             {
-                Shows.ShowMsgDialog(mainwindow, "服务器目录删除失败！\n" + ex.Message, "警告");
+                Shows.ShowMsgDialog("服务器目录删除失败！\n" + ex.Message, "警告");
             }
             try
             {
@@ -243,7 +243,7 @@ namespace MSL.pages
             catch
             {
                 Shows.GrowlErr("删除服务器失败！");
-                Shows.ShowMsgDialog(mainwindow, "服务器删除失败！", "警告");
+                Shows.ShowMsgDialog("服务器删除失败！", "警告");
                 GetServerConfig();
             }
         }

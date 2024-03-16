@@ -70,8 +70,7 @@ namespace MSL.pages
                             RefreshLink();
                             await Dispatcher.Invoke(async () =>
                             {
-                                var mwindow = (MainWindow)Window.GetWindow(this);
-                                await Shows.ShowDownloader(mwindow, _dnfrpc, "MSL", "frpc.exe", "下载内网映射中...");
+                                await Shows.ShowDownloader(_dnfrpc, "MSL", "frpc.exe", "下载内网映射中...");
                             });
                             _dnfrpc = "";
                         }
@@ -81,8 +80,7 @@ namespace MSL.pages
                         RefreshLink();
                         await Dispatcher.Invoke(async () =>
                         {
-                            var mwindow = (MainWindow)Window.GetWindow(this);
-                            await Shows.ShowDownloader(mwindow, _dnfrpc, "MSL", "frpc.exe", "更新内网映射中...");
+                            await Shows.ShowDownloader(_dnfrpc, "MSL", "frpc.exe", "更新内网映射中...");
                         });
                         _dnfrpc = "";
                         jobject["frpcversion"] = "6";
@@ -95,8 +93,7 @@ namespace MSL.pages
                         RefreshLink();
                         await Dispatcher.Invoke(async () =>
                         {
-                            var mwindow = (MainWindow)Window.GetWindow(this);
-                            await Shows.ShowDownloader(mwindow, _dnfrpc, "MSL", "frpc.exe", "下载内网映射中...");
+                            await Shows.ShowDownloader(_dnfrpc, "MSL", "frpc.exe", "下载内网映射中...");
                         });
                         _dnfrpc = "";
                     }
@@ -126,8 +123,7 @@ namespace MSL.pages
                         string latest_url = Functions.Get("download/frpc/OpenFrp/amd64");
                         await Dispatcher.Invoke(async () =>
                         {
-                            var mwindow = (MainWindow)Window.GetWindow(this);
-                            await Shows.ShowDownloader(mwindow, latest_url, "MSL", "frpc_of.zip", "下载内网映射中...");
+                            await Shows.ShowDownloader(latest_url, "MSL", "frpc_of.zip", "下载内网映射中...");
                             string fileName = "";
                             using (ZipFile zip = new ZipFile(@"MSL\frpc_of.zip"))
                             {
@@ -292,12 +288,6 @@ namespace MSL.pages
 
         private async void PaidServe()
         {
-            Window window = null;
-            Dispatcher.Invoke(() =>
-            {
-                window = (MainWindow)Window.GetWindow(this);
-            });
-
             string userAccount = "";
             string userPassword = "";
 
@@ -313,7 +303,7 @@ namespace MSL.pages
             bool _ret = false;
             await Dispatcher.Invoke(async () =>
             {
-                if (!await Shows.ShowMsgDialogAsync(window, "您的付费资格已过期，请进行续费！\n点击确定开始付费节点续费操作。", "提示", true, "取消"))
+                if (!await Shows.ShowMsgDialogAsync("您的付费资格已过期，请进行续费！\n点击确定开始付费节点续费操作。", "提示", true, "取消"))
                 {
                     _ret = true;
                 }
@@ -326,7 +316,7 @@ namespace MSL.pages
             Process.Start("https://afdian.net/a/makabaka123");
             await Dispatcher.Invoke(async () =>
             {
-                if (!await Shows.ShowMsgDialogAsync(window, "请在弹出的浏览器网站中进行购买，购买完毕后点击确定进行下一步操作……", "购买须知", true, "取消购买", "确定"))
+                if (!await Shows.ShowMsgDialogAsync("请在弹出的浏览器网站中进行购买，购买完毕后点击确定进行下一步操作……", "购买须知", true, "取消购买", "确定"))
                 {
                     _ret = true;
                 }
@@ -340,7 +330,7 @@ namespace MSL.pages
             string qq = null;
             await Dispatcher.Invoke(async () =>
             {
-                order = await Shows.ShowInput(window, "输入爱发电订单号：\n（头像→订单→找到发电项目→复制项目下方订单号）");
+                order = await Shows.ShowInput("输入爱发电订单号：\n（头像→订单→找到发电项目→复制项目下方订单号）");
             });
             if (order == null)
             {
@@ -350,13 +340,13 @@ namespace MSL.pages
             {
                 Dispatcher.Invoke(() =>
                 {
-                    Shows.ShowMsgDialog(window, "请输入合法订单号：仅含数字且长度不小于5位！", "获取失败！");
+                    Shows.ShowMsgDialog("请输入合法订单号：仅含数字且长度不小于5位！", "获取失败！");
                 });
                 return;
             }
             await Dispatcher.Invoke(async () =>
             {
-                qq = await Shows.ShowInput(window, "输入账号(QQ号)：");
+                qq = await Shows.ShowInput("输入账号(QQ号)：");
             });
 
             if (qq == null)
@@ -367,7 +357,7 @@ namespace MSL.pages
             {
                 Dispatcher.Invoke(() =>
                 {
-                    Shows.ShowMsgDialog(window, "请输入合法账号：仅含数字且长度不小于5位！", "获取失败！");
+                    Shows.ShowMsgDialog("请输入合法账号：仅含数字且长度不小于5位！", "获取失败！");
                 });
                 return;
             }
@@ -392,21 +382,21 @@ namespace MSL.pages
                 {
                     Dispatcher.Invoke(() =>
                     {
-                        Shows.ShowMsgDialog(window, "您的付费密码为：" + keyValues["password"].ToString() + "\n注册时间：" + keyValues["registration"].ToString() + "\n本次续费：" + keyValues["days"].ToString() + "天\n到期时间：" + keyValues["expiration"].ToString(), "续费成功！");
+                        Shows.ShowMsgDialog("您的付费密码为：" + keyValues["password"].ToString() + "\n注册时间：" + keyValues["registration"].ToString() + "\n本次续费：" + keyValues["days"].ToString() + "天\n到期时间：" + keyValues["expiration"].ToString(), "续费成功！");
                     });
                 }
                 else if (keyValues != null)
                 {
                     Dispatcher.Invoke(() =>
                     {
-                        Shows.ShowMsgDialog(window, keyValues["reason"].ToString(), "获取失败！");
+                        Shows.ShowMsgDialog(keyValues["reason"].ToString(), "获取失败！");
                     });
                 }
                 else
                 {
                     Dispatcher.Invoke(() =>
                     {
-                        Shows.ShowMsgDialog(window, "返回内容为空！", "获取失败！");
+                        Shows.ShowMsgDialog("返回内容为空！", "获取失败！");
                     });
                 }
             }
@@ -416,7 +406,7 @@ namespace MSL.pages
                 {
                     this.Focus();
                     _dialog.Close();
-                    Shows.ShowMsgDialog((MainWindow)Window.GetWindow(this), "获取失败，请添加QQ：483232994（昵称：MSL-FRP），并发送发电成功截图+订单号来手动获取密码\r\n（注：回复消息不一定及时，请耐心等待！如果没有添加成功，或者添加后长时间无人回复，请进入MSL交流群然后从群里私聊）", "获取失败！");
+                    Shows.ShowMsgDialog("获取失败，请添加QQ：483232994（昵称：MSL-FRP），并发送发电成功截图+订单号来手动获取密码\r\n（注：回复消息不一定及时，请耐心等待！如果没有添加成功，或者添加后长时间无人回复，请进入MSL交流群然后从群里私聊）", "获取失败！");
                 });
             }
         }
@@ -424,7 +414,7 @@ namespace MSL.pages
         private void setfrpc_Click(object sender, RoutedEventArgs e)
         {
             SetFrpc fw = new SetFrpc();
-            var mainwindow = (MainWindow)Window.GetWindow(this);
+            var mainwindow = Window.GetWindow(this);
             fw.Owner = mainwindow;
             fw.ShowDialog();
             try
@@ -443,11 +433,13 @@ namespace MSL.pages
 
         void RefreshLink()
         {
+            /*
             string url = "https://api.waheal.top";
             if (MainWindow.serverLink != "waheal.top")
             {
                 url = "https://api." + MainWindow.serverLink;
             }
+            */
             //WebClient MyWebClient = new WebClient();
             //byte[] pageData = MyWebClient.DownloadData(url + "/otherdownloads");
             //string _javaList = Encoding.UTF8.GetString(pageData);
@@ -456,6 +448,7 @@ namespace MSL.pages
             //_dnfrpc = javaList0["frpc"].ToString();
             _dnfrpc = Functions.Get("/download/frpc/MSLFrp/amd64");
         }
+
         private void startfrpc_Click(object sender, RoutedEventArgs e)
         {
             if (startfrpc.Content.ToString() == "启动内网映射")

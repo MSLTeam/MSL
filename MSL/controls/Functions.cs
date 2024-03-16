@@ -581,7 +581,7 @@ namespace MSL.controls
                         using (var reader = new StreamReader(errorResponse.GetResponseStream()))
                         {
                             string error = reader.ReadToEnd();
-                            Shows.ShowMsgDialog(window, error, "获取用户信息失败");
+                            Shows.ShowMsgDialog(error, "获取用户信息失败");
                         }
                     }
                 }
@@ -609,23 +609,23 @@ namespace MSL.controls
             }
             catch
             {
-                Shows.ShowMsgDialog(window, "签到失败！请登录OpenFrp官网进行签到！", "错误");
+                Shows.ShowMsgDialog("签到失败！请登录OpenFrp官网进行签到！", "错误");
                 return;
             }
             try
             {
                 if ((bool)JObject.Parse(responseMessage)["flag"] == true && JObject.Parse(responseMessage)["msg"].ToString() == "OK")
                 {
-                    Shows.ShowMsgDialog(window, JObject.Parse(responseMessage)["data"].ToString(), "签到成功");
+                    Shows.ShowMsgDialog(JObject.Parse(responseMessage)["data"].ToString(), "签到成功");
                 }
                 else
                 {
-                    Shows.ShowMsgDialog(window, "签到失败", "签到失败");
+                    Shows.ShowMsgDialog("签到失败", "签到失败");
                 }
             }
             catch (Exception ex)
             {
-                Shows.ShowMsgDialog(window, "签到失败,产生的错误:\n" + ex.Message, "签到失败");
+                Shows.ShowMsgDialog("签到失败,产生的错误:\n" + ex.Message, "签到失败");
             }
         }
 

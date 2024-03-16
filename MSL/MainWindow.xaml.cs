@@ -61,7 +61,7 @@ namespace MSL
             if (!Directory.Exists("MSL"))
             {
                 Process.Start("https://www.mslmc.cn/eula.html");
-                bool dialog = await Shows.ShowMsgDialogAsync(this, "请阅读并同意MSL开服器使用协议：https://www.mslmc.cn/eula.html", "提示", true, "不同意", "同意");
+                bool dialog = await Shows.ShowMsgDialogAsync("请阅读并同意MSL开服器使用协议：https://www.mslmc.cn/eula.html", "提示", true, "不同意", "同意");
                 if (!dialog)
                 {
                     //Logger.LogWarning("用户未同意使用协议，退出软件……");
@@ -84,7 +84,7 @@ namespace MSL
             catch (Exception ex)
             {
                 //Logger.LogError("生成config.json文件失败，原因："+ex.Message);
-                await Shows.ShowMsgDialogAsync(this, "MSL在初始化加载过程中出现问题，请尝试用管理员身份运行MSL……\n错误代码：" + ex.Message, "错误");
+                await Shows.ShowMsgDialogAsync("MSL在初始化加载过程中出现问题，请尝试用管理员身份运行MSL……\n错误代码：" + ex.Message, "错误");
                 Close();
             }
 
@@ -98,7 +98,7 @@ namespace MSL
             catch (Exception ex)
             {
                 //Logger.LogError("读取config.json失败！尝试重新载入……");
-                await Shows.ShowMsgDialogAsync(this, "MSL在加载配置文件时出现错误，将进行重试，若点击确定后软件突然闪退，请尝试使用管理员身份运行或将此问题报告给作者！\n错误代码：" + ex.Message, "错误");
+                await Shows.ShowMsgDialogAsync("MSL在加载配置文件时出现错误，将进行重试，若点击确定后软件突然闪退，请尝试使用管理员身份运行或将此问题报告给作者！\n错误代码：" + ex.Message, "错误");
                 File.WriteAllText(@"MSL\config.json", string.Format("{{{0}}}", "\n"));
                 jsonObject = JObject.Parse(File.ReadAllText(@"MSL\config.json", Encoding.UTF8));
                 //Logger.LogInfo("读取config.json成功！");
@@ -312,11 +312,11 @@ namespace MSL
                 {
                     string jsonString = File.ReadAllText(@"MSL\config.json", Encoding.UTF8);
                     JObject jobject = JObject.Parse(jsonString);
-                    jobject.Add("autoOpenServer", false);
+                    jobject.Add("autoOpenServer", "False");
                     string convertString = Convert.ToString(jobject);
                     File.WriteAllText(@"MSL\config.json", convertString, Encoding.UTF8);
                 }
-                else if ((bool)jsonObject["autoOpenServer"] != false)
+                else if (jsonObject["autoOpenServer"].ToString() != "False")
                 {
                     string servers = jsonObject["autoOpenServer"].ToString();
                     Shows.GrowlInfo("正在为你自动打开相应服务器……");
@@ -427,7 +427,7 @@ namespace MSL
                     }
                     await Dispatcher.Invoke(async () =>
                     {
-                        bool dialog = await Shows.ShowMsgDialogAsync(this, "发现新版本，版本号为：" + aaa + "，是否进行更新？\n更新日志：\n" + updatelog, "更新", true);
+                        bool dialog = await Shows.ShowMsgDialogAsync("发现新版本，版本号为：" + aaa + "，是否进行更新？\n更新日志：\n" + updatelog, "更新", true);
                         if (dialog == true)
                         {
                             //Logger.LogInfo("更新新版本……");
@@ -465,11 +465,11 @@ namespace MSL
         {
             if (ProcessRunningCheck())
             {
-                Shows.ShowMsgDialog(this, "您的服务器/内网映射/点对点联机正在运行中，若此时更新，会造成后台残留，请将前者关闭后再进行更新！", "警告");
+                Shows.ShowMsgDialog("您的服务器/内网映射/点对点联机正在运行中，若此时更新，会造成后台残留，请将前者关闭后再进行更新！", "警告");
                 return;
             }
             string aaa1 = Functions.Get("download/update");
-            await Shows.ShowDownloader(this, aaa1, AppDomain.CurrentDomain.BaseDirectory, "MSL" + aaa + ".exe", "下载新版本中……");
+            await Shows.ShowDownloader(aaa1, AppDomain.CurrentDomain.BaseDirectory, "MSL" + aaa + ".exe", "下载新版本中……");
             if (File.Exists("MSL" + aaa + ".exe"))
             {
                 string oldExePath = Process.GetCurrentProcess().MainModule.ModuleName;
@@ -742,6 +742,16 @@ namespace MSL
         private void NotifyClose_Click(object sender, RoutedEventArgs e)
         {
             if (ProcessRunningCheck())
+            {
+                int dialog = Shows.ShowMsg(this, "您的服务器、内网映射或联机功能正在运行中，关闭软件可能会让服务器进程在后台一直运行并占用资源！确定要继续关闭吗？\n注：如果想隐藏主窗口的话，请前往设置打开托盘图标", "警告", true, "取消");
+                if (dialog == 1)
+                {
+                    Application.Current.Shutdown();
+                    //Process.GetCurrentProcess().Kill();
+                    //Environment.Exit(0);
+                }
+            }
+            else
             {
                 Application.Current.Shutdown();
                 //Process.GetCurrentProcess().Kill();

@@ -124,7 +124,7 @@ namespace MSL.controls
 
             await Dispatcher.Invoke(async () => //下载
             {
-                bool dwnDialog = await Shows.ShowDownloader(Window.GetWindow(this), vanillaUrl, Path.GetDirectoryName(serverJarPath), Path.GetFileName(serverJarPath), "下载原版核心中···");
+                bool dwnDialog = await Shows.ShowDownloader(vanillaUrl, Path.GetDirectoryName(serverJarPath), Path.GetFileName(serverJarPath), "下载原版核心中···");
                 if (!dwnDialog)
                 {
                     //下载失败，跑路了！
@@ -215,7 +215,7 @@ namespace MSL.controls
                         await Dispatcher.Invoke(async () =>
                         {
                             Status_change("正在下载Forge运行Lib···(" + libCount + "/" + libALLCount + ")");
-                            bool dwnDialog = await Shows.ShowDownloader(Window.GetWindow(this), _dlurl, Path.GetDirectoryName(_savepath), Path.GetFileName(_savepath), "下载LIB(" + libCount + "/" + libALLCount + ")中···");
+                            bool dwnDialog = await Shows.ShowDownloader(_dlurl, Path.GetDirectoryName(_savepath), Path.GetFileName(_savepath), "下载LIB(" + libCount + "/" + libALLCount + ")中···");
                             if (!dwnDialog)
                             {
                                 //下载失败，跑路了！
@@ -257,7 +257,7 @@ namespace MSL.controls
                         await Dispatcher.Invoke(async () =>
                         {
                             Status_change("正在下载Forge运行Lib···(" + libCount + "/" + libALLCount + ")");
-                            bool dwnDialog = await Shows.ShowDownloader(Window.GetWindow(this), _dlurl, Path.GetDirectoryName(_savepath), Path.GetFileName(_savepath), "下载LIB(" + libCount + "/" + libALLCount + ")中···");
+                            bool dwnDialog = await Shows.ShowDownloader(_dlurl, Path.GetDirectoryName(_savepath), Path.GetFileName(_savepath), "下载LIB(" + libCount + "/" + libALLCount + ")中···");
                             if (!dwnDialog)
                             {
                                 //下载失败，跑路了！

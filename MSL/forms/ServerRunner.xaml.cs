@@ -419,7 +419,7 @@ namespace MSL
         #region 仪表盘
         private async void solveProblemBtn_Click(object sender, RoutedEventArgs e)
         {
-            bool dialogRet = await Shows.ShowMsgDialogAsync(this, "分析报告将在服务器关闭后生成！若使用后还是无法解决问题，请尝试进Q群询问（附带日志链接，日志链接可以点击分享日志按钮生成）：\n一群：1145888872  二群：234477679", "警告", true, "取消");
+            bool dialogRet = await Shows.ShowMsgDialogAsync("分析报告将在服务器关闭后生成！若使用后还是无法解决问题，请尝试进Q群询问（附带日志链接，日志链接可以点击分享日志按钮生成）：\n一群：1145888872  二群：234477679", "警告", true, "取消");
             if (dialogRet)
             {
                 TabCtrl.SelectedIndex = 1;
@@ -434,7 +434,7 @@ namespace MSL
         }
         private async void kickPlayer_Click(object sender, RoutedEventArgs e)
         {
-            bool dialogRet = await Shows.ShowMsgDialogAsync(this, "确定要踢出这个玩家吗？", "警告", true, "取消");
+            bool dialogRet = await Shows.ShowMsgDialogAsync("确定要踢出这个玩家吗？", "警告", true, "取消");
             if (dialogRet)
             {
                 try
@@ -468,11 +468,11 @@ namespace MSL
 
                     if (ipAddress.Contains(":"))
                     {
-                        Shows.ShowMsgDialog(this, "您的公网IP为：" + localIP.ToString() + "\n您的服务器远程进入地址为：" + localIP.ToString() + ":" + ipAddress.Substring(ipAddress.IndexOf(":") + 1, ipAddress.Length - ipAddress.IndexOf(":") - 1) + "\n注意：记得检查您的防火墙是否关闭，否则远程玩家无法进入服务器！", "信息");
+                        Shows.ShowMsgDialog("您的公网IP为：" + localIP.ToString() + "\n您的服务器远程进入地址为：" + localIP.ToString() + ":" + ipAddress.Substring(ipAddress.IndexOf(":") + 1, ipAddress.Length - ipAddress.IndexOf(":") - 1) + "\n注意：记得检查您的防火墙是否关闭，否则远程玩家无法进入服务器！", "信息");
                     }
                     else
                     {
-                        Shows.ShowMsgDialog(this, "您的公网IP为：" + localIP.ToString() + "\n您的服务器远程进入地址为：" + localIP.ToString() + "\n注意：记得检查您的防火墙是否关闭，否则远程玩家无法进入服务器！", "信息");
+                        Shows.ShowMsgDialog("您的公网IP为：" + localIP.ToString() + "\n您的服务器远程进入地址为：" + localIP.ToString() + "\n注意：记得检查您的防火墙是否关闭，否则远程玩家无法进入服务器！", "信息");
                     }
                     return;
                 }
@@ -480,7 +480,7 @@ namespace MSL
 
             // 返回IP地址，如果没有找到公网IP，则返回"none"
             //return string.IsNullOrEmpty(ipAddress) ? "none" : ipAddress;
-            await Shows.ShowMsgDialogAsync(this, "服务器开启后，通常远程的小伙伴是无法进入的，您需要进行内网映射才可让他人进入。开服器内置有免费的内网映射，您可点击主界面左侧的“内网映射”按钮查看详情并进行配置。", "注意", false);
+            await Shows.ShowMsgDialogAsync("服务器开启后，通常远程的小伙伴是无法进入的，您需要进行内网映射才可让他人进入。开服器内置有免费的内网映射，您可点击主界面左侧的“内网映射”按钮查看详情并进行配置。", "注意", false);
             GotoFrpcEvent();
         }
 
@@ -497,7 +497,7 @@ namespace MSL
             }
             else
             {
-                await Shows.ShowMsgDialogAsync(this, "关闭此功能后，输出预览功能也将同时关闭！", "注意", false);
+                await Shows.ShowMsgDialogAsync("关闭此功能后，输出预览功能也将同时关闭！", "注意", false);
                 //outlog.Margin = new Thickness(10, 10, 10, 47);
                 getServerInfo = false;
                 systemInfoBtn.Content = "显示占用:关";
@@ -582,7 +582,7 @@ namespace MSL
 
         private async void banPlayer_Click(object sender, RoutedEventArgs e)
         {
-            bool dialogRet = await Shows.ShowMsgDialogAsync(this, "确定要封禁这个玩家吗？封禁后该玩家将永远无法进入服务器！\n（原版解封指令：pardon +玩家名字，若添加插件，请使用插件的解封指令）", "警告", true, "取消");
+            bool dialogRet = await Shows.ShowMsgDialogAsync("确定要封禁这个玩家吗？封禁后该玩家将永远无法进入服务器！\n（原版解封指令：pardon +玩家名字，若添加插件，请使用插件的解封指令）", "警告", true, "取消");
             if (dialogRet)
             {
                 try
@@ -620,7 +620,7 @@ namespace MSL
                 if (!File.Exists(path1) || (File.Exists(path1) && !File.ReadAllText(path1).Contains("eula=true")))
                 {
 
-                    bool dialog = await Shows.ShowMsgDialogAsync(this, "开启Minecraft服务器需要接受Mojang的EULA，是否仔细阅读EULA条款（https://aka.ms/MinecraftEULA）并继续开服？", "提示", true, "取消");
+                    bool dialog = await Shows.ShowMsgDialogAsync("开启Minecraft服务器需要接受Mojang的EULA，是否仔细阅读EULA条款（https://aka.ms/MinecraftEULA）并继续开服？", "提示", true, "取消");
                     if (dialog == true)
                     {
                         Process.Start("https://aka.ms/MinecraftEULA");
@@ -734,7 +734,7 @@ namespace MSL
                 }
 
                 ShowLog("错误代码：" + e.Message, Brushes.Red);
-                Shows.ShowMsgDialog(this, "出现错误，开服器已检测完毕，请根据检测信息对服务器设置进行更改！", "错误");
+                Shows.ShowMsgDialog("出现错误，开服器已检测完毕，请根据检测信息对服务器设置进行更改！", "错误");
                 TabCtrl.SelectedIndex = 1;
                 ChangeControlsState(false);
             }
@@ -1558,13 +1558,13 @@ namespace MSL
                     else
                     {
                         Shows.GrowlInfo("服务器已关闭！即将为您展示分析报告！");
-                        Shows.ShowMsgDialog(this, foundProblems, "服务器分析报告");
+                        Shows.ShowMsgDialog(foundProblems, "服务器分析报告");
                         foundProblems = null;
                     }
                 }
                 else if (ServerProcess.ExitCode != 0 && getServerInfoLine <= 100)
                 {
-                    bool dialogRet = await Shows.ShowMsgDialogAsync(this, "您的服务器疑似异常关闭，是否使用崩溃分析系统进行检测？", "提示", true, "取消");
+                    bool dialogRet = await Shows.ShowMsgDialogAsync("您的服务器疑似异常关闭，是否使用崩溃分析系统进行检测？", "提示", true, "取消");
                     if (dialogRet)
                     {
                         TabCtrl.SelectedIndex = 1;
@@ -2024,7 +2024,7 @@ namespace MSL
             {
                 if (ServerProcess.HasExited == false)
                 {
-                    Shows.ShowMsgDialog(this, "您没有关闭服务器，无法调整服务器功能！", "错误");
+                    Shows.ShowMsgDialog("您没有关闭服务器，无法调整服务器功能！", "错误");
                     return;
                 }
             }
@@ -2044,11 +2044,11 @@ namespace MSL
                 try
                 {
                     File.WriteAllText(Rserverbase + @"\server.properties", config);
-                    Shows.ShowMsgDialog(this, "保存成功！", "信息");
+                    Shows.ShowMsgDialog("保存成功！", "信息");
                 }
                 catch (Exception ex)
                 {
-                    Shows.ShowMsgDialog(this, "保存失败！请检查服务器是否关闭！\n错误代码：" + ex.Message, "错误");
+                    Shows.ShowMsgDialog("保存失败！请检查服务器是否关闭！\n错误代码：" + ex.Message, "错误");
                 }
                 GetServerConfig();
             }
@@ -2060,7 +2060,7 @@ namespace MSL
             {
                 if (ServerProcess.HasExited == false)
                 {
-                    Shows.ShowMsgDialog(this, "您没有关闭服务器，无法更换图标！", "错误");
+                    Shows.ShowMsgDialog("您没有关闭服务器，无法更换图标！", "错误");
                     return;
                 }
             }
@@ -2068,7 +2068,7 @@ namespace MSL
             { }
             if (File.Exists(Rserverbase + "\\server-icon.png"))
             {
-                bool dialogret = await Shows.ShowMsgDialogAsync(this, "检测到服务器已有图标，是否删除它？", "警告", true, "取消");
+                bool dialogret = await Shows.ShowMsgDialogAsync("检测到服务器已有图标，是否删除它？", "警告", true, "取消");
                 if (dialogret)
                 {
                     try
@@ -2077,10 +2077,10 @@ namespace MSL
                     }
                     catch (Exception ex)
                     {
-                        Shows.ShowMsgDialog(this, "图标删除失败！请检查服务器是否关闭！\n错误代码：" + ex.Message, "错误");
+                        Shows.ShowMsgDialog("图标删除失败！请检查服务器是否关闭！\n错误代码：" + ex.Message, "错误");
                         return;
                     }
-                    bool _dialogret = await Shows.ShowMsgDialogAsync(this, "原图标已删除，是否继续更换操作？", "提示", true, "取消");
+                    bool _dialogret = await Shows.ShowMsgDialogAsync("原图标已删除，是否继续更换操作？", "提示", true, "取消");
                     if (!_dialogret)
                     {
                         return;
@@ -2091,7 +2091,7 @@ namespace MSL
                     return;
                 }
             }
-            bool dialogRet = await Shows.ShowMsgDialogAsync(this, "请先准备一张64*64像素的图片（格式为png），准备完成后点击确定以继续", "如何操作？");
+            bool dialogRet = await Shows.ShowMsgDialogAsync("请先准备一张64*64像素的图片（格式为png），准备完成后点击确定以继续", "如何操作？");
             if (!dialogRet)
             {
                 return;
@@ -2106,11 +2106,11 @@ namespace MSL
                 try
                 {
                     File.Copy(openfile.FileName, Rserverbase + "\\server-icon.png", true);
-                    Shows.ShowMsgDialog(this, "图标更换完成！", "信息");
+                    Shows.ShowMsgDialog("图标更换完成！", "信息");
                 }
                 catch (Exception ex)
                 {
-                    Shows.ShowMsgDialog(this, "图标更换失败！请检查服务器是否关闭！\n错误代码：" + ex.Message, "错误");
+                    Shows.ShowMsgDialog("图标更换失败！请检查服务器是否关闭！\n错误代码：" + ex.Message, "错误");
                 }
             }
         }
@@ -2120,13 +2120,13 @@ namespace MSL
             {
                 if (ServerProcess.HasExited == false)
                 {
-                    Shows.ShowMsgDialog(this, "您没有关闭服务器，无法更换地图！", "错误");
+                    Shows.ShowMsgDialog("您没有关闭服务器，无法更换地图！", "错误");
                     return;
                 }
             }
             catch
             { }
-            bool dialogret = await Shows.ShowMsgDialogAsync(this, "此功能会删除原来的旧地图，是否要继续使用？", "警告", true, "取消");
+            bool dialogret = await Shows.ShowMsgDialogAsync("此功能会删除原来的旧地图，是否要继续使用？", "警告", true, "取消");
             if (dialogret)
             {
                 if (Directory.Exists(Rserverbase + @"\" + gameWorldText.Text))
@@ -2142,11 +2142,11 @@ namespace MSL
                     try
                     {
                         Functions.MoveFolder(dialog.SelectedPath, Rserverbase + @"\" + gameWorldText.Text);
-                        Shows.ShowMsgDialog(this, "导入世界成功！", "信息");
+                        Shows.ShowMsgDialog("导入世界成功！", "信息");
                     }
                     catch (Exception ex)
                     {
-                        Shows.ShowMsgDialog(this, "导入世界失败！请检查服务器是否关闭！\n错误代码：" + ex.Message, "错误");
+                        Shows.ShowMsgDialog("导入世界失败！请检查服务器是否关闭！\n错误代码：" + ex.Message, "错误");
                     }
 
                 }
@@ -2223,7 +2223,7 @@ namespace MSL
         }
         private void mpHelp_Click(object sender, RoutedEventArgs e)
         {
-            Shows.ShowMsgDialog(this, "若标签栏为灰色且无法点击，说明此服务端不支持此功能，或相应的文件夹未生成。请更换服务端核心并重启服务器再试。", "提示");
+            Shows.ShowMsgDialog("若标签栏为灰色且无法点击，说明此服务端不支持此功能，或相应的文件夹未生成。请更换服务端核心并重启服务器再试。", "提示");
         }
 
         class PluginInfo
@@ -2245,7 +2245,7 @@ namespace MSL
 
         private async void addModsTip_Click(object sender, RoutedEventArgs e)
         {
-            bool dialog = await Shows.ShowMsgDialogAsync(this, "服务器需要添加的模组和客户端要添加的模组有所不同，增加方块、实体、玩法的MOD，是服务器需要安装的（也就是服务端和客户端都需要安装），而小地图、皮肤补丁、输入补丁、优化MOD、视觉显示类的MOD，服务器是一定不需要安装的（也就是只能加在客户端里）\n点击确定查看详细区分方法", "提示", true, "取消");
+            bool dialog = await Shows.ShowMsgDialogAsync("服务器需要添加的模组和客户端要添加的模组有所不同，增加方块、实体、玩法的MOD，是服务器需要安装的（也就是服务端和客户端都需要安装），而小地图、皮肤补丁、输入补丁、优化MOD、视觉显示类的MOD，服务器是一定不需要安装的（也就是只能加在客户端里）\n点击确定查看详细区分方法", "提示", true, "取消");
             if (dialog)
             {
                 Process.Start("https://zhidao.baidu.com/question/927720370906860259.html");
@@ -2332,7 +2332,7 @@ namespace MSL
             {
                 if (!ServerProcess.HasExited)
                 {
-                    Shows.ShowMsgDialog(this, "服务器在运行中，无法进行操作！请关闭服务器后再试！", "警告");
+                    Shows.ShowMsgDialog("服务器在运行中，无法进行操作！请关闭服务器后再试！", "警告");
                     return;
                 }
             }
@@ -2370,7 +2370,7 @@ namespace MSL
             {
                 if (!ServerProcess.HasExited)
                 {
-                    Shows.ShowMsgDialog(this, "服务器在运行中，无法进行操作！请关闭服务器后再试！", "警告");
+                    Shows.ShowMsgDialog("服务器在运行中，无法进行操作！请关闭服务器后再试！", "警告");
                     return;
                 }
             }
@@ -2406,7 +2406,7 @@ namespace MSL
             {
                 if (!ServerProcess.HasExited)
                 {
-                    Shows.ShowMsgDialog(this, "服务器在运行中，无法进行操作！请关闭服务器后再试！", "警告");
+                    Shows.ShowMsgDialog("服务器在运行中，无法进行操作！请关闭服务器后再试！", "警告");
                     return;
                 }
             }
@@ -2444,7 +2444,7 @@ namespace MSL
             {
                 if (!ServerProcess.HasExited)
                 {
-                    Shows.ShowMsgDialog(this, "服务器在运行中，无法进行操作！请关闭服务器后再试！", "警告");
+                    Shows.ShowMsgDialog("服务器在运行中，无法进行操作！请关闭服务器后再试！", "警告");
                     return;
                 }
             }
@@ -2480,7 +2480,7 @@ namespace MSL
             {
                 if (!ServerProcess.HasExited)
                 {
-                    Shows.ShowMsgDialog(this, "服务器在运行中，无法进行操作！请关闭服务器后再试！", "警告");
+                    Shows.ShowMsgDialog("服务器在运行中，无法进行操作！请关闭服务器后再试！", "警告");
                     return;
                 }
             }
@@ -2507,7 +2507,7 @@ namespace MSL
             {
                 if (!ServerProcess.HasExited)
                 {
-                    Shows.ShowMsgDialog(this, "服务器在运行中，无法进行操作！请关闭服务器后再试！", "警告");
+                    Shows.ShowMsgDialog("服务器在运行中，无法进行操作！请关闭服务器后再试！", "警告");
                     return;
                 }
             }
@@ -2540,7 +2540,7 @@ namespace MSL
         }
         private async void openpluginweb_Click(object sender, RoutedEventArgs e)
         {
-            await Shows.ShowMsgDialogAsync(this, "开服器暂时无法提供插件下载功能，即将为您打开Spigot网站，请您自行寻找插件并下载（下载后点击右下角“+”将其添加入服务器）。", "提示");
+            await Shows.ShowMsgDialogAsync("开服器暂时无法提供插件下载功能，即将为您打开Spigot网站，请您自行寻找插件并下载（下载后点击右下角“+”将其添加入服务器）。", "提示");
             Process.Start("https://www.spigotmc.org/resources/");
         }
         #endregion
@@ -2678,7 +2678,7 @@ namespace MSL
             {
                 if (ServerProcess.HasExited == false)
                 {
-                    Shows.ShowMsgDialog(this, "服务器运行时无法更改服务器设置！", "错误");
+                    Shows.ShowMsgDialog("服务器运行时无法更改服务器设置！", "错误");
                     return;
                 }
             }
@@ -2711,7 +2711,7 @@ namespace MSL
                             bool unzipJava = await UnzipJava();
                             if (!unzipJava)
                             {
-                                Shows.ShowMsgDialog(this, "安装失败，请查看是否有杀毒软件进行拦截！请确保添加信任或关闭杀毒软件后进行重新安装！", "错误");
+                                Shows.ShowMsgDialog("安装失败，请查看是否有杀毒软件进行拦截！请确保添加信任或关闭杀毒软件后进行重新安装！", "错误");
                                 doneBtn1.IsEnabled = true;
                                 refreahConfig.IsEnabled = true;
                                 return;
@@ -2724,7 +2724,7 @@ namespace MSL
                         }
                         else
                         {
-                            Shows.ShowMsgDialog(this, "下载取消！", "提示");
+                            Shows.ShowMsgDialog("下载取消！", "提示");
                             doneBtn1.IsEnabled = true;
                             refreahConfig.IsEnabled = true;
                             return;
@@ -2752,7 +2752,7 @@ namespace MSL
                     }
                     else
                     {
-                        Shows.ShowMsgDialog(this, "检测Java可用性失败，您的Java似乎不可用！请检查是否选择正确！", "错误");
+                        Shows.ShowMsgDialog("检测Java可用性失败，您的Java似乎不可用！请检查是否选择正确！", "错误");
                         doneBtn1.IsEnabled = true;
                         refreahConfig.IsEnabled = true;
                         return;
@@ -2775,12 +2775,12 @@ namespace MSL
                 Rserverjava = jAva.Text;
                 if (server.Text.Contains("forge") && server.Text.Contains("installer"))
                 {
-                    bool dialog = await Shows.ShowMsgDialogAsync(this, "您选择的服务端是forge安装器，是否将其展开安装？\n如果不展开安装，服务器可能无法开启！", "提示", true, "取消");
+                    bool dialog = await Shows.ShowMsgDialogAsync("您选择的服务端是forge安装器，是否将其展开安装？\n如果不展开安装，服务器可能无法开启！", "提示", true, "取消");
                     if (dialog)
                     {
                         string installReturn = null;
                         //调用新版forge安装器
-                        bool installForge = await Shows.ShowInstallForge(this, Rserverbase + "\\" + server.Text, Rserverbase, Rserverjava);
+                        bool installForge = await Shows.ShowInstallForge(Rserverbase + "\\" + server.Text, Rserverbase, Rserverjava);
                         if (installForge)
                         {
                             installReturn = Functions.InstallForge(Rserverjava, Rserverbase, server.Text);
@@ -2791,7 +2791,7 @@ namespace MSL
                         }
                         if (installReturn == null)
                         {
-                            Shows.ShowMsgDialog(this, "下载失败！", "错误");
+                            Shows.ShowMsgDialog("下载失败！", "错误");
                             return;
                         }
                         server.Text = installReturn;
@@ -2802,7 +2802,7 @@ namespace MSL
                 {
                     if (Rserverbase != bAse.Text)
                     {
-                        bool dialog = await Shows.ShowMsgDialogAsync(this, "检测到您更改了服务器目录，是否将当前的服务器目录移动至新的目录？", "警告", true, "取消");
+                        bool dialog = await Shows.ShowMsgDialogAsync("检测到您更改了服务器目录，是否将当前的服务器目录移动至新的目录？", "警告", true, "取消");
                         if (dialog)
                         {
                             Functions.MoveFolder(Rserverbase, bAse.Text);
@@ -2825,7 +2825,7 @@ namespace MSL
                 LoadSettings();
                 SaveConfigEvent();
 
-                Shows.ShowMsgDialog(this, "保存完毕！", "信息");
+                Shows.ShowMsgDialog("保存完毕！", "信息");
             }
             catch (Exception err)
             {
@@ -2845,9 +2845,9 @@ namespace MSL
             }
             else
             {
-                await Shows.ShowMsgDialogAsync(this, "下载Java即代表您接受Java的服务条款：\nhttps://www.oracle.com/downloads/licenses/javase-license1.html", "信息", false);
+                await Shows.ShowMsgDialogAsync("下载Java即代表您接受Java的服务条款：\nhttps://www.oracle.com/downloads/licenses/javase-license1.html", "信息", false);
                 DownjavaName = fileName;
-                bool downDialog = await Shows.ShowDownloader(this, downUrl, "MSL", "Java.zip", "下载" + fileName + "中……");
+                bool downDialog = await Shows.ShowDownloader(downUrl, "MSL", "Java.zip", "下载" + fileName + "中……");
                 if (downDialog)
                 {
                     return 1;
@@ -2918,7 +2918,7 @@ namespace MSL
                 if (Path.GetDirectoryName(openfile.FileName) != Rserverbase)
                 {
                     File.Copy(openfile.FileName, Rserverbase + @"\" + openfile.SafeFileName, true);
-                    Shows.ShowMsgDialog(this, "已将服务端文件移至服务器文件夹中！您可将源文件删除！", "提示");
+                    Shows.ShowMsgDialog("已将服务端文件移至服务器文件夹中！您可将源文件删除！", "提示");
                 }
                 server.Text = openfile.SafeFileName;
             }
@@ -3009,7 +3009,7 @@ namespace MSL
             }
             else
             {
-                Shows.ShowMsgDialog(this, "检测失败，您的环境变量似乎不存在！", "错误");
+                Shows.ShowMsgDialog("检测失败，您的环境变量似乎不存在！", "错误");
             }
         }
 
@@ -3170,7 +3170,7 @@ namespace MSL
             {
                 if (ServerProcess.HasExited == false)
                 {
-                    bool dialogRet = await Shows.ShowMsgDialogAsync(this, "检测到服务器正在运行，点击确定以关闭服务器", "信息");
+                    bool dialogRet = await Shows.ShowMsgDialogAsync("检测到服务器正在运行，点击确定以关闭服务器", "信息");
                     if (!dialogRet)
                     {
                         return;
@@ -3190,7 +3190,7 @@ namespace MSL
                     streamWriter.WriteLine(line);
                     streamWriter.Flush();
                     streamWriter.Close();
-                    Shows.ShowMsgDialog(this, "修改完毕，请重新开启服务器！", "信息");
+                    Shows.ShowMsgDialog("修改完毕，请重新开启服务器！", "信息");
                 }
                 catch (Exception a)
                 {
@@ -3212,7 +3212,7 @@ namespace MSL
                     streamWriter.WriteLine(line);
                     streamWriter.Flush();
                     streamWriter.Close();
-                    Shows.ShowMsgDialog(this, "修改完毕，请重新开启服务器！", "信息");
+                    Shows.ShowMsgDialog("修改完毕，请重新开启服务器！", "信息");
                 }
                 catch (Exception a)
                 {
@@ -3245,7 +3245,7 @@ namespace MSL
             JObject _json = (JObject)jsonObject[RserverID];
             if (closeOutlog_Copy.Content.ToString() == "屏蔽关键字日志:关")
             {
-                string text = await Shows.ShowInput(this, "输入你想屏蔽的关键字，\n开服器将不会输出含有此关键字的日志");
+                string text = await Shows.ShowInput("输入你想屏蔽的关键字，\n开服器将不会输出含有此关键字的日志");
                 if (text != null)
                 {
                     ShieldLog = text;
@@ -3285,7 +3285,7 @@ namespace MSL
             JObject _json = (JObject)jsonObject[RserverID];
             if (autoClearOutlog.Content.ToString() == "自动清屏:开")
             {
-                bool msgreturn = await Shows.ShowMsgDialogAsync(this, "关闭此功能后，服务器输出界面超过1000行日志后将不再清屏，这样可能会造成性能损失，您确定要继续吗？", "警告", true, "取消");
+                bool msgreturn = await Shows.ShowMsgDialogAsync("关闭此功能后，服务器输出界面超过1000行日志后将不再清屏，这样可能会造成性能损失，您确定要继续吗？", "警告", true, "取消");
                 if (msgreturn)
                 {
                     autoClearOutlog.Content = "自动清屏:关";
@@ -3368,7 +3368,7 @@ namespace MSL
                 _json.Remove("fastcmd");
                 jsonObject[RserverID] = _json;
                 File.WriteAllText("MSL\\ServerList.json", Convert.ToString(jsonObject), Encoding.UTF8);
-                Shows.ShowMsgDialog(this, "要使重置生效需重启此窗口，请您手动关闭此窗口并打开", "提示");
+                Shows.ShowMsgDialog("要使重置生效需重启此窗口，请您手动关闭此窗口并打开", "提示");
             }
         }
 
@@ -3376,7 +3376,7 @@ namespace MSL
         {
             try
             {
-                string text = await Shows.ShowInput(this, "请输入指令（格式为：/指令）\n若要输入的指令不是完整指令，请自行在最后添加空格");
+                string text = await Shows.ShowInput("请输入指令（格式为：/指令）\n若要输入的指令不是完整指令，请自行在最后添加空格");
                 if (text != null)
                 {
                     fastCmdList.Items.Add(text);
@@ -3438,7 +3438,7 @@ namespace MSL
             {
                 if (startTimercmd.Content.ToString() == "停止定时任务")
                 {
-                    Shows.ShowMsgDialog(this, "请先停止任务！", "警告");
+                    Shows.ShowMsgDialog("请先停止任务！", "警告");
                     return;
                 }
                 int selectedIndex = tasksList.SelectedIndex;

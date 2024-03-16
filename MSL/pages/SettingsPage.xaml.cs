@@ -34,7 +34,7 @@ namespace MSL.pages
         }
         private async void setdefault_Click(object sender, RoutedEventArgs e)
         {
-            bool dialogRet = await Shows.ShowMsgDialogAsync((MainWindow)Window.GetWindow(this), "恢复默认设置会清除MSL文件夹内的所有文件，请您谨慎选择！", "警告", true);
+            bool dialogRet = await Shows.ShowMsgDialogAsync("恢复默认设置会清除MSL文件夹内的所有文件，请您谨慎选择！", "警告", true);
             if (dialogRet)
             {
                 try
@@ -108,7 +108,7 @@ namespace MSL.pages
                 {
                     autoUpdateApp.IsChecked = true;
                 }
-                if (jsonObject["autoOpenServer"] != null && (bool)jsonObject["autoOpenServer"] != false)
+                if (jsonObject["autoOpenServer"] != null && jsonObject["autoOpenServer"].ToString() != "False")
                 {
                     openserversOnStart.IsChecked = true;
                     openserversOnStartList.Text = jsonObject["autoOpenServer"].ToString();
@@ -237,7 +237,7 @@ namespace MSL.pages
             {
                 string jsonString = File.ReadAllText(@"MSL\config.json", System.Text.Encoding.UTF8);
                 JObject jobject = JObject.Parse(jsonString);
-                jobject["autoOpenServer"] = false;
+                jobject["autoOpenServer"] = "False";
                 string convertString = Convert.ToString(jobject);
                 File.WriteAllText(@"MSL\config.json", convertString, System.Text.Encoding.UTF8);
                 Shows.GrowlSuccess("关闭成功！");
@@ -460,8 +460,8 @@ namespace MSL.pages
 
         private async void paintedEgg_Click(object sender, RoutedEventArgs e)
         {
-            var mainwindow = (MainWindow)Window.GetWindow(this);
-            bool dialog = await Shows.ShowMsgDialogAsync(mainwindow, "点击此按钮后软件出现任何问题作者概不负责，你确定要继续吗？\n（光敏性癫痫警告！若您患有光敏性癫痫，请不要点击确定！）", "警告", true, "取消");
+            var mainwindow = Window.GetWindow(this);
+            bool dialog = await Shows.ShowMsgDialogAsync("点击此按钮后软件出现任何问题作者概不负责，你确定要继续吗？\n（光敏性癫痫警告！若您患有光敏性癫痫，请不要点击确定！）", "警告", true, "取消");
             if (dialog)
             {
                 ThemeManager.Current.UsingSystemTheme = false;
@@ -474,7 +474,7 @@ namespace MSL.pages
             Window mainwindow = null;
             Dispatcher.Invoke(() =>
             {
-                mainwindow = (MainWindow)Window.GetWindow(this);
+                mainwindow = Window.GetWindow(this);
             });
             while (true)
             {
@@ -518,7 +518,7 @@ namespace MSL.pages
 
         private void changeBackImg_Click(object sender, RoutedEventArgs e)
         {
-            var mainwindow = (MainWindow)Window.GetWindow(this);
+            var mainwindow = Window.GetWindow(this);
             OpenFileDialog openfile = new OpenFileDialog();
             openfile.InitialDirectory = AppDomain.CurrentDomain.BaseDirectory;
             openfile.Title = "请选择文件";
@@ -536,7 +536,7 @@ namespace MSL.pages
                 }
                 catch (Exception ex)
                 {
-                    Shows.ShowMsgDialog(mainwindow, "更换背景图片失败！请重试！\n错误代码：" + ex.Message, "错误");
+                    Shows.ShowMsgDialog("更换背景图片失败！请重试！\n错误代码：" + ex.Message, "错误");
                 }
             }
         }
@@ -566,7 +566,7 @@ namespace MSL.pages
             }
             catch (Exception ex)
             {
-                Shows.ShowMsgDialog((MainWindow)Window.GetWindow(this), "清除背景图片失败！请重试！\n错误代码：" + ex.Message, "错误");
+                Shows.ShowMsgDialog("清除背景图片失败！请重试！\n错误代码：" + ex.Message, "错误");
             }
         }
 
@@ -644,7 +644,7 @@ namespace MSL.pages
             //更新
             try
             {
-                var mainwindow = (MainWindow)Window.GetWindow(this);
+                var mainwindow = Window.GetWindow(this);
                 string aaa = Functions.Get("query/update");
                 if (aaa.Contains("v"))
                 {
@@ -658,16 +658,16 @@ namespace MSL.pages
                     var updatelog = Functions.Get("query/update/log");
                     Dispatcher.Invoke(async () =>
                     {
-                        bool dialog = await Shows.ShowMsgDialogAsync(mainwindow, "发现新版本，版本号为：" + aaa + "，是否进行更新？\n更新日志：\n" + updatelog, "更新", true, "取消");
+                        bool dialog = await Shows.ShowMsgDialogAsync("发现新版本，版本号为：" + aaa + "，是否进行更新？\n更新日志：\n" + updatelog, "更新", true, "取消");
                         if (dialog == true)
                         {
                             if (MainWindow.ProcessRunningCheck())
                             {
-                                Shows.ShowMsgDialog(mainwindow, "您的服务器/内网映射/点对点联机正在运行中，若此时更新，会造成后台残留，请将前者关闭后再进行更新！", "警告");
+                                Shows.ShowMsgDialog("您的服务器/内网映射/点对点联机正在运行中，若此时更新，会造成后台残留，请将前者关闭后再进行更新！", "警告");
                                 return;
                             }
                             string aaa1 = Functions.Get("download/update");
-                            await Shows.ShowDownloader(mainwindow, aaa1, AppDomain.CurrentDomain.BaseDirectory, "MSL" + aaa + ".exe", "下载新版本中……");
+                            await Shows.ShowDownloader(aaa1, AppDomain.CurrentDomain.BaseDirectory, "MSL" + aaa + ".exe", "下载新版本中……");
                             if (File.Exists("MSL" + aaa + ".exe"))
                             {
                                 string oldExePath = Process.GetCurrentProcess().MainModule.ModuleName;

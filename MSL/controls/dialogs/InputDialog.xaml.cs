@@ -12,11 +12,11 @@ namespace MSL.controls
     {
         public event DeleControl CloseDialog;
         public string _dialogReturn = null;
-        public InputDialog(Window window, string dialogText, string textboxText, bool passwordMode = false)
+        public InputDialog(string dialogText, string textboxText, bool passwordMode = false)
         {
             InitializeComponent();
-            this.MaxHeight = window.ActualHeight;
-            this.MaxWidth = window.ActualWidth - 200;
+            //this.MaxHeight = window.ActualHeight;
+            //this.MaxWidth = window.ActualWidth - 200;
             bodyText.Text = dialogText;
             textBox.Text = textboxText;
             if (passwordMode)

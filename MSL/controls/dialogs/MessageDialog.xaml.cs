@@ -13,11 +13,11 @@ namespace MSL.controls
         public event DeleControl CloseDialog;
         public bool _dialogReturn;
 
-        public MessageDialog(Window window, string dialogText, string dialogTitle, bool showPrimaryBtn, string closeBtnContext, string primaryBtnContext)
+        public MessageDialog(string dialogText, string dialogTitle, bool showPrimaryBtn, string closeBtnContext, string primaryBtnContext)
         {
             InitializeComponent();
-            this.MaxHeight = window.ActualHeight;
-            this.MaxWidth = window.ActualWidth - 200;
+            //MaxHeight = window.ActualHeight;
+            //MaxWidth = window.ActualWidth - 200;
             bodyText.Text = dialogText;
             titleText.Text = dialogTitle;
             if (!showPrimaryBtn)

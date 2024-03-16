@@ -48,9 +48,9 @@ namespace MSL.pages
             }
             else
             {
-                var mainwindow = (MainWindow)Window.GetWindow(this);
-                //Shows.ShowMsgDialog(mainwindow, "注意：此功能目前不稳定，无法穿透所有类型的NAT，若联机失败，请尝试开服务器并使用内网映射联机！\r\n该功能可能需要正版账户，若无法联机，请从网络上寻找解决方法或尝试开服务器并使用内网映射联机！", "警告");
-                Shows.ShowMsgDialog(mainwindow, "注意：此功能目前不稳定，无法穿透所有类型的NAT，若联机失败，请尝试开服务器并使用内网映射联机！\r\n该功能可能需要正版账户，若无法联机，请从网络上寻找解决方法或尝试开服务器并使用内网映射联机！", "警告");
+                var mainwindow = Window.GetWindow(this);
+                //Shows.ShowMsgDialog("注意：此功能目前不稳定，无法穿透所有类型的NAT，若联机失败，请尝试开服务器并使用内网映射联机！\r\n该功能可能需要正版账户，若无法联机，请从网络上寻找解决方法或尝试开服务器并使用内网映射联机！", "警告");
+                Shows.ShowMsgDialog("注意：此功能目前不稳定，无法穿透所有类型的NAT，若联机失败，请尝试开服务器并使用内网映射联机！\r\n该功能可能需要正版账户，若无法联机，请从网络上寻找解决方法或尝试开服务器并使用内网映射联机！", "警告");
                 masterExp.IsExpanded = true;
             }
             Thread thread = new Thread(GetFrpcInfo);
@@ -240,16 +240,16 @@ namespace MSL.pages
                         if (!File.Exists("MSL\\frpc.exe"))
                         {
                             RefreshLink();
-                            var mwindow = (MainWindow)Window.GetWindow(this);
-                            await Shows.ShowDownloader(mwindow, _dnfrpc, "MSL", "frpc.exe", "下载内网映射中...");
+                            var mwindow = Window.GetWindow(this);
+                            await Shows.ShowDownloader(_dnfrpc, "MSL", "frpc.exe", "下载内网映射中...");
                             _dnfrpc = "";
                         }
                     }
                     else if (jobject2["frpcversion"].ToString() != "6")
                     {
                         RefreshLink();
-                        var mwindow = (MainWindow)Window.GetWindow(this);
-                        await Shows.ShowDownloader(mwindow, _dnfrpc, "MSL", "frpc.exe", "更新内网映射中...");
+                        var mwindow = Window.GetWindow(this);
+                        await Shows.ShowDownloader(_dnfrpc, "MSL", "frpc.exe", "更新内网映射中...");
                         _dnfrpc = "";
                         JObject jobject3 = JObject.Parse(File.ReadAllText("MSL\\config.json", Encoding.UTF8));
                         jobject3["frpcversion"] = "6";
@@ -259,8 +259,8 @@ namespace MSL.pages
                     else if (!File.Exists("MSL\\frpc.exe"))
                     {
                         RefreshLink();
-                        var mwindow = (MainWindow)Window.GetWindow(this);
-                        await Shows.ShowDownloader(mwindow, _dnfrpc, "MSL", "frpc.exe", "下载内网映射中...");
+                        var mwindow = Window.GetWindow(this);
+                        await Shows.ShowDownloader(_dnfrpc, "MSL", "frpc.exe", "下载内网映射中...");
                         _dnfrpc = "";
                     }
                 }
