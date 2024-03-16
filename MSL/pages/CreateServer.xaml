@@ -106,7 +106,7 @@
                 <Button x:Name="FastModeInstallBtn" Content="确定" Style="{StaticResource ButtonPrimary}" Width="150" Click="FastModeInstallBtn_Click" Height="45" FontSize="18" Margin="200,0,0,0"/>
             </Grid>
         </StackPanel>
-        <TabControl x:Name="tabCtrl" Visibility="Hidden" Background="{x:Null}" BorderThickness="0" Style="{StaticResource TabControlInLine}">
+        <TabControl x:Name="tabCtrl" Visibility="Hidden" Background="{x:Null}" BorderThickness="0,1,0,0" Style="{StaticResource TabControlInLine}">
             <TabItem x:Name="welcome" Header="基本信息" FontSize="14" Background="{DynamicResource SideMenuBrush}">
                 <StackPanel>
                     <Label Content="将通过几个步骤为您创建服务器……" FontSize="18" Background="{x:Null}" BorderBrush="{x:Null}" VerticalAlignment="Top" Height="40" HorizontalAlignment="Left" FontWeight="Bold"/>

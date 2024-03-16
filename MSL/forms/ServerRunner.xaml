@@ -23,7 +23,7 @@
         </StackPanel>
     </hc:Window.NonClientAreaContent>
     <Grid x:Name="MainGrid">
-        <TabControl x:Name="TabCtrl" SelectionChanged="TabCtrl_SelectionChanged" Background="{x:Null}" Style="{StaticResource TabControlInLine}" BorderThickness="0">
+        <TabControl x:Name="TabCtrl" SelectionChanged="TabCtrl_SelectionChanged" Background="{x:Null}" Style="{StaticResource TabControlInLine}" BorderThickness="0,1,0,0">
             <TabItem Header="仪表盘" Background="{DynamicResource SideMenuBrush}">
                 <Grid>
                     <Grid.RenderTransform>
@@ -165,7 +165,7 @@
                             <BeginStoryboard Storyboard="{StaticResource ShowPage}"/>
                         </EventTrigger>
                     </Grid.Triggers>
-                    <TabControl x:Name="pluginsAndModsTab" TabStripPlacement="Left" Visibility="Hidden" Background="{x:Null}">
+                    <TabControl x:Name="pluginsAndModsTab" TabStripPlacement="Left" Visibility="Hidden" Background="{x:Null}" BorderThickness="1,0,0,0">
                         <TabItem x:Name="pluginsTabItem" Header="管理服务器插件" Background="{DynamicResource SideMenuBrush}">
                             <Grid Margin="10">
                                 <Label Content="插件列表(添加的插件在服务器重启后生效)" Style="{StaticResource BorderTitle}"/>

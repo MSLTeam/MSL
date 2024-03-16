@@ -10,7 +10,7 @@
         NonClientAreaBackground="{DynamicResource BackgroundBrush}" Background="{DynamicResource BackgroundBrush}"
         Title="配置内网映射" Height="450" Width="750" ResizeMode="NoResize" WindowStartupLocation="CenterOwner">
     <Grid x:Name="MainGrid">
-        <TabControl Background="{x:Null}" BorderThickness="0">
+        <TabControl Background="{x:Null}" BorderThickness="0,1,0,0">
             <TabItem Header="MSL-Frp" Background="Transparent">
                 <Frame Source="/pages/frpProviders/MSLFrp.xaml" BorderBrush="{x:Null}"/>
             </TabItem>
