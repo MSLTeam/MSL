@@ -2611,6 +2611,10 @@ namespace MSL
         {
             try
             {
+                if (MainWindow.serverLink == null)
+                {
+                    Thread.Sleep(5000);
+                }
                 Dispatcher.Invoke(() =>
                 {
                     selectJava.Items.Clear();
