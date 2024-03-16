@@ -1,5 +1,6 @@
 ﻿using HandyControl.Controls;
 using HandyControl.Data;
+using System;
 using System.Threading.Tasks;
 using Window = System.Windows.Window;
 
@@ -73,15 +74,15 @@ namespace MSL.controls
             }
         }
 
-        public static async Task<string> ShowInput(string dialogText, string textboxText = "", bool passwordMode = false)
+        public static async Task<string> ShowInput(Window _window, string dialogText, string textboxText = "", bool passwordMode = false)
         {
             ShowDialogs showDialogs = new ShowDialogs();
-            string _ret = await showDialogs.ShowInpputDialog(dialogText, textboxText, passwordMode);
+            string _ret = await showDialogs.ShowInpputDialog(_window, dialogText, textboxText, passwordMode);
             return _ret;
         }
 
         /*
-        public static bool ShowInput(Window window, string dialogText, out string userInput, string textboxText = "", bool passwordMode = false)
+        public static bool ShowInput(this,Window window, string dialogText, out string userInput, string textboxText = "", bool passwordMode = false)
         {
             userInput = string.Empty;
             try
@@ -113,15 +114,15 @@ namespace MSL.controls
         }
         */
 
-        public static async Task<bool> ShowInstallForge(string forgePath, string downPath, string java)
+        public static async Task<bool> ShowInstallForge(Window _window, string forgePath, string downPath, string java)
         {
             ShowDialogs showDialogs = new ShowDialogs();
-            bool _ret = await showDialogs.ShowInstallForgeDialog(forgePath, downPath, java);
+            bool _ret = await showDialogs.ShowInstallForgeDialog(_window, forgePath, downPath, java);
             return _ret;
         }
 
         /*
-        public static bool ShowInstallForge(Window window, string forgePath, string downPath, string java)
+        public static bool ShowInstallForge(this,Window window, string forgePath, string downPath, string java)
         {
             try
             {
@@ -150,15 +151,15 @@ namespace MSL.controls
         }
         */
 
-        public static async Task<bool> ShowDownloader(string downloadurl, string downloadPath, string filename, string downloadinfo, string sha256 = "")
+        public static async Task<bool> ShowDownloader(Window _window, string downloadurl, string downloadPath, string filename, string downloadinfo, string sha256 = "")
         {
             ShowDialogs showDialogs = new ShowDialogs();
-            bool _ret = await showDialogs.ShowDownloadDialog(downloadurl, downloadPath, filename, downloadinfo, sha256);
+            bool _ret = await showDialogs.ShowDownloadDialog(_window, downloadurl, downloadPath, filename, downloadinfo, sha256);
             return _ret;
         }
 
         /*
-        public static bool ShowDownloader(Window window, string downloadurl, string downloadPath, string filename, string downloadinfo, string sha256 = "")
+        public static bool ShowDownloader(this,Window window, string downloadurl, string downloadPath, string filename, string downloadinfo, string sha256 = "")
         {
             try
             {
@@ -218,10 +219,10 @@ namespace MSL.controls
         /// <param name="_window">对话框父窗体</param>
         /// <param name="text">对话框内容</param>
         /// <param name="title">对话框标题</param>
-        public static void ShowMsgDialog(string text, string title)
+        public static void ShowMsgDialog(Window _window, string text, string title)
         {
             ShowDialogs showDialogs = new ShowDialogs();
-            showDialogs.ShowMsgDialog(text, title);
+            showDialogs.ShowMsgDialog(_window, text, title);
         }
 
         /// <summary>
@@ -234,87 +235,87 @@ namespace MSL.controls
         /// <param name="closeBtnContext">关闭按钮文字内容</param>
         /// <param name="primaryBtnContext">确认按钮文字内容</param>
         /// <returns></returns>
-        public static async Task<bool> ShowMsgDialogAsync(string text, string title, bool showPrimaryBtn = false, string closeBtnContext = "取消", string primaryBtnContext = "确定")
+        public static async Task<bool> ShowMsgDialogAsync(Window _window, string text, string title, bool showPrimaryBtn = false, string closeBtnContext = "取消", string primaryBtnContext = "确定")
         {
             ShowDialogs showDialogs = new ShowDialogs();
-            bool _ret = await showDialogs.ShowMsgDialog(text, title, showPrimaryBtn, closeBtnContext, primaryBtnContext);
+            bool _ret = await showDialogs.ShowMsgDialog(_window, text, title, showPrimaryBtn, closeBtnContext, primaryBtnContext);
             return _ret;
         }
     }
 
     internal class ShowDialogs
     {
-        //private Window window;
+        private Window window;
         private Dialog dialog;
 
 
-        public void ShowTextDialog(string text)
+        public void ShowTextDialog(Window _window, string text)
         {
-            //window = _window;
-            //window.Focus();
+            window = _window;
+            window?.Focus();
             dialog = Dialog.Show(new TextDialog(text));
         }
 
         public void CloseTextDialog()
         {
-            //window.Focus();
+            window?.Focus();
             dialog.Close();
         }
 
 
         private TaskCompletionSource<bool> _tcs;
-        public void ShowMsgDialog(string text, string title)
+        public void ShowMsgDialog(Window _window, string text, string title)
         {
-            //window = _window;
+            window = _window;
             MessageDialog msgDialog = new MessageDialog(text, title, false, "", "");
             msgDialog.CloseDialog += CloseMsgDialog;
-            //window.Focus();
+            window?.Focus();
             dialog = Dialog.Show(msgDialog);
             _tcs = new TaskCompletionSource<bool>();
         }
 
-        public async Task<bool> ShowMsgDialog(string text, string title, bool showPrimaryBtn, string closeBtnContext = "取消", string primaryBtnContext = "确定")
+        public async Task<bool> ShowMsgDialog(Window _window, string text, string title, bool showPrimaryBtn, string closeBtnContext = "取消", string primaryBtnContext = "确定")
         {
-            //window = _window;
+            window = _window;
             MessageDialog msgDialog = new MessageDialog(text, title, showPrimaryBtn, closeBtnContext, primaryBtnContext);
             msgDialog.CloseDialog += CloseMsgDialog;
-            //window.Focus();
+            window?.Focus();
             dialog = Dialog.Show(msgDialog);
             _tcs = new TaskCompletionSource<bool>();
             await _tcs.Task;
             return msgDialog._dialogReturn;
         }
 
-        public async Task<bool> ShowDownloadDialog(string downloadurl, string downloadPath, string filename, string downloadinfo, string sha256 = "")
+        public async Task<bool> ShowDownloadDialog(Window _window, string downloadurl, string downloadPath, string filename, string downloadinfo, string sha256 = "")
         {
-            //window = _window;
+            window = _window;
             DownloadDialog dwnDialog = new DownloadDialog(downloadurl, downloadPath, filename, downloadinfo, sha256);
             dwnDialog.CloseDialog += CloseMsgDialog;
-            //window.Focus();
+            window?.Focus();
             dialog = Dialog.Show(dwnDialog);
             _tcs = new TaskCompletionSource<bool>();
             await _tcs.Task;
             return dwnDialog._dialogReturn;
         }
 
-        public async Task<string> ShowInpputDialog(string dialogText, string textboxText = "", bool passwordMode = false)
+        public async Task<string> ShowInpputDialog(Window _window, string dialogText, string textboxText = "", bool passwordMode = false)
         {
-            //window = _window;
+            window = _window;
             InputDialog inputDialog = new InputDialog(dialogText, textboxText, passwordMode);
             inputDialog.CloseDialog += CloseMsgDialog;
-            //window.Focus();
+            window?.Focus();
             dialog = Dialog.Show(inputDialog);
             _tcs = new TaskCompletionSource<bool>();
             await _tcs.Task;
             return inputDialog._dialogReturn;
         }
 
-        public async Task<bool> ShowInstallForgeDialog(string forgePath, string downPath, string java)
+        public async Task<bool> ShowInstallForgeDialog(Window _window, string forgePath, string downPath, string java)
         {
-            //window = _window;
+            window = _window;
             InstallForgeDialog _dialog = new InstallForgeDialog(forgePath, downPath, java);
             _dialog.CloseDialog += CloseMsgDialog;
-            //window.Focus();
+            window?.Focus();
             dialog = Dialog.Show(_dialog);
             _tcs = new TaskCompletionSource<bool>();
             await _tcs.Task;
@@ -323,7 +324,7 @@ namespace MSL.controls
 
         private void CloseMsgDialog()
         {
-            //window.Focus();
+            window?.Focus();
             dialog.Close();
             _tcs.SetResult(true);
         }

@@ -11,6 +11,7 @@ using System.Text;
 using System.Text.RegularExpressions;
 using System.Threading;
 using System.Threading.Tasks;
+using System.Windows;
 
 namespace MSL.controls
 {
@@ -532,7 +533,7 @@ namespace MSL.controls
             }
         }
 
-        public (Dictionary<string, string>, JArray) GetNodeList(System.Windows.Window window)
+        public (Dictionary<string, string>, JArray) GetNodeList(Window window)
         {
             /*
             JObject userinfo = new JObject
@@ -581,7 +582,7 @@ namespace MSL.controls
                         using (var reader = new StreamReader(errorResponse.GetResponseStream()))
                         {
                             string error = reader.ReadToEnd();
-                            Shows.ShowMsgDialog(error, "获取用户信息失败");
+                            Shows.ShowMsgDialog(window, error, "获取用户信息失败");
                         }
                     }
                 }
@@ -589,7 +590,7 @@ namespace MSL.controls
             }
         }
 
-        public void UserSign(System.Windows.Window window)
+        public void UserSign(Window window)
         {
             /*
             JObject userinfo = new JObject
@@ -609,23 +610,23 @@ namespace MSL.controls
             }
             catch
             {
-                Shows.ShowMsgDialog("签到失败！请登录OpenFrp官网进行签到！", "错误");
+                Shows.ShowMsgDialog(window, "签到失败！请登录OpenFrp官网进行签到！", "错误");
                 return;
             }
             try
             {
                 if ((bool)JObject.Parse(responseMessage)["flag"] == true && JObject.Parse(responseMessage)["msg"].ToString() == "OK")
                 {
-                    Shows.ShowMsgDialog(JObject.Parse(responseMessage)["data"].ToString(), "签到成功");
+                    Shows.ShowMsgDialog(window, JObject.Parse(responseMessage)["data"].ToString(), "签到成功");
                 }
                 else
                 {
-                    Shows.ShowMsgDialog("签到失败", "签到失败");
+                    Shows.ShowMsgDialog(window, "签到失败", "签到失败");
                 }
             }
             catch (Exception ex)
             {
-                Shows.ShowMsgDialog("签到失败,产生的错误:\n" + ex.Message, "签到失败");
+                Shows.ShowMsgDialog(window, "签到失败,产生的错误:\n" + ex.Message, "签到失败");
             }
         }
 

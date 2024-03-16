@@ -87,7 +87,7 @@ namespace MSL.pages
                         {
                             Dispatcher.Invoke(() =>
                             {
-                                Shows.ShowMsgDialog(noticeLabText, "公告");
+                                Shows.ShowMsgDialog(Window.GetWindow(this), noticeLabText, "公告");
                             });
                         }
                     }

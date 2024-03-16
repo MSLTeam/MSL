@@ -115,7 +115,7 @@ namespace MSL
             }
             catch (Exception ex)
             {
-                await Shows.ShowMsgDialogAsync("获取模组/整合包失败！请重试或尝试连接代理后再试！\n" + ex.Message, "错误");
+                await Shows.ShowMsgDialogAsync(this, "获取模组/整合包失败！请重试或尝试连接代理后再试！\n" + ex.Message, "错误");
                 Close();
             }
         }
@@ -251,17 +251,17 @@ namespace MSL
                             filename += ".jar";
                         }
 
-                        bool dwnRet = await Shows.ShowDownloader(Url, Dir, filename, "下载中……");
+                        bool dwnRet = await Shows.ShowDownloader(this, Url, Dir, filename, "下载中……");
                         if (dwnRet)
                         {
-                            Shows.ShowMsgDialog("下载完成！", "提升");
+                            Shows.ShowMsgDialog(this, "下载完成！", "提升");
                         }
                     }
                     else if (loadType == 1)
                     {
                         Dir = "MSL";
                         Url = modVersionurl[listBox.SelectedIndex];
-                        bool dwnRet = await Shows.ShowDownloader(Url, Dir, "ServerPack.zip", "下载中……");
+                        bool dwnRet = await Shows.ShowDownloader(this, Url, Dir, "ServerPack.zip", "下载中……");
                         if (dwnRet)
                         {
                             Close();
