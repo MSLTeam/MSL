@@ -263,12 +263,12 @@ namespace MSL.pages
                         i = _i;
                     }
                 }
-                ServerList.serverIDs.Clear();
+                ServerList.serverID.Clear();
                 startServerDropdown.Items.Clear();
                 JObject jsonObject = JObject.Parse(File.ReadAllText(@"MSL\ServerList.json", Encoding.UTF8));
                 foreach (var item in jsonObject)
                 {
-                    ServerList.serverIDs.Add(item.Key);
+                    ServerList.serverID.Add(item.Key);
                     startServerDropdown.Items.Add(item.Value["name"]);
                 }
                 startServerDropdown.SelectedIndex = i;
@@ -298,7 +298,7 @@ namespace MSL.pages
             }
             else
             {
-                MainWindow.serverIDs = ServerList.serverIDs[startServerDropdown.SelectedIndex];
+                MainWindow.serverID = ServerList.serverID[startServerDropdown.SelectedIndex];
                 AutoOpenServer();
             }
         }

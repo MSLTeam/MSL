@@ -33,7 +33,7 @@ namespace MSL
         public static event DeleControl LoadAnnounce;
         public static event DeleControl AutoOpenServer;
         public static event DeleControl AutoOpenFrpc;
-        public static string serverIDs;
+        public static string serverID;
         public static string serverLink = null;
         public static float PhisicalMemory;
         public static bool getServerInfo = false;
@@ -53,11 +53,9 @@ namespace MSL
 
         private async void Window_Loaded(object sender, RoutedEventArgs e)
         {
-            this.Topmost = true;
-            //LoadingCircle loadingCircle = new LoadingCircle();
-            //MainGrid.Children.Add(loadingCircle);
-            //MainGrid.RegisterName("loadingBar", loadingCircle);
-            this.Topmost = false;
+            Topmost = true;
+            Topmost = false;
+            Focus();
             if (!Directory.Exists("MSL"))
             {
                 Process.Start("https://www.mslmc.cn/eula.html");
@@ -323,9 +321,9 @@ namespace MSL
                     while (servers != "")
                     {
                         int aserver = servers.IndexOf(",");
-                        serverIDs = servers.Substring(0, aserver);
+                        serverID = servers.Substring(0, aserver);
                         AutoOpenServer();
-                        servers = servers.Replace(serverIDs + ",", "");
+                        servers = servers.Replace(serverID + ",", "");
                     }
                 }
                 //Logger.LogInfo("读取自动开启（服务器）配置成功！");
@@ -362,11 +360,7 @@ namespace MSL
             //Logger.LogInfo("所有配置载入完毕！调整UI界面……");
             Dispatcher.Invoke(() =>
             {
-                //SideMenu.IsEnabled = true;
                 SideMenu.SelectedIndex = 0;
-                //LoadingCircle loadingCircle = MainGrid.FindName("loadingBar") as LoadingCircle;
-                //MainGrid.Children.Remove(loadingCircle);
-                //MainGrid.UnregisterName("loadingBar");
             });
             //Logger.LogInfo("软件加载完毕！");
         }
@@ -400,12 +394,8 @@ namespace MSL
             //更新
             try
             {
-                string aaa = Functions.Get("query/update");
-                if (aaa.Contains("v"))
-                {
-                    aaa = aaa.Replace("v", "");
-                }
-                Version newVersion = new Version(aaa);
+                string _httpReturn = Functions.Get("query/update");
+                Version newVersion = new Version(_httpReturn);
                 Version version = new Version(System.Reflection.Assembly.GetExecutingAssembly().GetName().Version.ToString());
 
                 if (newVersion > version)
@@ -423,15 +413,15 @@ namespace MSL
                     else if (jsonObject["autoUpdateApp"].ToString() == "True")
                     {
                         //Logger.LogInfo("自动更新功能已打开，更新新版本……");
-                        UpdateApp(aaa);
+                        UpdateApp(_httpReturn);
                     }
                     await Dispatcher.Invoke(async () =>
                     {
-                        bool dialog = await Shows.ShowMsgDialogAsync(this, "发现新版本，版本号为：" + aaa + "，是否进行更新？\n更新日志：\n" + updatelog, "更新", true);
+                        bool dialog = await Shows.ShowMsgDialogAsync(this, "发现新版本，版本号为：" + _httpReturn + "，是否进行更新？\n更新日志：\n" + updatelog, "更新", true);
                         if (dialog == true)
                         {
                             //Logger.LogInfo("更新新版本……");
-                            UpdateApp(aaa);
+                            UpdateApp(_httpReturn);
                         }
                         else
                         {
@@ -468,8 +458,8 @@ namespace MSL
                 Shows.ShowMsgDialog(this, "您的服务器/内网映射/点对点联机正在运行中，若此时更新，会造成后台残留，请将前者关闭后再进行更新！", "警告");
                 return;
             }
-            string aaa1 = Functions.Get("download/update");
-            await Shows.ShowDownloader(this, aaa1, AppDomain.CurrentDomain.BaseDirectory, "MSL" + aaa + ".exe", "下载新版本中……");
+            string downloadUrl = Functions.Get("download/update");
+            await Shows.ShowDownloader(this, downloadUrl, AppDomain.CurrentDomain.BaseDirectory, "MSL" + aaa + ".exe", "下载新版本中……");
             if (File.Exists("MSL" + aaa + ".exe"))
             {
                 string oldExePath = Process.GetCurrentProcess().MainModule.ModuleName;

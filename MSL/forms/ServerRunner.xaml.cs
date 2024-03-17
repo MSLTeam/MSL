@@ -49,6 +49,8 @@ namespace MSL
         private bool solveProblemSystem;
         private string foundProblems;
         private string DownjavaName;
+        public bool ControlSetPMTab;
+        public bool ControlSetServerTab;
         public string RserverID;
         public string Rservername;
         public string Rserverjava;
@@ -81,15 +83,15 @@ namespace MSL
             await Task.Delay(100);
             await Task.Run(() => { WindowLoadingEvent(); });
             GetFastCmd();
-            if (ServerList.ControlSetPMTab == true)
+            if (ControlSetPMTab == true)
             {
-                ServerList.ControlSetPMTab = false;
+                ControlSetPMTab = false;
                 WindowLoadedEvent();
                 TabCtrl.SelectedIndex = 2;
             }
-            else if (ServerList.ControlSetServerTab == true)
+            else if (ControlSetServerTab == true)
             {
-                ServerList.ControlSetServerTab = false;
+                ControlSetServerTab = false;
                 WindowLoadedEvent();
                 TabCtrl.SelectedIndex = 3;
             }
@@ -312,7 +314,7 @@ namespace MSL
 
         private void ShowWindowEvent()
         {
-            if (RserverID == MainWindow.serverIDs)
+            if (MainWindow.serverID == RserverID)
             {
                 if (WindowState == WindowState.Minimized)
                 {
@@ -321,6 +323,7 @@ namespace MSL
                 Visibility = Visibility.Visible;
                 Topmost = true;
                 Topmost = false;
+                Focus();
             }
         }//此方法是在Mainwindow的服务器列表双击后，如果服务器运行，就显示此窗口
 
@@ -2223,7 +2226,7 @@ namespace MSL
         }
         private void mpHelp_Click(object sender, RoutedEventArgs e)
         {
-            Shows.ShowMsgDialog(this, "若标签栏为灰色且无法点击，说明此服务端不支持此功能，或相应的文件夹未生成。请更换服务端核心并重启服务器再试。", "提示");
+            Shows.ShowMsgDialog(this, "若标签栏为灰色且无法点击，说明此服务端不支持相应的（插件或模组）功能，或相关（插件或模组）文件夹未创建。请更换服务端核心并重启服务器再试。", "提示");
         }
 
         class PluginInfo

@@ -15,6 +15,7 @@ namespace MSL.controls
         public InputDialog(string dialogText, string textboxText, bool passwordMode = false)
         {
             InitializeComponent();
+            Margin = new Thickness(50);
             //this.MaxHeight = window.ActualHeight;
             //this.MaxWidth = window.ActualWidth - 200;
             bodyText.Text = dialogText;

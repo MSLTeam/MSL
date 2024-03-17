@@ -6,10 +6,11 @@ using System;
 using System.Collections.Generic;
 using System.Diagnostics;
 using System.IO;
+using System.Linq;
 using System.Text;
-using System.Threading;
 using System.Windows;
 using System.Windows.Media;
+using System.Windows.Media.Animation;
 using System.Windows.Media.Imaging;
 using System.Windows.Threading;
 using MessageBox = System.Windows.MessageBox;
@@ -23,7 +24,7 @@ namespace MSL.pages
     {
         public static event DeleControl C_NotifyIcon;
         public static event DeleControl ChangeSkinStyle;
-        readonly List<string> _runServerList = new List<string>();
+        private string _autoStartList = "";
         public SettingsPage()
         {
             InitializeComponent();
@@ -111,7 +112,7 @@ namespace MSL.pages
                 if (jsonObject["autoOpenServer"] != null && jsonObject["autoOpenServer"].ToString() != "False")
                 {
                     openserversOnStart.IsChecked = true;
-                    openserversOnStartList.Text = jsonObject["autoOpenServer"].ToString();
+                    _autoStartList = jsonObject["autoOpenServer"].ToString();
                 }
                 if (jsonObject["autoOpenFrpc"] != null && (bool)jsonObject["autoOpenFrpc"] == true)
                 {
@@ -189,7 +190,9 @@ namespace MSL.pages
                 {
                     semitransparentTitle.IsChecked = true;
                 }
-                serverListBox.Items.Clear();
+                //serverListBox.Items.Clear();
+                ServersList.Items.Clear();
+                AutoStartServers.Items.Clear();
                 try
                 {
                     if (File.Exists(@"MSL\ServerList.json"))
@@ -197,9 +200,16 @@ namespace MSL.pages
                         JObject _json = JObject.Parse(File.ReadAllText(@"MSL\ServerList.json", Encoding.UTF8));
                         foreach (var item in _json)
                         {
-                            serverListBox.Items.Add(item.Value["name"]);
-                            _runServerList.Add(item.Key);
-                            serverListBox.SelectedIndex = 0;
+                            var items = _autoStartList.Split(',');
+                            if (items.Contains(item.Key))
+                            {
+                                AutoStartServers.Items.Add(string.Format("[{0}]{1}", item.Key, item.Value["name"]));
+                                continue;
+                            }
+                            ServersList.Items.Add(string.Format("[{0}]{1}", item.Key, item.Value["name"]));
+                            //serverListBox.Items.Add(item.Value["name"]);
+                            //_runServerList.Add(item.Key);
+                            //serverListBox.SelectedIndex = 0;
                         }
                     }
                 }
@@ -220,7 +230,7 @@ namespace MSL.pages
         {
             if (openserversOnStart.IsChecked == true)
             {
-                if (openserversOnStartList.Text == "")
+                if (_autoStartList == "")
                 {
                     Shows.GrowlErr("请先将服务器添加至启动列表！");
                     openserversOnStart.IsChecked = false;
@@ -228,7 +238,7 @@ namespace MSL.pages
                 }
                 string jsonString = File.ReadAllText(@"MSL\config.json", System.Text.Encoding.UTF8);
                 JObject jobject = JObject.Parse(jsonString);
-                jobject["autoOpenServer"] = openserversOnStartList.Text;
+                jobject["autoOpenServer"] = _autoStartList;
                 string convertString = Convert.ToString(jobject);
                 File.WriteAllText(@"MSL\config.json", convertString, System.Text.Encoding.UTF8);
                 Shows.GrowlSuccess("开启成功！");
@@ -463,55 +473,31 @@ namespace MSL.pages
             bool dialog = await Shows.ShowMsgDialogAsync(Window.GetWindow(this), "点击此按钮后软件出现任何问题作者概不负责，你确定要继续吗？\n（光敏性癫痫警告！若您患有光敏性癫痫，请不要点击确定！）", "警告", true, "取消");
             if (dialog)
             {
-                ThemeManager.Current.UsingSystemTheme = false;
-                Thread thread = new Thread(PaintedEgg);
-                thread.Start();
-            }
-        }
-        void PaintedEgg()
-        {
-            Window mainwindow = null;
-            Dispatcher.Invoke(() =>
-            {
-                mainwindow = Window.GetWindow(this);
-            });
-            while (true)
-            {
-                Dispatcher.Invoke(() =>
+                // 定义一个颜色数组
+                Color[] colors = new Color[] { Colors.Red, Colors.OrangeRed, Colors.Orange, Colors.SpringGreen, Colors.Green, Colors.DeepSkyBlue, Colors.DeepPink, Colors.MediumPurple, Colors.Red };
+
+                // 创建一个颜色关键帧动画
+                ColorAnimationUsingKeyFrames colorAnimation = new ColorAnimationUsingKeyFrames
                 {
-                    mainwindow.Background = Brushes.LightBlue;
-                    BrushConverter brushConverter = new BrushConverter();
-                    ThemeManager.Current.AccentColor = (Brush)brushConverter.ConvertFromString("#0078D4");
-                });
-                Thread.Sleep(200);
-                Dispatcher.Invoke(() =>
+                    Duration = TimeSpan.FromSeconds(2.0), // 总动画时间
+                    RepeatBehavior = RepeatBehavior.Forever // 无限循环
+                };
+
+                // 为每个颜色添加关键帧
+                for (int i = 0; i < colors.Length; i++)
                 {
-                    ThemeManager.Current.AccentColor = Brushes.Red;
-                });
-                Thread.Sleep(200);
-                Dispatcher.Invoke(() =>
-                {
-                    mainwindow.Background = Brushes.LightGreen;
-                    ThemeManager.Current.AccentColor = Brushes.Green;
-                });
-                Thread.Sleep(200);
-                Dispatcher.Invoke(() =>
-                {
-                    mainwindow.Background = Brushes.LightYellow;
-                    ThemeManager.Current.AccentColor = Brushes.Orange;
-                });
-                Thread.Sleep(200);
-                Dispatcher.Invoke(() =>
-                {
-                    ThemeManager.Current.AccentColor = Brushes.Purple;
-                });
-                Thread.Sleep(200);
-                Dispatcher.Invoke(() =>
-                {
-                    mainwindow.Background = Brushes.LightPink;
-                    ThemeManager.Current.AccentColor = Brushes.DeepPink;
-                });
-                Thread.Sleep(200);
+                    // 每个颜色持续时间为总时间除以颜色数量
+                    LinearColorKeyFrame keyFrame = new LinearColorKeyFrame(colors[i], KeyTime.FromTimeSpan(TimeSpan.FromSeconds(i * (2.0 / colors.Length))));
+                    colorAnimation.KeyFrames.Add(keyFrame);
+                }
+
+                // 应用动画到背景色和AccentColor
+                SolidColorBrush brush = new SolidColorBrush(colors[0]);
+
+                brush.BeginAnimation(SolidColorBrush.ColorProperty, colorAnimation);
+                //window.Background = brush;
+                Application.Current.Resources["BackgroundBrush"] = brush;
+                //ThemeManager.Current.AccentColor = brush;
             }
         }
 
@@ -566,18 +552,6 @@ namespace MSL.pages
             catch (Exception ex)
             {
                 Shows.ShowMsgDialog(Window.GetWindow(this), "清除背景图片失败！请重试！\n错误代码：" + ex.Message, "错误");
-            }
-        }
-
-        private void addServerToRunlist_Click(object sender, RoutedEventArgs e)
-        {
-            try
-            {
-                openserversOnStartList.Text += _runServerList[serverListBox.SelectedIndex] + ",";
-            }
-            catch
-            {
-                Shows.GrowlErr("出现错误，您是否选择了一个服务器？");
             }
         }
 
@@ -644,12 +618,8 @@ namespace MSL.pages
             try
             {
                 var mainwindow = Window.GetWindow(Window.GetWindow(this));
-                string aaa = Functions.Get("query/update");
-                if (aaa.Contains("v"))
-                {
-                    aaa = aaa.Replace("v", "");
-                }
-                Version newVersion = new Version(aaa);
+                string _httpReturn = Functions.Get("query/update");
+                Version newVersion = new Version(_httpReturn);
                 Version version = new Version(System.Reflection.Assembly.GetExecutingAssembly().GetName().Version.ToString());
 
                 if (newVersion > version)
@@ -657,7 +627,7 @@ namespace MSL.pages
                     var updatelog = Functions.Get("query/update/log");
                     Dispatcher.Invoke(async () =>
                     {
-                        bool dialog = await Shows.ShowMsgDialogAsync(Window.GetWindow(this), "发现新版本，版本号为：" + aaa + "，是否进行更新？\n更新日志：\n" + updatelog, "更新", true, "取消");
+                        bool dialog = await Shows.ShowMsgDialogAsync(Window.GetWindow(this), "发现新版本，版本号为：" + _httpReturn + "，是否进行更新？\n更新日志：\n" + updatelog, "更新", true, "取消");
                         if (dialog == true)
                         {
                             if (MainWindow.ProcessRunningCheck())
@@ -665,16 +635,16 @@ namespace MSL.pages
                                 Shows.ShowMsgDialog(Window.GetWindow(this), "您的服务器/内网映射/点对点联机正在运行中，若此时更新，会造成后台残留，请将前者关闭后再进行更新！", "警告");
                                 return;
                             }
-                            string aaa1 = Functions.Get("download/update");
-                            await Shows.ShowDownloader(Window.GetWindow(this), aaa1, AppDomain.CurrentDomain.BaseDirectory, "MSL" + aaa + ".exe", "下载新版本中……");
-                            if (File.Exists("MSL" + aaa + ".exe"))
+                            string downloadUrl = Functions.Get("download/update");
+                            await Shows.ShowDownloader(Window.GetWindow(this), downloadUrl, AppDomain.CurrentDomain.BaseDirectory, "MSL" + _httpReturn + ".exe", "下载新版本中……");
+                            if (File.Exists("MSL" + _httpReturn + ".exe"))
                             {
                                 string oldExePath = Process.GetCurrentProcess().MainModule.ModuleName;
-                                string dwnExePath = Path.Combine(AppDomain.CurrentDomain.BaseDirectory, "MSL" + aaa + ".exe");
+                                string dwnExePath = Path.Combine(AppDomain.CurrentDomain.BaseDirectory, "MSL" + _httpReturn + ".exe");
                                 string newExeDir = AppDomain.CurrentDomain.BaseDirectory;
 
                                 // 输出CMD命令以便调试
-                                string cmdCommand = "/C choice /C Y /N /D Y /T 1 & Del \"" + oldExePath + "\" & Ren \"" + "MSL" + aaa + ".exe" + "\" \"MSL.exe\" & start \"\" \"MSL.exe\"";
+                                string cmdCommand = "/C choice /C Y /N /D Y /T 1 & Del \"" + oldExePath + "\" & Ren \"" + "MSL" + _httpReturn + ".exe" + "\" \"MSL.exe\" & start \"\" \"MSL.exe\"";
                                 //MessageBox.Show(cmdCommand);
 
                                 // 关闭当前运行中的应用程序
@@ -715,6 +685,47 @@ namespace MSL.pages
             {
                 Shows.GrowlErr("检查更新失败！");
             }
+        }
+
+        private void AutoStartServers_ItemsChanged()
+        {
+            _autoStartList = "";
+            foreach (var item in AutoStartServers.Items)
+            {
+                _autoStartList += item.ToString().Substring(1, 1) + ",";
+            }
+        }
+
+        private void TransferOut_Click(object sender, RoutedEventArgs e)
+        {
+            List<object> list = new List<object>();
+            foreach (var item in AutoStartServers.SelectedItems)
+            {
+                ServersList.Items.Add(item);
+                list.Add(item);
+            }
+            foreach (var item in list)
+            {
+                AutoStartServers.Items.Remove(item);
+            }
+            list.Clear();
+            AutoStartServers_ItemsChanged();
+        }
+
+        private void TransferIn_Click(object sender, RoutedEventArgs e)
+        {
+            List<object> list = new List<object>();
+            foreach (var item in ServersList.SelectedItems)
+            {
+                AutoStartServers.Items.Add(item);
+                list.Add(item);
+            }
+            foreach (var item in list)
+            {
+                ServersList.Items.Remove(item);
+            }
+            list.Clear();
+            AutoStartServers_ItemsChanged();
         }
     }
 }
