@@ -9,6 +9,7 @@ using System.Net;
 using System.Security.Cryptography;
 using System.Text;
 using System.Threading;
+using System.Web.UI.WebControls;
 using System.Windows;
 
 
@@ -393,11 +394,11 @@ namespace MSL.controls
                         //启动编译,算了，不启动了，麻瓜
                         if (javaPath == "Java")
                         {
-                            batData = batData + "\n" + "java " + buildarg;
+                            batData = batData + "\n" + "java " + buildarg + " >> msl-compileForge.log & type msl-compileForge.log";
                         }
                         else
                         {
-                            batData = batData + "\n" + @"""" + javaPath + @""" " + buildarg;
+                            batData = batData + "\n" + @"""" + javaPath + @""" " + buildarg + " >> msl-compileForge.log & type msl-compileForge.log";
                         }
                     }
                 }
@@ -416,6 +417,12 @@ namespace MSL.controls
                 process.Start();
                 process.WaitForExit();
             }
+            //输出日志
+            Dispatcher.Invoke(() =>
+            {
+                File.WriteAllText(installPath + "/msl-installForge.log", log.Text);
+            });
+            
             Log_in("安装结束！");
             Status_change("结束！本对话框将自动关闭！");
             try
