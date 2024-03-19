@@ -935,6 +935,7 @@ namespace MSL.pages
             int selectType = 0;
             Dispatcher.Invoke(() =>
             {
+                ServerCoreCombo.IsEnabled = false;
                 ServerCoreDescrip.Text = "加载中，请稍等……";
                 selectType = ServerCoreCombo.SelectedIndex;
             });
@@ -1018,6 +1019,7 @@ namespace MSL.pages
             var sortedList = typeVersions.OrderByDescending(p => Functions.VersionCompare(p)).ToList();
             Dispatcher.Invoke(() =>
             {
+                ServerCoreCombo.IsEnabled = true;
                 FastModeNextBtn.IsEnabled = true;
                 ServerVersionCombo.ItemsSource = sortedList;
                 ServerVersionCombo.SelectedIndex = 0;

@@ -1904,58 +1904,6 @@ namespace MSL
             catch { }
         }
 
-        #region 上传日志到mclo.gs
-        string logs = "";
-        private void shareLog_Click(object sender, RoutedEventArgs e)
-        {
-            //遍历获取logs
-            foreach (var block in outlog.Document.Blocks)
-            {
-                if (block is Paragraph paragraph)
-                {
-                    foreach (var inline in paragraph.Inlines)
-                    {
-                        if (inline is Run run)
-                        {
-                            logs += run.Text + "\n";
-                        }
-                    }
-                }
-            }
-            //启动线程上传日志
-            Thread thread = new Thread(UploadLogs);
-            thread.Start();
-            Growl.Info("正在上传···");
-        }
-
-        private void UploadLogs()
-        {
-            string path = "1/log";
-            string customUrl = "https://api.mclo.gs";
-            int contentType = 2;
-            //请求内容
-            string parameterData = "content=" + logs;
-
-            string response = Functions.Post(path, contentType, parameterData, customUrl);
-            //解析返回的东东
-            var jsonResponse = JsonConvert.DeserializeObject<dynamic>(response);
-
-            if (jsonResponse.success == true)
-            {
-                Dispatcher.Invoke(() =>
-                {
-                    Clipboard.Clear();
-                    Clipboard.SetText(jsonResponse.url.ToString());
-                });
-                Growl.Success("日志地址: " + jsonResponse.url + "\n已经复制到剪贴板啦！\n如果遇到问题且不会看日志,\n请把链接粘贴在群中求助，\n记得详细描述你的问题哦！");
-            }
-            else
-            {
-                Growl.Error("请求失败: " + jsonResponse.error);
-            }
-        }
-        #endregion
-
         #endregion
 
         #region 服务器功能调整
@@ -3089,38 +3037,6 @@ namespace MSL
 
         ////////这里是更多功能界面
 
-        //上传Forge安装日志
-        private void forgeInstallLogUpload_Click(object sender, RoutedEventArgs e)
-        {
-            string logsContent = "";
-            try
-            {
-                if (File.Exists(Path.Combine(Rserverbase, "msl-installForge.log")))
-                {
-                    logsContent = "[MSL端处理日志]\n" + File.ReadAllText(Path.Combine(Rserverbase, "msl-installForge.log"));
-                }
-                if (File.Exists(Path.Combine(Rserverbase, "msl-compileForge.log")))
-                {
-                    logsContent = logsContent + "\n[Java端编译日志]\n" + File.ReadAllText(Path.Combine(Rserverbase, "msl-compileForge.log"));
-                }
-                if (logsContent == "")
-                {
-                    Growl.Error("未找到Forge安装日志！");
-                }
-                else
-                {
-                    logs = logsContent;
-                    //启动线程上传日志
-                    Thread thread = new Thread(UploadLogs);
-                    thread.Start();
-                    Growl.Info("正在上传···");
-                }
-            }
-            catch (Exception ex)
-            {
-                Growl.Error("Forge安装日志上传失败！" + ex.Message);
-            }
-        }
         private void autostartServer_Click(object sender, RoutedEventArgs e)
         {
             JObject jsonObject = JObject.Parse(File.ReadAllText(@"MSL\ServerList.json", Encoding.UTF8));
@@ -3343,7 +3259,98 @@ namespace MSL
             jsonObject[RserverID] = _json;
             File.WriteAllText("MSL\\ServerList.json", Convert.ToString(jsonObject), Encoding.UTF8);
         }
-        void GetFastCmd()
+
+        #region 上传日志到mclo.gs
+        
+        private void shareLog_Click(object sender, RoutedEventArgs e)
+        {
+            string logs = "";
+            //遍历获取logs
+            foreach (var block in outlog.Document.Blocks)
+            {
+                if (block is Paragraph paragraph)
+                {
+                    foreach (var inline in paragraph.Inlines)
+                    {
+                        if (inline is Run run)
+                        {
+                            logs += run.Text + "\n";
+                        }
+                    }
+                }
+            }
+            //启动线程上传日志
+            Task.Run(() =>
+            {
+                UploadLogs(logs);
+            });
+            Growl.Info("正在上传···");
+        }
+
+        private void UploadLogs(string logs)
+        {
+            string path = "1/log";
+            string customUrl = "https://api.mclo.gs";
+            int contentType = 2;
+            //请求内容
+            string parameterData = "content=" + logs;
+
+            string response = Functions.Post(path, contentType, parameterData, customUrl);
+            //解析返回的东东
+            var jsonResponse = JsonConvert.DeserializeObject<dynamic>(response);
+
+            if (jsonResponse.success == true)
+            {
+                Dispatcher.Invoke(() =>
+                {
+                    Clipboard.Clear();
+                    Clipboard.SetText(jsonResponse.url.ToString());
+                });
+                Growl.Success("日志地址: " + jsonResponse.url + "\n已经复制到剪贴板啦！\n如果遇到问题且不会看日志,\n请把链接粘贴在群中求助，\n记得详细描述你的问题哦！");
+            }
+            else
+            {
+                Growl.Error("请求失败: " + jsonResponse.error);
+            }
+        }
+        
+        //上传Forge安装日志
+        private void forgeInstallLogUpload_Click(object sender, RoutedEventArgs e)
+        {
+            string logsContent = "";
+            try
+            {
+                if (File.Exists(Path.Combine(Rserverbase, "msl-installForge.log")))
+                {
+                    logsContent = "[MSL端处理日志]\n" + File.ReadAllText(Path.Combine(Rserverbase, "msl-installForge.log"));
+                }
+                if (File.Exists(Path.Combine(Rserverbase, "msl-compileForge.log")))
+                {
+                    logsContent = logsContent + "\n[Java端编译日志]\n" + File.ReadAllText(Path.Combine(Rserverbase, "msl-compileForge.log"));
+                }
+                if (logsContent == "")
+                {
+                    Growl.Error("未找到Forge安装日志！");
+                }
+                else
+                {
+                    //启动线程上传日志
+                    Task.Run(() =>
+                    {
+                        UploadLogs(logsContent);
+                    });
+                    Growl.Info("正在上传···");
+                }
+            }
+            catch (Exception ex)
+            {
+                Growl.Error("Forge安装日志上传失败！" + ex.Message);
+            }
+        }
+
+        #endregion
+
+        private void GetFastCmd()
         {
             JObject jsonObject = JObject.Parse(File.ReadAllText(@"MSL\ServerList.json", Encoding.UTF8));
             JObject _json = (JObject)jsonObject[RserverID];
@@ -3374,7 +3381,7 @@ namespace MSL
                 }
             }
         }
-        void SetFastCmd()
+        private void SetFastCmd()
         {
             JObject jsonObject = JObject.Parse(File.ReadAllText(@"MSL\ServerList.json", Encoding.UTF8));
             JObject _json = (JObject)jsonObject[RserverID];
@@ -3383,15 +3390,6 @@ namespace MSL
             jsonObject[RserverID] = _json;
             File.WriteAllText("MSL\\ServerList.json", Convert.ToString(jsonObject), Encoding.UTF8);
             GetFastCmd();
-            /*
-            fastCmdList.Items.Clear();
-            fastCMD.Items.Add("/（指令）");
-            foreach (var item in _json["fastcmd"])
-            {
-                fastCMD.Items.Add(item.ToString());
-                fastCmdList.Items.Add(item.ToString());
-            }
-            */
         }
 
         private void refrushFastCmd_Click(object sender, RoutedEventArgs e)
@@ -3700,8 +3698,7 @@ namespace MSL
         {
             Growl.SetGrowlParent(GrowlPanel, false);
         }
+
         #endregion
-
-
     }
 }
