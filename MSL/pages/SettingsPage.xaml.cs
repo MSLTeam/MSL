@@ -498,6 +498,12 @@ namespace MSL.pages
                 //window.Background = brush;
                 Application.Current.Resources["BackgroundBrush"] = brush;
                 //ThemeManager.Current.AccentColor = brush;
+                if (File.Exists("MSL\\Background.png"))
+                {
+                    File.Copy("MSL\\Background.png", "MSL\\Background_.png", true);
+                    File.Delete("MSL\\Background.png");
+                    ChangeSkinStyle();
+                }
             }
         }
 

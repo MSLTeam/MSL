@@ -167,7 +167,7 @@ namespace MSL.controls
                     }
                     catch (Exception ex)
                     {
-                        Log_in("原版LIB解压失败！" + ex);
+                        Log_in("原版LIB解压失败！" + ex.Message);
                         return;
                     }
                 }
@@ -650,7 +650,7 @@ namespace MSL.controls
                 catch (Exception err)
                 {
                     //处理下载失败
-                    Log_in("下载失败！" + err);
+                    Log_in("下载失败！" + err.Message);
                     continue;
                 }
             }

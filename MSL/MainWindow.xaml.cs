@@ -229,6 +229,11 @@ namespace MSL
                     });
                 }
                 //Logger.LogInfo("读取暗色模式配置成功！");
+                if (File.Exists("MSL\\Background_.png"))
+                {
+                    File.Copy("MSL\\Background_.png", "MSL\\Background.png", true);
+                    File.Delete("MSL\\Background_.png");
+                }
                 if (File.Exists("MSL\\Background.png"))
                 {
                     Dispatcher.Invoke(() =>

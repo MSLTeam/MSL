@@ -722,10 +722,12 @@ namespace MSL.pages
             {
                 DownloadServer.downloadServerJava = serverjava;
                 DownloadServer.downloadServerBase = serverbase;
-                DownloadServer downloadServer = new DownloadServer();
-                downloadServer.Owner = Window.GetWindow(Window.GetWindow(this));
+                DownloadServer downloadServer = new DownloadServer
+                {
+                    Owner = Window.GetWindow(Window.GetWindow(this))
+                };
                 downloadServer.ShowDialog();
-                if (File.Exists(serverbase + @"\" + DownloadServer.downloadServerName))
+                if (File.Exists(serverbase + "\\" + DownloadServer.downloadServerName))
                 {
                     servercore = DownloadServer.downloadServerName;
                     sJVM.IsSelected = true;
@@ -762,7 +764,7 @@ namespace MSL.pages
                         if (Path.GetDirectoryName(txb3.Text) != serverbase)
                         {
                             File.Copy(txb3.Text, serverbase + "\\" + _filename, true);
-                            await Shows.ShowMsgDialogAsync(Window.GetWindow(this), "已将服务端核心复制到了服务器文件夹之中，您现在可以将源文件删除了！", "提示");
+                            await Shows.ShowMsgDialogAsync(Window.GetWindow(this), "已将服务端核心复制到了服务器目录之中，您现在可以将源文件删除了！", "提示");
                             txb3.Text = _filename;
                         }
                     }

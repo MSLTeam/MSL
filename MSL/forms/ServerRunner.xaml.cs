@@ -2915,17 +2915,19 @@ namespace MSL
         }
         private void a01_Click(object sender, RoutedEventArgs e)
         {
-            OpenFileDialog openfile = new OpenFileDialog();
-            openfile.InitialDirectory = AppDomain.CurrentDomain.BaseDirectory;
-            openfile.Title = "请选择文件，通常为*.jar";
-            openfile.Filter = "JAR文件|*.jar|所有文件类型|*.*";
+            OpenFileDialog openfile = new OpenFileDialog
+            {
+                InitialDirectory = AppDomain.CurrentDomain.BaseDirectory,
+                Title = "请选择文件，通常为*.jar",
+                Filter = "JAR文件|*.jar|所有文件类型|*.*"
+            };
             var res = openfile.ShowDialog();
             if (res == true)
             {
                 if (Path.GetDirectoryName(openfile.FileName) != Rserverbase)
                 {
                     File.Copy(openfile.FileName, Rserverbase + @"\" + openfile.SafeFileName, true);
-                    Shows.ShowMsgDialog(this, "已将服务端文件移至服务器文件夹中！您可将源文件删除！", "提示");
+                    Shows.ShowMsgDialog(this, "已将服务端核心复制到了服务器目录之中，您现在可以将源文件删除了！", "提示");
                 }
                 server.Text = openfile.SafeFileName;
             }
@@ -2951,8 +2953,10 @@ namespace MSL
             }
             DownloadServer.downloadServerJava = Rserverjava;
             DownloadServer.downloadServerBase = Rserverbase;
-            DownloadServer downloadServer = new DownloadServer();
-            downloadServer.Owner = this;
+            DownloadServer downloadServer = new DownloadServer
+            {
+                Owner = this
+            };
             downloadServer.ShowDialog();
             if (File.Exists(Rserverbase + @"\" + DownloadServer.downloadServerName))
             {
