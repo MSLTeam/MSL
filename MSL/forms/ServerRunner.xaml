@@ -412,42 +412,105 @@
                 </ScrollViewer>
             </TabItem>
             <TabItem Header="更多功能" Background="{DynamicResource SideMenuBrush}">
-                <StackPanel>
-                    <StackPanel.RenderTransform>
+                <ScrollViewer>
+                <Grid Margin="0,0,0,8">
+                        <Grid.RowDefinitions>
+                            <RowDefinition Height="auto"/>
+                            <RowDefinition Height="*"/>
+                        </Grid.RowDefinitions>
+                        <Grid.RenderTransform>
                         <TranslateTransform/>
-                    </StackPanel.RenderTransform>
-                    <StackPanel.Triggers>
+                    </Grid.RenderTransform>
+                        <Grid.Triggers>
                         <EventTrigger RoutedEvent="Loaded">
                             <BeginStoryboard Storyboard="{StaticResource ShowPage}"/>
                         </EventTrigger>
-                    </StackPanel.Triggers>
-                    <Border Style="{StaticResource MagicBorder}">
+                    </Grid.Triggers>
+                    <Border Style="{StaticResource MagicBorder}" Grid.Row="0">
                         <Grid>
-                            <Label Content="开服器功能：" Style="{StaticResource BorderTitle}"/>
-                            <Label Content="服务器控制：" FontSize="18" Width="120" Height="36" Margin="10,40,0,0" Background="{x:Null}" BorderBrush="{x:Null}" HorizontalAlignment="Left" VerticalAlignment="Top" HorizontalContentAlignment="Left"/>
-                            <Label Content="日志输出：" FontSize="18" Width="120" Height="36" Margin="10,120,0,0" BorderBrush="{x:Null}" Background="{x:Null}" HorizontalAlignment="Left" VerticalAlignment="Top" HorizontalContentAlignment="Left"/>
-                            <Button x:Name="onlineMode" Content="关闭正版验证" Margin="154,40,0,0" Click="onlineMode_Click" FontSize="16" Height="35" Width="160" HorizontalAlignment="Left" VerticalAlignment="Top"/>
-                            <Button x:Name="closeOutlog" Content="日志输出:开" Margin="154,120,0,0" FontSize="16" Height="35" Click="closeOutlog_Click" Width="130" HorizontalAlignment="Left" VerticalAlignment="Top"/>
-                            <Button x:Name="closeOutlog_Copy" Content="屏蔽关键字日志:关" Margin="289,120,0,0" FontSize="16" Height="35" Click="closeOutlog_Copy_Click" Width="160" VerticalAlignment="Top" HorizontalAlignment="Left"/>
-                            <Button x:Name="autoStartserver" Content="关服自动重启:禁用" Margin="319,40,0,0" Width="160" Click="autostartServer_Click" FontSize="16" Height="35" HorizontalAlignment="Left" VerticalAlignment="Top"/>
-                            <Button x:Name="inputCmdEncoding" Content="输入编码:UTF8" Margin="154,80,0,0" Width="160" FontSize="16" Height="35" HorizontalAlignment="Left" VerticalAlignment="Top" Click="inputCmdEncoding_Click"/>
-                            <Button x:Name="outputCmdEncoding" Content="输出编码:UTF8" Margin="319,80,0,0" Width="160" FontSize="16" Height="35" HorizontalAlignment="Left" VerticalAlignment="Top" Click="outputCmdEncoding_Click"/>
-                            <Button x:Name="shieldStackOut" Content="屏蔽堆栈追踪:开" Margin="454,120,0,0" FontSize="16" Height="35" Click="shieldStackOut_Click" Width="160" HorizontalAlignment="Left" VerticalAlignment="Top"/>
-                            <Button x:Name="autoClearOutlog" Content="自动清屏:开" Margin="619,120,0,0" FontSize="16" Height="35" Click="autoClearOutlog_Click" Width="130" HorizontalAlignment="Left" VerticalAlignment="Top"/>
-                            <Button x:Name="fileforceUTF8encoding" Content="强制服务器文件UTF8编码:关" Margin="484,40,0,0" Width="265" FontSize="16" Height="35" HorizontalAlignment="Left" VerticalAlignment="Top" Click="fileforceUTF8encoding_Click"/>
+                            <Grid.RowDefinitions>
+                                <RowDefinition Height="auto"/>
+                                <RowDefinition Height="auto"/>
+                                    <RowDefinition Height="auto"/>
+                                    <RowDefinition Height="auto"/>
+                                    <RowDefinition Height="auto"/>
+                                    <RowDefinition Height="*"/>
+                            </Grid.RowDefinitions>
+                            <Grid.ColumnDefinitions>
+                                <ColumnDefinition Width="*"/>
+                            </Grid.ColumnDefinitions>
+                            <Label Grid.Row="0" Content="开服器功能："  Style="{StaticResource BorderTitle}" Margin="3"/>
+                                <Grid Grid.Row="1" Margin="0,0,0,3" >
+                                    <Grid.ColumnDefinitions>
+                                        <ColumnDefinition Width="auto"/>
+                                        <ColumnDefinition Width="*"/>
+                                    </Grid.ColumnDefinitions>
+                                    <Label  Content="服务器控制:" Grid.Column="0" BorderBrush="{x:Null}" Background="{x:Null}" FontSize="18" Width="120" Height="36" HorizontalContentAlignment="Left" VerticalAlignment="Top"/>
+                                    <WrapPanel Margin="0,0,3,0" Grid.Column="1" >
+                                        <Button x:Name="onlineMode" Content="关闭正版验证" Click="onlineMode_Click" FontSize="16" Height="35"  Margin="0,0,5,5"/>
+                                        <Button x:Name="autoStartserver" Content="关服自动重启:禁用"  Click="autostartServer_Click" FontSize="16" Height="35" Margin="0,0,5,5"/>
+                                        <Button x:Name="fileforceUTF8encoding" Content="强制服务器文件UTF8编码:关"  FontSize="16" Height="35" Click="fileforceUTF8encoding_Click" Margin="0,0,5,5"/>
+
+                                        <Button x:Name="inputCmdEncoding" Content="输入编码:UTF8"  FontSize="16" Height="35" Click="inputCmdEncoding_Click" Margin="0,0,5,5"/>
+                                        <Button x:Name="outputCmdEncoding" Content="输出编码:UTF8" FontSize="16" Height="35" Click="outputCmdEncoding_Click" Margin="0,0,5,5"/>
+                                    </WrapPanel>
+                                </Grid>
+
+                                <Grid Grid.Row="2"  Margin="0,0,0,3" >
+                                    <Grid.ColumnDefinitions>
+                                        <ColumnDefinition Width="auto"/>
+                                        <ColumnDefinition Width="*"/>
+                                    </Grid.ColumnDefinitions>
+                                    <Label Content="日志输出:" Grid.Column="0" FontSize="18" Width="120" Height="36" BorderBrush="{x:Null}" Background="{x:Null}" VerticalAlignment="Top" HorizontalContentAlignment="Left"/>
+
+                                    <WrapPanel Margin="0,0,3,0" Grid.Column="1">
+                                        <Button x:Name="closeOutlog" Content="日志输出:开" FontSize="16" Height="35" Click="closeOutlog_Click" Margin="0,0,5,5"/>
+                                        <Button x:Name="closeOutlog_Copy" Content="屏蔽关键字日志:关" FontSize="16" Height="35" Click="closeOutlog_Copy_Click"  Margin="0,0,5,5"/>
+                                        <Button x:Name="shieldStackOut" Content="屏蔽堆栈追踪:开" FontSize="16" Height="35" Click="shieldStackOut_Click" Margin="0,0,5,5"/>
+                                        <Button x:Name="autoClearOutlog" Content="自动清屏:开" FontSize="16" Height="35" Click="autoClearOutlog_Click" Margin="0,0,5,5"/>
+                                    </WrapPanel>
+                                </Grid>
+
+                                <Grid Grid.Row="3"  Margin="0,0,0,3" >
+                                    <Grid.ColumnDefinitions>
+                                        <ColumnDefinition Width="auto"/>
+                                        <ColumnDefinition Width="*"/>
+                                    </Grid.ColumnDefinitions>
+                                    <Label Content="其它功能:" Grid.Column="0" FontSize="18" Width="120" Height="36" BorderBrush="{x:Null}" Background="{x:Null}" VerticalAlignment="Top" HorizontalContentAlignment="Left"/>
+
+                                    <WrapPanel Margin="0,0,3,0" Grid.Column="1">
+                                        <Button x:Name="forgeInstallLogUpload" Content="上传Forge安装日志" FontSize="16" Height="35" Click="forgeInstallLogUpload_Click" Margin="0,0,5,5"/>
+                                    </WrapPanel>
+                                </Grid>
+                            </Grid>
+                    </Border>
+                     <Border Style="{StaticResource MagicBorder}" Grid.Row="1">
+                        <Grid>
+                                <Grid.RowDefinitions>
+                                    <RowDefinition Height="auto"/>
+                                    <RowDefinition Height="*"/>
+                                </Grid.RowDefinitions>
+                                <Label Content="快捷指令栏：" Grid.Row="0" Style="{StaticResource BorderTitle}"/>
+                                <Grid Grid.Row="1">
+                                    <Grid.ColumnDefinitions>
+                                        <ColumnDefinition Width="*"/>
+                                        <ColumnDefinition Width="auto"/>
+                                        <ColumnDefinition Width="auto"/>
+                                    </Grid.ColumnDefinitions>
+                                    <ListBox x:Name="fastCmdList"  VerticalAlignment="Top" Margin="3" Grid.Column="0"/>
+                                    <StackPanel Grid.Column="1">
+                                        <Button x:Name="refrushFastCmd" Content="刷新" Margin="3" Height="70" Width="110" Click="refrushFastCmd_Click" FontSize="18" VerticalAlignment="Top" HorizontalAlignment="Right"/>
+                                        <Button x:Name="addFastCmd" Content="添加" Margin="3" Height="40" Width="110" Click="addFastCmd_Click" FontSize="18" VerticalAlignment="Top" HorizontalAlignment="Right" />
+                                        <Button x:Name="delFastCmd" Content="删除" Margin="3" Height="40" Width="110" Click="delFastCmd_Click" FontSize="18" HorizontalAlignment="Right" VerticalAlignment="Top" />
+                                    </StackPanel>
+
+                                    <Button Grid.Column="2" Margin="3" x:Name="resetFastCmd" Content="重置" Height="160" Width="110" Click="resetFastCmd_Click" FontSize="18" HorizontalAlignment="Right"  VerticalAlignment="Top"/>
+                                </Grid>
+                           
                         </Grid>
                     </Border>
-                    <Border Style="{StaticResource MagicBorder}">
-                        <Grid>
-                            <Label Content="快捷指令栏：" Style="{StaticResource BorderTitle}"/>
-                            <ListBox x:Name="fastCmdList" Margin="10,40,250,0" Height="160" VerticalAlignment="Top" />
-                            <Button x:Name="refrushFastCmd" Content="刷新" Height="70" Width="110" Click="refrushFastCmd_Click" FontSize="18" VerticalAlignment="Top" HorizontalAlignment="Right" Margin="0,40,130,0"/>
-                            <Button x:Name="addFastCmd" Content="添加" Height="40" Width="110" Click="addFastCmd_Click" FontSize="18" VerticalAlignment="Top" HorizontalAlignment="Right" Margin="0,115,130,0"/>
-                            <Button x:Name="delFastCmd" Content="删除" Height="40" Width="110" Click="delFastCmd_Click" FontSize="18" HorizontalAlignment="Right" VerticalAlignment="Top" Margin="0,160,130,0"/>
-                            <Button x:Name="resetFastCmd" Content="重置" Height="160" Width="110" Click="resetFastCmd_Click" FontSize="18" HorizontalAlignment="Right" Margin="0,40,10,0" VerticalAlignment="Top"/>
-                        </Grid>
-                    </Border>
-                </StackPanel>
+                </Grid>
+                </ScrollViewer>
             </TabItem>
             <TabItem Header="定时任务" Background="{DynamicResource SideMenuBrush}">
                 <Grid>

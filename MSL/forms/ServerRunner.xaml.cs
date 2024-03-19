@@ -3089,6 +3089,38 @@ namespace MSL
 
         ////////这里是更多功能界面
 
+        //上传Forge安装日志
+        private void forgeInstallLogUpload_Click(object sender, RoutedEventArgs e)
+        {
+            string logsContent = "";
+            try
+            {
+                if (File.Exists(Path.Combine(Rserverbase, "msl-installForge.log")))
+                {
+                    logsContent = "[MSL端处理日志]\n" + File.ReadAllText(Path.Combine(Rserverbase, "msl-installForge.log"));
+                }
+                if (File.Exists(Path.Combine(Rserverbase, "msl-compileForge.log")))
+                {
+                    logsContent = logsContent + "\n[Java端编译日志]\n" + File.ReadAllText(Path.Combine(Rserverbase, "msl-compileForge.log"));
+                }
+                if (logsContent == "")
+                {
+                    Growl.Error("未找到Forge安装日志！");
+                }
+                else
+                {
+                    logs = logsContent;
+                    //启动线程上传日志
+                    Thread thread = new Thread(UploadLogs);
+                    thread.Start();
+                    Growl.Info("正在上传···");
+                }
+            }
+            catch (Exception ex)
+            {
+                Growl.Error("Forge安装日志上传失败！" + ex.Message);
+            }
+        }
         private void autostartServer_Click(object sender, RoutedEventArgs e)
         {
             JObject jsonObject = JObject.Parse(File.ReadAllText(@"MSL\ServerList.json", Encoding.UTF8));
@@ -3669,5 +3701,7 @@ namespace MSL
             Growl.SetGrowlParent(GrowlPanel, false);
         }
         #endregion
+
+
     }
 }
