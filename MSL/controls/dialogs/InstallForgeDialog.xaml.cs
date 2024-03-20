@@ -271,8 +271,8 @@ namespace MSL.controls
             }
 
             Log_in("下载Forge运行Lib成功！");
-            Status_change("正在编译Forge···");
-            Log_in("正在编译Forge···");
+            Status_change("正在处理编译ForgeJava参数···");
+            Log_in("正在处理编译ForgeJava参数");
             string batData = "";
 
             if (versionType == 1 && forgePath.Contains("neoforge") == false) //只有①需要复制这玩意
@@ -394,11 +394,11 @@ namespace MSL.controls
                         //启动编译,算了，不启动了，麻瓜
                         if (javaPath == "Java")
                         {
-                            batData = batData + "\n" + "java " + buildarg + " >> msl-compileForge.log & type msl-compileForge.log";
+                            batData = batData + "\n" + "java " + buildarg + " >> msl-compileForge.log";
                         }
                         else
                         {
-                            batData = batData + "\n" + @"""" + javaPath + @""" " + buildarg + " >> msl-compileForge.log & type msl-compileForge.log";
+                            batData = batData + "\n" + @"""" + javaPath + @""" " + buildarg + " >> msl-compileForge.log";
                         }
                     }
                 }
@@ -409,10 +409,14 @@ namespace MSL.controls
                     sw.WriteLine(@"title ""正在编译Forge""");
                     sw.WriteLine(batData);
                 }
+                Status_change("正在编译Forge···");
+                Log_in("正在编译Forge（此进程由Java负责，MSL不会显示日志，请耐心等待！）");
                 Process process = new Process();
                 process.StartInfo.WorkingDirectory = installPath;
                 process.StartInfo.FileName = "cmd";
                 process.StartInfo.Arguments = "/c install.bat";
+                process.StartInfo.CreateNoWindow = true;
+                process.StartInfo.UseShellExecute = false; // 添加这行
                 //监听日志会假死，直接使用cmd窗口
                 process.Start();
                 process.WaitForExit();
