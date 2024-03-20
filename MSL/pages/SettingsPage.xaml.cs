@@ -474,12 +474,12 @@ namespace MSL.pages
             if (dialog)
             {
                 // 定义一个颜色数组
-                Color[] colors = new Color[] { Colors.Red, Colors.OrangeRed, Colors.Orange, Colors.SpringGreen, Colors.Green, Colors.DeepSkyBlue, Colors.DeepPink, Colors.MediumPurple, Colors.Red };
+                Color[] colors = new Color[] { Colors.DeepSkyBlue, Colors.Pink, Colors.Orange, Colors.SpringGreen, Colors.Turquoise, Colors.DeepSkyBlue, Colors.Pink, Colors.HotPink, Colors.DeepSkyBlue, };
 
                 // 创建一个颜色关键帧动画
                 ColorAnimationUsingKeyFrames colorAnimation = new ColorAnimationUsingKeyFrames
                 {
-                    Duration = TimeSpan.FromSeconds(2.0), // 总动画时间
+                    Duration = TimeSpan.FromSeconds(15.0), // 总动画时间
                     RepeatBehavior = RepeatBehavior.Forever // 无限循环
                 };
 
@@ -487,7 +487,7 @@ namespace MSL.pages
                 for (int i = 0; i < colors.Length; i++)
                 {
                     // 每个颜色持续时间为总时间除以颜色数量
-                    LinearColorKeyFrame keyFrame = new LinearColorKeyFrame(colors[i], KeyTime.FromTimeSpan(TimeSpan.FromSeconds(i * (2.0 / colors.Length))));
+                    LinearColorKeyFrame keyFrame = new LinearColorKeyFrame(colors[i], KeyTime.FromTimeSpan(TimeSpan.FromSeconds(i * (15.0 / colors.Length))));
                     colorAnimation.KeyFrames.Add(keyFrame);
                 }
 

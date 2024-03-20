@@ -73,15 +73,15 @@
                         <Grid>
                             <Label Content="系统占用" Style="{StaticResource BorderTitle}"/>
                             <Viewbox Stretch="Uniform" Margin="0,35,0,0">
-                                <Canvas Width="245" Height="270">
-                                    <Label x:Name="cpuInfoLab" Content="CPU占用" Height="30" Width="245"/>
-                                    <ProgressBar x:Name="cpuInfoBar" Style="{StaticResource ProgressBarFlat}" Height="24" Canvas.Top="40" Width="245"/>
-                                    <Label x:Name="memoryInfoLab" Content="内存占用" Height="60" Canvas.Top="80" Width="245"/>
-                                    <Label Content="系统已用内存" Height="30" Width="120" Canvas.Top="150"/>
-                                    <Label Content="系统空闲内存" Height="30" Width="120" Canvas.Left="125" Canvas.Top="150"/>
-                                    <hc:CircleProgressBar x:Name="memoryInfoBar" Height="80" Width="80" Canvas.Left="20" Canvas.Top="190"/>
-                                    <hc:CircleProgressBar x:Name="availableMemoryInfoBar" Height="80" Width="80" Canvas.Left="145" Canvas.Top="190"/>
-                                </Canvas>
+                                <Grid>
+                                    <Label x:Name="cpuInfoLab" Content="CPU占用" Height="30" Width="245" VerticalAlignment="Top"/>
+                                    <ProgressBar x:Name="cpuInfoBar" Style="{StaticResource ProgressBarFlat}" Height="24" Width="245" Margin="0,40,0,0" VerticalAlignment="Top"/>
+                                    <Label x:Name="memoryInfoLab" Content="内存占用" Height="60" Width="245" Margin="0,80,0,0" VerticalAlignment="Top"/>
+                                    <Label Content="系统已用内存" Height="30" Width="120" Margin="0,150,0,0" VerticalAlignment="Top" HorizontalAlignment="Left"/>
+                                    <Label Content="系统空闲内存" Height="30" Width="120" Margin="0,150,0,0" HorizontalAlignment="Right" VerticalAlignment="Top"/>
+                                    <hc:CircleProgressBar x:Name="memoryInfoBar" Height="90" Width="90" Margin="15,190,0,0" HorizontalAlignment="Left" VerticalAlignment="Top"/>
+                                    <hc:CircleProgressBar x:Name="availableMemoryInfoBar" Height="90" Width="90" Margin="0,190,15,0" HorizontalAlignment="Right" VerticalAlignment="Top"/>
+                                </Grid>
                             </Viewbox>
                         </Grid>
                     </Border>
@@ -125,13 +125,14 @@
                             <BeginStoryboard Storyboard="{StaticResource ShowPage}"/>
                         </EventTrigger>
                     </Grid.Triggers>
-                    <RichTextBox x:Name="outlog" Background="{DynamicResource BorderBackground}" IsReadOnly="True" Block.LineHeight="1" Margin="10,10,10,47" ContextMenu="{StaticResource UIContextMenu}" VerticalScrollBarVisibility="Visible">
+                    <RichTextBox x:Name="outlog" IsUndoEnabled="False" UndoLimit="0" Background="{DynamicResource BorderBackground}" IsReadOnly="True" Block.LineHeight="1" Margin="10,10,10,47" ContextMenu="{StaticResource UIContextMenu}" VerticalScrollBarVisibility="Visible">
                         <FlowDocument>
                             <Paragraph>
                                 <Run Text="在此显示输出......"/>
                             </Paragraph>
                         </FlowDocument>
                     </RichTextBox>
+
                     <Grid VerticalAlignment="Bottom">
                         <Grid.ColumnDefinitions>
                             <ColumnDefinition Width="Auto"/>
@@ -324,7 +325,9 @@
                                     <Grid>
                                         <Label Content="服务器JVM参数:"/>
                                         <TextBox x:Name="jVMcmd" Height="23" MaxLines="1" AutoWordSelection="True" VerticalAlignment="Top" Margin="125,0,0,0"/>
-                                        <TextBlock Text="提示：一般格式为 -参数，如 -Dlog4j2.formatMsgNoLookups=true，非必要无需填此框" Foreground="{DynamicResource PrimaryBrush}" Margin="125,30,0,0" FontSize="14" HorizontalAlignment="Left" VerticalAlignment="Top"/>
+                                        <Border Margin="125,30,0,0" Style="{StaticResource BorderTipPrimary}">
+                                            <TextBlock Text="提示：一般格式为 -参数，如 -Dlog4j2.formatMsgNoLookups=true，非必要无需填此框" Foreground="{DynamicResource PrimaryBrush}" FontSize="14" HorizontalAlignment="Left" VerticalAlignment="Top"/>
+                                        </Border>
                                     </Grid>
                                     <hc:Divider Margin="0,10,0,10"/>
                                     <Grid>

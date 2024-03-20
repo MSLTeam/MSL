@@ -14,28 +14,30 @@
                 <ComboBoxItem Content="隧道列表"/>
                 <ComboBoxItem Content="节点列表"/>
             </ComboBox>
-            <ListBox x:Name="serversList" Height="240" Width="270" SelectionMode="Single" Margin="20,40,0,0" HorizontalAlignment="Left" VerticalAlignment="Top" hc:Empty.ShowEmpty="true"/>
-            <Label x:Name="userInfo" Height="240" Margin="300,5,15,0" FontSize="16" VerticalAlignment="Top" HorizontalAlignment="Stretch" Background="{x:Null}"/>
-            <Button x:Name="doneBtn" Content="确定" Margin="630,285,0,0" Style="{StaticResource ButtonPrimary}" VerticalAlignment="Top" Width="100" Click="Button_Click" FontWeight="Normal" FontSize="18" Height="50" HorizontalAlignment="Left"/>
-            <Label Content="您正在使用的是OpenFrp映射服务！官方网站：https://www.openfrp.net/&#xA;您可登入此网站来管理您的更多信息！&#xA;上面列表将会显示您已创建的映射隧道或可用的映射节点。&#xA;如要新建隧道，请点击上方新建按钮进行创建！" HorizontalAlignment="Left" Margin="20,285,0,0" VerticalAlignment="Top" FontSize="16" Height="95" Width="595" HorizontalContentAlignment="Left" VerticalContentAlignment="Top"/>
-            <Button x:Name="gotoWeb" Content="进入官网" Margin="630,340,0,0" VerticalAlignment="Top" Click="gotoWeb_Click" HorizontalAlignment="Left" Width="100" Height="40"/>
-            <Button x:Name="signBtn" Content="签到" Margin="630,250,0,0" VerticalAlignment="Top" HorizontalAlignment="Left" Width="100" Height="30" Click="signBtn_Click"/>
-            <Button x:Name="delProxieBtn" Content="删除隧道" Margin="515,250,0,0" VerticalAlignment="Top" Width="100" FontWeight="Normal" Height="30" HorizontalAlignment="Left" Click="delProxieBtn_Click"/>
-            <Button x:Name="toggleAddProxiesGroup" Content="新建隧道（点击展开）" Margin="300,250,0,0" VerticalAlignment="Top" Width="200" FontWeight="Normal" Height="30" HorizontalAlignment="Left" Click="toggleAddProxiesGroup_Click"/>
+            <ListBox x:Name="serversList" Height="240" Width="270" SelectionMode="Single" Margin="20,35,0,0" HorizontalAlignment="Left" VerticalAlignment="Top" hc:Empty.ShowEmpty="true"/>
+            <Label x:Name="userInfo" Height="235" Margin="300,5,15,0" FontSize="16" VerticalAlignment="Top" HorizontalAlignment="Stretch" Background="{x:Null}"/>
+            <Border Margin="20,280,0,0" Height="100" Width="600" HorizontalAlignment="Left" VerticalAlignment="Top" Style="{StaticResource BorderTipPrimary}">
+                <TextBlock Text="您正在使用的是OpenFrp映射服务！官方网站：https://www.openfrp.net/&#xA;您可登入此网站来管理您的更多信息！&#xA;上面列表将会显示您已创建的映射隧道或可用的映射节点。&#xA;如要新建隧道，请点击上方新建按钮进行创建！" Foreground="{DynamicResource PrimaryTextBrush}" FontSize="16"/>
+            </Border>
+            <Button x:Name="toggleAddProxiesGroup" Content="新建隧道（点击展开）" Margin="300,245,0,0" VerticalAlignment="Top" Width="200" Height="30" HorizontalAlignment="Left" Click="toggleAddProxiesGroup_Click"/>
+            <Button x:Name="delProxieBtn" Content="删除隧道" Margin="515,245,0,0" VerticalAlignment="Top" Width="100" Height="30" HorizontalAlignment="Left" Click="delProxieBtn_Click"/>
+            <Button x:Name="signBtn" Content="签到" Margin="630,245,0,0" VerticalAlignment="Top" HorizontalAlignment="Left" Width="100" Height="30" Click="signBtn_Click"/>
             <Grid x:Name="addProxiesGroup" Margin="290,70,0,0" Height="100" Visibility="Hidden">
                 <Label Content="本地端口(Java版默认25565,基岩版默认19132)：" HorizontalAlignment="Left" Background="{x:Null}" BorderBrush="{x:Null}" FontSize="14" VerticalAlignment="Top"/>
                 <TextBox x:Name="portBox" HorizontalAlignment="Left" Margin="320,0,0,0" VerticalAlignment="Top" Width="120" Text="25565"/>
                 <Label Content="远程端口：" HorizontalAlignment="Left" Margin="0,35,0,0" Background="{x:Null}" BorderBrush="{x:Null}" FontSize="14" VerticalAlignment="Top"/>
                 <TextBox x:Name="remotePortBox" HorizontalAlignment="Left" Margin="90,35,0,0" VerticalAlignment="Top" Width="170" Text="25565"/>
-                <Button x:Name="randomRemotePort" Content="随机" VerticalAlignment="Top" Width="75" FontWeight="Normal" HorizontalAlignment="Left" Click="randomRemotePort_Click" Margin="260,35,0,0"/>
+                <Button x:Name="randomRemotePort" Content="随机" VerticalAlignment="Top" Width="75" HorizontalAlignment="Left" Click="randomRemotePort_Click" Margin="260,35,0,0"/>
                 <Label Content="传输协议：" HorizontalAlignment="Left" VerticalAlignment="Top" BorderBrush="{x:Null}" Background="{x:Null}" Width="86" FontSize="14" Margin="0,70,0,0"/>
                 <ComboBox x:Name="frpcType" HorizontalAlignment="Left" VerticalAlignment="Top" Width="245" SelectionChanged="frpcType_SelectionChanged" Margin="90,70,0,0">
                     <ComboBoxItem IsSelected="True" Content="TCP（Java版）"/>
                     <ComboBoxItem Content="UDP（基岩版）"/>
                 </ComboBox>
+                <Button x:Name="addProxieBtn" Content="新建隧道" VerticalAlignment="Top" Width="100" HorizontalAlignment="Left" Click="addProxieBtn_Click" Margin="340,70,0,0"/>
                 <CheckBox x:Name="enableCompression" Content="启用数据压缩" HorizontalAlignment="Left" IsChecked="True" Margin="340,0,0,0"/>
-                <Button x:Name="addProxieBtn" Content="新建隧道" VerticalAlignment="Top" Width="100" FontWeight="Normal" HorizontalAlignment="Left" Click="addProxieBtn_Click" Margin="340,70,0,0"/>
             </Grid>
+            <Button x:Name="doneBtn" Content="确定" Margin="630,280,0,0" Style="{StaticResource ButtonPrimary}" VerticalAlignment="Top" Width="100" Click="Button_Click" FontSize="18" Height="55" HorizontalAlignment="Left"/>
+            <Button x:Name="gotoWeb" Content="进入官网" Margin="630,340,0,0" VerticalAlignment="Top" Click="gotoWeb_Click" HorizontalAlignment="Left" Width="100" Height="40"/>
             <Button x:Name="logoutBtn" Content="登出" Margin="630,5,0,0" VerticalAlignment="Top" HorizontalAlignment="Left" Width="100" Height="30" Click="logoutBtn_Click"/>
         </Grid>
         <Grid x:Name="LoginGrid" Visibility="Hidden">

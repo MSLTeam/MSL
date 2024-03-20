@@ -63,13 +63,13 @@ namespace MSL
         /////////主要代码
         public ServerRunner()
         {
+            InitializeComponent();
             ServerProcess.OutputDataReceived += new DataReceivedEventHandler(p_OutputDataReceived);
             ServerProcess.ErrorDataReceived += new DataReceivedEventHandler(p_OutputDataReceived);
             ServerProcess.Exited += new EventHandler(ServerExitEvent);
             ReadStdOutput += new DelReadStdOutput(ReadStdOutputAction);
             ServerList.OpenServerForm += ShowWindowEvent;
             SettingsPage.ChangeSkinStyle += ChangeSkinStyle;
-            InitializeComponent();
         }
         private async void Window_Loaded(object sender, RoutedEventArgs e)
         {
@@ -508,7 +508,7 @@ namespace MSL
             }
         }
 
-        void GetSystemInfo()
+        private void GetSystemInfo()
         {
             while (getServerInfo == true)
             {
@@ -814,9 +814,9 @@ namespace MSL
         private void ShowLog(string msg, Brush color)
         {
             tempbrush = color;
+            Paragraph p = new Paragraph();
             try
             {
-                Paragraph p = new Paragraph();
                 if (msg.Contains("&"))
                 {
                     string[] splitMsg = msg.Split('&');
@@ -828,8 +828,10 @@ namespace MSL
                         }
                         string colorCode = everyMsg.Substring(0, 1);
                         string text = everyMsg.Substring(1);
-                        Run run = new Run(text);
-                        run.Foreground = GetBrushFromMinecraftColorCode(colorCode[0]);
+                        Run run = new Run(text)
+                        {
+                            Foreground = GetBrushFromMinecraftColorCode(colorCode[0])
+                        };
                         p.Inlines.Add(run);
                     }
                 }
@@ -844,8 +846,10 @@ namespace MSL
                         }
                         string colorCode = everyMsg.Substring(0, 1);
                         string text = everyMsg.Substring(1);
-                        Run run = new Run(text);
-                        run.Foreground = GetBrushFromMinecraftColorCode(colorCode[0]);
+                        Run run = new Run(text)
+                        {
+                            Foreground = GetBrushFromMinecraftColorCode(colorCode[0])
+                        };
                         p.Inlines.Add(run);
                     }
                 }
@@ -859,35 +863,33 @@ namespace MSL
                             continue;
                         }
                         string colorCode = everyMsg.Substring(1, 2);
-                        //MessageBox.Show(colorCode.ToString());
                         string text = everyMsg.Substring(everyMsg.IndexOf("m") + 1);
-                        Run run = new Run(text);
-                        run.Foreground = GetBrushFromAnsiColorCode(colorCode.ToString());
+                        Run run = new Run(text)
+                        {
+                            Foreground = GetBrushFromAnsiColorCode(colorCode.ToString())
+                        };
                         p.Inlines.Add(run);
                     }
                 }
                 else
                 {
-                    Run run = new Run(msg);
-                    run.Foreground = color;
+                    Run run = new Run(msg)
+                    {
+                        Foreground = color
+                    };
                     p.Inlines.Add(run);
                 }
-                Dispatcher.Invoke(() =>
-                {
-                    //p.Foreground = color;
-                    outlog.Document.Blocks.Add(p);
-                    if (outlog.VerticalOffset + outlog.ViewportHeight >= outlog.ExtentHeight)
-                    {
-                        outlog.ScrollToEnd();
-                    }
-                });
             }
             catch
             {
-                Paragraph p = new Paragraph();
-                Run run = new Run(msg);
-                run.Foreground = color;
+                Run run = new Run(msg)
+                {
+                    Foreground = color
+                };
                 p.Inlines.Add(run);
+            }
+            finally
+            {
                 Dispatcher.Invoke(() =>
                 {
                     outlog.Document.Blocks.Add(p);

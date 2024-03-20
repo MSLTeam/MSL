@@ -69,7 +69,7 @@ namespace MSL.pages.frpProviders
                 catch
                 { }
                 serversList.Items.Clear();
-                gonggao.Content = "加载中……";
+                gonggao.Text = "加载中……";
             });
 
             try
@@ -129,14 +129,14 @@ namespace MSL.pages.frpProviders
             {
                 Dispatcher.Invoke(() =>
                 {
-                    gonggao.Content = Functions.Get("query/MSLFrps/notice");
+                    gonggao.Text = Functions.Get("query/MSLFrps/notice");
                 });
             }
             catch
             {
                 Dispatcher.Invoke(() =>
                 {
-                    gonggao.Content = "无公告";
+                    gonggao.Text = "无公告";
                 });
             }
             Dispatcher.Invoke(() =>

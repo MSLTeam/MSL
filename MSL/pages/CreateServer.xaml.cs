@@ -242,15 +242,15 @@ namespace MSL.pages
             return5.IsEnabled = false;
             if (useJVself.IsChecked == true)
             {
-                outlog.Content = "正在检查所选Java可用性，请稍等……";
+                Shows.GrowlInfo("正在检查所选Java可用性，请稍等……");
                 (bool javaAvailability, string javainfo) = await Functions.CheckJavaAvailabilityAsync(txjava.Text);
                 if (javaAvailability)
                 {
-                    outlog.Content = "所选Java版本：" + javainfo;
+                    Shows.GrowlInfo("所选Java版本：" + javainfo);
                 }
                 else
                 {
-                    outlog.Content = "检测Java可用性失败";
+                    Shows.GrowlErr("检测Java可用性失败");
                     Shows.ShowMsgDialog(Window.GetWindow(this), "检测Java可用性失败，您的Java似乎不可用！请检查是否选择正确！", "错误");
                     usedownloadjv.IsChecked = true;
                     noNext = true;
@@ -282,7 +282,6 @@ namespace MSL.pages
             {
                 try
                 {
-                    outlog.Content = "当前进度:下载Java……";
                     if (usedownloadjv.IsChecked == true)
                     {
                         try
@@ -294,14 +293,12 @@ namespace MSL.pages
                             });
                             if (dwnJava == 1)
                             {
-                                outlog.Content = "当前进度:解压Java……";
                                 ShowDialogs showDialogs = new ShowDialogs();
                                 showDialogs.ShowTextDialog(Window.GetWindow(this), "解压Java中……");
                                 bool unzipJava = await UnzipJava();
                                 showDialogs.CloseTextDialog();
                                 if (unzipJava)
                                 {
-                                    outlog.Content = "完成";
                                     await Dispatcher.InvokeAsync(() =>
                                     {
                                         CheckServerPackCore();
@@ -314,7 +311,6 @@ namespace MSL.pages
                             }
                             else if (dwnJava == 2)
                             {
-                                outlog.Content = "完成";
                                 await Dispatcher.InvokeAsync(() =>
                                 {
                                     CheckServerPackCore();
@@ -624,30 +620,30 @@ namespace MSL.pages
             }
             if (selectCheckedJavaComb.Items.Count > 0)
             {
-                outlog.Content = "检测完毕！";
+                Shows.GrowlSuccess("检测完毕！");
                 selectCheckedJavaComb.SelectedIndex = 0;
             }
             else
             {
-                outlog.Content = "检测完毕，暂未找到Java";
+                Shows.GrowlInfo("检测完毕，暂未找到Java");
                 usedownloadjv.IsChecked = true;
             }
         }
 
         private async void usejvPath_Checked(object sender, RoutedEventArgs e)
         {
-            outlog.Content = "正在检查环境变量可用性，请稍等……";
+            Shows.GrowlInfo("正在检查环境变量可用性，请稍等……");
             txjava.IsEnabled = false;
             a0002_Copy.IsEnabled = false;
             (bool javaAvailability, string javainfo) = await Functions.CheckJavaAvailabilityAsync("java");
             if (javaAvailability)
             {
-                outlog.Content = "环境变量可用性检查完毕，您的环境变量正常！";
+                Shows.GrowlSuccess("环境变量可用性检查完毕，您的环境变量正常！");
                 usejvPath.Content = "使用环境变量：" + javainfo;
             }
             else
             {
-                outlog.Content = "检测环境变量失败";
+                Shows.GrowlErr("检测环境变量失败");
                 Shows.ShowMsgDialog(Window.GetWindow(this), "检测环境变量失败，您的环境变量似乎不存在！", "错误");
                 usedownloadjv.IsChecked = true;
             }

@@ -500,10 +500,10 @@ namespace MSL.pages.frpProviders
             if (toggleAddProxiesGroup.Content.ToString() == "收起")
             {
                 toggleAddProxiesGroup.Content = "新建隧道（点击展开）";
-                toggleAddProxiesGroup.Margin = new Thickness(300, 250, 0, 0);
-                delProxieBtn.Margin = new Thickness(515, 250, 0, 0);
-                signBtn.Margin = new Thickness(630, 250, 0, 0);
-                userInfo.Height = 240;
+                toggleAddProxiesGroup.Margin = new Thickness(300, 245, 0, 0);
+                delProxieBtn.Margin = new Thickness(515, 245, 0, 0);
+                signBtn.Margin = new Thickness(630, 245, 0, 0);
+                userInfo.Height = 235;
                 addProxiesGroup.Visibility = Visibility.Hidden;
                 toggleProxies.SelectedIndex = 0;
             }
