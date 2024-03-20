@@ -164,7 +164,7 @@
 
                                 <Border Grid.Row="1" Style="{StaticResource BorderTipPrimary}">
                                     <StackPanel>
-                                        <TextBlock Text="帮助：不同版本该如何选择Java？" FontSize="16" Foreground="{DynamicResource PrimaryBrush}" HorizontalAlignment="Center" Margin="0,0,0,5"/>
+                                        <TextBlock Text="帮助：不同版本该如何选择Java？" FontSize="16" Foreground="{DynamicResource PrimaryTextBrush}" FontWeight="Bold" HorizontalAlignment="Center" Margin="0,0,0,5"/>
                                         <TextBlock Text="1.8之前：可以使用Java7-Java8" />
                                         <TextBlock Text="1.8-1.12.2：可以使用Java8-Java11" />
                                         <TextBlock Text="1.13-1.16.5：可以使用Java11-Java17" />
