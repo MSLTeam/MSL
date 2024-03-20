@@ -36,6 +36,7 @@
                         <ComboBoxItem Content="下载整合包" FontSize="14"/>
                         <ComboBoxItem Content="选择本地整合包" FontSize="14"/>
                     </ComboBox>
+                    
                     <TextBlock Grid.Row="1" Text="快速模式：开服器自动为您选择服务器目录，并根据您想要开的服务器类型自动判断Java版本和服务端核心并进行下载" FontSize="16" VerticalAlignment="Center" TextWrapping="Wrap" Margin="320,0,50,0"/>
                     <TextBlock Grid.Row="2" Text="自定义模式：您将手动进行Java版本选择，服务端核心选择等操作，可操作性高，可以更改服务器运行内存和启动参数" FontSize="16" VerticalAlignment="Center" TextWrapping="Wrap" Margin="320,0,50,0"/>
                     <TextBlock Grid.Row="3" Text="导入整合包模式：想要在线下载一个服务器整合包来进行导入？或是自己备有一个整合包文件？那就使用此模式吧！" FontSize="16" VerticalAlignment="Center" TextWrapping="Wrap" Margin="320,0,50,0"/>
@@ -51,14 +52,14 @@
                     <Grid>
                         <Label Content="服务器名称" Style="{StaticResource BorderTitle}"/>
                         <Label Content="服务器名称（将在服务器列表中显示该名称）：" HorizontalAlignment="Left" Margin="10,35,0,0" VerticalAlignment="Top" FontSize="16" BorderBrush="{x:Null}" Background="{x:Null}" Height="35"/>
-                        <TextBox x:Name="ServerNameBox" HorizontalAlignment="Left" Margin="360,35,0,0" TextWrapping="Wrap" Text="MyServer" VerticalAlignment="Top" Width="330" Height="35"/>
+                        <TextBox x:Name="ServerNameBox" HorizontalAlignment="Left" Margin="360,35,0,0" TextWrapping="Wrap" Text="MyServer" VerticalAlignment="Top" Width="280" Height="35"/>
                     </Grid>
                 </Border>
                 <Border Style="{StaticResource MagicBorder}">
                     <Grid>
                         <Label Content="服务器类型" Style="{StaticResource BorderTitle}"/>
                         <Label Content="服务器类型（选择你想要开的服务器类型）：" HorizontalAlignment="Left" Margin="10,35,0,0" VerticalAlignment="Top" FontSize="16" BorderBrush="{x:Null}" Background="{x:Null}" Height="35"/>
-                        <ComboBox x:Name="ServerCoreCombo" HorizontalAlignment="Left" Margin="360,35,0,0" Width="330" VerticalAlignment="Top" Height="35" SelectionChanged="ServerCoreCombo_SelectionChanged">
+                        <ComboBox x:Name="ServerCoreCombo" HorizontalAlignment="Left" Margin="360,35,0,0" Width="280" VerticalAlignment="Top" Height="35" SelectionChanged="ServerCoreCombo_SelectionChanged">
                             <ComboBoxItem Content="插件服务器"/>
                             <ComboBoxItem Content="插件模组混合服务器（Forge）"/>
                             <ComboBoxItem Content="模组服务器（Forge）"/>
@@ -67,14 +68,17 @@
                             <ComboBoxItem Content="基岩版服务器"/>
                             <ComboBoxItem Content="代理服务器"/>
                         </ComboBox>
-                        <TextBlock x:Name="ServerCoreDescrip" Text="加载中，请稍等……" Foreground="{DynamicResource PrimaryBrush}" VerticalAlignment="Top" HorizontalAlignment="Left" Margin="20,75,30,0" TextWrapping="Wrap"/>
+                        <Border  Margin="20,75,10,0"  Style="{StaticResource BorderTipPrimary}">
+                            <TextBlock x:Name="ServerCoreDescrip" Text="加载中，请稍等……" Foreground="{DynamicResource PrimaryTextBrush}" VerticalAlignment="Top" HorizontalAlignment="Left" TextWrapping="Wrap"/>
+                        </Border>
+                        
                     </Grid>
                 </Border>
                 <Border Style="{StaticResource MagicBorder}" Margin="10,10,10,10">
                     <Grid>
                         <Label Content="服务器版本" Style="{StaticResource BorderTitle}"/>
                         <Label Content="服务器版本（选择你想要开的服务器版本）：" HorizontalAlignment="Left" Margin="10,35,0,0" VerticalAlignment="Top" FontSize="16" BorderBrush="{x:Null}" Background="{x:Null}" Height="35"/>
-                        <ComboBox x:Name="ServerVersionCombo" HorizontalAlignment="Left" Margin="360,35,0,0" Width="330" VerticalAlignment="Top" Height="35"/>
+                        <ComboBox x:Name="ServerVersionCombo" HorizontalAlignment="Left" Margin="360,35,0,0" Width="280" VerticalAlignment="Top" Height="35"/>
                     </Grid>
                 </Border>
                 <Grid VerticalAlignment="Bottom" Margin="0,0,0,10">
@@ -90,7 +94,10 @@
                     <Label Content="Java版本" Style="{StaticResource BorderTitle}"/>
                     <Label Content="Java版本（此版本为MSL评估的最优版本，&#xA;如果您后续要加载的插件或模组&#xA;有要求Java版本的话，请在此处更改）：" HorizontalAlignment="Left" Margin="10,30,0,0" VerticalAlignment="Top" FontSize="16" BorderBrush="{x:Null}" Background="{x:Null}" Height="90"/>
                     <ComboBox x:Name="FinallyJavaCombo" Margin="360,60,10,0" VerticalAlignment="Top" Height="35"/>
-                    <TextBlock x:Name="FinallyJavaDescrip" Foreground="{DynamicResource PrimaryBrush}" HorizontalAlignment="Left" VerticalAlignment="Top" Margin="20,120,0,0"/>
+                    <Border  Margin="20,120,0,0"  Style="{StaticResource BorderTipPrimary}">
+                        <TextBlock x:Name="FinallyJavaDescrip" Foreground="{DynamicResource PrimaryTextBrush}" HorizontalAlignment="Left" VerticalAlignment="Top" />
+                    </Border>
+                   
                 </Grid>
             </Border>
             <Border Style="{StaticResource MagicBorder}" Margin="10,0,10,10">
@@ -123,7 +130,10 @@
                             <TextBlock Text="在此选择服务器目录（用于安放服务器的相关文件）：" Foreground="{DynamicResource PrimaryTextBrush}" Margin="25,40,0,0" FontSize="16" HorizontalAlignment="Left" VerticalAlignment="Top"/>
                             <TextBox x:Name="txb6" Margin="25,70,60,0" VerticalAlignment="Top" MaxLines="1"/>
                             <Button x:Name="a0003" Content="浏览" Margin="0,70,0,0" VerticalAlignment="Top" Click="a0003_Click" FontWeight="Normal" HorizontalAlignment="Right" Width="60"/>
-                            <TextBlock Text="选择提示：请不要选择桌面或磁盘根目录，否则会生成许多存储文件且会造成误删问题" HorizontalAlignment="Left" Margin="25,105,0,5" VerticalAlignment="Top" FontSize="14" Foreground="{DynamicResource PrimaryBrush}" />
+                            <Border Margin="25,105,0,5" Grid.Row="1" Style="{StaticResource BorderTipPrimary}">
+                                <TextBlock Text="选择提示：请不要选择桌面或磁盘根目录，否则会生成许多存储文件且会造成误删问题" HorizontalAlignment="Left"  VerticalAlignment="Top" FontSize="14"  />
+                            </Border>
+                            
                         </Grid>
                     </Border>
                     <Grid Margin="0,20,0,0">
@@ -151,13 +161,14 @@
                                     <RowDefinition Height="Auto"/>
                                     <RowDefinition Height="Auto"/>
                                 </Grid.RowDefinitions>
-                                <TextBlock Text="帮助：不同版本该如何选择Java？" FontSize="16" Foreground="{DynamicResource PrimaryBrush}" HorizontalAlignment="Center" Margin="5"/>
-                                <Border Grid.Row="1" BorderBrush="{DynamicResource PrimaryBrush}" BorderThickness="1" CornerRadius="5" Padding="10">
+
+                                <Border Margin="0,0,0,2" Grid.Row="1" Style="{StaticResource BorderTipPrimary}">
                                     <StackPanel>
-                                        <TextBlock Text="1.8之前：可以使用Java7-Java8" Foreground="{DynamicResource PrimaryBrush}"/>
-                                        <TextBlock Text="1.8-1.12.2：可以使用Java8-Java11" Foreground="{DynamicResource PrimaryBrush}"/>
-                                        <TextBlock Text="1.13-1.16.5：可以使用Java11-Java17" Foreground="{DynamicResource PrimaryBrush}"/>
-                                        <TextBlock Text="1.17-最新版：可以使用Java17及以上" Foreground="{DynamicResource PrimaryBrush}"/>
+                                        <TextBlock Text="帮助：不同版本该如何选择Java？" FontSize="16" Foreground="{DynamicResource PrimaryBrush}" HorizontalAlignment="Center" Margin="0,0,0,5"/>
+                                        <TextBlock Text="1.8之前：可以使用Java7-Java8" />
+                                        <TextBlock Text="1.8-1.12.2：可以使用Java8-Java11" />
+                                        <TextBlock Text="1.13-1.16.5：可以使用Java11-Java17" />
+                                        <TextBlock Text="1.17-最新版：可以使用Java17及以上" />
                                     </StackPanel>
                                 </Border>
                             </Grid>
@@ -167,7 +178,10 @@
                         <Button x:Name="return5" Content="上一步" Margin="0,0,250,0" VerticalAlignment="Center" Width="150" Click="return5_Click" Height="48" FontSize="18" HorizontalAlignment="Center"/>
                         <Button x:Name="next3" Content="下一步" Style="{StaticResource ButtonPrimary}" Margin="200,0,0,0" VerticalAlignment="Center" Width="150" Click="next3_Click" Height="48" FontSize="18" HorizontalAlignment="Center"/>
                     </Grid>
-                    <Label x:Name="outlog" Content="" HorizontalAlignment="Left" Margin="10,10,0,0" VerticalAlignment="Top" FontSize="14" Foreground="{DynamicResource PrimaryBrush}" Background="{x:Null}" BorderBrush="{x:Null}"/>
+                    <Border Grid.Row="1" Margin="10,10,10,0" Style="{StaticResource BorderTipPrimary}">
+                        <Label x:Name="outlog" Content="检测未开始···" HorizontalAlignment="Left"  VerticalAlignment="Top" FontSize="14"  Background="{x:Null}" BorderBrush="{x:Null}"/>
+                    </Border>
+                    
                 </StackPanel>
             </TabItem>
             <TabItem x:Name="sserver" Header="服务端" IsEnabled="False" FontSize="14" Background="{DynamicResource SideMenuBrush}">
@@ -204,15 +218,20 @@
                                     <Label Content="最大" HorizontalAlignment="Left" Margin="353,105,0,0" VerticalAlignment="Top" FontSize="14" Background="{x:Null}" BorderBrush="{x:Null}"/>
                                     <Label Content="MB" HorizontalAlignment="Left" Margin="290,105,0,0" VerticalAlignment="Top" FontSize="14" BorderBrush="{x:Null}" Background="{x:Null}"/>
                                     <Label Content="MB" HorizontalAlignment="Left" Margin="523,105,0,0" VerticalAlignment="Top" FontSize="16" BorderBrush="{x:Null}" Background="{x:Null}"/>
-                                    <TextBlock Text="开服内存  手动设置提示：内存分配建议为电脑运行内存的80%    单位换算：1GB=1024MB" HorizontalAlignment="Left" Margin="38,138,0,0" VerticalAlignment="Top" FontSize="14" Foreground="{DynamicResource PrimaryBrush}"/>
+                                    <Border Margin="15,138,0,0" Grid.Row="1" Style="{StaticResource BorderTipPrimary}">
+                                        <TextBlock Text="开服内存  手动设置提示：内存分配建议为电脑运行内存的80%    单位换算：1GB=1024MB" HorizontalAlignment="Left"  VerticalAlignment="Top" FontSize="14" />
+                                    </Border>
+                                    
                                 </Grid>
                             </Border>
                             <Border Style="{StaticResource MagicBorder}">
                                 <Grid>
                                     <Label Content="启动参数" Style="{StaticResource BorderTitle}"/>
-                                    <Label Content="(非必要勿选择或填写此栏内容，如出现无法开服的情况请删除启动参数)" HorizontalAlignment="Left" Margin="80,2,0,0" VerticalAlignment="Top" Foreground="{DynamicResource PrimaryBrush}" FontSize="14" BorderBrush="{x:Null}" Background="{x:Null}" Padding="0,0,0,0"/>
+                                    <Border Margin="15,100,0,0"  Style="{StaticResource BorderTipPrimary}" >
+                                        <TextBlock Text="(!!!非必要勿选择或填写此栏内容，如出现无法开服的情况请删除启动参数)" HorizontalAlignment="Left"  VerticalAlignment="Top" FontSize="14" />
+                                    </Border>
                                     <CheckBox x:Name="usebasicfastJvm" Content="基本优化参数（Java11及以上勿选）" Margin="20,40,0,0" VerticalAlignment="Top" Checked="usebasicfastJvm_Checked" HorizontalAlignment="Left"/>
-                                    <CheckBox x:Name="usefastJvm" Content="高级优化参数（需分配内存为4G）" Margin="310,40,188,0" VerticalAlignment="Top" Checked="usefastJvm_Checked"/>
+                                    <CheckBox x:Name="usefastJvm" Content="高级优化参数（需分配内存为4G）" Margin="250,40,188,0" VerticalAlignment="Top" Checked="usefastJvm_Checked" />
                                     <TextBox x:Name="txb7" Margin="20,65,0,0" Text="" TextWrapping="Wrap" VerticalAlignment="Top"/>
                                 </Grid>
                             </Border>
