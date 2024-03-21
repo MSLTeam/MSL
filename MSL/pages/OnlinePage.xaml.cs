@@ -1,4 +1,5 @@
-﻿using MSL.controls;
+﻿using HandyControl.Controls;
+using MSL.controls;
 using Newtonsoft.Json;
 using Newtonsoft.Json.Linq;
 using System;
@@ -144,7 +145,7 @@ namespace MSL.pages
                     FRPCMD.Kill();
                     Thread.Sleep(200);
                     visiterExp.IsEnabled = true;
-                    Shows.GrowlSuccess("关闭成功！");
+                    Growl.Success("关闭成功！");
                     FRPCMD.CancelOutputRead();
                     FRPCMD.OutputDataReceived -= new DataReceivedEventHandler(p_OutputDataReceived);
                     createRoom.Content = "点击创建房间";
@@ -190,7 +191,7 @@ namespace MSL.pages
                     FRPCMD.Kill();
                     Thread.Sleep(200);
                     masterExp.IsEnabled = true;
-                    Shows.GrowlSuccess("关闭成功！");
+                    Growl.Success("关闭成功！");
                     FRPCMD.CancelOutputRead();
                     FRPCMD.OutputDataReceived -= new DataReceivedEventHandler(p_OutputDataReceived);
                     joinRoom.Content = "点击加入房间";
@@ -320,7 +321,7 @@ namespace MSL.pages
             {
                 if (msg.IndexOf("failed") + 1 != 0)
                 {
-                    Shows.GrowlErr("桥接失败！");
+                    Growl.Error("桥接失败！");
                     try
                     {
                         FRPCMD.Kill();
@@ -359,12 +360,12 @@ namespace MSL.pages
                 if (msg.IndexOf("success") + 1 != 0)
                 {
                     frpcOutlog.Text = frpcOutlog.Text + "桥接成功！\n";
-                    Shows.GrowlSuccess("桥接完成！");
+                    Growl.Success("桥接完成！");
                 }
                 if (msg.IndexOf("error") + 1 != 0)
                 {
                     frpcOutlog.Text = frpcOutlog.Text + "桥接失败！\n";
-                    Shows.GrowlErr("桥接失败！");
+                    Growl.Error("桥接失败！");
                     try
                     {
                         FRPCMD.Kill();

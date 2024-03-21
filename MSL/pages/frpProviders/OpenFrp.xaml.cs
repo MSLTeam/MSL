@@ -32,7 +32,7 @@ namespace MSL.pages.frpProviders
         private void Page_Loaded(object sender, RoutedEventArgs e)
         {
             cts = new CancellationTokenSource();
-            if (APIControl.authId != "")
+            if (OpenFrpApi.authId != "")
             {
                 Task.Run(() => GetFrpsInfo(cts.Token));
                 return;
@@ -55,22 +55,22 @@ namespace MSL.pages.frpProviders
 
         private async Task GetFrpsInfo(CancellationToken ct)
         {
-            APIControl control = new APIControl();
-            if (APIControl.userAccount == "" || APIControl.userPass == "")
+            OpenFrpApi control = new OpenFrpApi();
+            if (OpenFrpApi.userAccount == "" || OpenFrpApi.userPass == "")
             {
                 await Dispatcher.Invoke(async () =>
                 {
-                    APIControl.userAccount = await Shows.ShowInput(Window.GetWindow(this), "请输入OpenFrp的账户名/邮箱");
+                    OpenFrpApi.userAccount = await Shows.ShowInput(Window.GetWindow(this), "请输入OpenFrp的账户名/邮箱");
                 });
 
-                if (APIControl.userAccount != null)
+                if (OpenFrpApi.userAccount != null)
                 {
                     await Dispatcher.Invoke(async () =>
                     {
-                        APIControl.userPass = await Shows.ShowInput(Window.GetWindow(this), "请输入" + APIControl.userAccount + "的密码", "", true);
+                        OpenFrpApi.userPass = await Shows.ShowInput(Window.GetWindow(this), "请输入" + OpenFrpApi.userAccount + "的密码", "", true);
                     });
 
-                    if (APIControl.userPass == null)
+                    if (OpenFrpApi.userPass == null)
                     {
                         return;
                     }
@@ -103,9 +103,7 @@ namespace MSL.pages.frpProviders
                 catch
                 { }
             });
-            //MessageBox.Show("111");
-            string usr_info = await control.Login(APIControl.userAccount, APIControl.userPass);
-            //MessageBox.Show("11");
+            string usr_info = await control.Login(OpenFrpApi.userAccount, OpenFrpApi.userPass);
             JObject userdata = null;
             try
             {
@@ -116,10 +114,9 @@ namespace MSL.pages.frpProviders
                 Dispatcher.Invoke(() =>
                 {
                     Shows.ShowMsgDialog(Window.GetWindow(this), "登录失败！请检查您的用户名或密码是否正确！\n" + usr_info, "错误！");
-                    //APIControl.sessionId = string.Empty;
-                    APIControl.authId = string.Empty;
-                    APIControl.userAccount = string.Empty;
-                    APIControl.userPass = string.Empty;
+                    OpenFrpApi.authId = string.Empty;
+                    OpenFrpApi.userAccount = string.Empty;
+                    OpenFrpApi.userPass = string.Empty;
                     LoginGrid.Visibility = Visibility.Visible;
                     MainGrid.Visibility = Visibility.Hidden;
                     try
@@ -133,14 +130,13 @@ namespace MSL.pages.frpProviders
                 });
                 return;
             }
-            string welcome = $"欢迎,{userdata["data"]["username"]}\n";
-            string limit = $"带宽限制: {userdata["data"]["outLimit"]}↑ | ↓ {userdata["data"]["inLimit"]}\n";
-            string used = $"已用隧道:{userdata["data"]["used"]}条\n";
-            string group = $"用户组:{userdata["data"]["friendlyGroup"]}\n";
-            string userid = $"ID:{userdata["data"]["id"]}\n";
-            string email = $"邮箱:{userdata["data"]["email"]}\n";
-            string traffic = $"剩余流量:{userdata["data"]["traffic"]}Mib";
-            string showusrinfo = welcome + traffic + limit + group + userid + email + used;
+            string welcome = $"用户名：{userdata["data"]["username"]}[{userdata["data"]["friendlyGroup"]}]\n";
+            string userid = $"ID：{userdata["data"]["id"]}\n";
+            string email = $"邮箱：{userdata["data"]["email"]}\n";
+            string traffic = $"剩余流量：{userdata["data"]["traffic"]}Mib\n";
+            string limit = $"带宽限制：{userdata["data"]["outLimit"]}↑ | ↓ {userdata["data"]["inLimit"]}\n";
+            string used = $"已用隧道：{userdata["data"]["used"]}条";
+            string showusrinfo = welcome + userid + email + traffic + limit + used;
             token = userdata["data"]["token"].ToString();
             Dispatcher.Invoke(() =>
             {
@@ -289,8 +285,8 @@ namespace MSL.pages.frpProviders
         private async void signBtn_Click(object sender, RoutedEventArgs e)
         {
             /*
-            APIControl apiControl = new APIControl();
-            apiControl.UserSign(Window.GetWindow(Window.GetWindow(this)));
+            OpenFrpApi OpenFrpApi = new OpenFrpApi();
+            OpenFrpApi.UserSign(Window.GetWindow(Window.GetWindow(this)));
             */
             await Shows.ShowMsgDialogAsync(Window.GetWindow(this), "目前暂不支持在软件内签到，请前往OpenFrp官网进行签到！", "提示");
             Process.Start("https://www.openfrp.net/");
@@ -313,7 +309,7 @@ namespace MSL.pages.frpProviders
                 toggleProxies.IsEnabled = false;
                 toggleAddProxiesGroup.IsEnabled = false;
                 doneBtn.IsEnabled = false;
-                APIControl control = new APIControl();
+                OpenFrpApi control = new OpenFrpApi();
                 string type;
                 if (frpcType.SelectedIndex == 0) type = "tcp";
                 else type = "udp";
@@ -363,7 +359,7 @@ namespace MSL.pages.frpProviders
                 return;
             }
             serversList.Items.Clear();
-            APIControl control = new APIControl();
+            OpenFrpApi control = new OpenFrpApi();
             Window window = Window.GetWindow(Window.GetWindow(this));
             if (toggleProxies.SelectedIndex == 0)
             {
@@ -411,7 +407,7 @@ namespace MSL.pages.frpProviders
                 object o = serversList.SelectedValue;
                 string id = nodelist[o.ToString()];
                 serversList.Items.Clear();
-                APIControl control = new APIControl();
+                OpenFrpApi control = new OpenFrpApi();
                 string returnMsg = "";
                 bool delReturn = await Task.Run(() => control.DeleteProxy(id, out returnMsg));
                 if (delReturn)
@@ -522,10 +518,9 @@ namespace MSL.pages.frpProviders
 
         private void logoutBtn_Click(object sender, RoutedEventArgs e)
         {
-            //APIControl.sessionId = string.Empty;
-            APIControl.authId = string.Empty;
-            APIControl.userAccount = string.Empty;
-            APIControl.userPass = string.Empty;
+            OpenFrpApi.authId = string.Empty;
+            OpenFrpApi.userAccount = string.Empty;
+            OpenFrpApi.userPass = string.Empty;
             LoginGrid.Visibility = Visibility.Visible;
             MainGrid.Visibility = Visibility.Hidden;
             userInfo.Content = string.Empty;

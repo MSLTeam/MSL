@@ -148,10 +148,10 @@ namespace MSL.pages
                     }
                     else
                     {
-                        Shows.GrowlErr("出现错误，获取Java版本列表失败！");
+                        Growl.Error("出现错误，获取Java版本列表失败！");
                     }
 
-                    Shows.GrowlInfo("整合包解压完成！请在此界面选择Java环境，Java的版本要和导入整合包的版本相对应，详情查看界面下方的表格");
+                    Growl.Info("整合包解压完成！请在此界面选择Java环境，Java的版本要和导入整合包的版本相对应，详情查看界面下方的表格");
                     sjava.IsSelected = true;
                     sjava.IsEnabled = true;
                     welcome.IsEnabled = false;
@@ -222,10 +222,10 @@ namespace MSL.pages
                             }
                             else
                             {
-                                Shows.GrowlErr("出现错误，获取Java版本列表失败！");
+                                Growl.Error("出现错误，获取Java版本列表失败！");
                             }
 
-                            Shows.GrowlInfo("整合包解压完成！请在此界面选择Java环境，Java的版本要和导入整合包的版本相对应，详情查看界面下方的表格");
+                            Growl.Info("整合包解压完成！请在此界面选择Java环境，Java的版本要和导入整合包的版本相对应，详情查看界面下方的表格");
                             sjava.IsSelected = true;
                             sjava.IsEnabled = true;
                             welcome.IsEnabled = false;
@@ -242,15 +242,15 @@ namespace MSL.pages
             return5.IsEnabled = false;
             if (useJVself.IsChecked == true)
             {
-                Shows.GrowlInfo("正在检查所选Java可用性，请稍等……");
+                Growl.Info("正在检查所选Java可用性，请稍等……");
                 (bool javaAvailability, string javainfo) = await Functions.CheckJavaAvailabilityAsync(txjava.Text);
                 if (javaAvailability)
                 {
-                    Shows.GrowlInfo("所选Java版本：" + javainfo);
+                    Growl.Info("所选Java版本：" + javainfo);
                 }
                 else
                 {
-                    Shows.GrowlErr("检测Java可用性失败");
+                    Growl.Error("检测Java可用性失败");
                     Shows.ShowMsgDialog(Window.GetWindow(this), "检测Java可用性失败，您的Java似乎不可用！请检查是否选择正确！", "错误");
                     usedownloadjv.IsChecked = true;
                     noNext = true;
@@ -282,56 +282,45 @@ namespace MSL.pages
             {
                 try
                 {
-                    if (usedownloadjv.IsChecked == true)
+                    int dwnJava = 0;
+                    await Dispatcher.Invoke(async () =>
                     {
-                        try
+                        dwnJava = await DownloadJava(selectJavaComb.SelectedItem.ToString(), Functions.Get("download/java/" + selectJavaComb.SelectedItem.ToString()));
+                    });
+                    if (dwnJava == 1)
+                    {
+                        ShowDialogs showDialogs = new ShowDialogs();
+                        showDialogs.ShowTextDialog(Window.GetWindow(this), "解压Java中……");
+                        bool unzipJava = await UnzipJava();
+                        showDialogs.CloseTextDialog();
+                        if (unzipJava)
                         {
-                            int dwnJava = 0;
-                            await Dispatcher.Invoke(async () =>
+                            await Dispatcher.InvokeAsync(() =>
                             {
-                                dwnJava = await DownloadJava(selectJavaComb.SelectedItem.ToString(), Functions.Get("download/java/" + selectJavaComb.SelectedItem.ToString()));
+                                CheckServerPackCore();
                             });
-                            if (dwnJava == 1)
-                            {
-                                ShowDialogs showDialogs = new ShowDialogs();
-                                showDialogs.ShowTextDialog(Window.GetWindow(this), "解压Java中……");
-                                bool unzipJava = await UnzipJava();
-                                showDialogs.CloseTextDialog();
-                                if (unzipJava)
-                                {
-                                    await Dispatcher.InvokeAsync(() =>
-                                    {
-                                        CheckServerPackCore();
-                                    });
-                                }
-                                else
-                                {
-                                    noNext = true;
-                                }
-                            }
-                            else if (dwnJava == 2)
-                            {
-                                await Dispatcher.InvokeAsync(() =>
-                                {
-                                    CheckServerPackCore();
-                                });
-                            }
-                            else
-                            {
-                                Shows.ShowMsgDialog(Window.GetWindow(this), "下载取消！", "提示");
-                                noNext = true;
-                            }
                         }
-                        catch
+                        else
                         {
-                            Shows.GrowlErr("出现错误，请检查网络连接！");
                             noNext = true;
                         }
+                    }
+                    else if (dwnJava == 2)
+                    {
+                        await Dispatcher.InvokeAsync(() =>
+                        {
+                            CheckServerPackCore();
+                        });
+                    }
+                    else
+                    {
+                        Shows.ShowMsgDialog(Window.GetWindow(this), "下载取消！", "提示");
+                        noNext = true;
                     }
                 }
                 catch
                 {
-                    Shows.ShowMsgDialog(Window.GetWindow(this), "出现错误！请检查您的网络连接！", "信息");
+                    Growl.Error("出现错误，请检查网络连接！");
                     noNext = true;
                 }
             }
@@ -344,10 +333,14 @@ namespace MSL.pages
                 sjava.IsEnabled = false;
             }
         }
+
         private async void CheckServerPackCore()
         {
             if (isImportPack)
             {
+                sserver.IsSelected = true;
+                sserver.IsEnabled = true;
+                sjava.IsEnabled = false;
                 DirectoryInfo directoryInfo = new DirectoryInfo(serverbase);
                 FileInfo[] fileInfo = directoryInfo.GetFiles("*.jar");
                 List<string> files = new List<string>();
@@ -436,7 +429,7 @@ namespace MSL.pages
                 }
                 else if (files.Count == 0)
                 {
-                    Shows.GrowlInfo("开服器未在整合包中找到核心文件，请您进行下载或手动选择已有核心，核心的版本要和整合包对应的游戏版本一致");
+                    Growl.Info("开服器未在整合包中找到核心文件，请您进行下载或手动选择已有核心，核心的版本要和整合包对应的游戏版本一致");
                 }
             }
         }
@@ -560,6 +553,7 @@ namespace MSL.pages
         {
             if (isImportPack)
             {
+                isImportPack = false;
                 MainGrid.Visibility = Visibility.Visible;
                 tabCtrl.Visibility = Visibility.Hidden;
                 welcome.IsSelected = true;
@@ -620,30 +614,30 @@ namespace MSL.pages
             }
             if (selectCheckedJavaComb.Items.Count > 0)
             {
-                Shows.GrowlSuccess("检测完毕！");
+                Growl.Success("检测完毕！");
                 selectCheckedJavaComb.SelectedIndex = 0;
             }
             else
             {
-                Shows.GrowlInfo("检测完毕，暂未找到Java");
+                Growl.Info("检测完毕，暂未找到Java");
                 usedownloadjv.IsChecked = true;
             }
         }
 
         private async void usejvPath_Checked(object sender, RoutedEventArgs e)
         {
-            Shows.GrowlInfo("正在检查环境变量可用性，请稍等……");
+            Growl.Info("正在检查环境变量可用性，请稍等……");
             txjava.IsEnabled = false;
             a0002_Copy.IsEnabled = false;
             (bool javaAvailability, string javainfo) = await Functions.CheckJavaAvailabilityAsync("java");
             if (javaAvailability)
             {
-                Shows.GrowlSuccess("环境变量可用性检查完毕，您的环境变量正常！");
+                Growl.Success("环境变量可用性检查完毕，您的环境变量正常！");
                 usejvPath.Content = "使用环境变量：" + javainfo;
             }
             else
             {
-                Shows.GrowlErr("检测环境变量失败");
+                Growl.Error("检测环境变量失败");
                 Shows.ShowMsgDialog(Window.GetWindow(this), "检测环境变量失败，您的环境变量似乎不存在！", "错误");
                 usedownloadjv.IsChecked = true;
             }
@@ -704,7 +698,7 @@ namespace MSL.pages
             }
             else
             {
-                Shows.GrowlErr("出现错误，获取Java版本列表失败！");
+                Growl.Error("出现错误，获取Java版本列表失败！");
             }
 
             sjava.IsSelected = true;
@@ -907,7 +901,7 @@ namespace MSL.pages
             }
             catch (Exception a)
             {
-                Shows.GrowlInfo("获取服务端失败！请重试" + a.Message);
+                Growl.Info("获取服务端失败！请重试" + a.Message);
             }
         }
         List<string> typeVersions = new List<string>();
@@ -1089,7 +1083,7 @@ namespace MSL.pages
             }
             else
             {
-                Shows.GrowlErr("出现错误，获取Java版本列表失败！");
+                Growl.Error("出现错误，获取Java版本列表失败！");
             }
 
             string javaVersion = string.Empty;
@@ -1243,7 +1237,7 @@ namespace MSL.pages
             }
             catch
             {
-                Shows.GrowlErr("出现错误，请检查网络连接！");
+                Growl.Error("出现错误，请检查网络连接！");
                 FastModeReturnBtn.IsEnabled = true;
                 FastModeInstallBtn.IsEnabled = true;
             }

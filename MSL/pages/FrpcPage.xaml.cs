@@ -45,7 +45,7 @@ namespace MSL.pages
                 Dispatcher.Invoke(() =>
                 {
                     startfrpc.Content = "关闭内网映射";
-                    Shows.GrowlInfo("正在启动内网映射！");
+                    Growl.Info("正在启动内网映射！");
                     setfrpc.IsEnabled = false;
                     startfrpc.IsEnabled = false;
                     frpcOutlog.Text = "启动中，请稍候……\n";
@@ -160,7 +160,7 @@ namespace MSL.pages
                 }
                 Dispatcher.Invoke(() =>
                 {
-                    Shows.GrowlSuccess("内网映射已关闭！");
+                    Growl.Success("内网映射已关闭！");
                     startfrpc.IsEnabled = true;
                 });
             }
@@ -202,7 +202,7 @@ namespace MSL.pages
                 if (msg.IndexOf("failed") + 1 != 0)
                 {
                     frpcOutlog.Text = frpcOutlog.Text + "内网映射桥接失败！\n";
-                    Shows.GrowlErr("内网映射桥接失败！");
+                    Growl.Error("内网映射桥接失败！");
                     if (msg.Contains("付费资格已过期"))
                     {
                         Thread thread = new Thread(PaidServe);
@@ -227,12 +227,12 @@ namespace MSL.pages
                 if (msg.IndexOf("success") + 1 != 0)
                 {
                     frpcOutlog.Text = frpcOutlog.Text + "内网映射桥接成功！您可复制IP进入游戏了！\n";
-                    Shows.GrowlSuccess("内网映射桥接成功！");
+                    Growl.Success("内网映射桥接成功！");
                 }
                 if (msg.IndexOf("error") + 1 != 0)
                 {
                     frpcOutlog.Text = frpcOutlog.Text + "内网映射桥接失败！\n";
-                    Shows.GrowlErr("内网映射桥接失败！");
+                    Growl.Error("内网映射桥接失败！");
                     if (msg.IndexOf("port already used") + 1 != 0)
                     {
                         frpcOutlog.Text = frpcOutlog.Text + "本地端口被占用，请不要频繁开关内网映射并等待一分钟再试。\n若一分钟后仍然占用，请尝试手动结束frpc进程或重启电脑再试。\n";
@@ -460,12 +460,12 @@ namespace MSL.pages
                 try
                 {
                     startfrpc.IsEnabled = false;
-                    Shows.GrowlInfo("正在关闭内网映射！");
+                    Growl.Info("正在关闭内网映射！");
                     Task.Run(() => StopProcess(FRPCMD));
                 }
                 catch
                 {
-                    Shows.GrowlErr("关闭失败！请尝试手动结束frpc进程！");
+                    Growl.Error("关闭失败！请尝试手动结束frpc进程！");
                 }
             }
         }

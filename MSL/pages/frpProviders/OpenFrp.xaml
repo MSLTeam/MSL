@@ -38,7 +38,7 @@
             </Grid>
             <Button x:Name="doneBtn" Content="确定" Margin="630,280,0,0" Style="{StaticResource ButtonPrimary}" VerticalAlignment="Top" Width="100" Click="Button_Click" FontSize="18" Height="55" HorizontalAlignment="Left"/>
             <Button x:Name="gotoWeb" Content="进入官网" Margin="630,340,0,0" VerticalAlignment="Top" Click="gotoWeb_Click" HorizontalAlignment="Left" Width="100" Height="40"/>
-            <Button x:Name="logoutBtn" Content="登出" Margin="630,5,0,0" VerticalAlignment="Top" HorizontalAlignment="Left" Width="100" Height="30" Click="logoutBtn_Click"/>
+            <Button x:Name="logoutBtn" Content="登出" Margin="0,5,15,0" VerticalAlignment="Top" HorizontalAlignment="Right" Width="80" Height="30" Click="logoutBtn_Click"/>
         </Grid>
         <Grid x:Name="LoginGrid" Visibility="Hidden">
             <TextBlock Text="使用OpenFrp服务之前，请先登录您的OpenFrp账户" HorizontalAlignment="Center" VerticalAlignment="Center" Margin="0,0,0,70" FontSize="16" Foreground="{DynamicResource PrimaryTextBrush}"/>

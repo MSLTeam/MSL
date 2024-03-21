@@ -33,7 +33,6 @@ namespace MSL
         public static event DeleControl LoadAnnounce;
         public static event DeleControl AutoOpenServer;
         public static event DeleControl AutoOpenFrpc;
-        public static string serverID;
         public static string serverLink = null;
         public static float PhisicalMemory;
         public static bool getServerInfo = false;
@@ -290,10 +289,10 @@ namespace MSL
             catch (Exception ex)
             {
                 //Logger.LogError("读取配置时出现错误！错误代码："+ex.Message);
-                Shows.GrowlErr("MSL在加载配置文件时出现错误，此报错可能不影响软件运行，但还是建议您将其反馈给作者！\n错误代码：" + ex.Message);
+                Growl.Error("MSL在加载配置文件时出现错误，此报错可能不影响软件运行，但还是建议您将其反馈给作者！\n错误代码：" + ex.Message);
                 File.WriteAllText(@"MSL\config.json", string.Format("{{{0}}}", "\n"));
                 //jsonObject = JObject.Parse(File.ReadAllText(@"MSL\config.json", Encoding.UTF8));
-                //Shows.GrowlInfo("配置文件已更新！");
+                //Growl.Info("配置文件已更新！");
             }
 
             //获取电脑内存
@@ -322,13 +321,13 @@ namespace MSL
                 else if (jsonObject["autoOpenServer"].ToString() != "False")
                 {
                     string servers = jsonObject["autoOpenServer"].ToString();
-                    Shows.GrowlInfo("正在为你自动打开相应服务器……");
+                    Growl.Info("正在为你自动打开相应服务器……");
                     while (servers != "")
                     {
                         int aserver = servers.IndexOf(",");
-                        serverID = servers.Substring(0, aserver);
+                        ServerList.serverID = int.Parse(servers.Substring(0, aserver));
                         AutoOpenServer();
-                        servers = servers.Replace(serverID + ",", "");
+                        servers = servers.Replace(ServerList.serverID.ToString() + ",", "");
                     }
                 }
                 //Logger.LogInfo("读取自动开启（服务器）配置成功！");
@@ -351,7 +350,7 @@ namespace MSL
                 }
                 else if ((bool)jsonObject["autoOpenFrpc"] == true)
                 {
-                    Shows.GrowlInfo("正在为你自动打开内网映射……");
+                    Growl.Info("正在为你自动打开内网映射……");
                     AutoOpenFrpc();
                 }
                 //Logger.LogInfo("读取自动开启（内网映射）配置成功！");
@@ -381,13 +380,13 @@ namespace MSL
                     if (((int)((JObject)JsonConvert.DeserializeObject(Functions.Get("")))["status"]) != 200)
                     {
                         serverLink = "waheal.top";
-                        Shows.GrowlInfo("MSL主服务器连接超时（可能被DDos），已切换至备用服务器！");
+                        Growl.Info("MSL主服务器连接超时（可能被DDos），已切换至备用服务器！");
                     }
                 }
                 catch
                 {
                     serverLink = "waheal.top";
-                    Shows.GrowlInfo("MSL主服务器连接超时（可能被DDos），已切换至备用服务器！");
+                    Growl.Info("MSL主服务器连接超时（可能被DDos），已切换至备用服务器！");
                 }
             }
             catch
@@ -431,23 +430,23 @@ namespace MSL
                         else
                         {
                             //Logger.LogInfo("用户拒绝更新！");
-                            Shows.GrowlErr("您拒绝了更新新版本，若在此版本中遇到bug，请勿报告给作者！");
+                            Growl.Error("您拒绝了更新新版本，若在此版本中遇到bug，请勿报告给作者！");
                         }
                     });
                 }
                 else if (newVersion < version)
                 {
-                    Shows.GrowlInfo("当前版本高于正式版本，若使用中遇到BUG，请及时反馈！");
+                    Growl.Info("当前版本高于正式版本，若使用中遇到BUG，请及时反馈！");
                 }
                 else
                 {
-                    Shows.GrowlSuccess("您使用的开服器已是最新版本！");
+                    Growl.Success("您使用的开服器已是最新版本！");
                 }
             }
             catch
             {
                 //Logger.LogError("检测更新失败！");
-                Shows.GrowlErr("检查更新失败！");
+                Growl.Error("检查更新失败！");
             }
             await Dispatcher.InvokeAsync(() =>
             {

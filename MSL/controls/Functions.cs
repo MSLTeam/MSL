@@ -465,45 +465,18 @@ namespace MSL.controls
 
     #region OpenFrp Api
 
-    partial class CreateProxy
-    {
-        public string session { get; set; }
-        public int node_id { get; set; }
-        public string name { get; set; }
-        public string type { get; set; }
-        public string local_addr { get; set; }
-        public string local_port { get; set; }
-        public string remote_port { get; set; }
-        public string domain_bind { get; set; }
-        public bool dataGzip { get; set; }
-        public bool dataEncrypt { get; set; }
-        public string url_route { get; set; }
-        public string host_rewrite { get; set; }
-        public string request_from { get; set; }
-        public string request_pass { get; set; }
-        public string custom { get; set; }
-    }
-
-    internal class APIControl
+    internal class OpenFrpApi
     {
         public static string userAccount = "";
         public static string userPass = "";
-        //public static string sessionId="";
         public static string authId = "";
 
         public Dictionary<string, string> GetUserNodes()
         {
-            /*
-            JObject userinfo = new JObject
-            {
-                ["session"] = sessionId
-            };
-            */
             WebHeaderCollection header = new WebHeaderCollection
             {
                 authId
             };
-            //var responseMessage = Functions.Post("getUserProxies", 0, JsonConvert.SerializeObject(userinfo), "https://of-dev-api.bfsea.xyz/frp/api", header);
             var responseMessage = Functions.Post("getUserProxies", 0, string.Empty, "https://of-dev-api.bfsea.xyz/frp/api", header);
             try
             {
@@ -525,7 +498,6 @@ namespace MSL.controls
                         using (var _reader = new StreamReader(errorResponse.GetResponseStream()))
                         {
                             string error = _reader.ReadToEnd();
-                            //DialogShow.ShowMsg(window, error, "获取用户信息失败");
                         }
                     }
                 }
@@ -535,17 +507,10 @@ namespace MSL.controls
 
         public (Dictionary<string, string>, JArray) GetNodeList(Window window)
         {
-            /*
-            JObject userinfo = new JObject
-            {
-                ["session"] = sessionId
-            };
-            */
             WebHeaderCollection header = new WebHeaderCollection
             {
                 authId
             };
-            //var responseMessage = Functions.Post("getNodeList", 0, JsonConvert.SerializeObject(userinfo), "https://of-dev-api.bfsea.xyz/frp/api", header);
             var responseMessage = Functions.Post("getNodeList", 0, string.Empty, "https://of-dev-api.bfsea.xyz/frp/api", header);
 
             try
@@ -592,17 +557,10 @@ namespace MSL.controls
 
         public void UserSign(Window window)
         {
-            /*
-            JObject userinfo = new JObject
-            {
-                ["session"] = sessionId
-            };
-            */
             WebHeaderCollection header = new WebHeaderCollection
             {
                 authId
             };
-            //var responseMessage = Functions.Post("userSign", 0, JsonConvert.SerializeObject(userinfo), "https://of-dev-api.bfsea.xyz/frp/api", header);
             string responseMessage = "";
             try
             {
@@ -632,17 +590,10 @@ namespace MSL.controls
 
         public string GetUserInfo()
         {
-            /*
-            JObject userinfo = new JObject
-            {
-                ["session"] = sessionId
-            };
-            */
             WebHeaderCollection header = new WebHeaderCollection
             {
                 authId
             };
-            //string responseMessage = Functions.Post("getUserInfo", 0, JsonConvert.SerializeObject(userinfo), "https://of-dev-api.bfsea.xyz/frp/api", header);
             string responseMessage = Functions.Post("getUserInfo", 0, string.Empty, "https://of-dev-api.bfsea.xyz/frp/api", header);
             return responseMessage;
         }
@@ -706,17 +657,6 @@ namespace MSL.controls
                     // 检查响应状态码是否为 OK
                     if (authResponse.IsSuccessStatusCode)
                     {
-                        // 读取响应内容
-                        //string _loginData = await _loginResponse.Content.ReadAsStringAsync();
-                        //if ((bool)JObject.Parse(_loginData)["flag"] == false)
-                        //{
-                        //    return JObject.Parse(_loginData)["msg"].ToString();
-                        //}
-                        // 显示响应内容
-                        //MessageBox.Show(_loginData);
-                        //sessionId = JObject.Parse(_loginData)["data"].ToString();
-                        //MessageBox.Show(_loginResponse.Headers.ToString());
-
                         authId = _loginResponse.Headers.ToString().Substring(_loginResponse.Headers.ToString().IndexOf("Authorization:"), _loginResponse.Headers.ToString().Substring(_loginResponse.Headers.ToString().IndexOf("Authorization:")).IndexOf("\n") - 1);
                         //MessageBox.Show(authId);
                         string ret = GetUserInfo();
@@ -748,23 +688,22 @@ namespace MSL.controls
             request.Method = "POST";
             request.ContentType = "application/json";
             request.Headers.Add(authId);
-            string json = JsonConvert.SerializeObject(new CreateProxy()
+            string json = JsonConvert.SerializeObject(new JObject()
             {
-                //session = sessionId,
-                node_id = nodeid,
-                name = proxy_name,
-                type = type,
-                local_addr = "127.0.0.1",
-                local_port = port,
-                remote_port = remote_port,
-                domain_bind = "",
-                dataGzip = EnableZip,
-                dataEncrypt = false,
-                url_route = "",
-                host_rewrite = "",
-                request_from = "",
-                request_pass = "",
-                custom = ""
+                ["node_id"] = nodeid,
+                ["name"] = proxy_name,
+                ["type"] = type,
+                ["local_addr"] = "127.0.0.1",
+                ["local_port"] = port,
+                ["remote_port"] = remote_port,
+                ["domain_bind"] = "",
+                ["dataGzip"] = EnableZip,
+                ["dataEncrypt"] = false,
+                ["url_route"] = "",
+                ["host_rewrite"] = "",
+                ["request_from"] = "",
+                ["request_pass"] = "",
+                ["custom"] = ""
             });//转换json格式
             byte[] byteArray = Encoding.UTF8.GetBytes(json);
             request.ContentLength = byteArray.Length;
@@ -808,7 +747,6 @@ namespace MSL.controls
             JObject json = new JObject()
             {
                 ["proxy_id"] = id,
-                //["session"] = sessionId
             };//转换json格式
             byte[] byteArray = Encoding.UTF8.GetBytes(JsonConvert.SerializeObject(json));
             request.ContentLength = byteArray.Length;

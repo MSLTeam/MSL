@@ -97,31 +97,6 @@ namespace MSL.controls
             bool _ret = await showDialogs.ShowDownloadDialog(_window, downloadurl, downloadPath, filename, downloadinfo, sha256);
             return _ret;
         }
-
-        public static void GrowlSuccess(string msg, bool showtime = false)
-        {
-            Growl.Success(new GrowlInfo
-            {
-                Message = msg,
-                ShowDateTime = showtime
-            });
-        }
-        public static void GrowlInfo(string msg, bool showtime = false)
-        {
-            Growl.Info(new GrowlInfo
-            {
-                Message = msg,
-                ShowDateTime = showtime
-            });
-        }
-        public static void GrowlErr(string msg, bool showtime = false)
-        {
-            Growl.Error(new GrowlInfo
-            {
-                Message = msg,
-                ShowDateTime = showtime
-            });
-        }
     }
 
     internal class ShowDialogs
