@@ -33,9 +33,6 @@
             <Style TargetType="TextBox" BasedOn="{StaticResource TextBoxBaseStyle}">
                 <Setter Property="ContextMenu" Value="{StaticResource UIContextMenu}"/>
             </Style>
-            <Style TargetType="TextBlock">
-                <Setter Property="Foreground" Value="{DynamicResource PrimaryTextBrush}"/>
-            </Style>
         </ResourceDictionary>
     </Application.Resources>
 </Application>
