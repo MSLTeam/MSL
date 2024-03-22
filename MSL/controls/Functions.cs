@@ -401,7 +401,30 @@ namespace MSL.controls
                     bool checkRootBase = false;
                     if (Directory.Exists(_base + "\\libraries\\net\\minecraftforge\\forge"))
                     {
-                        //bool checkResult = false;
+                        /*
+                        bool checkRootBase = false;
+                        if (Directory.Exists(_base + "\\libraries\\net\\minecraftforge\\forge"))
+                        {
+                            List<string> versions = new List<string>();
+                            string[] subFolders = Directory.GetDirectories(_base + "\\libraries\\net\\minecraftforge\\forge");
+                            foreach (string subFolder in subFolders)
+                            {
+                                if (File.Exists(subFolder + "\\win_args.txt"))
+                                {
+                                    versions.Add(subFolder);
+                                }
+                            }
+                            if (versions.Count == 1)
+                            {
+                                forgeVersion = Path.GetFileName(versions[0]);
+                                return "@libraries/net/minecraftforge/forge/" + forgeVersion + "/win_args.txt %*";
+                            }
+                            else if (versions.Count > 1)
+                            {
+                                string selectFile = await Shows.ShowInput(window, "开服器检测到您安装了多个forge版本，请选择一个版本（输入文件前对应的数字，取消为不选择以下文件）\n" + filestr);
+                            }
+                            checkRootBase = true;
+                        */
                         string[] subFolders = Directory.GetDirectories(_base + "\\libraries\\net\\minecraftforge\\forge");
                         foreach (string subFolder in subFolders)
                         {
@@ -409,8 +432,6 @@ namespace MSL.controls
                             {
                                 forgeVersion = Path.GetFileName(subFolder);
                                 return "@libraries/net/minecraftforge/forge/" + forgeVersion + "/win_args.txt %*";
-                                //checkResult = true;
-                                //break;
                             }
                         }
                         checkRootBase = true;
