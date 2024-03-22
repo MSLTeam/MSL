@@ -46,8 +46,8 @@ namespace MSL
             ServerList.CreateServerEvent += GotoCreatePage;
             CreateServer.GotoServerList += GotoListPage;
             SettingsPage.C_NotifyIcon += CtrlNotifyIcon;
-            ServerRunner.GotoFrpcEvent += GotoFrpcPage;
             SettingsPage.ChangeSkinStyle += ChangeSkinStyle;
+            //ServerRunner.GotoFrpcEvent += GotoFrpcPage;
         }
 
         private async void Window_Loaded(object sender, RoutedEventArgs e)
@@ -604,11 +604,16 @@ namespace MSL
             }
         }
 
+        /*
         private void GotoFrpcPage()
         {
+            this.Topmost = true;
+            this.Topmost = false;
+            this.Focus();
             frame.Content = _frpcPage;
             SideMenu.SelectedIndex = 2;
         }
+        */
 
         private void GotoOnlinePage()
         {
