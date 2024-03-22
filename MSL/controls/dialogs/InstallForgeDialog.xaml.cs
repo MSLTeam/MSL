@@ -30,6 +30,7 @@ namespace MSL.controls
         private readonly string javaPath;
         private int versionType; //由于Forge安装器的json有4种格式（太6了），在此进行规定：①1.20.3-Latest ②？-1.20.2
         private readonly Thread thread;
+        private string mcVersion;
 
         public InstallForgeDialog(string forge, string downPath, string java)
         {
@@ -111,16 +112,19 @@ namespace MSL.controls
             {
                 serverJarPath = ReplaceStr(installJobj["serverJarPath"].ToString());
                 vanillaUrl = Functions.Get("download/server/vanilla/" + installJobj["minecraft"].ToString());
+                mcVersion = installJobj["minecraft"].ToString();
             }
             else if (versionType == 5)
             {
                 serverJarPath = installPath + "/minecraft_server." + installJobj["install"]["minecraft"].ToString() + ".jar";
                 vanillaUrl = Functions.Get("download/server/vanilla/" + installJobj["install"]["minecraft"].ToString());
+                mcVersion = installJobj["install"]["minecraft"].ToString();
             }
             else
             {
                 serverJarPath = installPath + "/minecraft_server." + installJobj["minecraft"].ToString() + ".jar";
                 vanillaUrl = Functions.Get("download/server/vanilla/" + installJobj["minecraft"].ToString());
+                mcVersion = installJobj["minecraft"].ToString();
             }
 
             await Dispatcher.Invoke(async () => //下载
