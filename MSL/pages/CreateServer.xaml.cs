@@ -794,25 +794,39 @@ namespace MSL.pages
                 }
             }
         }
-
-        private void usebasicfastJvm_Checked(object sender, RoutedEventArgs e)
+        
+        private async void usebasicfastJvm_Click(object sender, RoutedEventArgs e)
         {
-            MessageBox.Show("使用优化参数需要手动设置大小相同的内存，请对上面的内存进行更改！Java11及以上请勿选择此优化参数！", "警告", MessageBoxButton.OK, MessageBoxImage.Exclamation);
-            useJVM.IsChecked = true;
-            usefastJvm.IsChecked = false;
-            txb7.Text = "-XX:+AggressiveOpts";
-            txb4.Text = "2048";
-            txb5.Text = "2048";
+            if ((bool)usebasicfastJvm.IsChecked)
+            {
+                await Shows.ShowMsgDialogAsync(Window.GetWindow(this), "使用优化参数需要手动设置大小相同的内存，请对上面的内存进行更改！Java11及以上请勿选择此优化参数！", "警告");
+                useJVM.IsChecked = true;
+                usefastJvm.IsChecked = false;
+                txb7.Text = "-XX:+AggressiveOpts";
+                txb4.Text = "2048";
+                txb5.Text = "2048";
+            }
+            else
+            {
+                txb7.Text = string.Empty;
+            }
         }
-
-        private void usefastJvm_Checked(object sender, RoutedEventArgs e)
+        
+        private async void usefastJvm_Click(object sender, RoutedEventArgs e)
         {
-            MessageBox.Show("使用优化参数需要手动设置大小相同的内存，请对上面的内存进行更改！", "警告", MessageBoxButton.OK, MessageBoxImage.Exclamation);
-            useJVM.IsChecked = true;
-            usebasicfastJvm.IsChecked = false;
-            txb7.Text = "-XX:+UseG1GC -XX:+UnlockExperimentalVMOptions -XX:+ParallelRefProcEnabled -XX:MaxGCPauseMillis=200 -XX:+UnlockExperimentalVMOptions -XX:+DisableExplicitGC -XX:+AlwaysPreTouch -XX:G1NewSizePercent=30 -XX:G1MaxNewSizePercent=40 -XX:G1HeapRegionSize=8M -XX:G1ReservePercent=20 -XX:G1HeapWastePercent=5 -XX:G1MixedGCCountTarget=4 -XX:InitiatingHeapOccupancyPercent=15 -XX:G1MixedGCLiveThresholdPercent=90 -XX:G1RSetUpdatingPauseTimePercent=5 -XX:SurvivorRatio=32 -XX:+PerfDisableSharedMem -XX:MaxTenuringThreshold=1 -Dusing.aikars.flags=https://mcflags.emc.gs -Daikars.new.flags=true";
-            txb4.Text = "4096";
-            txb5.Text = "4096";
+            if ((bool)usefastJvm.IsChecked)
+            {
+                await Shows.ShowMsgDialogAsync(Window.GetWindow(this), "使用优化参数需要手动设置大小相同的内存，请对上面的内存进行更改！", "警告");
+                useJVM.IsChecked = true;
+                usebasicfastJvm.IsChecked = false;
+                txb7.Text = "-XX:+UseG1GC -XX:+UnlockExperimentalVMOptions -XX:+ParallelRefProcEnabled -XX:MaxGCPauseMillis=200 -XX:+UnlockExperimentalVMOptions -XX:+DisableExplicitGC -XX:+AlwaysPreTouch -XX:G1NewSizePercent=30 -XX:G1MaxNewSizePercent=40 -XX:G1HeapRegionSize=8M -XX:G1ReservePercent=20 -XX:G1HeapWastePercent=5 -XX:G1MixedGCCountTarget=4 -XX:InitiatingHeapOccupancyPercent=15 -XX:G1MixedGCLiveThresholdPercent=90 -XX:G1RSetUpdatingPauseTimePercent=5 -XX:SurvivorRatio=32 -XX:+PerfDisableSharedMem -XX:MaxTenuringThreshold=1 -Dusing.aikars.flags=https://mcflags.emc.gs -Daikars.new.flags=true";
+                txb4.Text = "4096";
+                txb5.Text = "4096";
+            }
+            else
+            {
+                txb7.Text = string.Empty;
+            }
         }
 
         private async void done_Click(object sender, RoutedEventArgs e)

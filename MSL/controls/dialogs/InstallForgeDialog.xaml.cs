@@ -9,7 +9,6 @@ using System.Net;
 using System.Security.Cryptography;
 using System.Text;
 using System.Threading;
-using System.Web.UI.WebControls;
 using System.Windows;
 
 
@@ -47,6 +46,18 @@ namespace MSL.controls
         //安装forge的主方法
         private async void Install()
         {
+            if (Directory.Exists(libPath))
+            {
+                Log_in("检测到libraries文件夹，尝试将其删除……");
+                try
+                {
+                    Directory.Delete(libPath, true);
+                }
+                finally
+                {
+                    Log_in("进行下一步……");
+                }
+            }
             //第一步，解压Installer
             //创建一个文件夹存放解压的installer
             if (!Directory.Exists(tempPath))

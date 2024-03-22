@@ -221,15 +221,17 @@
                                 </Grid>
                             </Border>
                             <Border Style="{StaticResource MagicBorder}">
-                                <Grid>
+                                <StackPanel>
                                     <Label Content="启动参数" Style="{StaticResource BorderTitle}"/>
-                                    <Border Margin="15,100,0,0" Style="{StaticResource BorderTipPrimary}" >
-                                        <TextBlock Text="(!!!非必要勿选择或填写此栏内容，如出现无法开服的情况请删除启动参数)" HorizontalAlignment="Left"  VerticalAlignment="Top" FontSize="14" />
+                                    <StackPanel Orientation="Horizontal" Margin="10">
+                                        <CheckBox x:Name="usebasicfastJvm" Content="基本优化参数（Java11及以上勿选）" Margin="10,0,0,0" VerticalAlignment="Top" Click="usebasicfastJvm_Click"/>
+                                        <CheckBox x:Name="usefastJvm" Content="高级优化参数（需分配内存为4G）" Margin="20,0,188,0" VerticalAlignment="Top" Click="usefastJvm_Click"/>
+                                    </StackPanel>
+                                    <TextBox x:Name="txb7" Margin="20,0,0,0" Text="" TextWrapping="Wrap" VerticalAlignment="Top"/>
+                                    <Border Margin="15,5,0,0" Style="{StaticResource BorderTipDanger}" >
+                                        <TextBlock Text="非必要勿选择或填写此栏内容，如出现无法开服的情况请删除启动参数" HorizontalAlignment="Left"  VerticalAlignment="Top" FontSize="14" />
                                     </Border>
-                                    <CheckBox x:Name="usebasicfastJvm" Content="基本优化参数（Java11及以上勿选）" Margin="20,40,0,0" VerticalAlignment="Top" Checked="usebasicfastJvm_Checked" HorizontalAlignment="Left"/>
-                                    <CheckBox x:Name="usefastJvm" Content="高级优化参数（需分配内存为4G）" Margin="250,40,188,0" VerticalAlignment="Top" Checked="usefastJvm_Checked" />
-                                    <TextBox x:Name="txb7" Margin="20,65,0,0" Text="" TextWrapping="Wrap" VerticalAlignment="Top"/>
-                                </Grid>
+                                </StackPanel>
                             </Border>
                             <Grid Margin="10">
                                 <Button x:Name="return3" Content="上一步" Margin="0,0,250,0" VerticalAlignment="Center" Width="150" Click="return3_Click" Height="48" FontSize="18" HorizontalAlignment="Center"/>
