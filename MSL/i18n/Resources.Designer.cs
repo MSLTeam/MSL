@@ -61,11 +61,146 @@ namespace MSL.i18n {
         }
         
         /// <summary>
+        ///   查找类似 您使用的开服器已是最新版本！ 的本地化字符串。
+        /// </summary>
+        public static string MainWindow_GrowlMsg_LatestVersion {
+            get {
+                return ResourceManager.GetString("MainWindow_GrowlMsg_LatestVersion", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   查找类似 关于 的本地化字符串。
+        /// </summary>
+        public static string MainWindow_Menu_About {
+            get {
+                return ResourceManager.GetString("MainWindow_Menu_About", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   查找类似 映射 的本地化字符串。
+        /// </summary>
+        public static string MainWindow_Menu_Frpc {
+            get {
+                return ResourceManager.GetString("MainWindow_Menu_Frpc", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   查找类似 主页 的本地化字符串。
+        /// </summary>
+        public static string MainWindow_Menu_Home {
+            get {
+                return ResourceManager.GetString("MainWindow_Menu_Home", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   查找类似 联机 的本地化字符串。
+        /// </summary>
+        public static string MainWindow_Menu_OnlinePlay {
+            get {
+                return ResourceManager.GetString("MainWindow_Menu_OnlinePlay", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   查找类似 服务器 的本地化字符串。
+        /// </summary>
+        public static string MainWindow_Menu_ServerList {
+            get {
+                return ResourceManager.GetString("MainWindow_Menu_ServerList", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   查找类似 设置 的本地化字符串。
+        /// </summary>
+        public static string MainWindow_Menu_Setting {
+            get {
+                return ResourceManager.GetString("MainWindow_Menu_Setting", resourceCulture);
+            }
+        }
+        
+        /// <summary>
         ///   查找类似 开启服务器 的本地化字符串。
         /// </summary>
-        public static string Pages_Home_LaunchServerBtn {
+        public static string Pages_Home_LaunchServer {
             get {
-                return ResourceManager.GetString("Pages_Home_LaunchServerBtn", resourceCulture);
+                return ResourceManager.GetString("Pages_Home_LaunchServer", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   查找类似 公告： 的本地化字符串。
+        /// </summary>
+        public static string Pages_Home_Notice {
+            get {
+                return ResourceManager.GetString("Pages_Home_Notice", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   查找类似 点对点联机 的本地化字符串。
+        /// </summary>
+        public static string Pages_Home_P2PPlay {
+            get {
+                return ResourceManager.GetString("Pages_Home_P2PPlay", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   查找类似 为您推荐： 的本地化字符串。
+        /// </summary>
+        public static string Pages_Home_Recommendations {
+            get {
+                return ResourceManager.GetString("Pages_Home_Recommendations", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   查找类似 注意：此功能目前不稳定，无法穿透所有类型的NAT，若联机失败，请尝试开服务器并使用内网映射联机！\n该功能可能需要正版账户，若无法联机，请从网络上寻找解决方法或尝试开服务器并使用内网映射联机！ 的本地化字符串。
+        /// </summary>
+        public static string Pages_OnlinePage_Dialog_Tips {
+            get {
+                return ResourceManager.GetString("Pages_OnlinePage_Dialog_Tips", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   查找类似 操作 的本地化字符串。
+        /// </summary>
+        public static string Pages_ServerList_Do {
+            get {
+                return ResourceManager.GetString("Pages_ServerList_Do", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   查找类似 服务器名称 的本地化字符串。
+        /// </summary>
+        public static string Pages_ServerList_ServerName {
+            get {
+                return ResourceManager.GetString("Pages_ServerList_ServerName", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   查找类似 服务器状态 的本地化字符串。
+        /// </summary>
+        public static string Pages_ServerList_Status {
+            get {
+                return ResourceManager.GetString("Pages_ServerList_Status", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   查找类似 服务器列表（双击可快捷启动服务器）： 的本地化字符串。
+        /// </summary>
+        public static string Pages_ServerList_Title {
+            get {
+                return ResourceManager.GetString("Pages_ServerList_Title", resourceCulture);
             }
         }
     }

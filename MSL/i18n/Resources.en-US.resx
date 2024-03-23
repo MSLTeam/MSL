@@ -117,7 +117,49 @@
   <resheader name="writer">
     <value>System.Resources.ResXResourceWriter, System.Windows.Forms, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089</value>
   </resheader>
-  <data name="Pages_Home_LaunchServerBtn" xml:space="preserve">
-    <value>Launch Server1</value>
+  <data name="MainWindow_Menu_About" xml:space="preserve">
+    <value>About</value>
+  </data>
+  <data name="MainWindow_Menu_Frpc" xml:space="preserve">
+    <value>Frp</value>
+  </data>
+  <data name="MainWindow_Menu_Home" xml:space="preserve">
+    <value>Home</value>
+  </data>
+  <data name="MainWindow_Menu_OnlinePlay" xml:space="preserve">
+    <value>P2P</value>
+  </data>
+  <data name="MainWindow_Menu_ServerList" xml:space="preserve">
+    <value>Server</value>
+  </data>
+  <data name="MainWindow_Menu_Setting" xml:space="preserve">
+    <value>Setting</value>
+  </data>
+  <data name="Pages_Home_LaunchServer" xml:space="preserve">
+    <value>Launch Server</value>
+  </data>
+  <data name="Pages_Home_Notice" xml:space="preserve">
+    <value>Notice:</value>
+  </data>
+  <data name="Pages_Home_P2PPlay" xml:space="preserve">
+    <value>P2P Play</value>
+  </data>
+  <data name="Pages_Home_Recommendations" xml:space="preserve">
+    <value>Recommendations:</value>
+  </data>
+  <data name="Pages_OnlinePage_Dialog_Tips" xml:space="preserve">
+    <value>Attention: This feature is currently unstable and cannot penetrate all types of NAT. If online fails, please try opening the server and using internal network mapping to go online! \n This feature may require a genuine account. If unable to connect, please find a solution on the network or try opening the server and using internal network mapping to connect!</value>
+  </data>
+  <data name="Pages_ServerList_Do" xml:space="preserve">
+    <value>Control</value>
+  </data>
+  <data name="Pages_ServerList_ServerName" xml:space="preserve">
+    <value>Name</value>
+  </data>
+  <data name="Pages_ServerList_Status" xml:space="preserve">
+    <value>Server Status</value>
+  </data>
+  <data name="Pages_ServerList_Title" xml:space="preserve">
+    <value>Server list (double-click to quickly start server):</value>
   </data>
 </root>

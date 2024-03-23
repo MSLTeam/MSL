@@ -11,7 +11,7 @@
         MinWidth="800" MinHeight="500" 
         Background="{DynamicResource BackgroundBrush}"
         NonClientAreaBackground="{DynamicResource PrimaryBrush}"
-        NonClientAreaHeight="35"
+        NonClientAreaHeight="35" xmlns:i18n="clr-namespace:MSL.i18n"
         CloseButtonForeground="White" OtherButtonForeground="White" OtherButtonHoverForeground="White"
         ShowTitle="False" Icon="icon.ico"
         WindowStartupLocation="CenterScreen" Loaded="Window_Loaded" Closing="Window_Closing"  Closed="Window_Closed"
@@ -34,37 +34,37 @@
                     <ListBoxItem Template="{StaticResource SideMenuTemplate}" Height="38" Margin="0,0,0,10" Foreground="{DynamicResource PrimaryTextBrush}">
                         <DockPanel >
                             <Image Source="pack://application:,,,/images/150px-Grass_Block_JE7_BE6.png" Width="22" Height="22"/>
-                            <TextBlock Text="主页" VerticalAlignment="Center" Margin="8,0,0,0" FontSize="14" />
+                            <TextBlock Text="{Binding [MainWindow_Menu_Home], Source={x:Static i18n:LanguageManager.Instance}}" VerticalAlignment="Center" Margin="8,0,0,0" FontSize="14" />
                         </DockPanel>
                     </ListBoxItem>
                     <ListBoxItem Template="{StaticResource SideMenuTemplate}" Height="38" Margin="0,0,0,10" Foreground="{DynamicResource PrimaryTextBrush}">
                         <DockPanel >
                             <Image Source="pack://application:,,,/images/150px-Enchanted_Book.png" Width="22" Height="22"/>
-                            <TextBlock Text="服务器" VerticalAlignment="Center" Margin="8,0,0,0" FontSize="14" />
+                            <TextBlock Text="{Binding [MainWindow_Menu_ServerList], Source={x:Static i18n:LanguageManager.Instance}}" VerticalAlignment="Center" Margin="8,0,0,0" FontSize="14" />
                         </DockPanel>
                     </ListBoxItem>
                     <ListBoxItem Template="{StaticResource SideMenuTemplate}" Height="38" Margin="0,0,0,10" Foreground="{DynamicResource PrimaryTextBrush}">
                         <DockPanel >
                             <Image Source="pack://application:,,,/images/150px-Beacon.png" Width="22" Height="22"/>
-                            <TextBlock Text="映射" VerticalAlignment="Center" Margin="8,0,0,0" FontSize="14" />
+                            <TextBlock Text="{Binding [MainWindow_Menu_Frpc], Source={x:Static i18n:LanguageManager.Instance}}" VerticalAlignment="Center" Margin="8,0,0,0" FontSize="14" />
                         </DockPanel>
                     </ListBoxItem>
                     <ListBoxItem Template="{StaticResource SideMenuTemplate}" Height="38" Margin="0,0,0,10" Foreground="{DynamicResource PrimaryTextBrush}">
                         <DockPanel >
                             <Image Source="pack://application:,,,/images/150px-Impulse_Command_Block.png" Width="22" Height="22"/>
-                            <TextBlock Text="联机" VerticalAlignment="Center" Margin="8,0,0,0" FontSize="14" />
+                            <TextBlock Text="{Binding [MainWindow_Menu_OnlinePlay], Source={x:Static i18n:LanguageManager.Instance}}" VerticalAlignment="Center" Margin="8,0,0,0" FontSize="14" />
                         </DockPanel>
                     </ListBoxItem>
                     <ListBoxItem Template="{StaticResource SideMenuTemplate}" Height="38" Margin="0,0,0,10" Foreground="{DynamicResource PrimaryTextBrush}">
                         <DockPanel >
                             <Image Source="pack://application:,,,/images/150px-Wooden_Pickaxe_JE3_BE3.png" Width="22" Height="22"/>
-                            <TextBlock Text="设置" VerticalAlignment="Center" Margin="8,0,0,0" FontSize="14" />
+                            <TextBlock Text="{Binding [MainWindow_Menu_Setting], Source={x:Static i18n:LanguageManager.Instance}}" VerticalAlignment="Center" Margin="8,0,0,0" FontSize="14" />
                         </DockPanel>
                     </ListBoxItem>
                     <ListBoxItem Template="{StaticResource SideMenuTemplate}" Height="38" Foreground="{DynamicResource PrimaryTextBrush}">
                         <DockPanel >
                             <Image Source="pack://application:,,,/images/150px-Diamond_Revision_2.png" Width="22" Height="22"/>
-                            <TextBlock Text="关于" VerticalAlignment="Center" Margin="8,0,0,0" FontSize="14" />
+                            <TextBlock Text="{Binding [MainWindow_Menu_About], Source={x:Static i18n:LanguageManager.Instance}}" VerticalAlignment="Center" Margin="8,0,0,0" FontSize="14" />
                         </DockPanel>
                     </ListBoxItem>
                 </ListBox>
