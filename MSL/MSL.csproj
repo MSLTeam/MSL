@@ -137,7 +137,7 @@
     <Compile Include="controls\dialogs\TextDialog.xaml.cs">
       <DependentUpon>TextDialog.xaml</DependentUpon>
     </Compile>
-    <Compile Include="i18n\i18.cs" />
+    <Compile Include="i18n\LangManage.cs" />
     <Compile Include="i18n\Resources.Designer.cs">
       <AutoGen>True</AutoGen>
       <DesignTime>True</DesignTime>
