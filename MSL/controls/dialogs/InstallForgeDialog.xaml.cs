@@ -476,11 +476,17 @@ namespace MSL.controls
             catch (OperationCanceledException) { return; }
         }
 
+        int counter = 100;
         private void Process_OutputDataReceived(object sender, DataReceivedEventArgs e)
         {
             if (e.Data != null)
             {
-                Log_in(e.Data);
+                if (counter == 100)
+                {
+                    counter = 0;
+                    Log_in(e.Data);
+                }
+                counter++;
             }
         }
 
