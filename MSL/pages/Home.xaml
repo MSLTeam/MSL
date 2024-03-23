@@ -4,7 +4,7 @@
       xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006" 
       xmlns:d="http://schemas.microsoft.com/expression/blend/2008" 
       xmlns:hc="https://handyorg.github.io/handycontrol"
-      xmlns:local="clr-namespace:MSL.pages"
+      xmlns:local="clr-namespace:MSL.pages" xmlns:i18n="clr-namespace:MSL.i18n"
       mc:Ignorable="d" d:DesignHeight="460" d:DesignWidth="750"
       Title="Home" Loaded="Page_Loaded">
     <Page.RenderTransform>
@@ -36,7 +36,7 @@
                 <ListBox x:Name="startServerDropdown" BorderThickness="0" SelectionChanged="startServerDropdown_SelectionChanged"/>
             </hc:SplitButton.DropDownContent>
             <StackPanel>
-                <TextBlock Text="开启服务器" FontSize="18" HorizontalAlignment="Center" Foreground="White"/>
+                <TextBlock Text="{Binding [Pages_Home_LaunchServerBtn], Source={x:Static i18n:LanguageManager.Instance}}" FontSize="18" HorizontalAlignment="Center" Foreground="White" />
                 <TextBlock x:Name="selectedItemTextBlock" Text="创建一个新的服务器" HorizontalAlignment="Center" Margin="0,5,0,0" Foreground="White"/>
             </StackPanel>
         </hc:SplitButton>

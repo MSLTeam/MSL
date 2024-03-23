@@ -2,10 +2,12 @@
 using HandyControl.Themes;
 using Microsoft.Win32;
 using MSL.controls;
+using MSL.i18n;
 using Newtonsoft.Json.Linq;
 using System;
 using System.Collections.Generic;
 using System.Diagnostics;
+using System.Globalization;
 using System.IO;
 using System.Linq;
 using System.Text;
@@ -734,6 +736,19 @@ namespace MSL.pages
             }
             list.Clear();
             AutoStartServers_ItemsChanged();
+        }
+
+        private void changeLanguage_SelectionChanged(object sender, System.Windows.Controls.SelectionChangedEventArgs e)
+        {
+            switch (changeLanguage.SelectedIndex)
+            {
+                case 0:
+                    LanguageManager.Instance.ChangeLanguage(new CultureInfo(""));
+                    break;
+                case 1:
+                    LanguageManager.Instance.ChangeLanguage(new CultureInfo("en-US"));
+                    break;
+            }
         }
     }
 }

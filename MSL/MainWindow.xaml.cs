@@ -52,6 +52,7 @@ namespace MSL
 
         private async void Window_Loaded(object sender, RoutedEventArgs e)
         {
+            
             Topmost = true;
             Topmost = false;
             Focus();
