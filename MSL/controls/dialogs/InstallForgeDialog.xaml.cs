@@ -476,7 +476,7 @@ namespace MSL.controls
             catch (OperationCanceledException) { return; }
         }
 
-        int counter = 100;
+        private int counter = 100;
         private void Process_OutputDataReceived(object sender, DataReceivedEventArgs e)
         {
             if (e.Data != null)
