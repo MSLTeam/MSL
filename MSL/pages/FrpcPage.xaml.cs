@@ -187,6 +187,7 @@ namespace MSL.pages
         {
             Task.Run(() => StartFrpc());
         }
+
         private void p_OutputDataReceived(object sender, DataReceivedEventArgs e)
         {
             if (e.Data != null)
@@ -194,6 +195,7 @@ namespace MSL.pages
                 Dispatcher.Invoke(ReadStdOutput, new object[] { e.Data });
             }
         }
+
         private void ReadStdOutputAction(string msg)
         {
             frpcOutlog.Text = frpcOutlog.Text + msg + "\n";
@@ -201,7 +203,7 @@ namespace MSL.pages
             {
                 if (msg.IndexOf("failed") + 1 != 0)
                 {
-                    frpcOutlog.Text = frpcOutlog.Text + "内网映射桥接失败！\n";
+                    frpcOutlog.Text += "内网映射桥接失败！\n";
                     Growl.Error("内网映射桥接失败！");
                     if (msg.Contains("付费资格已过期"))
                     {
@@ -210,7 +212,7 @@ namespace MSL.pages
                     }
                     else if (msg.IndexOf("i/o timeout") + 1 != 0)
                     {
-                        frpcOutlog.Text = frpcOutlog.Text + "连接超时，该节点可能下线，请重新配置！\n";
+                        frpcOutlog.Text += "连接超时，该节点可能下线，请重新配置！\n";
                     }
                     if (!FRPCMD.HasExited)
                     {
@@ -219,7 +221,7 @@ namespace MSL.pages
                 }
                 if (msg.IndexOf("success") + 1 != 0)
                 {
-                    frpcOutlog.Text = frpcOutlog.Text + "登录服务器成功！\n";
+                    frpcOutlog.Text += "登录服务器成功！\n";
                 }
             }
             if (msg.IndexOf("start") + 1 != 0)
@@ -235,19 +237,19 @@ namespace MSL.pages
                     Growl.Error("内网映射桥接失败！");
                     if (msg.IndexOf("port already used") + 1 != 0)
                     {
-                        frpcOutlog.Text = frpcOutlog.Text + "本地端口被占用，请不要频繁开关内网映射并等待一分钟再试。\n若一分钟后仍然占用，请尝试手动结束frpc进程或重启电脑再试。\n";
+                        frpcOutlog.Text += "本地端口被占用，请不要频繁开关内网映射并等待一分钟再试。\n若一分钟后仍然占用，请尝试手动结束frpc进程或重启电脑再试。\n";
                     }
                     else if (msg.IndexOf("port not allowed") + 1 != 0)
                     {
-                        frpcOutlog.Text = frpcOutlog.Text + "远程端口被占用，请尝试重新配置一下再试！\n";
+                        frpcOutlog.Text += "远程端口被占用，请尝试重新配置一下再试！\n";
                     }
                     else if (msg.IndexOf("proxy name") + 1 != 0 && msg.IndexOf("already in use") + 1 != 0)
                     {
-                        frpcOutlog.Text = frpcOutlog.Text + "隧道名称已被占用！请打开任务管理器检查后台是否存在frpc进程并手动结束！\n若仍然占用，请尝试重启电脑再试。\n";
+                        frpcOutlog.Text += "隧道名称已被占用！请打开任务管理器检查后台是否存在frpc进程并手动结束！\n若仍然占用，请尝试重启电脑再试。\n";
                     }
                     else if (msg.IndexOf("proxy") + 1 != 0 && msg.IndexOf("already exists") + 1 != 0)
                     {
-                        frpcOutlog.Text = frpcOutlog.Text + "隧道已被占用！请不要频繁开关内网映射并等待一分钟再试。\n若一分钟后仍然占用，请尝试手动结束frpc进程或重启电脑再试。\n";
+                        frpcOutlog.Text += "隧道已被占用！请不要频繁开关内网映射并等待一分钟再试。\n若一分钟后仍然占用，请尝试手动结束frpc进程或重启电脑再试。\n";
                     }
                     if (!FRPCMD.HasExited)
                     {

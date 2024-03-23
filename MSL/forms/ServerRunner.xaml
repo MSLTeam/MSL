@@ -157,7 +157,7 @@
                     </Grid>
                 </Grid>
             </TabItem>
-            <TabItem Header="服务器插件/MOD" Background="{DynamicResource SideMenuBrush}">
+            <TabItem Header="插件与模组" Background="{DynamicResource SideMenuBrush}">
                 <Grid>
                     <Grid.RenderTransform>
                         <TranslateTransform/>
@@ -171,7 +171,7 @@
                         <TabItem x:Name="pluginsTabItem" Header="管理服务器插件" Background="{DynamicResource SideMenuBrush}">
                             <Grid Margin="10">
                                 <Label Content="插件列表(添加的插件在服务器重启后生效)" Style="{StaticResource BorderTitle}"/>
-                                <ListView x:Name="pluginslist" hc:Empty.ShowEmpty="true" Margin="0,35,0,0" BorderBrush="{x:Null}" Background="{x:Null}" Padding="0,0,0,0" FontSize="14">
+                                <ListView x:Name="pluginslist" hc:Empty.ShowEmpty="true" Margin="0,35,0,0" BorderBrush="{x:Null}" Background="{DynamicResource BorderBackground}" FontSize="14">
                                     <ListBox.ContextMenu>
                                         <ContextMenu FontSize="14">
                                             <MenuItem Click="reFresh_Click" Header="刷新"/>
@@ -214,7 +214,7 @@
                         <TabItem x:Name="modsTabItem" Header="管理服务器模组" Background="{DynamicResource SideMenuBrush}">
                             <Grid Margin="10">
                                 <Label Content="模组列表(添加的模组在服务器重启后生效)" Style="{StaticResource BorderTitle}"/>
-                                <ListView x:Name="modslist" hc:Empty.ShowEmpty="true" BorderBrush="{x:Null}" Margin="0,35,0,0" Background="{x:Null}" Padding="0,0,0,0" FontSize="14">
+                                <ListView x:Name="modslist" hc:Empty.ShowEmpty="true" BorderBrush="{x:Null}" Margin="0,35,0,0" Background="{DynamicResource BorderBackground}" FontSize="14">
                                     <ListBox.ContextMenu>
                                         <ContextMenu FontSize="14">
                                             <MenuItem Click="reFresh_Click" Header="刷新"/>

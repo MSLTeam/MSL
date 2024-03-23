@@ -5,7 +5,7 @@
         xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
         xmlns:hc="https://handyorg.github.io/handycontrol"
         xmlns:local="clr-namespace:MSL.controls" Height="300" Width="600"
-        mc:Ignorable="d" Template="{StaticResource UserControlTemplate}" >
+        mc:Ignorable="d" Template="{StaticResource UserControlTemplate}" Loaded="UserControl_Loaded" >
     <Border CornerRadius="10" Background="{DynamicResource SecondaryRegionBrush}" BorderBrush="{DynamicResource BorderBrush}" BorderThickness="1">
         <Grid>
             <Grid.RowDefinitions>

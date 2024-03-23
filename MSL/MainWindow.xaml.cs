@@ -325,7 +325,7 @@ namespace MSL
                     while (servers != "")
                     {
                         int aserver = servers.IndexOf(",");
-                        ServerList.serverID = int.Parse(servers.Substring(0, aserver));
+                        ServerList.serverID = servers.Substring(0, aserver);
                         AutoOpenServer();
                         servers = servers.Replace(ServerList.serverID.ToString() + ",", "");
                     }
@@ -517,7 +517,6 @@ namespace MSL
                 e.Cancel = true;
                 this.Visibility = Visibility.Hidden;
                 //Logger.LogInfo("窗口已隐藏！");
-                return;
             }
             else if (ProcessRunningCheck())
             {

@@ -368,14 +368,26 @@ namespace MSL.pages
                             {
                                 string installReturn;
                                 //调用新版forge安装器
-                                bool installForge = await Shows.ShowInstallForge(Window.GetWindow(this), serverbase + "\\" + txb3.Text, serverbase, serverjava);
-                                if (installForge)
+                                string[] installForge = await Shows.ShowInstallForge(Window.GetWindow(this), serverbase + "\\" + txb3.Text, serverbase, serverjava);
+                                if (installForge[0] == "0")
                                 {
-                                    installReturn = Functions.InstallForge(serverjava, serverbase, txb3.Text);
+                                    if (await Shows.ShowMsgDialogAsync(Window.GetWindow(this), "自动安装失败！是否尝试使用命令行安装方式？", "错误", true))
+                                    {
+                                        installReturn = Functions.InstallForge(serverjava, serverbase, txb3.Text, string.Empty, false);
+                                    }
+                                    else
+                                    {
+                                        return;
+                                    }
+
+                                }
+                                else if (installForge[0] == "1")
+                                {
+                                    installReturn = Functions.InstallForge(serverjava, serverbase, txb3.Text, installForge[1]);
                                 }
                                 else
                                 {
-                                    installReturn = Functions.InstallForge(serverjava, serverbase, txb3.Text, false);
+                                    return;
                                 }
                                 if (installReturn == null)
                                 {
@@ -404,14 +416,26 @@ namespace MSL.pages
                             {
                                 string installReturn;
                                 //调用新版forge安装器
-                                bool installForge = await Shows.ShowInstallForge(Window.GetWindow(this), serverbase + "\\" + txb3.Text, serverbase, serverjava);
-                                if (installForge)
+                                string[] installForge = await Shows.ShowInstallForge(Window.GetWindow(this), serverbase + "\\" + txb3.Text, serverbase, serverjava);
+                                if (installForge[0] == "0")
                                 {
-                                    installReturn = Functions.InstallForge(serverjava, serverbase, txb3.Text);
+                                    if (await Shows.ShowMsgDialogAsync(Window.GetWindow(this), "自动安装失败！是否尝试使用命令行安装方式？", "错误", true))
+                                    {
+                                        installReturn = Functions.InstallForge(serverjava, serverbase, txb3.Text, string.Empty, false);
+                                    }
+                                    else
+                                    {
+                                        return;
+                                    }
+
+                                }
+                                else if (installForge[0] == "1")
+                                {
+                                    installReturn = Functions.InstallForge(serverjava, serverbase, txb3.Text, installForge[1]);
                                 }
                                 else
                                 {
-                                    installReturn = Functions.InstallForge(serverjava, serverbase, txb3.Text, false);
+                                    return;
                                 }
                                 if (installReturn == null)
                                 {
@@ -764,16 +788,27 @@ namespace MSL.pages
                         bool dialog = await Shows.ShowMsgDialogAsync(Window.GetWindow(this), "您选择的服务端是forge安装器，是否将其展开安装？\n如果不展开安装，服务器可能无法开启！", "提示", true, "取消");
                         if (dialog)
                         {
-                            string installReturn = null;
+                            string installReturn;
                             //调用新版forge安装器
-                            bool installForge = await Shows.ShowInstallForge(Window.GetWindow(this), serverbase + "\\" + txb3.Text, serverbase, serverjava);
-                            if (installForge)
+                            string[] installForge = await Shows.ShowInstallForge(Window.GetWindow(this), serverbase + "\\" + txb3.Text, serverbase, serverjava);
+                            if (installForge[0] == "0")
                             {
-                                installReturn = Functions.InstallForge(serverjava, serverbase, txb3.Text);
+                                if (await Shows.ShowMsgDialogAsync(Window.GetWindow(this), "自动安装失败！是否尝试使用命令行安装方式？", "错误", true))
+                                {
+                                    installReturn = Functions.InstallForge(serverjava, serverbase, txb3.Text, string.Empty, false);
+                                }
+                                else
+                                {
+                                    return;
+                                }
+                            }
+                            else if (installForge[0] == "1")
+                            {
+                                installReturn = Functions.InstallForge(serverjava, serverbase, txb3.Text, installForge[1]);
                             }
                             else
                             {
-                                installReturn = Functions.InstallForge(serverjava, serverbase, txb3.Text, false);
+                                return;
                             }
                             if (installReturn == null)
                             {
@@ -794,7 +829,7 @@ namespace MSL.pages
                 }
             }
         }
-        
+
         private async void usebasicfastJvm_Click(object sender, RoutedEventArgs e)
         {
             if ((bool)usebasicfastJvm.IsChecked)
@@ -811,7 +846,7 @@ namespace MSL.pages
                 txb7.Text = string.Empty;
             }
         }
-        
+
         private async void usefastJvm_Click(object sender, RoutedEventArgs e)
         {
             if ((bool)usefastJvm.IsChecked)
@@ -1276,17 +1311,32 @@ namespace MSL.pages
                 servercore = filename;
                 if (filename.Contains("forge"))
                 {
-                    string installReturn = null;
-                    await Shows.ShowMsgDialogAsync(Window.GetWindow(this), "检测到您下载的是Forge端，开服器将自动进行安装操作，稍后请您不要随意操作，耐心等待安装完毕！", "提示", false);
+                    string installReturn;
                     //调用新版forge安装器
-                    bool installForge = await Shows.ShowInstallForge(Window.GetWindow(this), serverbase + "\\" + filename, serverbase, serverjava);
-                    if (installForge)
+                    string[] installForge = await Shows.ShowInstallForge(Window.GetWindow(this), serverbase + "\\" + filename, serverbase, serverjava);
+                    if (installForge[0] == "0")
                     {
-                        installReturn = Functions.InstallForge(serverjava, serverbase, FinallyCoreCombo.Items[FinallyCoreCombo.SelectedIndex].ToString() + ".jar");
+                        if (await Shows.ShowMsgDialogAsync(Window.GetWindow(this), "自动安装失败！是否尝试使用命令行安装方式？", "错误", true))
+                        {
+                            installReturn = Functions.InstallForge(serverjava, serverbase, FinallyCoreCombo.Items[FinallyCoreCombo.SelectedIndex].ToString() + ".jar", string.Empty, false);
+                        }
+                        else
+                        {
+                            FastModeReturnBtn.IsEnabled = true;
+                            FastModeInstallBtn.IsEnabled = true;
+                            return;
+                        }
+                    }
+                    else if (installForge[0] == "1")
+                    {
+                        installReturn = Functions.InstallForge(serverjava, serverbase, FinallyCoreCombo.Items[FinallyCoreCombo.SelectedIndex].ToString() + ".jar", installForge[1]);
                     }
                     else
                     {
-                        installReturn = Functions.InstallForge(serverjava, serverbase, FinallyCoreCombo.Items[FinallyCoreCombo.SelectedIndex].ToString() + ".jar", false);
+                        FastInstallProcess.Text = "已取消！";
+                        FastModeReturnBtn.IsEnabled = true;
+                        FastModeInstallBtn.IsEnabled = true;
+                        return;
                     }
                     if (installReturn == null)
                     {

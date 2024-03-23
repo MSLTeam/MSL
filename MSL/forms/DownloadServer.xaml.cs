@@ -104,16 +104,28 @@ namespace MSL.pages
                 {
                     if (filename.IndexOf("forge") + 1 != 0)
                     {
-                        await Shows.ShowMsgDialogAsync(this, "检测到您下载的是Forge端，开服器将自动进行安装操作，稍后请您不要随意操作，耐心等待安装完毕！", "提示");
-                        bool installForge = await Shows.ShowInstallForge(this, downPath + "\\" + filename, downPath, downloadServerJava);
+                        //await Shows.ShowMsgDialogAsync(this, "检测到您下载的是Forge端，开服器将自动进行安装操作，稍后请您不要随意操作，耐心等待安装完毕！", "提示");
                         string installReturn;
-                        if (installForge)
+                        //调用新版forge安装器
+                        string[] installForge = await Shows.ShowInstallForge(this, downPath + "\\" + filename, downPath, downloadServerJava);
+                        if (installForge[0] == "0")
                         {
-                            installReturn = Functions.InstallForge(downloadServerJava, downloadServerBase, filename);
+                            if (await Shows.ShowMsgDialogAsync(this, "自动安装失败！是否尝试使用命令行安装方式？", "错误", true))
+                            {
+                                installReturn = Functions.InstallForge(downloadServerJava, downloadServerBase, filename, string.Empty, false);
+                            }
+                            else
+                            {
+                                return;
+                            }
+                        }
+                        else if (installForge[0] == "1")
+                        {
+                            installReturn = Functions.InstallForge(downloadServerJava, downloadServerBase, filename, installForge[1]);
                         }
                         else
                         {
-                            installReturn = Functions.InstallForge(downloadServerJava, downloadServerBase, filename, false);
+                            return;
                         }
                         if (installReturn == null)
                         {

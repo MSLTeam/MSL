@@ -378,7 +378,7 @@ namespace MSL.controls
         /// <param name="filename">安装器文件</param>
         /// <param name="fastMode">是否使用了自动安装模式（快速模式）</param>
         /// <returns></returns>
-        public static string InstallForge(string _java, string _base, string filename, bool fastMode = true/*, bool customMode = false*/)
+        public static string InstallForge(string _java, string _base, string filename, string mcVersion, bool fastMode = true/*, bool customMode = false*/)
         {
             try
             {
@@ -401,37 +401,16 @@ namespace MSL.controls
                     bool checkRootBase = false;
                     if (Directory.Exists(_base + "\\libraries\\net\\minecraftforge\\forge"))
                     {
-                        /*
-                        bool checkRootBase = false;
-                        if (Directory.Exists(_base + "\\libraries\\net\\minecraftforge\\forge"))
-                        {
-                            List<string> versions = new List<string>();
-                            string[] subFolders = Directory.GetDirectories(_base + "\\libraries\\net\\minecraftforge\\forge");
-                            foreach (string subFolder in subFolders)
-                            {
-                                if (File.Exists(subFolder + "\\win_args.txt"))
-                                {
-                                    versions.Add(subFolder);
-                                }
-                            }
-                            if (versions.Count == 1)
-                            {
-                                forgeVersion = Path.GetFileName(versions[0]);
-                                return "@libraries/net/minecraftforge/forge/" + forgeVersion + "/win_args.txt %*";
-                            }
-                            else if (versions.Count > 1)
-                            {
-                                string selectFile = await Shows.ShowInput(window, "开服器检测到您安装了多个forge版本，请选择一个版本（输入文件前对应的数字，取消为不选择以下文件）\n" + filestr);
-                            }
-                            checkRootBase = true;
-                        */
                         string[] subFolders = Directory.GetDirectories(_base + "\\libraries\\net\\minecraftforge\\forge");
                         foreach (string subFolder in subFolders)
                         {
                             if (File.Exists(subFolder + "\\win_args.txt"))
                             {
                                 forgeVersion = Path.GetFileName(subFolder);
-                                return "@libraries/net/minecraftforge/forge/" + forgeVersion + "/win_args.txt %*";
+                                if (forgeVersion.Contains(mcVersion))
+                                {
+                                    return "@libraries/net/minecraftforge/forge/" + forgeVersion + "/win_args.txt %*";
+                                }
                             }
                         }
                         checkRootBase = true;
@@ -444,7 +423,10 @@ namespace MSL.controls
                             if (File.Exists(subFolder + "\\win_args.txt"))
                             {
                                 forgeVersion = Path.GetFileName(subFolder);
-                                return "@libraries/net/neoforged/neoforge/" + forgeVersion + "/win_args.txt %*";
+                                if (forgeVersion.Contains(mcVersion))
+                                {
+                                    return "@libraries/net/neoforged/neoforge/" + forgeVersion + "/win_args.txt %*";
+                                }
                             }
                         }
                         checkRootBase = true;
@@ -455,16 +437,22 @@ namespace MSL.controls
                         FileInfo[] fileInfo = directoryInfo.GetFiles();
                         foreach (FileInfo file in fileInfo)
                         {
-                            if (file.Name.Contains("forge") && (file.Name != filename) && (!file.Name.Contains("installer")) && (!file.Name.Contains("universal")) && (!file.Name.Contains("server")))
+                            if (file.Name.Contains(mcVersion))
                             {
-                                return file.FullName.Replace(_base + @"\", "");
+                                if (file.Name.Contains("forge") && (file.Name != filename) && (!file.Name.Contains("installer")) && (!file.Name.Contains("universal")) && (!file.Name.Contains("server")))
+                                {
+                                    return file.FullName.Replace(_base + @"\", "");
+                                }
                             }
                         }
                         foreach (FileInfo file in fileInfo)
                         {
-                            if (file.Name.Contains("forge") && (file.Name != filename) && (!file.Name.Contains("installer")) && (!file.Name.Contains("server")))
+                            if (file.Name.Contains(mcVersion))
                             {
-                                return file.FullName.Replace(_base + @"\", "");
+                                if (file.Name.Contains("forge") && (file.Name != filename) && (!file.Name.Contains("installer")) && (!file.Name.Contains("server")))
+                                {
+                                    return file.FullName.Replace(_base + @"\", "");
+                                }
                             }
                         }
                     }

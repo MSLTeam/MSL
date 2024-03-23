@@ -1,5 +1,4 @@
 ﻿using HandyControl.Controls;
-using HandyControl.Data;
 using System.Threading.Tasks;
 using Window = System.Windows.Window;
 
@@ -84,11 +83,10 @@ namespace MSL.controls
             return _ret;
         }
 
-        public static async Task<bool> ShowInstallForge(Window _window, string forgePath, string downPath, string java)
+        public static async Task<string[]> ShowInstallForge(Window _window, string forgePath, string downPath, string java)
         {
             ShowDialogs showDialogs = new ShowDialogs();
-            bool _ret = await showDialogs.ShowInstallForgeDialog(_window, forgePath, downPath, java);
-            return _ret;
+            return await showDialogs.ShowInstallForgeDialog(_window, forgePath, downPath, java);
         }
 
         public static async Task<bool> ShowDownloader(Window _window, string downloadurl, string downloadPath, string filename, string downloadinfo, string sha256 = "")
@@ -166,7 +164,7 @@ namespace MSL.controls
             return inputDialog._dialogReturn;
         }
 
-        public async Task<bool> ShowInstallForgeDialog(Window _window, string forgePath, string downPath, string java)
+        public async Task<string[]> ShowInstallForgeDialog(Window _window, string forgePath, string downPath, string java)
         {
             window = _window;
             InstallForgeDialog _dialog = new InstallForgeDialog(forgePath, downPath, java);
@@ -175,14 +173,23 @@ namespace MSL.controls
             dialog = Dialog.Show(_dialog);
             _tcs = new TaskCompletionSource<bool>();
             await _tcs.Task;
-            return _dialog._dialogReturn;
+            string[] strings = new string[2];
+            strings[0] = _dialog._dialogReturn.ToString();
+            strings[1] = _dialog.mcVersion;
+            return strings;
         }
 
         private void CloseMsgDialog()
         {
-            window?.Focus();
-            dialog.Close();
-            _tcs.SetResult(true);
+            try
+            {
+                _tcs.SetResult(true);
+            }
+            finally
+            {
+                window?.Focus();
+                dialog.Close();
+            }
         }
     }
 }

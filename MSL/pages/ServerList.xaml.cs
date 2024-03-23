@@ -26,11 +26,9 @@ namespace MSL.pages
     {
         public static event DeleControl OpenServerForm;
         public static event DeleControl CreateServerEvent;
-        //public static bool ControlSetServerTab = false;
-        //public static bool ControlSetPMTab = false;
-        public static int serverID;
-        public static List<int> serverIDs = new List<int>();
-        public static Dictionary<int, int> runningServers = new Dictionary<int, int>();
+        public static string serverID;
+        public static List<string> serverIDs = new List<string>();
+        public static Dictionary<string, int> runningServers = new Dictionary<string, int>();
 
         class ServerInfo
         {
@@ -104,7 +102,7 @@ namespace MSL.pages
                 JObject jsonObject = JObject.Parse(File.ReadAllText(@"MSL\ServerList.json", Encoding.UTF8));
                 foreach (var item in jsonObject)
                 {
-                    serverIDs.Add(int.Parse(item.Key));
+                    serverIDs.Add(item.Key);
                     if (File.Exists(item.Value["base"].ToString() + "\\server-icon.png"))
                     {
                         await Dispatcher.InvokeAsync(() =>
@@ -218,7 +216,7 @@ namespace MSL.pages
                 if (_dialogRet)
                 {
                     JObject jsonObject = JObject.Parse(File.ReadAllText(@"MSL\ServerList.json", Encoding.UTF8));
-                    JObject _json = (JObject)jsonObject[serverIDs[serverList.SelectedIndex]];
+                    JObject _json = (JObject)jsonObject[serverIDs[serverList.SelectedIndex].ToString()];
                     FileSystem.DeleteDirectory(_json["base"].ToString(), UIOption.OnlyErrorDialogs, RecycleOption.SendToRecycleBin);
                     //Directory.Delete(_json["base"].ToString(), true);
                     Growl.Success("服务器目录已成功移至回收站！");
@@ -249,7 +247,7 @@ namespace MSL.pages
             try
             {
                 JObject jsonObject = JObject.Parse(File.ReadAllText(@"MSL\ServerList.json", Encoding.UTF8));
-                JObject _json = (JObject)jsonObject[serverIDs[serverList.SelectedIndex]];
+                JObject _json = (JObject)jsonObject[serverIDs[serverList.SelectedIndex].ToString()];
                 Process process = new Process();
                 process.StartInfo.WorkingDirectory = _json["base"].ToString();
                 process.StartInfo.FileName = "cmd.exe";
@@ -264,7 +262,7 @@ namespace MSL.pages
             try
             {
                 JObject jsonObject = JObject.Parse(File.ReadAllText(@"MSL\ServerList.json", Encoding.UTF8));
-                JObject _json = (JObject)jsonObject[serverIDs[serverList.SelectedIndex]];
+                JObject _json = (JObject)jsonObject[serverIDs[serverList.SelectedIndex].ToString()];
                 Growl.Info("正在为您打开服务器文件夹……");
                 Process.Start(_json["base"].ToString());
             }
@@ -294,7 +292,7 @@ namespace MSL.pages
                     JObject jsonObject = JObject.Parse(File.ReadAllText(@"MSL\ServerList.json", Encoding.UTF8));
                     foreach (var item in jsonObject)
                     {
-                        serverIDs.Add(int.Parse(item.Key));
+                        serverIDs.Add(item.Key);
                         if (File.Exists(item.Value["base"].ToString() + "\\server-icon.png"))
                         {
                             serverList.Items.Add(new ServerInfo(item.Value["name"].ToString(), item.Value["base"].ToString() + "\\server-icon.png", "未运行", Brushes.Green));
@@ -317,7 +315,7 @@ namespace MSL.pages
                     MessageBox.Show("err");
                 }
                 int i = 0;
-                foreach (int x in serverIDs)
+                foreach (string x in serverIDs)
                 {
                     if (x == serverID)
                     {
