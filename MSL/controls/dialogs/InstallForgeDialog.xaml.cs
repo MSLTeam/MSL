@@ -417,11 +417,11 @@ namespace MSL.controls
                             //启动编译,算了，不启动了，麻瓜
                             if (javaPath == "Java")
                             {
-                                batData = batData + "\n" + "java " + buildarg + " >> msl-compileForge.log";
+                                batData = batData + "\n" + "java " + buildarg; //+ " >> msl-compileForge.log";
                             }
                             else
                             {
-                                batData = batData + "\n" + @"""" + javaPath + @""" " + buildarg + " >> msl-compileForge.log";
+                                batData = batData + "\n" + @"""" + javaPath + @""" " + buildarg; //+ " >> msl-compileForge.log";
                             }
                         }
                     }
