@@ -54,7 +54,7 @@
                 </MultiDataTrigger.ExitActions>
             </MultiDataTrigger>
             <Trigger Property="IsSelected" Value="True">
-                <Setter TargetName="Rect" Property="Fill" Value="{DynamicResource PrimaryBrush}"/>
+                <Setter TargetName="Rect" Property="Fill" Value="{DynamicResource DarkPrimaryBrush}"/>
                 <Setter TargetName="Border" Property="Background" Value="{DynamicResource BorderBackground}"/>
             </Trigger>
         </ControlTemplate.Triggers>

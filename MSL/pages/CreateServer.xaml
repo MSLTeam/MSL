@@ -107,7 +107,7 @@
                     <ComboBox x:Name="FinallyCoreCombo" Margin="360,35,10,0" VerticalAlignment="Top" Height="35"/>
                 </Grid>
             </Border>
-            <TextBlock x:Name="FastInstallProcess" Text="" Foreground="{DynamicResource PrimaryBrush}" Margin="15,0,0,0" />
+            <TextBlock x:Name="FastInstallProcess" Text="" Foreground="{DynamicResource DarkPrimaryBrush}" Margin="15,0,0,0" />
             <Grid VerticalAlignment="Bottom" Margin="0,0,0,10">
                 <Button x:Name="FastModeReturnBtn" Content="上一步" Width="150" Click="FastModeReturnBtn_Click" Height="45" FontSize="18" Margin="0,0,300,0"/>
                 <Button x:Name="FastModeInstallBtn" Content="确定" Style="{StaticResource ButtonPrimary}" Width="150" Click="FastModeInstallBtn_Click" Height="45" FontSize="18" Margin="200,0,0,0"/>

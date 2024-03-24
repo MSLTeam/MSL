@@ -11,7 +11,7 @@
         Height="500" Width="800" 
         MinHeight="500" MinWidth="800"
         Background="{DynamicResource BackgroundBrush}"
-        NonClientAreaBackground="{DynamicResource PrimaryBrush}"
+        NonClientAreaBackground="{DynamicResource DarkPrimaryBrush}"
         NonClientAreaHeight="35"
         CloseButtonForeground="White" OtherButtonForeground="White" OtherButtonHoverForeground="White"
         ShowTitle="False" Icon="../icon.ico"
@@ -319,14 +319,14 @@
                                         <Label Content="服务器运行内存:"/>
                                         <ToggleButton x:Name="autoSetMemory" Content="让Java自动分配" VerticalAlignment="Top" HorizontalAlignment="Left" Margin="125,0,0,0" Style="{StaticResource ToggleButtonSwitch}" Click="autoSetMemory_Click"/>
                                         <hc:RangeSlider x:Name="memorySlider" ValueChanged="memorySlider_ValueChanged" Height="18" VerticalAlignment="Top" Margin="125,35,180,5"/>
-                                        <TextBox x:Name="memoryInfo" Text="当前为自动分配" Foreground="{DynamicResource PrimaryBrush}" TextAlignment="Center" TextChanged="memoryInfo_TextChanged" Width="165" HorizontalAlignment="Right" VerticalAlignment="Bottom"/>
+                                        <TextBox x:Name="memoryInfo" Text="当前为自动分配" Foreground="{DynamicResource DarkPrimaryBrush}" TextAlignment="Center" TextChanged="memoryInfo_TextChanged" Width="165" HorizontalAlignment="Right" VerticalAlignment="Bottom"/>
                                     </Grid>
                                     <hc:Divider Margin="0,10,0,10"/>
                                     <Grid>
                                         <Label Content="服务器JVM参数:"/>
                                         <TextBox x:Name="jVMcmd" Height="23" MaxLines="1" AutoWordSelection="True" VerticalAlignment="Top" Margin="125,0,0,0"/>
                                         <Border Margin="125,30,0,0" Style="{StaticResource BorderTipPrimary}">
-                                            <TextBlock Text="提示：一般格式为 -参数，如 -Dlog4j2.formatMsgNoLookups=true，非必要无需填此框" Foreground="{DynamicResource PrimaryBrush}" FontSize="14" HorizontalAlignment="Left" VerticalAlignment="Top"/>
+                                            <TextBlock Text="提示：一般格式为 -参数，如 -Dlog4j2.formatMsgNoLookups=true，非必要无需填此框" Foreground="{DynamicResource DarkPrimaryBrush}" FontSize="14" HorizontalAlignment="Left" VerticalAlignment="Top"/>
                                         </Border>
                                     </Grid>
                                     <hc:Divider Margin="0,10,0,10"/>
