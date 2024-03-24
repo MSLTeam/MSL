@@ -6,7 +6,7 @@
       xmlns:hc="https://handyorg.github.io/handycontrol" xmlns:langs="clr-namespace:MSL.i18n"
       xmlns:local="clr-namespace:MSL.pages"
       mc:Ignorable="d" d:DesignHeight="460" d:DesignWidth="750"
-      Title="About">
+      Title="About" Loaded="Page_Loaded">
     <Page.RenderTransform>
         <TranslateTransform/>
     </Page.RenderTransform>
