@@ -1,10 +1,7 @@
-﻿using HandyControl.Properties.Langs;
-using System;
+﻿using System;
 using System.ComponentModel;
 using System.Globalization;
 using System.Resources;
-using System.Threading;
-using System.Windows;
 
 namespace MSL.i18n
 {
@@ -17,7 +14,7 @@ namespace MSL.i18n
 
         private LanguageManager()
         {
-            _resourceManager = new ResourceManager(typeof(Resources));
+            _resourceManager = new ResourceManager(typeof(Langs));
         }
 
         public string this[string name]

@@ -1,4 +1,6 @@
-﻿using MSL.controls;
+﻿using HandyControl.Properties.Langs;
+using HandyControl.Tools;
+using MSL.controls;
 using MSL.i18n;
 using Newtonsoft.Json.Linq;
 using System;
@@ -309,6 +311,7 @@ namespace MSL.pages
         {
 
             //LanguageManager.Instance.ChangeLanguage(new CultureInfo("en-US"));
+
 
 
             GotoFrpcEvent();
