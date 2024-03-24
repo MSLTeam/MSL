@@ -1,6 +1,7 @@
 ﻿using HandyControl.Controls;
 using HandyControl.Themes;
 using MSL.controls;
+using MSL.i18n;
 using MSL.pages;
 using Newtonsoft.Json;
 using Newtonsoft.Json.Linq;
@@ -52,6 +53,7 @@ namespace MSL
 
         private async void Window_Loaded(object sender, RoutedEventArgs e)
         {
+            
             Topmost = true;
             Topmost = false;
             Focus();
@@ -440,7 +442,7 @@ namespace MSL
                 }
                 else
                 {
-                    Growl.Success("您使用的开服器已是最新版本！");
+                    Growl.Success(LanguageManager.Instance["MainWindow_GrowlMsg_LatestVersion"]);
                 }
             }
             catch

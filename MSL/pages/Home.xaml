@@ -4,7 +4,7 @@
       xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006" 
       xmlns:d="http://schemas.microsoft.com/expression/blend/2008" 
       xmlns:hc="https://handyorg.github.io/handycontrol"
-      xmlns:local="clr-namespace:MSL.pages"
+      xmlns:local="clr-namespace:MSL.pages" xmlns:i18n="clr-namespace:MSL.i18n"
       mc:Ignorable="d" d:DesignHeight="460" d:DesignWidth="750"
       Title="Home" Loaded="Page_Loaded">
     <Page.RenderTransform>
@@ -20,23 +20,23 @@
             <Grid>
                 <Image x:Name="noticeImage" Margin="0,35,0,0"/>
                 <TextBox x:Name="noticeLab" TextBlock.LineHeight="24" IsReadOnly="True" VerticalScrollBarVisibility="Auto" TextWrapping="Wrap" VerticalContentAlignment="Top" BorderThickness="0" Background="{x:Null}" Margin="5,35,5,5" FontSize="14"/>
-                <Label Content="公告：" Style="{StaticResource BorderTitle}"/>
+                <Label Content="{Binding [Pages_Home_Notice], Source={x:Static i18n:LanguageManager.Instance}}" Style="{StaticResource BorderTitle}"/>
             </Grid>
         </Border>
         <Border x:Name="recommendBorder" Margin="10,100,10,80" Padding="10" Style="{StaticResource MagicBorder}" Visibility="Hidden">
             <ScrollViewer>
                 <Grid x:Name="RecommendGrid">
-                    <Label Content="为您推荐：" Style="{StaticResource BorderTitle}"/>
+                    <Label Content="{Binding [Pages_Home_Recommendations], Source={x:Static i18n:LanguageManager.Instance}}" Style="{StaticResource BorderTitle}"/>
                 </Grid>
             </ScrollViewer>
         </Border>
-        <Button x:Name="gotoFrpBtn" Content="点对点联机" HorizontalAlignment="Right" Height="60" Margin="0,0,235,10" VerticalAlignment="Bottom" Width="120" Click="gotoFrpBtn_Click" FontSize="16"/>
+        <Button x:Name="gotoFrpBtn" Content="{Binding [Pages_Home_P2PPlay], Source={x:Static i18n:LanguageManager.Instance}}" HorizontalAlignment="Right" Height="60" Margin="0,0,235,10" VerticalAlignment="Bottom" Width="120" Click="gotoFrpBtn_Click" FontSize="16"/>
         <hc:SplitButton x:Name="startServer" Style="{StaticResource SplitButtonPrimary}" Margin="0,0,10,10" VerticalAlignment="Bottom" Height="60" Width="220" Click="startServer_Click" HorizontalAlignment="Right">
             <hc:SplitButton.DropDownContent>
                 <ListBox x:Name="startServerDropdown" BorderThickness="0" SelectionChanged="startServerDropdown_SelectionChanged"/>
             </hc:SplitButton.DropDownContent>
             <StackPanel>
-                <TextBlock Text="开启服务器" FontSize="18" HorizontalAlignment="Center" Foreground="White"/>
+                <TextBlock Text="{Binding [Pages_Home_LaunchServer], Source={x:Static i18n:LanguageManager.Instance}}" FontSize="18" HorizontalAlignment="Center" Foreground="White" />
                 <TextBlock x:Name="selectedItemTextBlock" Text="创建一个新的服务器" HorizontalAlignment="Center" Margin="0,5,0,0" Foreground="White"/>
             </StackPanel>
         </hc:SplitButton>

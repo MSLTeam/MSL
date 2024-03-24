@@ -428,6 +428,7 @@ namespace MSL.controls
                     using (StreamWriter sw = new StreamWriter(installPath + "/install.bat", false, Encoding.UTF8))
                     {
                         sw.WriteLine("@echo off");
+                        sw.WriteLine("chcp 65001");
                         sw.WriteLine(batData);
                     }
                     Status_change("正在编译Forge，请耐心等待……");
@@ -475,7 +476,7 @@ namespace MSL.controls
             }
             catch (OperationCanceledException) { return; }
         }
-
+        private string logTemp = "";
         private int counter = 100;
         private void Process_OutputDataReceived(object sender, DataReceivedEventArgs e)
         {
@@ -484,8 +485,10 @@ namespace MSL.controls
                 if (counter == 100)
                 {
                     counter = 0;
-                    Log_in(e.Data);
+                    Log_in(logTemp);
+                    logTemp = "";
                 }
+                logTemp = logTemp +  e.Data + "\n";
                 counter++;
             }
         }
