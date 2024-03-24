@@ -26,13 +26,13 @@
                 <ListView x:Name="serverList" hc:Empty.ShowEmpty="true" MouseDoubleClick="serverList_MouseDoubleClick" FontSize="16" SelectionMode="Single" SelectionChanged="serverList_SelectionChanged" Background="{x:Null}" BorderBrush="{x:Null}">
                     <ListView.ContextMenu>
                         <ContextMenu FontSize="14">
-                            <MenuItem Click="refreshList_Click" Header="刷新"/>
-                            <MenuItem x:Name="startServerBtn" Click="startServer_Click" Header="开启服务器" IsEnabled="False"/>
-                            <MenuItem x:Name="startWithCmd" Click="startWithCmd_Click" Header="用命令行开服" IsEnabled="False"/>
-                            <MenuItem x:Name="setServer" Click="setServer_Click" Header="更改服务器设置" IsEnabled="False"/>
-                            <MenuItem x:Name="setModorPlugin" Click="setModorPlugin_Click" Header="管理服务器插件或MOD" IsEnabled="False"/>
-                            <MenuItem x:Name="openServerDir" Click="openServerDir_Click" Header="打开服务器文件夹" IsEnabled="False"/>
-                            <MenuItem x:Name="delServer" Click="delServer_Click" Header="删除所选服务器" IsEnabled="False"/>
+                            <MenuItem Click="refreshList_Click" Header="{Binding [Pages_ServerList_Refresh], Source={x:Static langs:LanguageManager.Instance}}"/>
+                            <MenuItem x:Name="startServerBtn" Click="startServer_Click" Header="{Binding [Pages_ServerList_LaunchServer], Source={x:Static langs:LanguageManager.Instance}}" IsEnabled="False"/>
+                            <MenuItem x:Name="startWithCmd" Click="startWithCmd_Click" Header="{Binding [Pages_ServerList_UseCMDLaunch], Source={x:Static langs:LanguageManager.Instance}}" IsEnabled="False"/>
+                            <MenuItem x:Name="setServer" Click="setServer_Click" Header="{Binding [Pages_ServerList_Setting], Source={x:Static langs:LanguageManager.Instance}}" IsEnabled="False"/>
+                            <MenuItem x:Name="setModorPlugin" Click="setModorPlugin_Click" Header="{Binding [Pages_ServerList_ManageModsOrPlugins], Source={x:Static langs:LanguageManager.Instance}}" IsEnabled="False"/>
+                            <MenuItem x:Name="openServerDir" Click="openServerDir_Click" Header="{Binding [Pages_ServerList_OpenDir], Source={x:Static langs:LanguageManager.Instance}}" IsEnabled="False"/>
+                            <MenuItem x:Name="delServer" Click="delServer_Click" Header="{Binding [Pages_ServerList_Delete], Source={x:Static langs:LanguageManager.Instance}}" IsEnabled="False"/>
                         </ContextMenu>
                     </ListView.ContextMenu>
                     <ListView.View>

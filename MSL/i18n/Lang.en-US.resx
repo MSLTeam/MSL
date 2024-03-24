@@ -117,6 +117,12 @@
   <resheader name="writer">
     <value>System.Resources.ResXResourceWriter, System.Windows.Forms, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089</value>
   </resheader>
+  <data name="Dialog_Cancel" xml:space="preserve">
+    <value>Cancel</value>
+  </data>
+  <data name="Dialog_Warning" xml:space="preserve">
+    <value>Warning</value>
+  </data>
   <data name="MainWindow_Menu_About" xml:space="preserve">
     <value>About</value>
   </data>
@@ -135,6 +141,30 @@
   <data name="MainWindow_Menu_Setting" xml:space="preserve">
     <value>Settings</value>
   </data>
+  <data name="Pages_About_AboutMSL" xml:space="preserve">
+    <value>About MSL</value>
+  </data>
+  <data name="Pages_About_MainContent" xml:space="preserve">
+    <value>Minecraft Server Launcher (MSL)Copyright © 2021-2024 By MSLTeamThis software has no affiliation with Microsoft or Mojang StudioThe normal operation of the server opener cannot be separated from the following download sources/sites. Thanks:CurseForge - Module and Module Integration Package Download Source APIBMCLAPI - Forge Server Download SourceAnd other official and third-party download sources on the serverThank you to all users who have used MSL, as well as those who have provided improvement suggestions and bugs to MSLThank you all for your support and trust!</value>
+  </data>
+  <data name="Pages_About_OpenSource" xml:space="preserve">
+    <value>OpenSource(Github)</value>
+  </data>
+  <data name="Pages_About_OpenWebsite" xml:space="preserve">
+    <value>Open</value>
+  </data>
+  <data name="Pages_About_Package" xml:space="preserve">
+    <value>Package</value>
+  </data>
+  <data name="Pages_About_Sponsor" xml:space="preserve">
+    <value>Sponsor</value>
+  </data>
+  <data name="Pages_About_SponsorText" xml:space="preserve">
+    <value>Software devlop is not easy, if you have the ability, you can sponsor it~</value>
+  </data>
+  <data name="Pages_About_Website" xml:space="preserve">
+    <value>Offical Website: https://www.mslmc.cn/</value>
+  </data>
   <data name="Pages_Home_LaunchServer" xml:space="preserve">
     <value>Launch Server</value>
   </data>
@@ -150,16 +180,41 @@
   <data name="Pages_OnlinePage_Dialog_Tips" xml:space="preserve">
     <value>Attention: This feature is currently unstable and cannot penetrate all types of NAT. If online fails, please try opening the server and using internal network mapping to go online! \n This feature may require a genuine account. If unable to connect, please find a solution on the network or try opening the server and using internal network mapping to connect!</value>
   </data>
+  <data name="Pages_ServerList_Delete" xml:space="preserve">
+    <value>Delete Server</value>
+  </data>
+  <data name="Pages_ServerList_Dialog_FirstUse" xml:space="preserve">
+    <value>The server has detected an error in the configuration file. Is this the first time using it? 
+Do you want to create a new server?</value>
+  </data>
   <data name="Pages_ServerList_Do" xml:space="preserve">
     <value>Control</value>
   </data>
+  <data name="Pages_ServerList_LaunchServer" xml:space="preserve">
+    <value>Launch Server</value>
+  </data>
+  <data name="Pages_ServerList_ManageModsOrPlugins" xml:space="preserve">
+    <value>Manage Mods/Plugins</value>
+  </data>
+  <data name="Pages_ServerList_OpenDir" xml:space="preserve">
+    <value>Open Server Folder</value>
+  </data>
+  <data name="Pages_ServerList_Refresh" xml:space="preserve">
+    <value>Refresh</value>
+  </data>
   <data name="Pages_ServerList_ServerName" xml:space="preserve">
     <value>Name</value>
+  </data>
+  <data name="Pages_ServerList_Setting" xml:space="preserve">
+    <value>Change Setting</value>
   </data>
   <data name="Pages_ServerList_Status" xml:space="preserve">
     <value>Server Status</value>
   </data>
   <data name="Pages_ServerList_Title" xml:space="preserve">
     <value>Server List (Double-click to launch a server):</value>
+  </data>
+  <data name="Pages_ServerList_UseCMDLaunch" xml:space="preserve">
+    <value>Launch Server By CMD</value>
   </data>
 </root>

@@ -1,6 +1,7 @@
 ﻿using HandyControl.Controls;
 using Microsoft.VisualBasic.FileIO;
 using MSL.controls;
+using MSL.i18n;
 using Newtonsoft.Json.Linq;
 using System;
 using System.Collections.Generic;
@@ -133,7 +134,7 @@ namespace MSL.pages
             {
                 await Dispatcher.InvokeAsync(async () =>
                 {
-                    bool dialogRet = await Shows.ShowMsgDialogAsync(Window.GetWindow(this), "开服器检测到配置文件出现了错误，是第一次使用吗？\n是否创建一个新的服务器？", "警告", true, "取消");
+                    bool dialogRet = await Shows.ShowMsgDialogAsync(Window.GetWindow(this), LanguageManager.Instance["Pages_ServerList_Dialog_FirstUse"], LanguageManager.Instance["Dialog_Warning"], true, LanguageManager.Instance["Dialog_Cancel"]);
                     if (dialogRet)
                     {
                         CreateServerEvent();
