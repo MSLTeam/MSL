@@ -1,0 +1,253 @@
+﻿<ResourceDictionary xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+                    xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+                    xmlns:hc="clr-namespace:HandyControl.Controls"
+                    xmlns:interactivity="clr-namespace:HandyControl.Interactivity"
+                    xmlns:system="clr-namespace:System;assembly=mscorlib">
+
+    <Style x:Key="NumericUpDownBaseStyle" BasedOn="{StaticResource InputElementBaseStyle}" TargetType="hc:NumericUpDown">
+        <Setter Property="CaretBrush" Value="{DynamicResource PrimaryTextBrush}"/>
+        <Setter Property="KeyboardNavigation.TabNavigation" Value="Once"/>
+        <Setter Property="IsTabStop" Value="False"/>
+        <Setter Property="AllowDrop" Value="true"/>
+        <Setter Property="ScrollViewer.PanningMode" Value="VerticalFirst"/>
+        <Setter Property="Stylus.IsFlicksEnabled" Value="False"/>
+        <Setter Property="Template">
+            <Setter.Value>
+                <ControlTemplate TargetType="hc:NumericUpDown">
+                    <hc:SimplePanel x:Name="root">
+                        <Border CornerRadius="{Binding Path=(hc:BorderElement.CornerRadius),RelativeSource={RelativeSource TemplatedParent}}" BorderBrush="{TemplateBinding BorderBrush}" BorderThickness="{TemplateBinding BorderThickness}" Background="{TemplateBinding Background}"/>
+                        <Grid>
+                            <Grid.ColumnDefinitions>
+                                <ColumnDefinition/>
+                                <ColumnDefinition Width="Auto"/>
+                            </Grid.ColumnDefinitions>
+                            <Grid.RowDefinitions>
+                                <RowDefinition/>
+                                <RowDefinition/>
+                            </Grid.RowDefinitions>
+                            <hc:WatermarkTextBox Grid.RowSpan="2" Focusable="True" Watermark="{Binding Path=(hc:InfoElement.Placeholder),RelativeSource={RelativeSource TemplatedParent}}" CaretBrush="{TemplateBinding CaretBrush}" Foreground="{TemplateBinding Foreground}" HorizontalContentAlignment="{TemplateBinding HorizontalContentAlignment}" x:Name="PART_TextBox" Padding="{TemplateBinding Padding}" VerticalContentAlignment="{TemplateBinding VerticalContentAlignment}" IsReadOnly="{TemplateBinding IsReadOnly}"/>
+                            <Button x:Name="UpButton" VerticalContentAlignment="Bottom" VerticalAlignment="Stretch" HorizontalAlignment="Stretch" IsEnabled="{TemplateBinding IsReadOnly, Converter={StaticResource Boolean2BooleanReConverter}}" Height="Auto" Width="Auto" Grid.Row="0" Visibility="{TemplateBinding ShowUpDownButton,Converter={StaticResource Boolean2VisibilityConverter}}" Command="interactivity:ControlCommands.Prev" hc:IconElement.Height="6" hc:IconElement.Width="14" Padding="{Binding Padding, RelativeSource={RelativeSource TemplatedParent}, Converter={StaticResource ThicknessSplitConverter}, ConverterParameter='0,0,1,0'}" Grid.Column="1" Foreground="{TemplateBinding BorderBrush}" hc:IconElement.Geometry="{StaticResource UpGeometry}" Style="{StaticResource ButtonIcon}"/>
+                            <Button x:Name="DownButton" VerticalContentAlignment="Top" VerticalAlignment="Stretch" HorizontalAlignment="Stretch" IsEnabled="{TemplateBinding IsReadOnly, Converter={StaticResource Boolean2BooleanReConverter}}" Height="Auto" Width="Auto" Grid.Row="1" Visibility="{TemplateBinding ShowUpDownButton,Converter={StaticResource Boolean2VisibilityConverter}}" Command="interactivity:ControlCommands.Next" hc:IconElement.Height="6" hc:IconElement.Width="14" Padding="{Binding Padding, RelativeSource={RelativeSource TemplatedParent}, Converter={StaticResource ThicknessSplitConverter}, ConverterParameter='0,0,1,0'}" Grid.Column="1" Foreground="{TemplateBinding BorderBrush}" hc:IconElement.Geometry="{StaticResource DownGeometry}" Style="{StaticResource ButtonIcon}"/>
+                        </Grid>
+                    </hc:SimplePanel>
+                    <ControlTemplate.Triggers>
+                        <Trigger Property="IsEnabled" Value="false">
+                            <Setter Property="Opacity" TargetName="root" Value="0.4"/>
+                        </Trigger>
+                        <Trigger Property="IsMouseOver" Value="true">
+                            <Setter Property="BorderBrush" Value="{DynamicResource SecondaryBorderBrush}"/>
+                        </Trigger>
+                        <Trigger Property="IsFocused" Value="true" SourceName="PART_TextBox">
+                            <Setter Property="BorderBrush" Value="{DynamicResource PrimaryBrush}"/>
+                        </Trigger>
+                    </ControlTemplate.Triggers>
+                </ControlTemplate>
+            </Setter.Value>
+        </Setter>
+    </Style>
+
+    <ControlTemplate x:Key="NumericUpDownExtendTopTemplate" TargetType="hc:NumericUpDown">
+        <Grid>
+            <Grid.RowDefinitions>
+                <RowDefinition Height="Auto"/>
+                <RowDefinition MinHeight="{Binding Path=(hc:InfoElement.MinContentHeight),RelativeSource={RelativeSource TemplatedParent}}" Height="{Binding Path=(hc:InfoElement.ContentHeight),RelativeSource={RelativeSource TemplatedParent},Converter={StaticResource Double2GridLengthConverter}}"/>
+            </Grid.RowDefinitions>
+            <DockPanel LastChildFill="True" Visibility="{Binding Path=(hc:InfoElement.Title),RelativeSource={RelativeSource TemplatedParent},Converter={StaticResource String2VisibilityConverter}}" HorizontalAlignment="{Binding Path=(hc:TitleElement.HorizontalAlignment),RelativeSource={RelativeSource TemplatedParent}}" Margin="{Binding Path=(hc:TitleElement.MarginOnTheTop),RelativeSource={RelativeSource TemplatedParent}}">
+                <ContentPresenter DockPanel.Dock="Right" TextElement.Foreground="{DynamicResource DangerBrush}" Margin="4,0,0,0" Content="{Binding Path=(hc:InfoElement.Symbol),RelativeSource={RelativeSource TemplatedParent}}" Visibility="{Binding Path=(hc:InfoElement.Necessary),RelativeSource={RelativeSource TemplatedParent},Converter={StaticResource Boolean2VisibilityConverter}}"/>
+                <TextBlock hc:TextBlockAttach.AutoTooltip="True" TextWrapping="NoWrap" TextTrimming="CharacterEllipsis" Text="{Binding Path=(hc:InfoElement.Title),RelativeSource={RelativeSource TemplatedParent}}"/>
+            </DockPanel>
+            <Border Grid.Row="1" x:Name="border" CornerRadius="{Binding Path=(hc:BorderElement.CornerRadius),RelativeSource={RelativeSource TemplatedParent}}" BorderBrush="{TemplateBinding BorderBrush}" BorderThickness="{TemplateBinding BorderThickness}" Background="{TemplateBinding Background}" SnapsToDevicePixels="True"/>
+            <Grid Grid.Row="1" SnapsToDevicePixels="true" x:Name="root" >
+                <Grid.ColumnDefinitions>
+                    <ColumnDefinition/>
+                    <ColumnDefinition Width="Auto"/>
+                </Grid.ColumnDefinitions>
+                <Grid.RowDefinitions>
+                    <RowDefinition/>
+                    <RowDefinition/>
+                </Grid.RowDefinitions>
+                <hc:WatermarkTextBox Grid.RowSpan="2" Focusable="True" Watermark="{Binding Path=(hc:InfoElement.Placeholder),RelativeSource={RelativeSource TemplatedParent}}" CaretBrush="{TemplateBinding CaretBrush}" Foreground="{TemplateBinding Foreground}" HorizontalContentAlignment="{TemplateBinding HorizontalContentAlignment}" x:Name="PART_TextBox" Padding="{TemplateBinding Padding}" VerticalContentAlignment="{TemplateBinding VerticalContentAlignment}" IsReadOnly="{TemplateBinding IsReadOnly}"/>
+                <Button x:Name="UpButton" VerticalContentAlignment="Bottom" VerticalAlignment="Stretch" HorizontalAlignment="Stretch" IsEnabled="{TemplateBinding IsReadOnly, Converter={StaticResource Boolean2BooleanReConverter}}" Height="Auto" Width="Auto" Grid.Row="0" Visibility="{TemplateBinding ShowUpDownButton,Converter={StaticResource Boolean2VisibilityConverter}}" Command="interactivity:ControlCommands.Prev" hc:IconElement.Height="6" hc:IconElement.Width="14" Padding="{Binding Padding, RelativeSource={RelativeSource TemplatedParent}, Converter={StaticResource ThicknessSplitConverter}, ConverterParameter='0,0,1,0'}" Grid.Column="1" Foreground="{TemplateBinding BorderBrush}" hc:IconElement.Geometry="{StaticResource UpGeometry}" Style="{StaticResource ButtonIcon}" />
+                <Button x:Name="DownButton" VerticalContentAlignment="Top" VerticalAlignment="Stretch" HorizontalAlignment="Stretch" IsEnabled="{TemplateBinding IsReadOnly, Converter={StaticResource Boolean2BooleanReConverter}}" Height="Auto" Width="Auto" Grid.Row="1" Visibility="{TemplateBinding ShowUpDownButton,Converter={StaticResource Boolean2VisibilityConverter}}" Command="interactivity:ControlCommands.Next" hc:IconElement.Height="6" hc:IconElement.Width="14" Padding="{Binding Padding, RelativeSource={RelativeSource TemplatedParent}, Converter={StaticResource ThicknessSplitConverter}, ConverterParameter='0,0,1,0'}" Grid.Column="1" Foreground="{TemplateBinding BorderBrush}" hc:IconElement.Geometry="{StaticResource DownGeometry}" Style="{StaticResource ButtonIcon}" />
+            </Grid>
+        </Grid>
+        <ControlTemplate.Triggers>
+            <Trigger Property="IsEnabled" Value="false">
+                <Setter Property="Opacity" TargetName="border" Value="0.4"/>
+                <Setter Property="Opacity" TargetName="root" Value="0.4"/>
+            </Trigger>
+            <Trigger Property="IsMouseOver" Value="true" SourceName="root">
+                <Setter Property="BorderBrush" Value="{DynamicResource SecondaryBorderBrush}"/>
+            </Trigger>
+            <Trigger Property="IsFocused" Value="true" SourceName="PART_TextBox">
+                <Setter Property="BorderBrush" Value="{DynamicResource PrimaryBrush}"/>
+            </Trigger>
+            <Trigger Property="IsReadOnly" Value="True">
+                <Setter Property="IsEnabled" TargetName="UpButton" Value="False"/>
+                <Setter Property="IsEnabled" TargetName="DownButton" Value="False"/>
+            </Trigger>
+        </ControlTemplate.Triggers>
+    </ControlTemplate>
+
+    <ControlTemplate x:Key="NumericUpDownExtendLeftTemplate" TargetType="hc:NumericUpDown">
+        <Grid MinHeight="{Binding Path=(hc:InfoElement.MinContentHeight),RelativeSource={RelativeSource TemplatedParent}}" Height="{Binding Path=(hc:InfoElement.ContentHeight),RelativeSource={RelativeSource TemplatedParent}}">
+            <Grid.ColumnDefinitions>
+                <ColumnDefinition Width="{Binding Path=(hc:InfoElement.TitleWidth),RelativeSource={RelativeSource TemplatedParent}}"/>
+                <ColumnDefinition/>
+            </Grid.ColumnDefinitions>
+            <DockPanel LastChildFill="True" Visibility="{Binding Path=(hc:InfoElement.Title),RelativeSource={RelativeSource TemplatedParent},Converter={StaticResource String2VisibilityConverter}}" HorizontalAlignment="{Binding Path=(hc:TitleElement.HorizontalAlignment),RelativeSource={RelativeSource TemplatedParent}}" VerticalAlignment="{Binding Path=(hc:TitleElement.VerticalAlignment),RelativeSource={RelativeSource TemplatedParent}}" Margin="{Binding Path=(hc:TitleElement.MarginOnTheLeft),RelativeSource={RelativeSource TemplatedParent}}">
+                <ContentPresenter DockPanel.Dock="Right" TextElement.Foreground="{DynamicResource DangerBrush}" Margin="4,0,0,0" Content="{Binding Path=(hc:InfoElement.Symbol),RelativeSource={RelativeSource TemplatedParent}}" Visibility="{Binding Path=(hc:InfoElement.Necessary),RelativeSource={RelativeSource TemplatedParent},Converter={StaticResource Boolean2VisibilityConverter}}"/>
+                <TextBlock hc:TextBlockAttach.AutoTooltip="True" TextWrapping="NoWrap" TextTrimming="CharacterEllipsis" Text="{Binding Path=(hc:InfoElement.Title),RelativeSource={RelativeSource TemplatedParent}}"/>
+            </DockPanel>
+            <Border x:Name="border" Grid.Column="1" CornerRadius="{Binding Path=(hc:BorderElement.CornerRadius),RelativeSource={RelativeSource TemplatedParent}}" BorderBrush="{TemplateBinding BorderBrush}" BorderThickness="{TemplateBinding BorderThickness}" Background="{TemplateBinding Background}" SnapsToDevicePixels="True"/>
+            <Grid Grid.Column="1" SnapsToDevicePixels="true" x:Name="root" >
+                <Grid.ColumnDefinitions>
+                    <ColumnDefinition/>
+                    <ColumnDefinition Width="Auto"/>
+                </Grid.ColumnDefinitions>
+                <Grid.RowDefinitions>
+                    <RowDefinition/>
+                    <RowDefinition/>
+                </Grid.RowDefinitions>
+                <hc:WatermarkTextBox Grid.RowSpan="2" Focusable="True" Watermark="{Binding Path=(hc:InfoElement.Placeholder),RelativeSource={RelativeSource TemplatedParent}}" CaretBrush="{TemplateBinding CaretBrush}" Foreground="{TemplateBinding Foreground}" HorizontalContentAlignment="{TemplateBinding HorizontalContentAlignment}" x:Name="PART_TextBox" Padding="{TemplateBinding Padding}" VerticalContentAlignment="{TemplateBinding VerticalContentAlignment}" IsReadOnly="{TemplateBinding IsReadOnly}"/>
+                <Button x:Name="UpButton" VerticalContentAlignment="Bottom" VerticalAlignment="Stretch" HorizontalAlignment="Stretch" IsEnabled="{TemplateBinding IsReadOnly, Converter={StaticResource Boolean2BooleanReConverter}}" Height="Auto" Width="Auto" Grid.Row="0" Visibility="{TemplateBinding ShowUpDownButton,Converter={StaticResource Boolean2VisibilityConverter}}" Command="interactivity:ControlCommands.Prev" hc:IconElement.Height="6" hc:IconElement.Width="14" Padding="{Binding Padding, RelativeSource={RelativeSource TemplatedParent}, Converter={StaticResource ThicknessSplitConverter}, ConverterParameter='0,0,1,0'}" Grid.Column="1" Foreground="{TemplateBinding BorderBrush}" hc:IconElement.Geometry="{StaticResource UpGeometry}" Style="{StaticResource ButtonIcon}" />
+                <Button x:Name="DownButton" VerticalContentAlignment="Top" VerticalAlignment="Stretch" HorizontalAlignment="Stretch" IsEnabled="{TemplateBinding IsReadOnly, Converter={StaticResource Boolean2BooleanReConverter}}" Height="Auto" Width="Auto" Grid.Row="1" Visibility="{TemplateBinding ShowUpDownButton,Converter={StaticResource Boolean2VisibilityConverter}}" Command="interactivity:ControlCommands.Next" hc:IconElement.Height="6" hc:IconElement.Width="14" Padding="{Binding Padding, RelativeSource={RelativeSource TemplatedParent}, Converter={StaticResource ThicknessSplitConverter}, ConverterParameter='0,0,1,0'}" Grid.Column="1" Foreground="{TemplateBinding BorderBrush}" hc:IconElement.Geometry="{StaticResource DownGeometry}" Style="{StaticResource ButtonIcon}" />
+            </Grid>
+        </Grid>
+        <ControlTemplate.Triggers>
+            <Trigger Property="IsEnabled" Value="false">
+                <Setter Property="Opacity" TargetName="border" Value="0.4"/>
+                <Setter Property="Opacity" TargetName="root" Value="0.4"/>
+            </Trigger>
+            <Trigger Property="IsMouseOver" Value="true" SourceName="root">
+                <Setter Property="BorderBrush" Value="{DynamicResource SecondaryBorderBrush}"/>
+            </Trigger>
+            <Trigger Property="IsFocused" Value="true" SourceName="PART_TextBox">
+                <Setter Property="BorderBrush" Value="{DynamicResource PrimaryBrush}"/>
+            </Trigger>
+        </ControlTemplate.Triggers>
+    </ControlTemplate>
+
+    <Style x:Key="NumericUpDownExtendBaseStyle" BasedOn="{StaticResource NumericUpDownBaseStyle}" TargetType="hc:NumericUpDown">
+        <Setter Property="hc:InfoElement.Symbol" Value="●"/>
+        <Setter Property="hc:InfoElement.ContentHeight" Value="{x:Static system:Double.NaN}"/>
+        <Setter Property="hc:InfoElement.MinContentHeight" Value="{StaticResource DefaultControlHeight}"/>
+        <Setter Property="Height" Value="Auto"/>
+        <Setter Property="Template" Value="{StaticResource NumericUpDownExtendTopTemplate}"/>
+        <Style.Triggers>
+            <Trigger Property="hc:InfoElement.TitlePlacement" Value="Left">
+                <Setter Property="Template" Value="{StaticResource NumericUpDownExtendLeftTemplate}"/>
+                <Setter Property="Width" Value="Auto"/>
+            </Trigger>
+        </Style.Triggers>
+    </Style>
+
+    <ControlTemplate x:Key="NumericUpDownPlusTopTemplate" TargetType="hc:NumericUpDown">
+        <Grid>
+            <Grid.RowDefinitions>
+                <RowDefinition Height="Auto"/>
+                <RowDefinition MinHeight="{Binding Path=(hc:InfoElement.MinContentHeight),RelativeSource={RelativeSource TemplatedParent}}" Height="{Binding Path=(hc:InfoElement.ContentHeight),RelativeSource={RelativeSource TemplatedParent},Converter={StaticResource Double2GridLengthConverter}}"/>
+            </Grid.RowDefinitions>
+            <DockPanel Grid.ColumnSpan="2" LastChildFill="True" Visibility="{Binding Path=(hc:InfoElement.Title),RelativeSource={RelativeSource TemplatedParent},Converter={StaticResource String2VisibilityConverter}}" HorizontalAlignment="{Binding Path=(hc:TitleElement.HorizontalAlignment),RelativeSource={RelativeSource TemplatedParent}}" Margin="{Binding Path=(hc:TitleElement.MarginOnTheTop),RelativeSource={RelativeSource TemplatedParent}}">
+                <ContentPresenter DockPanel.Dock="Right" TextElement.Foreground="{DynamicResource DangerBrush}" Margin="4,0,0,0" Content="{Binding Path=(hc:InfoElement.Symbol),RelativeSource={RelativeSource TemplatedParent}}" Visibility="{Binding Path=(hc:InfoElement.Necessary),RelativeSource={RelativeSource TemplatedParent},Converter={StaticResource Boolean2VisibilityConverter}}"/>
+                <TextBlock hc:TextBlockAttach.AutoTooltip="True" TextWrapping="NoWrap" TextTrimming="CharacterEllipsis" Text="{Binding Path=(hc:InfoElement.Title),RelativeSource={RelativeSource TemplatedParent}}"/>
+            </DockPanel>
+            <Border Grid.Row="1" x:Name="border" CornerRadius="{Binding Path=(hc:BorderElement.CornerRadius),RelativeSource={RelativeSource TemplatedParent}}" BorderBrush="{TemplateBinding BorderBrush}" BorderThickness="{TemplateBinding BorderThickness}" Background="{TemplateBinding Background}"/>
+            <Grid Grid.Row="1" SnapsToDevicePixels="true" x:Name="root">
+                <Grid.ColumnDefinitions>
+                    <ColumnDefinition/>
+                    <ColumnDefinition Width="Auto"/>
+                    <ColumnDefinition Width="Auto"/>
+                </Grid.ColumnDefinitions>
+                <Grid.RowDefinitions>
+                    <RowDefinition/>
+                    <RowDefinition/>
+                </Grid.RowDefinitions>
+                <hc:WatermarkTextBox Grid.RowSpan="2" Focusable="True" Watermark="{Binding Path=(hc:InfoElement.Placeholder),RelativeSource={RelativeSource TemplatedParent}}" CaretBrush="{TemplateBinding CaretBrush}" Foreground="{TemplateBinding Foreground}" HorizontalContentAlignment="{TemplateBinding HorizontalContentAlignment}" x:Name="PART_TextBox" Padding="{TemplateBinding Padding}" VerticalContentAlignment="{TemplateBinding VerticalContentAlignment}" IsReadOnly="{TemplateBinding IsReadOnly}"/>
+                <Button HorizontalContentAlignment="Left" VerticalAlignment="Stretch" HorizontalAlignment="Stretch" Grid.RowSpan="2" Height="Auto" Width="Auto" Command="interactivity:ControlCommands.Clear" hc:IconElement.Width="14" Padding="0,0,2,0" Visibility="Collapsed" Name="ButtonClear" Grid.Column="1" Style="{StaticResource ButtonIcon}" hc:IconElement.Geometry="{StaticResource DeleteFillCircleGeometry}" Foreground="{TemplateBinding BorderBrush}"/>
+                <Button x:Name="UpButton" VerticalContentAlignment="Bottom" HorizontalContentAlignment="Left" VerticalAlignment="Stretch" HorizontalAlignment="Stretch" IsEnabled="{TemplateBinding IsReadOnly, Converter={StaticResource Boolean2BooleanReConverter}}" Height="Auto" Width="Auto" Grid.Row="0" Visibility="{TemplateBinding ShowUpDownButton,Converter={StaticResource Boolean2VisibilityConverter}}" Command="interactivity:ControlCommands.Prev" hc:IconElement.Height="6" hc:IconElement.Width="14" Padding="{Binding Padding, RelativeSource={RelativeSource TemplatedParent}, Converter={StaticResource ThicknessSplitConverter}, ConverterParameter='0,0,1,0'}" Grid.Column="2" Foreground="{TemplateBinding BorderBrush}" hc:IconElement.Geometry="{StaticResource UpGeometry}" Style="{StaticResource ButtonIcon}" />
+                <Button x:Name="DownButton" VerticalContentAlignment="Top" HorizontalContentAlignment="Left" VerticalAlignment="Stretch" HorizontalAlignment="Stretch" IsEnabled="{TemplateBinding IsReadOnly, Converter={StaticResource Boolean2BooleanReConverter}}" Height="Auto" Width="Auto" Grid.Row="1" Visibility="{TemplateBinding ShowUpDownButton,Converter={StaticResource Boolean2VisibilityConverter}}" Command="interactivity:ControlCommands.Next" hc:IconElement.Height="6" hc:IconElement.Width="14" Padding="{Binding Padding, RelativeSource={RelativeSource TemplatedParent}, Converter={StaticResource ThicknessSplitConverter}, ConverterParameter='0,0,1,0'}" Grid.Column="2" Foreground="{TemplateBinding BorderBrush}" hc:IconElement.Geometry="{StaticResource DownGeometry}" Style="{StaticResource ButtonIcon}" />
+            </Grid>
+        </Grid>
+        <ControlTemplate.Triggers>
+            <Trigger Property="IsEnabled" Value="false">
+                <Setter Property="Opacity" TargetName="border" Value="0.4"/>
+                <Setter Property="Opacity" TargetName="root" Value="0.4"/>
+            </Trigger>
+            <Trigger Property="IsMouseOver" Value="true" SourceName="root">
+                <Setter Property="BorderBrush" Value="{DynamicResource SecondaryBorderBrush}"/>
+            </Trigger>
+            <MultiTrigger>
+                <MultiTrigger.Conditions>
+                    <Condition Property="IsMouseOver" Value="true"/>
+                    <Condition Property="hc:InfoElement.ShowClearButton" Value="True"/>
+                    <Condition Property="IsReadOnly" Value="False"/>
+                </MultiTrigger.Conditions>
+                <Setter Property="Visibility" Value="Visible" TargetName="ButtonClear"/>
+            </MultiTrigger>
+            <Trigger Property="IsFocused" Value="true" SourceName="PART_TextBox">
+                <Setter Property="BorderBrush" Value="{DynamicResource PrimaryBrush}"/>
+            </Trigger>
+        </ControlTemplate.Triggers>
+    </ControlTemplate>
+
+    <ControlTemplate x:Key="NumericUpDownPlusLeftTemplate" TargetType="hc:NumericUpDown">
+        <Grid MinHeight="{Binding Path=(hc:InfoElement.MinContentHeight),RelativeSource={RelativeSource TemplatedParent}}" Height="{Binding Path=(hc:InfoElement.ContentHeight),RelativeSource={RelativeSource TemplatedParent}}">
+            <Grid.ColumnDefinitions>
+                <ColumnDefinition Width="{Binding Path=(hc:InfoElement.TitleWidth),RelativeSource={RelativeSource TemplatedParent}}"/>
+                <ColumnDefinition/>
+            </Grid.ColumnDefinitions>
+            <DockPanel Grid.Column="0" LastChildFill="True" Visibility="{Binding Path=(hc:InfoElement.Title),RelativeSource={RelativeSource TemplatedParent},Converter={StaticResource String2VisibilityConverter}}" HorizontalAlignment="{Binding Path=(hc:TitleElement.HorizontalAlignment),RelativeSource={RelativeSource TemplatedParent}}" VerticalAlignment="{Binding Path=(hc:TitleElement.VerticalAlignment),RelativeSource={RelativeSource TemplatedParent}}" Margin="{Binding Path=(hc:TitleElement.MarginOnTheLeft),RelativeSource={RelativeSource TemplatedParent}}">
+                <ContentPresenter DockPanel.Dock="Right" TextElement.Foreground="{DynamicResource DangerBrush}" Margin="4,0,0,0" Content="{Binding Path=(hc:InfoElement.Symbol),RelativeSource={RelativeSource TemplatedParent}}" Visibility="{Binding Path=(hc:InfoElement.Necessary),RelativeSource={RelativeSource TemplatedParent},Converter={StaticResource Boolean2VisibilityConverter}}"/>
+                <TextBlock hc:TextBlockAttach.AutoTooltip="True" TextWrapping="NoWrap" TextTrimming="CharacterEllipsis" Text="{Binding Path=(hc:InfoElement.Title),RelativeSource={RelativeSource TemplatedParent}}"/>
+            </DockPanel>
+            <Border Grid.Column="1" x:Name="border" CornerRadius="{Binding Path=(hc:BorderElement.CornerRadius),RelativeSource={RelativeSource TemplatedParent}}" BorderBrush="{TemplateBinding BorderBrush}" BorderThickness="{TemplateBinding BorderThickness}" Background="{TemplateBinding Background}"/>
+            <Grid Grid.Column="1" SnapsToDevicePixels="true" x:Name="root" >
+                <Grid.ColumnDefinitions>
+                    <ColumnDefinition/>
+                    <ColumnDefinition Width="Auto"/>
+                    <ColumnDefinition Width="Auto"/>
+                </Grid.ColumnDefinitions>
+                <Grid.RowDefinitions>
+                    <RowDefinition/>
+                    <RowDefinition/>
+                </Grid.RowDefinitions>
+                <hc:WatermarkTextBox Grid.RowSpan="2" Focusable="True" Watermark="{Binding Path=(hc:InfoElement.Placeholder),RelativeSource={RelativeSource TemplatedParent}}" CaretBrush="{TemplateBinding CaretBrush}" Foreground="{TemplateBinding Foreground}" HorizontalContentAlignment="{TemplateBinding HorizontalContentAlignment}" x:Name="PART_TextBox" Padding="{TemplateBinding Padding}" VerticalContentAlignment="{TemplateBinding VerticalContentAlignment}" IsReadOnly="{TemplateBinding IsReadOnly}"/>
+                <Button HorizontalContentAlignment="Left" VerticalAlignment="Stretch" HorizontalAlignment="Stretch" Grid.RowSpan="2" Height="Auto" Width="Auto" Command="interactivity:ControlCommands.Clear" hc:IconElement.Width="14" Padding="0,0,2,0" Visibility="Collapsed" Name="ButtonClear" Grid.Column="1" Style="{StaticResource ButtonIcon}" hc:IconElement.Geometry="{StaticResource DeleteFillCircleGeometry}" Foreground="{TemplateBinding BorderBrush}" />
+                <Button x:Name="UpButton" VerticalContentAlignment="Bottom" HorizontalContentAlignment="Left" VerticalAlignment="Stretch" HorizontalAlignment="Stretch" IsEnabled="{TemplateBinding IsReadOnly, Converter={StaticResource Boolean2BooleanReConverter}}" Height="Auto" Width="Auto" Grid.Row="0" Visibility="{TemplateBinding ShowUpDownButton,Converter={StaticResource Boolean2VisibilityConverter}}" Command="interactivity:ControlCommands.Prev" hc:IconElement.Height="6" hc:IconElement.Width="14" Padding="{Binding Padding, RelativeSource={RelativeSource TemplatedParent}, Converter={StaticResource ThicknessSplitConverter}, ConverterParameter='0,0,1,0'}" Grid.Column="2" Foreground="{TemplateBinding BorderBrush}" hc:IconElement.Geometry="{StaticResource UpGeometry}" Style="{StaticResource ButtonIcon}" />
+                <Button x:Name="DownButton" VerticalContentAlignment="Top" HorizontalContentAlignment="Left" VerticalAlignment="Stretch" HorizontalAlignment="Stretch" IsEnabled="{TemplateBinding IsReadOnly, Converter={StaticResource Boolean2BooleanReConverter}}" Height="Auto" Width="Auto" Grid.Row="1" Visibility="{TemplateBinding ShowUpDownButton,Converter={StaticResource Boolean2VisibilityConverter}}" Command="interactivity:ControlCommands.Next" hc:IconElement.Height="6" hc:IconElement.Width="14" Padding="{Binding Padding, RelativeSource={RelativeSource TemplatedParent}, Converter={StaticResource ThicknessSplitConverter}, ConverterParameter='0,0,1,0'}" Grid.Column="2" Foreground="{TemplateBinding BorderBrush}" hc:IconElement.Geometry="{StaticResource DownGeometry}" Style="{StaticResource ButtonIcon}" />
+            </Grid>
+        </Grid>
+        <ControlTemplate.Triggers>
+            <Trigger Property="IsEnabled" Value="false">
+                <Setter Property="Opacity" TargetName="border" Value="0.4"/>
+                <Setter Property="Opacity" TargetName="root" Value="0.4"/>
+            </Trigger>
+            <Trigger Property="IsMouseOver" Value="true" SourceName="root">
+                <Setter Property="BorderBrush" Value="{DynamicResource SecondaryBorderBrush}"/>
+            </Trigger>
+            <MultiTrigger>
+                <MultiTrigger.Conditions>
+                    <Condition Property="IsMouseOver" Value="true"/>
+                    <Condition Property="hc:InfoElement.ShowClearButton" Value="True"/>
+                    <Condition Property="IsReadOnly" Value="False"/>
+                </MultiTrigger.Conditions>
+                <Setter Property="Visibility" Value="Visible" TargetName="ButtonClear"/>
+            </MultiTrigger>
+            <Trigger Property="IsFocused" Value="true" SourceName="PART_TextBox">
+                <Setter Property="BorderBrush" Value="{DynamicResource PrimaryBrush}"/>
+            </Trigger>
+        </ControlTemplate.Triggers>
+    </ControlTemplate>
+
+    <Style x:Key="NumericUpDownPlusBaseStyle" BasedOn="{StaticResource NumericUpDownExtendBaseStyle}" TargetType="hc:NumericUpDown">
+        <Setter Property="Template" Value="{StaticResource NumericUpDownPlusTopTemplate}"/>
+        <Style.Triggers>
+            <Trigger Property="hc:InfoElement.TitlePlacement" Value="Left">
+                <Setter Property="Template" Value="{StaticResource NumericUpDownPlusLeftTemplate}"/>
+                <Setter Property="Width" Value="Auto"/>
+            </Trigger>
+        </Style.Triggers>
+    </Style>
+
+</ResourceDictionary>

@@ -377,7 +377,7 @@
     <Resource Include="images\150px-Impulse_Command_Block.png" />
   </ItemGroup>
   <ItemGroup>
-    <ProjectReference Include="..\..\Repos\HandyControls\src\Net_GE45\HandyControl_Net_GE45\HandyControl_Net_GE45.csproj">
+    <ProjectReference Include="..\HandyControls\Net_GE45\HandyControl_Net_GE45\HandyControl_Net_GE45.csproj">
       <Project>{f7fcdc09-a0db-4af8-8871-046a6d72e2fc}</Project>
       <Name>HandyControl_Net_GE45</Name>
     </ProjectReference>
