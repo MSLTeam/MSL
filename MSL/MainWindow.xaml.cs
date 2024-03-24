@@ -7,6 +7,7 @@ using Newtonsoft.Json;
 using Newtonsoft.Json.Linq;
 using System;
 using System.Diagnostics;
+using System.Globalization;
 using System.IO;
 using System.Management;
 using System.Text;
@@ -102,13 +103,32 @@ namespace MSL
                 jsonObject = JObject.Parse(File.ReadAllText(@"MSL\config.json", Encoding.UTF8));
                 //Logger.LogInfo("读取config.json成功！");
             }
-            //Logger.LogInfo("主窗体UI控件加载完毕！");
-            await Task.Run(() =>
+            try
             {
-                AsyncLoadEvent(jsonObject);
-                OnlineService(jsonObject);
-                //Logger.LogInfo("异步载入线程已启动！");
-            });
+                if (jsonObject["lang"] == null)
+                {
+                    string jsonString = File.ReadAllText(@"MSL\config.json", Encoding.UTF8);
+                    JObject jobject = JObject.Parse(jsonString);
+                    jobject.Add("lang", "zh-CN");
+                    string convertString = Convert.ToString(jobject);
+                    File.WriteAllText(@"MSL\config.json", convertString, Encoding.UTF8);
+                    LanguageManager.Instance.ChangeLanguage(new CultureInfo("zh-CN"));
+                }
+                else
+                {
+                    LanguageManager.Instance.ChangeLanguage(new CultureInfo(jsonObject["lang"].ToString()));
+                }
+            }
+            finally
+            {
+                //Logger.LogInfo("主窗体UI控件加载完毕！");
+                await Task.Run(() =>
+                {
+                    AsyncLoadEvent(jsonObject);
+                    OnlineService(jsonObject);
+                    //Logger.LogInfo("异步载入线程已启动！");
+                });
+            }
         }
 
         private void AsyncLoadEvent(JObject jsonObject)

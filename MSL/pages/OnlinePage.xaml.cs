@@ -1,5 +1,4 @@
 ﻿using HandyControl.Controls;
-using HandyControl.Properties.Langs;
 using MSL.controls;
 using MSL.i18n;
 using Newtonsoft.Json;

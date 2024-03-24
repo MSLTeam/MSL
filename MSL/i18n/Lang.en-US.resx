@@ -117,6 +117,9 @@
   <resheader name="writer">
     <value>System.Resources.ResXResourceWriter, System.Windows.Forms, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089</value>
   </resheader>
+  <data name="MainWindow_GrowlMsg_LatestVersion" xml:space="preserve">
+    <value>This version of MSL is latest!</value>
+  </data>
   <data name="MainWindow_Menu_About" xml:space="preserve">
     <value>About</value>
   </data>
@@ -160,6 +163,6 @@
     <value>Server Status</value>
   </data>
   <data name="Pages_ServerList_Title" xml:space="preserve">
-    <value>Server List (Double-click to launch a server):</value>
+    <value>Server List (Double-click to launch selected server):</value>
   </data>
 </root>

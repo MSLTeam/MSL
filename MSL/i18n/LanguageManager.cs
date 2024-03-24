@@ -31,6 +31,15 @@ namespace MSL.i18n
 
         public void ChangeLanguage(CultureInfo cultureInfo)
         {
+            if (cultureInfo.Name == "zh-CN")
+            {
+                CultureInfo _cultureInfo = new CultureInfo("");
+                CultureInfo.CurrentCulture = _cultureInfo;
+                CultureInfo.CurrentUICulture = _cultureInfo;
+                HandyControl.Tools.ConfigHelper.Instance.SetLang(_cultureInfo.Name);
+                PropertyChanged?.Invoke(this, new PropertyChangedEventArgs("Item[]"));
+                return;
+            }
             CultureInfo.CurrentCulture = cultureInfo;
             CultureInfo.CurrentUICulture = cultureInfo;
             HandyControl.Tools.ConfigHelper.Instance.SetLang(cultureInfo.Name);

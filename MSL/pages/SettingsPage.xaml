@@ -38,7 +38,7 @@
                         <Button Name="notifyIconbtn" Margin="0,0,10,0" Content="托盘图标:关闭" FontSize="14" Height="30" Click="notifyIconbtn_Click" />
                         <Button Name="useidea" Margin="0,0,10,0" Content="使用教程" FontSize="14" Height="30" Click="useidea_Click"/>
                         <Button x:Name="checkUpdateBtn" Margin="0,0,10,0" Content="检查更新" Style="{StaticResource ButtonPrimary}" FontSize="14" Height="30" Click="checkUpdateBtn_Click"/>
-                        <hc:ComboBox x:Name="changeLanguage" SelectedIndex="0" FontSize="14" Height="30" SelectionChanged="changeLanguage_SelectionChanged">
+                        <hc:ComboBox x:Name="ChangeLanguage" FontSize="14" Height="30" SelectionChanged="ChangeLanguage_SelectionChanged">
                             <ComboBoxItem Content="简体中文"/>
                             <ComboBoxItem Content="English"/>
                         </hc:ComboBox>

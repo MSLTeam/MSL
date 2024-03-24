@@ -1,5 +1,4 @@
 ﻿using HandyControl.Controls;
-using HandyControl.Properties.Langs;
 using HandyControl.Themes;
 using Microsoft.Win32;
 using MSL.controls;
@@ -34,69 +33,7 @@ namespace MSL.pages
         {
             InitializeComponent();
         }
-        private void mulitDownthread_Click(object sender, RoutedEventArgs e)
-        {
-            DownloadDialog.downloadthread = int.Parse(downthreadCount.Text);
-        }
-        private async void setdefault_Click(object sender, RoutedEventArgs e)
-        {
-            bool dialogRet = await Shows.ShowMsgDialogAsync(Window.GetWindow(this), "恢复默认设置会清除MSL文件夹内的所有文件，请您谨慎选择！", "警告", true);
-            if (dialogRet)
-            {
-                try
-                {
-                    Directory.Delete(@"MSL", true);
-                }
-                catch
-                {
-                }
-                Process.Start(Application.ResourceAssembly.Location);
-                Process.GetCurrentProcess().Kill();
-            }
-        }
-        private void notifyIconbtn_Click(object sender, RoutedEventArgs e)
-        {
-            if (notifyIconbtn.Content.ToString() == "托盘图标:打开")
-            {
-                notifyIconbtn.Content = "托盘图标:关闭";
-                C_NotifyIcon();
-                try
-                {
-                    string jsonString = File.ReadAllText(@"MSL\config.json", System.Text.Encoding.UTF8);
-                    JObject jobject = JObject.Parse(jsonString);
-                    jobject["notifyIcon"] = false;
-                    string convertString = Convert.ToString(jobject);
-                    File.WriteAllText(@"MSL\config.json", convertString, System.Text.Encoding.UTF8);
-                    Growl.Success("关闭成功！");
-                    return;
-                }
-                catch
-                {
-                    Growl.Error("关闭失败！");
-                    return;
-                }
-            }
-            else
-            {
-                notifyIconbtn.Content = "托盘图标:打开";
-                C_NotifyIcon();
-                try
-                {
-                    string jsonString = File.ReadAllText(@"MSL\config.json", System.Text.Encoding.UTF8);
-                    JObject jobject = JObject.Parse(jsonString);
-                    jobject["notifyIcon"] = true;
-                    string convertString = Convert.ToString(jobject);
-                    File.WriteAllText(@"MSL\config.json", convertString, System.Text.Encoding.UTF8);
-                    Growl.Success("打开成功！");
-                    return;
-                }
-                catch
-                {
-                    Growl.Error("打开失败！");
-                    return;
-                }
-            }
-        }
+
         private void Page_Loaded(object sender, RoutedEventArgs e)
         {
             try
@@ -141,6 +78,20 @@ namespace MSL.pages
                 {
                     autoSetTheme.IsChecked = false;
                     darkTheme.IsEnabled = true;
+                }
+                if (jsonObject["lang"] != null)
+                {
+                    int langCombo = 0;
+                    switch (jsonObject["lang"].ToString())
+                    {
+                        case "zh-CN":
+                            langCombo = 0;
+                            break;
+                        case "en-US":
+                            langCombo = 1;
+                            break;
+                    }
+                    ChangeLanguage.SelectedIndex = langCombo;
                 }
                 if (jsonObject["skin"] != null)
                 {
@@ -223,6 +174,72 @@ namespace MSL.pages
             catch
             {
                 Growl.Error("加载配置时发生错误！此错误不影响使用，您可继续使用或将其反馈给作者！");
+            }
+        }
+
+        private void mulitDownthread_Click(object sender, RoutedEventArgs e)
+        {
+            DownloadDialog.downloadthread = int.Parse(downthreadCount.Text);
+        }
+
+        private async void setdefault_Click(object sender, RoutedEventArgs e)
+        {
+            bool dialogRet = await Shows.ShowMsgDialogAsync(Window.GetWindow(this), "恢复默认设置会清除MSL文件夹内的所有文件，请您谨慎选择！", "警告", true);
+            if (dialogRet)
+            {
+                try
+                {
+                    Directory.Delete(@"MSL", true);
+                }
+                catch
+                {
+                }
+                Process.Start(Application.ResourceAssembly.Location);
+                Process.GetCurrentProcess().Kill();
+            }
+        }
+
+        private void notifyIconbtn_Click(object sender, RoutedEventArgs e)
+        {
+            if (notifyIconbtn.Content.ToString() == "托盘图标:打开")
+            {
+                notifyIconbtn.Content = "托盘图标:关闭";
+                C_NotifyIcon();
+                try
+                {
+                    string jsonString = File.ReadAllText(@"MSL\config.json", System.Text.Encoding.UTF8);
+                    JObject jobject = JObject.Parse(jsonString);
+                    jobject["notifyIcon"] = false;
+                    string convertString = Convert.ToString(jobject);
+                    File.WriteAllText(@"MSL\config.json", convertString, System.Text.Encoding.UTF8);
+                    Growl.Success("关闭成功！");
+                    return;
+                }
+                catch
+                {
+                    Growl.Error("关闭失败！");
+                    return;
+                }
+            }
+            else
+            {
+                notifyIconbtn.Content = "托盘图标:打开";
+                C_NotifyIcon();
+                try
+                {
+                    string jsonString = File.ReadAllText(@"MSL\config.json", System.Text.Encoding.UTF8);
+                    JObject jobject = JObject.Parse(jsonString);
+                    jobject["notifyIcon"] = true;
+                    string convertString = Convert.ToString(jobject);
+                    File.WriteAllText(@"MSL\config.json", convertString, System.Text.Encoding.UTF8);
+                    Growl.Success("打开成功！");
+                    return;
+                }
+                catch
+                {
+                    Growl.Error("打开失败！");
+                    return;
+                }
             }
         }
 
@@ -739,17 +756,23 @@ namespace MSL.pages
             AutoStartServers_ItemsChanged();
         }
 
-        private void changeLanguage_SelectionChanged(object sender, System.Windows.Controls.SelectionChangedEventArgs e)
+        private void ChangeLanguage_SelectionChanged(object sender, System.Windows.Controls.SelectionChangedEventArgs e)
         {
-            switch (changeLanguage.SelectedIndex)
+            string lang = "";
+            switch (ChangeLanguage.SelectedIndex)
             {
                 case 0:
-                    LanguageManager.Instance.ChangeLanguage(new CultureInfo(""));
+                    lang = "zh-CN";
                     break;
                 case 1:
-                    LanguageManager.Instance.ChangeLanguage(new CultureInfo("en-US"));
+                    lang = "en-US";
                     break;
             }
+            LanguageManager.Instance.ChangeLanguage(new CultureInfo(lang));
+            JObject jobject = JObject.Parse(File.ReadAllText("MSL\\config.json", Encoding.UTF8));
+            jobject["lang"] = lang;
+            string convertString = Convert.ToString(jobject);
+            File.WriteAllText("MSL\\config.json", convertString, Encoding.UTF8);
         }
     }
 }
