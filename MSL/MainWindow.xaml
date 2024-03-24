@@ -4,7 +4,7 @@
         xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
         xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
         xmlns:hc="https://handyorg.github.io/handycontrol"
-        xmlns:langs="clr-namespace:HandyControl.Properties.Langs;assembly=HandyControl"
+        xmlns:langs="clr-namespace:MSL.i18n"
         xmlns:local="clr-namespace:MSL"
         x:Class="MSL.MainWindow"
         mc:Ignorable="d" 

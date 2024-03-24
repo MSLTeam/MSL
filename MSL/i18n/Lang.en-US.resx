@@ -117,52 +117,49 @@
   <resheader name="writer">
     <value>System.Resources.ResXResourceWriter, System.Windows.Forms, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089</value>
   </resheader>
-  <data name="MainWindow_GrowlMsg_LatestVersion" xml:space="preserve">
-    <value>您使用的开服器已是最新版本！</value>
-  </data>
   <data name="MainWindow_Menu_About" xml:space="preserve">
-    <value>关于</value>
+    <value>About</value>
   </data>
   <data name="MainWindow_Menu_Frpc" xml:space="preserve">
-    <value>映射</value>
+    <value>Frpc</value>
   </data>
   <data name="MainWindow_Menu_Home" xml:space="preserve">
-    <value>主页</value>
+    <value>Home</value>
   </data>
   <data name="MainWindow_Menu_OnlinePlay" xml:space="preserve">
-    <value>联机</value>
+    <value>P2P</value>
   </data>
   <data name="MainWindow_Menu_ServerList" xml:space="preserve">
-    <value>服务器</value>
+    <value>Servers</value>
   </data>
   <data name="MainWindow_Menu_Setting" xml:space="preserve">
-    <value>设置</value>
+    <value>Settings</value>
   </data>
   <data name="Pages_Home_LaunchServer" xml:space="preserve">
-    <value>开启服务器</value>
+    <value>Launch Server</value>
   </data>
   <data name="Pages_Home_Notice" xml:space="preserve">
-    <value>公告：</value>
+    <value>Notice:</value>
   </data>
   <data name="Pages_Home_P2PPlay" xml:space="preserve">
-    <value>点对点联机</value>
+    <value>P2P Play</value>
   </data>
   <data name="Pages_Home_Recommendations" xml:space="preserve">
-    <value>为您推荐：</value>
+    <value>Recommendations:</value>
   </data>
   <data name="Pages_OnlinePage_Dialog_Tips" xml:space="preserve">
-    <value>注意：此功能目前不稳定，无法穿透所有类型的NAT，若联机失败，请尝试开服务器并使用内网映射联机！\n该功能可能需要正版账户，若无法联机，请从网络上寻找解决方法或尝试开服务器并使用内网映射联机！</value>
+    <value>Attention: This feature is currently unstable and cannot penetrate all types of NAT. If online fails, please try opening the server and using internal network mapping to go online! \n This feature may require a genuine account. If unable to connect, please find a solution on the network or try opening the server and using internal network mapping to connect!</value>
   </data>
   <data name="Pages_ServerList_Do" xml:space="preserve">
-    <value>操作</value>
+    <value>Control</value>
   </data>
   <data name="Pages_ServerList_ServerName" xml:space="preserve">
-    <value>服务器名称</value>
+    <value>Name</value>
   </data>
   <data name="Pages_ServerList_Status" xml:space="preserve">
-    <value>服务器状态</value>
+    <value>Server Status</value>
   </data>
   <data name="Pages_ServerList_Title" xml:space="preserve">
-    <value>服务器列表（双击可快捷启动服务器）：</value>
+    <value>Server List (Double-click to launch a server):</value>
   </data>
 </root>

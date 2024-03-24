@@ -33,6 +33,7 @@ namespace MSL.i18n
         {
             CultureInfo.CurrentCulture = cultureInfo;
             CultureInfo.CurrentUICulture = cultureInfo;
+            HandyControl.Tools.ConfigHelper.Instance.SetLang(cultureInfo.Name);
             PropertyChanged?.Invoke(this, new PropertyChangedEventArgs("Item[]"));
         }
     }

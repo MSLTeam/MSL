@@ -1,7 +1,7 @@
 ﻿using HandyControl.Controls;
-using HandyControl.Properties.Langs;
 using HandyControl.Themes;
 using MSL.controls;
+using MSL.i18n;
 using MSL.pages;
 using Newtonsoft.Json;
 using Newtonsoft.Json.Linq;
