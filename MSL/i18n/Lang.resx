@@ -117,6 +117,12 @@
   <resheader name="writer">
     <value>System.Resources.ResXResourceWriter, System.Windows.Forms, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089</value>
   </resheader>
+  <data name="Dialog_Cancel" xml:space="preserve">
+    <value>取消</value>
+  </data>
+  <data name="Dialog_Warning" xml:space="preserve">
+    <value>警告</value>
+  </data>
   <data name="MainWindow_GrowlMsg_LatestVersion" xml:space="preserve">
     <value>您使用的开服器已是最新版本！</value>
   </data>
@@ -138,6 +144,38 @@
   <data name="MainWindow_Menu_Setting" xml:space="preserve">
     <value>设置</value>
   </data>
+  <data name="Pages_About_AboutMSL" xml:space="preserve">
+    <value>关于开服器</value>
+  </data>
+  <data name="Pages_About_MainContent" xml:space="preserve">
+    <value>Minecraft Server Launcher(MSL) Copyright © 2021-2024 By MSLTeam
+本软件和Microsoft、Mojang Studio无任何隶属关系
+开服器的正常运行离不开下面的下载源/站点，特此感谢：
+CurseForge —— 模组、模组整合包下载源API
+BMCLAPI —— Forge服务端下载源
+以及其他服务端官方和第三方下载源……
+
+同时感谢所有使用MSL的用户，以及给MSL提出过改进建议和Bug的用户
+感谢各位的支持与信任！</value>
+  </data>
+  <data name="Pages_About_OpenSource" xml:space="preserve">
+    <value>开源（Github）</value>
+  </data>
+  <data name="Pages_About_OpenWebsite" xml:space="preserve">
+    <value>打开网站</value>
+  </data>
+  <data name="Pages_About_Package" xml:space="preserve">
+    <value>依赖包</value>
+  </data>
+  <data name="Pages_About_Sponsor" xml:space="preserve">
+    <value>赞助</value>
+  </data>
+  <data name="Pages_About_SponsorText" xml:space="preserve">
+    <value>软件制作不易，有能力可以赞助下哦~</value>
+  </data>
+  <data name="Pages_About_Website" xml:space="preserve">
+    <value>官方网站/文档：https://www.mslmc.cn/</value>
+  </data>
   <data name="Pages_Home_LaunchServer" xml:space="preserve">
     <value>开启服务器</value>
   </data>
@@ -151,18 +189,44 @@
     <value>为您推荐：</value>
   </data>
   <data name="Pages_OnlinePage_Dialog_Tips" xml:space="preserve">
-    <value>注意：此功能目前不稳定，无法穿透所有类型的NAT，若联机失败，请尝试开服务器并使用内网映射联机！\n该功能可能需要正版账户，若无法联机，请从网络上寻找解决方法或尝试开服务器并使用内网映射联机！</value>
+    <value>注意：此功能目前不稳定，无法穿透所有类型的NAT，若联机失败，请尝试开服务器并使用内网映射联机！
+该功能可能需要正版账户，若无法联机，请从网络上寻找解决方法或尝试开服务器并使用内网映射联机！</value>
+  </data>
+  <data name="Pages_ServerList_Delete" xml:space="preserve">
+    <value>删除所选服务器</value>
+  </data>
+  <data name="Pages_ServerList_Dialog_FirstUse" xml:space="preserve">
+    <value>开服器检测到配置文件出现了错误，是第一次使用吗？
+是否创建一个新的服务器？</value>
   </data>
   <data name="Pages_ServerList_Do" xml:space="preserve">
     <value>操作</value>
   </data>
+  <data name="Pages_ServerList_LaunchServer" xml:space="preserve">
+    <value>开启服务器</value>
+  </data>
+  <data name="Pages_ServerList_ManageModsOrPlugins" xml:space="preserve">
+    <value>管理服务器模组/插件</value>
+  </data>
+  <data name="Pages_ServerList_OpenDir" xml:space="preserve">
+    <value>打开服务器文件夹</value>
+  </data>
+  <data name="Pages_ServerList_Refresh" xml:space="preserve">
+    <value>刷新</value>
+  </data>
   <data name="Pages_ServerList_ServerName" xml:space="preserve">
     <value>服务器名称</value>
+  </data>
+  <data name="Pages_ServerList_Setting" xml:space="preserve">
+    <value>更改服务器设置</value>
   </data>
   <data name="Pages_ServerList_Status" xml:space="preserve">
     <value>服务器状态</value>
   </data>
   <data name="Pages_ServerList_Title" xml:space="preserve">
     <value>服务器列表（双击可快捷启动服务器）：</value>
+  </data>
+  <data name="Pages_ServerList_UseCMDLaunch" xml:space="preserve">
+    <value>使用命令行开服</value>
   </data>
 </root>

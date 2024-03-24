@@ -61,6 +61,24 @@ namespace MSL.i18n {
         }
         
         /// <summary>
+        ///   查找类似 取消 的本地化字符串。
+        /// </summary>
+        internal static string Dialog_Cancel {
+            get {
+                return ResourceManager.GetString("Dialog_Cancel", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   查找类似 警告 的本地化字符串。
+        /// </summary>
+        internal static string Dialog_Warning {
+            get {
+                return ResourceManager.GetString("Dialog_Warning", resourceCulture);
+            }
+        }
+        
+        /// <summary>
         ///   查找类似 您使用的开服器已是最新版本！ 的本地化字符串。
         /// </summary>
         internal static string MainWindow_GrowlMsg_LatestVersion {
@@ -124,6 +142,86 @@ namespace MSL.i18n {
         }
         
         /// <summary>
+        ///   查找类似 关于开服器 的本地化字符串。
+        /// </summary>
+        internal static string Pages_About_AboutMSL {
+            get {
+                return ResourceManager.GetString("Pages_About_AboutMSL", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   查找类似 Minecraft Server Launcher(MSL) Copyright © 2021-2024 By MSLTeam
+        ///本软件和Microsoft、Mojang Studio无任何隶属关系
+        ///开服器的正常运行离不开下面的下载源/站点，特此感谢：
+        ///CurseForge —— 模组、模组整合包下载源API
+        ///BMCLAPI —— Forge服务端下载源
+        ///以及其他服务端官方和第三方下载源……
+        ///
+        ///同时感谢所有使用MSL的用户，以及给MSL提出过改进建议和Bug的用户
+        ///感谢各位的支持与信任！ 的本地化字符串。
+        /// </summary>
+        internal static string Pages_About_MainContent {
+            get {
+                return ResourceManager.GetString("Pages_About_MainContent", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   查找类似 开源（Github） 的本地化字符串。
+        /// </summary>
+        internal static string Pages_About_OpenSource {
+            get {
+                return ResourceManager.GetString("Pages_About_OpenSource", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   查找类似 打开网站 的本地化字符串。
+        /// </summary>
+        internal static string Pages_About_OpenWebsite {
+            get {
+                return ResourceManager.GetString("Pages_About_OpenWebsite", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   查找类似 依赖包 的本地化字符串。
+        /// </summary>
+        internal static string Pages_About_Package {
+            get {
+                return ResourceManager.GetString("Pages_About_Package", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   查找类似 赞助 的本地化字符串。
+        /// </summary>
+        internal static string Pages_About_Sponsor {
+            get {
+                return ResourceManager.GetString("Pages_About_Sponsor", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   查找类似 软件制作不易，有能力可以赞助下哦~ 的本地化字符串。
+        /// </summary>
+        internal static string Pages_About_SponsorText {
+            get {
+                return ResourceManager.GetString("Pages_About_SponsorText", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   查找类似 官方网站/文档：https://www.mslmc.cn/ 的本地化字符串。
+        /// </summary>
+        internal static string Pages_About_Website {
+            get {
+                return ResourceManager.GetString("Pages_About_Website", resourceCulture);
+            }
+        }
+        
+        /// <summary>
         ///   查找类似 开启服务器 的本地化字符串。
         /// </summary>
         internal static string Pages_Home_LaunchServer {
@@ -160,11 +258,31 @@ namespace MSL.i18n {
         }
         
         /// <summary>
-        ///   查找类似 注意：此功能目前不稳定，无法穿透所有类型的NAT，若联机失败，请尝试开服务器并使用内网映射联机！\n该功能可能需要正版账户，若无法联机，请从网络上寻找解决方法或尝试开服务器并使用内网映射联机！ 的本地化字符串。
+        ///   查找类似 注意：此功能目前不稳定，无法穿透所有类型的NAT，若联机失败，请尝试开服务器并使用内网映射联机！
+        ///该功能可能需要正版账户，若无法联机，请从网络上寻找解决方法或尝试开服务器并使用内网映射联机！ 的本地化字符串。
         /// </summary>
         internal static string Pages_OnlinePage_Dialog_Tips {
             get {
                 return ResourceManager.GetString("Pages_OnlinePage_Dialog_Tips", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   查找类似 删除所选服务器 的本地化字符串。
+        /// </summary>
+        internal static string Pages_ServerList_Delete {
+            get {
+                return ResourceManager.GetString("Pages_ServerList_Delete", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   查找类似 开服器检测到配置文件出现了错误，是第一次使用吗？
+        ///是否创建一个新的服务器？ 的本地化字符串。
+        /// </summary>
+        internal static string Pages_ServerList_Dialog_FirstUse {
+            get {
+                return ResourceManager.GetString("Pages_ServerList_Dialog_FirstUse", resourceCulture);
             }
         }
         
@@ -178,11 +296,56 @@ namespace MSL.i18n {
         }
         
         /// <summary>
+        ///   查找类似 开启服务器 的本地化字符串。
+        /// </summary>
+        internal static string Pages_ServerList_LaunchServer {
+            get {
+                return ResourceManager.GetString("Pages_ServerList_LaunchServer", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   查找类似 管理服务器模组/插件 的本地化字符串。
+        /// </summary>
+        internal static string Pages_ServerList_ManageModsOrPlugins {
+            get {
+                return ResourceManager.GetString("Pages_ServerList_ManageModsOrPlugins", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   查找类似 打开服务器文件夹 的本地化字符串。
+        /// </summary>
+        internal static string Pages_ServerList_OpenDir {
+            get {
+                return ResourceManager.GetString("Pages_ServerList_OpenDir", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   查找类似 刷新 的本地化字符串。
+        /// </summary>
+        internal static string Pages_ServerList_Refresh {
+            get {
+                return ResourceManager.GetString("Pages_ServerList_Refresh", resourceCulture);
+            }
+        }
+        
+        /// <summary>
         ///   查找类似 服务器名称 的本地化字符串。
         /// </summary>
         internal static string Pages_ServerList_ServerName {
             get {
                 return ResourceManager.GetString("Pages_ServerList_ServerName", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   查找类似 更改服务器设置 的本地化字符串。
+        /// </summary>
+        internal static string Pages_ServerList_Setting {
+            get {
+                return ResourceManager.GetString("Pages_ServerList_Setting", resourceCulture);
             }
         }
         
@@ -201,6 +364,15 @@ namespace MSL.i18n {
         internal static string Pages_ServerList_Title {
             get {
                 return ResourceManager.GetString("Pages_ServerList_Title", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   查找类似 使用命令行开服 的本地化字符串。
+        /// </summary>
+        internal static string Pages_ServerList_UseCMDLaunch {
+            get {
+                return ResourceManager.GetString("Pages_ServerList_UseCMDLaunch", resourceCulture);
             }
         }
     }
