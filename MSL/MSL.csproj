@@ -89,10 +89,6 @@
     </AssemblyOriginatorKeyFile>
   </PropertyGroup>
   <ItemGroup>
-    <Reference Include="HandyControl, Version=3.5.2.0, Culture=neutral, PublicKeyToken=45be8712787a1e5b, processorArchitecture=MSIL">
-      <SpecificVersion>False</SpecificVersion>
-      <HintPath>controls\HandyControl.dll</HintPath>
-    </Reference>
     <Reference Include="Microsoft.VisualBasic" />
     <Reference Include="netstandard" />
     <Reference Include="System" />
@@ -382,6 +378,12 @@
   </ItemGroup>
   <ItemGroup>
     <Content Include="controls\HandyControl.dll" />
+  </ItemGroup>
+  <ItemGroup>
+    <ProjectReference Include="..\..\Repos\HandyControls\src\Net_GE45\HandyControl_Net_GE45\HandyControl_Net_GE45.csproj">
+      <Project>{f7fcdc09-a0db-4af8-8871-046a6d72e2fc}</Project>
+      <Name>HandyControl_Net_GE45</Name>
+    </ProjectReference>
   </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
 </Project>

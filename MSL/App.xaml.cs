@@ -38,6 +38,7 @@ namespace MSL
                     Environment.Exit(0);
                 }
             }
+            HandyControl.Tools.ConfigHelper.Instance.SetLang("fa");
             base.OnStartup(e);
         }
 
