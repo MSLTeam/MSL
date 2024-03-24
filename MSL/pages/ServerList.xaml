@@ -4,7 +4,7 @@
       xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006" 
       xmlns:d="http://schemas.microsoft.com/expression/blend/2008" 
       xmlns:hc="https://handyorg.github.io/handycontrol"
-      xmlns:controls="clr-namespace:MSL.controls" xmlns:i18n="clr-namespace:MSL.i18n"
+      xmlns:controls="clr-namespace:MSL.controls" xmlns:langs="clr-namespace:HandyControl.Properties.Langs;assembly=HandyControl"
       xmlns:local="clr-namespace:MSL.pages"
       mc:Ignorable="d" d:DesignHeight="460" d:DesignWidth="750"
       Title="ServerList" Loaded="Page_Loaded">
@@ -21,7 +21,7 @@
     </Page.Resources>
     <Border Style="{StaticResource MagicBorder}" VerticalAlignment="Stretch" Margin="10,10,10,10">
         <Grid>
-            <Label Style="{StaticResource BorderTitle}" Content="{Binding [Pages_ServerList_Title], Source={x:Static i18n:LanguageManager.Instance}}"/>
+            <Label Style="{StaticResource BorderTitle}" Content="{Binding [Pages_ServerList_Title], Source={x:Static langs:LanguageManager.Instance}}"/>
             <Border Margin="0,35,0,0" CornerRadius="10" BorderThickness="0" Background="{DynamicResource BackgroundBrush}">
                 <ListView x:Name="serverList" hc:Empty.ShowEmpty="true" MouseDoubleClick="serverList_MouseDoubleClick" FontSize="16" SelectionMode="Single" SelectionChanged="serverList_SelectionChanged" Background="{x:Null}" BorderBrush="{x:Null}">
                     <ListView.ContextMenu>
@@ -37,7 +37,7 @@
                     </ListView.ContextMenu>
                     <ListView.View>
                         <GridView>
-                            <GridViewColumn Width="230" Header="{Binding [Pages_ServerList_ServerName], Source={x:Static i18n:LanguageManager.Instance}}">
+                            <GridViewColumn Width="230" Header="{Binding [Pages_ServerList_ServerName], Source={x:Static langs:LanguageManager.Instance}}">
                                 <GridViewColumn.CellTemplate>
                                     <DataTemplate>
                                         <Grid>
@@ -47,7 +47,7 @@
                                     </DataTemplate>
                                 </GridViewColumn.CellTemplate>
                             </GridViewColumn>
-                            <GridViewColumn Width="230" Header="{Binding [Pages_ServerList_Status], Source={x:Static i18n:LanguageManager.Instance}}">
+                            <GridViewColumn Width="230" Header="{Binding [Pages_ServerList_Status], Source={x:Static langs:LanguageManager.Instance}}">
                                 <GridViewColumn.CellTemplate>
                                     <DataTemplate>
                                         <Grid>
@@ -56,7 +56,7 @@
                                     </DataTemplate>
                                 </GridViewColumn.CellTemplate>
                             </GridViewColumn>
-                            <GridViewColumn Width="150" Header="{Binding [Pages_ServerList_Do], Source={x:Static i18n:LanguageManager.Instance}}">
+                            <GridViewColumn Width="150" Header="{Binding [Pages_ServerList_Do], Source={x:Static langs:LanguageManager.Instance}}">
                                 <GridViewColumn.CellTemplate>
                                     <DataTemplate>
                                         <StackPanel Orientation="Horizontal">

@@ -488,7 +488,7 @@ namespace MSL.controls
                     Log_in(logTemp);
                     logTemp = "";
                 }
-                logTemp = logTemp +  e.Data + "\n";
+                logTemp = logTemp + e.Data + "\n";
                 counter++;
             }
         }

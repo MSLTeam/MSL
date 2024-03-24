@@ -1875,7 +1875,7 @@ namespace MSL
 
         private string[] ServerBaseConfig()
         {
-            string[] strings=new string[9];
+            string[] strings = new string[9];
             string config = File.ReadAllText(Rserverbase + @"\server.properties");
             if (config.Contains("\r"))
             {
@@ -1927,15 +1927,15 @@ namespace MSL
             {
                 string[] strings = ServerBaseConfig();
                 string config = File.ReadAllText(Rserverbase + @"\server.properties");
-                config = config.Replace("online-mode="+ strings[0], "online-mode=" + onlineModeText.Text);
-                config = config.Replace("gamemode="+ strings[1], "gamemode=" + gameModeText.Text);
-                config = config.Replace("difficulty="+ strings[2], "difficulty=" + gameDifficultyText.Text);
-                config = config.Replace("max-players="+ strings[3], "max-players=" + gamePlayerText.Text);
-                config = config.Replace("server-port="+ strings[4], "server-port=" + gamePortText.Text);
-                config = config.Replace("enable-command-block="+ strings[5], "enable-command-block=" + commandBlockText.Text);
-                config = config.Replace("view-distance="+ strings[6], "view-distance=" + viewDistanceText.Text);
-                config = config.Replace("pvp="+ strings[7], "pvp=" + gamePvpText.Text);
-                config = config.Replace("level-name="+ strings[8], "level-name=" + gameWorldText.Text);
+                config = config.Replace("online-mode=" + strings[0], "online-mode=" + onlineModeText.Text);
+                config = config.Replace("gamemode=" + strings[1], "gamemode=" + gameModeText.Text);
+                config = config.Replace("difficulty=" + strings[2], "difficulty=" + gameDifficultyText.Text);
+                config = config.Replace("max-players=" + strings[3], "max-players=" + gamePlayerText.Text);
+                config = config.Replace("server-port=" + strings[4], "server-port=" + gamePortText.Text);
+                config = config.Replace("enable-command-block=" + strings[5], "enable-command-block=" + commandBlockText.Text);
+                config = config.Replace("view-distance=" + strings[6], "view-distance=" + viewDistanceText.Text);
+                config = config.Replace("pvp=" + strings[7], "pvp=" + gamePvpText.Text);
+                config = config.Replace("level-name=" + strings[8], "level-name=" + gameWorldText.Text);
                 try
                 {
                     File.WriteAllText(Rserverbase + @"\server.properties", config);
@@ -3224,7 +3224,7 @@ namespace MSL
         }
 
         #region 上传日志到mclo.gs
-        
+
         private void shareLog_Click(object sender, RoutedEventArgs e)
         {
             TextRange textRange = new TextRange(outlog.Document.Blocks.FirstBlock.ContentStart, outlog.Document.Blocks.LastBlock.ContentEnd);
@@ -3278,7 +3278,7 @@ namespace MSL
                 Growl.Error("请求失败: " + jsonResponse.error);
             }
         }
-        
+
         //上传Forge安装日志
         private void forgeInstallLogUpload_Click(object sender, RoutedEventArgs e)
         {

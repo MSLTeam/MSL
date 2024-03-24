@@ -133,12 +133,6 @@
     <Compile Include="controls\dialogs\TextDialog.xaml.cs">
       <DependentUpon>TextDialog.xaml</DependentUpon>
     </Compile>
-    <Compile Include="i18n\LangManage.cs" />
-    <Compile Include="i18n\Langs.Designer.cs">
-      <AutoGen>True</AutoGen>
-      <DesignTime>True</DesignTime>
-      <DependentUpon>Langs.resx</DependentUpon>
-    </Compile>
     <Compile Include="pages\CreateServer.xaml.cs">
       <DependentUpon>CreateServer.xaml</DependentUpon>
     </Compile>
@@ -303,11 +297,6 @@
       <DependentUpon>Settings.settings</DependentUpon>
       <DesignTimeSharedInput>True</DesignTimeSharedInput>
     </Compile>
-    <EmbeddedResource Include="i18n\Langs.en-US.resx" />
-    <EmbeddedResource Include="i18n\Langs.resx">
-      <Generator>PublicResXFileCodeGenerator</Generator>
-      <LastGenOutput>Langs.Designer.cs</LastGenOutput>
-    </EmbeddedResource>
     <EmbeddedResource Include="Properties\Resources.resx">
       <Generator>ResXFileCodeGenerator</Generator>
       <LastGenOutput>Resources.Designer.cs</LastGenOutput>

@@ -47,5 +47,9 @@ Global
 	EndGlobalSection
 	GlobalSection(SharedMSBuildProjectFiles) = preSolution
 		..\Repos\HandyControls\src\Shared\HandyControl_Shared\HandyControl_Shared.projitems*{aac11083-faca-405d-9197-5c1212d65656}*SharedItemsImports = 13
+		..\Repos\HandyControls\src\Shared\HandyControl_Shared\HandyControl_Shared.projitems*{f7fcdc09-a0db-4af8-8871-046a6d72e2fc}*SharedItemsImports = 5
+		..\Repos\HandyControls\src\Shared\Microsoft.Expression.Drawing\Microsoft.Expression.Drawing.projitems*{f7fcdc09-a0db-4af8-8871-046a6d72e2fc}*SharedItemsImports = 5
+		..\Repos\HandyControls\src\Shared\Microsoft.Expression.Interactions\Microsoft.Expression.Interactions.projitems*{f7fcdc09-a0db-4af8-8871-046a6d72e2fc}*SharedItemsImports = 5
+		..\Repos\HandyControls\src\Shared\System.Windows.Interactivity\System.Windows.Interactivity.projitems*{f7fcdc09-a0db-4af8-8871-046a6d72e2fc}*SharedItemsImports = 5
 	EndGlobalSection
 EndGlobal

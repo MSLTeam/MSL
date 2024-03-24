@@ -1,8 +1,8 @@
 ﻿using HandyControl.Controls;
+using HandyControl.Properties.Langs;
 using HandyControl.Themes;
 using Microsoft.Win32;
 using MSL.controls;
-using MSL.i18n;
 using Newtonsoft.Json.Linq;
 using System;
 using System.Collections.Generic;
@@ -744,9 +744,11 @@ namespace MSL.pages
             {
                 case 0:
                     LanguageManager.Instance.ChangeLanguage(new CultureInfo(""));
+                    HandyControl.Tools.ConfigHelper.Instance.SetLang("zh-CN");
                     break;
                 case 1:
                     LanguageManager.Instance.ChangeLanguage(new CultureInfo("en-US"));
+                    HandyControl.Tools.ConfigHelper.Instance.SetLang("en-US");
                     break;
             }
         }

@@ -4,6 +4,7 @@
         xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
         xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
         xmlns:hc="https://handyorg.github.io/handycontrol"
+        xmlns:langs="clr-namespace:HandyControl.Properties.Langs;assembly=HandyControl"
         xmlns:local="clr-namespace:MSL"
         x:Class="MSL.MainWindow"
         mc:Ignorable="d" 
@@ -11,7 +12,7 @@
         MinWidth="800" MinHeight="500" 
         Background="{DynamicResource BackgroundBrush}"
         NonClientAreaBackground="{DynamicResource PrimaryBrush}"
-        NonClientAreaHeight="35" xmlns:i18n="clr-namespace:MSL.i18n"
+        NonClientAreaHeight="35"
         CloseButtonForeground="White" OtherButtonForeground="White" OtherButtonHoverForeground="White"
         ShowTitle="False" Icon="icon.ico"
         WindowStartupLocation="CenterScreen" Loaded="Window_Loaded" Closing="Window_Closing"  Closed="Window_Closed"
@@ -23,57 +24,61 @@
         </StackPanel>
     </hc:Window.NonClientAreaContent>
     <Grid x:Name="MainGrid">
-        <Border x:Name="SideMenuBorder" Background="{DynamicResource SideMenuBrush}" BorderBrush="{DynamicResource BorderBrush}" BorderThickness="0,0,1,0" HorizontalAlignment="Left">
+        <Grid.ColumnDefinitions>
+            <ColumnDefinition Width="Auto"/>
+            <ColumnDefinition Width="*"/>
+        </Grid.ColumnDefinitions>
+        <Border Grid.Column="0" x:Name="SideMenuBorder" Background="{DynamicResource SideMenuBrush}" BorderBrush="{DynamicResource BorderBrush}" BorderThickness="0,0,1,0" HorizontalAlignment="Left">
             <StackPanel>
-                <Button x:Name="sideMenuContextOpen" HorizontalAlignment="Left" VerticalAlignment="Top" Width="50" Height="42" BorderBrush="{x:Null}" Click="sideMenuContextOpen_Click">
+                <Button x:Name="sideMenuContextOpen" HorizontalAlignment="Stretch" VerticalAlignment="Top" Height="42" BorderBrush="{x:Null}" Click="sideMenuContextOpen_Click">
                     <Button.Background>
                         <ImageBrush ImageSource="pack://application:,,,/images/sidemenuextend.png" Stretch="Uniform"/>
                     </Button.Background>
                 </Button>
-                <ListBox x:Name="SideMenu" SelectionMode="Single" Width="50" HorizontalAlignment="Left" SelectionChanged="SideMenu_SelectionChanged" Background="{x:Null}" BorderBrush="{x:Null}" Padding="2,0,2,0" >
+                <ListBox x:Name="SideMenu" Width="50" SelectionMode="Single" HorizontalAlignment="Stretch" SelectionChanged="SideMenu_SelectionChanged" Background="{x:Null}" BorderBrush="{x:Null}" Padding="2,0,2,0" >
                     <ListBoxItem Template="{StaticResource SideMenuTemplate}" Height="38" Margin="0,0,0,10" Foreground="{DynamicResource PrimaryTextBrush}">
                         <DockPanel >
                             <Image Source="pack://application:,,,/images/150px-Grass_Block_JE7_BE6.png" Width="22" Height="22"/>
-                            <TextBlock Text="{Binding [MainWindow_Menu_Home], Source={x:Static i18n:LanguageManager.Instance}}" VerticalAlignment="Center" Margin="8,0,0,0" FontSize="14" />
+                            <TextBlock Text="{Binding [MainWindow_Menu_Home], Source={x:Static langs:LanguageManager.Instance}}" VerticalAlignment="Center" Margin="8,0,0,0" FontSize="14" />
                         </DockPanel>
                     </ListBoxItem>
                     <ListBoxItem Template="{StaticResource SideMenuTemplate}" Height="38" Margin="0,0,0,10" Foreground="{DynamicResource PrimaryTextBrush}">
                         <DockPanel >
                             <Image Source="pack://application:,,,/images/150px-Enchanted_Book.png" Width="22" Height="22"/>
-                            <TextBlock Text="{Binding [MainWindow_Menu_ServerList], Source={x:Static i18n:LanguageManager.Instance}}" VerticalAlignment="Center" Margin="8,0,0,0" FontSize="14" />
+                            <TextBlock Text="{Binding [MainWindow_Menu_ServerList], Source={x:Static langs:LanguageManager.Instance}}" VerticalAlignment="Center" Margin="8,0,0,0" FontSize="14" />
                         </DockPanel>
                     </ListBoxItem>
                     <ListBoxItem Template="{StaticResource SideMenuTemplate}" Height="38" Margin="0,0,0,10" Foreground="{DynamicResource PrimaryTextBrush}">
                         <DockPanel >
                             <Image Source="pack://application:,,,/images/150px-Beacon.png" Width="22" Height="22"/>
-                            <TextBlock Text="{Binding [MainWindow_Menu_Frpc], Source={x:Static i18n:LanguageManager.Instance}}" VerticalAlignment="Center" Margin="8,0,0,0" FontSize="14" />
+                            <TextBlock Text="{Binding [MainWindow_Menu_Frpc], Source={x:Static langs:LanguageManager.Instance}}" VerticalAlignment="Center" Margin="8,0,0,0" FontSize="14" />
                         </DockPanel>
                     </ListBoxItem>
                     <ListBoxItem Template="{StaticResource SideMenuTemplate}" Height="38" Margin="0,0,0,10" Foreground="{DynamicResource PrimaryTextBrush}">
                         <DockPanel >
                             <Image Source="pack://application:,,,/images/150px-Impulse_Command_Block.png" Width="22" Height="22"/>
-                            <TextBlock Text="{Binding [MainWindow_Menu_OnlinePlay], Source={x:Static i18n:LanguageManager.Instance}}" VerticalAlignment="Center" Margin="8,0,0,0" FontSize="14" />
+                            <TextBlock Text="{Binding [MainWindow_Menu_OnlinePlay], Source={x:Static langs:LanguageManager.Instance}}" VerticalAlignment="Center" Margin="8,0,0,0" FontSize="14" />
                         </DockPanel>
                     </ListBoxItem>
                     <ListBoxItem Template="{StaticResource SideMenuTemplate}" Height="38" Margin="0,0,0,10" Foreground="{DynamicResource PrimaryTextBrush}">
                         <DockPanel >
                             <Image Source="pack://application:,,,/images/150px-Wooden_Pickaxe_JE3_BE3.png" Width="22" Height="22"/>
-                            <TextBlock Text="{Binding [MainWindow_Menu_Setting], Source={x:Static i18n:LanguageManager.Instance}}" VerticalAlignment="Center" Margin="8,0,0,0" FontSize="14" />
+                            <TextBlock Text="{Binding [MainWindow_Menu_Setting], Source={x:Static langs:LanguageManager.Instance}}" VerticalAlignment="Center" Margin="8,0,0,0" FontSize="14" />
                         </DockPanel>
                     </ListBoxItem>
                     <ListBoxItem Template="{StaticResource SideMenuTemplate}" Height="38" Foreground="{DynamicResource PrimaryTextBrush}">
                         <DockPanel >
                             <Image Source="pack://application:,,,/images/150px-Diamond_Revision_2.png" Width="22" Height="22"/>
-                            <TextBlock Text="{Binding [MainWindow_Menu_About], Source={x:Static i18n:LanguageManager.Instance}}" VerticalAlignment="Center" Margin="8,0,0,0" FontSize="14" />
+                            <TextBlock Text="{Binding [MainWindow_Menu_About], Source={x:Static langs:LanguageManager.Instance}}" VerticalAlignment="Center" Margin="8,0,0,0" FontSize="14" />
                         </DockPanel>
                     </ListBoxItem>
                 </ListBox>
             </StackPanel>
         </Border>
+        
+        <Frame Grid.Column="1" x:Name="frame" NavigationUIVisibility="Hidden" BorderBrush="{x:Null}"/>
 
-        <Frame Margin="50,0,0,0" x:Name="frame" NavigationUIVisibility="Hidden" BorderBrush="{x:Null}"/>
-
-        <ScrollViewer VerticalScrollBarVisibility="Hidden" HorizontalAlignment="Right" VerticalAlignment="Top">
+        <ScrollViewer Grid.Column="1" VerticalScrollBarVisibility="Hidden" HorizontalAlignment="Right" VerticalAlignment="Top">
             <StackPanel x:Name="GrowlPanel" hc:Growl.GrowlParent="True" VerticalAlignment="Top" Margin="0,10,10,10" />
         </ScrollViewer>
 

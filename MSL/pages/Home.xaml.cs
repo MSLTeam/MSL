@@ -1,10 +1,6 @@
-﻿using HandyControl.Properties.Langs;
-using HandyControl.Tools;
-using MSL.controls;
-using MSL.i18n;
+﻿using MSL.controls;
 using Newtonsoft.Json.Linq;
 using System;
-using System.Globalization;
 using System.IO;
 using System.Text;
 using System.Threading;

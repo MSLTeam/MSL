@@ -1,7 +1,7 @@
 ﻿using HandyControl.Controls;
+using HandyControl.Properties.Langs;
 using HandyControl.Themes;
 using MSL.controls;
-using MSL.i18n;
 using MSL.pages;
 using Newtonsoft.Json;
 using Newtonsoft.Json.Linq;
@@ -53,7 +53,7 @@ namespace MSL
 
         private async void Window_Loaded(object sender, RoutedEventArgs e)
         {
-            
+
             Topmost = true;
             Topmost = false;
             Focus();
@@ -141,27 +141,21 @@ namespace MSL
                     File.WriteAllText(@"MSL\config.json", convertString, Encoding.UTF8);
                     Dispatcher.Invoke(() =>
                     {
-                        sideMenuContextOpen.Width = 100;
-                        SideMenu.Width = 100;
-                        frame.Margin = new Thickness(100, 0, 0, 0);
+                        SideMenu.Width = double.NaN;
                     });
                 }
                 else if ((bool)jsonObject["sidemenuExpanded"] == true)
                 {
                     Dispatcher.Invoke(() =>
                     {
-                        sideMenuContextOpen.Width = 100;
-                        SideMenu.Width = 100;
-                        frame.Margin = new Thickness(100, 0, 0, 0);
+                        SideMenu.Width = double.NaN;
                     });
                 }
                 else
                 {
                     Dispatcher.Invoke(() =>
                     {
-                        sideMenuContextOpen.Width = 50;
                         SideMenu.Width = 50;
-                        frame.Margin = new Thickness(50, 0, 0, 0);
                     });
                 }
                 //Logger.LogInfo("读取侧栏配置成功！");
@@ -685,11 +679,10 @@ namespace MSL
 
         private void sideMenuContextOpen_Click(object sender, RoutedEventArgs e)
         {
-            if (sideMenuContextOpen.Width == 50)
+            if (SideMenu.Width == 50)
             {
-                sideMenuContextOpen.Width = 100;
-                SideMenu.Width = 100;
-                frame.Margin = new Thickness(100, 0, 0, 0);
+                SideMenu.Width = double.NaN;
+                //frame.Margin = new Thickness(100, 0, 0, 0);
                 string jsonString = File.ReadAllText(@"MSL\config.json", Encoding.UTF8);
                 JObject jobject = JObject.Parse(jsonString);
                 jobject["sidemenuExpanded"] = true;
@@ -698,9 +691,8 @@ namespace MSL
             }
             else
             {
-                sideMenuContextOpen.Width = 50;
                 SideMenu.Width = 50;
-                frame.Margin = new Thickness(50, 0, 0, 0);
+                //frame.Margin = new Thickness(50, 0, 0, 0);
                 string jsonString = File.ReadAllText(@"MSL\config.json", Encoding.UTF8);
                 JObject jobject = JObject.Parse(jsonString);
                 jobject["sidemenuExpanded"] = false;
