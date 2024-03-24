@@ -1,0 +1,3 @@
+[submodule "HandyControls"]
+	path = HandyControls
+	url = https://github.com/MSLTeam/HandyControls
