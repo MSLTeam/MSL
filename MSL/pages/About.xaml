@@ -3,7 +3,8 @@
       xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
       xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006" 
       xmlns:d="http://schemas.microsoft.com/expression/blend/2008" 
-      xmlns:hc="https://handyorg.github.io/handycontrol" xmlns:langs="clr-namespace:MSL.i18n"
+      xmlns:hc="https://handyorg.github.io/handycontrol"
+      xmlns:langs="clr-namespace:MSL.i18n"
       xmlns:local="clr-namespace:MSL.pages"
       mc:Ignorable="d" d:DesignHeight="460" d:DesignWidth="750"
       Title="About" Loaded="Page_Loaded">
@@ -38,50 +39,40 @@
             <Border Style="{StaticResource MagicBorder}">
                 <StackPanel>
                     <Label Content="{Binding [Pages_About_Package], Source={x:Static langs:LanguageManager.Instance}}" Style="{StaticResource BorderTitle}"/>
-                    <StackPanel Margin="0,10,0,0">
-                        <TextBlock Text="1.Fody" Margin="20,0,0,5" FontSize="16" VerticalAlignment="Top" HorizontalAlignment="Left" FontWeight="Bold" Foreground="{DynamicResource PrimaryTextBrush}"/>
-                        <TextBlock Text="Copyright (c) Simon Cropp.&#xA;Licensed under the MIT License." Margin="20,0,0,5" VerticalAlignment="Top" HorizontalAlignment="Left" Foreground="{DynamicResource PrimaryTextBrush}"/>
-                        <hc:Shield Subject="..." Status="{Binding [Pages_About_OpenWebsite], Source={x:Static langs:LanguageManager.Instance}}" Margin="0,-45,20,0" Command="hc:ControlCommands.OpenLink" CommandParameter="https://github.com/Fody/Fody" HorizontalAlignment="Right" VerticalAlignment="Top"/>
-                    </StackPanel>
-                    <StackPanel>
-                        <TextBlock Text="2.Costura.Fody" Margin="20,0,0,5" FontSize="16" VerticalAlignment="Top" HorizontalAlignment="Left" FontWeight="Bold" Foreground="{DynamicResource PrimaryTextBrush}"/>
-                        <TextBlock Text="Copyright (c) 2012 Simon Cropp and contributors.&#xA;Licensed under the MIT License." Margin="20,0,0,5" VerticalAlignment="Top" HorizontalAlignment="Left" Foreground="{DynamicResource PrimaryTextBrush}"/>
-                        <hc:Shield Subject="..." Status="{Binding [Pages_About_OpenWebsite], Source={x:Static langs:LanguageManager.Instance}}" Margin="0,-45,20,0" Command="hc:ControlCommands.OpenLink" CommandParameter="https://github.com/Fody/Costura" HorizontalAlignment="Right" VerticalAlignment="Top"/>
-                    </StackPanel>
-                    <StackPanel>
-                        <TextBlock Text="3.CurseForge.APIClient" Margin="20,0,0,5" FontSize="16" VerticalAlignment="Top" HorizontalAlignment="Left" FontWeight="Bold" Foreground="{DynamicResource PrimaryTextBrush}"/>
-                        <TextBlock Text="Copyright (c) 2021 Chris Gårdenberg (NoLifeKing85 / It's Simple Studios).&#xA;Licensed under the MIT License." Margin="20,0,0,5" VerticalAlignment="Top" HorizontalAlignment="Left" Foreground="{DynamicResource PrimaryTextBrush}"/>
-                        <hc:Shield Subject="..." Status="{Binding [Pages_About_OpenWebsite], Source={x:Static langs:LanguageManager.Instance}}" Margin="0,-45,20,0" Command="hc:ControlCommands.OpenLink" CommandParameter="https://github.com/CurseForgeCommunity/.NET-APIClient" HorizontalAlignment="Right" VerticalAlignment="Top"/>
-                    </StackPanel>
-                    <StackPanel Margin="0,10,0,0">
-                        <TextBlock Text="4.Downloader" Margin="20,0,0,5" FontSize="16" VerticalAlignment="Top" HorizontalAlignment="Left" FontWeight="Bold" Foreground="{DynamicResource PrimaryTextBrush}"/>
-                        <TextBlock Text="Copyright (c) 2021 Behzad Khosravifar.&#xA;Licensed under the MIT License." Margin="20,0,0,5" VerticalAlignment="Top" HorizontalAlignment="Left" Foreground="{DynamicResource PrimaryTextBrush}"/>
-                        <hc:Shield Subject="..." Status="{Binding [Pages_About_OpenWebsite], Source={x:Static langs:LanguageManager.Instance}}" Margin="0,-45,20,0" Command="hc:ControlCommands.OpenLink" CommandParameter="https://github.com/bezzad/Downloader" HorizontalAlignment="Right" VerticalAlignment="Top"/>
-                    </StackPanel>
-                    <StackPanel Margin="0,10,0,0">
-                        <TextBlock Text="5.HandyControls" Margin="20,0,0,5" FontSize="16" VerticalAlignment="Top" HorizontalAlignment="Left" FontWeight="Bold" Foreground="{DynamicResource PrimaryTextBrush}"/>
+                    <StackPanel Margin="0,5,0,0">
+                        <TextBlock Text="1.HandyControls" Margin="20,0,0,5" FontSize="16" VerticalAlignment="Top" HorizontalAlignment="Left" FontWeight="Bold" Foreground="{DynamicResource PrimaryTextBrush}"/>
                         <TextBlock Text="Copyright (c) 2018-2022 HandyOrg.&#xA;Licensed under the MIT License." Margin="20,0,0,5" VerticalAlignment="Top" HorizontalAlignment="Left" Foreground="{DynamicResource PrimaryTextBrush}"/>
                         <hc:Shield Subject="..." Status="{Binding [Pages_About_OpenWebsite], Source={x:Static langs:LanguageManager.Instance}}" Margin="0,-45,20,0" Command="hc:ControlCommands.OpenLink" CommandParameter="https://github.com/ghost1372/HandyControls" HorizontalAlignment="Right" VerticalAlignment="Top"/>
                     </StackPanel>
                     <StackPanel Margin="0,10,0,0">
-                        <TextBlock Text="6.Microsoft.Windows.SDK.Contracts" Margin="20,0,0,5" FontSize="16" VerticalAlignment="Top" HorizontalAlignment="Left" FontWeight="Bold" Foreground="{DynamicResource PrimaryTextBrush}"/>
+                        <TextBlock Text="2.CurseForge.APIClient" Margin="20,0,0,5" FontSize="16" VerticalAlignment="Top" HorizontalAlignment="Left" FontWeight="Bold" Foreground="{DynamicResource PrimaryTextBrush}"/>
+                        <TextBlock Text="Copyright (c) 2021 Chris Gårdenberg (NoLifeKing85 / It's Simple Studios).&#xA;Licensed under the MIT License." Margin="20,0,0,5" VerticalAlignment="Top" HorizontalAlignment="Left" Foreground="{DynamicResource PrimaryTextBrush}"/>
+                        <hc:Shield Subject="..." Status="{Binding [Pages_About_OpenWebsite], Source={x:Static langs:LanguageManager.Instance}}" Margin="0,-45,20,0" Command="hc:ControlCommands.OpenLink" CommandParameter="https://github.com/CurseForgeCommunity/.NET-APIClient" HorizontalAlignment="Right" VerticalAlignment="Top"/>
+                    </StackPanel>
+                    <StackPanel Margin="0,10,0,0">
+                        <TextBlock Text="3.Downloader" Margin="20,0,0,5" FontSize="16" VerticalAlignment="Top" HorizontalAlignment="Left" FontWeight="Bold" Foreground="{DynamicResource PrimaryTextBrush}"/>
+                        <TextBlock Text="Copyright (c) 2021 Behzad Khosravifar.&#xA;Licensed under the MIT License." Margin="20,0,0,5" VerticalAlignment="Top" HorizontalAlignment="Left" Foreground="{DynamicResource PrimaryTextBrush}"/>
+                        <hc:Shield Subject="..." Status="{Binding [Pages_About_OpenWebsite], Source={x:Static langs:LanguageManager.Instance}}" Margin="0,-45,20,0" Command="hc:ControlCommands.OpenLink" CommandParameter="https://github.com/bezzad/Downloader" HorizontalAlignment="Right" VerticalAlignment="Top"/>
+                    </StackPanel>
+                    <StackPanel Margin="0,10,0,0">
+                        <TextBlock Text="4.Microsoft.Windows.SDK.Contracts" Margin="20,0,0,5" FontSize="16" VerticalAlignment="Top" HorizontalAlignment="Left" FontWeight="Bold" Foreground="{DynamicResource PrimaryTextBrush}"/>
                         <TextBlock Text="Copyright (c) MICROSOFT SOFTWARE.&#xA;Licensed under the MICROSOFT SOFTWARE LICENSE TERMS." Margin="20,0,0,5" VerticalAlignment="Top" HorizontalAlignment="Left" Foreground="{DynamicResource PrimaryTextBrush}"/>
                         <hc:Shield Subject="..." Status="{Binding [Pages_About_OpenWebsite], Source={x:Static langs:LanguageManager.Instance}}" Margin="0,-45,20,0" Command="hc:ControlCommands.OpenLink" CommandParameter="https://www.nuget.org/packages/Microsoft.Windows.SDK.Contracts" HorizontalAlignment="Right" VerticalAlignment="Top"/>
                     </StackPanel>
                     <StackPanel Margin="0,10,0,0">
-                        <TextBlock Text="7.Newtonsoft.Json" Margin="20,0,0,5" FontSize="16" VerticalAlignment="Top" HorizontalAlignment="Left" FontWeight="Bold" Foreground="{DynamicResource PrimaryTextBrush}"/>
+                        <TextBlock Text="5.Newtonsoft.Json" Margin="20,0,0,5" FontSize="16" VerticalAlignment="Top" HorizontalAlignment="Left" FontWeight="Bold" Foreground="{DynamicResource PrimaryTextBrush}"/>
                         <TextBlock Text="Copyright (c) 2007 James Newton-King.&#xA;Licensed under the MIT License." Margin="20,0,0,5" VerticalAlignment="Top" HorizontalAlignment="Left" Foreground="{DynamicResource PrimaryTextBrush}"/>
                         <hc:Shield Subject="..." Status="{Binding [Pages_About_OpenWebsite], Source={x:Static langs:LanguageManager.Instance}}" Margin="0,-45,20,0" Command="hc:ControlCommands.OpenLink" CommandParameter="https://www.newtonsoft.com/json" HorizontalAlignment="Right" VerticalAlignment="Top"/>
                     </StackPanel>
                     <StackPanel Margin="0,10,0,0">
-                        <TextBlock Text="8.SharpZipLib" Margin="20,0,0,5" FontSize="16" VerticalAlignment="Top" HorizontalAlignment="Left" FontWeight="Bold" Foreground="{DynamicResource PrimaryTextBrush}"/>
+                        <TextBlock Text="6.SharpZipLib" Margin="20,0,0,5" FontSize="16" VerticalAlignment="Top" HorizontalAlignment="Left" FontWeight="Bold" Foreground="{DynamicResource PrimaryTextBrush}"/>
                         <TextBlock Text="Copyright © 2000-2018 SharpZipLib Contributors.&#xA;Licensed under the MIT License." Margin="20,0,0,5" VerticalAlignment="Top" HorizontalAlignment="Left" Foreground="{DynamicResource PrimaryTextBrush}"/>
                         <hc:Shield Subject="..." Status="{Binding [Pages_About_OpenWebsite], Source={x:Static langs:LanguageManager.Instance}}" Margin="0,-45,20,0" Command="hc:ControlCommands.OpenLink" CommandParameter="https://github.com/icsharpcode/SharpZipLib" HorizontalAlignment="Right" VerticalAlignment="Top"/>
                     </StackPanel>
                     <StackPanel Margin="0,10,0,0">
-                        <TextBlock Text="9.System.Runtime.WindowsRuntime" Margin="20,0,0,5" FontSize="16" VerticalAlignment="Top" HorizontalAlignment="Left" FontWeight="Bold" Foreground="{DynamicResource PrimaryTextBrush}"/>
-                        <TextBlock Text="10.System.Runtime.WindowsRuntime.UI.Xaml" Margin="20,0,0,5" FontSize="16" VerticalAlignment="Top" HorizontalAlignment="Left" FontWeight="Bold" Foreground="{DynamicResource PrimaryTextBrush}"/>
-                        <TextBlock Text="11.System.ValueTuple" Margin="20,0,0,5" FontSize="16" VerticalAlignment="Top" HorizontalAlignment="Left" FontWeight="Bold" Foreground="{DynamicResource PrimaryTextBrush}"/>
+                        <TextBlock Text="7.System.Runtime.WindowsRuntime" Margin="20,0,0,5" FontSize="16" VerticalAlignment="Top" HorizontalAlignment="Left" FontWeight="Bold" Foreground="{DynamicResource PrimaryTextBrush}"/>
+                        <TextBlock Text="8.System.Runtime.WindowsRuntime.UI.Xaml" Margin="20,0,0,5" FontSize="16" VerticalAlignment="Top" HorizontalAlignment="Left" FontWeight="Bold" Foreground="{DynamicResource PrimaryTextBrush}"/>
+                        <TextBlock Text="9.System.ValueTuple" Margin="20,0,0,5" FontSize="16" VerticalAlignment="Top" HorizontalAlignment="Left" FontWeight="Bold" Foreground="{DynamicResource PrimaryTextBrush}"/>
                         <TextBlock Text="Copyright (c) .NET Foundation and Contributors.&#xA;Licensed under the MIT License." Margin="20,0,0,5" VerticalAlignment="Top" HorizontalAlignment="Left" Foreground="{DynamicResource PrimaryTextBrush}"/>
                         <hc:Shield Subject="..." Status="{Binding [Pages_About_OpenWebsite], Source={x:Static langs:LanguageManager.Instance}}" Margin="0,-45,20,0" Command="hc:ControlCommands.OpenLink" CommandParameter="https://github.com/dotnet/runtime" HorizontalAlignment="Right" VerticalAlignment="Top"/>
                     </StackPanel>

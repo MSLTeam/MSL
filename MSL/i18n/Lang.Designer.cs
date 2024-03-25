@@ -204,7 +204,7 @@ namespace MSL.i18n {
         }
         
         /// <summary>
-        ///   查找类似 软件制作不易，有能力可以赞助下哦~ 的本地化字符串。
+        ///   查找类似 软件制作不易，您的支持就是我们的动力！ 的本地化字符串。
         /// </summary>
         internal static string Pages_About_SponsorText {
             get {

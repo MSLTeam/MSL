@@ -118,7 +118,7 @@
     <value>System.Resources.ResXResourceWriter, System.Windows.Forms, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089</value>
   </resheader>
   <data name="MainWindow_GrowlMsg_LatestVersion" xml:space="preserve">
-    <value>This version of MSL is latest!</value>
+    <value>Your MSL is already the latest version!</value>
   </data>
   <data name="MainWindow_Menu_About" xml:space="preserve">
     <value>About</value>
@@ -148,7 +148,19 @@
     <value>About MSL</value>
   </data>
   <data name="Pages_About_MainContent" xml:space="preserve">
-    <value>Minecraft Server Launcher (MSL)Copyright © 2021-2024 By MSLTeamThis software has no affiliation with Microsoft or Mojang StudioThe normal operation of the server opener cannot be separated from the following download sources/sites. Thanks:CurseForge - Module and Module Integration Package Download Source APIBMCLAPI - Forge Server Download SourceAnd other official and third-party download sources on the serverThank you to all users who have used MSL, as well as those who have provided improvement suggestions and bugs to MSLThank you all for your support and trust!</value>
+    <value>Minecraft Server Launcher (MSL)
+Copyright © 2021-2024 By MSLTeam
+This software has no affiliation with Microsoft or Mojang Studio
+The normal operation of the server opener cannot be separated 
+from the following download sources/sites. 
+Thanks:
+CurseForge - Mods and Modpacks Download Source API
+BMCLAPI - Forge Server Download Source
+And other official and third-party download sources on the server
+
+We also thank all users of MSL,
+as well as those who have provided improvement suggestions and bugs to MSL
+Thank you all for your support and trust!</value>
   </data>
   <data name="Pages_About_OpenSource" xml:space="preserve">
     <value>OpenSource(Github)</value>
@@ -163,7 +175,7 @@
     <value>Sponsor</value>
   </data>
   <data name="Pages_About_SponsorText" xml:space="preserve">
-    <value>Software devlop is not easy, if you have the ability, you can sponsor it~</value>
+    <value>Software develop is not easy, you can sponsor us if you have the ability~</value>
   </data>
   <data name="Pages_About_Website" xml:space="preserve">
     <value>Offical Website: https://www.mslmc.cn/</value>
