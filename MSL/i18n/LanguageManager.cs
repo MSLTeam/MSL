@@ -45,5 +45,6 @@ namespace MSL.i18n
             HandyControl.Tools.ConfigHelper.Instance.SetLang(cultureInfo.Name);
             PropertyChanged?.Invoke(this, new PropertyChangedEventArgs("Item[]"));
         }
+
     }
 }

@@ -37,7 +37,7 @@
             </hc:SplitButton.DropDownContent>
             <StackPanel>
                 <TextBlock Text="{Binding [Pages_Home_LaunchServer], Source={x:Static langs:LanguageManager.Instance}}" FontSize="18" HorizontalAlignment="Center" Foreground="White" />
-                <TextBlock x:Name="selectedItemTextBlock" Text="创建一个新的服务器" HorizontalAlignment="Center" Margin="0,5,0,0" Foreground="White"/>
+                <TextBlock x:Name="selectedItemTextBlock" Text="{Binding [Pages_Home_CreateServer], Source={x:Static langs:LanguageManager.Instance}}" HorizontalAlignment="Center" Margin="0,5,0,0" Foreground="White"/>
             </StackPanel>
         </hc:SplitButton>
     </Grid>

@@ -5,6 +5,7 @@ using MSL.controls;
 using Newtonsoft.Json;
 using Newtonsoft.Json.Linq;
 using System;
+using MSL.i18n;
 using System.Diagnostics;
 using System.IO;
 using System.Net.NetworkInformation;
@@ -44,7 +45,7 @@ namespace MSL.pages
             {
                 Dispatcher.Invoke(() =>
                 {
-                    startfrpc.Content = "关闭内网映射";
+                    startfrpc.Content = LanguageManager.Instance["Pages_Frpc_Close"];
                     Growl.Info("正在启动内网映射！");
                     setfrpc.IsEnabled = false;
                     startfrpc.IsEnabled = false;
@@ -178,7 +179,7 @@ namespace MSL.pages
                 {
                     setfrpc.IsEnabled = true;
                     startfrpc.IsEnabled = true;
-                    startfrpc.Content = "启动内网映射";
+                    startfrpc.Content = LanguageManager.Instance["Pages_Frpc_Launch"];
                 });
             }
         }
@@ -659,8 +660,8 @@ namespace MSL.pages
                 {
                     copyFrpc.IsEnabled = false;
                     startfrpc.IsEnabled = false;
-                    frplab1.Text = "未检测到内网映射配置，请点击 配置 按钮以配置";
-                    frplab3.Text = "无";
+                    frplab1.Text = LanguageManager.Instance["Pages_Frpc_Status"];
+                    frplab3.Text = LanguageManager.Instance["Pages_Frpc_IPNull"];
                 }
             }
             catch

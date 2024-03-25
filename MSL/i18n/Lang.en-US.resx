@@ -220,4 +220,32 @@ Do you want to create a new server?</value>
   <data name="Pages_ServerList_UseCMDLaunch" xml:space="preserve">
     <value>Launch Server By CMD</value>
   </data>
+  <data name="Pages_Frpc_Close" xml:space="preserve">
+    <value>Stop Frpc</value>
+  </data>
+  <data name="Pages_Frpc_Configuration" xml:space="preserve">
+    <value>Configuration</value>
+  </data>
+  <data name="Pages_Frpc_Copy" xml:space="preserve">
+    <value>Copy</value>
+  </data>
+  <data name="Pages_Frpc_IP" xml:space="preserve">
+    <value>Your IP:</value>
+  </data>
+  <data name="Pages_Frpc_IPNull" xml:space="preserve">
+    <value>Null</value>
+  </data>
+  <data name="Pages_Frpc_Launch" xml:space="preserve">
+    <value>Launch Frpc</value>
+  </data>
+  <data name="Pages_Frpc_Status" xml:space="preserve">
+    <value>No frp configuration detected,
+please click the configuration button to configure</value>
+  </data>
+  <data name="Pages_Frpc_Title" xml:space="preserve">
+    <value>Frp</value>
+  </data>
+  <data name="Pages_Home_CreateServer" xml:space="preserve">
+    <value>Create A New Server</value>
+  </data>
 </root>

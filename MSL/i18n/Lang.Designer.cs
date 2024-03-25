@@ -222,6 +222,87 @@ namespace MSL.i18n {
         }
         
         /// <summary>
+        ///   查找类似 关闭内网映射 的本地化字符串。
+        /// </summary>
+        internal static string Pages_Frpc_Close {
+            get {
+                return ResourceManager.GetString("Pages_Frpc_Close", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   查找类似 配置 的本地化字符串。
+        /// </summary>
+        internal static string Pages_Frpc_Configuration {
+            get {
+                return ResourceManager.GetString("Pages_Frpc_Configuration", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   查找类似 复制 的本地化字符串。
+        /// </summary>
+        internal static string Pages_Frpc_Copy {
+            get {
+                return ResourceManager.GetString("Pages_Frpc_Copy", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   查找类似 您的公网IP为： 的本地化字符串。
+        /// </summary>
+        internal static string Pages_Frpc_IP {
+            get {
+                return ResourceManager.GetString("Pages_Frpc_IP", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   查找类似 无 的本地化字符串。
+        /// </summary>
+        internal static string Pages_Frpc_IPNull {
+            get {
+                return ResourceManager.GetString("Pages_Frpc_IPNull", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   查找类似 启动内网映射 的本地化字符串。
+        /// </summary>
+        internal static string Pages_Frpc_Launch {
+            get {
+                return ResourceManager.GetString("Pages_Frpc_Launch", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   查找类似 未检测到内网映射配置，请点击 配置 按钮以配置 的本地化字符串。
+        /// </summary>
+        internal static string Pages_Frpc_Status {
+            get {
+                return ResourceManager.GetString("Pages_Frpc_Status", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   查找类似 内网映射 的本地化字符串。
+        /// </summary>
+        internal static string Pages_Frpc_Title {
+            get {
+                return ResourceManager.GetString("Pages_Frpc_Title", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   查找类似 创建一个新的服务器 的本地化字符串。
+        /// </summary>
+        internal static string Pages_Home_CreateServer {
+            get {
+                return ResourceManager.GetString("Pages_Home_CreateServer", resourceCulture);
+            }
+        }
+        
+        /// <summary>
         ///   查找类似 开启服务器 的本地化字符串。
         /// </summary>
         internal static string Pages_Home_LaunchServer {
