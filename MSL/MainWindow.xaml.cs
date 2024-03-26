@@ -61,7 +61,7 @@ namespace MSL
             if (!Directory.Exists("MSL"))
             {
                 Process.Start("https://www.mslmc.cn/eula.html");
-                bool dialog = await Shows.ShowMsgDialogAsync(this, "请阅读并同意MSL开服器使用协议：https://www.mslmc.cn/eula.html", "提示", true, "不同意", "同意");
+                bool dialog = await Shows.ShowMsgDialogAsync(this, LanguageManager.Instance["MainWindow_GrowlMsg_Eula"]+ "https://www.mslmc.cn/eula.html", LanguageManager.Instance["Dialog_Tip"], true, LanguageManager.Instance["MainWindow_GrowlMsg_DisAgree"], LanguageManager.Instance["MainWindow_GrowlMsg_Agree"]);
                 if (!dialog)
                 {
                     //Logger.LogWarning("用户未同意使用协议，退出软件……");
@@ -84,7 +84,7 @@ namespace MSL
             catch (Exception ex)
             {
                 //Logger.LogError("生成config.json文件失败，原因："+ex.Message);
-                await Shows.ShowMsgDialogAsync(this, "MSL在初始化加载过程中出现问题，请尝试用管理员身份运行MSL……\n错误代码：" + ex.Message, "错误");
+                await Shows.ShowMsgDialogAsync(this, LanguageManager.Instance["MainWindow_GrowlMsg_InitErr"] + ex.Message, LanguageManager.Instance["Dialog_Err"]);
                 Close();
             }
 
@@ -98,7 +98,7 @@ namespace MSL
             catch (Exception ex)
             {
                 //Logger.LogError("读取config.json失败！尝试重新载入……");
-                await Shows.ShowMsgDialogAsync(this, "MSL在加载配置文件时出现错误，将进行重试，若点击确定后软件突然闪退，请尝试使用管理员身份运行或将此问题报告给作者！\n错误代码：" + ex.Message, "错误");
+                await Shows.ShowMsgDialogAsync(this, LanguageManager.Instance["MainWindow_GrowlMsg_ConfigErr2"] + ex.Message, LanguageManager.Instance["Dialog_Err"]);
                 File.WriteAllText(@"MSL\config.json", string.Format("{{{0}}}", "\n"));
                 jsonObject = JObject.Parse(File.ReadAllText(@"MSL\config.json", Encoding.UTF8));
                 //Logger.LogInfo("读取config.json成功！");
@@ -305,7 +305,7 @@ namespace MSL
             catch (Exception ex)
             {
                 //Logger.LogError("读取配置时出现错误！错误代码："+ex.Message);
-                Growl.Error("MSL在加载配置文件时出现错误，此报错可能不影响软件运行，但还是建议您将其反馈给作者！\n错误代码：" + ex.Message);
+                Growl.Error(LanguageManager.Instance["MainWindow_GrowlMsg_ConfigErr"] + ex.Message);
                 File.WriteAllText(@"MSL\config.json", string.Format("{{{0}}}", "\n"));
                 //jsonObject = JObject.Parse(File.ReadAllText(@"MSL\config.json", Encoding.UTF8));
                 //Growl.Info("配置文件已更新！");
@@ -320,7 +320,7 @@ namespace MSL
             catch (Exception ex)
             {
                 //Logger.LogError("读取系统内存失败！");
-                MessageBox.Show("获取系统内存失败！" + ex.Message, "错误", MessageBoxButton.OK, MessageBoxImage.Error);
+                MessageBox.Show(LanguageManager.Instance["MainWindow_GrowlMsg_MemoryErr"] + ex.Message, LanguageManager.Instance["Dialog_Err"], MessageBoxButton.OK, MessageBoxImage.Error);
                 PhisicalMemory = 0;
             }
             //自动开启服务器
@@ -337,7 +337,7 @@ namespace MSL
                 else if (jsonObject["autoOpenServer"].ToString() != "False")
                 {
                     string servers = jsonObject["autoOpenServer"].ToString();
-                    Growl.Info("正在为你自动打开相应服务器……");
+                    Growl.Info(LanguageManager.Instance["MainWindow_GrowlMsg_AutoLaunchServer"]);
                     while (servers != "")
                     {
                         int aserver = servers.IndexOf(",");
@@ -351,7 +351,7 @@ namespace MSL
             catch (Exception ex)
             {
                 //Logger.LogError("读取自动开启（服务器）配置失败！");
-                MessageBox.Show("自动启动服务器失败！" + ex.Message, "错误", MessageBoxButton.OK, MessageBoxImage.Error);
+                MessageBox.Show(LanguageManager.Instance["MainWindow_GrowlMsg_AutoLaunchServerErr"] + ex.Message, LanguageManager.Instance["Dialog_Err"], MessageBoxButton.OK, MessageBoxImage.Error);
             }
             //自动开启Frpc
             try
@@ -366,7 +366,7 @@ namespace MSL
                 }
                 else if ((bool)jsonObject["autoOpenFrpc"] == true)
                 {
-                    Growl.Info("正在为你自动打开内网映射……");
+                    Growl.Info(LanguageManager.Instance["MainWindow_GrowlMsg_AutoLaunchFrpc"]);
                     AutoOpenFrpc();
                 }
                 //Logger.LogInfo("读取自动开启（内网映射）配置成功！");
@@ -374,7 +374,7 @@ namespace MSL
             catch (Exception ex)
             {
                 //Logger.LogError("读取自动开启（内网映射）配置失败！");
-                MessageBox.Show("自动启动内网映射失败！" + ex.Message, "错误", MessageBoxButton.OK, MessageBoxImage.Error);
+                MessageBox.Show(LanguageManager.Instance["MainWindow_GrowlMsg_AutoLaunchFrpsErr"] + ex.Message, LanguageManager.Instance["Dialog_Err"], MessageBoxButton.OK, MessageBoxImage.Error);
             }
 
             //Logger.LogInfo("所有配置载入完毕！调整UI界面……");
@@ -396,13 +396,13 @@ namespace MSL
                     if (((int)((JObject)JsonConvert.DeserializeObject(Functions.Get("")))["status"]) != 200)
                     {
                         serverLink = "waheal.top";
-                        Growl.Info("MSL主服务器连接超时（可能被DDos），已切换至备用服务器！");
+                        Growl.Info(LanguageManager.Instance["MainWindow_GrowlMsg_MslServerDown"]);
                     }
                 }
                 catch
                 {
                     serverLink = "waheal.top";
-                    Growl.Info("MSL主服务器连接超时（可能被DDos），已切换至备用服务器！");
+                    Growl.Info(LanguageManager.Instance["MainWindow_GrowlMsg_MSLServerDown"]);
                 }
             }
             catch
@@ -437,7 +437,7 @@ namespace MSL
                     }
                     await Dispatcher.Invoke(async () =>
                     {
-                        bool dialog = await Shows.ShowMsgDialogAsync(this, "发现新版本，版本号为：" + _httpReturn + "，是否进行更新？\n更新日志：\n" + updatelog, "更新", true);
+                        bool dialog = await Shows.ShowMsgDialogAsync(this, LanguageManager.Instance["MainWindow_GrowlMsg_UpdateInfo1"] + _httpReturn + LanguageManager.Instance["MainWindow_GrowlMsg_UpdateInfo2"] + updatelog, LanguageManager.Instance["MainWindow_GrowlMsg_Update"], true);
                         if (dialog == true)
                         {
                             //Logger.LogInfo("更新新版本……");
@@ -446,13 +446,13 @@ namespace MSL
                         else
                         {
                             //Logger.LogInfo("用户拒绝更新！");
-                            Growl.Error("您拒绝了更新新版本，若在此版本中遇到bug，请勿报告给作者！");
+                            Growl.Error(LanguageManager.Instance["MainWindow_GrowlMsg_RefuseUpdate"]);
                         }
                     });
                 }
                 else if (newVersion < version)
                 {
-                    Growl.Info("当前版本高于正式版本，若使用中遇到BUG，请及时反馈！");
+                    Growl.Info(LanguageManager.Instance["MainWindow_GrowlMsg_BetaVersion"]);
                 }
                 else
                 {
@@ -462,7 +462,7 @@ namespace MSL
             catch
             {
                 //Logger.LogError("检测更新失败！");
-                Growl.Error("检查更新失败！");
+                Growl.Error(LanguageManager.Instance["MainWindow_GrowlMsg_CheckUpdateErr"]);
             }
             await Dispatcher.InvokeAsync(() =>
             {
@@ -475,7 +475,7 @@ namespace MSL
         {
             if (ProcessRunningCheck())
             {
-                Shows.ShowMsgDialog(this, "您的服务器/内网映射/点对点联机正在运行中，若此时更新，会造成后台残留，请将前者关闭后再进行更新！", "警告");
+                Shows.ShowMsgDialog(this, LanguageManager.Instance["MainWindow_GrowlMsg_UpdateWarning"], LanguageManager.Instance["Dialog_Warning"]);
                 return;
             }
             string downloadUrl = Functions.Get("download/update");
@@ -504,7 +504,7 @@ namespace MSL
             }
             else
             {
-                MessageBox.Show("更新失败！", "错误", MessageBoxButton.OK, MessageBoxImage.Error);
+                MessageBox.Show(LanguageManager.Instance["MainWindow_GrowlMsg_UpdateFailed"], LanguageManager.Instance["Dialog_Err"], MessageBoxButton.OK, MessageBoxImage.Error);
             }
         }
 
@@ -536,7 +536,7 @@ namespace MSL
             }
             else if (ProcessRunningCheck())
             {
-                int dialog = Shows.ShowMsg(this, "您的服务器、内网映射或联机功能正在运行中，关闭软件可能会让服务器进程在后台一直运行并占用资源！确定要继续关闭吗？\n注：如果想隐藏主窗口的话，请前往设置打开托盘图标", "警告", true, "取消");
+                int dialog = Shows.ShowMsg(this, LanguageManager.Instance["MainWindow_GrowlMsg_Close"], LanguageManager.Instance["Dialog_Warning"], true, LanguageManager.Instance["Dialog_Cancel"]);
                 if (dialog != 1)
                 {
                     e.Cancel = true;
@@ -755,7 +755,7 @@ namespace MSL
         {
             if (ProcessRunningCheck())
             {
-                int dialog = Shows.ShowMsg(this, "您的服务器、内网映射或联机功能正在运行中，关闭软件可能会让服务器进程在后台一直运行并占用资源！确定要继续关闭吗？\n注：如果想隐藏主窗口的话，请前往设置打开托盘图标", "警告", true, "取消");
+                int dialog = Shows.ShowMsg(this, LanguageManager.Instance["MainWindow_GrowlMsg_Close2"], LanguageManager.Instance["Dialog_Warning"], true, LanguageManager.Instance["Dialog_Cancel"]);
                 if (dialog == 1)
                 {
                     Application.Current.Shutdown();

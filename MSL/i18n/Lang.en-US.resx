@@ -260,4 +260,83 @@ please click the configuration button to configure</value>
   <data name="Pages_Home_CreateServer" xml:space="preserve">
     <value>Create A New Server</value>
   </data>
+  <data name="Dialog_Err" xml:space="preserve">
+    <value>错误</value>
+  </data>
+  <data name="Dialog_Tip" xml:space="preserve">
+    <value>提示</value>
+  </data>
+  <data name="MainWindow_GrowlMsg_Agree" xml:space="preserve">
+    <value>同意</value>
+  </data>
+  <data name="MainWindow_GrowlMsg_AutoLaunchFrpc" xml:space="preserve">
+    <value>正在为你自动打开内网映射……</value>
+  </data>
+  <data name="MainWindow_GrowlMsg_AutoLaunchFrpcErr" xml:space="preserve">
+    <value>自动启动内网映射失败！</value>
+  </data>
+  <data name="MainWindow_GrowlMsg_AutoLaunchServer" xml:space="preserve">
+    <value>正在为你自动打开相应服务器……</value>
+  </data>
+  <data name="MainWindow_GrowlMsg_AutoLaunchServerErr" xml:space="preserve">
+    <value>自动启动服务器失败！</value>
+  </data>
+  <data name="MainWindow_GrowlMsg_BeatVersion" xml:space="preserve">
+    <value>当前版本高于正式版本，若使用中遇到BUG，请及时反馈！</value>
+  </data>
+  <data name="MainWindow_GrowlMsg_CheckUpdateErr" xml:space="preserve">
+    <value>检查更新失败！</value>
+  </data>
+  <data name="MainWindow_GrowlMsg_Colse" xml:space="preserve">
+    <value>您的服务器、内网映射或联机功能正在运行中，关闭软件可能会让服务器进程在后台一直运行并占用资源！确定要继续关闭吗？
+注：如果想隐藏主窗口的话，请前往设置打开托盘图标</value>
+  </data>
+  <data name="MainWindow_GrowlMsg_Colse2" xml:space="preserve">
+    <value>您的服务器、内网映射或联机功能正在运行中，关闭软件可能会让服务器进程在后台一直运行并占用资源！确定要继续关闭吗？
+注：如果想隐藏主窗口的话，请前往设置打开托盘图标</value>
+  </data>
+  <data name="MainWindow_GrowlMsg_ConfigErr" xml:space="preserve">
+    <value>MSL在加载配置文件时出现错误，此报错可能不影响软件运行，但还是建议您将其反馈给作者！
+错误代码：</value>
+  </data>
+  <data name="MainWindow_GrowlMsg_ConfigErr2" xml:space="preserve">
+    <value>MSL在加载配置文件时出现错误，将进行重试，若点击确定后软件突然闪退，请尝试使用管理员身份运行或将此问题报告给作者！
+错误代码：</value>
+  </data>
+  <data name="MainWindow_GrowlMsg_DisAgree" xml:space="preserve">
+    <value>不同意</value>
+  </data>
+  <data name="MainWindow_GrowlMsg_Eula" xml:space="preserve">
+    <value>请阅读并同意MSL开服器使用协议：</value>
+  </data>
+  <data name="MainWindow_GrowlMsg_InitErr" xml:space="preserve">
+    <value>MSL在初始化加载过程中出现问题，请尝试用管理员身份运行MSL……
+错误代码：</value>
+  </data>
+  <data name="MainWindow_GrowlMsg_MemoryErr" xml:space="preserve">
+    <value>获取系统内存失败！</value>
+  </data>
+  <data name="MainWindow_GrowlMsg_MSLServerDown" xml:space="preserve">
+    <value>MSL主服务器连接超时（可能被DDos），已切换至备用服务器！</value>
+  </data>
+  <data name="MainWindow_GrowlMsg_RefuseUpdate" xml:space="preserve">
+    <value>您拒绝了更新到新版本，若在此版本中遇到bug，请勿报告给作者！</value>
+  </data>
+  <data name="MainWindow_GrowlMsg_Update" xml:space="preserve">
+    <value>更新</value>
+  </data>
+  <data name="MainWindow_GrowlMsg_UpdateFailed" xml:space="preserve">
+    <value>更新失败！</value>
+  </data>
+  <data name="MainWindow_GrowlMsg_UpdateInfo1" xml:space="preserve">
+    <value>发现新版本，版本号为：</value>
+  </data>
+  <data name="MainWindow_GrowlMsg_UpdateInfo2" xml:space="preserve">
+    <value>，是否进行更新？
+更新日志：
+</value>
+  </data>
+  <data name="MainWindow_GrowlMsg_UpdateWarning" xml:space="preserve">
+    <value>您的服务器/内网映射/点对点联机正在运行中，若此时更新，会造成后台残留，请将前者关闭后再进行更新！</value>
+  </data>
 </root>

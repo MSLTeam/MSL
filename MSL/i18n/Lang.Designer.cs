@@ -70,6 +70,24 @@ namespace MSL.i18n {
         }
         
         /// <summary>
+        ///   查找类似 错误 的本地化字符串。
+        /// </summary>
+        internal static string Dialog_Err {
+            get {
+                return ResourceManager.GetString("Dialog_Err", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   查找类似 提示 的本地化字符串。
+        /// </summary>
+        internal static string Dialog_Tip {
+            get {
+                return ResourceManager.GetString("Dialog_Tip", resourceCulture);
+            }
+        }
+        
+        /// <summary>
         ///   查找类似 警告 的本地化字符串。
         /// </summary>
         internal static string Dialog_Warning {
@@ -79,11 +97,216 @@ namespace MSL.i18n {
         }
         
         /// <summary>
+        ///   查找类似 同意 的本地化字符串。
+        /// </summary>
+        internal static string MainWindow_GrowlMsg_Agree {
+            get {
+                return ResourceManager.GetString("MainWindow_GrowlMsg_Agree", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   查找类似 正在为你自动打开内网映射…… 的本地化字符串。
+        /// </summary>
+        internal static string MainWindow_GrowlMsg_AutoLaunchFrpc {
+            get {
+                return ResourceManager.GetString("MainWindow_GrowlMsg_AutoLaunchFrpc", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   查找类似 自动启动内网映射失败！ 的本地化字符串。
+        /// </summary>
+        internal static string MainWindow_GrowlMsg_AutoLaunchFrpcErr {
+            get {
+                return ResourceManager.GetString("MainWindow_GrowlMsg_AutoLaunchFrpcErr", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   查找类似 正在为你自动打开相应服务器…… 的本地化字符串。
+        /// </summary>
+        internal static string MainWindow_GrowlMsg_AutoLaunchServer {
+            get {
+                return ResourceManager.GetString("MainWindow_GrowlMsg_AutoLaunchServer", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   查找类似 自动启动服务器失败！ 的本地化字符串。
+        /// </summary>
+        internal static string MainWindow_GrowlMsg_AutoLaunchServerErr {
+            get {
+                return ResourceManager.GetString("MainWindow_GrowlMsg_AutoLaunchServerErr", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   查找类似 当前版本高于正式版本，若使用中遇到BUG，请及时反馈！ 的本地化字符串。
+        /// </summary>
+        internal static string MainWindow_GrowlMsg_BeatVersion {
+            get {
+                return ResourceManager.GetString("MainWindow_GrowlMsg_BeatVersion", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   查找类似 检查更新失败！ 的本地化字符串。
+        /// </summary>
+        internal static string MainWindow_GrowlMsg_CheckUpdateErr {
+            get {
+                return ResourceManager.GetString("MainWindow_GrowlMsg_CheckUpdateErr", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   查找类似 您的服务器、内网映射或联机功能正在运行中，关闭软件可能会让服务器进程在后台一直运行并占用资源！确定要继续关闭吗？
+        ///注：如果想隐藏主窗口的话，请前往设置打开托盘图标 的本地化字符串。
+        /// </summary>
+        internal static string MainWindow_GrowlMsg_Colse {
+            get {
+                return ResourceManager.GetString("MainWindow_GrowlMsg_Colse", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   查找类似 您的服务器、内网映射或联机功能正在运行中，关闭软件可能会让服务器进程在后台一直运行并占用资源！确定要继续关闭吗？
+        ///注：如果想隐藏主窗口的话，请前往设置打开托盘图标 的本地化字符串。
+        /// </summary>
+        internal static string MainWindow_GrowlMsg_Colse2 {
+            get {
+                return ResourceManager.GetString("MainWindow_GrowlMsg_Colse2", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   查找类似 MSL在加载配置文件时出现错误，此报错可能不影响软件运行，但还是建议您将其反馈给作者！
+        ///错误代码： 的本地化字符串。
+        /// </summary>
+        internal static string MainWindow_GrowlMsg_ConfigErr {
+            get {
+                return ResourceManager.GetString("MainWindow_GrowlMsg_ConfigErr", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   查找类似 MSL在加载配置文件时出现错误，将进行重试，若点击确定后软件突然闪退，请尝试使用管理员身份运行或将此问题报告给作者！
+        ///错误代码： 的本地化字符串。
+        /// </summary>
+        internal static string MainWindow_GrowlMsg_ConfigErr2 {
+            get {
+                return ResourceManager.GetString("MainWindow_GrowlMsg_ConfigErr2", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   查找类似 不同意 的本地化字符串。
+        /// </summary>
+        internal static string MainWindow_GrowlMsg_DisAgree {
+            get {
+                return ResourceManager.GetString("MainWindow_GrowlMsg_DisAgree", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   查找类似 请阅读并同意MSL开服器使用协议： 的本地化字符串。
+        /// </summary>
+        internal static string MainWindow_GrowlMsg_Eula {
+            get {
+                return ResourceManager.GetString("MainWindow_GrowlMsg_Eula", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   查找类似 MSL在初始化加载过程中出现问题，请尝试用管理员身份运行MSL……
+        ///错误代码： 的本地化字符串。
+        /// </summary>
+        internal static string MainWindow_GrowlMsg_InitErr {
+            get {
+                return ResourceManager.GetString("MainWindow_GrowlMsg_InitErr", resourceCulture);
+            }
+        }
+        
+        /// <summary>
         ///   查找类似 您使用的开服器已是最新版本！ 的本地化字符串。
         /// </summary>
         internal static string MainWindow_GrowlMsg_LatestVersion {
             get {
                 return ResourceManager.GetString("MainWindow_GrowlMsg_LatestVersion", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   查找类似 获取系统内存失败！ 的本地化字符串。
+        /// </summary>
+        internal static string MainWindow_GrowlMsg_MemoryErr {
+            get {
+                return ResourceManager.GetString("MainWindow_GrowlMsg_MemoryErr", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   查找类似 MSL主服务器连接超时（可能被DDos），已切换至备用服务器！ 的本地化字符串。
+        /// </summary>
+        internal static string MainWindow_GrowlMsg_MSLServerDown {
+            get {
+                return ResourceManager.GetString("MainWindow_GrowlMsg_MSLServerDown", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   查找类似 您拒绝了更新到新版本，若在此版本中遇到bug，请勿报告给作者！ 的本地化字符串。
+        /// </summary>
+        internal static string MainWindow_GrowlMsg_RefuseUpdate {
+            get {
+                return ResourceManager.GetString("MainWindow_GrowlMsg_RefuseUpdate", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   查找类似 更新 的本地化字符串。
+        /// </summary>
+        internal static string MainWindow_GrowlMsg_Update {
+            get {
+                return ResourceManager.GetString("MainWindow_GrowlMsg_Update", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   查找类似 更新失败！ 的本地化字符串。
+        /// </summary>
+        internal static string MainWindow_GrowlMsg_UpdateFailed {
+            get {
+                return ResourceManager.GetString("MainWindow_GrowlMsg_UpdateFailed", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   查找类似 发现新版本，版本号为： 的本地化字符串。
+        /// </summary>
+        internal static string MainWindow_GrowlMsg_UpdateInfo1 {
+            get {
+                return ResourceManager.GetString("MainWindow_GrowlMsg_UpdateInfo1", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   查找类似 ，是否进行更新？
+        ///更新日志：
+        /// 的本地化字符串。
+        /// </summary>
+        internal static string MainWindow_GrowlMsg_UpdateInfo2 {
+            get {
+                return ResourceManager.GetString("MainWindow_GrowlMsg_UpdateInfo2", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   查找类似 您的服务器/内网映射/点对点联机正在运行中，若此时更新，会造成后台残留，请将前者关闭后再进行更新！ 的本地化字符串。
+        /// </summary>
+        internal static string MainWindow_GrowlMsg_UpdateWarning {
+            get {
+                return ResourceManager.GetString("MainWindow_GrowlMsg_UpdateWarning", resourceCulture);
             }
         }
         
