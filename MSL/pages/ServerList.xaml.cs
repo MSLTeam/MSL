@@ -47,11 +47,11 @@ namespace MSL.pages
         }
         public ServerList()
         {
+            InitializeComponent();
             ServerRunner.SaveConfigEvent += RefreshConfig;
             ServerRunner.ServerStateChange += RefreshConfig;
             MainWindow.AutoOpenServer += AutoOpenServer;
             Home.AutoOpenServer += AutoOpenServer;
-            InitializeComponent();
         }
 
         private void Page_Loaded(object sender, RoutedEventArgs e)
@@ -64,11 +64,11 @@ namespace MSL.pages
             GetServerConfig();
         }
 
-        private void StateCheck()
+        private void StateCheck(List<object> list)
         {
-            for (int id = 0; id < serverList.Items.Count; id++)
+            for (int id = 0; id < list.Count; id++)
             {
-                ServerInfo _server = serverList.Items[id] as ServerInfo;
+                ServerInfo _server = list[id] as ServerInfo;
                 if (runningServers.TryGetValue(serverIDs[id], out int status))
                 {
                     if (status == 1)
@@ -85,6 +85,7 @@ namespace MSL.pages
 
         private void addServer_Click(object sender, RoutedEventArgs e)
         {
+            //serverList.Items.Clear();
             CreateServerEvent();
         }
 
@@ -93,11 +94,13 @@ namespace MSL.pages
             GetServerConfig();
             Growl.Success("刷新成功！");
         }
+
         private async void GetServerConfig()
         {
             try
             {
-                serverList.Items.Clear();
+                //serverList.Items.Clear();
+                List<object> list = new List<object>();
                 serverIDs.Clear();
 
                 JObject jsonObject = JObject.Parse(File.ReadAllText(@"MSL\ServerList.json", Encoding.UTF8));
@@ -106,29 +109,30 @@ namespace MSL.pages
                     serverIDs.Add(item.Key);
                     if (File.Exists(item.Value["base"].ToString() + "\\server-icon.png"))
                     {
-                        await Dispatcher.InvokeAsync(() =>
-                        {
-                            serverList.Items.Add(new ServerInfo(item.Value["name"].ToString(), item.Value["base"].ToString() + "\\server-icon.png", "未运行", Brushes.Green));
-                            StateCheck();
-                        });
+                        //await Dispatcher.InvokeAsync(() =>
+                        //{
+                        list.Add(new ServerInfo(item.Value["name"].ToString(), item.Value["base"].ToString() + "\\server-icon.png", "未运行", Brushes.Green));
+                        StateCheck(list);
+                        //});
                     }
                     else if (item.Value["core"].ToString().IndexOf("forge") + 1 != 0 || item.Value["core"].ToString() == "")
                     {
-                        await Dispatcher.InvokeAsync(() =>
-                        {
-                            serverList.Items.Add(new ServerInfo(item.Value["name"].ToString(), "pack://application:,,,/images/150px-Anvil.png", "未运行", Brushes.Green));
-                            StateCheck();
-                        });
+                        //await Dispatcher.InvokeAsync(() =>
+                        //{
+                        list.Add(new ServerInfo(item.Value["name"].ToString(), "pack://application:,,,/images/150px-Anvil.png", "未运行", Brushes.Green));
+                        StateCheck(list);
+                        //});
                     }
                     else
                     {
-                        await Dispatcher.InvokeAsync(() =>
-                        {
-                            serverList.Items.Add(new ServerInfo(item.Value["name"].ToString(), "pack://application:,,,/images/150px-Impulse_Command_Block.png", "未运行", Brushes.MediumSeaGreen));
-                            StateCheck();
-                        });
+                        //await Dispatcher.InvokeAsync(() =>
+                        //{
+                        list.Add(new ServerInfo(item.Value["name"].ToString(), "pack://application:,,,/images/150px-Impulse_Command_Block.png", "未运行", Brushes.MediumSeaGreen));
+                        StateCheck(list);
+                        //});
                     }
                 }
+                serverList.ItemsSource = list;
             }
             catch
             {
@@ -281,40 +285,45 @@ namespace MSL.pages
             catch (Exception ex) { MessageBox.Show("出现错误，请检查您是否选择了服务器！\n" + ex.Message); }
         }
 
-        void AutoOpenServer()
+        private void AutoOpenServer()
         {
-            Dispatcher.Invoke(() =>
+            try
             {
-                try
-                {
-                    serverList.Items.Clear();
-                    serverIDs.Clear();
+                //serverList.Items.Clear();
+                List<object> list = new List<object>();
+                serverIDs.Clear();
 
-                    JObject jsonObject = JObject.Parse(File.ReadAllText(@"MSL\ServerList.json", Encoding.UTF8));
-                    foreach (var item in jsonObject)
+                JObject jsonObject = JObject.Parse(File.ReadAllText(@"MSL\ServerList.json", Encoding.UTF8));
+                foreach (var item in jsonObject)
+                {
+                    serverIDs.Add(item.Key);
+                    if (File.Exists(item.Value["base"].ToString() + "\\server-icon.png"))
                     {
-                        serverIDs.Add(item.Key);
-                        if (File.Exists(item.Value["base"].ToString() + "\\server-icon.png"))
-                        {
-                            serverList.Items.Add(new ServerInfo(item.Value["name"].ToString(), item.Value["base"].ToString() + "\\server-icon.png", "未运行", Brushes.Green));
-                            StateCheck();
-                        }
-                        else if (item.Value["core"].ToString().IndexOf("forge") + 1 != 0 || item.Value["core"].ToString() == "")
-                        {
-                            serverList.Items.Add(new ServerInfo(item.Value["name"].ToString(), "pack://application:,,,/images/150px-Anvil.png", "未运行", Brushes.Green));
-                            StateCheck();
-                        }
-                        else
-                        {
-                            serverList.Items.Add(new ServerInfo(item.Value["name"].ToString(), "pack://application:,,,/images/150px-Impulse_Command_Block.png", "未运行", Brushes.MediumSeaGreen));
-                            StateCheck();
-                        }
+                        list.Add(new ServerInfo(item.Value["name"].ToString(), item.Value["base"].ToString() + "\\server-icon.png", "未运行", Brushes.Green));
+                        StateCheck(list);
+                    }
+                    else if (item.Value["core"].ToString().IndexOf("forge") + 1 != 0 || item.Value["core"].ToString() == "")
+                    {
+                        list.Add(new ServerInfo(item.Value["name"].ToString(), "pack://application:,,,/images/150px-Anvil.png", "未运行", Brushes.Green));
+                        StateCheck(list);
+                    }
+                    else
+                    {
+                        list.Add(new ServerInfo(item.Value["name"].ToString(), "pack://application:,,,/images/150px-Impulse_Command_Block.png", "未运行", Brushes.MediumSeaGreen));
+                        StateCheck(list);
                     }
                 }
-                catch
+                Dispatcher.Invoke(() =>
                 {
-                    MessageBox.Show("err");
-                }
+                    serverList.ItemsSource = list;
+                });
+            }
+            catch
+            {
+                MessageBox.Show("err");
+            }
+            Dispatcher.Invoke(() =>
+            {
                 int i = 0;
                 foreach (string x in serverIDs)
                 {
