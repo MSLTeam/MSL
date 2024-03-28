@@ -4,12 +4,14 @@ using Newtonsoft.Json.Linq;
 using System;
 using System.Collections.Generic;
 using System.Diagnostics;
+using System.IO;
 using System.Linq;
 using System.Threading;
 using System.Windows;
 using System.Windows.Controls;
 using System.Windows.Input;
 using System.Windows.Threading;
+using Windows.Devices.Sensors;
 using File = System.IO.File;
 
 namespace MSL.pages
@@ -133,6 +135,42 @@ namespace MSL.pages
                             return;
                         }
                         downloadServerName = installReturn;
+                        Close();
+                    }else if(filename.IndexOf("banner") + 1 != 0)
+                    {
+                        //banner应当作为模组加载，所以要再下载一个fabric才是服务端
+                        try
+                        {
+                            //移动到mods文件夹
+                            Directory.CreateDirectory(downloadServerBase + "\\mods\\");
+                            if (File.Exists(downloadServerBase + "\\mods\\" + filename))
+                            {
+                                File.Delete(downloadServerBase + "\\mods\\" + filename);
+                            }
+                            File.Move(downloadServerBase + "\\" + filename, downloadServerBase + "\\mods\\" + filename);
+                        }
+                        catch (Exception e)
+                        {
+                            Dispatcher.Invoke( () =>
+                            {
+                                Shows.ShowMsgDialog(this, "Banner端移动失败！\n请重试！\n" + e.Message, "错误");
+                            });
+                            return;
+                        }
+
+                        //下载一个fabric端
+                        //获取版本号
+                        string bannerVersion = filename.Replace("banner-", "").Replace(".jar", "");
+                        await Dispatcher.Invoke(async () =>
+                        {
+                            bool dwnFabric = await Shows.ShowDownloader(Window.GetWindow(this), Functions.Get("download/server/fabric/"+bannerVersion), downloadServerBase, $"fabric-{bannerVersion}.jar", "下载Fabric端中···");
+                            if (!dwnFabric)
+                            {
+                                Shows.ShowMsgDialog(this, "Fabric端下载失败！\n请重试！", "错误");
+                                return;
+                            }
+                        });
+                        downloadServerName =  $"fabric-{bannerVersion}.jar";
                         Close();
                     }
                     else

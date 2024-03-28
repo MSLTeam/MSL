@@ -1,5 +1,6 @@
 ﻿using HandyControl.Controls;
 using System.Threading.Tasks;
+using System.Windows;
 using Window = System.Windows.Window;
 
 namespace MSL.controls
@@ -14,6 +15,7 @@ namespace MSL.controls
         /// <param name="title">对话框标题</param>
         public static void ShowMsgDialog(Window _window, string text, string title)
         {
+            
             ShowDialogs showDialogs = new ShowDialogs();
             showDialogs.ShowMsgDialog(_window, text, title);
         }
