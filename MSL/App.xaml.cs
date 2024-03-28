@@ -17,7 +17,7 @@ namespace MSL
             DispatcherUnhandledException += (s, e) =>
             {
                 MessageBox.Show("程序在运行的时候发生了异常，异常代码：\n" + e.Exception.Message + "\n若软件闪退，请联系作者进行反馈", "错误", MessageBoxButton.OK, MessageBoxImage.Error);
-                e.Handled = true; // 设置为已处理，阻止应用程序崩溃
+                //e.Handled = true; // 设置为已处理，阻止应用程序崩溃
             };
         }
 
