@@ -37,10 +37,7 @@ namespace MSL
     {
         public static event DeleControl SaveConfigEvent;
         public static event DeleControl ServerStateChange;
-        //public static event DeleControl GotoFrpcEvent;
         private readonly Process ServerProcess = new Process();
-        private delegate void DelReadStdOutput(string result);
-        private event DelReadStdOutput ReadStdOutput;
         private string ShieldLog = null;
         private bool autoRestart = false;
         private bool getServerInfo = MainWindow.getServerInfo;
@@ -48,7 +45,7 @@ namespace MSL
         private bool getPlayerInfo = MainWindow.getPlayerInfo;
         private readonly int FirstStartTab;
         private string DownjavaName;
-        private string RserverID;
+        private readonly string RserverID;
         private string Rservername;
         private string Rserverjava;
         private string Rserverserver;
@@ -64,15 +61,15 @@ namespace MSL
         public ServerRunner(string serverID, int controlTab = 0)
         {
             InitializeComponent();
-            ServerProcess.OutputDataReceived += new DataReceivedEventHandler(p_OutputDataReceived);
-            ServerProcess.ErrorDataReceived += new DataReceivedEventHandler(p_OutputDataReceived);
+            ServerProcess.OutputDataReceived += new DataReceivedEventHandler(OutputDataReceived);
+            ServerProcess.ErrorDataReceived += new DataReceivedEventHandler(OutputDataReceived);
             ServerProcess.Exited += new EventHandler(ServerExitEvent);
-            ReadStdOutput += new DelReadStdOutput(ReadStdOutputAction);
             ServerList.OpenServerForm += ShowWindowEvent;
             SettingsPage.ChangeSkinStyle += ChangeSkinStyle;
             RserverID = serverID;
             FirstStartTab = controlTab;
         }
+
         private async void Window_Loaded(object sender, RoutedEventArgs e)
         {
             ChangeSkinStyle();
@@ -596,6 +593,7 @@ namespace MSL
                 LaunchServer();
             });
         }
+
         private async void LaunchServer()
         {
             try
@@ -690,39 +688,40 @@ namespace MSL
             }
             catch (Exception e)
             {
-                ShowLog("出现错误，正在检查问题...", Brushes.Red);
+                PrintLog("出现错误，正在检查问题...", Brushes.Red);
                 if (File.Exists(Rserverjava))
                 {
-                    ShowLog("Java路径正常", Brushes.Green);
+                    PrintLog("Java路径正常", Brushes.Green);
                 }
                 else
                 {
-                    ShowLog("Java路径有误", Brushes.Red);
+                    PrintLog("Java路径有误", Brushes.Red);
                 }
                 if (Directory.Exists(Rserverbase))
                 {
-                    ShowLog("服务器目录正常", Brushes.Green);
+                    PrintLog("服务器目录正常", Brushes.Green);
                 }
                 else
                 {
-                    ShowLog("服务器目录有误", Brushes.Red);
+                    PrintLog("服务器目录有误", Brushes.Red);
                 }
                 if (File.Exists(Rserverbase + "\\" + Rserverserver))
                 {
-                    ShowLog("服务端路径正常", Brushes.Green);
+                    PrintLog("服务端路径正常", Brushes.Green);
                 }
                 else
                 {
-                    ShowLog("服务端路径有误", Brushes.Red);
+                    PrintLog("服务端路径有误", Brushes.Red);
                 }
 
-                ShowLog("错误代码：" + e.Message, Brushes.Red);
+                PrintLog("错误代码：" + e.Message, Brushes.Red);
                 Shows.ShowMsgDialog(this, "出现错误，开服器已检测完毕，请根据检测信息对服务器设置进行更改！", "错误");
                 TabCtrl.SelectedIndex = 1;
                 ChangeControlsState(false);
             }
         }
-        void ChangeControlsState(bool isEnable = true)
+
+        private void ChangeControlsState(bool isEnable = true)
         {
             if (isEnable)
             {
@@ -750,7 +749,7 @@ namespace MSL
                 sendcmd.IsEnabled = true;
                 outlog.Document.Blocks.Clear();
                 Growl.Info("开服中，请稍等……");
-                ShowLog("正在开启服务器，请稍等...", Brushes.Green);
+                PrintLog("正在开启服务器，请稍等...", Brushes.Green);
             }
             else
             {
@@ -781,17 +780,20 @@ namespace MSL
             }
         }
 
-        private void p_OutputDataReceived(object sender, DataReceivedEventArgs e)
+        private void OutputDataReceived(object sender, DataReceivedEventArgs e)
         {
             if (e.Data != null)
             {
-                Dispatcher.Invoke(ReadStdOutput, new object[] { e.Data });
+                Dispatcher.Invoke(() =>
+                {
+                    ReadStdOutputAction(e.Data);
+                });
             }
         }
 
         #region 日志显示功能、彩色日志实现
         private static Brush tempbrush = Brushes.Green;
-        private void ShowLog(string msg, Brush color)
+        private void PrintLog(string msg, Brush color)
         {
             tempbrush = color;
             Paragraph p = new Paragraph();
@@ -966,7 +968,7 @@ namespace MSL
             {
                 if (msg.Contains("INFO]"))
                 {
-                    ShowLog("[" + DateTime.Now.ToString("T") + " 信息]" + msg.Substring(msg.IndexOf("INFO]") + 5), Brushes.Green);
+                    PrintLog("[" + DateTime.Now.ToString("T") + " 信息]" + msg.Substring(msg.IndexOf("INFO]") + 5), Brushes.Green);
                     //服务器启动成功和关闭时的提示
                     LogHandleInfo(msg);
                 }
@@ -978,24 +980,24 @@ namespace MSL
                     }
                     else
                     {
-                        ShowLog("[" + DateTime.Now.ToString("T") + " 警告]" + msg.Substring(msg.IndexOf("WARN]") + 5), Brushes.Orange);
+                        PrintLog("[" + DateTime.Now.ToString("T") + " 警告]" + msg.Substring(msg.IndexOf("WARN]") + 5), Brushes.Orange);
                         LogHandleWarn(msg);
                     }
                 }
                 else if (msg.Contains("ERROR]"))
                 {
-                    ShowLog("[" + DateTime.Now.ToString("T") + " 错误]" + msg.Substring(msg.IndexOf("ERROR]") + 6), Brushes.Red);
+                    PrintLog("[" + DateTime.Now.ToString("T") + " 错误]" + msg.Substring(msg.IndexOf("ERROR]") + 6), Brushes.Red);
                 }
                 else
                 {
-                    ShowLog(msg, Brushes.Green);
+                    PrintLog(msg, Brushes.Green);
                 }
             }
             else
             {
                 if (msg.Contains("INFO"))
                 {
-                    ShowLog(msg, Brushes.Green);
+                    PrintLog(msg, Brushes.Green);
                     LogHandleInfo(msg);
                 }
                 else if (msg.Contains("WARN"))
@@ -1006,23 +1008,23 @@ namespace MSL
                     }
                     else
                     {
-                        ShowLog(msg, Brushes.Orange);
+                        PrintLog(msg, Brushes.Orange);
                         LogHandleWarn(msg);
                     }
                 }
                 else if (msg.Contains("ERROR"))
                 {
-                    ShowLog(msg, Brushes.Red);
+                    PrintLog(msg, Brushes.Red);
                 }
                 else
                 {
-                    ShowLog(msg, tempbrush);
+                    PrintLog(msg, tempbrush);
                 }
             }
             if (msg.Contains("�"))
             {
                 Brush brush = tempbrush;
-                ShowLog("MSL检测到您的服务器输出了乱码日志，请尝试去“更多功能”界面更改服务器的“输出编码”来解决此问题！", Brushes.Red);
+                PrintLog("MSL检测到您的服务器输出了乱码日志，请尝试去“更多功能”界面更改服务器的“输出编码”来解决此问题！", Brushes.Red);
                 tempbrush = brush;
                 if (outlogEncodingAsk)
                 {
@@ -1076,7 +1078,7 @@ namespace MSL
             if (msg.Contains("Done") && msg.Contains("For help"))
             {
                 getServerInfoLine = 101;
-                ShowLog("已成功开启服务器！你可以输入stop来关闭服务器！\r\n服务器本地IP通常为:127.0.0.1，想要远程进入服务器，需要开通公网IP或使用内网映射，详情查看开服器的内网映射界面。", Brushes.Green);
+                PrintLog("已成功开启服务器！你可以输入stop来关闭服务器！\r\n服务器本地IP通常为:127.0.0.1，想要远程进入服务器，需要开通公网IP或使用内网映射，详情查看开服器的内网映射界面。", Brushes.Green);
                 Growl.Success("已成功开启服务器！");
                 serverStateLab.Content = "已开服";
                 Thread thread = new Thread(CheckOnlineMode);
@@ -1085,7 +1087,7 @@ namespace MSL
             else if (msg.Contains("加载完成") && msg.Contains("如需帮助"))
             {
                 getServerInfoLine = 101;
-                ShowLog("已成功开启服务器！你可以输入stop来关闭服务器！\r\n服务器本地IP通常为:127.0.0.1，想要远程进入服务器，需要开通公网IP或使用内网映射，详情参照开服器的内网映射界面。", Brushes.Green);
+                PrintLog("已成功开启服务器！你可以输入stop来关闭服务器！\r\n服务器本地IP通常为:127.0.0.1，想要远程进入服务器，需要开通公网IP或使用内网映射，详情参照开服器的内网映射界面。", Brushes.Green);
                 Growl.Success("已成功开启服务器！");
                 serverStateLab.Content = "已开服";
                 Thread thread = new Thread(CheckOnlineMode);
@@ -1093,7 +1095,7 @@ namespace MSL
             }
             else if (msg.Contains("Stopping server"))
             {
-                ShowLog("正在关闭服务器！", Brushes.Green);
+                PrintLog("正在关闭服务器！", Brushes.Green);
             }
 
             //玩家进服是否记录
@@ -1107,15 +1109,15 @@ namespace MSL
         {
             if (msg.Contains("FAILED TO BIND TO PORT"))
             {
-                ShowLog("警告：由于端口占用，服务器已自动关闭！请检查您的服务器是否多开或者有其他软件占用端口！\r\n解决方法：您可尝试通过重启电脑解决！", Brushes.Red);
+                PrintLog("警告：由于端口占用，服务器已自动关闭！请检查您的服务器是否多开或者有其他软件占用端口！\r\n解决方法：您可尝试通过重启电脑解决！", Brushes.Red);
             }
             else if (msg.Contains("Unable to access jarfile"))
             {
-                ShowLog("警告：无法访问JAR文件！您的服务端可能已损坏或路径中含有中文或其他特殊字符,请及时修改！", Brushes.Red);
+                PrintLog("警告：无法访问JAR文件！您的服务端可能已损坏或路径中含有中文或其他特殊字符,请及时修改！", Brushes.Red);
             }
             else if (msg.Contains("加载 Java 代理时出错"))
             {
-                ShowLog("警告：无法访问JAR文件！您的服务端可能已损坏或路径中含有中文或其他特殊字符,请及时修改！", Brushes.Red);
+                PrintLog("警告：无法访问JAR文件！您的服务端可能已损坏或路径中含有中文或其他特殊字符,请及时修改！", Brushes.Red);
             }
         }
 
@@ -1289,7 +1291,7 @@ namespace MSL
                     {
                         Dispatcher.Invoke(() =>
                         {
-                            ShowLog("检测到您没有关闭正版验证，如果客户端为离线登录的话，请点击“更多功能”里“关闭正版验证”按钮以关闭正版验证。否则离线账户将无法进入服务器！", Brushes.OrangeRed);
+                            PrintLog("检测到您没有关闭正版验证，如果客户端为离线登录的话，请点击“更多功能”里“关闭正版验证”按钮以关闭正版验证。否则离线账户将无法进入服务器！", Brushes.OrangeRed);
                             Growl.Info("检测到您没有关闭正版验证，您可前往“更多功能”界面点击“关闭正版验证”按钮以关闭。否则离线账户无法进入服务器！");
                             onlineModeLab.Content = "已开启";
                         });
@@ -1749,7 +1751,7 @@ namespace MSL
                                     if (candidates.Count != 1)
                                     {
                                         //显示候选项，用逗号分隔
-                                        ShowLog(string.Join(",", candidates), Brushes.Green);
+                                        PrintLog(string.Join(",", candidates), Brushes.Green);
                                         int multiComplete = 0;
                                         foreach (string command in candidates)
                                         {
@@ -1771,7 +1773,7 @@ namespace MSL
                                 else
                                 {
                                     //显示候选项，用逗号分隔
-                                    ShowLog(string.Join(",", candidates), Brushes.Green);
+                                    PrintLog(string.Join(",", candidates), Brushes.Green);
                                 }
                             }
                         }

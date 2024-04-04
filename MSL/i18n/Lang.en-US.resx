@@ -339,4 +339,7 @@ please click the configuration button to configure</value>
   <data name="MainWindow_GrowlMsg_UpdateWarning" xml:space="preserve">
     <value>您的服务器/内网映射/点对点联机正在运行中，若此时更新，会造成后台残留，请将前者关闭后再进行更新！</value>
   </data>
+  <data name="MainWindow_GrowlMsg_BetaVersion" xml:space="preserve">
+    <value>The current version is higher than the latest official version. If you encounter any bugs, please provide timely feedback to the developers!</value>
+  </data>
 </root>

@@ -147,6 +147,9 @@
   <data name="MainWindow_GrowlMsg_BeatVersion" xml:space="preserve">
     <value>当前版本高于正式版本，若使用中遇到BUG，请及时反馈！</value>
   </data>
+  <data name="MainWindow_GrowlMsg_BetaVersion" xml:space="preserve">
+    <value>当前版本高于最新正式版，若遇到Bug，请及时向开发者反馈！</value>
+  </data>
   <data name="MainWindow_GrowlMsg_CheckUpdateErr" xml:space="preserve">
     <value>检查更新失败！</value>
   </data>

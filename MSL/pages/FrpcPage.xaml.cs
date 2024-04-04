@@ -27,15 +27,16 @@ namespace MSL.pages
     /// </summary>
     public partial class FrpcPage : Page
     {
-        private delegate void DelReadStdOutput(string result);
+        //private delegate void DelReadStdOutput(string result);
         public static Process FRPCMD = new Process();
-        private event DelReadStdOutput ReadStdOutput;
-        private string _dnfrpc;
+        //private event DelReadStdOutput ReadStdOutput;
+        //private string _dnfrpc;
+
         public FrpcPage()
         {
             InitializeComponent();
-            ReadStdOutput += new DelReadStdOutput(ReadStdOutputAction);
-            FRPCMD.OutputDataReceived += new DataReceivedEventHandler(p_OutputDataReceived);
+            FRPCMD.OutputDataReceived += new DataReceivedEventHandler(OutputDataReceived);
+            //ReadStdOutput += new DelReadStdOutput(ReadStdOutputAction);
             MainWindow.AutoOpenFrpc += AutoStartFrpc;
         }
 
@@ -68,22 +69,20 @@ namespace MSL.pages
                         File.WriteAllText(@"MSL\config.json", convertString, Encoding.UTF8);
                         if (!File.Exists("MSL\\frpc.exe"))
                         {
-                            RefreshLink();
+                            string _dnfrpc = Functions.Get("/download/frpc/MSLFrp/amd64");
                             await Dispatcher.Invoke(async () =>
                             {
                                 await Shows.ShowDownloader(Window.GetWindow(this), _dnfrpc, "MSL", "frpc.exe", "下载内网映射中...");
                             });
-                            _dnfrpc = "";
                         }
                     }
                     else if (jobject["frpcversion"].ToString() != "6")
                     {
-                        RefreshLink();
+                        string _dnfrpc = Functions.Get("/download/frpc/MSLFrp/amd64");
                         await Dispatcher.Invoke(async () =>
                         {
                             await Shows.ShowDownloader(Window.GetWindow(this), _dnfrpc, "MSL", "frpc.exe", "更新内网映射中...");
                         });
-                        _dnfrpc = "";
                         jobject["frpcversion"] = "6";
                         string convertString = Convert.ToString(jobject);
                         File.WriteAllText("MSL\\config.json", convertString, Encoding.UTF8);
@@ -91,12 +90,11 @@ namespace MSL.pages
                     //内网映射检测
                     if (!File.Exists("MSL\\frpc.exe"))
                     {
-                        RefreshLink();
+                        string _dnfrpc = Functions.Get("/download/frpc/MSLFrp/amd64");
                         await Dispatcher.Invoke(async () =>
                         {
                             await Shows.ShowDownloader(Window.GetWindow(this), _dnfrpc, "MSL", "frpc.exe", "下载内网映射中...");
                         });
-                        _dnfrpc = "";
                     }
 
                     FRPCMD.StartInfo.WorkingDirectory = "MSL";
@@ -189,11 +187,14 @@ namespace MSL.pages
             Task.Run(() => StartFrpc());
         }
 
-        private void p_OutputDataReceived(object sender, DataReceivedEventArgs e)
+        private void OutputDataReceived(object sender, DataReceivedEventArgs e)
         {
             if (e.Data != null)
             {
-                Dispatcher.Invoke(ReadStdOutput, new object[] { e.Data });
+                Dispatcher.Invoke(() =>
+                {
+                    ReadStdOutputAction(e.Data);
+                });
             }
         }
 
@@ -434,24 +435,6 @@ namespace MSL.pages
             }
         }
 
-        void RefreshLink()
-        {
-            /*
-            string url = "https://api.waheal.top";
-            if (MainWindow.serverLink != "waheal.top")
-            {
-                url = "https://api." + MainWindow.serverLink;
-            }
-            */
-            //WebClient MyWebClient = new WebClient();
-            //byte[] pageData = MyWebClient.DownloadData(url + "/otherdownloads");
-            //string _javaList = Encoding.UTF8.GetString(pageData);
-
-            //JObject javaList0 = JObject.Parse(_javaList);
-            //_dnfrpc = javaList0["frpc"].ToString();
-            _dnfrpc = Functions.Get("/download/frpc/MSLFrp/amd64");
-        }
-
         private void startfrpc_Click(object sender, RoutedEventArgs e)
         {
             if (startfrpc.Content.ToString() == "启动内网映射")
@@ -489,10 +472,6 @@ namespace MSL.pages
         public enum ConsoleCtrlEvent
         {
             CTRL_C = 0,
-            CTRL_BREAK = 1,
-            CTRL_CLOSE = 2,
-            CTRL_LOGOFF = 5,
-            CTRL_SHUTDOWN = 6
         }
 
         public static async Task StopProcess(Process process)

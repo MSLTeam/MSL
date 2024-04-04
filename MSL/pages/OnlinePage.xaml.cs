@@ -23,15 +23,17 @@ namespace MSL.pages
     /// </summary>
     public partial class OnlinePage : Page
     {
-        public delegate void DelReadStdOutput(string result);
+        //public delegate void DelReadStdOutput(string result);
         public static Process FRPCMD = new Process();
-        public event DelReadStdOutput ReadStdOutput;
-        string _dnfrpc;
-        bool isMaster;
+        //public event DelReadStdOutput ReadStdOutput;
+        //string _dnfrpc;
+        private bool isMaster;
+
         public OnlinePage()
         {
             InitializeComponent();
-            ReadStdOutput += new DelReadStdOutput(ReadStdOutputAction);
+            FRPCMD.OutputDataReceived += new DataReceivedEventHandler(OutputDataReceived);
+            //ReadStdOutput += new DelReadStdOutput(ReadStdOutputAction);
         }
 
         private void Page_Loaded(object sender, RoutedEventArgs e)
@@ -148,7 +150,7 @@ namespace MSL.pages
                     visiterExp.IsEnabled = true;
                     Growl.Success("关闭成功！");
                     FRPCMD.CancelOutputRead();
-                    FRPCMD.OutputDataReceived -= new DataReceivedEventHandler(p_OutputDataReceived);
+                    //FRPCMD.OutputDataReceived -= new DataReceivedEventHandler(p_OutputDataReceived);
                     createRoom.Content = "点击创建房间";
                 }
             }
@@ -159,14 +161,14 @@ namespace MSL.pages
                     FRPCMD.Kill();
                     Thread.Sleep(200);
                     FRPCMD.CancelOutputRead();
-                    FRPCMD.OutputDataReceived -= new DataReceivedEventHandler(p_OutputDataReceived);
+                    //FRPCMD.OutputDataReceived -= new DataReceivedEventHandler(p_OutputDataReceived);
                 }
                 catch
                 {
                     try
                     {
                         FRPCMD.CancelOutputRead();
-                        FRPCMD.OutputDataReceived -= new DataReceivedEventHandler(p_OutputDataReceived);
+                        //FRPCMD.OutputDataReceived -= new DataReceivedEventHandler(p_OutputDataReceived);
                     }
                     catch
                     { }
@@ -194,7 +196,7 @@ namespace MSL.pages
                     masterExp.IsEnabled = true;
                     Growl.Success("关闭成功！");
                     FRPCMD.CancelOutputRead();
-                    FRPCMD.OutputDataReceived -= new DataReceivedEventHandler(p_OutputDataReceived);
+                    //FRPCMD.OutputDataReceived -= new DataReceivedEventHandler(p_OutputDataReceived);
                     joinRoom.Content = "点击加入房间";
                 }
             }
@@ -205,14 +207,14 @@ namespace MSL.pages
                     FRPCMD.Kill();
                     Thread.Sleep(200);
                     FRPCMD.CancelOutputRead();
-                    FRPCMD.OutputDataReceived -= new DataReceivedEventHandler(p_OutputDataReceived);
+                    //FRPCMD.OutputDataReceived -= new DataReceivedEventHandler(p_OutputDataReceived);
                 }
                 catch
                 {
                     try
                     {
                         FRPCMD.CancelOutputRead();
-                        FRPCMD.OutputDataReceived -= new DataReceivedEventHandler(p_OutputDataReceived);
+                        //FRPCMD.OutputDataReceived -= new DataReceivedEventHandler(p_OutputDataReceived);
                     }
                     catch
                     { }
@@ -240,16 +242,14 @@ namespace MSL.pages
                         File.WriteAllText(@"MSL\config.json", convertString, Encoding.UTF8);
                         if (!File.Exists("MSL\\frpc.exe"))
                         {
-                            RefreshLink();
+                            string _dnfrpc = Functions.Get("/download/frpc/MSLFrp/amd64");
                             await Shows.ShowDownloader(Window.GetWindow(this), _dnfrpc, "MSL", "frpc.exe", "下载内网映射中...");
-                            _dnfrpc = "";
                         }
                     }
                     else if (jobject2["frpcversion"].ToString() != "6")
                     {
-                        RefreshLink();
+                        string _dnfrpc = Functions.Get("/download/frpc/MSLFrp/amd64");
                         await Shows.ShowDownloader(Window.GetWindow(this), _dnfrpc, "MSL", "frpc.exe", "更新内网映射中...");
-                        _dnfrpc = "";
                         JObject jobject3 = JObject.Parse(File.ReadAllText("MSL\\config.json", Encoding.UTF8));
                         jobject3["frpcversion"] = "6";
                         string convertString2 = Convert.ToString(jobject3);
@@ -257,9 +257,8 @@ namespace MSL.pages
                     }
                     else if (!File.Exists("MSL\\frpc.exe"))
                     {
-                        RefreshLink();
+                        string _dnfrpc = Functions.Get("/download/frpc/MSLFrp/amd64");
                         await Shows.ShowDownloader(Window.GetWindow(this), _dnfrpc, "MSL", "frpc.exe", "下载内网映射中...");
-                        _dnfrpc = "";
                     }
                 }
                 catch
@@ -283,7 +282,6 @@ namespace MSL.pages
                 FRPCMD.StartInfo.UseShellExecute = false;
                 FRPCMD.StartInfo.RedirectStandardInput = true;
                 FRPCMD.StartInfo.RedirectStandardOutput = true;
-                FRPCMD.OutputDataReceived += new DataReceivedEventHandler(p_OutputDataReceived);
                 FRPCMD.Start();
                 FRPCMD.BeginOutputReadLine();
             }
@@ -292,27 +290,15 @@ namespace MSL.pages
                 MessageBox.Show("出现错误，请检查是否有杀毒软件误杀并重试:" + e.Message, "错误", MessageBoxButton.OK, MessageBoxImage.Error);
             }
         }
-        void RefreshLink()
-        {
-            string url = "https://api.waheal.top";
-            if (MainWindow.serverLink != "waheal.top")
-            {
-                url = "https://api." + MainWindow.serverLink;
-            }
-            //WebClient MyWebClient = new WebClient();
-            //byte[] pageData = MyWebClient.DownloadData(url + "/otherdownloads");
-            //string _javaList = Encoding.UTF8.GetString(pageData);
 
-            //JObject javaList0 = JObject.Parse(_javaList);
-            //_dnfrpc = javaList0["frpc"].ToString();
-            _dnfrpc = Functions.Get("/download/frpc/MSLFrp/amd64");
-        }
-
-        private void p_OutputDataReceived(object sender, DataReceivedEventArgs e)
+        private void OutputDataReceived(object sender, DataReceivedEventArgs e)
         {
             if (e.Data != null)
             {
-                Dispatcher.Invoke(ReadStdOutput, new object[] { e.Data });
+                Dispatcher.Invoke(() =>
+                {
+                    ReadStdOutputAction(e.Data);
+                });
             }
         }
         private void ReadStdOutputAction(string msg)
@@ -328,14 +314,14 @@ namespace MSL.pages
                         FRPCMD.Kill();
                         Thread.Sleep(200);
                         FRPCMD.CancelOutputRead();
-                        FRPCMD.OutputDataReceived -= new DataReceivedEventHandler(p_OutputDataReceived);
+                        //FRPCMD.OutputDataReceived -= new DataReceivedEventHandler(p_OutputDataReceived);
                     }
                     catch
                     {
                         try
                         {
                             FRPCMD.CancelOutputRead();
-                            FRPCMD.OutputDataReceived -= new DataReceivedEventHandler(p_OutputDataReceived);
+                            //FRPCMD.OutputDataReceived -= new DataReceivedEventHandler(p_OutputDataReceived);
                         }
                         catch
                         { }
@@ -373,7 +359,7 @@ namespace MSL.pages
                         Thread.Sleep(200);
                         FRPCMD.CancelOutputRead();
                         //ReadStdOutput = null;
-                        FRPCMD.OutputDataReceived -= new DataReceivedEventHandler(p_OutputDataReceived);
+                        //FRPCMD.OutputDataReceived -= new DataReceivedEventHandler(p_OutputDataReceived);
                     }
                     catch
                     {
@@ -381,7 +367,7 @@ namespace MSL.pages
                         {
                             FRPCMD.CancelOutputRead();
                             //ReadStdOutput = null;
-                            FRPCMD.OutputDataReceived -= new DataReceivedEventHandler(p_OutputDataReceived);
+                            //FRPCMD.OutputDataReceived -= new DataReceivedEventHandler(p_OutputDataReceived);
                         }
                         catch
                         { }

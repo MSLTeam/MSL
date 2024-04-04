@@ -210,12 +210,12 @@ namespace MSL.pages.frpProviders
                         string a100 = portBox.Text.Substring(0, portBox.Text.IndexOf("|"));
                         string Ru2 = portBox.Text.Substring(portBox.Text.IndexOf("|"));
                         string a200 = Ru2.Substring(Ru2.IndexOf("|") + 1);
-                        frpc += "\n[tcp]\n\ttype = tcp\n";
+                        frpc += "\n[tcp]\ntype = tcp\n";
                         frpc += "local_ip = 127.0.0.1\n";
                         frpc += "local_port = " + a100 + "\n";
                         frpc += "remote_port = " + n + "\n";
                         frpc += compressionArg + "\n";
-                        frpc += "\n[udp]\n\ttype = udp\n";
+                        frpc += "\n[udp]\ntype = udp\n";
                         frpc += "local_ip = 127.0.0.1\n";
                         frpc += "local_port = " + a200 + "\n";
                         frpc += "remote_port = " + n + "\n";
@@ -585,7 +585,6 @@ namespace MSL.pages.frpProviders
                         ["qq"] = qq,
                     };
                     var ret = await Task.Run(() => Functions.Post("getpassword", 0, JsonConvert.SerializeObject(keyValuePairs), "http://111.180.189.249:7004"));
-                    //window.Focus();
                     _dialog.CloseTextDialog();
                     JObject keyValues = JObject.Parse(ret);
                     if (keyValues != null && int.Parse(keyValues["status"].ToString()) == 0)
@@ -594,7 +593,6 @@ namespace MSL.pages.frpProviders
                         bool dialog = await Shows.ShowMsgDialogAsync(Window.GetWindow(this), "您的付费密码为：" + passwd + "\n注册时间：" + keyValues["registration"].ToString() + "\n付费时长：" + keyValues["days"].ToString() + "天\n到期时间：" + keyValues["expiration"].ToString(), "购买成功！", true, "确定", "复制密码");
                         if (dialog)
                         {
-                            //passwordBox.Password = passwd;
                             Clipboard.SetDataObject(passwd);
                         }
                     }

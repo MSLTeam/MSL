@@ -4,7 +4,8 @@
       xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006" 
       xmlns:d="http://schemas.microsoft.com/expression/blend/2008" 
       xmlns:hc="https://handyorg.github.io/handycontrol"
-      xmlns:local="clr-namespace:MSL.pages" xmlns:langs="clr-namespace:MSL.i18n"
+      xmlns:local="clr-namespace:MSL.pages"
+      xmlns:langs="clr-namespace:MSL.i18n"
       mc:Ignorable="d" d:DesignHeight="460" d:DesignWidth="750"
       Title="FrpcPage" Loaded="Page_Loaded">
     <Page.RenderTransform>
@@ -26,11 +27,9 @@
                 <TextBlock x:Name="frplab1" Text="{Binding [Pages_Frpc_Status], Source={x:Static langs:LanguageManager.Instance}}" VerticalAlignment="Top" FontSize="16" Foreground="Red" HorizontalAlignment="Left" Margin="10,5,0,0"/>
                 <StackPanel Orientation="Horizontal" Margin="10,10,0,0">
                     <TextBlock Text="{Binding [Pages_Frpc_IP], Source={x:Static langs:LanguageManager.Instance}}" HorizontalAlignment="Center"  VerticalAlignment="Center" FontSize="16" Foreground="{DynamicResource PrimaryTextBrush}"/>
-                    <TextBlock x:Name="frplab3" Text="{Binding [Pages_Frpc_IPNull], Source={x:Static langs:LanguageManager.Instance}}" HorizontalAlignment="Left" VerticalAlignment="Center" FontSize="16" Foreground="{DynamicResource PrimaryTextBrush}" Margin="3,0,15,0"/>
-                    <Button x:Name="copyFrpc" Content="{Binding [Pages_Frpc_Copy], Source={x:Static langs:LanguageManager.Instance}}" HorizontalAlignment="Right" FontSize="14"   VerticalAlignment="Top" Width="100" Height="35" FontWeight="Normal" IsEnabled="False" Click="copyFrpc_Click"/>
+                    <TextBlock x:Name="frplab3" Text="{Binding [Pages_Frpc_IPNull], Source={x:Static langs:LanguageManager.Instance}}" HorizontalAlignment="Left" VerticalAlignment="Center" FontSize="16" Foreground="{DynamicResource PrimaryTextBrush}" Margin="3,0,30,0"/>
+                    <Button x:Name="copyFrpc" Content="{Binding [Pages_Frpc_Copy], Source={x:Static langs:LanguageManager.Instance}}" HorizontalAlignment="Right" FontSize="14" VerticalAlignment="Top" Width="100" Height="35" FontWeight="Normal" IsEnabled="False" Click="copyFrpc_Click"/>
                 </StackPanel>
-
-               
             </StackPanel>
             <Grid Grid.Row="1" Margin="10,10,0,0">
                 <Grid.ColumnDefinitions>
@@ -42,8 +41,8 @@
                 </Grid.RowDefinitions>
                 <TextBox Grid.Row="0" Grid.Column="0" x:Name="frpcOutlog"  TextWrapping="Wrap" Text="Logs" IsReadOnly="True" HorizontalScrollBarVisibility="Visible" VerticalScrollBarVisibility="Auto" VerticalContentAlignment="Top" Padding="10"/>
                 <StackPanel Grid.Column="1" VerticalAlignment="Center" Margin="10,0,5,0">
-                    <Button x:Name="setfrpc" Content="{Binding [Pages_Frpc_Configuration], Source={x:Static langs:LanguageManager.Instance}}" HorizontalAlignment="Right"  VerticalAlignment="Top" Width="140" Height="60" FontSize="16" Click="setfrpc_Click" Margin="0,0,0,20"/>
-                    <Button x:Name="startfrpc" Content="{Binding [Pages_Frpc_Launch], Source={x:Static langs:LanguageManager.Instance}}" Style="{StaticResource ButtonPrimary}" HorizontalAlignment="Right"  Width="140" Height="60" FontSize="16" IsEnabled="False" Click="startfrpc_Click" VerticalAlignment="Top"/>
+                    <Button x:Name="setfrpc" Content="{Binding [Pages_Frpc_Configuration], Source={x:Static langs:LanguageManager.Instance}}" HorizontalAlignment="Right" Width="140" Height="60" FontSize="16" Click="setfrpc_Click" Margin="0,0,0,50"/>
+                    <Button x:Name="startfrpc" Content="{Binding [Pages_Frpc_Launch], Source={x:Static langs:LanguageManager.Instance}}" Style="{StaticResource ButtonPrimary}" HorizontalAlignment="Right"  Width="140" Height="60" FontSize="16" IsEnabled="False" Click="startfrpc_Click"/>
                 </StackPanel>
             </Grid>
            

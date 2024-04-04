@@ -20,6 +20,7 @@ namespace MSL.pages
         public static event DeleControl CreateServerEvent;
         public static event DeleControl AutoOpenServer;
         public static event DeleControl GotoFrpcEvent;
+
         public Home()
         {
             InitializeComponent();

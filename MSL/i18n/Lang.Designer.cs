@@ -151,6 +151,15 @@ namespace MSL.i18n {
         }
         
         /// <summary>
+        ///   查找类似 当前版本高于最新正式版，若遇到Bug，请及时向开发者反馈！ 的本地化字符串。
+        /// </summary>
+        internal static string MainWindow_GrowlMsg_BetaVersion {
+            get {
+                return ResourceManager.GetString("MainWindow_GrowlMsg_BetaVersion", resourceCulture);
+            }
+        }
+        
+        /// <summary>
         ///   查找类似 检查更新失败！ 的本地化字符串。
         /// </summary>
         internal static string MainWindow_GrowlMsg_CheckUpdateErr {

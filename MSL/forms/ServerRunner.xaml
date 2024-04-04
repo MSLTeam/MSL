@@ -116,7 +116,7 @@
                 </Grid>
             </TabItem>
             <TabItem Header="服务器控制台" Background="{DynamicResource SideMenuBrush}">
-                <Grid>
+                <Grid x:Name="CmdGrid">
                     <Grid.RenderTransform>
                         <TranslateTransform/>
                     </Grid.RenderTransform>
