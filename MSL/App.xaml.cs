@@ -47,16 +47,23 @@ namespace MSL
         /// <returns></returns>
         private static System.Diagnostics.Process GetExistProcess()
         {
-            System.Diagnostics.Process currentProcess = System.Diagnostics.Process.GetCurrentProcess();
-            foreach (System.Diagnostics.Process process1 in System.Diagnostics.Process.GetProcessesByName(currentProcess.ProcessName))
+            try
             {
-                if ((process1.Id != currentProcess.Id) &&
-                     (Assembly.GetExecutingAssembly().Location == currentProcess.MainModule.FileName))
+                System.Diagnostics.Process currentProcess = System.Diagnostics.Process.GetCurrentProcess();
+                foreach (System.Diagnostics.Process process1 in System.Diagnostics.Process.GetProcessesByName(currentProcess.ProcessName))
                 {
-                    return process1;
+                    if ((process1.Id != currentProcess.Id) &&
+                         (Assembly.GetExecutingAssembly().Location == currentProcess.MainModule.FileName))
+                    {
+                        return process1;
+                    }
                 }
+                return null;
             }
-            return null;
+            catch
+            {
+                return null;
+            }
         }
 
         #region DllImport...
