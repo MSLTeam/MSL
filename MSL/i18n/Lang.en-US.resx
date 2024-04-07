@@ -342,4 +342,49 @@ please click the configuration button to configure</value>
   <data name="MainWindow_GrowlMsg_BetaVersion" xml:space="preserve">
     <value>The current version is higher than the latest official version. If you encounter bugs, please provide timely feedback to the developers!</value>
   </data>
+  <data name="Pages_Online_CreateBtn" xml:space="preserve">
+    <value>点击创建房间</value>
+  </data>
+  <data name="Pages_Online_Create_key" xml:space="preserve">
+    <value>房间密钥：</value>
+  </data>
+  <data name="Pages_Online_Create_Port" xml:space="preserve">
+    <value>游戏端口</value>
+  </data>
+  <data name="Pages_Online_Create_QQn" xml:space="preserve">
+    <value>QQ号：</value>
+  </data>
+  <data name="Pages_Online_EnterBtn" xml:space="preserve">
+    <value>点击加入房间</value>
+  </data>
+  <data name="Pages_Online_Enter_Key" xml:space="preserve">
+    <value>房间密钥：</value>
+  </data>
+  <data name="Pages_Online_Enter_Port" xml:space="preserve">
+    <value>绑定端口（默认25565，非必要别改）：</value>
+  </data>
+  <data name="Pages_Online_Enter_QQn" xml:space="preserve">
+    <value>房主QQ号：</value>
+  </data>
+  <data name="Pages_Online_HeaderCreate" xml:space="preserve">
+    <value>创建房间——房主</value>
+  </data>
+  <data name="Pages_Online_Header_Enter" xml:space="preserve">
+    <value>进入房间——成员</value>
+  </data>
+  <data name="Pages_Online_Log" xml:space="preserve">
+    <value>日志</value>
+  </data>
+  <data name="Pages_Online_ServerStatusChecking" xml:space="preserve">
+    <value>服务器状态：检测中</value>
+  </data>
+  <data name="Pages_Online_Tips1" xml:space="preserve">
+    <value>联机教程</value>
+  </data>
+  <data name="Pages_Online_TipsOpenWeb" xml:space="preserve">
+    <value>点击打开网站</value>
+  </data>
+  <data name="Pages_Online_Titole" xml:space="preserve">
+    <value>点对点联机</value>
+  </data>
 </root>

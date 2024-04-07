@@ -571,6 +571,141 @@ namespace MSL.i18n {
         }
         
         /// <summary>
+        ///   查找类似 房间密钥： 的本地化字符串。
+        /// </summary>
+        internal static string Pages_Online_Create_key {
+            get {
+                return ResourceManager.GetString("Pages_Online_Create_key", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   查找类似 游戏端口 的本地化字符串。
+        /// </summary>
+        internal static string Pages_Online_Create_Port {
+            get {
+                return ResourceManager.GetString("Pages_Online_Create_Port", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   查找类似 QQ号： 的本地化字符串。
+        /// </summary>
+        internal static string Pages_Online_Create_QQn {
+            get {
+                return ResourceManager.GetString("Pages_Online_Create_QQn", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   查找类似 点击创建房间 的本地化字符串。
+        /// </summary>
+        internal static string Pages_Online_CreateBtn {
+            get {
+                return ResourceManager.GetString("Pages_Online_CreateBtn", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   查找类似 房间密钥： 的本地化字符串。
+        /// </summary>
+        internal static string Pages_Online_Enter_Key {
+            get {
+                return ResourceManager.GetString("Pages_Online_Enter_Key", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   查找类似 绑定端口（默认25565，非必要别改）： 的本地化字符串。
+        /// </summary>
+        internal static string Pages_Online_Enter_Port {
+            get {
+                return ResourceManager.GetString("Pages_Online_Enter_Port", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   查找类似 房主QQ号： 的本地化字符串。
+        /// </summary>
+        internal static string Pages_Online_Enter_QQn {
+            get {
+                return ResourceManager.GetString("Pages_Online_Enter_QQn", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   查找类似 点击加入房间 的本地化字符串。
+        /// </summary>
+        internal static string Pages_Online_EnterBtn {
+            get {
+                return ResourceManager.GetString("Pages_Online_EnterBtn", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   查找类似 进入房间——成员 的本地化字符串。
+        /// </summary>
+        internal static string Pages_Online_Header_Enter {
+            get {
+                return ResourceManager.GetString("Pages_Online_Header_Enter", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   查找类似 创建房间——房主 的本地化字符串。
+        /// </summary>
+        internal static string Pages_Online_HeaderCreate {
+            get {
+                return ResourceManager.GetString("Pages_Online_HeaderCreate", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   查找类似 日志 的本地化字符串。
+        /// </summary>
+        internal static string Pages_Online_Log {
+            get {
+                return ResourceManager.GetString("Pages_Online_Log", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   查找类似 服务器状态：检测中 的本地化字符串。
+        /// </summary>
+        internal static string Pages_Online_ServerStatusChecking {
+            get {
+                return ResourceManager.GetString("Pages_Online_ServerStatusChecking", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   查找类似 联机教程 的本地化字符串。
+        /// </summary>
+        internal static string Pages_Online_Tips1 {
+            get {
+                return ResourceManager.GetString("Pages_Online_Tips1", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   查找类似 点击打开网站 的本地化字符串。
+        /// </summary>
+        internal static string Pages_Online_TipsOpenWeb {
+            get {
+                return ResourceManager.GetString("Pages_Online_TipsOpenWeb", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   查找类似 点对点联机 的本地化字符串。
+        /// </summary>
+        internal static string Pages_Online_Titole {
+            get {
+                return ResourceManager.GetString("Pages_Online_Titole", resourceCulture);
+            }
+        }
+        
+        /// <summary>
         ///   查找类似 注意：此功能目前不稳定，无法穿透所有类型的NAT，若联机失败，请尝试开服务器并使用内网映射联机！
         ///该功能可能需要正版账户，若无法联机，请从网络上寻找解决方法或尝试开服务器并使用内网映射联机！ 的本地化字符串。
         /// </summary>
