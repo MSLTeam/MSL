@@ -571,6 +571,24 @@ namespace MSL.i18n {
         }
         
         /// <summary>
+        ///   查找类似 关闭房间 的本地化字符串。
+        /// </summary>
+        internal static string Pages_Online_Close {
+            get {
+                return ResourceManager.GetString("Pages_Online_Close", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   查找类似 关闭成功！ 的本地化字符串。
+        /// </summary>
+        internal static string Pages_Online_CloseSuc {
+            get {
+                return ResourceManager.GetString("Pages_Online_CloseSuc", resourceCulture);
+            }
+        }
+        
+        /// <summary>
         ///   查找类似 房间密钥： 的本地化字符串。
         /// </summary>
         internal static string Pages_Online_Create_key {
@@ -580,7 +598,7 @@ namespace MSL.i18n {
         }
         
         /// <summary>
-        ///   查找类似 游戏端口 的本地化字符串。
+        ///   查找类似 游戏端口： 的本地化字符串。
         /// </summary>
         internal static string Pages_Online_Create_Port {
             get {
@@ -603,6 +621,15 @@ namespace MSL.i18n {
         internal static string Pages_Online_CreateBtn {
             get {
                 return ResourceManager.GetString("Pages_Online_CreateBtn", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   查找类似 下载内网映射中··· 的本地化字符串。
+        /// </summary>
+        internal static string Pages_Online_DlFrpc {
+            get {
+                return ResourceManager.GetString("Pages_Online_DlFrpc", resourceCulture);
             }
         }
         
@@ -643,6 +670,33 @@ namespace MSL.i18n {
         }
         
         /// <summary>
+        ///   查找类似 桥接失败！ 的本地化字符串。
+        /// </summary>
+        internal static string Pages_Online_Err {
+            get {
+                return ResourceManager.GetString("Pages_Online_Err", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   查找类似 出现错误，请检查是否有杀毒软件误杀并重试: 的本地化字符串。
+        /// </summary>
+        internal static string Pages_Online_ErrMsg1 {
+            get {
+                return ResourceManager.GetString("Pages_Online_ErrMsg1", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   查找类似 退出房间 的本地化字符串。
+        /// </summary>
+        internal static string Pages_Online_ExitRoom {
+            get {
+                return ResourceManager.GetString("Pages_Online_ExitRoom", resourceCulture);
+            }
+        }
+        
+        /// <summary>
         ///   查找类似 进入房间——成员 的本地化字符串。
         /// </summary>
         internal static string Pages_Online_Header_Enter {
@@ -666,6 +720,15 @@ namespace MSL.i18n {
         internal static string Pages_Online_Log {
             get {
                 return ResourceManager.GetString("Pages_Online_Log", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   查找类似 登录服务器成功！ 的本地化字符串。
+        /// </summary>
+        internal static string Pages_Online_LoginSuc {
+            get {
+                return ResourceManager.GetString("Pages_Online_LoginSuc", resourceCulture);
             }
         }
         
@@ -697,6 +760,15 @@ namespace MSL.i18n {
         }
         
         /// <summary>
+        ///   查找类似 桥接成功！ 的本地化字符串。
+        /// </summary>
+        internal static string Pages_Online_Suc {
+            get {
+                return ResourceManager.GetString("Pages_Online_Suc", resourceCulture);
+            }
+        }
+        
+        /// <summary>
         ///   查找类似 联机教程 的本地化字符串。
         /// </summary>
         internal static string Pages_Online_Tips1 {
@@ -720,6 +792,15 @@ namespace MSL.i18n {
         internal static string Pages_Online_Title {
             get {
                 return ResourceManager.GetString("Pages_Online_Title", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   查找类似 更新内网映射中··· 的本地化字符串。
+        /// </summary>
+        internal static string Pages_Online_UdFrpc {
+            get {
+                return ResourceManager.GetString("Pages_Online_UdFrpc", resourceCulture);
             }
         }
         

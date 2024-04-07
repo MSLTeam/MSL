@@ -135,7 +135,7 @@ namespace MSL.pages
         {
             try
             {
-                if (createRoom.Content.ToString() != "关闭房间")
+                if (createRoom.Content.ToString() != LanguageManager.Instance["Pages_Online_Close"])
                 {
                     string a = "[common]\r\nserver_port = 7000\r\nserver_addr = 47.243.96.125\r\n\r\n[" + masterQQ.Text + "]\r\ntype = xtcp\r\nlocal_ip = 127.0.0.1\r\nlocal_port = " + masterPort.Text + "\r\nsk = " + masterKey.Text + "\r\n";
                     File.WriteAllText("MSL\\P2Pfrpc", a);
@@ -148,7 +148,7 @@ namespace MSL.pages
                     FRPCMD.Kill();
                     Thread.Sleep(200);
                     visiterExp.IsEnabled = true;
-                    Growl.Success("关闭成功！");
+                    Growl.Success(LanguageManager.Instance["Pages_Online_CloseSuc"]);
                     FRPCMD.CancelOutputRead();
                     //FRPCMD.OutputDataReceived -= new DataReceivedEventHandler(p_OutputDataReceived);
                     createRoom.Content = LanguageManager.Instance["Pages_Online_CreateBtn"];
@@ -181,7 +181,7 @@ namespace MSL.pages
         {
             try
             {
-                if (joinRoom.Content.ToString() != "退出房间")
+                if (joinRoom.Content.ToString() != LanguageManager.Instance["Pages_Online_ExitRoom"])
                 {
                     string a = "[common]\r\nserver_port = 7000\r\nserver_addr = 47.243.96.125\r\n\r\n[p2p_ssh_visitor]\r\ntype = xtcp\r\nrole = visitor\r\nbind_addr = 127.0.0.1\r\nbind_port = " + visiterPort.Text + "\r\nserver_name = " + visiterQQ.Text + "\r\nsk = " + visiterKey.Text + "\r\n";
                     File.WriteAllText("MSL\\P2Pfrpc", a);
@@ -194,7 +194,7 @@ namespace MSL.pages
                     FRPCMD.Kill();
                     Thread.Sleep(200);
                     masterExp.IsEnabled = true;
-                    Growl.Success("关闭成功！");
+                    Growl.Success(LanguageManager.Instance["Pages_Online_CloseSuc"]);
                     FRPCMD.CancelOutputRead();
                     //FRPCMD.OutputDataReceived -= new DataReceivedEventHandler(p_OutputDataReceived);
                     joinRoom.Content = LanguageManager.Instance["Pages_Online_EnterBtn"];
@@ -243,13 +243,13 @@ namespace MSL.pages
                         if (!File.Exists("MSL\\frpc.exe"))
                         {
                             string _dnfrpc = Functions.Get("/download/frpc/MSLFrp/amd64");
-                            await Shows.ShowDownloader(Window.GetWindow(this), _dnfrpc, "MSL", "frpc.exe", "下载内网映射中...");
+                            await Shows.ShowDownloader(Window.GetWindow(this), _dnfrpc, "MSL", "frpc.exe", LanguageManager.Instance["Pages_Online_DlFrpc"]);
                         }
                     }
                     else if (jobject2["frpcversion"].ToString() != "6")
                     {
                         string _dnfrpc = Functions.Get("/download/frpc/MSLFrp/amd64");
-                        await Shows.ShowDownloader(Window.GetWindow(this), _dnfrpc, "MSL", "frpc.exe", "更新内网映射中...");
+                        await Shows.ShowDownloader(Window.GetWindow(this), _dnfrpc, "MSL", "frpc.exe", LanguageManager.Instance["Pages_Online_UdFrpc"]);
                         JObject jobject3 = JObject.Parse(File.ReadAllText("MSL\\config.json", Encoding.UTF8));
                         jobject3["frpcversion"] = "6";
                         string convertString2 = Convert.ToString(jobject3);
@@ -258,7 +258,7 @@ namespace MSL.pages
                     else if (!File.Exists("MSL\\frpc.exe"))
                     {
                         string _dnfrpc = Functions.Get("/download/frpc/MSLFrp/amd64");
-                        await Shows.ShowDownloader(Window.GetWindow(this), _dnfrpc, "MSL", "frpc.exe", "下载内网映射中...");
+                        await Shows.ShowDownloader(Window.GetWindow(this), _dnfrpc, "MSL", "frpc.exe", LanguageManager.Instance["Pages_Online_DlFrpc"]);
                     }
                 }
                 catch
@@ -267,11 +267,11 @@ namespace MSL.pages
                 }
                 if (isMaster)
                 {
-                    createRoom.Content = "关闭房间";
+                    createRoom.Content = LanguageManager.Instance["Pages_Online_Close"];
                 }
                 else
                 {
-                    joinRoom.Content = "退出房间";
+                    joinRoom.Content = LanguageManager.Instance["Pages_Online_ExitRoom"];
                 }
                 frpcOutlog.Text = "";
                 //Directory.SetCurrentDirectory("MSL");
@@ -287,7 +287,7 @@ namespace MSL.pages
             }
             catch (Exception e)
             {
-                MessageBox.Show("出现错误，请检查是否有杀毒软件误杀并重试:" + e.Message, "错误", MessageBoxButton.OK, MessageBoxImage.Error);
+                MessageBox.Show(LanguageManager.Instance["Pages_Online_ErrMsg1"] + e.Message, LanguageManager.Instance["Dialog_Err"], MessageBoxButton.OK, MessageBoxImage.Error);
             }
         }
 
@@ -308,7 +308,7 @@ namespace MSL.pages
             {
                 if (msg.IndexOf("failed") + 1 != 0)
                 {
-                    Growl.Error("桥接失败！");
+                    Growl.Error(LanguageManager.Instance["Pages_Online_Err"]);
                     try
                     {
                         FRPCMD.Kill();
@@ -339,20 +339,20 @@ namespace MSL.pages
                 }
                 if (msg.IndexOf("success") + 1 != 0)
                 {
-                    frpcOutlog.Text = frpcOutlog.Text + "登录服务器成功！\n";
+                    frpcOutlog.Text = frpcOutlog.Text + LanguageManager.Instance["Pages_Online_LoginSuc"] + "\n";
                 }
             }
             if (msg.IndexOf("start") + 1 != 0)
             {
                 if (msg.IndexOf("success") + 1 != 0)
                 {
-                    frpcOutlog.Text = frpcOutlog.Text + "桥接成功！\n";
-                    Growl.Success("桥接完成！");
+                    frpcOutlog.Text = frpcOutlog.Text + LanguageManager.Instance["Pages_Online_Suc"] + "\n";
+                    Growl.Success(LanguageManager.Instance["Pages_Online_Suc"]);
                 }
                 if (msg.IndexOf("error") + 1 != 0)
                 {
-                    frpcOutlog.Text = frpcOutlog.Text + "桥接失败！\n";
-                    Growl.Error("桥接失败！");
+                    frpcOutlog.Text = frpcOutlog.Text + LanguageManager.Instance["Pages_Online_Err"] + "\n";
+                    Growl.Error(LanguageManager.Instance["Pages_Online_Err"]);
                     try
                     {
                         FRPCMD.Kill();
