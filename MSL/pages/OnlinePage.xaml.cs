@@ -53,7 +53,7 @@ namespace MSL.pages
             else
             {
                 //Shows.ShowMsgDialog(Window.GetWindow(this),"注意：此功能目前不稳定，无法穿透所有类型的NAT，若联机失败，请尝试开服务器并使用内网映射联机！\r\n该功能可能需要正版账户，若无法联机，请从网络上寻找解决方法或尝试开服务器并使用内网映射联机！", "警告");
-                Shows.ShowMsgDialog(Window.GetWindow(this), LanguageManager.Instance["Pages_OnlinePage_Dialog_Tips"].Replace("\\n", Environment.NewLine), LanguageManager.Instance["Dialog_Warning"].Replace("\\n", Environment.NewLine));
+                Shows.ShowMsgDialog(Window.GetWindow(this), LanguageManager.Instance["Pages_OnlinePage_Dialog_Tips"], LanguageManager.Instance["Dialog_Warning"]);
                 masterExp.IsExpanded = true;
             }
             Thread thread = new Thread(GetFrpcInfo);
@@ -65,21 +65,21 @@ namespace MSL.pages
             try
             {
                 Ping pingSender = new Ping();
-                PingReply reply = pingSender.Send("47.243.96.125", 2000); // 替换成您要 ping 的 IP 地址
+                PingReply reply = pingSender.Send("47.243.96.125", 2000); //一个可爱的ip，ping一下
                 if (reply.Status == IPStatus.Success)
                 {
-                    // 节点在线，可以获取延迟等信息
+                    //服务器活着，太好了！
                     Dispatcher.Invoke(() =>
                     {
-                        serverState.Text = "服务器状态：可用";
+                        serverState.Text = LanguageManager.Instance["Pages_Online_ServerStatusOK"];
                     });
                 }
                 else
                 {
-                    // 节点离线
+                    //跑路了.jpg
                     Dispatcher.Invoke(() =>
                     {
-                        serverState.Text = "服务器状态：检测超时，服务器可能下线";
+                        serverState.Text = LanguageManager.Instance["Pages_Online_ServerStatusDown"];
                     });
                 }
             }
@@ -87,7 +87,7 @@ namespace MSL.pages
             {
                 Dispatcher.Invoke(() =>
                 {
-                    serverState.Text = "服务器状态：检测失败，服务器可能下线";
+                    serverState.Text = LanguageManager.Instance["Pages_Online_ServerStatusDown"];
                 });
             }
         }
@@ -151,7 +151,7 @@ namespace MSL.pages
                     Growl.Success("关闭成功！");
                     FRPCMD.CancelOutputRead();
                     //FRPCMD.OutputDataReceived -= new DataReceivedEventHandler(p_OutputDataReceived);
-                    createRoom.Content = "点击创建房间";
+                    createRoom.Content = LanguageManager.Instance["Pages_Online_CreateBtn"];
                 }
             }
             catch
@@ -173,7 +173,7 @@ namespace MSL.pages
                     catch
                     { }
                 }
-                createRoom.Content = "点击创建房间";
+                createRoom.Content = LanguageManager.Instance["Pages_Online_CreateBtn"];
             }
         }
 
@@ -197,7 +197,7 @@ namespace MSL.pages
                     Growl.Success("关闭成功！");
                     FRPCMD.CancelOutputRead();
                     //FRPCMD.OutputDataReceived -= new DataReceivedEventHandler(p_OutputDataReceived);
-                    joinRoom.Content = "点击加入房间";
+                    joinRoom.Content = LanguageManager.Instance["Pages_Online_EnterBtn"];
                 }
             }
             catch
@@ -219,7 +219,7 @@ namespace MSL.pages
                     catch
                     { }
                 }
-                joinRoom.Content = "点击加入房间";
+                joinRoom.Content = LanguageManager.Instance["Pages_Online_EnterBtn"];
             }
         }
 
@@ -328,12 +328,12 @@ namespace MSL.pages
                     }
                     if (isMaster)
                     {
-                        createRoom.Content = "点击创建房间";
+                        createRoom.Content = LanguageManager.Instance["Pages_Online_CreateBtn"];
                         visiterExp.IsEnabled = true;
                     }
                     else
                     {
-                        joinRoom.Content = "点击加入房间";
+                        joinRoom.Content = LanguageManager.Instance["Pages_Online_EnterBtn"];
                         masterExp.IsEnabled = true;
                     }
                 }
@@ -374,12 +374,12 @@ namespace MSL.pages
                     }
                     if (isMaster)
                     {
-                        createRoom.Content = "点击创建房间";
+                        createRoom.Content = LanguageManager.Instance["Pages_Online_CreateBtn"];
                         visiterExp.IsEnabled = true;
                     }
                     else
                     {
-                        joinRoom.Content = "点击加入房间";
+                        joinRoom.Content = LanguageManager.Instance["Pages_Online_EnterBtn"];
                         masterExp.IsEnabled = true;
                     }
                 }
