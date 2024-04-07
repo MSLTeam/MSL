@@ -337,13 +337,19 @@ BMCLAPI —— Forge服务端下载源
   <data name="Pages_Online_ServerStatusChecking" xml:space="preserve">
     <value>服务器状态：检测中</value>
   </data>
+  <data name="Pages_Online_ServerStatusDown" xml:space="preserve">
+    <value>服务器状态：检测超时，服务器可能下线</value>
+  </data>
+  <data name="Pages_Online_ServerStatusOK" xml:space="preserve">
+    <value>服务器状态：可用</value>
+  </data>
   <data name="Pages_Online_Tips1" xml:space="preserve">
     <value>联机教程</value>
   </data>
   <data name="Pages_Online_TipsOpenWeb" xml:space="preserve">
     <value>点击打开网站</value>
   </data>
-  <data name="Pages_Online_Titole" xml:space="preserve">
+  <data name="Pages_Online_Title" xml:space="preserve">
     <value>点对点联机</value>
   </data>
   <data name="Pages_ServerList_Delete" xml:space="preserve">

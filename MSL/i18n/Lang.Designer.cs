@@ -679,6 +679,24 @@ namespace MSL.i18n {
         }
         
         /// <summary>
+        ///   查找类似 服务器状态：检测超时，服务器可能下线 的本地化字符串。
+        /// </summary>
+        internal static string Pages_Online_ServerStatusDown {
+            get {
+                return ResourceManager.GetString("Pages_Online_ServerStatusDown", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   查找类似 服务器状态：可用 的本地化字符串。
+        /// </summary>
+        internal static string Pages_Online_ServerStatusOK {
+            get {
+                return ResourceManager.GetString("Pages_Online_ServerStatusOK", resourceCulture);
+            }
+        }
+        
+        /// <summary>
         ///   查找类似 联机教程 的本地化字符串。
         /// </summary>
         internal static string Pages_Online_Tips1 {
@@ -699,9 +717,9 @@ namespace MSL.i18n {
         /// <summary>
         ///   查找类似 点对点联机 的本地化字符串。
         /// </summary>
-        internal static string Pages_Online_Titole {
+        internal static string Pages_Online_Title {
             get {
-                return ResourceManager.GetString("Pages_Online_Titole", resourceCulture);
+                return ResourceManager.GetString("Pages_Online_Title", resourceCulture);
             }
         }
         
