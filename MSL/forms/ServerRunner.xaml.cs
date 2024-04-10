@@ -2072,32 +2072,26 @@ namespace MSL
 
         void ReFreshPluginsAndMods()
         {
-            lab001.Visibility = Visibility.Visible;
-            reFresh.Visibility = Visibility.Visible;
-            mpHelp.Visibility = Visibility.Hidden;
-            pluginsAndModsTab.Visibility = Visibility.Hidden;
-            pluginslist.Items.Clear();
-            modslist.Items.Clear();
+            bool hideList = true;
             if (Directory.Exists(Rserverbase + @"\plugins"))
             {
+                List<PluginInfo> list = new List<PluginInfo>();
                 DirectoryInfo directoryInfo = new DirectoryInfo(Rserverbase + @"\plugins");
                 FileInfo[] file = directoryInfo.GetFiles("*.*");
                 foreach (FileInfo f in file)
                 {
                     if (f.Name.EndsWith(".disabled"))
                     {
-                        pluginslist.Items.Add(new PluginInfo("[已禁用]" + f.Name));
+                        list.Add(new PluginInfo("[已禁用]" + f.Name));
                     }
                     else if (f.Name.EndsWith(".jar"))
                     {
-                        pluginslist.Items.Add(new PluginInfo(f.Name));
+                        list.Add(new PluginInfo(f.Name));
                     }
                 }
-                lab001.Visibility = Visibility.Hidden;
-                reFresh.Visibility = Visibility.Hidden;
-                mpHelp.Visibility = Visibility.Visible;
-                pluginsAndModsTab.Visibility = Visibility.Visible;
+                pluginslist.ItemsSource = list;
                 pluginsTabItem.IsEnabled = true;
+                hideList = false;
             }
             else
             {
@@ -2105,24 +2099,23 @@ namespace MSL
             }
             if (Directory.Exists(Rserverbase + @"\mods"))
             {
+                List<ModInfo> list = new List<ModInfo>();
                 DirectoryInfo directoryInfo1 = new DirectoryInfo(Rserverbase + @"\mods");
                 FileInfo[] file1 = directoryInfo1.GetFiles("*.*");
                 foreach (FileInfo f1 in file1)
                 {
                     if (f1.Name.EndsWith(".disabled"))
                     {
-                        modslist.Items.Add(new ModInfo("[已禁用]" + f1.Name));
+                        list.Add(new ModInfo("[已禁用]" + f1.Name));
                     }
                     else if (f1.Name.EndsWith(".jar"))
                     {
-                        modslist.Items.Add(new ModInfo(f1.Name));
+                        list.Add(new ModInfo(f1.Name));
                     }
                 }
-                lab001.Visibility = Visibility.Hidden;
-                reFresh.Visibility = Visibility.Hidden;
-                mpHelp.Visibility = Visibility.Visible;
-                pluginsAndModsTab.Visibility = Visibility.Visible;
+                modslist.ItemsSource = list;
                 modsTabItem.IsEnabled = true;
+                hideList = false;
                 if (pluginsTabItem.IsEnabled == false)
                 {
                     pluginsAndModsTab.SelectedIndex = 1;
@@ -2132,7 +2125,22 @@ namespace MSL
             {
                 modsTabItem.IsEnabled = false;
             }
+            if (hideList)
+            {
+                lab001.Visibility = Visibility.Visible;
+                reFresh.Visibility = Visibility.Visible;
+                mpHelp.Visibility = Visibility.Hidden;
+                pluginsAndModsTab.Visibility = Visibility.Hidden;
+            }
+            else if (lab001.Visibility == Visibility.Visible)
+            {
+                lab001.Visibility = Visibility.Hidden;
+                reFresh.Visibility = Visibility.Hidden;
+                mpHelp.Visibility = Visibility.Visible;
+                pluginsAndModsTab.Visibility = Visibility.Visible;
+            }
         }
+
         private void mpHelp_Click(object sender, RoutedEventArgs e)
         {
             Shows.ShowMsgDialog(this, "若标签栏为灰色且无法点击，说明此服务端不支持相应的（插件或模组）功能，或相关（插件或模组）文件夹未创建。请更换服务端核心并重启服务器再试。", "提示");

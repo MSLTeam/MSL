@@ -1,9 +1,11 @@
 ﻿<ResourceDictionary xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
-                    xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml">
+                    xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+                    xmlns:langs="clr-namespace:HandyControl.Properties.Langs;assembly=HandyControl"
+                    xmlns:ex="clr-namespace:HandyControl.Tools.Extension;assembly=HandyControl">
     <ContextMenu x:Key="UIContextMenu" TextBlock.LineHeight="12" TextBlock.TextAlignment="Left">
-        <MenuItem Command="SelectAll"/>
-        <MenuItem Command="Cut"/>
-        <MenuItem Command="Copy"/>
-        <MenuItem Command="Paste"/>
+        <MenuItem Header="{ex:Lang Key={x:Static langs:LangKeys.SelectAll}}" Command="SelectAll"/>
+        <MenuItem Header="{ex:Lang Key={x:Static langs:LangKeys.Cut}}" Command="Cut"/>
+        <MenuItem Header="{ex:Lang Key={x:Static langs:LangKeys.Copy}}" Command="Copy"/>
+        <MenuItem Header="{ex:Lang Key={x:Static langs:LangKeys.Paste}}" Command="Paste"/>
     </ContextMenu>
 </ResourceDictionary>
