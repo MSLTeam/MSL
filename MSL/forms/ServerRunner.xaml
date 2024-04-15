@@ -482,6 +482,7 @@
                                     <WrapPanel Grid.Column="1">
                                         <Button x:Name="shareLog" Content="上传服务器控制台日志" FontSize="16" Margin="0,0,5,5" Height="35" Click="shareLog_Click" MouseDoubleClick="controlServer_MouseDoubleClick"/>
                                         <Button x:Name="forgeInstallLogUpload" Content="上传Forge安装日志" FontSize="16" Height="35" Click="forgeInstallLogUpload_Click" Margin="0,0,5,5"/>
+                                        <Button x:Name="GetIPV6" Content="获取IPV6公网地址" FontSize="16" Height="35" Click="GetIPV6_Click" Margin="0,0,5,5"/>
                                     </WrapPanel>
                                 </Grid>
                             </Grid>

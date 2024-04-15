@@ -3,6 +3,7 @@ using HandyControl.Data;
 using ICSharpCode.SharpZipLib.Zip;
 using Microsoft.Win32;
 using MSL.controls;
+using MSL.i18n;
 using MSL.pages;
 using Newtonsoft.Json;
 using Newtonsoft.Json.Linq;
@@ -3010,6 +3011,25 @@ namespace MSL
 
         ////////这里是更多功能界面
 
+        //获取ipv6地址
+        private void GetIPV6_Click(object sender, RoutedEventArgs e)
+        {
+            string ipv6="";
+            try
+            {
+                ipv6 = Functions.Get("", "https://6.ipw.cn", true);
+                Clipboard.Clear();
+                Clipboard.SetText(ipv6);
+                _ = Shows.ShowMsgDialogAsync(this,$"您的IPV6公网地址是：{ipv6}\n已经帮您复制到剪贴板啦！\n注意：IPV6地址格式是：[IP]:端口\n若无法使用IPV6连接，请检查：\n-连接方是否有IPV6地址\n-您是否放行防火墙（包含电脑，路由器防火墙）\n-路由器是否使用桥接模式（若使用NAT，IPV6地址将不是公网）", "成功获取IPV6公网地址！");
+            }
+            catch (Exception)
+            {
+                _ = Shows.ShowMsgDialogAsync(this, "您当前的网络没有IPV6支持\n建议上网搜索如何开启IPV6\n或者联系运营商获取帮助~", "获取IPV6地址失败！");
+            }
+            
+            
+        }
+
         private void autostartServer_Click(object sender, RoutedEventArgs e)
         {
             JObject jsonObject = JObject.Parse(File.ReadAllText(@"MSL\ServerList.json", Encoding.UTF8));
@@ -3675,5 +3695,7 @@ namespace MSL
         }
 
         #endregion
+
+
     }
 }
