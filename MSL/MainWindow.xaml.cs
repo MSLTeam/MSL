@@ -41,8 +41,8 @@ namespace MSL
         public static bool getPlayerInfo = false;
 
         //标识当前版本是否支持i18n
-        //public static readonly string SoftTag ="normal"; //普通版本
-        public static readonly string SoftTag = "i18n"; //i18n版本
+        public static readonly string SoftTag ="normal"; //普通版本
+        //public static readonly string SoftTag = "i18n"; //i18n版本
 
         public MainWindow()
         {
@@ -418,7 +418,7 @@ namespace MSL
             //更新
             try
             {
-                string _httpReturn = Functions.Get("query/update?type=" + SoftTag);
+                string _httpReturn = Functions.Get("query/update");
                 Version newVersion = new Version(_httpReturn);
                 Version version = new Version(System.Reflection.Assembly.GetExecutingAssembly().GetName().Version.ToString());
 
@@ -482,7 +482,7 @@ namespace MSL
                 Shows.ShowMsgDialog(this, LanguageManager.Instance["MainWindow_GrowlMsg_UpdateWarning"], LanguageManager.Instance["Dialog_Warning"]);
                 return;
             }
-            string downloadUrl = Functions.Get("download/update");
+            string downloadUrl = Functions.Get("download/update?type=" + MainWindow.SoftTag);
             await Shows.ShowDownloader(this, downloadUrl, AppDomain.CurrentDomain.BaseDirectory, "MSL" + aaa + ".exe", "下载新版本中……");
             if (File.Exists("MSL" + aaa + ".exe"))
             {
