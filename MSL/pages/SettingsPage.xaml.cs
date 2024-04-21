@@ -656,7 +656,7 @@ namespace MSL.pages
             try
             {
                 var mainwindow = Window.GetWindow(Window.GetWindow(this));
-                string _httpReturn = Functions.Get("query/update" + MainWindow.SoftTag);
+                string _httpReturn = Functions.Get("query/update");
                 Version newVersion = new Version(_httpReturn);
                 Version version = new Version(System.Reflection.Assembly.GetExecutingAssembly().GetName().Version.ToString());
 

@@ -475,7 +475,7 @@ namespace MSL
 
         }
 
-        private async void UpdateApp(string aaa)
+        private async void UpdateApp(string latestVersion)
         {
             if (ProcessRunningCheck())
             {
@@ -483,13 +483,13 @@ namespace MSL
                 return;
             }
             string downloadUrl = Functions.Get("download/update?type=" + MainWindow.SoftTag);
-            await Shows.ShowDownloader(this, downloadUrl, AppDomain.CurrentDomain.BaseDirectory, "MSL" + aaa + ".exe", "下载新版本中……");
-            if (File.Exists("MSL" + aaa + ".exe"))
+            await Shows.ShowDownloader(this, downloadUrl, AppDomain.CurrentDomain.BaseDirectory, "MSL" + latestVersion + ".exe", "下载新版本中……");
+            if (File.Exists("MSL" + latestVersion + ".exe"))
             {
                 string oldExePath = Process.GetCurrentProcess().MainModule.ModuleName;
                 string newExeDir = AppDomain.CurrentDomain.BaseDirectory;
 
-                string cmdCommand = "/C choice /C Y /N /D Y /T 1 & Del \"" + oldExePath + "\" & Ren \"" + "MSL" + aaa + ".exe" + "\" \"MSL.exe\" & start \"\" \"MSL.exe\"";
+                string cmdCommand = "/C choice /C Y /N /D Y /T 1 & Del \"" + oldExePath + "\" & Ren \"" + "MSL" + latestVersion + ".exe" + "\" \"MSL.exe\" & start \"\" \"MSL.exe\"";
 
                 // 关闭当前运行中的应用程序
                 Application.Current.Shutdown();
