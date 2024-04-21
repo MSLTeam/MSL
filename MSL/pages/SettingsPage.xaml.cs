@@ -79,20 +79,30 @@ namespace MSL.pages
                     autoSetTheme.IsChecked = false;
                     darkTheme.IsEnabled = true;
                 }
-                if (jsonObject["lang"] != null)
+                if (MainWindow.SoftTag == "i18n")
                 {
-                    int langCombo = 0;
-                    switch (jsonObject["lang"].ToString())
+                    if (jsonObject["lang"] != null)
                     {
-                        case "zh-CN":
-                            langCombo = 0;
-                            break;
-                        case "en-US":
-                            langCombo = 1;
-                            break;
+                        int langCombo = 0;
+                        switch (jsonObject["lang"].ToString())
+                        {
+                            case "zh-CN":
+                                langCombo = 0;
+                                break;
+                            case "en-US":
+                                langCombo = 1;
+                                break;
+                        }
+                        ChangeLanguage.SelectedIndex = langCombo;
                     }
-                    ChangeLanguage.SelectedIndex = langCombo;
+
                 }
+                else
+                {
+                    ChangeLanguage.Visibility = Visibility.Collapsed;
+                    ChangeLanguageBtn.Visibility = Visibility.Visible;
+                }
+
                 if (jsonObject["skin"] != null)
                 {
                     if ((int)jsonObject["skin"] == 0)
@@ -646,7 +656,7 @@ namespace MSL.pages
             try
             {
                 var mainwindow = Window.GetWindow(Window.GetWindow(this));
-                string _httpReturn = Functions.Get("query/update");
+                string _httpReturn = Functions.Get("query/update?type=" + MainWindow.SoftTag);
                 Version newVersion = new Version(_httpReturn);
                 Version version = new Version(System.Reflection.Assembly.GetExecutingAssembly().GetName().Version.ToString());
 
@@ -773,6 +783,11 @@ namespace MSL.pages
             jobject["lang"] = lang;
             string convertString = Convert.ToString(jobject);
             File.WriteAllText("MSL\\config.json", convertString, Encoding.UTF8);
+        }
+
+        private void ChangeLanguageBtn_Click(object sender, RoutedEventArgs e)
+        {
+            Shows.ShowMsgDialog(Window.GetWindow(this), "您当前使用的MSL版本不支持多语言！\n若要使用其他语言，请下载i18n版本的MSL！\n由于封装技术原因，部分系统可能无法运行i18n版本的MSL！", LanguageManager.Instance["Dialog_Warning"]);
         }
     }
 }

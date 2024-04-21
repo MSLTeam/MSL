@@ -40,6 +40,10 @@ namespace MSL
         public static bool getServerInfo = false;
         public static bool getPlayerInfo = false;
 
+        //标识当前版本是否支持i18n
+        //public static readonly string SoftTag ="normal"; //普通版本
+        public static readonly string SoftTag = "i18n"; //i18n版本
+
         public MainWindow()
         {
             InitializeComponent();
@@ -414,7 +418,7 @@ namespace MSL
             //更新
             try
             {
-                string _httpReturn = Functions.Get("query/update");
+                string _httpReturn = Functions.Get("query/update?type=" + SoftTag);
                 Version newVersion = new Version(_httpReturn);
                 Version version = new Version(System.Reflection.Assembly.GetExecutingAssembly().GetName().Version.ToString());
 

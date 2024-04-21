@@ -42,6 +42,7 @@
                             <ComboBoxItem Content="简体中文"/>
                             <ComboBoxItem Content="English"/>
                         </hc:ComboBox>
+                        <Button Content="切换语言" x:Name="ChangeLanguageBtn" FontSize="14" Height="30" Visibility="Collapsed" Click="ChangeLanguageBtn_Click" />
                     </StackPanel>
                     <Grid Margin="10,10,10,0">
                         <Grid.ColumnDefinitions>
