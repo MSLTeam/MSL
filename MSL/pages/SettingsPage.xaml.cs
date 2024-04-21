@@ -799,7 +799,7 @@ namespace MSL.pages
                         return;
                     }
                     string downloadUrl = Functions.Get("download/update?type=i18n");
-                    await Shows.ShowDownloader(Window.GetWindow(this), downloadUrl, AppDomain.CurrentDomain.BaseDirectory, "MSL" + _httpReturn + ".exe", "下载新版本中……");
+                    await Shows.ShowDownloader(Window.GetWindow(this), downloadUrl, AppDomain.CurrentDomain.BaseDirectory, "MSL" + _httpReturn + ".exe", "下载多语言版本中……");
                     if (File.Exists("MSL" + _httpReturn + ".exe"))
                     {
                         string oldExePath = Process.GetCurrentProcess().MainModule.ModuleName;
