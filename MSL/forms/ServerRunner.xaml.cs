@@ -3014,21 +3014,80 @@ namespace MSL
         //获取ipv6地址
         private void GetIPV6_Click(object sender, RoutedEventArgs e)
         {
-            string ipv6="";
+            string ipv6 = "";
+            HttpListener listener = null;
             try
             {
                 ipv6 = Functions.Get("", "https://6.ipw.cn", true);
                 Clipboard.Clear();
                 Clipboard.SetText(ipv6);
-                _ = Shows.ShowMsgDialogAsync(this,$"您的IPV6公网地址是：{ipv6}\n已经帮您复制到剪贴板啦！\n注意：IPV6地址格式是：[IP]:端口\n若无法使用IPV6连接，请检查：\n-连接方是否有IPV6地址\n-您是否放行防火墙（包含电脑，路由器防火墙）\n-路由器是否使用桥接模式（若使用NAT，IPV6地址将不是公网）", "成功获取IPV6公网地址！");
+
+                //监听到21102端口
+                listener = new HttpListener();
+                listener.Prefixes.Add($"http://*:{21102}/");
+                listener.Start();
+
+                //异步，用于监听get请求
+                Task.Run(async () =>
+                {
+                    while (listener.IsListening)
+                    {
+                        HttpListenerContext context = await listener.GetContextAsync();
+                        HttpListenerRequest request = context.Request;
+                        HttpListenerResponse response = context.Response;
+
+                        if (request.HttpMethod == "GET")
+                        {
+                            string responseString = "200";
+                            byte[] buffer = System.Text.Encoding.UTF8.GetBytes(responseString);
+                            response.ContentLength64 = buffer.Length;
+                            System.IO.Stream output = response.OutputStream;
+                            await output.WriteAsync(buffer, 0, buffer.Length);
+                            output.Close();
+                        }
+                    }
+                });
+
+                //发送get，测试是否通
+                string result = Functions.Get("", $"https://ipv6test.52nahida.site/?addr=[{ipv6}]&port=21102", true);
+
+                //结果返回
+                var jsonResult = JObject.Parse(result);
+                int em = jsonResult.Value<int>("em");
+                string emsg = jsonResult.Value<string>("msg");
+                if (em == 200)
+                {
+                     Shows.ShowMsgDialog(this, $"您的IPV6公网地址是：{ipv6}\n已经帮您复制到剪贴板啦！\n注意：IPV6地址格式是：[IP]:端口\n若无法使用IPV6连接，请检查：\n-连接方是否有IPV6地址", "成功获取IPV6公网地址并测试连通性！");
+                }
+                else
+                {
+                   Shows.ShowMsgDialog(this, $"您的IPV6公网地址是：{ipv6}\n但是您的IPV6地址目前不能被访问！\n请检查：\n-您是否放行防火墙（包含电脑，路由器防火墙）\n-路由器是否使用桥接模式（若使用NAT，IPV6地址将不是公网）\n错误信息：{emsg}", "成功获取IPV6公网地址但测试连通性失败！");
+                }
+                
             }
-            catch (Exception)
+            catch (Exception ex)
             {
-                _ = Shows.ShowMsgDialogAsync(this, "您当前的网络没有IPV6支持\n建议上网搜索如何开启IPV6\n或者联系运营商获取帮助~", "获取IPV6地址失败！");
+                if (ipv6 == "")
+                {
+                   Shows.ShowMsgDialog(this, "您当前的网络没有IPV6支持\n建议上网搜索如何开启IPV6\n或者联系运营商获取帮助~", "获取IPV6地址失败！");
+                }
+                else
+                {
+                    Shows.ShowMsgDialog(this, $"获取到了IPv6地址:{ipv6}，但是公网连接测试失败\n请检查：\n-您是否放行防火墙（包含电脑，路由器防火墙）\n-路由器是否使用桥接模式（若使用NAT，IPV6地址将不是公网）\n错误信息：{ex.Message}", "测试连接失败！");
+                }
             }
-            
-            
+            finally
+            {
+                //// 测试完成后关闭监听
+                if (listener != null)
+                {
+                    listener.Stop();
+                    listener.Close();
+                }
+            }
         }
+
+
 
         private void autostartServer_Click(object sender, RoutedEventArgs e)
         {
