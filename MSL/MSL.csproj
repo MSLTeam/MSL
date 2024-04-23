@@ -114,6 +114,7 @@
     <Compile Include="controls\dialogs\TextDialog.xaml.cs">
       <DependentUpon>TextDialog.xaml</DependentUpon>
     </Compile>
+    <Compile Include="controls\ViewModels.cs" />
     <Compile Include="i18n\Lang.Designer.cs">
       <AutoGen>True</AutoGen>
       <DesignTime>True</DesignTime>

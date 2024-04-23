@@ -96,7 +96,11 @@ namespace MSL
         //下载完成的事件
         private void OnDownloadFileCompleted(object sender, AsyncCompletedEventArgs e)
         {
-            updateUITimer.Stop();
+            try
+            {
+                updateUITimer.Stop();
+            }
+            catch { }
             if (!_dialogReturn)
             {
                 Dispatcher.Invoke(() =>

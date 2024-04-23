@@ -53,6 +53,17 @@
                         <TextBox Grid.Column="1" Name="downthreadCount" Text="8" VerticalAlignment="Top" FontSize="14" />
                         <Button Grid.Column="2" Name="mulitDownthread" FontSize="14" Content="确定" HorizontalAlignment="Right" Click="mulitDownthread_Click" />
                     </Grid>
+                    <Grid Margin="10,10,10,0">
+                        <Grid.ColumnDefinitions>
+                            <ColumnDefinition Width="Auto"/>
+                            <ColumnDefinition/>
+                            <ColumnDefinition Width="Auto"/>
+                        </Grid.ColumnDefinitions>
+                        <Label Grid.Column="0" Content="添加下载任务："/>
+                        <TextBox Grid.Column="1" Name="DownloadUrl" Text="" VerticalAlignment="Top" FontSize="14" />
+                        <Button Grid.Column="2" Name="AddDownloadTask" FontSize="14" Content="确定" HorizontalAlignment="Right" Click="AddDownloadTask_Click" />
+                        
+                    </Grid>
                 </StackPanel>
             </Border>
             <Border Style="{StaticResource MagicBorder}">
