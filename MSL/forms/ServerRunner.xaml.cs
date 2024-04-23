@@ -2147,23 +2147,6 @@ namespace MSL
             Shows.ShowMsgDialog(this, "若标签栏为灰色且无法点击，说明此服务端不支持相应的（插件或模组）功能，或相关（插件或模组）文件夹未创建。请更换服务端核心并重启服务器再试。", "提示");
         }
 
-        class PluginInfo
-        {
-            public string PluginName { get; set; }
-            public PluginInfo(string pluginName)
-            {
-                PluginName = pluginName;
-            }
-        }
-        class ModInfo
-        {
-            public string ModName { get; set; }
-            public ModInfo(string modName)
-            {
-                ModName = modName;
-            }
-        }
-
         private async void addModsTip_Click(object sender, RoutedEventArgs e)
         {
             bool dialog = await Shows.ShowMsgDialogAsync(this, "服务器需要添加的模组和客户端要添加的模组有所不同，增加方块、实体、玩法的MOD，是服务器需要安装的（也就是服务端和客户端都需要安装），而小地图、皮肤补丁、输入补丁、优化MOD、视觉显示类的MOD，服务器是一定不需要安装的（也就是只能加在客户端里）\n点击确定查看详细区分方法", "提示", true, "取消");

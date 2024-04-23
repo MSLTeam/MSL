@@ -23,8 +23,11 @@
         </StackPanel>
     </hc:Window.NonClientAreaContent>
     <Grid x:Name="MainGrid">
-        <TabControl x:Name="TabCtrl" SelectionChanged="TabCtrl_SelectionChanged" Background="{x:Null}" Style="{StaticResource TabControlInLine}" BorderThickness="0,1,0,0">
-            <TabItem Header="仪表盘" Background="{DynamicResource SideMenuBrush}">
+        <TabControl x:Name="TabCtrl" SelectionChanged="TabCtrl_SelectionChanged" Style="{StaticResource TabControlSideMenu}">
+            <TabItem Style="{StaticResource TabItemSideMenu}">
+                <TabItem.Header>
+                    <controls:TabControlHeader Icon="pack://application:,,,/images/150px-Grass_Block_JE7_BE6.png" Text="仪表盘"/>
+                </TabItem.Header>
                 <Grid>
                     <Grid.RenderTransform>
                         <TranslateTransform/>
@@ -115,7 +118,10 @@
                     </Grid>
                 </Grid>
             </TabItem>
-            <TabItem Header="服务器控制台" Background="{DynamicResource SideMenuBrush}">
+            <TabItem Style="{StaticResource TabItemSideMenu}">
+                <TabItem.Header>
+                    <controls:TabControlHeader Icon="pack://application:,,,/images/150px-Enchanted_Book.png" Text="控制台"/>
+                </TabItem.Header>
                 <Grid x:Name="CmdGrid">
                     <Grid.RenderTransform>
                         <TranslateTransform/>
@@ -157,7 +163,10 @@
                     </Grid>
                 </Grid>
             </TabItem>
-            <TabItem Header="插件与模组" Background="{DynamicResource SideMenuBrush}">
+            <TabItem Style="{StaticResource TabItemSideMenu}">
+                <TabItem.Header>
+                    <controls:TabControlHeader Icon="pack://application:,,,/images/150px-Grass_Block_JE7_BE6.png" Text="插件与模组"/>
+                </TabItem.Header>
                 <Grid>
                     <Grid.RenderTransform>
                         <TranslateTransform/>
@@ -261,7 +270,10 @@
                     <Button x:Name="mpHelp" Content="获取帮助" Click="mpHelp_Click" hc:BorderElement.CornerRadius="0" Background="{DynamicResource SideMenuBrush}" HorizontalAlignment="Left" VerticalAlignment="Top" Width="104" Margin="0,56,0,0" BorderBrush="{x:Null}"/>
                 </Grid>
             </TabItem>
-            <TabItem Header="服务器设置" Background="{DynamicResource SideMenuBrush}">
+            <TabItem Style="{StaticResource TabItemSideMenu}">
+                <TabItem.Header>
+                    <controls:TabControlHeader Icon="pack://application:,,,/images/150px-Grass_Block_JE7_BE6.png" Text="服务器设置"/>
+                </TabItem.Header>
                 <ScrollViewer>
                     <ScrollViewer.RenderTransform>
                         <TranslateTransform/>
@@ -415,7 +427,10 @@
                     </StackPanel>
                 </ScrollViewer>
             </TabItem>
-            <TabItem Header="更多功能" Background="{DynamicResource SideMenuBrush}">
+            <TabItem Style="{StaticResource TabItemSideMenu}">
+                <TabItem.Header>
+                    <controls:TabControlHeader Icon="pack://application:,,,/images/150px-Grass_Block_JE7_BE6.png" Text="更多功能"/>
+                </TabItem.Header>
                 <ScrollViewer>
                     <Grid>
                         <Grid.RowDefinitions>
@@ -513,7 +528,10 @@
                     </Grid>
                 </ScrollViewer>
             </TabItem>
-            <TabItem Header="定时任务" Background="{DynamicResource SideMenuBrush}">
+            <TabItem Style="{StaticResource TabItemSideMenu}">
+                <TabItem.Header>
+                    <controls:TabControlHeader Icon="pack://application:,,,/images/150px-Grass_Block_JE7_BE6.png" Text="定时任务"/>
+                </TabItem.Header>
                 <Grid>
                     <Grid.RenderTransform>
                         <TranslateTransform/>

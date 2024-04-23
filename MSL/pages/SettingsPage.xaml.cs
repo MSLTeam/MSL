@@ -192,6 +192,14 @@ namespace MSL.pages
             DownloadDialog.downloadthread = int.Parse(downthreadCount.Text);
         }
 
+        private async void AddDownloadTask_Click(object sender, RoutedEventArgs e)
+        {
+            SaveFileDialog saveFileDialog = new SaveFileDialog();
+            saveFileDialog.ShowDialog();
+            await Shows.ShowMsgDialogAsync(Window.GetWindow(this), "保存目录:" + Path.GetDirectoryName(saveFileDialog.FileName) + "\n文件名:" + Path.GetFileName(saveFileDialog.FileName), "");
+            await Shows.ShowDownloader(Window.GetWindow(this), DownloadUrl.Text, Path.GetDirectoryName(saveFileDialog.FileName), Path.GetFileName(saveFileDialog.FileName), "下载中");
+        }
+
         private async void setdefault_Click(object sender, RoutedEventArgs e)
         {
             bool dialogRet = await Shows.ShowMsgDialogAsync(Window.GetWindow(this), "恢复默认设置会清除MSL文件夹内的所有文件，请您谨慎选择！", "警告", true);

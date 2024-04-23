@@ -31,20 +31,6 @@ namespace MSL.pages
         public static List<string> serverIDs = new List<string>();
         public static Dictionary<string, int> runningServers = new Dictionary<string, int>();
 
-        class ServerInfo
-        {
-            public string ServerName { get; set; }
-            public string ServerIcon { get; set; }
-            public string ServerState { get; set; }
-            public Brush ServerStateFore { get; set; }
-            public ServerInfo(string serverName, string serverIcon, string serverState, Brush serverStateFore)
-            {
-                ServerName = serverName;
-                ServerIcon = serverIcon;
-                ServerState = serverState;
-                ServerStateFore = serverStateFore;
-            }
-        }
         public ServerList()
         {
             InitializeComponent();
