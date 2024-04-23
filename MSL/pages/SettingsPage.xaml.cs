@@ -79,20 +79,30 @@ namespace MSL.pages
                     autoSetTheme.IsChecked = false;
                     darkTheme.IsEnabled = true;
                 }
-                if (jsonObject["lang"] != null)
+                if (MainWindow.SoftTag == "i18n")
                 {
-                    int langCombo = 0;
-                    switch (jsonObject["lang"].ToString())
+                    if (jsonObject["lang"] != null)
                     {
-                        case "zh-CN":
-                            langCombo = 0;
-                            break;
-                        case "en-US":
-                            langCombo = 1;
-                            break;
+                        int langCombo = 0;
+                        switch (jsonObject["lang"].ToString())
+                        {
+                            case "zh-CN":
+                                langCombo = 0;
+                                break;
+                            case "en-US":
+                                langCombo = 1;
+                                break;
+                        }
+                        ChangeLanguage.SelectedIndex = langCombo;
                     }
-                    ChangeLanguage.SelectedIndex = langCombo;
+
                 }
+                else
+                {
+                    ChangeLanguage.Visibility = Visibility.Collapsed;
+                    ChangeLanguageBtn.Visibility = Visibility.Visible;
+                }
+
                 if (jsonObject["skin"] != null)
                 {
                     if ((int)jsonObject["skin"] == 0)
@@ -671,7 +681,7 @@ namespace MSL.pages
                                 Shows.ShowMsgDialog(Window.GetWindow(this), "您的服务器/内网映射/点对点联机正在运行中，若此时更新，会造成后台残留，请将前者关闭后再进行更新！", "警告");
                                 return;
                             }
-                            string downloadUrl = Functions.Get("download/update");
+                            string downloadUrl = Functions.Get("download/update?type=" + MainWindow.SoftTag);
                             await Shows.ShowDownloader(Window.GetWindow(this), downloadUrl, AppDomain.CurrentDomain.BaseDirectory, "MSL" + _httpReturn + ".exe", "下载新版本中……");
                             if (File.Exists("MSL" + _httpReturn + ".exe"))
                             {
@@ -781,6 +791,59 @@ namespace MSL.pages
             jobject["lang"] = lang;
             string convertString = Convert.ToString(jobject);
             File.WriteAllText("MSL\\config.json", convertString, Encoding.UTF8);
+        }
+
+        private async void ChangeLanguageBtn_Click(object sender, RoutedEventArgs e)
+        {
+            try
+            {
+                string _httpReturn = Functions.Get("query/update");
+                bool dialog = await Shows.ShowMsgDialogAsync(Window.GetWindow(this), "当前版本不支持多语言！\n是否升级到MSL多语言版本？\n警告：部分系统可能不支持允许多语言版本，若升级后您无法运行MSL，请自行下载正常版本MSL！", "升级到多语言版本？", true, "取消");
+                if (dialog == true)
+                {
+                    if (MainWindow.ProcessRunningCheck())
+                    {
+                        Shows.ShowMsgDialog(Window.GetWindow(this), "您的服务器/内网映射/点对点联机正在运行中，若此时更新，会造成后台残留，请将前者关闭后再进行更新！", "警告");
+                        return;
+                    }
+                    string downloadUrl = Functions.Get("download/update?type=i18n");
+                    await Shows.ShowDownloader(Window.GetWindow(this), downloadUrl, AppDomain.CurrentDomain.BaseDirectory, "MSL" + _httpReturn + ".exe", "下载多语言版本中……");
+                    if (File.Exists("MSL" + _httpReturn + ".exe"))
+                    {
+                        string oldExePath = Process.GetCurrentProcess().MainModule.ModuleName;
+                        string dwnExePath = Path.Combine(AppDomain.CurrentDomain.BaseDirectory, "MSL" + _httpReturn + ".exe");
+                        string newExeDir = AppDomain.CurrentDomain.BaseDirectory;
+
+                        // 输出CMD命令以便调试
+                        string cmdCommand = "/C choice /C Y /N /D Y /T 1 & Del \"" + oldExePath + "\" & Ren \"" + "MSL" + _httpReturn + ".exe" + "\" \"MSL.exe\" & start \"\" \"MSL.exe\"";
+                        //MessageBox.Show(cmdCommand);
+
+                        // 关闭当前运行中的应用程序
+                        Application.Current.Shutdown();
+
+                        // 删除旧版本并启动新版本
+                        Process delProcess = new Process();
+                        delProcess.StartInfo.FileName = "cmd.exe";
+                        delProcess.StartInfo.Arguments = cmdCommand;
+                        Directory.SetCurrentDirectory(newExeDir);
+                        delProcess.StartInfo.WindowStyle = ProcessWindowStyle.Hidden;
+                        delProcess.Start();
+
+                        // 退出当前进程
+                        Process.GetCurrentProcess().Kill();
+                    }
+                    else
+                    {
+                        MessageBox.Show("升级失败！", "错误", MessageBoxButton.OK, MessageBoxImage.Error);
+                    }
+                }
+            }
+            catch (Exception ex)
+            {
+                Shows.ShowMsgDialog(Window.GetWindow(this), "升级失败！\n错误：" + ex.Message, LanguageManager.Instance["Dialog_Err"]);
+            }
+            
+            
         }
     }
 }
