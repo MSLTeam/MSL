@@ -153,11 +153,11 @@
   <data name="MainWindow_GrowlMsg_CheckUpdateErr" xml:space="preserve">
     <value>检查更新失败！</value>
   </data>
-  <data name="MainWindow_GrowlMsg_Colse" xml:space="preserve">
+  <data name="MainWindow_GrowlMsg_Close" xml:space="preserve">
     <value>您的服务器、内网映射或联机功能正在运行中，关闭软件可能会让服务器进程在后台一直运行并占用资源！确定要继续关闭吗？
 注：如果想隐藏主窗口的话，请前往设置打开托盘图标</value>
   </data>
-  <data name="MainWindow_GrowlMsg_Colse2" xml:space="preserve">
+  <data name="MainWindow_GrowlMsg_Close2" xml:space="preserve">
     <value>您的服务器、内网映射或联机功能正在运行中，关闭软件可能会让服务器进程在后台一直运行并占用资源！确定要继续关闭吗？
 注：如果想隐藏主窗口的话，请前往设置打开托盘图标</value>
   </data>
@@ -227,7 +227,7 @@
     <value>设置</value>
   </data>
   <data name="Pages_About_AboutMSL" xml:space="preserve">
-    <value>关于开服器</value>
+    <value>关于软件</value>
   </data>
   <data name="Pages_About_MainContent" xml:space="preserve">
     <value>Minecraft Server Launcher(MSL) Copyright © 2021-2024 By MSLTeam

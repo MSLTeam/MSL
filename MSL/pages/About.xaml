@@ -26,7 +26,6 @@
                         <TextBlock FontSize="14" VerticalAlignment="Center" HorizontalAlignment="Center" Foreground="{DynamicResource PrimaryTextBrush}" Text="{Binding [Pages_About_MainContent], Source={x:Static langs:LanguageManager.Instance}}"/>
                         <hc:Shield Subject="{Binding [Pages_About_Website], Source={x:Static langs:LanguageManager.Instance}}" Status="{Binding [Pages_About_OpenWebsite], Source={x:Static langs:LanguageManager.Instance}}" Command="hc:ControlCommands.OpenLink" CommandParameter="https://www.mslmc.cn/" HorizontalAlignment="Left" VerticalAlignment="Bottom" Margin="0,5,0,0"/>
                     </StackPanel>
-                    
                 </Grid>
             </Border>
             <Border x:Name="openSource" Style="{StaticResource MagicBorder}">
@@ -85,6 +84,11 @@
                         <TextBlock Text="11.System.ValueTuple" Margin="20,0,0,5" FontSize="16" VerticalAlignment="Top" HorizontalAlignment="Left" FontWeight="Bold" Foreground="{DynamicResource PrimaryTextBrush}"/>
                         <TextBlock Text="Copyright (c) .NET Foundation and Contributors.&#xA;Licensed under the MIT License." Margin="20,0,0,5" VerticalAlignment="Top" HorizontalAlignment="Left" Foreground="{DynamicResource PrimaryTextBrush}"/>
                         <hc:Shield Subject="..." Status="{Binding [Pages_About_OpenWebsite], Source={x:Static langs:LanguageManager.Instance}}" Margin="0,-45,20,0" Command="hc:ControlCommands.OpenLink" CommandParameter="https://github.com/dotnet/runtime" HorizontalAlignment="Right" VerticalAlignment="Top"/>
+                    </StackPanel>
+                    <StackPanel Margin="0,10,0,0">
+                        <TextBlock Text="12.Tabler Icons" Margin="20,0,0,5" FontSize="16" VerticalAlignment="Top" HorizontalAlignment="Left" FontWeight="Bold" Foreground="{DynamicResource PrimaryTextBrush}"/>
+                        <TextBlock Text="Copyright (c) 2020-2024 Paweł Kuna.&#xA;Licensed under the MIT License." Margin="20,0,0,5" VerticalAlignment="Top" HorizontalAlignment="Left" Foreground="{DynamicResource PrimaryTextBrush}"/>
+                        <hc:Shield Subject="..." Status="{Binding [Pages_About_OpenWebsite], Source={x:Static langs:LanguageManager.Instance}}" Margin="0,-45,20,0" Command="hc:ControlCommands.OpenLink" CommandParameter="https://github.com/tabler/tabler-icons" HorizontalAlignment="Right" VerticalAlignment="Top"/>
                     </StackPanel>
                 </StackPanel>
             </Border>

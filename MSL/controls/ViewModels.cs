@@ -1,8 +1,5 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
+﻿using System.Windows;
+using System.Windows.Controls;
 using System.Windows.Media;
 
 namespace MSL.controls
@@ -39,10 +36,37 @@ namespace MSL.controls
             ModName = modName;
         }
     }
-
-    internal class TabControlHeader
+    internal class ListBoxSideMenu : Control
     {
-        public string Icon { get; set; }
+        public ImageSource Icon { get; set; }
+        public static readonly DependencyProperty TextProperty =
+        DependencyProperty.Register(
+            "Text",
+            typeof(string),
+            typeof(ListBoxSideMenu),
+            new PropertyMetadata(default(string)));
+
+        public string Text
+        {
+            get { return (string)GetValue(TextProperty); }
+            set { SetValue(TextProperty, value); }
+        }
+    }
+
+    internal class TabControlHeader : Control
+    {
+        public static readonly DependencyProperty IconProperty =
+        DependencyProperty.Register(
+            "Icon", typeof(ImageSource),
+            typeof(TabControlHeader),
+            new PropertyMetadata(default(ImageSource)));
+
+        public ImageSource Icon
+        {
+            get { return (ImageSource)GetValue(IconProperty); }
+            set { SetValue(IconProperty, value); }
+        }
+
         public string Text { get; set; }
     }
 }

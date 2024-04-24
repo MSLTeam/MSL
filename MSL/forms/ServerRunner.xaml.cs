@@ -3,7 +3,6 @@ using HandyControl.Data;
 using ICSharpCode.SharpZipLib.Zip;
 using Microsoft.Win32;
 using MSL.controls;
-using MSL.i18n;
 using MSL.pages;
 using Newtonsoft.Json;
 using Newtonsoft.Json.Linq;
@@ -127,6 +126,59 @@ namespace MSL
 
         private void LoadingInfoEvent()
         {
+            try
+            {
+                if (File.Exists(@"MSL\config.json"))
+                {
+                    JObject keys = JObject.Parse(File.ReadAllText(@"MSL\config.json", Encoding.UTF8));
+                    if (keys["sidemenuExpanded"] == null)
+                    {
+                        string jsonString = File.ReadAllText(@"MSL\config.json", Encoding.UTF8);
+                        JObject jobject = JObject.Parse(jsonString);
+                        jobject.Add("sidemenuExpanded", true);
+                        string convertString = Convert.ToString(jobject);
+                        File.WriteAllText(@"MSL\config.json", convertString, Encoding.UTF8);
+                        Dispatcher.Invoke(() =>
+                        {
+                            Tab_Home.Width = double.NaN;
+                            Tab_Console.Width = double.NaN;
+                            Tab_Plugins.Width = double.NaN;
+                            Tab_Settings.Width = double.NaN;
+                            Tab_MoreFunctions.Width = double.NaN;
+                            Tab_Timer.Width = double.NaN;
+                        });
+                    }
+                    else if ((bool)keys["sidemenuExpanded"] == true)
+                    {
+                        Dispatcher.Invoke(() =>
+                        {
+                            Tab_Home.Width = double.NaN;
+                            Tab_Console.Width = double.NaN;
+                            Tab_Plugins.Width = double.NaN;
+                            Tab_Settings.Width = double.NaN;
+                            Tab_MoreFunctions.Width = double.NaN;
+                            Tab_Timer.Width = double.NaN;
+                        });
+                    }
+                    else
+                    {
+                        Dispatcher.Invoke(() =>
+                        {
+                            Tab_Home.Width = 50;
+                            Tab_Console.Width = 50;
+                            Tab_Plugins.Width = 50;
+                            Tab_Settings.Width = 50;
+                            Tab_MoreFunctions.Width = 50;
+                            Tab_Timer.Width = 50;
+                        });
+                    }
+                }
+            }
+            catch
+            {
+                MessageBox.Show("err");
+            }
+
             //Get Server's Information
             JObject jsonObject = JObject.Parse(File.ReadAllText(@"MSL\ServerList.json", Encoding.UTF8));
             JObject _json = (JObject)jsonObject[RserverID];
@@ -284,8 +336,7 @@ namespace MSL
             }
             else
             {
-                Thread thread = new Thread(GetSystemInfo);
-                thread.Start();
+                Task.Run(GetSystemInfo);
             }
             if (getPlayerInfo == false)
             {
@@ -357,6 +408,48 @@ namespace MSL
             }
         }
         #endregion
+
+        private void SideMenuContextOpen_Click(object sender, RoutedEventArgs e)
+        {
+            if (Tab_Home.Width == 50)
+            {
+                Tab_Home.Width = double.NaN;
+                Tab_Console.Width = double.NaN;
+                Tab_Plugins.Width = double.NaN;
+                Tab_Settings.Width = double.NaN;
+                Tab_MoreFunctions.Width = double.NaN;
+                Tab_Timer.Width = double.NaN;
+                //frame.Margin = new Thickness(100, 0, 0, 0);
+                try
+                {
+                    string jsonString = File.ReadAllText(@"MSL\config.json", Encoding.UTF8);
+                    JObject jobject = JObject.Parse(jsonString);
+                    jobject["sidemenuExpanded"] = true;
+                    string convertString = Convert.ToString(jobject);
+                    File.WriteAllText(@"MSL\config.json", convertString, Encoding.UTF8);
+                }
+                catch { }
+            }
+            else
+            {
+                Tab_Home.Width = 50;
+                Tab_Console.Width = 50;
+                Tab_Plugins.Width = 50;
+                Tab_Settings.Width = 50;
+                Tab_MoreFunctions.Width = 50;
+                Tab_Timer.Width = 50;
+                //frame.Margin = new Thickness(50, 0, 0, 0);
+                try
+                {
+                    string jsonString = File.ReadAllText(@"MSL\config.json", Encoding.UTF8);
+                    JObject jobject = JObject.Parse(jsonString);
+                    jobject["sidemenuExpanded"] = false;
+                    string convertString = Convert.ToString(jobject);
+                    File.WriteAllText(@"MSL\config.json", convertString, Encoding.UTF8);
+                }
+                catch { }
+            }
+        }
 
         private bool isModsPluginsRefresh = true;
         private void TabCtrl_SelectionChanged(object sender, SelectionChangedEventArgs e)
@@ -521,13 +614,24 @@ namespace MSL
                     Dispatcher.Invoke(() =>
                     {
                         memoryInfoLab.Content = "总内存:" + allMemory.ToString("f2") + "G\n" + "已使用:" + (allMemory - ramAvailable).ToString("f2") + "G\n" + "可使用:" + ramAvailable.ToString("f2") + "G";
-                        memoryInfoBar.Value = (allMemory - ramAvailable) / allMemory * 100;
-                        availableMemoryInfoBar.Value = ramAvailable / allMemory * 100;
+                        double temp = (allMemory - ramAvailable) / allMemory;
+                        double _temp = ramAvailable / allMemory;
+                        memoryInfoBar.Value = temp * 100;
+                        availableMemoryInfoBar.Value = _temp * 100;
+                        usedMemoryLab.Content = "系统已用内存:" + string.Format("{0:P}", temp);
+                        availableMemoryInfoLab.Content = "系统空闲内存:" + string.Format("{0:P}", _temp / 100);
 
                         if (outlog.Document.Blocks.LastBlock != null)
                         {
+                            if (previewOutlog.LineCount > 10)
+                            {
+                                previewOutlog.Clear();
+                            }
                             TextRange textRange = new TextRange(outlog.Document.Blocks.LastBlock.ContentStart, outlog.Document.Blocks.LastBlock.ContentEnd);
-                            previewOutlog.Text = textRange.Text;
+                            if (!previewOutlog.Text.Contains(textRange.Text))
+                            {
+                                previewOutlog.Text += textRange.Text + "\n";
+                            }
                         }
                     });
                 }
@@ -1872,8 +1976,10 @@ namespace MSL
                 changeServerProperties.Height = double.NaN;
                 changeServerProperties_Add.Visibility = Visibility.Visible;
                 changeServerProperties_Add.Height = double.NaN;
+                changeServerProperties_Add_Add.Visibility = Visibility.Visible;
+                changeServerProperties_Add_Add.Height = double.NaN;
             }
-            catch { changeServerPropertiesLab.Content = "找不到配置文件，更改配置功能已隐藏（请尝试开启一次服务器再试）"; changeServerProperties.Visibility = Visibility.Hidden; changeServerProperties.Height = 0; changeServerProperties_Add.Visibility = Visibility.Hidden; changeServerProperties_Add.Height = 0; }
+            catch { changeServerPropertiesLab.Content = "找不到配置文件，更改配置功能已隐藏（请尝试开启一次服务器再试）"; changeServerProperties.Visibility = Visibility.Hidden; changeServerProperties.Height = 0; changeServerProperties_Add.Visibility = Visibility.Hidden; changeServerProperties_Add.Height = 0; changeServerProperties_Add_Add.Visibility = Visibility.Hidden; changeServerProperties_Add_Add.Height = 0; }
         }
 
         private string[] ServerBaseConfig()
@@ -2997,20 +3103,20 @@ namespace MSL
         //获取ipv6地址
         private void GetIPV6_Click(object sender, RoutedEventArgs e)
         {
-            string ipv6="";
+            string ipv6 = "";
             try
             {
                 ipv6 = Functions.Get("", "https://6.ipw.cn", true);
                 Clipboard.Clear();
                 Clipboard.SetText(ipv6);
-                _ = Shows.ShowMsgDialogAsync(this,$"您的IPV6公网地址是：{ipv6}\n已经帮您复制到剪贴板啦！\n注意：IPV6地址格式是：[IP]:端口\n若无法使用IPV6连接，请检查：\n-连接方是否有IPV6地址\n-您是否放行防火墙（包含电脑，路由器防火墙）\n-路由器是否使用桥接模式（若使用NAT，IPV6地址将不是公网）", "成功获取IPV6公网地址！");
+                _ = Shows.ShowMsgDialogAsync(this, $"您的IPV6公网地址是：{ipv6}\n已经帮您复制到剪贴板啦！\n注意：IPV6地址格式是：[IP]:端口\n若无法使用IPV6连接，请检查：\n-连接方是否有IPV6地址\n-您是否放行防火墙（包含电脑，路由器防火墙）\n-路由器是否使用桥接模式（若使用NAT，IPV6地址将不是公网）", "成功获取IPV6公网地址！");
             }
             catch (Exception)
             {
                 _ = Shows.ShowMsgDialogAsync(this, "您当前的网络没有IPV6支持\n建议上网搜索如何开启IPV6\n或者联系运营商获取帮助~", "获取IPV6地址失败！");
             }
-            
-            
+
+
         }
 
         private void autostartServer_Click(object sender, RoutedEventArgs e)

@@ -6,6 +6,7 @@ using MSL.pages;
 using Newtonsoft.Json;
 using Newtonsoft.Json.Linq;
 using System;
+using System.Collections.Generic;
 using System.Diagnostics;
 using System.Globalization;
 using System.IO;
@@ -13,6 +14,7 @@ using System.Management;
 using System.Text;
 using System.Threading.Tasks;
 using System.Windows;
+using System.Windows.Controls;
 using System.Windows.Media;
 using System.Windows.Threading;
 using Brush = System.Windows.Media.Brush;
@@ -26,12 +28,23 @@ namespace MSL
     /// </summary>
     public partial class MainWindow : HandyControl.Controls.Window
     {
+        private readonly List<Page> Pages = new List<Page>
+        {
+            new Home(),
+            new ServerList(),
+            new FrpcPage(),
+            new OnlinePage(),
+            new SettingsPage(),
+            new About()
+        };
+        /*
         private readonly Home _homePage = new Home();
         private readonly ServerList _listPage = new ServerList();
         private readonly FrpcPage _frpcPage = new FrpcPage();
         private readonly OnlinePage _onlinePage = new OnlinePage();
         private readonly SettingsPage _setPage = new SettingsPage();
         private readonly About _aboutPage = new About();
+        */
         public static event DeleControl LoadAnnounce;
         public static event DeleControl AutoOpenServer;
         public static event DeleControl AutoOpenFrpc;
@@ -39,10 +52,7 @@ namespace MSL
         public static float PhisicalMemory;
         public static bool getServerInfo = false;
         public static bool getPlayerInfo = false;
-
-        //标识当前版本是否支持i18n
-        public static readonly string SoftTag ="normal"; //普通版本
-        //public static readonly string SoftTag = "i18n"; //i18n版本
+        public static readonly bool isI18N = false; //标识当前版本是否支持i18n
 
         public MainWindow()
         {
@@ -53,19 +63,17 @@ namespace MSL
             CreateServer.GotoServerList += GotoListPage;
             SettingsPage.C_NotifyIcon += CtrlNotifyIcon;
             SettingsPage.ChangeSkinStyle += ChangeSkinStyle;
-            //ServerRunner.GotoFrpcEvent += GotoFrpcPage;
         }
 
         private async void Window_Loaded(object sender, RoutedEventArgs e)
         {
-
             Topmost = true;
             Topmost = false;
             Focus();
             if (!Directory.Exists("MSL"))
             {
                 Process.Start("https://www.mslmc.cn/eula.html");
-                bool dialog = await Shows.ShowMsgDialogAsync(this, LanguageManager.Instance["MainWindow_GrowlMsg_Eula"]+ "https://www.mslmc.cn/eula.html", LanguageManager.Instance["Dialog_Tip"], true, LanguageManager.Instance["MainWindow_GrowlMsg_DisAgree"], LanguageManager.Instance["MainWindow_GrowlMsg_Agree"]);
+                bool dialog = await Shows.ShowMsgDialogAsync(this, LanguageManager.Instance["MainWindow_GrowlMsg_Eula"] + "https://www.mslmc.cn/eula.html", LanguageManager.Instance["Dialog_Tip"], true, LanguageManager.Instance["MainWindow_GrowlMsg_DisAgree"], LanguageManager.Instance["MainWindow_GrowlMsg_Agree"]);
                 if (!dialog)
                 {
                     //Logger.LogWarning("用户未同意使用协议，退出软件……");
@@ -258,7 +266,7 @@ namespace MSL
                     Dispatcher.Invoke(() =>
                     {
                         Background = new ImageBrush(SettingsPage.GetImage("MSL\\Background.png"));
-                        SideMenuBorder.BorderThickness = new Thickness(0);
+                        frame.BorderThickness = new Thickness(0);
                     });
                 }
                 //Logger.LogInfo("加载背景图片成功！");
@@ -482,7 +490,11 @@ namespace MSL
                 Shows.ShowMsgDialog(this, LanguageManager.Instance["MainWindow_GrowlMsg_UpdateWarning"], LanguageManager.Instance["Dialog_Warning"]);
                 return;
             }
-            string downloadUrl = Functions.Get("download/update?type=" + MainWindow.SoftTag);
+            string downloadUrl = Functions.Get("download/update?type=normal"); ;
+            if (isI18N)
+            {
+                downloadUrl = Functions.Get("download/update?type=i18n");
+            }
             await Shows.ShowDownloader(this, downloadUrl, AppDomain.CurrentDomain.BaseDirectory, "MSL" + latestVersion + ".exe", "下载新版本中……");
             if (File.Exists("MSL" + latestVersion + ".exe"))
             {
@@ -636,20 +648,22 @@ namespace MSL
 
         private void GotoOnlinePage()
         {
-            frame.Content = _onlinePage;
+            //frame.Content = _onlinePage;
             SideMenu.SelectedIndex = 3;
+            frame.Content = Pages[SideMenu.SelectedIndex];
         }
 
         private void GotoCreatePage()
         {
             frame.Content = new CreateServer();
-            SideMenu.SelectedIndex = -1;
+            //SideMenu.SelectedIndex = -1;
         }
 
         private void GotoListPage()
         {
-            frame.Content = _listPage;
-            SideMenu.SelectedIndex = 1;
+            //frame.Content = _listPage;
+            //SideMenu.SelectedIndex = 1;
+            frame.Content = Pages[SideMenu.SelectedIndex];
         }
 
         private void ChangeSkinStyle()
@@ -667,13 +681,13 @@ namespace MSL
                 }
                 if (File.Exists("MSL\\Background.png"))//check background and set it
                 {
-                    SideMenuBorder.BorderThickness = new Thickness(0);
+                    frame.BorderThickness = new Thickness(0);
                     Background = new ImageBrush(SettingsPage.GetImage("MSL\\Background.png"));
                 }
                 else
                 {
                     SetResourceReference(BackgroundProperty, "BackgroundBrush");
-                    SideMenuBorder.BorderThickness = new Thickness(0, 0, 1, 0);
+                    frame.BorderThickness = new Thickness(1, 0, 0, 0);
                 }
                 //RunFormChangeTitle();
             }
@@ -701,7 +715,7 @@ namespace MSL
             }
         }
 
-        private void sideMenuContextOpen_Click(object sender, RoutedEventArgs e)
+        private void SideMenuContextOpen_Click(object sender, RoutedEventArgs e)
         {
             if (SideMenu.Width == 50)
             {
@@ -727,6 +741,7 @@ namespace MSL
 
         private void SideMenu_SelectionChanged(object sender, System.Windows.Controls.SelectionChangedEventArgs e)
         {
+            /*
             switch (SideMenu.SelectedIndex)
             {
                 case 0:
@@ -747,6 +762,11 @@ namespace MSL
                 case 5:
                     frame.Content = _aboutPage;
                     break;
+            }
+            */
+            if (SideMenu.SelectedIndex != -1)
+            {
+                frame.Content = Pages[SideMenu.SelectedIndex];
             }
         }
 

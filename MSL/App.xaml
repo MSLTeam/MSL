@@ -14,12 +14,18 @@
                 <hc:ThemeResources>
                     <hc:ThemeResources.ThemeDictionaries>
                         <ResourceDictionary x:Key="Light" hc:ThemeDictionary.Key="Light">
+                            <ResourceDictionary.MergedDictionaries>
+                                <ResourceDictionary Source="images/Svgs.xaml"/>
+                            </ResourceDictionary.MergedDictionaries>
                             <SolidColorBrush x:Key="BorderBackground" Color="White" Opacity="0.7" />
                             <SolidColorBrush x:Key="SideMenuBrush" Color="#FFEEF4F9" Opacity="0.7" />
                             <SolidColorBrush x:Key="SideMenuItemBrush" Opacity="0" />
                         </ResourceDictionary>
 
                         <ResourceDictionary x:Key="Dark" hc:ThemeDictionary.Key="Dark">
+                            <ResourceDictionary.MergedDictionaries>
+                                <ResourceDictionary Source="images/Svgs_DarkMode.xaml"/>
+                            </ResourceDictionary.MergedDictionaries>
                             <SolidColorBrush x:Key="BorderBackground" Color="#232323" Opacity="0.7" />
                             <SolidColorBrush x:Key="SideMenuBrush" Color="Black" Opacity="0.7" />
                             <SolidColorBrush x:Key="SideMenuItemBrush" Opacity="0" />

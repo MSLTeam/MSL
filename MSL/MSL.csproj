@@ -195,6 +195,14 @@
       <SubType>Designer</SubType>
       <Generator>MSBuild:Compile</Generator>
     </Page>
+    <Page Include="images\Svgs.xaml">
+      <Generator>MSBuild:Compile</Generator>
+      <SubType>Designer</SubType>
+    </Page>
+    <Page Include="images\Svgs_DarkMode.xaml">
+      <SubType>Designer</SubType>
+      <Generator>MSBuild:Compile</Generator>
+    </Page>
     <Page Include="pages\CreateServer.xaml">
       <SubType>Designer</SubType>
       <Generator>MSBuild:Compile</Generator>
@@ -362,9 +370,6 @@
     <Resource Include="images\150px-Grass_Block_JE7_BE6.png" />
     <Resource Include="images\150px-Wooden_Pickaxe_JE3_BE3.png" />
     <Resource Include="icon.ico" />
-  </ItemGroup>
-  <ItemGroup>
-    <Resource Include="images\sidemenuextend.png" />
   </ItemGroup>
   <ItemGroup>
     <Resource Include="images\150px-Anvil.png" />

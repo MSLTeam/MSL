@@ -79,7 +79,7 @@ namespace MSL.pages
                     autoSetTheme.IsChecked = false;
                     darkTheme.IsEnabled = true;
                 }
-                if (MainWindow.SoftTag == "i18n")
+                if (MainWindow.isI18N == true)
                 {
                     if (jsonObject["lang"] != null)
                     {
@@ -95,12 +95,11 @@ namespace MSL.pages
                         }
                         ChangeLanguage.SelectedIndex = langCombo;
                     }
-
                 }
                 else
                 {
                     ChangeLanguage.Visibility = Visibility.Collapsed;
-                    ChangeLanguageBtn.Visibility = Visibility.Visible;
+                    //ChangeLanguageBtn.Visibility = Visibility.Visible;//         i18入口
                 }
 
                 if (jsonObject["skin"] != null)
@@ -681,7 +680,11 @@ namespace MSL.pages
                                 Shows.ShowMsgDialog(Window.GetWindow(this), "您的服务器/内网映射/点对点联机正在运行中，若此时更新，会造成后台残留，请将前者关闭后再进行更新！", "警告");
                                 return;
                             }
-                            string downloadUrl = Functions.Get("download/update?type=" + MainWindow.SoftTag);
+                            string downloadUrl = Functions.Get("download/update?type=normal"); ;
+                            if (MainWindow.isI18N)
+                            {
+                                downloadUrl = Functions.Get("download/update?type=i18n");
+                            }
                             await Shows.ShowDownloader(Window.GetWindow(this), downloadUrl, AppDomain.CurrentDomain.BaseDirectory, "MSL" + _httpReturn + ".exe", "下载新版本中……");
                             if (File.Exists("MSL" + _httpReturn + ".exe"))
                             {
@@ -842,8 +845,8 @@ namespace MSL.pages
             {
                 Shows.ShowMsgDialog(Window.GetWindow(this), "升级失败！\n错误：" + ex.Message, LanguageManager.Instance["Dialog_Err"]);
             }
-            
-            
+
+
         }
     }
 }

@@ -11,7 +11,6 @@ using System.Windows;
 using System.Windows.Controls;
 using System.Windows.Input;
 using System.Windows.Threading;
-using Windows.Devices.Sensors;
 using File = System.IO.File;
 
 namespace MSL.pages
@@ -136,7 +135,8 @@ namespace MSL.pages
                         }
                         downloadServerName = installReturn;
                         Close();
-                    }else if(filename.IndexOf("banner") + 1 != 0)
+                    }
+                    else if (filename.IndexOf("banner") + 1 != 0)
                     {
                         //banner应当作为模组加载，所以要再下载一个fabric才是服务端
                         try
@@ -151,7 +151,7 @@ namespace MSL.pages
                         }
                         catch (Exception e)
                         {
-                            Dispatcher.Invoke( () =>
+                            Dispatcher.Invoke(() =>
                             {
                                 Shows.ShowMsgDialog(this, "Banner端移动失败！\n请重试！\n" + e.Message, "错误");
                             });
@@ -163,14 +163,14 @@ namespace MSL.pages
                         string bannerVersion = filename.Replace("banner-", "").Replace(".jar", "");
                         await Dispatcher.Invoke(async () =>
                         {
-                            bool dwnFabric = await Shows.ShowDownloader(Window.GetWindow(this), Functions.Get("download/server/fabric/"+bannerVersion), downloadServerBase, $"fabric-{bannerVersion}.jar", "下载Fabric端中···");
+                            bool dwnFabric = await Shows.ShowDownloader(Window.GetWindow(this), Functions.Get("download/server/fabric/" + bannerVersion), downloadServerBase, $"fabric-{bannerVersion}.jar", "下载Fabric端中···");
                             if (!dwnFabric)
                             {
                                 Shows.ShowMsgDialog(this, "Fabric端下载失败！\n请重试！", "错误");
                                 return;
                             }
                         });
-                        downloadServerName =  $"fabric-{bannerVersion}.jar";
+                        downloadServerName = $"fabric-{bannerVersion}.jar";
                         Close();
                     }
                     else

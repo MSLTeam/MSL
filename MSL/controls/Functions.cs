@@ -21,6 +21,7 @@ namespace MSL.controls
         {
             return WebGet(path, out _, customUrl, hideHeader);
         }
+
         public static string[] GetWithSha256(string path, string customUrl = "", bool hideHeader = false)
         {
             string context = WebGet(path, out string sha256, customUrl, hideHeader);
@@ -29,6 +30,7 @@ namespace MSL.controls
             strings[1] = sha256;
             return strings;
         }
+
         private static string WebGet(string path, out string sha256, string customUrl = "", bool hideHeader = false)
         {
             string url = "https://api.waheal.top";
@@ -164,7 +166,6 @@ namespace MSL.controls
             {
                 if (!Directory.Exists(destPath))
                 {
-                    //目标目录不存在则创建
                     try
                     {
                         Directory.CreateDirectory(destPath);
@@ -174,28 +175,21 @@ namespace MSL.controls
                         throw new Exception("创建目标目录失败：" + ex.Message);
                     }
                 }
-                //获得源文件下所有文件
                 List<string> files = new List<string>(Directory.GetFiles(sourcePath));
                 files.ForEach(c =>
                 {
                     string destFile = Path.Combine(new string[] { destPath, Path.GetFileName(c) });
-                    //覆盖模式
                     if (File.Exists(destFile))
                     {
                         File.Delete(destFile);
                     }
                     File.Move(c, destFile);
                 });
-                //获得源文件下所有目录文件
                 List<string> folders = new List<string>(Directory.GetDirectories(sourcePath));
 
                 folders.ForEach(c =>
                 {
                     string destDir = Path.Combine(new string[] { destPath, Path.GetFileName(c) });
-                    //Directory.Move必须要在同一个根目录下移动才有效，不能在不同卷中移动。
-                    //Directory.Move(c, destDir);
-
-                    //采用递归的方法实现
                     MoveFolder(c, destDir);
                 });
                 Directory.Delete(sourcePath);
@@ -473,7 +467,6 @@ namespace MSL.controls
     }
 
     #region OpenFrp Api
-
     internal class OpenFrpApi
     {
         public static string userAccount = "";
@@ -609,28 +602,20 @@ namespace MSL.controls
 
         public async Task<string> Login(string account, string password)
         {
-            // 创建一个 HttpClient 对象
             HttpClient client = new HttpClient();
-            // 准备登录信息
             JObject logininfo = new JObject
             {
                 ["user"] = account,
                 ["password"] = password
             };
-            // 将登录信息序列化为 JSON 字符串
             string json = JsonConvert.SerializeObject(logininfo);
-            // 创建一个 StringContent 对象，指定内容类型为 application/json
             HttpContent content = new StringContent(json, Encoding.UTF8, "application/json");
             // 发送 POST 请求到登录 API 地址
             HttpResponseMessage loginResponse = await client.PostAsync("https://openid.17a.ink/api/public/login", content);
             // 检查响应状态码是否为 OK
             if (loginResponse.IsSuccessStatusCode)
             {
-                // 读取响应内容
-                //string loginData = 
                 await loginResponse.Content.ReadAsStringAsync();
-                // 显示响应内容
-                //MessageBox.Show(loginData);
                 string authUrl;
                 try
                 {
@@ -649,8 +634,6 @@ namespace MSL.controls
                 {
                     return $"Get-Login-Url request failed: {ex.Message}";
                 }
-                //MessageBox.Show(authUrl);
-                // 发送 GET 请求到授权 API 地址
                 HttpResponseMessage authResponse = await client.GetAsync(authUrl);
                 // 检查响应状态码是否为 OK
                 if (authResponse.IsSuccessStatusCode)
