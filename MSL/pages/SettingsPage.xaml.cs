@@ -194,9 +194,11 @@ namespace MSL.pages
         private async void AddDownloadTask_Click(object sender, RoutedEventArgs e)
         {
             SaveFileDialog saveFileDialog = new SaveFileDialog();
-            saveFileDialog.ShowDialog();
-            await Shows.ShowMsgDialogAsync(Window.GetWindow(this), "保存目录:" + Path.GetDirectoryName(saveFileDialog.FileName) + "\n文件名:" + Path.GetFileName(saveFileDialog.FileName), "");
-            await Shows.ShowDownloader(Window.GetWindow(this), DownloadUrl.Text, Path.GetDirectoryName(saveFileDialog.FileName), Path.GetFileName(saveFileDialog.FileName), "下载中");
+            if (saveFileDialog.ShowDialog() == true)
+            {
+                await Shows.ShowMsgDialogAsync(Window.GetWindow(this), "保存目录:" + Path.GetDirectoryName(saveFileDialog.FileName) + "\n文件名:" + Path.GetFileName(saveFileDialog.FileName), "信息");
+                await Shows.ShowDownloader(Window.GetWindow(this), DownloadUrl.Text, Path.GetDirectoryName(saveFileDialog.FileName), Path.GetFileName(saveFileDialog.FileName), "下载中");
+            }
         }
 
         private async void setdefault_Click(object sender, RoutedEventArgs e)
@@ -817,14 +819,10 @@ namespace MSL.pages
                         string dwnExePath = Path.Combine(AppDomain.CurrentDomain.BaseDirectory, "MSL" + _httpReturn + ".exe");
                         string newExeDir = AppDomain.CurrentDomain.BaseDirectory;
 
-                        // 输出CMD命令以便调试
                         string cmdCommand = "/C choice /C Y /N /D Y /T 1 & Del \"" + oldExePath + "\" & Ren \"" + "MSL" + _httpReturn + ".exe" + "\" \"MSL.exe\" & start \"\" \"MSL.exe\"";
-                        //MessageBox.Show(cmdCommand);
 
-                        // 关闭当前运行中的应用程序
                         Application.Current.Shutdown();
 
-                        // 删除旧版本并启动新版本
                         Process delProcess = new Process();
                         delProcess.StartInfo.FileName = "cmd.exe";
                         delProcess.StartInfo.Arguments = cmdCommand;
@@ -832,7 +830,6 @@ namespace MSL.pages
                         delProcess.StartInfo.WindowStyle = ProcessWindowStyle.Hidden;
                         delProcess.Start();
 
-                        // 退出当前进程
                         Process.GetCurrentProcess().Kill();
                     }
                     else
@@ -845,8 +842,6 @@ namespace MSL.pages
             {
                 Shows.ShowMsgDialog(Window.GetWindow(this), "升级失败！\n错误：" + ex.Message, LanguageManager.Instance["Dialog_Err"]);
             }
-
-
         }
     }
 }

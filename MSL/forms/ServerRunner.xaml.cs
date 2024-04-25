@@ -525,8 +525,7 @@ namespace MSL
 
         private async void gotoFrpc_Click(object sender, RoutedEventArgs e)
         {
-            string ipAddress = string.Empty;
-
+            string ipAddress;
             // 获取本地计算机的IP地址列表
             IPAddress[] localIPs = Dns.GetHostAddresses(Dns.GetHostName());
             // 正则表达式匹配内网地址的模式
@@ -552,7 +551,6 @@ namespace MSL
                     return;
                 }
             }
-
             // 返回IP地址，如果没有找到公网IP，则返回"none"
             //return string.IsNullOrEmpty(ipAddress) ? "none" : ipAddress;
             await Shows.ShowMsgDialogAsync(this, "服务器开启后，通常远程的小伙伴是无法进入的，您需要进行内网映射才可让他人进入。开服器内置有免费的内网映射，您可点击主界面左侧的“内网映射”按钮查看详情并进行配置。", "注意", false);
@@ -565,7 +563,6 @@ namespace MSL
             {
                 Growl.Info("加载相关信息中，请稍等……");
                 getServerInfo = true;
-                //outlog.Margin = new Thickness(10, 10, 125, 47);
                 systemInfoBtn.Content = "显示占用:开";
                 Thread thread = new Thread(GetSystemInfo);
                 thread.Start();
@@ -573,7 +570,6 @@ namespace MSL
             else
             {
                 await Shows.ShowMsgDialogAsync(this, "关闭此功能后，输出预览功能也将同时关闭！", "注意", false);
-                //outlog.Margin = new Thickness(10, 10, 10, 47);
                 getServerInfo = false;
                 systemInfoBtn.Content = "显示占用:关";
                 previewOutlog.Text = "预览功能已关闭，请前往服务器控制台界面查看日志信息！";
@@ -623,7 +619,7 @@ namespace MSL
 
                         if (outlog.Document.Blocks.LastBlock != null)
                         {
-                            if (previewOutlog.LineCount > 10)
+                            if (previewOutlog.LineCount >= 25)
                             {
                                 previewOutlog.Clear();
                             }
@@ -631,6 +627,7 @@ namespace MSL
                             if (!previewOutlog.Text.Contains(textRange.Text))
                             {
                                 previewOutlog.Text += textRange.Text + "\n";
+                                previewOutlog.ScrollToEnd();
                             }
                         }
                     });
@@ -1268,7 +1265,24 @@ namespace MSL
                 }
                 else if (msg.Contains("Default game type:"))
                 {
-                    gameTypeLab.Content = msg.Substring(msg.LastIndexOf(" ") + 1);
+                    string gamemode = msg.Substring(msg.LastIndexOf(" ") + 1);
+                    if (gamemode.IndexOf("survival", StringComparison.OrdinalIgnoreCase) != -1)
+                    {
+                        gamemode = "生存";
+                    }
+                    if (gamemode.IndexOf("creative", StringComparison.OrdinalIgnoreCase) != -1)
+                    {
+                        gamemode = "创造";
+                    }
+                    if (gamemode.IndexOf("adventure", StringComparison.OrdinalIgnoreCase) != -1)
+                    {
+                        gamemode = "冒险";
+                    }
+                    if (gamemode.IndexOf("spectator", StringComparison.OrdinalIgnoreCase) != -1)
+                    {
+                        gamemode = "旁观";
+                    }
+                    gameTypeLab.Content = gamemode;
                 }
                 else if (msg.Contains("Starting Minecraft server on"))
                 {
@@ -1644,23 +1658,23 @@ namespace MSL
                     {
                         SendCmdUTF8(cmdtext.Text);
                     }
-                    else if (fastCMD.SelectedItem.ToString().IndexOf("/op（给管理员）") != -1)
+                    else if (fastCMD.SelectedItem.ToString().Contains("/op（给管理员）"))
                     {
                         SendCmdUTF8("op " + cmdtext.Text);
                     }
-                    else if (fastCMD.SelectedItem.ToString().IndexOf("/deop（去除管理员）") != -1)
+                    else if (fastCMD.SelectedItem.ToString().Contains("/deop（去除管理员）"))
                     {
                         SendCmdUTF8("deop " + cmdtext.Text);
                     }
-                    else if (fastCMD.SelectedItem.ToString().IndexOf("/ban（封禁玩家）") != -1)
+                    else if (fastCMD.SelectedItem.ToString().Contains("/ban（封禁玩家）"))
                     {
                         SendCmdUTF8("ban " + cmdtext.Text);
                     }
-                    else if (fastCMD.SelectedItem.ToString().IndexOf("/say（全服说话）") != -1)
+                    else if (fastCMD.SelectedItem.ToString().Contains("/say（全服说话）"))
                     {
                         SendCmdUTF8("say " + cmdtext.Text);
                     }
-                    else if (fastCMD.SelectedItem.ToString().IndexOf("/pardon（解除封禁）") != -1)
+                    else if (fastCMD.SelectedItem.ToString().Contains("/pardon（解除封禁）"))
                     {
                         SendCmdUTF8("pardon " + cmdtext.Text);
                     }
@@ -1682,23 +1696,23 @@ namespace MSL
                     {
                         SendCmdANSL(cmdtext.Text);
                     }
-                    else if (fastCMD.SelectedItem.ToString().IndexOf("/op（给管理员）") != -1)
+                    else if (fastCMD.SelectedItem.ToString().Contains("/op（给管理员）"))
                     {
                         SendCmdANSL("op " + cmdtext.Text);
                     }
-                    else if (fastCMD.SelectedItem.ToString().IndexOf("/deop（去除管理员）") != -1)
+                    else if (fastCMD.SelectedItem.ToString().Contains("/deop（去除管理员）"))
                     {
                         SendCmdANSL("deop " + cmdtext.Text);
                     }
-                    else if (fastCMD.SelectedItem.ToString().IndexOf("/ban（封禁玩家）") != -1)
+                    else if (fastCMD.SelectedItem.ToString().Contains("/ban（封禁玩家）"))
                     {
                         SendCmdANSL("ban " + cmdtext.Text);
                     }
-                    else if (fastCMD.SelectedItem.ToString().IndexOf("/say（全服说话）") != -1)
+                    else if (fastCMD.SelectedItem.ToString().Contains("/say（全服说话）"))
                     {
                         SendCmdANSL("say " + cmdtext.Text);
                     }
-                    else if (fastCMD.SelectedItem.ToString().IndexOf("/pardon（解除封禁）") != -1)
+                    else if (fastCMD.SelectedItem.ToString().Contains("/pardon（解除封禁）"))
                     {
                         SendCmdANSL("pardon " + cmdtext.Text);
                     }
@@ -1979,7 +1993,7 @@ namespace MSL
                 changeServerProperties_Add_Add.Visibility = Visibility.Visible;
                 changeServerProperties_Add_Add.Height = double.NaN;
             }
-            catch { changeServerPropertiesLab.Content = "找不到配置文件，更改配置功能已隐藏（请尝试开启一次服务器再试）"; changeServerProperties.Visibility = Visibility.Hidden; changeServerProperties.Height = 0; changeServerProperties_Add.Visibility = Visibility.Hidden; changeServerProperties_Add.Height = 0; changeServerProperties_Add_Add.Visibility = Visibility.Hidden; changeServerProperties_Add_Add.Height = 0; }
+            catch { changeServerPropertiesLab.Content = "找不到配置文件，更改配置功能已隐藏（请尝试开启一次服务器再试）"; changeServerProperties.Visibility = Visibility.Collapsed; changeServerProperties.Height = 0; changeServerProperties_Add.Visibility = Visibility.Collapsed; changeServerProperties_Add.Height = 0; changeServerProperties_Add_Add.Visibility = Visibility.Collapsed; changeServerProperties_Add_Add.Height = 0; }
         }
 
         private string[] ServerBaseConfig()
@@ -1993,9 +2007,15 @@ namespace MSL
             int om1 = config.IndexOf("online-mode=") + 12;
             string om2 = config.Substring(om1);
             strings[0] = om2.Substring(0, om2.IndexOf("\n"));
-            int gm1 = config.IndexOf("gamemode=") + 9;
-            string gm2 = config.Substring(gm1);
-            strings[1] = gm2.Substring(0, gm2.IndexOf("\n"));
+            string[] strings1=config.Split('\n');
+            foreach(string s in strings1)
+            {
+                if (s.StartsWith("gamemode="))
+                {
+                    strings[1] = s.Substring(9);
+                    break;
+                }
+            }
             int dc1 = config.IndexOf("difficulty=") + 11;
             string dc2 = config.Substring(dc1);
             strings[2] = dc2.Substring(0, dc2.IndexOf("\n"));

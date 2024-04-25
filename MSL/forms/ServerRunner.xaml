@@ -47,6 +47,21 @@
                             <StackPanel>
                                 <Label Content="服务器基本信息" Style="{StaticResource BorderTitle}"/>
                                 <Grid>
+                                    <Grid.Resources>
+                                        <Style TargetType="Label" BasedOn="{StaticResource {x:Type Label}}">
+                                            <Setter Property="HorizontalAlignment" Value="Stretch"/>
+                                            <Setter Property="VerticalAlignment" Value="Center"/>
+                                            <Setter Property="Height" Value="32"/>
+                                            <Setter Property="Margin" Value="90,0,0,0"/>
+                                            <Setter Property="FontSize" Value="14"/>
+                                        </Style>
+                                        <Style TargetType="TextBlock">
+                                            <Setter Property="Foreground" Value="{DynamicResource PrimaryTextBrush}"/>
+                                            <Setter Property="VerticalAlignment" Value="Center"/>
+                                            <Setter Property="Margin" Value="10,0,0,0"/>
+                                            <Setter Property="FontSize" Value="14"/>
+                                        </Style>
+                                    </Grid.Resources>
                                     <Grid.RowDefinitions>
                                         <RowDefinition Height="45"/>
                                         <RowDefinition Height="45"/>
@@ -56,20 +71,20 @@
                                         <RowDefinition Height="45"/>
                                         <RowDefinition Height="45"/>
                                     </Grid.RowDefinitions>
-                                    <TextBlock Grid.Row="0" Text="服务器状态" Foreground="{DynamicResource PrimaryTextBrush}" FontSize="16" Margin="10,0,0,0" VerticalAlignment="Center"/>
-                                    <Label Grid.Row="0" x:Name="serverStateLab" Content="已关闭" HorizontalAlignment="Stretch" Height="32" Margin="100,0,0,0" VerticalAlignment="Center" FontSize="16" Foreground="Green"/>
-                                    <TextBlock Grid.Row="1" Text="服务器版本" Margin="10,0,0,0" Foreground="{DynamicResource PrimaryTextBrush}" FontSize="16" VerticalAlignment="Center" />
-                                    <Label Grid.Row="1" x:Name="serverVersionLab" Content="获取中" HorizontalAlignment="Stretch" Height="32" Margin="100,0,0,0" VerticalAlignment="Center" FontSize="16"/>
-                                    <TextBlock Grid.Row="2" Text="正版验证" Margin="15,0,0,0" Foreground="{DynamicResource PrimaryTextBrush}" FontSize="16" VerticalAlignment="Center" />
-                                    <Label Grid.Row="2" x:Name="onlineModeLab" Content="获取中" HorizontalAlignment="Stretch" Height="32" Margin="100,0,0,0" VerticalAlignment="Center" FontSize="16"/>
-                                    <TextBlock Grid.Row="3" Text="游戏模式" Margin="15,0,0,0" Foreground="{DynamicResource PrimaryTextBrush}" FontSize="16" VerticalAlignment="Center" />
-                                    <Label Grid.Row="3" x:Name="gameTypeLab" Content="获取中" HorizontalAlignment="Stretch" Height="32" Margin="100,0,0,0" FontSize="16" VerticalAlignment="Center"/>
-                                    <TextBlock Grid.Row="4" Text="服务器IP" Margin="15,0,0,0" Foreground="{DynamicResource PrimaryTextBrush}" FontSize="16" VerticalAlignment="Center" />
-                                    <Label Grid.Row="4" x:Name="serverIPLab" Content="获取中" HorizontalAlignment="Stretch" Height="32" Margin="100,0,0,0" VerticalAlignment="Center" FontSize="16"/>
-                                    <TextBlock Grid.Row="5" Text="本地进入IP" Margin="10,0,0,0" Foreground="{DynamicResource PrimaryTextBrush}" FontSize="16" VerticalAlignment="Center" />
-                                    <Label Grid.Row="5" x:Name="localServerIPLab" Content="获取中" HorizontalAlignment="Stretch" Height="32" Margin="100,0,0,0" VerticalAlignment="Center" FontSize="16"/>
-                                    <TextBlock Grid.Row="6" Text="远程进入IP" Margin="10,0,0,0" Foreground="{DynamicResource PrimaryTextBrush}" FontSize="16" VerticalAlignment="Center" />
-                                    <Button Grid.Row="6" x:Name="gotoFrpc" HorizontalAlignment="Stretch" Margin="100,0,0,0" VerticalAlignment="Center" Height="32" Content="点击查看" FontSize="16" Click="gotoFrpc_Click"/>
+                                    <TextBlock Grid.Row="0" Text="服务器状态"/>
+                                    <Label Grid.Row="0" x:Name="serverStateLab" Content="已关闭" Foreground="Green"/>
+                                    <TextBlock Grid.Row="1" Text="服务器版本"/>
+                                    <Label Grid.Row="1" x:Name="serverVersionLab" Content="获取中"/>
+                                    <TextBlock Grid.Row="2" Text="正版验证"/>
+                                    <Label Grid.Row="2" x:Name="onlineModeLab" Content="获取中"/>
+                                    <TextBlock Grid.Row="3" Text="游戏模式"/>
+                                    <Label Grid.Row="3" x:Name="gameTypeLab" Content="获取中"/>
+                                    <TextBlock Grid.Row="4" Text="服务器IP"/>
+                                    <Label Grid.Row="4" x:Name="serverIPLab" Content="获取中"/>
+                                    <TextBlock Grid.Row="5" Text="本地进入IP"/>
+                                    <Label Grid.Row="5" x:Name="localServerIPLab" Content="获取中"/>
+                                    <TextBlock Grid.Row="6" Text="远程进入IP"/>
+                                    <Button Grid.Row="6" x:Name="gotoFrpc" HorizontalAlignment="Stretch" Margin="90,0,0,0" VerticalAlignment="Center" Height="32" Content="点击获取" FontSize="14" Click="gotoFrpc_Click"/>
                                 </Grid>
                                 <Label Margin="0,20,0,0" Content="系统占用" Style="{StaticResource BorderTitle}"/>
                                 <Grid Margin="0,10,0,20">
@@ -87,7 +102,7 @@
                     <Border Style="{StaticResource MagicBorder}" Margin="0,10,0,80" Grid.Column="1" VerticalAlignment="Stretch" >
                         <Grid>
                             <Label Content="日志输出" Style="{StaticResource BorderTitle}"/>
-                            <TextBox x:Name="previewOutlog" Margin="5,35,5,5" IsReadOnly="True" TextWrapping="Wrap" VerticalContentAlignment="Top" FontSize="14" Padding="10"/>
+                            <TextBox x:Name="previewOutlog" Margin="5,35,5,5" IsReadOnly="True" TextWrapping="Wrap" VerticalContentAlignment="Top" FontSize="14" Padding="10" VerticalScrollBarVisibility="Auto"/>
                         </Grid>
                     </Border>
                     <Border Style="{StaticResource MagicBorder}" Grid.Column="2" VerticalAlignment="Stretch" Margin="10,10,10,10" >
