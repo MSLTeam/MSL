@@ -615,7 +615,7 @@ namespace MSL
                         memoryInfoBar.Value = temp * 100;
                         availableMemoryInfoBar.Value = _temp * 100;
                         usedMemoryLab.Content = "系统已用内存:" + string.Format("{0:P}", temp);
-                        availableMemoryInfoLab.Content = "系统空闲内存:" + string.Format("{0:P}", _temp / 100);
+                        availableMemoryInfoLab.Content = "系统空闲内存:" + string.Format("{0:P}", _temp);
 
                         if (outlog.Document.Blocks.LastBlock != null)
                         {
