@@ -655,6 +655,7 @@ namespace MSL
 
         private void GotoCreatePage()
         {
+            SideMenu.SelectedIndex = 1;
             frame.Content = new CreateServer();
             //SideMenu.SelectedIndex = -1;
         }
