@@ -45,7 +45,7 @@ namespace MSL
         private bool getPlayerInfo = MainWindow.getPlayerInfo;
         private readonly int FirstStartTab;
         private string DownjavaName;
-        private readonly string RserverID;
+        private string RserverID = string.Empty;
         private string Rservername;
         private string Rserverjava;
         private string Rserverserver;
@@ -108,6 +108,7 @@ namespace MSL
                 else
                 {
                     ServerList.runningServers.Remove(RserverID);
+                    RserverID = string.Empty;
                     getServerInfo = false;
                     getPlayerInfo = false;
                     outlog.Document.Blocks.Clear();
@@ -117,6 +118,7 @@ namespace MSL
             catch
             {
                 ServerList.runningServers.Remove(RserverID);
+                RserverID = string.Empty;
                 getServerInfo = false;
                 getPlayerInfo = false;
                 outlog.Document.Blocks.Clear();
@@ -3047,18 +3049,21 @@ namespace MSL
                 }
             }
         }
-        private async void useJvpath_Checked(object sender, RoutedEventArgs e)
+        private async void useJvpath_Click(object sender, RoutedEventArgs e)
         {
-            Growl.Info("正在检查环境变量可用性，请稍等……");
-            (bool javaAvailability, string javainfo) = await Functions.CheckJavaAvailabilityAsync("java");
-            if (javaAvailability)
+            if (useJvpath.IsChecked==true)
             {
-                Growl.Success("检查完毕，您的环境变量正常！");
-                useJvpath.Content = "使用环境变量：" + javainfo;
-            }
-            else
-            {
-                Shows.ShowMsgDialog(this, "检测失败，您的环境变量似乎不存在！", "错误");
+                Growl.Info("正在检查环境变量可用性，请稍等……");
+                (bool javaAvailability, string javainfo) = await Functions.CheckJavaAvailabilityAsync("java");
+                if (javaAvailability)
+                {
+                    Growl.Success("检查完毕，您的环境变量正常！");
+                    useJvpath.Content = "使用环境变量：" + javainfo;
+                }
+                else
+                {
+                    Shows.ShowMsgDialog(this, "检测失败，您的环境变量似乎不存在！", "错误");
+                }
             }
         }
 

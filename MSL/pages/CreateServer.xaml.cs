@@ -1153,41 +1153,43 @@ namespace MSL.pages
                 Version targetVersion1 = new Version("1.7");
                 Version targetVersion2 = new Version("1.12");
                 Version targetVersion3 = new Version("1.16");
+                Version targetVersion4 = new Version("1.19");
 
                 if (_version <= targetVersion1)
                 {
                     //_version <=1.7
                     FinallyJavaDescrip.Text = "根据您的选择，最适合您服务器的Java版本为：Java7-Java8";
                     javaVersion = "Java8";
-                    //FinallyJavaCombo.SelectedIndex = 0;
                 }
                 else if (_version <= targetVersion2)
                 {
                     //1.7< _version <=1.12
                     FinallyJavaDescrip.Text = "根据您的选择，最适合您服务器的Java版本为：Java8-Java11";
                     javaVersion = "Java8";
-                    //FinallyJavaCombo.SelectedIndex = 0;
                 }
                 else if (_version <= targetVersion3)
                 {
                     //1.12< _version <=1.16
                     FinallyJavaDescrip.Text = "根据您的选择，最适合您服务器的Java版本为：Java11-Java17（或更高）";
                     javaVersion = "Java11";
-                    //FinallyJavaCombo.SelectedIndex = 1;
+                }
+                else if (_version <= targetVersion4)
+                {
+                    //1.16< _version <=1.19
+                    FinallyJavaDescrip.Text = "根据您的选择，最适合您服务器的Java版本为：Java17及以上";
+                    javaVersion = "Java17";
                 }
                 else
                 {
-                    //_version >1.16
-                    FinallyJavaDescrip.Text = "根据您的选择，最适合您服务器的Java版本为：Java17及以上（或更高）";
-                    javaVersion = "Java17";
-                    //FinallyJavaCombo.SelectedIndex = 2;
+                    //1.19< _version
+                    FinallyJavaDescrip.Text = "根据您的选择，最适合您服务器的Java版本为：Java21及以上";
+                    javaVersion = "Java21";
                 }
             }
             else
             {
                 FinallyJavaDescrip.Text = "根据您的选择，最适合您服务器的Java版本为：Java8-Java21（或更高）";
                 javaVersion = "Java21";
-                //FinallyJavaCombo.SelectedIndex = 3;
             }
             FinallyJavaCombo.SelectedIndex = FinallyJavaCombo.Items.Count - 1;
             foreach (var item in FinallyJavaCombo.Items)
