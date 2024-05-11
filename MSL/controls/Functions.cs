@@ -33,6 +33,7 @@ namespace MSL.controls
 
         private static string WebGet(string path, out string sha256, string customUrl = "", bool hideHeader = false)
         {
+            System.Net.ServicePointManager.SecurityProtocol = SecurityProtocolType.Tls12;
             string url = "https://api.waheal.top";
             if (customUrl == "")
             {
@@ -62,6 +63,7 @@ namespace MSL.controls
 
         public static string Post(string path, int contentType = 0, string parameterData = "", string customUrl = "", WebHeaderCollection header = null)
         {
+            System.Net.ServicePointManager.SecurityProtocol = SecurityProtocolType.Tls12;
             string url = "https://api.waheal.top";
             if (customUrl == "")
             {
