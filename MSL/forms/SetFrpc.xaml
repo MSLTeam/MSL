@@ -17,6 +17,9 @@
             <TabItem Header="OpenFrp" Background="Transparent">
                 <Frame Source="/pages/frpProviders/OpenFrp.xaml" BorderBrush="{x:Null}"/>
             </TabItem>
+            <TabItem Header="ChmlFrp" Background="Transparent">
+                <Frame Source="/pages/frpProviders/ChmlFrp.xaml" BorderBrush="{x:Null}"/>
+            </TabItem>
         </TabControl>
     </Grid>
 </hc:Window>
