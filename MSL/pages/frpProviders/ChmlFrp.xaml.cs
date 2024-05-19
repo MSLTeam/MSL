@@ -1,10 +1,12 @@
 ﻿using MSL.controls;
+using MSL.i18n;
 using Newtonsoft.Json;
 using Newtonsoft.Json.Linq;
 using System;
 using System.Collections.Generic;
 using System.Diagnostics;
 using System.Linq;
+using System.Reflection.Emit;
 using System.Text;
 using System.Threading.Tasks;
 using System.Windows;
@@ -59,19 +61,27 @@ namespace MSL.pages.frpProviders
                 {
                     string token = jsonResponse["token"].ToString();
                     //这里就拿到token了
-                    MessageBox.Show(token);
+                    Task.Run(() => GetFrpList(token));
                 }
                 else
                 {
-                    MessageBox.Show("登陆失败！"+ jsonResponse["message"].ToString());
+                    Dispatcher.Invoke(() =>
+                    {
+                        Shows.ShowMsgDialog(Window.GetWindow(this), "登陆失败！" + jsonResponse["message"].ToString(), LanguageManager.Instance["Dialog_Err"]);
+                    });
+                    
                 }
             }
             else
             {
                 if (jsonResponse.ContainsKey("error"))
                 {
-                    MessageBox.Show("登陆失败！\n" + jsonResponse["error"].ToString());
-                }
+                    Dispatcher.Invoke(() =>
+                    {
+
+                        Shows.ShowMsgDialog(Window.GetWindow(this), "登陆失败！\n" + jsonResponse["error"].ToString(), LanguageManager.Instance["Dialog_Err"]);
+                    });
+                    }
                     
             }
             
@@ -85,19 +95,56 @@ namespace MSL.pages.frpProviders
             var jsonResponse = JsonConvert.DeserializeObject<Dictionary<string, object>>(response);
             if (jsonResponse.ContainsKey("userid"))
             {
-                MessageBox.Show(userToken);
+                //这里就拿到token了
+                Task.Run(() => GetFrpList(userToken));
             }
             else
             {
                 if (jsonResponse.ContainsKey("error"))
                 {
-                    MessageBox.Show("登陆失败！\n" + jsonResponse["error"].ToString());
-                }
+                    Dispatcher.Invoke(() =>
+                    {
+                        Shows.ShowMsgDialog(Window.GetWindow(this), "Token登陆失败！\n可以尝试账号密码登录！\n" + jsonResponse["error"].ToString(), LanguageManager.Instance["Dialog_Err"]);
+                    });
+                    }
 
             }
         }
 
-        //然后就是获取隧道
+        //登录成功了，然后就是获取隧道,丢到ui去
+        private void GetFrpList(String token )
+        {
+            Dispatcher.Invoke(() =>
+            {
+                MainGrid.Visibility = Visibility.Visible;
+                LoginGrid.Visibility = Visibility.Collapsed;
+            });
+            string response = Functions.Get($"api/usertunnel.php?token={token}", ChmlFrpApiUrl);
+            try
+            {
+                var jsonArray = JsonConvert.DeserializeObject<List<Dictionary<string, object>>>(response);
+                foreach ( var item in jsonArray )
+                {
+                    Dispatcher.Invoke(() =>
+                    {
+                        FrpList.Items.Add($"{item["name"]}({item["node"]})");
+                    });
+                }
+            }
+            catch (JsonSerializationException)
+            {
+                Dispatcher.Invoke(() =>
+                {
+                    Shows.ShowMsgDialog(Window.GetWindow(this), "建议创建一个哦~" , "您似乎没有隧道");
+                });
+            }
 
+        }
+
+        private void Page_Loaded(object sender, RoutedEventArgs e)
+        {
+            MainGrid.Visibility = Visibility.Collapsed;
+            LoginGrid.Visibility = Visibility.Visible;
+        }
     }
 }
