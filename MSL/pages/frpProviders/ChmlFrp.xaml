@@ -71,7 +71,7 @@
                 <Grid Grid.Column="1" Margin="0,10,10,10">
                     <StackPanel Orientation="Horizontal">
                         <Button Content="新建隧道" MinWidth="100" MinHeight="60" Margin="0,0,8,0" FontSize="20"/>
-                        <Button Content="确定" MinWidth="100" MinHeight="60" Style="{StaticResource ButtonPrimary}" FontSize="20"/>
+                        <Button Content="确定" MinWidth="100" MinHeight="60" Style="{StaticResource ButtonPrimary}" FontSize="20" x:Name="OKBtn" Click="OKBtn_Click"/>
                     </StackPanel>
                 </Grid>
             </Grid>

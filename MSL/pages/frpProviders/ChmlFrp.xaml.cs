@@ -6,6 +6,7 @@ using System;
 using System.Collections.Generic;
 using System.Collections.ObjectModel;
 using System.Diagnostics;
+using System.IO;
 using System.Linq;
 using System.Reflection.Emit;
 using System.Text;
@@ -122,6 +123,9 @@ namespace MSL.pages.frpProviders
             public string Name { get; set; }
             public string Node { get; set; }
             public string Addr { get; set; }
+            public string Token { get; set; }
+            public string Encryption { get; set; }
+            public string Compression { get; set; }
         }
 
         //登录成功了，然后就是获取隧道,丢到ui去
@@ -154,7 +158,7 @@ namespace MSL.pages.frpProviders
                 {
                     Dispatcher.Invoke(() =>
                     {
-                        tunnels.Add(new TunnelInfo { Name = $"{item["name"]}", Node = $"{item["node"]}" ,ID= $"{item["id"]}" ,Type= $"{item["type"]}",LIP= $"{item["localip"]}",LPort= $"{item["nport"]}",RPort= $"{item["dorp"]}" ,Addr = $"{item["ip"]}" });
+                        tunnels.Add(new TunnelInfo { Name = $"{item["name"]}", Node = $"{item["node"]}" ,ID= $"{item["id"]}" ,Type= $"{item["type"]}",LIP= $"{item["localip"]}",LPort= $"{item["nport"]}",RPort= $"{item["dorp"]}" ,Addr = $"{item["ip"]}" ,Token= token ,Compression= $"{item["compression"]}" ,Encryption = $"{item["encryption"]}" });
                     });
                 }
             }
@@ -182,6 +186,25 @@ namespace MSL.pages.frpProviders
                 TunnelInfo_Text.Text=$"隧道名:{selectedTunnel.Name}\n隧道ID:{selectedTunnel.ID}\n协议:{selectedTunnel.Type}\n地域:{selectedTunnel.Node}\n远程端口:{selectedTunnel.RPort}";
                 LocalIp.Text=selectedTunnel.LIP;
                 LocalPort.Text=selectedTunnel.LPort;
+            }
+        }
+
+        private async void OKBtn_Click(object sender, RoutedEventArgs e)
+        {
+            string FrpcConfig;
+            var listBox = FrpList as ListBox;
+            if (listBox.SelectedItem is TunnelInfo selectedTunnel)
+            {
+                //输出配置文件
+                Uri host = new Uri("http://" + selectedTunnel.Addr);
+                FrpcConfig = $"[common]\r\nserver_addr = {host.Host}\r\nserver_port = 7000\r\ntcp_mux = true\r\nprotocol = tcp\r\nuser = {selectedTunnel.Token}\r\ntoken = ChmlFrpToken\r\ndns_server = 223.6.6.6\r\ntls_enable = false\r\n[{selectedTunnel.Name}]\r\nprivilege_mode = true\r\ntype = {selectedTunnel.Type}\r\nlocal_ip = {LocalIp.Text}\r\nlocal_port = {LocalPort.Text}\r\nremote_port = {selectedTunnel.RPort}\r\nuse_encryption = {selectedTunnel.Encryption}\r\nuse_compression = {selectedTunnel.Compression}\r\n \r\n";
+                File.WriteAllText(@"MSL\frpc", FrpcConfig);
+                JObject jobject = JObject.Parse(File.ReadAllText(@"MSL\config.json", Encoding.UTF8));
+                jobject["frpcServer"] = "2";
+                string convertString = Convert.ToString(jobject);
+                File.WriteAllText(@"MSL\config.json", convertString, Encoding.UTF8);
+                await Shows.ShowMsgDialogAsync(Window.GetWindow(this), "映射配置成功，请您点击“启动内网映射”以启动映射！", "信息");
+                Window.GetWindow(this).Close();
             }
         }
     }
