@@ -27,13 +27,18 @@ namespace MSL.pages.frpProviders
         {
             InitializeComponent();
         }
+        private void Page_Initialized(object sender, EventArgs e)
+        {
+            MainGrid.Visibility = Visibility.Collapsed;
+            LoginGrid.Visibility = Visibility.Visible;
+        }
 
         //使用token登录
         private async void userTokenLogin_Click(object sender, RoutedEventArgs e)
         {
             string token;
             token = await Shows.ShowInput(Window.GetWindow(this), "请输入Chml账户Token", "", true);
-            Task.Run(() => verifyUserToken(token));
+            Task.Run(() => verifyUserToken(token.Trim())); //移除空格，防止笨蛋
         }
 
         //账号密码
@@ -141,7 +146,11 @@ namespace MSL.pages.frpProviders
             var jsonUserInfo = JsonConvert.DeserializeObject<Dictionary<string, object>>(Functions.Get($"api/userinfo.php?usertoken={token}", ChmlFrpApiUrl));
             Dispatcher.Invoke(() =>
             {
-                UserInfo.Text= $"用户ID:{jsonUserInfo["userid"]}  用户名:{jsonUserInfo["username"]}\n邮箱:{jsonUserInfo["email"]}  会员类型:{jsonUserInfo["usergroup"]}\n隧道数:{jsonUserInfo["tunnelstate"]}/{jsonUserInfo["tunnel"]}";
+                UserInfo.Text= $"用户ID:{jsonUserInfo["userid"]}  " +
+                $"用户名:{jsonUserInfo["username"]}\n" +
+                $"邮箱:{jsonUserInfo["email"]}  " +
+                $"会员类型:{jsonUserInfo["usergroup"]}\n" +
+                $"隧道数:{jsonUserInfo["tunnelstate"]}/{jsonUserInfo["tunnel"]}";
             });
 
             //获取隧道
@@ -158,7 +167,12 @@ namespace MSL.pages.frpProviders
                 {
                     Dispatcher.Invoke(() =>
                     {
-                        tunnels.Add(new TunnelInfo { Name = $"{item["name"]}", Node = $"{item["node"]}" ,ID= $"{item["id"]}" ,Type= $"{item["type"]}",LIP= $"{item["localip"]}",LPort= $"{item["nport"]}",RPort= $"{item["dorp"]}" ,Addr = $"{item["ip"]}" ,Token= token ,Compression= $"{item["compression"]}" ,Encryption = $"{item["encryption"]}" });
+                        tunnels.Add(new TunnelInfo { Name = $"{item["name"]}", 
+                            Node = $"{item["node"]}" ,ID= $"{item["id"]}" ,
+                            Type= $"{item["type"]}",LIP= $"{item["localip"]}",
+                            LPort= $"{item["nport"]}",RPort= $"{item["dorp"]}" ,
+                            Addr = $"{item["ip"]}" ,Token= token ,
+                            Compression= $"{item["compression"]}" ,Encryption = $"{item["encryption"]}" });
                     });
                 }
             }
@@ -172,18 +186,16 @@ namespace MSL.pages.frpProviders
 
         }
 
-        private void Page_Loaded(object sender, RoutedEventArgs e)
-        {
-            MainGrid.Visibility = Visibility.Collapsed;
-            LoginGrid.Visibility = Visibility.Visible;
-        }
+
 
         private void FrpList_SelectionChanged(object sender, SelectionChangedEventArgs e)
         {
             var listBox = sender as ListBox;
             if (listBox.SelectedItem is TunnelInfo selectedTunnel)
             {
-                TunnelInfo_Text.Text=$"隧道名:{selectedTunnel.Name}\n隧道ID:{selectedTunnel.ID}\n协议:{selectedTunnel.Type}\n地域:{selectedTunnel.Node}\n远程端口:{selectedTunnel.RPort}";
+                TunnelInfo_Text.Text=$"隧道名:{selectedTunnel.Name}\n" +
+                    $"隧道ID:{selectedTunnel.ID}\n协议:{selectedTunnel.Type}\n" +
+                    $"地域:{selectedTunnel.Node}\n远程端口:{selectedTunnel.RPort}";
                 LocalIp.Text=selectedTunnel.LIP;
                 LocalPort.Text=selectedTunnel.LPort;
             }
@@ -197,15 +209,25 @@ namespace MSL.pages.frpProviders
             {
                 //输出配置文件
                 Uri host = new Uri("http://" + selectedTunnel.Addr);
-                FrpcConfig = $"[common]\r\nserver_addr = {host.Host}\r\nserver_port = 7000\r\ntcp_mux = true\r\nprotocol = tcp\r\nuser = {selectedTunnel.Token}\r\ntoken = ChmlFrpToken\r\ndns_server = 223.6.6.6\r\ntls_enable = false\r\n[{selectedTunnel.Name}]\r\nprivilege_mode = true\r\ntype = {selectedTunnel.Type}\r\nlocal_ip = {LocalIp.Text}\r\nlocal_port = {LocalPort.Text}\r\nremote_port = {selectedTunnel.RPort}\r\nuse_encryption = {selectedTunnel.Encryption}\r\nuse_compression = {selectedTunnel.Compression}\r\n \r\n";
+                FrpcConfig = $"#ChmlFrp节点-{selectedTunnel.Name}\r\n[common]\r\nserver_addr = {host.Host}\r\n" +
+                    $"server_port = 7000\r\ntcp_mux = true\r\nprotocol = tcp\r\n" +
+                    $"user = {selectedTunnel.Token}\r\ntoken = ChmlFrpToken\r\n" +
+                    $"dns_server = 223.6.6.6\r\ntls_enable = false\r\n" +
+                    $"[{selectedTunnel.Name}]\r\nprivilege_mode = true\r\n" +
+                    $"type = {selectedTunnel.Type}\r\nlocal_ip = {LocalIp.Text}\r\n" +
+                    $"local_port = {LocalPort.Text}\r\nremote_port = {selectedTunnel.RPort}\r\n" +
+                    $"use_encryption = {selectedTunnel.Encryption}\r\n" +
+                    $"use_compression = {selectedTunnel.Compression}\r\n \r\n";
                 File.WriteAllText(@"MSL\frpc", FrpcConfig);
                 JObject jobject = JObject.Parse(File.ReadAllText(@"MSL\config.json", Encoding.UTF8));
                 jobject["frpcServer"] = "2";
                 string convertString = Convert.ToString(jobject);
                 File.WriteAllText(@"MSL\config.json", convertString, Encoding.UTF8);
-                await Shows.ShowMsgDialogAsync(Window.GetWindow(this), "映射配置成功，请您点击“启动内网映射”以启动映射！", "信息");
+                await Shows.ShowMsgDialogAsync(Window.GetWindow(this), "ChmlFrp隧道配置成功，请您点击“启动内网映射”以启动映射！", "信息");
                 Window.GetWindow(this).Close();
             }
         }
+
+
     }
 }

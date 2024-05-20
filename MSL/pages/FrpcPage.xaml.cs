@@ -157,7 +157,49 @@ namespace MSL.pages
                     FRPCMD.WaitForExit();
                     FRPCMD.CancelOutputRead();
                 }
-                Dispatcher.Invoke(() =>
+                else if (jobject["frpcServer"].ToString() == "2")
+                {
+                    if (!File.Exists("MSL\\frpc_chml.exe"))
+                    {
+                        string latest_url = Functions.Get("download/frpc/ChmlFrp/amd64");
+                        await Dispatcher.Invoke(async () =>
+                        {
+                            await Shows.ShowDownloader(Window.GetWindow(this), latest_url, "MSL", "frpc_chml.zip", "下载内网映射中...");
+                            string fileName = "";
+                            using (ZipFile zip = new ZipFile(@"MSL\frpc_chml.zip"))
+                            {
+                                foreach (ZipEntry entry in zip)
+                                {
+                                    fileName = entry.Name.Replace("/", "");
+                                    break;
+                                }
+                            }
+                            FastZip fastZip = new FastZip();
+                            fastZip.ExtractZip(@"MSL\frpc_chml.zip", "MSL", "");
+                            File.Delete(@"MSL\frpc_chml.zip");
+                            File.Move("MSL\\" + fileName +"\\frpc.exe", "MSL\\frpc_chml.exe");
+                            Directory.Delete("MSL\\" + fileName,true);
+
+                        });
+                    }
+                    FRPCMD.StartInfo.WorkingDirectory = "MSL";
+                    FRPCMD.StartInfo.FileName = "MSL\\frpc_chml.exe";
+                    FRPCMD.StartInfo.Arguments = "-c frpc";
+                    FRPCMD.StartInfo.CreateNoWindow = true;
+                    FRPCMD.StartInfo.UseShellExecute = false;
+                    FRPCMD.StartInfo.RedirectStandardInput = true;
+                    FRPCMD.StartInfo.RedirectStandardOutput = true;
+                    FRPCMD.StartInfo.StandardOutputEncoding = Encoding.UTF8;
+                    FRPCMD.Start();
+                    FRPCMD.BeginOutputReadLine();
+                    Dispatcher.Invoke(() =>
+                    {
+                        startfrpc.IsEnabled = true;
+                    });
+                    FRPCMD.WaitForExit();
+                    FRPCMD.CancelOutputRead();
+                }
+                    Dispatcher.Invoke(() =>
                 {
                     Growl.Success("内网映射已关闭！");
                     startfrpc.IsEnabled = true;
@@ -521,7 +563,7 @@ namespace MSL.pages
                     string convertString = Convert.ToString(jobject);
                     File.WriteAllText(@"MSL\config.json", convertString, Encoding.UTF8);
                 }
-                if (jobject["frpcServer"].ToString() == "0")
+                if (jobject["frpcServer"].ToString() == "0" || jobject["frpcServer"].ToString()=="2")
                 {
                     Dispatcher.Invoke(() =>
                     {
