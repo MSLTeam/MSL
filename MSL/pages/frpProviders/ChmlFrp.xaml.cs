@@ -4,6 +4,7 @@ using Newtonsoft.Json;
 using Newtonsoft.Json.Linq;
 using System;
 using System.Collections.Generic;
+using System.Collections.ObjectModel;
 using System.Diagnostics;
 using System.Linq;
 using System.Reflection.Emit;
@@ -111,23 +112,49 @@ namespace MSL.pages.frpProviders
             }
         }
 
+        public class TunnelInfo
+        {
+            public string ID { get; set; }
+            public string Type { get; set; }
+            public string LPort { get; set; }
+            public string RPort { get; set; }
+            public string LIP { get; set; }
+            public string Name { get; set; }
+            public string Node { get; set; }
+            public string Addr { get; set; }
+        }
+
         //登录成功了，然后就是获取隧道,丢到ui去
         private void GetFrpList(String token )
         {
+            //处理ui界面交接
             Dispatcher.Invoke(() =>
             {
                 MainGrid.Visibility = Visibility.Visible;
                 LoginGrid.Visibility = Visibility.Collapsed;
             });
+            //获取userinfo
+            var jsonUserInfo = JsonConvert.DeserializeObject<Dictionary<string, object>>(Functions.Get($"api/userinfo.php?usertoken={token}", ChmlFrpApiUrl));
+            Dispatcher.Invoke(() =>
+            {
+                UserInfo.Text= $"用户ID:{jsonUserInfo["userid"]}  用户名:{jsonUserInfo["username"]}\n邮箱:{jsonUserInfo["email"]}  会员类型:{jsonUserInfo["usergroup"]}\n隧道数:{jsonUserInfo["tunnelstate"]}/{jsonUserInfo["tunnel"]}";
+            });
+
+            //获取隧道
+            ObservableCollection<TunnelInfo> tunnels = new ObservableCollection<TunnelInfo>();
+            Dispatcher.Invoke(() =>
+            {
+                FrpList.ItemsSource = tunnels;
+            });
             string response = Functions.Get($"api/usertunnel.php?token={token}", ChmlFrpApiUrl);
             try
             {
                 var jsonArray = JsonConvert.DeserializeObject<List<Dictionary<string, object>>>(response);
-                foreach ( var item in jsonArray )
+                foreach (var item in jsonArray)
                 {
                     Dispatcher.Invoke(() =>
                     {
-                        FrpList.Items.Add($"{item["name"]}({item["node"]})");
+                        tunnels.Add(new TunnelInfo { Name = $"{item["name"]}", Node = $"{item["node"]}" ,ID= $"{item["id"]}" ,Type= $"{item["type"]}",LIP= $"{item["localip"]}",LPort= $"{item["nport"]}",RPort= $"{item["dorp"]}" ,Addr = $"{item["ip"]}" });
                     });
                 }
             }
@@ -135,7 +162,7 @@ namespace MSL.pages.frpProviders
             {
                 Dispatcher.Invoke(() =>
                 {
-                    Shows.ShowMsgDialog(Window.GetWindow(this), "建议创建一个哦~" , "您似乎没有隧道");
+                    Shows.ShowMsgDialog(Window.GetWindow(this), "建议创建一个哦~", "您似乎没有隧道");
                 });
             }
 
@@ -145,6 +172,17 @@ namespace MSL.pages.frpProviders
         {
             MainGrid.Visibility = Visibility.Collapsed;
             LoginGrid.Visibility = Visibility.Visible;
+        }
+
+        private void FrpList_SelectionChanged(object sender, SelectionChangedEventArgs e)
+        {
+            var listBox = sender as ListBox;
+            if (listBox.SelectedItem is TunnelInfo selectedTunnel)
+            {
+                TunnelInfo_Text.Text=$"隧道名:{selectedTunnel.Name}\n隧道ID:{selectedTunnel.ID}\n协议:{selectedTunnel.Type}\n地域:{selectedTunnel.Node}\n远程端口:{selectedTunnel.RPort}";
+                LocalIp.Text=selectedTunnel.LIP;
+                LocalPort.Text=selectedTunnel.LPort;
+            }
         }
     }
 }
