@@ -7,12 +7,15 @@ using System.Collections.Generic;
 using System.Collections.ObjectModel;
 using System.Diagnostics;
 using System.IO;
-using System.Linq;
-using System.Reflection.Emit;
+using System.Net;
+using System.Security.RightsManagement;
 using System.Text;
 using System.Threading.Tasks;
+using System.Web.UI.WebControls;
 using System.Windows;
 using System.Windows.Controls;
+using System.Xml.Linq;
+using Windows.Storage.Compression;
 
 
 namespace MSL.pages.frpProviders
@@ -23,6 +26,7 @@ namespace MSL.pages.frpProviders
     public partial class ChmlFrp : Page
     {
         string ChmlFrpApiUrl = "https://panel.chmlfrp.cn";
+        string ChmlToken, ChmlID;
         public ChmlFrp()
         {
             InitializeComponent();
@@ -31,6 +35,7 @@ namespace MSL.pages.frpProviders
         {
             MainGrid.Visibility = Visibility.Collapsed;
             LoginGrid.Visibility = Visibility.Visible;
+            CreateGrid.Visibility = Visibility.Collapsed;
         }
 
         //使用token登录
@@ -38,7 +43,11 @@ namespace MSL.pages.frpProviders
         {
             string token;
             token = await Shows.ShowInput(Window.GetWindow(this), "请输入Chml账户Token", "", true);
-            Task.Run(() => verifyUserToken(token.Trim())); //移除空格，防止笨蛋
+            if (token != null)
+            {
+                Task.Run(() => verifyUserToken(token.Trim())); //移除空格，防止笨蛋
+            }
+            
         }
 
         //账号密码
@@ -67,6 +76,7 @@ namespace MSL.pages.frpProviders
                 if (jsonResponse["code"].ToString() == "200")
                 {
                     string token = jsonResponse["token"].ToString();
+                    ChmlID = jsonResponse["userid"].ToString();//id丢全局
                     //这里就拿到token了
                     Task.Run(() => GetFrpList(token));
                 }
@@ -102,6 +112,7 @@ namespace MSL.pages.frpProviders
             var jsonResponse = JsonConvert.DeserializeObject<Dictionary<string, object>>(response);
             if (jsonResponse.ContainsKey("userid"))
             {
+                ChmlID = jsonResponse["userid"].ToString();//id丢全局
                 //这里就拿到token了
                 Task.Run(() => GetFrpList(userToken));
             }
@@ -136,11 +147,13 @@ namespace MSL.pages.frpProviders
         //登录成功了，然后就是获取隧道,丢到ui去
         private void GetFrpList(String token )
         {
+            ChmlToken=token;//丢到全局
             //处理ui界面交接
             Dispatcher.Invoke(() =>
             {
                 MainGrid.Visibility = Visibility.Visible;
                 LoginGrid.Visibility = Visibility.Collapsed;
+                CreateGrid.Visibility = Visibility.Collapsed;
             });
             //获取userinfo
             var jsonUserInfo = JsonConvert.DeserializeObject<Dictionary<string, object>>(Functions.Get($"api/userinfo.php?usertoken={token}", ChmlFrpApiUrl));
@@ -190,7 +203,7 @@ namespace MSL.pages.frpProviders
 
         private void FrpList_SelectionChanged(object sender, SelectionChangedEventArgs e)
         {
-            var listBox = sender as ListBox;
+            var listBox = sender as System.Windows.Controls.ListBox;
             if (listBox.SelectedItem is TunnelInfo selectedTunnel)
             {
                 TunnelInfo_Text.Text=$"隧道名:{selectedTunnel.Name}\n" +
@@ -204,7 +217,7 @@ namespace MSL.pages.frpProviders
         private async void OKBtn_Click(object sender, RoutedEventArgs e)
         {
             string FrpcConfig;
-            var listBox = FrpList as ListBox;
+            var listBox = FrpList as System.Windows.Controls.ListBox;
             if (listBox.SelectedItem is TunnelInfo selectedTunnel)
             {
                 //输出配置文件
@@ -228,6 +241,231 @@ namespace MSL.pages.frpProviders
             }
         }
 
+        private void OpenWeb_Click(object sender, RoutedEventArgs e)
+        {
+            Process.Start("https://panel.chmlfrp.cn/tunnelm/manage");
+        }
 
+        //删除隧道的
+        private async void Del_Tunnel_Click(object sender, RoutedEventArgs e)
+        {
+            bool dialog = await Shows.ShowMsgDialogAsync(Window.GetWindow(this), "确定删除所选隧道吗？", "删除隧道", true);
+            if (dialog == true)
+            {
+                var listBox = FrpList as System.Windows.Controls.ListBox;
+                if (listBox.SelectedItem is TunnelInfo selectedTunnel)
+                {
+                    string res = Functions.Get($"api/deletetl.php?token={ChmlToken}&nodeid={selectedTunnel.ID}&userid={ChmlID}", ChmlFrpApiUrl);
+                    //处理结果
+                    var PostResponse = JsonConvert.DeserializeObject<Dictionary<string, object>>(res);
+                    if (PostResponse["code"].ToString() == "200")
+                    {
+                        //好了
+                        Dispatcher.Invoke(() =>
+                        {
+                            Shows.ShowMsgDialog(Window.GetWindow(this), "隧道删除成功！", "删除");
+                        });
+                        Task.Run(() => GetFrpList(ChmlToken));//刷新下列表
+                    }
+                    else
+                    {
+                        //创建失败的处理
+                        Dispatcher.Invoke(() =>
+                        {
+                            Shows.ShowMsgDialog(Window.GetWindow(this), $"隧道删除失败！\n{PostResponse["error"]}", "失败！");
+                        });
+
+                    }
+                }
+                else
+                {
+                    Dispatcher.Invoke(() =>
+                    {
+                        Shows.ShowMsgDialog(Window.GetWindow(this), $"请选择一个隧道再操作！", "失败！");
+                    });
+                }
+            }
+           
+        }
+
+
+        //创建隧道相关
+        private void CreateBtn_Click(object sender, RoutedEventArgs e)
+        {
+            MainGrid.Visibility = Visibility.Collapsed;
+            LoginGrid.Visibility = Visibility.Collapsed;
+            CreateGrid.Visibility = Visibility.Visible;
+            Task.Run(()=> GetNodeList() );//获取列表
+        }
+
+        public class NodeInfo
+        {
+            public string Area { get; set; }
+            public string Name { get; set; }
+            public string Notes { get; set; }
+            public string NodeGroup { get; set; }
+            public string NodeGroupName { get; set; }
+        }
+        //获取节点列表
+        private void GetNodeList()
+        {
+            ObservableCollection<NodeInfo> nodes = new ObservableCollection<NodeInfo>();
+            Dispatcher.Invoke(() =>
+            {
+                NodeList.ItemsSource = nodes;
+            });
+            //从api获取节点列表
+            string response = Functions.Get($"api/unode.php", ChmlFrpApiUrl);
+            try
+            {
+                var jsonArray = JsonConvert.DeserializeObject<List<Dictionary<string, object>>>(response);
+                foreach (var item in jsonArray)
+                {
+                    Dispatcher.Invoke(() =>
+                    {
+                        if (item["nodegroup"].ToString() == "vip")
+                        {
+                            nodes.Add(new NodeInfo
+                            {
+                                Name = $"{item["name"]}",
+                                Area = $"{item["area"]}",
+                                Notes = $"{item["notes"]}",
+                                NodeGroup = $"{item["nodegroup"]}",
+                                NodeGroupName="VIP节点",
+                            });
+                        }
+                        else
+                        {
+                            nodes.Add(new NodeInfo
+                            {
+                                Name = $"{item["name"]}",
+                                Area = $"{item["area"]}",
+                                Notes = $"{item["notes"]}",
+                                NodeGroup = $"{item["nodegroup"]}",
+                                NodeGroupName = "普通节点",
+                            });
+                        }
+
+                    });
+                }
+            }
+            catch (JsonSerializationException)
+            {
+                Dispatcher.Invoke(() =>
+                {
+                    Shows.ShowMsgDialog(Window.GetWindow(this), "无法加载节点信息！", "错误");
+                });
+            }
+        }
+
+        //处理信息显示
+        private void NodeList_SelectionChanged(object sender, SelectionChangedEventArgs e)
+        {
+            var listBox = sender as System.Windows.Controls.ListBox;
+            if (listBox.SelectedItem is NodeInfo selectedNode)
+            {
+                NodeTips.Text=selectedNode.Notes;
+            }
+        }
+
+        //确定创建摁下去了
+        private void Create_OKBtn_Click(object sender, RoutedEventArgs e)
+        {
+            var listBox = NodeList as System.Windows.Controls.ListBox;
+            if (listBox.SelectedItem is NodeInfo selectedNode)
+            {
+                string enc, comp;
+                if (Create_Encryption.IsChecked == true)
+                {
+                    enc = "";
+                }
+                else
+                {
+                    enc = "false";
+                }
+                if (Create_Compression.IsChecked == true)
+                {
+                    comp = "";
+                }
+                else
+                {
+                    comp = "false";
+                }
+                string lip = Create_LocalIP.Text;
+                string name = Create_Name.Text;
+                string proc = Create_Protocol.Text;
+                string lport = Create_LocalPort.Text;
+                string rport = Create_RemotePort.Text;
+                Task.Run(() => PostCreate(lip, name, selectedNode.Name,proc ,lport ,rport , enc, comp));
+            }
+           
+        }
+
+        //post把数据丢过去
+        private void PostCreate(string localip,string name,string node,string type,string nport,string dorp,string encryption,string compression)
+        {
+
+            string parameterData = $@"
+{{
+    ""token"": ""{ChmlToken}"",
+    ""userid"": ""{ChmlID}"",
+    ""localip"": ""{localip}"",
+    ""name"": ""{name}"",
+    ""node"": ""{node}"",
+    ""type"": ""{type}"",
+    ""nport"": {nport},
+    ""dorp"": {dorp},
+    ""ap"": """",
+    ""encryption"": ""{encryption}"",
+    ""compression"": ""{compression}""
+}}";
+            string response = Functions.Post("api/tunnel.php", 0, parameterData, ChmlFrpApiUrl, null);
+            //处理结果
+            var PostResponse = JsonConvert.DeserializeObject<Dictionary<string, object>>(response);
+            if (PostResponse["code"].ToString() == "200")
+            {
+                //好了
+                Dispatcher.Invoke(() =>
+                {
+                    Shows.ShowMsgDialog(Window.GetWindow(this), "隧道创建成功！\n即将返回主页···", "创建成功！");
+                    MainGrid.Visibility = Visibility.Visible;
+                    LoginGrid.Visibility = Visibility.Collapsed;
+                    CreateGrid.Visibility = Visibility.Collapsed;
+                });
+                Task.Run(() => GetFrpList(ChmlToken));//刷新下列表
+            }
+            else
+            {
+                //创建失败的处理
+                Dispatcher.Invoke(() =>
+                {
+                    Shows.ShowMsgDialog(Window.GetWindow(this), $"隧道创建失败！\n{PostResponse["error"]}", "创建失败！");
+                });
+                
+            }
+
+        }
+
+        private void RefreshBtn_Click(object sender, RoutedEventArgs e)
+        {
+            Task.Run(()=> GetFrpList(ChmlToken));
+        }
+
+        private void ExitBtn_Click(object sender, RoutedEventArgs e)
+        {
+            MainGrid.Visibility = Visibility.Collapsed;
+            LoginGrid.Visibility = Visibility.Visible;
+            CreateGrid.Visibility = Visibility.Collapsed;
+        }
+
+
+
+        //返回按钮
+        private void Create_BackBtn_Click(object sender, RoutedEventArgs e)
+        {
+            MainGrid.Visibility = Visibility.Visible;
+            LoginGrid.Visibility = Visibility.Collapsed;
+            CreateGrid.Visibility = Visibility.Collapsed;
+        }
     }
 }
