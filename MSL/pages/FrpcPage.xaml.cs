@@ -107,9 +107,13 @@ namespace MSL.pages
                 }
                 if (frpcversion == null || frpcversion != "6")//mslfrp的特别更新qwq
                 {
-                    jobject["frpcversion"] = "6";
-                    string convertString = Convert.ToString(jobject);
-                    File.WriteAllText("MSL\\config.json", convertString, Encoding.UTF8);
+                    
+                    string _dnfrpc = Functions.Get(downloadUrl);
+                    await Dispatcher.Invoke(async () =>
+                    {
+                        await Shows.ShowDownloader(Window.GetWindow(this), _dnfrpc, "MSL", $"{frpcExeName}", "更新内网映射中...");
+                    });
+                    Config.Write("frpcversion", "6");
                 }
                 if (!File.Exists($"MSL\\{frpcExeName}"))//检查frpc是否存在，不存在就下崽崽
                 {
