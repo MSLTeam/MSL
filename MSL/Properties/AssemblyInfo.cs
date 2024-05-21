@@ -6,9 +6,9 @@ using System.Windows;
 // 控制。更改这些特性值可修改
 // 与程序集关联的信息。
 [assembly: AssemblyTitle("Minecraft Server Launcher")]
-[assembly: AssemblyDescription("")]
+[assembly: AssemblyDescription("MSLTeam")]
 [assembly: AssemblyConfiguration("")]
-[assembly: AssemblyCompany("")]
+[assembly: AssemblyCompany("MSLTeam")]
 [assembly: AssemblyProduct("Minecraft Server Launcher")]
 [assembly: AssemblyCopyright("Copyright © MSLTeam 2021-2024")]
 [assembly: AssemblyTrademark("")]
@@ -49,5 +49,5 @@ using System.Windows;
 //可以指定所有这些值，也可以使用“生成号”和“修订号”的默认值
 //通过使用 "*"，如下所示:
 // [assembly: AssemblyVersion("1.0.*")]
-[assembly: AssemblyVersion("3.5.6.8")]
-[assembly: AssemblyFileVersion("3.5.6.8")]
+[assembly: AssemblyVersion("3.5.7.0")]
+[assembly: AssemblyFileVersion("3.5.7.0")]
