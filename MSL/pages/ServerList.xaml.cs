@@ -13,6 +13,7 @@ using System.Windows.Controls;
 using System.Windows.Input;
 using System.Windows.Media;
 using System.Windows.Threading;
+using Windows.UI.Xaml;
 using MessageBox = System.Windows.Forms.MessageBox;
 using RoutedEventArgs = System.Windows.RoutedEventArgs;
 using Window = System.Windows.Window;
@@ -390,7 +391,7 @@ namespace MSL.pages
             }
             DelServerEvent();
         }
-        public static T FindAncestor<T>(DependencyObject current) where T : DependencyObject
+        public static T FindAncestor<T>(System.Windows.DependencyObject current) where T : System.Windows.DependencyObject
         {
             current = VisualTreeHelper.GetParent(current);
 
@@ -400,6 +401,18 @@ namespace MSL.pages
             }
 
             return current as T;
+        }
+
+        //单独的下载按钮
+        private async void DlServerCoreBtn_Click(object sender, RoutedEventArgs e)
+        {
+            await Shows.ShowMsgDialogAsync(Window.GetWindow(this), "这是单独的服务端下载界面\n下载的服务端均在MSL文件夹下的ServerCores文件夹", "提示");
+            DownloadServer.downloadServerBase = @"MSL/ServerCores/";
+            DownloadServer downloadServer = new DownloadServer
+            {
+                Owner = Window.GetWindow(Window.GetWindow(this))
+            };
+            downloadServer.ShowDialog();
         }
     }
 }

@@ -23,6 +23,7 @@
     <Border Style="{StaticResource MagicBorder}" VerticalAlignment="Stretch" Margin="10,10,10,10">
         <Grid>
             <Label Style="{StaticResource BorderTitle}" Content="{Binding [Pages_ServerList_Title], Source={x:Static langs:LanguageManager.Instance}}"/>
+            <Button Content="下载服务端" HorizontalAlignment="Right" VerticalAlignment="Top" x:Name="DlServerCoreBtn" Click="DlServerCoreBtn_Click"/>
             <Border Margin="0,35,0,0" CornerRadius="10" BorderThickness="0" Background="{DynamicResource BackgroundBrush}">
                 <ListView x:Name="serverList" hc:Empty.ShowEmpty="true" MouseDoubleClick="serverList_MouseDoubleClick" FontSize="16" SelectionMode="Single" SelectionChanged="serverList_SelectionChanged" Background="{x:Null}" BorderBrush="{x:Null}">
                     <ListView.ContextMenu>
