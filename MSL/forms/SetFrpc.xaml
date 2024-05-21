@@ -20,6 +20,18 @@
             <TabItem Header="ChmlFrp" Background="Transparent">
                 <Frame Source="/pages/frpProviders/ChmlFrp.xaml" BorderBrush="{x:Null}"/>
             </TabItem>
+            <TabItem Header="更多Frp" Background="Transparent">
+                <StackPanel HorizontalAlignment="Center" VerticalAlignment="Center">
+                    <hc:Card>
+                        <StackPanel Margin="10" MaxWidth="500">
+                            <Label Content="想要MSL接入更多第三方Frp服务吗？" FontWeight="Bold" BorderThickness="0" FontSize="15" Margin="0,0,0,10"/>
+                            <TextBlock LineHeight="20" Text="如果您是Frp服务商，希望我们接入，可以通过以下按钮提交接入申请。" FontSize="13" HorizontalAlignment="Center"/>
+                            <TextBlock LineHeight="20" Text="如果您是个人用户，希望MSL接入你所使用的Frp服务，请联系您的服务商询问是否愿意提供接入API支持，若可以，请通过以下按钮提交接入申请。" TextWrapping="Wrap" TextAlignment="Center" FontSize="13"/>
+                            <Button Content="提交接入申请" Style="{DynamicResource ButtonPrimary}" Margin="0,10,0,0" Click="Button_Click_1"/>
+                        </StackPanel>
+                    </hc:Card>
+                </StackPanel>
+            </TabItem>
         </TabControl>
     </Grid>
 </hc:Window>

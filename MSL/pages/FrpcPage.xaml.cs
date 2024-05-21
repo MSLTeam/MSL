@@ -41,11 +41,37 @@ namespace MSL.pages
             //ReadStdOutput += new DelReadStdOutput(ReadStdOutputAction);
             MainWindow.AutoOpenFrpc += AutoStartFrpc;
         }
-
-        private async void StartFrpc()
+        /*
+        *      
+        *          ┌─┐       ┌─┐
+        *       ┌──┘ ┴───────┘ ┴──┐
+        *       │                 │
+        *       │       ───       │
+        *       │  ─┬┘       └┬─  │
+        *       │                 │
+        *       │       ─┴─       │
+        *       │                 │
+        *       └───┐         ┌───┘
+        *           │         │
+        *           │         │
+        *           │         │
+        *           │         └──────────────┐
+        *           │                        │
+        *           │                        ├─┐
+        *           │                        ┌─┘    
+        *           │                        │
+        *           └─┐  ┐  ┌───────┬──┐  ┌──┘         
+        *             │ ─┤ ─┤       │ ─┤ ─┤         
+        *             └──┴──┘       └──┴──┘ 
+        *                 重写了个shitmountain
+        *                 神兽保佑 
+        *                 代码无BUG! 
+        */
+        private async void StartFrpc() //以下代码由神兽保佑
         {
             try
             {
+                //ui提示
                 Dispatcher.Invoke(() =>
                 {
                     startfrpc.Content = LanguageManager.Instance["Pages_Frpc_Close"];
@@ -54,6 +80,7 @@ namespace MSL.pages
                     startfrpc.IsEnabled = false;
                     frpcOutlog.Text = "启动中，请稍候……\n";
                 });
+                //读取配置
                 JObject jobject = JObject.Parse(File.ReadAllText(@"MSL\config.json", Encoding.UTF8));
                 if (jobject["frpcServer"] == null)
                 {
@@ -61,158 +88,102 @@ namespace MSL.pages
                     string convertString = Convert.ToString(jobject);
                     File.WriteAllText(@"MSL\config.json", convertString, Encoding.UTF8);
                 }
-                if (jobject["frpcServer"].ToString() == "0")
+                //默认的玩意
+                string frpcServer = jobject["frpcServer"].ToString();
+                string frpcversion = jobject["frpcversion"]?.ToString();
+                string frpcExeName = "frpc.exe"; //frpc客户端主程序
+                string downloadUrl = "/download/frpc/MSLFrp/amd64"; //frpc客户端在api的调用位置
+                string arguments = "-c frpc"; //启动命令
+                if (frpcServer == "1")//openfrp
                 {
-                    //内网映射版本检测
-                    if (jobject["frpcversion"] == null)
+                    frpcExeName = "frpc_of.exe";
+                    downloadUrl = "download/frpc/OpenFrp/amd64";
+                    arguments = File.ReadAllText("MSL\\frpc");
+                }
+                else if (frpcServer == "2")//chmlfrp
+                {
+                    frpcExeName = "frpc_chml.exe";
+                    downloadUrl = "download/frpc/ChmlFrp/amd64";
+                }
+                if (frpcversion == null || frpcversion != "6")//mslfrp的特别更新qwq
+                {
+                    jobject["frpcversion"] = "6";
+                    string convertString = Convert.ToString(jobject);
+                    File.WriteAllText("MSL\\config.json", convertString, Encoding.UTF8);
+                }
+                if (!File.Exists($"MSL\\{frpcExeName}"))//检查frpc是否存在，不存在就下崽崽
+                {
+                    string _dnfrpc = Functions.Get(downloadUrl);
+                    await Dispatcher.Invoke(async () =>
                     {
-                        jobject.Add("frpcversion", "6");
-                        string convertString = Convert.ToString(jobject);
-                        File.WriteAllText(@"MSL\config.json", convertString, Encoding.UTF8);
-                        if (!File.Exists("MSL\\frpc.exe"))
-                        {
-                            string _dnfrpc = Functions.Get("/download/frpc/MSLFrp/amd64");
-                            await Dispatcher.Invoke(async () =>
-                            {
-                                await Shows.ShowDownloader(Window.GetWindow(this), _dnfrpc, "MSL", "frpc.exe", "下载内网映射中...");
-                            });
+                        if(frpcServer == "0") {
+                            await Shows.ShowDownloader(Window.GetWindow(this), _dnfrpc, "MSL", $"{frpcExeName}", "下载内网映射中...");
                         }
-                    }
-                    else if (jobject["frpcversion"].ToString() != "6")
-                    {
-                        string _dnfrpc = Functions.Get("/download/frpc/MSLFrp/amd64");
-                        await Dispatcher.Invoke(async () =>
+                        else
                         {
-                            await Shows.ShowDownloader(Window.GetWindow(this), _dnfrpc, "MSL", "frpc.exe", "更新内网映射中...");
-                        });
-                        jobject["frpcversion"] = "6";
-                        string convertString = Convert.ToString(jobject);
-                        File.WriteAllText("MSL\\config.json", convertString, Encoding.UTF8);
-                    }
-                    //内网映射检测
-                    if (!File.Exists("MSL\\frpc.exe"))
-                    {
-                        string _dnfrpc = Functions.Get("/download/frpc/MSLFrp/amd64");
-                        await Dispatcher.Invoke(async () =>
-                        {
-                            await Shows.ShowDownloader(Window.GetWindow(this), _dnfrpc, "MSL", "frpc.exe", "下载内网映射中...");
-                        });
-                    }
-
-                    FRPCMD.StartInfo.WorkingDirectory = "MSL";
-                    FRPCMD.StartInfo.FileName = "MSL\\frpc.exe";
-                    FRPCMD.StartInfo.Arguments = "-c frpc";
-                    FRPCMD.StartInfo.CreateNoWindow = true;
-                    FRPCMD.StartInfo.UseShellExecute = false;
-                    FRPCMD.StartInfo.RedirectStandardInput = true;
-                    FRPCMD.StartInfo.RedirectStandardOutput = true;
-                    FRPCMD.StartInfo.StandardOutputEncoding = Encoding.UTF8;
-                    FRPCMD.Start();
-                    FRPCMD.BeginOutputReadLine();
-                    Dispatcher.Invoke(() =>
-                    {
-                        startfrpc.IsEnabled = true;
+                            await Shows.ShowDownloader(Window.GetWindow(this), _dnfrpc, "MSL", $"{frpcExeName}.zip", "下载内网映射中...");
+                        }
+                        
                     });
-                    FRPCMD.WaitForExit();
-                    FRPCMD.CancelOutputRead();
-                }
-                else if (jobject["frpcServer"].ToString() == "1")
-                {
-                    //内网映射检测
-                    if (!File.Exists("MSL\\frpc_of.exe"))
-                    {
-                        string latest_url = Functions.Get("download/frpc/OpenFrp/amd64");
-                        await Dispatcher.Invoke(async () =>
+                    //只有mslfrp不需要
+                    if(frpcServer != "0") {
+                        //很寻常的解压
+                        string fileName = "";
+                        using (ZipFile zip = new ZipFile($@"MSL\{frpcExeName}.zip"))
                         {
-                            await Shows.ShowDownloader(Window.GetWindow(this), latest_url, "MSL", "frpc_of.zip", "下载内网映射中...");
-                            string fileName = "";
-                            using (ZipFile zip = new ZipFile(@"MSL\frpc_of.zip"))
+                            foreach (ZipEntry entry in zip)
                             {
-                                foreach (ZipEntry entry in zip)
-                                {
-                                    fileName = entry.Name.Replace("/", "");
-                                    break;
-                                }
+                                fileName = entry.Name.Replace("/", "");
+                                break;
                             }
-                            FastZip fastZip = new FastZip();
-                            fastZip.ExtractZip(@"MSL\frpc_of.zip", "MSL", "");
-                            File.Delete(@"MSL\frpc_of.zip");
-                            File.Move("MSL\\" + fileName, "MSL\\frpc_of.exe");
+                        }
+                        FastZip fastZip = new FastZip();
+                        fastZip.ExtractZip($@"MSL\{frpcExeName}.zip", "MSL", "");
+                        File.Delete($@"MSL\{frpcExeName}.zip");
+                        if(frpcServer == "1") //这是of的解压处理
+                        {
+                            File.Move("MSL\\" + fileName, $"MSL\\{frpcExeName}");
                             File.Delete("MSL\\" + fileName);
-
-                        });
-                    }
-                    FRPCMD.StartInfo.WorkingDirectory = "MSL";
-                    FRPCMD.StartInfo.FileName = "MSL\\frpc_of.exe";
-                    FRPCMD.StartInfo.Arguments = File.ReadAllText("MSL\\frpc");
-                    FRPCMD.StartInfo.CreateNoWindow = true;
-                    FRPCMD.StartInfo.UseShellExecute = false;
-                    FRPCMD.StartInfo.RedirectStandardInput = true;
-                    FRPCMD.StartInfo.RedirectStandardOutput = true;
-                    FRPCMD.StartInfo.StandardOutputEncoding = Encoding.UTF8;
-                    FRPCMD.Start();
-                    FRPCMD.BeginOutputReadLine();
-                    Dispatcher.Invoke(() =>
-                    {
-                        startfrpc.IsEnabled = true;
-                    });
-                    FRPCMD.WaitForExit();
-                    FRPCMD.CancelOutputRead();
-                }
-                else if (jobject["frpcServer"].ToString() == "2")
-                {
-                    if (!File.Exists("MSL\\frpc_chml.exe"))
-                    {
-                        string latest_url = Functions.Get("download/frpc/ChmlFrp/amd64");
-                        await Dispatcher.Invoke(async () =>
+                        }
+                        else //这是chml的解压处理
                         {
-                            await Shows.ShowDownloader(Window.GetWindow(this), latest_url, "MSL", "frpc_chml.zip", "下载内网映射中...");
-                            string fileName = "";
-                            using (ZipFile zip = new ZipFile(@"MSL\frpc_chml.zip"))
-                            {
-                                foreach (ZipEntry entry in zip)
-                                {
-                                    fileName = entry.Name.Replace("/", "");
-                                    break;
-                                }
-                            }
-                            FastZip fastZip = new FastZip();
-                            fastZip.ExtractZip(@"MSL\frpc_chml.zip", "MSL", "");
-                            File.Delete(@"MSL\frpc_chml.zip");
-                            File.Move("MSL\\" + fileName +"\\frpc.exe", "MSL\\frpc_chml.exe");
-                            Directory.Delete("MSL\\" + fileName,true);
-
-                        });
+                            File.Move("MSL\\" + fileName + $"\\frpc.exe", $"MSL\\{frpcExeName}");
+                            Directory.Delete("MSL\\" + fileName , true);
+                        }
+                        //三个服务 三个下载解压方式 我真是太开心了！(p≧w≦q)
                     }
-                    FRPCMD.StartInfo.WorkingDirectory = "MSL";
-                    FRPCMD.StartInfo.FileName = "MSL\\frpc_chml.exe";
-                    FRPCMD.StartInfo.Arguments = "-c frpc";
-                    FRPCMD.StartInfo.CreateNoWindow = true;
-                    FRPCMD.StartInfo.UseShellExecute = false;
-                    FRPCMD.StartInfo.RedirectStandardInput = true;
-                    FRPCMD.StartInfo.RedirectStandardOutput = true;
-                    FRPCMD.StartInfo.StandardOutputEncoding = Encoding.UTF8;
-                    FRPCMD.Start();
-                    FRPCMD.BeginOutputReadLine();
-                    Dispatcher.Invoke(() =>
-                    {
-                        startfrpc.IsEnabled = true;
-                    });
-                    FRPCMD.WaitForExit();
-                    FRPCMD.CancelOutputRead();
+
                 }
-                    Dispatcher.Invoke(() =>
+                //该启动了！
+                FRPCMD.StartInfo.WorkingDirectory = "MSL";
+                FRPCMD.StartInfo.FileName = $"MSL\\{frpcExeName}";
+                FRPCMD.StartInfo.Arguments = arguments;
+                FRPCMD.StartInfo.CreateNoWindow = true;
+                FRPCMD.StartInfo.UseShellExecute = false;
+                FRPCMD.StartInfo.RedirectStandardInput = true;
+                FRPCMD.StartInfo.RedirectStandardOutput = true;
+                FRPCMD.StartInfo.StandardOutputEncoding = Encoding.UTF8;
+                FRPCMD.Start();
+                FRPCMD.BeginOutputReadLine();
+                Dispatcher.Invoke(() =>
+                {
+                    startfrpc.IsEnabled = true;
+                });
+                FRPCMD.WaitForExit();
+                FRPCMD.CancelOutputRead();
+                //到这里就关掉了
+                Dispatcher.Invoke(() =>
                 {
                     Growl.Success("内网映射已关闭！");
                     startfrpc.IsEnabled = true;
                 });
             }
-            catch (Exception e)
+            catch (Exception e)//错误处理
             {
                 Dispatcher.Invoke(() =>
                 {
                     startfrpc.IsEnabled = true;
-                    MessageBox.Show("出现错误，请检查是否有杀毒软件误杀并重试:" + e.Message, "错误", MessageBoxButton.OK, MessageBoxImage.Error);
+                    Shows.ShowMsg(Window.GetWindow(this),"出现错误，请检查是否有杀毒软件误杀并重试:" + e.Message, "错误");
                 });
             }
             finally
@@ -225,6 +196,9 @@ namespace MSL.pages
                 });
             }
         }
+
+
+
 
         private void AutoStartFrpc()
         {

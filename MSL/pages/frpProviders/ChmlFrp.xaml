@@ -137,7 +137,8 @@
                             <ColumnDefinition Width="*"/>
                         </Grid.ColumnDefinitions>
                         <Button Content="删除所选隧道" x:Name="Del_Tunnel" Style="{DynamicResource ButtonDanger}" FontSize="14" Grid.Column="0" HorizontalAlignment="Stretch" Margin="0,0,3,0" Click="Del_Tunnel_Click"/>
-                        <Button Content="打开网页控制台" x:Name="OpenWeb" Style="{DynamicResource ButtonPrimary}" FontSize="14" Grid.Column="1" HorizontalAlignment="Stretch" Margin="3,0,0,0" Click="OpenWeb_Click"/>
+                        <Button Content="刷新" x:Name="RefreshBtn"  FontSize="14" Style="{StaticResource ButtonPrimary}" HorizontalAlignment="Stretch" Grid.Column="1" Click="RefreshBtn_Click" Margin="3,0,0,0"/>
+
                     </Grid>
        
                 </Grid>
@@ -154,13 +155,13 @@
                                 <TextBlock x:Name="UserInfo" LineHeight="20" Foreground="{DynamicResource PrimaryTextBrush}" Text="Loadings······" FontSize="14" HorizontalAlignment="Left" Margin="10,0,0,0"/>
                             </StackPanel>
                                 <StackPanel Grid.Column="1" Margin="0,5,8,5" >
-                                    <Button Content="刷新" x:Name="RefreshBtn" Margin="0,0,0,3" FontSize="14" Style="{StaticResource ButtonPrimary}" HorizontalAlignment="Stretch" Click="RefreshBtn_Click"/>
+                                    <Button Content="打开官网" x:Name="OpenWeb" Margin="0,0,0,3" Style="{DynamicResource ButtonPrimary}" FontSize="14"  HorizontalAlignment="Stretch"  Click="OpenWeb_Click"/>
                                     <Button Content="退出登录" x:Name="ExitBtn" Margin="0,3,0,0" FontSize="14" Style="{StaticResource ButtonDanger}" HorizontalAlignment="Stretch" Click="ExitBtn_Click"/>
                                 </StackPanel>
                             </Grid>
                         </hc:Card>
                         <hc:Card Margin="0,5,0,0">
-                            <StackPanel Margin="3" HorizontalAlignment="Left">
+                            <StackPanel Margin="3,3,3,6" HorizontalAlignment="Left">
                                 <Label Content="隧道信息" BorderThickness="0" FontSize="16" FontWeight="Bold" HorizontalAlignment="Left"/>
                                 <TextBlock x:Name="TunnelInfo_Text" LineHeight="20" Foreground="{DynamicResource PrimaryTextBrush}" Text="请选择一条隧道~" FontSize="14" HorizontalAlignment="Left" Margin="10,0,0,0"/>
                                 <StackPanel Orientation="Horizontal" Margin="0,2,0,0">

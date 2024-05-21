@@ -23,6 +23,29 @@ namespace MSL.pages.frpProviders
     /// <summary>
     /// ChmlFrp.xaml 的交互逻辑
     /// </summary>
+    /**
+ *　　┏┓　　　┏┓+ +
+ *　┏┛┻━━━┛┻┓ + +
+ *　┃　　　　　　　┃ 　
+ *　┃　　　━　　　┃ ++ + + +
+ * ████━████ ┃+
+ *　┃　　　　　　　┃ +
+ *　┃　　　┻　　　┃
+ *　┃　　　　　　　┃ + +
+ *　┗━┓　　　┏━┛
+ *　　　┃　　　┃　　　　　　　　　　　
+ *　　　┃　　　┃ + + + +
+ *　　　┃　　　┃
+ *　　　┃　　　┃ +  神兽保佑
+ *　　　┃　　　┃    代码无bug　　
+ *　　　┃　　　┃　　+　　　　　　　　　
+ *　　　┃　 　　┗━━━┓ + +
+ *　　　┃ 　　　　　　　┣┓
+ *　　　┃ 　　　　　　　┏┛
+ *　　　┗┓┓┏━┳┓┏┛ + + + +
+ *　　　　┃┫┫　┃┫┫
+ *　　　　┗┻┛　┗┻┛+ + + +
+ */
     public partial class ChmlFrp : Page
     {
         string ChmlFrpApiUrl = "https://panel.chmlfrp.cn";
