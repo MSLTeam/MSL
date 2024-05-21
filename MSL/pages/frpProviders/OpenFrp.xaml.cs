@@ -23,10 +23,12 @@ namespace MSL.pages.frpProviders
     /// </summary>
     public partial class OpenFrp : Page
     {
-        private CancellationTokenSource cts;
+        //private CancellationTokenSource cts;
         private string token;
         private JArray jArray;
         private Dictionary<string, string> nodelist;
+        private bool isInitialize = false;
+
         public OpenFrp()
         {
             InitializeComponent();
@@ -34,15 +36,22 @@ namespace MSL.pages.frpProviders
 
         private void Page_Loaded(object sender, RoutedEventArgs e)
         {
-            cts = new CancellationTokenSource();
-            if (OpenFrpApi.authId != "")
+            if (!isInitialize)
             {
-                Task.Run(() => GetFrpsInfo(cts.Token));
-                return;
+                isInitialize = true;
+                //cts = new CancellationTokenSource();
+                if (OpenFrpApi.authId != "")
+                {
+                    //Task.Run(() => GetFrpsInfo(cts.Token));
+                    Task.Run(() => GetFrpsInfo());
+                    return;
+                }
+                LoginGrid.Visibility = Visibility.Visible;
+                MainGrid.Visibility = Visibility.Hidden;
             }
-            LoginGrid.Visibility = Visibility.Visible;
-            MainGrid.Visibility = Visibility.Hidden;
         }
+
+        /*
         private void Page_Unloaded(object sender, RoutedEventArgs e)
         {
             cts.Cancel();
@@ -55,8 +64,9 @@ namespace MSL.pages.frpProviders
             catch
             { }
         }
+        */
 
-        private async Task GetFrpsInfo(CancellationToken ct)
+        private async Task GetFrpsInfo()
         {
             OpenFrpApi control = new OpenFrpApi();
             if (OpenFrpApi.userAccount == "" || OpenFrpApi.userPass == "")
@@ -215,13 +225,6 @@ namespace MSL.pages.frpProviders
                 catch
                 { }
             });
-            if (ct.IsCancellationRequested)
-            {
-                Dispatcher.Invoke(() =>
-                {
-                    serversList.Items.Clear();
-                });
-            }
         }
 
         private async void Button_Click(object sender, RoutedEventArgs e)
@@ -281,8 +284,9 @@ namespace MSL.pages.frpProviders
 
         private void userLogin_Click(object sender, RoutedEventArgs e)
         {
-            cts = new CancellationTokenSource();
-            Task.Run(() => GetFrpsInfo(cts.Token));
+            //cts = new CancellationTokenSource();
+            //Task.Run(() => GetFrpsInfo(cts.Token));
+            Task.Run(() => GetFrpsInfo());
         }
 
         private async void addProxieBtn_Click(object sender, RoutedEventArgs e)

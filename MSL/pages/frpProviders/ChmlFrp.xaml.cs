@@ -45,21 +45,30 @@ namespace MSL.pages.frpProviders
     {
         private readonly string ChmlFrpApiUrl = "https://panel.chmlfrp.cn";
         private string ChmlToken, ChmlID;
+        private bool isInitialize = false;
+
         public ChmlFrp()
         {
             InitializeComponent();
         }
-        private void Page_Initialized(object sender, EventArgs e)
-        {
-            MainGrid.Visibility = Visibility.Collapsed;
-            LoginGrid.Visibility = Visibility.Visible;
-            CreateGrid.Visibility = Visibility.Collapsed;
 
-            //自动登录
-            //JObject jobject = JObject.Parse(File.ReadAllText(@"MSL\config.json", Encoding.UTF8));
-            if (Config.Read("ChmlToken") != "")
+        private async void Page_Loaded(object sender, EventArgs e)
+        {
+            if (!isInitialize)
             {
-                Task.Run(() => verifyUserToken(Config.Read("ChmlToken"), false));
+                isInitialize = true;
+                MainGrid.Visibility = Visibility.Collapsed;
+                LoginGrid.Visibility = Visibility.Visible;
+                CreateGrid.Visibility = Visibility.Collapsed;
+                //自动登录
+                //JObject jobject = JObject.Parse(File.ReadAllText(@"MSL\config.json", Encoding.UTF8));
+                if (Config.Read("ChmlToken") != "")
+                {
+                    ShowDialogs showDialogs = new ShowDialogs();
+                    showDialogs.ShowTextDialog(Window.GetWindow(this),"登录中……");
+                    await Task.Run(() => verifyUserToken(Config.Read("ChmlToken"), false));
+                    showDialogs.CloseTextDialog();
+                }
             }
         }
 
@@ -91,7 +100,10 @@ namespace MSL.pages.frpProviders
                 return;
             }
             bool save = (bool)SaveToken.IsChecked;
-            _ = Task.Run(() => getUserToken(frpUser, frpPassword, save));
+            ShowDialogs showDialogs = new ShowDialogs();
+            showDialogs.ShowTextDialog(Window.GetWindow(this), "登录中……");
+            await Task.Run(() => getUserToken(frpUser, frpPassword, save));
+            showDialogs.CloseTextDialog();
         }
 
         //注册一个可爱的账户
@@ -136,7 +148,6 @@ namespace MSL.pages.frpProviders
                     {
                         Dispatcher.Invoke(() =>
                         {
-
                             Shows.ShowMsgDialog(Window.GetWindow(this), "登陆失败！\n" + jsonResponse["error"].ToString(), LanguageManager.Instance["Dialog_Err"]);
                         });
                     }
@@ -147,13 +158,9 @@ namespace MSL.pages.frpProviders
             {
                 Dispatcher.Invoke(() =>
                 {
-
                     Shows.ShowMsgDialog(Window.GetWindow(this), "登陆失败！\n" + e.Message, LanguageManager.Instance["Dialog_Err"]);
                 });
             }
-
-
-
         }
 
         //直接token登录，那么验证下咯~
@@ -608,8 +615,6 @@ namespace MSL.pages.frpProviders
             string convertString = Convert.ToString(jobject);
             File.WriteAllText(@"MSL\config.json", convertString, Encoding.UTF8);
         }
-
-
 
         //返回按钮
         private void Create_BackBtn_Click(object sender, RoutedEventArgs e)

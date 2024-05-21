@@ -7,7 +7,7 @@
       xmlns:local="clr-namespace:MSL.pages.frpProviders"
       mc:Ignorable="d" 
       d:DesignHeight="400" d:DesignWidth="750"
-      Title="MSLFrp" Loaded="Page_Loaded" Unloaded="Page_Unloaded">
+      Title="MSLFrp">
     <Grid x:Name="MainGrid">
         <Label Content="节点列表：" HorizontalAlignment="Left" VerticalAlignment="Top" FontSize="20" Margin="10,0,0,0" Background="{x:Null}" BorderBrush="{x:Null}" Height="40" Padding="10,0,10,5" FontWeight="Bold"/>
         <ListBox x:Name="serversList" Height="240" Width="270" SelectionChanged="serversList_SelectionChanged" SelectionMode="Single" Margin="20,35,0,0" HorizontalAlignment="Left" VerticalAlignment="Top"/>

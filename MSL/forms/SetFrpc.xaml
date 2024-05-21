@@ -10,27 +10,22 @@
         NonClientAreaBackground="{DynamicResource BackgroundBrush}" Background="{DynamicResource BackgroundBrush}"
         Title="配置内网映射" Height="450" Width="750" ResizeMode="NoResize" WindowStartupLocation="CenterOwner">
     <Grid x:Name="MainGrid">
-        <TabControl Background="{x:Null}" BorderThickness="0,1,0,0">
-            <TabItem Header="MSL-Frp" Background="Transparent">
-                <Frame Source="/pages/frpProviders/MSLFrp.xaml" BorderBrush="{x:Null}"/>
-            </TabItem>
-            <TabItem Header="OpenFrp" Background="Transparent">
-                <Frame Source="/pages/frpProviders/OpenFrp.xaml" BorderBrush="{x:Null}"/>
-            </TabItem>
-            <TabItem Header="ChmlFrp" Background="Transparent">
-                <Frame Source="/pages/frpProviders/ChmlFrp.xaml" BorderBrush="{x:Null}"/>
-            </TabItem>
+        <Frame x:Name="frame" BorderBrush="{x:Null}" Margin="0,29,0,0" NavigationUIVisibility="Hidden"/>
+        <TabControl x:Name="TabCtrl" Background="{x:Null}" BorderThickness="0,1,0,0" SelectionChanged="TabCtrl_SelectionChanged">
+            <TabItem Header="MSL-Frp" Background="Transparent"/>
+            <TabItem Header="OpenFrp" Background="Transparent"/>
+            <TabItem Header="ChmlFrp" Background="Transparent"/>
             <TabItem Header="更多Frp" Background="Transparent">
-                <StackPanel HorizontalAlignment="Center" VerticalAlignment="Center">
-                    <hc:Card>
+                <Grid>
+                    <hc:Card HorizontalAlignment="Center" VerticalAlignment="Center">
                         <StackPanel Margin="10" MaxWidth="500">
                             <Label Content="想要MSL接入更多第三方Frp服务吗？" FontWeight="Bold" BorderThickness="0" FontSize="15" Margin="0,0,0,10"/>
                             <TextBlock LineHeight="20" Text="如果您是Frp服务商，希望我们接入，可以通过以下按钮提交接入申请。" FontSize="13" HorizontalAlignment="Center"/>
                             <TextBlock LineHeight="20" Text="如果您是个人用户，希望MSL接入你所使用的Frp服务，请联系您的服务商询问是否愿意提供接入API支持，若可以，请通过以下按钮提交接入申请。" TextWrapping="Wrap" TextAlignment="Center" FontSize="13"/>
-                            <Button Content="提交接入申请" Style="{DynamicResource ButtonPrimary}" Margin="0,10,0,0" Click="Button_Click_1"/>
+                            <Button Content="提交接入申请" Style="{DynamicResource ButtonPrimary}" Margin="0,10,0,0" Click="JoinUs_Click"/>
                         </StackPanel>
                     </hc:Card>
-                </StackPanel>
+                </Grid>
             </TabItem>
         </TabControl>
     </Grid>

@@ -7,8 +7,7 @@
       xmlns:hc="https://handyorg.github.io/handycontrol"
       mc:Ignorable="d" 
       d:DesignHeight="450" d:DesignWidth="800"
-      Title="ChmlFrp" Initialized="Page_Initialized" >
-
+      Title="ChmlFrp" Loaded="Page_Loaded" >
     <Grid>
         <Grid x:Name="CreateGrid" Margin="10" Visibility="Collapsed">
             <Grid.ColumnDefinitions>
@@ -30,11 +29,11 @@
                     <ListBox.ItemTemplate>
                         <DataTemplate>
                             <StackPanel Orientation="Horizontal">
-                                <TextBlock Text="{Binding Name}" Margin="3" Foreground="{DynamicResource PrimaryTextBrush}"/>
-                                <TextBlock Text="-" Margin="3" Foreground="{DynamicResource PrimaryTextBrush}"/>
-                                <TextBlock Text="{Binding Area}" Margin="3" Foreground="{DynamicResource PrimaryTextBrush}"/>
-                                <TextBlock Text="-" Margin="3" Foreground="{DynamicResource PrimaryTextBrush}"/>
-                                <TextBlock Text="{Binding NodeGroupName}" Margin="3" Foreground="{DynamicResource PrimaryTextBrush}"/>
+                                <TextBlock Text="{Binding Name}" Margin="3"/>
+                                <TextBlock Text="-" Margin="3"/>
+                                <TextBlock Text="{Binding Area}" Margin="3"/>
+                                <TextBlock Text="-" Margin="3"/>
+                                <TextBlock Text="{Binding NodeGroupName}" Margin="3"/>
                             </StackPanel>
                         </DataTemplate>
                     </ListBox.ItemTemplate>
@@ -124,9 +123,9 @@
                         <ListBox.ItemTemplate>
                             <DataTemplate>
                                 <StackPanel Orientation="Horizontal">
-                                    <TextBlock Text="{Binding Name}" Margin="3" Foreground="{DynamicResource PrimaryTextBrush}"/>
-                                    <TextBlock Text="-" Margin="3" Foreground="{DynamicResource PrimaryTextBrush}"/>
-                                    <TextBlock Text="{Binding Node}" Margin="3" Foreground="{DynamicResource PrimaryTextBrush}"/>
+                                    <TextBlock Text="{Binding Name}" Margin="3"/>
+                                    <TextBlock Text="-" Margin="3"/>
+                                    <TextBlock Text="{Binding Node}" Margin="3"/>
                                 </StackPanel>
                             </DataTemplate>
                         </ListBox.ItemTemplate>
