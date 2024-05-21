@@ -172,14 +172,14 @@ namespace MSL.pages
                             }
                         });
                         downloadServerName = $"fabric-{bannerVersion}.jar";
-                            Close();
+                        Close();
 
-                        
+
                     }
                     else
                     {
                         downloadServerName = filename;
-                       Close();
+                        Close();
                     }
                 }
                 else
