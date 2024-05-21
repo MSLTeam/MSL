@@ -43,8 +43,8 @@ namespace MSL.pages.frpProviders
  */
     public partial class ChmlFrp : Page
     {
-        string ChmlFrpApiUrl = "https://panel.chmlfrp.cn";
-        string ChmlToken, ChmlID;
+        private readonly string ChmlFrpApiUrl = "https://panel.chmlfrp.cn";
+        private string ChmlToken, ChmlID;
         public ChmlFrp()
         {
             InitializeComponent();
@@ -81,7 +81,15 @@ namespace MSL.pages.frpProviders
         {
             string frpUser, frpPassword;
             frpUser = await Shows.ShowInput(Window.GetWindow(this), "请输入ChmlFrp的账户名/邮箱/QQ号");
+            if (frpUser == null)
+            {
+                return;
+            }
             frpPassword = await Shows.ShowInput(Window.GetWindow(this), "请输入密码", "", true);
+            if (frpPassword == null)
+            {
+                return;
+            }
             bool save = (bool)SaveToken.IsChecked;
             _ = Task.Run(() => getUserToken(frpUser, frpPassword, save));
         }
@@ -91,7 +99,6 @@ namespace MSL.pages.frpProviders
         {
             Process.Start("https://panel.chmlfrp.cn/register");
         }
-
 
         //异步登录，获取到用户token
         private void getUserToken(string user, string pwd, bool save)
