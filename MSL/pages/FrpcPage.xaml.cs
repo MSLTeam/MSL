@@ -1,6 +1,8 @@
 ﻿using HandyControl.Controls;
 using HandyControl.Data;
 using ICSharpCode.SharpZipLib.Zip;
+using IniParser.Model;
+using IniParser;
 using MSL.controls;
 using MSL.i18n;
 using Newtonsoft.Json;
@@ -242,7 +244,34 @@ namespace MSL.pages
 
         private void ReadStdOutputAction(string msg)
         {
-            frpcOutlog.Text = frpcOutlog.Text + msg + "\n";
+            //这里控制日志输出
+            JObject jobject = JObject.Parse(File.ReadAllText(@"MSL\config.json", Encoding.UTF8));
+            if (jobject["frpcServer"].ToString() == "2")//给chmlfrp做token打码
+            {
+                try //写个try 预防旧版不支持
+                {
+                    var parser = new FileIniDataParser();
+                    IniData data = parser.ReadFile(@"MSL\frpc");
+                    if (data["common"]["user"] != "")
+                    {
+                        frpcOutlog.Text = frpcOutlog.Text + msg.Replace(data["common"]["user"], "***usertoken***") + "\n";
+                    }
+                    else
+                    {
+                        frpcOutlog.Text = frpcOutlog.Text + msg + "\n";
+                    }
+                }
+                catch(Exception)
+                {
+                    frpcOutlog.Text = frpcOutlog.Text + msg + "\n";
+                }
+
+            }
+            else
+            {
+                frpcOutlog.Text = frpcOutlog.Text + msg + "\n";
+            }
+                
             if (msg.IndexOf("login") + 1 != 0)
             {
                 if (msg.IndexOf("failed") + 1 != 0)
@@ -303,7 +332,7 @@ namespace MSL.pages
             }
             if (msg.Contains(" 发现新版本"))
             {
-                JObject jobject = JObject.Parse(File.ReadAllText(@"MSL\config.json", Encoding.UTF8));
+                //JObject jobject = JObject.Parse(File.ReadAllText(@"MSL\config.json", Encoding.UTF8));
                 if (jobject["frpcServer"].ToString() == "1")
                 {
                     Growl.Ask(new GrowlInfo
@@ -576,7 +605,16 @@ namespace MSL.pages
                     string[] lines = configText.Split('\n');
 
                     // 节点名称
-                    string nodeName = lines[0].TrimStart('#').Trim();
+                    string nodeName;
+                    if (jobject["frpcServer"].ToString() == "0")
+                    {
+                       nodeName = lines[0].TrimStart('#').Trim();
+                    }
+                    else
+                    {
+                        nodeName = "ChmlFrp节点";
+                    }
+                    
 
                     // 服务器地址
                     string serverAddr = "";
@@ -607,6 +645,10 @@ namespace MSL.pages
                         else if (lines[i].StartsWith("remote_port") && readServerInfo)
                         {
                             remotePort = lines[i].Split('=')[1].Trim();
+                        }
+                        else if (lines[i].StartsWith("[")  && readServerInfo && jobject["frpcServer"].ToString() == "2")//针对chmlfrp的节点名字读取
+                        {
+                            nodeName = "ChmlFrp节点-" + lines[i].Replace("[","").Replace("]","").Replace("\r","").ToString();
                         }
                     }
 

@@ -296,7 +296,7 @@ namespace MSL.pages.frpProviders
                 {
                     //输出配置文件
                     Uri host = new Uri("http://" + selectedTunnel.Addr);
-                    FrpcConfig = $"#ChmlFrp节点-{selectedTunnel.Name}\r\n[common]\r\nserver_addr = {host.Host}\r\n" +
+                    FrpcConfig = $"[common]\r\nserver_addr = {host.Host}\r\n" +
                         $"server_port = 7000\r\ntcp_mux = true\r\nprotocol = tcp\r\n" +
                         $"user = {selectedTunnel.Token}\r\ntoken = ChmlFrpToken\r\n" +
                         $"dns_server = 223.6.6.6\r\ntls_enable = false\r\n" +
