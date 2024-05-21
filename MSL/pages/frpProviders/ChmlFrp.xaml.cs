@@ -36,6 +36,16 @@ namespace MSL.pages.frpProviders
             MainGrid.Visibility = Visibility.Collapsed;
             LoginGrid.Visibility = Visibility.Visible;
             CreateGrid.Visibility = Visibility.Collapsed;
+
+            //自动登录
+            JObject jobject = JObject.Parse(File.ReadAllText(@"MSL\config.json", Encoding.UTF8));
+            if (jobject.ContainsKey("ChmlToken"))
+            {
+                if (jobject["ChmlToken"].ToString() != "")
+                {
+                    Task.Run(() => verifyUserToken(jobject["ChmlToken"].ToString(), false));
+                }
+            }
         }
 
         //使用token登录
@@ -45,7 +55,8 @@ namespace MSL.pages.frpProviders
             token = await Shows.ShowInput(Window.GetWindow(this), "请输入Chml账户Token", "", true);
             if (token != null)
             {
-                Task.Run(() => verifyUserToken(token.Trim())); //移除空格，防止笨蛋
+                bool save = (bool)SaveToken.IsChecked;
+                Task.Run(() => verifyUserToken(token.Trim(),save)); //移除空格，防止笨蛋
             }
             
         }
@@ -56,7 +67,8 @@ namespace MSL.pages.frpProviders
             string frpUser, frpPassword;
            frpUser = await Shows.ShowInput(Window.GetWindow(this), "请输入ChmlFrp的账户名/邮箱/QQ号");
             frpPassword = await Shows.ShowInput(Window.GetWindow(this), "请输入密码","", true);
-            Task.Run(() => getUserToken(frpUser, frpPassword));
+            bool save = (bool)SaveToken.IsChecked;
+            Task.Run(() => getUserToken(frpUser, frpPassword,save));
         }
 
         //注册一个可爱的账户
@@ -67,7 +79,7 @@ namespace MSL.pages.frpProviders
 
 
         //异步登录，获取到用户token
-        private void getUserToken(string user,string pwd)
+        private void getUserToken(string user,string pwd,bool save)
         {
             try
             {
@@ -80,6 +92,14 @@ namespace MSL.pages.frpProviders
                         string token = jsonResponse["token"].ToString();
                         ChmlID = jsonResponse["userid"].ToString();//id丢全局
                                                                    //这里就拿到token了
+                       //保存？写到配置
+                        if (save == true)
+                        {
+                            JObject jobject = JObject.Parse(File.ReadAllText(@"MSL\config.json", Encoding.UTF8));
+                            jobject["ChmlToken"] = token;
+                            string convertString = Convert.ToString(jobject);
+                            File.WriteAllText(@"MSL\config.json", convertString, Encoding.UTF8);
+                        }
                         Task.Run(() => GetFrpList(token));
                     }
                     else
@@ -117,7 +137,7 @@ namespace MSL.pages.frpProviders
         }
 
         //直接token登录，那么验证下咯~
-        private void verifyUserToken(string userToken)
+        private void verifyUserToken(string userToken,bool save)
         {
             try
             {
@@ -126,11 +146,25 @@ namespace MSL.pages.frpProviders
                 if (jsonResponse.ContainsKey("userid"))
                 {
                     ChmlID = jsonResponse["userid"].ToString();//id丢全局
-                                                               //这里就拿到token了
+                                                               //这里就拿到token了(确定有效）
+                    //保存？写到配置
+                    if(save == true)
+                    {
+                        JObject jobject = JObject.Parse(File.ReadAllText(@"MSL\config.json", Encoding.UTF8));
+                        jobject["ChmlToken"] = userToken;
+                        string convertString = Convert.ToString(jobject);
+                        File.WriteAllText(@"MSL\config.json", convertString, Encoding.UTF8);
+                    }
                     Task.Run(() => GetFrpList(userToken));
+
                 }
                 else
                 {
+                    //清理保存的token
+                    JObject jobject = JObject.Parse(File.ReadAllText(@"MSL\config.json", Encoding.UTF8));
+                    jobject["ChmlToken"] = "";
+                    string convertString = Convert.ToString(jobject);
+                    File.WriteAllText(@"MSL\config.json", convertString, Encoding.UTF8);
                     if (jsonResponse.ContainsKey("error"))
                     {
                         Dispatcher.Invoke(() =>
@@ -534,6 +568,11 @@ namespace MSL.pages.frpProviders
             MainGrid.Visibility = Visibility.Collapsed;
             LoginGrid.Visibility = Visibility.Visible;
             CreateGrid.Visibility = Visibility.Collapsed;
+            //清理保存的token
+            JObject jobject = JObject.Parse(File.ReadAllText(@"MSL\config.json", Encoding.UTF8));
+            jobject["ChmlToken"] = "";
+            string convertString = Convert.ToString(jobject);
+            File.WriteAllText(@"MSL\config.json", convertString, Encoding.UTF8);
         }
 
 

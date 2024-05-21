@@ -105,7 +105,7 @@
                 </Grid>
             </Grid>
         </Grid>
-        <Grid x:Name="MainGrid" >
+        <Grid x:Name="MainGrid" Visibility="Collapsed">
             <Grid.RowDefinitions>
                 <RowDefinition Height="*"/>
                 <RowDefinition Height="auto"/>
@@ -191,7 +191,7 @@
                 </Grid>
             </Grid>
         </Grid>
-        <Grid x:Name="LoginGrid" Visibility="Hidden">
+        <Grid x:Name="LoginGrid" Visibility="Visible">
             <StackPanel HorizontalAlignment="Center" VerticalAlignment="Center" >
                 <TextBlock Text="使用ChmlFrp服务之前，请先登录您的ChmlFrp账户" HorizontalAlignment="Center"  VerticalAlignment="Center"  FontSize="16" Foreground="{DynamicResource PrimaryTextBrush}" Margin="0,0,0,20"/>
                 <StackPanel Orientation="Horizontal">
@@ -199,6 +199,7 @@
                     <Button x:Name="userLogin" Content="使用账户密码登录"  Click="userLogin_Click" Margin="0,0,10,0"/>
                     <Button x:Name="userRegister" Content="我没有ChmlFrp账户，点击注册"  Click="userRegister_Click"/>
                 </StackPanel>
+                <CheckBox Content="保存登录状态（风险自负哦~）" HorizontalAlignment="Center" Margin="0,10,0,0" x:Name="SaveToken"/>
                 <TextBlock Text="如果您不知道什么是Token，我们建议你用账户密码~" HorizontalAlignment="Center"  VerticalAlignment="Center"  FontSize="13" Foreground="{DynamicResource PrimaryTextBrush}" Margin="0,10,0,0"/>
             </StackPanel>
             
