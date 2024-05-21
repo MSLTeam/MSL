@@ -7,15 +7,10 @@ using System.Collections.Generic;
 using System.Collections.ObjectModel;
 using System.Diagnostics;
 using System.IO;
-using System.Net;
-using System.Security.RightsManagement;
 using System.Text;
 using System.Threading.Tasks;
-using System.Web.UI.WebControls;
 using System.Windows;
 using System.Windows.Controls;
-using System.Xml.Linq;
-using Windows.Storage.Compression;
 
 
 namespace MSL.pages.frpProviders
@@ -76,7 +71,7 @@ namespace MSL.pages.frpProviders
             if (token != null)
             {
                 bool save = (bool)SaveToken.IsChecked;
-                Task.Run(() => verifyUserToken(token.Trim(),save)); //移除空格，防止笨蛋
+                _ = Task.Run(() => verifyUserToken(token.Trim(), save)); //移除空格，防止笨蛋
             }
             
         }
@@ -88,7 +83,7 @@ namespace MSL.pages.frpProviders
            frpUser = await Shows.ShowInput(Window.GetWindow(this), "请输入ChmlFrp的账户名/邮箱/QQ号");
             frpPassword = await Shows.ShowInput(Window.GetWindow(this), "请输入密码","", true);
             bool save = (bool)SaveToken.IsChecked;
-            Task.Run(() => getUserToken(frpUser, frpPassword,save));
+            _ = Task.Run(() => getUserToken(frpUser, frpPassword, save));
         }
 
         //注册一个可爱的账户
@@ -381,7 +376,7 @@ namespace MSL.pages.frpProviders
                             {
                                 Shows.ShowMsgDialog(Window.GetWindow(this), "隧道删除成功！", "删除");
                             });
-                            Task.Run(() => GetFrpList(ChmlToken));//刷新下列表
+                            _ = Task.Run(() => GetFrpList(ChmlToken));//刷新下列表
                         }
                         else
                         {
