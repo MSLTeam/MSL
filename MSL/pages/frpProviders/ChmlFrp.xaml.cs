@@ -288,17 +288,33 @@ namespace MSL.pages.frpProviders
 
         private async void OKBtn_Click(object sender, RoutedEventArgs e)
         {
-            string FrpcConfig;
+            string FrpcConfig,FrpsPort="7000",FrpsToken= "ChmlFrpToken";
             var listBox = FrpList as System.Windows.Controls.ListBox;
             if (listBox.SelectedItem is TunnelInfo selectedTunnel)
             {
                 try
                 {
+                    //获取frps端口
+                    JArray frps = JArray.Parse(Functions.Get("api/unode.php", ChmlFrpApiUrl));
+                    foreach (JObject frp in frps)
+                    {
+                        if (frp.ContainsKey("name"))
+                        {
+                            if (frp["name"].ToString() == selectedTunnel.Node)
+                            {
+                                FrpsPort = frp["port"].ToString();
+                                FrpsToken = frp["nodetoken"].ToString();
+                                break;
+                            }
+                        }
+
+                    }
+
                     //输出配置文件
                     Uri host = new Uri("http://" + selectedTunnel.Addr);
                     FrpcConfig = $"[common]\r\nserver_addr = {host.Host}\r\n" +
-                        $"server_port = 7000\r\ntcp_mux = true\r\nprotocol = tcp\r\n" +
-                        $"user = {selectedTunnel.Token}\r\ntoken = ChmlFrpToken\r\n" +
+                        $"server_port = {FrpsPort}\r\ntcp_mux = true\r\nprotocol = tcp\r\n" +
+                        $"user = {selectedTunnel.Token}\r\ntoken = {FrpsToken}\r\n" +
                         $"dns_server = 223.6.6.6\r\ntls_enable = false\r\n" +
                         $"[{selectedTunnel.Name}]\r\nprivilege_mode = true\r\n" +
                         $"type = {selectedTunnel.Type}\r\nlocal_ip = {LocalIp.Text}\r\n" +
