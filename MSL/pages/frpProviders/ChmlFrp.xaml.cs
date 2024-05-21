@@ -61,13 +61,10 @@ namespace MSL.pages.frpProviders
             CreateGrid.Visibility = Visibility.Collapsed;
 
             //自动登录
-            JObject jobject = JObject.Parse(File.ReadAllText(@"MSL\config.json", Encoding.UTF8));
-            if (jobject.ContainsKey("ChmlToken"))
+            //JObject jobject = JObject.Parse(File.ReadAllText(@"MSL\config.json", Encoding.UTF8));
+            if (Config.Read("ChmlToken")!="")
             {
-                if (jobject["ChmlToken"].ToString() != "")
-                {
-                    Task.Run(() => verifyUserToken(jobject["ChmlToken"].ToString(), false));
-                }
+               Task.Run(() => verifyUserToken(Config.Read("ChmlToken"), false));
             }
         }
 
@@ -118,10 +115,7 @@ namespace MSL.pages.frpProviders
                        //保存？写到配置
                         if (save == true)
                         {
-                            JObject jobject = JObject.Parse(File.ReadAllText(@"MSL\config.json", Encoding.UTF8));
-                            jobject["ChmlToken"] = token;
-                            string convertString = Convert.ToString(jobject);
-                            File.WriteAllText(@"MSL\config.json", convertString, Encoding.UTF8);
+                            Config.Write("ChmlToken", token);
                         }
                         Task.Run(() => GetFrpList(token));
                     }
@@ -173,10 +167,7 @@ namespace MSL.pages.frpProviders
                     //保存？写到配置
                     if(save == true)
                     {
-                        JObject jobject = JObject.Parse(File.ReadAllText(@"MSL\config.json", Encoding.UTF8));
-                        jobject["ChmlToken"] = userToken;
-                        string convertString = Convert.ToString(jobject);
-                        File.WriteAllText(@"MSL\config.json", convertString, Encoding.UTF8);
+                        Config.Write("ChmlToken", userToken);
                     }
                     Task.Run(() => GetFrpList(userToken));
 
