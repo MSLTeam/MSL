@@ -7,7 +7,7 @@
       xmlns:hc="https://handyorg.github.io/handycontrol"
       mc:Ignorable="d" 
       d:DesignHeight="450" d:DesignWidth="800"
-      Title="Custom">
+      Title="Custom" Initialized="Page_Initialized">
 
     <Grid>
         <Grid.RowDefinitions>
@@ -24,14 +24,142 @@
                     </Grid.ColumnDefinitions>
                 <StackPanel Margin="5" Grid.Column="0">
                     <Label Content="自定义Frpc隧道" MinHeight="38" BorderThickness="0" FontSize="18" FontWeight="Bold" HorizontalAlignment="Left"/>
-                    <TextBlock LineHeight="20" Foreground="{DynamicResource PrimaryTextBrush}" Text="这里是自定义Frpc界面，适合高级用户选择。&#13;通常需要您拥有自己的Frp服务器。" FontSize="14" HorizontalAlignment="Left" Margin="10,0,0,0"/>
+                    <TextBlock LineHeight="20" Foreground="{DynamicResource PrimaryTextBrush}" Text="这里是自定义Frpc界面，适合高级用户选择。&#13;通常需要您拥有自己的Frp服务器。&#13;当然，你也可以通过这里实现使用未被MSL支持的第三方Frp服务。" FontSize="14" HorizontalAlignment="Left" Margin="10,0,0,0"/>
                 </StackPanel>
                     <StackPanel Margin="5,5,10,5" Grid.Column="1" VerticalAlignment="Center">
-                        <RadioButton Content="引导模式" GroupName="mode" Margin="0,0,0,3" FontSize="14"/>
-                        <RadioButton Content="自定义模式" GroupName="mode" FontSize="14" Margin="0,3,0,0"/>
+                        <RadioButton Content="引导模式" GroupName="mode" Margin="0,0,0,3" FontSize="14" IsChecked="True" Checked="RadioButton_Checked"/>
+                        <RadioButton Content="高级模式" GroupName="mode" FontSize="14" Margin="0,3,0,0" Checked="RadioButton_Checked_1"/>
                     </StackPanel>
                 </Grid>
             </hc:Card>
+        </Grid>
+        <Grid Grid.Row="1" Margin="10,0,10,6" x:Name="LowLevelGrid">
+
+                <Grid>
+                    <Grid.ColumnDefinitions>
+                        <ColumnDefinition Width="*"/>
+                        <ColumnDefinition Width="*"/>
+                    </Grid.ColumnDefinitions>
+                    <hc:Card Margin="0,0,3,0" Grid.Column="0">
+                    <Grid Margin="5">
+                        <Grid.RowDefinitions>
+                            <RowDefinition Height="auto"/>
+                            <RowDefinition Height="*"/>
+                        </Grid.RowDefinitions>
+                        <Label Grid.Row="0" Content="Frps连接配置（服务端连接）"  MinHeight="20" BorderThickness="0" FontSize="16" FontWeight="Bold" HorizontalAlignment="Left"/>
+                        <hc:ScrollViewer Grid.Row="1">
+                        <WrapPanel Margin="0,3,0,0">
+                            <StackPanel Orientation="Horizontal" Margin="0,0,0,5">
+                                <TextBlock LineHeight="20" Foreground="{DynamicResource PrimaryTextBrush}" Text="服务器地址:" FontSize="14" Margin="10,0,6,0" VerticalAlignment="Center"/>
+                                <TextBox Text="" x:Name="ServerIP" MinWidth="100"/>
+                            </StackPanel>
+                            <StackPanel Orientation="Horizontal" Margin="0,0,0,5">
+                                <TextBlock LineHeight="20" Foreground="{DynamicResource PrimaryTextBrush}" Text="服务器端口:" FontSize="14" Margin="10,0,6,0" VerticalAlignment="Center"/>
+                                <TextBox Text="" x:Name="ServerPort" MinWidth="100"/>
+                            </StackPanel>
+                            <StackPanel Orientation="Horizontal" Margin="0,0,0,5">
+                                <TextBlock LineHeight="20" Foreground="{DynamicResource PrimaryTextBrush}" Text="服务器Token（可选）:" FontSize="14" Margin="10,0,6,0" VerticalAlignment="Center"/>
+                                <TextBox Text="" x:Name="ServerToken" MinWidth="100"/>
+                            </StackPanel>
+                            <StackPanel Orientation="Horizontal" Margin="0,0,0,5">
+                                <TextBlock LineHeight="20" Foreground="{DynamicResource PrimaryTextBrush}" Text="服务器用户（可选）:" FontSize="14" Margin="10,0,6,0" VerticalAlignment="Center"/>
+                                <TextBox Text="" x:Name="ServerUser" MinWidth="100"/>
+                            </StackPanel>
+                            <StackPanel Orientation="Horizontal" Margin="0,0,0,5">
+                                <TextBlock LineHeight="20" Foreground="{DynamicResource PrimaryTextBrush}" Text="DNS:" FontSize="14" Margin="10,0,6,0" VerticalAlignment="Center"/>
+                                <TextBox Text="223.6.6.6" x:Name="ServerDNS" MinWidth="100"/>
+                            </StackPanel>
+                            <StackPanel Orientation="Horizontal" Margin="0,0,3,5">
+                                <TextBlock LineHeight="20" Foreground="{DynamicResource PrimaryTextBrush}" Text="服务端传输协议（不懂别动）:" FontSize="14" Margin="10,0,6,0" VerticalAlignment="Center"/>
+                                <ComboBox x:Name="ServerProtocol" MinWidth="100" SelectedIndex="0">
+                                    <ComboBoxItem Content="tcp"/>
+                                    <ComboBoxItem Content="udp"/>
+                                </ComboBox>
+                            </StackPanel>
+                            <StackPanel Orientation="Horizontal" Margin="8,0,0,5">
+                                <CheckBox Content="启用TLS（不懂别开）"/>
+                            </StackPanel>
+                            <StackPanel Orientation="Horizontal" Margin="8,0,0,5">
+                                <CheckBox Content="TCP多路复用（不懂别开）"/>
+                            </StackPanel>
+                        </WrapPanel>
+                        </hc:ScrollViewer>
+                    </Grid>
+                    </hc:Card>
+                    <hc:Card Margin="3,0,0,0" Grid.Column="1">
+                    <Grid Margin="5">
+                        <Grid.RowDefinitions>
+                            <RowDefinition Height="auto"/>
+                            <RowDefinition Height="*"/>
+                        </Grid.RowDefinitions>
+                        <Label Content="隧道配置（引导模式暂时只支持一条隧道）" Grid.Row="0" MinHeight="20" BorderThickness="0" FontSize="16" FontWeight="Bold" HorizontalAlignment="Left"/>
+                        <hc:ScrollViewer Grid.Row="1">
+                        <WrapPanel Margin="0,3,0,0">
+                            <StackPanel Orientation="Horizontal" Margin="0,0,0,5">
+                                <TextBlock LineHeight="20" Foreground="{DynamicResource PrimaryTextBrush}" Text="本地IP:" FontSize="14" Margin="10,0,6,0" VerticalAlignment="Center"/>
+                                <TextBox Text="" x:Name="ClientIP" MinWidth="100"/>
+                            </StackPanel>
+                            <StackPanel Orientation="Horizontal" Margin="0,0,0,5">
+                                <TextBlock LineHeight="20" Foreground="{DynamicResource PrimaryTextBrush}" Text="本地端口:" FontSize="14" Margin="10,0,6,0" VerticalAlignment="Center"/>
+                                <TextBox Text="" x:Name="ClientPort" MinWidth="100"/>
+                            </StackPanel>
+                            <StackPanel Orientation="Horizontal" Margin="0,0,0,5">
+                                <TextBlock LineHeight="20" Foreground="{DynamicResource PrimaryTextBrush}" Text="远程端口:" FontSize="14" Margin="10,0,6,0" VerticalAlignment="Center"/>
+                                <TextBox Text="" x:Name="ClientRemotePort" MinWidth="100"/>
+                            </StackPanel>
+                            <StackPanel Orientation="Horizontal" Margin="0,0,3,5">
+                                <TextBlock LineHeight="20" Foreground="{DynamicResource PrimaryTextBrush}" Text="映射传输协议:" FontSize="14" Margin="10,0,6,0" VerticalAlignment="Center"/>
+                                <ComboBox x:Name="ClientProtocol" MinWidth="100" SelectedIndex="0">
+                                    <ComboBoxItem Content="tcp"/>
+                                    <ComboBoxItem Content="udp"/>
+                                    <ComboBoxItem Content="http"/>
+                                    <ComboBoxItem Content="https"/>
+                                </ComboBox>
+                            </StackPanel>
+                            <StackPanel Orientation="Horizontal" Margin="8,0,0,5">
+                                <CheckBox Content="启动数据加密"/>
+                            </StackPanel>
+                            <StackPanel Orientation="Horizontal" Margin="8,0,0,5">
+                                <CheckBox Content="启用数据压缩"/>
+                            </StackPanel>
+                        </WrapPanel>
+                        </hc:ScrollViewer>
+                    </Grid>
+                </hc:Card>
+                </Grid>
+
+        </Grid>
+        <Grid Grid.Row="1" Margin="10,0,10,6" x:Name="CustomGrid" Visibility="Collapsed">
+            <hc:Card>
+                <Grid Margin="5">
+                    <Grid.RowDefinitions    >
+                        <RowDefinition Height="auto"/>
+                        <RowDefinition Height="*"/>
+                    </Grid.RowDefinitions>
+                    <Label Content="请填写（粘贴）Frpc的配置文件（ini/toml格式）" Grid.Row="0" MinHeight="20" BorderThickness="0" FontSize="16" FontWeight="Bold" HorizontalAlignment="Left"/>
+                    <hc:TextBox Grid.Row="1" TextWrapping="Wrap" AcceptsReturn="True" Margin="10"/>
+                </Grid>
+            </hc:Card>
+        </Grid>
+        <Grid Grid.Row="2" Margin="10,-3,10,10">
+            <Grid.ColumnDefinitions>
+                <ColumnDefinition Width="*"/>
+                <ColumnDefinition Width="auto"/>
+            </Grid.ColumnDefinitions>
+            <Grid Grid.Column="0">
+                <hc:Card >
+                    <StackPanel Margin="5" HorizontalAlignment="Left" VerticalAlignment="Center">
+                        <RadioButton Content="使用官方Frpc客户端" HorizontalAlignment="Left" Margin="0,0,0,6"/>
+                        <RadioButton Content="使用自定义Frpc客户端" HorizontalAlignment="Left"/>
+                    </StackPanel>
+                </hc:Card>
+            </Grid>
+            <Grid Grid.Column="1">
+                <StackPanel Orientation="Horizontal" Margin="6,0,0,0">
+                    <Button Content="查看教程" MinWidth="100" MinHeight="60" Margin="0,0,8,0" FontSize="16" x:Name="CreateBtn" Click="WebBtn_Click"/>
+                    <Button Content="确定" MinWidth="100" MinHeight="60" Style="{StaticResource ButtonPrimary}" FontSize="16" x:Name="OKBtn" Click="OKBtn_Click"/>
+                </StackPanel>
+            </Grid>
         </Grid>
     </Grid>
 </Page>

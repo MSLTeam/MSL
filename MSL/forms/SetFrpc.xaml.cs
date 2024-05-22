@@ -26,14 +26,7 @@ namespace MSL
 
         private void TabCtrl_SelectionChanged(object sender, SelectionChangedEventArgs e)
         {
-            if (TabCtrl.SelectedIndex != -1 && TabCtrl.SelectedIndex != 3)
-            {
-                frame.Content = Pages[TabCtrl.SelectedIndex];
-            }
-            else
-            {
-                frame.Content = null;
-            }
+
         }
     }
 }
