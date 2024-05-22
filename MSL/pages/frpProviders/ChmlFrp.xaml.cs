@@ -80,9 +80,11 @@ namespace MSL.pages.frpProviders
             if (token != null)
             {
                 bool save = (bool)SaveToken.IsChecked;
-                _ = Task.Run(() => verifyUserToken(token.Trim(), save)); //移除空格，防止笨蛋
+                ShowDialogs showDialogs = new ShowDialogs();
+                showDialogs.ShowTextDialog(Window.GetWindow(this), "登录中……");
+                await Task.Run(() => verifyUserToken(token.Trim(), save)); //移除空格，防止笨蛋
+                showDialogs.CloseTextDialog();
             }
-
         }
 
         //账号密码
