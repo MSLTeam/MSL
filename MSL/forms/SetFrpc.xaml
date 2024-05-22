@@ -20,6 +20,9 @@
             <TabItem Header="ChmlFrp" Background="Transparent">
                 <Frame Source="/pages/frpProviders/ChmlFrp.xaml" BorderBrush="{x:Null}"/>
             </TabItem>
+            <TabItem Header="自定义" Background="Transparent">
+                <Frame Source="/pages/frpProviders/Custom.xaml" BorderBrush="{x:Null}"/>
+            </TabItem>
             <TabItem Header="更多Frp" Background="Transparent">
                 <StackPanel HorizontalAlignment="Center" VerticalAlignment="Center">
                     <hc:Card>
