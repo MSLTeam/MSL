@@ -77,7 +77,7 @@ namespace MSL.pages.frpProviders
 
         private async void SetFrpcPath()
         {
-            if ((bool)(CustomFrpcClient.IsChecked = true))//自定义的话要导入进MSL文件夹
+            if (CustomFrpcClient.IsChecked == true)//自定义的话要导入进MSL文件夹
             {
                 //选择文件对还款
                 OpenFileDialog openFileDialog = new OpenFileDialog();

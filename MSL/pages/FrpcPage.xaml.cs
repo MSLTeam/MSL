@@ -104,6 +104,14 @@ namespace MSL.pages
                 {
                     frpcExeName = "frpc_chml.exe";
                     downloadUrl = "download/frpc/ChmlFrp/amd64";
+                }else if (frpcServer == "-1")//自定义frp，使用官版
+                {
+                    frpcExeName = "frpc_official.exe";
+                    downloadUrl = "download/frpc/Official/amd64";
+                }
+                else if (frpcServer == "-2")//自定义frp，使用自己的
+                {
+                    frpcExeName = "frpc_custom.exe";
                 }
                 if (frpcversion == null || frpcversion != "6")//mslfrp的特别更新qwq
                 {
@@ -115,12 +123,12 @@ namespace MSL.pages
                     });
                     Config.Write("frpcversion", "6");
                 }
-                if (!File.Exists($"MSL\\{frpcExeName}"))//检查frpc是否存在，不存在就下崽崽
+                if (!File.Exists($"MSL\\{frpcExeName}") && frpcServer != "-2")//检查frpc是否存在，不存在就下崽崽
                 {
                     string _dnfrpc = Functions.Get(downloadUrl);
                     await Dispatcher.Invoke(async () =>
                     {
-                        if (frpcServer == "0")
+                        if (frpcServer == "0" || frpcServer == "-1")//下载exe or zip
                         {
                             await Shows.ShowDownloader(Window.GetWindow(this), _dnfrpc, "MSL", $"{frpcExeName}", "下载内网映射中...");
                         }
@@ -130,8 +138,8 @@ namespace MSL.pages
                         }
 
                     });
-                    //只有mslfrp不需要
-                    if (frpcServer != "0")
+                    //只有mslfrp+gh不需要
+                    if (frpcServer != "0" && frpcServer != "-1")
                     {
                         //很寻常的解压
                         string fileName = "";
@@ -159,6 +167,9 @@ namespace MSL.pages
                         //三个服务 三个下载解压方式 我真是太开心了！(p≧w≦q)
                     }
 
+                }else if(!File.Exists($"MSL\\{frpcExeName}") && frpcServer == "-2") {
+                    //找不到自定义的frp，直接失败
+                    throw new FileNotFoundException("Frpc Not Found");
                 }
                 //该启动了！
                 FRPCMD.StartInfo.WorkingDirectory = "MSL";
@@ -186,11 +197,23 @@ namespace MSL.pages
             }
             catch (Exception e)//错误处理
             {
-                Dispatcher.Invoke(() =>
+                if (e.Message.Contains("Frpc Not Found") )
                 {
-                    startfrpc.IsEnabled = true;
-                    Shows.ShowMsg(Window.GetWindow(this), "出现错误，请检查是否有杀毒软件误杀并重试:" + e.Message, "错误");
-                });
+                    Dispatcher.Invoke(() =>
+                    {
+                        startfrpc.IsEnabled = true;
+                        Shows.ShowMsg(Window.GetWindow(this), "找不到自定义的Frpc客户端，请重新配置！\n" + e.Message, "错误");
+                    });
+                }
+                else
+                {
+                    Dispatcher.Invoke(() =>
+                    {
+                        startfrpc.IsEnabled = true;
+                        Shows.ShowMsg(Window.GetWindow(this), "出现错误，请检查是否有杀毒软件误杀并重试:" + e.Message, "错误");
+                    });
+                }
+                
             }
             finally
             {
@@ -572,7 +595,7 @@ namespace MSL.pages
                     string convertString = Convert.ToString(jobject);
                     File.WriteAllText(@"MSL\config.json", convertString, Encoding.UTF8);
                 }
-                if (jobject["frpcServer"].ToString() == "0" || jobject["frpcServer"].ToString() == "2")
+                if (jobject["frpcServer"].ToString() == "0" || jobject["frpcServer"].ToString() == "2" || jobject["frpcServer"].ToString() == "-2" || jobject["frpcServer"].ToString() == "-1")
                 {
                     Dispatcher.Invoke(() =>
                     {
@@ -589,6 +612,9 @@ namespace MSL.pages
                     if (jobject["frpcServer"].ToString() == "0")
                     {
                         nodeName = lines[0].TrimStart('#').Trim();
+                    }else if (jobject["frpcServer"].ToString() == "-1" || jobject["frpcServer"].ToString() == "-2")
+                    {
+                        nodeName = "自定义节点";
                     }
                     else
                     {
