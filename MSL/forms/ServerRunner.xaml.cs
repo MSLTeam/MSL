@@ -2009,8 +2009,8 @@ namespace MSL
             int om1 = config.IndexOf("online-mode=") + 12;
             string om2 = config.Substring(om1);
             strings[0] = om2.Substring(0, om2.IndexOf("\n"));
-            string[] strings1=config.Split('\n');
-            foreach(string s in strings1)
+            string[] strings1 = config.Split('\n');
+            foreach (string s in strings1)
             {
                 if (s.StartsWith("gamemode="))
                 {
@@ -3051,7 +3051,7 @@ namespace MSL
         }
         private async void useJvpath_Click(object sender, RoutedEventArgs e)
         {
-            if (useJvpath.IsChecked==true)
+            if (useJvpath.IsChecked == true)
             {
                 Growl.Info("正在检查环境变量可用性，请稍等……");
                 (bool javaAvailability, string javainfo) = await Functions.CheckJavaAvailabilityAsync("java");
@@ -3079,11 +3079,11 @@ namespace MSL
             Dialog waitDialog = Dialog.Show(new TextDialog("检测中，请稍等……"));
             if (dialog == 1)
             {
-                await Task.Run(() => { Thread.Sleep(200); strings = Functions.CheckJava(); });
+                await Task.Run(() => { Thread.Sleep(200); strings = Functions.SearchJava(); });
             }
             else
             {
-                await Task.Run(() => { Thread.Sleep(200); strings = Functions.CheckJava(true); });
+                await Task.Run(() => { Thread.Sleep(200); strings = Functions.SearchJava(true); });
             }
             this.Focus();
             waitDialog.Close();
@@ -3171,19 +3171,19 @@ namespace MSL
                 string emsg = jsonResult.Value<string>("msg");
                 if (em == 200)
                 {
-                     Shows.ShowMsgDialog(this, $"您的IPV6公网地址是：{ipv6}\n已经帮您复制到剪贴板啦！\n注意：IPV6地址格式是：[IP]:端口\n若无法使用IPV6连接，请检查：\n-连接方是否有IPV6地址", "成功获取IPV6公网地址并测试连通性！");
+                    Shows.ShowMsgDialog(this, $"您的IPV6公网地址是：{ipv6}\n已经帮您复制到剪贴板啦！\n注意：IPV6地址格式是：[IP]:端口\n若无法使用IPV6连接，请检查：\n-连接方是否有IPV6地址", "成功获取IPV6公网地址并测试连通性！");
                 }
                 else
                 {
-                   Shows.ShowMsgDialog(this, $"您的IPV6公网地址是：{ipv6}\n但是您的IPV6地址目前不能被访问！\n请检查：\n-您是否放行防火墙（包含电脑，路由器防火墙）\n-路由器是否使用桥接模式（若使用NAT，IPV6地址将不是公网）\n错误信息：{emsg}", "成功获取IPV6公网地址但测试连通性失败！");
+                    Shows.ShowMsgDialog(this, $"您的IPV6公网地址是：{ipv6}\n但是您的IPV6地址目前不能被访问！\n请检查：\n-您是否放行防火墙（包含电脑，路由器防火墙）\n-路由器是否使用桥接模式（若使用NAT，IPV6地址将不是公网）\n错误信息：{emsg}", "成功获取IPV6公网地址但测试连通性失败！");
                 }
-                
+
             }
             catch (Exception ex)
             {
                 if (ipv6 == "")
                 {
-                   Shows.ShowMsgDialog(this, "您当前的网络没有IPV6支持\n建议上网搜索如何开启IPV6\n或者联系运营商获取帮助~", "获取IPV6地址失败！");
+                    Shows.ShowMsgDialog(this, "您当前的网络没有IPV6支持\n建议上网搜索如何开启IPV6\n或者联系运营商获取帮助~", "获取IPV6地址失败！");
                 }
                 else
                 {
@@ -3868,7 +3868,5 @@ namespace MSL
         }
 
         #endregion
-
-
     }
 }

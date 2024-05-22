@@ -7,7 +7,7 @@
       xmlns:local="clr-namespace:MSL.pages.frpProviders"
       mc:Ignorable="d" 
       d:DesignHeight="400" d:DesignWidth="750"
-      Title="OpenFrp" Loaded="Page_Loaded" Unloaded="Page_Unloaded">
+      Title="OpenFrp" Loaded="Page_Loaded">
     <Grid>
         <Grid x:Name="MainGrid">
             <ComboBox x:Name="toggleProxies" Margin="20,5,0,0" Height="30" Width="270" HorizontalAlignment="Left" VerticalAlignment="Top" SelectedIndex="0" SelectionChanged="toggleProxies_SelectionChanged">
@@ -21,7 +21,7 @@
             </Border>
             <Button x:Name="toggleAddProxiesGroup" Content="新建隧道（点击展开）" Margin="300,245,0,0" VerticalAlignment="Top" Width="200" Height="30" HorizontalAlignment="Left" Click="toggleAddProxiesGroup_Click"/>
             <Button x:Name="delProxieBtn" Content="删除隧道" Margin="515,245,0,0" VerticalAlignment="Top" Width="100" Height="30" HorizontalAlignment="Left" Click="delProxieBtn_Click"/>
-            <Button x:Name="signBtn" Content="签到" Margin="630,245,0,0" VerticalAlignment="Top" HorizontalAlignment="Left" Width="100" Height="30" Click="signBtn_Click"/>
+            <Button x:Name="signBtn" Content="进入官网" Margin="630,245,0,0" VerticalAlignment="Top" HorizontalAlignment="Left" Width="100" Height="30" Click="gotoWeb_Click"/>
             <Grid x:Name="addProxiesGroup" Margin="290,70,0,0" Height="100" Visibility="Hidden">
                 <Label Content="本地端口(Java版默认25565,基岩版默认19132)：" HorizontalAlignment="Left" Background="{x:Null}" BorderBrush="{x:Null}" FontSize="14" VerticalAlignment="Top"/>
                 <TextBox x:Name="portBox" HorizontalAlignment="Left" Margin="320,0,0,0" VerticalAlignment="Top" Width="120" Text="25565"/>
@@ -36,9 +36,8 @@
                 <Button x:Name="addProxieBtn" Content="新建隧道" VerticalAlignment="Top" Width="100" HorizontalAlignment="Left" Click="addProxieBtn_Click" Margin="340,70,0,0"/>
                 <CheckBox x:Name="enableCompression" Content="启用数据压缩" HorizontalAlignment="Left" IsChecked="True" Margin="340,0,0,0"/>
             </Grid>
-            <Button x:Name="doneBtn" Content="确定" Margin="630,280,0,0" Style="{StaticResource ButtonPrimary}" VerticalAlignment="Top" Width="100" Click="Button_Click" FontSize="18" Height="55" HorizontalAlignment="Left"/>
-            <Button x:Name="gotoWeb" Content="进入官网" Margin="630,340,0,0" VerticalAlignment="Top" Click="gotoWeb_Click" HorizontalAlignment="Left" Width="100" Height="40"/>
-            <Button x:Name="logoutBtn" Content="登出" Margin="0,5,15,0" VerticalAlignment="Top" HorizontalAlignment="Right" Width="80" Height="30" Click="logoutBtn_Click"/>
+            <Button x:Name="doneBtn" Content="确定" Margin="630,280,0,0" Style="{StaticResource ButtonPrimary}" VerticalAlignment="Top" Width="100" Click="Button_Click" FontSize="18" Height="100" HorizontalAlignment="Left"/>
+            <Button x:Name="logoutBtn" Content="登出" Margin="0,5,15,0" Style="{StaticResource ButtonDanger}" VerticalAlignment="Top" HorizontalAlignment="Right" Width="80" Height="30" Click="logoutBtn_Click"/>
         </Grid>
         <Grid x:Name="LoginGrid" Visibility="Hidden">
             <TextBlock Text="使用OpenFrp服务之前，请先登录您的OpenFrp账户" HorizontalAlignment="Center" VerticalAlignment="Center" Margin="0,0,0,70" FontSize="16" Foreground="{DynamicResource PrimaryTextBrush}"/>

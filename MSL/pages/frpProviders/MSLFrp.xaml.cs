@@ -24,23 +24,22 @@ namespace MSL.pages.frpProviders
     /// </summary>
     public partial class MSLFrp : Page
     {
-        private CancellationTokenSource cts;
-        List<string> list1 = new List<string>();
-        List<string> list2 = new List<string>();
-        List<string> list3 = new List<string>();
-        List<string> list4 = new List<string>();
+        //private CancellationTokenSource cts;
+        private List<string> list1 = new List<string>();
+        private List<string> list2 = new List<string>();
+        private List<string> list3 = new List<string>();
+        private List<string> list4 = new List<string>();
 
         public MSLFrp()
         {
             InitializeComponent();
+            //cts = new CancellationTokenSource();
+            //await GetFrpsInfo(cts.Token);
+            //Task.Run(() => GetFrpsInfo(cts.Token));
+            Task.Run(() => GetFrpsInfo());
         }
 
-        private void Page_Loaded(object sender, RoutedEventArgs e)
-        {
-            cts = new CancellationTokenSource();
-            //await GetFrpsInfo(cts.Token);
-            Task.Run(() => GetFrpsInfo(cts.Token));
-        }
+        /*
         private void Page_Unloaded(object sender, RoutedEventArgs e)
         {
             cts.Cancel();
@@ -53,7 +52,9 @@ namespace MSL.pages.frpProviders
             catch
             { }
         }
-        private async Task GetFrpsInfo(CancellationToken ct)
+        */
+
+        private async Task GetFrpsInfo()
         {
             Dispatcher.Invoke(() =>
             {
@@ -162,13 +163,6 @@ namespace MSL.pages.frpProviders
                 catch
                 { }
             });
-            if (ct.IsCancellationRequested)
-            {
-                Dispatcher.Invoke(() =>
-                {
-                    serversList.Items.Clear();
-                });
-            }
         }
 
         private async void Button_Click(object sender, RoutedEventArgs e)

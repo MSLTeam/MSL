@@ -7,8 +7,7 @@
       xmlns:hc="https://handyorg.github.io/handycontrol"
       mc:Ignorable="d" 
       d:DesignHeight="450" d:DesignWidth="800"
-      Title="ChmlFrp" Initialized="Page_Initialized" >
-
+      Title="ChmlFrp" Loaded="Page_Loaded" >
     <Grid>
         <Grid x:Name="CreateGrid" Margin="10" Visibility="Collapsed">
             <Grid.ColumnDefinitions>
@@ -30,11 +29,11 @@
                     <ListBox.ItemTemplate>
                         <DataTemplate>
                             <StackPanel Orientation="Horizontal">
-                                <TextBlock Text="{Binding Name}" Margin="3" Foreground="{DynamicResource PrimaryTextBrush}"/>
-                                <TextBlock Text="-" Margin="3" Foreground="{DynamicResource PrimaryTextBrush}"/>
-                                <TextBlock Text="{Binding Area}" Margin="3" Foreground="{DynamicResource PrimaryTextBrush}"/>
-                                <TextBlock Text="-" Margin="3" Foreground="{DynamicResource PrimaryTextBrush}"/>
-                                <TextBlock Text="{Binding NodeGroupName}" Margin="3" Foreground="{DynamicResource PrimaryTextBrush}"/>
+                                <TextBlock Text="{Binding Name}" Margin="3"/>
+                                <TextBlock Text="-" Margin="3"/>
+                                <TextBlock Text="{Binding Area}" Margin="3"/>
+                                <TextBlock Text="-" Margin="3"/>
+                                <TextBlock Text="{Binding NodeGroupName}" Margin="3"/>
                             </StackPanel>
                         </DataTemplate>
                     </ListBox.ItemTemplate>
@@ -124,9 +123,9 @@
                         <ListBox.ItemTemplate>
                             <DataTemplate>
                                 <StackPanel Orientation="Horizontal">
-                                    <TextBlock Text="{Binding Name}" Margin="3" Foreground="{DynamicResource PrimaryTextBrush}"/>
-                                    <TextBlock Text="-" Margin="3" Foreground="{DynamicResource PrimaryTextBrush}"/>
-                                    <TextBlock Text="{Binding Node}" Margin="3" Foreground="{DynamicResource PrimaryTextBrush}"/>
+                                    <TextBlock Text="{Binding Name}" Margin="3"/>
+                                    <TextBlock Text="-" Margin="3"/>
+                                    <TextBlock Text="{Binding Node}" Margin="3"/>
                                 </StackPanel>
                             </DataTemplate>
                         </ListBox.ItemTemplate>
@@ -136,8 +135,8 @@
                             <ColumnDefinition Width="*"/>
                             <ColumnDefinition Width="*"/>
                         </Grid.ColumnDefinitions>
-                        <Button Content="删除所选隧道" x:Name="Del_Tunnel" Style="{DynamicResource ButtonDanger}" FontSize="14" Grid.Column="0" HorizontalAlignment="Stretch" Margin="0,0,3,0" Click="Del_Tunnel_Click"/>
-                        <Button Content="刷新" x:Name="RefreshBtn"  FontSize="14" Style="{StaticResource ButtonPrimary}" HorizontalAlignment="Stretch" Grid.Column="1" Click="RefreshBtn_Click" Margin="3,0,0,0"/>
+                        <Button Content="删除所选隧道" x:Name="Del_Tunnel" Style="{DynamicResource ButtonDanger}" Grid.Column="0" HorizontalAlignment="Stretch" Margin="0,0,3,0" Click="Del_Tunnel_Click"/>
+                        <Button Content="刷新" x:Name="RefreshBtn"  Style="{StaticResource ButtonPrimary}" HorizontalAlignment="Stretch" Grid.Column="1" Click="RefreshBtn_Click" Margin="3,0,0,0"/>
 
                     </Grid>
        
@@ -155,8 +154,8 @@
                                 <TextBlock x:Name="UserInfo" LineHeight="20" Foreground="{DynamicResource PrimaryTextBrush}" Text="Loadings······" FontSize="14" HorizontalAlignment="Left" Margin="10,0,0,0"/>
                             </StackPanel>
                                 <StackPanel Grid.Column="1" Margin="0,5,8,5" >
-                                    <Button Content="打开官网" x:Name="OpenWeb" Margin="0,0,0,3" Style="{DynamicResource ButtonPrimary}" FontSize="14"  HorizontalAlignment="Stretch"  Click="OpenWeb_Click"/>
-                                    <Button Content="退出登录" x:Name="ExitBtn" Margin="0,3,0,0" FontSize="14" Style="{StaticResource ButtonDanger}" HorizontalAlignment="Stretch" Click="ExitBtn_Click"/>
+                                    <Button Content="打开官网" x:Name="OpenWeb" Margin="0,0,0,3" Style="{DynamicResource ButtonPrimary}" HorizontalAlignment="Stretch"  Click="OpenWeb_Click"/>
+                                    <Button Content="退出登录" x:Name="ExitBtn" Margin="0,3,0,0" Style="{StaticResource ButtonDanger}" HorizontalAlignment="Stretch" Click="ExitBtn_Click"/>
                                 </StackPanel>
                             </Grid>
                         </hc:Card>
@@ -193,8 +192,8 @@
                 <Grid Grid.Column="1" Margin="0,10,10,10">
                     <StackPanel Orientation="Horizontal">
                        
-                        <Button Content="新建隧道" MinWidth="100" MinHeight="60" Margin="0,0,8,0" FontSize="20" x:Name="CreateBtn" Click="CreateBtn_Click"/>
-                        <Button Content="确定" MinWidth="100" MinHeight="60" Style="{StaticResource ButtonPrimary}" FontSize="20" x:Name="OKBtn" Click="OKBtn_Click"/>
+                        <Button Content="新建隧道" MinWidth="100" MinHeight="60" Margin="0,0,8,0" FontSize="16" x:Name="CreateBtn" Click="CreateBtn_Click"/>
+                        <Button Content="确定" MinWidth="100" MinHeight="60" Style="{StaticResource ButtonPrimary}" FontSize="16" x:Name="OKBtn" Click="OKBtn_Click"/>
                     </StackPanel>
                 </Grid>
             </Grid>

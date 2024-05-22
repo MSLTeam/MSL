@@ -624,11 +624,11 @@ namespace MSL.pages
             Dialog waitDialog = Dialog.Show(new TextDialog("检测中，请稍等……"));
             if (dialog == 1)
             {
-                await Task.Run(() => { Thread.Sleep(200); strings = Functions.CheckJava(); });
+                await Task.Run(() => { Thread.Sleep(200); strings = Functions.SearchJava(); });
             }
             else
             {
-                await Task.Run(() => { Thread.Sleep(200); strings = Functions.CheckJava(true); });
+                await Task.Run(() => { Thread.Sleep(200); strings = Functions.SearchJava(true); });
             }
             Window.GetWindow(this).Focus();
             waitDialog.Close();

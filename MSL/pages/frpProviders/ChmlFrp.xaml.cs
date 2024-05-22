@@ -7,15 +7,10 @@ using System.Collections.Generic;
 using System.Collections.ObjectModel;
 using System.Diagnostics;
 using System.IO;
-using System.Net;
-using System.Security.RightsManagement;
 using System.Text;
 using System.Threading.Tasks;
-using System.Web.UI.WebControls;
 using System.Windows;
 using System.Windows.Controls;
-using System.Xml.Linq;
-using Windows.Storage.Compression;
 
 
 namespace MSL.pages.frpProviders
@@ -48,23 +43,32 @@ namespace MSL.pages.frpProviders
  */
     public partial class ChmlFrp : Page
     {
-        string ChmlFrpApiUrl = "https://panel.chmlfrp.cn";
-        string ChmlToken, ChmlID;
+        private readonly string ChmlFrpApiUrl = "https://panel.chmlfrp.cn";
+        private string ChmlToken, ChmlID;
+        private bool isInitialize = false;
+
         public ChmlFrp()
         {
             InitializeComponent();
         }
-        private void Page_Initialized(object sender, EventArgs e)
-        {
-            MainGrid.Visibility = Visibility.Collapsed;
-            LoginGrid.Visibility = Visibility.Visible;
-            CreateGrid.Visibility = Visibility.Collapsed;
 
-            //自动登录
-            //JObject jobject = JObject.Parse(File.ReadAllText(@"MSL\config.json", Encoding.UTF8));
-            if (Config.Read("ChmlToken")!="")
+        private async void Page_Loaded(object sender, EventArgs e)
+        {
+            if (!isInitialize)
             {
-               Task.Run(() => verifyUserToken(Config.Read("ChmlToken"), false));
+                isInitialize = true;
+                MainGrid.Visibility = Visibility.Collapsed;
+                LoginGrid.Visibility = Visibility.Visible;
+                CreateGrid.Visibility = Visibility.Collapsed;
+                //自动登录
+                //JObject jobject = JObject.Parse(File.ReadAllText(@"MSL\config.json", Encoding.UTF8));
+                if (Config.Read("ChmlToken") != "")
+                {
+                    ShowDialogs showDialogs = new ShowDialogs();
+                    showDialogs.ShowTextDialog(Window.GetWindow(this),"登录中……");
+                    await Task.Run(() => verifyUserToken(Config.Read("ChmlToken"), false));
+                    showDialogs.CloseTextDialog();
+                }
             }
         }
 
@@ -76,19 +80,32 @@ namespace MSL.pages.frpProviders
             if (token != null)
             {
                 bool save = (bool)SaveToken.IsChecked;
-                Task.Run(() => verifyUserToken(token.Trim(),save)); //移除空格，防止笨蛋
+                ShowDialogs showDialogs = new ShowDialogs();
+                showDialogs.ShowTextDialog(Window.GetWindow(this), "登录中……");
+                await Task.Run(() => verifyUserToken(token.Trim(), save)); //移除空格，防止笨蛋
+                showDialogs.CloseTextDialog();
             }
-            
         }
 
         //账号密码
         private async void userLogin_Click(object sender, RoutedEventArgs e)
         {
             string frpUser, frpPassword;
-           frpUser = await Shows.ShowInput(Window.GetWindow(this), "请输入ChmlFrp的账户名/邮箱/QQ号");
-            frpPassword = await Shows.ShowInput(Window.GetWindow(this), "请输入密码","", true);
+            frpUser = await Shows.ShowInput(Window.GetWindow(this), "请输入ChmlFrp的账户名/邮箱/QQ号");
+            if (frpUser == null)
+            {
+                return;
+            }
+            frpPassword = await Shows.ShowInput(Window.GetWindow(this), "请输入密码", "", true);
+            if (frpPassword == null)
+            {
+                return;
+            }
             bool save = (bool)SaveToken.IsChecked;
-            Task.Run(() => getUserToken(frpUser, frpPassword,save));
+            ShowDialogs showDialogs = new ShowDialogs();
+            showDialogs.ShowTextDialog(Window.GetWindow(this), "登录中……");
+            await Task.Run(() => getUserToken(frpUser, frpPassword, save));
+            showDialogs.CloseTextDialog();
         }
 
         //注册一个可爱的账户
@@ -97,9 +114,8 @@ namespace MSL.pages.frpProviders
             Process.Start("https://panel.chmlfrp.cn/register");
         }
 
-
         //异步登录，获取到用户token
-        private void getUserToken(string user,string pwd,bool save)
+        private void getUserToken(string user, string pwd, bool save)
         {
             try
             {
@@ -112,7 +128,7 @@ namespace MSL.pages.frpProviders
                         string token = jsonResponse["token"].ToString();
                         ChmlID = jsonResponse["userid"].ToString();//id丢全局
                                                                    //这里就拿到token了
-                       //保存？写到配置
+                                                                   //保存？写到配置
                         if (save == true)
                         {
                             Config.Write("ChmlToken", token);
@@ -134,27 +150,23 @@ namespace MSL.pages.frpProviders
                     {
                         Dispatcher.Invoke(() =>
                         {
-
                             Shows.ShowMsgDialog(Window.GetWindow(this), "登陆失败！\n" + jsonResponse["error"].ToString(), LanguageManager.Instance["Dialog_Err"]);
                         });
                     }
 
                 }
             }
-            catch(Exception e) {
+            catch (Exception e)
+            {
                 Dispatcher.Invoke(() =>
                 {
-
                     Shows.ShowMsgDialog(Window.GetWindow(this), "登陆失败！\n" + e.Message, LanguageManager.Instance["Dialog_Err"]);
                 });
             }
-           
-            
-            
         }
 
         //直接token登录，那么验证下咯~
-        private void verifyUserToken(string userToken,bool save)
+        private void verifyUserToken(string userToken, bool save)
         {
             try
             {
@@ -164,8 +176,8 @@ namespace MSL.pages.frpProviders
                 {
                     ChmlID = jsonResponse["userid"].ToString();//id丢全局
                                                                //这里就拿到token了(确定有效）
-                    //保存？写到配置
-                    if(save == true)
+                                                               //保存？写到配置
+                    if (save == true)
                     {
                         Config.Write("ChmlToken", userToken);
                     }
@@ -215,9 +227,9 @@ namespace MSL.pages.frpProviders
         }
 
         //登录成功了，然后就是获取隧道,丢到ui去
-        private void GetFrpList(String token )
+        private void GetFrpList(String token)
         {
-            ChmlToken=token;//丢到全局
+            ChmlToken = token;//丢到全局
             //处理ui界面交接
             Dispatcher.Invoke(() =>
             {
@@ -281,7 +293,7 @@ namespace MSL.pages.frpProviders
             {
                 Shows.ShowMsgDialog(Window.GetWindow(this), e.Message, "出错了！");
             }
-            
+
 
         }
 
@@ -292,17 +304,17 @@ namespace MSL.pages.frpProviders
             var listBox = sender as System.Windows.Controls.ListBox;
             if (listBox.SelectedItem is TunnelInfo selectedTunnel)
             {
-                TunnelInfo_Text.Text=$"隧道名:{selectedTunnel.Name}\n" +
+                TunnelInfo_Text.Text = $"隧道名:{selectedTunnel.Name}\n" +
                     $"隧道ID:{selectedTunnel.ID}\n协议:{selectedTunnel.Type}\n" +
                     $"地域:{selectedTunnel.Node}\n远程端口:{selectedTunnel.RPort}";
-                LocalIp.Text=selectedTunnel.LIP;
-                LocalPort.Text=selectedTunnel.LPort;
+                LocalIp.Text = selectedTunnel.LIP;
+                LocalPort.Text = selectedTunnel.LPort;
             }
         }
 
         private async void OKBtn_Click(object sender, RoutedEventArgs e)
         {
-            string FrpcConfig,FrpsPort="7000",FrpsToken= "ChmlFrpToken";
+            string FrpcConfig, FrpsPort = "7000", FrpsToken = "ChmlFrpToken";
             var listBox = FrpList as System.Windows.Controls.ListBox;
             if (listBox.SelectedItem is TunnelInfo selectedTunnel)
             {
@@ -345,11 +357,12 @@ namespace MSL.pages.frpProviders
                 }
                 catch (Exception ex)
                 {
-                    await Shows.ShowMsgDialogAsync(Window.GetWindow(this), "写入Frp配置失败！\n"+ex.Message, "出错");
+                    await Shows.ShowMsgDialogAsync(Window.GetWindow(this), "写入Frp配置失败！\n" + ex.Message, "出错");
                 }
-                
-            } 
-            else {
+
+            }
+            else
+            {
                 await Shows.ShowMsgDialogAsync(Window.GetWindow(this), "诚恳的建议，您选择一个隧道再按确定哦~", "隧道呢？");
             }
         }
@@ -381,7 +394,7 @@ namespace MSL.pages.frpProviders
                             {
                                 Shows.ShowMsgDialog(Window.GetWindow(this), "隧道删除成功！", "删除");
                             });
-                            Task.Run(() => GetFrpList(ChmlToken));//刷新下列表
+                            _ = Task.Run(() => GetFrpList(ChmlToken));//刷新下列表
                         }
                         else
                         {
@@ -408,9 +421,9 @@ namespace MSL.pages.frpProviders
                         Shows.ShowMsgDialog(Window.GetWindow(this), ex.Message, "失败！");
                     });
                 }
-                
+
             }
-           
+
         }
 
 
@@ -420,7 +433,7 @@ namespace MSL.pages.frpProviders
             MainGrid.Visibility = Visibility.Collapsed;
             LoginGrid.Visibility = Visibility.Collapsed;
             CreateGrid.Visibility = Visibility.Visible;
-            Task.Run(()=> GetNodeList() );//获取列表
+            Task.Run(() => GetNodeList());//获取列表
             //随机一些数据
             Random rand = new Random();
             int randomNumber = rand.Next(10000, 65536);
@@ -469,7 +482,7 @@ namespace MSL.pages.frpProviders
                                 Area = $"{item["area"]}",
                                 Notes = $"{item["notes"]}",
                                 NodeGroup = $"{item["nodegroup"]}",
-                                NodeGroupName="VIP节点",
+                                NodeGroupName = "VIP节点",
                             });
                         }
                         else
@@ -502,7 +515,7 @@ namespace MSL.pages.frpProviders
             var listBox = sender as System.Windows.Controls.ListBox;
             if (listBox.SelectedItem is NodeInfo selectedNode)
             {
-                NodeTips.Text=selectedNode.Notes;
+                NodeTips.Text = selectedNode.Notes;
             }
         }
 
@@ -534,17 +547,17 @@ namespace MSL.pages.frpProviders
                 string proc = Create_Protocol.Text;
                 string lport = Create_LocalPort.Text;
                 string rport = Create_RemotePort.Text;
-                Task.Run(() => PostCreate(lip, name, selectedNode.Name,proc ,lport ,rport , enc, comp));
+                Task.Run(() => PostCreate(lip, name, selectedNode.Name, proc, lport, rport, enc, comp));
             }
             else
             {
                 Shows.ShowMsgDialog(Window.GetWindow(this), "您似乎没有选择节点！", "错误");
             }
-           
+
         }
 
         //post把数据丢过去
-        private void PostCreate(string localip,string name,string node,string type,string nport,string dorp,string encryption,string compression)
+        private void PostCreate(string localip, string name, string node, string type, string nport, string dorp, string encryption, string compression)
         {
 
             string parameterData = $@"
@@ -583,14 +596,14 @@ namespace MSL.pages.frpProviders
                 {
                     Shows.ShowMsgDialog(Window.GetWindow(this), $"隧道创建失败！\n{PostResponse["error"]}", "创建失败！");
                 });
-                
+
             }
 
         }
 
         private void RefreshBtn_Click(object sender, RoutedEventArgs e)
         {
-            Task.Run(()=> GetFrpList(ChmlToken));
+            Task.Run(() => GetFrpList(ChmlToken));
         }
 
         private void ExitBtn_Click(object sender, RoutedEventArgs e)
@@ -604,8 +617,6 @@ namespace MSL.pages.frpProviders
             string convertString = Convert.ToString(jobject);
             File.WriteAllText(@"MSL\config.json", convertString, Encoding.UTF8);
         }
-
-
 
         //返回按钮
         private void Create_BackBtn_Click(object sender, RoutedEventArgs e)

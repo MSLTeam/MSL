@@ -635,17 +635,6 @@ namespace MSL
             }
         }
 
-        /*
-        private void GotoFrpcPage()
-        {
-            this.Topmost = true;
-            this.Topmost = false;
-            this.Focus();
-            frame.Content = _frpcPage;
-            SideMenu.SelectedIndex = 2;
-        }
-        */
-
         private void GotoOnlinePage()
         {
             //frame.Content = _onlinePage;
@@ -742,29 +731,6 @@ namespace MSL
 
         private void SideMenu_SelectionChanged(object sender, System.Windows.Controls.SelectionChangedEventArgs e)
         {
-            /*
-            switch (SideMenu.SelectedIndex)
-            {
-                case 0:
-                    frame.Content = _homePage;
-                    break;
-                case 1:
-                    frame.Content = _listPage;
-                    break;
-                case 2:
-                    frame.Content = _frpcPage;
-                    break;
-                case 3:
-                    frame.Content = _onlinePage;
-                    break;
-                case 4:
-                    frame.Content = _setPage;
-                    break;
-                case 5:
-                    frame.Content = _aboutPage;
-                    break;
-            }
-            */
             if (SideMenu.SelectedIndex != -1)
             {
                 frame.Content = Pages[SideMenu.SelectedIndex];

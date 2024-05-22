@@ -1,8 +1,8 @@
 ﻿using HandyControl.Controls;
 using HandyControl.Data;
 using ICSharpCode.SharpZipLib.Zip;
-using IniParser.Model;
 using IniParser;
+using IniParser.Model;
 using MSL.controls;
 using MSL.i18n;
 using Newtonsoft.Json;
@@ -120,17 +120,19 @@ namespace MSL.pages
                     string _dnfrpc = Functions.Get(downloadUrl);
                     await Dispatcher.Invoke(async () =>
                     {
-                        if(frpcServer == "0") {
+                        if (frpcServer == "0")
+                        {
                             await Shows.ShowDownloader(Window.GetWindow(this), _dnfrpc, "MSL", $"{frpcExeName}", "下载内网映射中...");
                         }
                         else
                         {
                             await Shows.ShowDownloader(Window.GetWindow(this), _dnfrpc, "MSL", $"{frpcExeName}.zip", "下载内网映射中...");
                         }
-                        
+
                     });
                     //只有mslfrp不需要
-                    if(frpcServer != "0") {
+                    if (frpcServer != "0")
+                    {
                         //很寻常的解压
                         string fileName = "";
                         using (ZipFile zip = new ZipFile($@"MSL\{frpcExeName}.zip"))
@@ -144,7 +146,7 @@ namespace MSL.pages
                         FastZip fastZip = new FastZip();
                         fastZip.ExtractZip($@"MSL\{frpcExeName}.zip", "MSL", "");
                         File.Delete($@"MSL\{frpcExeName}.zip");
-                        if(frpcServer == "1") //这是of的解压处理
+                        if (frpcServer == "1") //这是of的解压处理
                         {
                             File.Move("MSL\\" + fileName, $"MSL\\{frpcExeName}");
                             File.Delete("MSL\\" + fileName);
@@ -152,7 +154,7 @@ namespace MSL.pages
                         else //这是chml的解压处理
                         {
                             File.Move("MSL\\" + fileName + $"\\frpc.exe", $"MSL\\{frpcExeName}");
-                            Directory.Delete("MSL\\" + fileName , true);
+                            Directory.Delete("MSL\\" + fileName, true);
                         }
                         //三个服务 三个下载解压方式 我真是太开心了！(p≧w≦q)
                     }
@@ -187,7 +189,7 @@ namespace MSL.pages
                 Dispatcher.Invoke(() =>
                 {
                     startfrpc.IsEnabled = true;
-                    Shows.ShowMsg(Window.GetWindow(this),"出现错误，请检查是否有杀毒软件误杀并重试:" + e.Message, "错误");
+                    Shows.ShowMsg(Window.GetWindow(this), "出现错误，请检查是否有杀毒软件误杀并重试:" + e.Message, "错误");
                 });
             }
             finally
@@ -239,7 +241,7 @@ namespace MSL.pages
                         frpcOutlog.Text = frpcOutlog.Text + msg + "\n";
                     }
                 }
-                catch(Exception)
+                catch (Exception)
                 {
                     frpcOutlog.Text = frpcOutlog.Text + msg + "\n";
                 }
@@ -249,7 +251,7 @@ namespace MSL.pages
             {
                 frpcOutlog.Text = frpcOutlog.Text + msg + "\n";
             }
-                
+
             if (msg.IndexOf("login") + 1 != 0)
             {
                 if (msg.IndexOf("failed") + 1 != 0)
@@ -570,7 +572,7 @@ namespace MSL.pages
                     string convertString = Convert.ToString(jobject);
                     File.WriteAllText(@"MSL\config.json", convertString, Encoding.UTF8);
                 }
-                if (jobject["frpcServer"].ToString() == "0" || jobject["frpcServer"].ToString()=="2")
+                if (jobject["frpcServer"].ToString() == "0" || jobject["frpcServer"].ToString() == "2")
                 {
                     Dispatcher.Invoke(() =>
                     {
@@ -586,13 +588,13 @@ namespace MSL.pages
                     string nodeName;
                     if (jobject["frpcServer"].ToString() == "0")
                     {
-                       nodeName = lines[0].TrimStart('#').Trim();
+                        nodeName = lines[0].TrimStart('#').Trim();
                     }
                     else
                     {
                         nodeName = "ChmlFrp节点";
                     }
-                    
+
 
                     // 服务器地址
                     string serverAddr = "";
@@ -624,9 +626,9 @@ namespace MSL.pages
                         {
                             remotePort = lines[i].Split('=')[1].Trim();
                         }
-                        else if (lines[i].StartsWith("[")  && readServerInfo && jobject["frpcServer"].ToString() == "2")//针对chmlfrp的节点名字读取
+                        else if (lines[i].StartsWith("[") && readServerInfo && jobject["frpcServer"].ToString() == "2")//针对chmlfrp的节点名字读取
                         {
-                            nodeName = "ChmlFrp节点-" + lines[i].Replace("[","").Replace("]","").Replace("\r","").ToString();
+                            nodeName = "ChmlFrp节点-" + lines[i].Replace("[", "").Replace("]", "").Replace("\r", "").ToString();
                         }
                     }
 
