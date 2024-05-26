@@ -18,7 +18,7 @@
         <Border Margin="20,280,0,0" Height="100" Width="600" HorizontalAlignment="Left" VerticalAlignment="Top" Style="{StaticResource BorderTipPrimary}">
             <TextBlock x:Name="gonggao" Text="加载中" Foreground="{DynamicResource PrimaryTextBrush}" FontSize="16"/>
         </Border>
-        <Label Content="（请务必选择节点）" HorizontalAlignment="Left" Margin="110,5,0,0" VerticalAlignment="Top" FontSize="16" BorderBrush="{x:Null}" Background="{x:Null}" Height="35" Padding="0,0,0,5"/>
+        <Label Content="（在此选择一个节点）" HorizontalAlignment="Left" Margin="110,5,0,0" VerticalAlignment="Top" FontSize="16" BorderBrush="{x:Null}" Background="{x:Null}" Height="35" Padding="0,0,0,5"/>
         <hc:PasswordBox x:Name="passwordBox" HorizontalAlignment="Left" Height="23" Margin="330,175,0,0" VerticalAlignment="Top" Width="400" ShowEyeButton="True" Visibility="Hidden"/>
         <Label x:Name="paidPasswordLabel" Content="输入您的付费密码：" HorizontalAlignment="Left" Margin="290,145,0,0" FontSize="14" VerticalAlignment="Top" Background="{x:Null}" BorderBrush="{x:Null}" Visibility="Hidden"/>
         <Label Content="传输协议：" HorizontalAlignment="Left" Margin="290,215,0,0" VerticalAlignment="Top" BorderBrush="{x:Null}" Background="{x:Null}" Width="86" FontSize="14"/>

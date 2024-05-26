@@ -237,7 +237,7 @@ namespace MSL.i18n {
         }
         
         /// <summary>
-        ///   查找类似 您使用的开服器已是最新版本！ 的本地化字符串。
+        ///   查找类似 软件已是最新版本！ 的本地化字符串。
         /// </summary>
         internal static string MainWindow_GrowlMsg_LatestVersion {
             get {
@@ -255,7 +255,7 @@ namespace MSL.i18n {
         }
         
         /// <summary>
-        ///   查找类似 MSL主服务器连接超时（可能被DDos），已切换至备用服务器！ 的本地化字符串。
+        ///   查找类似 软件主服务器连接超时，已切换至备用服务器！ 的本地化字符串。
         /// </summary>
         internal static string MainWindow_GrowlMsg_MSLServerDown {
             get {

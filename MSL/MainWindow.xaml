@@ -63,7 +63,7 @@
             </ListBox>
         </StackPanel>
 
-        <Frame Grid.Column="1" x:Name="frame" NavigationUIVisibility="Hidden" BorderThickness="1,0,0,0"/>
+        <Frame Grid.Column="1" x:Name="frame" hc:BorderElement.CornerRadius="0" NavigationUIVisibility="Hidden" BorderThickness="1,0,0,0"/>
 
         <ScrollViewer Grid.Column="1" VerticalScrollBarVisibility="Hidden" HorizontalAlignment="Right" VerticalAlignment="Top">
             <StackPanel x:Name="GrowlPanel" hc:Growl.GrowlParent="True" VerticalAlignment="Top" Margin="0,10,10,10" />

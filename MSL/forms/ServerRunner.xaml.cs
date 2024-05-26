@@ -2184,10 +2184,10 @@ namespace MSL
                 }
             }
         }
+
         private void setServerconfig_Click(object sender, RoutedEventArgs e)
         {
-            SetServerconfig.serverbase = Rserverbase;
-            Window window = new SetServerconfig
+            Window window = new SetServerconfig(Rserverbase)
             {
                 Owner = this
             };

@@ -612,7 +612,8 @@ namespace MSL.pages
                     if (jobject["frpcServer"].ToString() == "0")
                     {
                         nodeName = lines[0].TrimStart('#').Trim();
-                    }else if (jobject["frpcServer"].ToString() == "-1" || jobject["frpcServer"].ToString() == "-2")
+                    }
+                    else if (jobject["frpcServer"].ToString() == "-1" || jobject["frpcServer"].ToString() == "-2")
                     {
                         nodeName = "自定义节点";
                     }
@@ -692,7 +693,7 @@ namespace MSL.pages
                         // 节点离线
                         Dispatcher.Invoke(() =>
                         {
-                            frplab1.Text = nodeName + "  节点离线，请重新配置！";
+                            frplab1.Text = nodeName + "  节点离线或禁Ping，若无法连接，请重新配置！";
                         });
                     }
                 }
@@ -701,7 +702,7 @@ namespace MSL.pages
                     Dispatcher.Invoke(() =>
                     {
                         startfrpc.IsEnabled = true;
-                        frplab1.Text = "您正在使用OpenFrp的节点";
+                        frplab1.Text = "OpenFrp的节点";
                         frplab3.Text = "请启动内网映射以查看IP";
                     });
                 }

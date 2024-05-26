@@ -144,7 +144,7 @@
                         <RowDefinition Height="*"/>
                     </Grid.RowDefinitions>
                     <Label Content="请填写（粘贴）Frpc的配置文件（ini/toml格式）" Grid.Row="0" MinHeight="20" BorderThickness="0" FontSize="16" FontWeight="Bold" HorizontalAlignment="Left"/>
-                    <hc:TextBox Grid.Row="1" TextWrapping="Wrap" AcceptsReturn="True" Margin="10" x:Name="ConfigBox"/>
+                    <TextBox Grid.Row="1" TextWrapping="Wrap" AcceptsReturn="True" Margin="10" x:Name="ConfigBox" VerticalContentAlignment="Top" Padding="5"/>
                 </Grid>
             </hc:Card>
         </Grid>
