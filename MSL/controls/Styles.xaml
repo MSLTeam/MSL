@@ -4,7 +4,7 @@
         <Setter Property="Margin" Value="10,10,10,0"/>
         <Setter Property="Padding" Value="10"/>
         <Setter Property="VerticalAlignment" Value="Top"/>
-        <Setter Property="CornerRadius" Value="10"/>
+        <Setter Property="CornerRadius" Value="4"/>
         <Setter Property="BorderBrush" Value="{DynamicResource BorderBrush}"/>
         <Setter Property="Background" Value="{DynamicResource BorderBackground}"/>
         <Setter Property="BorderThickness" Value="1"/>
