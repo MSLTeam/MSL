@@ -9,7 +9,6 @@ using System.IO;
 using System.Net.NetworkInformation;
 using System.Text;
 using System.Text.RegularExpressions;
-using System.Threading;
 using System.Threading.Tasks;
 using System.Windows;
 using System.Windows.Controls;
@@ -559,9 +558,7 @@ namespace MSL.pages.frpProviders
                     //买了，继续
                     ActiveOrder();
                 }
-                
             }
-
         }
 
         //激活方法
@@ -596,13 +593,14 @@ namespace MSL.pages.frpProviders
                     ["order"] = order,
                     ["qq"] = qq,
                 };
-                var ret = await Task.Run(() => Functions.Post("getpassword", 0, JsonConvert.SerializeObject(keyValuePairs), "http://111.180.189.249:7004"));
+                var ret = await Task.Run(() => Functions.Post("getpassword", 0, JsonConvert.SerializeObject(keyValuePairs), Functions.Get("query/MSLFrps/orderapi")));
                 _dialog.CloseTextDialog();
                 JObject keyValues = JObject.Parse(ret);
-                if (keyValues != null && int.Parse(keyValues["status"].ToString()) == 0)
+                if (keyValues != null && (int)keyValues["status"] == 0)
                 {
                     string passwd = keyValues["password"].ToString();
-                    bool dialog = await Shows.ShowMsgDialogAsync(Window.GetWindow(this), "您的付费密码为：" + passwd + "\n注册时间：" + keyValues["registration"].ToString() + "\n付费时长：" + keyValues["days"].ToString() + "天\n到期时间：" + keyValues["expiration"].ToString(), "购买成功！", true, "确定", "复制密码");
+                    passwordBox.Password = passwd;
+                    bool dialog = await Shows.ShowMsgDialogAsync(Window.GetWindow(this), "您的付费密码为：" + passwd + "\n已自动填入到密码栏中！\n注册时间：" + keyValues["registration"].ToString() + "\n付费时长：" + keyValues["days"].ToString() + "天\n到期时间：" + keyValues["expiration"].ToString(), "购买成功！", true, "确定", "复制密码");
                     if (dialog)
                     {
                         Clipboard.SetDataObject(passwd);

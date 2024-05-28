@@ -70,20 +70,12 @@ namespace MSL
             Topmost = true;
             Topmost = false;
             Focus();
+
             if (!Directory.Exists("MSL"))
             {
-                Process.Start("https://www.mslmc.cn/eula.html");
-                bool dialog = await Shows.ShowMsgDialogAsync(this, LanguageManager.Instance["MainWindow_GrowlMsg_Eula"] + "https://www.mslmc.cn/eula.html", LanguageManager.Instance["Dialog_Tip"], true, LanguageManager.Instance["MainWindow_GrowlMsg_DisAgree"], LanguageManager.Instance["MainWindow_GrowlMsg_Agree"]);
-                if (!dialog)
-                {
-                    //Logger.LogWarning("用户未同意使用协议，退出软件……");
-                    Close();
-                    Environment.Exit(0);
-                }
-                Directory.CreateDirectory("MSL");
                 //Logger.LogWarning("未检测到MSL文件夹，已进行创建");
+                Directory.CreateDirectory("MSL");
             }
-
             try
             {
                 //firstLauchEvent
@@ -99,7 +91,6 @@ namespace MSL
                 await Shows.ShowMsgDialogAsync(this, LanguageManager.Instance["MainWindow_GrowlMsg_InitErr"] + ex.Message, LanguageManager.Instance["Dialog_Err"]);
                 Close();
             }
-
             //Logger.LogInfo("开始载入配置文件……");
             JObject jsonObject;
             try
@@ -119,10 +110,8 @@ namespace MSL
             {
                 if (jsonObject["lang"] == null)
                 {
-                    string jsonString = File.ReadAllText(@"MSL\config.json", Encoding.UTF8);
-                    JObject jobject = JObject.Parse(jsonString);
-                    jobject.Add("lang", "zh-CN");
-                    string convertString = Convert.ToString(jobject);
+                    jsonObject.Add("lang", "zh-CN");
+                    string convertString = Convert.ToString(jsonObject);
                     File.WriteAllText(@"MSL\config.json", convertString, Encoding.UTF8);
                     LanguageManager.Instance.ChangeLanguage(new CultureInfo("zh-CN"));
                 }
@@ -133,13 +122,54 @@ namespace MSL
             }
             finally
             {
+                bool onlineMode = await EulaEvent(jsonObject);
                 //Logger.LogInfo("主窗体UI控件加载完毕！");
                 await Task.Run(() =>
                 {
                     AsyncLoadEvent(jsonObject);
-                    OnlineService(jsonObject);
+                    if (onlineMode)
+                    {
+                        OnlineService(jsonObject);
+                    }
                     //Logger.LogInfo("异步载入线程已启动！");
                 });
+            }
+        }
+
+        private async Task<bool> EulaEvent(JObject jsonObject)
+        {
+            if (jsonObject["eula"] == null || (bool)jsonObject["eula"] == false)
+            {
+                int dialog = Shows.ShowMsg(this, LanguageManager.Instance["MainWindow_GrowlMsg_Eula"], LanguageManager.Instance["Dialog_Tip"], true, LanguageManager.Instance["MainWindow_GrowlMsg_Agree"], LanguageManager.Instance["MainWindow_GrowlMsg_ReadEula"]);
+                if (dialog == 0)
+                {
+                    if (jsonObject["eula"] == null)
+                    {
+                        jsonObject.Add("eula", true);
+                    }
+                    else
+                    {
+                        jsonObject["eula"] = true;
+                    }
+                    string convertString = Convert.ToString(jsonObject);
+                    File.WriteAllText(@"MSL\config.json", convertString, Encoding.UTF8);
+                    return true;
+                }
+                else if (dialog == 2)
+                {
+                    //Logger.LogWarning("用户未同意使用协议……");
+                    await Shows.ShowMsgDialogAsync(this, "您未同意用户使用协议，为保障您的权益，软件将以离线模式运行！", "提示");
+                    return false;
+                }
+                else
+                {
+                    Process.Start("https://www.mslmc.cn/eula.html");
+                    return await EulaEvent(jsonObject);
+                }
+            }
+            else
+            {
+                return true;
             }
         }
 

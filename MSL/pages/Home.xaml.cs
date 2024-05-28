@@ -141,9 +141,9 @@ namespace MSL.pages
                     }
                 }
             }
-            catch
+            catch(Exception ex)
             {
-                noticeLabText = "获取公告失败！请检查网络连接是否正常或联系作者进行解决！";
+                noticeLabText = ex.ToString();
             }
 
             Dispatcher.Invoke(() =>

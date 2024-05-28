@@ -29,13 +29,14 @@ namespace MSL.controls
 
         private static string WebGet(string path, out string sha256, string customUrl = "", bool hideHeader = false)
         {
-            System.Net.ServicePointManager.SecurityProtocol = SecurityProtocolType.Tls12;
-            string url = "https://api.waheal.top";
+            ServicePointManager.SecurityProtocol = SecurityProtocolType.Tls12;
+            string url = "https://api." + MainWindow.serverLink;
             if (customUrl == "")
             {
-                if (MainWindow.serverLink != "waheal.top")
+                if (MainWindow.serverLink == null)
                 {
-                    url = "https://api." + MainWindow.serverLink;// + "/api";
+                    sha256 = string.Empty;
+                    return string.Empty;
                 }
             }
             else
@@ -49,7 +50,7 @@ namespace MSL.controls
             }
             webClient.Credentials = CredentialCache.DefaultCredentials;
             byte[] pageData = webClient.DownloadData(url + "/" + path);
-            sha256 = ""; //先定义为空
+            sha256 = string.Empty; //先定义为空
             if (webClient.ResponseHeaders["sha256"] != null)
             {
                 sha256 = webClient.ResponseHeaders["sha256"];
@@ -59,13 +60,13 @@ namespace MSL.controls
 
         public static string Post(string path, int contentType = 0, string parameterData = "", string customUrl = "", WebHeaderCollection header = null)
         {
-            System.Net.ServicePointManager.SecurityProtocol = SecurityProtocolType.Tls12;
-            string url = "https://api.waheal.top";
+            ServicePointManager.SecurityProtocol = SecurityProtocolType.Tls12;
+            string url = "https://api." + MainWindow.serverLink;
             if (customUrl == "")
             {
-                if (MainWindow.serverLink != "waheal.top")
+                if (MainWindow.serverLink == null)
                 {
-                    url = "https://api." + MainWindow.serverLink;// + "/api";
+                    return string.Empty;
                 }
             }
             else
@@ -74,7 +75,6 @@ namespace MSL.controls
             }
             HttpWebRequest myRequest = (HttpWebRequest)WebRequest.Create(url + "/" + path);
             byte[] buf = Encoding.GetEncoding("UTF-8").GetBytes(parameterData);
-
             if (contentType == 0)
             {
                 myRequest.Method = "POST";

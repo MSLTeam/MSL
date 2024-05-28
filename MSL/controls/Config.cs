@@ -11,7 +11,7 @@ namespace MSL.controls
     internal class Config
     {
         private static readonly ConcurrentQueue<KeyValuePair<string, string>> _queue = new ConcurrentQueue<KeyValuePair<string, string>>();
-        private static readonly string _configPath = @"MSL\config.json";//配置文件路径
+        private static readonly string _configPath = "MSL\\config.json";//配置文件路径
         private static Task _writeTask = Task.CompletedTask;
 
         public static string Read(string key)

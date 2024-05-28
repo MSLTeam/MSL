@@ -449,14 +449,14 @@ namespace MSL.pages
                     ["order"] = order,
                     ["qq"] = qq,
                 };
-                var ret = Functions.Post("getpassword", 0, JsonConvert.SerializeObject(keyValuePairs), "http://111.180.189.249:7004");
+                var ret = Functions.Post("getpassword", 0, JsonConvert.SerializeObject(keyValuePairs), Functions.Get("query/MSLFrps/orderapi"));
                 Dispatcher.Invoke(() =>
                 {
                     Window.GetWindow(this).Focus();
                     _dialog.Close();
                 });
                 JObject keyValues = JObject.Parse(ret);
-                if (keyValues != null && int.Parse(keyValues["status"].ToString()) == 0)
+                if (keyValues != null && (int)keyValues["status"] == 0)
                 {
                     Dispatcher.Invoke(() =>
                     {

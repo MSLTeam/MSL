@@ -209,16 +209,8 @@ namespace MSL.i18n {
         }
         
         /// <summary>
-        ///   查找类似 不同意 的本地化字符串。
-        /// </summary>
-        internal static string MainWindow_GrowlMsg_DisAgree {
-            get {
-                return ResourceManager.GetString("MainWindow_GrowlMsg_DisAgree", resourceCulture);
-            }
-        }
-        
-        /// <summary>
-        ///   查找类似 请阅读并同意MSL开服器使用协议： 的本地化字符串。
+        ///   查找类似 请阅读并同意MSL开服器使用协议：https://www.mslmc.cn/eula.html
+        ///关闭窗口代表拒绝接受！ 的本地化字符串。
         /// </summary>
         internal static string MainWindow_GrowlMsg_Eula {
             get {
@@ -260,6 +252,15 @@ namespace MSL.i18n {
         internal static string MainWindow_GrowlMsg_MSLServerDown {
             get {
                 return ResourceManager.GetString("MainWindow_GrowlMsg_MSLServerDown", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   查找类似 阅读协议 的本地化字符串。
+        /// </summary>
+        internal static string MainWindow_GrowlMsg_ReadEula {
+            get {
+                return ResourceManager.GetString("MainWindow_GrowlMsg_ReadEula", resourceCulture);
             }
         }
         

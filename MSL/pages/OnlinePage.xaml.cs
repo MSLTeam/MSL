@@ -28,6 +28,8 @@ namespace MSL.pages
         //public event DelReadStdOutput ReadStdOutput;
         //string _dnfrpc;
         private bool isMaster;
+        private string ipAddress = "";
+        private string ipPort = "";
 
         public OnlinePage()
         {
@@ -64,8 +66,28 @@ namespace MSL.pages
         {
             try
             {
+                string mslFrpInfo = Functions.Get("query/MSLFrps");
+                JObject valuePairs = (JObject)JsonConvert.DeserializeObject(mslFrpInfo);
+                foreach (var valuePair in valuePairs)
+                {
+                    string serverInfo = valuePair.Key;
+                    JObject serverDetails = (JObject)valuePair.Value;
+                    foreach (var value in serverDetails)
+                    {
+                        string serverName = value.Key;
+                        string serverAddress = value.Value["server_addr"].ToString();
+                        string serverPort = value.Value["server_port"].ToString();
+                        string minPort = value.Value["min_open_port"].ToString();
+                        string maxPort = value.Value["max_open_port"].ToString();
+
+                        ipAddress = serverAddress;
+                        ipPort = serverPort;
+                        break;
+                    }
+                    break;
+                }
                 Ping pingSender = new Ping();
-                PingReply reply = pingSender.Send("47.243.96.125", 2000); //一个可爱的ip，ping一下
+                PingReply reply = pingSender.Send(ipAddress, 2000); //一个可爱的ip，ping一下
                 if (reply.Status == IPStatus.Success)
                 {
                     //服务器活着，太好了！
@@ -137,7 +159,7 @@ namespace MSL.pages
             {
                 if (createRoom.Content.ToString() != LanguageManager.Instance["Pages_Online_Close"])
                 {
-                    string a = "[common]\r\nserver_port = 7000\r\nserver_addr = 47.243.96.125\r\n\r\n[" + masterQQ.Text + "]\r\ntype = xtcp\r\nlocal_ip = 127.0.0.1\r\nlocal_port = " + masterPort.Text + "\r\nsk = " + masterKey.Text + "\r\n";
+                    string a = "[common]\r\nserver_port = " + ipPort + "\r\nserver_addr = " + ipAddress + "\r\n\r\n[" + masterQQ.Text + "]\r\ntype = xtcp\r\nlocal_ip = 127.0.0.1\r\nlocal_port = " + masterPort.Text + "\r\nsk = " + masterKey.Text + "\r\n";
                     File.WriteAllText("MSL\\P2Pfrpc", a);
                     isMaster = true;
                     visiterExp.IsEnabled = false;
@@ -183,7 +205,7 @@ namespace MSL.pages
             {
                 if (joinRoom.Content.ToString() != LanguageManager.Instance["Pages_Online_ExitRoom"])
                 {
-                    string a = "[common]\r\nserver_port = 7000\r\nserver_addr = 47.243.96.125\r\n\r\n[p2p_ssh_visitor]\r\ntype = xtcp\r\nrole = visitor\r\nbind_addr = 127.0.0.1\r\nbind_port = " + visiterPort.Text + "\r\nserver_name = " + visiterQQ.Text + "\r\nsk = " + visiterKey.Text + "\r\n";
+                    string a = "[common]\r\nserver_port = " + ipPort + "\r\nserver_addr = " + ipAddress + "\r\n\r\n[p2p_ssh_visitor]\r\ntype = xtcp\r\nrole = visitor\r\nbind_addr = 127.0.0.1\r\nbind_port = " + visiterPort.Text + "\r\nserver_name = " + visiterQQ.Text + "\r\nsk = " + visiterKey.Text + "\r\n";
                     File.WriteAllText("MSL\\P2Pfrpc", a);
                     isMaster = false;
                     masterExp.IsEnabled = false;

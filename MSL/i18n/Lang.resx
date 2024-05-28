@@ -169,11 +169,9 @@
     <value>MSL在加载配置文件时出现错误，将进行重试，若点击确定后软件突然闪退，请尝试使用管理员身份运行或将此问题报告给作者！
 错误代码：</value>
   </data>
-  <data name="MainWindow_GrowlMsg_DisAgree" xml:space="preserve">
-    <value>不同意</value>
-  </data>
   <data name="MainWindow_GrowlMsg_Eula" xml:space="preserve">
-    <value>请阅读并同意MSL开服器使用协议：</value>
+    <value>请阅读并同意MSL开服器使用协议：https://www.mslmc.cn/eula.html
+关闭窗口代表拒绝接受！</value>
   </data>
   <data name="MainWindow_GrowlMsg_InitErr" xml:space="preserve">
     <value>MSL在初始化加载过程中出现问题，请尝试用管理员身份运行MSL……
@@ -187,6 +185,9 @@
   </data>
   <data name="MainWindow_GrowlMsg_MSLServerDown" xml:space="preserve">
     <value>软件主服务器连接超时，已切换至备用服务器！</value>
+  </data>
+  <data name="MainWindow_GrowlMsg_ReadEula" xml:space="preserve">
+    <value>阅读协议</value>
   </data>
   <data name="MainWindow_GrowlMsg_RefuseUpdate" xml:space="preserve">
     <value>您拒绝了更新到新版本，若在此版本中遇到bug，请勿报告给作者！</value>
