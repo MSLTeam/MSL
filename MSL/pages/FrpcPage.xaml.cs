@@ -113,16 +113,16 @@ namespace MSL.pages
                 {
                     frpcExeName = "frpc_custom.exe";
                 }
-                if (frpcversion == null || frpcversion != "6")//mslfrp的特别更新qwq
+                if ((frpcversion == null || frpcversion != "6") && frpcServer == "0") //mslfrp的特别更新qwq
                 {
-                    
                     string _dnfrpc = Functions.Get(downloadUrl);
                     await Dispatcher.Invoke(async () =>
                     {
-                        await Shows.ShowDownloader(Window.GetWindow(this), _dnfrpc, "MSL", $"{frpcExeName}", "更新内网映射中...");
+                        await Shows.ShowDownloader(Window.GetWindow(this), _dnfrpc, "MSL", $"{frpcExeName}", "更新MSL内网映射中...");
                     });
                     Config.Write("frpcversion", "6");
                 }
+
                 if (!File.Exists($"MSL\\{frpcExeName}") && frpcServer != "-2")//检查frpc是否存在，不存在就下崽崽
                 {
                     string _dnfrpc = Functions.Get(downloadUrl);
