@@ -1,7 +1,9 @@
-﻿using System;
+﻿using MSL.controls;
+using System;
 using System.IO;
 using System.Text;
 using System.Windows;
+using System.Windows.Controls;
 
 namespace MSL
 {
@@ -11,6 +13,8 @@ namespace MSL
     public partial class SetServerconfig : HandyControl.Controls.Window
     {
         private readonly string serverbase;
+        private Encoding encoding;
+        private string path;
         public SetServerconfig(string _serverbase)
         {
             InitializeComponent();
@@ -22,17 +26,41 @@ namespace MSL
             GetConfigFiles();
         }
 
+        private void RefreshBtn_Click(object sender, RoutedEventArgs e)
+        {
+            FileTreeView.Items.Clear();
+            GetConfigFiles();
+        }
+
         private void GetConfigFiles()
+        {
+            GetConfigFiles(serverbase, FileTreeView);
+        }
+
+        private void GetConfigFiles(string folderPath, TreeViewItem parentNode)
         {
             try
             {
-                string[] files = Directory.GetFiles(serverbase);
+                string[] files = Directory.GetFiles(folderPath);
                 foreach (string file in files)
                 {
                     if (file.EndsWith(".json") || file.EndsWith(".yml") || file.EndsWith(".properties"))
                     {
-                        FileTreeView.Items.Add(Path.GetFileName(file));
+                        TreeViewItem fileNode = new TreeViewItem();
+                        fileNode.Header = Path.GetFileName(file);
+                        parentNode.Items.Add(fileNode);
                     }
+                }
+
+                string[] subdirectories = Directory.GetDirectories(folderPath);
+                foreach (string subdirectory in subdirectories)
+                {
+                    TreeViewItem subdirectoryNode = new TreeViewItem
+                    {
+                        Header = Path.GetFileName(subdirectory)
+                    };
+                    parentNode.Items.Add(subdirectoryNode);
+                    GetConfigFiles(subdirectory, subdirectoryNode); // 递归调用，处理子文件夹
                 }
             }
             catch
@@ -41,96 +69,103 @@ namespace MSL
             }
         }
 
-        private Encoding encoding;
-        private void FileTreeView_SelectedItemChanged(object sender, RoutedPropertyChangedEventArgs<object> e)
+        private void FileTreeView_Selected(object sender, RoutedEventArgs e)
         {
-            encoding = GetTextFileEncodingType(serverbase + "\\" + FileTreeView.SelectedItem.ToString());
-            //MessageBox.Show(encoding.EncodingName);
-            FileEncoding.Content = encoding.EncodingName;
-            EditorBox.Text = File.ReadAllText(serverbase + "\\" + FileTreeView.SelectedItem.ToString(),encoding);
+            if (e.Source is TreeViewItem selectedNode)
+            {
+                path = GetSelectTreePath(selectedNode);
+                //MessageBox.Show("选中的路径：" + path);
+                if(path.EndsWith(".json") || path.EndsWith(".yml") || path.EndsWith(".properties"))
+                {
+                    try
+                    {
+                        encoding = Functions.GetTextFileEncodingType(serverbase + "\\" + path);
+                        FileEncoding.Content = encoding.EncodingName;
+                        EditorBox.Text = File.ReadAllText(serverbase + "\\" + path, encoding);
+                    }
+                    catch (FileNotFoundException)
+                    {
+                        FileTreeView.Items.Clear();
+                        GetConfigFiles();
+                    }
+                    catch (Exception ex)
+                    {
+                        Shows.ShowMsgDialog(this, ex.Message, "Err");
+                    }
+                }
+            }
+        }
+
+        private string GetSelectTreePath(TreeViewItem item)
+        {
+            // 初始化一个 StringBuilder 用于拼接路径
+            StringBuilder pathBuilder = new StringBuilder();
+
+            // 从当前选中的 TreeViewItem 开始，逐级向上遍历父节点
+            while (item.Header != null)
+            {
+                // 获取当前节点的标题（Header）
+                string header = item.Header.ToString();
+
+                // 将标题添加到路径中
+                pathBuilder.Insert(0, header);
+
+                // 添加路径分隔符（例如斜杠或反斜杠）
+                pathBuilder.Insert(0, "\\");
+
+                // 获取当前节点的父节点
+                item = item.Parent as TreeViewItem;
+            }
+            if(pathBuilder.Length > 0)
+            {
+                // 移除路径开头的分隔符
+                pathBuilder.Remove(0, 1);
+
+                // 返回拼接好的路径
+                return pathBuilder.ToString();
+            }
+            return string.Empty;
+        }
+
+        private void ChangeEncoding_Click(object sender, RoutedEventArgs e)
+        {
+            string content = EditorBox.Text;
+            if (encoding == Encoding.UTF8)
+            {
+                byte[] ansiBytes = Encoding.Convert(Encoding.UTF8, Encoding.Default, Encoding.UTF8.GetBytes(content));
+                string ansiContent = Encoding.Default.GetString(ansiBytes);
+                encoding = Encoding.Default;
+                FileEncoding.Content = encoding.EncodingName;
+                EditorBox.Text = ansiContent;
+            }
+            else if (encoding == Encoding.Default)
+            {
+                byte[] utf8Bytes = Encoding.Convert(Encoding.Default, Encoding.UTF8, Encoding.Default.GetBytes(content));
+                string utf8Content = Encoding.UTF8.GetString(utf8Bytes);
+                encoding = Encoding.UTF8;
+                FileEncoding.Content = encoding.EncodingName;
+                EditorBox.Text = utf8Content;
+            }
         }
 
         private void SaveChange_Click(object sender, RoutedEventArgs e)
         {
-            File.WriteAllText(serverbase + "\\" + FileTreeView.SelectedItem.ToString(), EditorBox.Text, encoding);
-        }
-
-        /// <summary>
-        /// 获取文本文件的字符编码类型
-        /// </summary>
-        /// <param name="fileName"></param>
-        /// <returns></returns>
-        static Encoding GetTextFileEncodingType(string fileName)
-        {
-            Encoding encoding = Encoding.Default;
-            FileStream fileStream = new FileStream(fileName, FileMode.Open, FileAccess.Read);
-            BinaryReader binaryReader = new BinaryReader(fileStream, encoding);
-            byte[] buffer = binaryReader.ReadBytes((int)fileStream.Length);
-            binaryReader.Close();
-            fileStream.Close();
-            if (buffer.Length >= 3 && buffer[0] == 239 && buffer[1] == 187 && buffer[2] == 191)
+            try
             {
-                encoding = Encoding.UTF8;
-            }
-            else if (buffer.Length >= 3 && buffer[0] == 254 && buffer[1] == 255 && buffer[2] == 0)
-            {
-                encoding = Encoding.BigEndianUnicode;
-            }
-            else if (buffer.Length >= 3 && buffer[0] == 255 && buffer[1] == 254 && buffer[2] == 65)
-            {
-                encoding = Encoding.Unicode;
-            }
-            else if (IsUTF8Bytes(buffer))
-            {
-                encoding = Encoding.UTF8;
-            }
-            return encoding;
-        }
-
-        /// <summary>
-        /// 判断是否是不带 BOM 的 UTF8 格式
-        /// BOM（Byte Order Mark），字节顺序标记，出现在文本文件头部，Unicode编码标准中用于标识文件是采用哪种格式的编码。
-        /// </summary>
-        /// <param name="data"></param>
-        /// <returns></returns>
-        private static bool IsUTF8Bytes(byte[] data)
-        {
-            int charByteCounter = 1; //计算当前正分析的字符应还有的字节数 
-            byte curByte; //当前分析的字节. 
-            for (int i = 0; i < data.Length; i++)
-            {
-                curByte = data[i];
-                if (charByteCounter == 1)
+                if (encoding == Encoding.UTF8)
                 {
-                    if (curByte >= 0x80)
-                    {
-                        //判断当前 
-                        while (((curByte <<= 1) & 0x80) != 0)
-                        {
-                            charByteCounter++;
-                        }
-                        //标记位首位若为非0 则至少以2个1开始 如:110XXXXX...........1111110X 
-                        if (charByteCounter == 1 || charByteCounter > 6)
-                        {
-                            return false;
-                        }
-                    }
+                    File.WriteAllText(serverbase + "\\" + path, EditorBox.Text, new UTF8Encoding(false));
                 }
-                else
+                else if (encoding == Encoding.Default)
                 {
-                    //若是UTF-8 此时第一位必须为1 
-                    if ((curByte & 0xC0) != 0x80)
-                    {
-                        return false;
-                    }
-                    charByteCounter--;
+                    File.WriteAllText(serverbase + "\\" + path, EditorBox.Text, Encoding.Default);
                 }
+                Shows.ShowMsgDialog(this, "保存成功！", "提示");
             }
-            if (charByteCounter > 1)
+            catch(Exception ex)
             {
-                throw new Exception("非预期的byte格式");
+                Shows.ShowMsgDialog(this, ex.Message,"Err");
             }
-            return true;
         }
     }
 }

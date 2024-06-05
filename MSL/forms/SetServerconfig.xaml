@@ -14,10 +14,14 @@
             <ColumnDefinition Width="Auto"/>
             <ColumnDefinition/>
         </Grid.ColumnDefinitions>
-        <TreeView Grid.Column="0" x:Name="FileTreeView" SelectedItemChanged="FileTreeView_SelectedItemChanged" Margin="10"/>
+        <TreeView Grid.Column="0" Margin="10">
+            <TreeViewItem x:Name="FileTreeView" IsExpanded="True" Selected="FileTreeView_Selected"/>
+        </TreeView>
+        <Button Grid.Column="0" x:Name="RefreshBtn" Margin="10" Content="刷新" VerticalAlignment="Bottom" HorizontalAlignment="Left" Click="RefreshBtn_Click"/>
         <TextBox Grid.Column="1" x:Name="EditorBox" TextWrapping="Wrap" AcceptsReturn="True" VerticalContentAlignment="Top" Padding="5" VerticalScrollBarVisibility="Auto" Margin="0,10,10,10"/>
         <StackPanel Grid.Column="1" Margin="10" Orientation="Horizontal" VerticalAlignment="Bottom" HorizontalAlignment="Right">
-            <Label x:Name="FileEncoding"/>
+            <Label x:Name="FileEncoding" Content="Encoding"/>
+            <Button x:Name="ChangeEncoding" Content="转换编码" Click="ChangeEncoding_Click"/>
             <Button x:Name="SaveChange" Content="保存更改" Style="{StaticResource ButtonPrimary}" Click="SaveChange_Click"/>
         </StackPanel>
     </Grid>

@@ -487,10 +487,6 @@ namespace MSL
                     }
                 }
             }
-            if (TabCtrl.SelectedIndex == 3)
-            {
-                GetServerConfig();
-            }
         }
 
         #region 仪表盘
@@ -1972,7 +1968,12 @@ namespace MSL
 
         /////////这里是服务器功能调整
 
-        //string config;
+        private void refreahServerConfig_Click(object sender, RoutedEventArgs e)
+        {
+            GetServerConfig();
+            Growl.Success("刷新成功！");
+        }
+
         private void GetServerConfig()
         {
             try
@@ -2001,7 +2002,8 @@ namespace MSL
         private string[] ServerBaseConfig()
         {
             string[] strings = new string[9];
-            string config = File.ReadAllText(Rserverbase + @"\server.properties");
+            Encoding encoding = Functions.GetTextFileEncodingType(Rserverbase + @"\server.properties");
+            string config = File.ReadAllText(Rserverbase + @"\server.properties", encoding);
             if (config.Contains("\r"))
             {
                 config = config.Replace("\r", string.Empty);
@@ -2057,7 +2059,8 @@ namespace MSL
             try
             {
                 string[] strings = ServerBaseConfig();
-                string config = File.ReadAllText(Rserverbase + @"\server.properties");
+                Encoding encoding = Functions.GetTextFileEncodingType(Rserverbase + @"\server.properties");
+                string config = File.ReadAllText(Rserverbase + @"\server.properties", encoding);
                 config = config.Replace("online-mode=" + strings[0], "online-mode=" + onlineModeText.Text);
                 config = config.Replace("gamemode=" + strings[1], "gamemode=" + gameModeText.Text);
                 config = config.Replace("difficulty=" + strings[2], "difficulty=" + gameDifficultyText.Text);
@@ -2069,7 +2072,14 @@ namespace MSL
                 config = config.Replace("level-name=" + strings[8], "level-name=" + gameWorldText.Text);
                 try
                 {
-                    File.WriteAllText(Rserverbase + @"\server.properties", config);
+                    if (encoding == Encoding.UTF8)
+                    {
+                        File.WriteAllText(Rserverbase + @"\server.properties", config, new UTF8Encoding(false));
+                    }
+                    else if (encoding == Encoding.Default)
+                    {
+                        File.WriteAllText(Rserverbase + @"\server.properties", config, Encoding.Default);
+                    }
                     Shows.ShowMsgDialog(this, "保存成功！", "信息");
                 }
                 catch (Exception ex)
@@ -2192,6 +2202,7 @@ namespace MSL
                 Owner = this
             };
             window.ShowDialog();
+            GetServerConfig();
         }
         #endregion
 
@@ -2581,7 +2592,7 @@ namespace MSL
 
         //////////////////////这里是服务器设置界面
 
-        void LoadSettings()
+        private void LoadSettings()
         {
             try
             {
@@ -2632,6 +2643,7 @@ namespace MSL
                         memoryInfo.Text = "最小:0M," + "最大:" + maxMemoryValue + "M";
                     }
                 }
+                GetServerConfig();
             }
             catch
             {
@@ -2703,6 +2715,7 @@ namespace MSL
                 }
             });
         }
+
         private void refreahConfig_Click(object sender, RoutedEventArgs e)
         {
             LoadSettings();

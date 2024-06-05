@@ -367,7 +367,11 @@
                         </Border>
                         <Border Style="{StaticResource MagicBorder}" Margin="10,10,10,20">
                             <StackPanel>
-                                <Label x:Name="changeServerPropertiesLab" Style="{StaticResource BorderTitle}" Content="更改服务器配置"/>
+                                <StackPanel Orientation="Horizontal">
+                                    <Label x:Name="changeServerPropertiesLab" Style="{StaticResource BorderTitle}" Content="更改服务器配置"/>
+                                    <Button x:Name="refreahServerConfig" Content="刷新" Margin="10,0,0,0" Style="{StaticResource ButtonPrimary}" Width="80" Click="refreahServerConfig_Click"/>
+                                </StackPanel>
+                                
                                 <Grid x:Name="changeServerProperties" Margin="0,10,0,0">
                                     <Grid.Resources>
                                         <Style TargetType="TextBlock">

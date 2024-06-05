@@ -36,14 +36,6 @@ namespace MSL
             new SettingsPage(),
             new About()
         };
-        /*
-        private readonly Home _homePage = new Home();
-        private readonly ServerList _listPage = new ServerList();
-        private readonly FrpcPage _frpcPage = new FrpcPage();
-        private readonly OnlinePage _onlinePage = new OnlinePage();
-        private readonly SettingsPage _setPage = new SettingsPage();
-        private readonly About _aboutPage = new About();
-        */
         public static event DeleControl LoadAnnounce;
         public static event DeleControl AutoOpenServer;
         public static event DeleControl AutoOpenFrpc;
