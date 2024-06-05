@@ -94,35 +94,38 @@ namespace MSL.pages
                 string frpcExeName = "frpc.exe"; //frpc客户端主程序
                 string downloadUrl = "/download/frpc/MSLFrp/amd64"; //frpc客户端在api的调用位置
                 string arguments = "-c frpc"; //启动命令
-                if (frpcServer == "1")//openfrp
+                switch (frpcServer)
                 {
-                    frpcExeName = "frpc_of.exe";
-                    downloadUrl = "download/frpc/OpenFrp/amd64";
-                    arguments = File.ReadAllText("MSL\\frpc");
+                    case "1"://openfrp
+                        frpcExeName = "frpc_of.exe";
+                        downloadUrl = "download/frpc/OpenFrp/amd64";
+                        arguments = File.ReadAllText("MSL\\frpc");
+                        break;
+                    case "2"://chmlfrp
+                        frpcExeName = "frpc_chml.exe";
+                        downloadUrl = "download/frpc/ChmlFrp/amd64";
+                        break;
+                    case "-1"://自定义frp，使用官版
+                        frpcExeName = "frpc_official.exe";
+                        downloadUrl = "download/frpc/Official/amd64";
+                        break;
+                    case "-2"://自定义frp，使用自己的
+                        frpcExeName = "frpc_custom.exe";
+                        break;
+
+
                 }
-                else if (frpcServer == "2")//chmlfrp
+               
+                if ((frpcversion == null || frpcversion != "6") && frpcServer == "0") //mslfrp的特别更新qwq
                 {
-                    frpcExeName = "frpc_chml.exe";
-                    downloadUrl = "download/frpc/ChmlFrp/amd64";
-                }else if (frpcServer == "-1")//自定义frp，使用官版
-                {
-                    frpcExeName = "frpc_official.exe";
-                    downloadUrl = "download/frpc/Official/amd64";
-                }
-                else if (frpcServer == "-2")//自定义frp，使用自己的
-                {
-                    frpcExeName = "frpc_custom.exe";
-                }
-                if (frpcversion == null || frpcversion != "6")//mslfrp的特别更新qwq
-                {
-                    
                     string _dnfrpc = Functions.Get(downloadUrl);
                     await Dispatcher.Invoke(async () =>
                     {
-                        await Shows.ShowDownloader(Window.GetWindow(this), _dnfrpc, "MSL", $"{frpcExeName}", "更新内网映射中...");
+                        await Shows.ShowDownloader(Window.GetWindow(this), _dnfrpc, "MSL", $"{frpcExeName}", "更新MSL内网映射中...");
                     });
                     Config.Write("frpcversion", "6");
                 }
+
                 if (!File.Exists($"MSL\\{frpcExeName}") && frpcServer != "-2")//检查frpc是否存在，不存在就下崽崽
                 {
                     string _dnfrpc = Functions.Get(downloadUrl);
