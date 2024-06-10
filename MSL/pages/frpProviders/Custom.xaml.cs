@@ -56,14 +56,16 @@ namespace MSL.pages.frpProviders
                         $"localPort = {ClientPort.Text}\r\nremotePort = {ClientRemotePort.Text}\r\n" +
                         $"transport.useEncryption = {ClientEnc.IsChecked.ToString().ToLower()}\r\n" +
                         $"transport.useCompression = {ClientComp.IsChecked.ToString().ToLower()}\r\n \r\n";
-                    File.WriteAllText(@"MSL\frpc.toml", FrpcConfig);
+                    Directory.CreateDirectory("MSL\\frp");
+                    File.WriteAllText(@"MSL\frp\frpc.toml", FrpcConfig);
                     SetFrpcPath();
                 }
             }
             else
             {
                 //直接丢配置文件模式
-                File.WriteAllText(@"MSL\frpc.toml", ConfigBox.Text);
+                Directory.CreateDirectory("MSL\\frp");
+                File.WriteAllText(@"MSL\frp\frpc.toml", ConfigBox.Text);
                 SetFrpcPath();
             }
         }

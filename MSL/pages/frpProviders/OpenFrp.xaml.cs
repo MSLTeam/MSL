@@ -250,7 +250,8 @@ namespace MSL.pages.frpProviders
                 return;
             }
             string id = nodelist[o.ToString()];
-            File.WriteAllText(@"MSL\frpc", $"-u {token} -p {id}");
+            Directory.CreateDirectory("MSL\\frp");
+            File.WriteAllText(@"MSL\frp\frpc", $"-u {token} -p {id}");
             JObject jobject = JObject.Parse(File.ReadAllText(@"MSL\config.json", Encoding.UTF8));
             jobject["frpcServer"] = "1";
             string convertString = Convert.ToString(jobject);

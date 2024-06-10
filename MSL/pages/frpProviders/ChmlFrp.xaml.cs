@@ -227,7 +227,7 @@ namespace MSL.pages.frpProviders
         }
 
         //登录成功了，然后就是获取隧道,丢到ui去
-        private void GetFrpList(String token)
+        private void GetFrpList(string token)
         {
             ChmlToken = token;//丢到全局
             //处理ui界面交接
@@ -333,7 +333,6 @@ namespace MSL.pages.frpProviders
                                 break;
                             }
                         }
-
                     }
 
                     //输出配置文件
@@ -347,7 +346,8 @@ namespace MSL.pages.frpProviders
                         $"local_port = {LocalPort.Text}\r\nremote_port = {selectedTunnel.RPort}\r\n" +
                         $"use_encryption = {selectedTunnel.Encryption}\r\n" +
                         $"use_compression = {selectedTunnel.Compression}\r\n \r\n";
-                    File.WriteAllText(@"MSL\frpc", FrpcConfig);
+                    Directory.CreateDirectory("MSL\\frp");
+                    File.WriteAllText(@"MSL\frp\frpc", FrpcConfig);
                     JObject jobject = JObject.Parse(File.ReadAllText(@"MSL\config.json", Encoding.UTF8));
                     jobject["frpcServer"] = "2";
                     string convertString = Convert.ToString(jobject);

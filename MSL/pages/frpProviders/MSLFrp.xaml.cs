@@ -388,7 +388,8 @@ namespace MSL.pages.frpProviders
                         frpc += "remotePort = " + n + "\n";
                         frpc += compressionArg;
                     }
-                    File.WriteAllText(@"MSL\frpc.toml", frpc);
+                    Directory.CreateDirectory("MSL\\frp");
+                    File.WriteAllText(@"MSL\frp\frpc.toml", frpc);
                     JObject jobject = JObject.Parse(File.ReadAllText(@"MSL\config.json", Encoding.UTF8));
                     jobject["frpcServer"] = "0";
                     string convertString = Convert.ToString(jobject);
@@ -475,7 +476,8 @@ namespace MSL.pages.frpProviders
                         frpc += compressionArg;
                     }
 
-                    File.WriteAllText(@"MSL\frpc.toml", frpc);
+                    Directory.CreateDirectory("MSL\\frp");
+                    File.WriteAllText(@"MSL\frp\frpc.toml", frpc);
                     JObject jobject = JObject.Parse(File.ReadAllText(@"MSL\config.json", Encoding.UTF8));
                     jobject["frpcServer"] = "0";
                     string convertString = Convert.ToString(jobject);

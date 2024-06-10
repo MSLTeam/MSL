@@ -120,23 +120,23 @@ namespace MSL.pages
                     string _dnfrpc = Functions.Get(downloadUrl);
                     await Dispatcher.Invoke(async () =>
                     {
-                        await Shows.ShowDownloader(Window.GetWindow(this), _dnfrpc, "MSL", $"{frpcExeName}", "更新MSL内网映射中...");
+                        await Shows.ShowDownloader(Window.GetWindow(this), _dnfrpc, "MSL\\frp", $"{frpcExeName}", "更新MSL内网映射中...");
                     });
                     Config.Write("frpcversion", "0581");
                 }
 
-                if (!File.Exists($"MSL\\{frpcExeName}") && frpcServer != "-2")//检查frpc是否存在，不存在就下崽崽
+                if (!File.Exists($"MSL\\frp\\{frpcExeName}") && frpcServer != "-2")//检查frpc是否存在，不存在就下崽崽
                 {
                     string _dnfrpc = Functions.Get(downloadUrl);
                     await Dispatcher.Invoke(async () =>
                     {
                         if (frpcServer == "0" || frpcServer == "-1")//下载exe or zip
                         {
-                            await Shows.ShowDownloader(Window.GetWindow(this), _dnfrpc, "MSL", $"{frpcExeName}", "下载内网映射中...");
+                            await Shows.ShowDownloader(Window.GetWindow(this), _dnfrpc, "MSL\\frp", $"{frpcExeName}", "下载内网映射中...");
                         }
                         else
                         {
-                            await Shows.ShowDownloader(Window.GetWindow(this), _dnfrpc, "MSL", $"{frpcExeName}.zip", "下载内网映射中...");
+                            await Shows.ShowDownloader(Window.GetWindow(this), _dnfrpc, "MSL\\frp", $"{frpcExeName}.zip", "下载内网映射中...");
                         }
 
                     });
@@ -145,7 +145,7 @@ namespace MSL.pages
                     {
                         //很寻常的解压
                         string fileName = "";
-                        using (ZipFile zip = new ZipFile($@"MSL\{frpcExeName}.zip"))
+                        using (ZipFile zip = new ZipFile($@"MSL\frp\{frpcExeName}.zip"))
                         {
                             foreach (ZipEntry entry in zip)
                             {
@@ -154,30 +154,30 @@ namespace MSL.pages
                             }
                         }
                         FastZip fastZip = new FastZip();
-                        fastZip.ExtractZip($@"MSL\{frpcExeName}.zip", "MSL", "");
-                        File.Delete($@"MSL\{frpcExeName}.zip");
+                        fastZip.ExtractZip($@"MSL\frp\{frpcExeName}.zip", "MSL\\frp", "");
+                        File.Delete($@"MSL\frp\{frpcExeName}.zip");
                         if (frpcServer == "1") //这是of的解压处理
                         {
-                            File.Move("MSL\\" + fileName, $"MSL\\{frpcExeName}");
-                            File.Delete("MSL\\" + fileName);
+                            File.Move("MSL\\frp\\" + fileName, $"MSL\\frp\\{frpcExeName}");
+                            File.Delete("MSL\\frp\\" + fileName);
                         }
                         else //这是chml的解压处理
                         {
-                            File.Move("MSL\\" + fileName + $"\\frpc.exe", $"MSL\\{frpcExeName}");
-                            Directory.Delete("MSL\\" + fileName, true);
+                            File.Move("MSL\\frp\\" + fileName + $"\\frpc.exe", $"MSL\\frp\\{frpcExeName}");
+                            Directory.Delete("MSL\\frp\\" + fileName, true);
                         }
                         //三个服务 三个下载解压方式 我真是太开心了！(p≧w≦q)
                     }
 
                 }
-                else if(!File.Exists($"MSL\\{frpcExeName}") && frpcServer == "-2")
+                else if(!File.Exists($"MSL\\frp\\{frpcExeName}") && frpcServer == "-2")
                 {
                     //找不到自定义的frp，直接失败
                     throw new FileNotFoundException("Frpc Not Found");
                 }
                 //该启动了！
-                FRPCMD.StartInfo.WorkingDirectory = "MSL";
-                FRPCMD.StartInfo.FileName = $"MSL\\{frpcExeName}";
+                FRPCMD.StartInfo.WorkingDirectory = "MSL\\frp";
+                FRPCMD.StartInfo.FileName = $"MSL\\frp\\{frpcExeName}";
                 FRPCMD.StartInfo.Arguments = arguments;
                 FRPCMD.StartInfo.CreateNoWindow = true;
                 FRPCMD.StartInfo.UseShellExecute = false;
@@ -498,10 +498,17 @@ namespace MSL.pages
             fw.ShowDialog();
             try
             {
-                if (File.Exists(@"MSL\frpc.toml"))
+                if (File.Exists(@"MSL\frp\frpc") || File.Exists(@"MSL\frp\frpc.toml"))
                 {
                     Thread thread = new Thread(GetFrpcInfo);
                     thread.Start();
+                }
+                else
+                {
+                    copyFrpc.IsEnabled = false;
+                    startfrpc.IsEnabled = false;
+                    frplab1.Text = LanguageManager.Instance["Pages_Frpc_Status"];
+                    frplab3.Text = LanguageManager.Instance["Pages_Frpc_IPNull"];
                 }
             }
             catch
@@ -596,15 +603,15 @@ namespace MSL.pages
                     string convertString = Convert.ToString(jobject);
                     File.WriteAllText(@"MSL\config.json", convertString, Encoding.UTF8);
                 }
-                if (jobject["frpcServer"].ToString() == "0" || jobject["frpcServer"].ToString() == "2" || jobject["frpcServer"].ToString() == "-2" || jobject["frpcServer"].ToString() == "-1")
+                Dispatcher.Invoke(() =>
                 {
-                    Dispatcher.Invoke(() =>
-                    {
-                        copyFrpc.IsEnabled = true;
-                        startfrpc.IsEnabled = true;
-                        frplab1.Text = "检测节点信息中……";
-                    });
-                    string configText = File.ReadAllText(@"MSL\frpc.toml");
+                    copyFrpc.IsEnabled = true;
+                    startfrpc.IsEnabled = true;
+                    frplab1.Text = "检测节点信息中……";
+                });
+                if (jobject["frpcServer"].ToString() == "0" || jobject["frpcServer"].ToString() == "-2" || jobject["frpcServer"].ToString() == "-1")
+                {
+                    string configText = File.ReadAllText(@"MSL\frp\frpc.toml");
                     // 读取每一行
                     string[] lines = configText.Split('\n');
 
@@ -614,13 +621,9 @@ namespace MSL.pages
                     {
                         nodeName = lines[0].TrimStart('#').Trim();
                     }
-                    else if (jobject["frpcServer"].ToString() == "-1" || jobject["frpcServer"].ToString() == "-2")
-                    {
-                        nodeName = "自定义节点";
-                    }
                     else
                     {
-                        nodeName = "ChmlFrp节点";
+                        nodeName = "自定义节点";
                     }
 
 
@@ -654,7 +657,88 @@ namespace MSL.pages
                         {
                             remotePort = lines[i].Split('=')[1].Trim();
                         }
-                        else if (lines[i].StartsWith("[") && readServerInfo && jobject["frpcServer"].ToString() == "2")//针对chmlfrp的节点名字读取
+                    }
+
+                    Dispatcher.Invoke(() =>
+                    {
+                        if (!readServerInfo)
+                        {
+                            frplab3.Text = "Java版：" + serverAddr + ":" + remotePort + "\n基岩版：IP:" + serverAddr + " 端口:" + remotePort;
+                        }
+                        else
+                        {
+                            if (frpcType == "udp")
+                            {
+                                frplab3.Text = "IP:" + serverAddr + " 端口:" + remotePort;
+                            }
+                            else
+                            {
+                                frplab3.Text = serverAddr + ":" + remotePort;
+                            }
+                        }
+                    });
+                    Ping pingSender = new Ping();
+                    PingReply reply = pingSender.Send(serverAddr, 2000); // 替换成您要 ping 的 IP 地址
+                    if (reply.Status == IPStatus.Success)
+                    {
+                        // 节点在线，可以获取延迟等信息
+                        int roundTripTime = (int)reply.RoundtripTime;
+                        Dispatcher.Invoke(() =>
+                        {
+                            frplab1.Text = nodeName + "  延迟：" + roundTripTime + "ms";
+                        });
+                    }
+                    else
+                    {
+                        // 节点离线
+                        Dispatcher.Invoke(() =>
+                        {
+                            frplab1.Text = nodeName + "  节点离线或禁Ping，若无法连接，请重新配置！";
+                        });
+                    }
+                }
+                else if (jobject["frpcServer"].ToString() == "2")
+                {
+                    
+                    string configText = File.ReadAllText(@"MSL\frp\frpc");
+                    // 读取每一行
+                    string[] lines = configText.Split('\n');
+
+                    // 节点名称
+                    string nodeName = "ChmlFrp节点";
+
+
+                    // 服务器地址
+                    string serverAddr = "";
+                    int serverPort = 0;
+                    string remotePort = "";
+                    string frpcType = "";
+                    bool readServerInfo = true;  // 是否继续读取服务器信息
+                    for (int i = 0; i < lines.Length; i++)
+                    {
+                        if (lines[i].StartsWith("type") && frpcType != "")
+                        {
+                            // 遇到第二个type时停止读取服务器信息
+                            readServerInfo = false;
+                            break;
+                        }
+                        else if (lines[i].StartsWith("type") && readServerInfo)
+                        {
+                            frpcType = lines[i].Split('=')[1].Trim();
+                        }
+                        else if (lines[i].StartsWith("server_addr") && readServerInfo)
+                        {
+                            serverAddr = lines[i].Split('=')[1].Trim().Replace("\"", string.Empty);
+                        }
+                        else if (lines[i].StartsWith("server_port") && readServerInfo)
+                        {
+                            serverPort = int.Parse(lines[i].Split('=')[1].Trim());
+                        }
+                        else if (lines[i].StartsWith("remote_port") && readServerInfo)
+                        {
+                            remotePort = lines[i].Split('=')[1].Trim();
+                        }
+                        else if (lines[i].StartsWith("[") && readServerInfo)//针对chmlfrp的节点名字读取
                         {
                             nodeName = "ChmlFrp节点-" + lines[i].Replace("[", "").Replace("]", "").Replace("\r", "").ToString();
                         }
@@ -702,12 +786,11 @@ namespace MSL.pages
                 {
                     Dispatcher.Invoke(() =>
                     {
-                        startfrpc.IsEnabled = true;
-                        frplab1.Text = "OpenFrp的节点";
+                        copyFrpc.IsEnabled = false;
+                        frplab1.Text = "OpenFrp节点";
                         frplab3.Text = "请启动内网映射以查看IP";
                     });
                 }
-
             }
             catch
             {
@@ -722,7 +805,7 @@ namespace MSL.pages
         {
             try
             {
-                if (File.Exists(@"MSL\frpc.toml"))
+                if (File.Exists(@"MSL\frp\frpc")|| File.Exists(@"MSL\frp\frpc.toml"))
                 {
                     Thread thread = new Thread(GetFrpcInfo);
                     thread.Start();

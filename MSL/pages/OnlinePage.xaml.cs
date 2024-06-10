@@ -40,9 +40,9 @@ namespace MSL.pages
 
         private void Page_Loaded(object sender, RoutedEventArgs e)
         {
-            if (File.Exists("MSL\\P2Pfrpc"))
+            if (File.Exists("MSL\\frp\\P2Pfrpc"))
             {
-                string a = File.ReadAllText("MSL\\P2Pfrpc");
+                string a = File.ReadAllText("MSL\\frp\\P2Pfrpc");
                 if (a.IndexOf("role = visitor") + 1 != 0)
                 {
                     visiterExp.IsExpanded = true;
@@ -116,9 +116,9 @@ namespace MSL.pages
         private void masterExp_Expanded(object sender, RoutedEventArgs e)
         {
             visiterExp.IsExpanded = false;
-            if (File.Exists("MSL\\P2Pfrpc"))
+            if (File.Exists("MSL\\frp\\P2Pfrpc"))
             {
-                string a = File.ReadAllText("MSL\\P2Pfrpc");
+                string a = File.ReadAllText("MSL\\frp\\P2Pfrpc");
                 if (a.IndexOf("role = visitor") + 1 == 0)
                 {
                     string pattern = @"\[(\w+)\]\s*type\s*=\s*xtcp\s*local_ip\s*=\s*(\S+)\s*local_port\s*=\s*(\d+)\s*sk\s*=\s*(\S+)";
@@ -135,9 +135,9 @@ namespace MSL.pages
         private void visiterExp_Expanded(object sender, RoutedEventArgs e)
         {
             masterExp.IsExpanded = false;
-            if (File.Exists("MSL\\P2Pfrpc"))
+            if (File.Exists("MSL\\frp\\P2Pfrpc"))
             {
-                string a = File.ReadAllText("MSL\\P2Pfrpc");
+                string a = File.ReadAllText("MSL\\frp\\P2Pfrpc");
                 if (a.IndexOf("role = visitor") + 1 != 0)
                 {
                     string pattern = @"server_name\s*=\s*(\S+)\s*sk\s*=\s*(\S+)\s*bind_port\s*=\s*(\d+)";
@@ -160,7 +160,7 @@ namespace MSL.pages
                 if (createRoom.Content.ToString() != LanguageManager.Instance["Pages_Online_Close"])
                 {
                     string a = "[common]\r\nserver_port = " + ipPort + "\r\nserver_addr = " + ipAddress + "\r\n\r\n[" + masterQQ.Text + "]\r\ntype = xtcp\r\nlocal_ip = 127.0.0.1\r\nlocal_port = " + masterPort.Text + "\r\nsk = " + masterKey.Text + "\r\n";
-                    File.WriteAllText("MSL\\P2Pfrpc", a);
+                    File.WriteAllText("MSL\\frp\\P2Pfrpc", a);
                     isMaster = true;
                     visiterExp.IsEnabled = false;
                     StartFrpc();
@@ -206,7 +206,7 @@ namespace MSL.pages
                 if (joinRoom.Content.ToString() != LanguageManager.Instance["Pages_Online_ExitRoom"])
                 {
                     string a = "[common]\r\nserver_port = " + ipPort + "\r\nserver_addr = " + ipAddress + "\r\n\r\n[p2p_ssh_visitor]\r\ntype = xtcp\r\nrole = visitor\r\nbind_addr = 127.0.0.1\r\nbind_port = " + visiterPort.Text + "\r\nserver_name = " + visiterQQ.Text + "\r\nsk = " + visiterKey.Text + "\r\n";
-                    File.WriteAllText("MSL\\P2Pfrpc", a);
+                    File.WriteAllText("MSL\\frp\\P2Pfrpc", a);
                     isMaster = false;
                     masterExp.IsEnabled = false;
                     StartFrpc();
