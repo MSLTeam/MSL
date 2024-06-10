@@ -160,6 +160,7 @@ namespace MSL.pages
                 if (createRoom.Content.ToString() != LanguageManager.Instance["Pages_Online_Close"])
                 {
                     string a = "[common]\r\nserver_port = " + ipPort + "\r\nserver_addr = " + ipAddress + "\r\n\r\n[" + masterQQ.Text + "]\r\ntype = xtcp\r\nlocal_ip = 127.0.0.1\r\nlocal_port = " + masterPort.Text + "\r\nsk = " + masterKey.Text + "\r\n";
+                    Directory.CreateDirectory("MSL\\frp");
                     File.WriteAllText("MSL\\frp\\P2Pfrpc", a);
                     isMaster = true;
                     visiterExp.IsEnabled = false;
@@ -206,6 +207,7 @@ namespace MSL.pages
                 if (joinRoom.Content.ToString() != LanguageManager.Instance["Pages_Online_ExitRoom"])
                 {
                     string a = "[common]\r\nserver_port = " + ipPort + "\r\nserver_addr = " + ipAddress + "\r\n\r\n[p2p_ssh_visitor]\r\ntype = xtcp\r\nrole = visitor\r\nbind_addr = 127.0.0.1\r\nbind_port = " + visiterPort.Text + "\r\nserver_name = " + visiterQQ.Text + "\r\nsk = " + visiterKey.Text + "\r\n";
+                    Directory.CreateDirectory("MSL\\frp");
                     File.WriteAllText("MSL\\frp\\P2Pfrpc", a);
                     isMaster = false;
                     masterExp.IsEnabled = false;
@@ -255,32 +257,10 @@ namespace MSL.pages
                     StreamReader reader = File.OpenText("MSL\\config.json");
                     JObject jobject2 = (JObject)JToken.ReadFrom(new JsonTextReader(reader));
                     reader.Close();
-                    if (jobject2["frpcversion"] == null)
-                    {
-                        string jsonString = File.ReadAllText(@"MSL\config.json", Encoding.UTF8);
-                        JObject jobject = JObject.Parse(jsonString);
-                        jobject.Add("frpcversion", "6");
-                        string convertString = Convert.ToString(jobject);
-                        File.WriteAllText(@"MSL\config.json", convertString, Encoding.UTF8);
-                        if (!File.Exists("MSL\\frpc.exe"))
-                        {
-                            string _dnfrpc = Functions.Get("/download/frpc/MSLFrp/amd64");
-                            await Shows.ShowDownloader(Window.GetWindow(this), _dnfrpc, "MSL", "frpc.exe", LanguageManager.Instance["Pages_Online_DlFrpc"]);
-                        }
-                    }
-                    else if (jobject2["frpcversion"].ToString() != "6")
+                    if (!File.Exists("MSL\\frp\\frpc.exe"))
                     {
                         string _dnfrpc = Functions.Get("/download/frpc/MSLFrp/amd64");
-                        await Shows.ShowDownloader(Window.GetWindow(this), _dnfrpc, "MSL", "frpc.exe", LanguageManager.Instance["Pages_Online_UdFrpc"]);
-                        JObject jobject3 = JObject.Parse(File.ReadAllText("MSL\\config.json", Encoding.UTF8));
-                        jobject3["frpcversion"] = "6";
-                        string convertString2 = Convert.ToString(jobject3);
-                        File.WriteAllText("MSL\\config.json", convertString2, Encoding.UTF8);
-                    }
-                    else if (!File.Exists("MSL\\frpc.exe"))
-                    {
-                        string _dnfrpc = Functions.Get("/download/frpc/MSLFrp/amd64");
-                        await Shows.ShowDownloader(Window.GetWindow(this), _dnfrpc, "MSL", "frpc.exe", LanguageManager.Instance["Pages_Online_DlFrpc"]);
+                        await Shows.ShowDownloader(Window.GetWindow(this), _dnfrpc, "MSL\\frp", "frpc.exe", LanguageManager.Instance["Pages_Online_DlFrpc"]);
                     }
                 }
                 catch
@@ -297,8 +277,8 @@ namespace MSL.pages
                 }
                 frpcOutlog.Text = "";
                 //Directory.SetCurrentDirectory("MSL");
-                FRPCMD.StartInfo.WorkingDirectory = "MSL";
-                FRPCMD.StartInfo.FileName = "MSL\\frpc.exe";
+                FRPCMD.StartInfo.WorkingDirectory = "MSL\\frp";
+                FRPCMD.StartInfo.FileName = "MSL\\frp\\frpc.exe";
                 FRPCMD.StartInfo.Arguments = "-c P2Pfrpc";
                 FRPCMD.StartInfo.CreateNoWindow = true;
                 FRPCMD.StartInfo.UseShellExecute = false;
