@@ -609,9 +609,18 @@ namespace MSL.pages
                     startfrpc.IsEnabled = true;
                     frplab1.Text = "检测节点信息中……";
                 });
-                if (jobject["frpcServer"].ToString() == "0" || jobject["frpcServer"].ToString() == "-2" || jobject["frpcServer"].ToString() == "-1")
+                if (jobject["frpcServer"].ToString() == "0"|| jobject["frpcServer"].ToString() == "2" || jobject["frpcServer"].ToString() == "-2" || jobject["frpcServer"].ToString() == "-1")
                 {
-                    string configText = File.ReadAllText(@"MSL\frp\frpc.toml");
+
+                    string configText;
+                    if (jobject["frpcServer"].ToString() == "2")
+                    {
+                        configText = File.ReadAllText(@"MSL\frp\frpc");
+                    }
+                    else
+                    {
+                        configText = File.ReadAllText(@"MSL\frp\frpc.toml");
+                    }
                     // 读取每一行
                     string[] lines = configText.Split('\n');
 
@@ -621,12 +630,15 @@ namespace MSL.pages
                     {
                         nodeName = lines[0].TrimStart('#').Trim();
                     }
+                    else if(jobject["frpcServer"].ToString() == "2")
+                    {
+                        nodeName = "ChmlFrp节点";
+                    }
                     else
                     {
                         nodeName = "自定义节点";
                     }
 
-
                     // 服务器地址
                     string serverAddr = "";
                     int serverPort = 0;
@@ -645,100 +657,19 @@ namespace MSL.pages
                         {
                             frpcType = lines[i].Split('=')[1].Trim();
                         }
-                        else if (lines[i].StartsWith("serverAddr") && readServerInfo)
+                        else if ((lines[i].StartsWith("serverAddr")|| lines[i].StartsWith("server_addr")) && readServerInfo)
                         {
                             serverAddr = lines[i].Split('=')[1].Trim().Replace("\"", string.Empty);
                         }
-                        else if (lines[i].StartsWith("serverPort") && readServerInfo)
+                        else if ((lines[i].StartsWith("serverPort")|| lines[i].StartsWith("server_port")) && readServerInfo)
                         {
                             serverPort = int.Parse(lines[i].Split('=')[1].Trim());
                         }
-                        else if (lines[i].StartsWith("remotePort") && readServerInfo)
+                        else if ((lines[i].StartsWith("remotePort")|| lines[i].StartsWith("remote_port")) && readServerInfo)
                         {
                             remotePort = lines[i].Split('=')[1].Trim();
                         }
-                    }
-
-                    Dispatcher.Invoke(() =>
-                    {
-                        if (!readServerInfo)
-                        {
-                            frplab3.Text = "Java版：" + serverAddr + ":" + remotePort + "\n基岩版：IP:" + serverAddr + " 端口:" + remotePort;
-                        }
-                        else
-                        {
-                            if (frpcType == "udp")
-                            {
-                                frplab3.Text = "IP:" + serverAddr + " 端口:" + remotePort;
-                            }
-                            else
-                            {
-                                frplab3.Text = serverAddr + ":" + remotePort;
-                            }
-                        }
-                    });
-                    Ping pingSender = new Ping();
-                    PingReply reply = pingSender.Send(serverAddr, 2000); // 替换成您要 ping 的 IP 地址
-                    if (reply.Status == IPStatus.Success)
-                    {
-                        // 节点在线，可以获取延迟等信息
-                        int roundTripTime = (int)reply.RoundtripTime;
-                        Dispatcher.Invoke(() =>
-                        {
-                            frplab1.Text = nodeName + "  延迟：" + roundTripTime + "ms";
-                        });
-                    }
-                    else
-                    {
-                        // 节点离线
-                        Dispatcher.Invoke(() =>
-                        {
-                            frplab1.Text = nodeName + "  节点离线或禁Ping，若无法连接，请重新配置！";
-                        });
-                    }
-                }
-                else if (jobject["frpcServer"].ToString() == "2")
-                {
-
-                    string configText = File.ReadAllText(@"MSL\frp\frpc");
-                    // 读取每一行
-                    string[] lines = configText.Split('\n');
-
-                    // 节点名称
-                    string nodeName = "ChmlFrp节点";
-
-
-                    // 服务器地址
-                    string serverAddr = "";
-                    int serverPort = 0;
-                    string remotePort = "";
-                    string frpcType = "";
-                    bool readServerInfo = true;  // 是否继续读取服务器信息
-                    for (int i = 0; i < lines.Length; i++)
-                    {
-                        if (lines[i].StartsWith("type") && frpcType != "")
-                        {
-                            // 遇到第二个type时停止读取服务器信息
-                            readServerInfo = false;
-                            break;
-                        }
-                        else if (lines[i].StartsWith("type") && readServerInfo)
-                        {
-                            frpcType = lines[i].Split('=')[1].Trim();
-                        }
-                        else if (lines[i].StartsWith("server_addr") && readServerInfo)
-                        {
-                            serverAddr = lines[i].Split('=')[1].Trim().Replace("\"", string.Empty);
-                        }
-                        else if (lines[i].StartsWith("server_port") && readServerInfo)
-                        {
-                            serverPort = int.Parse(lines[i].Split('=')[1].Trim());
-                        }
-                        else if (lines[i].StartsWith("remote_port") && readServerInfo)
-                        {
-                            remotePort = lines[i].Split('=')[1].Trim();
-                        }
-                        else if (lines[i].StartsWith("[") && readServerInfo)//针对chmlfrp的节点名字读取
+                        else if (jobject["frpcServer"].ToString() == "2" && lines[i].StartsWith("[") && readServerInfo)//针对chmlfrp的节点名字读取
                         {
                             nodeName = "ChmlFrp节点-" + lines[i].Replace("[", "").Replace("]", "").Replace("\r", "").ToString();
                         }
@@ -796,7 +727,9 @@ namespace MSL.pages
             {
                 Dispatcher.Invoke(() =>
                 {
-                    frplab1.Text = "获取节点信息失败，建议重新配置！";
+                    copyFrpc.IsEnabled = false;
+                    frplab1.Text = "获取Frp信息失败，建议重新配置！";
+                    frplab3.Text = "无";
                 });
             }
         }

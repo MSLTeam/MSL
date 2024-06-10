@@ -153,6 +153,18 @@ namespace MSL.pages.frpProviders
                         passwordBox.Password = match.Groups[2].Value;
                     }
                 }
+                if (File.Exists(@"MSL\frp\frpc.toml"))
+                {
+                    string text = File.ReadAllText(@"MSL\frp\frpc.toml");
+                    string pattern = @"user\s*=\s*""(\w+)""\s*metadatas\.token\s*=\s*""(\w+)""";
+                    Match match = Regex.Match(text, pattern);
+
+                    if (match.Success)
+                    {
+                        accountBox.Text = match.Groups[1].Value;
+                        passwordBox.Password = match.Groups[2].Value;
+                    }
+                }
                 try
                 {
                     LoadingCircle loadingCircle = MainGrid.FindName("loadingBar") as LoadingCircle;
