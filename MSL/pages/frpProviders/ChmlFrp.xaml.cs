@@ -65,7 +65,7 @@ namespace MSL.pages.frpProviders
                 if (Config.Read("ChmlToken") != "")
                 {
                     ShowDialogs showDialogs = new ShowDialogs();
-                    showDialogs.ShowTextDialog(Window.GetWindow(this),"登录中……");
+                    showDialogs.ShowTextDialog(Window.GetWindow(this), "登录中……");
                     await Task.Run(() => verifyUserToken(Config.Read("ChmlToken"), false));
                     showDialogs.CloseTextDialog();
                 }

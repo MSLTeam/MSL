@@ -75,7 +75,7 @@ namespace MSL
             {
                 path = GetSelectTreePath(selectedNode);
                 //MessageBox.Show("选中的路径：" + path);
-                if(path.EndsWith(".json") || path.EndsWith(".yml") || path.EndsWith(".properties"))
+                if (path.EndsWith(".json") || path.EndsWith(".yml") || path.EndsWith(".properties"))
                 {
                     try
                     {
@@ -116,7 +116,7 @@ namespace MSL
                 // 获取当前节点的父节点
                 item = item.Parent as TreeViewItem;
             }
-            if(pathBuilder.Length > 0)
+            if (pathBuilder.Length > 0)
             {
                 // 移除路径开头的分隔符
                 pathBuilder.Remove(0, 1);
@@ -162,9 +162,9 @@ namespace MSL
                 }
                 Shows.ShowMsgDialog(this, "保存成功！", "提示");
             }
-            catch(Exception ex)
+            catch (Exception ex)
             {
-                Shows.ShowMsgDialog(this, ex.Message,"Err");
+                Shows.ShowMsgDialog(this, ex.Message, "Err");
             }
         }
     }

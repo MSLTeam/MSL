@@ -13,7 +13,7 @@ namespace MSL.pages.frpProviders
     /// </summary>
     public partial class Custom : Page
     {
-        private bool init=false; //初始化确认，防止未初始化就更改ui导致boom
+        private bool init = false; //初始化确认，防止未初始化就更改ui导致boom
         public Custom()
         {
             InitializeComponent();
@@ -32,11 +32,11 @@ namespace MSL.pages.frpProviders
 
         private void OKBtn_Click(object sender, RoutedEventArgs e)
         {
-            if (EasyMode.IsChecked==true)
+            if (EasyMode.IsChecked == true)
             {
                 //可视化模式
                 //检测必备数据写了没，防止小傻瓜
-                if (ServerIP.Text == "" || ServerPort.Text=="" || ClientRemotePort.Text==""||ClientIP.Text==""||ClientPort.Text=="")
+                if (ServerIP.Text == "" || ServerPort.Text == "" || ClientRemotePort.Text == "" || ClientIP.Text == "" || ClientPort.Text == "")
                 {
                     Shows.ShowMsg(Window.GetWindow(this), "存在未填写的数据！\n请检查！", "错误！");
                 }
@@ -53,7 +53,7 @@ namespace MSL.pages.frpProviders
                         $"transport.tls.enable = {ServerTls.IsChecked.ToString().ToLower()}\r\n" +
                         //$"[[proxies]]\r\nprivilege_mode = {ServerPrivilege.IsChecked.ToString().ToLower()}\r\n" +
                         $"[[proxies]]\r\n" +
-                        $"name = \"{ClientName.Text}\"\r\n"+
+                        $"name = \"{ClientName.Text}\"\r\n" +
                         $"type = \"{ClientProtocol.Text}\"\r\nlocalIp = \"{ClientIP.Text}\"\r\n" +
                         $"localPort = {ClientPort.Text}\r\nremotePort = {ClientRemotePort.Text}\r\n" +
                         $"transport.useEncryption = {ClientEnc.IsChecked.ToString().ToLower()}\r\n" +
@@ -111,7 +111,7 @@ namespace MSL.pages.frpProviders
                 LowLevelGrid.Visibility = Visibility.Visible;
                 CustomGrid.Visibility = Visibility.Collapsed;
             }
-           
+
         }
 
         private void CustomMode_Checked(object sender, RoutedEventArgs e)
@@ -121,7 +121,7 @@ namespace MSL.pages.frpProviders
                 LowLevelGrid.Visibility = Visibility.Collapsed;
                 CustomGrid.Visibility = Visibility.Visible;
             }
-            
+
         }
     }
 }

@@ -114,7 +114,7 @@ namespace MSL.pages
                         frpcExeName = "frpc_custom.exe";
                         break;
                 }
-               
+
                 if ((frpcversion == null || frpcversion != "0581") && frpcServer == "0") //mslfrp的特别更新qwq
                 {
                     string _dnfrpc = Functions.Get(downloadUrl);
@@ -170,7 +170,7 @@ namespace MSL.pages
                     }
 
                 }
-                else if(!File.Exists($"MSL\\frp\\{frpcExeName}") && frpcServer == "-2")
+                else if (!File.Exists($"MSL\\frp\\{frpcExeName}") && frpcServer == "-2")
                 {
                     //找不到自定义的frp，直接失败
                     throw new FileNotFoundException("Frpc Not Found");
@@ -201,7 +201,7 @@ namespace MSL.pages
             }
             catch (Exception e)//错误处理
             {
-                if (e.Message.Contains("Frpc Not Found") )
+                if (e.Message.Contains("Frpc Not Found"))
                 {
                     Dispatcher.Invoke(() =>
                     {
@@ -217,7 +217,7 @@ namespace MSL.pages
                         Shows.ShowMsg(Window.GetWindow(this), "出现错误，请检查是否有杀毒软件误杀并重试:" + e.Message, "错误");
                     });
                 }
-                
+
             }
             finally
             {
@@ -647,7 +647,7 @@ namespace MSL.pages
                         }
                         else if (lines[i].StartsWith("serverAddr") && readServerInfo)
                         {
-                            serverAddr = lines[i].Split('=')[1].Trim().Replace("\"",string.Empty);
+                            serverAddr = lines[i].Split('=')[1].Trim().Replace("\"", string.Empty);
                         }
                         else if (lines[i].StartsWith("serverPort") && readServerInfo)
                         {
@@ -699,7 +699,7 @@ namespace MSL.pages
                 }
                 else if (jobject["frpcServer"].ToString() == "2")
                 {
-                    
+
                     string configText = File.ReadAllText(@"MSL\frp\frpc");
                     // 读取每一行
                     string[] lines = configText.Split('\n');
@@ -805,7 +805,7 @@ namespace MSL.pages
         {
             try
             {
-                if (File.Exists(@"MSL\frp\frpc")|| File.Exists(@"MSL\frp\frpc.toml"))
+                if (File.Exists(@"MSL\frp\frpc") || File.Exists(@"MSL\frp\frpc.toml"))
                 {
                     Thread thread = new Thread(GetFrpcInfo);
                     thread.Start();

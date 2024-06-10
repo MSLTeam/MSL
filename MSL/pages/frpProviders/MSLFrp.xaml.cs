@@ -325,7 +325,7 @@ namespace MSL.pages.frpProviders
         */
 
         //这里是toml格式配置文件的代码（后续版本更新可能会启用）
-        
+
         private async void Button_Click(object sender, RoutedEventArgs e)
         {
             Window window = Window.GetWindow(Window.GetWindow(this));
@@ -492,7 +492,7 @@ namespace MSL.pages.frpProviders
             }
             window.Close();
         }
-        
+
 
         private void serversList_SelectionChanged(object sender, SelectionChangedEventArgs e)
         {

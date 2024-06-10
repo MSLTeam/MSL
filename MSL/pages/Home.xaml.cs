@@ -141,7 +141,7 @@ namespace MSL.pages
                     }
                 }
             }
-            catch(Exception ex)
+            catch (Exception ex)
             {
                 noticeLabText = ex.ToString();
             }
