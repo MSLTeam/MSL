@@ -44,15 +44,17 @@ namespace MSL.pages.frpProviders
                 {
                     //既然都写了，那就继续
                     string FrpcConfig;
-                    FrpcConfig = $"serverAddr = {ServerIP.Text}\r\n" +
+                    FrpcConfig = $"serverAddr = \"{ServerIP.Text}\"\r\n" +
                         $"serverPort = {ServerPort.Text}\r\n" +
                         $"transport.tcpMux = {ServerTcpMux.IsChecked.ToString().ToLower()}\r\n" +
-                        $"transport.protocol = {ServerProtocol.Text}\r\nuser = {ServerUser.Text}\r\n" +
-                        $"auth.token = {ServerToken.Text}\r\ndnsServer = {ServerDNS.Text}\r\n" +
+                        //$"transport.protocol = {ServerProtocol.Text}\r\n"+
+                        $"user = \"{ServerUser.Text}\"\r\n" +
+                        $"auth.token = \"{ServerToken.Text}\"\r\ndnsServer = \"{ServerDNS.Text}\"\r\n" +
                         $"transport.tls.enable = {ServerTls.IsChecked.ToString().ToLower()}\r\n" +
                         //$"[[proxies]]\r\nprivilege_mode = {ServerPrivilege.IsChecked.ToString().ToLower()}\r\n" +
                         $"[[proxies]]\r\n" +
-                        $"type = {ClientProtocol.Text}\r\nlocalIp = {ClientIP.Text}\r\n" +
+                        $"name = \"{ClientName.Text}\"\r\n"+
+                        $"type = \"{ClientProtocol.Text}\"\r\nlocalIp = \"{ClientIP.Text}\"\r\n" +
                         $"localPort = {ClientPort.Text}\r\nremotePort = {ClientRemotePort.Text}\r\n" +
                         $"transport.useEncryption = {ClientEnc.IsChecked.ToString().ToLower()}\r\n" +
                         $"transport.useCompression = {ClientComp.IsChecked.ToString().ToLower()}\r\n \r\n";
@@ -90,9 +92,12 @@ namespace MSL.pages.frpProviders
                 }
                 else
                 {
-                    Config.Write("frpcServer", "-1");//自定义模式-Gh上的客户端
+                    return;
                 }
-
+            }
+            else
+            {
+                Config.Write("frpcServer", "-1");//自定义模式-Gh上的客户端
             }
             //最后结束
             await Shows.ShowMsgDialogAsync(Window.GetWindow(this), "隧道配置成功，请您点击“启动内网映射”以启动映射！", "信息");
