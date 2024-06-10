@@ -92,8 +92,13 @@ namespace MSL.pages
                 string frpcServer = jobject["frpcServer"].ToString();
                 string frpcversion = jobject["frpcversion"]?.ToString();
                 string frpcExeName = "frpc.exe"; //frpc客户端主程序
-                string downloadUrl = "/download/frpc/MSLFrp/amd64"; //frpc客户端在api的调用位置
+                string downloadUrl = "download/frpc/MSLFrp/amd64"; //frpc客户端在api的调用位置
                 string arguments = "-c frpc.toml"; //启动命令
+                string osver = "10";
+                if(Environment.OSVersion.Version.Major == 6 && Environment.OSVersion.Version.Minor == 1)
+                {
+                    osver = "6"; //OSVersion.Version win11内获取的是6.2 win7是6.1
+                }
                 switch (frpcServer)
                 {
                     case "1"://openfrp
@@ -114,18 +119,11 @@ namespace MSL.pages
                         frpcExeName = "frpc_custom.exe";
                         break;
                 }
-
                 if ((frpcversion == null || frpcversion != "0581") && frpcServer == "0") //mslfrp的特别更新qwq
                 {
                     string _dnfrpc;
-                    if (Environment.OSVersion.Version.Major == 6)
-                    {
-                        _dnfrpc = "https://files." + MainWindow.serverLink + "/frpc_0.54.exe";
-                    }
-                    else
-                    {
-                        _dnfrpc = Functions.Get(downloadUrl);
-                    }
+                    _dnfrpc = Functions.Get(downloadUrl+"?os="+ osver);//丢os版本号
+
                     await Dispatcher.Invoke(async () =>
                     {
                         await Shows.ShowDownloader(Window.GetWindow(this), _dnfrpc, "MSL\\frp", $"{frpcExeName}", "更新MSL内网映射中...");
@@ -136,14 +134,7 @@ namespace MSL.pages
                 if (!File.Exists($"MSL\\frp\\{frpcExeName}") && frpcServer != "-2")//检查frpc是否存在，不存在就下崽崽
                 {
                     string _dnfrpc;
-                    if (Environment.OSVersion.Version.Major == 6)
-                    {
-                        _dnfrpc = "https://files." + MainWindow.serverLink + "/frpc_0.54.exe";
-                    }
-                    else
-                    {
-                        _dnfrpc = Functions.Get(downloadUrl);
-                    }
+                    _dnfrpc = Functions.Get(downloadUrl + "?os=" + osver);//丢os版本号
                     await Dispatcher.Invoke(async () =>
                     {
                         if (frpcServer == "0" || frpcServer == "-1")//下载exe or zip
