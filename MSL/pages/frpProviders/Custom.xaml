@@ -22,10 +22,10 @@
                         <ColumnDefinition Width="*"/>
                         <ColumnDefinition Width="auto"/>
                     </Grid.ColumnDefinitions>
-                <StackPanel Margin="5" Grid.Column="0">
-                    <Label Content="自定义Frpc隧道（适用于高级用户）" MinHeight="38" BorderThickness="0" FontSize="18" FontWeight="Bold" HorizontalAlignment="Left"/>
-                    <TextBlock LineHeight="20" Foreground="{DynamicResource PrimaryTextBrush}" Text="通常需要您拥有自己的Frp服务器。&#13;当然，你也可以通过这里实现使用未被MSL支持的第三方Frp服务。" FontSize="14" HorizontalAlignment="Left" Margin="10,0,0,0"/>
-                </StackPanel>
+                    <StackPanel Margin="5" Grid.Column="0">
+                        <Label Content="自定义Frpc隧道（适用于高级用户）" MinHeight="38" BorderThickness="0" FontSize="18" FontWeight="Bold" HorizontalAlignment="Left"/>
+                        <TextBlock LineHeight="20" Foreground="{DynamicResource PrimaryTextBrush}" Text="通常需要您拥有自己的Frp服务器。&#13;当然，你也可以通过这里实现使用未被MSL支持的第三方Frp服务。" FontSize="14" HorizontalAlignment="Left" Margin="10,0,0,0"/>
+                    </StackPanel>
                     <StackPanel Margin="5,5,10,5" Grid.Column="1" VerticalAlignment="Center">
                         <RadioButton Content="引导模式" x:Name="EasyMode" GroupName="mode" Margin="0,0,0,3" FontSize="14" IsChecked="True" Checked="EasyMode_Checked"/>
                         <RadioButton Content="高级模式" x:Name="CustomMode" GroupName="mode" FontSize="14" Margin="0,3,0,0" Checked="CustomMode_Checked"/>
@@ -35,12 +35,12 @@
         </Grid>
         <Grid Grid.Row="1" Margin="10,0,10,6" x:Name="LowLevelGrid">
 
-                <Grid>
-                    <Grid.ColumnDefinitions>
-                        <ColumnDefinition Width="*"/>
-                        <ColumnDefinition Width="*"/>
-                    </Grid.ColumnDefinitions>
-                    <hc:Card Margin="0,0,3,0" Grid.Column="0">
+            <Grid>
+                <Grid.ColumnDefinitions>
+                    <ColumnDefinition Width="*"/>
+                    <ColumnDefinition Width="*"/>
+                </Grid.ColumnDefinitions>
+                <hc:Card Margin="0,0,3,0" Grid.Column="0">
                     <Grid Margin="5">
                         <Grid.RowDefinitions>
                             <RowDefinition Height="auto"/>
@@ -48,48 +48,50 @@
                         </Grid.RowDefinitions>
                         <Label Grid.Row="0" Content="Frps连接配置（服务端连接）"  MinHeight="20" BorderThickness="0" FontSize="16" FontWeight="Bold" HorizontalAlignment="Left"/>
                         <hc:ScrollViewer Grid.Row="1">
-                        <WrapPanel Margin="0,3,0,0">
-                            <StackPanel Orientation="Horizontal" Margin="0,0,0,5">
-                                <TextBlock LineHeight="20" Foreground="{DynamicResource PrimaryTextBrush}" Text="服务器地址:" FontSize="14" Margin="10,0,6,0" VerticalAlignment="Center"/>
-                                <TextBox Text="" x:Name="ServerIP" MinWidth="100"/>
-                            </StackPanel>
-                            <StackPanel Orientation="Horizontal" Margin="0,0,0,5">
-                                <TextBlock LineHeight="20" Foreground="{DynamicResource PrimaryTextBrush}" Text="服务器端口:" FontSize="14" Margin="10,0,6,0" VerticalAlignment="Center"/>
-                                <TextBox Text="" x:Name="ServerPort" MinWidth="100"/>
-                            </StackPanel>
-                            <StackPanel Orientation="Horizontal" Margin="0,0,0,5">
-                                <TextBlock LineHeight="20" Foreground="{DynamicResource PrimaryTextBrush}" Text="服务器Token（可选）:" FontSize="14" Margin="10,0,6,0" VerticalAlignment="Center"/>
-                                <TextBox Text="" x:Name="ServerToken" MinWidth="100"/>
-                            </StackPanel>
-                            <StackPanel Orientation="Horizontal" Margin="0,0,0,5">
-                                <TextBlock LineHeight="20" Foreground="{DynamicResource PrimaryTextBrush}" Text="服务器用户（可选）:" FontSize="14" Margin="10,0,6,0" VerticalAlignment="Center"/>
-                                <TextBox Text="" x:Name="ServerUser" MinWidth="100"/>
-                            </StackPanel>
-                            <StackPanel Orientation="Horizontal" Margin="0,0,0,5">
-                                <TextBlock LineHeight="20" Foreground="{DynamicResource PrimaryTextBrush}" Text="DNS:" FontSize="14" Margin="10,0,6,0" VerticalAlignment="Center"/>
-                                <TextBox Text="223.6.6.6" x:Name="ServerDNS" MinWidth="100"/>
-                            </StackPanel>
-                            <StackPanel Orientation="Horizontal" Margin="0,0,3,5">
-                                <TextBlock LineHeight="20" Foreground="{DynamicResource PrimaryTextBrush}" Text="服务端传输协议（不懂别动）:" FontSize="14" Margin="10,0,6,0" VerticalAlignment="Center"/>
-                                <ComboBox x:Name="ServerProtocol" MinWidth="100" SelectedIndex="0">
-                                    <ComboBoxItem Content="tcp"/>
-                                    <ComboBoxItem Content="udp"/>
-                                </ComboBox>
-                            </StackPanel>
-                            <StackPanel Orientation="Horizontal" Margin="8,0,0,5">
-                                <CheckBox Content="启用TLS（不懂别开）" x:Name="ServerTls"/>
-                            </StackPanel>
-                            <StackPanel Orientation="Horizontal" Margin="8,0,0,5">
+                            <WrapPanel Margin="0,3,0,0">
+                                <StackPanel Orientation="Horizontal" Margin="0,0,0,5">
+                                    <TextBlock LineHeight="20" Foreground="{DynamicResource PrimaryTextBrush}" Text="服务器地址:" FontSize="14" Margin="10,0,6,0" VerticalAlignment="Center"/>
+                                    <TextBox Text="" x:Name="ServerIP" MinWidth="100"/>
+                                </StackPanel>
+                                <StackPanel Orientation="Horizontal" Margin="0,0,0,5">
+                                    <TextBlock LineHeight="20" Foreground="{DynamicResource PrimaryTextBrush}" Text="服务器端口:" FontSize="14" Margin="10,0,6,0" VerticalAlignment="Center"/>
+                                    <TextBox Text="" x:Name="ServerPort" MinWidth="100"/>
+                                </StackPanel>
+                                <StackPanel Orientation="Horizontal" Margin="0,0,0,5">
+                                    <TextBlock LineHeight="20" Foreground="{DynamicResource PrimaryTextBrush}" Text="服务器Token（可选）:" FontSize="14" Margin="10,0,6,0" VerticalAlignment="Center"/>
+                                    <TextBox Text="" x:Name="ServerToken" MinWidth="100"/>
+                                </StackPanel>
+                                <StackPanel Orientation="Horizontal" Margin="0,0,0,5">
+                                    <TextBlock LineHeight="20" Foreground="{DynamicResource PrimaryTextBrush}" Text="服务器用户（可选）:" FontSize="14" Margin="10,0,6,0" VerticalAlignment="Center"/>
+                                    <TextBox Text="" x:Name="ServerUser" MinWidth="100"/>
+                                </StackPanel>
+                                <StackPanel Orientation="Horizontal" Margin="0,0,0,5">
+                                    <TextBlock LineHeight="20" Foreground="{DynamicResource PrimaryTextBrush}" Text="DNS:" FontSize="14" Margin="10,0,6,0" VerticalAlignment="Center"/>
+                                    <TextBox Text="223.6.6.6" x:Name="ServerDNS" MinWidth="100"/>
+                                </StackPanel>
+                                <StackPanel Orientation="Horizontal" Margin="0,0,3,5">
+                                    <TextBlock LineHeight="20" Foreground="{DynamicResource PrimaryTextBrush}" Text="服务端传输协议（不懂别动）:" FontSize="14" Margin="10,0,6,0" VerticalAlignment="Center"/>
+                                    <ComboBox x:Name="ServerProtocol" MinWidth="100" SelectedIndex="0">
+                                        <ComboBoxItem Content="tcp"/>
+                                        <ComboBoxItem Content="udp"/>
+                                    </ComboBox>
+                                </StackPanel>
+                                <StackPanel Orientation="Horizontal" Margin="8,0,0,5">
+                                    <CheckBox Content="启用TLS（不懂别开）" x:Name="ServerTls"/>
+                                </StackPanel>
+                                <StackPanel Orientation="Horizontal" Margin="8,0,0,5">
                                     <CheckBox Content="TCP多路复用（不懂别开）" x:Name="ServerTcpMux"/>
-                            </StackPanel>
+                                </StackPanel>
+                                <!--
                                 <StackPanel Orientation="Horizontal" Margin="8,0,0,5">
                                     <CheckBox Content="特权模式（不懂别开）" x:Name="ServerPrivilege"/>
                                 </StackPanel>
+                             -->
                             </WrapPanel>
                         </hc:ScrollViewer>
                     </Grid>
-                    </hc:Card>
-                    <hc:Card Margin="3,0,0,0" Grid.Column="1">
+                </hc:Card>
+                <hc:Card Margin="3,0,0,0" Grid.Column="1">
                     <Grid Margin="5">
                         <Grid.RowDefinitions>
                             <RowDefinition Height="auto"/>
@@ -97,43 +99,43 @@
                         </Grid.RowDefinitions>
                         <Label Content="隧道配置（引导模式暂时只支持一条隧道）" Grid.Row="0" MinHeight="20" BorderThickness="0" FontSize="16" FontWeight="Bold" HorizontalAlignment="Left"/>
                         <hc:ScrollViewer Grid.Row="1">
-                        <WrapPanel Margin="0,3,0,0">
+                            <WrapPanel Margin="0,3,0,0">
                                 <StackPanel Orientation="Horizontal" Margin="0,0,0,5">
                                     <TextBlock LineHeight="20" Foreground="{DynamicResource PrimaryTextBrush}" Text="隧道名字:" FontSize="14" Margin="10,0,6,0" VerticalAlignment="Center"/>
                                     <TextBox Text="MyMSLFrpc" x:Name="ClientName" MinWidth="100"/>
                                 </StackPanel>
                                 <StackPanel Orientation="Horizontal" Margin="0,0,0,5">
-                                <TextBlock LineHeight="20" Foreground="{DynamicResource PrimaryTextBrush}" Text="本地IP:" FontSize="14" Margin="10,0,6,0" VerticalAlignment="Center"/>
-                                <TextBox Text="127.0.0.1" x:Name="ClientIP" MinWidth="100"/>
-                            </StackPanel>
-                            <StackPanel Orientation="Horizontal" Margin="0,0,0,5">
-                                <TextBlock LineHeight="20" Foreground="{DynamicResource PrimaryTextBrush}" Text="本地端口:" FontSize="14" Margin="10,0,6,0" VerticalAlignment="Center"/>
-                                <TextBox Text="25565" x:Name="ClientPort" MinWidth="100"/>
-                            </StackPanel>
-                            <StackPanel Orientation="Horizontal" Margin="0,0,0,5">
-                                <TextBlock LineHeight="20" Foreground="{DynamicResource PrimaryTextBrush}" Text="远程端口:" FontSize="14" Margin="10,0,6,0" VerticalAlignment="Center"/>
-                                <TextBox Text="" x:Name="ClientRemotePort" MinWidth="100"/>
-                            </StackPanel>
-                            <StackPanel Orientation="Horizontal" Margin="0,0,3,5">
-                                <TextBlock LineHeight="20" Foreground="{DynamicResource PrimaryTextBrush}" Text="映射传输协议:" FontSize="14" Margin="10,0,6,0" VerticalAlignment="Center"/>
-                                <ComboBox x:Name="ClientProtocol" MinWidth="100" SelectedIndex="0">
-                                    <ComboBoxItem Content="tcp"/>
-                                    <ComboBoxItem Content="udp"/>
-                                    <ComboBoxItem Content="http"/>
-                                    <ComboBoxItem Content="https"/>
-                                </ComboBox>
-                            </StackPanel>
-                            <StackPanel Orientation="Horizontal" Margin="8,0,0,5">
-                                <CheckBox Content="启用数据加密" x:Name="ClientEnc"/>
-                            </StackPanel>
-                            <StackPanel Orientation="Horizontal" Margin="8,0,0,5">
+                                    <TextBlock LineHeight="20" Foreground="{DynamicResource PrimaryTextBrush}" Text="本地IP:" FontSize="14" Margin="10,0,6,0" VerticalAlignment="Center"/>
+                                    <TextBox Text="127.0.0.1" x:Name="ClientIP" MinWidth="100"/>
+                                </StackPanel>
+                                <StackPanel Orientation="Horizontal" Margin="0,0,0,5">
+                                    <TextBlock LineHeight="20" Foreground="{DynamicResource PrimaryTextBrush}" Text="本地端口:" FontSize="14" Margin="10,0,6,0" VerticalAlignment="Center"/>
+                                    <TextBox Text="25565" x:Name="ClientPort" MinWidth="100"/>
+                                </StackPanel>
+                                <StackPanel Orientation="Horizontal" Margin="0,0,0,5">
+                                    <TextBlock LineHeight="20" Foreground="{DynamicResource PrimaryTextBrush}" Text="远程端口:" FontSize="14" Margin="10,0,6,0" VerticalAlignment="Center"/>
+                                    <TextBox Text="" x:Name="ClientRemotePort" MinWidth="100"/>
+                                </StackPanel>
+                                <StackPanel Orientation="Horizontal" Margin="0,0,3,5">
+                                    <TextBlock LineHeight="20" Foreground="{DynamicResource PrimaryTextBrush}" Text="映射传输协议:" FontSize="14" Margin="10,0,6,0" VerticalAlignment="Center"/>
+                                    <ComboBox x:Name="ClientProtocol" MinWidth="100" SelectedIndex="0">
+                                        <ComboBoxItem Content="tcp"/>
+                                        <ComboBoxItem Content="udp"/>
+                                        <ComboBoxItem Content="http"/>
+                                        <ComboBoxItem Content="https"/>
+                                    </ComboBox>
+                                </StackPanel>
+                                <StackPanel Orientation="Horizontal" Margin="8,0,0,5">
+                                    <CheckBox Content="启用数据加密" x:Name="ClientEnc"/>
+                                </StackPanel>
+                                <StackPanel Orientation="Horizontal" Margin="8,0,0,5">
                                     <CheckBox Content="启用数据压缩" x:Name="ClientComp"/>
                                 </StackPanel>
-                        </WrapPanel>
+                            </WrapPanel>
                         </hc:ScrollViewer>
                     </Grid>
                 </hc:Card>
-                </Grid>
+            </Grid>
 
         </Grid>
         <Grid Grid.Row="1" Margin="10,0,10,6" x:Name="CustomGrid" Visibility="Collapsed">
@@ -163,7 +165,7 @@
             </Grid>
             <Grid Grid.Column="1">
                 <StackPanel Orientation="Horizontal" Margin="6,0,0,0">
-                    <Button Content="查看教程" MinWidth="100" MinHeight="35" Margin="0,0,8,0" FontSize="16" x:Name="CreateBtn" Click="WebBtn_Click"/>
+                    <!--<Button Content="查看教程" MinWidth="100" MinHeight="35" Margin="0,0,8,0" FontSize="16" x:Name="CreateBtn" Click="WebBtn_Click"/>-->
                     <Button Content="确定" MinWidth="100" MinHeight="35" Style="{StaticResource ButtonPrimary}" FontSize="16" x:Name="OKBtn" Click="OKBtn_Click"/>
                 </StackPanel>
             </Grid>

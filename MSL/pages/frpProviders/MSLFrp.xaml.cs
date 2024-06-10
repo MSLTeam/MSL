@@ -164,6 +164,7 @@ namespace MSL.pages.frpProviders
             });
         }
 
+        /*
         private async void Button_Click(object sender, RoutedEventArgs e)
         {
             if (serversList.SelectedIndex == -1)
@@ -321,15 +322,16 @@ namespace MSL.pages.frpProviders
             }
             Window.GetWindow(this).Close();
         }
+        */
 
         //这里是toml格式配置文件的代码（后续版本更新可能会启用）
-        /*
-        private void Button_Click(object sender, RoutedEventArgs e)
+        
+        private async void Button_Click(object sender, RoutedEventArgs e)
         {
             Window window = Window.GetWindow(Window.GetWindow(this));
             if (serversList.SelectedIndex == -1)
             {
-                DialogShow.ShowMsg(window, "请确保您选择了一个节点！", "信息");
+                Shows.ShowMsgDialog(window, "请确保您选择了一个节点！", "信息");
                 return;
             }
             //MSL-FRP
@@ -343,13 +345,13 @@ namespace MSL.pages.frpProviders
                     int n = ran.Next(int.Parse(list3[a].ToString()), int.Parse(list4[a].ToString()));
                     if (portBox.Text == "" || accountBox.Text == "")
                     {
-                        DialogShow.ShowMsg(window, "请确保内网端口和QQ号不为空", "错误");
+                        Shows.ShowMsgDialog(window, "请确保内网端口和QQ号不为空", "错误");
                         return;
                     }
                     //string frptype = "";
                     string serverName = serversList.Items[serversList.SelectedIndex].ToString();
                     string compressionArg = "";
-                    if (enableCompression.IsChecked == true) compressionArg = "useCompression = true\n";
+                    if (enableCompression.IsChecked == true) compressionArg = "transport.useCompression = true\n";
                     if (serverName.Contains("(")) serverName = serverName.Substring(0, serverName.IndexOf("("));
                     if (frpcType.SelectedIndex == 0) frptype = "tcp";
                     else if (frpcType.SelectedIndex == 1) frptype = "udp";
@@ -358,7 +360,7 @@ namespace MSL.pages.frpProviders
                     frpc += "serverAddr = \"" + list1[a].ToString() + "\"\n";
                     frpc += "serverPort = " + list2[a].ToString() + "\n";
                     frpc += "user = \"" + accountBox.Text + "\"\n";
-                    frpc += "token = \"\"\n";
+                    //frpc += "auth.token = \"\"\n";
                     if (frpcType.SelectedIndex == 2)
                     {
                         string a100 = portBox.Text.Substring(0, portBox.Text.IndexOf("|"));
@@ -391,7 +393,7 @@ namespace MSL.pages.frpProviders
                     jobject["frpcServer"] = "0";
                     string convertString = Convert.ToString(jobject);
                     File.WriteAllText(@"MSL\config.json", convertString, Encoding.UTF8);
-                    DialogShow.ShowMsg(window, "Frpc配置已保存", "信息");
+                    await Shows.ShowMsgDialogAsync(Window.GetWindow(this), "映射配置成功，请您点击“启动内网映射”以启动映射！", "信息");
                 }
                 catch (Exception a) { MessageBox.Show(a.ToString(), "错误", MessageBoxButton.OK, MessageBoxImage.Error); return; }
             }
@@ -404,7 +406,7 @@ namespace MSL.pages.frpProviders
                     int n = ran.Next(int.Parse(list3[a].ToString()), int.Parse(list4[a].ToString()));
                     if (portBox.Text == "" || accountBox.Text == "")
                     {
-                        DialogShow.ShowMsg(window, "请确保没有漏填信息", "错误");
+                        Shows.ShowMsgDialog(window, "请确保没有漏填信息", "错误");
                         return;
                     }
                     //string frptype = "";
@@ -436,14 +438,14 @@ namespace MSL.pages.frpProviders
 
                     string serverName = serversList.Items[serversList.SelectedIndex].ToString();
                     string compressionArg = "";
-                    if (enableCompression.IsChecked == true) compressionArg = "useCompression = true\n";
+                    if (enableCompression.IsChecked == true) compressionArg = "transport.useCompression = true\n";
                     if (serverName.Contains("(")) serverName = serverName.Substring(0, serverName.IndexOf("("));
                     string frpc = "#" + serverName + "\n";
                     frpc += "serverAddr = \"" + list1[a].ToString() + "\"\n";
                     frpc += "serverPort = " + frpPort + "\n";
                     frpc += "user = \"" + accountBox.Text + "\"\n";
-                    frpc += "metaToken = \"" + passwordBox.Password + "\"\n";
-                    if (protocol != "") frpc += "protocol = \"" + protocol + "\"\n";
+                    frpc += "metadatas.token = \"" + passwordBox.Password + "\"\n";
+                    if (protocol != "") frpc += "transport.protocol = \"" + protocol + "\"\n";
 
                     if (frpcType.SelectedIndex == 2)
                     {
@@ -467,9 +469,9 @@ namespace MSL.pages.frpProviders
                     {
                         frpc += "\n[[proxies]]\nname = \"" + frptype + "\"\n";
                         frpc += "type = \"" + frptype + "\"\n";
-                        frpc += "local_ip = \"127.0.0.1\"\n";
-                        frpc += "local_port = " + portBox.Text + "\n";
-                        frpc += "remote_port = " + n + "\n";
+                        frpc += "localIp = \"127.0.0.1\"\n";
+                        frpc += "localPort = " + portBox.Text + "\n";
+                        frpc += "remotePort = " + n + "\n";
                         frpc += compressionArg;
                     }
 
@@ -478,7 +480,7 @@ namespace MSL.pages.frpProviders
                     jobject["frpcServer"] = "0";
                     string convertString = Convert.ToString(jobject);
                     File.WriteAllText(@"MSL\config.json", convertString, Encoding.UTF8);
-                    DialogShow.ShowMsg(window, "映射配置成功，请您点击“启动内网映射”以启动映射！", "信息");
+                    await Shows.ShowMsgDialogAsync(window, "映射配置成功，请您点击“启动内网映射”以启动映射！", "信息");
                 }
                 catch (Exception a)
                 {
@@ -488,7 +490,7 @@ namespace MSL.pages.frpProviders
             }
             window.Close();
         }
-        */
+        
 
         private void serversList_SelectionChanged(object sender, SelectionChangedEventArgs e)
         {

@@ -1,20 +1,10 @@
 ﻿using MSL.controls;
 using System;
-using System.Collections.Generic;
 using System.IO;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
 using System.Windows;
 using System.Windows.Controls;
-using System.Windows.Data;
-using System.Windows.Documents;
 using System.Windows.Forms;
-using System.Windows.Input;
-using System.Windows.Media;
-using System.Windows.Media.Imaging;
-using System.Windows.Navigation;
-using System.Windows.Shapes;
+
 
 namespace MSL.pages.frpProviders
 {
@@ -23,7 +13,7 @@ namespace MSL.pages.frpProviders
     /// </summary>
     public partial class Custom : Page
     {
-        bool init=false; //初始化确认，防止未初始化就更改ui导致boom
+        private bool init=false; //初始化确认，防止未初始化就更改ui导致boom
         public Custom()
         {
             InitializeComponent();
@@ -33,10 +23,12 @@ namespace MSL.pages.frpProviders
             init = true;//初始化完成了
         }
 
+        /*
         private void WebBtn_Click(object sender, RoutedEventArgs e)
         {
 
         }
+        */
 
         private void OKBtn_Click(object sender, RoutedEventArgs e)
         {
@@ -52,25 +44,26 @@ namespace MSL.pages.frpProviders
                 {
                     //既然都写了，那就继续
                     string FrpcConfig;
-                    FrpcConfig = $"[common]\r\nserver_addr = {ServerIP.Text}\r\n" +
-                        $"server_port = {ServerPort.Text}\r\n" +
-                        $"tcp_mux = {ServerTcpMux.IsChecked.ToString().ToLower()}\r\n" +
-                        $"protocol = {ServerProtocol.Text}\r\nuser = {ServerUser.Text}\r\n" +
-                        $"token = {ServerToken.Text}\r\ndns_server = {ServerDNS.Text}\r\n" +
-                        $"tls_enable = {ServerTls.IsChecked.ToString().ToLower()}\r\n" +
-                        $"[{ClientName.Text}]\r\nprivilege_mode = {ServerPrivilege.IsChecked.ToString().ToLower()}\r\n" +
-                        $"type = {ClientProtocol.Text}\r\nlocal_ip = {ClientIP.Text}\r\n" +
-                        $"local_port = {ClientPort.Text}\r\nremote_port = {ClientRemotePort.Text}\r\n" +
-                        $"use_encryption = {ClientEnc.IsChecked.ToString().ToLower()}\r\n" +
-                        $"use_compression = {ClientComp.IsChecked.ToString().ToLower()}\r\n \r\n";
-                    File.WriteAllText(@"MSL\frpc", FrpcConfig);
+                    FrpcConfig = $"serverAddr = {ServerIP.Text}\r\n" +
+                        $"serverPort = {ServerPort.Text}\r\n" +
+                        $"transport.tcpMux = {ServerTcpMux.IsChecked.ToString().ToLower()}\r\n" +
+                        $"transport.protocol = {ServerProtocol.Text}\r\nuser = {ServerUser.Text}\r\n" +
+                        $"auth.token = {ServerToken.Text}\r\ndnsServer = {ServerDNS.Text}\r\n" +
+                        $"transport.tls.enable = {ServerTls.IsChecked.ToString().ToLower()}\r\n" +
+                        //$"[[proxies]]\r\nprivilege_mode = {ServerPrivilege.IsChecked.ToString().ToLower()}\r\n" +
+                        $"[[proxies]]\r\n" +
+                        $"type = {ClientProtocol.Text}\r\nlocalIp = {ClientIP.Text}\r\n" +
+                        $"localPort = {ClientPort.Text}\r\nremotePort = {ClientRemotePort.Text}\r\n" +
+                        $"transport.useEncryption = {ClientEnc.IsChecked.ToString().ToLower()}\r\n" +
+                        $"transport.useCompression = {ClientComp.IsChecked.ToString().ToLower()}\r\n \r\n";
+                    File.WriteAllText(@"MSL\frpc.toml", FrpcConfig);
                     SetFrpcPath();
                 }
             }
             else
             {
                 //直接丢配置文件模式
-                File.WriteAllText(@"MSL\frpc", ConfigBox.Text);
+                File.WriteAllText(@"MSL\frpc.toml", ConfigBox.Text);
                 SetFrpcPath();
             }
         }
@@ -123,8 +116,6 @@ namespace MSL.pages.frpProviders
             }
             
         }
-
-
     }
 }
 // 最后是creeper镇楼⠀⠀

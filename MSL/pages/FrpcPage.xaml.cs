@@ -93,7 +93,7 @@ namespace MSL.pages
                 string frpcversion = jobject["frpcversion"]?.ToString();
                 string frpcExeName = "frpc.exe"; //frpc客户端主程序
                 string downloadUrl = "/download/frpc/MSLFrp/amd64"; //frpc客户端在api的调用位置
-                string arguments = "-c frpc"; //启动命令
+                string arguments = "-c frpc.toml"; //启动命令
                 switch (frpcServer)
                 {
                     case "1"://openfrp
@@ -104,6 +104,7 @@ namespace MSL.pages
                     case "2"://chmlfrp
                         frpcExeName = "frpc_chml.exe";
                         downloadUrl = "download/frpc/ChmlFrp/amd64";
+                        arguments = "-c frpc"; //启动命令
                         break;
                     case "-1"://自定义frp，使用官版
                         frpcExeName = "frpc_official.exe";
@@ -112,18 +113,16 @@ namespace MSL.pages
                     case "-2"://自定义frp，使用自己的
                         frpcExeName = "frpc_custom.exe";
                         break;
-
-
                 }
                
-                if ((frpcversion == null || frpcversion != "6") && frpcServer == "0") //mslfrp的特别更新qwq
+                if ((frpcversion == null || frpcversion != "0581") && frpcServer == "0") //mslfrp的特别更新qwq
                 {
                     string _dnfrpc = Functions.Get(downloadUrl);
                     await Dispatcher.Invoke(async () =>
                     {
                         await Shows.ShowDownloader(Window.GetWindow(this), _dnfrpc, "MSL", $"{frpcExeName}", "更新MSL内网映射中...");
                     });
-                    Config.Write("frpcversion", "6");
+                    Config.Write("frpcversion", "0581");
                 }
 
                 if (!File.Exists($"MSL\\{frpcExeName}") && frpcServer != "-2")//检查frpc是否存在，不存在就下崽崽
@@ -170,7 +169,9 @@ namespace MSL.pages
                         //三个服务 三个下载解压方式 我真是太开心了！(p≧w≦q)
                     }
 
-                }else if(!File.Exists($"MSL\\{frpcExeName}") && frpcServer == "-2") {
+                }
+                else if(!File.Exists($"MSL\\{frpcExeName}") && frpcServer == "-2")
+                {
                     //找不到自定义的frp，直接失败
                     throw new FileNotFoundException("Frpc Not Found");
                 }
@@ -229,9 +230,6 @@ namespace MSL.pages
             }
         }
 
-
-
-
         private void AutoStartFrpc()
         {
             Task.Run(() => StartFrpc());
@@ -257,7 +255,7 @@ namespace MSL.pages
                 try //写个try 预防旧版不支持
                 {
                     var parser = new FileIniDataParser();
-                    IniData data = parser.ReadFile(@"MSL\frpc");
+                    IniData data = parser.ReadFile(@"MSL\frpc.toml");
                     if (data["common"]["user"] != "")
                     {
                         frpcOutlog.Text = frpcOutlog.Text + msg.Replace(data["common"]["user"], "***usertoken***") + "\n";
@@ -372,7 +370,7 @@ namespace MSL.pages
             string userAccount = "";
             string userPassword = "";
 
-            string _text = File.ReadAllText(@"MSL\frpc");
+            string _text = File.ReadAllText(@"MSL\frpc.toml");
             string pattern = @"user\s*=\s*(\w+)\s*meta_token\s*=\s*(\w+)";
             Match match = Regex.Match(_text, pattern);
 
@@ -500,7 +498,7 @@ namespace MSL.pages
             fw.ShowDialog();
             try
             {
-                if (File.Exists(@"MSL\frpc"))
+                if (File.Exists(@"MSL\frpc.toml"))
                 {
                     Thread thread = new Thread(GetFrpcInfo);
                     thread.Start();
@@ -587,7 +585,7 @@ namespace MSL.pages
             Clipboard.SetDataObject(frplab3.Text.ToString());
         }
 
-        void GetFrpcInfo()
+        private void GetFrpcInfo()
         {
             try
             {
@@ -606,7 +604,7 @@ namespace MSL.pages
                         startfrpc.IsEnabled = true;
                         frplab1.Text = "检测节点信息中……";
                     });
-                    string configText = File.ReadAllText(@"MSL\frpc");
+                    string configText = File.ReadAllText(@"MSL\frpc.toml");
                     // 读取每一行
                     string[] lines = configText.Split('\n');
 
@@ -644,15 +642,15 @@ namespace MSL.pages
                         {
                             frpcType = lines[i].Split('=')[1].Trim();
                         }
-                        else if (lines[i].StartsWith("server_addr") && readServerInfo)
+                        else if (lines[i].StartsWith("serverAddr") && readServerInfo)
                         {
-                            serverAddr = lines[i].Split('=')[1].Trim();
+                            serverAddr = lines[i].Split('=')[1].Trim().Replace("\"",string.Empty);
                         }
-                        else if (lines[i].StartsWith("server_port") && readServerInfo)
+                        else if (lines[i].StartsWith("serverPort") && readServerInfo)
                         {
                             serverPort = int.Parse(lines[i].Split('=')[1].Trim());
                         }
-                        else if (lines[i].StartsWith("remote_port") && readServerInfo)
+                        else if (lines[i].StartsWith("remotePort") && readServerInfo)
                         {
                             remotePort = lines[i].Split('=')[1].Trim();
                         }
@@ -724,7 +722,7 @@ namespace MSL.pages
         {
             try
             {
-                if (File.Exists(@"MSL\frpc"))
+                if (File.Exists(@"MSL\frpc.toml"))
                 {
                     Thread thread = new Thread(GetFrpcInfo);
                     thread.Start();
