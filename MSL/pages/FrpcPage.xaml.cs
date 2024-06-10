@@ -99,7 +99,7 @@ namespace MSL.pages
                     case "1"://openfrp
                         frpcExeName = "frpc_of.exe";
                         downloadUrl = "download/frpc/OpenFrp/amd64";
-                        arguments = File.ReadAllText("MSL\\frpc");
+                        arguments = File.ReadAllText("MSL\\frp\\frpc");
                         break;
                     case "2"://chmlfrp
                         frpcExeName = "frpc_chml.exe";
