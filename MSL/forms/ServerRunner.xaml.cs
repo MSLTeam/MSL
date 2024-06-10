@@ -649,13 +649,11 @@ namespace MSL
             {
                 Growl.Success("已开启");
                 getPlayerInfo = true;
-                //outlog.Margin = new Thickness(10, 10, 125, 47);
                 playerInfoBtn.Content = "记录玩家:开";
             }
             else
             {
                 Growl.Success("已关闭");
-                //outlog.Margin = new Thickness(10, 10, 10, 47);
                 getPlayerInfo = false;
                 playerInfoBtn.Content = "记录玩家:关";
             }
@@ -2269,14 +2267,12 @@ namespace MSL
             {
                 lab001.Visibility = Visibility.Visible;
                 reFresh.Visibility = Visibility.Visible;
-                mpHelp.Visibility = Visibility.Hidden;
                 pluginsAndModsTab.Visibility = Visibility.Hidden;
             }
             else if (lab001.Visibility == Visibility.Visible)
             {
                 lab001.Visibility = Visibility.Hidden;
                 reFresh.Visibility = Visibility.Hidden;
-                mpHelp.Visibility = Visibility.Visible;
                 pluginsAndModsTab.Visibility = Visibility.Visible;
             }
         }

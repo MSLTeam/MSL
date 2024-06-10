@@ -59,8 +59,12 @@ namespace MSL
         private async void Window_Loaded(object sender, RoutedEventArgs e)
         {
             Topmost = true;
-            Topmost = false;
             Focus();
+            Topmost = false;
+            if (Directory.GetCurrentDirectory()+"\\" != AppDomain.CurrentDomain.BaseDirectory)
+            {
+                Directory.SetCurrentDirectory(AppDomain.CurrentDomain.BaseDirectory);
+            }
 
             if (!Directory.Exists("MSL"))
             {

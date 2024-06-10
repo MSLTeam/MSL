@@ -22,10 +22,7 @@ namespace MSL.pages
     /// </summary>
     public partial class OnlinePage : Page
     {
-        //public delegate void DelReadStdOutput(string result);
         public static Process FRPCMD = new Process();
-        //public event DelReadStdOutput ReadStdOutput;
-        //string _dnfrpc;
         private bool isMaster;
         private string ipAddress = "";
         private string ipPort = "";
@@ -34,7 +31,6 @@ namespace MSL.pages
         {
             InitializeComponent();
             FRPCMD.OutputDataReceived += new DataReceivedEventHandler(OutputDataReceived);
-            //ReadStdOutput += new DelReadStdOutput(ReadStdOutputAction);
         }
 
         private void Page_Loaded(object sender, RoutedEventArgs e)
@@ -172,7 +168,6 @@ namespace MSL.pages
                     visiterExp.IsEnabled = true;
                     Growl.Success(LanguageManager.Instance["Pages_Online_CloseSuc"]);
                     FRPCMD.CancelOutputRead();
-                    //FRPCMD.OutputDataReceived -= new DataReceivedEventHandler(p_OutputDataReceived);
                     createRoom.Content = LanguageManager.Instance["Pages_Online_CreateBtn"];
                 }
             }
@@ -183,14 +178,12 @@ namespace MSL.pages
                     FRPCMD.Kill();
                     Thread.Sleep(200);
                     FRPCMD.CancelOutputRead();
-                    //FRPCMD.OutputDataReceived -= new DataReceivedEventHandler(p_OutputDataReceived);
                 }
                 catch
                 {
                     try
                     {
                         FRPCMD.CancelOutputRead();
-                        //FRPCMD.OutputDataReceived -= new DataReceivedEventHandler(p_OutputDataReceived);
                     }
                     catch
                     { }
@@ -219,7 +212,6 @@ namespace MSL.pages
                     masterExp.IsEnabled = true;
                     Growl.Success(LanguageManager.Instance["Pages_Online_CloseSuc"]);
                     FRPCMD.CancelOutputRead();
-                    //FRPCMD.OutputDataReceived -= new DataReceivedEventHandler(p_OutputDataReceived);
                     joinRoom.Content = LanguageManager.Instance["Pages_Online_EnterBtn"];
                 }
             }
@@ -230,14 +222,12 @@ namespace MSL.pages
                     FRPCMD.Kill();
                     Thread.Sleep(200);
                     FRPCMD.CancelOutputRead();
-                    //FRPCMD.OutputDataReceived -= new DataReceivedEventHandler(p_OutputDataReceived);
                 }
                 catch
                 {
                     try
                     {
                         FRPCMD.CancelOutputRead();
-                        //FRPCMD.OutputDataReceived -= new DataReceivedEventHandler(p_OutputDataReceived);
                     }
                     catch
                     { }
@@ -258,7 +248,15 @@ namespace MSL.pages
                     reader.Close();
                     if (!File.Exists("MSL\\frp\\frpc.exe"))
                     {
-                        string _dnfrpc = Functions.Get("/download/frpc/MSLFrp/amd64");
+                        string _dnfrpc;
+                        if (Environment.OSVersion.Version.Major == 6)
+                        {
+                            _dnfrpc = "https://files." + MainWindow.serverLink + "/frpc_0.54.exe";
+                        }
+                        else
+                        {
+                            _dnfrpc = Functions.Get("/download/frpc/MSLFrp/amd64");
+                        }
                         await Shows.ShowDownloader(Window.GetWindow(this), _dnfrpc, "MSL\\frp", "frpc.exe", LanguageManager.Instance["Pages_Online_DlFrpc"]);
                     }
                 }
@@ -275,7 +273,6 @@ namespace MSL.pages
                     joinRoom.Content = LanguageManager.Instance["Pages_Online_ExitRoom"];
                 }
                 frpcOutlog.Text = "";
-                //Directory.SetCurrentDirectory("MSL");
                 FRPCMD.StartInfo.WorkingDirectory = "MSL\\frp";
                 FRPCMD.StartInfo.FileName = "MSL\\frp\\frpc.exe";
                 FRPCMD.StartInfo.Arguments = "-c P2Pfrpc";
@@ -302,6 +299,7 @@ namespace MSL.pages
                 });
             }
         }
+
         private void ReadStdOutputAction(string msg)
         {
             frpcOutlog.Text = frpcOutlog.Text + msg + "\n";
@@ -315,14 +313,12 @@ namespace MSL.pages
                         FRPCMD.Kill();
                         Thread.Sleep(200);
                         FRPCMD.CancelOutputRead();
-                        //FRPCMD.OutputDataReceived -= new DataReceivedEventHandler(p_OutputDataReceived);
                     }
                     catch
                     {
                         try
                         {
                             FRPCMD.CancelOutputRead();
-                            //FRPCMD.OutputDataReceived -= new DataReceivedEventHandler(p_OutputDataReceived);
                         }
                         catch
                         { }
@@ -359,16 +355,12 @@ namespace MSL.pages
                         FRPCMD.Kill();
                         Thread.Sleep(200);
                         FRPCMD.CancelOutputRead();
-                        //ReadStdOutput = null;
-                        //FRPCMD.OutputDataReceived -= new DataReceivedEventHandler(p_OutputDataReceived);
                     }
                     catch
                     {
                         try
                         {
                             FRPCMD.CancelOutputRead();
-                            //ReadStdOutput = null;
-                            //FRPCMD.OutputDataReceived -= new DataReceivedEventHandler(p_OutputDataReceived);
                         }
                         catch
                         { }

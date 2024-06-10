@@ -117,7 +117,15 @@ namespace MSL.pages
 
                 if ((frpcversion == null || frpcversion != "0581") && frpcServer == "0") //mslfrp的特别更新qwq
                 {
-                    string _dnfrpc = Functions.Get(downloadUrl);
+                    string _dnfrpc;
+                    if (Environment.OSVersion.Version.Major == 6)
+                    {
+                        _dnfrpc = "https://files." + MainWindow.serverLink + "/frpc_0.54.exe";
+                    }
+                    else
+                    {
+                        _dnfrpc = Functions.Get(downloadUrl);
+                    }
                     await Dispatcher.Invoke(async () =>
                     {
                         await Shows.ShowDownloader(Window.GetWindow(this), _dnfrpc, "MSL\\frp", $"{frpcExeName}", "更新MSL内网映射中...");
@@ -127,7 +135,15 @@ namespace MSL.pages
 
                 if (!File.Exists($"MSL\\frp\\{frpcExeName}") && frpcServer != "-2")//检查frpc是否存在，不存在就下崽崽
                 {
-                    string _dnfrpc = Functions.Get(downloadUrl);
+                    string _dnfrpc;
+                    if (Environment.OSVersion.Version.Major == 6)
+                    {
+                        _dnfrpc = "https://files." + MainWindow.serverLink + "/frpc_0.54.exe";
+                    }
+                    else
+                    {
+                        _dnfrpc = Functions.Get(downloadUrl);
+                    }
                     await Dispatcher.Invoke(async () =>
                     {
                         if (frpcServer == "0" || frpcServer == "-1")//下载exe or zip
@@ -140,6 +156,7 @@ namespace MSL.pages
                         }
 
                     });
+
                     //只有mslfrp+gh不需要
                     if (frpcServer != "0" && frpcServer != "-1")
                     {
