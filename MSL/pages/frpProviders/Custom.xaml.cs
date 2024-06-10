@@ -87,7 +87,7 @@ namespace MSL.pages.frpProviders
                 {
                     //文件路径
                     string filePath = openFileDialog.FileName;
-                    File.Copy(filePath, @"MSL/frpc_custom.exe");
+                    File.Copy(filePath, @"MSL/frp/frpc_custom.exe");
                     Config.Write("frpcServer", "-2");//自定义模式-自定义frpc客户端
                 }
                 else
