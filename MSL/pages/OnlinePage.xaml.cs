@@ -248,15 +248,14 @@ namespace MSL.pages
                     reader.Close();
                     if (!File.Exists("MSL\\frp\\frpc.exe"))
                     {
-                        string _dnfrpc;
-                        if (Environment.OSVersion.Version.Major == 6)
+                        string _dnfrpc,os="10";
+                        if (Environment.OSVersion.Version.Major == 6 && Environment.OSVersion.Version.Minor==1)
                         {
-                            _dnfrpc = "https://files." + MainWindow.serverLink + "/frpc_0.54.exe";
+                            os = "6";
                         }
-                        else
-                        {
-                            _dnfrpc = Functions.Get("/download/frpc/MSLFrp/amd64");
-                        }
+
+                            _dnfrpc = Functions.Get("/download/frpc/MSLFrp/amd64?os=" + os);
+
                         await Shows.ShowDownloader(Window.GetWindow(this), _dnfrpc, "MSL\\frp", "frpc.exe", LanguageManager.Instance["Pages_Online_DlFrpc"]);
                     }
                 }
