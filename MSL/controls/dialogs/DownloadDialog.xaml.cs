@@ -53,6 +53,7 @@ namespace MSL
         {
             var downloadOpt = new DownloadConfiguration()
             {
+                RequestConfiguration = { UserAgent = "MSL Downloader/" + new Version(System.Reflection.Assembly.GetExecutingAssembly().GetName().Version.ToString()) },
                 ChunkCount = downloadthread, // file parts to download, default value is 1
                 ParallelDownload = true // download parts of file as parallel or not. Default value is false
             };
