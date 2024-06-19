@@ -343,7 +343,7 @@
       <Version>3.0.6</Version>
     </PackageReference>
     <PackageReference Include="Fody">
-      <Version>6.8.0</Version>
+      <Version>6.8.1</Version>
       <IncludeAssets>runtime; compile; build; native; contentfiles; analyzers; buildtransitive</IncludeAssets>
       <PrivateAssets>all</PrivateAssets>
     </PackageReference>
@@ -351,7 +351,7 @@
       <Version>2.5.2</Version>
     </PackageReference>
     <PackageReference Include="Microsoft.Windows.SDK.Contracts">
-      <Version>10.0.25336-preview</Version>
+      <Version>10.0.26100.1</Version>
     </PackageReference>
     <PackageReference Include="Newtonsoft.Json">
       <Version>13.0.3</Version>
