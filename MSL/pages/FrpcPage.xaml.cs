@@ -180,7 +180,7 @@ namespace MSL.pages
                 }
                 //该启动了！
                 FRPCMD.StartInfo.WorkingDirectory = "MSL\\frp";
-                FRPCMD.StartInfo.FileName = "MSL\\frp" + frpcExeName;
+                FRPCMD.StartInfo.FileName = "MSL\\frp\\" + frpcExeName;
                 FRPCMD.StartInfo.Arguments = arguments;
                 FRPCMD.StartInfo.CreateNoWindow = true;
                 FRPCMD.StartInfo.UseShellExecute = false;

@@ -270,7 +270,7 @@ namespace MSL.pages
                 }
                 frpcOutlog.Text = "";
                 FRPCMD.StartInfo.WorkingDirectory = "MSL\\frp";
-                FRPCMD.StartInfo.FileName = "MSL\\frp" + "frpc.exe";
+                FRPCMD.StartInfo.FileName = "MSL\\frp\\" + "frpc.exe";
                 FRPCMD.StartInfo.Arguments = "-c P2Pfrpc";
                 FRPCMD.StartInfo.CreateNoWindow = true;
                 FRPCMD.StartInfo.UseShellExecute = false;
