@@ -1,8 +1,6 @@
 ﻿using HandyControl.Controls;
 using HandyControl.Data;
 using ICSharpCode.SharpZipLib.Zip;
-using IniParser;
-using IniParser.Model;
 using MSL.controls;
 using MSL.i18n;
 using Newtonsoft.Json;

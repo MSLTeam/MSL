@@ -90,11 +90,6 @@
                         <TextBlock Text="Copyright (c) 2020-2024 Paweł Kuna.&#xA;Licensed under the MIT License." Margin="20,0,0,5" VerticalAlignment="Top" HorizontalAlignment="Left" Foreground="{DynamicResource PrimaryTextBrush}"/>
                         <hc:Shield Subject="..." Status="{Binding [Pages_About_OpenWebsite], Source={x:Static langs:LanguageManager.Instance}}" Margin="0,-45,20,0" Command="hc:ControlCommands.OpenLink" CommandParameter="https://github.com/tabler/tabler-icons" HorizontalAlignment="Right" VerticalAlignment="Top"/>
                     </StackPanel>
-                    <StackPanel Margin="0,10,0,0">
-                        <TextBlock Text="13.ini-parser" Margin="20,0,0,5" FontSize="16" VerticalAlignment="Top" HorizontalAlignment="Left" FontWeight="Bold" Foreground="{DynamicResource PrimaryTextBrush}"/>
-                        <TextBlock Text="Copyright (c) 2008 Ricardo Amores Hernández.&#xA;Licensed under the MIT License." Margin="20,0,0,5" VerticalAlignment="Top" HorizontalAlignment="Left" Foreground="{DynamicResource PrimaryTextBrush}"/>
-                        <hc:Shield Subject="..." Status="{Binding [Pages_About_OpenWebsite], Source={x:Static langs:LanguageManager.Instance}}" Margin="0,-45,20,0" Command="hc:ControlCommands.OpenLink" CommandParameter="https://github.com/rickyah/ini-parser" HorizontalAlignment="Right" VerticalAlignment="Top"/>
-                    </StackPanel>
                 </StackPanel>
             </Border>
             <Border x:Name="support" Margin="10,10,10,20" Style="{StaticResource MagicBorder}">
