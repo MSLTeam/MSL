@@ -298,6 +298,26 @@ namespace MSL.pages
 
         private void ReadStdOutputAction(string msg)
         {
+            if (msg.Contains("\x1B"))
+            {
+                string[] splitMsg = msg.Split(new[] { '\x1B' }, StringSplitOptions.RemoveEmptyEntries);
+                foreach (var everyMsg in splitMsg)
+                {
+                    if (everyMsg == string.Empty)
+                    {
+                        continue;
+                    }
+
+                    // 提取ANSI码和文本内容
+                    int mIndex = everyMsg.IndexOf('m');
+                    if (mIndex == -1)
+                    {
+                        continue;
+                    }
+
+                    msg = everyMsg.Substring(mIndex + 1);
+                }
+            }
             frpcOutlog.Text = frpcOutlog.Text + msg + "\n";
             if (msg.IndexOf("login") + 1 != 0)
             {

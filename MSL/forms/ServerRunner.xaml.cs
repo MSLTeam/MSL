@@ -935,19 +935,61 @@ namespace MSL
                 }
                 else if (msg.Contains("\x1B"))
                 {
-                    string[] splitMsg = msg.Split('\x1B');
+                    string[] splitMsg = msg.Split(new[] { '\x1B' }, StringSplitOptions.RemoveEmptyEntries);
                     foreach (var everyMsg in splitMsg)
                     {
                         if (everyMsg == string.Empty)
                         {
                             continue;
                         }
-                        string colorCode = everyMsg.Substring(1, 2);
-                        string text = everyMsg.Substring(everyMsg.IndexOf("m") + 1);
+
+                        // 提取ANSI码和文本内容
+                        int mIndex = everyMsg.IndexOf('m');
+                        if (mIndex == -1)
+                        {
+                            continue;
+                        }
+
+                        string[] codes = everyMsg.Substring(0, mIndex).Split(';');
+                        string text = everyMsg.Substring(mIndex + 1);
+
+                        // 默认的文字装饰
+                        bool isBold = false;
+                        bool isUnderline = false;
+
+                        Brush foreground = Brushes.Green; // 默认颜色
+
+                        foreach (var code in codes)
+                        {
+                            switch (code)
+                            {
+                                case "0": // 重置
+                                    isBold = false;
+                                    isUnderline = false;
+                                    foreground = Brushes.Green;
+                                    break;
+                                case "1": // 加粗
+                                    isBold = true;
+                                    break;
+                                case "4": // 下划线
+                                    isUnderline = true;
+                                    break;
+                                default:
+                                    if (colorDictAnsi.ContainsKey(code))
+                                    {
+                                        foreground = colorDictAnsi[code];
+                                    }
+                                    break;
+                            }
+                        }
+
                         Run run = new Run(text)
                         {
-                            Foreground = GetBrushFromAnsiColorCode(colorCode.ToString())
+                            Foreground = foreground,
+                            FontWeight = isBold ? FontWeights.Bold : FontWeights.Normal,
+                            TextDecorations = isUnderline ? TextDecorations.Underline : null
                         };
+
                         p.Inlines.Add(run);
                     }
                 }

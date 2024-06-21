@@ -251,34 +251,27 @@ namespace MSL.pages
 
         private void ReadStdOutputAction(string msg)
         {
-            //这里控制日志输出
-            JObject jobject = JObject.Parse(File.ReadAllText(@"MSL\config.json", Encoding.UTF8));
-            if (jobject["frpcServer"].ToString() == "2")//给chmlfrp做token打码
+            if (msg.Contains("\x1B"))
             {
-                try //写个try 预防旧版不支持
+                string[] splitMsg = msg.Split(new[] { '\x1B' }, StringSplitOptions.RemoveEmptyEntries);
+                foreach (var everyMsg in splitMsg)
                 {
-                    var parser = new FileIniDataParser();
-                    IniData data = parser.ReadFile(@"MSL\frpc.toml");
-                    if (data["common"]["user"] != "")
+                    if (everyMsg == string.Empty)
                     {
-                        frpcOutlog.Text = frpcOutlog.Text + msg.Replace(data["common"]["user"], "***usertoken***") + "\n";
+                        continue;
                     }
-                    else
+
+                    // 提取ANSI码和文本内容
+                    int mIndex = everyMsg.IndexOf('m');
+                    if (mIndex == -1)
                     {
-                        frpcOutlog.Text = frpcOutlog.Text + msg + "\n";
+                        continue;
                     }
-                }
-                catch (Exception)
-                {
-                    frpcOutlog.Text = frpcOutlog.Text + msg + "\n";
-                }
 
+                    msg = everyMsg.Substring(mIndex + 1);
+                }
             }
-            else
-            {
-                frpcOutlog.Text = frpcOutlog.Text + msg + "\n";
-            }
-
+            frpcOutlog.Text = frpcOutlog.Text + msg + "\n";
             if (msg.IndexOf("login") + 1 != 0)
             {
                 if (msg.IndexOf("failed") + 1 != 0)
@@ -339,7 +332,7 @@ namespace MSL.pages
             }
             if (msg.Contains(" 发现新版本"))
             {
-                //JObject jobject = JObject.Parse(File.ReadAllText(@"MSL\config.json", Encoding.UTF8));
+                JObject jobject = JObject.Parse(File.ReadAllText(@"MSL\config.json", Encoding.UTF8));
                 if (jobject["frpcServer"].ToString() == "1")
                 {
                     Growl.Ask(new GrowlInfo
