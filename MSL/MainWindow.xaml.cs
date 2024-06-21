@@ -66,11 +66,7 @@ namespace MSL
                 Directory.SetCurrentDirectory(AppDomain.CurrentDomain.BaseDirectory);
             }
 
-            if (!Directory.Exists("MSL"))
-            {
-                //Logger.LogWarning("未检测到MSL文件夹，已进行创建");
-                Directory.CreateDirectory("MSL");
-            }
+            Directory.CreateDirectory("MSL");
             try
             {
                 //firstLauchEvent

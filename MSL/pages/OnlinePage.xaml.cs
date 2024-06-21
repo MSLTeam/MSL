@@ -243,19 +243,16 @@ namespace MSL.pages
                 //内网映射版本检测
                 try
                 {
-                    StreamReader reader = File.OpenText("MSL\\config.json");
-                    JObject jobject2 = (JObject)JToken.ReadFrom(new JsonTextReader(reader));
-                    reader.Close();
+                    Directory.CreateDirectory("MSL\\frp");
                     if (!File.Exists("MSL\\frp\\frpc.exe"))
                     {
-                        string _dnfrpc,os="10";
-                        if (Environment.OSVersion.Version.Major == 6 && Environment.OSVersion.Version.Minor==1)
+                        string _dnfrpc, os = "10";
+                        if (Environment.OSVersion.Version.Major == 6 && Environment.OSVersion.Version.Minor == 1)
                         {
                             os = "6";
                         }
 
-                            _dnfrpc = Functions.Get("/download/frpc/MSLFrp/amd64?os=" + os);
-
+                        _dnfrpc = Functions.Get("/download/frpc/MSLFrp/amd64?os=" + os);
                         await Shows.ShowDownloader(Window.GetWindow(this), _dnfrpc, "MSL\\frp", "frpc.exe", LanguageManager.Instance["Pages_Online_DlFrpc"]);
                     }
                 }
@@ -273,7 +270,7 @@ namespace MSL.pages
                 }
                 frpcOutlog.Text = "";
                 FRPCMD.StartInfo.WorkingDirectory = "MSL\\frp";
-                FRPCMD.StartInfo.FileName = "MSL\\frp\\frpc.exe";
+                FRPCMD.StartInfo.FileName = "MSL\\frp" + "frpc.exe";
                 FRPCMD.StartInfo.Arguments = "-c P2Pfrpc";
                 FRPCMD.StartInfo.CreateNoWindow = true;
                 FRPCMD.StartInfo.UseShellExecute = false;
@@ -378,6 +375,5 @@ namespace MSL.pages
             }
             frpcOutlog.ScrollToEnd();
         }
-
     }
 }

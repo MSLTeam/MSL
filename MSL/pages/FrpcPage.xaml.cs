@@ -29,16 +29,12 @@ namespace MSL.pages
     /// </summary>
     public partial class FrpcPage : Page
     {
-        //private delegate void DelReadStdOutput(string result);
         public static Process FRPCMD = new Process();
-        //private event DelReadStdOutput ReadStdOutput;
-        //private string _dnfrpc;
 
         public FrpcPage()
         {
             InitializeComponent();
             FRPCMD.OutputDataReceived += new DataReceivedEventHandler(OutputDataReceived);
-            //ReadStdOutput += new DelReadStdOutput(ReadStdOutputAction);
             MainWindow.AutoOpenFrpc += AutoStartFrpc;
         }
         /*
@@ -71,6 +67,7 @@ namespace MSL.pages
         {
             try
             {
+                Directory.CreateDirectory("MSL\\frp");
                 //ui提示
                 Dispatcher.Invoke(() =>
                 {
@@ -93,7 +90,7 @@ namespace MSL.pages
                 string downloadUrl = "download/frpc/MSLFrp/amd64"; //frpc客户端在api的调用位置
                 string arguments = "-c frpc.toml"; //启动命令
                 string osver = "10";
-                if(Environment.OSVersion.Version.Major == 6 && Environment.OSVersion.Version.Minor == 1)
+                if (Environment.OSVersion.Version.Major == 6 && Environment.OSVersion.Version.Minor == 1)
                 {
                     osver = "6"; //OSVersion.Version win11获取的是6.2 win7是6.1
                 }
@@ -120,7 +117,7 @@ namespace MSL.pages
                 if ((frpcversion == "" || frpcversion != "0581") && frpcServer == "0") //mslfrp的特别更新qwq
                 {
                     string _dnfrpc;
-                    _dnfrpc = Functions.Get(downloadUrl+"?os="+ osver);//丢os版本号
+                    _dnfrpc = Functions.Get(downloadUrl + "?os=" + osver);//丢os版本号
 
                     await Dispatcher.Invoke(async () =>
                     {
@@ -183,7 +180,7 @@ namespace MSL.pages
                 }
                 //该启动了！
                 FRPCMD.StartInfo.WorkingDirectory = "MSL\\frp";
-                FRPCMD.StartInfo.FileName = $"MSL\\frp\\{frpcExeName}";
+                FRPCMD.StartInfo.FileName = "MSL\\frp" + frpcExeName;
                 FRPCMD.StartInfo.Arguments = arguments;
                 FRPCMD.StartInfo.CreateNoWindow = true;
                 FRPCMD.StartInfo.UseShellExecute = false;
@@ -615,7 +612,7 @@ namespace MSL.pages
                     startfrpc.IsEnabled = true;
                     frplab1.Text = "检测节点信息中……";
                 });
-                if (jobject["frpcServer"].ToString() == "0"|| jobject["frpcServer"].ToString() == "2" || jobject["frpcServer"].ToString() == "-2" || jobject["frpcServer"].ToString() == "-1")
+                if (jobject["frpcServer"].ToString() == "0" || jobject["frpcServer"].ToString() == "2" || jobject["frpcServer"].ToString() == "-2" || jobject["frpcServer"].ToString() == "-1")
                 {
 
                     string configText;
@@ -636,7 +633,7 @@ namespace MSL.pages
                     {
                         nodeName = lines[0].TrimStart('#').Trim();
                     }
-                    else if(jobject["frpcServer"].ToString() == "2")
+                    else if (jobject["frpcServer"].ToString() == "2")
                     {
                         nodeName = "ChmlFrp节点";
                     }
@@ -663,15 +660,15 @@ namespace MSL.pages
                         {
                             frpcType = lines[i].Split('=')[1].Trim();
                         }
-                        else if ((lines[i].StartsWith("serverAddr")|| lines[i].StartsWith("server_addr")) && readServerInfo)
+                        else if ((lines[i].StartsWith("serverAddr") || lines[i].StartsWith("server_addr")) && readServerInfo)
                         {
                             serverAddr = lines[i].Split('=')[1].Trim().Replace("\"", string.Empty);
                         }
-                        else if ((lines[i].StartsWith("serverPort")|| lines[i].StartsWith("server_port")) && readServerInfo)
+                        else if ((lines[i].StartsWith("serverPort") || lines[i].StartsWith("server_port")) && readServerInfo)
                         {
                             serverPort = int.Parse(lines[i].Split('=')[1].Trim());
                         }
-                        else if ((lines[i].StartsWith("remotePort")|| lines[i].StartsWith("remote_port")) && readServerInfo)
+                        else if ((lines[i].StartsWith("remotePort") || lines[i].StartsWith("remote_port")) && readServerInfo)
                         {
                             remotePort = lines[i].Split('=')[1].Trim();
                         }
