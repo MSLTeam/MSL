@@ -160,7 +160,7 @@ namespace MSL
                 {
                     File.WriteAllText(serverbase + "\\" + path, EditorBox.Text, Encoding.Default);
                 }
-                Shows.ShowMsgDialog(this, "保存成功！", "提示");
+                Shows.ShowMsgDialog(this, "保存成功！重启服务器生效！", "提示");
             }
             catch (Exception ex)
             {

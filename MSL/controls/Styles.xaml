@@ -88,7 +88,7 @@
         <Setter Property="Template">
             <Setter.Value>
                 <ControlTemplate TargetType="{x:Type TabItem}">
-                    <Border x:Name="Border" Margin="5" Height="38" Background="{DynamicResource SideMenuBrush}" CornerRadius="5">
+                    <Border x:Name="Border" Margin="5" Height="38" Background="{DynamicResource SideMenuItemBrush}" CornerRadius="5">
                         <StackPanel Orientation="Horizontal">
                             <Rectangle Fill="{DynamicResource SideMenuItemBrush}" RadiusX="5" RadiusY="5" HorizontalAlignment="Left" Width="3" Height="24" x:Name="Rect"/>
                             <ContentPresenter VerticalAlignment="Center" HorizontalAlignment="Stretch" Margin="5" ContentSource="Header"/>

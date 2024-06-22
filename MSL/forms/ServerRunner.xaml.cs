@@ -453,41 +453,31 @@ namespace MSL
             }
         }
 
-        private bool isModsPluginsRefresh = true;
+        private bool isRefresh = true;
         private void TabCtrl_SelectionChanged(object sender, SelectionChangedEventArgs e)
         {
-            if (TabCtrl.SelectedIndex == 2)
+            switch (TabCtrl.SelectedIndex)
             {
-                if (isModsPluginsRefresh)
-                {
-                    isModsPluginsRefresh = false;
-                    ReFreshPluginsAndMods();
-                    return;
-                }
-            }
-            else
-            {
-                isModsPluginsRefresh = true;
-                if (IsLoaded)
-                {
-                    try
+                case 2:
+                    if (isRefresh)
                     {
-                        pluginslist.Items.Clear();
-                        modslist.Items.Clear();
+                        isRefresh = false;
+                        ReFreshPluginsAndMods();
                     }
-                    catch
+                    break;
+                case 3:
+                    if (isRefresh)
                     {
-                        try
-                        {
-                            modslist.Items.Clear();
-                        }
-                        catch
-                        {
-                        }
+                        isRefresh = false;
+                        GetServerConfig();
                     }
-                }
+                    break;
+                default:
+                    isRefresh = true;
+                    break;
             }
         }
+
 
         #region 仪表盘
         private async void solveProblemBtn_Click(object sender, RoutedEventArgs e)
@@ -2681,7 +2671,6 @@ namespace MSL
                         memoryInfo.Text = "最小:0M," + "最大:" + maxMemoryValue + "M";
                     }
                 }
-                GetServerConfig();
             }
             catch
             {
@@ -2703,7 +2692,6 @@ namespace MSL
                 });
                 string response = Functions.Get("query/java");
                 JArray jArray = JArray.Parse(response);
-                //List<string> strings = new List<string>();
                 foreach (var j in jArray)
                 {
                     Dispatcher.Invoke(() =>
