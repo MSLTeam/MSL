@@ -379,10 +379,10 @@ namespace MSL.pages.frpProviders
                         string Ru2 = portBox.Text.Substring(portBox.Text.IndexOf("|"));
                         string a200 = Ru2.Substring(Ru2.IndexOf("|") + 1);
                         frpc += "\n[[proxies]]\nname = \"tcp\"\n";
-                        frpc += "\ttype = \"tcp\"\n";
-                        frpc += "\tlocalIP = \"127.0.0.1\"\n";
-                        frpc += "\tlocalPort = " + a100 + "\n";
-                        frpc += "\tremotePort = " + n + "\n";
+                        frpc += "type = \"tcp\"\n";
+                        frpc += "localIP = \"127.0.0.1\"\n";
+                        frpc += "localPort = " + a100 + "\n";
+                        frpc += "remotePort = " + n + "\n";
                         frpc += compressionArg + "\n";
                         frpc += "\n[[proxies]]\nname = \"udp\"\n";
                         frpc += "type = \"udp\"\n";

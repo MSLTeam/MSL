@@ -20,7 +20,7 @@
 
         <Grid>
             <Label Style="{StaticResource BorderTitle}" Content="{Binding [Pages_Online_Title], Source={x:Static langs:LanguageManager.Instance}}"/>
-            <hc:Shield Subject="{Binding [Pages_Online_Tips1], Source={x:Static langs:LanguageManager.Instance}}" Status="{Binding [Pages_Online_TipsOpenWeb], Source={x:Static langs:LanguageManager.Instance}}" Margin="150,5,0,0" Command="hc:ControlCommands.OpenLink" CommandParameter="https://www.mslmc.cn/docs/p2p.html" HorizontalAlignment="Left" VerticalAlignment="Top" Height="25"/>
+            <hc:Shield Subject="{Binding [Pages_Online_Tips1], Source={x:Static langs:LanguageManager.Instance}}" Status="{Binding [Pages_Online_TipsOpenWeb], Source={x:Static langs:LanguageManager.Instance}}" Margin="10" Command="hc:ControlCommands.OpenLink" CommandParameter="https://www.mslmc.cn/docs/p2p.html" HorizontalAlignment="Right" VerticalAlignment="Top" Height="25"/>
             <TextBlock x:Name="serverState" Text="{Binding [Pages_Online_ServerStatusChecking], Source={x:Static langs:LanguageManager.Instance}}" Foreground="Red" Margin="10,35,0,0" VerticalAlignment="Top" HorizontalAlignment="Left" FontSize="16"/>
             <Grid Margin="0,65,0,0">
                 <Grid.RowDefinitions>

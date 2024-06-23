@@ -328,26 +328,20 @@ namespace MSL.pages
                     {
                         FRPCMD.Kill();
                         Thread.Sleep(200);
+                    }
+                    finally
+                    {
                         FRPCMD.CancelOutputRead();
-                    }
-                    catch
-                    {
-                        try
+                        if (isMaster)
                         {
-                            FRPCMD.CancelOutputRead();
+                            createRoom.Content = LanguageManager.Instance["Pages_Online_CreateBtn"];
+                            visiterExp.IsEnabled = true;
                         }
-                        catch
-                        { }
-                    }
-                    if (isMaster)
-                    {
-                        createRoom.Content = LanguageManager.Instance["Pages_Online_CreateBtn"];
-                        visiterExp.IsEnabled = true;
-                    }
-                    else
-                    {
-                        joinRoom.Content = LanguageManager.Instance["Pages_Online_EnterBtn"];
-                        masterExp.IsEnabled = true;
+                        else
+                        {
+                            joinRoom.Content = LanguageManager.Instance["Pages_Online_EnterBtn"];
+                            masterExp.IsEnabled = true;
+                        }
                     }
                 }
                 if (msg.IndexOf("success") + 1 != 0)
@@ -372,24 +366,19 @@ namespace MSL.pages
                         Thread.Sleep(200);
                         FRPCMD.CancelOutputRead();
                     }
-                    catch
+                    finally
                     {
-                        try
+                        FRPCMD.CancelOutputRead();
+                        if (isMaster)
                         {
-                            FRPCMD.CancelOutputRead();
+                            createRoom.Content = LanguageManager.Instance["Pages_Online_CreateBtn"];
+                            visiterExp.IsEnabled = true;
                         }
-                        catch
-                        { }
-                    }
-                    if (isMaster)
-                    {
-                        createRoom.Content = LanguageManager.Instance["Pages_Online_CreateBtn"];
-                        visiterExp.IsEnabled = true;
-                    }
-                    else
-                    {
-                        joinRoom.Content = LanguageManager.Instance["Pages_Online_EnterBtn"];
-                        masterExp.IsEnabled = true;
+                        else
+                        {
+                            joinRoom.Content = LanguageManager.Instance["Pages_Online_EnterBtn"];
+                            masterExp.IsEnabled = true;
+                        }
                     }
                 }
             }
