@@ -9,7 +9,6 @@ using System;
 using System.Diagnostics;
 using System.IO;
 using System.Net.NetworkInformation;
-using System.Runtime.InteropServices;
 using System.Text;
 using System.Text.RegularExpressions;
 using System.Threading;
@@ -27,14 +26,15 @@ namespace MSL.pages
     /// </summary>
     public partial class FrpcPage : Page
     {
-        public static Process FRPCMD = new Process();
+        public static Process FrpcProcess = new Process();
 
         public FrpcPage()
         {
             InitializeComponent();
-            FRPCMD.OutputDataReceived += new DataReceivedEventHandler(OutputDataReceived);
+            FrpcProcess.OutputDataReceived += new DataReceivedEventHandler(OutputDataReceived);
             MainWindow.AutoOpenFrpc += AutoStartFrpc;
         }
+
         /*
         *      
         *          ┌─┐       ┌─┐
@@ -177,22 +177,22 @@ namespace MSL.pages
                     throw new FileNotFoundException("Frpc Not Found");
                 }
                 //该启动了！
-                FRPCMD.StartInfo.WorkingDirectory = "MSL\\frp";
-                FRPCMD.StartInfo.FileName = "MSL\\frp\\" + frpcExeName;
-                FRPCMD.StartInfo.Arguments = arguments;
-                FRPCMD.StartInfo.CreateNoWindow = true;
-                FRPCMD.StartInfo.UseShellExecute = false;
-                FRPCMD.StartInfo.RedirectStandardInput = true;
-                FRPCMD.StartInfo.RedirectStandardOutput = true;
-                FRPCMD.StartInfo.StandardOutputEncoding = Encoding.UTF8;
-                FRPCMD.Start();
-                FRPCMD.BeginOutputReadLine();
+                FrpcProcess.StartInfo.WorkingDirectory = "MSL\\frp";
+                FrpcProcess.StartInfo.FileName = "MSL\\frp\\" + frpcExeName;
+                FrpcProcess.StartInfo.Arguments = arguments;
+                FrpcProcess.StartInfo.CreateNoWindow = true;
+                FrpcProcess.StartInfo.UseShellExecute = false;
+                FrpcProcess.StartInfo.RedirectStandardInput = true;
+                FrpcProcess.StartInfo.RedirectStandardOutput = true;
+                FrpcProcess.StartInfo.StandardOutputEncoding = Encoding.UTF8;
+                FrpcProcess.Start();
+                FrpcProcess.BeginOutputReadLine();
                 Dispatcher.Invoke(() =>
                 {
                     startfrpc.IsEnabled = true;
                 });
-                FRPCMD.WaitForExit();
-                FRPCMD.CancelOutputRead();
+                FrpcProcess.WaitForExit();
+                FrpcProcess.CancelOutputRead();
                 //到这里就关掉了
                 Dispatcher.Invoke(() =>
                 {
@@ -285,9 +285,9 @@ namespace MSL.pages
                     {
                         frpcOutlog.Text += "连接超时，该节点可能下线，请重新配置！\n";
                     }
-                    if (!FRPCMD.HasExited)
+                    if (!FrpcProcess.HasExited)
                     {
-                        Task.Run(() => StopProcess(FRPCMD));
+                        Task.Run(() => Functions.StopProcess(FrpcProcess));
                     }
                 }
                 if (msg.IndexOf("success") + 1 != 0)
@@ -322,9 +322,9 @@ namespace MSL.pages
                     {
                         frpcOutlog.Text += "隧道已被占用！请不要频繁开关内网映射并等待一分钟再试。\n若一分钟后仍然占用，请尝试手动结束frpc进程或重启电脑再试。\n";
                     }
-                    if (!FRPCMD.HasExited)
+                    if (!FrpcProcess.HasExited)
                     {
-                        Task.Run(() => StopProcess(FRPCMD));
+                        Task.Run(() => Functions.StopProcess(FrpcProcess));
                     }
                 }
             }
@@ -342,8 +342,11 @@ namespace MSL.pages
                             {
                                 Dispatcher.InvokeAsync(async () =>
                                 {
-                                    await Task.Run(() => StopProcess(FRPCMD));
-                                    await Task.Delay(1000);
+                                    if (!FrpcProcess.HasExited)
+                                    {
+                                        await Task.Run(() => Functions.StopProcess(FrpcProcess));
+                                    }
+                                    await Task.Delay(500);
                                     await Task.Run(() => File.Delete("MSL\\frpc_of.exe"));
                                     _ = Task.Run(() => StartFrpc());
 
@@ -523,61 +526,12 @@ namespace MSL.pages
                 {
                     startfrpc.IsEnabled = false;
                     Growl.Info("正在关闭内网映射！");
-                    Task.Run(() => StopProcess(FRPCMD));
+                    Task.Run(() => Functions.StopProcess(FrpcProcess));
                 }
                 catch
                 {
                     Growl.Error("关闭失败！请尝试手动结束frpc进程！");
                 }
-            }
-        }
-        [DllImport("kernel32.dll", SetLastError = true)]
-        static extern bool GenerateConsoleCtrlEvent(ConsoleCtrlEvent sigevent, int dwProcessGroupId);
-
-        [DllImport("kernel32.dll", SetLastError = true)]
-        static extern bool AttachConsole(uint dwProcessId);
-
-        [DllImport("kernel32.dll")]
-        static extern bool SetConsoleCtrlHandler(ConsoleCtrlDelegate HandlerRoutine, bool Add);
-
-        [DllImport("kernel32.dll", SetLastError = true, ExactSpelling = true)]
-        static extern bool FreeConsole();
-
-        delegate Boolean ConsoleCtrlDelegate(uint CtrlType);
-
-        public enum ConsoleCtrlEvent
-        {
-            CTRL_C = 0,
-        }
-
-        public static async Task StopProcess(Process process)
-        {
-            if (AttachConsole((uint)process.Id))
-            {
-                // NOTE: each of these functions could fail. Error-handling omitted
-                // for clarity. A real-world program should check the result of each
-                // call and handle errors appropriately.
-                SetConsoleCtrlHandler(null, true);
-                GenerateConsoleCtrlEvent(ConsoleCtrlEvent.CTRL_C, 0);
-                await Task.Run(() => ProcessExited());
-                SetConsoleCtrlHandler(null, false);
-                FreeConsole();
-            }
-            else
-            {
-                int hresult = Marshal.GetLastWin32Error();
-                Exception e = Marshal.GetExceptionForHR(hresult);
-
-                throw new InvalidOperationException(
-                    $"ERROR: failed to attach console to process {process.Id}: {e?.Message ?? hresult.ToString()}");
-            }
-        }
-
-        static void ProcessExited()
-        {
-            while (!FRPCMD.HasExited)
-            {
-                Thread.Sleep(1000);
             }
         }
 

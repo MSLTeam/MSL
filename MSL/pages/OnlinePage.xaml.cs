@@ -9,6 +9,7 @@ using System.IO;
 using System.Net.NetworkInformation;
 using System.Text.RegularExpressions;
 using System.Threading;
+using System.Threading.Tasks;
 using System.Windows;
 using System.Windows.Controls;
 using System.Windows.Threading;
@@ -22,7 +23,7 @@ namespace MSL.pages
     /// </summary>
     public partial class OnlinePage : Page
     {
-        public static Process FRPCMD = new Process();
+        public static Process FrpcProcess = new Process();
         private bool isMaster;
         private string ipAddress = "";
         private string ipPort = "";
@@ -30,7 +31,7 @@ namespace MSL.pages
         public OnlinePage()
         {
             InitializeComponent();
-            FRPCMD.OutputDataReceived += new DataReceivedEventHandler(OutputDataReceived);
+            FrpcProcess.OutputDataReceived += new DataReceivedEventHandler(OutputDataReceived);
         }
 
         private void Page_Loaded(object sender, RoutedEventArgs e)
@@ -150,89 +151,41 @@ namespace MSL.pages
 
         private void createRoom_Click(object sender, RoutedEventArgs e)
         {
-            try
+            if (createRoom.Content.ToString() != LanguageManager.Instance["Pages_Online_Close"])
             {
-                if (createRoom.Content.ToString() != LanguageManager.Instance["Pages_Online_Close"])
-                {
-                    string a = "[common]\r\nserver_port = " + ipPort + "\r\nserver_addr = " + ipAddress + "\r\n\r\n[" + masterQQ.Text + "]\r\ntype = xtcp\r\nlocal_ip = 127.0.0.1\r\nlocal_port = " + masterPort.Text + "\r\nsk = " + masterKey.Text + "\r\n";
-                    Directory.CreateDirectory("MSL\\frp");
-                    File.WriteAllText("MSL\\frp\\P2Pfrpc", a);
-                    isMaster = true;
-                    visiterExp.IsEnabled = false;
-                    StartFrpc();
-                }
-                else
-                {
-                    FRPCMD.Kill();
-                    Thread.Sleep(200);
-                    visiterExp.IsEnabled = true;
-                    Growl.Success(LanguageManager.Instance["Pages_Online_CloseSuc"]);
-                    FRPCMD.CancelOutputRead();
-                    createRoom.Content = LanguageManager.Instance["Pages_Online_CreateBtn"];
-                }
+                string a = "[common]\r\nserver_port = " + ipPort + "\r\nserver_addr = " + ipAddress + "\r\n\r\n[" + masterQQ.Text + "]\r\ntype = xtcp\r\nlocal_ip = 127.0.0.1\r\nlocal_port = " + masterPort.Text + "\r\nsk = " + masterKey.Text + "\r\n";
+                Directory.CreateDirectory("MSL\\frp");
+                File.WriteAllText("MSL\\frp\\P2Pfrpc", a);
+                isMaster = true;
+                visiterExp.IsEnabled = false;
+                Task.Run(StartFrpc);
             }
-            catch
+            else
             {
-                try
+                if (!FrpcProcess.HasExited)
                 {
-                    FRPCMD.Kill();
-                    Thread.Sleep(200);
-                    FRPCMD.CancelOutputRead();
+                    Task.Run(() => Functions.StopProcess(FrpcProcess));
                 }
-                catch
-                {
-                    try
-                    {
-                        FRPCMD.CancelOutputRead();
-                    }
-                    catch
-                    { }
-                }
-                createRoom.Content = LanguageManager.Instance["Pages_Online_CreateBtn"];
             }
         }
 
         private void joinRoom_Click(object sender, RoutedEventArgs e)
         {
-            try
+            if (joinRoom.Content.ToString() != LanguageManager.Instance["Pages_Online_ExitRoom"])
             {
-                if (joinRoom.Content.ToString() != LanguageManager.Instance["Pages_Online_ExitRoom"])
-                {
-                    string a = "[common]\r\nserver_port = " + ipPort + "\r\nserver_addr = " + ipAddress + "\r\n\r\n[p2p_ssh_visitor]\r\ntype = xtcp\r\nrole = visitor\r\nbind_addr = 127.0.0.1\r\nbind_port = " + visiterPort.Text + "\r\nserver_name = " + visiterQQ.Text + "\r\nsk = " + visiterKey.Text + "\r\n";
-                    Directory.CreateDirectory("MSL\\frp");
-                    File.WriteAllText("MSL\\frp\\P2Pfrpc", a);
-                    isMaster = false;
-                    masterExp.IsEnabled = false;
-                    StartFrpc();
-                }
-                else
-                {
-                    FRPCMD.Kill();
-                    Thread.Sleep(200);
-                    masterExp.IsEnabled = true;
-                    Growl.Success(LanguageManager.Instance["Pages_Online_CloseSuc"]);
-                    FRPCMD.CancelOutputRead();
-                    joinRoom.Content = LanguageManager.Instance["Pages_Online_EnterBtn"];
-                }
+                string a = "[common]\r\nserver_port = " + ipPort + "\r\nserver_addr = " + ipAddress + "\r\n\r\n[p2p_ssh_visitor]\r\ntype = xtcp\r\nrole = visitor\r\nbind_addr = 127.0.0.1\r\nbind_port = " + visiterPort.Text + "\r\nserver_name = " + visiterQQ.Text + "\r\nsk = " + visiterKey.Text + "\r\n";
+                Directory.CreateDirectory("MSL\\frp");
+                File.WriteAllText("MSL\\frp\\P2Pfrpc", a);
+                isMaster = false;
+                masterExp.IsEnabled = false;
+                Task.Run(StartFrpc);
             }
-            catch
+            else
             {
-                try
+                if (!FrpcProcess.HasExited)
                 {
-                    FRPCMD.Kill();
-                    Thread.Sleep(200);
-                    FRPCMD.CancelOutputRead();
+                    Task.Run(() => Functions.StopProcess(FrpcProcess));
                 }
-                catch
-                {
-                    try
-                    {
-                        FRPCMD.CancelOutputRead();
-                    }
-                    catch
-                    { }
-                }
-                joinRoom.Content = LanguageManager.Instance["Pages_Online_EnterBtn"];
             }
         }
 
@@ -253,31 +206,52 @@ namespace MSL.pages
                         }
 
                         _dnfrpc = Functions.Get("/download/frpc/MSLFrp/amd64?os=" + os);
-                        await Shows.ShowDownloader(Window.GetWindow(this), _dnfrpc, "MSL\\frp", "frpc.exe", LanguageManager.Instance["Pages_Online_DlFrpc"]);
+                        await Dispatcher.Invoke(async () =>
+                        {
+                            await Shows.ShowDownloader(Window.GetWindow(this), _dnfrpc, "MSL\\frp", "frpc.exe", LanguageManager.Instance["Pages_Online_DlFrpc"]);
+                        });
                     }
                 }
                 catch
                 {
                     return;
                 }
-                if (isMaster)
+                Dispatcher.Invoke(() =>
                 {
-                    createRoom.Content = LanguageManager.Instance["Pages_Online_Close"];
-                }
-                else
+                    if (isMaster)
+                    {
+                        createRoom.Content = LanguageManager.Instance["Pages_Online_Close"];
+                    }
+                    else
+                    {
+                        joinRoom.Content = LanguageManager.Instance["Pages_Online_ExitRoom"];
+                    }
+                    frpcOutlog.Text = string.Empty;
+                });
+                FrpcProcess.StartInfo.WorkingDirectory = "MSL\\frp";
+                FrpcProcess.StartInfo.FileName = "MSL\\frp\\" + "frpc.exe";
+                FrpcProcess.StartInfo.Arguments = "-c P2Pfrpc";
+                FrpcProcess.StartInfo.CreateNoWindow = true;
+                FrpcProcess.StartInfo.UseShellExecute = false;
+                FrpcProcess.StartInfo.RedirectStandardInput = true;
+                FrpcProcess.StartInfo.RedirectStandardOutput = true;
+                FrpcProcess.Start();
+                FrpcProcess.BeginOutputReadLine();
+                FrpcProcess.WaitForExit();
+                FrpcProcess.CancelOutputRead();
+                Dispatcher.Invoke(() =>
                 {
-                    joinRoom.Content = LanguageManager.Instance["Pages_Online_ExitRoom"];
-                }
-                frpcOutlog.Text = "";
-                FRPCMD.StartInfo.WorkingDirectory = "MSL\\frp";
-                FRPCMD.StartInfo.FileName = "MSL\\frp\\" + "frpc.exe";
-                FRPCMD.StartInfo.Arguments = "-c P2Pfrpc";
-                FRPCMD.StartInfo.CreateNoWindow = true;
-                FRPCMD.StartInfo.UseShellExecute = false;
-                FRPCMD.StartInfo.RedirectStandardInput = true;
-                FRPCMD.StartInfo.RedirectStandardOutput = true;
-                FRPCMD.Start();
-                FRPCMD.BeginOutputReadLine();
+                    if (isMaster)
+                    {
+                        createRoom.Content = LanguageManager.Instance["Pages_Online_CreateBtn"];
+                        visiterExp.IsEnabled = true;
+                    }
+                    else
+                    {
+                        joinRoom.Content = LanguageManager.Instance["Pages_Online_EnterBtn"];
+                        masterExp.IsEnabled = true;
+                    }
+                });
             }
             catch (Exception e)
             {
@@ -324,24 +298,9 @@ namespace MSL.pages
                 if (msg.IndexOf("failed") + 1 != 0)
                 {
                     Growl.Error(LanguageManager.Instance["Pages_Online_Err"]);
-                    try
+                    if (!FrpcProcess.HasExited)
                     {
-                        FRPCMD.Kill();
-                        Thread.Sleep(200);
-                    }
-                    finally
-                    {
-                        FRPCMD.CancelOutputRead();
-                        if (isMaster)
-                        {
-                            createRoom.Content = LanguageManager.Instance["Pages_Online_CreateBtn"];
-                            visiterExp.IsEnabled = true;
-                        }
-                        else
-                        {
-                            joinRoom.Content = LanguageManager.Instance["Pages_Online_EnterBtn"];
-                            masterExp.IsEnabled = true;
-                        }
+                        Task.Run(() => Functions.StopProcess(FrpcProcess));
                     }
                 }
                 if (msg.IndexOf("success") + 1 != 0)
@@ -360,26 +319,7 @@ namespace MSL.pages
                 {
                     frpcOutlog.Text = frpcOutlog.Text + LanguageManager.Instance["Pages_Online_Err"] + "\n";
                     Growl.Error(LanguageManager.Instance["Pages_Online_Err"]);
-                    try
-                    {
-                        FRPCMD.Kill();
-                        Thread.Sleep(200);
-                        FRPCMD.CancelOutputRead();
-                    }
-                    finally
-                    {
-                        FRPCMD.CancelOutputRead();
-                        if (isMaster)
-                        {
-                            createRoom.Content = LanguageManager.Instance["Pages_Online_CreateBtn"];
-                            visiterExp.IsEnabled = true;
-                        }
-                        else
-                        {
-                            joinRoom.Content = LanguageManager.Instance["Pages_Online_EnterBtn"];
-                            masterExp.IsEnabled = true;
-                        }
-                    }
+                    FrpcProcess.Kill();
                 }
             }
             frpcOutlog.ScrollToEnd();

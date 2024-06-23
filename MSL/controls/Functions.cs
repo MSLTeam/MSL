@@ -4,6 +4,7 @@ using System.Diagnostics;
 using System.IO;
 using System.Linq;
 using System.Net;
+using System.Runtime.InteropServices;
 using System.Text;
 using System.Text.RegularExpressions;
 using System.Threading;
@@ -13,6 +14,7 @@ namespace MSL.controls
 {
     internal class Functions
     {
+        #region Http Service
         public static string Get(string path, string customUrl = "", bool hideHeader = false)
         {
             return WebGet(path, out _, customUrl, hideHeader);
@@ -122,6 +124,7 @@ namespace MSL.controls
                 return returnData;
             }
         }
+        #endregion
 
         public static Tuple<int, int, int, int> VersionCompare(string version)
         {
@@ -198,6 +201,7 @@ namespace MSL.controls
             }
         }
 
+        #region Java Function
         public static async Task<(bool, string)> CheckJavaAvailabilityAsync(string application)
         {
             try
@@ -361,7 +365,9 @@ namespace MSL.controls
             // 如果匹配失败，返回 null
             return null;
         }
+        #endregion
 
+        #region Install Forge
         /// <summary>
         /// 安装Forge函数
         /// </summary>
@@ -462,7 +468,9 @@ namespace MSL.controls
                 return null;
             }
         }
+        #endregion
 
+        #region Get File Encoding
         /// <summary>
         /// 获取文本文件的字符编码类型
         /// </summary>
@@ -540,5 +548,58 @@ namespace MSL.controls
             }
             return true;
         }
+        #endregion
+
+        #region Close Process (Ctrl_C)
+        [DllImport("kernel32.dll", SetLastError = true)]
+        static extern bool GenerateConsoleCtrlEvent(ConsoleCtrlEvent sigevent, int dwProcessGroupId);
+
+        [DllImport("kernel32.dll", SetLastError = true)]
+        static extern bool AttachConsole(uint dwProcessId);
+
+        [DllImport("kernel32.dll")]
+        static extern bool SetConsoleCtrlHandler(ConsoleCtrlDelegate HandlerRoutine, bool Add);
+
+        [DllImport("kernel32.dll", SetLastError = true, ExactSpelling = true)]
+        static extern bool FreeConsole();
+
+        delegate Boolean ConsoleCtrlDelegate(uint CtrlType);
+
+        public enum ConsoleCtrlEvent
+        {
+            CTRL_C = 0,
+        }
+
+        public static async Task StopProcess(Process process)
+        {
+            if (AttachConsole((uint)process.Id))
+            {
+                // NOTE: each of these functions could fail. Error-handling omitted
+                // for clarity. A real-world program should check the result of each
+                // call and handle errors appropriately.
+                SetConsoleCtrlHandler(null, true);
+                GenerateConsoleCtrlEvent(ConsoleCtrlEvent.CTRL_C, 0);
+                await Task.Run(() => ProcessExited(process));
+                SetConsoleCtrlHandler(null, false);
+                FreeConsole();
+            }
+            else
+            {
+                int hresult = Marshal.GetLastWin32Error();
+                Exception e = Marshal.GetExceptionForHR(hresult);
+
+                throw new InvalidOperationException(
+                    $"ERROR: failed to attach console to process {process.Id}: {e?.Message ?? hresult.ToString()}");
+            }
+        }
+
+        private static void ProcessExited(Process process)
+        {
+            while (!process.HasExited)
+            {
+                Thread.Sleep(1000);
+            }
+        }
+        #endregion
     }
 }

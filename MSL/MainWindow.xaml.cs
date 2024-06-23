@@ -598,7 +598,7 @@ namespace MSL
         {
             try
             {
-                if (CheckServerRunning() || FrpcPage.FRPCMD.HasExited == false || OnlinePage.FRPCMD.HasExited == false)
+                if (CheckServerRunning() || FrpcPage.FrpcProcess.HasExited == false || OnlinePage.FrpcProcess.HasExited == false)
                 {
                     //Logger.LogWarning("服务器、内网映射或联机功能正在运行中！");
                     return true;
@@ -612,7 +612,7 @@ namespace MSL
             {
                 try
                 {
-                    if (FrpcPage.FRPCMD.HasExited == false || OnlinePage.FRPCMD.HasExited == false)
+                    if (FrpcPage.FrpcProcess.HasExited == false || OnlinePage.FrpcProcess.HasExited == false)
                     {
                         //Logger.LogWarning("内网映射或联机功能正在运行中！");
                         return true;
@@ -626,7 +626,7 @@ namespace MSL
                 {
                     try
                     {
-                        if (OnlinePage.FRPCMD.HasExited == false)
+                        if (OnlinePage.FrpcProcess.HasExited == false)
                         {
                             //Logger.LogWarning("联机功能正在运行中！");
                             return true;
