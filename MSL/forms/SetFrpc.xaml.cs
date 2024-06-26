@@ -1,8 +1,5 @@
 ﻿using MSL.controls;
-using MSL.pages.frpProviders;
-using System.Collections.Generic;
 using System.Diagnostics;
-using System.Windows.Controls;
 
 namespace MSL
 {
@@ -11,8 +8,6 @@ namespace MSL
     /// </summary>
     public partial class SetFrpc : HandyControl.Controls.Window
     {
-        private readonly List<Page> Pages = new List<Page> { new MSLFrp(), new OpenFrp(), new ChmlFrp(), };
-
         public SetFrpc()
         {
             InitializeComponent();

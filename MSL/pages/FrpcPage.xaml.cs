@@ -218,7 +218,6 @@ namespace MSL.pages
                         Shows.ShowMsg(Window.GetWindow(this), "出现错误，请检查是否有杀毒软件误杀并重试:" + e.Message, "错误");
                     });
                 }
-
             }
             finally
             {
@@ -367,8 +366,8 @@ namespace MSL.pages
             string userAccount = "";
             string userPassword = "";
 
-            string _text = File.ReadAllText(@"MSL\frpc.toml");
-            string pattern = @"user\s*=\s*(\w+)\s*meta_token\s*=\s*(\w+)";
+            string _text = File.ReadAllText(@"MSL\frp\frpc.toml");
+            string pattern = @"user\s*=\s*""(\w+)""\s*metadatas\.token\s*=\s*""(\w+)""";
             Match match = Regex.Match(_text, pattern);
 
             if (match.Success)
