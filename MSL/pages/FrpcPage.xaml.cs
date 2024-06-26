@@ -257,14 +257,12 @@ namespace MSL.pages
                     {
                         continue;
                     }
-
                     // 提取ANSI码和文本内容
                     int mIndex = everyMsg.IndexOf('m');
                     if (mIndex == -1)
                     {
                         continue;
                     }
-
                     msg = everyMsg.Substring(mIndex + 1);
                 }
             }
@@ -277,8 +275,7 @@ namespace MSL.pages
                     Growl.Error("内网映射桥接失败！");
                     if (msg.Contains("付费资格已过期"))
                     {
-                        Thread thread = new Thread(PaidServe);
-                        thread.Start();
+                        Task.Run(PayService);
                     }
                     else if (msg.IndexOf("i/o timeout") + 1 != 0)
                     {
@@ -298,7 +295,7 @@ namespace MSL.pages
             {
                 if (msg.IndexOf("success") + 1 != 0)
                 {
-                    frpcOutlog.Text = frpcOutlog.Text + "内网映射桥接成功！您可复制IP进入游戏了！\n";
+                    frpcOutlog.Text += "内网映射桥接成功！您可复制IP进入游戏了！\n";
                     Growl.Success("内网映射桥接成功！");
                 }
                 if (msg.IndexOf("error") + 1 != 0)
@@ -361,7 +358,7 @@ namespace MSL.pages
             frpcOutlog.ScrollToEnd();
         }
 
-        private void PaidServe()
+        private async void PayService()
         {
             string userAccount = "";
             string userPassword = "";
@@ -387,9 +384,9 @@ namespace MSL.pages
                 });
                 return;
             }
-            
+
             bool _ret = false;
-            Dispatcher.Invoke(async () =>
+            await Dispatcher.Invoke(async () =>
             {
                 if (!await Shows.ShowMsgDialogAsync(Window.GetWindow(this), "您的付费资格已过期，请进行续费！\n点击确定开始付费节点续费操作。", "提示", true, "取消"))
                 {
@@ -402,7 +399,7 @@ namespace MSL.pages
             }
 
             Process.Start("https://afdian.net/a/makabaka123");
-            Dispatcher.Invoke(async () =>
+            await Dispatcher.Invoke(async () =>
             {
                 if (!await Shows.ShowMsgDialogAsync(Window.GetWindow(this), "请在弹出的浏览器网站中进行购买，购买完毕后点击确定进行下一步操作……", "购买须知", true, "取消购买", "确定"))
                 {
@@ -416,7 +413,7 @@ namespace MSL.pages
 
             string order = null;
             string qq = null;
-            Dispatcher.Invoke(async () =>
+            await Dispatcher.Invoke(async () =>
             {
                 order = await Shows.ShowInput(Window.GetWindow(this), "输入爱发电订单号：\n（头像→订单→找到发电项目→复制项目下方订单号）");
             });
@@ -433,7 +430,7 @@ namespace MSL.pages
                 return;
             }
 
-            Dispatcher.Invoke(async () =>
+            await Dispatcher.Invoke(async () =>
             {
                 qq = await Shows.ShowInput(Window.GetWindow(this), "输入账号(QQ号)：");
             });
