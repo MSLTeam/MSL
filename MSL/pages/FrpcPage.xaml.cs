@@ -361,22 +361,35 @@ namespace MSL.pages
             frpcOutlog.ScrollToEnd();
         }
 
-        private async void PaidServe()
+        private void PaidServe()
         {
             string userAccount = "";
             string userPassword = "";
 
-            string _text = File.ReadAllText(@"MSL\frp\frpc.toml");
-            string pattern = @"user\s*=\s*""(\w+)""\s*metadatas\.token\s*=\s*""(\w+)""";
-            Match match = Regex.Match(_text, pattern);
-
-            if (match.Success)
+            //保险起见，还是加个try吧（
+            try
             {
-                userAccount = match.Groups[1].Value;
-                userPassword = match.Groups[2].Value;
+                string _text = File.ReadAllText(@"MSL\frp\frpc.toml");
+                string pattern = @"user\s*=\s*""(\w+)""\s*metadatas\.token\s*=\s*""(\w+)""";
+                Match match = Regex.Match(_text, pattern);
+
+                if (match.Success)
+                {
+                    userAccount = match.Groups[1].Value;
+                    userPassword = match.Groups[2].Value;
+                }
             }
+            catch
+            {
+                Dispatcher.Invoke(() =>
+                {
+                    Shows.ShowMsgDialog(Window.GetWindow(this), "您的付费资格已过期，但自动续费功能出现问题，请手动前往爱发电续费或重新配置节点再试！", "错误");
+                });
+                return;
+            }
+            
             bool _ret = false;
-            await Dispatcher.Invoke(async () =>
+            Dispatcher.Invoke(async () =>
             {
                 if (!await Shows.ShowMsgDialogAsync(Window.GetWindow(this), "您的付费资格已过期，请进行续费！\n点击确定开始付费节点续费操作。", "提示", true, "取消"))
                 {
@@ -389,7 +402,7 @@ namespace MSL.pages
             }
 
             Process.Start("https://afdian.net/a/makabaka123");
-            await Dispatcher.Invoke(async () =>
+            Dispatcher.Invoke(async () =>
             {
                 if (!await Shows.ShowMsgDialogAsync(Window.GetWindow(this), "请在弹出的浏览器网站中进行购买，购买完毕后点击确定进行下一步操作……", "购买须知", true, "取消购买", "确定"))
                 {
@@ -403,7 +416,7 @@ namespace MSL.pages
 
             string order = null;
             string qq = null;
-            await Dispatcher.Invoke(async () =>
+            Dispatcher.Invoke(async () =>
             {
                 order = await Shows.ShowInput(Window.GetWindow(this), "输入爱发电订单号：\n（头像→订单→找到发电项目→复制项目下方订单号）");
             });
@@ -419,7 +432,8 @@ namespace MSL.pages
                 });
                 return;
             }
-            await Dispatcher.Invoke(async () =>
+
+            Dispatcher.Invoke(async () =>
             {
                 qq = await Shows.ShowInput(Window.GetWindow(this), "输入账号(QQ号)：");
             });
