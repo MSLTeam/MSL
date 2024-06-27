@@ -161,10 +161,15 @@ namespace MSL.controls
             return Tuple.Create(versionIntParts[0], versionIntParts[1], versionIntParts[2], versionIntParts[3]);
         }
 
-        public static void MoveFolder(string sourcePath, string destPath)
+        public static void MoveFolder(string sourcePath, string destPath, bool deleteSource = true)
         {
             if (Directory.Exists(sourcePath))
             {
+                // 检查目标路径是否是源路径的子目录
+                if (destPath.StartsWith(sourcePath, StringComparison.OrdinalIgnoreCase))
+                {
+                    throw new InvalidOperationException("目标目录不能是源目录的子目录。");
+                }
                 if (!Directory.Exists(destPath))
                 {
                     try
@@ -184,16 +189,26 @@ namespace MSL.controls
                     {
                         File.Delete(destFile);
                     }
-                    File.Move(c, destFile);
+                    if (deleteSource)
+                    {
+                        File.Move(c, destFile);
+                    }
+                    else
+                    {
+                        File.Copy(c, destFile);
+                    }
                 });
                 List<string> folders = new List<string>(Directory.GetDirectories(sourcePath));
 
                 folders.ForEach(c =>
                 {
                     string destDir = Path.Combine(new string[] { destPath, Path.GetFileName(c) });
-                    MoveFolder(c, destDir);
+                    MoveFolder(c, destDir, deleteSource);
                 });
-                Directory.Delete(sourcePath);
+                if (deleteSource)
+                {
+                    Directory.Delete(sourcePath);
+                }
             }
             else
             {

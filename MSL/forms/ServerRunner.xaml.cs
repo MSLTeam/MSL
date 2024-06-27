@@ -2026,7 +2026,7 @@ namespace MSL
                 changeServerProperties_Add_Add.Visibility = Visibility.Visible;
                 changeServerProperties_Add_Add.Height = double.NaN;
             }
-            catch { changeServerPropertiesLab.Content = "找不到配置文件，更改配置功能已隐藏（请尝试开启一次服务器再试）"; changeServerProperties.Visibility = Visibility.Collapsed; changeServerProperties.Height = 0; changeServerProperties_Add.Visibility = Visibility.Collapsed; changeServerProperties_Add.Height = 0; changeServerProperties_Add_Add.Visibility = Visibility.Collapsed; changeServerProperties_Add_Add.Height = 0; }
+            catch { changeServerPropertiesLab.Content = "找不到配置文件，无法更改相关设置（请尝试开启一次服务器）"; changeServerProperties.Visibility = Visibility.Collapsed; changeServerProperties.Height = 0; changeServerProperties_Add.Visibility = Visibility.Collapsed; changeServerProperties_Add.Height = 0; changeServerProperties_Add_Add.Visibility = Visibility.Collapsed; changeServerProperties_Add_Add.Height = 0; }
         }
 
         private string[] ServerBaseConfig()
@@ -2196,15 +2196,80 @@ namespace MSL
             }
             catch
             { }
-            bool dialogret = await Shows.ShowMsgDialogAsync(this, "此功能会删除原来的旧地图，是否要继续使用？", "警告", true, "取消");
-            if (dialogret)
+            string levelName= gameWorldText.Text;
+            if (Directory.Exists(Rserverbase + @"\" + levelName))
             {
-                if (Directory.Exists(Rserverbase + @"\" + gameWorldText.Text))
+                if (await Shows.ShowMsgDialogAsync(this, "点击确定后，MSL将删除原先主世界地图（删除后，地图将从电脑上彻底消失，如有必要请提前备份！）\n点击取消以中止操作", "警告", true, "取消"))
                 {
-                    DirectoryInfo di = new DirectoryInfo(Rserverbase + @"\" + gameWorldText.Text);
-                    di.Delete(true);
-                    Directory.CreateDirectory(Rserverbase + @"\" + gameWorldText.Text);
+                    ShowDialogs dialog = new ShowDialogs();
+                    dialog.ShowTextDialog(this, "删除中，请稍候");
+                    await Task.Run(() =>
+                    {
+                        DirectoryInfo di = new DirectoryInfo(Rserverbase + @"\" + levelName);
+                        di.Delete(true);
+                    });
+                    dialog.CloseTextDialog();
                 }
+                else
+                {
+                    return;
+                }
+                if (Directory.Exists(Rserverbase + @"\" + levelName + "_nether"))
+                {
+                    if (await Shows.ShowMsgDialogAsync(this, "MSL同时检测到了下界地图，是否一并删除？\n删除后，地图将从电脑上彻底消失！", "警告", true, "取消"))
+                    {
+                        ShowDialogs dialog = new ShowDialogs();
+                        dialog.ShowTextDialog(this, "删除中，请稍候");
+                        await Task.Run(() =>
+                        {
+                            DirectoryInfo di = new DirectoryInfo(Rserverbase + @"\" + levelName + "_nether");
+                            di.Delete(true);
+                        });
+                        dialog.CloseTextDialog();
+                    }
+                }
+                if (Directory.Exists(Rserverbase + @"\" + levelName + "_the_end"))
+                {
+                    if (await Shows.ShowMsgDialogAsync(this, "MSL同时检测到了末地地图，是否一并删除？\n删除后，地图将从电脑上彻底消失！", "警告", true, "取消"))
+                    {
+                        ShowDialogs dialog = new ShowDialogs();
+                        dialog.ShowTextDialog(this, "删除中，请稍候");
+                        await Task.Run(() =>
+                        {
+                            DirectoryInfo di = new DirectoryInfo(Rserverbase + @"\" + levelName + "_the_end");
+                            di.Delete(true);
+                        });
+                        dialog.CloseTextDialog();
+                    }
+                }
+                if (await Shows.ShowMsgDialogAsync(this, "相关地图已经成功删除！是否选择新存档进行导入？（如果不导入而直接开服，服务器将会重新创建一个新世界）", "提示", true, "取消"))
+                {
+                    System.Windows.Forms.FolderBrowserDialog dialog = new System.Windows.Forms.FolderBrowserDialog
+                    {
+                        Description = "请选择地图文件夹(或解压后的文件夹)"
+                    };
+                    if (dialog.ShowDialog() == System.Windows.Forms.DialogResult.OK)
+                    {
+                        try
+                        {
+                            ShowDialogs _dialog = new ShowDialogs();
+                            _dialog.ShowTextDialog(this, "导入中，请稍候");
+                            await Task.Run(() =>
+                            {
+                                Functions.MoveFolder(dialog.SelectedPath, Rserverbase + @"\" + levelName, false);
+                            });
+                            _dialog.CloseTextDialog();
+                            Shows.ShowMsgDialog(this, "导入世界成功！源存档目录您可手动进行删除！", "信息");
+                        }
+                        catch (Exception ex)
+                        {
+                            Shows.ShowMsgDialog(this, "导入世界失败！\n错误代码：" + ex.Message, "错误");
+                        }
+                    }
+                }
+            }
+            else
+            {
                 System.Windows.Forms.FolderBrowserDialog dialog = new System.Windows.Forms.FolderBrowserDialog
                 {
                     Description = "请选择地图文件夹(或解压后的文件夹)"
@@ -2213,14 +2278,19 @@ namespace MSL
                 {
                     try
                     {
-                        Functions.MoveFolder(dialog.SelectedPath, Rserverbase + @"\" + gameWorldText.Text);
-                        Shows.ShowMsgDialog(this, "导入世界成功！", "信息");
+                        ShowDialogs _dialog = new ShowDialogs();
+                        _dialog.ShowTextDialog(this, "导入中，请稍候");
+                        await Task.Run(() =>
+                        {
+                            Functions.MoveFolder(dialog.SelectedPath, Rserverbase + @"\" + levelName, false);
+                        });
+                        _dialog.CloseTextDialog();
+                        Shows.ShowMsgDialog(this, "导入世界成功！源存档目录您可手动进行删除！", "信息");
                     }
                     catch (Exception ex)
                     {
-                        Shows.ShowMsgDialog(this, "导入世界失败！请检查服务器是否关闭！\n错误代码：" + ex.Message, "错误");
+                        Shows.ShowMsgDialog(this, "导入世界失败！\n错误代码：" + ex.Message, "错误");
                     }
-
                 }
             }
         }
