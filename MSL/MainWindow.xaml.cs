@@ -61,7 +61,7 @@ namespace MSL
             Topmost = true;
             Focus();
             Topmost = false;
-            if (Directory.GetCurrentDirectory()+"\\" != AppDomain.CurrentDomain.BaseDirectory)
+            if (Directory.GetCurrentDirectory() + "\\" != AppDomain.CurrentDomain.BaseDirectory)
             {
                 Directory.SetCurrentDirectory(AppDomain.CurrentDomain.BaseDirectory);
             }
@@ -546,7 +546,7 @@ namespace MSL
                     MessageBox.Show(LanguageManager.Instance["MainWindow_GrowlMsg_UpdateFailed"], LanguageManager.Instance["Dialog_Err"], MessageBoxButton.OK, MessageBoxImage.Error);
                 }
             }
-            catch(Exception ex)
+            catch (Exception ex)
             {
                 MessageBox.Show("出现错误，更新失败！\n" + ex.Message);
             }

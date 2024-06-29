@@ -21,10 +21,10 @@ namespace MSL.pages
     /// </summary>
     public partial class DownloadServer : HandyControl.Controls.Window
     {
-        public string downloadServerName;
-        private string downloadServerBase;
-        private string downloadServerJava;
-        private bool isInstallSomeCore;
+        public string downloadServerName = string.Empty;
+        private readonly string downloadServerBase;
+        private readonly string downloadServerJava;
+        private readonly bool isInstallSomeCore;
         private string downPath = string.Empty;
         private string filename = string.Empty;
         private string downServer = string.Empty;
@@ -375,104 +375,6 @@ namespace MSL.pages
                 });
             }
         }
-
-        /*
-        private void InstallForge(string downurl, bool fastMode = true)
-        {
-            try
-            {
-                string forgeVersion;
-
-                if (downurl.Contains("bmcl"))
-                {
-                    Match match = Regex.Match(downurl, @"&version=([\w.-]+)&category");
-                    if (serverlist1.SelectedItem.ToString().Contains("-"))
-                    {
-                        string version = serverlist1.SelectedItem.ToString().Split('-')[0];
-                        forgeVersion = version + "-" + match.Groups[1].Value;
-                    }
-                    else
-                    {
-                        forgeVersion = serverlist1.SelectedItem.ToString() + "-" + match.Groups[1].Value;
-                    }
-                }
-                else
-                {
-                    Match match = Regex.Match(downurl, @"forge-([\w.-]+)-installer");
-                    forgeVersion = match.Groups[1].Value;
-                }
-                if (!Path.IsPathRooted(downloadServerJava) && File.Exists(downloadServerJava))
-                {
-                    downloadServerJava = AppDomain.CurrentDomain.BaseDirectory + downloadServerJava;
-                }
-
-
-                if (!fastMode)
-                {
-                    Process process = new Process();
-                    process.StartInfo.WorkingDirectory = downloadServerBase;
-                    process.StartInfo.FileName = "cmd";
-                    if (downloadServerJava == "Java")
-                    {
-                        process.StartInfo.Arguments = "/c java -jar " + filename + " -installServer";
-                    }
-                    else
-                    {
-                        process.StartInfo.Arguments = @"/c """ + downloadServerJava + @""" -jar " + filename + " -installServer";
-                    }
-                    process.Start();
-
-                    while (!process.HasExited)
-                    {
-                        Thread.Sleep(1000);
-                    }
-                }
-
-                //检测安装成功与否
-                try
-                {
-                    if (File.Exists(downloadServerBase + "\\libraries\\net\\minecraftforge\\forge\\" + forgeVersion + "\\win_args.txt"))
-                    {
-                        downloadServerName = "@libraries/net/minecraftforge/forge/" + forgeVersion + "/win_args.txt %*";
-                        Close();
-                    }
-                    else if (File.Exists(downloadServerBase + "\\libraries\\net\\neoforged\\neoforge\\" + forgeVersion + "\\win_args.txt"))
-                    {
-                        downloadServerName = "@libraries/net/neoforged/neoforge/" + forgeVersion + "/win_args.txt %*";
-                        Close();
-                    }
-                    else
-                    {
-                        DirectoryInfo directoryInfo = new DirectoryInfo(downloadServerBase);
-                        FileInfo[] fileInfo = directoryInfo.GetFiles();
-                        bool checkResult = false;
-                        foreach (FileInfo file in fileInfo)
-                        {
-                            if (file.Name.IndexOf("forge-" + forgeVersion) + 1 != 0)
-                            {
-                                downloadServerName = file.FullName.Replace(downloadServerBase + @"\", "");
-                                checkResult = true;
-                                break;
-                            }
-                        }
-                        if (!checkResult)
-                        {
-                            Shows.ShowMsgDialog(this,"下载失败,请多次尝试或使用代理再试！", "错误");
-                        }
-                        Close();
-                    }
-                }
-                catch
-                {
-                    Shows.ShowMsgDialog(this,"下载失败！", "错误");
-                }
-            }
-            catch (Exception ex)
-            {
-                Shows.ShowMsgDialog(this,"出现错误！\n" + ex.ToString(), "错误");
-            }
-        }
-        */
 
         private void openChooseServerDocs_Click(object sender, RoutedEventArgs e)
         {

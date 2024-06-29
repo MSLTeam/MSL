@@ -734,7 +734,7 @@ namespace MSL.pages
         {
             if (usedownloadserver.IsChecked == true)
             {
-                DownloadServer downloadServer = new DownloadServer(serverbase,serverjava)
+                DownloadServer downloadServer = new DownloadServer(serverbase, serverjava)
                 {
                     Owner = Window.GetWindow(Window.GetWindow(this))
                 };

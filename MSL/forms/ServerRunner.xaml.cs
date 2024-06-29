@@ -2196,7 +2196,7 @@ namespace MSL
             }
             catch
             { }
-            string levelName= gameWorldText.Text;
+            string levelName = gameWorldText.Text;
             if (Directory.Exists(Rserverbase + @"\" + levelName))
             {
                 if (await Shows.ShowMsgDialogAsync(this, "点击确定后，MSL将删除原先主世界地图（删除后，地图将从电脑上彻底消失，如有必要请提前备份！）\n点击取消以中止操作", "警告", true, "取消"))
@@ -3100,7 +3100,7 @@ namespace MSL
             {
                 jVMcmd.Clear();
             }
-            DownloadServer downloadServer = new DownloadServer(Rserverbase,Rserverjava)
+            DownloadServer downloadServer = new DownloadServer(Rserverbase, Rserverjava)
             {
                 Owner = this
             };
