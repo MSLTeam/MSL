@@ -21,30 +21,25 @@ namespace MSL
     public partial class DownloadDialog
     {
         public event DeleControl CloseDialog;
-        public bool _dialogReturn = true;
+        public int _dialogReturn = 0; // 0未开始下载（或下载中），1下载完成，2下载取消，3下载失败
         public static int downloadthread = 8;
         private readonly string downloadPath;
         private readonly string filename;
         private readonly string downloadurl;
-        private readonly string expectedSha256 = "";
+        private readonly string expectedSha256;
+        private readonly bool closeDirectly;
         private DownloadService downloader;
         private DispatcherTimer updateUITimer;
 
-        public DownloadDialog(string _downloadurl, string _downloadPath, string _filename, string downloadinfo, string sha256 = "")
+        public DownloadDialog(string _downloadurl, string _downloadPath, string _filename, string downloadinfo, string sha256 = "", bool _closeDirectly = false)
         {
             InitializeComponent();
-
-            if (!Directory.Exists(_downloadPath))
-            {
-                Directory.CreateDirectory(_downloadPath);
-            }
+            Directory.CreateDirectory(_downloadPath);
             downloadurl = _downloadurl;
             downloadPath = _downloadPath;
             filename = _filename;
-            if (sha256 != "")
-            {
-                expectedSha256 = sha256;
-            }
+            expectedSha256 = sha256;
+            closeDirectly = _closeDirectly;
             taskinfo.Text = downloadinfo;
             Thread thread = new Thread(Downloader);
             thread.Start();
@@ -102,7 +97,7 @@ namespace MSL
                 updateUITimer.Stop();
             }
             catch { }
-            if (!_dialogReturn)
+            if (_dialogReturn == 2)
             {
                 Dispatcher.Invoke(() =>
                 {
@@ -113,46 +108,27 @@ namespace MSL
                     }
                     catch { }
                 });
-                Thread.Sleep(1000);
-                Dispatcher.Invoke(() =>
-                {
-                    Close();
-                });
             }
             else
             {
                 if (File.Exists(downloadPath + "\\" + filename))
                 {
+                    _dialogReturn = 1;
                     Dispatcher.Invoke(() =>
                     {
                         infolabel.Text = "下载完成！";
                         pbar.Value = 100;
                     });
-                    if (expectedSha256 == "")
-                    {
-                        Thread.Sleep(1000);
-                        Dispatcher.Invoke(() =>
-                        {
-                            Close();
-                        });
-                    }
-                    else
+                    if (!string.IsNullOrEmpty(expectedSha256))
                     {
                         //有传入sha256，进行校验
-                        if (VerifyFileSHA256(downloadPath + "\\" + filename, expectedSha256) == true)
-                        {
-                            Thread.Sleep(1000);
-                            Dispatcher.Invoke(() =>
-                            {
-                                Close();
-                            });
-
-                        }
-                        else
+                        if (VerifyFileSHA256(downloadPath + "\\" + filename, expectedSha256) == false)
                         {
                             //失败
+                            _dialogReturn = 3;
                             Dispatcher.Invoke(() =>
                             {
+                                button1.Content = "关闭";
                                 infolabel.Text = "校验完整性失败！请重新下载！";
                                 try
                                 {
@@ -160,14 +136,14 @@ namespace MSL
                                 }
                                 catch { }
                             });
-                            Thread.Sleep(1000);
-                            Dispatcher.Invoke(() =>
+                            if (closeDirectly)
                             {
-                                Close();
-                            });
+                                Thread.Sleep(1000);
+                                Dispatcher.Invoke(Close);
+                            }
+                            return;
                         }
                     }
-
                 }
                 else
                 {
@@ -177,8 +153,11 @@ namespace MSL
                         Thread thread = new Thread(DownloadFile);
                         thread.Start();
                     });
+                    return;
                 }
             }
+            Thread.Sleep(1000);
+            Dispatcher.Invoke(Close);
         }
 
         private void DownloadFile()
@@ -213,7 +192,7 @@ namespace MSL
 
                             while ((bytesRead = responseStream.Read(buffer, 0, buffer.Length)) > 0)
                             {
-                                if (!_dialogReturn) break;
+                                if (_dialogReturn == 2) break;
                                 fileStream.Write(buffer, 0, bytesRead);
                                 totalDownloadedByte += bytesRead;
                                 // 计算并报告进度
@@ -225,28 +204,36 @@ namespace MSL
                     // 下载完成后更新UI
                     Dispatcher.Invoke(() =>
                     {
-                        if (!_dialogReturn && File.Exists(Path.Combine(downloadPath, filename)))
+                        if (_dialogReturn == 2 && File.Exists(Path.Combine(downloadPath, filename)))
                         {
                             File.Delete(Path.Combine(downloadPath, filename));
+                            infolabel.Text = "下载取消！";
                         }
                         else
                         {
+                            _dialogReturn = 1;
                             infolabel.Text = "下载完成！";
                         }
                     });
                 }
                 catch (Exception ex)
                 {
+                    _dialogReturn = 3;
                     // 异常处理
                     Dispatcher.Invoke(() =>
                     {
+                        button1.Content = "关闭";
                         infolabel.Text = "下载失败！" + ex.Message;
                     });
                 }
+                Thread.Sleep(1000);
             }).ContinueWith(t =>
             {
-                // 关闭对话框
-                Dispatcher.Invoke(Close);
+                if (_dialogReturn != 3 || closeDirectly)
+                {
+                    // 关闭对话框
+                    Dispatcher.Invoke(Close);
+                }
             });
         }
 
@@ -294,15 +281,29 @@ namespace MSL
 
         private void button1_Click(object sender, RoutedEventArgs e)
         {
-            downloader.CancelAsync();
-            _dialogReturn = false;
+            if (button1.Content.ToString() == "关闭")
+            {
+                Close();
+            }
+            else
+            {
+                downloader.CancelAsync();
+                _dialogReturn = 2;
+            }
         }
 
         private void button1_MouseDoubleClick(object sender, MouseButtonEventArgs e)
         {
-            downloader.CancelAsync();
-            _dialogReturn = false;
-            Close();
+            if (button1.Content.ToString() == "关闭")
+            {
+                Close();
+            }
+            else
+            {
+                downloader.CancelAsync();
+                _dialogReturn = 2;
+                Close();
+            }
         }
 
         //用于校验sha256的函数

@@ -3100,21 +3100,19 @@ namespace MSL
             {
                 jVMcmd.Clear();
             }
-            DownloadServer.downloadServerJava = Rserverjava;
-            DownloadServer.downloadServerBase = Rserverbase;
-            DownloadServer downloadServer = new DownloadServer
+            DownloadServer downloadServer = new DownloadServer(Rserverbase,Rserverjava)
             {
                 Owner = this
             };
             downloadServer.ShowDialog();
-            if (File.Exists(Rserverbase + @"\" + DownloadServer.downloadServerName))
+            if (File.Exists(Rserverbase + @"\" + downloadServer.downloadServerName))
             {
-                server.Text = DownloadServer.downloadServerName;
+                server.Text = downloadServer.downloadServerName;
                 Growl.Success("服务端下载完毕！已自动选择该服务端核心，请记得保存哦~");
             }
-            else if (DownloadServer.downloadServerName.StartsWith("@libraries/"))
+            else if (downloadServer.downloadServerName.StartsWith("@libraries/"))
             {
-                server.Text = DownloadServer.downloadServerName;
+                server.Text = downloadServer.downloadServerName;
                 Growl.Success("服务端下载完毕！已自动选择该服务端核心，请记得保存哦~");
             }
         }

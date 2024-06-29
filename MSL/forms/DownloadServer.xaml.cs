@@ -7,6 +7,7 @@ using System.Diagnostics;
 using System.IO;
 using System.Linq;
 using System.Threading;
+using System.Threading.Tasks;
 using System.Windows;
 using System.Windows.Controls;
 using System.Windows.Input;
@@ -20,21 +21,22 @@ namespace MSL.pages
     /// </summary>
     public partial class DownloadServer : HandyControl.Controls.Window
     {
-        public static string downloadServerBase;
-        public static string downloadServerName;
-        public static string downloadServerJava;
+        public string downloadServerName;
+        private string downloadServerBase;
+        private string downloadServerJava;
+        private bool isInstallSomeCore;
+        private string downPath = string.Empty;
+        private string filename = string.Empty;
+        private string downServer = string.Empty;
+        private string downVersion = string.Empty;
 
-
-        public DownloadServer()
+        public DownloadServer(string _downloadServerBase, string _downloadServerJava, bool _isInstallSomeCore = true)
         {
-            downloadServerName = string.Empty;
             InitializeComponent();
+            downloadServerBase = _downloadServerBase;
+            downloadServerJava = _downloadServerJava;
+            isInstallSomeCore = _isInstallSomeCore;
         }
-        string downPath = "";
-        string filename = "";
-        string downServer = "";
-        string downVersion = "";
-        //服务端下载
 
         private void DownloadBtn_Click(object sender, RoutedEventArgs e)
         {
@@ -63,129 +65,212 @@ namespace MSL.pages
 
             if (serverlist1.SelectedIndex != -1)
             {
-                //int url = serverlist1.SelectedIndex;
-
-                string[] downContext = Functions.GetWithSha256("download/server/" + downServer + "/" + downVersion);
-                string downUrl = downContext[0];
-                string sha256Exp = downContext[1];
-
-                if (serverlist.SelectedItem.ToString().IndexOf("（") + 1 != 0)
+                string[] downContext = await Functions.HttpGetAsync("download/server/" + downServer + "/" + downVersion, "", false, true);
+                string downUrl = downContext[1];
+                string sha256Exp = downContext[2];
+                downPath = downloadServerBase;
+                filename = downServer + "-" + downVersion + ".jar";
+                if (downServer.Contains("forge"))
                 {
-                    if (serverlist1.SelectedItem.ToString().IndexOf("（") + 1 != 0)
+                    int dwnDialog = await Shows.ShowDownloaderWithIntReturn(this, downUrl, downPath, filename, "下载服务端中……", sha256Exp, true);
+                    if (dwnDialog == 2)
                     {
-                        downPath = downloadServerBase;
-                        filename = serverlist.SelectedItem.ToString().Substring(0, serverlist.SelectedItem.ToString().IndexOf("（")) + "-" + serverlist1.SelectedItem.ToString().Substring(0, serverlist1.SelectedItem.ToString().IndexOf("（")) + ".jar";
+                        Shows.ShowMsgDialog(this, "下载取消！（或服务端文件不存在）", "错误");
+                        return;
                     }
-                    else
-                    {
-                        downPath = downloadServerBase;
-                        filename = serverlist.SelectedItem.ToString().Substring(0, serverlist.SelectedItem.ToString().IndexOf("（")) + "-" + serverlist1.SelectedItem.ToString() + ".jar";
-                    }
-
                 }
                 else
                 {
-                    if (serverlist1.SelectedItem.ToString().IndexOf("（") + 1 != 0)
+                    bool dwnDialog = await Shows.ShowDownloader(this, downUrl, downPath, filename, "下载服务端中……", sha256Exp);
+                    if (!dwnDialog || !File.Exists(downPath + "\\" + filename))
                     {
-                        downPath = downloadServerBase;
-                        filename = serverlist.SelectedItem.ToString() + "-" + serverlist1.SelectedItem.ToString().Substring(0, serverlist1.SelectedItem.ToString().IndexOf("（")) + ".jar";
-                    }
-                    else
-                    {
-                        downPath = downloadServerBase;
-                        filename = serverlist.SelectedItem.ToString() + "-" + serverlist1.SelectedItem.ToString() + ".jar";
+                        Shows.ShowMsgDialog(this, "下载取消！（或服务端文件不存在）", "错误");
+                        return;
                     }
                 }
-                bool dwnDialog = await Shows.ShowDownloader(this, downUrl, downPath, filename, "下载服务端中……", sha256Exp);
-                if (!dwnDialog)
+
+                if (!isInstallSomeCore)
                 {
-                    Shows.ShowMsgDialog(this, "下载取消！", "提示");
+                    Shows.ShowMsgDialog(this, "下载完成！服务端核心放置在“MSL\\ServerCores”文件夹中！", "提示");
+                    //downloadServerName = filename;
+                    //Close();
                     return;
                 }
-                if (File.Exists(downPath + @"\" + filename))
+                if (downServer.Contains("spongeforge"))
                 {
-                    if (filename.IndexOf("forge") + 1 != 0)
-                    {
-                        //await Shows.ShowMsgDialogAsync(this, "检测到您下载的是Forge端，开服器将自动进行安装操作，稍后请您不要随意操作，耐心等待安装完毕！", "提示");
-                        string installReturn;
-                        //调用新版forge安装器
-                        string[] installForge = await Shows.ShowInstallForge(this, downPath + "\\" + filename, downPath, downloadServerJava);
-                        if (installForge[0] == "0")
-                        {
-                            if (await Shows.ShowMsgDialogAsync(this, "自动安装失败！是否尝试使用命令行安装方式？", "错误", true))
-                            {
-                                installReturn = Functions.InstallForge(downloadServerJava, downloadServerBase, filename, string.Empty, false);
-                            }
-                            else
-                            {
-                                return;
-                            }
-                        }
-                        else if (installForge[0] == "1")
-                        {
-                            installReturn = Functions.InstallForge(downloadServerJava, downloadServerBase, filename, installForge[1]);
-                        }
-                        else
-                        {
-                            return;
-                        }
-                        if (installReturn == null)
-                        {
-                            Shows.ShowMsgDialog(this, "下载失败！", "错误");
-                            return;
-                        }
-                        downloadServerName = installReturn;
-                        Close();
-                    }
-                    else if (filename.IndexOf("banner") + 1 != 0)
-                    {
-                        //banner应当作为模组加载，所以要再下载一个fabric才是服务端
-                        try
-                        {
-                            //移动到mods文件夹
-                            Directory.CreateDirectory(downloadServerBase + "\\mods\\");
-                            if (File.Exists(downloadServerBase + "\\mods\\" + filename))
-                            {
-                                File.Delete(downloadServerBase + "\\mods\\" + filename);
-                            }
-                            File.Move(downloadServerBase + "\\" + filename, downloadServerBase + "\\mods\\" + filename);
-                        }
-                        catch (Exception e)
-                        {
-                            Dispatcher.Invoke(() =>
-                            {
-                                Shows.ShowMsgDialog(this, "Banner端移动失败！\n请重试！\n" + e.Message, "错误");
-                            });
-                            return;
-                        }
+                    string forgeName = downServer.Replace("spongeforge", "forge");
+                    string _filename = forgeName + ".jar";
+                    string[] _dlContext = await Functions.HttpGetAsync("download/server/" + forgeName.Replace("-", "/"), "", false, true);
+                    string _dlUrl = _dlContext[1];
+                    string _sha256Exp = _dlContext[2];
+                    int _dwnDialog = await Shows.ShowDownloaderWithIntReturn(this, _dlUrl, downPath, _filename, "下载服务端中……", _sha256Exp, true);
 
-                        //下载一个fabric端
-                        //获取版本号
-                        string bannerVersion = filename.Replace("banner-", "").Replace(".jar", "");
-                        await Dispatcher.Invoke(async () =>
+                    if (_dwnDialog == 2)
+                    {
+                        Shows.ShowMsgDialog(this, "下载取消！", "提示");
+                        return;
+                    }
+
+                    // Check if file exists and download succeeded
+                    if (!File.Exists(downPath + "\\" + _filename))
+                    {
+                        // Extract version info and create backup URL
+                        var query = new Uri(_dlUrl).Query;
+                        var queryDictionary = System.Web.HttpUtility.ParseQueryString(query);
+                        string mcVersion = queryDictionary["mcversion"];
+                        string forgeVersion = queryDictionary["version"];
+                        string[] components = mcVersion.Split('.');
+                        string _mcMajorVersion = mcVersion;
+                        if (components.Length >= 3 && int.TryParse(components[2], out int _))
                         {
-                            bool dwnFabric = await Shows.ShowDownloader(Window.GetWindow(this), Functions.Get("download/server/fabric/" + bannerVersion), downloadServerBase, $"fabric-{bannerVersion}.jar", "下载Fabric端中···");
-                            if (!dwnFabric)
-                            {
-                                Shows.ShowMsgDialog(this, "Fabric端下载失败！\n请重试！", "错误");
-                                return;
-                            }
+                            _mcMajorVersion = $"{components[0]}.{components[1]}"; // remove the last component
+                        }
+                        if (new Version(_mcMajorVersion) < new Version("1.10"))
+                        {
+                            forgeVersion += "-" + mcVersion;
+                        }
+                        string backupUrl = $"https://maven.minecraftforge.net/net/minecraftforge/forge/{mcVersion}-{forgeVersion}/{forgeName}-{forgeVersion}-installer.jar";
+
+                        // Attempt to download from backup URL
+                        bool backupDownloadSuccess = await Shows.ShowDownloader(Window.GetWindow(this), backupUrl, downPath, _filename, "备用链接下载中……", _sha256Exp);
+                        if (!backupDownloadSuccess || !File.Exists(downPath + "\\" + _filename))
+                        {
+                            Shows.ShowMsgDialog(this, "下载取消！（或服务端文件不存在）", "错误");
+                            return;
+                        }
+                    }
+
+                    string installReturn = await InstallForge(_filename);
+                    if (installReturn == null)
+                    {
+                        Shows.ShowMsgDialog(this, "安装失败！", "错误");
+                        return;
+                    }
+
+                    downloadServerName = installReturn;
+                }
+                else if (downServer.Contains("neoforge"))
+                {
+                    if (!File.Exists(downPath + "\\" + filename))
+                    {
+                        Shows.ShowMsgDialog(this, "下载失败！（或服务端文件不存在）", "提示");
+                        return;
+                    }
+                    string installReturn = await InstallForge(filename);
+                    if (installReturn == null)
+                    {
+                        Shows.ShowMsgDialog(this, "安装失败！", "错误");
+                        return;
+                    }
+
+                    downloadServerName = installReturn;
+                }
+                else if (downServer.Contains("forge"))
+                {
+                    // Check if file exists and download succeeded
+                    if (!File.Exists(downPath + "\\" + filename))
+                    {
+                        // Extract version info and create backup URL
+                        var query = new Uri(downUrl).Query;
+                        var queryDictionary = System.Web.HttpUtility.ParseQueryString(query);
+                        string mcVersion = queryDictionary["mcversion"];
+                        string forgeVersion = queryDictionary["version"];
+                        string[] components = mcVersion.Split('.');
+                        string _mcMajorVersion = mcVersion;
+                        if (components.Length >= 3 && int.TryParse(components[2], out int _))
+                        {
+                            _mcMajorVersion = $"{components[0]}.{components[1]}"; // remove the last component
+                        }
+                        if (new Version(_mcMajorVersion) < new Version("1.10"))
+                        {
+                            forgeVersion += "-" + mcVersion;
+                        }
+                        string backupUrl = $"https://maven.minecraftforge.net/net/minecraftforge/forge/{mcVersion}-{forgeVersion}/{downServer}-{forgeVersion}-installer.jar";
+
+                        // Attempt to download from backup URL
+                        bool backupDownloadSuccess = await Shows.ShowDownloader(this, backupUrl, downPath, filename, "备用链接下载中……", sha256Exp);
+                        if (!backupDownloadSuccess || !File.Exists(downPath + "\\" + filename))
+                        {
+                            Shows.ShowMsgDialog(this, "下载取消！（或服务端文件不存在）", "错误");
+                            return;
+                        }
+                    }
+                    string installReturn = await InstallForge(filename);
+                    if (installReturn == null)
+                    {
+                        Shows.ShowMsgDialog(this, "安装失败！", "错误");
+                        return;
+                    }
+
+                    downloadServerName = installReturn;
+                }
+                else if (downServer.IndexOf("banner") + 1 != 0)
+                {
+                    //banner应当作为模组加载，所以要再下载一个fabric才是服务端
+                    try
+                    {
+                        //移动到mods文件夹
+                        Directory.CreateDirectory(downloadServerBase + "\\mods\\");
+                        if (File.Exists(downloadServerBase + "\\mods\\" + filename))
+                        {
+                            File.Delete(downloadServerBase + "\\mods\\" + filename);
+                        }
+                        File.Move(downloadServerBase + "\\" + filename, downloadServerBase + "\\mods\\" + filename);
+                    }
+                    catch (Exception e)
+                    {
+                        Dispatcher.Invoke(() =>
+                        {
+                            Shows.ShowMsgDialog(this, "Banner端移动失败！\n请重试！" + e.Message, "错误");
                         });
-                        downloadServerName = $"fabric-{bannerVersion}.jar";
-                        Close();
-
-
+                        return;
                     }
-                    else
+
+                    //下载一个fabric端
+                    //获取版本号
+                    string bannerVersion = filename.Replace("banner-", "").Replace(".jar", "");
+                    await Dispatcher.Invoke(async () =>
                     {
-                        downloadServerName = filename;
-                        Close();
-                    }
+                        bool dwnFabric = await Shows.ShowDownloader(GetWindow(this), Functions.Get("download/server/fabric/" + bannerVersion), downloadServerBase, $"fabric-{bannerVersion}.jar", "下载Fabric端中···");
+                        if (!dwnFabric || !File.Exists(downloadServerBase + "\\" + $"fabric-{bannerVersion}.jar"))
+                        {
+                            Shows.ShowMsgDialog(this, "Fabric端下载取消（或服务端文件不存在）！", "错误");
+                            return;
+                        }
+                    });
+
+                    downloadServerName = $"fabric-{bannerVersion}.jar";
                 }
                 else
                 {
-                    Shows.ShowMsgDialog(this, "下载失败！（文件无法下载/下载后校验完整性失败）\n请重试！", "错误");
+                    downloadServerName = filename;
                 }
+                Close();
+            }
+        }
+
+        private async Task<string> InstallForge(string filename)
+        {
+            //调用新版forge安装器
+            string[] installForge = await Shows.ShowInstallForge(this, downPath + "\\" + filename, downPath, downloadServerJava);
+            if (installForge[0] == "0")
+            {
+                if (await Shows.ShowMsgDialogAsync(this, "自动安装失败！是否尝试使用命令行安装方式？", "错误", true))
+                {
+                    return Functions.InstallForge(downloadServerJava, downloadServerBase, filename, string.Empty, false);
+                }
+                else
+                {
+                    return null;
+                }
+            }
+            else if (installForge[0] == "1")
+            {
+                return Functions.InstallForge(downloadServerJava, downloadServerBase, filename, installForge[1]);
+            }
+            else
+            {
+                return null;
             }
         }
 

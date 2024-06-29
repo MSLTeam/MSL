@@ -90,10 +90,41 @@ namespace MSL.controls
             return await showDialogs.ShowInstallForgeDialog(_window, forgePath, downPath, java);
         }
 
-        public static async Task<bool> ShowDownloader(Window _window, string downloadurl, string downloadPath, string filename, string downloadinfo, string sha256 = "")
+        /// <summary>
+        /// 下载器
+        /// </summary>
+        /// <param name="_window">显示在哪个窗体中</param>
+        /// <param name="downloadurl">下载地址</param>
+        /// <param name="downloadPath">文件存放目录</param>
+        /// <param name="filename">文件名</param>
+        /// <param name="downloadinfo">下载信息（label中显示的内容）</param>
+        /// <param name="sha256">验证完整性（可选）</param>
+        /// <returns>true下载成功；false下载取消/失败</returns>
+        public static async Task<bool> ShowDownloader(Window _window, string downloadurl, string downloadPath, string filename, string downloadinfo, string sha256 = "", bool closeDirectly = false)
         {
             ShowDialogs showDialogs = new ShowDialogs();
-            bool _ret = await showDialogs.ShowDownloadDialog(_window, downloadurl, downloadPath, filename, downloadinfo, sha256);
+            int _ret = await showDialogs.ShowDownloadDialog(_window, downloadurl, downloadPath, filename, downloadinfo, sha256, closeDirectly);
+            if (_ret == 1)
+            {
+                return true;
+            }
+            return false;
+        }
+
+        /// <summary>
+        /// 下载器
+        /// </summary>
+        /// <param name="_window">显示在哪个窗体中</param>
+        /// <param name="downloadurl">下载地址</param>
+        /// <param name="downloadPath">文件存放目录</param>
+        /// <param name="filename">文件名</param>
+        /// <param name="downloadinfo">下载信息（label中显示的内容）</param>
+        /// <param name="sha256">验证完整性（可选）</param>
+        /// <returns>0未开始下载（或下载中），1下载完成，2下载取消，3下载失败</returns>
+        public static async Task<int> ShowDownloaderWithIntReturn(Window _window, string downloadurl, string downloadPath, string filename, string downloadinfo, string sha256 = "", bool closeDirectly = false)
+        {
+            ShowDialogs showDialogs = new ShowDialogs();
+            int _ret = await showDialogs.ShowDownloadDialog(_window, downloadurl, downloadPath, filename, downloadinfo, sha256, closeDirectly);
             return _ret;
         }
     }
@@ -141,10 +172,10 @@ namespace MSL.controls
             return msgDialog._dialogReturn;
         }
 
-        public async Task<bool> ShowDownloadDialog(Window _window, string downloadurl, string downloadPath, string filename, string downloadinfo, string sha256 = "")
+        public async Task<int> ShowDownloadDialog(Window _window, string downloadurl, string downloadPath, string filename, string downloadinfo, string sha256 = "", bool closeDirectly = false)
         {
             window = _window;
-            DownloadDialog dwnDialog = new DownloadDialog(downloadurl, downloadPath, filename, downloadinfo, sha256);
+            DownloadDialog dwnDialog = new DownloadDialog(downloadurl, downloadPath, filename, downloadinfo, sha256, closeDirectly);
             dwnDialog.CloseDialog += CloseMsgDialog;
             window?.Focus();
             dialog = Dialog.Show(dwnDialog);

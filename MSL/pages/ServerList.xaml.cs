@@ -405,8 +405,7 @@ namespace MSL.pages
         private async void DlServerCoreBtn_Click(object sender, RoutedEventArgs e)
         {
             await Shows.ShowMsgDialogAsync(Window.GetWindow(this), "这是单独的服务端下载界面\n下载的服务端均在MSL文件夹下的ServerCores文件夹", "提示");
-            DownloadServer.downloadServerBase = @"MSL/ServerCores/";
-            DownloadServer downloadServer = new DownloadServer
+            DownloadServer downloadServer = new DownloadServer("MSL\\ServerCores\\", "", false)
             {
                 Owner = Window.GetWindow(Window.GetWindow(this))
             };

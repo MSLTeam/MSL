@@ -506,42 +506,49 @@ namespace MSL
 
         private async void UpdateApp(string latestVersion)
         {
-            if (ProcessRunningCheck())
+            try
             {
-                Shows.ShowMsgDialog(this, LanguageManager.Instance["MainWindow_GrowlMsg_UpdateWarning"], LanguageManager.Instance["Dialog_Warning"]);
-                return;
+                if (ProcessRunningCheck())
+                {
+                    Shows.ShowMsgDialog(this, LanguageManager.Instance["MainWindow_GrowlMsg_UpdateWarning"], LanguageManager.Instance["Dialog_Warning"]);
+                    return;
+                }
+                string downloadUrl = Functions.Get("download/update?type=normal"); ;
+                if (isI18N)
+                {
+                    downloadUrl = Functions.Get("download/update?type=i18n");
+                }
+                await Shows.ShowDownloader(this, downloadUrl, AppDomain.CurrentDomain.BaseDirectory, "MSL" + latestVersion + ".exe", "下载新版本中……");
+                if (File.Exists("MSL" + latestVersion + ".exe"))
+                {
+                    string oldExePath = Process.GetCurrentProcess().MainModule.ModuleName;
+                    string newExeDir = AppDomain.CurrentDomain.BaseDirectory;
+
+                    string cmdCommand = "/C choice /C Y /N /D Y /T 1 & Del \"" + oldExePath + "\" & Ren \"" + "MSL" + latestVersion + ".exe" + "\" \"MSL.exe\" & start \"\" \"MSL.exe\"";
+
+                    // 关闭当前运行中的应用程序
+                    Application.Current.Shutdown();
+
+                    // 删除旧版本并启动新版本
+                    Process delProcess = new Process();
+                    delProcess.StartInfo.FileName = "cmd.exe";
+                    delProcess.StartInfo.Arguments = cmdCommand;
+                    Directory.SetCurrentDirectory(newExeDir);
+                    delProcess.StartInfo.WindowStyle = ProcessWindowStyle.Hidden;
+                    delProcess.Start();
+
+                    // 退出当前进程
+                    Process.GetCurrentProcess().Kill();
+                    //Environment.Exit(0);
+                }
+                else
+                {
+                    MessageBox.Show(LanguageManager.Instance["MainWindow_GrowlMsg_UpdateFailed"], LanguageManager.Instance["Dialog_Err"], MessageBoxButton.OK, MessageBoxImage.Error);
+                }
             }
-            string downloadUrl = Functions.Get("download/update?type=normal"); ;
-            if (isI18N)
+            catch(Exception ex)
             {
-                downloadUrl = Functions.Get("download/update?type=i18n");
-            }
-            await Shows.ShowDownloader(this, downloadUrl, AppDomain.CurrentDomain.BaseDirectory, "MSL" + latestVersion + ".exe", "下载新版本中……");
-            if (File.Exists("MSL" + latestVersion + ".exe"))
-            {
-                string oldExePath = Process.GetCurrentProcess().MainModule.ModuleName;
-                string newExeDir = AppDomain.CurrentDomain.BaseDirectory;
-
-                string cmdCommand = "/C choice /C Y /N /D Y /T 1 & Del \"" + oldExePath + "\" & Ren \"" + "MSL" + latestVersion + ".exe" + "\" \"MSL.exe\" & start \"\" \"MSL.exe\"";
-
-                // 关闭当前运行中的应用程序
-                Application.Current.Shutdown();
-
-                // 删除旧版本并启动新版本
-                Process delProcess = new Process();
-                delProcess.StartInfo.FileName = "cmd.exe";
-                delProcess.StartInfo.Arguments = cmdCommand;
-                Directory.SetCurrentDirectory(newExeDir);
-                delProcess.StartInfo.WindowStyle = ProcessWindowStyle.Hidden;
-                delProcess.Start();
-
-                // 退出当前进程
-                Process.GetCurrentProcess().Kill();
-                //Environment.Exit(0);
-            }
-            else
-            {
-                MessageBox.Show(LanguageManager.Instance["MainWindow_GrowlMsg_UpdateFailed"], LanguageManager.Instance["Dialog_Err"], MessageBoxButton.OK, MessageBoxImage.Error);
+                MessageBox.Show("出现错误，更新失败！\n" + ex.Message);
             }
         }
 
