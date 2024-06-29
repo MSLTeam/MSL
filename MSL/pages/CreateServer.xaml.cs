@@ -1311,7 +1311,7 @@ namespace MSL.pages
             if (File.Exists(serverbase + "\\" + filename))
             {
                 servercore = filename;
-                if (filename.Contains("forge"))
+                if (filename.Contains("forge") && filename.Contains("installer"))
                 {
                     string installReturn;
                     //调用新版forge安装器
