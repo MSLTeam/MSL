@@ -44,20 +44,20 @@ namespace MSL.pages.frpProviders
                 {
                     //既然都写了，那就继续
                     string FrpcConfig;
-                    FrpcConfig = $"serverAddr = \"{ServerIP.Text}\"\r\n" +
-                        $"serverPort = {ServerPort.Text}\r\n" +
-                        //$"transport.tcpMux = {ServerTcpMux.IsChecked.ToString().ToLower()}\r\n" +
-                        //$"transport.protocol = {ServerProtocol.Text}\r\n"+
-                        $"user = \"{ServerUser.Text}\"\r\n" +
-                        $"auth.token = \"{ServerToken.Text}\"\r\ndnsServer = \"{ServerDNS.Text}\"\r\n" +
-                        $"transport.tls.enable = {ServerTls.IsChecked.ToString().ToLower()}\r\n" +
-                        //$"[[proxies]]\r\nprivilege_mode = {ServerPrivilege.IsChecked.ToString().ToLower()}\r\n" +
-                        $"[[proxies]]\r\n" +
-                        $"name = \"{ClientName.Text}\"\r\n" +
-                        $"type = \"{ClientProtocol.Text}\"\r\nlocalIp = \"{ClientIP.Text}\"\r\n" +
-                        $"localPort = {ClientPort.Text}\r\nremotePort = {ClientRemotePort.Text}\r\n" +
-                        $"transport.useEncryption = {ClientEnc.IsChecked.ToString().ToLower()}\r\n" +
-                        $"transport.useCompression = {ClientComp.IsChecked.ToString().ToLower()}\r\n \r\n";
+                    FrpcConfig = $"serverAddr = \"{ServerIP.Text}\"\n" +
+                        $"serverPort = {ServerPort.Text}\n" +
+                        $"user = \"{ServerUser.Text}\"\nauth.token = \"{ServerToken.Text}\"\n" +
+                        $"dnsServer = \"{ServerDNS.Text}\"\n" +
+                        $"transport.protocol = \"{ServerProtocol.Text}\"\n"+
+                        $"transport.tcpMux = {ServerTcpMux.IsChecked.ToString().ToLower()}\n" +
+                        $"transport.tls.enable = {ServerTls.IsChecked.ToString().ToLower()}\n\n" +
+                        $"[[proxies]]\n" +
+                        $"name = \"{ClientName.Text}\"\n" +
+                        $"type = \"{ClientProtocol.Text}\"\r\nlocalIp = \"{ClientIP.Text}\"\n" +
+                        $"localPort = {ClientPort.Text}\r\nremotePort = {ClientRemotePort.Text}\n" +
+                        $"transport.useCompression = {ClientComp.IsChecked.ToString().ToLower()}\n" +
+                        $"transport.useEncryption = {ClientEnc.IsChecked.ToString().ToLower()}\n" +
+                        $"{moreData.Text}\n";
                     Directory.CreateDirectory("MSL\\frp");
                     File.WriteAllText(@"MSL\frp\frpc.toml", FrpcConfig);
                     SetFrpcPath();
