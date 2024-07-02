@@ -70,7 +70,7 @@ namespace MSL.pages
                 string sha256Exp = downContext[2];
                 downPath = downloadServerBase;
                 filename = downServer + "-" + downVersion + ".jar";
-                if (downServer.Contains("forge"))
+                if (downServer == "forge" || downServer == "spongeforge" || downServer == "neoforge")
                 {
                     int dwnDialog = await Shows.ShowDownloaderWithIntReturn(this, downUrl, downPath, filename, "下载服务端中……", sha256Exp, true);
                     if (dwnDialog == 2)
@@ -89,14 +89,7 @@ namespace MSL.pages
                     }
                 }
 
-                if (!isInstallSomeCore)
-                {
-                    Shows.ShowMsgDialog(this, "下载完成！服务端核心放置在“MSL\\ServerCores”文件夹中！", "提示");
-                    //downloadServerName = filename;
-                    //Close();
-                    return;
-                }
-                if (downServer.Contains("spongeforge"))
+                if (downServer == "spongeforge")
                 {
                     string forgeName = downServer.Replace("spongeforge", "forge");
                     string _filename = forgeName + ".jar";
@@ -132,14 +125,18 @@ namespace MSL.pages
                         string backupUrl = $"https://maven.minecraftforge.net/net/minecraftforge/forge/{mcVersion}-{forgeVersion}/{forgeName}-{forgeVersion}-installer.jar";
 
                         // Attempt to download from backup URL
-                        bool backupDownloadSuccess = await Shows.ShowDownloader(Window.GetWindow(this), backupUrl, downPath, _filename, "备用链接下载中……", _sha256Exp);
+                        bool backupDownloadSuccess = await Shows.ShowDownloader(GetWindow(this), backupUrl, downPath, _filename, "备用链接下载中……", _sha256Exp);
                         if (!backupDownloadSuccess || !File.Exists(downPath + "\\" + _filename))
                         {
                             Shows.ShowMsgDialog(this, "下载取消！（或服务端文件不存在）", "错误");
                             return;
                         }
                     }
-
+                    if (!isInstallSomeCore)
+                    {
+                        Shows.ShowMsgDialog(this, "下载完成！服务端核心放置在“MSL\\ServerCores”文件夹中！", "提示");
+                        return;
+                    }
                     string installReturn = await InstallForge(_filename);
                     if (installReturn == null)
                     {
@@ -149,11 +146,16 @@ namespace MSL.pages
 
                     downloadServerName = installReturn;
                 }
-                else if (downServer.Contains("neoforge"))
+                else if (downServer == "neoforge")
                 {
                     if (!File.Exists(downPath + "\\" + filename))
                     {
                         Shows.ShowMsgDialog(this, "下载失败！（或服务端文件不存在）", "提示");
+                        return;
+                    }
+                    if (!isInstallSomeCore)
+                    {
+                        Shows.ShowMsgDialog(this, "下载完成！服务端核心放置在“MSL\\ServerCores”文件夹中！", "提示");
                         return;
                     }
                     string installReturn = await InstallForge(filename);
@@ -165,7 +167,7 @@ namespace MSL.pages
 
                     downloadServerName = installReturn;
                 }
-                else if (downServer.Contains("forge"))
+                else if (downServer == "forge")
                 {
                     // Check if file exists and download succeeded
                     if (!File.Exists(downPath + "\\" + filename))
@@ -195,6 +197,11 @@ namespace MSL.pages
                             return;
                         }
                     }
+                    if (!isInstallSomeCore)
+                    {
+                        Shows.ShowMsgDialog(this, "下载完成！服务端核心放置在“MSL\\ServerCores”文件夹中！", "提示");
+                        return;
+                    }
                     string installReturn = await InstallForge(filename);
                     if (installReturn == null)
                     {
@@ -204,8 +211,13 @@ namespace MSL.pages
 
                     downloadServerName = installReturn;
                 }
-                else if (downServer.IndexOf("banner") + 1 != 0)
+                else if (downServer == "banner")
                 {
+                    if (!isInstallSomeCore)
+                    {
+                        Shows.ShowMsgDialog(this, "下载完成！服务端核心放置在“MSL\\ServerCores”文件夹中！", "提示");
+                        return;
+                    }
                     //banner应当作为模组加载，所以要再下载一个fabric才是服务端
                     try
                     {
@@ -243,6 +255,11 @@ namespace MSL.pages
                 }
                 else
                 {
+                    if (!isInstallSomeCore)
+                    {
+                        Shows.ShowMsgDialog(this, "下载完成！服务端核心放置在“MSL\\ServerCores”文件夹中！", "提示");
+                        return;
+                    }
                     downloadServerName = filename;
                 }
                 Close();

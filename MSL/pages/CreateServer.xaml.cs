@@ -363,7 +363,7 @@ namespace MSL.pages
                         txb3.Text = files[int.Parse(selectFile)];
                         if (txb3.Text.Contains("forge") && txb3.Text.Contains("installer"))
                         {
-                            bool dialog = await Shows.ShowMsgDialogAsync(Window.GetWindow(this), "您选择的服务端是forge安装器，是否将其展开安装？\n如果不展开安装，服务器可能无法开启！", "提示", true, "取消");
+                            bool dialog = await Shows.ShowMsgDialogAsync(Window.GetWindow(this), "您选择的服务端疑似是forge安装器，是否将其展开安装？\n如果不展开安装，服务器可能无法开启！", "提示", true, "取消");
                             if (dialog)
                             {
                                 string installReturn;
@@ -411,7 +411,7 @@ namespace MSL.pages
                         txb3.Text = files[0];
                         if (txb3.Text.Contains("forge") && txb3.Text.Contains("installer"))
                         {
-                            bool dialog = await Shows.ShowMsgDialogAsync(Window.GetWindow(this), "您选择的服务端是forge安装器，是否将其展开安装？\n如果不展开安装，服务器可能无法开启！", "提示", true, "取消");
+                            bool dialog = await Shows.ShowMsgDialogAsync(Window.GetWindow(this), "您选择的服务端疑似是forge安装器，是否将其展开安装？\n如果不展开安装，服务器可能无法开启！", "提示", true, "取消");
                             if (dialog)
                             {
                                 string installReturn;
@@ -783,7 +783,7 @@ namespace MSL.pages
 
                     if (txb3.Text.Contains("forge") && txb3.Text.Contains("installer"))
                     {
-                        bool dialog = await Shows.ShowMsgDialogAsync(Window.GetWindow(this), "您选择的服务端是forge安装器，是否将其展开安装？\n如果不展开安装，服务器可能无法开启！", "提示", true, "取消");
+                        bool dialog = await Shows.ShowMsgDialogAsync(Window.GetWindow(this), "您选择的服务端疑似是forge安装器，是否将其展开安装？\n如果不展开安装，服务器可能无法开启！", "提示", true, "取消");
                         if (dialog)
                         {
                             string installReturn;
@@ -1297,11 +1297,12 @@ namespace MSL.pages
         private async void FastModeInstallCore()
         {
             string finallyServerCore = FinallyCoreCombo.SelectedItem.ToString();
+            string serverCoreType = finallyServerCore.Split('-')[0];
             string filename = finallyServerCore + ".jar";
             string[] dlContext = await Functions.HttpGetAsync("download/server/" + finallyServerCore.Replace("-", "/"), "", false, true);//获取链接
             string dlUrl = dlContext[1];
             string sha256Exp = dlContext[2];
-            if (finallyServerCore.Contains("forge"))
+            if (serverCoreType == "forge"|| serverCoreType == "spongeforge"|| serverCoreType == "neoforge")
             {
                 int dwnDialog = await Shows.ShowDownloaderWithIntReturn(Window.GetWindow(this), dlUrl, serverbase, filename, "下载服务端中……", sha256Exp, true); //从这里请求服务端下载
                 if (dwnDialog == 2)
@@ -1326,7 +1327,7 @@ namespace MSL.pages
                 }
             }
 
-            if (finallyServerCore.Contains("spongeforge"))
+            if (serverCoreType == "spongeforge")
             {
                 string forgeName = finallyServerCore.Replace("spongeforge", "forge");
                 string _filename = forgeName + ".jar";
@@ -1396,7 +1397,7 @@ namespace MSL.pages
 
             }
             */
-            else if (finallyServerCore.Contains("neoforge"))
+            else if (serverCoreType == "neoforge")
             {
                 if (!File.Exists(serverbase + "\\" + filename))
                 {
@@ -1416,7 +1417,7 @@ namespace MSL.pages
                 }
                 servercore = installReturn;
             }
-            else if (finallyServerCore.Contains("forge"))
+            else if (serverCoreType == "forge")
             {
                 // Check if file exists and download succeeded
                 if (!File.Exists(serverbase + "\\" + filename))
