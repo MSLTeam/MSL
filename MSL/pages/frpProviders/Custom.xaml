@@ -81,10 +81,10 @@
                                 <StackPanel Orientation="Horizontal" Margin="8,0,0,5">
                                     <CheckBox Content="启用TLS（不懂别开）" x:Name="ServerTls"/>
                                 </StackPanel>
+                                <!--
                                 <StackPanel Orientation="Horizontal" Margin="8,0,0,5">
                                     <CheckBox Content="TCP多路复用（不懂别开）" x:Name="ServerTcpMux"/>
                                 </StackPanel>
-                                <!--
                                 <StackPanel Orientation="Horizontal" Margin="8,0,0,5">
                                     <CheckBox Content="特权模式（不懂别开）" x:Name="ServerPrivilege"/>
                                 </StackPanel>

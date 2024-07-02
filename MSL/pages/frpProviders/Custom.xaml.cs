@@ -46,7 +46,7 @@ namespace MSL.pages.frpProviders
                     string FrpcConfig;
                     FrpcConfig = $"serverAddr = \"{ServerIP.Text}\"\r\n" +
                         $"serverPort = {ServerPort.Text}\r\n" +
-                        $"transport.tcpMux = {ServerTcpMux.IsChecked.ToString().ToLower()}\r\n" +
+                        //$"transport.tcpMux = {ServerTcpMux.IsChecked.ToString().ToLower()}\r\n" +
                         //$"transport.protocol = {ServerProtocol.Text}\r\n"+
                         $"user = \"{ServerUser.Text}\"\r\n" +
                         $"auth.token = \"{ServerToken.Text}\"\r\ndnsServer = \"{ServerDNS.Text}\"\r\n" +
