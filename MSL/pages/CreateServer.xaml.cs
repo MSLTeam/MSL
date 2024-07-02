@@ -516,7 +516,6 @@ namespace MSL.pages
             }
             catch (Exception ex)
             {
-                //MessageBox.Show(ex.ToString(), "错误", MessageBoxButton.OK, MessageBoxImage.Error);
                 Shows.ShowMsgDialog(Window.GetWindow(this), "解压失败，Java压缩包可能已损坏，请重试！错误代码：" + ex.Message + "\n（注：若多次重试均无法解压的话，请自行去网络上下载安装并使用自定义模式来创建服务器）", "错误");
                 return false;
             }

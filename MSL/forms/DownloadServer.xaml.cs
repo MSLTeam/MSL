@@ -122,7 +122,7 @@ namespace MSL.pages
                         {
                             forgeVersion += "-" + mcVersion;
                         }
-                        string backupUrl = $"https://maven.minecraftforge.net/net/minecraftforge/forge/{mcVersion}-{forgeVersion}/{forgeName}-{forgeVersion}-installer.jar";
+                        string backupUrl = $"https://maven.minecraftforge.net/net/minecraftforge/forge/{mcVersion}-{forgeVersion}/{forgeName}-{mcVersion}-{forgeVersion}-installer.jar";
 
                         // Attempt to download from backup URL
                         bool backupDownloadSuccess = await Shows.ShowDownloader(GetWindow(this), backupUrl, downPath, _filename, "备用链接下载中……", _sha256Exp);
@@ -187,7 +187,7 @@ namespace MSL.pages
                         {
                             forgeVersion += "-" + mcVersion;
                         }
-                        string backupUrl = $"https://maven.minecraftforge.net/net/minecraftforge/forge/{mcVersion}-{forgeVersion}/{downServer}-{forgeVersion}-installer.jar";
+                        string backupUrl = $"https://maven.minecraftforge.net/net/minecraftforge/forge/{mcVersion}-{forgeVersion}/{downServer}-{mcVersion}-{forgeVersion}-installer.jar";
 
                         // Attempt to download from backup URL
                         bool backupDownloadSuccess = await Shows.ShowDownloader(this, backupUrl, downPath, filename, "备用链接下载中……", sha256Exp);
