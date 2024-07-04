@@ -62,6 +62,7 @@
                         <ComboBox x:Name="ServerCoreCombo" Margin="360,35,10,0" HorizontalAlignment="Stretch" VerticalAlignment="Top" Height="35" SelectionChanged="ServerCoreCombo_SelectionChanged">
                             <ComboBoxItem Content="插件服务器"/>
                             <ComboBoxItem Content="插件模组混合服务器（Forge）"/>
+                            <ComboBoxItem Content="插件模组混合服务器（Fabric）"/>
                             <ComboBoxItem Content="模组服务器（Forge）"/>
                             <ComboBoxItem Content="模组服务器（Fabric）"/>
                             <ComboBoxItem Content="原版服务器"/>

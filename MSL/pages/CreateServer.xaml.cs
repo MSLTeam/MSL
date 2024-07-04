@@ -1070,18 +1070,21 @@ namespace MSL.pages
                         ServerCoreDescrip.Text = "插件模组混合服务器（Forge加载器）：这种服务器将插件服务端和Forge服务端合二为一，既吸取了二者的优点（服务器管理功能可通过添加插件做到，添加新物品更改游戏玩法可通过添加模组做到），同时又有许多缺点（如服务器不稳定，同时添加插件和模组，极易造成冲突问题，且也存在模组服务器服务端和客户端需要同步模组的问题）";
                         break;
                     case 2:
-                        ServerCoreDescrip.Text = "注意：此服务端的相关库文件源在海外，若多次出现下载失败的情况，请换用混合服务端！\n模组服务器（Forge加载器）：指通过Forge加载器，添加模组来增加功能（服务端和客户端均需添加），这种方式既可以更改服务端的内容，也可以更改客户端的内容，所以插件服务器无法实现的功能在这里即可轻易做到，但是这种方式很难做到插件服的管理功能，且需要客户端的模组和服务端进行同步，会给玩家造成一定的麻烦";
+                        ServerCoreDescrip.Text = "插件模组混合服务器（Fabric加载器）：这种服务器将插件服务端和Fabric服务端合二为一，既吸取了二者的优点（服务器管理功能可通过添加插件做到，添加新物品更改游戏玩法可通过添加模组做到），同时又有许多缺点（如服务器不稳定，同时添加插件和模组，极易造成冲突问题，且也存在模组服务器服务端和客户端需要同步模组的问题）";
                         break;
                     case 3:
-                        ServerCoreDescrip.Text = "模组服务器（Fabric加载器）：指通过Fabric加载器，添加模组来增加功能（服务端和客户端均需添加），这种方式既可以更改服务端的内容，也可以更改客户端的内容，所以插件服务器无法实现的功能在这里即可轻易做到，但是这种方式很难做到插件服的管理功能，且需要客户端的模组和服务端进行同步，会给玩家造成一定的麻烦";
+                        ServerCoreDescrip.Text = "模组服务器（Forge加载器）：指通过Forge加载器，添加模组来增加功能（服务端和客户端均需添加），这种方式既可以更改服务端的内容，也可以更改客户端的内容，所以插件服务器无法实现的功能在这里即可轻易做到，但是这种方式很难做到插件服的管理功能，且需要客户端的模组和服务端进行同步，会给玩家造成一定的麻烦";
                         break;
                     case 4:
-                        ServerCoreDescrip.Text = "原版服务器：Mojang纯原生服务器，不能添加任何插件或模组，给您原汁原味的体验";
+                        ServerCoreDescrip.Text = "模组服务器（Fabric加载器）：指通过Fabric加载器，添加模组来增加功能（服务端和客户端均需添加），这种方式既可以更改服务端的内容，也可以更改客户端的内容，所以插件服务器无法实现的功能在这里即可轻易做到，但是这种方式很难做到插件服的管理功能，且需要客户端的模组和服务端进行同步，会给玩家造成一定的麻烦";
                         break;
                     case 5:
-                        ServerCoreDescrip.Text = "基岩版服务器：专为基岩版提供的服务器，这种服务器在配置等方面和Java版服务器不太一样，同时开服器也不太适配，更改配置文件等相关操作只能您手动操作";
+                        ServerCoreDescrip.Text = "原版服务器：Mojang纯原生服务器，不能添加任何插件或模组，给您原汁原味的体验";
                         break;
                     case 6:
+                        ServerCoreDescrip.Text = "基岩版服务器：专为基岩版提供的服务器，这种服务器在配置等方面和Java版服务器不太一样，同时开服器也不太适配，更改配置文件等相关操作只能您手动操作";
+                        break;
+                    case 7:
                         ServerCoreDescrip.Text = "代理服务器：指Java版群组服务器的转发服务器，这种服务器相当于一个桥梁，将玩家在不同的服务器之间进行传送转发，使用这种服务器您首先需要开启一个普通服务器，因为这种服务器没有游戏内容，如果没有普通服务器进行连接，玩家根本无法进入，且目前开服器并不兼容这种服务器，创建完毕后您需在列表右键该服务器并使用“命令行开服”功能来启动";
                         break;
                 }
@@ -1296,12 +1299,13 @@ namespace MSL.pages
         private async void FastModeInstallCore()
         {
             string finallyServerCore = FinallyCoreCombo.SelectedItem.ToString();
-            string serverCoreType = finallyServerCore.Split('-')[0];
+            string serverCoreType = finallyServerCore.Substring(0, finallyServerCore.LastIndexOf("-"));
             string filename = finallyServerCore + ".jar";
-            string[] dlContext = await Functions.HttpGetAsync("download/server/" + finallyServerCore.Replace("-", "/"), "", false, true);//获取链接
+            string[] dlContext = await Functions.HttpGetAsync("download/server/" + serverCoreType + "/" + 
+                finallyServerCore.Substring(finallyServerCore.LastIndexOf("-") + 1), "", false, true);//获取链接
             string dlUrl = dlContext[1];
             string sha256Exp = dlContext[2];
-            if (serverCoreType == "forge"|| serverCoreType == "spongeforge"|| serverCoreType == "neoforge")
+            if (serverCoreType == "forge" || serverCoreType == "spongeforge" || serverCoreType == "neoforge")
             {
                 int dwnDialog = await Shows.ShowDownloaderWithIntReturn(Window.GetWindow(this), dlUrl, serverbase, filename, "下载服务端中……", sha256Exp, true); //从这里请求服务端下载
                 if (dwnDialog == 2)
