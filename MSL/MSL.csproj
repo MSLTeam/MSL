@@ -45,7 +45,7 @@
     <DefineConstants>DEBUG;TRACE</DefineConstants>
     <DebugType>full</DebugType>
     <PlatformTarget>x64</PlatformTarget>
-    <LangVersion>7.3</LangVersion>
+    <LangVersion>12.0</LangVersion>
     <ErrorReport>prompt</ErrorReport>
     <Prefer32Bit>true</Prefer32Bit>
   </PropertyGroup>
@@ -55,7 +55,7 @@
     <Optimize>true</Optimize>
     <DebugType>pdbonly</DebugType>
     <PlatformTarget>x64</PlatformTarget>
-    <LangVersion>7.3</LangVersion>
+    <LangVersion>12.0</LangVersion>
     <ErrorReport>prompt</ErrorReport>
     <Prefer32Bit>true</Prefer32Bit>
   </PropertyGroup>
@@ -99,8 +99,8 @@
       <Generator>MSBuild:Compile</Generator>
       <SubType>Designer</SubType>
     </ApplicationDefinition>
-    <Compile Include="controls\Config.cs" />
-    <Compile Include="controls\Functions.cs" />
+    <Compile Include="utils\Config.cs" />
+    <Compile Include="utils\Functions.cs" />
     <Compile Include="controls\ImagePathConverter.cs" />
     <Compile Include="controls\dialogs\InputDialog.xaml.cs">
       <DependentUpon>InputDialog.xaml</DependentUpon>
@@ -111,10 +111,12 @@
     <Compile Include="controls\dialogs\MessageDialog.xaml.cs">
       <DependentUpon>MessageDialog.xaml</DependentUpon>
     </Compile>
+    <Compile Include="utils\HttpService.cs" />
+    <Compile Include="utils\JavaScanner.cs" />
     <Compile Include="controls\MessageWindow.xaml.cs">
       <DependentUpon>MessageWindow.xaml</DependentUpon>
     </Compile>
-    <Compile Include="controls\Shows.cs" />
+    <Compile Include="utils\Shows.cs" />
     <Compile Include="controls\dialogs\TextDialog.xaml.cs">
       <DependentUpon>TextDialog.xaml</DependentUpon>
     </Compile>

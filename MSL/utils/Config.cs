@@ -6,7 +6,7 @@ using System.IO;
 using System.Text;
 using System.Threading.Tasks;
 
-namespace MSL.controls
+namespace MSL.utils
 {
     internal class Config
     {

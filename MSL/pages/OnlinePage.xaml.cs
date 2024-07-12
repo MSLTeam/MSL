@@ -1,6 +1,6 @@
 ﻿using HandyControl.Controls;
-using MSL.controls;
 using MSL.i18n;
+using MSL.utils;
 using Newtonsoft.Json;
 using Newtonsoft.Json.Linq;
 using System;
@@ -62,7 +62,7 @@ namespace MSL.pages
         {
             try
             {
-                string mslFrpInfo = Functions.Get("query/MSLFrps");
+                string mslFrpInfo = HttpService.Get("query/MSLFrps");
                 JObject valuePairs = (JObject)JsonConvert.DeserializeObject(mslFrpInfo);
                 foreach (var valuePair in valuePairs)
                 {
@@ -205,7 +205,7 @@ namespace MSL.pages
                             os = "6";
                         }
 
-                        _dnfrpc = Functions.Get("/download/frpc/MSLFrp/amd64?os=" + os);
+                        _dnfrpc = HttpService.Get("/download/frpc/MSLFrp/amd64?os=" + os);
                         await Dispatcher.Invoke(async () =>
                         {
                             await Shows.ShowDownloader(Window.GetWindow(this), _dnfrpc, "MSL\\frp", "frpc.exe", LanguageManager.Instance["Pages_Online_DlFrpc"]);

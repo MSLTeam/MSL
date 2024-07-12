@@ -1,4 +1,4 @@
-﻿using MSL.controls;
+﻿using MSL.utils;
 using System;
 using System.IO;
 using System.Windows;
@@ -48,7 +48,7 @@ namespace MSL.pages.frpProviders
                         $"serverPort = {ServerPort.Text}\n" +
                         $"user = \"{ServerUser.Text}\"\nauth.token = \"{ServerToken.Text}\"\n" +
                         $"dnsServer = \"{ServerDNS.Text}\"\n" +
-                        $"transport.protocol = \"{ServerProtocol.Text}\"\n"+
+                        $"transport.protocol = \"{ServerProtocol.Text}\"\n" +
                         $"transport.tcpMux = {ServerTcpMux.IsChecked.ToString().ToLower()}\n" +
                         $"transport.tls.enable = {ServerTls.IsChecked.ToString().ToLower()}\n\n" +
                         $"[[proxies]]\n" +

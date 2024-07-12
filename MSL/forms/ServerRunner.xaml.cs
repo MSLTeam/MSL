@@ -4,6 +4,7 @@ using ICSharpCode.SharpZipLib.Zip;
 using Microsoft.Win32;
 using MSL.controls;
 using MSL.pages;
+using MSL.utils;
 using Newtonsoft.Json;
 using Newtonsoft.Json.Linq;
 using System;
@@ -2793,7 +2794,7 @@ namespace MSL
                 {
                     selectJava.Items.Clear();
                 });
-                string response = Functions.Get("query/java");
+                string response = HttpService.Get("query/java");
                 JArray jArray = JArray.Parse(response);
                 foreach (var j in jArray)
                 {
@@ -2881,7 +2882,7 @@ namespace MSL
                     {
                         await Dispatcher.Invoke(async () =>
                         {
-                            dwnJava = await DownloadJava(selectJava.SelectedItem.ToString(), Functions.Get("download/java/" + selectJava.SelectedItem.ToString()));
+                            dwnJava = await DownloadJava(selectJava.SelectedItem.ToString(), HttpService.Get("download/java/" + selectJava.SelectedItem.ToString()));
                         });
                         if (dwnJava == 1)
                         {
@@ -2923,7 +2924,7 @@ namespace MSL
                         jAva.Text = AppDomain.CurrentDomain.BaseDirectory.ToString() + jAva.Text;
                     }
                     Growl.Info("正在检查所选Java可用性，请稍等……");
-                    (bool javaAvailability, string javainfo) = await Functions.CheckJavaAvailabilityAsync(jAva.Text);
+                    (bool javaAvailability, string javainfo) = await JavaScanner.CheckJavaAvailabilityAsync(jAva.Text);
                     if (javaAvailability)
                     {
                         Growl.Success("检测完毕，Java可用！\n" + "版本：" + javainfo);
@@ -3194,7 +3195,7 @@ namespace MSL
             if (useJvpath.IsChecked == true)
             {
                 Growl.Info("正在检查环境变量可用性，请稍等……");
-                (bool javaAvailability, string javainfo) = await Functions.CheckJavaAvailabilityAsync("java");
+                (bool javaAvailability, string javainfo) = await JavaScanner.CheckJavaAvailabilityAsync("java");
                 if (javaAvailability)
                 {
                     Growl.Success("检查完毕，您的环境变量正常！");
@@ -3209,7 +3210,7 @@ namespace MSL
 
         private async void usecheckedjv_Checked(object sender, RoutedEventArgs e)
         {
-            List<string> strings = null;
+            List<JavaScanner.JavaInfo> strings = null;
             int dialog = Shows.ShowMsg(this, "即将开始检测电脑上的Java，此过程可能需要一些时间，请耐心等待。\n目前有两种检测模式，一种是简单检测，只检测一些关键目录，用时较少，普通用户可优先使用此模式。\n第二种是深度检测，将检测所有磁盘的所有目录，耗时可能会很久，请慎重选择！", "提示", true, "开始深度检测", "开始简单检测");
             if (dialog == 2)
             {
@@ -3217,20 +3218,28 @@ namespace MSL
                 return;
             }
             Dialog waitDialog = Dialog.Show(new TextDialog("检测中，请稍等……"));
+            JavaScanner javaScanner = new();
             if (dialog == 1)
             {
-                await Task.Run(() => { Thread.Sleep(200); strings = Functions.SearchJava(); });
+                await Task.Run(async () => { Thread.Sleep(200); strings = await javaScanner.ScanJava(); });
             }
             else
             {
-                await Task.Run(() => { Thread.Sleep(200); strings = Functions.SearchJava(true); });
+                await Task.Run(() => { Thread.Sleep(200); strings = javaScanner.SearchJava(); });
             }
             this.Focus();
             waitDialog.Close();
 
             if (strings != null)
             {
-                selectCheckedJavaComb.ItemsSource = strings.ToList();
+                selectCheckedJavaComb.ItemsSource = strings.Select(info => $"Java{info.Version}: {info.Path}").ToList();
+                /*
+                foreach (JavaScanner.JavaInfo info in strings)
+                {
+                    selectCheckedJavaComb.Items.Add(info.Version + ":" + info.Path);
+                }
+                */
+                //selectCheckedJavaComb.ItemsSource = strings;
             }
             if (selectCheckedJavaComb.Items.Count > 0)
             {
@@ -3272,7 +3281,7 @@ namespace MSL
             HttpListener listener = null;
             try
             {
-                ipv6 = Functions.Get("", "https://6.ipw.cn", true);
+                ipv6 = HttpService.Get("", "https://6.ipw.cn", true);
                 Clipboard.Clear();
                 Clipboard.SetText(ipv6);
 
@@ -3303,7 +3312,7 @@ namespace MSL
                 });
 
                 //发送get，测试是否通
-                string result = Functions.Get("", $"https://ipv6test.52nahida.site/?addr=[{ipv6}]&port=21102", true);
+                string result = HttpService.Get("", $"https://ipv6test.52nahida.site/?addr=[{ipv6}]&port=21102", true);
 
                 //结果返回
                 var jsonResult = JObject.Parse(result);
@@ -3603,7 +3612,7 @@ namespace MSL
             //请求内容
             string parameterData = "content=" + logs;
 
-            string response = Functions.Post(path, contentType, parameterData, customUrl);
+            string response = HttpService.Post(path, contentType, parameterData, customUrl);
             //解析返回的东东
             var jsonResponse = JsonConvert.DeserializeObject<dynamic>(response);
 

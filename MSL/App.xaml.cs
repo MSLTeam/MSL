@@ -107,7 +107,7 @@ namespace MSL
             base.OnExit(e);
         }
     }
-    
+
     /*
     public class Logger
     {

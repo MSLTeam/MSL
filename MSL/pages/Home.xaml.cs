@@ -1,4 +1,4 @@
-﻿using MSL.controls;
+﻿using MSL.utils;
 using Newtonsoft.Json.Linq;
 using System;
 using System.IO;
@@ -61,7 +61,7 @@ namespace MSL.pages
             string noticeversion1;
             try
             {
-                string noticeversion = Functions.Get("query/notice/id");
+                string noticeversion = HttpService.Get("query/notice/id");
                 JObject jsonObject = JObject.Parse(File.ReadAllText(@"MSL\config.json", Encoding.UTF8));
                 if (jsonObject["notice"] == null)
                 {
@@ -78,8 +78,8 @@ namespace MSL.pages
                 }
                 if (noticeversion1 != noticeversion)
                 {
-                    var notice = Functions.Get("query/notice/main");
-                    var recommendations = Functions.Get("query/notice/tips");
+                    var notice = HttpService.Get("query/notice/main");
+                    var recommendations = HttpService.Get("query/notice/tips");
 
                     if (!string.IsNullOrEmpty(notice))
                     {
@@ -124,7 +124,7 @@ namespace MSL.pages
                     });
                     if (noticevisible == Visibility.Visible)
                     {
-                        var notice = Functions.Get("query/notice/main");
+                        var notice = HttpService.Get("query/notice/main");
                         if (!string.IsNullOrEmpty(notice))
                         {
                             noticeLabText = notice;
@@ -133,7 +133,7 @@ namespace MSL.pages
                         {
                             noticeLabText = "获取公告失败！请检查网络连接是否正常或联系作者进行解决！";
                         }
-                        var recommendations = Functions.Get("query/notice/tips");
+                        var recommendations = HttpService.Get("query/notice/tips");
                         if (!string.IsNullOrEmpty(recommendations))
                         {
                             LoadRecommendations(recommendations);

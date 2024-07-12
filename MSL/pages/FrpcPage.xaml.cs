@@ -3,6 +3,7 @@ using HandyControl.Data;
 using ICSharpCode.SharpZipLib.Zip;
 using MSL.controls;
 using MSL.i18n;
+using MSL.utils;
 using Newtonsoft.Json;
 using Newtonsoft.Json.Linq;
 using System;
@@ -115,7 +116,7 @@ namespace MSL.pages
                 if ((frpcversion == "" || frpcversion != "0581") && frpcServer == "0") //mslfrp的特别更新qwq
                 {
                     string _dnfrpc;
-                    _dnfrpc = Functions.Get(downloadUrl + "?os=" + osver);//丢os版本号
+                    _dnfrpc = HttpService.Get(downloadUrl + "?os=" + osver);//丢os版本号
 
                     await Dispatcher.Invoke(async () =>
                     {
@@ -127,7 +128,7 @@ namespace MSL.pages
                 if (!File.Exists($"MSL\\frp\\{frpcExeName}") && frpcServer != "-2")//检查frpc是否存在，不存在就下崽崽
                 {
                     string _dnfrpc;
-                    _dnfrpc = Functions.Get(downloadUrl + "?os=" + osver);//丢os版本号
+                    _dnfrpc = HttpService.Get(downloadUrl + "?os=" + osver);//丢os版本号
                     await Dispatcher.Invoke(async () =>
                     {
                         if (frpcServer == "0" || frpcServer == "-1")//下载exe or zip
@@ -457,7 +458,7 @@ namespace MSL.pages
                     ["order"] = order,
                     ["qq"] = qq,
                 };
-                var ret = Functions.Post("getpassword", 0, JsonConvert.SerializeObject(keyValuePairs), Functions.Get("query/MSLFrps/orderapi"));
+                var ret = HttpService.Post("getpassword", 0, JsonConvert.SerializeObject(keyValuePairs), HttpService.Get("query/MSLFrps/orderapi"));
                 Dispatcher.Invoke(() =>
                 {
                     Window.GetWindow(this).Focus();

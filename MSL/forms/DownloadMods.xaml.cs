@@ -1,5 +1,5 @@
 ﻿using CurseForge.APIClient.Models.Mods;
-using MSL.controls;
+using MSL.utils;
 using System;
 using System.Collections.Generic;
 using System.Diagnostics;
@@ -56,7 +56,7 @@ namespace MSL
                 string token = string.Empty;
                 await Task.Run(() =>
                 {
-                    string _token = Functions.Get("query/cf_token");
+                    string _token = HttpService.Get("query/cf_token");
                     try
                     {
                         byte[] data = Convert.FromBase64String(_token);

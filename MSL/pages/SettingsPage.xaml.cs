@@ -1,8 +1,8 @@
 ﻿using HandyControl.Controls;
 using HandyControl.Themes;
 using Microsoft.Win32;
-using MSL.controls;
 using MSL.i18n;
+using MSL.utils;
 using Newtonsoft.Json.Linq;
 using System;
 using System.Collections.Generic;
@@ -660,13 +660,13 @@ namespace MSL.pages
             try
             {
                 var mainwindow = Window.GetWindow(Window.GetWindow(this));
-                string _httpReturn = Functions.Get("query/update");
+                string _httpReturn = HttpService.Get("query/update");
                 Version newVersion = new Version(_httpReturn);
                 Version version = new Version(System.Reflection.Assembly.GetExecutingAssembly().GetName().Version.ToString());
 
                 if (newVersion > version)
                 {
-                    var updatelog = Functions.Get("query/update/log");
+                    var updatelog = HttpService.Get("query/update/log");
                     Dispatcher.Invoke(async () =>
                     {
                         bool dialog = await Shows.ShowMsgDialogAsync(Window.GetWindow(this), "发现新版本，版本号为：" + _httpReturn + "，是否进行更新？\n更新日志：\n" + updatelog, "更新", true, "取消");
@@ -677,10 +677,10 @@ namespace MSL.pages
                                 Shows.ShowMsgDialog(Window.GetWindow(this), "您的服务器/内网映射/点对点联机正在运行中，若此时更新，会造成后台残留，请将前者关闭后再进行更新！", "警告");
                                 return;
                             }
-                            string downloadUrl = Functions.Get("download/update?type=normal"); ;
+                            string downloadUrl = HttpService.Get("download/update?type=normal"); ;
                             if (MainWindow.isI18N)
                             {
-                                downloadUrl = Functions.Get("download/update?type=i18n");
+                                downloadUrl = HttpService.Get("download/update?type=i18n");
                             }
                             await Shows.ShowDownloader(Window.GetWindow(this), downloadUrl, AppDomain.CurrentDomain.BaseDirectory, "MSL" + _httpReturn + ".exe", "下载新版本中……");
                             if (File.Exists("MSL" + _httpReturn + ".exe"))
@@ -797,7 +797,7 @@ namespace MSL.pages
         {
             try
             {
-                string _httpReturn = Functions.Get("query/update");
+                string _httpReturn = HttpService.Get("query/update");
                 bool dialog = await Shows.ShowMsgDialogAsync(Window.GetWindow(this), "当前版本不支持多语言！\n是否升级到MSL多语言版本？\n警告：部分系统可能不支持允许多语言版本，若升级后您无法运行MSL，请自行下载正常版本MSL！", "升级到多语言版本？", true, "取消");
                 if (dialog == true)
                 {
@@ -806,7 +806,7 @@ namespace MSL.pages
                         Shows.ShowMsgDialog(Window.GetWindow(this), "您的服务器/内网映射/点对点联机正在运行中，若此时更新，会造成后台残留，请将前者关闭后再进行更新！", "警告");
                         return;
                     }
-                    string downloadUrl = Functions.Get("download/update?type=i18n");
+                    string downloadUrl = HttpService.Get("download/update?type=i18n");
                     await Shows.ShowDownloader(Window.GetWindow(this), downloadUrl, AppDomain.CurrentDomain.BaseDirectory, "MSL" + _httpReturn + ".exe", "下载多语言版本中……");
                     if (File.Exists("MSL" + _httpReturn + ".exe"))
                     {

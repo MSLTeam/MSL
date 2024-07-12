@@ -1,5 +1,5 @@
-﻿using MSL.controls;
-using MSL.i18n;
+﻿using MSL.i18n;
+using MSL.utils;
 using Newtonsoft.Json;
 using Newtonsoft.Json.Linq;
 using System;
@@ -119,7 +119,7 @@ namespace MSL.pages.frpProviders
         {
             try
             {
-                string response = Functions.Post("api/login.php", 2, $"username={user}&password={pwd}", ChmlFrpApiUrl);
+                string response = HttpService.Post("api/login.php", 2, $"username={user}&password={pwd}", ChmlFrpApiUrl);
                 var jsonResponse = JsonConvert.DeserializeObject<Dictionary<string, object>>(response);
                 if (jsonResponse.ContainsKey("code"))
                 {
@@ -170,7 +170,7 @@ namespace MSL.pages.frpProviders
         {
             try
             {
-                string response = Functions.Get($"api/userinfo.php?usertoken={userToken}", ChmlFrpApiUrl);
+                string response = HttpService.Get($"api/userinfo.php?usertoken={userToken}", ChmlFrpApiUrl);
                 var jsonResponse = JsonConvert.DeserializeObject<Dictionary<string, object>>(response);
                 if (jsonResponse.ContainsKey("userid"))
                 {
@@ -240,7 +240,7 @@ namespace MSL.pages.frpProviders
             try
             {
                 //获取userinfo
-                var jsonUserInfo = JsonConvert.DeserializeObject<Dictionary<string, object>>(Functions.Get($"api/userinfo.php?usertoken={token}", ChmlFrpApiUrl));
+                var jsonUserInfo = JsonConvert.DeserializeObject<Dictionary<string, object>>(HttpService.Get($"api/userinfo.php?usertoken={token}", ChmlFrpApiUrl));
                 Dispatcher.Invoke(() =>
                 {
                     UserInfo.Text = $"用户ID:{jsonUserInfo["userid"]}  " +
@@ -256,7 +256,7 @@ namespace MSL.pages.frpProviders
                 {
                     FrpList.ItemsSource = tunnels;
                 });
-                string response = Functions.Get($"api/usertunnel.php?token={token}", ChmlFrpApiUrl);
+                string response = HttpService.Get($"api/usertunnel.php?token={token}", ChmlFrpApiUrl);
                 try
                 {
                     var jsonArray = JsonConvert.DeserializeObject<List<Dictionary<string, object>>>(response);
@@ -321,7 +321,7 @@ namespace MSL.pages.frpProviders
                 try
                 {
                     //获取frps端口
-                    JArray frps = JArray.Parse(Functions.Get("api/unode.php", ChmlFrpApiUrl));
+                    JArray frps = JArray.Parse(HttpService.Get("api/unode.php", ChmlFrpApiUrl));
                     foreach (JObject frp in frps)
                     {
                         if (frp.ContainsKey("name"))
@@ -384,7 +384,7 @@ namespace MSL.pages.frpProviders
                     var listBox = FrpList as System.Windows.Controls.ListBox;
                     if (listBox.SelectedItem is TunnelInfo selectedTunnel)
                     {
-                        string res = Functions.Get($"api/deletetl.php?token={ChmlToken}&nodeid={selectedTunnel.ID}&userid={ChmlID}", ChmlFrpApiUrl);
+                        string res = HttpService.Get($"api/deletetl.php?token={ChmlToken}&nodeid={selectedTunnel.ID}&userid={ChmlID}", ChmlFrpApiUrl);
                         //处理结果
                         var PostResponse = JsonConvert.DeserializeObject<Dictionary<string, object>>(res);
                         if (PostResponse["code"].ToString() == "200")
@@ -466,7 +466,7 @@ namespace MSL.pages.frpProviders
                 NodeList.ItemsSource = nodes;
             });
             //从api获取节点列表
-            string response = Functions.Get($"api/unode.php", ChmlFrpApiUrl);
+            string response = HttpService.Get($"api/unode.php", ChmlFrpApiUrl);
             try
             {
                 var jsonArray = JsonConvert.DeserializeObject<List<Dictionary<string, object>>>(response);
@@ -574,7 +574,7 @@ namespace MSL.pages.frpProviders
     ""encryption"": ""{encryption}"",
     ""compression"": ""{compression}""
 }}";
-            string response = Functions.Post("api/tunnel.php", 0, parameterData, ChmlFrpApiUrl, null);
+            string response = HttpService.Post("api/tunnel.php", 0, parameterData, ChmlFrpApiUrl, null);
             //处理结果
             var PostResponse = JsonConvert.DeserializeObject<Dictionary<string, object>>(response);
             if (PostResponse["code"].ToString() == "200")

@@ -1,8 +1,8 @@
 ﻿using HandyControl.Controls;
 using HandyControl.Themes;
-using MSL.controls;
 using MSL.i18n;
 using MSL.pages;
+using MSL.utils;
 using Newtonsoft.Json;
 using Newtonsoft.Json.Linq;
 using System;
@@ -430,11 +430,11 @@ namespace MSL
             //get serverlink
             try
             {
-                serverLink = Functions.Get("", "https://msl-server.oss-cn-hangzhou.aliyuncs.com/", true);
+                serverLink = HttpService.Get("", "https://msl-server.oss-cn-hangzhou.aliyuncs.com/", true);
                 //Logger.LogInfo("连接到api：" + "https://api." + serverLink);
                 try
                 {
-                    if (((int)((JObject)JsonConvert.DeserializeObject(Functions.Get("")))["status"]) != 200)
+                    if (((int)((JObject)JsonConvert.DeserializeObject(HttpService.Get("")))["status"]) != 200)
                     {
                         serverLink = "waheal.top";
                         Growl.Info(LanguageManager.Instance["MainWindow_GrowlMsg_MslServerDown"]);
@@ -456,14 +456,14 @@ namespace MSL
             try
             {
                 //Logger.LogInfo("检查更新……");
-                string _httpReturn = Functions.Get("query/update");
+                string _httpReturn = HttpService.Get("query/update");
                 Version newVersion = new Version(_httpReturn);
                 Version version = new Version(System.Reflection.Assembly.GetExecutingAssembly().GetName().Version.ToString());
 
                 if (newVersion > version)
                 {
                     //Logger.LogInfo("检测到新版本！");
-                    var updatelog = Functions.Get("query/update/log");
+                    var updatelog = HttpService.Get("query/update/log");
                     if (jsonObject["autoUpdateApp"] == null)
                     {
                         string jsonString = File.ReadAllText(@"MSL\config.json", Encoding.UTF8);
@@ -523,10 +523,10 @@ namespace MSL
                     Shows.ShowMsgDialog(this, LanguageManager.Instance["MainWindow_GrowlMsg_UpdateWarning"], LanguageManager.Instance["Dialog_Warning"]);
                     return;
                 }
-                string downloadUrl = Functions.Get("download/update?type=normal"); ;
+                string downloadUrl = HttpService.Get("download/update?type=normal"); ;
                 if (isI18N)
                 {
-                    downloadUrl = Functions.Get("download/update?type=i18n");
+                    downloadUrl = HttpService.Get("download/update?type=i18n");
                 }
                 await Shows.ShowDownloader(this, downloadUrl, AppDomain.CurrentDomain.BaseDirectory, "MSL" + latestVersion + ".exe", "下载新版本中……");
                 if (File.Exists("MSL" + latestVersion + ".exe"))

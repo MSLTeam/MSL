@@ -1,4 +1,4 @@
-﻿using MSL.controls;
+﻿using MSL.utils;
 using Newtonsoft.Json;
 using Newtonsoft.Json.Linq;
 using System;
@@ -65,7 +65,7 @@ namespace MSL.pages
 
             if (serverlist1.SelectedIndex != -1)
             {
-                string[] downContext = await Functions.HttpGetAsync("download/server/" + downServer + "/" + downVersion, "", false, true);
+                string[] downContext = await HttpService.GetAsync("download/server/" + downServer + "/" + downVersion, "", false, true);
                 string downUrl = downContext[1];
                 string sha256Exp = downContext[2];
                 downPath = downloadServerBase;
@@ -93,7 +93,7 @@ namespace MSL.pages
                 {
                     string forgeName = downServer.Replace("spongeforge", "forge");
                     string _filename = forgeName + ".jar";
-                    string[] _dlContext = await Functions.HttpGetAsync("download/server/" + forgeName.Replace("-", "/"), "", false, true);
+                    string[] _dlContext = await HttpService.GetAsync("download/server/" + forgeName.Replace("-", "/"), "", false, true);
                     string _dlUrl = _dlContext[1];
                     string _sha256Exp = _dlContext[2];
                     int _dwnDialog = await Shows.ShowDownloaderWithIntReturn(this, _dlUrl, downPath, _filename, "下载服务端中……", _sha256Exp, true);
@@ -243,7 +243,7 @@ namespace MSL.pages
                     string bannerVersion = filename.Replace("banner-", "").Replace(".jar", "");
                     await Dispatcher.Invoke(async () =>
                     {
-                        bool dwnFabric = await Shows.ShowDownloader(GetWindow(this), Functions.Get("download/server/fabric/" + bannerVersion), downloadServerBase, $"fabric-{bannerVersion}.jar", "下载Fabric端中···");
+                        bool dwnFabric = await Shows.ShowDownloader(GetWindow(this), HttpService.Get("download/server/fabric/" + bannerVersion), downloadServerBase, $"fabric-{bannerVersion}.jar", "下载Fabric端中···");
                         if (!dwnFabric || !File.Exists(downloadServerBase + "\\" + $"fabric-{bannerVersion}.jar"))
                         {
                             Shows.ShowMsgDialog(this, "Fabric端下载取消（或服务端文件不存在）！", "错误");
@@ -300,7 +300,7 @@ namespace MSL.pages
             });
             try
             {
-                string jsonData = Functions.Get("query/available_server_types");
+                string jsonData = HttpService.Get("query/available_server_types");
                 string[] serverTypes = JsonConvert.DeserializeObject<string[]>(jsonData);
                 Dispatcher.Invoke(() =>
                 {
@@ -345,8 +345,8 @@ namespace MSL.pages
                 });
                 try
                 {
-                    var resultData = Functions.Get("query/available_versions/" + serverName);
-                    string server_des = Functions.Get("query/servers_description/" + serverName);
+                    var resultData = HttpService.Get("query/available_versions/" + serverName);
+                    string server_des = HttpService.Get("query/servers_description/" + serverName);
                     JArray serverVersions = JArray.Parse(resultData);
                     List<string> sortedVersions = serverVersions.ToObject<List<string>>().OrderByDescending(v => Functions.VersionCompare(v)).ToList();
                     Dispatcher.Invoke(() =>
@@ -362,7 +362,7 @@ namespace MSL.pages
                 {
                     try
                     {
-                        var resultData = Functions.Get("query/available_versions/" + serverName);
+                        var resultData = HttpService.Get("query/available_versions/" + serverName);
                         JArray serverVersions = JArray.Parse(resultData);
                         List<string> sortedVersions = serverVersions.ToObject<List<string>>().OrderByDescending(v => Functions.VersionCompare(v)).ToList();
                         Dispatcher.Invoke(() =>

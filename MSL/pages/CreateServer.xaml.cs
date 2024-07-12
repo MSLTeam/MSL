@@ -1,6 +1,7 @@
 ﻿using HandyControl.Controls;
 using ICSharpCode.SharpZipLib.Zip;
 using MSL.controls;
+using MSL.utils;
 using Newtonsoft.Json;
 using Newtonsoft.Json.Linq;
 using System;
@@ -243,7 +244,7 @@ namespace MSL.pages
             if (useJVself.IsChecked == true)
             {
                 Growl.Info("正在检查所选Java可用性，请稍等……");
-                (bool javaAvailability, string javainfo) = await Functions.CheckJavaAvailabilityAsync(txjava.Text);
+                (bool javaAvailability, string javainfo) = await JavaScanner.CheckJavaAvailabilityAsync(txjava.Text);
                 if (javaAvailability)
                 {
                     Growl.Info("所选Java版本：" + javainfo);
@@ -285,7 +286,7 @@ namespace MSL.pages
                     int dwnJava = 0;
                     await Dispatcher.Invoke(async () =>
                     {
-                        dwnJava = await DownloadJava(selectJavaComb.SelectedItem.ToString(), Functions.Get("download/java/" + selectJavaComb.SelectedItem.ToString()));
+                        dwnJava = await DownloadJava(selectJavaComb.SelectedItem.ToString(), HttpService.Get("download/java/" + selectJavaComb.SelectedItem.ToString()));
                     });
                     if (dwnJava == 1)
                     {
@@ -611,7 +612,7 @@ namespace MSL.pages
         }
         private async void usecheckedjv_Checked(object sender, RoutedEventArgs e)
         {
-            List<string> strings = null;
+            List<JavaScanner.JavaInfo> strings = null;
             int dialog = Shows.ShowMsg(Window.GetWindow(Window.GetWindow(this)), "即将开始检测电脑上的Java，此过程可能需要一些时间，请耐心等待。\n目前有两种检测模式，一种是简单检测，只检测一些关键目录，用时较少，普通用户可优先使用此模式。\n第二种是深度检测，将检测所有磁盘的所有目录，耗时可能会很久，请慎重选择！", "提示", true, "开始深度检测", "开始简单检测");
             if (dialog == 2)
             {
@@ -621,19 +622,27 @@ namespace MSL.pages
             txjava.IsEnabled = false;
             a0002_Copy.IsEnabled = false;
             Dialog waitDialog = Dialog.Show(new TextDialog("检测中，请稍等……"));
+            JavaScanner javaScanner = new();
             if (dialog == 1)
             {
-                await Task.Run(() => { Thread.Sleep(200); strings = Functions.SearchJava(); });
+                await Task.Run(async () => { Thread.Sleep(200); strings = await javaScanner.ScanJava(); });
             }
             else
             {
-                await Task.Run(() => { Thread.Sleep(200); strings = Functions.SearchJava(true); });
+                await Task.Run(() => { Thread.Sleep(200); strings = javaScanner.SearchJava(); });
             }
             Window.GetWindow(this).Focus();
             waitDialog.Close();
             if (strings != null)
             {
-                selectCheckedJavaComb.ItemsSource = strings.ToList();
+                selectCheckedJavaComb.ItemsSource = strings.Select(info => $"Java{info.Version}: {info.Path}").ToList();
+                /*
+                foreach (JavaScanner.JavaInfo info in strings)
+                {
+                    selectCheckedJavaComb.Items.Add(info.Version + ":" + info.Path);
+                }
+                */
+                //selectCheckedJavaComb.ItemsSource = strings.ToList();
             }
             if (selectCheckedJavaComb.Items.Count > 0)
             {
@@ -652,7 +661,7 @@ namespace MSL.pages
             Growl.Info("正在检查环境变量可用性，请稍等……");
             txjava.IsEnabled = false;
             a0002_Copy.IsEnabled = false;
-            (bool javaAvailability, string javainfo) = await Functions.CheckJavaAvailabilityAsync("java");
+            (bool javaAvailability, string javainfo) = await JavaScanner.CheckJavaAvailabilityAsync("java");
             if (javaAvailability)
             {
                 Growl.Success("环境变量可用性检查完毕，您的环境变量正常！");
@@ -936,9 +945,9 @@ namespace MSL.pages
             try
             {
                 //获取分类
-                var responseString = Functions.Get("query/server_classify");
+                var responseString = HttpService.Get("query/server_classify");
                 serverCoreTypes = JsonConvert.DeserializeObject<Dictionary<string, List<string>>>(responseString);
-                string jsonData = Functions.Get("query/available_server_types");
+                string jsonData = HttpService.Get("query/available_server_types");
                 serverTypes = JsonConvert.DeserializeObject<string[]>(jsonData);
                 Dispatcher.Invoke(() =>
                 {
@@ -998,7 +1007,7 @@ namespace MSL.pages
                                 {
                                     try
                                     {
-                                        var resultData = Functions.Get("query/available_versions/" + _serverType);
+                                        var resultData = HttpService.Get("query/available_versions/" + _serverType);
                                         tempServerCore.Add(coreType, resultData);
                                         List<string> serverVersions = JsonConvert.DeserializeObject<List<string>>(resultData);
                                         foreach (var item in serverVersions)
@@ -1013,7 +1022,7 @@ namespace MSL.pages
                                     {
                                         try
                                         {
-                                            var resultData = Functions.Get("query/available_versions/" + coreType);
+                                            var resultData = HttpService.Get("query/available_versions/" + coreType);
                                             tempServerCore.Add(coreType, resultData);
                                             Dictionary<string, string> serverDetails = JsonConvert.DeserializeObject<Dictionary<string, string>>(resultData);
                                             foreach (var item in serverDetails.Keys)
@@ -1218,7 +1227,7 @@ namespace MSL.pages
                 string response = string.Empty;
                 await Task.Run(() =>
                 {
-                    response = Functions.Get("query/java");
+                    response = HttpService.Get("query/java");
                 });
                 await Task.Delay(200);
                 JArray jArray = JArray.Parse(response);
@@ -1247,7 +1256,7 @@ namespace MSL.pages
                 int dwnJava = 0;
                 await Dispatcher.Invoke(async () =>
                 {
-                    dwnJava = await DownloadJava(FinallyJavaCombo.SelectedItem.ToString(), (await Functions.HttpGetAsync("download/java/" + FinallyJavaCombo.SelectedItem.ToString()))[1]);
+                    dwnJava = await DownloadJava(FinallyJavaCombo.SelectedItem.ToString(), (await HttpService.GetAsync("download/java/" + FinallyJavaCombo.SelectedItem.ToString()))[1]);
                 });
                 if (dwnJava == 1)
                 {
@@ -1301,7 +1310,7 @@ namespace MSL.pages
             string finallyServerCore = FinallyCoreCombo.SelectedItem.ToString();
             string serverCoreType = finallyServerCore.Substring(0, finallyServerCore.LastIndexOf("-"));
             string filename = finallyServerCore + ".jar";
-            string[] dlContext = await Functions.HttpGetAsync("download/server/" + serverCoreType + "/" + 
+            string[] dlContext = await HttpService.GetAsync("download/server/" + serverCoreType + "/" +
                 finallyServerCore.Substring(finallyServerCore.LastIndexOf("-") + 1), "", false, true);//获取链接
             string dlUrl = dlContext[1];
             string sha256Exp = dlContext[2];
@@ -1334,7 +1343,7 @@ namespace MSL.pages
             {
                 string forgeName = finallyServerCore.Replace("spongeforge", "forge");
                 string _filename = forgeName + ".jar";
-                string[] _dlContext = await Functions.HttpGetAsync("download/server/" + forgeName.Replace("-", "/"), "", false, true);
+                string[] _dlContext = await HttpService.GetAsync("download/server/" + forgeName.Replace("-", "/"), "", false, true);
                 string _dlUrl = _dlContext[1];
                 string _sha256Exp = _dlContext[2];
                 int _dwnDialog = await Shows.ShowDownloaderWithIntReturn(Window.GetWindow(this), _dlUrl, serverbase, _filename, "下载服务端中……", _sha256Exp, true);

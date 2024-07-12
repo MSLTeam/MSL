@@ -1,4 +1,5 @@
 ﻿using ICSharpCode.SharpZipLib.Zip;
+using MSL.utils;
 using Newtonsoft.Json.Linq;
 using System;
 using System.Collections.Generic;
@@ -128,19 +129,19 @@ namespace MSL.controls
                 if (versionType <= 3)
                 {
                     serverJarPath = ReplaceStr(installJobj["serverJarPath"].ToString());
-                    vanillaUrl = Functions.Get("download/server/vanilla/" + installJobj["minecraft"].ToString());
+                    vanillaUrl = HttpService.Get("download/server/vanilla/" + installJobj["minecraft"].ToString());
                     mcVersion = installJobj["minecraft"].ToString();
                 }
                 else if (versionType == 5)
                 {
                     serverJarPath = installPath + "/minecraft_server." + installJobj["install"]["minecraft"].ToString() + ".jar";
-                    vanillaUrl = Functions.Get("download/server/vanilla/" + installJobj["install"]["minecraft"].ToString());
+                    vanillaUrl = HttpService.Get("download/server/vanilla/" + installJobj["install"]["minecraft"].ToString());
                     mcVersion = installJobj["install"]["minecraft"].ToString();
                 }
                 else
                 {
                     serverJarPath = installPath + "/minecraft_server." + installJobj["minecraft"].ToString() + ".jar";
-                    vanillaUrl = Functions.Get("download/server/vanilla/" + installJobj["minecraft"].ToString());
+                    vanillaUrl = HttpService.Get("download/server/vanilla/" + installJobj["minecraft"].ToString());
                     mcVersion = installJobj["minecraft"].ToString();
                 }
 

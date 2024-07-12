@@ -1,5 +1,5 @@
 ﻿using HandyControl.Controls;
-using MSL.controls;
+using MSL.utils;
 using Newtonsoft.Json;
 using Newtonsoft.Json.Linq;
 using System;
@@ -74,7 +74,7 @@ namespace MSL.pages.frpProviders
 
             try
             {
-                string mslFrpInfo = Functions.Get("query/MSLFrps");
+                string mslFrpInfo = HttpService.Get("query/MSLFrps");
                 JObject valuePairs = (JObject)JsonConvert.DeserializeObject(mslFrpInfo);
                 foreach (var valuePair in valuePairs)
                 {
@@ -129,7 +129,7 @@ namespace MSL.pages.frpProviders
             {
                 Dispatcher.Invoke(() =>
                 {
-                    gonggao.Text = Functions.Get("query/MSLFrps/notice");
+                    gonggao.Text = HttpService.Get("query/MSLFrps/notice");
                 });
             }
             catch
@@ -609,7 +609,7 @@ namespace MSL.pages.frpProviders
                     ["order"] = order,
                     ["qq"] = qq,
                 };
-                var ret = await Task.Run(() => Functions.Post("getpassword", 0, JsonConvert.SerializeObject(keyValuePairs), Functions.Get("query/MSLFrps/orderapi")));
+                var ret = await Task.Run(() => HttpService.Post("getpassword", 0, JsonConvert.SerializeObject(keyValuePairs), HttpService.Get("query/MSLFrps/orderapi")));
                 _dialog.CloseTextDialog();
                 JObject keyValues = JObject.Parse(ret);
                 if (keyValues != null && (int)keyValues["status"] == 0)

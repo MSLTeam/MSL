@@ -1,5 +1,5 @@
 ﻿using HandyControl.Controls;
-using MSL.controls;
+using MSL.utils;
 using Newtonsoft.Json;
 using Newtonsoft.Json.Linq;
 using System;
@@ -539,7 +539,7 @@ namespace MSL.pages.frpProviders
             {
                 authId
             };
-            var responseMessage = Functions.Post("getUserProxies", 0, string.Empty, "https://of-dev-api.bfsea.xyz/frp/api", header);
+            var responseMessage = HttpService.Post("getUserProxies", 0, string.Empty, "https://of-dev-api.bfsea.xyz/frp/api", header);
             try
             {
                 Dictionary<string, string> Nodes = new Dictionary<string, string>();
@@ -573,7 +573,7 @@ namespace MSL.pages.frpProviders
             {
                 authId
             };
-            var responseMessage = Functions.Post("getNodeList", 0, string.Empty, "https://of-dev-api.bfsea.xyz/frp/api", header);
+            var responseMessage = HttpService.Post("getNodeList", 0, string.Empty, "https://of-dev-api.bfsea.xyz/frp/api", header);
 
             try
             {
@@ -627,7 +627,7 @@ namespace MSL.pages.frpProviders
             string responseMessage = "";
             try
             {
-                Functions.Post("userSign", 0, string.Empty, "https://of-dev-api.bfsea.xyz/frp/api", header);
+                HttpService.Post("userSign", 0, string.Empty, "https://of-dev-api.bfsea.xyz/frp/api", header);
             }
             catch
             {
@@ -658,7 +658,7 @@ namespace MSL.pages.frpProviders
             {
                 authId
             };
-            string responseMessage = Functions.Post("getUserInfo", 0, string.Empty, "https://of-dev-api.bfsea.xyz/frp/api", header);
+            string responseMessage = HttpService.Post("getUserInfo", 0, string.Empty, "https://of-dev-api.bfsea.xyz/frp/api", header);
             return responseMessage;
         }
 
