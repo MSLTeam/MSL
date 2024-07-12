@@ -38,6 +38,8 @@ namespace MSL.pages
         {
             try
             {
+                //生成设备id
+                DCID.Content=Functions.GetDeviceID();
                 JObject jsonObject = JObject.Parse(File.ReadAllText(@"MSL\config.json", Encoding.UTF8));
                 if (jsonObject["notifyIcon"] != null && (bool)jsonObject["notifyIcon"] == true)
                 {
@@ -891,6 +893,17 @@ namespace MSL.pages
         private void WikiButton_Click(object sender, RoutedEventArgs e)
         {
             Process.Start("https://www.mslmc.cn/docs/");
+        }
+
+        private void CopyDCID_Click(object sender, RoutedEventArgs e)
+        {
+            try
+            {
+                Clipboard.Clear();
+                Clipboard.SetText(Functions.GetDeviceID());
+                Growl.Info("设备ID复制成功！");
+            }
+            catch { }
         }
     }
 }

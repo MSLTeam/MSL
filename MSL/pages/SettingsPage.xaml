@@ -116,7 +116,7 @@
                     </StackPanel>
                 </StackPanel>
             </Border>
-            <Border Margin="10,10,10,20" Style="{StaticResource MagicBorder}">
+            <Border  Style="{StaticResource MagicBorder}">
                 <StackPanel>
                     <StackPanel.Resources>
                         <ResourceDictionary>
@@ -147,6 +147,29 @@
                         <Label Content="背景图片:" Margin="0,0,10,0"/>
                         <Button x:Name="changeBackImg" Margin="0,0,10,0" Content="更改背景图片" VerticalAlignment="Center" Click="changeBackImg_Click"/>
                         <Button x:Name="delBackImg"  Content="清除背景图片" VerticalAlignment="Center" Click="delBackImg_Click"/>
+                    </StackPanel>
+                </StackPanel>
+            </Border>
+            <Border Margin="10,10,10,20" Style="{StaticResource MagicBorder}">
+                <StackPanel>
+                    <StackPanel.Resources>
+                        <ResourceDictionary>
+                            <Style TargetType="RadioButton" BasedOn="{StaticResource RadioButtonBaseStyle}">
+                                <Setter Property="HorizontalAlignment" Value="Left"/>
+                                <Setter Property="VerticalAlignment" Value="Top"/>
+                                <Setter Property="IsEnabled" Value="False"/>
+                            </Style>
+                        </ResourceDictionary>
+                    </StackPanel.Resources>
+                    <Label Content="设备信息" Style="{StaticResource BorderTitle}"/>
+                    <StackPanel Orientation="Horizontal" Margin="10,5,10,0">
+                        <Label Content="设备ID:" Margin="0,0,10,0" VerticalAlignment="Center"/>
+                        <Label Content="AAA" x:Name="DCID" Margin="0,0,10,0" VerticalAlignment="Center"/>
+                        <Button Name="CopyDCID" Margin="5" Content="复制设备ID" FontSize="14" Height="30" Click="CopyDCID_Click"  />
+                    </StackPanel>
+                    <StackPanel Margin="10,5,10,0">
+                        <Label Content="设备ID是MSL开发团队追踪MSL发生意外错误的重要依据，需要时请提供给我们！" Margin="0,0,10,0" VerticalAlignment="Center"/>
+                        <Label Content="每台设备的设备ID是唯一的（仅当重装系统/切换用户会变化）" Margin="0,0,10,0" VerticalAlignment="Center"/>
                     </StackPanel>
                 </StackPanel>
             </Border>

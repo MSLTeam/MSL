@@ -335,5 +335,30 @@ namespace MSL.utils
             }
         }
         #endregion
+
+        public static string GetDeviceID()
+        {
+            if (MainWindow.deviceID == null)
+            {
+                //获取windows-sid
+                System.Security.Principal.WindowsIdentity currentUser = System.Security.Principal.WindowsIdentity.GetCurrent();
+                string sid = currentUser.User.ToString() + "==Ovo**#MSL#**ovO==";
+                byte[] dataToHash = new System.Text.ASCIIEncoding().GetBytes(sid);
+                byte[] hashvalue = ((System.Security.Cryptography.HashAlgorithm)System.Security.Cryptography.CryptoConfig.CreateFromName("MD5")).ComputeHash(dataToHash);
+                string ATR = "";
+                //32 hash
+                for (int i = 0; i < 16; i++)
+                {
+                    ATR += hashvalue[i].ToString("x2");
+                }
+                MainWindow.deviceID = ATR.ToUpper();
+                return ATR.ToUpper();
+            }
+            else
+            {
+                return MainWindow.deviceID;
+            }
+
+        }
     }
 }

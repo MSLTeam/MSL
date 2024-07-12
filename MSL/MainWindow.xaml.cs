@@ -44,6 +44,7 @@ namespace MSL
         public static bool getServerInfo = false;
         public static bool getPlayerInfo = false;
         public static readonly bool isI18N = false; //标识当前版本是否支持i18n
+        public static string deviceID = null;
 
         public MainWindow()
         {
