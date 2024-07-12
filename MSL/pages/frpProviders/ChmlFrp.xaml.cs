@@ -43,7 +43,7 @@ namespace MSL.pages.frpProviders
  */
     public partial class ChmlFrp : Page
     {
-        private readonly string ChmlFrpApiUrl = "https://panel.chmlfrp.cn";
+        private readonly string ChmlFrpApiUrl = "https://cf-v1.uapis.cn";
         private string ChmlToken, ChmlID;
         private bool isInitialize = false;
 
