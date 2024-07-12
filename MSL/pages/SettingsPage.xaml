@@ -32,19 +32,26 @@
             <Border Style="{StaticResource MagicBorder}">
                 <StackPanel>
                     <Label Content="功能调整" Style="{StaticResource BorderTitle}"/>
-                    <StackPanel Margin="10,5,10,0" Orientation="Horizontal">
-                        <Label Content="基础功能：" VerticalAlignment="Center"/>
-                        <Button Name="setdefault" Margin="0,0,10,0" Content="恢复默认设置" FontSize="14" Height="30" Click="setdefault_Click" />
-                        <Button Name="notifyIconbtn" Margin="0,0,10,0" Content="托盘图标:关闭" FontSize="14" Height="30" Click="notifyIconbtn_Click" />
-                        <Button Name="useidea" Margin="0,0,10,0" Content="使用教程" FontSize="14" Height="30" Click="useidea_Click"/>
-                        <Button x:Name="checkUpdateBtn" Margin="0,0,10,0" Content="检查更新" Style="{StaticResource ButtonPrimary}" FontSize="14" Height="30" Click="checkUpdateBtn_Click"/>
-                        <ComboBox x:Name="ChangeLanguage" FontSize="14" Height="30" SelectionChanged="ChangeLanguage_SelectionChanged">
-                            <ComboBoxItem Content="简体中文"/>
-                            <ComboBoxItem Content="English"/>
-                        </ComboBox>
-                        <Button Content="切换语言" x:Name="ChangeLanguageBtn" FontSize="14" Height="30" Visibility="Collapsed" Click="ChangeLanguageBtn_Click" />
-                    </StackPanel>
-                    <Grid Margin="10,10,10,0">
+                    <Grid Margin="10,5,10,0">
+                        <Grid.ColumnDefinitions>
+                            <ColumnDefinition Width="Auto"/>
+                            <ColumnDefinition/>
+                        </Grid.ColumnDefinitions>
+                        <Label Grid.Column="0" Content="基础功能：" VerticalAlignment="Center"/>
+                        <WrapPanel Grid.Column="1">
+                            <Button Name="setdefault" Margin="5" Content="恢复默认设置" FontSize="14" Height="30" Click="setdefault_Click" />
+                            <Button Name="notifyIconbtn" Margin="5" Content="托盘图标:关闭" FontSize="14" Height="30" Click="notifyIconbtn_Click" />
+                            <Button Name="MSLTips" Margin="5" Content="MSL提示:开启" FontSize="14" Height="30" Click="MSLTips_Click" />
+                            <Button Name="WikiButton" Margin="5" Content="软件文档" FontSize="14" Height="30" Click="WikiButton_Click"/>
+                            <Button x:Name="checkUpdateBtn" Margin="5" Content="检查更新" Style="{StaticResource ButtonPrimary}" FontSize="14" Height="30" Click="checkUpdateBtn_Click"/>
+                            <ComboBox x:Name="ChangeLanguage" Margin="5" FontSize="14" Height="30" SelectionChanged="ChangeLanguage_SelectionChanged">
+                                <ComboBoxItem Content="简体中文"/>
+                                <ComboBoxItem Content="English"/>
+                            </ComboBox>
+                            <Button Content="切换语言" Margin="5" x:Name="ChangeLanguageBtn" FontSize="14" Height="30" Visibility="Collapsed" Click="ChangeLanguageBtn_Click" />
+                        </WrapPanel>
+                    </Grid>
+                    <Grid Margin="10,5,10,0">
                         <Grid.ColumnDefinitions>
                             <ColumnDefinition Width="Auto"/>
                             <ColumnDefinition/>

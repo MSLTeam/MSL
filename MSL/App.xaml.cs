@@ -39,6 +39,17 @@ namespace MSL
                 }
             }
             base.OnStartup(e);
+            /*
+            // Logger
+            if (!Directory.Exists("MSL"))
+            {
+                Directory.CreateDirectory("MSL");
+                Logger.LogWarning("未检测到MSL文件夹，已进行创建");
+            }
+
+            Logger.Clear();
+            Logger.LogInfo("MSL，启动！");
+            */
         }
 
         /// <summary>
@@ -95,22 +106,8 @@ namespace MSL
             _mutex?.ReleaseMutex();
             base.OnExit(e);
         }
-
-        /*
-        protected override void OnStartup(StartupEventArgs e)
-        {
-            base.OnStartup(e);
-            if (!Directory.Exists("MSL"))
-            {
-                Directory.CreateDirectory("MSL");
-                Logger.LogWarning("未检测到MSL文件夹，已进行创建");
-            }
-
-            Logger.Clear();
-            Logger.LogInfo("MSL，启动！");
-        }
-        */
     }
+    
     /*
     public class Logger
     {
@@ -139,6 +136,7 @@ namespace MSL
         private static void LogMessage(string level, string message)
         {
             string logEntry = $"{DateTime.Now} [{level}] {message}";
+            Console.WriteLine(logEntry);
 
             // 写入日志文件
             using (StreamWriter writer = File.AppendText("MSL\\log.txt"))

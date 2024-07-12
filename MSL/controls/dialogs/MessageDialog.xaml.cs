@@ -17,8 +17,6 @@ namespace MSL.controls
         {
             InitializeComponent();
             Margin = new Thickness(50);
-            //MaxHeight = window.ActualHeight;
-            //MaxWidth = window.ActualWidth - 200;
             bodyText.Text = dialogText;
             titleText.Text = dialogTitle;
             if (!showPrimaryBtn)

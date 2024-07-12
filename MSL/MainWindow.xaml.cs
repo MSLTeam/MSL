@@ -72,7 +72,7 @@ namespace MSL
                 //firstLauchEvent
                 if (!File.Exists(@"MSL\config.json"))
                 {
-                    //Logger.LogWarning("未检测到config.json文件，载入首次启动事件");
+                    //Logger.LogWarning("未检测到config.json文件，创建config.json……");
                     File.WriteAllText(@"MSL\config.json", string.Format("{{{0}}}", "\n"));
                 }
             }
@@ -82,12 +82,12 @@ namespace MSL
                 await Shows.ShowMsgDialogAsync(this, LanguageManager.Instance["MainWindow_GrowlMsg_InitErr"] + ex.Message, LanguageManager.Instance["Dialog_Err"]);
                 Close();
             }
-            //Logger.LogInfo("开始载入配置文件……");
+            //Logger.LogInfo("读取配置文件……");
             JObject jsonObject;
             try
             {
                 jsonObject = JObject.Parse(File.ReadAllText(@"MSL\config.json", Encoding.UTF8));
-                ////Logger.LogInfo("读取config.json成功！");
+                //Logger.LogInfo("读取配置文件成功！");
             }
             catch (Exception ex)
             {
@@ -105,25 +105,28 @@ namespace MSL
                     string convertString = Convert.ToString(jsonObject);
                     File.WriteAllText(@"MSL\config.json", convertString, Encoding.UTF8);
                     LanguageManager.Instance.ChangeLanguage(new CultureInfo("zh-CN"));
+                    //Logger.LogInfo("Language: " + "ZH-CN");
                 }
                 else
                 {
                     LanguageManager.Instance.ChangeLanguage(new CultureInfo(jsonObject["lang"].ToString()));
+                    //Logger.LogInfo("Language: " + jsonObject["lang"].ToString().ToUpper());
                 }
             }
             finally
             {
                 bool onlineMode = await EulaEvent(jsonObject);
-                //Logger.LogInfo("主窗体UI控件加载完毕！");
                 await Task.Run(() =>
                 {
+                    //Logger.LogInfo("异步载入配置……");
                     AsyncLoadEvent(jsonObject);
                     if (onlineMode)
                     {
+                        //Logger.LogInfo("异步载入联网功能……");
                         OnlineService(jsonObject);
                     }
-                    //Logger.LogInfo("异步载入线程已启动！");
                 });
+                //Logger.LogInfo("启动事件完成！");
             }
         }
 
@@ -144,22 +147,26 @@ namespace MSL
                     }
                     string convertString = Convert.ToString(jsonObject);
                     File.WriteAllText(@"MSL\config.json", convertString, Encoding.UTF8);
+                    //Logger.LogInfo("EULA=TRUE");
                     return true;
                 }
                 else if (dialog == 2)
                 {
-                    //Logger.LogWarning("用户未同意使用协议……");
+                    //Logger.LogInfo("EULA=FALSE");
+                    //Logger.LogWarning("用户未同意使用协议……禁用联网功能");
                     await Shows.ShowMsgDialogAsync(this, "您未同意用户使用协议，为保障您的权益，软件将以离线模式运行！", "提示");
                     return false;
                 }
                 else
                 {
+                    //Logger.LogInfo("打开EULA网页……");
                     Process.Start("https://www.mslmc.cn/eula.html");
                     return await EulaEvent(jsonObject);
                 }
             }
             else
             {
+                //Logger.LogInfo("EULA=TRUE");
                 return true;
             }
         }
@@ -415,7 +422,7 @@ namespace MSL
             {
                 SideMenu.SelectedIndex = 0;
             });
-            //Logger.LogInfo("软件加载完毕！");
+            //Logger.LogInfo("配置加载完毕！");
         }
 
         private async void OnlineService(JObject jsonObject)
@@ -424,6 +431,7 @@ namespace MSL
             try
             {
                 serverLink = Functions.Get("", "https://msl-server.oss-cn-hangzhou.aliyuncs.com/", true);
+                //Logger.LogInfo("连接到api：" + "https://api." + serverLink);
                 try
                 {
                     if (((int)((JObject)JsonConvert.DeserializeObject(Functions.Get("")))["status"]) != 200)
@@ -447,6 +455,7 @@ namespace MSL
             //更新
             try
             {
+                //Logger.LogInfo("检查更新……");
                 string _httpReturn = Functions.Get("query/update");
                 Version newVersion = new Version(_httpReturn);
                 Version version = new Version(System.Reflection.Assembly.GetExecutingAssembly().GetName().Version.ToString());
@@ -499,6 +508,7 @@ namespace MSL
             }
             await Dispatcher.InvokeAsync(() =>
             {
+                //Logger.LogInfo("开始加载公告……");
                 LoadAnnounce();
             });
 

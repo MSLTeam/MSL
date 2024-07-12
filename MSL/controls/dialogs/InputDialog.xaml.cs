@@ -16,8 +16,6 @@ namespace MSL.controls
         {
             InitializeComponent();
             Margin = new Thickness(50);
-            //this.MaxHeight = window.ActualHeight;
-            //this.MaxWidth = window.ActualWidth - 200;
             bodyText.Text = dialogText;
             textBox.Text = textboxText;
             if (passwordMode)

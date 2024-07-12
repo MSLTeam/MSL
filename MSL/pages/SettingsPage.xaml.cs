@@ -220,17 +220,17 @@ namespace MSL.pages
 
         private void notifyIconbtn_Click(object sender, RoutedEventArgs e)
         {
-            if (notifyIconbtn.Content.ToString() == "托盘图标:打开")
+            if (notifyIconbtn.Content.ToString() == "托盘图标:开启")
             {
                 notifyIconbtn.Content = "托盘图标:关闭";
                 C_NotifyIcon();
                 try
                 {
-                    string jsonString = File.ReadAllText(@"MSL\config.json", System.Text.Encoding.UTF8);
+                    string jsonString = File.ReadAllText(@"MSL\config.json", Encoding.UTF8);
                     JObject jobject = JObject.Parse(jsonString);
                     jobject["notifyIcon"] = false;
                     string convertString = Convert.ToString(jobject);
-                    File.WriteAllText(@"MSL\config.json", convertString, System.Text.Encoding.UTF8);
+                    File.WriteAllText(@"MSL\config.json", convertString, Encoding.UTF8);
                     Growl.Success("关闭成功！");
                     return;
                 }
@@ -242,29 +242,24 @@ namespace MSL.pages
             }
             else
             {
-                notifyIconbtn.Content = "托盘图标:打开";
+                notifyIconbtn.Content = "托盘图标:开启";
                 C_NotifyIcon();
                 try
                 {
-                    string jsonString = File.ReadAllText(@"MSL\config.json", System.Text.Encoding.UTF8);
+                    string jsonString = File.ReadAllText(@"MSL\config.json", Encoding.UTF8);
                     JObject jobject = JObject.Parse(jsonString);
                     jobject["notifyIcon"] = true;
                     string convertString = Convert.ToString(jobject);
-                    File.WriteAllText(@"MSL\config.json", convertString, System.Text.Encoding.UTF8);
-                    Growl.Success("打开成功！");
+                    File.WriteAllText(@"MSL\config.json", convertString, Encoding.UTF8);
+                    Growl.Success("开启成功！");
                     return;
                 }
                 catch
                 {
-                    Growl.Error("打开失败！");
+                    Growl.Error("开启失败！");
                     return;
                 }
             }
-        }
-
-        private void useidea_Click(object sender, RoutedEventArgs e)
-        {
-            Process.Start("https://www.mslmc.cn/docs/");
         }
 
         private void openserversOnStart_Click(object sender, RoutedEventArgs e)
@@ -277,20 +272,20 @@ namespace MSL.pages
                     openserversOnStart.IsChecked = false;
                     return;
                 }
-                string jsonString = File.ReadAllText(@"MSL\config.json", System.Text.Encoding.UTF8);
+                string jsonString = File.ReadAllText(@"MSL\config.json", Encoding.UTF8);
                 JObject jobject = JObject.Parse(jsonString);
                 jobject["autoOpenServer"] = _autoStartList;
                 string convertString = Convert.ToString(jobject);
-                File.WriteAllText(@"MSL\config.json", convertString, System.Text.Encoding.UTF8);
+                File.WriteAllText(@"MSL\config.json", convertString, Encoding.UTF8);
                 Growl.Success("开启成功！");
             }
             else
             {
-                string jsonString = File.ReadAllText(@"MSL\config.json", System.Text.Encoding.UTF8);
+                string jsonString = File.ReadAllText(@"MSL\config.json", Encoding.UTF8);
                 JObject jobject = JObject.Parse(jsonString);
                 jobject["autoOpenServer"] = "False";
                 string convertString = Convert.ToString(jobject);
-                File.WriteAllText(@"MSL\config.json", convertString, System.Text.Encoding.UTF8);
+                File.WriteAllText(@"MSL\config.json", convertString, Encoding.UTF8);
                 Growl.Success("关闭成功！");
             }
         }
@@ -299,20 +294,20 @@ namespace MSL.pages
         {
             if (openfrpOnStart.IsChecked == true)
             {
-                string jsonString = File.ReadAllText(@"MSL\config.json", System.Text.Encoding.UTF8);
+                string jsonString = File.ReadAllText(@"MSL\config.json", Encoding.UTF8);
                 JObject jobject = JObject.Parse(jsonString);
                 jobject["autoOpenFrpc"] = true;
                 string convertString = Convert.ToString(jobject);
-                File.WriteAllText(@"MSL\config.json", convertString, System.Text.Encoding.UTF8);
+                File.WriteAllText(@"MSL\config.json", convertString, Encoding.UTF8);
                 Growl.Success("开启成功！");
             }
             else
             {
-                string jsonString = File.ReadAllText(@"MSL\config.json", System.Text.Encoding.UTF8);
+                string jsonString = File.ReadAllText(@"MSL\config.json", Encoding.UTF8);
                 JObject jobject = JObject.Parse(jsonString);
                 jobject["autoOpenFrpc"] = false;
                 string convertString = Convert.ToString(jobject);
-                File.WriteAllText(@"MSL\config.json", convertString, System.Text.Encoding.UTF8);
+                File.WriteAllText(@"MSL\config.json", convertString, Encoding.UTF8);
                 Growl.Success("关闭成功！");
             }
         }
@@ -374,21 +369,21 @@ namespace MSL.pages
         {
             if (autoGetPlayerInfo.IsChecked == true)
             {
-                string jsonString = File.ReadAllText(@"MSL\config.json", System.Text.Encoding.UTF8);
+                string jsonString = File.ReadAllText(@"MSL\config.json", Encoding.UTF8);
                 JObject jobject = JObject.Parse(jsonString);
                 jobject["autoGetPlayerInfo"] = true;
                 string convertString = Convert.ToString(jobject);
-                File.WriteAllText(@"MSL\config.json", convertString, System.Text.Encoding.UTF8);
+                File.WriteAllText(@"MSL\config.json", convertString, Encoding.UTF8);
                 Growl.Success("开启成功！");
                 MainWindow.getPlayerInfo = true;
             }
             else
             {
-                string jsonString = File.ReadAllText(@"MSL\config.json", System.Text.Encoding.UTF8);
+                string jsonString = File.ReadAllText(@"MSL\config.json", Encoding.UTF8);
                 JObject jobject = JObject.Parse(jsonString);
                 jobject["autoGetPlayerInfo"] = false;
                 string convertString = Convert.ToString(jobject);
-                File.WriteAllText(@"MSL\config.json", convertString, System.Text.Encoding.UTF8);
+                File.WriteAllText(@"MSL\config.json", convertString, Encoding.UTF8);
                 Growl.Success("关闭成功！");
                 MainWindow.getPlayerInfo = false;
             }
@@ -398,21 +393,21 @@ namespace MSL.pages
         {
             if (autoGetServerInfo.IsChecked == true)
             {
-                string jsonString = File.ReadAllText(@"MSL\config.json", System.Text.Encoding.UTF8);
+                string jsonString = File.ReadAllText(@"MSL\config.json", Encoding.UTF8);
                 JObject jobject = JObject.Parse(jsonString);
                 jobject["autoGetServerInfo"] = true;
                 string convertString = Convert.ToString(jobject);
-                File.WriteAllText(@"MSL\config.json", convertString, System.Text.Encoding.UTF8);
+                File.WriteAllText(@"MSL\config.json", convertString, Encoding.UTF8);
                 Growl.Success("开启成功！");
                 MainWindow.getServerInfo = true;
             }
             else
             {
-                string jsonString = File.ReadAllText(@"MSL\config.json", System.Text.Encoding.UTF8);
+                string jsonString = File.ReadAllText(@"MSL\config.json", Encoding.UTF8);
                 JObject jobject = JObject.Parse(jsonString);
                 jobject["autoGetServerInfo"] = false;
                 string convertString = Convert.ToString(jobject);
-                File.WriteAllText(@"MSL\config.json", convertString, System.Text.Encoding.UTF8);
+                File.WriteAllText(@"MSL\config.json", convertString, Encoding.UTF8);
                 Growl.Success("关闭成功！");
                 MainWindow.getServerInfo = false;
             }
@@ -614,11 +609,11 @@ namespace MSL.pages
                 {
                     regKey.SetValue("Minecraft Server Launcher", System.Reflection.Assembly.GetExecutingAssembly().Location);
                 }
-                string jsonString = File.ReadAllText(@"MSL\config.json", System.Text.Encoding.UTF8);
+                string jsonString = File.ReadAllText(@"MSL\config.json", Encoding.UTF8);
                 JObject jobject = JObject.Parse(jsonString);
                 jobject["autoRunApp"] = true;
                 string convertString = Convert.ToString(jobject);
-                File.WriteAllText(@"MSL\config.json", convertString, System.Text.Encoding.UTF8);
+                File.WriteAllText(@"MSL\config.json", convertString, Encoding.UTF8);
             }
             else
             {
@@ -630,31 +625,31 @@ namespace MSL.pages
                 {
                     regKey.DeleteValue("Minecraft Server Launcher");
                 }
-                string jsonString = File.ReadAllText(@"MSL\config.json", System.Text.Encoding.UTF8);
+                string jsonString = File.ReadAllText(@"MSL\config.json", Encoding.UTF8);
                 JObject jobject = JObject.Parse(jsonString);
                 jobject["autoRunApp"] = false;
                 string convertString = Convert.ToString(jobject);
-                File.WriteAllText(@"MSL\config.json", convertString, System.Text.Encoding.UTF8);
+                File.WriteAllText(@"MSL\config.json", convertString, Encoding.UTF8);
             }
         }
         private void autoUpdateApp_Click(object sender, RoutedEventArgs e)
         {
             if (autoUpdateApp.IsChecked == true)
             {
-                string jsonString = File.ReadAllText(@"MSL\config.json", System.Text.Encoding.UTF8);
+                string jsonString = File.ReadAllText(@"MSL\config.json", Encoding.UTF8);
                 JObject jobject = JObject.Parse(jsonString);
                 jobject["autoUpdateApp"] = true;
                 string convertString = Convert.ToString(jobject);
-                File.WriteAllText(@"MSL\config.json", convertString, System.Text.Encoding.UTF8);
+                File.WriteAllText(@"MSL\config.json", convertString, Encoding.UTF8);
                 Growl.Success("开启成功！");
             }
             else
             {
-                string jsonString = File.ReadAllText(@"MSL\config.json", System.Text.Encoding.UTF8);
+                string jsonString = File.ReadAllText(@"MSL\config.json", Encoding.UTF8);
                 JObject jobject = JObject.Parse(jsonString);
                 jobject["autoUpdateApp"] = false;
                 string convertString = Convert.ToString(jobject);
-                File.WriteAllText(@"MSL\config.json", convertString, System.Text.Encoding.UTF8);
+                File.WriteAllText(@"MSL\config.json", convertString, Encoding.UTF8);
                 Growl.Success("关闭成功！");
             }
         }
@@ -842,6 +837,60 @@ namespace MSL.pages
             {
                 Shows.ShowMsgDialog(Window.GetWindow(this), "升级失败！\n错误：" + ex.Message, LanguageManager.Instance["Dialog_Err"]);
             }
+        }
+
+        private async void MSLTips_Click(object sender, RoutedEventArgs e)
+        {
+            if (MSLTips.Content.ToString() == "MSL提示:开启")
+            {
+                if (await Shows.ShowMsgDialogAsync(Window.GetWindow(this), "关闭此功能后，读取服务器信息、玩家等功能将会失效，请谨慎选择！", "警告", true) == true)
+                {
+                    MSLTips.Content = "MSL提示:关闭";
+                    try
+                    {
+                        string jsonString = File.ReadAllText(@"MSL\config.json", Encoding.UTF8);
+                        JObject jobject = JObject.Parse(jsonString);
+                        jobject["mslTips"] = false;
+                        string convertString = Convert.ToString(jobject);
+                        File.WriteAllText(@"MSL\config.json", convertString, Encoding.UTF8);
+                        Growl.Success("关闭成功！重启服务器运行界面以生效！");
+                        return;
+                    }
+                    catch
+                    {
+                        Growl.Error("关闭失败！");
+                        return;
+                    }
+                }
+                else
+                {
+                    return;
+                }
+            }
+            else
+            {
+                MSLTips.Content = "MSL提示:开启";
+                try
+                {
+                    string jsonString = File.ReadAllText(@"MSL\config.json", Encoding.UTF8);
+                    JObject jobject = JObject.Parse(jsonString);
+                    jobject["mslTips"] = true;
+                    string convertString = Convert.ToString(jobject);
+                    File.WriteAllText(@"MSL\config.json", convertString, Encoding.UTF8);
+                    Growl.Success("开启成功！重启服务器运行界面以生效！");
+                    return;
+                }
+                catch
+                {
+                    Growl.Error("开启失败！");
+                    return;
+                }
+            }
+        }
+
+        private void WikiButton_Click(object sender, RoutedEventArgs e)
+        {
+            Process.Start("https://www.mslmc.cn/docs/");
         }
     }
 }

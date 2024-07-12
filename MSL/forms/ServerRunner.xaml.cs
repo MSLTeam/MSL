@@ -40,6 +40,7 @@ namespace MSL
         private readonly Process ServerProcess = new Process();
         private string ShieldLog = null;
         private bool autoRestart = false;
+        private bool mslTips = true;
         private bool getServerInfo = MainWindow.getServerInfo;
         private int getServerInfoLine = 0;
         private bool getPlayerInfo = MainWindow.getPlayerInfo;
@@ -133,6 +134,10 @@ namespace MSL
                 if (File.Exists(@"MSL\config.json"))
                 {
                     JObject keys = JObject.Parse(File.ReadAllText(@"MSL\config.json", Encoding.UTF8));
+                    if (keys["mslTips"] != null && (bool)keys["mslTips"] == false)
+                    {
+                        mslTips = false;
+                    }
                     if (keys["sidemenuExpanded"] == null)
                     {
                         string jsonString = File.ReadAllText(@"MSL\config.json", Encoding.UTF8);
@@ -1090,6 +1095,40 @@ namespace MSL
             {
                 return;
             }
+            if (mslTips == false)
+            {
+                if (msg.StartsWith("["))
+                {
+                    if (msg.Contains("INFO]"))
+                    {
+                        PrintLog(msg, Brushes.Green);
+                    }
+                    else if (msg.Contains("WARN]"))
+                    {
+                        PrintLog(msg, Brushes.Orange);
+                    }
+                    else if (msg.Contains("ERROR]"))
+                    {
+                        PrintLog(msg, Brushes.Red);
+                    }
+                }
+                else
+                {
+                    if (msg.Contains("INFO"))
+                    {
+                        PrintLog(msg, Brushes.Green);
+                    }
+                    else if (msg.Contains("WARN"))
+                    {
+                        PrintLog(msg, Brushes.Orange);
+                    }
+                    else if (msg.Contains("ERROR"))
+                    {
+                        PrintLog(msg, Brushes.Red);
+                    }
+                }
+                return;
+            }
             if (getServerInfoLine < 100)
             {
                 GetServerInfoSys(msg);
@@ -1108,11 +1147,8 @@ namespace MSL
                     {
                         return;
                     }
-                    else
-                    {
-                        PrintLog("[" + DateTime.Now.ToString("T") + " 警告]" + msg.Substring(msg.IndexOf("WARN]") + 5), Brushes.Orange);
-                        LogHandleWarn(msg);
-                    }
+                    PrintLog("[" + DateTime.Now.ToString("T") + " 警告]" + msg.Substring(msg.IndexOf("WARN]") + 5), Brushes.Orange);
+                    LogHandleWarn(msg);
                 }
                 else if (msg.Contains("ERROR]"))
                 {
@@ -1136,11 +1172,8 @@ namespace MSL
                     {
                         return;
                     }
-                    else
-                    {
-                        PrintLog(msg, Brushes.Orange);
-                        LogHandleWarn(msg);
-                    }
+                    PrintLog(msg, Brushes.Orange);
+                    LogHandleWarn(msg);
                 }
                 else if (msg.Contains("ERROR"))
                 {

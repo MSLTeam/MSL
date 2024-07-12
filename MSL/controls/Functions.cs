@@ -484,10 +484,7 @@ namespace MSL.controls
                             if (File.Exists(subFolder + "\\win_args.txt"))
                             {
                                 forgeVersion = Path.GetFileName(subFolder);
-                                if (forgeVersion.Contains(mcVersion))
-                                {
-                                    return "@libraries/net/neoforged/neoforge/" + forgeVersion + "/win_args.txt %*";
-                                }
+                                return "@libraries/net/neoforged/neoforge/" + forgeVersion + "/win_args.txt %*";
                             }
                         }
                         checkRootBase = true;
