@@ -391,8 +391,6 @@ namespace MSL.i18n {
         ///BMCLAPI —— Forge服务端下载源
         ///以及其他服务端官方和第三方下载源……
         ///
-        ///感谢MCSL开发组提供相关技术帮助
-        ///
         ///同时感谢所有使用MSL的用户，以及给MSL提出过改进建议和Bug的用户
         ///感谢各位的支持与信任！ 的本地化字符串。
         /// </summary>
@@ -421,7 +419,7 @@ namespace MSL.i18n {
         }
         
         /// <summary>
-        ///   查找类似 依赖包 的本地化字符串。
+        ///   查找类似 依赖/包 的本地化字符串。
         /// </summary>
         internal static string Pages_About_Package {
             get {

@@ -238,8 +238,6 @@ CurseForge —— 模组、模组整合包下载源API
 BMCLAPI —— Forge服务端下载源
 以及其他服务端官方和第三方下载源……
 
-感谢MCSL开发组提供相关技术帮助
-
 同时感谢所有使用MSL的用户，以及给MSL提出过改进建议和Bug的用户
 感谢各位的支持与信任！</value>
   </data>
@@ -250,7 +248,7 @@ BMCLAPI —— Forge服务端下载源
     <value>打开网站</value>
   </data>
   <data name="Pages_About_Package" xml:space="preserve">
-    <value>依赖包</value>
+    <value>依赖/包</value>
   </data>
   <data name="Pages_About_Sponsor" xml:space="preserve">
     <value>赞助</value>
