@@ -1,4 +1,5 @@
 ﻿using ICSharpCode.SharpZipLib.Zip;
+using Microsoft.Extensions.Logging.Abstractions;
 using MSL.utils;
 using Newtonsoft.Json.Linq;
 using System;
@@ -32,12 +33,12 @@ namespace MSL.controls
         private readonly string tempPath;
         private readonly string libPath;
         private readonly string javaPath;
+        private StreamWriter logWriter;
         private int versionType; //由于Forge安装器的json有4种格式（太6了），在此进行规定：①1.20.3-Latest ②？-1.20.2
 
         public InstallForgeDialog(string forge, string downPath, string java)
         {
             InitializeComponent();
-            Log_in("准备开始安装Forge···");
             forgePath = forge;//传递路径过来
             installPath = downPath;
             tempPath = downPath + "/temp";
@@ -48,6 +49,9 @@ namespace MSL.controls
         private readonly CancellationTokenSource cancellationTokenSource = new CancellationTokenSource();
         private void UserControl_Loaded(object sender, RoutedEventArgs e)
         {
+            File.Create(installPath + "/msl-installForge.log").Close();
+            logWriter = File.AppendText(installPath + "/msl-installForge.log");
+            Log_in("准备开始安装Forge···");
             Task.Run(Install);
         }
 
@@ -462,31 +466,38 @@ namespace MSL.controls
                     }
                 }
                 //输出日志
+                /*
                 Dispatcher.Invoke(() =>
                 {
                     File.WriteAllText(installPath + "/msl-installForge.log", log.Text);
                 });
+                */
 
                 Log_in("安装结束！");
                 Status_change("结束！本对话框将自动关闭！");
                 try
                 {
                     //File.Delete(installPath + "/install.bat");
+                    logWriter.Flush();
+                    logWriter.Close();
+                    logWriter.Dispose();
                     Directory.Delete(tempPath, true);
                 }
-                catch// (Exception ex)
+                catch(Exception ex)
                 {
-                    //没log
+                    Console.WriteLine(ex.Message);
                 }
                 Thread.Sleep(1500);
                 _dialogReturn = 1;
                 Dispatcher.Invoke(() =>
                 {
+                    log.Clear();
                     CloseDialog();
                 });
             }
             catch (OperationCanceledException) { return; }
         }
+
         private string logTemp = "";
         private int counter = 100;
         private void Process_OutputDataReceived(object sender, DataReceivedEventArgs e)
@@ -499,7 +510,7 @@ namespace MSL.controls
                     Log_in(logTemp);
                     logTemp = "";
                 }
-                logTemp = logTemp + e.Data + "\n";
+                logTemp += e.Data + "\n";
                 counter++;
             }
         }
@@ -509,9 +520,22 @@ namespace MSL.controls
             cancellationTokenSource.Token.ThrowIfCancellationRequested();
             Dispatcher.Invoke(() =>
             {
+                if (log.LineCount > 150)
+                {
+                    log.Clear();
+                }
                 log.Text += logStr + "\n";
                 log.ScrollToEnd();
             });
+            try
+            {
+                // 写入日志文件
+                logWriter.WriteLineAsync(logStr);
+            }
+            catch
+            {
+                Console.WriteLine("Write log failed!");
+            }
         }
 
         private void Status_change(string textStr)

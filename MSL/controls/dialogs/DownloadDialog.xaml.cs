@@ -69,7 +69,7 @@ namespace MSL
             {
                 downloadOpt.RequestConfiguration.UserAgent = "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/126.0.0.0 Safari/537.36";
             }
-            downloadOpt.Timeout = 10000;
+            downloadOpt.Timeout = 5000;
             downloadOpt.ChunkCount = downloadthread; // file parts to download, default value is 1
             downloadOpt.ParallelDownload = true; // download parts of file as parallel or not. Default value is false
             downloader = new DownloadService(downloadOpt);
@@ -115,7 +115,7 @@ namespace MSL
             {
                 updateUITimer.Stop();
             }
-            catch { }
+            catch { Console.WriteLine("Stop UITimer Failed"); }
             if (_dialogReturn == 2)
             {
                 Dispatcher.Invoke(() =>
@@ -125,7 +125,7 @@ namespace MSL
                     {
                         File.Delete(downloadPath + "\\" + filename);
                     }
-                    catch { }
+                    catch { Console.WriteLine("Delete File Failed"); }
                 });
             }
             else
