@@ -39,7 +39,7 @@ namespace MSL.pages
             try
             {
                 //生成设备id
-                DCID.Content=Functions.GetDeviceID();
+                DCID.Content = Functions.GetDeviceID();
                 JObject jsonObject = JObject.Parse(File.ReadAllText(@"MSL\config.json", Encoding.UTF8));
                 if (jsonObject["notifyIcon"] != null && (bool)jsonObject["notifyIcon"] == true)
                 {

@@ -318,7 +318,7 @@ please click the configuration button to configure</value>
     <value>获取系统内存失败！</value>
   </data>
   <data name="MainWindow_GrowlMsg_MSLServerDown" xml:space="preserve">
-    <value>MSL主服务器连接超时（可能被DDos），已切换至备用服务器！</value>
+    <value>MSL主服务器连接超时（可能被DDoS），已切换至备用服务器！</value>
   </data>
   <data name="MainWindow_GrowlMsg_RefuseUpdate" xml:space="preserve">
     <value>您拒绝了更新到新版本，若在此版本中遇到bug，请勿报告给作者！</value>

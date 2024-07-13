@@ -273,7 +273,7 @@ namespace MSL.pages
             else if (usecheckedjv.IsChecked == true)
             {
                 string a = selectCheckedJavaComb.Items[selectCheckedJavaComb.SelectedIndex].ToString();
-                serverjava = a.Substring(a.IndexOf(":") + 1);
+                serverjava = a.Substring(a.IndexOf(":") + 2);
                 await Dispatcher.InvokeAsync(() =>
                 {
                     CheckServerPackCore();
@@ -1311,7 +1311,7 @@ namespace MSL.pages
             string serverCoreType = finallyServerCore.Substring(0, finallyServerCore.LastIndexOf("-"));
             string filename = finallyServerCore + ".jar";
             string[] dlContext = await HttpService.GetAsync("download/server/" + serverCoreType + "/" +
-                finallyServerCore.Substring(finallyServerCore.LastIndexOf("-") + 1), "", false, true);//获取链接
+                finallyServerCore.Substring(finallyServerCore.LastIndexOf("-") + 1), "", 0, true);//获取链接
             string dlUrl = dlContext[1];
             string sha256Exp = dlContext[2];
             if (serverCoreType == "forge" || serverCoreType == "spongeforge" || serverCoreType == "neoforge")
@@ -1343,7 +1343,7 @@ namespace MSL.pages
             {
                 string forgeName = finallyServerCore.Replace("spongeforge", "forge");
                 string _filename = forgeName + ".jar";
-                string[] _dlContext = await HttpService.GetAsync("download/server/" + forgeName.Replace("-", "/"), "", false, true);
+                string[] _dlContext = await HttpService.GetAsync("download/server/" + forgeName.Replace("-", "/"), "", 0, true);
                 string _dlUrl = _dlContext[1];
                 string _sha256Exp = _dlContext[2];
                 int _dwnDialog = await Shows.ShowDownloaderWithIntReturn(Window.GetWindow(this), _dlUrl, serverbase, _filename, "下载服务端中……", _sha256Exp, true);

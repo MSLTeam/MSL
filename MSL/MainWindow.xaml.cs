@@ -44,7 +44,7 @@ namespace MSL
         public static bool getServerInfo = false;
         public static bool getPlayerInfo = false;
         public static readonly bool isI18N = false; //标识当前版本是否支持i18n
-        public static string deviceID = null;
+        //public static string deviceID = null; //用于记录设备id
 
         public MainWindow()
         {
@@ -431,7 +431,7 @@ namespace MSL
             //get serverlink
             try
             {
-                serverLink = HttpService.Get("", "https://msl-server.oss-cn-hangzhou.aliyuncs.com/", true);
+                serverLink = HttpService.Get("", "https://msl-server.oss-cn-hangzhou.aliyuncs.com/", 1);
                 //Logger.LogInfo("连接到api：" + "https://api." + serverLink);
                 try
                 {
@@ -452,7 +452,6 @@ namespace MSL
                 serverLink = "waheal.top";
                 //Logger.LogError("在匹配在线服务器时出现错误，已连接至备用服务器");
             }
-
             //更新
             try
             {

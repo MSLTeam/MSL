@@ -107,13 +107,13 @@ namespace MSL.pages.frpProviders
                                 }
                                 else
                                 {
-                                    serversList.Items.Add("[" + serverInfo + "]" + serverName + "(检测失败,可能被DDos或下线)");
+                                    serversList.Items.Add("[" + serverInfo + "]" + serverName + "(检测失败,可能被DDoS或下线)");
                                 }
                             });
                         }
                         catch
                         {
-                            serversList.Items.Add(serverAddress + "(检测失败,可能被DDos或下线)");
+                            serversList.Items.Add(serverAddress + "(检测失败,可能被DDoS或下线)");
                         }
                     }
                 }

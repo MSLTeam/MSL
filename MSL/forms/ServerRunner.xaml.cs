@@ -2940,7 +2940,7 @@ namespace MSL
                 else if (usecheckedjv.IsChecked == true)
                 {
                     string a = selectCheckedJavaComb.Items[selectCheckedJavaComb.SelectedIndex].ToString();
-                    jAva.Text = a.Substring(a.IndexOf(":") + 1);
+                    jAva.Text = a.Substring(a.IndexOf(":") + 2);
                 }
                 else// (useJvpath.IsChecked == true)
                 {
@@ -2988,17 +2988,14 @@ namespace MSL
                     }
                 }
                 Rserverserver = server.Text;
-                await Dispatcher.InvokeAsync(async () =>
+                if (Rserverbase != bAse.Text)
                 {
-                    if (Rserverbase != bAse.Text)
+                    bool dialog = await Shows.ShowMsgDialogAsync(this, "检测到您更改了服务器目录，是否将当前的服务器目录移动至新的目录？", "警告", true, "取消");
+                    if (dialog)
                     {
-                        bool dialog = await Shows.ShowMsgDialogAsync(this, "检测到您更改了服务器目录，是否将当前的服务器目录移动至新的目录？", "警告", true, "取消");
-                        if (dialog)
-                        {
-                            Functions.MoveFolder(Rserverbase, bAse.Text);
-                        }
+                        Functions.MoveFolder(Rserverbase, bAse.Text);
                     }
-                });
+                }
                 Rserverbase = bAse.Text;
                 RserverJVMcmd = jVMcmd.Text;
 
@@ -3208,13 +3205,21 @@ namespace MSL
             }
         }
 
-        private async void usecheckedjv_Checked(object sender, RoutedEventArgs e)
+        private void usecheckedjv_Checked(object sender, RoutedEventArgs e)
+        {
+            if (selectCheckedJavaComb.Items.Count == 0)
+            {
+                Shows.ShowMsgDialog(this, "请先进行搜索！", "警告");
+                useSelf.IsChecked = true;
+            }
+        }
+
+        private async void ScanJava_Click(object sender, RoutedEventArgs e)
         {
             List<JavaScanner.JavaInfo> strings = null;
             int dialog = Shows.ShowMsg(this, "即将开始检测电脑上的Java，此过程可能需要一些时间，请耐心等待。\n目前有两种检测模式，一种是简单检测，只检测一些关键目录，用时较少，普通用户可优先使用此模式。\n第二种是深度检测，将检测所有磁盘的所有目录，耗时可能会很久，请慎重选择！", "提示", true, "开始深度检测", "开始简单检测");
             if (dialog == 2)
             {
-                useSelf.IsChecked = true;
                 return;
             }
             Dialog waitDialog = Dialog.Show(new TextDialog("检测中，请稍等……"));
@@ -3249,7 +3254,6 @@ namespace MSL
             else
             {
                 Growl.Error("暂未找到Java");
-                useSelf.IsChecked = true;
             }
         }
 
@@ -3281,7 +3285,7 @@ namespace MSL
             HttpListener listener = null;
             try
             {
-                ipv6 = HttpService.Get("", "https://6.ipw.cn", true);
+                ipv6 = HttpService.Get("", "https://6.ipw.cn", 3);
                 Clipboard.Clear();
                 Clipboard.SetText(ipv6);
 
@@ -3312,7 +3316,7 @@ namespace MSL
                 });
 
                 //发送get，测试是否通
-                string result = HttpService.Get("", $"https://ipv6test.52nahida.site/?addr=[{ipv6}]&port=21102", true);
+                string result = HttpService.Get("", $"https://ipv6test.52nahida.site/?addr=[{ipv6}]&port=21102", 3);
 
                 //结果返回
                 var jsonResult = JObject.Parse(result);

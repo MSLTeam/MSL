@@ -28,10 +28,11 @@ namespace MSL
         private readonly string downloadurl;
         private readonly string expectedSha256;
         private readonly bool closeDirectly;
+        private readonly int headerMode; //0等于自动检测（MSL Downloader或无Header），1等于无Header，2等于MSL Downloader，3等于伪装浏览器Header
         private DownloadService downloader;
         private DispatcherTimer updateUITimer;
 
-        public DownloadDialog(string _downloadurl, string _downloadPath, string _filename, string downloadinfo, string sha256 = "", bool _closeDirectly = false)
+        public DownloadDialog(string _downloadurl, string _downloadPath, string _filename, string downloadinfo, string sha256 = "", bool _closeDirectly = false, int header = 0)
         {
             InitializeComponent();
             Directory.CreateDirectory(_downloadPath);
@@ -40,18 +41,37 @@ namespace MSL
             filename = _filename;
             expectedSha256 = sha256;
             closeDirectly = _closeDirectly;
+            headerMode = header;
             taskinfo.Text = downloadinfo;
             Thread thread = new Thread(Downloader);
             thread.Start();
         }
         private void Downloader()
         {
-            var downloadOpt = new DownloadConfiguration()
+            var downloadOpt = new DownloadConfiguration();
+            if (headerMode == 0)
             {
-                RequestConfiguration = { UserAgent = "MSL Downloader/" + new Version(System.Reflection.Assembly.GetExecutingAssembly().GetName().Version.ToString()) },
-                ChunkCount = downloadthread, // file parts to download, default value is 1
-                ParallelDownload = true // download parts of file as parallel or not. Default value is false
-            };
+                string serverLink = MainWindow.serverLink;
+                if (serverLink.Contains("/"))
+                {
+                    serverLink = serverLink.Substring(0, serverLink.IndexOf("/"));
+                }
+                if (downloadurl.Contains(serverLink))
+                {
+                    downloadOpt.RequestConfiguration.UserAgent = "MSL Downloader/" + new Version(System.Reflection.Assembly.GetExecutingAssembly().GetName().Version.ToString());
+                }
+            }
+            else if (headerMode == 2)
+            {
+                downloadOpt.RequestConfiguration.UserAgent = "MSL Downloader/" + new Version(System.Reflection.Assembly.GetExecutingAssembly().GetName().Version.ToString());
+            }
+            else if (headerMode == 3)
+            {
+                downloadOpt.RequestConfiguration.UserAgent = "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/126.0.0.0 Safari/537.36";
+            }
+            downloadOpt.Timeout = 10000;
+            downloadOpt.ChunkCount = downloadthread; // file parts to download, default value is 1
+            downloadOpt.ParallelDownload = true; // download parts of file as parallel or not. Default value is false
             downloader = new DownloadService(downloadOpt);
             // Provide `FileName` and `TotalBytesToReceive` at the start of each downloads
             downloader.DownloadStarted += OnDownloadStarted;
@@ -71,7 +91,6 @@ namespace MSL
             // cancelled or download completed successfully.
             downloader.DownloadFileCompleted += OnDownloadFileCompleted;
             downloader.DownloadFileTaskAsync(downloadurl, downloadPath + "\\" + filename);
-
         }
 
         private void OnDownloadStarted(object sender, DownloadStartedEventArgs e)

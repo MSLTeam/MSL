@@ -100,11 +100,13 @@ namespace MSL.utils
         /// <param name="filename">文件名</param>
         /// <param name="downloadinfo">下载信息（label中显示的内容）</param>
         /// <param name="sha256">验证完整性（可选）</param>
+        /// <param name="closeDirectly">下载失败后是否直接关闭下载对话框</param>
+        /// <param name="headerMode">UA标识：0等于自动检测（MSL Downloader或无Header），1等于无Header，2等于MSL Downloader，3等于伪装浏览器Header</param>
         /// <returns>true下载成功；false下载取消/失败</returns>
-        public static async Task<bool> ShowDownloader(Window _window, string downloadurl, string downloadPath, string filename, string downloadinfo, string sha256 = "", bool closeDirectly = false)
+        public static async Task<bool> ShowDownloader(Window _window, string downloadurl, string downloadPath, string filename, string downloadinfo, string sha256 = "", bool closeDirectly = false, int headerMode = 0)
         {
             ShowDialogs showDialogs = new ShowDialogs();
-            int _ret = await showDialogs.ShowDownloadDialog(_window, downloadurl, downloadPath, filename, downloadinfo, sha256, closeDirectly);
+            int _ret = await showDialogs.ShowDownloadDialog(_window, downloadurl, downloadPath, filename, downloadinfo, sha256, closeDirectly, headerMode);
             if (_ret == 1)
             {
                 return true;
@@ -121,11 +123,13 @@ namespace MSL.utils
         /// <param name="filename">文件名</param>
         /// <param name="downloadinfo">下载信息（label中显示的内容）</param>
         /// <param name="sha256">验证完整性（可选）</param>
+        /// <param name="closeDirectly">下载失败后是否直接关闭下载对话框</param>
+        /// <param name="headerMode">UA标识：0等于自动检测（MSL Downloader或无Header），1等于无Header，2等于MSL Downloader，3等于伪装浏览器Header</param>
         /// <returns>0未开始下载（或下载中），1下载完成，2下载取消，3下载失败</returns>
-        public static async Task<int> ShowDownloaderWithIntReturn(Window _window, string downloadurl, string downloadPath, string filename, string downloadinfo, string sha256 = "", bool closeDirectly = false)
+        public static async Task<int> ShowDownloaderWithIntReturn(Window _window, string downloadurl, string downloadPath, string filename, string downloadinfo, string sha256 = "", bool closeDirectly = false, int headerMode = 0)
         {
             ShowDialogs showDialogs = new ShowDialogs();
-            int _ret = await showDialogs.ShowDownloadDialog(_window, downloadurl, downloadPath, filename, downloadinfo, sha256, closeDirectly);
+            int _ret = await showDialogs.ShowDownloadDialog(_window, downloadurl, downloadPath, filename, downloadinfo, sha256, closeDirectly, headerMode);
             return _ret;
         }
     }
@@ -173,10 +177,10 @@ namespace MSL.utils
             return msgDialog._dialogReturn;
         }
 
-        public async Task<int> ShowDownloadDialog(Window _window, string downloadurl, string downloadPath, string filename, string downloadinfo, string sha256 = "", bool closeDirectly = false)
+        public async Task<int> ShowDownloadDialog(Window _window, string downloadurl, string downloadPath, string filename, string downloadinfo, string sha256 = "", bool closeDirectly = false, int headerMode = 0)
         {
             window = _window;
-            DownloadDialog dwnDialog = new DownloadDialog(downloadurl, downloadPath, filename, downloadinfo, sha256, closeDirectly);
+            DownloadDialog dwnDialog = new DownloadDialog(downloadurl, downloadPath, filename, downloadinfo, sha256, closeDirectly, headerMode);
             dwnDialog.CloseDialog += CloseMsgDialog;
             window?.Focus();
             dialog = Dialog.Show(dwnDialog);
@@ -206,9 +210,7 @@ namespace MSL.utils
             dialog = Dialog.Show(_dialog);
             _tcs = new TaskCompletionSource<bool>();
             await _tcs.Task;
-            string[] strings = new string[2];
-            strings[0] = _dialog._dialogReturn.ToString();
-            strings[1] = _dialog.mcVersion;
+            string[] strings = [_dialog._dialogReturn.ToString(), _dialog.mcVersion];
             return strings;
         }
 
@@ -216,7 +218,7 @@ namespace MSL.utils
         {
             try
             {
-                _tcs.SetResult(true);
+                _tcs.TrySetResult(true);
             }
             finally
             {

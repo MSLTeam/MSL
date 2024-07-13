@@ -337,8 +337,9 @@
                                         <Button x:Name="a03" Content="浏览" Width="60" Click="a03_Click" FontWeight="Normal" FontSize="12" Height="28" VerticalAlignment="Top" HorizontalAlignment="Right"/>
                                         <RadioButton x:Name="useDownJv" Content="开服器在线下载" VerticalAlignment="Top" HorizontalAlignment="Left" Margin="125,40,0,0"/>
                                         <ComboBox x:Name="selectJava" Width="200" HorizontalAlignment="Left" VerticalAlignment="Top" Margin="250,35,0,0"/>
-                                        <RadioButton x:Name="usecheckedjv" Content="检查电脑上的Java" Margin="125,75,0,0" VerticalAlignment="Top" HorizontalAlignment="Left" Checked="usecheckedjv_Checked"/>
+                                        <RadioButton x:Name="usecheckedjv" Content="电脑上的Java" Margin="125,75,0,0" VerticalAlignment="Top" HorizontalAlignment="Left" Checked="usecheckedjv_Checked"/>
                                         <ComboBox x:Name="selectCheckedJavaComb" Margin="250,70,0,0" HorizontalAlignment="Left" VerticalAlignment="Top" Width="200"/>
+                                        <Button x:Name="ScanJava" Content="点我搜索" HorizontalAlignment="Left" Margin="455,70,0,0" VerticalAlignment="Top" Click="ScanJava_Click"/>
                                         <RadioButton x:Name="useJvpath" Content="使用环境变量" VerticalAlignment="Top" HorizontalAlignment="Left" Margin="125,110,0,0" Click="useJvpath_Click"/>
                                     </Grid>
                                     <hc:Divider Margin="0,10,0,10"/>

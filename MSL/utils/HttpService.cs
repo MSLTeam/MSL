@@ -10,12 +10,14 @@ namespace MSL.utils
 {
     internal class HttpService
     {
-        public static string Get(string path, string customUrl = "", bool hideHeader = false)
-        {
-            return WebGet(path, out _, customUrl, hideHeader);
-        }
-
-        private static string WebGet(string path, out string sha256, string customUrl = "", bool hideHeader = false)
+        /// <summary>
+        /// WebGet
+        /// </summary>
+        /// <param name="path">位置（默认为软件在线链接的位置）</param>
+        /// <param name="customUrl">自定义url，更改后上面的位置将使用此设置的url</param>
+        /// <param name="headerMode">UA标识：0等于自动检测（MSL或无Header），1等于无Header，2等于MSL，3等于伪装浏览器Header</param>
+        /// <returns>页内容</returns>
+        public static string Get(string path, string customUrl = "", int headerMode=0)
         {
             ServicePointManager.SecurityProtocol = SecurityProtocolType.Tls12;
             string url = "https://api." + MainWindow.serverLink;
@@ -23,7 +25,6 @@ namespace MSL.utils
             {
                 if (MainWindow.serverLink == null)
                 {
-                    sha256 = string.Empty;
                     return string.Empty;
                 }
             }
@@ -32,17 +33,28 @@ namespace MSL.utils
                 url = customUrl;
             }
             WebClient webClient = new WebClient();
-            if (!hideHeader)
+            if (headerMode == 0)
+            {
+                string serverLink = MainWindow.serverLink;
+                if (serverLink.Contains("/"))
+                {
+                    serverLink = serverLink.Substring(0, serverLink.IndexOf("/"));
+                }
+                if (url.Contains(serverLink))
+                {
+                    webClient.Headers.Add("User-Agent", "MSL/" + new Version(System.Reflection.Assembly.GetExecutingAssembly().GetName().Version.ToString()));
+                }
+            }
+            else if (headerMode == 2)
             {
                 webClient.Headers.Add("User-Agent", "MSL/" + new Version(System.Reflection.Assembly.GetExecutingAssembly().GetName().Version.ToString()));
             }
+            else if (headerMode == 3)
+            {
+                webClient.Headers.Add("Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/126.0.0.0 Safari/537.36");
+            }
             webClient.Credentials = CredentialCache.DefaultCredentials;
             byte[] pageData = webClient.DownloadData(url + "/" + path);
-            sha256 = string.Empty; //先定义为空
-            if (webClient.ResponseHeaders["sha256"] != null)
-            {
-                sha256 = webClient.ResponseHeaders["sha256"];
-            }
             return Encoding.UTF8.GetString(pageData);
         }
 
@@ -51,9 +63,10 @@ namespace MSL.utils
         /// </summary>
         /// <param name="path">位置（默认为软件在线链接的位置）</param>
         /// <param name="customUrl">自定义url，更改后上面的位置将使用此设置的url</param>
-        /// <param name="hideHeader">隐藏MSL请求头</param>
-        /// <returns>strings[0]=0出现错误，此时strings[1]=错误信息；strings[0]=1请求成功，此时strings[1]=web信息，strings[2]=sha256（若开启getSha256）</returns>
-        public static async Task<string[]> GetAsync(string path, string customUrl = "", bool hideHeader = false, bool getSha256 = false)
+        /// <param name="headerMode">UA标识：0等于自动检测（MSL或无Header），1等于无Header，2等于MSL，3等于伪装浏览器Header</param>
+        /// <param name="getSha256">是否获取sha256（特定功能需要）</param>
+        /// <returns>strings[0]=0出现错误，此时strings[1]=错误信息；strings[0]=1请求成功，此时strings[1]=页内容，strings[2]=sha256（若开启getSha256）</returns>
+        public static async Task<string[]> GetAsync(string path, string customUrl = "", int headerMode = 0, bool getSha256 = false)
         {
             string[] strings = new string[3];
             string url = "https://api." + MainWindow.serverLink;
@@ -73,9 +86,25 @@ namespace MSL.utils
             }
             using (HttpClient client = new HttpClient())
             {
-                if (!hideHeader)
+                if (headerMode == 0)
                 {
-                    client.DefaultRequestHeaders.UserAgent.ParseAdd("MSL/" + new Version(System.Reflection.Assembly.GetExecutingAssembly().GetName().Version.ToString()));
+                    string serverLink = MainWindow.serverLink;
+                    if (serverLink.Contains("/"))
+                    {
+                        serverLink = serverLink.Substring(0, serverLink.IndexOf("/"));
+                    }
+                    if (url.Contains(serverLink))
+                    {
+                        client.DefaultRequestHeaders.UserAgent.TryParseAdd("MSL/" + new Version(System.Reflection.Assembly.GetExecutingAssembly().GetName().Version.ToString()));
+                    }
+                }
+                else if (headerMode == 2)
+                {
+                    client.DefaultRequestHeaders.UserAgent.TryParseAdd("MSL/" + new Version(System.Reflection.Assembly.GetExecutingAssembly().GetName().Version.ToString()));
+                }
+                else if (headerMode == 3)
+                {
+                    client.DefaultRequestHeaders.UserAgent.TryParseAdd("Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/126.0.0.0 Safari/537.36");
                 }
                 try
                 {
@@ -102,6 +131,15 @@ namespace MSL.utils
             return strings;
         }
 
+        /// <summary>
+        /// WebPost
+        /// </summary>
+        /// <param name="path">位置（默认为软件在线链接的位置）</param>
+        /// <param name="contentType">0为json，1为text，2为x-www-form-urlencoded</param>
+        /// <param name="parameterData">Post参数</param>
+        /// <param name="customUrl">自定义url，更改后上面的位置将使用此设置的url</param>
+        /// <param name="header">Header</param>
+        /// <returns>post后，返回的内容</returns>
         public static string Post(string path, int contentType = 0, string parameterData = "", string customUrl = "", WebHeaderCollection header = null)
         {
             ServicePointManager.SecurityProtocol = SecurityProtocolType.Tls12;
