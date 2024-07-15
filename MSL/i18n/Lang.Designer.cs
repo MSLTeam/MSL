@@ -70,6 +70,15 @@ namespace MSL.i18n {
         }
         
         /// <summary>
+        ///   查找类似 确定 的本地化字符串。
+        /// </summary>
+        internal static string Dialog_Done {
+            get {
+                return ResourceManager.GetString("Dialog_Done", resourceCulture);
+            }
+        }
+        
+        /// <summary>
         ///   查找类似 错误 的本地化字符串。
         /// </summary>
         internal static string Dialog_Err {
@@ -93,15 +102,6 @@ namespace MSL.i18n {
         internal static string Dialog_Warning {
             get {
                 return ResourceManager.GetString("Dialog_Warning", resourceCulture);
-            }
-        }
-        
-        /// <summary>
-        ///   查找类似 同意 的本地化字符串。
-        /// </summary>
-        internal static string MainWindow_GrowlMsg_Agree {
-            get {
-                return ResourceManager.GetString("MainWindow_GrowlMsg_Agree", resourceCulture);
             }
         }
         
@@ -209,8 +209,8 @@ namespace MSL.i18n {
         }
         
         /// <summary>
-        ///   查找类似 请阅读并同意MSL开服器使用协议：https://www.mslmc.cn/eula.html
-        ///关闭窗口代表拒绝接受！ 的本地化字符串。
+        ///   查找类似 使用本软件，即代表您已阅读并接受本软件的使用协议：https://www.mslmc.cn/eula.html
+        ///如果您不接受，请立即退出本软件并删除相关文件！ 的本地化字符串。
         /// </summary>
         internal static string MainWindow_GrowlMsg_Eula {
             get {
@@ -385,7 +385,10 @@ namespace MSL.i18n {
         
         /// <summary>
         ///   查找类似 Minecraft Server Launcher(MSL) Copyright © 2021-2024 By MSLTeam
-        ///本软件和Microsoft、Mojang Studio无任何隶属关系
+        ///本软件与Microsoft、Mojang Studio(Mojang AB)无任何隶属关系
+        ///本软件为开源软件，用户使用本软件从事的任何行为均与开发者无关
+        ///本软件接入的部分第三方服务，其相关权利归第三方所有
+        ///
         ///开服器的正常运行离不开下面的下载源/站点，特此感谢：
         ///CurseForge —— 模组、模组整合包下载源API
         ///BMCLAPI —— Forge服务端下载源

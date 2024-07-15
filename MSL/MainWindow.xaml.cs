@@ -11,6 +11,7 @@ using System.Diagnostics;
 using System.Globalization;
 using System.IO;
 using System.Management;
+using System.Runtime.CompilerServices;
 using System.Text;
 using System.Threading.Tasks;
 using System.Windows;
@@ -67,9 +68,16 @@ namespace MSL
                 Directory.SetCurrentDirectory(AppDomain.CurrentDomain.BaseDirectory);
             }
 
-            Directory.CreateDirectory("MSL");
+            /*
+            if (await EulaEvent())
+            {
+                Directory.CreateDirectory("MSL");
+            }
+            */
+            
             try
             {
+                Directory.CreateDirectory("MSL");
                 //firstLauchEvent
                 if (!File.Exists(@"MSL\config.json"))
                 {
@@ -116,47 +124,63 @@ namespace MSL
             }
             finally
             {
-                bool onlineMode = await EulaEvent(jsonObject);
+                //await EulaEvent(jsonObject);
                 await Task.Run(() =>
                 {
                     //Logger.LogInfo("异步载入配置……");
                     AsyncLoadEvent(jsonObject);
-                    if (onlineMode)
-                    {
-                        //Logger.LogInfo("异步载入联网功能……");
-                        OnlineService(jsonObject);
-                    }
+                    //Logger.LogInfo("异步载入联网功能……");
+                    OnlineService(jsonObject);
                 });
                 //Logger.LogInfo("启动事件完成！");
             }
         }
 
+        /*
+        private async Task<bool> EulaEvent()
+        {
+            if (!Directory.Exists("MSL"))
+            {
+                bool dialog = await Shows.ShowMsgDialogAsync(this, LanguageManager.Instance["MainWindow_GrowlMsg_Eula"], LanguageManager.Instance["Dialog_Tip"], true, LanguageManager.Instance["Dialog_Done"], LanguageManager.Instance["MainWindow_GrowlMsg_ReadEula"]);
+                if (!dialog)
+                {
+                    return true;
+                }
+                else
+                {
+                    //Logger.LogInfo("打开EULA网页……");
+                    Process.Start("https://www.mslmc.cn/eula.html");
+                    return await EulaEvent();
+                }
+            }
+            return true;
+        }
+        */
+        /*
         private async Task<bool> EulaEvent(JObject jsonObject)
         {
-            if (jsonObject["eula"] == null || (bool)jsonObject["eula"] == false)
+            if (jsonObject.ContainsKey("eula"))
             {
-                int dialog = Shows.ShowMsg(this, LanguageManager.Instance["MainWindow_GrowlMsg_Eula"], LanguageManager.Instance["Dialog_Tip"], true, LanguageManager.Instance["MainWindow_GrowlMsg_Agree"], LanguageManager.Instance["MainWindow_GrowlMsg_ReadEula"]);
-                if (dialog == 0)
+                jsonObject.Remove("eula");
+            }
+            string _deviceID = Functions.GetDeviceID();
+            if (jsonObject["deviceID"] == null || jsonObject["deviceID"].ToString() != _deviceID)
+            {
+                bool dialog = await Shows.ShowMsgDialogAsync(this, LanguageManager.Instance["MainWindow_GrowlMsg_Eula"], LanguageManager.Instance["Dialog_Tip"], true, LanguageManager.Instance["Dialog_Done"], LanguageManager.Instance["MainWindow_GrowlMsg_ReadEula"]);
+                if (!dialog)
                 {
-                    if (jsonObject["eula"] == null)
+                    if (jsonObject["deviceID"] == null)
                     {
-                        jsonObject.Add("eula", true);
+                        jsonObject.Add("deviceID", _deviceID);
                     }
                     else
                     {
-                        jsonObject["eula"] = true;
+                        jsonObject["deviceID"] = _deviceID;
                     }
                     string convertString = Convert.ToString(jsonObject);
                     File.WriteAllText(@"MSL\config.json", convertString, Encoding.UTF8);
                     //Logger.LogInfo("EULA=TRUE");
                     return true;
-                }
-                else if (dialog == 2)
-                {
-                    //Logger.LogInfo("EULA=FALSE");
-                    //Logger.LogWarning("用户未同意使用协议……禁用联网功能");
-                    await Shows.ShowMsgDialogAsync(this, "您未同意用户使用协议，为保障您的权益，软件将以离线模式运行！", "提示");
-                    return false;
                 }
                 else
                 {
@@ -171,6 +195,7 @@ namespace MSL
                 return true;
             }
         }
+        */
 
         private void AsyncLoadEvent(JObject jsonObject)
         {

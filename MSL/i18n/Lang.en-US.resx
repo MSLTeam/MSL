@@ -150,7 +150,7 @@
   <data name="Pages_About_MainContent" xml:space="preserve">
     <value>Minecraft Server Launcher (MSL)
 Copyright © 2021-2024 By MSLTeam
-This software has no affiliation with Microsoft or Mojang Studio
+This software has no affiliation with Microsoft or Mojang Studio(Mojang AB)
 The normal operation of the server opener cannot be separated 
 from the following download sources/sites. 
 Thanks:
@@ -266,9 +266,6 @@ please click the configuration button to configure</value>
   <data name="Dialog_Tip" xml:space="preserve">
     <value>提示</value>
   </data>
-  <data name="MainWindow_GrowlMsg_Agree" xml:space="preserve">
-    <value>同意</value>
-  </data>
   <data name="MainWindow_GrowlMsg_AutoLaunchFrpc" xml:space="preserve">
     <value>正在为你自动打开内网映射……</value>
   </data>
@@ -307,8 +304,8 @@ please click the configuration button to configure</value>
     <value>阅读协议</value>
   </data>
   <data name="MainWindow_GrowlMsg_Eula" xml:space="preserve">
-    <value>请阅读并同意MSL开服器使用协议：https://www.mslmc.cn/eula.html
-关闭窗口代表拒绝接受！</value>
+    <value>使用本软件，即代表您已阅读并接受本软件的使用协议：https://www.mslmc.cn/eula.html
+如果您不接受，请立即退出本软件并删除相关文件！</value>
   </data>
   <data name="MainWindow_GrowlMsg_InitErr" xml:space="preserve">
     <value>MSL在初始化加载过程中出现问题，请尝试用管理员身份运行MSL……
@@ -420,5 +417,8 @@ please click the configuration button to configure</value>
   </data>
   <data name="Pages_Online_UdFrpc" xml:space="preserve">
     <value>更新内网映射中···</value>
+  </data>
+  <data name="Dialog_Done" xml:space="preserve">
+    <value>Done</value>
   </data>
 </root>
