@@ -11,7 +11,6 @@ using System.Diagnostics;
 using System.Globalization;
 using System.IO;
 using System.Management;
-using System.Runtime.CompilerServices;
 using System.Text;
 using System.Threading.Tasks;
 using System.Windows;
@@ -74,7 +73,7 @@ namespace MSL
                 Directory.CreateDirectory("MSL");
             }
             */
-            
+
             try
             {
                 Directory.CreateDirectory("MSL");

@@ -1,5 +1,4 @@
 ﻿using ICSharpCode.SharpZipLib.Zip;
-using Microsoft.Extensions.Logging.Abstractions;
 using MSL.utils;
 using Newtonsoft.Json.Linq;
 using System;
@@ -13,7 +12,6 @@ using System.Security.Cryptography;
 using System.Text;
 using System.Threading;
 using System.Threading.Tasks;
-using System.Web;
 using System.Windows;
 
 
@@ -47,12 +45,15 @@ namespace MSL.controls
         }
 
         private readonly CancellationTokenSource cancellationTokenSource = new CancellationTokenSource();
-        private void UserControl_Loaded(object sender, RoutedEventArgs e)
+        private async void UserControl_Loaded(object sender, RoutedEventArgs e)
         {
             File.Create(installPath + "/msl-installForge.log").Close();
             logWriter = File.AppendText(installPath + "/msl-installForge.log");
-            Log_in("准备开始安装Forge···");
-            Task.Run(Install);
+            Log_in("准备安装Forge···");
+            Log_in("3秒后开始安装···");
+            await Task.Delay(3000);
+            MultiThreadCount.IsEnabled = false;
+            await Task.Run(Install);
         }
 
         //安装forge的主方法
@@ -151,6 +152,7 @@ namespace MSL.controls
                     mcVersion = installJobj["minecraft"].ToString();
                 }
 
+                bool _return = false;
                 await Dispatcher.Invoke(async () => //下载
                 {
                     bool dwnDialog = await Shows.ShowDownloader(Window.GetWindow(this), vanillaUrl, Path.GetDirectoryName(serverJarPath), Path.GetFileName(serverJarPath), "下载原版核心中···");
@@ -158,9 +160,14 @@ namespace MSL.controls
                     {
                         //下载失败，跑路了！
                         Log_in("原版核心下载失败！安装失败！");
-                        return;
+                        _return = true;
                     }
                 });
+                if (_return)
+                {
+                    await Task.Delay(1000);
+                    return;
+                }
                 Log_in("下载原版服务端核心成功！");
                 Log_in("正在解压原版LIB！");
 
@@ -197,6 +204,7 @@ namespace MSL.controls
                         catch (Exception ex)
                         {
                             Log_in("原版LIB解压失败！" + ex.Message);
+                            await Task.Delay(1000);
                             return;
                         }
                     }
@@ -235,27 +243,29 @@ namespace MSL.controls
                         string _savepath = libPath + "/" + lib["downloads"]["artifact"]["path"].ToString();
                         string _sha1 = lib["downloads"]["artifact"]["sha1"].ToString();
                         Log_in("[LIB]下载：" + lib["downloads"]["artifact"]["path"].ToString());
-                        if (!_dlurl.Contains("mcp")) //mcp那个zip会用js redirect，所以只能用downloader，真神奇！
+                        //if (!_dlurl.Contains("mcp")) //mcp那个zip会用js redirect，所以只能用downloader，真神奇！
+                        //{
+                        downloadTasks.Add(DownloadFile(_dlurl, _savepath, _sha1));
+                        //bool dlStatus = await DownloadFile(_dlurl, _savepath, _sha1);
+                        //Status_change("正在下载Forge运行Lib···(" + libCount + "/" + libALLCount + ")");
+                        /*
+                    }
+                    else
+                    {
+                        await Dispatcher.Invoke(async () =>
                         {
-                            downloadTasks.Add(DownloadFile(_dlurl, _savepath, _sha1));
-                            //bool dlStatus = await DownloadFile(_dlurl, _savepath, _sha1);
                             //Status_change("正在下载Forge运行Lib···(" + libCount + "/" + libALLCount + ")");
-                        }
-                        else
-                        {
-                            await Dispatcher.Invoke(async () =>
+                            bool dwnDialog = await Shows.ShowDownloader(Window.GetWindow(this), _dlurl, Path.GetDirectoryName(_savepath), Path.GetFileName(_savepath), "下载LIB···");
+                            //bool dwnDialog = await Shows.ShowDownloader(Window.GetWindow(this), _dlurl, Path.GetDirectoryName(_savepath), Path.GetFileName(_savepath), "下载LIB(" + libCount + "/" + libALLCount + ")中···");
+                            if (!dwnDialog)
                             {
-                                //Status_change("正在下载Forge运行Lib···(" + libCount + "/" + libALLCount + ")");
-                                bool dwnDialog = await Shows.ShowDownloader(Window.GetWindow(this), _dlurl, Path.GetDirectoryName(_savepath), Path.GetFileName(_savepath), "下载LIB···");
-                                //bool dwnDialog = await Shows.ShowDownloader(Window.GetWindow(this), _dlurl, Path.GetDirectoryName(_savepath), Path.GetFileName(_savepath), "下载LIB(" + libCount + "/" + libALLCount + ")中···");
-                                if (!dwnDialog)
-                                {
-                                    //下载失败，跑路了！
-                                    Log_in(lib["downloads"]["artifact"]["path"].ToString() + "下载失败！安装失败！");
-                                    return;
-                                }
-                            });
-                        }
+                                //下载失败，跑路了！
+                                Log_in(lib["downloads"]["artifact"]["path"].ToString() + "下载失败！安装失败！");
+                                return;
+                            }
+                        });
+                    }
+                        */
                     }
                 }
                 else
@@ -279,31 +289,33 @@ namespace MSL.controls
 
                         string _savepath = libPath + "/" + NameToPath(SafeGetValue(lib, "name"));
                         Log_in("[LIB]下载：" + NameToPath(SafeGetValue(lib, "name")));
-                        if (!_dlurl.Contains("mcp")) //mcp那个zip会用js redirect，所以只能用downloader，真神奇！
+                        //if (!_dlurl.Contains("mcp")) //mcp那个zip会用js redirect，所以只能用downloader，真神奇！
+                        //{
+                        downloadTasks.Add(DownloadFile(_dlurl, _savepath));
+                        //bool dlStatus = await DownloadFile(_dlurl, _savepath);
+                        //Status_change("正在下载Forge运行Lib···(" + libCount + "/" + libALLCount + ")");
+                        /*
+                    }
+                    else
+                    {
+                        await Dispatcher.Invoke(async () =>
                         {
-                            downloadTasks.Add(DownloadFile(_dlurl, _savepath));
-                            //bool dlStatus = await DownloadFile(_dlurl, _savepath);
                             //Status_change("正在下载Forge运行Lib···(" + libCount + "/" + libALLCount + ")");
-                        }
-                        else
-                        {
-                            await Dispatcher.Invoke(async () =>
+                            bool dwnDialog = await Shows.ShowDownloader(Window.GetWindow(this), _dlurl, Path.GetDirectoryName(_savepath), Path.GetFileName(_savepath), "下载LIB(" + libCount + "/" + libALLCount + ")中···");
+                            if (!dwnDialog)
                             {
-                                //Status_change("正在下载Forge运行Lib···(" + libCount + "/" + libALLCount + ")");
-                                bool dwnDialog = await Shows.ShowDownloader(Window.GetWindow(this), _dlurl, Path.GetDirectoryName(_savepath), Path.GetFileName(_savepath), "下载LIB(" + libCount + "/" + libALLCount + ")中···");
-                                if (!dwnDialog)
-                                {
-                                    //下载失败，跑路了！
-                                    Log_in(NameToPath(SafeGetValue(lib, "name")) + "下载失败！安装失败！");
-                                    return;
-                                }
-                            });
-                        }
+                                //下载失败，跑路了！
+                                Log_in(NameToPath(SafeGetValue(lib, "name")) + "下载失败！安装失败！");
+                                return;
+                            }
+                        });
+                    }
+                        */
                     }
                 }
                 await Task.WhenAll(downloadTasks);
                 Log_in("下载Forge运行Lib成功！");
-                Thread.Sleep(1000);
+                await Task.Delay(1000);
                 Status_change("正在处理编译ForgeJava参数···");
                 Log_in("正在处理编译ForgeJava参数");
                 //string batData = "";
@@ -440,8 +452,8 @@ namespace MSL.controls
                     {
                         CancelButton.IsEnabled = false;
                     });
-                    Log_in("正在编译Forge……\n\n\n");
-                    foreach(string cmdLine in cmdLines)
+                    Log_in("正在编译Forge……\n");
+                    foreach (string cmdLine in cmdLines)
                     {
                         Process process = new Process();
                         process.StartInfo.WorkingDirectory = installPath;
@@ -483,7 +495,7 @@ namespace MSL.controls
                     logWriter.Dispose();
                     Directory.Delete(tempPath, true);
                 }
-                catch(Exception ex)
+                catch (Exception ex)
                 {
                     Console.WriteLine(ex.Message);
                 }
@@ -695,7 +707,41 @@ namespace MSL.controls
             }
         }
 
-        private readonly SemaphoreSlim semaphore = new SemaphoreSlim(5); // 设置最大并发任务数量为5
+        private void MultiThreadCount_SelectionChanged(object sender, System.Windows.Controls.SelectionChangedEventArgs e)
+        {
+            switch (MultiThreadCount.SelectedIndex)
+            {
+                case 0:
+                    semaphore = new SemaphoreSlim(1);
+                    break;
+                case 1:
+                    semaphore = new SemaphoreSlim(2);
+                    break;
+                case 2:
+                    semaphore = new SemaphoreSlim(3);
+                    break;
+                case 3:
+                    semaphore = new SemaphoreSlim(4);
+                    break;
+                case 4:
+                    semaphore = new SemaphoreSlim(5);
+                    break;
+                case 5:
+                    semaphore = new SemaphoreSlim(6);
+                    break;
+                case 6:
+                    semaphore = new SemaphoreSlim(7);
+                    break;
+                case 7:
+                    semaphore = new SemaphoreSlim(8);
+                    break;
+                default:
+                    semaphore = new SemaphoreSlim(1);
+                    break;
+            }
+        }
+
+        private SemaphoreSlim semaphore = new SemaphoreSlim(4); // 设置最大并发任务数量为5
         private async Task DownloadFile(string url, string targetPath, string expectedSha1 = "")
         {
             if (string.IsNullOrEmpty(url))

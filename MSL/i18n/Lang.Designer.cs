@@ -387,7 +387,7 @@ namespace MSL.i18n {
         ///   查找类似 Minecraft Server Launcher(MSL) Copyright © 2021-2024 By MSLTeam
         ///本软件与Microsoft、Mojang Studio(Mojang AB)无任何隶属关系
         ///本软件为开源软件，用户使用本软件从事的任何行为均与开发者无关
-        ///本软件接入的部分第三方服务，其相关权利归第三方所有
+        ///本软件接入的第三方服务，其相关权利归第三方所有
         ///
         ///开服器的正常运行离不开下面的下载源/站点，特此感谢：
         ///CurseForge —— 模组、模组整合包下载源API

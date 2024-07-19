@@ -13,10 +13,23 @@
                 <RowDefinition Height="*"/>
                 <RowDefinition Height="auto"/>
             </Grid.RowDefinitions>
-            <TextBlock Grid.Row="0" Foreground="{DynamicResource PrimaryTextBrush}" HorizontalAlignment="Center" Margin="15,15,0,0" TextWrapping="Wrap" Text="正在安装Forge，请耐心等待……" VerticalAlignment="Top" FontSize="16"/>
-            <TextBox Grid.Row="1" Margin="15" x:Name="log" TextAlignment="Center" TextWrapping="Wrap" IsReadOnly="True" VerticalScrollBarVisibility="Auto"/>
-            <TextBlock Grid.Row="2" Foreground="{DynamicResource PrimaryTextBrush}" HorizontalAlignment="Center" Margin="15,0,0,15" TextWrapping="Wrap" Text="等待安装开始……" VerticalAlignment="Top" FontSize="16" x:Name="status"/>
-            <Button Grid.Row="2" x:Name="CancelButton" Style="{StaticResource ButtonPrimary}" Content="取消" HorizontalAlignment="Right" Margin="0,0,15,10" VerticalAlignment="Bottom" Width="75" FontSize="14" Click="CancelButton_Click"/>
+            <TextBlock Grid.Row="0" Foreground="{DynamicResource PrimaryTextBrush}" HorizontalAlignment="Center" VerticalAlignment="Center" TextWrapping="Wrap" Text="Forge安装器" FontSize="20"/>
+            <ComboBox x:Name="MultiThreadCount" Grid.Row="0" HorizontalAlignment="Right" Margin="10" SelectionChanged="MultiThreadCount_SelectionChanged">
+                <ComboBoxItem Content="并发数：1"/>
+                <ComboBoxItem Content="并发数：2"/>
+                <ComboBoxItem Content="并发数：3"/>
+                <ComboBoxItem Content="并发数：4" IsSelected="True"/>
+                <ComboBoxItem Content="并发数：5"/>
+                <ComboBoxItem Content="并发数：6"/>
+                <ComboBoxItem Content="并发数：7"/>
+                <ComboBoxItem Content="并发数：8"/>
+            </ComboBox>
+            <TextBox x:Name="log" Grid.Row="1" Margin="10,0,10,0" Padding="7" TextWrapping="Wrap" IsReadOnly="True" VerticalScrollBarVisibility="Auto" VerticalContentAlignment="Top"/>
+            <StackPanel Grid.Row="2" Orientation="Horizontal" >
+                <TextBlock Foreground="{DynamicResource PrimaryTextBrush}" Margin="10" VerticalAlignment="Center" TextWrapping="Wrap" Text="当前状态：" FontSize="16"/>
+                <TextBlock x:Name="status" Foreground="{DynamicResource PrimaryTextBrush}" VerticalAlignment="Center" TextWrapping="Wrap" Text="等待安装开始……" FontSize="16"/>
+            </StackPanel>
+            <Button Grid.Row="2" x:Name="CancelButton" Style="{StaticResource ButtonPrimary}" Content="取消" HorizontalAlignment="Right" Margin="10" VerticalAlignment="Bottom" Width="75" FontSize="14" Click="CancelButton_Click"/>
         </Grid>
     </Border>
 </UserControl>

@@ -17,7 +17,7 @@ namespace MSL.utils
         /// <param name="customUrl">自定义url，更改后上面的位置将使用此设置的url</param>
         /// <param name="headerMode">UA标识：0等于自动检测（MSL或无Header），1等于无Header，2等于MSL，3等于伪装浏览器Header</param>
         /// <returns>页内容</returns>
-        public static string Get(string path, string customUrl = "", int headerMode=0)
+        public static string Get(string path, string customUrl = "", int headerMode = 0)
         {
             ServicePointManager.SecurityProtocol = SecurityProtocolType.Tls12;
             string url = "https://api." + MainWindow.serverLink;
