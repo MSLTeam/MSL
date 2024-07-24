@@ -325,8 +325,8 @@
                                     <Label Content="服务器名称:" Margin="0,35,0,0"/>
                                     <TextBox x:Name="nAme" MaxLines="1" AutoWordSelection="True" Margin="125,35,0,34" VerticalAlignment="Top"/>
                                     <Label Content="服务器存放目录:" Margin="0,70,0,0" />
-                                    <Button x:Name="a0" Content="浏览" Width="60" VerticalAlignment="Top" HorizontalAlignment="Right" Margin="0,70,0,0" Click="a0_Click"/>
                                     <TextBox x:Name="bAse" MaxLines="1" AutoWordSelection="True" VerticalAlignment="Top" Margin="125,70,60,0"/>
+                                    <Button x:Name="a0" Content="浏览" Width="60" VerticalAlignment="Top" HorizontalAlignment="Right" Margin="0,70,0,0" Click="a0_Click"/>
                                 </Grid>
                                 <StackPanel Margin="0,10,0,0">
                                     <Label Content="服务器设置：" Style="{StaticResource BorderTitle}"/>

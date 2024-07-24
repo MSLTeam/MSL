@@ -54,9 +54,9 @@ namespace MSL
                 lCircle.Visibility = Visibility.Visible;
                 lb01.Visibility = Visibility.Visible;
                 string token = string.Empty;
-                await Task.Run(() =>
+                await Task.Run(async () =>
                 {
-                    string _token = HttpService.Get("query/cf_token");
+                    string _token = (await HttpService.GetAsync("query/cf_token"))[1];
                     try
                     {
                         byte[] data = Convert.FromBase64String(_token);
@@ -119,6 +119,7 @@ namespace MSL
                 Close();
             }
         }
+
         private async void searchMod_Click(object sender, RoutedEventArgs e)
         {
             try
@@ -156,6 +157,7 @@ namespace MSL
                 MessageBox.Show("获取MOD失败！您的系统版本可能过旧，请再次尝试或前往浏览器自行下载！", "错误", MessageBoxButton.OK, MessageBoxImage.Error);
             }
         }
+
         private async void listBox_MouseDoubleClick(object sender, MouseButtonEventArgs e)
         {
             try
@@ -163,13 +165,9 @@ namespace MSL
                 if (listBoxColumnName.Header.ToString() == "模组列表（双击获取该模组的版本）：")
                 {
                     string imageurl = imageUrls[listBox.SelectedIndex];
-                    //MessageBox.Show(imageurl);
                     searchMod.IsEnabled = false;
                     backBtn.IsEnabled = false;
                     backBtn.Content = "加载中……";
-                    //lCircle.IsRunning = true;
-                    //lCircle.Visibility = Visibility.Visible;
-                    //lb01.Visibility = Visibility.Visible;
                     try
                     {
                         var selectedModId = modIds[listBox.SelectedIndex];
@@ -209,9 +207,6 @@ namespace MSL
                         }
                     }
                     catch (Exception ex) { MessageBox.Show(ex.ToString()); }
-                    //lCircle.IsRunning = false;
-                    //lCircle.Visibility = Visibility.Hidden;
-                    //lb01.Visibility = Visibility.Hidden;
 
                     if (listBox.Items.Count > 0)
                     {
@@ -293,8 +288,7 @@ namespace MSL
             modUrls.Clear();
             imageUrls.Clear();
             backList.Clear();
-            //listBox.Items.Clear();
-            GC.Collect();
+            listBox.Items.Clear();
         }
 
         private void Modrinth_Click(object sender, RoutedEventArgs e)

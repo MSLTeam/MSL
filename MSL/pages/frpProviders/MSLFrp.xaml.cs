@@ -1,5 +1,4 @@
-﻿using HandyControl.Controls;
-using MSL.utils;
+﻿using MSL.utils;
 using Newtonsoft.Json;
 using Newtonsoft.Json.Linq;
 using System;
@@ -24,58 +23,30 @@ namespace MSL.pages.frpProviders
     public partial class MSLFrp : Page
     {
         //private CancellationTokenSource cts;
-        private List<string> list1 = new List<string>();
-        private List<string> list2 = new List<string>();
-        private List<string> list3 = new List<string>();
-        private List<string> list4 = new List<string>();
+        private readonly List<string> list1 = new List<string>();
+        private readonly List<string> list2 = new List<string>();
+        private readonly List<string> list3 = new List<string>();
+        private readonly List<string> list4 = new List<string>();
 
         public MSLFrp()
         {
             InitializeComponent();
-            //cts = new CancellationTokenSource();
-            //await GetFrpsInfo(cts.Token);
-            //Task.Run(() => GetFrpsInfo(cts.Token));
-            Task.Run(() => GetFrpsInfo());
         }
 
-        /*
-        private void Page_Unloaded(object sender, RoutedEventArgs e)
+        private async void Page_Loaded(object sender, RoutedEventArgs e)
         {
-            cts.Cancel();
+            serversList.Items.Clear();
+            gonggao.Text = "加载中……";
+
             try
             {
-                LoadingCircle loadingCircle = MainGrid.FindName("loadingBar") as LoadingCircle;
-                MainGrid.Children.Remove(loadingCircle);
-                MainGrid.UnregisterName("loadingBar");
-            }
-            catch
-            { }
-        }
-        */
-
-        private async Task GetFrpsInfo()
-        {
-            Dispatcher.Invoke(() =>
-            {
-                try
+                string[] mslFrpInfo = await HttpService.GetAsync("query/MSLFrps");
+                if (mslFrpInfo[0] == "0")
                 {
-                    LoadingCircle loadingCircle = new LoadingCircle();
-                    loadingCircle.VerticalAlignment = VerticalAlignment.Top;
-                    loadingCircle.HorizontalAlignment = HorizontalAlignment.Left;
-                    loadingCircle.Margin = new Thickness(130, 150, 0, 0);
-                    MainGrid.Children.Add(loadingCircle);
-                    MainGrid.RegisterName("loadingBar", loadingCircle);
+                    throw new Exception("获取节点信息失败！");
                 }
-                catch
-                { }
-                serversList.Items.Clear();
-                gonggao.Text = "加载中……";
-            });
-
-            try
-            {
-                string mslFrpInfo = HttpService.Get("query/MSLFrps");
-                JObject valuePairs = (JObject)JsonConvert.DeserializeObject(mslFrpInfo);
+                JObject valuePairs = (JObject)JsonConvert.DeserializeObject(mslFrpInfo[1]);
+                int id = 0;
                 foreach (var valuePair in valuePairs)
                 {
                     string serverInfo = valuePair.Key;
@@ -93,87 +64,72 @@ namespace MSL.pages.frpProviders
                         list3.Add(minPort);
                         list4.Add(maxPort);
 
-                        try
-                        {
-                            Ping pingSender = new Ping();
-                            PingReply reply = pingSender.Send(serverAddress, 2000); // 替换成您要 ping 的 IP 地址
-                            await Dispatcher.InvokeAsync(() =>
-                            {
-                                if (reply.Status == IPStatus.Success)
-                                {
-                                    // 节点在线，可以获取延迟等信息
-                                    int roundTripTime = (int)reply.RoundtripTime;
-                                    serversList.Items.Add("[" + serverInfo + "]" + serverName + "(延迟：" + roundTripTime + "ms)");
-                                }
-                                else
-                                {
-                                    serversList.Items.Add("[" + serverInfo + "]" + serverName + "(检测失败,可能被DDoS或下线)");
-                                }
-                            });
-                        }
-                        catch
-                        {
-                            serversList.Items.Add(serverAddress + "(检测失败,可能被DDoS或下线)");
-                        }
+                        //string _serverName = serversList.Items.Add("[" + serverInfo + "]" + serverName + "(延迟：" + roundTripTime + "ms)");
+                        string _serverName = "[" + serverInfo + "]" + serverName;
+                        ServerPingTest(_serverName, serverAddress, id);
+                        id++;
                     }
                 }
             }
             catch (Exception ex)
             {
-                Dispatcher.Invoke(() =>
-                {
-                    MessageBox.Show("连接服务器失败！" + ex.Message, "Error", MessageBoxButton.OK, MessageBoxImage.Error);
-                });
+                Shows.ShowMsgDialog(Window.GetWindow(this), "连接服务器失败！" + ex.Message, "错误");
             }
             try
             {
-                Dispatcher.Invoke(() =>
-                {
-                    gonggao.Text = HttpService.Get("query/MSLFrps/notice");
-                });
+                gonggao.Text = (await HttpService.GetAsync("query/MSLFrps/notice"))[1];
             }
             catch
             {
-                Dispatcher.Invoke(() =>
-                {
-                    gonggao.Text = "无公告";
-                });
+                gonggao.Text = "无公告";
             }
-            Dispatcher.Invoke(() =>
+            if (File.Exists(@"MSL\frp\frpc.toml"))
             {
-                if (File.Exists(@"MSL\frpc"))
-                {
-                    string text = File.ReadAllText(@"MSL\frpc");
-                    string pattern = @"user\s*=\s*(\w+)\s*meta_token\s*=\s*(\w+)";
-                    Match match = Regex.Match(text, pattern);
+                string text = File.ReadAllText(@"MSL\frp\frpc.toml");
+                string pattern = @"user\s*=\s*""(\w+)""\s*metadatas\.token\s*=\s*""(\w+)""";
+                Match match = Regex.Match(text, pattern);
 
-                    if (match.Success)
-                    {
-                        accountBox.Text = match.Groups[1].Value;
-                        passwordBox.Password = match.Groups[2].Value;
-                    }
-                }
-                if (File.Exists(@"MSL\frp\frpc.toml"))
+                if (match.Success)
                 {
-                    string text = File.ReadAllText(@"MSL\frp\frpc.toml");
-                    string pattern = @"user\s*=\s*""(\w+)""\s*metadatas\.token\s*=\s*""(\w+)""";
-                    Match match = Regex.Match(text, pattern);
+                    accountBox.Text = match.Groups[1].Value;
+                    passwordBox.Password = match.Groups[2].Value;
+                }
+            }
+        }
 
-                    if (match.Success)
-                    {
-                        accountBox.Text = match.Groups[1].Value;
-                        passwordBox.Password = match.Groups[2].Value;
-                    }
-                }
-                try
+        private async void ServerPingTest(string serverName, string serverAddr,int id)
+        {
+            try
+            {
+                serversList.Items.Add(serverName);
+                await Task.Run(() =>
                 {
-                    LoadingCircle loadingCircle = MainGrid.FindName("loadingBar") as LoadingCircle;
-                    MainGrid.Children.Remove(loadingCircle);
-                    MainGrid.UnregisterName("loadingBar");
-                }
-                catch
-                { }
-            });
+                    Ping pingSender = new Ping();
+                    PingReply reply = pingSender.Send(serverAddr, 2000); // 替换成您要 ping 的 IP 地址
+                    if (reply.Status == IPStatus.Success)
+                    {
+                        // 节点在线，可以获取延迟等信息
+                        int roundTripTime = (int)reply.RoundtripTime;
+                        Dispatcher.Invoke(() =>
+                        {
+                            serversList.Items[id] = serversList.Items[id].ToString() + "(延迟：" + roundTripTime + "ms)";
+                        });
+                        
+                    }
+                    else
+                    {
+                        Dispatcher.Invoke(() =>
+                        {
+                            serversList.Items[id] = serversList.Items[id].ToString() + "(检测失败,可能被DDoS或下线)";
+                        });
+                    }
+                });
+                
+            }
+            catch
+            {
+                serversList.Items.Add(serverAddr + "(检测失败,可能被DDoS或下线)");
+            }
         }
 
         /*

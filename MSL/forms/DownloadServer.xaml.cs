@@ -1,4 +1,5 @@
-﻿using MSL.utils;
+﻿using HandyControl.Controls;
+using MSL.utils;
 using Newtonsoft.Json;
 using Newtonsoft.Json.Linq;
 using System;
@@ -36,6 +37,10 @@ namespace MSL.pages
             downloadServerBase = _downloadServerBase;
             downloadServerJava = _downloadServerJava;
             isInstallSomeCore = _isInstallSomeCore;
+        }
+        private async void Page_Loaded(object sender, RoutedEventArgs e)
+        {
+            await GetServer();
         }
 
         private void DownloadBtn_Click(object sender, RoutedEventArgs e)
@@ -291,106 +296,109 @@ namespace MSL.pages
             }
         }
 
-        private void GetServer()
+        private async Task GetServer()
         {
-            Dispatcher.Invoke(() =>
-            {
-                serverlist.ItemsSource = null;
-                serverlist1.ItemsSource = null;
-            });
             try
             {
-                string jsonData = HttpService.Get("query/available_server_types");
+                LoadingCircle loadingCircle = new LoadingCircle();
+                loadingCircle.VerticalAlignment = VerticalAlignment.Center;
+                loadingCircle.HorizontalAlignment = HorizontalAlignment.Left;
+                loadingCircle.Margin = new Thickness(160, 0, 0, 0);
+                BodyGrid.Children.Add(loadingCircle);
+                BodyGrid.RegisterName("loadingBar", loadingCircle);
+            }
+            catch
+            { }
+            serverlist.ItemsSource = null;
+            serverlist1.ItemsSource = null;
+            try
+            {
+                string jsonData = (await HttpService.GetAsync("query/available_server_types"))[1];
                 string[] serverTypes = JsonConvert.DeserializeObject<string[]>(jsonData);
-                Dispatcher.Invoke(() =>
-                {
-                    serverlist.ItemsSource = serverTypes;
-
-                    serverlist.SelectedIndex = 0;
-                    getservermsg.Visibility = Visibility.Hidden;
-                    lCircle.Visibility = Visibility.Hidden;
-                });
+                serverlist.ItemsSource = serverTypes;
+                serverlist.SelectedIndex = 0;
+                getservermsg.Visibility = Visibility.Hidden;
             }
             catch (Exception a)
             {
-                Dispatcher.Invoke(() =>
-                {
-                    getservermsg.Text = "获取服务端失败！请重试" + a.Message;
-                    lCircle.Visibility = Visibility.Hidden;
-                });
+                getservermsg.Text = "获取服务端失败！请重试" + a.Message;
             }
+            try
+            {
+                LoadingCircle loadingCircle = BodyGrid.FindName("loadingBar") as LoadingCircle;
+                BodyGrid.Children.Remove(loadingCircle);
+                BodyGrid.UnregisterName("loadingBar");
+            }
+            catch
+            { }
         }
 
-        private void serverlist_SelectionChanged(object sender, SelectionChangedEventArgs e)
+        private async void serverlist_SelectionChanged(object sender, SelectionChangedEventArgs e)
         {
             if (serverlist.Items.Count != 0)
             {
-                Thread thread = new Thread(GetServerVersionList);
-                thread.Start();
+                await GetServerVersionList();
             }
         }
-        void GetServerVersionList()
+
+        private async Task GetServerVersionList()
         {
             try
             {
+                LoadingCircle loadingCircle = new LoadingCircle();
+                loadingCircle.VerticalAlignment = VerticalAlignment.Center;
+                loadingCircle.HorizontalAlignment = HorizontalAlignment.Left;
+                loadingCircle.Margin = new Thickness(160, 0, 0, 0);
+                BodyGrid.Children.Add(loadingCircle);
+                BodyGrid.RegisterName("loadingBar1", loadingCircle);
+            }
+            catch
+            { }
+            serverlist1.ItemsSource = null;
+            try
+            {
                 string serverName = "paper";
-                Dispatcher.Invoke(() =>
-                {
-                    serverlist1.ItemsSource = null;
-                    //serverurl.Clear();
-                    getservermsg.Visibility = Visibility.Visible;
-                    lCircle.Visibility = Visibility.Visible;
-                    serverName = serverlist.SelectedItem.ToString();
-                    //serverName = serverlist.SelectedItem.ToString();
-                });
+                serverlist1.ItemsSource = null;
+                getservermsg.Visibility = Visibility.Visible;
+                serverName = serverlist.SelectedItem.ToString();
                 try
                 {
-                    var resultData = HttpService.Get("query/available_versions/" + serverName);
-                    string server_des = HttpService.Get("query/servers_description/" + serverName);
+                    var resultData = (await HttpService.GetAsync("query/available_versions/" + serverName))[1];
+                    string server_des = (await HttpService.GetAsync("query/servers_description/" + serverName))[1];
                     JArray serverVersions = JArray.Parse(resultData);
                     List<string> sortedVersions = serverVersions.ToObject<List<string>>().OrderByDescending(v => Functions.VersionCompare(v)).ToList();
-                    Dispatcher.Invoke(() =>
-                    {
-                        serverlist1.ItemsSource = sortedVersions;
-                        getservermsg.Visibility = Visibility.Hidden;
-                        lCircle.Visibility = Visibility.Hidden;
-                        server_d.Text = "你选择的是：" + server_des;
-                    });
-
+                    serverlist1.ItemsSource = sortedVersions;
+                    getservermsg.Visibility = Visibility.Hidden;
                 }
                 catch
                 {
                     try
                     {
-                        var resultData = HttpService.Get("query/available_versions/" + serverName);
+                        var resultData = (await HttpService.GetAsync("query/available_versions/" + serverName))[1];
                         JArray serverVersions = JArray.Parse(resultData);
                         List<string> sortedVersions = serverVersions.ToObject<List<string>>().OrderByDescending(v => Functions.VersionCompare(v)).ToList();
-                        Dispatcher.Invoke(() =>
-                        {
-                            serverlist1.ItemsSource = sortedVersions;
-                            getservermsg.Visibility = Visibility.Hidden;
-                            lCircle.Visibility = Visibility.Hidden;
-                        });
+                        serverlist1.ItemsSource = sortedVersions;
+                        getservermsg.Visibility = Visibility.Hidden;
 
                     }
                     catch (Exception a)
                     {
-                        Dispatcher.Invoke(() =>
-                        {
-                            getservermsg.Text = "获取服务端失败！请重试" + a.Message;
-                            lCircle.Visibility = Visibility.Hidden;
-                        });
+                        getservermsg.Text = "获取服务端失败！请重试" + a.Message;
                     }
                 }
             }
             catch (Exception a)
             {
-                Dispatcher.Invoke(() =>
-                {
-                    getservermsg.Text = "获取服务端失败！请重试" + a.Message;
-                    lCircle.Visibility = Visibility.Hidden;
-                });
+                getservermsg.Text = "获取服务端失败！请重试" + a.Message;
             }
+            try
+            {
+                LoadingCircle loadingCircle = BodyGrid.FindName("loadingBar1") as LoadingCircle;
+                BodyGrid.Children.Remove(loadingCircle);
+                BodyGrid.UnregisterName("loadingBar1");
+            }
+            catch
+            { }
         }
 
         private void openChooseServerDocs_Click(object sender, RoutedEventArgs e)
@@ -413,16 +421,9 @@ namespace MSL.pages
             Process.Start("https://www.minecraft.net/zh-hans/download/server");
         }
 
-        private void Page_Loaded(object sender, RoutedEventArgs e)
+        private async void RefreshBtn_Click(object sender, RoutedEventArgs e)
         {
-            Thread thread = new Thread(GetServer);
-            thread.Start();
-        }
-
-        private void RefreshBtn_Click(object sender, RoutedEventArgs e)
-        {
-            Thread thread = new Thread(GetServer);
-            thread.Start();
+            await GetServer();
         }
     }
 }

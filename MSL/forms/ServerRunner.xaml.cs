@@ -699,7 +699,25 @@ namespace MSL
                     bool dialog = await Shows.ShowMsgDialogAsync(this, "开启Minecraft服务器需要接受Mojang的EULA，是否仔细阅读EULA条款（https://aka.ms/MinecraftEULA）并继续开服？", "提示", true, "取消");
                     if (dialog == true)
                     {
-                        Process.Start("https://aka.ms/MinecraftEULA");
+                        try
+                        {
+                            Process p = new Process();
+                            p.StartInfo.FileName = "cmd.exe";
+                            p.StartInfo.UseShellExecute = false;
+                            p.StartInfo.RedirectStandardInput = true;
+                            p.StartInfo.RedirectStandardOutput = false;
+                            p.StartInfo.RedirectStandardError = true;
+                            p.StartInfo.CreateNoWindow = true;
+                            p.Start();
+                            p.StandardInput.WriteLine("start https://aka.ms/MinecraftEULA &exit");
+                            p.StandardInput.AutoFlush = true;
+                            p.WaitForExit();
+                            p.Close();
+                        }
+                        catch
+                        {
+                            Shows.ShowMsgDialog(this, "打开链接失败！请手动打开：https://aka.ms/MinecraftEULA\n若您不同意EULA，请立刻关闭服务器！", "错误");
+                        }
                         try
                         {
                             File.WriteAllText(path1, string.Empty);
