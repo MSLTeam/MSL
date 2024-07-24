@@ -101,7 +101,7 @@
                 <StackPanel>
                     <Label Content="{Binding [Pages_About_Sponsor], Source={x:Static langs:LanguageManager.Instance}}" Style="{StaticResource BorderTitle}"/>
                     <TextBlock Text="{Binding [Pages_About_SponsorText], Source={x:Static langs:LanguageManager.Instance}}" Foreground="{DynamicResource PrimaryTextBrush}" FontSize="16" VerticalAlignment="Center" HorizontalAlignment="Center"/>
-                    <hc:Shield Subject="https://afdian.net/@makabaka123" Status="{Binding [Pages_About_OpenWebsite], Source={x:Static langs:LanguageManager.Instance}}" Margin="0,5,0,0" Command="hc:ControlCommands.OpenLink" CommandParameter="https://afdian.net/@makabaka123" HorizontalAlignment="Center"/>
+                    <hc:Shield Subject="https://afdian.com/a/makabaka123" Status="{Binding [Pages_About_OpenWebsite], Source={x:Static langs:LanguageManager.Instance}}" Margin="0,5,0,0" Command="hc:ControlCommands.OpenLink" CommandParameter="https://afdian.com/a/makabaka123" HorizontalAlignment="Center"/>
                 </StackPanel>
             </Border>
         </StackPanel>

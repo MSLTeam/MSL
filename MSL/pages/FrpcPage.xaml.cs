@@ -399,7 +399,7 @@ namespace MSL.pages
                 return;
             }
 
-            Process.Start("https://afdian.net/a/makabaka123");
+            Process.Start("https://afdian.com/a/makabaka123");
             await Dispatcher.Invoke(async () =>
             {
                 if (!await Shows.ShowMsgDialogAsync(Window.GetWindow(this), "请在弹出的浏览器网站中进行购买，购买完毕后点击确定进行下一步操作……", "购买须知", true, "取消购买", "确定"))
