@@ -45,30 +45,25 @@ namespace MSL.pages.frpProviders
     {
         private readonly string ChmlFrpApiUrl = "https://cf-v1.uapis.cn";
         private string ChmlToken, ChmlID;
-        private bool isInitialize = false;
 
         public ChmlFrp()
         {
             InitializeComponent();
         }
 
-        private async void Page_Loaded(object sender, EventArgs e)
+        private async void Page_Initialized(object sender, EventArgs e)
         {
-            if (!isInitialize)
+            MainGrid.Visibility = Visibility.Collapsed;
+            LoginGrid.Visibility = Visibility.Visible;
+            CreateGrid.Visibility = Visibility.Collapsed;
+            //自动登录
+            //JObject jobject = JObject.Parse(File.ReadAllText(@"MSL\config.json", Encoding.UTF8));
+            if (Config.Read("ChmlToken") != "")
             {
-                isInitialize = true;
-                MainGrid.Visibility = Visibility.Collapsed;
-                LoginGrid.Visibility = Visibility.Visible;
-                CreateGrid.Visibility = Visibility.Collapsed;
-                //自动登录
-                //JObject jobject = JObject.Parse(File.ReadAllText(@"MSL\config.json", Encoding.UTF8));
-                if (Config.Read("ChmlToken") != "")
-                {
-                    ShowDialogs showDialogs = new ShowDialogs();
-                    showDialogs.ShowTextDialog(Window.GetWindow(this), "登录中……");
-                    await Task.Run(() => verifyUserToken(Config.Read("ChmlToken"), false));
-                    showDialogs.CloseTextDialog();
-                }
+                ShowDialogs showDialogs = new ShowDialogs();
+                showDialogs.ShowTextDialog(Window.GetWindow(this), "登录中……");
+                await Task.Run(() => verifyUserToken(Config.Read("ChmlToken"), false));
+                showDialogs.CloseTextDialog();
             }
         }
 

@@ -26,61 +26,33 @@ namespace MSL.pages.frpProviders
         private string token;
         private JArray jArray;
         private Dictionary<string, string> nodelist;
-        private bool isInitialize = false;
 
         public OpenFrp()
         {
             InitializeComponent();
         }
 
-        private void Page_Loaded(object sender, RoutedEventArgs e)
+        private async void Page_Initialized(object sender, EventArgs e)
         {
-            if (!isInitialize)
+            if (OpenFrpApi.authId != "")
             {
-                isInitialize = true;
-                //cts = new CancellationTokenSource();
-                if (OpenFrpApi.authId != "")
-                {
-                    //Task.Run(() => GetFrpsInfo(cts.Token));
-                    Task.Run(() => GetFrpsInfo());
-                    return;
-                }
-                LoginGrid.Visibility = Visibility.Visible;
-                MainGrid.Visibility = Visibility.Hidden;
+                await GetFrpsInfo();
+                return;
             }
+            LoginGrid.Visibility = Visibility.Visible;
+            MainGrid.Visibility = Visibility.Hidden;
         }
-
-        /*
-        private void Page_Unloaded(object sender, RoutedEventArgs e)
-        {
-            cts.Cancel();
-            try
-            {
-                LoadingCircle loadingCircle = MainGrid.FindName("loadingBar") as LoadingCircle;
-                MainGrid.Children.Remove(loadingCircle);
-                MainGrid.UnregisterName("loadingBar");
-            }
-            catch
-            { }
-        }
-        */
 
         private async Task GetFrpsInfo()
         {
             OpenFrpApi control = new OpenFrpApi();
             if (OpenFrpApi.userAccount == "" || OpenFrpApi.userPass == "")
             {
-                await Dispatcher.Invoke(async () =>
-                {
-                    OpenFrpApi.userAccount = await Shows.ShowInput(Window.GetWindow(this), "请输入OpenFrp的账户名/邮箱");
-                });
+                OpenFrpApi.userAccount = await Shows.ShowInput(Window.GetWindow(this), "请输入OpenFrp的账户名/邮箱");
 
                 if (OpenFrpApi.userAccount != null)
                 {
-                    await Dispatcher.Invoke(async () =>
-                    {
-                        OpenFrpApi.userPass = await Shows.ShowInput(Window.GetWindow(this), "请输入" + OpenFrpApi.userAccount + "的密码", "", true);
-                    });
+                    OpenFrpApi.userPass = await Shows.ShowInput(Window.GetWindow(this), "请输入" + OpenFrpApi.userAccount + "的密码", "", true);
 
                     if (OpenFrpApi.userPass == null)
                     {
@@ -92,29 +64,26 @@ namespace MSL.pages.frpProviders
                     return;
                 }
             }
-            Dispatcher.Invoke(() =>
+            LoginGrid.Visibility = Visibility.Hidden;
+            MainGrid.Visibility = Visibility.Visible;
+            signBtn.IsEnabled = false;
+            logoutBtn.IsEnabled = false;
+            addProxieBtn.IsEnabled = false;
+            delProxieBtn.IsEnabled = false;
+            toggleProxies.IsEnabled = false;
+            toggleAddProxiesGroup.IsEnabled = false;
+            doneBtn.IsEnabled = false;
+            try
             {
-                LoginGrid.Visibility = Visibility.Hidden;
-                MainGrid.Visibility = Visibility.Visible;
-                signBtn.IsEnabled = false;
-                logoutBtn.IsEnabled = false;
-                addProxieBtn.IsEnabled = false;
-                delProxieBtn.IsEnabled = false;
-                toggleProxies.IsEnabled = false;
-                toggleAddProxiesGroup.IsEnabled = false;
-                doneBtn.IsEnabled = false;
-                try
-                {
-                    LoadingCircle loadingCircle = new LoadingCircle();
-                    loadingCircle.VerticalAlignment = VerticalAlignment.Top;
-                    loadingCircle.HorizontalAlignment = HorizontalAlignment.Left;
-                    loadingCircle.Margin = new Thickness(130, 150, 0, 0);
-                    MainGrid.Children.Add(loadingCircle);
-                    MainGrid.RegisterName("loadingBar", loadingCircle);
-                }
-                catch
-                { }
-            });
+                LoadingCircle loadingCircle = new LoadingCircle();
+                loadingCircle.VerticalAlignment = VerticalAlignment.Top;
+                loadingCircle.HorizontalAlignment = HorizontalAlignment.Left;
+                loadingCircle.Margin = new Thickness(130, 150, 0, 0);
+                MainGrid.Children.Add(loadingCircle);
+                MainGrid.RegisterName("loadingBar", loadingCircle);
+            }
+            catch
+            { }
             string usr_info = await control.Login(OpenFrpApi.userAccount, OpenFrpApi.userPass);
             JObject userdata = null;
             try
@@ -123,23 +92,20 @@ namespace MSL.pages.frpProviders
             }
             catch
             {
-                Dispatcher.Invoke(() =>
+                Shows.ShowMsgDialog(Window.GetWindow(this), "登录失败！请检查您的用户名或密码是否正确！\n" + usr_info, "错误！");
+                OpenFrpApi.authId = string.Empty;
+                OpenFrpApi.userAccount = string.Empty;
+                OpenFrpApi.userPass = string.Empty;
+                LoginGrid.Visibility = Visibility.Visible;
+                MainGrid.Visibility = Visibility.Hidden;
+                try
                 {
-                    Shows.ShowMsgDialog(Window.GetWindow(this), "登录失败！请检查您的用户名或密码是否正确！\n" + usr_info, "错误！");
-                    OpenFrpApi.authId = string.Empty;
-                    OpenFrpApi.userAccount = string.Empty;
-                    OpenFrpApi.userPass = string.Empty;
-                    LoginGrid.Visibility = Visibility.Visible;
-                    MainGrid.Visibility = Visibility.Hidden;
-                    try
-                    {
-                        LoadingCircle loadingCircle = MainGrid.FindName("loadingBar") as LoadingCircle;
-                        MainGrid.Children.Remove(loadingCircle);
-                        MainGrid.UnregisterName("loadingBar");
-                    }
-                    catch
-                    { }
-                });
+                    LoadingCircle loadingCircle = MainGrid.FindName("loadingBar") as LoadingCircle;
+                    MainGrid.Children.Remove(loadingCircle);
+                    MainGrid.UnregisterName("loadingBar");
+                }
+                catch
+                { }
                 return;
             }
             string welcome = $"用户名：{userdata["data"]["username"]}[{userdata["data"]["friendlyGroup"]}]\n";
@@ -150,20 +116,14 @@ namespace MSL.pages.frpProviders
             string used = $"已用隧道：{userdata["data"]["used"]}条";
             string showusrinfo = welcome + userid + email + traffic + limit + used;
             token = userdata["data"]["token"].ToString();
-            Dispatcher.Invoke(() =>
-            {
-                userInfo.Content = showusrinfo;
-                signBtn.IsEnabled = true;
-                logoutBtn.IsEnabled = true;
-            });
+            userInfo.Content = showusrinfo;
+            signBtn.IsEnabled = true;
+            logoutBtn.IsEnabled = true;
             try
             {
                 int loadMode = 0;
-                Dispatcher.Invoke(() =>
-                {
-                    serversList.Items.Clear();
-                    loadMode = toggleProxies.SelectedIndex;
-                });
+                serversList.Items.Clear();
+                loadMode = toggleProxies.SelectedIndex;
                 if (loadMode == 0)
                 {
                     Dictionary<string, string> process = control.GetUserNodes();
@@ -172,18 +132,12 @@ namespace MSL.pages.frpProviders
                         nodelist = process;
                         foreach (KeyValuePair<string, string> node in process)
                         {
-                            Dispatcher.Invoke(() =>
-                            {
-                                serversList.Items.Add(node.Key);
-                            });
+                            serversList.Items.Add(node.Key);
                         }
                     }
                     else
                     {
-                        Dispatcher.Invoke(() =>
-                        {
-                            Shows.ShowMsgDialog(Window.GetWindow(this), "你的账户看起来一条隧道也没有……", "提示");
-                        });
+                        Shows.ShowMsgDialog(Window.GetWindow(this), "你的账户看起来一条隧道也没有……", "提示");
                     }
                 }
                 else
@@ -194,36 +148,27 @@ namespace MSL.pages.frpProviders
                     jArray = process.Item2;
                     foreach (var node in item1)
                     {
-                        Dispatcher.Invoke(() =>
-                        {
-                            serversList.Items.Add(node.Key);
-                        });
+                        serversList.Items.Add(node.Key);
                     }
                 }
             }
             catch
             {
-                Dispatcher.Invoke(() =>
-                {
-                    MessageBox.Show("err");
-                });
+                MessageBox.Show("err");
             }
-            Dispatcher.Invoke(() =>
+            addProxieBtn.IsEnabled = true;
+            delProxieBtn.IsEnabled = true;
+            toggleProxies.IsEnabled = true;
+            toggleAddProxiesGroup.IsEnabled = true;
+            doneBtn.IsEnabled = true;
+            try
             {
-                addProxieBtn.IsEnabled = true;
-                delProxieBtn.IsEnabled = true;
-                toggleProxies.IsEnabled = true;
-                toggleAddProxiesGroup.IsEnabled = true;
-                doneBtn.IsEnabled = true;
-                try
-                {
-                    LoadingCircle loadingCircle = MainGrid.FindName("loadingBar") as LoadingCircle;
-                    MainGrid.Children.Remove(loadingCircle);
-                    MainGrid.UnregisterName("loadingBar");
-                }
-                catch
-                { }
-            });
+                LoadingCircle loadingCircle = MainGrid.FindName("loadingBar") as LoadingCircle;
+                MainGrid.Children.Remove(loadingCircle);
+                MainGrid.UnregisterName("loadingBar");
+            }
+            catch
+            { }
         }
 
         private async void Button_Click(object sender, RoutedEventArgs e)
@@ -282,11 +227,9 @@ namespace MSL.pages.frpProviders
             Process.Start("https://www.openfrp.net/");
         }
 
-        private void userLogin_Click(object sender, RoutedEventArgs e)
+        private async void userLogin_Click(object sender, RoutedEventArgs e)
         {
-            //cts = new CancellationTokenSource();
-            //Task.Run(() => GetFrpsInfo(cts.Token));
-            Task.Run(() => GetFrpsInfo());
+            await GetFrpsInfo();
         }
 
         private async void addProxieBtn_Click(object sender, RoutedEventArgs e)

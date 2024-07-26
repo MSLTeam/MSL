@@ -7,7 +7,6 @@ using System.Collections.Generic;
 using System.Diagnostics;
 using System.IO;
 using System.Linq;
-using System.Threading;
 using System.Threading.Tasks;
 using System.Windows;
 using System.Windows.Controls;
@@ -364,7 +363,7 @@ namespace MSL.pages
                 try
                 {
                     var resultData = (await HttpService.GetAsync("query/available_versions/" + serverName))[1];
-                    string server_des = (await HttpService.GetAsync("query/servers_description/" + serverName))[1];
+                    server_d.Text = (await HttpService.GetAsync("query/servers_description/" + serverName))[1];
                     JArray serverVersions = JArray.Parse(resultData);
                     List<string> sortedVersions = serverVersions.ToObject<List<string>>().OrderByDescending(v => Functions.VersionCompare(v)).ToList();
                     serverlist1.ItemsSource = sortedVersions;

@@ -242,7 +242,14 @@ namespace MSL.pages
                 Process process = new Process();
                 process.StartInfo.WorkingDirectory = _json["base"].ToString();
                 process.StartInfo.FileName = "cmd.exe";
-                process.StartInfo.Arguments = "/K " + "@ \"" + _json["java"] + "\" " + _json["memory"] + " " + _json["args"] + " -jar \"" + _json["core"] + "\" nogui&pause&exit";
+                if (_json["core"].ToString().StartsWith("@libraries/"))
+                {
+                    process.StartInfo.Arguments = "/K " + "@ \"" + _json["java"] + "\" " + _json["memory"] + " " + _json["args"] + " " + _json["core"] + " nogui&pause&exit";
+                }
+                else
+                {
+                    process.StartInfo.Arguments = "/K " + "@ \"" + _json["java"] + "\" " + _json["memory"] + " " + _json["args"] + " -jar \"" + _json["core"] + "\" nogui&pause&exit";
+                }
                 process.Start();
             }
             catch (Exception ex) { MessageBox.Show("出现错误，请检查您是否选择了服务器！\n" + ex.Message); }

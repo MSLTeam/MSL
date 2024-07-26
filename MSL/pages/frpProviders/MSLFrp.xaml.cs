@@ -22,7 +22,6 @@ namespace MSL.pages.frpProviders
     /// </summary>
     public partial class MSLFrp : Page
     {
-        //private CancellationTokenSource cts;
         private readonly List<string> list1 = new List<string>();
         private readonly List<string> list2 = new List<string>();
         private readonly List<string> list3 = new List<string>();
@@ -33,11 +32,10 @@ namespace MSL.pages.frpProviders
             InitializeComponent();
         }
 
-        private async void Page_Loaded(object sender, RoutedEventArgs e)
+        private async void Page_Initialized(object sender, EventArgs e)
         {
             serversList.Items.Clear();
             gonggao.Text = "加载中……";
-
             try
             {
                 string[] mslFrpInfo = await HttpService.GetAsync("query/MSLFrps");
@@ -64,7 +62,6 @@ namespace MSL.pages.frpProviders
                         list3.Add(minPort);
                         list4.Add(maxPort);
 
-                        //string _serverName = serversList.Items.Add("[" + serverInfo + "]" + serverName + "(延迟：" + roundTripTime + "ms)");
                         string _serverName = "[" + serverInfo + "]" + serverName;
                         ServerPingTest(_serverName, serverAddress, id);
                         id++;
@@ -97,7 +94,7 @@ namespace MSL.pages.frpProviders
             }
         }
 
-        private async void ServerPingTest(string serverName, string serverAddr,int id)
+        private async void ServerPingTest(string serverName, string serverAddr, int id)
         {
             try
             {
@@ -114,7 +111,7 @@ namespace MSL.pages.frpProviders
                         {
                             serversList.Items[id] = serversList.Items[id].ToString() + "(延迟：" + roundTripTime + "ms)";
                         });
-                        
+
                     }
                     else
                     {
@@ -124,7 +121,7 @@ namespace MSL.pages.frpProviders
                         });
                     }
                 });
-                
+
             }
             catch
             {

@@ -228,7 +228,7 @@
                                         <CheckBox x:Name="usebasicfastJvm" Content="基本优化参数（Java11及以上勿选）" Margin="10,0,0,0" VerticalAlignment="Top" Click="usebasicfastJvm_Click"/>
                                         <CheckBox x:Name="usefastJvm" Content="高级优化参数（需分配内存为4G）" Margin="20,0,188,0" VerticalAlignment="Top" Click="usefastJvm_Click"/>
                                     </StackPanel>
-                                    <TextBox x:Name="txb7" Margin="20,0,0,0" Text="" TextWrapping="Wrap" VerticalAlignment="Top"/>
+                                    <TextBox x:Name="txb7" Margin="20,0,0,0" TextWrapping="Wrap" AcceptsReturn="True" AutoWordSelection="True" VerticalAlignment="Top"/>
                                     <Border Margin="15,5,0,0" Style="{StaticResource BorderTipDanger}" >
                                         <TextBlock Text="非必要勿选择或填写此栏内容，如出现无法开服的情况请删除启动参数" HorizontalAlignment="Left"  VerticalAlignment="Top" FontSize="14" />
                                     </Border>

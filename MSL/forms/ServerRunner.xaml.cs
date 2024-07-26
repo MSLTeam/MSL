@@ -760,7 +760,7 @@ namespace MSL
                 {
                     StartServer(RserverJVM + " " + fileforceUTF8Jvm + RserverJVMcmd + " -jar \"" + Rserverserver + "\" nogui");
                 }
-                GC.Collect();
+                //GC.Collect();
             }
             catch (Exception a)
             {
@@ -1724,10 +1724,10 @@ namespace MSL
         }
 
 
-        string lastCommand;
-        string nextCommand;
+        private string lastCommand;
+        private string nextCommand;
 
-        void SendCommand()
+        private void SendCommand()
         {
             lastCommand = cmdtext.Text;
             try
@@ -1823,14 +1823,14 @@ namespace MSL
             }
         }
 
-        void SendCmdUTF8(string cmd)
+        private void SendCmdUTF8(string cmd)
         {
             byte[] utf8Bytes = Encoding.UTF8.GetBytes(cmd);
             ServerProcess.StandardInput.BaseStream.Write(utf8Bytes, 0, utf8Bytes.Length);
             ServerProcess.StandardInput.WriteLine();
             cmdtext.Text = "";
         }
-        void SendCmdANSL(string cmd)
+        private void SendCmdANSL(string cmd)
         {
             ServerProcess.StandardInput.WriteLine(cmd);
             cmdtext.Text = "";
@@ -3279,7 +3279,16 @@ namespace MSL
         {
             try
             {
-                string content = "@ECHO OFF\r\n\"" + Rserverjava + "\" " + RserverJVM + " " + RserverJVMcmd + " -jar \"" + Rserverbase + @"\" + Rserverserver + "\" nogui" + "\r\npause";
+                string content;
+                if (Rserverserver.StartsWith("@libraries/"))
+                {
+                    content = "@ECHO OFF\r\n\"" + Rserverjava + "\" " + RserverJVM + " " + RserverJVMcmd + " " + Rserverserver + " nogui" + "\r\npause";
+                }
+                else
+                {
+                    content = "@ECHO OFF\r\n\"" + Rserverjava + "\" " + RserverJVM + " " + RserverJVMcmd + " -jar \"" + Rserverserver + "\" nogui" + "\r\npause";
+                }
+
                 string filePath = Path.Combine(Rserverbase, "StartServer.bat");
                 File.WriteAllText(filePath, content, Encoding.Default);
                 MessageBox.Show("脚本文件：" + Rserverbase + @"\StartServer.bat", "INFO", MessageBoxButton.OK, MessageBoxImage.Information);

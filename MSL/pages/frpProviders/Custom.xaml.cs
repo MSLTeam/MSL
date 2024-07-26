@@ -1,5 +1,4 @@
 ﻿using MSL.utils;
-using System;
 using System.IO;
 using System.Windows;
 using System.Windows.Controls;
@@ -13,14 +12,9 @@ namespace MSL.pages.frpProviders
     /// </summary>
     public partial class Custom : Page
     {
-        private bool init = false; //初始化确认，防止未初始化就更改ui导致boom
         public Custom()
         {
             InitializeComponent();
-        }
-        private void Page_Initialized(object sender, EventArgs e)
-        {
-            init = true;//初始化完成了
         }
 
         /*
@@ -106,7 +100,7 @@ namespace MSL.pages.frpProviders
 
         private void EasyMode_Checked(object sender, RoutedEventArgs e)
         {
-            if (init)
+            if (IsLoaded)
             {
                 LowLevelGrid.Visibility = Visibility.Visible;
                 CustomGrid.Visibility = Visibility.Collapsed;
@@ -116,7 +110,7 @@ namespace MSL.pages.frpProviders
 
         private void CustomMode_Checked(object sender, RoutedEventArgs e)
         {
-            if (init)
+            if (IsLoaded)
             {
                 LowLevelGrid.Visibility = Visibility.Collapsed;
                 CustomGrid.Visibility = Visibility.Visible;
