@@ -135,6 +135,10 @@ namespace MSL.pages
 
         private void serverList_MouseDoubleClick(object sender, MouseButtonEventArgs e)
         {
+            if (serverList.SelectedIndex == -1)
+            {
+                return;
+            }
             StartServerEvent();
         }
 

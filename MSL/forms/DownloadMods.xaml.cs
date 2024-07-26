@@ -288,7 +288,9 @@ namespace MSL
             modUrls.Clear();
             imageUrls.Clear();
             backList.Clear();
-            listBox.Items.Clear();
+            listBox.ItemsSource = null;
+            //GC.Collect();
+            //listBox.Items.Clear();
         }
 
         private void Modrinth_Click(object sender, RoutedEventArgs e)
