@@ -741,7 +741,7 @@ namespace MSL.controls
             }
         }
 
-        private SemaphoreSlim semaphore = new SemaphoreSlim(4); // 设置最大并发任务数量为5
+        private SemaphoreSlim semaphore = new SemaphoreSlim(4); // 设置最大并发任务数量为4
         private async Task DownloadFile(string url, string targetPath, string expectedSha1 = "")
         {
             if (string.IsNullOrEmpty(url))
