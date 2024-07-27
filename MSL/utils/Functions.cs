@@ -329,7 +329,7 @@ namespace MSL.utils
                     {
                         string forgeVersion = Path.GetFileName(subFolder);
                         string resultPath = $"@{Path.Combine(relativePath, forgeVersion, "win_args.txt").Replace("\\", "/")}";
-                        MessageBox.Show(resultPath);
+                        //MessageBox.Show(resultPath);
                         return resultPath;
                     }
                     else
