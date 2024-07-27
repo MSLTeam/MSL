@@ -223,7 +223,7 @@ namespace MSL.utils
                     */
 
                     string argsFile = CheckArgsFile(_base, "libraries");
-                    MessageBox.Show(argsFile);
+                    //MessageBox.Show(argsFile);
                     if (argsFile != null)
                     {
                         return argsFile;
