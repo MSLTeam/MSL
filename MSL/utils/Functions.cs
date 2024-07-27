@@ -326,11 +326,11 @@ namespace MSL.utils
                     if (File.Exists(Path.Combine(subFolder, "win_args.txt")))
                     {
                         string forgeVersion = Path.GetFileName(subFolder);
-                        return $"@{relativePath.Replace("\\", "/")}/{forgeVersion}/win_args.txt %*";
+                        return $"@{relativePath.Replace("\\", "/")}/{forgeVersion}/win_args.txt";
                     }
                     else
                     {
-                        CheckArgsFile(basePath, Path.Combine(relativePath, Path.GetFileName(subFolder)));
+                        return CheckArgsFile(basePath, Path.Combine(relativePath, Path.GetFileName(subFolder)));
                     }
                 }
                 return null;

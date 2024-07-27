@@ -901,6 +901,18 @@ namespace MSL.controls
         private void ChangePlanButton_Click(object sender, RoutedEventArgs e)
         {
             cancellationTokenSource.Cancel();
+            try
+            {
+                //File.Delete(installPath + "/install.bat");
+                logWriter.Flush();
+                logWriter.Close();
+                logWriter.Dispose();
+                Directory.Delete(tempPath, true);
+            }
+            catch (Exception ex)
+            {
+                Console.WriteLine(ex.Message);
+            }
             _dialogReturn = 3;
             CloseDialog();
         }
@@ -910,6 +922,18 @@ namespace MSL.controls
             //关闭线程
             //thread.Abort();
             cancellationTokenSource.Cancel();
+            try
+            {
+                //File.Delete(installPath + "/install.bat");
+                logWriter.Flush();
+                logWriter.Close();
+                logWriter.Dispose();
+                Directory.Delete(tempPath, true);
+            }
+            catch (Exception ex)
+            {
+                Console.WriteLine(ex.Message);
+            }
             _dialogReturn = 2;
             CloseDialog();
         }
