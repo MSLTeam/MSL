@@ -133,7 +133,7 @@
                         <ToggleButton x:Name="autoSetTheme" Margin="0,0,20,0" Style="{StaticResource ToggleButtonSwitch}" VerticalAlignment="Center" Click="autoSetTheme_Click" IsChecked="True" Content="使用系统样式" Height="25"/>
                         <ToggleButton x:Name="darkTheme" Margin="0,0,20,0" Style="{StaticResource ToggleButtonSwitch}" VerticalAlignment="Center" Click="darkTheme_Click" IsEnabled="False" Content="暗色模式" Height="25"/>
                         <ToggleButton x:Name="semitransparentTitle" Margin="0,0,20,0" Style="{StaticResource ToggleButtonSwitch}" VerticalAlignment="Center" Content="半透明标题栏" Height="25" Click="semitransparentTitle_Click"/>
-                        <Button x:Name="paintedEgg" Content="千万别点" Style="{StaticResource ButtonDanger}" HorizontalAlignment="Left" VerticalAlignment="Center" Click="paintedEgg_Click" Height="30" Width="100"/>
+                        <Button x:Name="WesternEgg" Content="千万别点" Style="{StaticResource ButtonDanger}" HorizontalAlignment="Left" VerticalAlignment="Center" Click="WesternEgg_Click" Height="30" Width="100"/>
                     </StackPanel>
                     <StackPanel Orientation="Horizontal" Margin="10,10,10,0" >
                         <RadioButton Name="BlueSkinBtn" Margin="0,0,20,0" Content="蓝色皮肤(默认)" Click="ChangeSkin" Foreground="#0078D4"/>

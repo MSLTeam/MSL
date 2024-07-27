@@ -753,7 +753,7 @@ namespace MSL.pages
                     {
                         fullFileName = txb3.Text;
                     }
-                    if(Functions.CheckForgeInstaller(fullFileName))
+                    if (Functions.CheckForgeInstaller(fullFileName))
                     {
                         bool dialog = await Shows.ShowMsgDialogAsync(Window.GetWindow(this), "您选择的服务端疑似是forge安装器，是否将其展开安装？\n如果不展开安装，服务器可能无法开启！", "提示", true, "取消");
                         if (dialog)

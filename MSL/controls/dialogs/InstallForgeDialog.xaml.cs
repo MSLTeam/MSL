@@ -245,20 +245,20 @@ namespace MSL.controls
                         Log_in("[LIB]下载：" + lib["downloads"]["artifact"]["path"].ToString());
                         //if (!_dlurl.Contains("mcp")) //mcp那个zip会用js redirect，所以只能用downloader，真神奇！
                         //{
-                            downloadTasks.Add(DownloadFile(_dlurl, _savepath, _sha1));
-                            //bool dlStatus = await DownloadFile(_dlurl, _savepath, _sha1);
-                            //Status_change("正在下载Forge运行Lib···(" + libCount + "/" + libALLCount + ")");
-                            /*
-                        }
-                        else
+                        downloadTasks.Add(DownloadFile(_dlurl, _savepath, _sha1));
+                        //bool dlStatus = await DownloadFile(_dlurl, _savepath, _sha1);
+                        //Status_change("正在下载Forge运行Lib···(" + libCount + "/" + libALLCount + ")");
+                        /*
+                    }
+                    else
+                    {
+                        await Dispatcher.Invoke(async () =>
                         {
-                            await Dispatcher.Invoke(async () =>
-                            {
-                                //Status_change("正在下载Forge运行Lib···(" + libCount + "/" + libALLCount + ")");
-                                await Shows.ShowDownloader(Window.GetWindow(this), _dlurl, Path.GetDirectoryName(_savepath), Path.GetFileName(_savepath), "下载LIB···");
-                            });
-                        }
-                            */
+                            //Status_change("正在下载Forge运行Lib···(" + libCount + "/" + libALLCount + ")");
+                            await Shows.ShowDownloader(Window.GetWindow(this), _dlurl, Path.GetDirectoryName(_savepath), Path.GetFileName(_savepath), "下载LIB···");
+                        });
+                    }
+                        */
                     }
                 }
                 else
@@ -284,20 +284,20 @@ namespace MSL.controls
                         Log_in("[LIB]下载：" + NameToPath(SafeGetValue(lib, "name")));
                         //if (!_dlurl.Contains("mcp")) //mcp那个zip会用js redirect，所以只能用downloader，真神奇！
                         //{
-                            downloadTasks.Add(DownloadFile(_dlurl, _savepath));
-                            //bool dlStatus = await DownloadFile(_dlurl, _savepath);
-                            //Status_change("正在下载Forge运行Lib···(" + libCount + "/" + libALLCount + ")");
-                            /*
-                        }
-                        else
+                        downloadTasks.Add(DownloadFile(_dlurl, _savepath));
+                        //bool dlStatus = await DownloadFile(_dlurl, _savepath);
+                        //Status_change("正在下载Forge运行Lib···(" + libCount + "/" + libALLCount + ")");
+                        /*
+                    }
+                    else
+                    {
+                        await Dispatcher.Invoke(async () =>
                         {
-                            await Dispatcher.Invoke(async () =>
-                            {
-                                //Status_change("正在下载Forge运行Lib···(" + libCount + "/" + libALLCount + ")");
-                                await Shows.ShowDownloader(Window.GetWindow(this), _dlurl, Path.GetDirectoryName(_savepath), Path.GetFileName(_savepath), "下载LIB(" + libCount + "/" + libALLCount + ")中···");
-                            });
-                        }
-                            */
+                            //Status_change("正在下载Forge运行Lib···(" + libCount + "/" + libALLCount + ")");
+                            await Shows.ShowDownloader(Window.GetWindow(this), _dlurl, Path.GetDirectoryName(_savepath), Path.GetFileName(_savepath), "下载LIB(" + libCount + "/" + libALLCount + ")中···");
+                        });
+                    }
+                        */
                     }
                 }
                 await Task.WhenAll(downloadTasks);

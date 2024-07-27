@@ -223,6 +223,7 @@ namespace MSL.utils
                     */
 
                     string argsFile = CheckArgsFile(_base, "libraries");
+                    MessageBox.Show(argsFile);
                     if (argsFile != null)
                     {
                         return argsFile;
@@ -315,7 +316,7 @@ namespace MSL.utils
             }
         }
 
-        private static string CheckArgsFile(string basePath,string relativePath)
+        private static string CheckArgsFile(string basePath, string relativePath)
         {
             string fullPath = Path.Combine(basePath, relativePath);
             if (Directory.Exists(fullPath))
@@ -323,20 +324,28 @@ namespace MSL.utils
                 string[] subFolders = Directory.GetDirectories(fullPath);
                 foreach (string subFolder in subFolders)
                 {
-                    if (File.Exists(Path.Combine(subFolder, "win_args.txt")))
+                    string argsFilePath = Path.Combine(subFolder, "win_args.txt");
+                    if (File.Exists(argsFilePath))
                     {
                         string forgeVersion = Path.GetFileName(subFolder);
-                        return $"@{relativePath.Replace("\\", "/")}/{forgeVersion}/win_args.txt";
+                        string resultPath = $"@{Path.Combine(relativePath, forgeVersion, "win_args.txt").Replace("\\", "/")}";
+                        MessageBox.Show(resultPath);
+                        return resultPath;
                     }
                     else
                     {
-                        return CheckArgsFile(basePath, Path.Combine(relativePath, Path.GetFileName(subFolder)));
+                        // Recursive call to check subdirectories
+                        string result = CheckArgsFile(basePath, Path.Combine(relativePath, Path.GetFileName(subFolder)));
+                        if (result != null)
+                        {
+                            return result;
+                        }
                     }
                 }
-                return null;
             }
             return null;
         }
+
         #endregion
 
         #region Get File Encoding

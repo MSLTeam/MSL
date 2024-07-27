@@ -15,7 +15,6 @@ using System.Windows;
 using System.Windows.Media;
 using System.Windows.Media.Animation;
 using System.Windows.Media.Imaging;
-using System.Windows.Threading;
 using MessageBox = System.Windows.MessageBox;
 using Window = System.Windows.Window;
 
@@ -506,8 +505,9 @@ namespace MSL.pages
             }
         }
 
-        private async void paintedEgg_Click(object sender, RoutedEventArgs e)
+        private async void WesternEgg_Click(object sender, RoutedEventArgs e)
         {
+
             bool dialog = await Shows.ShowMsgDialogAsync(Window.GetWindow(this), "点击此按钮后软件出现任何问题作者概不负责，你确定要继续吗？\n（光敏性癫痫警告！若您患有光敏性癫痫，请不要点击确定！）", "警告", true, "取消");
             if (dialog)
             {
@@ -656,69 +656,66 @@ namespace MSL.pages
             }
         }
 
-        private void checkUpdateBtn_Click(object sender, RoutedEventArgs e)
+        private async void checkUpdateBtn_Click(object sender, RoutedEventArgs e)
         {
             //更新
             try
             {
                 var mainwindow = Window.GetWindow(Window.GetWindow(this));
-                string _httpReturn = HttpService.Get("query/update");
+                string _httpReturn = (await HttpService.GetAsync("query/update"))[1];
                 Version newVersion = new Version(_httpReturn);
                 Version version = new Version(System.Reflection.Assembly.GetExecutingAssembly().GetName().Version.ToString());
 
                 if (newVersion > version)
                 {
                     var updatelog = HttpService.Get("query/update/log");
-                    Dispatcher.Invoke(async () =>
+                    bool dialog = await Shows.ShowMsgDialogAsync(Window.GetWindow(this), "发现新版本，版本号为：" + _httpReturn + "，是否进行更新？\n更新日志：\n" + updatelog, "更新", true, "取消");
+                    if (dialog == true)
                     {
-                        bool dialog = await Shows.ShowMsgDialogAsync(Window.GetWindow(this), "发现新版本，版本号为：" + _httpReturn + "，是否进行更新？\n更新日志：\n" + updatelog, "更新", true, "取消");
-                        if (dialog == true)
+                        if (MainWindow.ProcessRunningCheck())
                         {
-                            if (MainWindow.ProcessRunningCheck())
-                            {
-                                Shows.ShowMsgDialog(Window.GetWindow(this), "您的服务器/内网映射/点对点联机正在运行中，若此时更新，会造成后台残留，请将前者关闭后再进行更新！", "警告");
-                                return;
-                            }
-                            string downloadUrl = HttpService.Get("download/update?type=normal"); ;
-                            if (MainWindow.isI18N)
-                            {
-                                downloadUrl = HttpService.Get("download/update?type=i18n");
-                            }
-                            await Shows.ShowDownloader(Window.GetWindow(this), downloadUrl, AppDomain.CurrentDomain.BaseDirectory, "MSL" + _httpReturn + ".exe", "下载新版本中……");
-                            if (File.Exists("MSL" + _httpReturn + ".exe"))
-                            {
-                                string oldExePath = Process.GetCurrentProcess().MainModule.ModuleName;
-                                string dwnExePath = Path.Combine(AppDomain.CurrentDomain.BaseDirectory, "MSL" + _httpReturn + ".exe");
-                                string newExeDir = AppDomain.CurrentDomain.BaseDirectory;
+                            Shows.ShowMsgDialog(Window.GetWindow(this), "您的服务器/内网映射/点对点联机正在运行中，若此时更新，会造成后台残留，请将前者关闭后再进行更新！", "警告");
+                            return;
+                        }
+                        string downloadUrl = HttpService.Get("download/update?type=normal"); ;
+                        if (MainWindow.isI18N)
+                        {
+                            downloadUrl = HttpService.Get("download/update?type=i18n");
+                        }
+                        await Shows.ShowDownloader(Window.GetWindow(this), downloadUrl, AppDomain.CurrentDomain.BaseDirectory, "MSL" + _httpReturn + ".exe", "下载新版本中……");
+                        if (File.Exists("MSL" + _httpReturn + ".exe"))
+                        {
+                            string oldExePath = Process.GetCurrentProcess().MainModule.ModuleName;
+                            string dwnExePath = Path.Combine(AppDomain.CurrentDomain.BaseDirectory, "MSL" + _httpReturn + ".exe");
+                            string newExeDir = AppDomain.CurrentDomain.BaseDirectory;
 
-                                // 输出CMD命令以便调试
-                                string cmdCommand = "/C choice /C Y /N /D Y /T 1 & Del \"" + oldExePath + "\" & Ren \"" + "MSL" + _httpReturn + ".exe" + "\" \"MSL.exe\" & start \"\" \"MSL.exe\"";
-                                //MessageBox.Show(cmdCommand);
+                            // 输出CMD命令以便调试
+                            string cmdCommand = "/C choice /C Y /N /D Y /T 1 & Del \"" + oldExePath + "\" & Ren \"" + "MSL" + _httpReturn + ".exe" + "\" \"MSL.exe\" & start \"\" \"MSL.exe\"";
+                            //MessageBox.Show(cmdCommand);
 
-                                // 关闭当前运行中的应用程序
-                                Application.Current.Shutdown();
+                            // 关闭当前运行中的应用程序
+                            Application.Current.Shutdown();
 
-                                // 删除旧版本并启动新版本
-                                Process delProcess = new Process();
-                                delProcess.StartInfo.FileName = "cmd.exe";
-                                delProcess.StartInfo.Arguments = cmdCommand;
-                                Directory.SetCurrentDirectory(newExeDir);
-                                delProcess.StartInfo.WindowStyle = ProcessWindowStyle.Hidden;
-                                delProcess.Start();
+                            // 删除旧版本并启动新版本
+                            Process delProcess = new Process();
+                            delProcess.StartInfo.FileName = "cmd.exe";
+                            delProcess.StartInfo.Arguments = cmdCommand;
+                            Directory.SetCurrentDirectory(newExeDir);
+                            delProcess.StartInfo.WindowStyle = ProcessWindowStyle.Hidden;
+                            delProcess.Start();
 
-                                // 退出当前进程
-                                Process.GetCurrentProcess().Kill();
-                            }
-                            else
-                            {
-                                MessageBox.Show("更新失败！", "错误", MessageBoxButton.OK, MessageBoxImage.Error);
-                            }
+                            // 退出当前进程
+                            Process.GetCurrentProcess().Kill();
                         }
                         else
                         {
-                            Growl.Error("您拒绝了更新新版本，若在此版本中遇到bug，请勿报告给作者！");
+                            MessageBox.Show("更新失败！", "错误", MessageBoxButton.OK, MessageBoxImage.Error);
                         }
-                    });
+                    }
+                    else
+                    {
+                        Growl.Error("您拒绝了更新新版本，若在此版本中遇到bug，请勿报告给作者！");
+                    }
                 }
                 else if (newVersion < version)
                 {
