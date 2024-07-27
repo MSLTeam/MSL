@@ -274,6 +274,7 @@ namespace MSL.pages
         {
             //调用新版forge安装器
             string[] installForge = await Shows.ShowInstallForge(this, downPath + "\\" + filename, downPath, downloadServerJava);
+            Functions functions = new Functions();
             if (installForge[0] == "0")
             {
                 if (await Shows.ShowMsgDialogAsync(this, "自动安装失败！是否尝试使用命令行安装方式？", "错误", true))
@@ -287,7 +288,19 @@ namespace MSL.pages
             }
             else if (installForge[0] == "1")
             {
-                return Functions.InstallForge(downloadServerJava, downloadServerBase, filename, installForge[1]);
+                string _ret = Functions.InstallForge(downloadServerJava, downloadServerBase, filename, installForge[1]);
+                if (_ret == null)
+                {
+                    return Functions.InstallForge(downloadServerJava, downloadServerBase, filename, string.Empty, false);
+                }
+                else
+                {
+                    return _ret;
+                }
+            }
+            else if (installForge[0] == "3")
+            {
+                return Functions.InstallForge(downloadServerJava, downloadServerBase, filename, string.Empty, false);
             }
             else
             {

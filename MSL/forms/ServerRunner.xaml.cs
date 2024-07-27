@@ -2970,7 +2970,16 @@ namespace MSL
                 Rservername = nAme.Text;
                 Title = Rservername;
                 Rserverjava = jAva.Text;
-                if (server.Text.Contains("forge") && server.Text.Contains("installer"))
+                string fullFileName;
+                if (File.Exists(Rserverbase + "\\" + server.Text))
+                {
+                    fullFileName = Rserverbase + "\\" + server.Text;
+                }
+                else
+                {
+                    fullFileName = server.Text;
+                }
+                if (Functions.CheckForgeInstaller(fullFileName))
                 {
                     bool dialog = await Shows.ShowMsgDialogAsync(this, "您选择的服务端是forge安装器，是否将其展开安装？\n如果不展开安装，服务器可能无法开启！", "提示", true, "取消");
                     if (dialog)
@@ -2991,7 +3000,19 @@ namespace MSL
                         }
                         else if (installForge[0] == "1")
                         {
-                            installReturn = Functions.InstallForge(Rserverjava, Rserverbase, server.Text, installForge[1]);
+                            string _ret = Functions.InstallForge(Rserverjava, Rserverbase, server.Text, installForge[1]);
+                            if (_ret == null)
+                            {
+                                installReturn = Functions.InstallForge(Rserverjava, Rserverbase, server.Text, installForge[1], false);
+                            }
+                            else
+                            {
+                                installReturn = _ret;
+                            }
+                        }
+                        else if (installForge[0] == "3")
+                        {
+                            installReturn = Functions.InstallForge(Rserverjava, Rserverbase, server.Text, string.Empty, false);
                         }
                         else
                         {
@@ -3111,7 +3132,8 @@ namespace MSL
                 bAse.Text = dialog.SelectedPath;
             }
         }
-        private void a01_Click(object sender, RoutedEventArgs e)
+
+        private async void a01_Click(object sender, RoutedEventArgs e)
         {
             OpenFileDialog openfile = new OpenFileDialog
             {
@@ -3122,12 +3144,23 @@ namespace MSL
             var res = openfile.ShowDialog();
             if (res == true)
             {
-                if (Path.GetDirectoryName(openfile.FileName) != Rserverbase)
+                server.Text = openfile.FileName;
+                if (File.Exists(Rserverbase + "\\" + openfile.SafeFileName))
                 {
-                    File.Copy(openfile.FileName, Rserverbase + @"\" + openfile.SafeFileName, true);
-                    Shows.ShowMsgDialog(this, "已将服务端核心复制到了服务器目录之中，您现在可以将源文件删除了！", "提示");
+                    server.Text = openfile.SafeFileName;
                 }
-                server.Text = openfile.SafeFileName;
+                else
+                {
+                    if (Path.GetDirectoryName(openfile.FileName) != Rserverbase)
+                    {
+                        if (await Shows.ShowMsgDialogAsync(this, "所选的服务端核心文件并不在服务器目录中，是否将其复制进服务器目录？\n若不复制，请留意勿将核心文件删除！", "提示", true))
+                        {
+                            File.Copy(openfile.FileName, Rserverbase + @"\" + openfile.SafeFileName, true);
+                            Shows.ShowMsgDialog(this, "已将服务端核心复制到了服务器目录之中，您现在可以将源文件删除了！", "提示");
+                            server.Text = openfile.SafeFileName;
+                        }
+                    }
+                }
             }
         }
 

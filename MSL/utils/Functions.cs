@@ -1,4 +1,5 @@
-﻿using System;
+﻿using ICSharpCode.SharpZipLib.Zip;
+using System;
 using System.Collections.Generic;
 using System.Diagnostics;
 using System.IO;
@@ -7,6 +8,7 @@ using System.Text;
 using System.Text.RegularExpressions;
 using System.Threading;
 using System.Threading.Tasks;
+using System.Windows;
 
 namespace MSL.utils
 {
@@ -142,6 +144,29 @@ namespace MSL.utils
         }
 
         #region Install Forge
+        public static bool CheckForgeInstaller(string _filename)
+        {
+            try
+            {
+                using (FileStream fs = File.OpenRead(_filename))
+                using (ZipFile zipFile = new ZipFile(fs))
+                {
+                    foreach (ZipEntry entry in zipFile)
+                    {
+                        if (entry.Name.Equals("install_profile.json", StringComparison.OrdinalIgnoreCase))
+                        {
+                            return true;
+                        }
+                    }
+                }
+                return false;
+            }
+            catch
+            {
+                return false;
+            }
+        }
+
         /// <summary>
         /// 安装Forge函数
         /// </summary>
@@ -154,7 +179,7 @@ namespace MSL.utils
         {
             try
             {
-                string forgeVersion;
+                //string forgeVersion;
                 if (!fastMode)
                 {
                     Process process = new Process();
@@ -162,15 +187,48 @@ namespace MSL.utils
                     process.StartInfo.FileName = _java;
                     process.StartInfo.Arguments = "-jar " + filename + " -installServer";
                     process.Start();
-
-                    while (!process.HasExited)
-                    {
-                        Thread.Sleep(1000);
-                    }
+                    process.WaitForExit();
                 }
                 try
                 {
-                    bool checkRootBase = false;
+                    /*
+                    try
+                    {
+                        //删除Forge安装器文件
+                        File.Delete(_base + "\\" + filename);
+                    }
+                    catch
+                    {
+                        Console.WriteLine("Delete Forge Installer Failed");
+                    }
+                    */
+
+                    /*
+                    if (File.Exists(Path.Combine(_base, "run.bat")))
+                    {
+                        string[] args = File.ReadAllLines(Path.Combine(_base, "run.bat"));
+                        foreach (string arg in args)
+                        {
+                            if (arg.Contains("@libraries"))
+                            {
+                                string _arg= arg.Substring(arg.IndexOf("@libraries"));
+                                if(_arg.Contains(" %*"))
+                                {
+                                    _arg = _arg.Replace(" %*", string.Empty);
+                                }
+                                return _arg;
+                            }
+                        }
+                    }
+                    */
+
+                    string argsFile = CheckArgsFile(_base, "libraries");
+                    if (argsFile != null)
+                    {
+                        return argsFile;
+                    }
+
+                    /*
                     if (Directory.Exists(_base + "\\libraries\\net\\minecraftforge\\forge"))
                     {
                         string[] subFolders = Directory.GetDirectories(_base + "\\libraries\\net\\minecraftforge\\forge");
@@ -200,25 +258,42 @@ namespace MSL.utils
                         }
                         checkRootBase = true;
                     }
-                    if (checkRootBase)
+                    else if (Directory.Exists(_base + "\\libraries\\net\\neoforged\\forge"))
                     {
-                        DirectoryInfo directoryInfo = new DirectoryInfo(_base);
-                        FileInfo[] fileInfo = directoryInfo.GetFiles();
-                        foreach (FileInfo file in fileInfo)
+                        string[] subFolders = Directory.GetDirectories(_base + "\\libraries\\net\\neoforged\\forge");
+                        foreach (string subFolder in subFolders)
                         {
-                            if (file.Name.Contains(mcVersion))
+                            if (File.Exists(subFolder + "\\win_args.txt"))
                             {
-                                if (file.Name.Contains("forge") && (file.Name != filename) && (!file.Name.Contains("installer")) && (!file.Name.Contains("universal")) && (!file.Name.Contains("server")))
+                                forgeVersion = Path.GetFileName(subFolder);
+                                return "@libraries/net/neoforged/forge/" + forgeVersion + "/win_args.txt %*";
+                            }
+                        }
+                        checkRootBase = true;
+                    }
+                    */
+                    DirectoryInfo directoryInfo = new DirectoryInfo(_base);
+                    FileInfo[] fileInfo = directoryInfo.GetFiles();
+                    foreach (FileInfo file in fileInfo)
+                    {
+                        if (file.Name.Contains(mcVersion) && file.Name.EndsWith(".jar"))
+                        {
+                            if (file.Name.Contains("forge") && (file.Name != filename) && (!file.Name.Contains("installer")) && (!file.Name.Contains("universal")) && (!file.Name.Contains("server") && (!file.Name.Contains("shim"))))
+                            {
+                                if (!CheckForgeInstaller(file.FullName))
                                 {
                                     return file.FullName.Replace(_base + @"\", "");
                                 }
                             }
                         }
-                        foreach (FileInfo file in fileInfo)
+                    }
+                    foreach (FileInfo file in fileInfo)
+                    {
+                        if (file.Name.Contains(mcVersion) && file.Name.EndsWith(".jar"))
                         {
-                            if (file.Name.Contains(mcVersion))
+                            if (file.Name.Contains("forge") && (file.Name != filename) && (!file.Name.Contains("installer")) && (!file.Name.Contains("server") && (!file.Name.Contains("shim"))))
                             {
-                                if (file.Name.Contains("forge") && (file.Name != filename) && (!file.Name.Contains("installer")) && (!file.Name.Contains("server")))
+                                if (!CheckForgeInstaller(file.FullName))
                                 {
                                     return file.FullName.Replace(_base + @"\", "");
                                 }
@@ -238,6 +313,29 @@ namespace MSL.utils
                 //Console.WriteLine(ex.Message);
                 return null;
             }
+        }
+
+        private static string CheckArgsFile(string basePath,string relativePath)
+        {
+            string fullPath = Path.Combine(basePath, relativePath);
+            if (Directory.Exists(fullPath))
+            {
+                string[] subFolders = Directory.GetDirectories(fullPath);
+                foreach (string subFolder in subFolders)
+                {
+                    if (File.Exists(Path.Combine(subFolder, "win_args.txt")))
+                    {
+                        string forgeVersion = Path.GetFileName(subFolder);
+                        return $"@{relativePath.Replace("\\", "/")}/{forgeVersion}/win_args.txt %*";
+                    }
+                    else
+                    {
+                        CheckArgsFile(basePath, Path.Combine(relativePath, Path.GetFileName(subFolder)));
+                    }
+                }
+                return null;
+            }
+            return null;
         }
         #endregion
 

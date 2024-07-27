@@ -24,7 +24,7 @@ namespace MSL.controls
     public partial class InstallForgeDialog
     {
         public event DeleControl CloseDialog;
-        public int _dialogReturn = 0;
+        public int _dialogReturn = 0;//0为未安装或未安装成功，1为安装成功，2为取消安装，3为切换至命令行安装
         public string mcVersion = string.Empty;
         private readonly string forgePath;
         private readonly string installPath;
@@ -61,20 +61,20 @@ namespace MSL.controls
         {
             try
             {
-                /*
                 if (Directory.Exists(libPath))
                 {
                     Log_in("检测到libraries文件夹，尝试将其删除……");
                     try
                     {
                         Directory.Delete(libPath, true);
+                        await Task.Delay(500);
                     }
                     finally
                     {
                         Log_in("进行下一步……");
                     }
                 }
-                */
+
                 //第一步，解压Installer
                 //创建一个文件夹存放解压的installer
                 if (!Directory.Exists(tempPath))
@@ -245,27 +245,20 @@ namespace MSL.controls
                         Log_in("[LIB]下载：" + lib["downloads"]["artifact"]["path"].ToString());
                         //if (!_dlurl.Contains("mcp")) //mcp那个zip会用js redirect，所以只能用downloader，真神奇！
                         //{
-                        downloadTasks.Add(DownloadFile(_dlurl, _savepath, _sha1));
-                        //bool dlStatus = await DownloadFile(_dlurl, _savepath, _sha1);
-                        //Status_change("正在下载Forge运行Lib···(" + libCount + "/" + libALLCount + ")");
-                        /*
-                    }
-                    else
-                    {
-                        await Dispatcher.Invoke(async () =>
-                        {
+                            downloadTasks.Add(DownloadFile(_dlurl, _savepath, _sha1));
+                            //bool dlStatus = await DownloadFile(_dlurl, _savepath, _sha1);
                             //Status_change("正在下载Forge运行Lib···(" + libCount + "/" + libALLCount + ")");
-                            bool dwnDialog = await Shows.ShowDownloader(Window.GetWindow(this), _dlurl, Path.GetDirectoryName(_savepath), Path.GetFileName(_savepath), "下载LIB···");
-                            //bool dwnDialog = await Shows.ShowDownloader(Window.GetWindow(this), _dlurl, Path.GetDirectoryName(_savepath), Path.GetFileName(_savepath), "下载LIB(" + libCount + "/" + libALLCount + ")中···");
-                            if (!dwnDialog)
+                            /*
+                        }
+                        else
+                        {
+                            await Dispatcher.Invoke(async () =>
                             {
-                                //下载失败，跑路了！
-                                Log_in(lib["downloads"]["artifact"]["path"].ToString() + "下载失败！安装失败！");
-                                return;
-                            }
-                        });
-                    }
-                        */
+                                //Status_change("正在下载Forge运行Lib···(" + libCount + "/" + libALLCount + ")");
+                                await Shows.ShowDownloader(Window.GetWindow(this), _dlurl, Path.GetDirectoryName(_savepath), Path.GetFileName(_savepath), "下载LIB···");
+                            });
+                        }
+                            */
                     }
                 }
                 else
@@ -291,26 +284,20 @@ namespace MSL.controls
                         Log_in("[LIB]下载：" + NameToPath(SafeGetValue(lib, "name")));
                         //if (!_dlurl.Contains("mcp")) //mcp那个zip会用js redirect，所以只能用downloader，真神奇！
                         //{
-                        downloadTasks.Add(DownloadFile(_dlurl, _savepath));
-                        //bool dlStatus = await DownloadFile(_dlurl, _savepath);
-                        //Status_change("正在下载Forge运行Lib···(" + libCount + "/" + libALLCount + ")");
-                        /*
-                    }
-                    else
-                    {
-                        await Dispatcher.Invoke(async () =>
-                        {
+                            downloadTasks.Add(DownloadFile(_dlurl, _savepath));
+                            //bool dlStatus = await DownloadFile(_dlurl, _savepath);
                             //Status_change("正在下载Forge运行Lib···(" + libCount + "/" + libALLCount + ")");
-                            bool dwnDialog = await Shows.ShowDownloader(Window.GetWindow(this), _dlurl, Path.GetDirectoryName(_savepath), Path.GetFileName(_savepath), "下载LIB(" + libCount + "/" + libALLCount + ")中···");
-                            if (!dwnDialog)
+                            /*
+                        }
+                        else
+                        {
+                            await Dispatcher.Invoke(async () =>
                             {
-                                //下载失败，跑路了！
-                                Log_in(NameToPath(SafeGetValue(lib, "name")) + "下载失败！安装失败！");
-                                return;
-                            }
-                        });
-                    }
-                        */
+                                //Status_change("正在下载Forge运行Lib···(" + libCount + "/" + libALLCount + ")");
+                                await Shows.ShowDownloader(Window.GetWindow(this), _dlurl, Path.GetDirectoryName(_savepath), Path.GetFileName(_savepath), "下载LIB(" + libCount + "/" + libALLCount + ")中···");
+                            });
+                        }
+                            */
                     }
                 }
                 await Task.WhenAll(downloadTasks);
@@ -351,22 +338,19 @@ namespace MSL.controls
                 if (versionType != 5) //低版本不编译
                 {
                     JArray processors = (JArray)installJobj["processors"]; //获取processors数组
-                    int i = 0;
                     foreach (JObject processor in processors.Cast<JObject>())
                     {
-                        i++;
                         string buildarg;
                         JArray sides = (JArray)processor["sides"]; //获取sides数组
                         if (sides == null || sides.Values<string>().Contains("server"))
                         {
                             buildarg = @"-cp """;
                             //处理classpath
-                            buildarg = buildarg + libPath + "/" + NameToPath((string)processor["jar"]) + ";";
+                            buildarg += libPath + "/" + NameToPath((string)processor["jar"]) + ";";
                             JArray classpath = (JArray)processor["classpath"];
                             foreach (string path in classpath.Values<string>())
                             {
-
-                                buildarg = buildarg + libPath + "/" + NameToPath(path) + ";";
+                                buildarg += libPath + "/" + NameToPath(path) + ";";
                             }
                             buildarg += @""" ";//结束cp处理
 
@@ -377,7 +361,6 @@ namespace MSL.controls
                                 if (buildarg.Contains("binarypatcher"))
                                 {
                                     buildarg += "net.neoforged.binarypatcher.ConsoleTool ";
-
                                 }
                                 else if (buildarg.Contains("AutoRenamingTool"))
                                 {
@@ -779,7 +762,7 @@ namespace MSL.controls
                     using (HttpClient client = new HttpClient())
                     {
                         client.DefaultRequestHeaders.UserAgent.TryParseAdd("Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/126.0.0.0 Safari/537.36");
-                        client.Timeout = TimeSpan.FromMilliseconds(5000);
+                        client.Timeout = TimeSpan.FromMilliseconds(10000);
                         HttpResponseMessage responseMessage = await client.GetAsync(url);
                         if (responseMessage.StatusCode == HttpStatusCode.OK)
                         {
@@ -913,6 +896,13 @@ namespace MSL.controls
                     File.Copy(file, Path.Combine(target, fileName), true);
                 }
             }
+        }
+
+        private void ChangePlanButton_Click(object sender, RoutedEventArgs e)
+        {
+            cancellationTokenSource.Cancel();
+            _dialogReturn = 3;
+            CloseDialog();
         }
 
         private void CancelButton_Click(object sender, RoutedEventArgs e)

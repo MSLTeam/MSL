@@ -362,34 +362,12 @@ namespace MSL.pages
                     if (selectFile != null)
                     {
                         txb3.Text = files[int.Parse(selectFile)];
-                        if (txb3.Text.Contains("forge") && txb3.Text.Contains("installer"))
+                        if (Functions.CheckForgeInstaller(serverbase + "\\" + txb3.Text))
                         {
                             bool dialog = await Shows.ShowMsgDialogAsync(Window.GetWindow(this), "您选择的服务端疑似是forge安装器，是否将其展开安装？\n如果不展开安装，服务器可能无法开启！", "提示", true, "取消");
                             if (dialog)
                             {
-                                string installReturn;
-                                //调用新版forge安装器
-                                string[] installForge = await Shows.ShowInstallForge(Window.GetWindow(this), serverbase + "\\" + txb3.Text, serverbase, serverjava);
-                                if (installForge[0] == "0")
-                                {
-                                    if (await Shows.ShowMsgDialogAsync(Window.GetWindow(this), "自动安装失败！是否尝试使用命令行安装方式？", "错误", true))
-                                    {
-                                        installReturn = Functions.InstallForge(serverjava, serverbase, txb3.Text, string.Empty, false);
-                                    }
-                                    else
-                                    {
-                                        return;
-                                    }
-
-                                }
-                                else if (installForge[0] == "1")
-                                {
-                                    installReturn = Functions.InstallForge(serverjava, serverbase, txb3.Text, installForge[1]);
-                                }
-                                else
-                                {
-                                    return;
-                                }
+                                string installReturn = await InstallForge(txb3.Text);
                                 if (installReturn == null)
                                 {
                                     Shows.ShowMsgDialog(Window.GetWindow(this), "下载失败！", "错误");
@@ -410,34 +388,12 @@ namespace MSL.pages
                     if (ret)
                     {
                         txb3.Text = files[0];
-                        if (txb3.Text.Contains("forge") && txb3.Text.Contains("installer"))
+                        if (Functions.CheckForgeInstaller(serverbase + "\\" + txb3.Text))
                         {
                             bool dialog = await Shows.ShowMsgDialogAsync(Window.GetWindow(this), "您选择的服务端疑似是forge安装器，是否将其展开安装？\n如果不展开安装，服务器可能无法开启！", "提示", true, "取消");
                             if (dialog)
                             {
-                                string installReturn;
-                                //调用新版forge安装器
-                                string[] installForge = await Shows.ShowInstallForge(Window.GetWindow(this), serverbase + "\\" + txb3.Text, serverbase, serverjava);
-                                if (installForge[0] == "0")
-                                {
-                                    if (await Shows.ShowMsgDialogAsync(Window.GetWindow(this), "自动安装失败！是否尝试使用命令行安装方式？", "错误", true))
-                                    {
-                                        installReturn = Functions.InstallForge(serverjava, serverbase, txb3.Text, string.Empty, false);
-                                    }
-                                    else
-                                    {
-                                        return;
-                                    }
-
-                                }
-                                else if (installForge[0] == "1")
-                                {
-                                    installReturn = Functions.InstallForge(serverjava, serverbase, txb3.Text, installForge[1]);
-                                }
-                                else
-                                {
-                                    return;
-                                }
+                                string installReturn = await InstallForge(txb3.Text);
                                 if (installReturn == null)
                                 {
                                     Shows.ShowMsgDialog(Window.GetWindow(this), "下载失败！", "错误");
@@ -766,10 +722,7 @@ namespace MSL.pages
             {
                 try
                 {
-                    if (!Directory.Exists(serverbase))
-                    {
-                        Directory.CreateDirectory(serverbase);
-                    }
+                    Directory.CreateDirectory(serverbase);
                     string _filename = Path.GetFileName(txb3.Text);
                     if (File.Exists(serverbase + "\\" + _filename))
                     {
@@ -777,45 +730,35 @@ namespace MSL.pages
                     }
                     else
                     {
-                        if (!Path.IsPathRooted(txb3.Text) && File.Exists(AppDomain.CurrentDomain.BaseDirectory + txb3.Text))
+                        if (Path.GetDirectoryName(txb3.Text) != serverbase)
+                        {
+                            if (await Shows.ShowMsgDialogAsync(Window.GetWindow(this), "所选的服务端核心文件并不在服务器目录中，是否将其复制进服务器目录？\n若不复制，请留意勿将核心文件删除！", "提示", true))
+                            {
+                                File.Copy(txb3.Text, serverbase + "\\" + _filename, true);
+                                await Shows.ShowMsgDialogAsync(Window.GetWindow(this), "已将服务端核心复制到了服务器目录之中，您现在可以将源文件删除了！", "提示");
+                                txb3.Text = _filename;
+                            }
+                        }
+                        else if (!Path.IsPathRooted(txb3.Text) && File.Exists(AppDomain.CurrentDomain.BaseDirectory + txb3.Text))
                         {
                             txb3.Text = AppDomain.CurrentDomain.BaseDirectory + txb3.Text;
                         }
-                        if (Path.GetDirectoryName(txb3.Text) != serverbase)
-                        {
-                            File.Copy(txb3.Text, serverbase + "\\" + _filename, true);
-                            await Shows.ShowMsgDialogAsync(Window.GetWindow(this), "已将服务端核心复制到了服务器目录之中，您现在可以将源文件删除了！", "提示");
-                            txb3.Text = _filename;
-                        }
                     }
-
-                    if (txb3.Text.Contains("forge") && txb3.Text.Contains("installer"))
+                    string fullFileName;
+                    if (File.Exists(serverbase + "\\" + txb3.Text))
+                    {
+                        fullFileName = serverbase + "\\" + txb3.Text;
+                    }
+                    else
+                    {
+                        fullFileName = txb3.Text;
+                    }
+                    if(Functions.CheckForgeInstaller(fullFileName))
                     {
                         bool dialog = await Shows.ShowMsgDialogAsync(Window.GetWindow(this), "您选择的服务端疑似是forge安装器，是否将其展开安装？\n如果不展开安装，服务器可能无法开启！", "提示", true, "取消");
                         if (dialog)
                         {
-                            string installReturn;
-                            //调用新版forge安装器
-                            string[] installForge = await Shows.ShowInstallForge(Window.GetWindow(this), serverbase + "\\" + txb3.Text, serverbase, serverjava);
-                            if (installForge[0] == "0")
-                            {
-                                if (await Shows.ShowMsgDialogAsync(Window.GetWindow(this), "自动安装失败！是否尝试使用命令行安装方式？", "错误", true))
-                                {
-                                    installReturn = Functions.InstallForge(serverjava, serverbase, txb3.Text, string.Empty, false);
-                                }
-                                else
-                                {
-                                    return;
-                                }
-                            }
-                            else if (installForge[0] == "1")
-                            {
-                                installReturn = Functions.InstallForge(serverjava, serverbase, txb3.Text, installForge[1]);
-                            }
-                            else
-                            {
-                                return;
-                            }
+                            string installReturn = await InstallForge(txb3.Text);
                             if (installReturn == null)
                             {
                                 Shows.ShowMsgDialog(Window.GetWindow(this), "下载失败！", "错误");
@@ -1532,7 +1475,7 @@ namespace MSL.pages
             {
                 if (await Shows.ShowMsgDialogAsync(Window.GetWindow(this), "自动安装失败！是否尝试使用命令行安装方式？", "错误", true))
                 {
-                    return Functions.InstallForge(serverjava, serverbase, FinallyCoreCombo.Items[FinallyCoreCombo.SelectedIndex].ToString() + ".jar", string.Empty, false);
+                    return Functions.InstallForge(serverjava, serverbase, filename, string.Empty, false);
                 }
                 else
                 {
@@ -1543,7 +1486,19 @@ namespace MSL.pages
             }
             else if (installForge[0] == "1")
             {
-                return Functions.InstallForge(serverjava, serverbase, FinallyCoreCombo.Items[FinallyCoreCombo.SelectedIndex].ToString() + ".jar", installForge[1]);
+                string _ret = Functions.InstallForge(serverjava, serverbase, filename, installForge[1]);
+                if (_ret == null)
+                {
+                    return Functions.InstallForge(serverjava, serverbase, filename, installForge[1], false);
+                }
+                else
+                {
+                    return _ret;
+                }
+            }
+            else if (installForge[0] == "3")
+            {
+                return Functions.InstallForge(serverjava, serverbase, filename, string.Empty, false);
             }
             else
             {
