@@ -56,7 +56,7 @@ namespace MSL
                 string token = string.Empty;
                 await Task.Run(async () =>
                 {
-                    string _token = (await HttpService.GetAsync("query/cf_token"))[1];
+                    string _token = (await HttpService.GetApiContentAsync("query/cf_token"))["data"]["cfToken"].ToString();
                     try
                     {
                         byte[] data = Convert.FromBase64String(_token);

@@ -38,12 +38,12 @@ namespace MSL.pages.frpProviders
             gonggao.Text = "加载中……";
             try
             {
-                string[] mslFrpInfo = await HttpService.GetAsync("query/MSLFrps");
-                if (mslFrpInfo[0] == "0")
+                HttpResponse mslFrpInfo = await HttpService.GetApiAsync("query/frp/MSLFrps");
+                if (mslFrpInfo.HttpResponseCode != System.Net.HttpStatusCode.OK)
                 {
                     throw new Exception("获取节点信息失败！");
                 }
-                JObject valuePairs = (JObject)JsonConvert.DeserializeObject(mslFrpInfo[1]);
+                JObject valuePairs = (JObject)((JObject)JsonConvert.DeserializeObject(mslFrpInfo.HttpResponseContent.ToString()))["data"];
                 int id = 0;
                 foreach (var valuePair in valuePairs)
                 {
@@ -74,7 +74,7 @@ namespace MSL.pages.frpProviders
             }
             try
             {
-                gonggao.Text = (await HttpService.GetAsync("query/MSLFrps/notice"))[1];
+                gonggao.Text = (await HttpService.GetApiContentAsync("query/frp/MSLFrps?query=notice"))["data"]["notice"].ToString();
             }
             catch
             {

@@ -1,5 +1,4 @@
-﻿using HandyControl.Controls;
-using MSL.utils;
+﻿using MSL.utils;
 using Newtonsoft.Json;
 using Newtonsoft.Json.Linq;
 using System;
@@ -11,7 +10,6 @@ using System.Threading.Tasks;
 using System.Windows;
 using System.Windows.Controls;
 using System.Windows.Input;
-using System.Windows.Threading;
 using File = System.IO.File;
 
 namespace MSL.pages
@@ -42,36 +40,36 @@ namespace MSL.pages
             await GetServer();
         }
 
-        private void DownloadBtn_Click(object sender, RoutedEventArgs e)
+        private async void DownloadBtn_Click(object sender, RoutedEventArgs e)
         {
             if (serverlist1.SelectedIndex == -1)
             {
                 Shows.ShowMsgDialog(this, "请先选择一个版本！", "警告");
                 return;
             }
-            DownloadServerFunc();
+            await DownloadServerFunc();
         }
 
-        private void serverlist_MouseDoubleClick(object sender, MouseButtonEventArgs e)
+        private async void serverlist_MouseDoubleClick(object sender, MouseButtonEventArgs e)
         {
             if (serverlist1.SelectedIndex == -1)
             {
                 Shows.ShowMsgDialog(this, "请先选择一个版本！", "警告");
                 return;
             }
-            DownloadServerFunc();
+            await DownloadServerFunc();
         }
-        private async void DownloadServerFunc()
-        {
 
+        private async Task DownloadServerFunc()
+        {
             downVersion = serverlist1.SelectedItem.ToString();
             downServer = serverlist.SelectedItem.ToString();
 
             if (serverlist1.SelectedIndex != -1)
             {
-                string[] downContext = await HttpService.GetAsync("download/server/" + downServer + "/" + downVersion, "", 0, true);
-                string downUrl = downContext[1];
-                string sha256Exp = downContext[2];
+                JObject downContext = await HttpService.GetApiContentAsync("download/server/" + downServer + "/" + downVersion);
+                string downUrl = downContext["data"]["url"].ToString();
+                string sha256Exp = downContext["data"]["sha256"].ToString();
                 downPath = downloadServerBase;
                 filename = downServer + "-" + downVersion + ".jar";
                 if (downServer == "forge" || downServer == "spongeforge" || downServer == "neoforge")
@@ -97,9 +95,9 @@ namespace MSL.pages
                 {
                     string forgeName = downServer.Replace("spongeforge", "forge");
                     string _filename = forgeName + ".jar";
-                    string[] _dlContext = await HttpService.GetAsync("download/server/" + forgeName.Replace("-", "/"), "", 0, true);
-                    string _dlUrl = _dlContext[1];
-                    string _sha256Exp = _dlContext[2];
+                    JObject _dlContext = await HttpService.GetApiContentAsync("download/server/" + downServer + "/" + downVersion);
+                    string _dlUrl = _dlContext["data"]["url"].ToString();
+                    string _sha256Exp = _dlContext["data"]["sha256"].ToString();
                     int _dwnDialog = await Shows.ShowDownloaderWithIntReturn(this, _dlUrl, downPath, _filename, "下载服务端中……", _sha256Exp, true);
 
                     if (_dwnDialog == 2)
@@ -235,25 +233,19 @@ namespace MSL.pages
                     }
                     catch (Exception e)
                     {
-                        Dispatcher.Invoke(() =>
-                        {
-                            Shows.ShowMsgDialog(this, "Banner端移动失败！\n请重试！" + e.Message, "错误");
-                        });
+                        Shows.ShowMsgDialog(this, "Banner端移动失败！\n请重试！" + e.Message, "错误");
                         return;
                     }
 
                     //下载一个fabric端
                     //获取版本号
                     string bannerVersion = filename.Replace("banner-", "").Replace(".jar", "");
-                    await Dispatcher.Invoke(async () =>
+                    bool dwnFabric = await Shows.ShowDownloader(GetWindow(this), HttpService.Get("download/server/fabric/" + bannerVersion), downloadServerBase, $"fabric-{bannerVersion}.jar", "下载Fabric端中···");
+                    if (!dwnFabric || !File.Exists(downloadServerBase + "\\" + $"fabric-{bannerVersion}.jar"))
                     {
-                        bool dwnFabric = await Shows.ShowDownloader(GetWindow(this), HttpService.Get("download/server/fabric/" + bannerVersion), downloadServerBase, $"fabric-{bannerVersion}.jar", "下载Fabric端中···");
-                        if (!dwnFabric || !File.Exists(downloadServerBase + "\\" + $"fabric-{bannerVersion}.jar"))
-                        {
-                            Shows.ShowMsgDialog(this, "Fabric端下载取消（或服务端文件不存在）！", "错误");
-                            return;
-                        }
-                    });
+                        Shows.ShowMsgDialog(this, "Fabric端下载取消（或服务端文件不存在）！", "错误");
+                        return;
+                    }
 
                     downloadServerName = $"fabric-{bannerVersion}.jar";
                 }
@@ -310,39 +302,29 @@ namespace MSL.pages
 
         private async Task GetServer()
         {
-            try
-            {
-                LoadingCircle loadingCircle = new LoadingCircle();
-                loadingCircle.VerticalAlignment = VerticalAlignment.Center;
-                loadingCircle.HorizontalAlignment = HorizontalAlignment.Left;
-                loadingCircle.Margin = new Thickness(160, 0, 0, 0);
-                BodyGrid.Children.Add(loadingCircle);
-                BodyGrid.RegisterName("loadingBar", loadingCircle);
-            }
-            catch
-            { }
             serverlist.ItemsSource = null;
             serverlist1.ItemsSource = null;
             try
             {
-                string jsonData = (await HttpService.GetAsync("query/available_server_types"))[1];
-                string[] serverTypes = JsonConvert.DeserializeObject<string[]>(jsonData);
-                serverlist.ItemsSource = serverTypes;
-                serverlist.SelectedIndex = 0;
-                getservermsg.Visibility = Visibility.Hidden;
+                HttpResponse httpResponse = await HttpService.GetApiAsync("query/available_server_types");
+                if (httpResponse.HttpResponseCode == System.Net.HttpStatusCode.OK)
+                {
+                    string[] serverTypes = JsonConvert.DeserializeObject<string[]>(((JObject)JsonConvert.DeserializeObject(httpResponse.HttpResponseContent.ToString()))["data"]["types"].ToString());
+                    serverlist.ItemsSource = serverTypes;
+                    serverlist.SelectedIndex = 0;
+                    getservermsg.Visibility = Visibility.Collapsed;
+                }
+                else
+                {
+                    getservermsg.Text = "请求错误！请重试\n（" + httpResponse.HttpResponseCode.ToString() + "）" + httpResponse.HttpResponseContent.ToString();
+                }
             }
             catch (Exception a)
             {
-                getservermsg.Text = "获取服务端失败！请重试" + a.Message;
+                getservermsg.Text = "获取服务端失败！请重试\n" + a.Message;
             }
-            try
-            {
-                LoadingCircle loadingCircle = BodyGrid.FindName("loadingBar") as LoadingCircle;
-                BodyGrid.Children.Remove(loadingCircle);
-                BodyGrid.UnregisterName("loadingBar");
-            }
-            catch
-            { }
+            Loading_Circle.IsRunning = false;
+            Loading_Circle.Visibility = Visibility.Collapsed;
         }
 
         private async void serverlist_SelectionChanged(object sender, SelectionChangedEventArgs e)
@@ -355,62 +337,41 @@ namespace MSL.pages
 
         private async Task GetServerVersionList()
         {
-            try
-            {
-                LoadingCircle loadingCircle = new LoadingCircle();
-                loadingCircle.VerticalAlignment = VerticalAlignment.Center;
-                loadingCircle.HorizontalAlignment = HorizontalAlignment.Left;
-                loadingCircle.Margin = new Thickness(160, 0, 0, 0);
-                BodyGrid.Children.Add(loadingCircle);
-                BodyGrid.RegisterName("loadingBar1", loadingCircle);
-            }
-            catch
-            { }
+            Loading_Circle.IsRunning = true;
+            Loading_Circle.Visibility = Visibility.Visible;
             serverlist1.ItemsSource = null;
             try
             {
-                string serverName = "paper";
                 serverlist1.ItemsSource = null;
                 getservermsg.Visibility = Visibility.Visible;
-                serverName = serverlist.SelectedItem.ToString();
-                try
+                getservermsg.Text = "加载中，请稍等...";
+                string serverName = serverlist.SelectedItem.ToString();
+                HttpResponse httpResponse = await HttpService.GetApiAsync("query/available_versions/" + serverName);
+                if (httpResponse.HttpResponseCode == System.Net.HttpStatusCode.OK)
                 {
-                    var resultData = (await HttpService.GetAsync("query/available_versions/" + serverName))[1];
-                    server_d.Text = (await HttpService.GetAsync("query/servers_description/" + serverName))[1];
+                    string resultData = ((JObject)JsonConvert.DeserializeObject(httpResponse.HttpResponseContent.ToString()))["data"]["versionList"].ToString();
+                    server_d.Text = (await HttpService.GetApiContentAsync("query/servers_description/" + serverName))["data"]["description"].ToString();
                     JArray serverVersions = JArray.Parse(resultData);
                     List<string> sortedVersions = serverVersions.ToObject<List<string>>().OrderByDescending(v => Functions.VersionCompare(v)).ToList();
                     serverlist1.ItemsSource = sortedVersions;
-                    getservermsg.Visibility = Visibility.Hidden;
+                    getservermsg.Visibility = Visibility.Collapsed;
                 }
-                catch
+                else
                 {
-                    try
-                    {
-                        var resultData = (await HttpService.GetAsync("query/available_versions/" + serverName))[1];
-                        JArray serverVersions = JArray.Parse(resultData);
-                        List<string> sortedVersions = serverVersions.ToObject<List<string>>().OrderByDescending(v => Functions.VersionCompare(v)).ToList();
-                        serverlist1.ItemsSource = sortedVersions;
-                        getservermsg.Visibility = Visibility.Hidden;
-
-                    }
-                    catch (Exception a)
-                    {
-                        getservermsg.Text = "获取服务端失败！请重试" + a.Message;
-                    }
+                    getservermsg.Text = "请求错误！请重试\n（" + httpResponse.HttpResponseCode.ToString() + "）" + httpResponse.HttpResponseContent.ToString();
                 }
             }
             catch (Exception a)
             {
-                getservermsg.Text = "获取服务端失败！请重试" + a.Message;
+                getservermsg.Text = "获取服务端失败！请重试\n" + a.Message;
             }
-            try
-            {
-                LoadingCircle loadingCircle = BodyGrid.FindName("loadingBar1") as LoadingCircle;
-                BodyGrid.Children.Remove(loadingCircle);
-                BodyGrid.UnregisterName("loadingBar1");
-            }
-            catch
-            { }
+            Loading_Circle.IsRunning = false;
+            Loading_Circle.Visibility = Visibility.Collapsed;
+        }
+
+        private async void RefreshBtn_Click(object sender, RoutedEventArgs e)
+        {
+            await GetServer();
         }
 
         private void openChooseServerDocs_Click(object sender, RoutedEventArgs e)
@@ -431,11 +392,6 @@ namespace MSL.pages
         private void openMojang_Click(object sender, RoutedEventArgs e)
         {
             Process.Start("https://www.minecraft.net/zh-hans/download/server");
-        }
-
-        private async void RefreshBtn_Click(object sender, RoutedEventArgs e)
-        {
-            await GetServer();
         }
     }
 }

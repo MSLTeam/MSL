@@ -3,7 +3,7 @@ using Newtonsoft.Json.Linq;
 using System;
 using System.IO;
 using System.Text;
-using System.Threading;
+using System.Threading.Tasks;
 using System.Windows;
 using System.Windows.Controls;
 using System.Windows.Media.Imaging;
@@ -24,44 +24,37 @@ namespace MSL.pages
         public Home()
         {
             InitializeComponent();
-            MainWindow.LoadAnnounce += LoadAnnounce;
         }
 
-        private void Page_Loaded(object sender, RoutedEventArgs e)
+        private async void Page_Loaded(object sender, RoutedEventArgs e)
         {
+            GetServerConfig();
+            for (int i = 0; i < 10; i++)
+            {
+                if (MainWindow.serverLink != null)
+                {
+                    break;
+                }
+                await Task.Delay(1000);
+            }
             if (MainWindow.serverLink == null)
             {
-                noticeLab.Text = "加载中，请稍候……";
+                noticeLab.Text = "加载失败，请检查网络连接！";
             }
             else
             {
-                Thread thread = new Thread(GetNotice);
-                thread.Start();
+                await GetNotice();
             }
-            GetServerConfig();
         }
 
-        private void LoadAnnounce()
-        {
-            noticeLab.Text = "";
-            Thread thread = new Thread(GetNotice);
-            thread.Start();
-        }
-
-        private void GetNotice()
+        private async Task GetNotice()
         {
             //公告
-            //version
-            string noticeLabText = "";
-
-            Dispatcher.Invoke(() =>
-            {
-                noticeLabText = noticeLab.Text;
-            });
+            string noticeLabText = noticeLab.Text;
             string noticeversion1;
             try
             {
-                string noticeversion = HttpService.Get("query/notice/id");
+                string noticeversion = (await HttpService.GetApiContentAsync("query/notice?query=id"))["data"]["noticeID"].ToString();
                 JObject jsonObject = JObject.Parse(File.ReadAllText(@"MSL\config.json", Encoding.UTF8));
                 if (jsonObject["notice"] == null)
                 {
@@ -78,8 +71,8 @@ namespace MSL.pages
                 }
                 if (noticeversion1 != noticeversion)
                 {
-                    var notice = HttpService.Get("query/notice/main");
-                    var recommendations = HttpService.Get("query/notice/tips");
+                    var notice = (await HttpService.GetApiContentAsync("query/notice"))["data"]["notice"].ToString();
+                    var recommendations = (await HttpService.GetApiContentAsync("query/notice?query=tips"))["data"]["tips"];
 
                     if (!string.IsNullOrEmpty(notice))
                     {
@@ -97,9 +90,9 @@ namespace MSL.pages
                         noticeLabText = "获取公告失败！请检查网络连接是否正常或联系作者进行解决！";
                     }
 
-                    if (!string.IsNullOrEmpty(recommendations))
+                    if (recommendations != null)
                     {
-                        LoadRecommendations(recommendations);
+                        LoadRecommendations((JArray)recommendations);
                     }
 
                     try
@@ -118,13 +111,10 @@ namespace MSL.pages
                 else if (noticeLabText == "")
                 {
                     Visibility noticevisible = Visibility.Visible;
-                    Dispatcher.Invoke(() =>
-                    {
-                        noticevisible = noticeLab.Visibility;
-                    });
+                    noticevisible = noticeLab.Visibility;
                     if (noticevisible == Visibility.Visible)
                     {
-                        var notice = HttpService.Get("query/notice/main");
+                        var notice = (await HttpService.GetApiContentAsync("query/notice"))["data"]["notice"].ToString();
                         if (!string.IsNullOrEmpty(notice))
                         {
                             noticeLabText = notice;
@@ -133,10 +123,10 @@ namespace MSL.pages
                         {
                             noticeLabText = "获取公告失败！请检查网络连接是否正常或联系作者进行解决！";
                         }
-                        var recommendations = HttpService.Get("query/notice/tips");
-                        if (!string.IsNullOrEmpty(recommendations))
+                        var recommendations = (await HttpService.GetApiContentAsync("query/notice?query=tips"))["data"]["tips"];
+                        if (recommendations != null)
                         {
-                            LoadRecommendations(recommendations);
+                            LoadRecommendations((JArray)recommendations);
                         }
                     }
                 }
@@ -146,106 +136,96 @@ namespace MSL.pages
                 noticeLabText = ex.ToString();
             }
 
-            Dispatcher.Invoke(() =>
+            if (noticeLabText == "")
             {
-                if (noticeLabText == "")
+                noticeLab.Visibility = Visibility.Hidden;
+                noticeLab.Text = "";
+                string _serverLink = MainWindow.serverLink;
+                if (_serverLink.Contains("/"))
                 {
-                    noticeLab.Visibility = Visibility.Hidden;
-                    noticeLab.Text = "";
+                    _serverLink = _serverLink.Substring(0, _serverLink.IndexOf("/"));
+                }
+                noticeImage.Source = new BitmapImage(new Uri("https://msl." + _serverLink + "/notice.png"));
+            }
+            else
+            {
+                noticeLab.Visibility = Visibility.Visible;
+                noticeImage.Source = null;
+                noticeLab.Text = noticeLabText;
+            }
+        }
+
+        private void LoadRecommendations(JArray recommendations)
+        {
+            recommendBorder.Visibility = Visibility.Visible;
+            for (int x = 1; x < 100; x++)
+            {
+                TextBlock textBlock = RecommendGrid.FindName("RecText" + x.ToString()) as TextBlock;
+                if (textBlock != null)
+                {
+                    RecommendGrid.Children.Remove(textBlock);
+                    RecommendGrid.UnregisterName("RecText" + x.ToString());
+                    Image img = RecommendGrid.FindName("RecImg" + x.ToString()) as Image;
+                    if (img != null)
+                    {
+                        RecommendGrid.Children.Remove(img);
+                        RecommendGrid.UnregisterName("RecImg" + x.ToString());
+                    }
+                }
+                else
+                {
+                    break;
+                }
+            }
+
+            // Parse the JSON array from the string
+            //JArray recommendationList = JArray.Parse(recommendations);
+            int i = 0;
+            foreach (var recommendation in recommendations)
+            {
+                i++;
+                Image image = new Image();
+                if (i == 1)
+                {
+                    image.Margin = new Thickness(5, 35 * i, 5, 5);
+                }
+                else
+                {
+                    image.Margin = new Thickness(5, 35 + (53 * (i - 1)), 5, 5);
+                }
+                image.HorizontalAlignment = HorizontalAlignment.Left;
+                image.VerticalAlignment = VerticalAlignment.Top;
+                image.Width = 48;
+                image.Height = 48;
+                if (recommendation.ToString().StartsWith("*"))
+                {
+                    image.Source = new BitmapImage(new Uri("pack://application:,,,/icon.ico"));
+                }
+                else
+                {
                     string _serverLink = MainWindow.serverLink;
                     if (_serverLink.Contains("/"))
                     {
                         _serverLink = _serverLink.Substring(0, _serverLink.IndexOf("/"));
                     }
-                    noticeImage.Source = new BitmapImage(new Uri("https://msl." + _serverLink + "/notice.png"));
+                    image.Source = new BitmapImage(new Uri("https://msl." + _serverLink + "/recommendImg/" + i.ToString() + ".png"));
+                }
+                RecommendGrid.Children.Add(image);
+                RecommendGrid.RegisterName("RecImg" + i.ToString(), image);
+
+                TextBlock textBlock = new TextBlock();
+                textBlock.Text = recommendation.ToString();
+                textBlock.SetResourceReference(ForegroundProperty, "PrimaryTextBrush");
+                if (i == 1)
+                {
+                    textBlock.Margin = new Thickness(58, 35 * i, 5, 5);
                 }
                 else
                 {
-                    noticeLab.Visibility = Visibility.Visible;
-                    noticeImage.Source = null;
-                    noticeLab.Text = noticeLabText;
+                    textBlock.Margin = new Thickness(58, 35 + (53 * (i - 1)), 5, 5);
                 }
-
-            });
-        }
-
-        private void LoadRecommendations(string recommendations)
-        {
-            Dispatcher.Invoke(() =>
-            {
-                recommendBorder.Visibility = Visibility.Visible;
-                for (int x = 1; x < 100; x++)
-                {
-                    TextBlock textBlock = RecommendGrid.FindName("RecText" + x.ToString()) as TextBlock;
-                    if (textBlock != null)
-                    {
-                        RecommendGrid.Children.Remove(textBlock);
-                        RecommendGrid.UnregisterName("RecText" + x.ToString());
-                        Image img = RecommendGrid.FindName("RecImg" + x.ToString()) as Image;
-                        if (img != null)
-                        {
-                            RecommendGrid.Children.Remove(img);
-                            RecommendGrid.UnregisterName("RecImg" + x.ToString());
-                        }
-                    }
-                    else
-                    {
-                        break;
-                    }
-                }
-            });
-
-            // Parse the JSON array from the string
-            JArray recommendationList = JArray.Parse(recommendations);
-            int i = 0;
-            foreach (var recommendation in recommendationList)
-            {
-                i++;
-                Dispatcher.Invoke(() =>
-                {
-                    Image image = new Image();
-                    if (i == 1)
-                    {
-                        image.Margin = new Thickness(5, 35 * i, 5, 5);
-                    }
-                    else
-                    {
-                        image.Margin = new Thickness(5, 35 + (53 * (i - 1)), 5, 5);
-                    }
-                    image.HorizontalAlignment = HorizontalAlignment.Left;
-                    image.VerticalAlignment = VerticalAlignment.Top;
-                    image.Width = 48;
-                    image.Height = 48;
-                    if (recommendation.ToString().StartsWith("*"))
-                    {
-                        image.Source = new BitmapImage(new Uri("pack://application:,,,/icon.ico"));
-                    }
-                    else
-                    {
-                        string _serverLink = MainWindow.serverLink;
-                        if (_serverLink.Contains("/"))
-                        {
-                            _serverLink = _serverLink.Substring(0, _serverLink.IndexOf("/"));
-                        }
-                        image.Source = new BitmapImage(new Uri("https://msl." + _serverLink + "/recommendImg/" + i.ToString() + ".png"));
-                    }
-                    RecommendGrid.Children.Add(image);
-                    RecommendGrid.RegisterName("RecImg" + i.ToString(), image);
-
-                    TextBlock textBlock = new TextBlock();
-                    textBlock.Text = recommendation.ToString();
-                    textBlock.SetResourceReference(ForegroundProperty, "PrimaryTextBrush");
-                    if (i == 1)
-                    {
-                        textBlock.Margin = new Thickness(58, 35 * i, 5, 5);
-                    }
-                    else
-                    {
-                        textBlock.Margin = new Thickness(58, 35 + (53 * (i - 1)), 5, 5);
-                    }
-                    RecommendGrid.Children.Add(textBlock);
-                    RecommendGrid.RegisterName("RecText" + i.ToString(), textBlock);
-                });
+                RecommendGrid.Children.Add(textBlock);
+                RecommendGrid.RegisterName("RecText" + i.ToString(), textBlock);
             }
         }
 
@@ -257,7 +237,6 @@ namespace MSL.pages
                 JObject _jsonObject = JObject.Parse(File.ReadAllText(@"MSL\config.json", Encoding.UTF8));
                 if (_jsonObject["selectedServer"] != null)
                 {
-                    //MessageBox.Show(_jsonObject["selectedServer"].ToString());
                     int _i = int.Parse(_jsonObject["selectedServer"].ToString());
                     if (_i != -1)
                     {
@@ -295,7 +274,6 @@ namespace MSL.pages
             if (startServerDropdown.SelectedIndex == -1)
             {
                 CreateServerEvent();
-                //GetServerConfig();
             }
             else
             {
@@ -306,11 +284,6 @@ namespace MSL.pages
 
         private void gotoFrpBtn_Click(object sender, RoutedEventArgs e)
         {
-
-            //LanguageManager.Instance.ChangeLanguage(new CultureInfo("en-US"));
-
-
-
             GotoFrpcEvent();
         }
 

@@ -1199,7 +1199,7 @@ namespace MSL.pages
                 int dwnJava = 0;
                 await Dispatcher.Invoke(async () =>
                 {
-                    dwnJava = await DownloadJava(FinallyJavaCombo.SelectedItem.ToString(), (await HttpService.GetAsync("download/java/" + FinallyJavaCombo.SelectedItem.ToString()))[1]);
+                    dwnJava = await DownloadJava(FinallyJavaCombo.SelectedItem.ToString(), (await HttpService.GetApiContentAsync("download/java/" + FinallyJavaCombo.SelectedItem.ToString()))["data"]["url"].ToString());
                 });
                 if (dwnJava == 1)
                 {
@@ -1253,10 +1253,10 @@ namespace MSL.pages
             string finallyServerCore = FinallyCoreCombo.SelectedItem.ToString();
             string serverCoreType = finallyServerCore.Substring(0, finallyServerCore.LastIndexOf("-"));
             string filename = finallyServerCore + ".jar";
-            string[] dlContext = await HttpService.GetAsync("download/server/" + serverCoreType + "/" +
-                finallyServerCore.Substring(finallyServerCore.LastIndexOf("-") + 1), "", 0, true);//获取链接
-            string dlUrl = dlContext[1];
-            string sha256Exp = dlContext[2];
+            JObject dlContext = await HttpService.GetApiContentAsync("download/server/" + serverCoreType + "/" +
+                finallyServerCore.Substring(finallyServerCore.LastIndexOf("-") + 1));//获取链接
+            string dlUrl = dlContext["data"]["url"].ToString();
+            string sha256Exp = dlContext["data"]["sha256"].ToString();
             if (serverCoreType == "forge" || serverCoreType == "spongeforge" || serverCoreType == "neoforge")
             {
                 int dwnDialog = await Shows.ShowDownloaderWithIntReturn(Window.GetWindow(this), dlUrl, serverbase, filename, "下载服务端中……", sha256Exp, true); //从这里请求服务端下载
@@ -1286,9 +1286,9 @@ namespace MSL.pages
             {
                 string forgeName = finallyServerCore.Replace("spongeforge", "forge");
                 string _filename = forgeName + ".jar";
-                string[] _dlContext = await HttpService.GetAsync("download/server/" + forgeName.Replace("-", "/"), "", 0, true);
-                string _dlUrl = _dlContext[1];
-                string _sha256Exp = _dlContext[2];
+                JObject _dlContext = await HttpService.GetApiContentAsync("download/server/" + forgeName.Replace("-", "/"));
+                string _dlUrl = _dlContext["data"]["url"].ToString();
+                string _sha256Exp = _dlContext["data"]["sha256"].ToString();
                 int _dwnDialog = await Shows.ShowDownloaderWithIntReturn(Window.GetWindow(this), _dlUrl, serverbase, _filename, "下载服务端中……", _sha256Exp, true);
 
                 if (_dwnDialog == 2)

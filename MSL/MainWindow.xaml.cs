@@ -3,7 +3,6 @@ using HandyControl.Themes;
 using MSL.i18n;
 using MSL.pages;
 using MSL.utils;
-using Newtonsoft.Json;
 using Newtonsoft.Json.Linq;
 using System;
 using System.Collections.Generic;
@@ -36,15 +35,14 @@ namespace MSL
             new SettingsPage(),
             new About()
         };
-        public static event DeleControl LoadAnnounce;
         public static event DeleControl AutoOpenServer;
         public static event DeleControl AutoOpenFrpc;
         public static string serverLink = null;
+        public static string deviceID = null; //用于记录设备id
         public static float PhisicalMemory;
         public static bool getServerInfo = false;
         public static bool getPlayerInfo = false;
         public static readonly bool isI18N = false; //标识当前版本是否支持i18n
-        //public static string deviceID = null; //用于记录设备id
 
         public MainWindow()
         {
@@ -455,11 +453,14 @@ namespace MSL
             //get serverlink
             try
             {
-                serverLink = HttpService.Get("", "https://msl-server.oss-cn-hangzhou.aliyuncs.com/", 1);
+                deviceID = Functions.GetDeviceID();
+                serverLink = "mslmc.cn/v3";
+                //serverLink = HttpService.Get("", "https://msl-server.oss-cn-hangzhou.aliyuncs.com/", 1);
                 //Logger.LogInfo("连接到api：" + "https://api." + serverLink);
                 try
                 {
-                    if (((int)((JObject)JsonConvert.DeserializeObject(HttpService.Get("")))["status"]) != 200)
+                    //MessageBox.Show((await HttpService.GetApiContentAsync("")).ToString());
+                    if (((int)(await HttpService.GetApiContentAsync(""))["code"]) != 200)
                     {
                         serverLink = "waheal.top";
                         Growl.Info(LanguageManager.Instance["MainWindow_GrowlMsg_MslServerDown"]);
@@ -480,14 +481,14 @@ namespace MSL
             try
             {
                 //Logger.LogInfo("检查更新……");
-                string _httpReturn = HttpService.Get("query/update");
-                Version newVersion = new Version(_httpReturn);
+                JObject _httpReturn = await HttpService.GetApiContentAsync("query/update");
+                Version newVersion = new Version(_httpReturn["data"]["latestVersion"].ToString());
                 Version version = new Version(System.Reflection.Assembly.GetExecutingAssembly().GetName().Version.ToString());
 
                 if (newVersion > version)
                 {
                     //Logger.LogInfo("检测到新版本！");
-                    var updatelog = HttpService.Get("query/update/log");
+                    var updatelog = _httpReturn["data"]["log"].ToString();
                     if (jsonObject["autoUpdateApp"] == null)
                     {
                         string jsonString = File.ReadAllText(@"MSL\config.json", Encoding.UTF8);
@@ -499,7 +500,7 @@ namespace MSL
                     else if (jsonObject["autoUpdateApp"].ToString() == "True")
                     {
                         //Logger.LogInfo("自动更新功能已打开，更新新版本……");
-                        UpdateApp(_httpReturn);
+                        UpdateApp(_httpReturn["data"]["latestVersion"].ToString());
                     }
                     await Dispatcher.Invoke(async () =>
                     {
@@ -507,7 +508,7 @@ namespace MSL
                         if (dialog == true)
                         {
                             //Logger.LogInfo("更新新版本……");
-                            UpdateApp(_httpReturn);
+                            UpdateApp(_httpReturn["data"]["latestVersion"].ToString());
                         }
                         else
                         {
@@ -530,12 +531,13 @@ namespace MSL
                 //Logger.LogError("检测更新失败！");
                 Growl.Error(LanguageManager.Instance["MainWindow_GrowlMsg_CheckUpdateErr"]);
             }
+            /*
             await Dispatcher.InvokeAsync(() =>
             {
                 //Logger.LogInfo("开始加载公告……");
                 LoadAnnounce();
             });
-
+            */
         }
 
         private async void UpdateApp(string latestVersion)

@@ -662,13 +662,13 @@ namespace MSL.pages
             try
             {
                 var mainwindow = Window.GetWindow(Window.GetWindow(this));
-                string _httpReturn = (await HttpService.GetAsync("query/update"))[1];
-                Version newVersion = new Version(_httpReturn);
+                JObject _httpReturn = (await HttpService.GetApiContentAsync("query/update"));
+                Version newVersion = new Version(_httpReturn["data"]["latestVersion"].ToString());
                 Version version = new Version(System.Reflection.Assembly.GetExecutingAssembly().GetName().Version.ToString());
 
                 if (newVersion > version)
                 {
-                    var updatelog = HttpService.Get("query/update/log");
+                    var updatelog = _httpReturn["data"]["log"].ToString();
                     bool dialog = await Shows.ShowMsgDialogAsync(Window.GetWindow(this), "发现新版本，版本号为：" + _httpReturn + "，是否进行更新？\n更新日志：\n" + updatelog, "更新", true, "取消");
                     if (dialog == true)
                     {

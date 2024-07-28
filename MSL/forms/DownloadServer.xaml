@@ -22,7 +22,8 @@
         <Button x:Name="openSpigot" Content="SpigotMC" Margin="0,0,10,90" VerticalAlignment="Bottom" Width="185" FontSize="14" Height="35" Background="#33000000" Click="openSpigot_Click" HorizontalAlignment="Right"/>
         <Button x:Name="openPaper" Content="PaperMC" Margin="0,0,10,50" VerticalAlignment="Bottom" Width="185" FontSize="14" Height="35" Background="#33000000" Click="openPaper_Click" HorizontalAlignment="Right"/>
         <Button x:Name="openMojang" Content="Mojang" Margin="0,0,10,10" VerticalAlignment="Bottom" Width="185" FontSize="14" Height="35" Background="#33000000" Click="openMojang_Click" HorizontalAlignment="Right"/>
-        <TextBlock x:Name="getservermsg" HorizontalAlignment="Left" VerticalAlignment="Center" Margin="230,0,100,0" TextWrapping="Wrap" Text="加载中，请稍等..." FontSize="16" Foreground="{DynamicResource PrimaryBrush}"/>
+        <hc:LoadingCircle x:Name="Loading_Circle" Margin="0,0,300,0"/>
+        <TextBlock x:Name="getservermsg" Margin="0,0,100,0" TextWrapping="Wrap" Text="加载中，请稍等..." FontSize="16" Foreground="{DynamicResource PrimaryBrush}" HorizontalAlignment="Center" VerticalAlignment="Center"/>
         <TextBlock Text="所选服务端介绍：" Foreground="{DynamicResource PrimaryTextBrush}" HorizontalAlignment="Right" Margin="0,100,100,0" VerticalAlignment="Top" FontWeight="Bold"/>
     </Grid>
 </hc:Window>
