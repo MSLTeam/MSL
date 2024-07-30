@@ -102,7 +102,7 @@ namespace MSL.pages.frpProviders
                 await Task.Run(() =>
                 {
                     Ping pingSender = new Ping();
-                    PingReply reply = pingSender.Send(serverAddr, 2000); // 替换成您要 ping 的 IP 地址
+                    PingReply reply = pingSender.Send(serverAddr, 2000);
                     if (reply.Status == IPStatus.Success)
                     {
                         // 节点在线，可以获取延迟等信息
@@ -121,7 +121,6 @@ namespace MSL.pages.frpProviders
                         });
                     }
                 });
-
             }
             catch
             {

@@ -15,7 +15,6 @@ using System.Threading.Tasks;
 using System.Windows;
 using System.Windows.Controls;
 using System.Windows.Forms;
-using System.Windows.Threading;
 using MessageBox = System.Windows.MessageBox;
 using OpenFileDialog = Microsoft.Win32.OpenFileDialog;
 using Path = System.IO.Path;
@@ -41,6 +40,7 @@ namespace MSL.pages
         {
             InitializeComponent();
         }
+
         private void Page_Loaded(object sender, RoutedEventArgs e)
         {
             for (int a = 1; a != 0; a++)
@@ -68,17 +68,16 @@ namespace MSL.pages
             }
         }
 
-        private void FastModeBtn_Click(object sender, RoutedEventArgs e)
+        private async void FastModeBtn_Click(object sender, RoutedEventArgs e)
         {
-            MainGrid.Visibility = Visibility.Hidden;
+            MainGrid.Visibility = Visibility.Collapsed;
             FastModeGrid.Visibility = Visibility.Visible;
-            Thread thread = new Thread(FastModeGetCore);
-            thread.Start();
+            await FastModeGetCore();
         }
 
         private void CustomModeBtn_Click(object sender, RoutedEventArgs e)
         {
-            MainGrid.Visibility = Visibility.Hidden;
+            MainGrid.Visibility = Visibility.Collapsed;
             tabCtrl.Visibility = Visibility.Visible;
         }
 
@@ -257,37 +256,25 @@ namespace MSL.pages
                     noNext = true;
                 }
                 serverjava = txjava.Text;
-                await Dispatcher.InvokeAsync(() =>
-                {
-                    CheckServerPackCore();
-                });
+                await CheckServerPackCore();
             }
             else if (usejvPath.IsChecked == true)
             {
                 serverjava = "Java";
-                await Dispatcher.InvokeAsync(() =>
-                {
-                    CheckServerPackCore();
-                });
+                await CheckServerPackCore();
             }
             else if (usecheckedjv.IsChecked == true)
             {
                 string a = selectCheckedJavaComb.Items[selectCheckedJavaComb.SelectedIndex].ToString();
                 serverjava = a.Substring(a.IndexOf(":") + 2);
-                await Dispatcher.InvokeAsync(() =>
-                {
-                    CheckServerPackCore();
-                });
+                await CheckServerPackCore();
             }
             else if (usedownloadjv.IsChecked == true)
             {
                 try
                 {
                     int dwnJava = 0;
-                    await Dispatcher.Invoke(async () =>
-                    {
-                        dwnJava = await DownloadJava(selectJavaComb.SelectedItem.ToString(), HttpService.Get("download/java/" + selectJavaComb.SelectedItem.ToString()));
-                    });
+                    dwnJava = await DownloadJava(selectJavaComb.SelectedItem.ToString(), HttpService.Get("download/java/" + selectJavaComb.SelectedItem.ToString()));
                     if (dwnJava == 1)
                     {
                         ShowDialogs showDialogs = new ShowDialogs();
@@ -296,10 +283,7 @@ namespace MSL.pages
                         showDialogs.CloseTextDialog();
                         if (unzipJava)
                         {
-                            await Dispatcher.InvokeAsync(() =>
-                            {
-                                CheckServerPackCore();
-                            });
+                            await CheckServerPackCore();
                         }
                         else
                         {
@@ -308,10 +292,7 @@ namespace MSL.pages
                     }
                     else if (dwnJava == 2)
                     {
-                        await Dispatcher.InvokeAsync(() =>
-                        {
-                            CheckServerPackCore();
-                        });
+                        await CheckServerPackCore();
                     }
                     else
                     {
@@ -335,7 +316,7 @@ namespace MSL.pages
             }
         }
 
-        private async void CheckServerPackCore()
+        private async Task CheckServerPackCore()
         {
             if (isImportPack)
             {
@@ -535,7 +516,7 @@ namespace MSL.pages
             {
                 isImportPack = false;
                 MainGrid.Visibility = Visibility.Visible;
-                tabCtrl.Visibility = Visibility.Hidden;
+                tabCtrl.Visibility = Visibility.Collapsed;
                 welcome.IsSelected = true;
                 welcome.IsEnabled = true;
                 sjava.IsEnabled = false;
@@ -653,18 +634,9 @@ namespace MSL.pages
         private async void next_Click(object sender, RoutedEventArgs e)
         {
             servername = serverNameBox.Text;
-            if (new Regex("[\u4E00-\u9FA5]").IsMatch(txb6.Text))
+            if ((new Regex("[\u4E00-\u9FA5]").IsMatch(txb6.Text)) || txb6.Text.Contains(" "))
             {
-                bool result = await Shows.ShowMsgDialogAsync(Window.GetWindow(this), "使用带有中文的路径可能造成编码错误，导致无法开服，您确定要继续吗？", "警告", true, "取消");
-                if (result == false)
-                {
-                    return;
-                }
-            }
-            else if (txb6.Text.IndexOf(" ") + 1 != 0)
-            {
-                bool result = await Shows.ShowMsgDialogAsync(Window.GetWindow(this), "使用带有空格的路径可能造成编码错误，导致无法开服，您确定要继续吗？", "警告", true, "取消");
-                if (result == false)
+                if (!await Shows.ShowMsgDialogAsync(Window.GetWindow(this), "使用带有中文字符或空格的路径可能造成编码错误，导致无法开服，您确定要继续吗？", "警告", true))
                 {
                     return;
                 }
@@ -876,34 +848,32 @@ namespace MSL.pages
         private void Return_Click(object sender, RoutedEventArgs e)
         {
             MainGrid.Visibility = Visibility.Visible;
-            tabCtrl.Visibility = Visibility.Hidden;
-            FastModeGrid.Visibility = Visibility.Hidden;
+            tabCtrl.Visibility = Visibility.Collapsed;
+            FastModeGrid.Visibility = Visibility.Collapsed;
         }
 
         //用于分类的字典
-        public static Dictionary<string, List<string>> serverCoreTypes;
+        public static JObject serverCoreTypes;
         string[] serverTypes;
-        private void FastModeGetCore()
+        private async Task FastModeGetCore()
         {
             try
             {
                 //获取分类
-                var responseString = HttpService.Get("query/server_classify");
-                serverCoreTypes = JsonConvert.DeserializeObject<Dictionary<string, List<string>>>(responseString);
-                string jsonData = HttpService.Get("query/available_server_types");
+                var responseString = (await HttpService.GetApiContentAsync("query/server_classify"))["data"].ToString();
+                serverCoreTypes = (JObject)JsonConvert.DeserializeObject(responseString);
+                string jsonData = (await HttpService.GetApiContentAsync("query/available_server_types"))["data"]["types"].ToString();
                 serverTypes = JsonConvert.DeserializeObject<string[]>(jsonData);
-                Dispatcher.Invoke(() =>
-                {
-                    ServerCoreCombo.SelectedIndex = 0;
-                });
+                ServerCoreCombo.SelectedIndex = 0;
             }
             catch (Exception a)
             {
                 Growl.Info("获取服务端失败！请重试" + a.Message);
             }
         }
-        List<string> typeVersions = new List<string>();
-        private void ServerCoreCombo_SelectionChanged(object sender, SelectionChangedEventArgs e)
+
+        private List<string> typeVersions = new List<string>();
+        private async void ServerCoreCombo_SelectionChanged(object sender, SelectionChangedEventArgs e)
         {
             FastModeNextBtn.IsEnabled = false;
             ServerVersionCombo.ItemsSource = null;
@@ -914,151 +884,109 @@ namespace MSL.pages
                 Shows.ShowMsgDialog(Window.GetWindow(this), "服务端正在加载中，请稍后再选择！", "提示");
                 return;
             }
-            Thread thread = new Thread(GetServerVersion);
-            thread.Start();
+            await GetServerVersion();
         }
 
-        private void GetServerVersion()
+        private async Task GetServerVersion()
         {
-            int selectType = 0;
-            Dispatcher.Invoke(() =>
-            {
-                ServerCoreCombo.IsEnabled = false;
-                ServerCoreDescrip.Text = "加载中，请稍等……";
-                selectType = ServerCoreCombo.SelectedIndex;
-            });
+            ServerCoreCombo.IsEnabled = false;
+            ServerCoreDescrip.Text = "加载中，请稍等……";
             try
             {
                 int i = 0;
-                foreach (var serverType in serverTypes)
+                foreach (var serverType in serverCoreTypes)
                 {
-                    int x = 0;
-                    foreach (var coreTypes in serverCoreTypes)
+                    if (i == ServerCoreCombo.SelectedIndex)
                     {
-                        if (x == selectType)
-                        {
-                            string _serverType = serverType;
-                            /*
-                            if (serverType.Contains("（"))
-                            {
-                                _serverType = serverType.Substring(0, serverType.IndexOf("（"));
-                            }
-                            */
-                            foreach (var coreType in coreTypes.Value)
-                            {
-                                if (coreType == _serverType)
-                                {
-                                    try
-                                    {
-                                        var resultData = HttpService.Get("query/available_versions/" + _serverType);
-                                        tempServerCore.Add(coreType, resultData);
-                                        List<string> serverVersions = JsonConvert.DeserializeObject<List<string>>(resultData);
-                                        foreach (var item in serverVersions)
-                                        {
-                                            if (!typeVersions.Contains(item) && !item.StartsWith("*"))
-                                            {
-                                                typeVersions.Add(item);
-                                            }
-                                        }
-                                    }
-                                    catch
-                                    {
-                                        try
-                                        {
-                                            var resultData = HttpService.Get("query/available_versions/" + coreType);
-                                            tempServerCore.Add(coreType, resultData);
-                                            Dictionary<string, string> serverDetails = JsonConvert.DeserializeObject<Dictionary<string, string>>(resultData);
-                                            foreach (var item in serverDetails.Keys)
-                                            {
-                                                if (!typeVersions.Contains(item) && !item.StartsWith("*"))
-                                                {
-                                                    typeVersions.Add(item);
-                                                }
-                                            }
-                                        }
-                                        catch (Exception ex)
-                                        {
-                                            Dispatcher.Invoke(() =>
-                                            {
-                                                Shows.ShowMsgDialog(Window.GetWindow(this), "获取服务端失败！请重试！\n错误代码：" + ex.Message, "错误");
-                                            });
-                                            return;
-                                        }
-                                    }
-                                }
-                            }
-                            x++;
-                        }
-                        else
-                        {
-                            x++;
-                        }
+                        //MessageBox.Show(serverType.Key + "\n" + serverType.Value);
+                        await ProcessServerType((JArray)serverType.Value);
                     }
                     i++;
                 }
             }
             catch (Exception ex)
             {
-                Dispatcher.Invoke(() =>
-                {
-                    Shows.ShowMsgDialog(Window.GetWindow(this), "出现错误：" + ex.Message, "err");
-                    FastModeNextBtn.IsEnabled = true;
-                    return;
-                });
+                Shows.ShowMsgDialog(Window.GetWindow(this), "出现错误：" + ex.Message, "ERR");
+                FastModeNextBtn.IsEnabled = true;
+                return;
             }
             var sortedList = typeVersions.OrderByDescending(p => Functions.VersionCompare(p)).ToList();
-            Dispatcher.Invoke(() =>
+            ServerCoreCombo.IsEnabled = true;
+            FastModeNextBtn.IsEnabled = true;
+            ServerVersionCombo.ItemsSource = sortedList;
+            ServerVersionCombo.SelectedIndex = 0;
+            switch (ServerCoreCombo.SelectedIndex)
             {
-                ServerCoreCombo.IsEnabled = true;
-                FastModeNextBtn.IsEnabled = true;
-                ServerVersionCombo.ItemsSource = sortedList;
-                ServerVersionCombo.SelectedIndex = 0;
-                switch (ServerCoreCombo.SelectedIndex)
+                case 0:
+                    ServerCoreDescrip.Text = "插件服务器：指在服务端添加插件（客户端无需添加），通过更改服务端底层来增加功能，这种方式极易做到对服务器、服务器用户玩家进行管理，如权限组、封禁系统等，但这种方式不能修改客户端内容，所以也导致很多功能很难实现，如添加新的物品，只能通过更改材质包的方式让客户端显示新的物品";
+                    break;
+                case 1:
+                    ServerCoreDescrip.Text = "插件模组混合服务器（Forge加载器）：这种服务器将插件服务端和Forge服务端合二为一，既吸取了二者的优点（服务器管理功能可通过添加插件做到，添加新物品更改游戏玩法可通过添加模组做到），同时又有许多缺点（如服务器不稳定，同时添加插件和模组，极易造成冲突问题，且也存在模组服务器服务端和客户端需要同步模组的问题）";
+                    break;
+                case 2:
+                    ServerCoreDescrip.Text = "插件模组混合服务器（Fabric加载器）：这种服务器将插件服务端和Fabric服务端合二为一，既吸取了二者的优点（服务器管理功能可通过添加插件做到，添加新物品更改游戏玩法可通过添加模组做到），同时又有许多缺点（如服务器不稳定，同时添加插件和模组，极易造成冲突问题，且也存在模组服务器服务端和客户端需要同步模组的问题）";
+                    break;
+                case 3:
+                    ServerCoreDescrip.Text = "模组服务器（Forge加载器）：指通过Forge加载器，添加模组来增加功能（服务端和客户端均需添加），这种方式既可以更改服务端的内容，也可以更改客户端的内容，所以插件服务器无法实现的功能在这里即可轻易做到，但是这种方式很难做到插件服的管理功能，且需要客户端的模组和服务端进行同步，会给玩家造成一定的麻烦";
+                    break;
+                case 4:
+                    ServerCoreDescrip.Text = "模组服务器（Fabric加载器）：指通过Fabric加载器，添加模组来增加功能（服务端和客户端均需添加），这种方式既可以更改服务端的内容，也可以更改客户端的内容，所以插件服务器无法实现的功能在这里即可轻易做到，但是这种方式很难做到插件服的管理功能，且需要客户端的模组和服务端进行同步，会给玩家造成一定的麻烦";
+                    break;
+                case 5:
+                    ServerCoreDescrip.Text = "原版服务器：Mojang纯原生服务器，不能添加任何插件或模组，给您原汁原味的体验";
+                    break;
+                case 6:
+                    ServerCoreDescrip.Text = "基岩版服务器：专为基岩版提供的服务器，这种服务器在配置等方面和Java版服务器不太一样，同时开服器也不太适配，更改配置文件等相关操作只能您手动操作";
+                    break;
+                case 7:
+                    ServerCoreDescrip.Text = "代理服务器：指Java版群组服务器的转发服务器，这种服务器相当于一个桥梁，将玩家在不同的服务器之间进行传送转发，使用这种服务器您首先需要开启一个普通服务器，因为这种服务器没有游戏内容，如果没有普通服务器进行连接，玩家根本无法进入，且目前开服器并不兼容这种服务器，创建完毕后您需在列表右键该服务器并使用“命令行开服”功能来启动";
+                    break;
+            }
+        }
+
+        private async Task ProcessServerType(JArray serverType)
+        {
+            foreach (var coreType in serverType)
+            {
+                //MessageBox.Show(coreType.ToString());
+                var serverVersions = await TryGetServerVersions(coreType.ToString());
+                if (serverVersions == null)
                 {
-                    case 0:
-                        ServerCoreDescrip.Text = "插件服务器：指在服务端添加插件（客户端无需添加），通过更改服务端底层来增加功能，这种方式极易做到对服务器、服务器用户玩家进行管理，如权限组、封禁系统等，但这种方式不能修改客户端内容，所以也导致很多功能很难实现，如添加新的物品，只能通过更改材质包的方式让客户端显示新的物品";
-                        break;
-                    case 1:
-                        ServerCoreDescrip.Text = "插件模组混合服务器（Forge加载器）：这种服务器将插件服务端和Forge服务端合二为一，既吸取了二者的优点（服务器管理功能可通过添加插件做到，添加新物品更改游戏玩法可通过添加模组做到），同时又有许多缺点（如服务器不稳定，同时添加插件和模组，极易造成冲突问题，且也存在模组服务器服务端和客户端需要同步模组的问题）";
-                        break;
-                    case 2:
-                        ServerCoreDescrip.Text = "插件模组混合服务器（Fabric加载器）：这种服务器将插件服务端和Fabric服务端合二为一，既吸取了二者的优点（服务器管理功能可通过添加插件做到，添加新物品更改游戏玩法可通过添加模组做到），同时又有许多缺点（如服务器不稳定，同时添加插件和模组，极易造成冲突问题，且也存在模组服务器服务端和客户端需要同步模组的问题）";
-                        break;
-                    case 3:
-                        ServerCoreDescrip.Text = "模组服务器（Forge加载器）：指通过Forge加载器，添加模组来增加功能（服务端和客户端均需添加），这种方式既可以更改服务端的内容，也可以更改客户端的内容，所以插件服务器无法实现的功能在这里即可轻易做到，但是这种方式很难做到插件服的管理功能，且需要客户端的模组和服务端进行同步，会给玩家造成一定的麻烦";
-                        break;
-                    case 4:
-                        ServerCoreDescrip.Text = "模组服务器（Fabric加载器）：指通过Fabric加载器，添加模组来增加功能（服务端和客户端均需添加），这种方式既可以更改服务端的内容，也可以更改客户端的内容，所以插件服务器无法实现的功能在这里即可轻易做到，但是这种方式很难做到插件服的管理功能，且需要客户端的模组和服务端进行同步，会给玩家造成一定的麻烦";
-                        break;
-                    case 5:
-                        ServerCoreDescrip.Text = "原版服务器：Mojang纯原生服务器，不能添加任何插件或模组，给您原汁原味的体验";
-                        break;
-                    case 6:
-                        ServerCoreDescrip.Text = "基岩版服务器：专为基岩版提供的服务器，这种服务器在配置等方面和Java版服务器不太一样，同时开服器也不太适配，更改配置文件等相关操作只能您手动操作";
-                        break;
-                    case 7:
-                        ServerCoreDescrip.Text = "代理服务器：指Java版群组服务器的转发服务器，这种服务器相当于一个桥梁，将玩家在不同的服务器之间进行传送转发，使用这种服务器您首先需要开启一个普通服务器，因为这种服务器没有游戏内容，如果没有普通服务器进行连接，玩家根本无法进入，且目前开服器并不兼容这种服务器，创建完毕后您需在列表右键该服务器并使用“命令行开服”功能来启动";
-                        break;
+                    Shows.ShowMsgDialog(Window.GetWindow(this), "获取服务端失败！请重试！", "错误");
+                    return;
                 }
-            });
+
+                foreach (var version in serverVersions)
+                {
+                    if (!typeVersions.Contains(version))
+                    {
+                        typeVersions.Add(version);
+                    }
+                }
+            }
+        }
+
+        private async Task<List<string>> TryGetServerVersions(string serverType)
+        {
+            try
+            {
+                var resultData = (await HttpService.GetApiContentAsync("query/available_versions/" + serverType))["data"]["versionList"].ToString();
+                tempServerCore.Add(serverType, resultData);
+                return JsonConvert.DeserializeObject<List<string>>(resultData);
+            }
+            catch
+            {
+                return null;
+            }
         }
 
         private readonly Dictionary<string, string> tempServerCore = new Dictionary<string, string>();
         private async void FastModeNextBtn_Click(object sender, RoutedEventArgs e)
         {
             servername = ServerNameBox.Text;
-            if (new Regex("[\u4E00-\u9FA5]").IsMatch(txb6.Text))
+            if ((new Regex("[\u4E00-\u9FA5]").IsMatch(txb6.Text)) || txb6.Text.Contains(" "))
             {
-                bool result = await Shows.ShowMsgDialogAsync(Window.GetWindow(this), "开服器被放置于带有中文的目录里，中文目录可能会造成编码错误导致无法开服，您确定要继续吗？", "警告", true, "取消");
-                if (result == false)
-                {
-                    return;
-                }
-            }
-            else if (txb6.Text.IndexOf(" ") + 1 != 0)
-            {
-                bool result = await Shows.ShowMsgDialogAsync(Window.GetWindow(this), "开服器被放置于带有空格的目录里，这种目录可能会造成编码错误导致无法开服，您确定要继续吗？", "警告", true, "取消");
-                if (result == false)
+                if (!await Shows.ShowMsgDialogAsync(Window.GetWindow(this), "开服器被放置于带有中文字符或空格的目录里，这可能会造成编码错误，从而无法开服，您确定要继续吗？", "警告", true))
                 {
                     return;
                 }
@@ -1156,7 +1084,7 @@ namespace MSL.pages
             }
             FinallyCoreCombo.SelectedIndex = 0;
             FastModeNextBtn.IsEnabled = true;
-            FastModeGrid.Visibility = Visibility.Hidden;
+            FastModeGrid.Visibility = Visibility.Collapsed;
             InstallGrid.Visibility = Visibility.Visible;
         }
 
@@ -1168,10 +1096,7 @@ namespace MSL.pages
             try
             {
                 string response = string.Empty;
-                await Task.Run(() =>
-                {
-                    response = HttpService.Get("query/java");
-                });
+                response = (await HttpService.GetApiContentAsync("query/java"))["data"]["versionList"].ToString();
                 await Task.Delay(200);
                 JArray jArray = JArray.Parse(response);
                 List<string> strings = new List<string>();
@@ -1197,10 +1122,7 @@ namespace MSL.pages
                 FastModeInstallBtn.IsEnabled = false;
                 FastInstallProcess.Text = "当前进度:下载Java……";
                 int dwnJava = 0;
-                await Dispatcher.Invoke(async () =>
-                {
-                    dwnJava = await DownloadJava(FinallyJavaCombo.SelectedItem.ToString(), (await HttpService.GetApiContentAsync("download/java/" + FinallyJavaCombo.SelectedItem.ToString()))["data"]["url"].ToString());
-                });
+                dwnJava = await DownloadJava(FinallyJavaCombo.SelectedItem.ToString(), (await HttpService.GetApiContentAsync("download/java/" + FinallyJavaCombo.SelectedItem.ToString()))["data"]["url"].ToString());
                 if (dwnJava == 1)
                 {
                     FastInstallProcess.Text = "当前进度:解压Java……";
@@ -1211,10 +1133,7 @@ namespace MSL.pages
                     if (unzipJava)
                     {
                         FastInstallProcess.Text = "当前进度:下载服务端……";
-                        await Dispatcher.InvokeAsync(() =>
-                        {
-                            FastModeInstallCore();
-                        });
+                        await FastModeInstallCore();
                     }
                     else
                     {
@@ -1226,10 +1145,7 @@ namespace MSL.pages
                 else if (dwnJava == 2)
                 {
                     FastInstallProcess.Text = "当前进度:下载服务端……";
-                    await Dispatcher.InvokeAsync(() =>
-                    {
-                        FastModeInstallCore();
-                    });
+                    await FastModeInstallCore();
                 }
                 else
                 {
@@ -1248,7 +1164,7 @@ namespace MSL.pages
             }
         }
 
-        private async void FastModeInstallCore()
+        private async Task FastModeInstallCore()
         {
             string finallyServerCore = FinallyCoreCombo.SelectedItem.ToString();
             string serverCoreType = finallyServerCore.Substring(0, finallyServerCore.LastIndexOf("-"));

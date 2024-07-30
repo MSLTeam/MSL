@@ -8,7 +8,6 @@ using System.Diagnostics;
 using System.IO;
 using System.Net.NetworkInformation;
 using System.Text.RegularExpressions;
-using System.Threading;
 using System.Threading.Tasks;
 using System.Windows;
 using System.Windows.Controls;
@@ -34,7 +33,7 @@ namespace MSL.pages
             FrpcProcess.OutputDataReceived += new DataReceivedEventHandler(OutputDataReceived);
         }
 
-        private void Page_Loaded(object sender, RoutedEventArgs e)
+        private async void Page_Loaded(object sender, RoutedEventArgs e)
         {
             if (File.Exists("MSL\\frp\\P2Pfrpc"))
             {
@@ -54,15 +53,14 @@ namespace MSL.pages
                 Shows.ShowMsgDialog(Window.GetWindow(this), LanguageManager.Instance["Pages_OnlinePage_Dialog_Tips"], LanguageManager.Instance["Dialog_Warning"]);
                 masterExp.IsExpanded = true;
             }
-            Thread thread = new Thread(GetFrpcInfo);
-            thread.Start();
+            await GetFrpcInfo();
         }
 
-        private void GetFrpcInfo()
+        private async Task GetFrpcInfo()
         {
             try
             {
-                string mslFrpInfo = HttpService.Get("query/MSLFrps");
+                string mslFrpInfo = (await HttpService.GetApiContentAsync("query/frp/MSLFrps"))["data"].ToString();
                 JObject valuePairs = (JObject)JsonConvert.DeserializeObject(mslFrpInfo);
                 foreach (var valuePair in valuePairs)
                 {
@@ -82,33 +80,34 @@ namespace MSL.pages
                     }
                     break;
                 }
-                Ping pingSender = new Ping();
-                PingReply reply = pingSender.Send(ipAddress, 2000); //一个可爱的ip，ping一下
-                if (reply.Status == IPStatus.Success)
+                await Task.Run(() =>
                 {
-                    //服务器活着，太好了！
-                    Dispatcher.Invoke(() =>
+                    Ping pingSender = new Ping();
+                    PingReply reply = pingSender.Send(ipAddress, 2000);
+                    if (reply.Status == IPStatus.Success)
                     {
-                        serverState.Text = LanguageManager.Instance["Pages_Online_ServerStatusOK"];
-                    });
-                }
-                else
-                {
-                    //跑路了.jpg
-                    Dispatcher.Invoke(() =>
+                        Dispatcher.Invoke(() =>
+                        {
+                            //服务器活着，太好了！
+                            serverState.Text = LanguageManager.Instance["Pages_Online_ServerStatusOK"];
+                        });
+                    }
+                    else
                     {
-                        serverState.Text = LanguageManager.Instance["Pages_Online_ServerStatusDown"];
-                    });
-                }
+                        Dispatcher.Invoke(() =>
+                        {
+                            //跑路了.jpg
+                            serverState.Text = LanguageManager.Instance["Pages_Online_ServerStatusDown"];
+                        });
+                    }
+                });
             }
             catch
             {
-                Dispatcher.Invoke(() =>
-                {
-                    serverState.Text = LanguageManager.Instance["Pages_Online_ServerStatusDown"];
-                });
+                serverState.Text = LanguageManager.Instance["Pages_Online_ServerStatusDown"];
             }
         }
+
         private void masterExp_Expanded(object sender, RoutedEventArgs e)
         {
             visiterExp.IsExpanded = false;

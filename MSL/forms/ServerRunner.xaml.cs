@@ -2753,9 +2753,9 @@ namespace MSL
                 jVMcmd.Text = RserverJVMcmd;
                 jAva.Text = Rserverjava;
 
-                Task.Run(() =>
+                Task.Run(async () =>
                 {
-                    LoadJavaInfo();
+                    await LoadJavaInfo();
                 });
 
                 if (RserverJVM == "")
@@ -2800,7 +2800,7 @@ namespace MSL
             }
         }
 
-        private void LoadJavaInfo()
+        private async Task LoadJavaInfo()
         {
             try
             {
@@ -2812,7 +2812,7 @@ namespace MSL
                 {
                     selectJava.Items.Clear();
                 });
-                string response = HttpService.Get("query/java");
+                string response = (await HttpService.GetApiContentAsync("query/java"))["data"]["versionList"].ToString();
                 JArray jArray = JArray.Parse(response);
                 foreach (var j in jArray)
                 {
@@ -2898,10 +2898,7 @@ namespace MSL
                     int dwnJava = 0;
                     try
                     {
-                        await Dispatcher.Invoke(async () =>
-                        {
-                            dwnJava = await DownloadJava(selectJava.SelectedItem.ToString(), HttpService.Get("download/java/" + selectJava.SelectedItem.ToString()));
-                        });
+                        dwnJava = await DownloadJava(selectJava.SelectedItem.ToString(), (await HttpService.GetApiContentAsync("download/java/" + selectJava.SelectedItem.ToString()))["data"]["url"].ToString());
                         if (dwnJava == 1)
                         {
                             Growl.Info("解压中……");
