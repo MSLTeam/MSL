@@ -80,7 +80,7 @@ namespace MSL.utils
         public static async Task<JObject> GetApiContentAsync(string path)
         {
             HttpResponse _response = await GetApiAsync(path);
-            return (JObject)JsonConvert.DeserializeObject(_response.HttpResponseContent.ToString());
+            return JObject.Parse(_response.HttpResponseContent.ToString());
         }
 
         /// <summary>

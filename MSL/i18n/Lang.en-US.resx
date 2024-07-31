@@ -235,9 +235,6 @@ Do you want to create a new server?</value>
   <data name="Pages_Frpc_Close" xml:space="preserve">
     <value>Stop Frpc</value>
   </data>
-  <data name="Pages_Frpc_Configuration" xml:space="preserve">
-    <value>Configuration</value>
-  </data>
   <data name="Pages_Frpc_Copy" xml:space="preserve">
     <value>Copy</value>
   </data>
@@ -251,8 +248,7 @@ Do you want to create a new server?</value>
     <value>Launch Frpc</value>
   </data>
   <data name="Pages_Frpc_Status" xml:space="preserve">
-    <value>No frp configuration detected,
-please click the configuration button to configure</value>
+    <value>No Status</value>
   </data>
   <data name="Pages_Frpc_Title" xml:space="preserve">
     <value>Frp</value>

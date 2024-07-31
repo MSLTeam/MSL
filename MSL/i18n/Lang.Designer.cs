@@ -467,15 +467,6 @@ namespace MSL.i18n {
         }
         
         /// <summary>
-        ///   查找类似 配置 的本地化字符串。
-        /// </summary>
-        internal static string Pages_Frpc_Configuration {
-            get {
-                return ResourceManager.GetString("Pages_Frpc_Configuration", resourceCulture);
-            }
-        }
-        
-        /// <summary>
         ///   查找类似 复制 的本地化字符串。
         /// </summary>
         internal static string Pages_Frpc_Copy {
@@ -512,7 +503,7 @@ namespace MSL.i18n {
         }
         
         /// <summary>
-        ///   查找类似 未检测到内网映射配置，请点击 配置 按钮以配置 的本地化字符串。
+        ///   查找类似 无 状态 的本地化字符串。
         /// </summary>
         internal static string Pages_Frpc_Status {
             get {

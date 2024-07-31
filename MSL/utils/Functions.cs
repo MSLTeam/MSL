@@ -105,28 +105,6 @@ namespace MSL.utils
 
         public static string GetDeviceID()
         {
-            /*
-            if (MainWindow.deviceID == null)
-            {
-                //获取windows-sid
-                System.Security.Principal.WindowsIdentity currentUser = System.Security.Principal.WindowsIdentity.GetCurrent();
-                string sid = currentUser.User.ToString() + "==Ovo**#MSL#**ovO==";
-                byte[] dataToHash = new ASCIIEncoding().GetBytes(sid);
-                byte[] hashvalue = ((System.Security.Cryptography.HashAlgorithm)System.Security.Cryptography.CryptoConfig.CreateFromName("MD5")).ComputeHash(dataToHash);
-                string ATR = "";
-                //32 hash
-                for (int i = 0; i < 16; i++)
-                {
-                    ATR += hashvalue[i].ToString("x2");
-                }
-                MainWindow.deviceID = ATR.ToUpper();
-                return ATR.ToUpper();
-            }
-            else
-            {
-                return MainWindow.deviceID;
-            }
-            */
             //获取windows-sid
             try
             {
@@ -146,6 +124,20 @@ namespace MSL.utils
             catch
             {
                 return null;
+            }
+        }
+
+        public static int Frpc_GenerateRandomInt()
+        {
+            Random random = new Random();
+            int a = random.Next();
+            if (!Directory.Exists("MSL\\frp\\" + a.ToString()))
+            {
+                return a;
+            }
+            else
+            {
+                return Frpc_GenerateRandomInt();
             }
         }
 
@@ -235,50 +227,6 @@ namespace MSL.utils
                         return argsFile;
                     }
 
-                    /*
-                    if (Directory.Exists(_base + "\\libraries\\net\\minecraftforge\\forge"))
-                    {
-                        string[] subFolders = Directory.GetDirectories(_base + "\\libraries\\net\\minecraftforge\\forge");
-                        foreach (string subFolder in subFolders)
-                        {
-                            if (File.Exists(subFolder + "\\win_args.txt"))
-                            {
-                                forgeVersion = Path.GetFileName(subFolder);
-                                if (forgeVersion.Contains(mcVersion))
-                                {
-                                    return "@libraries/net/minecraftforge/forge/" + forgeVersion + "/win_args.txt %*";
-                                }
-                            }
-                        }
-                        checkRootBase = true;
-                    }
-                    else if (Directory.Exists(_base + "\\libraries\\net\\neoforged\\neoforge"))
-                    {
-                        string[] subFolders = Directory.GetDirectories(_base + "\\libraries\\net\\neoforged\\neoforge");
-                        foreach (string subFolder in subFolders)
-                        {
-                            if (File.Exists(subFolder + "\\win_args.txt"))
-                            {
-                                forgeVersion = Path.GetFileName(subFolder);
-                                return "@libraries/net/neoforged/neoforge/" + forgeVersion + "/win_args.txt %*";
-                            }
-                        }
-                        checkRootBase = true;
-                    }
-                    else if (Directory.Exists(_base + "\\libraries\\net\\neoforged\\forge"))
-                    {
-                        string[] subFolders = Directory.GetDirectories(_base + "\\libraries\\net\\neoforged\\forge");
-                        foreach (string subFolder in subFolders)
-                        {
-                            if (File.Exists(subFolder + "\\win_args.txt"))
-                            {
-                                forgeVersion = Path.GetFileName(subFolder);
-                                return "@libraries/net/neoforged/forge/" + forgeVersion + "/win_args.txt %*";
-                            }
-                        }
-                        checkRootBase = true;
-                    }
-                    */
                     DirectoryInfo directoryInfo = new DirectoryInfo(_base);
                     FileInfo[] fileInfo = directoryInfo.GetFiles();
                     foreach (FileInfo file in fileInfo)

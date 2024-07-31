@@ -135,10 +135,6 @@ namespace MSL.pages.frpProviders
                             serversList.Items.Add(node.Key);
                         }
                     }
-                    else
-                    {
-                        Shows.ShowMsgDialog(Window.GetWindow(this), "你的账户看起来一条隧道也没有……", "提示");
-                    }
                 }
                 else
                 {
@@ -194,15 +190,26 @@ namespace MSL.pages.frpProviders
                 return;
             }
             string id = nodelist[o.ToString()];
-            Directory.CreateDirectory("MSL\\frp");
-            File.WriteAllText(@"MSL\frp\frpc", $"-u {token} -p {id}");
-            JObject jobject = JObject.Parse(File.ReadAllText(@"MSL\config.json", Encoding.UTF8));
-            jobject["frpcServer"] = "1";
-            string convertString = Convert.ToString(jobject);
-            File.WriteAllText(@"MSL\config.json", convertString, Encoding.UTF8);
-            await Shows.ShowMsgDialogAsync(Window.GetWindow(this), "映射配置成功，请您点击“启动内网映射”以启动映射！", "信息");
-            window.Close();
 
+            Directory.CreateDirectory("MSL\\frp");
+            int number = Functions.Frpc_GenerateRandomInt();
+            if (!File.Exists(@"MSL\frp\config.json"))
+            {
+                //Logger.LogWarning("未检测到config.json文件，创建config.json……");
+                File.WriteAllText(@"MSL\frp\config.json", string.Format("{{{0}}}", "\n"));
+            }
+            Directory.CreateDirectory("MSL\\frp\\" + number);
+            File.WriteAllText($"MSL\\frp\\{number}\\frpc", $"-u {token} -p {id}");
+            JObject keyValues = new JObject()
+            {
+                ["frpcServer"] = "1",
+            };
+            JObject jobject = JObject.Parse(File.ReadAllText(@"MSL\frp\config.json", Encoding.UTF8));
+            jobject.Add(number.ToString(), keyValues);
+            string convertString = Convert.ToString(jobject);
+            File.WriteAllText(@"MSL\frp\config.json", convertString, Encoding.UTF8);
+            await Shows.ShowMsgDialogAsync(window, "映射配置成功，请您点击“启动内网映射”以启动映射！", "信息");
+            window.Close();
         }
 
         private void frpcType_SelectionChanged(object sender, SelectionChangedEventArgs e)

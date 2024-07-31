@@ -30,7 +30,7 @@ namespace MSL
         {
             new Home(),
             new ServerList(),
-            new FrpcPage(),
+            new FrpcList(),
             new OnlinePage(),
             new SettingsPage(),
             new About()
@@ -50,6 +50,8 @@ namespace MSL
             Home.GotoFrpcEvent += GotoOnlinePage;
             Home.CreateServerEvent += GotoCreatePage;
             ServerList.CreateServerEvent += GotoCreatePage;
+            FrpcList.OpenFrpcPage += OpenFrpcPage;
+            FrpcPage.GotoFrpcListPage += GotoFrpcListPage;
             CreateServer.GotoServerList += GotoListPage;
             SettingsPage.C_NotifyIcon += CtrlNotifyIcon;
             SettingsPage.ChangeSkinStyle += ChangeSkinStyle;
@@ -416,6 +418,8 @@ namespace MSL
                 //Logger.LogError("读取自动开启（服务器）配置失败！");
                 MessageBox.Show(LanguageManager.Instance["MainWindow_GrowlMsg_AutoLaunchServerErr"] + ex.Message, LanguageManager.Instance["Dialog_Err"], MessageBoxButton.OK, MessageBoxImage.Error);
             }
+
+            /*
             //自动开启Frpc
             try
             {
@@ -439,6 +443,7 @@ namespace MSL
                 //Logger.LogError("读取自动开启（内网映射）配置失败！");
                 MessageBox.Show(LanguageManager.Instance["MainWindow_GrowlMsg_AutoLaunchFrpsErr"] + ex.Message, LanguageManager.Instance["Dialog_Err"], MessageBoxButton.OK, MessageBoxImage.Error);
             }
+            */
 
             //Logger.LogInfo("所有配置载入完毕！调整UI界面……");
             Dispatcher.Invoke(() =>
@@ -637,11 +642,20 @@ namespace MSL
             return false;
         }
 
+        private static bool CheckFrpcRunning()
+        {
+            if (FrpcList.RunningFrpc.Count != 0)
+            {
+                return true;
+            }
+            return false;
+        }
+
         public static bool ProcessRunningCheck()
         {
             try
             {
-                if (CheckServerRunning() || FrpcPage.FrpcProcess.HasExited == false || OnlinePage.FrpcProcess.HasExited == false)
+                if (CheckServerRunning() || CheckFrpcRunning() || OnlinePage.FrpcProcess.HasExited == false)
                 {
                     //Logger.LogWarning("服务器、内网映射或联机功能正在运行中！");
                     return true;
@@ -655,9 +669,9 @@ namespace MSL
             {
                 try
                 {
-                    if (FrpcPage.FrpcProcess.HasExited == false || OnlinePage.FrpcProcess.HasExited == false)
+                    if (OnlinePage.FrpcProcess.HasExited == false)
                     {
-                        //Logger.LogWarning("内网映射或联机功能正在运行中！");
+                        //Logger.LogWarning("联机功能正在运行中！");
                         return true;
                     }
                     else
@@ -667,22 +681,7 @@ namespace MSL
                 }
                 catch
                 {
-                    try
-                    {
-                        if (OnlinePage.FrpcProcess.HasExited == false)
-                        {
-                            //Logger.LogWarning("联机功能正在运行中！");
-                            return true;
-                        }
-                        else
-                        {
-                            return false;
-                        }
-                    }
-                    catch
-                    {
-                        return false;
-                    }
+                    return false;
                 }
             }
         }
@@ -701,7 +700,6 @@ namespace MSL
 
         private void GotoOnlinePage()
         {
-            //frame.Content = _onlinePage;
             SideMenu.SelectedIndex = 3;
             frame.Content = Pages[SideMenu.SelectedIndex];
         }
@@ -710,14 +708,28 @@ namespace MSL
         {
             SideMenu.SelectedIndex = 1;
             frame.Content = new CreateServer();
-            //SideMenu.SelectedIndex = -1;
         }
 
         private void GotoListPage()
         {
-            //frame.Content = _listPage;
-            //SideMenu.SelectedIndex = 1;
+            SideMenu.SelectedIndex = 1;
             frame.Content = Pages[SideMenu.SelectedIndex];
+        }
+
+        private void GotoFrpcListPage()
+        {
+            SideMenu.SelectedIndex = 2;
+            frame.Content = Pages[SideMenu.SelectedIndex];
+        }
+
+        private void OpenFrpcPage()
+        {
+            SideMenu.SelectedIndex = 2;
+            if (!FrpcList.FrpcPageList.ContainsKey(FrpcList.FrpcID))
+            {
+                FrpcList.FrpcPageList.Add(FrpcList.FrpcID, new FrpcPage(FrpcList.FrpcID));
+            }
+            frame.Content = FrpcList.FrpcPageList[FrpcList.FrpcID];
         }
 
         private void ChangeSkinStyle()
@@ -793,7 +805,7 @@ namespace MSL
             }
         }
 
-        private void SideMenu_SelectionChanged(object sender, System.Windows.Controls.SelectionChangedEventArgs e)
+        private void SideMenu_SelectionChanged(object sender, SelectionChangedEventArgs e)
         {
             if (SideMenu.SelectedIndex != -1)
             {

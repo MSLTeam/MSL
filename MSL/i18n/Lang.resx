@@ -265,9 +265,6 @@ BMCLAPI —— Forge服务端下载源
   <data name="Pages_Frpc_Close" xml:space="preserve">
     <value>关闭内网映射</value>
   </data>
-  <data name="Pages_Frpc_Configuration" xml:space="preserve">
-    <value>配置</value>
-  </data>
   <data name="Pages_Frpc_Copy" xml:space="preserve">
     <value>复制</value>
   </data>
@@ -281,7 +278,7 @@ BMCLAPI —— Forge服务端下载源
     <value>启动内网映射</value>
   </data>
   <data name="Pages_Frpc_Status" xml:space="preserve">
-    <value>未检测到内网映射配置，请点击 配置 按钮以配置</value>
+    <value>无 状态</value>
   </data>
   <data name="Pages_Frpc_Title" xml:space="preserve">
     <value>内网映射</value>

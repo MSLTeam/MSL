@@ -41,7 +41,7 @@
                 </Grid.RowDefinitions>
                 <TextBox Grid.Row="0" Grid.Column="0" x:Name="frpcOutlog"  TextWrapping="Wrap" Text="Logs" IsReadOnly="True" HorizontalScrollBarVisibility="Visible" VerticalScrollBarVisibility="Auto" VerticalContentAlignment="Top" Padding="10"/>
                 <StackPanel Grid.Column="1" VerticalAlignment="Center" Margin="10,0,5,0">
-                    <Button x:Name="setfrpc" Content="{Binding [Pages_Frpc_Configuration], Source={x:Static langs:LanguageManager.Instance}}" HorizontalAlignment="Right" Width="140" Height="60" FontSize="16" Click="setfrpc_Click" Margin="0,0,0,50"/>
+                    <Button x:Name="Return" Margin="0,0,0,20" Content="返回Frpc列表" HorizontalAlignment="Right"  Width="140" Height="60" FontSize="16" Click="Return_Click"/>
                     <Button x:Name="startfrpc" Content="{Binding [Pages_Frpc_Launch], Source={x:Static langs:LanguageManager.Instance}}" Style="{StaticResource ButtonPrimary}" HorizontalAlignment="Right"  Width="140" Height="60" FontSize="16" IsEnabled="False" Click="startfrpc_Click"/>
                 </StackPanel>
             </Grid>

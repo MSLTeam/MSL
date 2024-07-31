@@ -18,29 +18,6 @@ namespace MSL.pages.frpProviders
     /// <summary>
     /// ChmlFrp.xaml 的交互逻辑
     /// </summary>
-    /**
- *　　┏┓　　　┏┓+ +
- *　┏┛┻━━━┛┻┓ + +
- *　┃　　　　　　　┃ 　
- *　┃　　　━　　　┃ ++ + + +
- * ████━████ ┃+
- *　┃　　　　　　　┃ +
- *　┃　　　┻　　　┃
- *　┃　　　　　　　┃ + +
- *　┗━┓　　　┏━┛
- *　　　┃　　　┃　　　　　　　　　　　
- *　　　┃　　　┃ + + + +
- *　　　┃　　　┃
- *　　　┃　　　┃ +  神兽保佑
- *　　　┃　　　┃    代码无bug　　
- *　　　┃　　　┃　　+　　　　　　　　　
- *　　　┃　 　　┗━━━┓ + +
- *　　　┃ 　　　　　　　┣┓
- *　　　┃ 　　　　　　　┏┛
- *　　　┗┓┓┏━┳┓┏┛ + + + +
- *　　　　┃┫┫　┃┫┫
- *　　　　┗┻┛　┗┻┛+ + + +
- */
     public partial class ChmlFrp : Page
     {
         private readonly string ChmlFrpApiUrl = "https://cf-v1.uapis.cn";
@@ -57,7 +34,6 @@ namespace MSL.pages.frpProviders
             LoginGrid.Visibility = Visibility.Visible;
             CreateGrid.Visibility = Visibility.Collapsed;
             //自动登录
-            //JObject jobject = JObject.Parse(File.ReadAllText(@"MSL\config.json", Encoding.UTF8));
             if (Config.Read("ChmlToken") != "")
             {
                 ShowDialogs showDialogs = new ShowDialogs();
@@ -206,7 +182,7 @@ namespace MSL.pages.frpProviders
 
         }
 
-        public class TunnelInfo
+        internal class TunnelInfo
         {
             public string ID { get; set; }
             public string Type { get; set; }
@@ -288,11 +264,7 @@ namespace MSL.pages.frpProviders
             {
                 Shows.ShowMsgDialog(Window.GetWindow(this), e.Message, "出错了！");
             }
-
-
         }
-
-
 
         private void FrpList_SelectionChanged(object sender, SelectionChangedEventArgs e)
         {
@@ -341,24 +313,34 @@ namespace MSL.pages.frpProviders
                         $"local_port = {LocalPort.Text}\r\nremote_port = {selectedTunnel.RPort}\r\n" +
                         $"use_encryption = {selectedTunnel.Encryption}\r\n" +
                         $"use_compression = {selectedTunnel.Compression}\r\n \r\n";
+
                     Directory.CreateDirectory("MSL\\frp");
-                    File.WriteAllText(@"MSL\frp\frpc", FrpcConfig);
-                    JObject jobject = JObject.Parse(File.ReadAllText(@"MSL\config.json", Encoding.UTF8));
-                    jobject["frpcServer"] = "2";
+                    int number = Functions.Frpc_GenerateRandomInt();
+                    if (!File.Exists(@"MSL\frp\config.json"))
+                    {
+                        File.WriteAllText(@"MSL\frp\config.json", string.Format("{{{0}}}", "\n"));
+                    }
+                    Directory.CreateDirectory("MSL\\frp\\" + number);
+                    File.WriteAllText($"MSL\\frp\\{number}\\frpc", FrpcConfig);
+                    JObject keyValues = new JObject()
+                    {
+                        ["frpcServer"] = "2",
+                    };
+                    JObject jobject = JObject.Parse(File.ReadAllText(@"MSL\frp\config.json", Encoding.UTF8));
+                    jobject.Add(number.ToString(), keyValues);
                     string convertString = Convert.ToString(jobject);
-                    File.WriteAllText(@"MSL\config.json", convertString, Encoding.UTF8);
-                    await Shows.ShowMsgDialogAsync(Window.GetWindow(this), "ChmlFrp隧道配置成功，请您点击“启动内网映射”以启动映射！", "信息");
+                    File.WriteAllText(@"MSL\frp\config.json", convertString, Encoding.UTF8);
+                    await Shows.ShowMsgDialogAsync(Window.GetWindow(this), "映射配置成功，请您点击“启动内网映射”以启动映射！", "信息");
                     Window.GetWindow(this).Close();
                 }
                 catch (Exception ex)
                 {
-                    await Shows.ShowMsgDialogAsync(Window.GetWindow(this), "写入Frp配置失败！\n" + ex.Message, "出错");
+                    await Shows.ShowMsgDialogAsync(Window.GetWindow(this), "写入Frpc配置失败！\n" + ex.Message, "出错");
                 }
-
             }
             else
             {
-                await Shows.ShowMsgDialogAsync(Window.GetWindow(this), "诚恳的建议，您选择一个隧道再按确定哦~", "隧道呢？");
+                await Shows.ShowMsgDialogAsync(Window.GetWindow(this), "请您选择一个隧道再按确定哦~", "隧道呢？");
             }
         }
 
@@ -416,9 +398,7 @@ namespace MSL.pages.frpProviders
                         Shows.ShowMsgDialog(Window.GetWindow(this), ex.Message, "失败！");
                     });
                 }
-
             }
-
         }
 
 
@@ -491,7 +471,6 @@ namespace MSL.pages.frpProviders
                                 NodeGroupName = "普通节点",
                             });
                         }
-
                     });
                 }
             }
@@ -548,7 +527,6 @@ namespace MSL.pages.frpProviders
             {
                 Shows.ShowMsgDialog(Window.GetWindow(this), "您似乎没有选择节点！", "错误");
             }
-
         }
 
         //post把数据丢过去
@@ -591,9 +569,7 @@ namespace MSL.pages.frpProviders
                 {
                     Shows.ShowMsgDialog(Window.GetWindow(this), $"隧道创建失败！\n{PostResponse["error"]}", "创建失败！");
                 });
-
             }
-
         }
 
         private void RefreshBtn_Click(object sender, RoutedEventArgs e)

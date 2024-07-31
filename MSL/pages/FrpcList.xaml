@@ -1,0 +1,16 @@
+﻿<Page x:Class="MSL.pages.FrpcList"
+      xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+      xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+      xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006" 
+      xmlns:d="http://schemas.microsoft.com/expression/blend/2008" 
+      xmlns:local="clr-namespace:MSL.pages"
+      mc:Ignorable="d" 
+      d:DesignHeight="460" d:DesignWidth="750"
+      Title="FrpcList" Loaded="Page_Loaded">
+
+    <Grid>
+        <ListBox x:Name="FrpcListBox" Margin="10" MouseDoubleClick="FrpcListBox_MouseDoubleClick"/>
+        <Button x:Name="AddFrpc" Margin="10,10,60,10" Content="添加" HorizontalAlignment="Right" VerticalAlignment="Bottom" Click="AddFrpc_Click"/>
+        <Button x:Name="DelFrpc" Margin="10" Content="删除" HorizontalAlignment="Right" VerticalAlignment="Bottom" Click="DelFrpc_Click"/>
+    </Grid>
+</Page>
