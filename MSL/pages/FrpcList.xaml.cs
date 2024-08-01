@@ -52,7 +52,7 @@ namespace MSL.pages
 
         private void FrpcListBox_KeyUp(object sender, KeyEventArgs e)
         {
-            if (e.Key == Key.Enter)
+            if (e.Key == Key.Space)
             {
                 FrpcID = int.Parse(FrpcListBox.SelectedItem.ToString());
                 OpenFrpcPage();
