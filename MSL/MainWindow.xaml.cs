@@ -494,6 +494,7 @@ namespace MSL
             {
                 //Logger.LogInfo("检查更新……");
                 JObject _httpReturn = await HttpService.GetApiContentAsync("query/update");
+                string _version = _httpReturn["data"]["latestVersion"].ToString();
                 Version newVersion = new Version(_httpReturn["data"]["latestVersion"].ToString());
                 Version version = new Version(System.Reflection.Assembly.GetExecutingAssembly().GetName().Version.ToString());
 
@@ -512,15 +513,15 @@ namespace MSL
                     else if (jsonObject["autoUpdateApp"].ToString() == "True")
                     {
                         //Logger.LogInfo("自动更新功能已打开，更新新版本……");
-                        UpdateApp(_httpReturn["data"]["latestVersion"].ToString());
+                        UpdateApp(_version);
                     }
                     await Dispatcher.Invoke(async () =>
                     {
-                        bool dialog = await Shows.ShowMsgDialogAsync(this, LanguageManager.Instance["MainWindow_GrowlMsg_UpdateInfo1"] + _httpReturn + LanguageManager.Instance["MainWindow_GrowlMsg_UpdateInfo2"] + updatelog, LanguageManager.Instance["MainWindow_GrowlMsg_Update"], true);
+                        bool dialog = await Shows.ShowMsgDialogAsync(this, LanguageManager.Instance["MainWindow_GrowlMsg_UpdateInfo1"] + _version + LanguageManager.Instance["MainWindow_GrowlMsg_UpdateInfo2"] + updatelog, LanguageManager.Instance["MainWindow_GrowlMsg_Update"], true);
                         if (dialog == true)
                         {
                             //Logger.LogInfo("更新新版本……");
-                            UpdateApp(_httpReturn["data"]["latestVersion"].ToString());
+                            UpdateApp(_version);
                         }
                         else
                         {
@@ -543,13 +544,6 @@ namespace MSL
                 //Logger.LogError("检测更新失败！");
                 Growl.Error(LanguageManager.Instance["MainWindow_GrowlMsg_CheckUpdateErr"]);
             }
-            /*
-            await Dispatcher.InvokeAsync(() =>
-            {
-                //Logger.LogInfo("开始加载公告……");
-                LoadAnnounce();
-            });
-            */
         }
 
         private async void UpdateApp(string latestVersion)

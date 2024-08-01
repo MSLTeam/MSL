@@ -666,13 +666,14 @@ namespace MSL.pages
             {
                 var mainwindow = Window.GetWindow(Window.GetWindow(this));
                 JObject _httpReturn = (await HttpService.GetApiContentAsync("query/update"));
+                string _version = _httpReturn["data"]["latestVersion"].ToString();
                 Version newVersion = new Version(_httpReturn["data"]["latestVersion"].ToString());
                 Version version = new Version(System.Reflection.Assembly.GetExecutingAssembly().GetName().Version.ToString());
 
                 if (newVersion > version)
                 {
                     var updatelog = _httpReturn["data"]["log"].ToString();
-                    bool dialog = await Shows.ShowMsgDialogAsync(Window.GetWindow(this), "发现新版本，版本号为：" + _httpReturn + "，是否进行更新？\n更新日志：\n" + updatelog, "更新", true, "取消");
+                    bool dialog = await Shows.ShowMsgDialogAsync(Window.GetWindow(this), "发现新版本，版本号为：" + _version + "，是否进行更新？\n更新日志：\n" + updatelog, "更新", true, "取消");
                     if (dialog == true)
                     {
                         if (MainWindow.ProcessRunningCheck())
@@ -685,15 +686,15 @@ namespace MSL.pages
                         {
                             downloadUrl = HttpService.Get("download/update?type=i18n");
                         }
-                        await Shows.ShowDownloader(Window.GetWindow(this), downloadUrl, AppDomain.CurrentDomain.BaseDirectory, "MSL" + _httpReturn + ".exe", "下载新版本中……");
-                        if (File.Exists("MSL" + _httpReturn + ".exe"))
+                        await Shows.ShowDownloader(Window.GetWindow(this), downloadUrl, AppDomain.CurrentDomain.BaseDirectory, "MSL" + _version + ".exe", "下载新版本中……");
+                        if (File.Exists("MSL" + _version + ".exe"))
                         {
                             string oldExePath = Process.GetCurrentProcess().MainModule.ModuleName;
-                            string dwnExePath = Path.Combine(AppDomain.CurrentDomain.BaseDirectory, "MSL" + _httpReturn + ".exe");
+                            string dwnExePath = Path.Combine(AppDomain.CurrentDomain.BaseDirectory, "MSL" + _version + ".exe");
                             string newExeDir = AppDomain.CurrentDomain.BaseDirectory;
 
                             // 输出CMD命令以便调试
-                            string cmdCommand = "/C choice /C Y /N /D Y /T 1 & Del \"" + oldExePath + "\" & Ren \"" + "MSL" + _httpReturn + ".exe" + "\" \"MSL.exe\" & start \"\" \"MSL.exe\"";
+                            string cmdCommand = "/C choice /C Y /N /D Y /T 1 & Del \"" + oldExePath + "\" & Ren \"" + "MSL" + _version + ".exe" + "\" \"MSL.exe\" & start \"\" \"MSL.exe\"";
                             //MessageBox.Show(cmdCommand);
 
                             // 关闭当前运行中的应用程序
