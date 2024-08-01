@@ -63,6 +63,7 @@ namespace MSL
         public ServerRunner(string serverID, int controlTab = 0)
         {
             InitializeComponent();
+            InitializeColorDict();
             ServerProcess.OutputDataReceived += new DataReceivedEventHandler(OutputDataReceived);
             ServerProcess.ErrorDataReceived += new DataReceivedEventHandler(OutputDataReceived);
             ServerProcess.Exited += new EventHandler(ServerExitEvent);
@@ -904,7 +905,7 @@ namespace MSL
         }
 
         #region 日志显示功能、彩色日志实现
-        private static Brush tempbrush = Brushes.Green;
+        private Brush tempbrush = Brushes.Green;
         private void PrintLog(string msg, Brush color)
         {
             tempbrush = color;
@@ -1037,26 +1038,30 @@ namespace MSL
             }
         }
 
-        private Dictionary<char, SolidColorBrush> colorDict = new Dictionary<char, SolidColorBrush>
+        private Dictionary<char, SolidColorBrush> colorDict;
+        private void InitializeColorDict()
         {
-            ['r'] = (SolidColorBrush)tempbrush,
-            ['0'] = Brushes.Black,
-            ['1'] = Brushes.DarkBlue,
-            ['2'] = Brushes.DarkGreen,
-            ['3'] = Brushes.DarkCyan,
-            ['4'] = Brushes.DarkRed,
-            ['5'] = Brushes.DarkMagenta,
-            ['6'] = Brushes.Orange,//gold
-            ['7'] = Brushes.Gray,
-            ['8'] = Brushes.DarkGray,
-            ['9'] = Brushes.Blue,
-            ['a'] = Brushes.Green,
-            ['b'] = Brushes.Cyan,
-            ['c'] = Brushes.Red,
-            ['d'] = Brushes.Magenta,
-            ['e'] = Brushes.Gold,//yellow
-            ['f'] = Brushes.White,
-        };
+            colorDict = new Dictionary<char, SolidColorBrush>
+            {
+                ['r'] = (SolidColorBrush)tempbrush,
+                ['0'] = Brushes.Black,
+                ['1'] = Brushes.DarkBlue,
+                ['2'] = Brushes.DarkGreen,
+                ['3'] = Brushes.DarkCyan,
+                ['4'] = Brushes.DarkRed,
+                ['5'] = Brushes.DarkMagenta,
+                ['6'] = Brushes.Orange,//gold
+                ['7'] = Brushes.Gray,
+                ['8'] = Brushes.DarkGray,
+                ['9'] = Brushes.Blue,
+                ['a'] = Brushes.Green,
+                ['b'] = Brushes.Cyan,
+                ['c'] = Brushes.Red,
+                ['d'] = Brushes.Magenta,
+                ['e'] = Brushes.Gold,//yellow
+                ['f'] = Brushes.White,
+            };
+        }
 
         private Brush GetBrushFromMinecraftColorCode(char colorCode)
         {

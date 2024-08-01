@@ -32,26 +32,26 @@
             </StackPanel.Resources>
             <controls:MagicCard Title="功能调整" MarginOverride="10,10,10,0">
                 <StackPanel>
-                    <Grid Margin="10,0,10,0">
+                    <Grid Margin="0,0,0,10">
                         <Grid.ColumnDefinitions>
                             <ColumnDefinition Width="Auto"/>
                             <ColumnDefinition/>
                         </Grid.ColumnDefinitions>
                         <Label Grid.Column="0" Content="基础功能：" VerticalAlignment="Center"/>
                         <WrapPanel Grid.Column="1">
-                            <Button Name="setdefault" Margin="5" Content="恢复默认设置" FontSize="14" Height="30" Click="setdefault_Click" />
-                            <Button Name="notifyIconbtn" Margin="5" Content="托盘图标:关闭" FontSize="14" Height="30" Click="notifyIconbtn_Click" />
-                            <Button Name="MSLTips" Margin="5" Content="MSL提示:开启" FontSize="14" Height="30" Click="MSLTips_Click" />
-                            <Button Name="WikiButton" Margin="5" Content="软件文档" FontSize="14" Height="30" Click="WikiButton_Click"/>
-                            <Button x:Name="checkUpdateBtn" Margin="5" Content="检查更新" Style="{StaticResource ButtonPrimary}" FontSize="14" Height="30" Click="checkUpdateBtn_Click"/>
-                            <ComboBox x:Name="ChangeLanguage" Margin="5" FontSize="14" Height="30" SelectionChanged="ChangeLanguage_SelectionChanged">
+                            <Button Name="setdefault" Margin="5,0,5,0" Content="恢复默认设置" FontSize="14" Height="30" Click="setdefault_Click" />
+                            <Button Name="notifyIconbtn" Margin="5,0,5,0" Content="托盘图标:关闭" FontSize="14" Height="30" Click="notifyIconbtn_Click" />
+                            <Button Name="MSLTips" Margin="5,0,5,0" Content="MSL提示:开启" FontSize="14" Height="30" Click="MSLTips_Click" />
+                            <Button Name="WikiButton" Margin="5,0,5,0" Content="软件文档" FontSize="14" Height="30" Click="WikiButton_Click"/>
+                            <Button x:Name="checkUpdateBtn" Margin="5,0,5,0" Content="检查更新" Style="{StaticResource ButtonPrimary}" FontSize="14" Height="30" Click="checkUpdateBtn_Click"/>
+                            <ComboBox x:Name="ChangeLanguage" Margin="5,0,5,0" FontSize="14" Height="30" SelectionChanged="ChangeLanguage_SelectionChanged">
                                 <ComboBoxItem Content="简体中文"/>
                                 <ComboBoxItem Content="English"/>
                             </ComboBox>
                             <Button Content="切换语言" Margin="5" x:Name="ChangeLanguageBtn" FontSize="14" Height="30" Visibility="Collapsed" Click="ChangeLanguageBtn_Click" />
                         </WrapPanel>
                     </Grid>
-                    <Grid Margin="10,5,10,0">
+                    <Grid Margin="0,0,0,10">
                         <Grid.ColumnDefinitions>
                             <ColumnDefinition Width="Auto"/>
                             <ColumnDefinition/>
@@ -61,7 +61,7 @@
                         <TextBox Grid.Column="1" Name="downthreadCount" Text="8" VerticalAlignment="Top" FontSize="14" />
                         <Button Grid.Column="2" Name="mulitDownthread" FontSize="14" Content="确定" HorizontalAlignment="Right" Click="mulitDownthread_Click" />
                     </Grid>
-                    <Grid Margin="10,10,10,0">
+                    <Grid Margin="0,0,0,5">
                         <Grid.ColumnDefinitions>
                             <ColumnDefinition Width="Auto"/>
                             <ColumnDefinition/>
@@ -75,7 +75,7 @@
             </controls:MagicCard>
             <controls:MagicCard Title="自动化选项" MarginOverride="10,10,10,0">
                 <StackPanel>
-                    <StackPanel Margin="10,0,10,0">
+                    <StackPanel Margin="0,0,0,5">
                         <StackPanel Orientation="Horizontal">
                             <Label Content="启动软件自动打开启动列表中的服务器："/>
                             <ToggleButton Name="openserversOnStart" Style="{StaticResource ToggleButtonSwitch}" VerticalAlignment="Center" Click="openserversOnStart_Click" />
@@ -99,8 +99,8 @@
                             <ToggleButton Name="openfrpOnStart" Style="{StaticResource ToggleButtonSwitch}" VerticalAlignment="Center" Click="openfrpOnStart_Click" />
                         </StackPanel>
                         <StackPanel Orientation="Horizontal" Margin="0,5,0,0">
-                            <TextBox x:Name="AutoOpenFrpcList" Width="200" Margin="0,0,10,0"/>
-                            <Label Content="在此输入需要启动Frpc的ID，半角逗号隔开"/>
+                            <Label Content="在此输入需要启动Frpc的ID，半角逗号隔开："/>
+                            <TextBox x:Name="AutoOpenFrpcList" Width="200" Margin="10,0,0,0"/>
                         </StackPanel>
                         <hc:Divider Margin="0,10,0,10"/>
                         <StackPanel Orientation="Horizontal">
@@ -129,14 +129,14 @@
                             </Style>
                         </ResourceDictionary>
                     </StackPanel.Resources>
-                    <StackPanel Orientation="Horizontal" Margin="10,0,10,0">
+                    <StackPanel Orientation="Horizontal" Margin="0,0,0,10">
                         <Label Content="主题颜色:" Margin="0,0,10,0"/>
                         <ToggleButton x:Name="autoSetTheme" Margin="0,0,20,0" Style="{StaticResource ToggleButtonSwitch}" VerticalAlignment="Center" Click="autoSetTheme_Click" IsChecked="True" Content="使用系统样式" Height="25"/>
                         <ToggleButton x:Name="darkTheme" Margin="0,0,20,0" Style="{StaticResource ToggleButtonSwitch}" VerticalAlignment="Center" Click="darkTheme_Click" IsEnabled="False" Content="暗色模式" Height="25"/>
                         <ToggleButton x:Name="semitransparentTitle" Margin="0,0,20,0" Style="{StaticResource ToggleButtonSwitch}" VerticalAlignment="Center" Content="半透明标题栏" Height="25" Click="semitransparentTitle_Click"/>
                         <Button x:Name="WesternEgg" Content="千万别点" Style="{StaticResource ButtonDanger}" HorizontalAlignment="Left" VerticalAlignment="Center" Click="WesternEgg_Click" Height="30" Width="100"/>
                     </StackPanel>
-                    <StackPanel Orientation="Horizontal" Margin="10,10,10,0" >
+                    <StackPanel Orientation="Horizontal" Margin="0,0,0,10" >
                         <RadioButton Name="BlueSkinBtn" Margin="0,0,20,0" Content="蓝色皮肤(默认)" Click="ChangeSkin" Foreground="#0078D4"/>
                         <RadioButton Name="RedSkinBtn" Margin="0,0,20,0" Content="红色皮肤" Checked="ChangeSkin" Foreground="Red"/>
                         <RadioButton Name="GreenSkinBtn" Margin="0,0,20,0" Content="绿色皮肤" Checked="ChangeSkin" Foreground="Green"/>
@@ -144,7 +144,7 @@
                         <RadioButton Name="PurpleSkinBtn" Margin="0,0,20,0" Content="紫色皮肤" Checked="ChangeSkin" Foreground="Purple"/>
                         <RadioButton Name="PinkSkinBtn" Content="粉色皮肤" Checked="ChangeSkin" Foreground="DeepPink"/>
                     </StackPanel>
-                    <StackPanel Orientation="Horizontal" Margin="10,10,10,0">
+                    <StackPanel Orientation="Horizontal" Margin="0,0,0,5">
                         <Label Content="背景图片:" Margin="0,0,10,0"/>
                         <Button x:Name="changeBackImg" Margin="0,0,10,0" Content="更改背景图片" VerticalAlignment="Center" Click="changeBackImg_Click"/>
                         <Button x:Name="delBackImg"  Content="清除背景图片" VerticalAlignment="Center" Click="delBackImg_Click"/>
@@ -162,12 +162,12 @@
                             </Style>
                         </ResourceDictionary>
                     </StackPanel.Resources>
-                    <StackPanel Orientation="Horizontal" Margin="10,0,10,0">
+                    <StackPanel Orientation="Horizontal" Margin="0,0,0,10">
                         <Label Content="设备ID:" Margin="0,0,10,0" VerticalAlignment="Center"/>
                         <Label Content="AAA" x:Name="DCID" Margin="0,0,10,0" VerticalAlignment="Center"/>
                         <Button Name="CopyDCID" Margin="5" Content="复制设备ID" FontSize="14" Height="30" Click="CopyDCID_Click"  />
                     </StackPanel>
-                    <StackPanel Margin="10,5,10,0">
+                    <StackPanel Margin="0,0,0,5">
                         <Label Content="设备ID是MSL开发团队追踪MSL发生意外错误的重要依据，需要时请提供给我们！" Margin="0,0,10,0" VerticalAlignment="Center"/>
                         <Label Content="每台设备的设备ID是唯一的（仅当重装系统/切换用户会变化）" Margin="0,0,10,0" VerticalAlignment="Center"/>
                     </StackPanel>

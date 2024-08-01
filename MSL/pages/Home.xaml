@@ -8,7 +8,7 @@
       xmlns:controls="clr-namespace:MSL.controls"
       xmlns:langs="clr-namespace:MSL.i18n"
       mc:Ignorable="d" d:DesignHeight="460" d:DesignWidth="750"
-      Title="Home" Loaded="Page_Loaded">
+      Title="Home" Initialized="Page_Initialized" Loaded="Page_Loaded">
     <Page.RenderTransform>
         <TranslateTransform/>
     </Page.RenderTransform>
@@ -27,7 +27,7 @@
                 <controls:MagicCard x:Name="noticeBorder" Title="{Binding [Pages_Home_Notice], Source={x:Static langs:LanguageManager.Instance}}" VerticalAlignment="Top" MarginOverride="10,10,10,0">
                     <Grid>
                         <Image x:Name="noticeImage"/>
-                        <TextBox x:Name="noticeLab" TextBlock.LineHeight="24" IsReadOnly="True" VerticalScrollBarVisibility="Auto" TextWrapping="Wrap" BorderThickness="0" Background="{x:Null}" FontSize="14"/>
+                        <TextBox x:Name="noticeLab" Text="加载中……" TextBlock.LineHeight="24" IsReadOnly="True" VerticalScrollBarVisibility="Auto" TextWrapping="Wrap" BorderThickness="0" Background="{x:Null}" FontSize="14"/>
                     </Grid>
                 </controls:MagicCard>
                 <controls:MagicCard x:Name="recommendBorder" Title="{Binding [Pages_Home_Recommendations], Source={x:Static langs:LanguageManager.Instance}}" VerticalAlignment="Top" MarginOverride="10,10,10,0" Visibility="Collapsed">

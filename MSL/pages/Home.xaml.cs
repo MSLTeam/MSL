@@ -7,7 +7,6 @@ using System.Threading.Tasks;
 using System.Windows;
 using System.Windows.Controls;
 using System.Windows.Media.Imaging;
-using System.Windows.Threading;
 using MessageBox = System.Windows.MessageBox;
 
 namespace MSL.pages
@@ -26,7 +25,8 @@ namespace MSL.pages
             InitializeComponent();
         }
 
-        private async void Page_Loaded(object sender, RoutedEventArgs e)
+        private bool isInit = false;
+        private async void Page_Initialized(object sender, EventArgs e)
         {
             GetServerConfig();
             for (int i = 0; i < 10; i++)
@@ -43,14 +43,32 @@ namespace MSL.pages
             }
             else
             {
+                await GetNotice(true);
+            }
+            isInit = true;
+        }
+
+        private async void Page_Loaded(object sender, RoutedEventArgs e)
+        {
+            if (!isInit)
+            {
+                return;
+            }
+            GetServerConfig();
+            if (MainWindow.serverLink != null)
+            {
                 await GetNotice();
             }
         }
 
-        private async Task GetNotice()
+        private async Task GetNotice(bool firstLoad = false)
         {
             //公告
             string noticeLabText = noticeLab.Text;
+            if (firstLoad)
+            {
+                noticeLabText = "";
+            }
             string noticeversion1;
             try
             {
@@ -79,10 +97,7 @@ namespace MSL.pages
                         noticeLabText = notice;
                         if (noticeLabText != "")
                         {
-                            Dispatcher.Invoke(() =>
-                            {
-                                Shows.ShowMsgDialog(Window.GetWindow(this), noticeLabText, "公告");
-                            });
+                            Shows.ShowMsgDialog(Window.GetWindow(this), noticeLabText, "公告");
                         }
                     }
                     else
@@ -145,7 +160,7 @@ namespace MSL.pages
                 {
                     _serverLink = _serverLink.Substring(0, _serverLink.IndexOf("/"));
                 }
-                noticeImage.Source = new BitmapImage(new Uri("https://msl." + _serverLink + "/notice.png"));
+                noticeImage.Source = new BitmapImage(new Uri("https://file." + _serverLink + "/notice.png"));
             }
             else
             {
@@ -178,8 +193,6 @@ namespace MSL.pages
                 }
             }
 
-            // Parse the JSON array from the string
-            //JArray recommendationList = JArray.Parse(recommendations);
             int i = 0;
             foreach (var recommendation in recommendations)
             {
@@ -208,7 +221,7 @@ namespace MSL.pages
                     {
                         _serverLink = _serverLink.Substring(0, _serverLink.IndexOf("/"));
                     }
-                    image.Source = new BitmapImage(new Uri("https://msl." + _serverLink + "/recommendImg/" + i.ToString() + ".png"));
+                    image.Source = new BitmapImage(new Uri("https://file." + _serverLink + "/recommendImg/" + i.ToString() + ".png"));
                 }
                 RecommendGrid.Children.Add(image);
                 RecommendGrid.RegisterName("RecImg" + i.ToString(), image);

@@ -69,7 +69,7 @@ namespace MSL.pages
             {
                 JObject downContext = await HttpService.GetApiContentAsync("download/server/" + downServer + "/" + downVersion);
                 string downUrl = downContext["data"]["url"].ToString();
-                string sha256Exp = downContext["data"]["sha256"].ToString();
+                string sha256Exp = downContext["data"]["sha256"]?.ToString() ?? string.Empty;
                 downPath = downloadServerBase;
                 filename = downServer + "-" + downVersion + ".jar";
                 if (downServer == "forge" || downServer == "spongeforge" || downServer == "neoforge")
@@ -97,7 +97,7 @@ namespace MSL.pages
                     string _filename = forgeName + ".jar";
                     JObject _dlContext = await HttpService.GetApiContentAsync("download/server/" + downServer + "/" + downVersion);
                     string _dlUrl = _dlContext["data"]["url"].ToString();
-                    string _sha256Exp = _dlContext["data"]["sha256"].ToString();
+                    string _sha256Exp = _dlContext["data"]["sha256"]?.ToString() ?? string.Empty;
                     int _dwnDialog = await Shows.ShowDownloaderWithIntReturn(this, _dlUrl, downPath, _filename, "下载服务端中……", _sha256Exp, true);
 
                     if (_dwnDialog == 2)

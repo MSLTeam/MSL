@@ -1172,7 +1172,7 @@ namespace MSL.pages
             JObject dlContext = await HttpService.GetApiContentAsync("download/server/" + serverCoreType + "/" +
                 finallyServerCore.Substring(finallyServerCore.LastIndexOf("-") + 1));//获取链接
             string dlUrl = dlContext["data"]["url"].ToString();
-            string sha256Exp = dlContext["data"]["sha256"].ToString();
+            string sha256Exp = dlContext["data"]["sha256"]?.ToString() ?? string.Empty;
             if (serverCoreType == "forge" || serverCoreType == "spongeforge" || serverCoreType == "neoforge")
             {
                 int dwnDialog = await Shows.ShowDownloaderWithIntReturn(Window.GetWindow(this), dlUrl, serverbase, filename, "下载服务端中……", sha256Exp, true); //从这里请求服务端下载
@@ -1204,7 +1204,7 @@ namespace MSL.pages
                 string _filename = forgeName + ".jar";
                 JObject _dlContext = await HttpService.GetApiContentAsync("download/server/" + forgeName.Replace("-", "/"));
                 string _dlUrl = _dlContext["data"]["url"].ToString();
-                string _sha256Exp = _dlContext["data"]["sha256"].ToString();
+                string _sha256Exp = _dlContext["data"]["sha256"]?.ToString() ?? string.Empty;
                 int _dwnDialog = await Shows.ShowDownloaderWithIntReturn(Window.GetWindow(this), _dlUrl, serverbase, _filename, "下载服务端中……", _sha256Exp, true);
 
                 if (_dwnDialog == 2)
