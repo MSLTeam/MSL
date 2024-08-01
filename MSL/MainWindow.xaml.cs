@@ -466,8 +466,8 @@ namespace MSL
             try
             {
                 deviceID = Functions.GetDeviceID();
-                serverLink = "mslmc.cn/v3";
-                //serverLink = HttpService.Get("", "https://msl-server.oss-cn-hangzhou.aliyuncs.com/", 1);
+                //serverLink = "mslmc.cn/v3";
+                serverLink = (await HttpService.GetContentAsync("https://msl-api.oss-cn-hangzhou.aliyuncs.com/")).ToString();
                 //Logger.LogInfo("连接到api：" + "https://api." + serverLink);
                 try
                 {
