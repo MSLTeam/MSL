@@ -15,7 +15,7 @@
             <RowDefinition Height="auto"/>
         </Grid.RowDefinitions>
         <Grid Grid.Row="0" Margin="10,10,10,6" >
-            <hc:Card hc:BorderElement.CornerRadius="4">
+            <hc:Card>
                 <Grid>
                     <Grid.ColumnDefinitions>
                         <ColumnDefinition Width="*"/>

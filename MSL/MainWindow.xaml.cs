@@ -36,7 +36,6 @@ namespace MSL
             new About()
         };
         public static event DeleControl AutoOpenServer;
-        public static event DeleControl AutoOpenFrpc;
         public static string serverLink = null;
         public static string deviceID = null; //用于记录设备id
         public static float PhisicalMemory;
@@ -47,7 +46,7 @@ namespace MSL
         public MainWindow()
         {
             InitializeComponent();
-            Home.GotoFrpcEvent += GotoOnlinePage;
+            Home.GotoP2PEvent += GotoOnlinePage;
             Home.CreateServerEvent += GotoCreatePage;
             ServerList.CreateServerEvent += GotoCreatePage;
             FrpcList.OpenFrpcPage += OpenFrpcPage;
@@ -418,8 +417,6 @@ namespace MSL
                 //Logger.LogError("读取自动开启（服务器）配置失败！");
                 MessageBox.Show(LanguageManager.Instance["MainWindow_GrowlMsg_AutoLaunchServerErr"] + ex.Message, LanguageManager.Instance["Dialog_Err"], MessageBoxButton.OK, MessageBoxImage.Error);
             }
-
-            /*
             //自动开启Frpc
             try
             {
@@ -427,14 +424,25 @@ namespace MSL
                 {
                     string jsonString = File.ReadAllText(@"MSL\config.json", Encoding.UTF8);
                     JObject jobject = JObject.Parse(jsonString);
-                    jobject.Add("autoOpenFrpc", false);
+                    jobject.Add("autoOpenFrpc", "False");
                     string convertString = Convert.ToString(jobject);
                     File.WriteAllText(@"MSL\config.json", convertString, Encoding.UTF8);
                 }
-                else if ((bool)jsonObject["autoOpenFrpc"] == true)
+                else if (jsonObject["autoOpenFrpc"].ToString() != "False")
                 {
+                    string frpcs = jsonObject["autoOpenFrpc"].ToString();
                     Growl.Info(LanguageManager.Instance["MainWindow_GrowlMsg_AutoLaunchFrpc"]);
-                    AutoOpenFrpc();
+                    while (frpcs != "")
+                    {
+                        int aserver = frpcs.IndexOf(",");
+                        FrpcList.FrpcID = int.Parse(frpcs.Substring(0, aserver));
+                        if (!FrpcList.FrpcPageList.ContainsKey(FrpcList.FrpcID))
+                        {
+                            FrpcList.FrpcPageList.Add(FrpcList.FrpcID, new FrpcPage(FrpcList.FrpcID, true));
+                        }
+                        //frame.Content = FrpcList.FrpcPageList[FrpcList.FrpcID];
+                        frpcs = frpcs.Replace(ServerList.serverID.ToString() + ",", "");
+                    }
                 }
                 //Logger.LogInfo("读取自动开启（内网映射）配置成功！");
             }
@@ -443,7 +451,6 @@ namespace MSL
                 //Logger.LogError("读取自动开启（内网映射）配置失败！");
                 MessageBox.Show(LanguageManager.Instance["MainWindow_GrowlMsg_AutoLaunchFrpsErr"] + ex.Message, LanguageManager.Instance["Dialog_Err"], MessageBoxButton.OK, MessageBoxImage.Error);
             }
-            */
 
             //Logger.LogInfo("所有配置载入完毕！调整UI界面……");
             Dispatcher.Invoke(() =>

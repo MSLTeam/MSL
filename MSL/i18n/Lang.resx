@@ -269,7 +269,7 @@ BMCLAPI —— Forge服务端下载源
     <value>复制</value>
   </data>
   <data name="Pages_Frpc_IP" xml:space="preserve">
-    <value>您的公网IP为：</value>
+    <value>使用此IP来连接：</value>
   </data>
   <data name="Pages_Frpc_IPNull" xml:space="preserve">
     <value>无</value>
@@ -281,7 +281,7 @@ BMCLAPI —— Forge服务端下载源
     <value>无 状态</value>
   </data>
   <data name="Pages_Frpc_Title" xml:space="preserve">
-    <value>内网映射</value>
+    <value>内网映射列表（双击进入详情页）</value>
   </data>
   <data name="Pages_Home_CreateServer" xml:space="preserve">
     <value>创建一个新的服务器</value>
@@ -412,7 +412,7 @@ BMCLAPI —— Forge服务端下载源
     <value>服务器状态</value>
   </data>
   <data name="Pages_ServerList_Title" xml:space="preserve">
-    <value>服务器列表（双击可快捷启动服务器）：</value>
+    <value>服务器列表（双击可快捷启动服务器）</value>
   </data>
   <data name="Pages_ServerList_UseCMDLaunch" xml:space="preserve">
     <value>使用命令行开服</value>

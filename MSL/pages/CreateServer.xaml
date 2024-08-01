@@ -18,8 +18,15 @@
     </Page.Triggers>
     <Grid x:Name="BodyGrid">
         <Grid x:Name="MainGrid" Visibility="Visible">
-            <Label Content="将通过几个步骤为您创建服务器……" Style="{StaticResource BorderTitle}" Margin="10" Height="25"/>
-            <Border Style="{StaticResource MagicBorder}" Margin="10,40,10,10" VerticalAlignment="Stretch">
+            <Grid.RowDefinitions>
+                <RowDefinition Height="Auto"/>
+                <RowDefinition/>
+            </Grid.RowDefinitions>
+            <StackPanel Grid.Row="0" Orientation="Horizontal" Margin="10,10,10,0" VerticalAlignment="Top">
+                <Button x:Name="CancelBtn" Grid.Row="4" hc:IconElement.Geometry="{StaticResource LeftGeometry}" Content="返回服务器列表" Click="CancelBtn_Click"/>
+                <Label Content="将通过几个步骤为您创建服务器……" Margin="5,0,0,0" Foreground="{DynamicResource DarkPrimaryBrush}" FontSize="14"/>
+            </StackPanel>
+            <Border Grid.Row="1" Style="{StaticResource MagicBorder}" Margin="10" VerticalAlignment="Stretch">
                 <Grid>
                     <Grid.RowDefinitions>
                         <RowDefinition Height="50"/>
@@ -40,15 +47,13 @@
                     <TextBlock Grid.Row="1" Text="快速模式：开服器自动为您选择服务器目录，并根据您想要开的服务器类型自动判断Java版本和服务端核心并进行下载" FontSize="16" VerticalAlignment="Center" TextWrapping="Wrap" Margin="320,0,50,0"/>
                     <TextBlock Grid.Row="2" Text="自定义模式：您将手动进行Java版本选择，服务端核心选择等操作，可操作性高，可以更改服务器运行内存和启动参数" FontSize="16" VerticalAlignment="Center" TextWrapping="Wrap" Margin="320,0,50,0"/>
                     <TextBlock Grid.Row="3" Text="导入整合包模式：想要在线下载一个服务器整合包来进行导入？或是自己备有一个整合包文件？那就使用此模式吧！" FontSize="16" VerticalAlignment="Center" TextWrapping="Wrap" Margin="320,0,50,0"/>
-                    <Button x:Name="CancelBtn" Grid.Row="4" Content="返回服务器列表" Click="CancelBtn_Click" HorizontalAlignment="Left" VerticalAlignment="Bottom"/>
                     <Image Grid.Row="4" Source="/icon.ico" VerticalAlignment="Bottom" HorizontalAlignment="Right" Width="50"/>
                 </Grid>
             </Border>
         </Grid>
         <ScrollViewer x:Name="FastModeGrid" Visibility="Hidden">
             <StackPanel>
-                <Label Content="将通过几个步骤为您创建服务器……" Style="{StaticResource BorderTitle}" Margin="10" Height="25"/>
-                <Border Style="{StaticResource MagicBorder}" Margin="10,-5,10,0">
+                <Border Style="{StaticResource MagicBorder}" Margin="10,10,10,0">
                     <Grid>
                         <Label Content="服务器名称" Style="{StaticResource BorderTitle}"/>
                         <Label Content="服务器名称（将在服务器列表中显示该名称）：" HorizontalAlignment="Left" Margin="10,35,0,0" VerticalAlignment="Top" FontSize="16" BorderBrush="{x:Null}" Background="{x:Null}" Height="35"/>
@@ -117,8 +122,7 @@
         <TabControl x:Name="tabCtrl" Visibility="Hidden" Background="{x:Null}" BorderThickness="0,1,0,0" Style="{StaticResource TabControlInLine}">
             <TabItem x:Name="welcome" Header="基本信息" FontSize="14" Background="{DynamicResource SideMenuBrush}">
                 <StackPanel>
-                    <Label Content="将通过几个步骤为您创建服务器……" FontSize="18" Background="{x:Null}" BorderBrush="{x:Null}" VerticalAlignment="Top" Height="40" HorizontalAlignment="Left" FontWeight="Bold"/>
-                    <Border Style="{StaticResource MagicBorder}" Margin="10,0,10,0">
+                    <Border Style="{StaticResource MagicBorder}" Margin="10,10,10,0">
                         <Grid>
                             <Label Content="服务器名称" HorizontalAlignment="Left" Style="{StaticResource BorderTitle}"/>
                             <TextBlock Text="服务器名称（将在服务器列表中显示该名称）：" Foreground="{DynamicResource PrimaryTextBrush}" Margin="25,35,0,10" FontSize="16" HorizontalAlignment="Left" VerticalAlignment="Top"/>

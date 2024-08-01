@@ -476,7 +476,7 @@ namespace MSL.i18n {
         }
         
         /// <summary>
-        ///   查找类似 您的公网IP为： 的本地化字符串。
+        ///   查找类似 使用此IP来连接： 的本地化字符串。
         /// </summary>
         internal static string Pages_Frpc_IP {
             get {
@@ -512,7 +512,7 @@ namespace MSL.i18n {
         }
         
         /// <summary>
-        ///   查找类似 内网映射 的本地化字符串。
+        ///   查找类似 内网映射列表（双击进入详情页） 的本地化字符串。
         /// </summary>
         internal static string Pages_Frpc_Title {
             get {
@@ -901,7 +901,7 @@ namespace MSL.i18n {
         }
         
         /// <summary>
-        ///   查找类似 服务器列表（双击可快捷启动服务器）： 的本地化字符串。
+        ///   查找类似 服务器列表（双击可快捷启动服务器） 的本地化字符串。
         /// </summary>
         internal static string Pages_ServerList_Title {
             get {

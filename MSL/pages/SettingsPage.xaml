@@ -5,6 +5,7 @@
       xmlns:d="http://schemas.microsoft.com/expression/blend/2008" 
       xmlns:hc="https://handyorg.github.io/handycontrol"
       xmlns:local="clr-namespace:MSL.pages"
+      xmlns:controls="clr-namespace:MSL.controls"
       mc:Ignorable="d" d:DesignHeight="460" d:DesignWidth="750"
       Title="SettingsPage" Loaded="Page_Loaded">
     <Page.RenderTransform>
@@ -29,10 +30,9 @@
                     </Style>
                 </ResourceDictionary>
             </StackPanel.Resources>
-            <Border Style="{StaticResource MagicBorder}">
+            <controls:MagicCard Title="功能调整" MarginOverride="10,10,10,0">
                 <StackPanel>
-                    <Label Content="功能调整" Style="{StaticResource BorderTitle}"/>
-                    <Grid Margin="10,5,10,0">
+                    <Grid Margin="10,0,10,0">
                         <Grid.ColumnDefinitions>
                             <ColumnDefinition Width="Auto"/>
                             <ColumnDefinition/>
@@ -70,14 +70,12 @@
                         <Label Grid.Column="0" Content="添加下载任务："/>
                         <TextBox Grid.Column="1" Name="DownloadUrl" Text="" VerticalAlignment="Top" FontSize="14" />
                         <Button Grid.Column="2" Name="AddDownloadTask" FontSize="14" Content="确定" HorizontalAlignment="Right" Click="AddDownloadTask_Click" />
-                        
                     </Grid>
                 </StackPanel>
-            </Border>
-            <Border Style="{StaticResource MagicBorder}">
+            </controls:MagicCard>
+            <controls:MagicCard Title="自动化选项" MarginOverride="10,10,10,0">
                 <StackPanel>
-                    <Label Content="自动化选项" Style="{StaticResource BorderTitle}"/>
-                    <StackPanel Margin="10,5,10,0">
+                    <StackPanel Margin="10,0,10,0">
                         <StackPanel Orientation="Horizontal">
                             <Label Content="启动软件自动打开启动列表中的服务器："/>
                             <ToggleButton Name="openserversOnStart" Style="{StaticResource ToggleButtonSwitch}" VerticalAlignment="Center" Click="openserversOnStart_Click" />
@@ -100,6 +98,10 @@
                             <Label Content="启动软件自动打开内网映射："/>
                             <ToggleButton Name="openfrpOnStart" Style="{StaticResource ToggleButtonSwitch}" VerticalAlignment="Center" Click="openfrpOnStart_Click" />
                         </StackPanel>
+                        <StackPanel Orientation="Horizontal" Margin="0,5,0,0">
+                            <TextBox x:Name="AutoOpenFrpcList" Width="200" Margin="0,0,10,0"/>
+                            <Label Content="在此输入需要启动Frpc的ID，半角逗号隔开"/>
+                        </StackPanel>
                         <hc:Divider Margin="0,10,0,10"/>
                         <StackPanel Orientation="Horizontal">
                             <Label Content="开机自动启动MSL:" Margin="0,0,10,0"/>
@@ -115,8 +117,8 @@
                         </StackPanel>
                     </StackPanel>
                 </StackPanel>
-            </Border>
-            <Border  Style="{StaticResource MagicBorder}">
+            </controls:MagicCard>
+            <controls:MagicCard Title="皮肤选项" MarginOverride="10,10,10,0">
                 <StackPanel>
                     <StackPanel.Resources>
                         <ResourceDictionary>
@@ -127,8 +129,7 @@
                             </Style>
                         </ResourceDictionary>
                     </StackPanel.Resources>
-                    <Label Content="皮肤选项" Style="{StaticResource BorderTitle}"/>
-                    <StackPanel Orientation="Horizontal" Margin="10,5,10,0">
+                    <StackPanel Orientation="Horizontal" Margin="10,0,10,0">
                         <Label Content="主题颜色:" Margin="0,0,10,0"/>
                         <ToggleButton x:Name="autoSetTheme" Margin="0,0,20,0" Style="{StaticResource ToggleButtonSwitch}" VerticalAlignment="Center" Click="autoSetTheme_Click" IsChecked="True" Content="使用系统样式" Height="25"/>
                         <ToggleButton x:Name="darkTheme" Margin="0,0,20,0" Style="{StaticResource ToggleButtonSwitch}" VerticalAlignment="Center" Click="darkTheme_Click" IsEnabled="False" Content="暗色模式" Height="25"/>
@@ -149,8 +150,8 @@
                         <Button x:Name="delBackImg"  Content="清除背景图片" VerticalAlignment="Center" Click="delBackImg_Click"/>
                     </StackPanel>
                 </StackPanel>
-            </Border>
-            <Border Margin="10,10,10,20" Style="{StaticResource MagicBorder}">
+            </controls:MagicCard>
+            <controls:MagicCard Title="设备信息" MarginOverride="10,10,10,20">
                 <StackPanel>
                     <StackPanel.Resources>
                         <ResourceDictionary>
@@ -161,8 +162,7 @@
                             </Style>
                         </ResourceDictionary>
                     </StackPanel.Resources>
-                    <Label Content="设备信息" Style="{StaticResource BorderTitle}"/>
-                    <StackPanel Orientation="Horizontal" Margin="10,5,10,0">
+                    <StackPanel Orientation="Horizontal" Margin="10,0,10,0">
                         <Label Content="设备ID:" Margin="0,0,10,0" VerticalAlignment="Center"/>
                         <Label Content="AAA" x:Name="DCID" Margin="0,0,10,0" VerticalAlignment="Center"/>
                         <Button Name="CopyDCID" Margin="5" Content="复制设备ID" FontSize="14" Height="30" Click="CopyDCID_Click"  />
@@ -172,7 +172,7 @@
                         <Label Content="每台设备的设备ID是唯一的（仅当重装系统/切换用户会变化）" Margin="0,0,10,0" VerticalAlignment="Center"/>
                     </StackPanel>
                 </StackPanel>
-            </Border>
+            </controls:MagicCard>
         </StackPanel>
     </ScrollViewer>
 </Page>

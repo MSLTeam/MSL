@@ -3,14 +3,30 @@
       xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
       xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006" 
       xmlns:d="http://schemas.microsoft.com/expression/blend/2008" 
+      xmlns:hc="https://handyorg.github.io/handycontrol"
       xmlns:local="clr-namespace:MSL.pages"
+      xmlns:controls="clr-namespace:MSL.controls"
+      xmlns:langs="clr-namespace:MSL.i18n"
       mc:Ignorable="d" 
       d:DesignHeight="460" d:DesignWidth="750"
       Title="FrpcList" Loaded="Page_Loaded">
-
-    <Grid>
-        <ListBox x:Name="FrpcListBox" Margin="10" MouseDoubleClick="FrpcListBox_MouseDoubleClick"/>
-        <Button x:Name="AddFrpc" Margin="10,10,60,10" Content="添加" HorizontalAlignment="Right" VerticalAlignment="Bottom" Click="AddFrpc_Click"/>
-        <Button x:Name="DelFrpc" Margin="10" Content="删除" HorizontalAlignment="Right" VerticalAlignment="Bottom" Click="DelFrpc_Click"/>
-    </Grid>
+    <Page.RenderTransform>
+        <TranslateTransform/>
+    </Page.RenderTransform>
+    <Page.Triggers>
+        <EventTrigger RoutedEvent="Loaded">
+            <BeginStoryboard Storyboard="{StaticResource ShowPage}"/>
+        </EventTrigger>
+    </Page.Triggers>
+    <controls:MagicCard Title="{Binding [Pages_Frpc_Title], Source={x:Static langs:LanguageManager.Instance}}">
+        <Grid>
+            <Border CornerRadius="10" BorderThickness="0" Background="{DynamicResource BackgroundBrush}">
+                <ListBox x:Name="FrpcListBox" Background="{x:Null}" BorderBrush="{x:Null}" hc:Empty.ShowEmpty="true" MouseDoubleClick="FrpcListBox_MouseDoubleClick"/>
+            </Border>
+            <StackPanel Orientation="Horizontal" HorizontalAlignment="Right" VerticalAlignment="Bottom">
+                <Button x:Name="AddFrpc" Style="{StaticResource ButtonPrimary}" Content="添加" Click="AddFrpc_Click"/>
+                <Button x:Name="DelFrpc" Style="{StaticResource ButtonDanger}" Margin="10" Content="删除" Click="DelFrpc_Click"/>
+            </StackPanel>
+        </Grid>
+    </controls:MagicCard>
 </Page>

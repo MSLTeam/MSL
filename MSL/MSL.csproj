@@ -99,6 +99,7 @@
       <Generator>MSBuild:Compile</Generator>
       <SubType>Designer</SubType>
     </ApplicationDefinition>
+    <Compile Include="controls\MagicCard.cs" />
     <Compile Include="pages\FrpcList.xaml.cs">
       <DependentUpon>FrpcList.xaml</DependentUpon>
     </Compile>

@@ -31,12 +31,15 @@ namespace MSL.pages
         public readonly Process FrpcProcess = new Process();
         private readonly int frpID;
 
-        public FrpcPage(int frpId)
+        public FrpcPage(int frpId, bool autoStart = false)
         {
             InitializeComponent();
             frpID = frpId;
             FrpcProcess.OutputDataReceived += new DataReceivedEventHandler(OutputDataReceived);
-            MainWindow.AutoOpenFrpc += AutoStartFrpc;
+            if (autoStart)
+            {
+                Task.Run(() => StartFrpc());
+            }
         }
 
         private void Page_Loaded(object sender, RoutedEventArgs e)
@@ -225,11 +228,6 @@ namespace MSL.pages
                     startfrpc.Content = LanguageManager.Instance["Pages_Frpc_Launch"];
                 });
             }
-        }
-
-        private void AutoStartFrpc()
-        {
-            Task.Run(() => StartFrpc());
         }
 
         private void OutputDataReceived(object sender, DataReceivedEventArgs e)

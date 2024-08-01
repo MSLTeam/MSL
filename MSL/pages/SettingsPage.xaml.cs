@@ -57,9 +57,10 @@ namespace MSL.pages
                     openserversOnStart.IsChecked = true;
                     _autoStartList = jsonObject["autoOpenServer"].ToString();
                 }
-                if (jsonObject["autoOpenFrpc"] != null && (bool)jsonObject["autoOpenFrpc"] == true)
+                if (jsonObject["autoOpenFrpc"] != null && jsonObject["autoOpenFrpc"].ToString() != "False")
                 {
                     openfrpOnStart.IsChecked = true;
+                    AutoOpenFrpcList.Text = jsonObject["autoOpenFrpc"].ToString();
                 }
                 if (jsonObject["autoGetPlayerInfo"] != null && (bool)jsonObject["autoGetPlayerInfo"] == true)
                 {
@@ -156,7 +157,6 @@ namespace MSL.pages
                 {
                     semitransparentTitle.IsChecked = true;
                 }
-                //serverListBox.Items.Clear();
                 ServersList.Items.Clear();
                 AutoStartServers.Items.Clear();
                 try
@@ -173,9 +173,6 @@ namespace MSL.pages
                                 continue;
                             }
                             ServersList.Items.Add(string.Format("[{0}]{1}", item.Key, item.Value["name"]));
-                            //serverListBox.Items.Add(item.Value["name"]);
-                            //_runServerList.Add(item.Key);
-                            //serverListBox.SelectedIndex = 0;
                         }
                     }
                 }
@@ -295,9 +292,15 @@ namespace MSL.pages
         {
             if (openfrpOnStart.IsChecked == true)
             {
+                if (AutoOpenFrpcList.Text == "")
+                {
+                    Growl.Error("请先将需要自动启动的Frpc之ID填入框中！");
+                    openfrpOnStart.IsChecked = false;
+                    return;
+                }
                 string jsonString = File.ReadAllText(@"MSL\config.json", Encoding.UTF8);
                 JObject jobject = JObject.Parse(jsonString);
-                jobject["autoOpenFrpc"] = true;
+                jobject["autoOpenFrpc"] = AutoOpenFrpcList.Text;
                 string convertString = Convert.ToString(jobject);
                 File.WriteAllText(@"MSL\config.json", convertString, Encoding.UTF8);
                 Growl.Success("开启成功！");
@@ -306,7 +309,7 @@ namespace MSL.pages
             {
                 string jsonString = File.ReadAllText(@"MSL\config.json", Encoding.UTF8);
                 JObject jobject = JObject.Parse(jsonString);
-                jobject["autoOpenFrpc"] = false;
+                jobject["autoOpenFrpc"] = "False";
                 string convertString = Convert.ToString(jobject);
                 File.WriteAllText(@"MSL\config.json", convertString, Encoding.UTF8);
                 Growl.Success("关闭成功！");

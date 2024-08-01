@@ -19,7 +19,7 @@ namespace MSL.pages
     {
         public static event DeleControl CreateServerEvent;
         public static event DeleControl AutoOpenServer;
-        public static event DeleControl GotoFrpcEvent;
+        public static event DeleControl GotoP2PEvent;
 
         public Home()
         {
@@ -138,7 +138,7 @@ namespace MSL.pages
 
             if (noticeLabText == "")
             {
-                noticeLab.Visibility = Visibility.Hidden;
+                noticeLab.Visibility = Visibility.Collapsed;
                 noticeLab.Text = "";
                 string _serverLink = MainWindow.serverLink;
                 if (_serverLink.Contains("/"))
@@ -284,12 +284,7 @@ namespace MSL.pages
 
         private void gotoFrpBtn_Click(object sender, RoutedEventArgs e)
         {
-            GotoFrpcEvent();
-        }
-
-        private void noticeBorder_SizeChanged(object sender, SizeChangedEventArgs e)
-        {
-            recommendBorder.Margin = new Thickness(10, noticeBorder.ActualHeight + 20, 10, 80);
+            GotoP2PEvent();
         }
 
         private void startServerDropdown_SelectionChanged(object sender, SelectionChangedEventArgs e)
