@@ -21,7 +21,7 @@
     <controls:MagicCard Title="{Binding [Pages_Frpc_Title], Source={x:Static langs:LanguageManager.Instance}}">
         <Grid>
             <Border CornerRadius="10" BorderThickness="0" Background="{DynamicResource BackgroundBrush}">
-                <ListBox x:Name="FrpcListBox" Background="{x:Null}" BorderBrush="{x:Null}" hc:Empty.ShowEmpty="true" MouseDoubleClick="FrpcListBox_MouseDoubleClick"/>
+                <ListBox x:Name="FrpcListBox" Background="{x:Null}" BorderBrush="{x:Null}" hc:Empty.ShowEmpty="true" MouseDoubleClick="FrpcListBox_MouseDoubleClick" KeyUp="FrpcListBox_KeyUp"/>
             </Border>
             <StackPanel Orientation="Horizontal" HorizontalAlignment="Right" VerticalAlignment="Bottom">
                 <Button x:Name="AddFrpc" Style="{StaticResource ButtonPrimary}" Content="添加" Click="AddFrpc_Click"/>

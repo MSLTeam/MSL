@@ -50,6 +50,15 @@ namespace MSL.pages
             OpenFrpcPage();
         }
 
+        private void FrpcListBox_KeyUp(object sender, KeyEventArgs e)
+        {
+            if (e.Key == Key.Enter)
+            {
+                FrpcID = int.Parse(FrpcListBox.SelectedItem.ToString());
+                OpenFrpcPage();
+            }
+        }
+
         private void AddFrpc_Click(object sender, RoutedEventArgs e)
         {
             SetFrpc fw = new SetFrpc();
