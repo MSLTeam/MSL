@@ -555,10 +555,10 @@ namespace MSL
                     Shows.ShowMsgDialog(this, LanguageManager.Instance["MainWindow_GrowlMsg_UpdateWarning"], LanguageManager.Instance["Dialog_Warning"]);
                     return;
                 }
-                string downloadUrl = HttpService.Get("download/update?type=normal"); ;
+                string downloadUrl = (await HttpService.GetApiContentAsync("download/update?type=normal"))["data"].ToString(); ;
                 if (isI18N)
                 {
-                    downloadUrl = HttpService.Get("download/update?type=i18n");
+                    downloadUrl = (await HttpService.GetApiContentAsync("download/update?type=i18n"))["data"].ToString();
                 }
                 await Shows.ShowDownloader(this, downloadUrl, AppDomain.CurrentDomain.BaseDirectory, "MSL" + latestVersion + ".exe", "下载新版本中……");
                 if (File.Exists("MSL" + latestVersion + ".exe"))

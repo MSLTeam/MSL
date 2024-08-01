@@ -800,7 +800,8 @@ namespace MSL.pages
         {
             try
             {
-                string _httpReturn = HttpService.Get("query/update");
+                JObject _httpReturn = (await HttpService.GetApiContentAsync("query/update"));
+                string _version = _httpReturn["data"]["latestVersion"].ToString();
                 bool dialog = await Shows.ShowMsgDialogAsync(Window.GetWindow(this), "当前版本不支持多语言！\n是否升级到MSL多语言版本？\n警告：部分系统可能不支持允许多语言版本，若升级后您无法运行MSL，请自行下载正常版本MSL！", "升级到多语言版本？", true, "取消");
                 if (dialog == true)
                 {
@@ -809,15 +810,15 @@ namespace MSL.pages
                         Shows.ShowMsgDialog(Window.GetWindow(this), "您的服务器/内网映射/点对点联机正在运行中，若此时更新，会造成后台残留，请将前者关闭后再进行更新！", "警告");
                         return;
                     }
-                    string downloadUrl = HttpService.Get("download/update?type=i18n");
-                    await Shows.ShowDownloader(Window.GetWindow(this), downloadUrl, AppDomain.CurrentDomain.BaseDirectory, "MSL" + _httpReturn + ".exe", "下载多语言版本中……");
-                    if (File.Exists("MSL" + _httpReturn + ".exe"))
+                    string downloadUrl = (await HttpService.GetApiContentAsync("download/update?type=i18n"))["data"].ToString();
+                    await Shows.ShowDownloader(Window.GetWindow(this), downloadUrl, AppDomain.CurrentDomain.BaseDirectory, "MSL" + _version + ".exe", "下载多语言版本中……");
+                    if (File.Exists("MSL" + _version + ".exe"))
                     {
                         string oldExePath = Process.GetCurrentProcess().MainModule.ModuleName;
-                        string dwnExePath = Path.Combine(AppDomain.CurrentDomain.BaseDirectory, "MSL" + _httpReturn + ".exe");
+                        string dwnExePath = Path.Combine(AppDomain.CurrentDomain.BaseDirectory, "MSL" + _version + ".exe");
                         string newExeDir = AppDomain.CurrentDomain.BaseDirectory;
 
-                        string cmdCommand = "/C choice /C Y /N /D Y /T 1 & Del \"" + oldExePath + "\" & Ren \"" + "MSL" + _httpReturn + ".exe" + "\" \"MSL.exe\" & start \"\" \"MSL.exe\"";
+                        string cmdCommand = "/C choice /C Y /N /D Y /T 1 & Del \"" + oldExePath + "\" & Ren \"" + "MSL" + _version + ".exe" + "\" \"MSL.exe\" & start \"\" \"MSL.exe\"";
 
                         Application.Current.Shutdown();
 
