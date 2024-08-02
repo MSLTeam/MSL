@@ -322,19 +322,22 @@
                                 </Style>
                             </ResourceDictionary>
                         </StackPanel.Resources>
-                        <Border Style="{StaticResource MagicBorder}">
+                        <controls:MagicCard>
                             <StackPanel>
-                                <Grid>
-                                    <Label Content="服务器信息：" Style="{StaticResource BorderTitle}"/>
-                                    <Label Content="服务器名称:" Margin="0,35,0,0"/>
-                                    <TextBox x:Name="nAme" MaxLines="1" AutoWordSelection="True" Margin="125,35,0,34" VerticalAlignment="Top"/>
-                                    <Label Content="服务器存放目录:" Margin="0,70,0,0" />
-                                    <TextBox x:Name="bAse" MaxLines="1" AutoWordSelection="True" VerticalAlignment="Top" Margin="125,70,60,0"/>
-                                    <Button x:Name="a0" Content="浏览" Width="60" VerticalAlignment="Top" HorizontalAlignment="Right" Margin="0,70,0,0" Click="a0_Click"/>
-                                </Grid>
+                                <StackPanel>
+                                    <Label Content="服务器信息" Style="{StaticResource BorderTitle}"/>
+                                    <Grid>
+                                        <Label Content="服务器名称:"/>
+                                        <TextBox x:Name="nAme" MaxLines="1" AutoWordSelection="True" Margin="125,0,0,0" VerticalAlignment="Top"/>
+                                        <Label Content="服务器存放目录:" Margin="0,35,0,0" />
+                                        <TextBox x:Name="bAse" MaxLines="1" AutoWordSelection="True" VerticalAlignment="Top" Margin="125,35,60,0"/>
+                                        <Button x:Name="a0" Content="浏览" Width="60" VerticalAlignment="Top" HorizontalAlignment="Right" Margin="0,35,0,0" Click="a0_Click"/>
+                                    </Grid>
+                                    
+                                </StackPanel>
                                 <StackPanel Margin="0,10,0,0">
-                                    <Label Content="服务器设置：" Style="{StaticResource BorderTitle}"/>
-                                    <Grid Margin="0,5,0,0">
+                                    <Label Content="服务器设置" Style="{StaticResource BorderTitle}"/>
+                                    <Grid>
                                         <Label Content="Java地址:"/>
                                         <RadioButton x:Name="useSelf" Content="手动选择Java" IsChecked="True" VerticalAlignment="Top" HorizontalAlignment="Left" Margin="125,5,0,0"/>
                                         <TextBox x:Name="jAva" MaxLines="1" AutoWordSelection="True" VerticalAlignment="Top" Margin="250,0,60,0"/>
@@ -378,15 +381,14 @@
                                     </Grid>
                                 </StackPanel>
                             </StackPanel>
-                        </Border>
-                        <Border Style="{StaticResource MagicBorder}" Margin="10,10,10,20">
+                        </controls:MagicCard>
+                        <controls:MagicCard Margin="0,0,0,10">
                             <StackPanel>
                                 <StackPanel Orientation="Horizontal">
                                     <Label x:Name="changeServerPropertiesLab" Style="{StaticResource BorderTitle}" Content="更改服务器配置"/>
-                                    <Button x:Name="refreahServerConfig" Content="刷新" Margin="10,0,0,0" Style="{StaticResource ButtonPrimary}" Width="80" Click="refreahServerConfig_Click"/>
+                                    <Button x:Name="refreahServerConfig" Margin="10,-10,0,0" Content="刷新" Style="{StaticResource ButtonPrimary}" Width="80" Click="refreahServerConfig_Click"/>
                                 </StackPanel>
-                                
-                                <Grid x:Name="changeServerProperties" Margin="0,10,0,0">
+                                <Grid x:Name="changeServerProperties">
                                     <Grid.Resources>
                                         <Style TargetType="TextBlock">
                                             <Setter Property="Foreground" Value="{DynamicResource PrimaryTextBrush}"/>
@@ -498,7 +500,7 @@
                                     </Grid>
                                 </Grid>
                             </StackPanel>
-                        </Border>
+                        </controls:MagicCard>
 
                     </StackPanel>
                 </ScrollViewer>
@@ -534,8 +536,8 @@
                                 <Grid.ColumnDefinitions>
                                     <ColumnDefinition Width="*"/>
                                 </Grid.ColumnDefinitions>
-                                <Label Grid.Row="0" Content="开服器功能：" Style="{StaticResource BorderTitle}"/>
-                                <Grid Grid.Row="1" Margin="0,5,0,5" >
+                                <Label Grid.Row="0" Content="开服器功能" Style="{StaticResource BorderTitle}"/>
+                                <Grid Grid.Row="1">
                                     <Grid.ColumnDefinitions>
                                         <ColumnDefinition Width="auto"/>
                                         <ColumnDefinition Width="*"/>
@@ -549,7 +551,7 @@
                                         <Button x:Name="outputCmdEncoding" Content="输出编码:UTF8" FontSize="16" Height="35" Click="outputCmdEncoding_Click" Margin="0,0,5,5"/>
                                     </WrapPanel>
                                 </Grid>
-                                <Grid Grid.Row="2"  Margin="0,0,0,5" >
+                                <Grid Grid.Row="2" Margin="0,5,0,0">
                                     <Grid.ColumnDefinitions>
                                         <ColumnDefinition Width="auto"/>
                                         <ColumnDefinition Width="*"/>
@@ -564,7 +566,7 @@
                                     </WrapPanel>
                                 </Grid>
 
-                                <Grid Grid.Row="3">
+                                <Grid Grid.Row="3" Margin="0,5,0,0">
                                     <Grid.ColumnDefinitions>
                                         <ColumnDefinition Width="auto"/>
                                         <ColumnDefinition Width="*"/>
@@ -584,7 +586,7 @@
                                     <RowDefinition Height="auto"/>
                                     <RowDefinition Height="*"/>
                                 </Grid.RowDefinitions>
-                                <Label Content="快捷指令栏：" Grid.Row="0" Style="{StaticResource BorderTitle}"/>
+                                <Label Content="快捷指令栏" Grid.Row="0" Style="{StaticResource BorderTitle}"/>
                                 <Grid Grid.Row="1">
                                     <Grid.ColumnDefinitions>
                                         <ColumnDefinition Width="*"/>
@@ -608,43 +610,49 @@
                 <TabItem.Header>
                     <controls:TabControlHeader Icon="{DynamicResource alarmDrawingImage}" Text="定时任务"/>
                 </TabItem.Header>
-                <Grid>
-                    <Grid.RenderTransform>
+                <StackPanel>
+                    <StackPanel.RenderTransform>
                         <TranslateTransform/>
-                    </Grid.RenderTransform>
-                    <Grid.Triggers>
+                    </StackPanel.RenderTransform>
+                    <StackPanel.Triggers>
                         <EventTrigger RoutedEvent="Loaded">
                             <BeginStoryboard Storyboard="{StaticResource ShowPage}"/>
                         </EventTrigger>
-                    </Grid.Triggers>
-                    <Label Content="任务列表" Style="{StaticResource BorderTitle}" Margin="10,10,0,0" Padding="10,0,0,0"/>
-                    <Label Content="操作" Style="{StaticResource BorderTitle}" VerticalAlignment="Top" HorizontalAlignment="Right" Margin="0,10,270,0" Padding="10,0,0,0"/>
-                    <ListBox x:Name="tasksList" hc:Empty.ShowEmpty="true" SelectionChanged="tasksList_SelectionChanged" Canvas.Left="10" Canvas.Top="45" Margin="10,40,320,160"/>
-                    <Grid Margin="0,40,10,160" HorizontalAlignment="Right">
-                        <Grid.RowDefinitions>
-                            <RowDefinition Height="80"/>
-                            <RowDefinition Height="90"/>
-                            <RowDefinition Height="85"/>
-                        </Grid.RowDefinitions>
-                        <Button Grid.Row="0" x:Name="addTask" Height="80" Width="300" Click="addTask_Click" Content="添加新任务" FontSize="18"/>
-                        <Button Grid.Row="1" x:Name="delTask" Height="80" Width="300" Click="delTask_Click" FontSize="18" Content="删除所选任务"/>
-                        <Button Grid.Row="2" x:Name="loadOrSaveTaskConfig" Height="85" Width="145" Click="loadOrSaveTaskConfig_Click" FontSize="18" Content="加载任务配置" HorizontalAlignment="Left"/>
-                        <Button Grid.Row="2" x:Name="delTaskConfig" Height="85" Width="145" Click="delTaskConfig_Click" FontSize="18" Content="删除任务配置" HorizontalAlignment="Right"/>
-                    </Grid>
-                    <Border Style="{StaticResource MagicBorder}" VerticalAlignment="Bottom" Margin="10,10,10,10">
+                    </StackPanel.Triggers>
+                    <controls:MagicCard Title="任务列表" VerticalAlignment="Top" MarginOverride="10,10,10,0">
                         <Grid>
-                            <Label Content="任务设置(请先添加任务，然后选中想要运行的任务进行更改)" Style="{StaticResource BorderTitle}" />
-                            <Label Content="周期：" FontSize="16" Height="32" BorderBrush="{x:Null}" Background="{x:Null}" VerticalAlignment="Top" Width="60" HorizontalAlignment="Left" Margin="0,48,0,0"/>
-                            <TextBox x:Name="timercmdTime" HorizontalAlignment="Left" VerticalAlignment="Top" Width="110" Height="32" Margin="60,48,0,0" TextChanged="timercmdTime_TextChanged"/>
-                            <Label Content="秒(s)" FontSize="16" HorizontalAlignment="Left" VerticalAlignment="Top" Width="60" Height="32" Background="{x:Null}" BorderBrush="{x:Null}" Margin="170,48,0,0"/>
-                            <TextBox x:Name="timercmdCmd" VerticalAlignment="Top" Height="32" Margin="300,48,0,0" TextChanged="timercmdCmd_TextChanged"/>
-                            <Label Content="指令：" FontSize="16" HorizontalAlignment="Left" VerticalAlignment="Top" Width="60" Height="32" BorderBrush="{x:Null}" Background="{x:Null}" Margin="235,48,0,0"/>
-                            <Button x:Name="startTimercmd" Height="36" Width="120" Content="启动定时任务" Click="startTimercmd_Click" HorizontalAlignment="Right" Margin="0,85,0,0" VerticalAlignment="Top"/>
-                            <Label Content="上次执行结果：" FontSize="16" HorizontalAlignment="Left" VerticalAlignment="Top" Width="130" Height="35" BorderBrush="{x:Null}" Background="{x:Null}" Margin="0,84,0,0"/>
-                            <Label x:Name="timerCmdout" Content="无" FontSize="16" VerticalAlignment="Top" Height="35" HorizontalAlignment="Left" Background="{x:Null}" BorderBrush="{x:Null}" Margin="130,85,0,0"/>
+                            <Grid.ColumnDefinitions>
+                                <ColumnDefinition/>
+                                <ColumnDefinition Width="Auto"/>
+                            </Grid.ColumnDefinitions>
+                            <ListBox Grid.Column="0" x:Name="tasksList" hc:Empty.ShowEmpty="true" SelectionChanged="tasksList_SelectionChanged"/>
+                            <Grid Grid.Column="1" Margin="10,0,0,0" HorizontalAlignment="Right">
+                                <Grid.RowDefinitions>
+                                    <RowDefinition Height="80"/>
+                                    <RowDefinition Height="90"/>
+                                    <RowDefinition Height="70"/>
+                                </Grid.RowDefinitions>
+                                <Button Grid.Row="0" x:Name="addTask" Height="80" Width="300" Click="addTask_Click" Content="添加新任务" FontSize="18"/>
+                                <Button Grid.Row="1" x:Name="delTask" Height="80" Width="300" Click="delTask_Click" FontSize="18" Content="删除所选任务"/>
+                                <Button Grid.Row="2" x:Name="loadOrSaveTaskConfig" Height="70" Width="145" Click="loadOrSaveTaskConfig_Click" FontSize="18" Content="加载任务配置" HorizontalAlignment="Left"/>
+                                <Button Grid.Row="2" x:Name="delTaskConfig" Height="70" Width="145" Click="delTaskConfig_Click" FontSize="18" Content="删除任务配置" HorizontalAlignment="Right"/>
+                            </Grid>
+                        </Grid>
+                    </controls:MagicCard>
+                    <Border Style="{StaticResource MagicBorder}" VerticalAlignment="Bottom" Margin="10">
+                        <Grid>
+                            <Label Content="任务设置（请先添加任务，然后选择一个任务进行更改）" Style="{StaticResource BorderTitle}" />
+                            <Label Content="周期：" FontSize="16" Height="32" BorderBrush="{x:Null}" Background="{x:Null}" VerticalAlignment="Top" Width="60" HorizontalAlignment="Left" Margin="0,35,0,0"/>
+                            <TextBox x:Name="timercmdTime" HorizontalAlignment="Left" VerticalAlignment="Top" Width="110" Height="32" Margin="60,35,0,0" TextChanged="timercmdTime_TextChanged"/>
+                            <Label Content="秒(s)" FontSize="16" HorizontalAlignment="Left" VerticalAlignment="Top" Width="60" Height="32" Background="{x:Null}" BorderBrush="{x:Null}" Margin="170,35,0,0"/>
+                            <TextBox x:Name="timercmdCmd" VerticalAlignment="Top" Height="32" Margin="300,35,0,0" TextChanged="timercmdCmd_TextChanged"/>
+                            <Label Content="指令：" FontSize="16" HorizontalAlignment="Left" VerticalAlignment="Top" Width="60" Height="32" BorderBrush="{x:Null}" Background="{x:Null}" Margin="235,35,0,0"/>
+                            <Button x:Name="startTimercmd" Height="36" Width="120" Content="启动定时任务" Click="startTimercmd_Click" HorizontalAlignment="Right" Margin="0,70,0,0" VerticalAlignment="Top"/>
+                            <Label Content="上次执行结果：" FontSize="16" HorizontalAlignment="Left" VerticalAlignment="Top" Width="130" Height="35" BorderBrush="{x:Null}" Background="{x:Null}" Margin="0,70,0,0"/>
+                            <Label x:Name="timerCmdout" Content="无" FontSize="16" VerticalAlignment="Top" Height="35" HorizontalAlignment="Left" Background="{x:Null}" BorderBrush="{x:Null}" Margin="130,70,0,0"/>
                         </Grid>
                     </Border>
-                </Grid>
+                </StackPanel>
             </TabItem>
         </TabControl>
         <Button x:Name="SideMenuContextOpen" HorizontalAlignment="Left" VerticalAlignment="Bottom" Width="50" Height="42" BorderThickness="0" Background="Transparent" Click="SideMenuContextOpen_Click">

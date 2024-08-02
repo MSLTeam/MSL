@@ -312,7 +312,6 @@ namespace MSL.pages
                     string[] serverTypes = JsonConvert.DeserializeObject<string[]>(((JObject)JsonConvert.DeserializeObject(httpResponse.HttpResponseContent.ToString()))["data"]["types"].ToString());
                     serverlist.ItemsSource = serverTypes;
                     serverlist.SelectedIndex = 0;
-                    getservermsg.Visibility = Visibility.Collapsed;
                 }
                 else
                 {
@@ -323,8 +322,6 @@ namespace MSL.pages
             {
                 getservermsg.Text = "获取服务端失败！请重试\n" + a.Message;
             }
-            Loading_Circle.IsRunning = false;
-            Loading_Circle.Visibility = Visibility.Collapsed;
         }
 
         private async void serverlist_SelectionChanged(object sender, SelectionChangedEventArgs e)

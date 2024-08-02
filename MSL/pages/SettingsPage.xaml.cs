@@ -294,7 +294,7 @@ namespace MSL.pages
             {
                 if (AutoOpenFrpcList.Text == "")
                 {
-                    Growl.Error("请先将需要自动启动的Frpc之ID填入框中！");
+                    Growl.Error("请先将需要自启动的Frpc之ID填入框中！");
                     openfrpOnStart.IsChecked = false;
                     return;
                 }
