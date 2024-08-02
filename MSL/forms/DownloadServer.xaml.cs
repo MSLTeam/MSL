@@ -315,7 +315,7 @@ namespace MSL.pages
                 }
                 else
                 {
-                    getservermsg.Text = "请求错误！请重试\n（" + httpResponse.HttpResponseCode.ToString() + "）" + httpResponse.HttpResponseContent.ToString();
+                    getservermsg.Text = "请求错误！请重试\n(" + httpResponse.HttpResponseCode.ToString() + ")" + httpResponse.HttpResponseContent.ToString();
                     Loading_Circle.IsRunning = false;
                     Loading_Circle.Visibility = Visibility.Collapsed;
                 }
@@ -359,7 +359,7 @@ namespace MSL.pages
                 }
                 else
                 {
-                    getservermsg.Text = "请求错误！请重试\n（" + httpResponse.HttpResponseCode.ToString() + "）" + httpResponse.HttpResponseContent.ToString();
+                    getservermsg.Text = "请求错误！请重试\n(" + httpResponse.HttpResponseCode.ToString() + ")" + httpResponse.HttpResponseContent.ToString();
                 }
             }
             catch (Exception a)

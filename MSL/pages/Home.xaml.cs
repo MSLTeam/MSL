@@ -148,7 +148,10 @@ namespace MSL.pages
             }
             catch (Exception ex)
             {
-                noticeLabText = ex.ToString();
+                if (noticeLabText == "")
+                {
+                    noticeLabText = "获取公告失败！请检查网络连接是否正常或联系作者进行解决！\n" + ex.Message;
+                }
             }
 
             if (noticeLabText == "")
