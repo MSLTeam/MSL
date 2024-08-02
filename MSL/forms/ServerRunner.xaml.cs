@@ -2065,15 +2065,12 @@ namespace MSL
                 viewDistanceText.Text = strings[6];
                 gamePvpText.Text = strings[7];
                 gameWorldText.Text = strings[8];
-                changeServerPropertiesLab.Content = "更改服务器配置信息";
+                changeServerPropertiesLab.Text = "更改服务器配置信息";
                 changeServerProperties.Visibility = Visibility.Visible;
-                changeServerProperties.Height = double.NaN;
                 changeServerProperties_Add.Visibility = Visibility.Visible;
-                changeServerProperties_Add.Height = double.NaN;
                 changeServerProperties_Add_Add.Visibility = Visibility.Visible;
-                changeServerProperties_Add_Add.Height = double.NaN;
             }
-            catch { changeServerPropertiesLab.Content = "找不到配置文件，无法更改相关设置（请尝试开启一次服务器）"; changeServerProperties.Visibility = Visibility.Collapsed; changeServerProperties.Height = 0; changeServerProperties_Add.Visibility = Visibility.Collapsed; changeServerProperties_Add.Height = 0; changeServerProperties_Add_Add.Visibility = Visibility.Collapsed; changeServerProperties_Add_Add.Height = 0; }
+            catch { changeServerPropertiesLab.Text = "找不到配置文件，无法更改相关设置（请尝试开启一次服务器）"; changeServerProperties.Visibility = Visibility.Collapsed; changeServerProperties_Add.Visibility = Visibility.Collapsed; changeServerProperties_Add_Add.Visibility = Visibility.Collapsed; }
         }
 
         private string[] ServerBaseConfig()
@@ -2243,7 +2240,11 @@ namespace MSL
             }
             catch
             { }
-            string levelName = gameWorldText.Text;
+            string levelName = "world";
+            if (!string.IsNullOrEmpty(gameWorldText.Text))
+            {
+                levelName = gameWorldText.Text;
+            }
             if (Directory.Exists(Rserverbase + @"\" + levelName))
             {
                 if (await Shows.ShowMsgDialogAsync(this, "点击确定后，MSL将删除原先主世界地图（删除后，地图将从电脑上彻底消失，如有必要请提前备份！）\n点击取消以中止操作", "警告", true, "取消"))
