@@ -1431,11 +1431,6 @@ namespace MSL.pages
             FastModeGrid.Visibility = Visibility.Visible;
         }
 
-        private void Page_Unloaded(object sender, RoutedEventArgs e)
-        {
-            GC.Collect();
-        }
-
         private void CancelBtn_Click(object sender, RoutedEventArgs e)
         {
             GotoServerList();

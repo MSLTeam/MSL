@@ -12,7 +12,6 @@ using System.IO;
 using System.Net.NetworkInformation;
 using System.Text;
 using System.Text.RegularExpressions;
-using System.Threading;
 using System.Threading.Tasks;
 using System.Windows;
 using System.Windows.Controls;
@@ -38,18 +37,17 @@ namespace MSL.pages
             FrpcProcess.OutputDataReceived += new DataReceivedEventHandler(OutputDataReceived);
             if (autoStart)
             {
-                Task.Run(() => StartFrpc());
+                AutoStartFrpc();
             }
         }
 
-        private void Page_Loaded(object sender, RoutedEventArgs e)
+        private async void Page_Loaded(object sender, RoutedEventArgs e)
         {
             try
             {
                 if (File.Exists(@$"MSL\frp\{frpID}\frpc") || File.Exists(@$"MSL\frp\{frpID}\frpc.toml"))
                 {
-                    Thread thread = new Thread(GetFrpcInfo);
-                    thread.Start();
+                    await GetFrpcInfo();
                 }
                 else
                 {
@@ -65,19 +63,24 @@ namespace MSL.pages
             }
         }
 
-        private async void StartFrpc() //以下代码由神兽保佑
+        private void AutoStartFrpc()
+        {
+            Dispatcher.InvokeAsync(async () =>
+            {
+                await StartFrpc();
+            });
+        }
+
+        private async Task StartFrpc() //以下代码由神兽保佑
         {
             try
             {
                 Directory.CreateDirectory("MSL\\frp");
                 //ui提示
-                Dispatcher.Invoke(() =>
-                {
-                    startfrpc.Content = LanguageManager.Instance["Pages_Frpc_Close"];
-                    Growl.Info("正在启动内网映射！");
-                    startfrpc.IsEnabled = false;
-                    frpcOutlog.Text = "启动中，请稍候……\n";
-                });
+                startfrpc.Content = LanguageManager.Instance["Pages_Frpc_Close"];
+                Growl.Info("正在启动内网映射！");
+                startfrpc.IsEnabled = false;
+                frpcOutlog.Text = "启动中，请稍候……\n";
                 //读取配置
                 JObject jobject = JObject.Parse(File.ReadAllText(@"MSL\frp\config.json", Encoding.UTF8));
                 //默认的玩意
@@ -116,10 +119,7 @@ namespace MSL.pages
                     string _dnfrpc;
                     _dnfrpc = (await HttpService.GetApiContentAsync(downloadUrl + "?os=" + osver))["data"]["url"].ToString();//丢os版本号
 
-                    await Dispatcher.Invoke(async () =>
-                    {
-                        await Shows.ShowDownloader(Window.GetWindow(this), _dnfrpc, "MSL\\frp", $"{frpcExeName}", "更新MSL内网映射中...");
-                    });
+                    await Shows.ShowDownloader(Window.GetWindow(this), _dnfrpc, "MSL\\frp", $"{frpcExeName}", "更新MSL内网映射中...");
                     Config.Write("frpcversion", "0581");
                 }
 
@@ -127,18 +127,14 @@ namespace MSL.pages
                 {
                     string _dnfrpc;
                     _dnfrpc = (await HttpService.GetApiContentAsync(downloadUrl + "?os=" + osver))["data"]["url"].ToString();//丢os版本号
-                    await Dispatcher.Invoke(async () =>
+                    if (frpcServer == "0" || frpcServer == "-1")//下载exe or zip
                     {
-                        if (frpcServer == "0" || frpcServer == "-1")//下载exe or zip
-                        {
-                            await Shows.ShowDownloader(Window.GetWindow(this), _dnfrpc, "MSL\\frp", $"{frpcExeName}", "下载内网映射中...");
-                        }
-                        else
-                        {
-                            await Shows.ShowDownloader(Window.GetWindow(this), _dnfrpc, "MSL\\frp", $"{frpcExeName}.zip", "下载内网映射中...");
-                        }
-
-                    });
+                        await Shows.ShowDownloader(Window.GetWindow(this), _dnfrpc, "MSL\\frp", $"{frpcExeName}", "下载内网映射中...");
+                    }
+                    else
+                    {
+                        await Shows.ShowDownloader(Window.GetWindow(this), _dnfrpc, "MSL\\frp", $"{frpcExeName}.zip", "下载内网映射中...");
+                    }
 
                     //只有mslfrp+gh不需要
                     if (frpcServer != "0" && frpcServer != "-1")
@@ -187,46 +183,31 @@ namespace MSL.pages
                 FrpcProcess.Start();
                 FrpcProcess.BeginOutputReadLine();
                 FrpcList.RunningFrpc.Add(frpID);
-                Dispatcher.Invoke(() =>
-                {
-                    startfrpc.IsEnabled = true;
-                });
-                FrpcProcess.WaitForExit();
+                startfrpc.IsEnabled = true;
+                await Task.Run(FrpcProcess.WaitForExit);
                 FrpcProcess.CancelOutputRead();
                 FrpcList.RunningFrpc.Remove(frpID);
                 //到这里就关掉了
-                Dispatcher.Invoke(() =>
-                {
-                    Growl.Success("内网映射已关闭！");
-                    startfrpc.IsEnabled = true;
-                });
+                Growl.Success("内网映射已关闭！");
+                startfrpc.IsEnabled = true;
             }
             catch (Exception e)//错误处理
             {
                 if (e.Message.Contains("Frpc Not Found"))
                 {
-                    Dispatcher.Invoke(() =>
-                    {
-                        startfrpc.IsEnabled = true;
-                        Shows.ShowMsg(Window.GetWindow(this), "找不到自定义的Frpc客户端，请重新配置！\n" + e.Message, "错误");
-                    });
+                    startfrpc.IsEnabled = true;
+                    Shows.ShowMsg(Window.GetWindow(this), "找不到自定义的Frpc客户端，请重新配置！\n" + e.Message, "错误");
                 }
                 else
                 {
-                    Dispatcher.Invoke(() =>
-                    {
-                        startfrpc.IsEnabled = true;
-                        Shows.ShowMsg(Window.GetWindow(this), "出现错误，请检查是否有杀毒软件误杀并重试:" + e.Message, "错误");
-                    });
+                    startfrpc.IsEnabled = true;
+                    Shows.ShowMsg(Window.GetWindow(this), "出现错误，请检查是否有杀毒软件误杀并重试:" + e.Message, "错误");
                 }
             }
             finally
             {
-                Dispatcher.Invoke(() =>
-                {
-                    startfrpc.IsEnabled = true;
-                    startfrpc.Content = LanguageManager.Instance["Pages_Frpc_Launch"];
-                });
+                startfrpc.IsEnabled = true;
+                startfrpc.Content = LanguageManager.Instance["Pages_Frpc_Launch"];
             }
         }
 
@@ -492,38 +473,11 @@ namespace MSL.pages
             }
         }
 
-        private void setfrpc_Click(object sender, RoutedEventArgs e)
-        {
-            SetFrpc fw = new SetFrpc();
-            var mainwindow = Window.GetWindow(Window.GetWindow(this));
-            fw.Owner = mainwindow;
-            fw.ShowDialog();
-            try
-            {
-                if (File.Exists(@"MSL\frp\frpc") || File.Exists(@"MSL\frp\frpc.toml"))
-                {
-                    Thread thread = new Thread(GetFrpcInfo);
-                    thread.Start();
-                }
-                else
-                {
-                    copyFrpc.IsEnabled = false;
-                    startfrpc.IsEnabled = false;
-                    frplab1.Text = LanguageManager.Instance["Pages_Frpc_Status"];
-                    frplab3.Text = LanguageManager.Instance["Pages_Frpc_IPNull"];
-                }
-            }
-            catch
-            {
-                MessageBox.Show("出现错误，请重试:" + "m0x3");
-            }
-        }
-
-        private void startfrpc_Click(object sender, RoutedEventArgs e)
+        private async void startfrpc_Click(object sender, RoutedEventArgs e)
         {
             if (startfrpc.Content.ToString() == "启动内网映射")
             {
-                Task.Run(() => StartFrpc());
+                await StartFrpc();
             }
             else
             {
@@ -531,7 +485,7 @@ namespace MSL.pages
                 {
                     startfrpc.IsEnabled = false;
                     Growl.Info("正在关闭内网映射！");
-                    Task.Run(() => Functions.StopProcess(FrpcProcess));
+                    await Functions.StopProcess(FrpcProcess);
                 }
                 catch
                 {
@@ -545,7 +499,7 @@ namespace MSL.pages
             Clipboard.SetDataObject(frplab3.Text.ToString());
         }
 
-        private void GetFrpcInfo()
+        private async Task GetFrpcInfo()
         {
             try
             {
@@ -556,12 +510,9 @@ namespace MSL.pages
                     string convertString = Convert.ToString(jobject);
                     File.WriteAllText(@"MSL\frp\config.json", convertString, Encoding.UTF8);
                 }
-                Dispatcher.Invoke(() =>
-                {
-                    copyFrpc.IsEnabled = true;
-                    startfrpc.IsEnabled = true;
-                    frplab1.Text = "检测节点信息中……";
-                });
+                copyFrpc.IsEnabled = true;
+                startfrpc.IsEnabled = true;
+                frplab1.Text = "检测节点信息中……";
                 if (jobject[frpID.ToString()]["frpcServer"].ToString() == "0" || jobject[frpID.ToString()]["frpcServer"].ToString() == "2" || jobject[frpID.ToString()]["frpcServer"].ToString() == "-2" || jobject[frpID.ToString()]["frpcServer"].ToString() == "-1")
                 {
 
@@ -628,62 +579,59 @@ namespace MSL.pages
                         }
                     }
 
-                    Dispatcher.Invoke(() =>
+                    if (!readServerInfo)
                     {
-                        if (!readServerInfo)
-                        {
-                            frplab3.Text = "Java版：" + serverAddr + ":" + remotePort + "\n基岩版：IP:" + serverAddr + " 端口:" + remotePort;
-                        }
-                        else
-                        {
-                            if (frpcType == "udp")
-                            {
-                                frplab3.Text = "IP:" + serverAddr + " 端口:" + remotePort;
-                            }
-                            else
-                            {
-                                frplab3.Text = serverAddr + ":" + remotePort;
-                            }
-                        }
-                    });
-                    Ping pingSender = new Ping();
-                    PingReply reply = pingSender.Send(serverAddr, 2000); // 替换成您要 ping 的 IP 地址
-                    if (reply.Status == IPStatus.Success)
-                    {
-                        // 节点在线，可以获取延迟等信息
-                        int roundTripTime = (int)reply.RoundtripTime;
-                        Dispatcher.Invoke(() =>
-                        {
-                            frplab1.Text = nodeName + "  延迟：" + roundTripTime + "ms";
-                        });
+                        frplab3.Text = "Java版：" + serverAddr + ":" + remotePort + "\n基岩版：IP:" + serverAddr + " 端口:" + remotePort;
                     }
                     else
                     {
-                        // 节点离线
-                        Dispatcher.Invoke(() =>
+                        if (frpcType == "udp")
                         {
-                            frplab1.Text = nodeName + "  节点离线或禁Ping，若无法连接，请重新配置！";
-                        });
+                            frplab3.Text = "IP:" + serverAddr + " 端口:" + remotePort;
+                        }
+                        else
+                        {
+                            frplab3.Text = serverAddr + ":" + remotePort;
+                        }
                     }
+                    await Task.Run(() =>
+                    {
+                        Ping pingSender = new Ping();
+                        PingReply reply = pingSender.Send(serverAddr, 2000);
+                        if (reply.Status == IPStatus.Success)
+                        {
+                            Dispatcher.Invoke(() =>
+                            {
+                                // 节点在线，可以获取延迟等信息
+                                int roundTripTime = (int)reply.RoundtripTime;
+                                Dispatcher.Invoke(() =>
+                                {
+                                    frplab1.Text = nodeName + "  延迟：" + roundTripTime + "ms";
+                                });
+                            });
+                        }
+                        else
+                        {
+                            Dispatcher.Invoke(() =>
+                            {
+                                // 节点离线
+                                frplab1.Text = nodeName + "  节点离线或禁Ping，若无法连接，请重新配置！";
+                            });
+                        }
+                    });
                 }
                 else
                 {
-                    Dispatcher.Invoke(() =>
-                    {
-                        copyFrpc.IsEnabled = false;
-                        frplab1.Text = "OpenFrp节点";
-                        frplab3.Text = "请启动内网映射以查看IP";
-                    });
+                    copyFrpc.IsEnabled = false;
+                    frplab1.Text = "OpenFrp节点";
+                    frplab3.Text = "请启动内网映射以查看IP";
                 }
             }
             catch
             {
-                Dispatcher.Invoke(() =>
-                {
-                    copyFrpc.IsEnabled = false;
-                    frplab1.Text = "获取Frp信息失败，建议重新配置！";
-                    frplab3.Text = "无";
-                });
+                copyFrpc.IsEnabled = false;
+                frplab1.Text = "获取Frp信息失败，建议重新配置！";
+                frplab3.Text = "无";
             }
         }
 

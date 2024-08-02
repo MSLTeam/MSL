@@ -9,6 +9,7 @@ using System.Collections.Generic;
 using System.Diagnostics;
 using System.IO;
 using System.Text;
+using System.Windows;
 using System.Windows.Controls;
 using System.Windows.Input;
 using System.Windows.Media;
@@ -25,17 +26,17 @@ namespace MSL.pages
     /// </summary>
     public partial class ServerList : Page
     {
-        public static event DeleControl OpenServerForm;
         public static event DeleControl CreateServerEvent;
-        public static string serverID;
-        public static List<string> serverIDs = new List<string>();
-        public static Dictionary<string, int> runningServers = new Dictionary<string, int>();
+        public static int ServerID;
+        public static List<int> RunningServers = new List<int>();
+        public static Dictionary<int, Window> ServerWindowList = new Dictionary<int, Window>();
+        //private static readonly List<int> serverIDs = new List<int>();
 
         public ServerList()
         {
             InitializeComponent();
-            ServerRunner.SaveConfigEvent += RefreshConfig;
-            ServerRunner.ServerStateChange += RefreshConfig;
+            ServerRunner.SaveConfigEvent += GetServerConfig;
+            ServerRunner.ServerStateChange += GetServerConfig;
             MainWindow.AutoOpenServer += AutoOpenServer;
             Home.AutoOpenServer += AutoOpenServer;
         }
@@ -45,33 +46,8 @@ namespace MSL.pages
             GetServerConfig();
         }
 
-        private void RefreshConfig()
-        {
-            GetServerConfig();
-        }
-
-        private void StateCheck(List<object> list)
-        {
-            for (int id = 0; id < list.Count; id++)
-            {
-                ServerInfo _server = list[id] as ServerInfo;
-                if (runningServers.TryGetValue(serverIDs[id], out int status))
-                {
-                    if (status == 1)
-                    {
-                        _server.ServerState = "运行中";
-                        _server.ServerStateFore = Brushes.Red;
-                        continue;
-                    }
-                }
-                _server.ServerState = "未运行";
-                _server.ServerStateFore = Brushes.MediumSeaGreen;
-            }
-        }
-
         private void addServer_Click(object sender, RoutedEventArgs e)
         {
-            //serverList.Items.Clear();
             CreateServerEvent();
         }
 
@@ -85,37 +61,30 @@ namespace MSL.pages
         {
             try
             {
-                //serverList.Items.Clear();
                 List<object> list = new List<object>();
-                serverIDs.Clear();
+                //serverIDs.Clear();
 
                 JObject jsonObject = JObject.Parse(File.ReadAllText(@"MSL\ServerList.json", Encoding.UTF8));
                 foreach (var item in jsonObject)
                 {
-                    serverIDs.Add(item.Key);
+                    string status = "未运行";
+                    Brush brushes = Brushes.MediumSeaGreen;
+                    if (RunningServers.Contains(int.Parse(item.Key)))
+                    {
+                        status = "运行中";
+                        brushes = Brushes.Orange;
+                    }
                     if (File.Exists(item.Value["base"].ToString() + "\\server-icon.png"))
                     {
-                        //await Dispatcher.InvokeAsync(() =>
-                        //{
-                        list.Add(new ServerInfo(item.Value["name"].ToString(), item.Value["base"].ToString() + "\\server-icon.png", "未运行", Brushes.Green));
-                        StateCheck(list);
-                        //});
+                        list.Add(new ServerInfo(int.Parse(item.Key), item.Value["name"].ToString(), item.Value["base"].ToString() + "\\server-icon.png", status, brushes));
                     }
                     else if (item.Value["core"].ToString().IndexOf("forge") + 1 != 0 || item.Value["core"].ToString() == "")
                     {
-                        //await Dispatcher.InvokeAsync(() =>
-                        //{
-                        list.Add(new ServerInfo(item.Value["name"].ToString(), "pack://application:,,,/images/150px-Anvil.png", "未运行", Brushes.Green));
-                        StateCheck(list);
-                        //});
+                        list.Add(new ServerInfo(int.Parse(item.Key), item.Value["name"].ToString(), "pack://application:,,,/images/150px-Anvil.png", status, brushes));
                     }
                     else
                     {
-                        //await Dispatcher.InvokeAsync(() =>
-                        //{
-                        list.Add(new ServerInfo(item.Value["name"].ToString(), "pack://application:,,,/images/150px-Impulse_Command_Block.png", "未运行", Brushes.MediumSeaGreen));
-                        StateCheck(list);
-                        //});
+                        list.Add(new ServerInfo(int.Parse(item.Key), item.Value["name"].ToString(), "pack://application:,,,/images/150px-Impulse_Command_Block.png", status, brushes));
                     }
                 }
                 serverList.ItemsSource = list;
@@ -139,14 +108,40 @@ namespace MSL.pages
             {
                 return;
             }
-            StartServerEvent();
+            OpenServerWindowEvent();
         }
 
         private void startServer_Click(object sender, RoutedEventArgs e)
         {
-            StartServerEvent();
+            OpenServerWindowEvent();
         }
 
+        private void OpenServerWindowEvent(int ctrlTab = 0)
+        {
+            ServerInfo serverInfo = serverList.SelectedItem as ServerInfo;
+            int serverID = serverInfo.ServerID;
+            if (ServerWindowList.ContainsKey(serverID))
+            {
+                ServerWindowList.TryGetValue(serverID, out Window window);
+                window.Show();
+                if (window.WindowState == WindowState.Minimized)
+                {
+                    window.WindowState = WindowState.Normal;
+                }
+                window.Visibility = Visibility.Visible;
+                window.Topmost = true;
+                window.Topmost = false;
+                window.Focus();
+            }
+            else
+            {
+                Window window = new ServerRunner(serverID, ctrlTab);
+                ServerWindowList.Add(serverID, window);
+                window.Show();
+            }
+        }
+
+        /*
         private ServerRunner CheckServerRunStatus(int tabCtrl = 0)
         {
             if (runningServers.ContainsKey(serverIDs[serverList.SelectedIndex]))
@@ -161,6 +156,7 @@ namespace MSL.pages
                 return runner;
             }
         }
+        
 
         private void StartServerEvent()
         {
@@ -171,18 +167,18 @@ namespace MSL.pages
             }
             catch (Exception ex) { MessageBox.Show("出现错误，请检查您是否选择了服务器！\n" + ex.Message); }
         }
+        */
 
         private void setServer_Click(object sender, RoutedEventArgs e)
         {
-            SetServerEvent();
+            OpenServerWindowEvent();
         }
 
         private void SetServerEvent()
         {
             try
             {
-                var runner = CheckServerRunStatus(3);
-                runner?.Show();
+                OpenServerWindowEvent(3);
             }
             catch (Exception ex) { MessageBox.Show("出现错误，请检查您是否选择了服务器！\n" + ex.Message); }
         }
@@ -194,9 +190,11 @@ namespace MSL.pages
 
         private async void DelServerEvent()
         {
-            if (runningServers.ContainsKey(serverIDs[serverList.SelectedIndex]))
+            ServerInfo serverInfo = serverList.SelectedItem as ServerInfo;
+            int serverID = serverInfo.ServerID;
+            if (ServerWindowList.ContainsKey(serverID))
             {
-                Shows.ShowMsgDialog(Window.GetWindow(this), "请先关闭服务器窗口再进行删除！", "警告");
+                Shows.ShowMsgDialog(Window.GetWindow(this), "请在关闭服务器并关掉服务器窗口后再进行删除！", "警告");
                 return;
             }
             bool dialogRet = await Shows.ShowMsgDialogAsync(Window.GetWindow(this), "您确定要删除该服务器吗？", "提示", true, "取消");
@@ -211,7 +209,7 @@ namespace MSL.pages
                 if (_dialogRet)
                 {
                     JObject jsonObject = JObject.Parse(File.ReadAllText(@"MSL\ServerList.json", Encoding.UTF8));
-                    JObject _json = (JObject)jsonObject[serverIDs[serverList.SelectedIndex].ToString()];
+                    JObject _json = (JObject)jsonObject[serverID.ToString()];
                     FileSystem.DeleteDirectory(_json["base"].ToString(), UIOption.OnlyErrorDialogs, RecycleOption.SendToRecycleBin);
                     //Directory.Delete(_json["base"].ToString(), true);
                     Growl.Success("服务器目录已成功移至回收站！");
@@ -224,7 +222,7 @@ namespace MSL.pages
             try
             {
                 JObject jsonObject = JObject.Parse(File.ReadAllText(@"MSL\ServerList.json", Encoding.UTF8));
-                jsonObject.Remove(serverIDs[serverList.SelectedIndex].ToString());
+                jsonObject.Remove(serverID.ToString());
                 File.WriteAllText(@"MSL\ServerList.json", Convert.ToString(jsonObject), Encoding.UTF8);
                 Growl.Success("删除服务器成功！");
                 GetServerConfig();
@@ -241,8 +239,10 @@ namespace MSL.pages
         {
             try
             {
+                ServerInfo serverInfo = serverList.SelectedItem as ServerInfo;
+                string serverID = serverInfo.ServerID.ToString();
                 JObject jsonObject = JObject.Parse(File.ReadAllText(@"MSL\ServerList.json", Encoding.UTF8));
-                JObject _json = (JObject)jsonObject[serverIDs[serverList.SelectedIndex].ToString()];
+                JObject _json = (JObject)jsonObject[serverID];
                 Process process = new Process();
                 process.StartInfo.WorkingDirectory = _json["base"].ToString();
                 process.StartInfo.FileName = "cmd.exe";
@@ -263,8 +263,10 @@ namespace MSL.pages
         {
             try
             {
+                ServerInfo serverInfo = serverList.SelectedItem as ServerInfo;
+                string serverID = serverInfo.ServerID.ToString();
                 JObject jsonObject = JObject.Parse(File.ReadAllText(@"MSL\ServerList.json", Encoding.UTF8));
-                JObject _json = (JObject)jsonObject[serverIDs[serverList.SelectedIndex].ToString()];
+                JObject _json = (JObject)jsonObject[serverID];
                 Growl.Info("正在为您打开服务器文件夹……");
                 Process.Start(_json["base"].ToString());
             }
@@ -275,70 +277,33 @@ namespace MSL.pages
         {
             try
             {
-                var runner = CheckServerRunStatus(2);
-                //ControlSetPMTab = true;
-                runner?.Show();
+                OpenServerWindowEvent(2);
             }
             catch (Exception ex) { MessageBox.Show("出现错误，请检查您是否选择了服务器！\n" + ex.Message); }
         }
 
         private void AutoOpenServer()
         {
-            try
+            if (ServerWindowList.ContainsKey(ServerID))
             {
-                //serverList.Items.Clear();
-                List<object> list = new List<object>();
-                serverIDs.Clear();
-
-                JObject jsonObject = JObject.Parse(File.ReadAllText(@"MSL\ServerList.json", Encoding.UTF8));
-                foreach (var item in jsonObject)
+                ServerWindowList.TryGetValue(ServerID, out Window window);
+                window.Show();
+                if (window.WindowState == WindowState.Minimized)
                 {
-                    serverIDs.Add(item.Key);
-                    if (File.Exists(item.Value["base"].ToString() + "\\server-icon.png"))
-                    {
-                        list.Add(new ServerInfo(item.Value["name"].ToString(), item.Value["base"].ToString() + "\\server-icon.png", "未运行", Brushes.Green));
-                        StateCheck(list);
-                    }
-                    else if (item.Value["core"].ToString().IndexOf("forge") + 1 != 0 || item.Value["core"].ToString() == "")
-                    {
-                        list.Add(new ServerInfo(item.Value["name"].ToString(), "pack://application:,,,/images/150px-Anvil.png", "未运行", Brushes.Green));
-                        StateCheck(list);
-                    }
-                    else
-                    {
-                        list.Add(new ServerInfo(item.Value["name"].ToString(), "pack://application:,,,/images/150px-Impulse_Command_Block.png", "未运行", Brushes.MediumSeaGreen));
-                        StateCheck(list);
-                    }
+                    window.WindowState = WindowState.Normal;
                 }
-                Dispatcher.Invoke(() =>
-                {
-                    serverList.ItemsSource = list;
-                });
+                window.Visibility = Visibility.Visible;
+                window.Topmost = true;
+                window.Topmost = false;
+                window.Focus();
             }
-            catch
+            else
             {
-                MessageBox.Show("err");
+                Window window = new ServerRunner(ServerID);
+                ServerWindowList.Add(ServerID, window);
+                window.Show();
             }
-            Dispatcher.Invoke(() =>
-            {
-                int i = 0;
-                foreach (string x in serverIDs)
-                {
-                    if (x == serverID)
-                    {
-                        serverList.SelectedIndex = i;
-                        break;
-                    }
-                    i++;
-                }
-                try
-                {
-                    var runner = CheckServerRunStatus();
-                    runner?.Show();
-                }
-                catch (Exception ex) { MessageBox.Show("出现错误，请检查您是否选择了服务器！\n" + ex.Message); }
-            });
-        }//the same of GetServerConfig and StartServerEvent
+        }
 
         private void serverList_SelectionChanged(object sender, SelectionChangedEventArgs e)
         {
@@ -373,7 +338,7 @@ namespace MSL.pages
                     item.IsSelected = true;
                 }
             }
-            StartServerEvent();
+            OpenServerWindowEvent();
         }
         private void setServerBtn_Click(object sender, RoutedEventArgs e)
         {

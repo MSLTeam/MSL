@@ -515,7 +515,7 @@ namespace MSL.pages
             if (dialog)
             {
                 // 定义一个颜色数组
-                Color[] colors = new Color[] { Colors.DeepSkyBlue, Colors.Pink, Colors.Orange, Colors.SpringGreen, Colors.Turquoise, Colors.DeepSkyBlue, Colors.Pink, Colors.HotPink, Colors.DeepSkyBlue, };
+                Color[] colors = new Color[] { Colors.DeepSkyBlue, Colors.Pink, Colors.LightGoldenrodYellow, Colors.SpringGreen, Colors.DeepSkyBlue, Colors.Pink, Colors.HotPink, Colors.DeepSkyBlue, };
 
                 // 创建一个颜色关键帧动画
                 ColorAnimationUsingKeyFrames colorAnimation = new ColorAnimationUsingKeyFrames

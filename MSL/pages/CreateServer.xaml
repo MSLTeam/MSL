@@ -7,7 +7,7 @@
         xmlns:local="clr-namespace:MSL.pages"
         mc:Ignorable="d" Title="CreateServer"
         d:DesignHeight="460" d:DesignWidth="750"
-        Loaded="Page_Loaded" Unloaded="Page_Unloaded">
+        Loaded="Page_Loaded">
     <Page.RenderTransform>
         <TranslateTransform/>
     </Page.RenderTransform>

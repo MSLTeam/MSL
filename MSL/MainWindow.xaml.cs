@@ -405,9 +405,12 @@ namespace MSL
                     while (servers != "")
                     {
                         int aserver = servers.IndexOf(",");
-                        ServerList.serverID = servers.Substring(0, aserver);
-                        AutoOpenServer();
-                        servers = servers.Replace(ServerList.serverID.ToString() + ",", "");
+                        ServerList.ServerID = int.Parse(servers.Substring(0, aserver));
+                        Dispatcher.Invoke(() =>
+                        {
+                            AutoOpenServer();
+                        });
+                        servers = servers.Replace(ServerList.ServerID.ToString() + ",", "");
                     }
                 }
                 //Logger.LogInfo("读取自动开启（服务器）配置成功！");
@@ -434,14 +437,16 @@ namespace MSL
                     Growl.Info(LanguageManager.Instance["MainWindow_GrowlMsg_AutoLaunchFrpc"]);
                     while (frpcs != "")
                     {
-                        int aserver = frpcs.IndexOf(",");
-                        FrpcList.FrpcID = int.Parse(frpcs.Substring(0, aserver));
-                        if (!FrpcList.FrpcPageList.ContainsKey(FrpcList.FrpcID))
+                        int afrpc = frpcs.IndexOf(",");
+                        FrpcList.FrpcID = int.Parse(frpcs.Substring(0, afrpc));
+                        Dispatcher.Invoke(() =>
                         {
-                            FrpcList.FrpcPageList.Add(FrpcList.FrpcID, new FrpcPage(FrpcList.FrpcID, true));
-                        }
-                        //frame.Content = FrpcList.FrpcPageList[FrpcList.FrpcID];
-                        frpcs = frpcs.Replace(ServerList.serverID.ToString() + ",", "");
+                            if (!FrpcList.FrpcPageList.ContainsKey(FrpcList.FrpcID))
+                            {
+                                FrpcList.FrpcPageList.Add(FrpcList.FrpcID, new FrpcPage(FrpcList.FrpcID, true));
+                            }
+                        });
+                        frpcs = frpcs.Replace(FrpcList.FrpcID.ToString() + ",", "");
                     }
                 }
                 //Logger.LogInfo("读取自动开启（内网映射）配置成功！");
@@ -633,12 +638,9 @@ namespace MSL
 
         private static bool CheckServerRunning()
         {
-            foreach (var item in ServerList.runningServers)
+            if (ServerList.RunningServers.Count != 0)
             {
-                if (item.Value == 1)
-                {
-                    return true;
-                }
+                return true;
             }
             return false;
         }
@@ -668,22 +670,7 @@ namespace MSL
             }
             catch
             {
-                try
-                {
-                    if (OnlinePage.FrpcProcess.HasExited == false)
-                    {
-                        //Logger.LogWarning("联机功能正在运行中！");
-                        return true;
-                    }
-                    else
-                    {
-                        return false;
-                    }
-                }
-                catch
-                {
-                    return false;
-                }
+                return false;
             }
         }
 
@@ -730,7 +717,8 @@ namespace MSL
             {
                 FrpcList.FrpcPageList.Add(FrpcList.FrpcID, new FrpcPage(FrpcList.FrpcID));
             }
-            frame.Content = FrpcList.FrpcPageList[FrpcList.FrpcID];
+            FrpcList.FrpcPageList.TryGetValue(FrpcList.FrpcID, out Page page);
+            frame.Content = page;
         }
 
         private void ChangeSkinStyle()

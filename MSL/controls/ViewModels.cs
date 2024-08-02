@@ -6,12 +6,14 @@ namespace MSL.controls
 {
     internal class ServerInfo
     {
+        public int ServerID { get; set; }
         public string ServerName { get; set; }
         public string ServerIcon { get; set; }
         public string ServerState { get; set; }
         public Brush ServerStateFore { get; set; }
-        public ServerInfo(string serverName, string serverIcon, string serverState, Brush serverStateFore)
+        public ServerInfo(int serverID, string serverName, string serverIcon, string serverState, Brush serverStateFore)
         {
+            ServerID = serverID;
             ServerName = serverName;
             ServerIcon = serverIcon;
             ServerState = serverState;
