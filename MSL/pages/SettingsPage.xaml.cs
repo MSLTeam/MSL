@@ -681,10 +681,10 @@ namespace MSL.pages
                             Shows.ShowMsgDialog(Window.GetWindow(this), "您的服务器/内网映射/点对点联机正在运行中，若此时更新，会造成后台残留，请将前者关闭后再进行更新！", "警告");
                             return;
                         }
-                        string downloadUrl = HttpService.Get("download/update?type=normal"); ;
+                        string downloadUrl = (await HttpService.GetApiContentAsync("download/update?type=normal"))["data"]["url"].ToString(); ;
                         if (MainWindow.isI18N)
                         {
-                            downloadUrl = HttpService.Get("download/update?type=i18n");
+                            downloadUrl = (await HttpService.GetApiContentAsync("download/update?type=i18n"))["data"]["url"].ToString();
                         }
                         await Shows.ShowDownloader(Window.GetWindow(this), downloadUrl, AppDomain.CurrentDomain.BaseDirectory, "MSL" + _version + ".exe", "下载新版本中……");
                         if (File.Exists("MSL" + _version + ".exe"))

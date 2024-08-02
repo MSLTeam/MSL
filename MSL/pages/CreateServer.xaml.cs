@@ -274,7 +274,7 @@ namespace MSL.pages
                 try
                 {
                     int dwnJava = 0;
-                    dwnJava = await DownloadJava(selectJavaComb.SelectedItem.ToString(), HttpService.Get("download/java/" + selectJavaComb.SelectedItem.ToString()));
+                    dwnJava = await DownloadJava(selectJavaComb.SelectedItem.ToString(), (await HttpService.GetApiContentAsync("download/java/" + selectJavaComb.SelectedItem.ToString()))["data"]["url"].ToString());
                     if (dwnJava == 1)
                     {
                         ShowDialogs showDialogs = new ShowDialogs();

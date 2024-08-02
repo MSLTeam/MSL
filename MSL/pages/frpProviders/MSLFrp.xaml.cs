@@ -415,7 +415,7 @@ namespace MSL.pages.frpProviders
                     ["order"] = order,
                     ["qq"] = qq,
                 };
-                var ret = await Task.Run(() => HttpService.Post("getpassword", 0, JsonConvert.SerializeObject(keyValuePairs), HttpService.Get("query/MSLFrps/orderapi")));
+                var ret = await Task.Run(async () => HttpService.Post("getpassword", 0, JsonConvert.SerializeObject(keyValuePairs), (await HttpService.GetApiContentAsync("query/frp/MSLFrps?query=orderapi"))["data"]["url"].ToString()));
                 _dialog.CloseTextDialog();
                 JObject keyValues = JObject.Parse(ret);
                 if (keyValues != null && (int)keyValues["status"] == 0)

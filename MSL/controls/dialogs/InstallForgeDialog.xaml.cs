@@ -136,19 +136,19 @@ namespace MSL.controls
                 if (versionType <= 3)
                 {
                     serverJarPath = ReplaceStr(installJobj["serverJarPath"].ToString());
-                    vanillaUrl = HttpService.Get("download/server/vanilla/" + installJobj["minecraft"].ToString());
+                    vanillaUrl = (await HttpService.GetApiContentAsync("download/server/vanilla/" + installJobj["minecraft"].ToString()))["data"]["url"].ToString();
                     mcVersion = installJobj["minecraft"].ToString();
                 }
                 else if (versionType == 5)
                 {
                     serverJarPath = installPath + "/minecraft_server." + installJobj["install"]["minecraft"].ToString() + ".jar";
-                    vanillaUrl = HttpService.Get("download/server/vanilla/" + installJobj["install"]["minecraft"].ToString());
+                    vanillaUrl = (await HttpService.GetApiContentAsync("download/server/vanilla/" + installJobj["install"]["minecraft"].ToString()))["data"]["url"].ToString();
                     mcVersion = installJobj["install"]["minecraft"].ToString();
                 }
                 else
                 {
                     serverJarPath = installPath + "/minecraft_server." + installJobj["minecraft"].ToString() + ".jar";
-                    vanillaUrl = HttpService.Get("download/server/vanilla/" + installJobj["minecraft"].ToString());
+                    vanillaUrl = (await HttpService.GetApiContentAsync("download/server/vanilla/" + installJobj["minecraft"].ToString()))["data"]["url"].ToString();
                     mcVersion = installJobj["minecraft"].ToString();
                 }
 

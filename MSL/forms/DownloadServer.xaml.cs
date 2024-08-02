@@ -240,7 +240,7 @@ namespace MSL.pages
                     //下载一个fabric端
                     //获取版本号
                     string bannerVersion = filename.Replace("banner-", "").Replace(".jar", "");
-                    bool dwnFabric = await Shows.ShowDownloader(GetWindow(this), HttpService.Get("download/server/fabric/" + bannerVersion), downloadServerBase, $"fabric-{bannerVersion}.jar", "下载Fabric端中···");
+                    bool dwnFabric = await Shows.ShowDownloader(GetWindow(this), (await HttpService.GetApiContentAsync("download/server/fabric/" + bannerVersion))["data"]["url"].ToString(), downloadServerBase, $"fabric-{bannerVersion}.jar", "下载Fabric端中···");
                     if (!dwnFabric || !File.Exists(downloadServerBase + "\\" + $"fabric-{bannerVersion}.jar"))
                     {
                         Shows.ShowMsgDialog(this, "Fabric端下载取消（或服务端文件不存在）！", "错误");
@@ -316,11 +316,15 @@ namespace MSL.pages
                 else
                 {
                     getservermsg.Text = "请求错误！请重试\n（" + httpResponse.HttpResponseCode.ToString() + "）" + httpResponse.HttpResponseContent.ToString();
+                    Loading_Circle.IsRunning = false;
+                    Loading_Circle.Visibility = Visibility.Collapsed;
                 }
             }
             catch (Exception a)
             {
                 getservermsg.Text = "获取服务端失败！请重试\n" + a.Message;
+                Loading_Circle.IsRunning = false;
+                Loading_Circle.Visibility = Visibility.Collapsed;
             }
         }
 

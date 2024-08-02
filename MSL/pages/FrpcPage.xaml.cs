@@ -433,7 +433,7 @@ namespace MSL.pages
                     ["order"] = order,
                     ["qq"] = qq,
                 };
-                var ret = HttpService.Post("getpassword", 0, JsonConvert.SerializeObject(keyValuePairs), HttpService.Get("query/MSLFrps/orderapi"));
+                var ret = HttpService.Post("getpassword", 0, JsonConvert.SerializeObject(keyValuePairs), (await HttpService.GetApiContentAsync("query/frp/MSLFrps?query=orderapi"))["data"]["url"].ToString());
                 Dispatcher.Invoke(() =>
                 {
                     Window.GetWindow(this).Focus();

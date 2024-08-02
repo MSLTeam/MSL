@@ -204,7 +204,7 @@ namespace MSL.pages
                             os = "6";
                         }
 
-                        _dnfrpc = HttpService.Get("/download/frpc/MSLFrp/amd64?os=" + os);
+                        _dnfrpc = (await HttpService.GetApiContentAsync("/download/frpc/MSLFrp/amd64?os=" + os))["data"]["url"].ToString();
                         await Dispatcher.Invoke(async () =>
                         {
                             await Shows.ShowDownloader(Window.GetWindow(this), _dnfrpc, "MSL\\frp", "frpc.exe", LanguageManager.Instance["Pages_Online_DlFrpc"]);
