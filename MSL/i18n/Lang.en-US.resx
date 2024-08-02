@@ -184,13 +184,13 @@ Thank you all for your support and trust!</value>
     <value>Launch Server</value>
   </data>
   <data name="Pages_Home_Notice" xml:space="preserve">
-    <value>Notice:</value>
+    <value>Notice</value>
   </data>
   <data name="Pages_Home_P2PPlay" xml:space="preserve">
     <value>P2P Play</value>
   </data>
   <data name="Pages_Home_Recommendations" xml:space="preserve">
-    <value>Recommendations:</value>
+    <value>Recommendations</value>
   </data>
   <data name="Pages_OnlinePage_Dialog_Tips" xml:space="preserve">
     <value>Attention: This feature is currently unstable and cannot penetrate all types of NAT. If online fails, please try opening the server and using internal network mapping to go online! \n This feature may require a genuine account. If unable to connect, please find a solution on the network or try opening the server and using internal network mapping to connect!</value>

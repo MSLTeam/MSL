@@ -539,7 +539,7 @@ namespace MSL.i18n {
         }
         
         /// <summary>
-        ///   查找类似 公告： 的本地化字符串。
+        ///   查找类似 公告 的本地化字符串。
         /// </summary>
         internal static string Pages_Home_Notice {
             get {
@@ -557,7 +557,7 @@ namespace MSL.i18n {
         }
         
         /// <summary>
-        ///   查找类似 为您推荐： 的本地化字符串。
+        ///   查找类似 推荐 的本地化字符串。
         /// </summary>
         internal static string Pages_Home_Recommendations {
             get {

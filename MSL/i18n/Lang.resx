@@ -290,13 +290,13 @@ BMCLAPI —— Forge服务端下载源
     <value>开启服务器</value>
   </data>
   <data name="Pages_Home_Notice" xml:space="preserve">
-    <value>公告：</value>
+    <value>公告</value>
   </data>
   <data name="Pages_Home_P2PPlay" xml:space="preserve">
     <value>点对点联机</value>
   </data>
   <data name="Pages_Home_Recommendations" xml:space="preserve">
-    <value>为您推荐：</value>
+    <value>推荐</value>
   </data>
   <data name="Pages_OnlinePage_Dialog_Tips" xml:space="preserve">
     <value>注意：此功能目前不稳定，无法穿透所有类型的NAT，若联机失败，请尝试开服务器并使用内网映射联机！
