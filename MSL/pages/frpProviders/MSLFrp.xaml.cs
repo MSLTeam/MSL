@@ -91,21 +91,24 @@ namespace MSL.pages.frpProviders
                     passwordBox.Password = match.Groups[2].Value;
                 }
             }
-            DirectoryInfo directoryInfo = new DirectoryInfo(@"MSL\frp");
-            DirectoryInfo[] dirInfo = directoryInfo.GetDirectories();
-            foreach (DirectoryInfo dir in dirInfo)
+            if (Directory.Exists("MSL\\frp"))
             {
-                if (File.Exists(dir.FullName + @"\frpc.toml"))
+                DirectoryInfo directoryInfo = new DirectoryInfo(@"MSL\frp");
+                DirectoryInfo[] dirInfo = directoryInfo.GetDirectories();
+                foreach (DirectoryInfo dir in dirInfo)
                 {
-                    string text = File.ReadAllText(dir.FullName + @"\frpc.toml");
-                    string pattern = @"user\s*=\s*""(\w+)""\s*metadatas\.token\s*=\s*""(\w+)""";
-                    Match match = Regex.Match(text, pattern);
-
-                    if (match.Success)
+                    if (File.Exists(dir.FullName + @"\frpc.toml"))
                     {
-                        accountBox.Text = match.Groups[1].Value;
-                        passwordBox.Password = match.Groups[2].Value;
-                        break;
+                        string text = File.ReadAllText(dir.FullName + @"\frpc.toml");
+                        string pattern = @"user\s*=\s*""(\w+)""\s*metadatas\.token\s*=\s*""(\w+)""";
+                        Match match = Regex.Match(text, pattern);
+
+                        if (match.Success)
+                        {
+                            accountBox.Text = match.Groups[1].Value;
+                            passwordBox.Password = match.Groups[2].Value;
+                            break;
+                        }
                     }
                 }
             }

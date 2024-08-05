@@ -26,16 +26,16 @@ namespace MSL.pages
 
         private void Page_Loaded(object sender, RoutedEventArgs e)
         {
-            if (!File.Exists(Path.Combine("MSL", "frp", "config.json")))
-            {
-                return;
-            }
             GetFrpcConfig();
         }
 
         private void GetFrpcConfig()
         {
             FrpcListBox.Items.Clear();
+            if (!File.Exists(Path.Combine("MSL", "frp", "config.json")))
+            {
+                return;
+            }
             JObject keyValuePairs = JObject.Parse(File.ReadAllText(Path.Combine("MSL", "frp", "config.json")));
             foreach (var keyValue in keyValuePairs)
             {
