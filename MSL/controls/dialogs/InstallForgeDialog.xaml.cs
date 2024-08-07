@@ -67,14 +67,34 @@ namespace MSL.controls
                     try
                     {
                         Directory.Delete(libPath, true);
-                        await Task.Delay(500);
+                        
                     }
                     finally
                     {
                         Log_in("进行下一步……");
                     }
                 }
-
+                DirectoryInfo directoryInfo = new DirectoryInfo(installPath);
+                FileInfo[] fileInfo = directoryInfo.GetFiles();
+                foreach (FileInfo file in fileInfo)
+                {
+                    if (file.Name != Path.GetFileName(forgePath))
+                    {
+                        if (file.Name.Contains("forge") && file.Name.Contains(".jar"))
+                        {
+                            Log_in("检测到"+file.Name+"文件，尝试将其删除……");
+                            try
+                            {
+                                file.Delete();
+                            }
+                            finally
+                            {
+                                await Task.Delay(100);
+                            }
+                        }
+                    }
+                }
+                Log_in("进行下一步……");
                 //第一步，解压Installer
                 //创建一个文件夹存放解压的installer
                 if (!Directory.Exists(tempPath))

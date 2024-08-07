@@ -1215,7 +1215,7 @@ namespace MSL.pages
                     FastModeInstallBtn.IsEnabled = true;
                     return;
                 }
-
+                
                 // Check if file exists and download succeeded
                 if (!File.Exists(serverbase + "\\" + _filename))
                 {
@@ -1247,7 +1247,22 @@ namespace MSL.pages
                         return;
                     }
                 }
-
+                //sponge应当作为模组加载，所以要再下载一个forge才是服务端
+                try
+                {
+                    //移动到mods文件夹
+                    Directory.CreateDirectory(serverbase + "\\mods\\");
+                    if (File.Exists(serverbase + "\\mods\\" + filename))
+                    {
+                        File.Delete(serverbase + "\\mods\\" + filename);
+                    }
+                    File.Move(serverbase + "\\" + filename, serverbase + "\\mods\\" + filename);
+                }
+                catch (Exception e)
+                {
+                    Shows.ShowMsgDialog(Window.GetWindow(this), "Sponge核心移动失败！\n请重试！" + e.Message, "错误");
+                    return;
+                }
                 string installReturn = await InstallForge(_filename);
                 if (installReturn == null)
                 {

@@ -105,7 +105,7 @@ namespace MSL.pages
                         Shows.ShowMsgDialog(this, "下载取消！", "提示");
                         return;
                     }
-
+                    
                     // Check if file exists and download succeeded
                     if (!File.Exists(downPath + "\\" + _filename))
                     {
@@ -137,6 +137,22 @@ namespace MSL.pages
                     if (!isInstallSomeCore)
                     {
                         Shows.ShowMsgDialog(this, "下载完成！服务端核心放置在“MSL\\ServerCores”文件夹中！", "提示");
+                        return;
+                    }
+                    //sponge应当作为模组加载，所以要再下载一个forge才是服务端
+                    try
+                    {
+                        //移动到mods文件夹
+                        Directory.CreateDirectory(downloadServerBase + "\\mods\\");
+                        if (File.Exists(downloadServerBase + "\\mods\\" + filename))
+                        {
+                            File.Delete(downloadServerBase + "\\mods\\" + filename);
+                        }
+                        File.Move(downloadServerBase + "\\" + filename, downloadServerBase + "\\mods\\" + filename);
+                    }
+                    catch (Exception e)
+                    {
+                        Shows.ShowMsgDialog(this, "Sponge核心移动失败！\n请重试！" + e.Message, "错误");
                         return;
                     }
                     string installReturn = await InstallForge(_filename);
