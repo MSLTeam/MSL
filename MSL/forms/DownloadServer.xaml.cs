@@ -95,7 +95,7 @@ namespace MSL.pages
                 {
                     string forgeName = downServer.Replace("spongeforge", "forge");
                     string _filename = forgeName + ".jar";
-                    JObject _dlContext = await HttpService.GetApiContentAsync("download/server/" + downServer + "/" + downVersion);
+                    JObject _dlContext = await HttpService.GetApiContentAsync("download/server/" + forgeName + "/" + downVersion);
                     string _dlUrl = _dlContext["data"]["url"].ToString();
                     string _sha256Exp = _dlContext["data"]["sha256"]?.ToString() ?? string.Empty;
                     int _dwnDialog = await Shows.ShowDownloaderWithIntReturn(this, _dlUrl, downPath, _filename, "下载服务端中……", _sha256Exp, true);
