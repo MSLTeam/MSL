@@ -1116,8 +1116,7 @@ namespace MSL.pages
 
         private async void FastModeInstallBtn_Click(object sender, RoutedEventArgs e)
         {
-            try
-            {
+
                 FastModeReturnBtn.IsEnabled = false;
                 FastModeInstallBtn.IsEnabled = false;
                 FastInstallProcess.Text = "当前进度:下载Java……";
@@ -1155,13 +1154,7 @@ namespace MSL.pages
                     FastModeInstallBtn.IsEnabled = true;
                     return;
                 }
-            }
-            catch
-            {
-                Growl.Error("出现错误，请检查网络连接！");
-                FastModeReturnBtn.IsEnabled = true;
-                FastModeInstallBtn.IsEnabled = true;
-            }
+
         }
 
         private async Task FastModeInstallCore()
@@ -1273,8 +1266,6 @@ namespace MSL.pages
                 }
 
                 servercore = installReturn;
-                Directory.CreateDirectory(serverbase + "\\mods");
-                File.Move(serverbase + "\\" + filename, serverbase + "\\mods\\" + filename);
             }
 
             /*
