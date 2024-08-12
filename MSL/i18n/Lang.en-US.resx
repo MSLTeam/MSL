@@ -281,12 +281,11 @@ Do you want to create a new server?</value>
     <value>检查更新失败！</value>
   </data>
   <data name="MainWindow_GrowlMsg_Close" xml:space="preserve">
-    <value>您的服务器、内网映射或联机功能正在运行中，关闭软件可能会让服务器进程在后台一直运行并占用资源！确定要继续关闭吗？
+    <value>您的服务器、内网映射或联机功能正在运行中，关闭软件可能会让这些进程在后台一直运行并占用资源！确定要继续关闭吗？
 注：如果想隐藏主窗口的话，请前往设置打开托盘图标</value>
   </data>
   <data name="MainWindow_GrowlMsg_Close2" xml:space="preserve">
-    <value>您的服务器、内网映射或联机功能正在运行中，关闭软件可能会让服务器进程在后台一直运行并占用资源！确定要继续关闭吗？
-注：如果想隐藏主窗口的话，请前往设置打开托盘图标</value>
+    <value>您的服务器、内网映射或联机功能正在运行中，关闭软件可能会让这些进程在后台一直运行并占用资源！确定要继续关闭吗？</value>
   </data>
   <data name="MainWindow_GrowlMsg_ConfigErr" xml:space="preserve">
     <value>MSL在加载配置文件时出现错误，此报错可能不影响软件运行，但还是建议您将其反馈给作者！

@@ -105,7 +105,7 @@ namespace MSL.pages
                         Shows.ShowMsgDialog(this, "下载取消！", "提示");
                         return;
                     }
-                    
+
                     // Check if file exists and download succeeded
                     if (!File.Exists(downPath + "\\" + _filename))
                     {

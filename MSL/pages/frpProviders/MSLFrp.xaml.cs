@@ -112,6 +112,18 @@ namespace MSL.pages.frpProviders
                     }
                 }
             }
+            if (File.Exists(@"MSL\frp\config.json"))
+            {
+                JObject jobject = JObject.Parse(File.ReadAllText(@"MSL\frp\config.json", Encoding.UTF8));
+                if (jobject["MSLFrpAccount"] != null)
+                {
+                    accountBox.Text = jobject["MSLFrpAccount"].ToString();
+                }
+                if (jobject["MSLFrpPasswd"] != null)
+                {
+                    passwordBox.Password = jobject["MSLFrpPasswd"].ToString();
+                }
+            }
         }
 
         private async void ServerPingTest(string serverName, string serverAddr, int id)
@@ -309,6 +321,25 @@ namespace MSL.pages.frpProviders
             };
             JObject jobject = JObject.Parse(File.ReadAllText(@"MSL\frp\config.json", Encoding.UTF8));
             jobject.Add(number.ToString(), keyValues);
+            if (rememberPasswd.IsChecked == true)
+            {
+                if (jobject["MSLFrpAccount"] == null)
+                {
+                    jobject.Add("MSLFrpAccount", accountBox.Text);
+                }
+                else
+                {
+                    jobject["MSLFrpPasswd"] = accountBox.Text;
+                }
+                if (jobject["MSLFrpPasswd"] == null)
+                {
+                    jobject.Add("MSLFrpPasswd", passwordBox.Password);
+                }
+                else
+                {
+                    jobject["MSLFrpPasswd"] = passwordBox.Password;
+                }
+            }
             string convertString = Convert.ToString(jobject);
             File.WriteAllText(@"MSL\frp\config.json", convertString, Encoding.UTF8);
             await Shows.ShowMsgDialogAsync(window, "映射配置成功，请您点击“启动内网映射”以启动映射！", "信息");
@@ -317,36 +348,31 @@ namespace MSL.pages.frpProviders
 
         private void serversList_SelectionChanged(object sender, SelectionChangedEventArgs e)
         {
-            if (serversList.SelectedIndex != -1)
+            if (serversList.SelectedIndex == -1)
             {
-                if (serversList.SelectedItem.ToString().IndexOf("付费") + 1 != 0)
-                {
-                    if (serversList.SelectedItem.ToString().IndexOf("无加速协议") + 1 != 0)
-                    {
-                        paidProtocolLabel.Visibility = Visibility.Hidden;
-                        usePaidProtocol.Visibility = Visibility.Hidden;
-                    }
-                    else
-                    {
-                        paidProtocolLabel.Visibility = Visibility.Visible;
-                        usePaidProtocol.Visibility = Visibility.Visible;
-                    }
-                    lab2.Margin = new Thickness(290, 90, 0, 0);
-                    accountBox.Margin = new Thickness(330, 120, 0, 0);
-                    paidProtocolLabel.Visibility = Visibility.Visible;
-                    usePaidProtocol.Visibility = Visibility.Visible;
-                    paidPasswordLabel.Visibility = Visibility.Visible;
-                    passwordBox.Visibility = Visibility.Visible;
-                    return;
-                }
+                return;
             }
+            if (serversList.SelectedItem.ToString().IndexOf("付费") + 1 != 0)
+            {
+                lab2.Margin = new Thickness(290, 90, 0, 0);
+                accountBox.Margin = new Thickness(330, 120, 0, 0);
+                paidProtocolLabel.Visibility = Visibility.Visible;
+                usePaidProtocol.Visibility = Visibility.Visible;
+                paidPasswordLabel.Visibility = Visibility.Visible;
+                passwordBox.Visibility = Visibility.Visible;
+                rememberPasswd.Visibility = Visibility.Visible;
+                return;
+            }
+
             lab2.Margin = new Thickness(290, 115, 0, 0);
             accountBox.Margin = new Thickness(330, 150, 0, 0);
             paidProtocolLabel.Visibility = Visibility.Hidden;
             usePaidProtocol.Visibility = Visibility.Hidden;
             paidPasswordLabel.Visibility = Visibility.Hidden;
             passwordBox.Visibility = Visibility.Hidden;
+            rememberPasswd.Visibility = Visibility.Hidden;
         }
+
         private void frpcType_SelectionChanged(object sender, SelectionChangedEventArgs e)
         {
             if (frpcType.SelectedIndex == 0)

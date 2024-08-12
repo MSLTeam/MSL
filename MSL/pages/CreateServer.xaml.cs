@@ -1117,43 +1117,43 @@ namespace MSL.pages
         private async void FastModeInstallBtn_Click(object sender, RoutedEventArgs e)
         {
 
-                FastModeReturnBtn.IsEnabled = false;
-                FastModeInstallBtn.IsEnabled = false;
-                FastInstallProcess.Text = "当前进度:下载Java……";
-                int dwnJava = 0;
-                dwnJava = await DownloadJava(FinallyJavaCombo.SelectedItem.ToString(), (await HttpService.GetApiContentAsync("download/java/" + FinallyJavaCombo.SelectedItem.ToString()))["data"]["url"].ToString());
-                if (dwnJava == 1)
-                {
-                    FastInstallProcess.Text = "当前进度:解压Java……";
-                    ShowDialogs showDialogs = new ShowDialogs();
-                    showDialogs.ShowTextDialog(Window.GetWindow(this), "解压Java中……");
-                    bool unzipJava = await UnzipJava();
-                    showDialogs.CloseTextDialog();
-                    if (unzipJava)
-                    {
-                        FastInstallProcess.Text = "当前进度:下载服务端……";
-                        await FastModeInstallCore();
-                    }
-                    else
-                    {
-                        FastModeReturnBtn.IsEnabled = true;
-                        FastModeInstallBtn.IsEnabled = true;
-                        return;
-                    }
-                }
-                else if (dwnJava == 2)
+            FastModeReturnBtn.IsEnabled = false;
+            FastModeInstallBtn.IsEnabled = false;
+            FastInstallProcess.Text = "当前进度:下载Java……";
+            int dwnJava = 0;
+            dwnJava = await DownloadJava(FinallyJavaCombo.SelectedItem.ToString(), (await HttpService.GetApiContentAsync("download/java/" + FinallyJavaCombo.SelectedItem.ToString()))["data"]["url"].ToString());
+            if (dwnJava == 1)
+            {
+                FastInstallProcess.Text = "当前进度:解压Java……";
+                ShowDialogs showDialogs = new ShowDialogs();
+                showDialogs.ShowTextDialog(Window.GetWindow(this), "解压Java中……");
+                bool unzipJava = await UnzipJava();
+                showDialogs.CloseTextDialog();
+                if (unzipJava)
                 {
                     FastInstallProcess.Text = "当前进度:下载服务端……";
                     await FastModeInstallCore();
                 }
                 else
                 {
-                    Shows.ShowMsgDialog(Window.GetWindow(this), "下载取消！", "提示");
-                    FastInstallProcess.Text = "取消安装！";
                     FastModeReturnBtn.IsEnabled = true;
                     FastModeInstallBtn.IsEnabled = true;
                     return;
                 }
+            }
+            else if (dwnJava == 2)
+            {
+                FastInstallProcess.Text = "当前进度:下载服务端……";
+                await FastModeInstallCore();
+            }
+            else
+            {
+                Shows.ShowMsgDialog(Window.GetWindow(this), "下载取消！", "提示");
+                FastInstallProcess.Text = "取消安装！";
+                FastModeReturnBtn.IsEnabled = true;
+                FastModeInstallBtn.IsEnabled = true;
+                return;
+            }
 
         }
 
@@ -1208,7 +1208,7 @@ namespace MSL.pages
                     FastModeInstallBtn.IsEnabled = true;
                     return;
                 }
-                
+
                 // Check if file exists and download succeeded
                 if (!File.Exists(serverbase + "\\" + _filename))
                 {
@@ -1267,13 +1267,37 @@ namespace MSL.pages
 
                 servercore = installReturn;
             }
-
-            /*
             else if (finallyServerCore.Contains("banner"))
             {
+                //banner应当作为模组加载，所以要再下载一个fabric才是服务端
+                try
+                {
+                    //移动到mods文件夹
+                    Directory.CreateDirectory(serverbase + "\\mods\\");
+                    if (File.Exists(serverbase + "\\mods\\" + filename))
+                    {
+                        File.Delete(serverbase + "\\mods\\" + filename);
+                    }
+                    File.Move(serverbase + "\\" + filename, serverbase + "\\mods\\" + filename);
+                }
+                catch (Exception e)
+                {
+                    Shows.ShowMsgDialog(Window.GetWindow(this), "Banner端移动失败！\n请重试！" + e.Message, "错误");
+                    return;
+                }
 
+                //下载一个fabric端
+                //获取版本号
+                string bannerVersion = filename.Replace("banner-", "").Replace(".jar", "");
+                bool dwnFabric = await Shows.ShowDownloader(Window.GetWindow(this), (await HttpService.GetApiContentAsync("download/server/fabric/" + bannerVersion))["data"]["url"].ToString(), serverbase, $"fabric-{bannerVersion}.jar", "下载Fabric端中···");
+                if (!dwnFabric || !File.Exists(serverbase + "\\" + $"fabric-{bannerVersion}.jar"))
+                {
+                    Shows.ShowMsgDialog(Window.GetWindow(this), "Fabric端下载取消（或服务端文件不存在）！", "错误");
+                    return;
+                }
+
+                servercore = $"fabric-{bannerVersion}.jar";
             }
-            */
             else if (serverCoreType == "neoforge")
             {
                 if (!File.Exists(serverbase + "\\" + filename))

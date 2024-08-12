@@ -3,6 +3,7 @@ using HandyControl.Data;
 using ICSharpCode.SharpZipLib.Zip;
 using Microsoft.Win32;
 using MSL.controls;
+using MSL.forms;
 using MSL.pages;
 using MSL.utils;
 using Newtonsoft.Json;
@@ -43,11 +44,13 @@ namespace MSL
         private bool autoRestart = false;
         private bool mslTips = true;
         private bool getServerInfo = MainWindow.getServerInfo;
+        private ConptyWindow conptyWindow = null;
+        private Dialog conptyDialog;
         private int getServerInfoLine = 0;
         private bool getPlayerInfo = MainWindow.getPlayerInfo;
         private readonly int FirstStartTab;
         private string DownjavaName;
-        private int RserverID;
+        private readonly int RserverID;
         private string Rservername;
         private string Rserverjava;
         private string Rserverserver;
@@ -81,7 +84,7 @@ namespace MSL
             MainGrid.RegisterName("loadingBar", loadingCircle);
             //ServerList.runningServers.Add(RserverID, 0);
             await Task.Delay(100);
-            await Task.Run(() => { LoadingInfoEvent(); });
+            await LoadingInfoEvent();
             GetFastCmd();
             LoadedInfoEvent();
             await Task.Delay(100);
@@ -98,13 +101,19 @@ namespace MSL
         {
             try
             {
-                if (ServerProcess.HasExited != true)
+                if (CheckServerRunning())
                 {
                     e.Cancel = true;
                     int dialog = Shows.ShowMsg(this, "检测到您没有关闭服务器，是否隐藏此窗口？\n如要重新显示此窗口，请在服务器列表内双击该服务器（或点击开启服务器按钮）", "警告", true, "取消");
                     if (dialog == 1)
                     {
-                        Visibility = Visibility.Hidden;
+                        if (conptyWindow != null)
+                        {
+                            conptyWindow.Visibility = Visibility.Collapsed;
+                            this?.Focus();
+                            conptyDialog.Close();
+                        }
+                        Visibility = Visibility.Collapsed;
                     }
                 }
                 else
@@ -136,7 +145,7 @@ namespace MSL
             }
         }
 
-        private void LoadingInfoEvent()
+        private async Task LoadingInfoEvent()
         {
             try
             {
@@ -154,39 +163,30 @@ namespace MSL
                         jobject.Add("sidemenuExpanded", true);
                         string convertString = Convert.ToString(jobject);
                         File.WriteAllText(@"MSL\config.json", convertString, Encoding.UTF8);
-                        Dispatcher.Invoke(() =>
-                        {
-                            Tab_Home.Width = double.NaN;
-                            Tab_Console.Width = double.NaN;
-                            Tab_Plugins.Width = double.NaN;
-                            Tab_Settings.Width = double.NaN;
-                            Tab_MoreFunctions.Width = double.NaN;
-                            Tab_Timer.Width = double.NaN;
-                        });
+                        Tab_Home.Width = double.NaN;
+                        Tab_Console.Width = double.NaN;
+                        Tab_Plugins.Width = double.NaN;
+                        Tab_Settings.Width = double.NaN;
+                        Tab_MoreFunctions.Width = double.NaN;
+                        Tab_Timer.Width = double.NaN;
                     }
                     else if ((bool)keys["sidemenuExpanded"] == true)
                     {
-                        Dispatcher.Invoke(() =>
-                        {
-                            Tab_Home.Width = double.NaN;
-                            Tab_Console.Width = double.NaN;
-                            Tab_Plugins.Width = double.NaN;
-                            Tab_Settings.Width = double.NaN;
-                            Tab_MoreFunctions.Width = double.NaN;
-                            Tab_Timer.Width = double.NaN;
-                        });
+                        Tab_Home.Width = double.NaN;
+                        Tab_Console.Width = double.NaN;
+                        Tab_Plugins.Width = double.NaN;
+                        Tab_Settings.Width = double.NaN;
+                        Tab_MoreFunctions.Width = double.NaN;
+                        Tab_Timer.Width = double.NaN;
                     }
                     else
                     {
-                        Dispatcher.Invoke(() =>
-                        {
-                            Tab_Home.Width = 50;
-                            Tab_Console.Width = 50;
-                            Tab_Plugins.Width = 50;
-                            Tab_Settings.Width = 50;
-                            Tab_MoreFunctions.Width = 50;
-                            Tab_Timer.Width = 50;
-                        });
+                        Tab_Home.Width = 50;
+                        Tab_Console.Width = 50;
+                        Tab_Plugins.Width = 50;
+                        Tab_Settings.Width = 50;
+                        Tab_MoreFunctions.Width = 50;
+                        Tab_Timer.Width = 50;
                     }
                 }
             }
@@ -198,14 +198,6 @@ namespace MSL
             //Get Server's Information
             JObject jsonObject = JObject.Parse(File.ReadAllText(@"MSL\ServerList.json", Encoding.UTF8));
             JObject _json = (JObject)jsonObject[RserverID.ToString()];
-            if (_json["core"].ToString().IndexOf("bungeecord", StringComparison.OrdinalIgnoreCase) != -1 || _json["core"].ToString().IndexOf("waterfall", StringComparison.OrdinalIgnoreCase) != -1)//is the server Bungeecord,it will send a message and close window
-            {
-                Dispatcher.Invoke(() =>
-                {
-                    MessageBox.Show("开服器暂不支持Bungeecord类服务端的运行，请右键服务器并点击“用命令行开服”选项来开服！");
-                    Close();
-                });
-            }
             Rservername = _json["name"].ToString();
             Rserverjava = _json["java"].ToString();
             Rserverbase = _json["base"].ToString();
@@ -215,78 +207,38 @@ namespace MSL
             if (_json["autostartServer"] != null && _json["autostartServer"].ToString() == "True")
             {
                 autoRestart = true;
+                autoStartserver.Content = "关服自动重启:启用";
             }
-            bool _closeOutlog = false;
             if (_json["closeOutlog"] != null && _json["closeOutlog"].ToString() == "True")
             {
-                _closeOutlog = true;
+                closeOutlog.Content = "日志输出:关";
             }
             if (_json["shieldLog"] != null)
             {
                 ShieldLog = _json["shieldLog"].ToString();
+                closeOutlog_Copy.Content = "屏蔽关键字日志:开";
             }
-            bool _shieldStackOut = true;
             if (_json["shieldStackOut"] != null && _json["shieldStackOut"].ToString() == "False")
             {
-                _shieldStackOut = false;
+                shieldStackOut.Content = "屏蔽堆栈追踪:关";
             }
-            bool _autoClearOutlog = true;
             if (_json["autoClearOutlog"] != null && _json["autoClearOutlog"].ToString() == "False")
             {
-                _autoClearOutlog = false;
+                autoClearOutlog.Content = "自动清屏:关";
             }
-            string _encoding_in = null;
             if (_json["encoding_in"] != null)
             {
-                _encoding_in = "输入编码:" + _json["encoding_in"].ToString();
+                inputCmdEncoding.Content = "输入编码:" + _json["encoding_in"].ToString();
             }
-            string _encoding_out = null;
             if (_json["encoding_out"] != null)
             {
-                _encoding_out = "输出编码:" + _json["encoding_out"].ToString();
+                outputCmdEncoding.Content = "输出编码:" + _json["encoding_out"].ToString();
             }
-            bool _fileforceUTF8 = false;
             if (_json["fileforceUTF8"] != null && _json["fileforceUTF8"].ToString() == "True")
             {
-                _fileforceUTF8 = true;
+                fileforceUTF8encoding.Content = "强制服务器文件UTF8编码:开";
             }
-
-            Dispatcher.Invoke(() =>
-            {
-                if (autoRestart)
-                {
-                    autoStartserver.Content = "关服自动重启:启用";
-                }
-                if (_closeOutlog)
-                {
-                    closeOutlog.Content = "日志输出:关";
-                }
-                if (ShieldLog != null)
-                {
-                    closeOutlog_Copy.Content = "屏蔽关键字日志:开";
-                }
-                if (!_shieldStackOut)
-                {
-                    shieldStackOut.Content = "屏蔽堆栈追踪:关";
-                }
-                if (!_autoClearOutlog)
-                {
-                    autoClearOutlog.Content = "自动清屏:关";
-                }
-                if (_encoding_in != null)
-                {
-                    inputCmdEncoding.Content = _encoding_in;
-                }
-                if (_encoding_out != null)
-                {
-                    outputCmdEncoding.Content = _encoding_out;
-                }
-                if (_fileforceUTF8)
-                {
-                    fileforceUTF8encoding.Content = "强制服务器文件UTF8编码:开";
-                }
-                this.Title = Rservername;//set title to server name
-            });
+            this.Title = Rservername;//set title to server name
 
             bool isChangeConfig = false;
             if (!Directory.Exists(Rserverbase))
@@ -307,10 +259,7 @@ namespace MSL
             }
             else if (File.Exists(Rserverbase + "\\server-icon.png"))//check server-icon,if exist,set icon to server-icon
             {
-                Dispatcher.Invoke(() =>
-                {
-                    this.Icon = new BitmapImage(new Uri(Rserverbase + "\\server-icon.png"));
-                });
+                this.Icon = new BitmapImage(new Uri(Rserverbase + "\\server-icon.png"));
             }
             if (Rserverjava != "Java" && Rserverjava != "java")
             {
@@ -335,6 +284,31 @@ namespace MSL
                     }
                 }
             }
+
+            if (_json["useConpty"] != null && _json["useConpty"].ToString() == "True")
+            {
+                inputCmdEncoding.Visibility = Visibility.Collapsed;
+                outputCmdEncoding.Visibility = Visibility.Collapsed;
+                Tradition_LogFunGrid.Visibility = Visibility.Collapsed;
+                useConpty.Content = "使用高级终端（ConPty）:开";
+            }
+            else if (_json["useConpty"] == null)
+            {
+                if (await Shows.ShowMsgDialogAsync(this, "高级终端（ConPty）拥有Tab一键补全、历史指令等诸多功能，且支持群组服（Bungeecord）的运行，适合开服老手使用。\nPS：使用高级终端后，部分MSL提示将会关闭，如果你对开服并不熟练，建议不要使用此功能！\nConPty仅支持Win10及以上系统的运行！", "体验高级终端", true))
+                {
+                    inputCmdEncoding.Visibility = Visibility.Collapsed;
+                    outputCmdEncoding.Visibility = Visibility.Collapsed;
+                    Tradition_LogFunGrid.Visibility = Visibility.Collapsed;
+                    _json["useConpty"] = "True";
+                    useConpty.Content = "使用高级终端（ConPty）:开";
+                }
+                else
+                {
+                    _json["useConpty"] = "False";
+                }
+                isChangeConfig = true;
+            }
+
             if (isChangeConfig)
             {
                 _json["java"].Replace(Rserverjava);
@@ -477,14 +451,39 @@ namespace MSL
             }
         }
 
+        private bool CheckServerRunning()
+        {
+            if (conptyWindow != null)
+            {
+                if (conptyWindow.ConptyConsole.ConPTYTerm.TermProcIsRunning)
+                {
+                    return true;
+                }
+                else
+                {
+                    return false;
+                }
+            }
+            try
+            {
+                if (!ServerProcess.HasExited)
+                {
+                    return true;
+                }
+            }
+            catch
+            {
+                return false;
+            }
+            return false;
+        }
 
         #region 仪表盘
         private async void solveProblemBtn_Click(object sender, RoutedEventArgs e)
         {
-            bool dialogRet = await Shows.ShowMsgDialogAsync(this, "分析报告将在服务器关闭后生成！若使用后还是无法解决问题，请尝试进Q群询问（附带日志链接，日志链接可以点击分享日志按钮生成）：\n一群：1145888872  二群：234477679", "警告", true, "取消");
+            bool dialogRet = await Shows.ShowMsgDialogAsync(this, "分析报告将在服务器关闭后生成！若使用后还是无法解决问题，请尝试进Q群询问（附带日志或日志链接，日志链接可以点击分享日志按钮生成）：\n一群：1145888872  二群：234477679", "警告", true, "取消");
             if (dialogRet)
             {
-                TabCtrl.SelectedIndex = 1;
                 solveProblemSystem = true;
                 LaunchServer();
             }
@@ -501,7 +500,33 @@ namespace MSL
             {
                 try
                 {
+                    if (conptyWindow != null)
+                    {
+                        conptyWindow.ConptyConsole.ConPTYTerm.WriteToTerm(("kick " + serverPlayerList.SelectedItem.ToString().Substring(0, serverPlayerList.SelectedItem.ToString().IndexOf("[")) + "\r\n").AsSpan());
+                        return;
+                    }
                     ServerProcess.StandardInput.WriteLine("kick " + serverPlayerList.SelectedItem.ToString().Substring(0, serverPlayerList.SelectedItem.ToString().IndexOf("[")));
+                }
+                catch
+                {
+                    Growl.Error("操作失败！");
+                }
+            }
+        }
+
+        private async void banPlayer_Click(object sender, RoutedEventArgs e)
+        {
+            bool dialogRet = await Shows.ShowMsgDialogAsync(this, "确定要封禁这个玩家吗？封禁后该玩家将永远无法进入服务器！\n（原版解封指令：pardon +玩家名字，若添加插件，请使用插件的解封指令）", "警告", true, "取消");
+            if (dialogRet)
+            {
+                try
+                {
+                    if (conptyWindow != null)
+                    {
+                        conptyWindow.ConptyConsole.ConPTYTerm.WriteToTerm(("ban " + serverPlayerList.SelectedItem.ToString().Substring(0, serverPlayerList.SelectedItem.ToString().IndexOf("[")) + "\r\n").AsSpan());
+                        return;
+                    }
+                    ServerProcess.StandardInput.WriteLine("ban " + serverPlayerList.SelectedItem.ToString().Substring(0, serverPlayerList.SelectedItem.ToString().IndexOf("[")));
                 }
                 catch
                 {
@@ -647,22 +672,6 @@ namespace MSL
                 playerInfoBtn.Content = "记录玩家:关";
             }
         }
-
-        private async void banPlayer_Click(object sender, RoutedEventArgs e)
-        {
-            bool dialogRet = await Shows.ShowMsgDialogAsync(this, "确定要封禁这个玩家吗？封禁后该玩家将永远无法进入服务器！\n（原版解封指令：pardon +玩家名字，若添加插件，请使用插件的解封指令）", "警告", true, "取消");
-            if (dialogRet)
-            {
-                try
-                {
-                    ServerProcess.StandardInput.WriteLine("ban " + serverPlayerList.SelectedItem.ToString().Substring(0, serverPlayerList.SelectedItem.ToString().IndexOf("[")));
-                }
-                catch
-                {
-                    Growl.Error("操作失败！");
-                }
-            }
-        }
         #endregion
 
         #region 服务器输出
@@ -738,7 +747,7 @@ namespace MSL
                         return;
                     }
                 }
-                ChangeControlsState();
+
                 string fileforceUTF8Jvm = "";
                 if (fileforceUTF8encoding.Content.ToString().Contains("开") && !RserverJVMcmd.Contains("-Dfile.encoding=UTF-8"))
                 {
@@ -763,10 +772,185 @@ namespace MSL
                 fastCMD.IsEnabled = false;
             }
         }
+
+        private void Window_LocationChanged(object sender, EventArgs e)
+        {
+            if (conptyWindow != null)
+            {
+                UpdateChildWindowPosition();
+            }
+        }
+
+        private async void Window_SizeChanged(object sender, SizeChangedEventArgs e)
+        {
+            if (conptyWindow != null)
+            {
+                await UpdateChildWindowSize();
+                UpdateChildWindowPosition();
+            }
+        }
+
+        // 更新子窗口大小
+        private async Task UpdateChildWindowSize()
+        {
+            if (conptyWindow != null)
+            {
+                if (this.WindowState == WindowState.Maximized)
+                {
+                    await Task.Delay(250);
+                }
+                conptyWindow.Width = this.ActualWidth - 100;
+                conptyWindow.Height = this.ActualHeight - 100;
+            }
+        }
+
+        // 更新子窗口位置
+        private void UpdateChildWindowPosition()
+        {
+            if (conptyWindow != null)
+            {
+                if (this.WindowState == WindowState.Maximized)
+                {
+                    // 获取屏幕工作区的宽度和高度
+                    double screenWidth = SystemParameters.WorkArea.Width;
+                    double screenHeight = SystemParameters.WorkArea.Height;
+
+                    // 计算子窗口居中后的 Left 和 Top 值
+                    conptyWindow.Left = (screenWidth - conptyWindow.Width) / 2;
+                    conptyWindow.Top = (screenHeight - conptyWindow.Height) / 2;
+                }
+                else if (this.WindowState == WindowState.Normal)
+                {
+                    conptyWindow.Left = this.Left + (this.Width - conptyWindow.Width) / 2;
+                    conptyWindow.Top = this.Top + (this.Height - conptyWindow.Height) / 2;
+                }
+            }
+        }
+
+        private void CloseConptyWindow(object sender, RoutedEventArgs e)
+        {
+            conptyWindow.Visibility = Visibility.Collapsed;
+            this?.Focus();
+            conptyDialog.Close();
+        }
+
+        private void ConptyWindowControlServer(object sender, RoutedEventArgs e)
+        {
+            if (conptyWindow.ControlServer.Content.ToString() == "StopServer")
+            {
+                conptyWindow.ConptyConsole.ConPTYTerm.WriteToTerm("stop\r\n".AsSpan());
+            }
+            else
+            {
+                if (getServerInfoLine == 102)
+                {
+                    getServerInfoLine = 101;
+                    return;
+                }
+                LaunchServer();
+                conptyWindow.ControlServer.Content = "StopServer";
+            }
+        }
+
+        private async void KillConptyServer(object sender, RoutedEventArgs e)
+        {
+            if (conptyWindow.ControlServer.Content.ToString() == "StopServer")
+            {
+                getServerInfoLine = 102;
+                conptyWindow.ConptyConsole.ConPTYTerm.Process.Process.Kill();
+                await Task.Delay(500);
+                getServerInfoLine = 101;
+            }
+        }
+
+        private void ShowConptyWindow()
+        {
+            if (conptyWindow != null)
+            {
+                if (conptyDialog.IsClosed)
+                {
+                    this?.Focus();
+                    conptyDialog = Dialog.Show(null);
+                }
+                conptyWindow.Show();
+                conptyWindow.Visibility = Visibility.Visible;
+                conptyWindow.ConptyConsole.Focus();
+            }
+        }
+
         private void StartServer(string StartFileArg)
+        {
+            if (useConpty.Content.ToString().Contains("开"))
+            {
+                if (conptyWindow == null)
+                {
+                    try
+                    {
+                        conptyWindow = new ConptyWindow();
+                        conptyWindow.CloseBtn.Click += CloseConptyWindow;
+                        conptyWindow.ControlServer.Click += ConptyWindowControlServer;
+                        conptyWindow.ControlServer.MouseDoubleClick += KillConptyServer;
+                        conptyWindow.serverbase = Rserverbase;
+                        conptyWindow.java = Rserverjava;
+                        conptyWindow.launcharg = StartFileArg;
+                        conptyWindow.Owner = this;
+                        conptyWindow.Show();
+                        this?.Focus();
+                        conptyDialog = Dialog.Show(null);
+                        ChangeControlsState();
+                        if (TabCtrl.SelectedIndex == 1)
+                        {
+                            TabCtrl.SelectedIndex = 0;
+                        }
+                        Tab_Console.Visibility = Visibility.Collapsed;
+                        ShowConptyWindowBtn.Visibility = Visibility.Visible;
+                        conptyWindow.Focus();
+                        conptyWindow.ConptyConsole.Focus();
+                        conptyWindow.StartServer();
+                        conptyWindow.ConptyConsole.ConPTYTerm.TermExited += OnTermExited;
+                        conptyWindow.ConptyConsole.ConPTYTerm.OnOutputReceived += ProcessOutputEvent;
+                    }
+                    catch
+                    {
+                        try
+                        {
+                            conptyWindow.Close();
+                            conptyWindow = null;
+                            this?.Focus();
+                            conptyDialog.Close();
+                        }
+                        catch (Exception ex)
+                        {
+                            Console.WriteLine(ex.Message);
+                        }
+                        Tradition_StartServer(StartFileArg);
+                    }
+                }
+                else
+                {
+                    conptyWindow.serverbase = Rserverbase;
+                    conptyWindow.java = Rserverjava;
+                    conptyWindow.launcharg = StartFileArg;
+                    ShowConptyWindow();
+                    ChangeControlsState();
+                    conptyWindow.StartServer2();
+                    conptyWindow.ConptyConsole.ConPTYTerm.TermExited += OnTermExited;
+                    conptyWindow.ConptyConsole.ConPTYTerm.OnOutputReceived += ProcessOutputEvent;
+                }
+            }
+            else
+            {
+                Tradition_StartServer(StartFileArg);
+            }
+        }
+
+        private void Tradition_StartServer(string StartFileArg)
         {
             try
             {
+                ChangeControlsState();
+                Tab_Console.Visibility = Visibility.Visible;
+                ShowConptyWindowBtn.Visibility = Visibility.Collapsed;
                 Directory.CreateDirectory(Rserverbase);
                 ServerProcess.StartInfo.WorkingDirectory = Rserverbase;
                 ServerProcess.StartInfo.FileName = Rserverjava;
@@ -835,25 +1019,27 @@ namespace MSL
                     ServerList.RunningServers.Add(RserverID);
                 }
                 ServerStateChange();
-
                 getServerInfoLine = 0;
                 serverPlayerList.Items.Clear();
                 serverStateLab.Content = "运行中";
                 serverStateLab.Foreground = Brushes.Red;
                 solveProblemBtn.IsEnabled = false;
-                cmdtext.IsEnabled = true;
-                cmdtext.Text = "";
                 controlServer.Content = "关服";
                 controlServer_Copy.Content = "关服";
-                serverVersionLab.Content = "获取中";
+                gameDifficultyLab.Content = "获取中";
                 gameTypeLab.Content = "获取中";
                 serverIPLab.Content = "获取中";
                 localServerIPLab.Content = "获取中";
-                fastCMD.IsEnabled = true;
-                sendcmd.IsEnabled = true;
-                outlog.Document.Blocks.Clear();
                 Growl.Info("开服中，请稍等……");
                 PrintLog("正在开启服务器，请稍等...", Brushes.Green);
+                if (conptyWindow == null)
+                {
+                    cmdtext.IsEnabled = true;
+                    cmdtext.Text = "";
+                    fastCMD.IsEnabled = true;
+                    sendcmd.IsEnabled = true;
+                    outlog.Document.Blocks.Clear();
+                }
             }
             else
             {
@@ -863,23 +1049,26 @@ namespace MSL
                 }
                 ServerStateChange();
 
-                Growl.Info("服务器已关闭！");
-                cmdtext.Text = "服务器已关闭";
                 serverStateLab.Content = "已关闭";
                 serverStateLab.Foreground = Brushes.Green;
                 solveProblemBtn.IsEnabled = true;
-                sendcmd.IsEnabled = false;
-                cmdtext.IsEnabled = false;
                 controlServer.Content = "开服";
                 controlServer_Copy.Content = "开服";
-                fastCMD.IsEnabled = false;
-                try
+                Growl.Info("服务器已关闭！");
+                if (conptyWindow == null)
                 {
-                    ServerProcess.CancelOutputRead();
-                    ServerProcess.CancelErrorRead();
+                    sendcmd.IsEnabled = false;
+                    cmdtext.IsEnabled = false;
+                    fastCMD.IsEnabled = false;
+                    cmdtext.Text = "服务器已关闭";
+                    try
+                    {
+                        ServerProcess.CancelOutputRead();
+                        ServerProcess.CancelErrorRead();
+                    }
+                    catch
+                    { return; }
                 }
-                catch
-                { return; }
             }
         }
 
@@ -1094,7 +1283,54 @@ namespace MSL
 
         private bool solveProblemSystem;
         private bool outlogEncodingAsk = true;
-        private delegate void AddMessageHandler(string msg);
+        private string tempLogs;
+
+        private void ProcessOutputEvent(string msg)
+        {
+            //MessageBox.Show(msg);
+            if (msg.Contains("\x1B[15;68H"))
+            {
+                tempLogs += msg;
+                //MessageBox.Show(tempLogs);
+                ProcessOutput(tempLogs);
+                tempLogs = null;
+            }
+            else
+            {
+                if (tempLogs != null)
+                {
+                    ProcessOutput(tempLogs);
+                }
+                tempLogs = msg;
+            }
+        }
+
+
+        private void ProcessOutput(string msg)
+        {
+            Dispatcher.Invoke(() =>
+            {
+                msg = ProcessOutLogAnsiChar(msg);
+                //MessageBox.Show(msg);
+                if (msg.Contains("\n"))
+                {
+                    if (msg.Contains("\r"))
+                    {
+                        msg = msg.Replace("\r", string.Empty);
+                    }
+                    string[] strings = msg.Split('\n');
+                    foreach (string s in strings)
+                    {
+                        LogHandleInfo(s);
+                    }
+                }
+                else
+                {
+                    LogHandleInfo(msg);
+                }
+            });
+        }
+
         private void ReadStdOutputAction(string msg)//日志回显实现
         {
             if (solveProblemSystem)
@@ -1142,10 +1378,6 @@ namespace MSL
                     }
                 }
                 return;
-            }
-            if (getServerInfoLine < 100)
-            {
-                GetServerInfoSys(msg);
             }
             if (msg.StartsWith("["))
             {
@@ -1258,8 +1490,7 @@ namespace MSL
                 PrintLog("已成功开启服务器！你可以输入stop来关闭服务器！\r\n服务器本地IP通常为:127.0.0.1，想要远程进入服务器，需要开通公网IP或使用内网映射，详情查看开服器的内网映射界面。", Brushes.Green);
                 Growl.Success("已成功开启服务器！");
                 serverStateLab.Content = "已开服";
-                Thread thread = new Thread(CheckOnlineMode);
-                thread.Start();
+                GetServerInfoSys();
             }
             else if (msg.Contains("加载完成") && msg.Contains("如需帮助"))
             {
@@ -1267,8 +1498,7 @@ namespace MSL
                 PrintLog("已成功开启服务器！你可以输入stop来关闭服务器！\r\n服务器本地IP通常为:127.0.0.1，想要远程进入服务器，需要开通公网IP或使用内网映射，详情参照开服器的内网映射界面。", Brushes.Green);
                 Growl.Success("已成功开启服务器！");
                 serverStateLab.Content = "已开服";
-                Thread thread = new Thread(CheckOnlineMode);
-                thread.Start();
+                GetServerInfoSys();
             }
             else if (msg.Contains("Stopping server"))
             {
@@ -1298,89 +1528,62 @@ namespace MSL
             }
         }
 
-        private void GetServerInfoSys(string msg)
+        private void GetServerInfoSys()
         {
-            if (msg.Contains("下载") || msg.Contains("Download") || msg.Contains("download"))
-            {
-                getServerInfoLine--;
-
-                if (getServerInfoLine == -5)
-                {
-                    Growl.Info("该服务端可能在下载依赖文件，请耐心等待！");
-                }
-            }
-            else
-            {
-                getServerInfoLine++;
-            }
-            if (getServerInfoLine == 100)
-            {
-                if (serverVersionLab.Content.ToString() == "获取中")
-                {
-                    serverVersionLab.Content = "未知";
-                }
-                if (gameTypeLab.Content.ToString() == "获取中")
-                {
-                    gameTypeLab.Content = "未知";
-                }
-                if (serverIPLab.Content.ToString() == "获取中")
-                {
-                    serverIPLab.Content = "未知";
-                }
-                if (localServerIPLab.Content.ToString() == "获取中")
-                {
-                    localServerIPLab.Content = "未知";
-                }
-            }
             try
             {
-                if (msg.Contains("Starting minecraft server version"))
+                Encoding encoding = Functions.GetTextFileEncodingType(Rserverbase + @"\server.properties");
+                string config = File.ReadAllText(Rserverbase + @"\server.properties", encoding);
+                if (config.Contains("\r"))
                 {
-                    serverVersionLab.Content = msg.Substring(msg.LastIndexOf(" ") + 1);
+                    config = config.Replace("\r", string.Empty);
                 }
-                else if (msg.Contains("Default game type:"))
+                int om1 = config.IndexOf("online-mode=") + 12;
+                string om2 = config.Substring(om1);
+                string onlineMode = om2.Substring(0, om2.IndexOf("\n"));
+                if (onlineMode == "true")
                 {
-                    string gamemode = msg.Substring(msg.LastIndexOf(" ") + 1);
-                    if (gamemode.IndexOf("survival", StringComparison.OrdinalIgnoreCase) != -1)
+                    PrintLog("检测到您没有关闭正版验证，如果客户端为离线登录的话，请点击“更多功能”里“关闭正版验证”按钮以关闭正版验证。否则离线账户将无法进入服务器！", Brushes.OrangeRed);
+                    onlineModeLab.Content = "已开启";
+                }
+                else if (onlineMode == "false")
+                {
+                    PrintLog("检测到您关闭了正版验证，若没有采取相关措施来保护服务器（如添加登录插件等），服务器会有被入侵的风险，请务必注意！", Brushes.OrangeRed);
+                    onlineModeLab.Content = "已关闭";
+                }
+                string[] strings1 = config.Split('\n');
+                foreach (string s in strings1)
+                {
+                    if (s.StartsWith("gamemode="))
                     {
-                        gamemode = "生存";
+                        gameTypeLab.Content = s.Substring(9);
+                        break;
                     }
-                    if (gamemode.IndexOf("creative", StringComparison.OrdinalIgnoreCase) != -1)
-                    {
-                        gamemode = "创造";
-                    }
-                    if (gamemode.IndexOf("adventure", StringComparison.OrdinalIgnoreCase) != -1)
-                    {
-                        gamemode = "冒险";
-                    }
-                    if (gamemode.IndexOf("spectator", StringComparison.OrdinalIgnoreCase) != -1)
-                    {
-                        gamemode = "旁观";
-                    }
-                    gameTypeLab.Content = gamemode;
                 }
-                else if (msg.Contains("Starting Minecraft server on"))
+                int dc1 = config.IndexOf("difficulty=") + 11;
+                string dc2 = config.Substring(dc1);
+                gameDifficultyLab.Content = dc2.Substring(0, dc2.IndexOf("\n"));
+                int ip1 = config.IndexOf("server-ip=") + 10;
+                string ip2 = config.Substring(ip1);
+                string serverIP = ip2.Substring(0, ip2.IndexOf("\n"));
+
+                int sp1 = config.IndexOf("server-port=") + 12;
+                string sp2 = config.Substring(sp1);
+                string serverPort = sp2.Substring(0, sp2.IndexOf("\n"));
+                serverIPLab.Content = serverIP + ":" + serverPort;
+                if (string.IsNullOrEmpty(serverIP))
                 {
-                    serverIPLab.Content = msg.Substring(msg.LastIndexOf(" ") + 1);
-                    ChangeServerIP();
+                    serverIP = "127.0.0.1";
                 }
-                else if (msg.Contains("正在启动") && msg.Contains("的Minecraft服务端"))
+                if (serverPort == "25565")
                 {
-                    serverVersionLab.Content = msg.Substring(msg.IndexOf("正在启动") + 4, msg.IndexOf("的") - (msg.IndexOf("正在启动") + 4));
+                    serverPort = string.Empty;
                 }
-                else if (msg.Contains("正在启动Minecraft服务器") && msg.Contains("版本"))
+                else
                 {
-                    serverVersionLab.Content = msg.Substring(msg.IndexOf("版本") + 2);
+                    serverPort = ":" + serverPort;
                 }
-                else if (msg.Contains("默认游戏模式:"))
-                {
-                    gameTypeLab.Content = msg.Substring(msg.LastIndexOf("游戏模式:") + 5);
-                }
-                else if (msg.Contains("正在") && msg.Contains("上启动服务器"))
-                {
-                    serverIPLab.Content = msg.Substring(msg.IndexOf("正在 ") + 3, msg.IndexOf("上") - (msg.IndexOf("正在 ") + 3));
-                    ChangeServerIP();
-                }
+                localServerIPLab.Content = serverIP + serverPort;
             }
             catch
             {
@@ -1388,30 +1591,6 @@ namespace MSL
             }
         }
 
-        private void ChangeServerIP()
-        {
-            if (serverIPLab.Content.ToString().Contains("*"))
-            {
-                localServerIPLab.Content = serverIPLab.Content.ToString().Replace("*", "127.0.0.1");
-                if (localServerIPLab.Content.ToString().Contains(":25565"))
-                {
-                    localServerIPLab.Content = localServerIPLab.Content.ToString().Replace(":25565", "");
-                    return;
-                }
-                localServerIPLab.FontSize = 12;
-            }
-            else
-            {
-                serverIPLab.FontSize = 12;
-                localServerIPLab.Content = serverIPLab.Content;
-                if (localServerIPLab.Content.ToString().Contains(":25565"))
-                {
-                    localServerIPLab.Content = localServerIPLab.Content.ToString().Replace(":25565", "");
-                    return;
-                }
-                localServerIPLab.FontSize = 12;
-            }
-        }
         private void GetPlayerInfoSys(string msg)
         {
             if (msg.Contains("logged in with entity id"))
@@ -1470,42 +1649,6 @@ namespace MSL
                 }
             }
         }
-        private void CheckOnlineMode()
-        {
-            for (int i = 0; i < 5; i++)
-            {
-                try
-                {
-                    Thread.Sleep(1000);
-                    FileStream fs = new FileStream(Rserverbase + @"\server.properties", FileMode.Open, FileAccess.Read, FileShare.ReadWrite);
-                    StreamReader sr = new StreamReader(fs, Encoding.Default);
-                    string text = sr.ReadToEnd();
-                    sr.Close();
-                    if (text.IndexOf("online-mode=true") + 1 != 0)
-                    {
-                        Dispatcher.Invoke(() =>
-                        {
-                            PrintLog("检测到您没有关闭正版验证，如果客户端为离线登录的话，请点击“更多功能”里“关闭正版验证”按钮以关闭正版验证。否则离线账户将无法进入服务器！", Brushes.OrangeRed);
-                            Growl.Info("检测到您没有关闭正版验证，您可前往“更多功能”界面点击“关闭正版验证”按钮以关闭。否则离线账户无法进入服务器！");
-                            onlineModeLab.Content = "已开启";
-                        });
-                        break;
-                    }
-                    else if (text.IndexOf("online-mode=false") + 1 != 0)
-                    {
-                        Dispatcher.Invoke(() =>
-                        { onlineModeLab.Content = "已关闭"; }); break;
-                    }
-                }
-                catch
-                {
-                    Dispatcher.Invoke(() =>
-                    { onlineModeLab.Content = "未知"; }); break;
-                }
-            }
-            Dispatcher.Invoke(() =>
-            { if (onlineModeLab.Content.ToString() == "获取中") onlineModeLab.Content = "未知"; });
-        }
 
         private string foundProblems;
         private void ProblemSystemShow(string msg)
@@ -1527,7 +1670,7 @@ namespace MSL
                 else if (msg.Contains("requires running the server with"))
                 {
                     foundProblems += "*不匹配的Java版本：\n";
-                    foundProblems += "请使用" + msg.Substring(msg.IndexOf("Java"), 7) + "！\n";
+                    foundProblems += "请使用" + msg.Substring(msg.IndexOf("requires running the server with ") + 33, 7) + "！\n";
                 }
                 else if (msg.Contains("Invalid or corrupt jarfile"))
                 {
@@ -1681,7 +1824,7 @@ namespace MSL
             }
         }
 
-        private void ServerExitEvent(object sender, EventArgs e)
+        private void ServerExitEvent(object sender, EventArgs e)//Tradition_ServerExitEvent
         {
             Dispatcher.InvokeAsync(async () =>
             {
@@ -1718,13 +1861,80 @@ namespace MSL
             });
         }
 
+        #region ConptyExitEvent
+        private string CleanAnsiEscapeCodes(string input)
+        {
+            string pattern = @"\x1B\[[0-9;]*[A-Za-z]";
+            return Regex.Replace(input, pattern, string.Empty);
+        }
 
-        private string lastCommand;
-        private string nextCommand;
+        private string ProcessOutLogAnsiChar(string str)
+        {
+            str = Regex.Replace(str, @"(\r?\n)+\x1B\[15;68H.", string.Empty);
+            str = CleanAnsiEscapeCodes(str);
+            return str;
+        }
+
+        private void OnTermExited(object sender, EventArgs e)
+        {
+            Dispatcher.InvokeAsync(async () =>
+            {
+                conptyWindow.ConptyConsole.ConPTYTerm.WriteToUITerminal("服务器已关闭！".AsSpan());
+                ChangeControlsState(false);
+                conptyWindow.ControlServer.Content = "StartServer";
+                if (solveProblemSystem)
+                {
+                    solveProblemSystem = false;
+                    var logs = conptyWindow.ConptyConsole.ConPTYTerm.ConsoleOutputLog.ToString();
+                    logs = ProcessOutLogAnsiChar(logs);
+                    if (logs.Contains("\r"))
+                    {
+                        logs = logs.Replace("\r", string.Empty);
+                    }
+                    string[] strings = logs.Split('\n');
+                    foreach (var log in strings)
+                    {
+                        //MessageBox.Show(log);
+                        ProblemSystemShow(log);
+                    }
+                    conptyWindow.Visibility = Visibility.Collapsed;
+                    this?.Focus();
+                    conptyDialog.Close();
+
+                    if (string.IsNullOrEmpty(foundProblems))
+                    {
+                        Shows.ShowMsgDialog(this, "服务器已关闭！开服器未检测到相关问题，您可前往“更多功能”界面上传服务器日志，并发送给他人以寻求帮助！", "崩溃分析系统");
+                    }
+                    else
+                    {
+                        Growl.Info("服务器已关闭！即将为您展示分析报告！");
+                        Shows.ShowMsgDialog(this, foundProblems, "服务器分析报告");
+                        foundProblems = null;
+                    }
+                }
+                else if (getServerInfoLine <= 100)
+                {
+                    conptyWindow.Visibility = Visibility.Collapsed;
+                    this?.Focus();
+                    conptyDialog.Close();
+                    bool dialogRet = await Shows.ShowMsgDialogAsync(this, "服务器疑似异常关闭，是您人为关闭的吗？\n您可使用MSL的崩溃分析系统进行检测，也可前往“更多功能”界面上传服务器日志，并发送给他人以寻求帮助！（请不要截图此弹窗！）\n点击确定开始进行崩溃分析", "提示", true, "取消");
+                    if (dialogRet)
+                    {
+                        solveProblemSystem = true;
+                        LaunchServer();
+                    }
+                }
+                else if (autoRestart)
+                {
+                    await Task.Delay(200);
+                    LaunchServer();
+                }
+            });
+        }
+        #endregion
 
         private void SendCommand()
         {
-            lastCommand = cmdtext.Text;
             try
             {
                 if (inputCmdEncoding.Content.ToString() == "输入编码:UTF8")
@@ -1733,23 +1943,23 @@ namespace MSL
                     {
                         SendCmdUTF8(cmdtext.Text);
                     }
-                    else if (fastCMD.SelectedItem.ToString().Contains("/op（给管理员）"))
+                    else if (fastCMD.SelectedItem.ToString().Contains("/op"))
                     {
                         SendCmdUTF8("op " + cmdtext.Text);
                     }
-                    else if (fastCMD.SelectedItem.ToString().Contains("/deop（去除管理员）"))
+                    else if (fastCMD.SelectedItem.ToString().Contains("/deop"))
                     {
                         SendCmdUTF8("deop " + cmdtext.Text);
                     }
-                    else if (fastCMD.SelectedItem.ToString().Contains("/ban（封禁玩家）"))
+                    else if (fastCMD.SelectedItem.ToString().Contains("/ban"))
                     {
                         SendCmdUTF8("ban " + cmdtext.Text);
                     }
-                    else if (fastCMD.SelectedItem.ToString().Contains("/say（全服说话）"))
+                    else if (fastCMD.SelectedItem.ToString().Contains("/say"))
                     {
                         SendCmdUTF8("say " + cmdtext.Text);
                     }
-                    else if (fastCMD.SelectedItem.ToString().Contains("/pardon（解除封禁）"))
+                    else if (fastCMD.SelectedItem.ToString().Contains("/pardon"))
                     {
                         SendCmdUTF8("pardon " + cmdtext.Text);
                     }
@@ -1771,23 +1981,23 @@ namespace MSL
                     {
                         SendCmdANSL(cmdtext.Text);
                     }
-                    else if (fastCMD.SelectedItem.ToString().Contains("/op（给管理员）"))
+                    else if (fastCMD.SelectedItem.ToString().Contains("/op"))
                     {
                         SendCmdANSL("op " + cmdtext.Text);
                     }
-                    else if (fastCMD.SelectedItem.ToString().Contains("/deop（去除管理员）"))
+                    else if (fastCMD.SelectedItem.ToString().Contains("/deop"))
                     {
                         SendCmdANSL("deop " + cmdtext.Text);
                     }
-                    else if (fastCMD.SelectedItem.ToString().Contains("/ban（封禁玩家）"))
+                    else if (fastCMD.SelectedItem.ToString().Contains("/ban"))
                     {
                         SendCmdANSL("ban " + cmdtext.Text);
                     }
-                    else if (fastCMD.SelectedItem.ToString().Contains("/say（全服说话）"))
+                    else if (fastCMD.SelectedItem.ToString().Contains("/say"))
                     {
                         SendCmdANSL("say " + cmdtext.Text);
                     }
-                    else if (fastCMD.SelectedItem.ToString().Contains("/pardon（解除封禁）"))
+                    else if (fastCMD.SelectedItem.ToString().Contains("/pardon"))
                     {
                         SendCmdANSL("pardon " + cmdtext.Text);
                     }
@@ -1841,173 +2051,8 @@ namespace MSL
             {
                 SendCommand();
             }
-            else if (e.Key == Key.Tab)
-            {
-                e.Handled = true;
-                if (fastCMD.SelectedIndex == 0)
-                {
-                    try
-                    {
-                        //tab补全命令列表
-                        List<string> tabCompleteList = new List<string>
-                        {
-                            "gamemode creative",
-                            "gamemode survival",
-                            "gamemode spectator",
-                            "gamemode adventure",
-                            "gamerule keepInventory true",
-                            "gamerule keepInventory false",
-                            "difficulty peaceful",
-                            "difficulty easy",
-                            "difficulty normal",
-                            "difficulty hard",
-                            "say",
-                            "op",
-                            "pardon",
-                            "time set day",
-                            "time set night",
-                            "ban",
-                            "weather clear",
-                            "ban",
-                            "kick"
-                        };
-                        //获取输入的文本
-                        string input = cmdtext.Text;
-                        //判断是否为空
-                        if (!string.IsNullOrEmpty(input))
-                        {
-                            //初始化替换标志和候选列表
-                            bool isReplace = true;
-                            List<string> candidates = new List<string>();
-                            //获取最后一个空格之前的文本
-                            string prefix = input;
-                            if (input.Contains(" "))
-                            {
-                                prefix = input.Substring(0, input.LastIndexOf(" ") + 1);
-                            }
-                            //遍历命令列表
-                            foreach (string command in tabCompleteList)
-                            {
-                                //如果命令以输入的文本开头
-                                if (command.StartsWith(input))
-                                {
-                                    //获取命令的剩余部分
-                                    string suffix = command.Replace(input, "");
-                                    //如果剩余部分包含空格
-                                    if (suffix.Contains(" "))
-                                    {
-                                        //如果是第一次匹配
-                                        if (isReplace)
-                                        {
-                                            //替换输入的文本为命令的第一个空格之前的部分
-                                            cmdtext.Text = input + suffix.Substring(0, suffix.IndexOf(" "));
-                                        }
-                                        if (!candidates.Contains(command.Substring(0, command.IndexOf(" "))))
-                                        {
-                                            //添加候选项为命令的第一个空格之前的部分
-                                            candidates.Add(command.Substring(0, command.IndexOf(" ")));
-                                        }
-                                    }
-                                    else
-                                    {
-                                        //如果是第一次匹配
-                                        if (isReplace)
-                                        {
-                                            //替换输入的文本为命令
-                                            cmdtext.Text = command;
-                                        }
-                                        if (!candidates.Contains(command))
-                                        {
-                                            //添加候选项为命令
-                                            candidates.Add(command);
-                                        }
-                                    }
-                                    //设置替换标志为false
-                                    isReplace = false;
-                                }
-                            }
-                            //如果有候选项
-                            if (candidates.Count > 0)
-                            {
-                                if (candidates.Count == 1 && prefix != input)
-                                {
-                                    candidates.Clear();
-                                    //遍历命令列表
-                                    foreach (string command in tabCompleteList)
-                                    {
-                                        //如果命令以输入的文本开头
-                                        if (command.StartsWith(prefix))
-                                        {
-                                            //添加候选项为命令
-                                            candidates.Add(command.Replace(prefix, ""));
-                                        }
-                                    }
-                                    if (candidates.Count != 1)
-                                    {
-                                        //显示候选项，用逗号分隔
-                                        PrintLog(string.Join(",", candidates), Brushes.Green);
-                                        int multiComplete = 0;
-                                        foreach (string command in candidates)
-                                        {
-                                            if (cmdtext.Text.Replace(prefix, "") == command)
-                                            {
-                                                multiComplete++;
-                                                break;
-                                            }
-                                            multiComplete++;
-                                        }
-                                        if (candidates.Count < multiComplete + 1)
-                                        {
-                                            multiComplete = 0;
-                                        }
-
-                                        cmdtext.Text = prefix + candidates[multiComplete];
-                                    }
-                                }
-                                else
-                                {
-                                    //显示候选项，用逗号分隔
-                                    PrintLog(string.Join(",", candidates), Brushes.Green);
-                                }
-                            }
-                        }
-                        //清空命令列表
-                        tabCompleteList.Clear();
-                    }
-                    catch
-                    {
-                        Growl.Error("命令补全失败！");
-                    }
-                    finally
-                    {
-                        //设置光标位置为文本末尾
-                        cmdtext.SelectionStart = cmdtext.Text.Length;
-                    }
-                }
-            }
         }
 
-        private void cmdtext_KeyUp(object sender, KeyEventArgs e)
-        {
-            if (e.Key == Key.Up)
-            {
-                if (cmdtext.Text != lastCommand)
-                {
-                    nextCommand = cmdtext.Text;
-                    cmdtext.Text = lastCommand;
-                }
-                cmdtext.Select(cmdtext.Text.Length, 0);
-            }
-            if (e.Key == Key.Down)
-            {
-                if (cmdtext.Text != nextCommand)
-                {
-                    lastCommand = cmdtext.Text;
-                    cmdtext.Text = nextCommand;
-                }
-                cmdtext.Select(cmdtext.Text.Length, 0);
-            }
-        }
         private void controlServer_Click(object sender, RoutedEventArgs e)
         {
             if (controlServer.Content.ToString() == "开服")
@@ -2021,22 +2066,44 @@ namespace MSL
             }
             else
             {
-                Growl.Info("关服中，请耐心等待……\n双击按钮可强制关服（不建议）");
-                ServerProcess.StandardInput.WriteLine("stop");
+                if (conptyWindow != null)
+                {
+                    conptyWindow.ConptyConsole.ConPTYTerm.WriteToTerm("stop\r\n".AsSpan());
+                    ShowConptyWindow();
+                }
+                else
+                {
+                    Growl.Info("关服中，请耐心等待……\n双击按钮可强制关服（不建议）");
+                    ServerProcess.StandardInput.WriteLine("stop");
+                }
             }
         }
 
-        private void controlServer_MouseDoubleClick(object sender, MouseButtonEventArgs e)
+        private void ShowConptyWindow_Click(object sender, RoutedEventArgs e)
+        {
+            ShowConptyWindow();
+        }
+
+        private async void controlServer_MouseDoubleClick(object sender, MouseButtonEventArgs e)
         {
             try
             {
                 if (controlServer.Content.ToString() == "关服")
                 {
                     getServerInfoLine = 102;
-                    ServerProcess.Kill();
+                    if (conptyWindow != null)
+                    {
+                        conptyWindow.ConptyConsole.ConPTYTerm.Process.Process.Kill();
+                    }
+                    else
+                    {
+                        ServerProcess.Kill();
+                    }
                 }
             }
             catch { }
+            await Task.Delay(500);
+            getServerInfoLine = 101;
         }
 
         #endregion
@@ -2122,7 +2189,7 @@ namespace MSL
         {
             try
             {
-                if (ServerProcess.HasExited == false)
+                if (CheckServerRunning())
                 {
                     Shows.ShowMsgDialog(this, "您没有关闭服务器，无法调整服务器功能！", "错误");
                     return;
@@ -2173,7 +2240,7 @@ namespace MSL
         {
             try
             {
-                if (ServerProcess.HasExited == false)
+                if (CheckServerRunning())
                 {
                     Shows.ShowMsgDialog(this, "您没有关闭服务器，无法更换图标！", "错误");
                     return;
@@ -2232,7 +2299,7 @@ namespace MSL
         {
             try
             {
-                if (ServerProcess.HasExited == false)
+                if (CheckServerRunning())
                 {
                     Shows.ShowMsgDialog(this, "您没有关闭服务器，无法更换地图！", "错误");
                     return;
@@ -2519,7 +2586,7 @@ namespace MSL
         {
             try
             {
-                if (!ServerProcess.HasExited)
+                if (CheckServerRunning())
                 {
                     Shows.ShowMsgDialog(this, "服务器在运行中，无法进行操作！请关闭服务器后再试！", "警告");
                     return;
@@ -2557,7 +2624,7 @@ namespace MSL
         {
             try
             {
-                if (!ServerProcess.HasExited)
+                if (CheckServerRunning())
                 {
                     Shows.ShowMsgDialog(this, "服务器在运行中，无法进行操作！请关闭服务器后再试！", "警告");
                     return;
@@ -2593,7 +2660,7 @@ namespace MSL
         {
             try
             {
-                if (!ServerProcess.HasExited)
+                if (CheckServerRunning())
                 {
                     Shows.ShowMsgDialog(this, "服务器在运行中，无法进行操作！请关闭服务器后再试！", "警告");
                     return;
@@ -2631,7 +2698,7 @@ namespace MSL
         {
             try
             {
-                if (!ServerProcess.HasExited)
+                if (CheckServerRunning())
                 {
                     Shows.ShowMsgDialog(this, "服务器在运行中，无法进行操作！请关闭服务器后再试！", "警告");
                     return;
@@ -2667,7 +2734,7 @@ namespace MSL
         {
             try
             {
-                if (!ServerProcess.HasExited)
+                if (CheckServerRunning())
                 {
                     Shows.ShowMsgDialog(this, "服务器在运行中，无法进行操作！请关闭服务器后再试！", "警告");
                     return;
@@ -2694,7 +2761,7 @@ namespace MSL
         {
             try
             {
-                if (!ServerProcess.HasExited)
+                if (CheckServerRunning())
                 {
                     Shows.ShowMsgDialog(this, "服务器在运行中，无法进行操作！请关闭服务器后再试！", "警告");
                     return;
@@ -2869,7 +2936,7 @@ namespace MSL
         {
             try
             {
-                if (ServerProcess.HasExited == false)
+                if (CheckServerRunning())
                 {
                     Shows.ShowMsgDialog(this, "服务器运行时无法更改服务器设置！", "错误");
                     return;
@@ -3426,6 +3493,7 @@ namespace MSL
             jsonObject[RserverID.ToString()] = _json;
             File.WriteAllText("MSL\\ServerList.json", Convert.ToString(jsonObject), Encoding.UTF8);
         }
+
         private void inputCmdEncoding_Click(object sender, RoutedEventArgs e)
         {
             JObject jsonObject = JObject.Parse(File.ReadAllText(@"MSL\ServerList.json", Encoding.UTF8));
@@ -3493,11 +3561,48 @@ namespace MSL
             jsonObject[RserverID.ToString()] = _json;
             File.WriteAllText("MSL\\ServerList.json", Convert.ToString(jsonObject), Encoding.UTF8);
         }
+
+        private void useConpty_Click(object sender, RoutedEventArgs e)
+        {
+            if (CheckServerRunning())
+            {
+                Shows.ShowMsgDialog(this, "请关闭服务器后再进行更改！", "提示");
+                return;
+            }
+            JObject jsonObject = JObject.Parse(File.ReadAllText(@"MSL\ServerList.json", Encoding.UTF8));
+            JObject _json = (JObject)jsonObject[RserverID.ToString()];
+            if (useConpty.Content.ToString() == "使用高级终端（ConPty）:开")
+            {
+                inputCmdEncoding.Visibility = Visibility.Visible;
+                outputCmdEncoding.Visibility = Visibility.Visible;
+                Tradition_LogFunGrid.Visibility = Visibility.Visible;
+                ShowConptyWindowBtn.Visibility = Visibility.Collapsed;
+                useConpty.Content = "使用高级终端（ConPty）:关";
+                _json["useConpty"] = "False";
+                try
+                {
+                    conptyWindow.Close();
+                    conptyWindow = null;
+                }
+                catch { }
+            }
+            else
+            {
+                inputCmdEncoding.Visibility = Visibility.Collapsed;
+                outputCmdEncoding.Visibility = Visibility.Collapsed;
+                Tradition_LogFunGrid.Visibility = Visibility.Collapsed;
+                useConpty.Content = "使用高级终端（ConPty）:开";
+                _json["useConpty"] = "True";
+            }
+            jsonObject[RserverID.ToString()] = _json;
+            File.WriteAllText("MSL\\ServerList.json", Convert.ToString(jsonObject), Encoding.UTF8);
+        }
+
         private async void onlineMode_Click(object sender, RoutedEventArgs e)
         {
             try
             {
-                if (ServerProcess.HasExited == false)
+                if (CheckServerRunning())
                 {
                     bool dialogRet = await Shows.ShowMsgDialogAsync(this, "检测到服务器正在运行，点击确定以关闭服务器", "信息");
                     if (!dialogRet)
@@ -3634,27 +3739,27 @@ namespace MSL
 
         private void shareLog_Click(object sender, RoutedEventArgs e)
         {
-            TextRange textRange = new TextRange(outlog.Document.Blocks.FirstBlock.ContentStart, outlog.Document.Blocks.LastBlock.ContentEnd);
-            /*
-            //遍历获取logs
-            foreach (var block in outlog.Document.Blocks)
+            string logs = string.Empty;
+            if (useConpty.Content.ToString().Contains("开"))
             {
-                if (block is Paragraph paragraph)
+                if (conptyWindow != null)
                 {
-                    foreach (var inline in paragraph.Inlines)
-                    {
-                        if (inline is Run run)
-                        {
-                            logs += run.Text + "\n";
-                        }
-                    }
+                    logs = ProcessOutLogAnsiChar(conptyWindow.ConptyConsole.ConPTYTerm.ConsoleOutputLog.ToString());
                 }
             }
-            */
+            else
+            {
+                TextRange textRange = new TextRange(outlog.Document.Blocks.FirstBlock.ContentStart, outlog.Document.Blocks.LastBlock.ContentEnd);
+                logs = textRange.Text;
+            }
+            if (string.IsNullOrEmpty(logs))
+            {
+                return;
+            }
             //启动线程上传日志
             Task.Run(() =>
             {
-                UploadLogs(textRange.Text);
+                UploadLogs(logs);
             });
             Growl.Info("正在上传···");
         }
@@ -3939,9 +4044,16 @@ namespace MSL
                 {
                     try
                     {
-                        if (ServerProcess.HasExited == false)
+                        if (CheckServerRunning())
                         {
-                            ServerProcess.StandardInput.WriteLine(cmd);
+                            if (conptyWindow != null)
+                            {
+                                conptyWindow.ConptyConsole.ConPTYTerm.WriteToTerm((cmd + "\r\n").AsSpan());
+                            }
+                            else
+                            {
+                                ServerProcess.StandardInput.WriteLine(cmd);
+                            }
                             Dispatcher.Invoke(() =>
                             {
                                 if (tasksList.SelectedIndex != -1 && taskID[tasksList.SelectedIndex] == id)

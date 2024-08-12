@@ -100,6 +100,9 @@
       <SubType>Designer</SubType>
     </ApplicationDefinition>
     <Compile Include="controls\MagicCard.cs" />
+    <Compile Include="forms\ConptyWindow.xaml.cs">
+      <DependentUpon>ConptyWindow.xaml</DependentUpon>
+    </Compile>
     <Compile Include="pages\FrpcList.xaml.cs">
       <DependentUpon>FrpcList.xaml</DependentUpon>
     </Compile>
@@ -120,6 +123,7 @@
     <Compile Include="controls\MessageWindow.xaml.cs">
       <DependentUpon>MessageWindow.xaml</DependentUpon>
     </Compile>
+    <Compile Include="utils\MCServerService.cs" />
     <Compile Include="utils\Shows.cs" />
     <Compile Include="controls\dialogs\TextDialog.xaml.cs">
       <DependentUpon>TextDialog.xaml</DependentUpon>
@@ -208,6 +212,10 @@
       <Generator>MSBuild:Compile</Generator>
     </Page>
     <Page Include="controls\dialogs\TextDialog.xaml">
+      <SubType>Designer</SubType>
+      <Generator>MSBuild:Compile</Generator>
+    </Page>
+    <Page Include="forms\ConptyWindow.xaml">
       <SubType>Designer</SubType>
       <Generator>MSBuild:Compile</Generator>
     </Page>
@@ -406,6 +414,10 @@
     <Resource Include="images\150px-Impulse_Command_Block.png" />
   </ItemGroup>
   <ItemGroup>
+    <ProjectReference Include="..\ConPtyTermEmulatorLib\ConPtyTermEmulatorLib.csproj">
+      <Project>{20077fdd-d742-4e19-a3a1-14c49361c500}</Project>
+      <Name>ConPtyTermEmulatorLib</Name>
+    </ProjectReference>
     <ProjectReference Include="..\HandyControls\src\Net_GE45\HandyControl_Net_GE45\HandyControl_Net_GE45.csproj">
       <Project>{e4854e6a-be7c-4daf-8a0f-0c4cdbbbe4d9}</Project>
       <Name>HandyControl_Net_GE45</Name>

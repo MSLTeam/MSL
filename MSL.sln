@@ -4,6 +4,9 @@ Microsoft Visual Studio Solution File, Format Version 12.00
 VisualStudioVersion = 17.2.32616.157
 MinimumVisualStudioVersion = 10.0.40219.1
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "MSL", "MSL\MSL.csproj", "{88EE4C55-A2E5-40CB-81DF-22EC5DD0858A}"
+	ProjectSection(ProjectDependencies) = postProject
+		{20077FDD-D742-4E19-A3A1-14C49361C500} = {20077FDD-D742-4E19-A3A1-14C49361C500}
+	EndProjectSection
 EndProject
 Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Solution Items", "Solution Items", "{0D3A1BC5-615F-4C52-B38F-E4DC8D391757}"
 	ProjectSection(SolutionItems) = preProject
@@ -14,20 +17,40 @@ Project("{D954291E-2A0B-460D-934E-DC6B0785DB48}") = "HandyControl_Shared", "Hand
 EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "HandyControl_Net_GE45", "HandyControls\src\Net_GE45\HandyControl_Net_GE45\HandyControl_Net_GE45.csproj", "{E4854E6A-BE7C-4DAF-8A0F-0C4CDBBBE4D9}"
 EndProject
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "ConPtyTermEmulatorLib", "ConPtyTermEmulatorLib\ConPtyTermEmulatorLib.csproj", "{20077FDD-D742-4E19-A3A1-14C49361C500}"
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
+		Debug|Any CPU = Debug|Any CPU
 		Debug|x64 = Debug|x64
+		Release|Any CPU = Release|Any CPU
 		Release|x64 = Release|x64
 	EndGlobalSection
 	GlobalSection(ProjectConfigurationPlatforms) = postSolution
+		{88EE4C55-A2E5-40CB-81DF-22EC5DD0858A}.Debug|Any CPU.ActiveCfg = Debug|x64
+		{88EE4C55-A2E5-40CB-81DF-22EC5DD0858A}.Debug|Any CPU.Build.0 = Debug|x64
 		{88EE4C55-A2E5-40CB-81DF-22EC5DD0858A}.Debug|x64.ActiveCfg = Debug|x64
 		{88EE4C55-A2E5-40CB-81DF-22EC5DD0858A}.Debug|x64.Build.0 = Debug|x64
+		{88EE4C55-A2E5-40CB-81DF-22EC5DD0858A}.Release|Any CPU.ActiveCfg = Release|x64
+		{88EE4C55-A2E5-40CB-81DF-22EC5DD0858A}.Release|Any CPU.Build.0 = Release|x64
 		{88EE4C55-A2E5-40CB-81DF-22EC5DD0858A}.Release|x64.ActiveCfg = Release|x64
 		{88EE4C55-A2E5-40CB-81DF-22EC5DD0858A}.Release|x64.Build.0 = Release|x64
+		{E4854E6A-BE7C-4DAF-8A0F-0C4CDBBBE4D9}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{E4854E6A-BE7C-4DAF-8A0F-0C4CDBBBE4D9}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{E4854E6A-BE7C-4DAF-8A0F-0C4CDBBBE4D9}.Debug|x64.ActiveCfg = Debug|Any CPU
 		{E4854E6A-BE7C-4DAF-8A0F-0C4CDBBBE4D9}.Debug|x64.Build.0 = Debug|Any CPU
+		{E4854E6A-BE7C-4DAF-8A0F-0C4CDBBBE4D9}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{E4854E6A-BE7C-4DAF-8A0F-0C4CDBBBE4D9}.Release|Any CPU.Build.0 = Release|Any CPU
 		{E4854E6A-BE7C-4DAF-8A0F-0C4CDBBBE4D9}.Release|x64.ActiveCfg = Release|Any CPU
 		{E4854E6A-BE7C-4DAF-8A0F-0C4CDBBBE4D9}.Release|x64.Build.0 = Release|Any CPU
+		{20077FDD-D742-4E19-A3A1-14C49361C500}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{20077FDD-D742-4E19-A3A1-14C49361C500}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{20077FDD-D742-4E19-A3A1-14C49361C500}.Debug|x64.ActiveCfg = Debug|Any CPU
+		{20077FDD-D742-4E19-A3A1-14C49361C500}.Debug|x64.Build.0 = Debug|Any CPU
+		{20077FDD-D742-4E19-A3A1-14C49361C500}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{20077FDD-D742-4E19-A3A1-14C49361C500}.Release|Any CPU.Build.0 = Release|Any CPU
+		{20077FDD-D742-4E19-A3A1-14C49361C500}.Release|x64.ActiveCfg = Release|Any CPU
+		{20077FDD-D742-4E19-A3A1-14C49361C500}.Release|x64.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE

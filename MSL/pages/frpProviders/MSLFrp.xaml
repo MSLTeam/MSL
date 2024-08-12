@@ -10,17 +10,15 @@
       Title="MSLFrp" Initialized="Page_Initialized">
     <Grid x:Name="MainGrid">
         <Label Content="节点列表：" HorizontalAlignment="Left" VerticalAlignment="Top" FontSize="20" Margin="10,0,0,0" Background="{x:Null}" BorderBrush="{x:Null}" Height="40" Padding="10,0,10,5" FontWeight="Bold"/>
+        <Label Content="（在此选择一个节点）" HorizontalAlignment="Left" Margin="110,5,0,0" VerticalAlignment="Top" FontSize="16" BorderBrush="{x:Null}" Background="{x:Null}" Height="35" Padding="0,0,0,5"/>
         <ListBox x:Name="serversList" Height="240" Width="270" SelectionChanged="serversList_SelectionChanged" SelectionMode="Single" Margin="20,35,0,0" HorizontalAlignment="Left" VerticalAlignment="Top"/>
         <Label x:Name="lab1" Content="输入本地端口(Java版默认25565,基岩版默认19132,双协议用|分割)：" HorizontalAlignment="Left" Margin="290,30,0,0" VerticalAlignment="Top" Background="{x:Null}" BorderBrush="{x:Null}" FontSize="14"/>
         <TextBox x:Name="portBox" HorizontalAlignment="Left" Height="23" Margin="330,65,0,0" VerticalAlignment="Top" Width="400" Text="25565"/>
         <Label x:Name="lab2" Content="输入账号（QQ号）：" HorizontalAlignment="Left" Margin="290,115,0,0" VerticalAlignment="Top" BorderBrush="{x:Null}" Background="{x:Null}" FontSize="14"/>
         <TextBox x:Name="accountBox" HorizontalAlignment="Left" Height="23" Margin="330,150,0,0" VerticalAlignment="Top" Width="400"/>
-        <Border Margin="20,280,0,0" Height="100" Width="600" HorizontalAlignment="Left" VerticalAlignment="Top" Style="{StaticResource BorderTipPrimary}">
-            <TextBlock x:Name="gonggao" Text="加载中" Foreground="{DynamicResource PrimaryTextBrush}" FontSize="16"/>
-        </Border>
-        <Label Content="（在此选择一个节点）" HorizontalAlignment="Left" Margin="110,5,0,0" VerticalAlignment="Top" FontSize="16" BorderBrush="{x:Null}" Background="{x:Null}" Height="35" Padding="0,0,0,5"/>
-        <hc:PasswordBox x:Name="passwordBox" HorizontalAlignment="Left" Height="23" Margin="330,175,0,0" VerticalAlignment="Top" Width="400" ShowEyeButton="True" Visibility="Hidden"/>
         <Label x:Name="paidPasswordLabel" Content="输入您的付费密码：" HorizontalAlignment="Left" Margin="290,145,0,0" FontSize="14" VerticalAlignment="Top" Background="{x:Null}" BorderBrush="{x:Null}" Visibility="Hidden"/>
+        <hc:PasswordBox x:Name="passwordBox" HorizontalAlignment="Left" Margin="330,175,0,0" VerticalAlignment="Top" Width="285" ShowEyeButton="True" Visibility="Hidden"/>
+        <CheckBox x:Name="rememberPasswd" Content="记住账号密码" HorizontalAlignment="Left" Margin="630,182,0,0" VerticalAlignment="Top" IsChecked="True" Visibility="Hidden"/>
         <Label Content="传输协议：" HorizontalAlignment="Left" Margin="290,215,0,0" VerticalAlignment="Top" BorderBrush="{x:Null}" Background="{x:Null}" Width="86" FontSize="14"/>
         <ComboBox x:Name="frpcType" HorizontalAlignment="Left" Margin="370,215,0,0" VerticalAlignment="Top" Width="245" SelectionChanged="frpcType_SelectionChanged">
             <ComboBoxItem IsSelected="True" Content="TCP（Java版）"/>
@@ -33,8 +31,11 @@
             <ComboBoxItem Content="KCP加速协议"/>
             <ComboBoxItem Content="默认（无加速协议）"/>
         </ComboBox>
-        <CheckBox x:Name="enableCompression" Content="启用数据压缩" HorizontalAlignment="Left" Margin="630,230,0,0" VerticalAlignment="Top" IsChecked="True"/>
+        <CheckBox x:Name="enableCompression" Content="启用数据压缩" HorizontalAlignment="Left" Margin="630,220,0,0" VerticalAlignment="Top" IsChecked="True"/>
         <Button Content="确定" Margin="630,255,0,0" Style="{StaticResource ButtonPrimary}" VerticalAlignment="Top" Width="100" Click="Button_Click" FontWeight="Normal" FontSize="18" Height="70" HorizontalAlignment="Left"/>
         <Button x:Name="gotoAifadian" Content="购买/激活&#13;付费节点"  Margin="630,330,0,0" VerticalAlignment="Top" Click="gotoWeb_Click" HorizontalAlignment="Left" Width="100" Height="50"/>
+        <Border Margin="20,280,0,0" Height="100" Width="600" HorizontalAlignment="Left" VerticalAlignment="Top" Style="{StaticResource BorderTipPrimary}">
+            <TextBlock x:Name="gonggao" Text="加载中" Foreground="{DynamicResource PrimaryTextBrush}" FontSize="16"/>
+        </Border>
     </Grid>
 </Page>

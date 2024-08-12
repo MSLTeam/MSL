@@ -67,7 +67,7 @@ namespace MSL.controls
                     try
                     {
                         Directory.Delete(libPath, true);
-                        
+
                     }
                     finally
                     {
@@ -82,7 +82,7 @@ namespace MSL.controls
                     {
                         if (file.Name.Contains("forge") && file.Name.Contains(".jar"))
                         {
-                            Log_in("检测到"+file.Name+"文件，尝试将其删除……");
+                            Log_in("检测到" + file.Name + "文件，尝试将其删除……");
                             try
                             {
                                 file.Delete();

@@ -87,7 +87,10 @@ namespace MSL.pages
                         list.Add(new ServerInfo(int.Parse(item.Key), item.Value["name"].ToString(), "pack://application:,,,/images/150px-Impulse_Command_Block.png", status, brushes));
                     }
                 }
-                serverList.ItemsSource = list;
+                Dispatcher.Invoke(() =>
+                {
+                    serverList.ItemsSource = list;
+                });
             }
             catch
             {
@@ -171,7 +174,7 @@ namespace MSL.pages
 
         private void setServer_Click(object sender, RoutedEventArgs e)
         {
-            OpenServerWindowEvent();
+            OpenServerWindowEvent(3);
         }
 
         private void SetServerEvent()

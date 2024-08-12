@@ -40,7 +40,10 @@ namespace MSL.pages
             foreach (var keyValue in keyValuePairs)
             {
                 string key = keyValue.Key;
-                FrpcListBox.Items.Add(key);
+                if (key != "MSLFrpAccount" && key != "MSLFrpPasswd")
+                {
+                    FrpcListBox.Items.Add(key);
+                }
             }
         }
 

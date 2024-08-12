@@ -1,0 +1,15 @@
+GetConsoleMode
+SetConsoleMode
+CreatePipe
+CreateProcess
+DeleteProcThreadAttributeList
+UpdateProcThreadAttribute
+InitializeProcThreadAttributeList
+DeleteProcThreadAttributeList
+ResizePseudoConsole
+COORD
+STARTUPINFOEXW
+PROC_THREAD_ATTRIBUTE_PSEUDOCONSOLE
+SetConsoleCtrlHandler
+CTRL_CLOSE_EVENT
+CreatePseudoConsole
