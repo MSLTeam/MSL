@@ -5,4 +5,5 @@
       MSL.resources
     </ExcludeAssemblies>
   </Costura>
+  <Costura Unmanaged64Assemblies="Microsoft.Terminal.Control" />
 </Weavers>
