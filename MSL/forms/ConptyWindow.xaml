@@ -16,10 +16,14 @@
                 </Style>
             </term:BasicTerminalControl.Resources>
         </term:BasicTerminalControl>
+        <StackPanel Orientation="Horizontal" HorizontalAlignment="Left" VerticalAlignment="Bottom"  >
+            <Button x:Name="Help" Content="帮助" Margin="5" Click="Help_Click"/>
+            <TextBlock Text="服务器 当前状态：" FontSize="14" Foreground="{DynamicResource PrimaryTextBrush}" VerticalAlignment="Center" Margin="5"/>
+            <TextBlock x:Name="ServerStatus"  Text="已关服" FontSize="14" Foreground="{DynamicResource DarkPrimaryBrush}" VerticalAlignment="Center"/>
+        </StackPanel>
         <StackPanel Orientation="Horizontal" HorizontalAlignment="Right" VerticalAlignment="Bottom"  >
-            <Button x:Name="ControlServer" Content="StartServer" Margin="5"/>
-            <Button x:Name="CloseBtn" Content="Close" Margin="5" />
-            <!--<Button Content="Process Output Sample" Click="ShowProcessOutputClicked" Margin="5" />-->
+            <Button x:Name="ControlServer" Content="开服" Margin="5"/>
+            <Button x:Name="HideBtn" Content="隐藏终端" Margin="5" />
         </StackPanel>
     </Grid>
 </Window>

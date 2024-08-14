@@ -195,7 +195,7 @@ namespace ConPtyTermEmulatorLib
                 ConPTYTerm.StopTerm();
             }
             DisconnectConPTYTerm();
-            GC.Collect();
+            //GC.Collect();
             ConPTYTerm = new();
             StartTerm();
         }
