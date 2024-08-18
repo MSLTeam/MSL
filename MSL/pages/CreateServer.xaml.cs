@@ -28,6 +28,7 @@ namespace MSL.pages
     public partial class CreateServer : Page
     {
         public static event DeleControl GotoServerList;
+        private int returnMode = 0; //1：WelcomeGrid，2：FastModeGrid，3：FastModeInstallGrid，4：CustomModeDir，5：CustomModeJava，6：CustomModeServerCore，7：CustomModeFinally，8Finally：SelectTerminal
         private string DownjavaName;
         private string servername;
         private string serverjava;
@@ -72,6 +73,7 @@ namespace MSL.pages
         {
             MainGrid.Visibility = Visibility.Collapsed;
             FastModeGrid.Visibility = Visibility.Visible;
+            returnMode = 1;
             await FastModeGetCore();
         }
 
@@ -79,6 +81,7 @@ namespace MSL.pages
         {
             MainGrid.Visibility = Visibility.Collapsed;
             tabCtrl.Visibility = Visibility.Visible;
+            returnMode = 1;
         }
 
         private bool isImportPack = false;
@@ -155,6 +158,7 @@ namespace MSL.pages
                     sjava.IsSelected = true;
                     sjava.IsEnabled = true;
                     welcome.IsEnabled = false;
+                    returnMode = 1;
                 }
             }
             else if (ImportPack.SelectedIndex == 2)
@@ -229,90 +233,10 @@ namespace MSL.pages
                             sjava.IsSelected = true;
                             sjava.IsEnabled = true;
                             welcome.IsEnabled = false;
+                            returnMode = 1;
                         }
                     }
                 }
-            }
-        }
-
-        private async void next3_Click(object sender, RoutedEventArgs e)
-        {
-            bool noNext = false;
-            next3.IsEnabled = false;
-            return5.IsEnabled = false;
-            if (useJVself.IsChecked == true)
-            {
-                Growl.Info("正在检查所选Java可用性，请稍等……");
-                (bool javaAvailability, string javainfo) = await JavaScanner.CheckJavaAvailabilityAsync(txjava.Text);
-                if (javaAvailability)
-                {
-                    Growl.Info("所选Java版本：" + javainfo);
-                }
-                else
-                {
-                    Growl.Error("检测Java可用性失败");
-                    Shows.ShowMsgDialog(Window.GetWindow(this), "检测Java可用性失败，您的Java似乎不可用！请检查是否选择正确！", "错误");
-                    usedownloadjv.IsChecked = true;
-                    noNext = true;
-                }
-                serverjava = txjava.Text;
-                await CheckServerPackCore();
-            }
-            else if (usejvPath.IsChecked == true)
-            {
-                serverjava = "Java";
-                await CheckServerPackCore();
-            }
-            else if (usecheckedjv.IsChecked == true)
-            {
-                string a = selectCheckedJavaComb.Items[selectCheckedJavaComb.SelectedIndex].ToString();
-                serverjava = a.Substring(a.IndexOf(":") + 2);
-                await CheckServerPackCore();
-            }
-            else if (usedownloadjv.IsChecked == true)
-            {
-                try
-                {
-                    int dwnJava = 0;
-                    dwnJava = await DownloadJava(selectJavaComb.SelectedItem.ToString(), (await HttpService.GetApiContentAsync("download/java/" + selectJavaComb.SelectedItem.ToString()))["data"]["url"].ToString());
-                    if (dwnJava == 1)
-                    {
-                        ShowDialogs showDialogs = new ShowDialogs();
-                        showDialogs.ShowTextDialog(Window.GetWindow(this), "解压Java中……");
-                        bool unzipJava = await UnzipJava();
-                        showDialogs.CloseTextDialog();
-                        if (unzipJava)
-                        {
-                            await CheckServerPackCore();
-                        }
-                        else
-                        {
-                            noNext = true;
-                        }
-                    }
-                    else if (dwnJava == 2)
-                    {
-                        await CheckServerPackCore();
-                    }
-                    else
-                    {
-                        Shows.ShowMsgDialog(Window.GetWindow(this), "下载取消！", "提示");
-                        noNext = true;
-                    }
-                }
-                catch
-                {
-                    Growl.Error("出现错误，请检查网络连接！");
-                    noNext = true;
-                }
-            }
-            next3.IsEnabled = true;
-            return5.IsEnabled = true;
-            if (!noNext && !isImportPack)
-            {
-                sserver.IsSelected = true;
-                sserver.IsEnabled = true;
-                sjava.IsEnabled = false;
             }
         }
 
@@ -458,12 +382,6 @@ namespace MSL.pages
                 return false;
             }
         }
-        private void return2_Click(object sender, RoutedEventArgs e)
-        {
-            sjava.IsSelected = true;
-            sjava.IsEnabled = true;
-            sserver.IsEnabled = false;
-        }
 
         private void usedefault_Checked(object sender, RoutedEventArgs e)
         {
@@ -478,13 +396,6 @@ namespace MSL.pages
         {
             txb4.IsEnabled = true;
             txb5.IsEnabled = true;
-        }
-
-        private void return3_Click(object sender, RoutedEventArgs e)
-        {
-            sserver.IsSelected = true;
-            sserver.IsEnabled = true;
-            sJVM.IsEnabled = false;
         }
 
         private void a0002_Click(object sender, RoutedEventArgs e)
@@ -508,23 +419,6 @@ namespace MSL.pages
             {
                 txb6.Text = dialog.SelectedPath;
             }
-        }
-
-        private void return5_Click(object sender, RoutedEventArgs e)
-        {
-            if (isImportPack)
-            {
-                isImportPack = false;
-                MainGrid.Visibility = Visibility.Visible;
-                tabCtrl.Visibility = Visibility.Collapsed;
-                welcome.IsSelected = true;
-                welcome.IsEnabled = true;
-                sjava.IsEnabled = false;
-                return;
-            }
-            welcome.IsSelected = true;
-            welcome.IsEnabled = true;
-            sjava.IsEnabled = false;
         }
 
         private void a0002_Copy_Click(object sender, RoutedEventArgs e)
@@ -631,7 +525,7 @@ namespace MSL.pages
             a0002.IsEnabled = true;
         }
 
-        private async void next_Click(object sender, RoutedEventArgs e)
+        private async void CustomModeDirNext_Click(object sender, RoutedEventArgs e)
         {
             servername = serverNameBox.Text;
             if ((new Regex("[\u4E00-\u9FA5]").IsMatch(txb6.Text)) || txb6.Text.Contains(" "))
@@ -664,9 +558,92 @@ namespace MSL.pages
             sjava.IsSelected = true;
             sjava.IsEnabled = true;
             welcome.IsEnabled = false;
+            returnMode = 4;
         }
 
-        private async void next2_Click(object sender, RoutedEventArgs e)
+        private async void CustomModeJavaNext_Click(object sender, RoutedEventArgs e)
+        {
+            bool noNext = false;
+            CustomModeJavaNext.IsEnabled = false;
+            CustomModeJavaReturn.IsEnabled = false;
+            if (useJVself.IsChecked == true)
+            {
+                Growl.Info("正在检查所选Java可用性，请稍等……");
+                (bool javaAvailability, string javainfo) = await JavaScanner.CheckJavaAvailabilityAsync(txjava.Text);
+                if (javaAvailability)
+                {
+                    Growl.Info("所选Java版本：" + javainfo);
+                }
+                else
+                {
+                    Growl.Error("检测Java可用性失败");
+                    Shows.ShowMsgDialog(Window.GetWindow(this), "检测Java可用性失败，您的Java似乎不可用！请检查是否选择正确！", "错误");
+                    usedownloadjv.IsChecked = true;
+                    noNext = true;
+                }
+                serverjava = txjava.Text;
+                await CheckServerPackCore();
+            }
+            else if (usejvPath.IsChecked == true)
+            {
+                serverjava = "Java";
+                await CheckServerPackCore();
+            }
+            else if (usecheckedjv.IsChecked == true)
+            {
+                string a = selectCheckedJavaComb.Items[selectCheckedJavaComb.SelectedIndex].ToString();
+                serverjava = a.Substring(a.IndexOf(":") + 2);
+                await CheckServerPackCore();
+            }
+            else if (usedownloadjv.IsChecked == true)
+            {
+                try
+                {
+                    int dwnJava = 0;
+                    dwnJava = await DownloadJava(selectJavaComb.SelectedItem.ToString(), (await HttpService.GetApiContentAsync("download/java/" + selectJavaComb.SelectedItem.ToString()))["data"]["url"].ToString());
+                    if (dwnJava == 1)
+                    {
+                        ShowDialogs showDialogs = new ShowDialogs();
+                        showDialogs.ShowTextDialog(Window.GetWindow(this), "解压Java中……");
+                        bool unzipJava = await UnzipJava();
+                        showDialogs.CloseTextDialog();
+                        if (unzipJava)
+                        {
+                            await CheckServerPackCore();
+                        }
+                        else
+                        {
+                            noNext = true;
+                        }
+                    }
+                    else if (dwnJava == 2)
+                    {
+                        await CheckServerPackCore();
+                    }
+                    else
+                    {
+                        Shows.ShowMsgDialog(Window.GetWindow(this), "下载取消！", "提示");
+                        noNext = true;
+                    }
+                }
+                catch
+                {
+                    Growl.Error("出现错误，请检查网络连接！");
+                    noNext = true;
+                }
+            }
+            CustomModeJavaNext.IsEnabled = true;
+            CustomModeJavaReturn.IsEnabled = true;
+            if (!noNext && !isImportPack)
+            {
+                sserver.IsSelected = true;
+                sserver.IsEnabled = true;
+                sjava.IsEnabled = false;
+                returnMode = 5;
+            }
+        }
+
+        private async void CustomModeServerCoreNext_Click(object sender, RoutedEventArgs e)
         {
             if (usedownloadserver.IsChecked == true)
             {
@@ -681,6 +658,7 @@ namespace MSL.pages
                     sJVM.IsSelected = true;
                     sJVM.IsEnabled = true;
                     sserver.IsEnabled = false;
+                    returnMode = 6;
                 }
                 else if (downloadServer.downloadServerName.StartsWith("@libraries/"))
                 {
@@ -688,6 +666,7 @@ namespace MSL.pages
                     sJVM.IsSelected = true;
                     sJVM.IsEnabled = true;
                     sserver.IsEnabled = false;
+                    returnMode = 6;
                 }
             }
             else
@@ -743,12 +722,33 @@ namespace MSL.pages
                     sJVM.IsSelected = true;
                     sJVM.IsEnabled = true;
                     sserver.IsEnabled = false;
+                    returnMode = 6;
                 }
                 catch (Exception ex)
                 {
                     Shows.ShowMsgDialog(Window.GetWindow(this), ex.Message, "错误");
                 }
             }
+        }
+
+        private void CustomModeFinallyNext_Click(object sender, RoutedEventArgs e)
+        {
+            if (usedefault.IsChecked == true)
+            {
+                servermemory = "";
+            }
+            else
+            {
+                servermemory = "-Xms" + txb4.Text + "M -Xmx" + txb5.Text + "M";
+            }
+            serverargs += txb7.Text;
+            if (!Directory.Exists(serverbase))
+            {
+                Directory.CreateDirectory(serverbase);
+            }
+            SelectTerminalGrid.Visibility = Visibility.Visible;
+            tabCtrl.Visibility = Visibility.Collapsed;
+            returnMode = 7;
         }
 
         private async void usebasicfastJvm_Click(object sender, RoutedEventArgs e)
@@ -785,73 +785,6 @@ namespace MSL.pages
             }
         }
 
-        private async void done_Click(object sender, RoutedEventArgs e)
-        {
-            if (usedefault.IsChecked == true)
-            {
-                servermemory = "";
-            }
-            else
-            {
-                servermemory = "-Xms" + txb4.Text + "M -Xmx" + txb5.Text + "M";
-            }
-            serverargs += txb7.Text;
-            try
-            {
-                if (!Directory.Exists(serverbase))
-                {
-                    Directory.CreateDirectory(serverbase);
-                }
-
-                if (!File.Exists(@"MSL\ServerList.json"))
-                {
-                    File.WriteAllText(@"MSL\ServerList.json", string.Format("{{{0}}}", "\n"));
-                }
-                JObject _json = new JObject
-                {
-                    { "name", servername },
-                    { "java", serverjava },
-                    { "base", serverbase },
-                    { "core", servercore },
-                    { "memory", servermemory },
-                    { "args", serverargs }
-                };
-                JObject jsonObject = JObject.Parse(File.ReadAllText(@"MSL\ServerList.json", Encoding.UTF8));
-                List<string> keys = jsonObject.Properties().Select(p => p.Name).ToList();
-                var _keys = keys.Select(x => Convert.ToInt32(x));
-                int[] ikeys = _keys.ToArray();
-                Array.Sort(ikeys);
-                int i = 0;
-
-                foreach (int key in ikeys)
-                {
-                    if (i == key)
-                    {
-                        i++;
-                    }
-                    else
-                    {
-                        break;
-                    }
-                }
-                jsonObject.Add(i.ToString(), _json);
-                File.WriteAllText(@"MSL\ServerList.json", Convert.ToString(jsonObject), Encoding.UTF8);
-                await Shows.ShowMsgDialogAsync(Window.GetWindow(this), "创建完毕，请点击“开启服务器”按钮以开服", "信息");
-                GotoServerList();
-            }
-            catch (Exception ex)
-            {
-                MessageBox.Show("出现错误，请重试：" + ex.Message, "Error", MessageBoxButton.OK, MessageBoxImage.Error);
-            }
-        }
-
-        private void Return_Click(object sender, RoutedEventArgs e)
-        {
-            MainGrid.Visibility = Visibility.Visible;
-            tabCtrl.Visibility = Visibility.Collapsed;
-            FastModeGrid.Visibility = Visibility.Collapsed;
-        }
-
         //用于分类的字典
         public static JObject serverCoreTypes;
         string[] serverTypes;
@@ -875,6 +808,10 @@ namespace MSL.pages
         private List<string> typeVersions = new List<string>();
         private async void ServerCoreCombo_SelectionChanged(object sender, SelectionChangedEventArgs e)
         {
+            if (ServerCoreCombo.SelectedIndex == -1)
+            {
+                return;
+            }
             FastModeNextBtn.IsEnabled = false;
             ServerVersionCombo.ItemsSource = null;
             typeVersions.Clear();
@@ -1086,18 +1023,19 @@ namespace MSL.pages
             FastModeNextBtn.IsEnabled = true;
             FastModeGrid.Visibility = Visibility.Collapsed;
             InstallGrid.Visibility = Visibility.Visible;
+            returnMode = 2;
         }
 
         private async Task<List<string>> AsyncGetJavaVersion()
         {
             ShowDialogs showDialogs = new ShowDialogs();
             showDialogs.ShowTextDialog(Window.GetWindow(this), "获取Java版本列表中，请稍等……");
-            await Task.Delay(200);
+            await Task.Delay(100);
             try
             {
                 string response = string.Empty;
                 response = (await HttpService.GetApiContentAsync("query/java"))["data"]["versionList"].ToString();
-                await Task.Delay(200);
+                await Task.Delay(100);
                 JArray jArray = JArray.Parse(response);
                 List<string> strings = new List<string>();
                 foreach (var j in jArray)
@@ -1116,7 +1054,6 @@ namespace MSL.pages
 
         private async void FastModeInstallBtn_Click(object sender, RoutedEventArgs e)
         {
-
             FastModeReturnBtn.IsEnabled = false;
             FastModeInstallBtn.IsEnabled = false;
             FastInstallProcess.Text = "当前进度:下载Java……";
@@ -1154,7 +1091,6 @@ namespace MSL.pages
                 FastModeInstallBtn.IsEnabled = true;
                 return;
             }
-
         }
 
         private async Task FastModeInstallCore()
@@ -1365,52 +1301,12 @@ namespace MSL.pages
             {
                 servercore = filename;
             }
-
-            FastInstallProcess.Text = "当前进度:完成！";
-            try
-            {
-                if (!File.Exists(@"MSL\ServerList.json"))
-                {
-                    File.WriteAllText(@"MSL\ServerList.json", string.Format("{{{0}}}", "\n"));
-                }
-                JObject _json = new JObject
-                        {
-                        { "name", servername },
-                        { "java", serverjava },
-                        { "base", serverbase },
-                        { "core", servercore },
-                        { "memory", servermemory },
-                        { "args", serverargs }
-                        };
-                JObject jsonObject = JObject.Parse(File.ReadAllText(@"MSL\ServerList.json", Encoding.UTF8));
-                List<string> keys = jsonObject.Properties().Select(p => p.Name).ToList();
-                var _keys = keys.Select(x => Convert.ToInt32(x));
-                int[] ikeys = _keys.ToArray();
-                Array.Sort(ikeys);
-                int i = 0;
-
-                foreach (int key in ikeys)
-                {
-                    if (i == key)
-                    {
-                        i++;
-                    }
-                    else
-                    {
-                        break;
-                    }
-                }
-                jsonObject.Add(i.ToString(), _json);
-                File.WriteAllText(@"MSL\ServerList.json", Convert.ToString(jsonObject), Encoding.UTF8);
-                await Shows.ShowMsgDialogAsync(Window.GetWindow(this), "创建完毕，请点击“开启服务器”按钮以开服", "信息");
-                GotoServerList();
-            }
-            catch (Exception ex)
-            {
-                MessageBox.Show("出现错误，请重试：" + ex.Message, "Error", MessageBoxButton.OK, MessageBoxImage.Error);
-                FastModeReturnBtn.IsEnabled = true;
-                FastModeInstallBtn.IsEnabled = true;
-            }
+            FastModeReturnBtn.IsEnabled = true;
+            FastModeInstallBtn.IsEnabled = true;
+            FastInstallProcess.Text = "当前进度:下载完成！";
+            SelectTerminalGrid.Visibility = Visibility.Visible;
+            InstallGrid.Visibility = Visibility.Collapsed;
+            returnMode = 3;
         }
 
         private async Task<string> InstallForge(string filename)
@@ -1455,15 +1351,170 @@ namespace MSL.pages
             }
         }
 
-        private void FastModeReturnBtn_Click(object sender, RoutedEventArgs e)
-        {
-            InstallGrid.Visibility = Visibility.Hidden;
-            FastModeGrid.Visibility = Visibility.Visible;
-        }
 
         private void CancelBtn_Click(object sender, RoutedEventArgs e)
         {
             GotoServerList();
+            ReInit();
+        }
+
+        private void Return_Click(object sender, RoutedEventArgs e)
+        {
+            switch (returnMode)
+            {
+                case 1:
+                    if (isImportPack)
+                    {
+                        isImportPack = false;
+                        welcome.IsSelected = true;
+                        welcome.IsEnabled = true;
+                        sjava.IsEnabled = false;
+                    }
+                    MainGrid.Visibility = Visibility.Visible;
+                    tabCtrl.Visibility = Visibility.Collapsed;
+                    FastModeGrid.Visibility = Visibility.Collapsed;
+                    returnMode = 0;
+                    break;
+                case 2:
+                    FastModeGrid.Visibility = Visibility.Visible;
+                    InstallGrid.Visibility = Visibility.Collapsed;
+                    returnMode = 1;
+                    break;
+                case 3:
+                    InstallGrid.Visibility = Visibility.Visible;
+                    SelectTerminalGrid.Visibility = Visibility.Collapsed;
+                    returnMode = 2;
+                    break;
+                case 4:
+                    welcome.IsSelected = true;
+                    welcome.IsEnabled = true;
+                    sjava.IsEnabled = false;
+                    returnMode = 1;
+                    break;
+                case 5:
+                    sjava.IsSelected = true;
+                    sjava.IsEnabled = true;
+                    sserver.IsEnabled = false;
+                    returnMode = 4;
+                    break;
+                case 6:
+                    sserver.IsSelected = true;
+                    sserver.IsEnabled = true;
+                    sJVM.IsEnabled = false;
+                    returnMode = 5;
+                    break;
+                case 7:
+                    tabCtrl.Visibility = Visibility.Visible;
+                    SelectTerminalGrid.Visibility = Visibility.Collapsed;
+                    returnMode = 6;
+                    break;
+            }
+        }
+
+        private void TraditionModeBtn_Checked(object sender, RoutedEventArgs e)
+        {
+            if (IsLoaded)
+            {
+                ConptyModeBtn.IsChecked = false;
+            }
+        }
+
+        private void ConptyModeBtn_Checked(object sender, RoutedEventArgs e)
+        {
+            TraditionModeBtn.IsChecked = false;
+            Shows.ShowMsgDialog(Window.GetWindow(this), "若使用此模式出现问题，可在服务器运行窗口的“更多功能”界面修改此项。", "提示");
+        }
+
+        private async void DoneBtn_Click(object sender, RoutedEventArgs e)
+        {
+            try
+            {
+                if (!File.Exists(@"MSL\ServerList.json"))
+                {
+                    File.WriteAllText(@"MSL\ServerList.json", string.Format("{{{0}}}", "\n"));
+                }
+                JObject _json = new JObject
+                        {
+                        { "name", servername },
+                        { "java", serverjava },
+                        { "base", serverbase },
+                        { "core", servercore },
+                        { "memory", servermemory },
+                        { "args", serverargs }
+                        };
+                if (ConptyModeBtn.IsChecked == true)
+                {
+                    _json.Add("useConpty", "True");
+                }
+                JObject jsonObject = JObject.Parse(File.ReadAllText(@"MSL\ServerList.json", Encoding.UTF8));
+                List<string> keys = jsonObject.Properties().Select(p => p.Name).ToList();
+                var _keys = keys.Select(x => Convert.ToInt32(x));
+                int[] ikeys = _keys.ToArray();
+                Array.Sort(ikeys);
+                int i = 0;
+
+                foreach (int key in ikeys)
+                {
+                    if (i == key)
+                    {
+                        i++;
+                    }
+                    else
+                    {
+                        break;
+                    }
+                }
+                jsonObject.Add(i.ToString(), _json);
+                File.WriteAllText(@"MSL\ServerList.json", Convert.ToString(jsonObject), Encoding.UTF8);
+                await Shows.ShowMsgDialogAsync(Window.GetWindow(this), "创建完毕，请点击“开启服务器”按钮以开服", "信息");
+                GotoServerList();
+                ReInit();
+            }
+            catch (Exception ex)
+            {
+                MessageBox.Show("出现错误，请重试：" + ex.Message, "Error", MessageBoxButton.OK, MessageBoxImage.Error);
+            }
+        }
+
+        private void ReInit()
+        {
+            returnMode = 0;
+            DownjavaName = null;
+            servername = null;
+            serverjava = null;
+            serverbase = null;
+            servercore = null;
+            servermemory = null;
+            serverargs = null;
+            ServerCoreCombo.SelectedIndex = -1;
+            FastInstallProcess.Text = string.Empty;
+            serverNameBox.Text = "MyServer";
+            txb6.Text = string.Empty;
+            usedownloadjv.IsChecked = true;
+            selectJavaComb.ItemsSource = null;
+            usejvPath.Content = "使用环境变量";
+            selectCheckedJavaComb.ItemsSource = null;
+            txjava.Text = string.Empty;
+            usedownloadserver.IsChecked = true;
+            txb3.Text = string.Empty;
+            usedefault.IsChecked = true;
+            txb4.Text = string.Empty;
+            txb5.Text = string.Empty;
+            usebasicfastJvm.IsChecked = false;
+            usefastJvm.IsChecked = false;
+            txb7.Text = string.Empty;
+            TraditionModeBtn.IsChecked = true;
+            isImportPack = false;
+            MainGrid.Visibility = Visibility.Visible;
+            tabCtrl.Visibility = Visibility.Collapsed;
+            FastModeGrid.Visibility = Visibility.Collapsed;
+            InstallGrid.Visibility = Visibility.Collapsed;
+            SelectTerminalGrid.Visibility = Visibility.Collapsed;
+            welcome.IsSelected = true;
+            welcome.IsEnabled = true;
+            sjava.IsEnabled = false;
+            sserver.IsEnabled = false;
+            sJVM.IsEnabled = false;
         }
     }
 }

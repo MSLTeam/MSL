@@ -1,5 +1,8 @@
-﻿using MSL.utils;
+﻿using HandyControl.Controls;
+using MSL.utils;
+using System;
 using System.Windows;
+using Window = System.Windows.Window;
 
 namespace MSL.forms
 {
@@ -15,11 +18,6 @@ namespace MSL.forms
         public ConptyWindow()
         {
             InitializeComponent();
-        }
-
-        private void Window_SizeChanged(object sender, SizeChangedEventArgs e)
-        {
-            ConptyConsole.ConPTYTerm.CanOutLog = false;
         }
 
         public void StartServer()
@@ -44,7 +42,19 @@ namespace MSL.forms
                 "\n粘贴：在终端没有选择任何内容的情况下，直接点击鼠标右键，即可进行粘贴操作。" +
                 "\n取消选择：直接点击鼠标右键。" +
                 "\n\n终端特殊功能：\n在输入指令时，按一下Tab键可进行一键补全（或指令提示）操作。" +
-                "\n使用上下方向键可以回溯历史指令，左右方向键可以移动当前光标。","操作提示");
+                "\n使用上下方向键可以回溯历史指令，左右方向键可以移动当前光标。", "操作提示");
+        }
+
+        private void Window_Activated(object sender, EventArgs e)
+        {
+            PopUp.IsOpen = true;
+            Growl.SetGrowlParent(GrowlPanel, true);
+        }
+
+        private void Window_Deactivated(object sender, EventArgs e)
+        {
+            PopUp.IsOpen = false;
+            Growl.SetGrowlParent(GrowlPanel, false);
         }
     }
 }

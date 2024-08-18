@@ -47,7 +47,11 @@ namespace MSL.pages
                 Shows.ShowMsgDialog(this, "请先选择一个版本！", "警告");
                 return;
             }
+            serverlist1.IsEnabled = false;
+            DownloadBtn.IsEnabled = false;
             await DownloadServerFunc();
+            serverlist1.IsEnabled = true;
+            DownloadBtn.IsEnabled = true;
         }
 
         private async void serverlist_MouseDoubleClick(object sender, MouseButtonEventArgs e)
@@ -57,7 +61,11 @@ namespace MSL.pages
                 Shows.ShowMsgDialog(this, "请先选择一个版本！", "警告");
                 return;
             }
+            serverlist1.IsEnabled = false;
+            DownloadBtn.IsEnabled = false;
             await DownloadServerFunc();
+            serverlist1.IsEnabled = true;
+            DownloadBtn.IsEnabled = true;
         }
 
         private async Task DownloadServerFunc()

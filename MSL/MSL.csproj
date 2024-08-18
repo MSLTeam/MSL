@@ -423,5 +423,9 @@
       <Name>HandyControl_Net_GE45</Name>
     </ProjectReference>
   </ItemGroup>
+  <ItemGroup>
+    <Resource Include="images\ConPtyTerm.png" />
+    <Resource Include="images\TraditionTerm.png" />
+  </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
 </Project>

@@ -77,7 +77,6 @@
                         <Border Margin="20,75,10,0" Style="{StaticResource BorderTipPrimary}">
                             <TextBlock x:Name="ServerCoreDescrip" Text="加载中，请稍等……" Foreground="{DynamicResource PrimaryTextBrush}" VerticalAlignment="Top" HorizontalAlignment="Left" TextWrapping="Wrap"/>
                         </Border>
-                        
                     </Grid>
                 </Border>
                 <Border Style="{StaticResource MagicBorder}" Margin="10,10,10,10">
@@ -93,8 +92,8 @@
                 </Grid>
             </StackPanel>
         </ScrollViewer>
-        <StackPanel x:Name="InstallGrid" Visibility="Hidden">
-            <Label Content="根据您的选择，MSL为您选出了以下版本的Java和服务端核心&#xA;请点击确定按钮以安装……" FontSize="18" Background="{x:Null}" BorderBrush="{x:Null}" VerticalAlignment="Top" Height="60" HorizontalAlignment="Left" FontWeight="Bold"/>
+        <StackPanel x:Name="InstallGrid" Visibility="Collapsed">
+            <Label Content="根据您的选择，MSL为您选出了以下版本的Java和服务端核心，请点击确定按钮以安装……" Margin="10" Foreground="{DynamicResource DarkPrimaryBrush}" FontSize="14" HorizontalAlignment="Left"/>
             <Border Style="{StaticResource MagicBorder}" Margin="10,0,10,10">
                 <Grid>
                     <Label Content="Java版本" Style="{StaticResource BorderTitle}"/>
@@ -115,8 +114,8 @@
             </Border>
             <TextBlock x:Name="FastInstallProcess" Text="" Foreground="{DynamicResource DarkPrimaryBrush}" Margin="15,0,0,0" />
             <Grid VerticalAlignment="Bottom" Margin="0,0,0,10">
-                <Button x:Name="FastModeReturnBtn" Content="上一步" Width="150" Click="FastModeReturnBtn_Click" Height="45" FontSize="18" Margin="0,0,300,0"/>
-                <Button x:Name="FastModeInstallBtn" Content="确定" Style="{StaticResource ButtonPrimary}" Width="150" Click="FastModeInstallBtn_Click" Height="45" FontSize="18" Margin="200,0,0,0"/>
+                <Button x:Name="FastModeReturnBtn" Content="上一步" Width="150" Click="Return_Click" Height="45" FontSize="18" Margin="0,0,300,0"/>
+                <Button x:Name="FastModeInstallBtn" Content="下一步" Style="{StaticResource ButtonPrimary}" Width="150" Click="FastModeInstallBtn_Click" Height="45" FontSize="18" Margin="200,0,0,0"/>
             </Grid>
         </StackPanel>
         <TabControl x:Name="tabCtrl" Visibility="Hidden" Background="{x:Null}" BorderThickness="0,1,0,0" Style="{StaticResource TabControlInLine}">
@@ -138,12 +137,11 @@
                             <Border Margin="25,105,0,5" Grid.Row="1" Style="{StaticResource BorderTipPrimary}">
                                 <TextBlock Text="选择提示：请不要选择桌面或磁盘根目录，否则会生成许多存储文件且会造成误删问题" HorizontalAlignment="Left"  VerticalAlignment="Top" FontSize="14"  />
                             </Border>
-                            
                         </Grid>
                     </Border>
                     <Grid Margin="0,20,0,0">
-                        <Button x:Name="skip" Content="上一步" Margin="0,0,250,0" VerticalAlignment="Center" Width="150" Click="Return_Click" Height="48" FontSize="18" HorizontalAlignment="Center"/>
-                        <Button x:Name="next" Content="下一步" Style="{StaticResource ButtonPrimary}" Margin="200,0,0,0" VerticalAlignment="Center" Width="150" Click="next_Click" Height="48" FontSize="18" HorizontalAlignment="Center"/>
+                        <Button x:Name="CustomModeDirReturn" Content="上一步" Margin="0,0,250,0" VerticalAlignment="Center" Width="150" Click="Return_Click" Height="48" FontSize="18" HorizontalAlignment="Center"/>
+                        <Button x:Name="CustomModeDirNext" Content="下一步" Style="{StaticResource ButtonPrimary}" Margin="200,0,0,0" VerticalAlignment="Center" Width="150" Click="CustomModeDirNext_Click" Height="48" FontSize="18" HorizontalAlignment="Center"/>
                     </Grid>
                 </StackPanel>
             </TabItem>
@@ -180,8 +178,8 @@
                         </Grid>
                     </Border>
                     <Grid Margin="0,20,0,0">
-                        <Button x:Name="return5" Content="上一步" Margin="0,0,250,0" VerticalAlignment="Center" Width="150" Click="return5_Click" Height="48" FontSize="18" HorizontalAlignment="Center"/>
-                        <Button x:Name="next3" Content="下一步" Style="{StaticResource ButtonPrimary}" Margin="200,0,0,0" VerticalAlignment="Center" Width="150" Click="next3_Click" Height="48" FontSize="18" HorizontalAlignment="Center"/>
+                        <Button x:Name="CustomModeJavaReturn" Content="上一步" Margin="0,0,250,0" VerticalAlignment="Center" Width="150" Click="Return_Click" Height="48" FontSize="18" HorizontalAlignment="Center"/>
+                        <Button x:Name="CustomModeJavaNext" Content="下一步" Style="{StaticResource ButtonPrimary}" Margin="200,0,0,0" VerticalAlignment="Center" Width="150" Click="CustomModeJavaNext_Click" Height="48" FontSize="18" HorizontalAlignment="Center"/>
                     </Grid>
                 </StackPanel>
             </TabItem>
@@ -198,8 +196,8 @@
                         </Grid>
                     </Border>
                     <Grid Margin="0,20,0,0">
-                        <Button x:Name="return2" Content="上一步" Margin="0,0,250,0" VerticalAlignment="Center" Width="150" Click="return2_Click" Height="48" FontSize="18" HorizontalAlignment="Center"/>
-                        <Button x:Name="next2" Content="下一步" Style="{StaticResource ButtonPrimary}" Margin="200,0,0,0" VerticalAlignment="Center" Width="150" Click="next2_Click" Height="48" FontSize="18" HorizontalAlignment="Center"/>
+                        <Button x:Name="CustomModeServerCoreReturn" Content="上一步" Margin="0,0,250,0" VerticalAlignment="Center" Width="150" Click="Return_Click" Height="48" FontSize="18" HorizontalAlignment="Center"/>
+                        <Button x:Name="CustomModeServerCoreNext" Content="下一步" Style="{StaticResource ButtonPrimary}" Margin="200,0,0,0" VerticalAlignment="Center" Width="150" Click="CustomModeServerCoreNext_Click" Height="48" FontSize="18" HorizontalAlignment="Center"/>
                     </Grid>
                 </StackPanel>
             </TabItem>
@@ -222,7 +220,6 @@
                                     <Border Margin="15,138,0,0" Grid.Row="1" Style="{StaticResource BorderTipPrimary}">
                                         <TextBlock Text="开服内存  手动设置提示：内存分配建议为电脑运行内存的80%    单位换算：1GB=1024MB" HorizontalAlignment="Left"  VerticalAlignment="Top" FontSize="14" />
                                     </Border>
-                                    
                                 </Grid>
                             </Border>
                             <Border Style="{StaticResource MagicBorder}">
@@ -239,14 +236,52 @@
                                 </StackPanel>
                             </Border>
                             <Grid Margin="10">
-                                <Button x:Name="return3" Content="上一步" Margin="0,0,250,0" VerticalAlignment="Center" Width="150" Click="return3_Click" Height="48" FontSize="18" HorizontalAlignment="Center"/>
-                                <Button x:Name="done" Content="确定" Style="{StaticResource ButtonPrimary}" Margin="200,0,0,0" VerticalAlignment="Center" Width="150" Click="done_Click" Height="48" FontSize="18" HorizontalAlignment="Center"/>
+                                <Button x:Name="return3" Content="上一步" Margin="0,0,250,0" VerticalAlignment="Center" Width="150" Click="Return_Click" Height="48" FontSize="18" HorizontalAlignment="Center"/>
+                                <Button x:Name="CustomModeFinallyNext" Content="下一步" Style="{StaticResource ButtonPrimary}" Margin="200,0,0,0" VerticalAlignment="Center" Width="150" Click="CustomModeFinallyNext_Click" Height="48" FontSize="18" HorizontalAlignment="Center"/>
                             </Grid>
                         </StackPanel>
                     </ScrollViewer>
-                    
                 </Grid>
             </TabItem>
         </TabControl>
+        <Grid x:Name="SelectTerminalGrid" Visibility="Collapsed">
+            <Border Grid.Row="1" Style="{StaticResource MagicBorder}" Margin="10" VerticalAlignment="Stretch">
+                <Grid Grid.Column="0">
+                    <Grid.RowDefinitions>
+                        <RowDefinition Height="35"/>
+                        <RowDefinition/>
+                        <RowDefinition/>
+                        <RowDefinition Height="50"/>
+                    </Grid.RowDefinitions>
+                    <Label Grid.Row="0" Content="请选择一个终端模式以继续：" Style="{StaticResource BorderTitle}" Margin="10,10,3,3"/>
+                    <Grid Grid.Row="1">
+                        <Grid.ColumnDefinitions>
+                            <ColumnDefinition/>
+                            <ColumnDefinition Width="Auto"/>
+                        </Grid.ColumnDefinitions>
+                        <StackPanel Grid.Column="0" VerticalAlignment="Center">
+                            <RadioButton x:Name="TraditionModeBtn" Content="传统模式（适合小白）" Foreground="{DynamicResource DarkPrimaryBrush}" FontSize="18" VerticalAlignment="Center" HorizontalAlignment="Left" Margin="10" IsChecked="True" Checked="TraditionModeBtn_Checked"/>
+                            <TextBlock Text="传统模式：UI美观，操作简单，稳定性强。但没有指令补全和回溯功能，没有一些终端特性。PS：该模式有浅色和暗色两种主题。" Foreground="{DynamicResource PrimaryTextBrush}" FontSize="16" VerticalAlignment="Center" TextWrapping="Wrap" Margin="10"/>
+                        </StackPanel>
+                        <Image Grid.Column="1" Source="/images/TraditionTerm.png" Margin="10" HorizontalAlignment="Right" MaxWidth="350"/>
+                    </Grid>
+                    <Grid Grid.Row="2">
+                        <Grid.ColumnDefinitions>
+                            <ColumnDefinition/>
+                            <ColumnDefinition Width="Auto"/>
+                        </Grid.ColumnDefinitions>
+                        <StackPanel Grid.Column="0" VerticalAlignment="Center">
+                            <RadioButton x:Name="ConptyModeBtn" Content="伪终端模式（适合老手）" Foreground="{DynamicResource DarkPrimaryBrush}" FontSize="18" VerticalAlignment="Center" HorizontalAlignment="Left" Margin="10" Checked="ConptyModeBtn_Checked"/>
+                            <TextBlock Text="伪终端（ConPty）模式：终端式UI，有Tab键指令补全和历史指令回溯功能，但稳定性和兼容性不强，可能会出现无法输入指令的问题。" Foreground="{DynamicResource PrimaryTextBrush}" FontSize="16" VerticalAlignment="Center" TextWrapping="Wrap" Margin="10"/>
+                        </StackPanel>
+                        <Image Grid.Column="1" Source="/images/ConPtyTerm.png" Margin="10" HorizontalAlignment="Right" MaxWidth="350"/>
+                    </Grid>
+                    <Grid Grid.Row="3"  VerticalAlignment="Bottom">
+                        <Button Content="上一步" Width="150" Click="Return_Click" Height="45" FontSize="18" Margin="0,0,250,0"/>
+                        <Button Content="完成" Style="{StaticResource ButtonPrimary}" Width="150" Click="DoneBtn_Click" Height="45" FontSize="18" Margin="250,0,0,0"/>
+                    </Grid>
+                </Grid>
+            </Border>
+        </Grid>
     </Grid>
 </Page>

@@ -3,13 +3,23 @@
         xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
         xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
         xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+        xmlns:hc="https://handyorg.github.io/handycontrol"
         xmlns:term="clr-namespace:ConPtyTermEmulatorLib;assembly=ConPtyTermEmulatorLib"
         xmlns:local="clr-namespace:MSL.forms"
         mc:Ignorable="d" WindowStartupLocation="CenterOwner" WindowStyle="None" ResizeMode="NoResize" ShowInTaskbar="False"
         Title="ConptyWindow" Height="400" Width="700" Background="{DynamicResource BackgroundBrush}"
-        MinHeight="400" MinWidth="700" SizeChanged="Window_SizeChanged">
+        MinHeight="400" MinWidth="700" Activated="Window_Activated" Deactivated="Window_Deactivated">
     <Grid>
-        <term:BasicTerminalControl x:Name="ConptyConsole" Margin="0,0,0,40" Theme="{Binding Theme, Mode=OneWay}" LogConPTYOutput="True" Win32InputMode="True" InputCapture="TabKey,DirectionKeys" >
+        <Popup x:Name="PopUp" IsOpen="True" AllowsTransparency="True" Placement="Relative"
+               Width="{Binding ActualWidth, RelativeSource={RelativeSource AncestorType=Window}}" 
+               Height="{Binding ActualHeight, RelativeSource={RelativeSource AncestorType=Window}}">
+            <ScrollViewer VerticalScrollBarVisibility="Hidden" HorizontalAlignment="Stretch" VerticalAlignment="Stretch">
+                <ScrollViewer Grid.Column="1" VerticalScrollBarVisibility="Hidden" HorizontalAlignment="Right" VerticalAlignment="Top">
+                    <StackPanel x:Name="GrowlPanel" hc:Growl.GrowlParent="True" VerticalAlignment="Top" Margin="0,10,10,10" />
+                </ScrollViewer>
+            </ScrollViewer>
+        </Popup>
+        <term:BasicTerminalControl x:Name="ConptyConsole" Margin="0,0,0,40" LogConPTYOutput="True" Win32InputMode="True" InputCapture="TabKey,DirectionKeys" >
             <term:BasicTerminalControl.Resources>
                 <Style TargetType="ScrollBar" BasedOn="{StaticResource {x:Type ScrollBar}}">
                     <Setter Property="Opacity" Value="0.7"/>
@@ -18,10 +28,11 @@
         </term:BasicTerminalControl>
         <StackPanel Orientation="Horizontal" HorizontalAlignment="Left" VerticalAlignment="Bottom"  >
             <Button x:Name="Help" Content="帮助" Margin="5" Click="Help_Click"/>
-            <TextBlock Text="服务器 当前状态：" FontSize="14" Foreground="{DynamicResource PrimaryTextBrush}" VerticalAlignment="Center" Margin="5"/>
-            <TextBlock x:Name="ServerStatus"  Text="已关服" FontSize="14" Foreground="{DynamicResource DarkPrimaryBrush}" VerticalAlignment="Center"/>
+            <TextBlock Text="提示：输入指令请不要加“/”" FontSize="14" Foreground="{DynamicResource PrimaryTextBrush}" VerticalAlignment="Center" Margin="5"/>
         </StackPanel>
         <StackPanel Orientation="Horizontal" HorizontalAlignment="Right" VerticalAlignment="Bottom"  >
+            <TextBlock Text="服务器状态：" FontSize="14" Foreground="{DynamicResource PrimaryTextBrush}" VerticalAlignment="Center" Margin="5,5,0,5"/>
+            <TextBlock x:Name="ServerStatus"  Text="已关服" FontSize="14" Foreground="{DynamicResource DarkPrimaryBrush}" VerticalAlignment="Center" Margin="0,5,5,5"/>
             <Button x:Name="ControlServer" Content="开服" Margin="5"/>
             <Button x:Name="HideBtn" Content="隐藏终端" Margin="5" />
         </StackPanel>

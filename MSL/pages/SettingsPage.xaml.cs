@@ -44,6 +44,10 @@ namespace MSL.pages
                 {
                     notifyIconbtn.Content = "托盘图标:打开";
                 }
+                if (jsonObject["mslTips"] != null && (bool)jsonObject["mslTips"] == false)
+                {
+                    MSLTips.Content = "MSL提示:关闭";
+                }
                 if (jsonObject["autoRunApp"] != null && (bool)jsonObject["autoRunApp"] == true)
                 {
                     autoRunApp.IsChecked = true;

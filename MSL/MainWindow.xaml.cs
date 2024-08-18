@@ -33,7 +33,8 @@ namespace MSL
             new FrpcList(),
             new OnlinePage(),
             new SettingsPage(),
-            new About()
+            new About(),
+            new CreateServer()
         };
         public static event DeleControl AutoOpenServer;
         public static string serverLink = null;
@@ -695,7 +696,7 @@ namespace MSL
         private void GotoCreatePage()
         {
             SideMenu.SelectedIndex = 1;
-            frame.Content = new CreateServer();
+            frame.Content = Pages[6];
         }
 
         private void GotoListPage()

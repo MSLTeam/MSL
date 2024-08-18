@@ -168,14 +168,6 @@ namespace ConPtyTermEmulatorLib
         {
             if (ConPTYTerm == null)
                 return;
-            /*
-            if (ConPTYTerm.TermProcIsStarted)
-            {
-                //ConPTYTerm.Resize(Terminal.Columns, Terminal.Rows);
-                Term_TermReady(ConPTYTerm, null);
-                return;
-            }
-            */
             ConPTYTerm.TermReady += Term_TermReady;
             this.Dispatcher.Invoke(() =>
             {
@@ -195,7 +187,6 @@ namespace ConPtyTermEmulatorLib
                 ConPTYTerm.StopTerm();
             }
             DisconnectConPTYTerm();
-            //GC.Collect();
             ConPTYTerm = new();
             StartTerm();
         }
