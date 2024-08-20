@@ -899,9 +899,9 @@ namespace MSL
                 ShowConptyDialog();
                 conptyWindow.Width = this.ActualWidth - 100;
                 conptyWindow.Height = this.ActualHeight - 100;
-                UpdateChildWindowPosition();
                 conptyWindow.Show();
                 conptyWindow.Visibility = Visibility.Visible;
+                UpdateChildWindowPosition();
                 conptyWindow.ConptyConsole.Focus();
             }
         }

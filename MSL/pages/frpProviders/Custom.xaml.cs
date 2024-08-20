@@ -92,7 +92,7 @@ namespace MSL.pages.frpProviders
                 {
                     //文件路径
                     string filePath = openFileDialog.FileName;
-                    File.Copy(filePath, @"MSL/frp/frpc_custom.exe");
+                    File.Copy(filePath, @"MSL/frp/frpc_custom.exe", true);
                     JObject keyValues = new JObject()
                     {
                         ["frpcServer"] = "-2",

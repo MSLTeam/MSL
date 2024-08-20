@@ -150,7 +150,7 @@ namespace MSL.pages
             {
                 if (noticeLabText == "")
                 {
-                    noticeLabText = "获取公告失败！请检查网络连接是否正常或联系作者进行解决！\n" + ex.Message;
+                    noticeLabText = "获取公告失败！可能有以下原因：\n1.网络连接异常\n2.未安装.Net Framework 4.7.2运行库\n3.软件Bug，请联系作者进行解决\n错误信息：" + ex.Message;
                 }
             }
 
