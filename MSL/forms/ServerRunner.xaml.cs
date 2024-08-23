@@ -3446,16 +3446,17 @@ namespace MSL
         ////////这里是更多功能界面
 
         //获取ipv6地址
-        private void GetIPV6_Click(object sender, RoutedEventArgs e)
+        private async void GetIPV6_Click(object sender, RoutedEventArgs e)
         {
             string ipv6 = "";
             HttpListener listener = null;
             try
             {
-                ipv6 = HttpService.Get("", "https://6.ipw.cn", 3);
+                ipv6 = (string)await HttpService.GetContentAsync("https://6.ipw.cn");
                 Clipboard.Clear();
                 Clipboard.SetText(ipv6);
-
+                Shows.ShowMsgDialog(this, $"您的IPV6公网地址是：{ipv6}\n已经帮您复制到剪贴板啦！\n注意：IPV6地址格式是：[IP]:端口\n若无法使用IPV6连接，请检查：\n-连接方是否有IPV6地址\n-防火墙是否拦截", "成功获取IPV6公网地址！");
+                /*
                 //监听到21102端口
                 listener = new HttpListener();
                 listener.Prefixes.Add($"http://*:{21102}/");
@@ -3497,6 +3498,7 @@ namespace MSL
                 {
                     Shows.ShowMsgDialog(this, $"您的IPV6公网地址是：{ipv6}\n但是您的IPV6地址目前不能被访问！\n请检查：\n-您是否放行防火墙（包含电脑，路由器防火墙）\n-路由器是否使用桥接模式（若使用NAT，IPV6地址将不是公网）\n错误信息：{emsg}", "成功获取IPV6公网地址但测试连通性失败！");
                 }
+                */
 
             }
             catch (Exception ex)
@@ -3509,6 +3511,7 @@ namespace MSL
                 {
                     Shows.ShowMsgDialog(this, $"获取到了IPv6地址:{ipv6}，但是公网连接测试失败\n请检查：\n-您是否放行防火墙（包含电脑，路由器防火墙）\n-路由器是否使用桥接模式（若使用NAT，IPV6地址将不是公网）\n错误信息：{ex.Message}", "测试连接失败！");
                 }
+                MessageBox.Show(ex.ToString());
             }
             finally
             {
@@ -3519,6 +3522,7 @@ namespace MSL
                     listener.Close();
                 }
             }
+                
         }
 
         private void autostartServer_Click(object sender, RoutedEventArgs e)
