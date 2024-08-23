@@ -8,17 +8,8 @@
         xmlns:local="clr-namespace:MSL.forms"
         mc:Ignorable="d" WindowStartupLocation="CenterOwner" WindowStyle="None" ResizeMode="NoResize" ShowInTaskbar="False"
         Title="ConptyWindow" Height="400" Width="700" Background="{DynamicResource BackgroundBrush}"
-        MinHeight="400" MinWidth="700" Activated="Window_Activated" Deactivated="Window_Deactivated">
+        MinHeight="400" MinWidth="700">
     <Grid>
-        <Popup x:Name="PopUp" IsOpen="True" AllowsTransparency="True" Placement="Relative"
-               Width="{Binding ActualWidth, RelativeSource={RelativeSource AncestorType=Window}}" 
-               Height="{Binding ActualHeight, RelativeSource={RelativeSource AncestorType=Window}}">
-            <ScrollViewer VerticalScrollBarVisibility="Hidden" HorizontalAlignment="Stretch" VerticalAlignment="Stretch">
-                <ScrollViewer Grid.Column="1" VerticalScrollBarVisibility="Hidden" HorizontalAlignment="Right" VerticalAlignment="Top">
-                    <StackPanel x:Name="GrowlPanel" hc:Growl.GrowlParent="True" VerticalAlignment="Top" Margin="0,10,10,10" />
-                </ScrollViewer>
-            </ScrollViewer>
-        </Popup>
         <term:BasicTerminalControl x:Name="ConptyConsole" Margin="0,0,0,40" LogConPTYOutput="True" Win32InputMode="True" InputCapture="TabKey,DirectionKeys" >
             <term:BasicTerminalControl.Resources>
                 <Style TargetType="ScrollBar" BasedOn="{StaticResource {x:Type ScrollBar}}">

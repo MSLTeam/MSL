@@ -682,6 +682,15 @@
                 </Path.Data>
             </Path>
         </Button>
+        <Popup x:Name="ConptyPopUp" IsOpen="False" AllowsTransparency="True" Placement="Relative"
+       Width="{Binding ActualWidth, RelativeSource={RelativeSource AncestorType=Window}}" 
+       Height="{Binding ActualHeight, RelativeSource={RelativeSource AncestorType=Window}}">
+            <ScrollViewer VerticalScrollBarVisibility="Hidden" HorizontalAlignment="Stretch" VerticalAlignment="Stretch">
+                <ScrollViewer Grid.Column="1" VerticalScrollBarVisibility="Hidden" HorizontalAlignment="Right" VerticalAlignment="Top">
+                    <StackPanel x:Name="ConptyGrowlPanel" hc:Growl.GrowlParent="True" VerticalAlignment="Top" Margin="0,10,10,10" />
+                </ScrollViewer>
+            </ScrollViewer>
+        </Popup>
         <ScrollViewer VerticalScrollBarVisibility="Hidden" HorizontalAlignment="Right" VerticalAlignment="Top">
             <StackPanel Name="GrowlPanel" hc:Growl.GrowlParent="True" VerticalAlignment="Top" Margin="0,10,10,10" />
         </ScrollViewer>

@@ -252,7 +252,7 @@ namespace ConPtyTermEmulatorLib
                         if (!CanOutLog)
                         {
                             CanOutLog = true;
-                            Thread.Sleep(100);
+                            Thread.Sleep(50);
                             continue;
                         }
                         tempBuffer.AsSpan(0, state.readChars).CopyTo(state.curBuffer);
