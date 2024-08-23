@@ -3446,13 +3446,13 @@ namespace MSL
         ////////这里是更多功能界面
 
         //获取ipv6地址
-        private void GetIPV6_Click(object sender, RoutedEventArgs e)
+        private async void GetIPV6_Click(object sender, RoutedEventArgs e)
         {
             string ipv6 = "";
             HttpListener listener = null;
             try
             {
-                ipv6 = HttpService.Get("", "https://6.ipw.cn", 2);
+                ipv6 = (string)await HttpService.GetContentAsync("https://6.ipw.cn");
                 Clipboard.Clear();
                 Clipboard.SetText(ipv6);
                 Shows.ShowMsgDialog(this, $"您的IPV6公网地址是：{ipv6}\n已经帮您复制到剪贴板啦！\n注意：IPV6地址格式是：[IP]:端口\n若无法使用IPV6连接，请检查：\n-连接方是否有IPV6地址\n-防火墙是否拦截", "成功获取IPV6公网地址！");
