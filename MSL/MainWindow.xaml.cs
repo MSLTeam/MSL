@@ -521,16 +521,19 @@ namespace MSL
                         //Logger.LogInfo("自动更新功能已打开，更新新版本……");
                         UpdateApp(_version);
                     }
-                    if (await Shows.ShowMsgDialogAsync(this, LanguageManager.Instance["MainWindow_GrowlMsg_UpdateInfo1"] + _version + LanguageManager.Instance["MainWindow_GrowlMsg_UpdateInfo2"] + updatelog, LanguageManager.Instance["MainWindow_GrowlMsg_Update"], true))
+                    await Dispatcher.Invoke(async() =>
                     {
-                        //Logger.LogInfo("更新新版本……");
-                        UpdateApp(_version);
-                    }
-                    else
-                    {
-                        //Logger.LogInfo("用户拒绝更新！");
-                        Growl.Error(LanguageManager.Instance["MainWindow_GrowlMsg_RefuseUpdate"]);
-                    }
+                        if (await Shows.ShowMsgDialogAsync(this, LanguageManager.Instance["MainWindow_GrowlMsg_UpdateInfo1"] + _version + LanguageManager.Instance["MainWindow_GrowlMsg_UpdateInfo2"] + updatelog, LanguageManager.Instance["MainWindow_GrowlMsg_Update"], true))
+                        {
+                            //Logger.LogInfo("更新新版本……");
+                            UpdateApp(_version);
+                        }
+                        else
+                        {
+                            //Logger.LogInfo("用户拒绝更新！");
+                            Growl.Error(LanguageManager.Instance["MainWindow_GrowlMsg_RefuseUpdate"]);
+                        }
+                    });
                 }
                 else if (newVersion < version)
                 {
