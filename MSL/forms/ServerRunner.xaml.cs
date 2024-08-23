@@ -3448,6 +3448,8 @@ namespace MSL
         //获取ipv6地址
         private async void GetIPV6_Click(object sender, RoutedEventArgs e)
         {
+            GetIPV6.IsEnabled = false;
+            Growl.Info("获取中，请稍后……");
             string ipv6 = "";
             //HttpListener listener = null;
             try
@@ -3513,17 +3515,18 @@ namespace MSL
                 }
                 MessageBox.Show(ex.ToString());
             }
-            /*
             finally
             {
+                /*
                 //// 测试完成后关闭监听
                 if (listener != null)
                 {
                     listener.Stop();
                     listener.Close();
                 }
+                */
+                GetIPV6.IsEnabled = true;
             }
-            */
         }
 
         private void autostartServer_Click(object sender, RoutedEventArgs e)
