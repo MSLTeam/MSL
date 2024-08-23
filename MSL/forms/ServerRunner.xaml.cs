@@ -3449,7 +3449,7 @@ namespace MSL
         private async void GetIPV6_Click(object sender, RoutedEventArgs e)
         {
             string ipv6 = "";
-            HttpListener listener = null;
+            //HttpListener listener = null;
             try
             {
                 ipv6 = (string)await HttpService.GetContentAsync("https://6.ipw.cn");
@@ -3513,6 +3513,7 @@ namespace MSL
                 }
                 MessageBox.Show(ex.ToString());
             }
+            /*
             finally
             {
                 //// 测试完成后关闭监听
@@ -3522,7 +3523,7 @@ namespace MSL
                     listener.Close();
                 }
             }
-                
+            */
         }
 
         private void autostartServer_Click(object sender, RoutedEventArgs e)
