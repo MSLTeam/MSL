@@ -1681,7 +1681,11 @@ namespace MSL
                 {
                     a = a.Substring(a.IndexOf(" ") + 1);
                 }
-                serverPlayerList.Items.Add(a);
+                if (!serverPlayerList.Items.Contains(a))
+                {
+                    serverPlayerList.Items.Add(a);
+                }
+
             }
             else if (msg.Contains("lost connection:"))
             {
