@@ -6,6 +6,7 @@
     <Version>1.0.18</Version>
 	  <LangVersion>12.0</LangVersion>
 	  <PlatformTarget>x64</PlatformTarget>
+	  <Platforms>AnyCPU;x64</Platforms>
   </PropertyGroup>
 
   <ItemGroup>

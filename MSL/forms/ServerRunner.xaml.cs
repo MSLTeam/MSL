@@ -476,6 +476,11 @@ namespace MSL
         }
 
         #region 仪表盘
+
+        //////////////////
+        /////这里是仪表盘
+        //////////////////
+
         private async void solveProblemBtn_Click(object sender, RoutedEventArgs e)
         {
             bool dialogRet = await Shows.ShowMsgDialogAsync(this, "分析报告将在服务器关闭后生成！若使用后还是无法解决问题，请尝试进Q群询问（附带日志或日志链接，日志链接可以点击分享日志按钮生成）：\n一群：1145888872  二群：234477679", "警告", true, "取消");
@@ -560,10 +565,7 @@ namespace MSL
                     return;
                 }
             }
-            // 返回IP地址，如果没有找到公网IP，则返回"none"
-            //return string.IsNullOrEmpty(ipAddress) ? "none" : ipAddress;
             await Shows.ShowMsgDialogAsync(this, "服务器开启后，通常远程的小伙伴是无法进入的，您需要进行内网映射才可让他人进入。开服器内置有免费的内网映射，您可点击主界面左侧的“内网映射”按钮查看详情并进行配置。", "注意", false);
-            //GotoFrpcEvent();
         }
 
         private async void systemInfoBtn_Click(object sender, RoutedEventArgs e)
@@ -573,8 +575,7 @@ namespace MSL
                 Growl.Info("加载相关信息中，请稍等……");
                 getServerInfo = true;
                 systemInfoBtn.Content = "显示占用:开";
-                Thread thread = new Thread(GetSystemInfo);
-                thread.Start();
+                _ = Task.Run(GetSystemInfo);
             }
             else
             {
@@ -587,58 +588,30 @@ namespace MSL
 
         private void GetSystemInfo()
         {
-            while (getServerInfo == true)
+            var cpuCounter = new PerformanceCounter("Processor Information", "% Processor Utility", "_Total");
+            var ramCounter = new PerformanceCounter("Memory", "Available MBytes");
+
+            while (getServerInfo)
             {
                 try
                 {
-                    try
-                    {
-                        var cpuCounter = new PerformanceCounter("Processor Information", "% Processor Utility", "_Total");
-                        cpuCounter.NextValue();
-                        float cpuUsage = cpuCounter.NextValue();
-                        if ((int)cpuUsage <= 100)
-                        {
-                            Dispatcher.Invoke(() =>
-                            {
-                                cpuInfoLab.Content = "CPU:" + cpuUsage.ToString("f2") + "%";
-                                cpuInfoBar.Value = (int)cpuUsage;
-                            });
-                        }
-                    }
-                    catch
+                    float cpuUsage = cpuCounter.NextValue();
+                    if ((int)cpuUsage <= 100)
                     {
                         Dispatcher.Invoke(() =>
                         {
-                            cpuInfoLab.Content = "无法获取CPU信息";
+                            cpuInfoLab.Content = $"CPU: {cpuUsage:f2}%";
+                            cpuInfoBar.Value = (int)cpuUsage;
                         });
                     }
-                    var ramCounter = new PerformanceCounter("Memory", "Available MBytes");
 
                     float ramAvailable = ramCounter.NextValue() / 1024;
                     double allMemory = MainWindow.PhisicalMemory / 1024.0 / 1024.0 / 1024.0;
+
                     Dispatcher.Invoke(() =>
                     {
-                        memoryInfoLab.Content = "总内存:" + allMemory.ToString("f2") + "G\n" + "已使用:" + (allMemory - ramAvailable).ToString("f2") + "G\n" + "可使用:" + ramAvailable.ToString("f2") + "G";
-                        double temp = (allMemory - ramAvailable) / allMemory;
-                        double _temp = ramAvailable / allMemory;
-                        memoryInfoBar.Value = temp * 100;
-                        availableMemoryInfoBar.Value = _temp * 100;
-                        usedMemoryLab.Content = "系统已用内存:" + string.Format("{0:P}", temp);
-                        availableMemoryInfoLab.Content = "系统空闲内存:" + string.Format("{0:P}", _temp);
-
-                        if (outlog.Document.Blocks.LastBlock != null)
-                        {
-                            if (previewOutlog.LineCount >= 25)
-                            {
-                                previewOutlog.Clear();
-                            }
-                            TextRange textRange = new TextRange(outlog.Document.Blocks.LastBlock.ContentStart, outlog.Document.Blocks.LastBlock.ContentEnd);
-                            if (!previewOutlog.Text.Contains(textRange.Text))
-                            {
-                                previewOutlog.Text += textRange.Text + "\n";
-                                previewOutlog.ScrollToEnd();
-                            }
-                        }
+                        UpdateMemoryInfo(ramAvailable, allMemory);
+                        UpdateLogPreview();
                     });
                 }
                 catch
@@ -654,6 +627,34 @@ namespace MSL
                 Thread.Sleep(3000);
             }
         }
+
+        private void UpdateMemoryInfo(float ramAvailable, double allMemory)
+        {
+            memoryInfoLab.Content = $"总内存: {allMemory:f2}G\n已使用: {allMemory - ramAvailable:f2}G\n可使用: {ramAvailable:f2}G";
+            double usedMemoryPercentage = (allMemory - ramAvailable) / allMemory;
+            memoryInfoBar.Value = usedMemoryPercentage * 100;
+            availableMemoryInfoBar.Value = (ramAvailable / allMemory) * 100;
+            usedMemoryLab.Content = $"系统已用内存: {usedMemoryPercentage:P}";
+            availableMemoryInfoLab.Content = $"系统空闲内存: {(ramAvailable / allMemory):P}";
+        }
+
+        private void UpdateLogPreview()
+        {
+            if (outlog.Document.Blocks.LastBlock != null && previewOutlog.LineCount < 25)
+            {
+                TextRange textRange = new TextRange(outlog.Document.Blocks.LastBlock.ContentStart, outlog.Document.Blocks.LastBlock.ContentEnd);
+                if (!previewOutlog.Text.Contains(textRange.Text))
+                {
+                    previewOutlog.Text += textRange.Text + "\n";
+                    previewOutlog.ScrollToEnd();
+                }
+            }
+            else
+            {
+                previewOutlog.Clear();
+            }
+        }
+
         private void playerInfoBtn_Click(object sender, RoutedEventArgs e)
         {
             if (playerInfoBtn.Content.ToString() == "记录玩家:关")
@@ -821,11 +822,8 @@ namespace MSL
             {
                 return;
             }
-            conptyWindow.PopUp.HorizontalOffset += 1;
-            conptyWindow.PopUp.HorizontalOffset -= 1;
-            Growl.SetGrowlParent(GrowlPanel, false);
-            Growl.SetGrowlParent(conptyWindow.GrowlPanel, true);
-            conptyWindow.PopUp.IsOpen = true;
+            ConptyPopUp.HorizontalOffset += 1;
+            ConptyPopUp.HorizontalOffset -= 1;
         }
 
         private void HideConptyWindow(object sender, RoutedEventArgs e)
@@ -840,6 +838,9 @@ namespace MSL
             {
                 this?.Focus();
                 conptyDialog.Close();
+                ConptyPopUp.IsOpen = false;
+                Growl.SetGrowlParent(ConptyGrowlPanel, false);
+                Growl.SetGrowlParent(GrowlPanel, true);
             }
         }
 
@@ -864,6 +865,7 @@ namespace MSL
                     conptyWindow.ControlServer.Content = "开服";
                     ChangeControlsState(false);
                 }
+                getServerInfoLine = 101;
             }
             else
             {
@@ -912,6 +914,9 @@ namespace MSL
             {
                 this?.Focus();
                 conptyDialog = Dialog.Show(null);
+                ConptyPopUp.IsOpen = true;
+                Growl.SetGrowlParent(GrowlPanel, false);
+                Growl.SetGrowlParent(ConptyGrowlPanel, true);
             }
         }
 
@@ -928,6 +933,8 @@ namespace MSL
                         conptyWindow.HideBtn.Click += HideConptyWindow;
                         conptyWindow.ControlServer.Click += ConptyWindowControlServer;
                         conptyWindow.ControlServer.MouseDoubleClick += KillConptyServer;
+                        conptyWindow.Activated += Window_Activated;
+                        conptyWindow.Deactivated += Window_Deactivated;
                         conptyWindow.serverbase = Rserverbase;
                         conptyWindow.java = Rserverjava;
                         conptyWindow.launcharg = StartFileArg;
@@ -1131,7 +1138,7 @@ namespace MSL
             }
         }
 
-        #region 日志显示功能、彩色日志实现
+        #region 日志显示功能、彩色日志
         private Brush tempbrush = Brushes.Green;
         private void PrintLog(string msg, Brush color)
         {
@@ -1329,10 +1336,7 @@ namespace MSL
         }
         #endregion
 
-        private bool solveProblemSystem;
-        private bool outlogEncodingAsk = true;
         private string tempLogs;
-
         private void ProcessOutputEvent(string msg)
         {
             //MessageBox.Show(msg);
@@ -1340,45 +1344,62 @@ namespace MSL
             {
                 tempLogs += msg;
                 //MessageBox.Show(tempLogs);
-                ProcessOutput(tempLogs);
+                Dispatcher.Invoke(() =>
+                {
+                    ProcessOutput(tempLogs);
+                });
                 tempLogs = null;
             }
             else
             {
                 if (tempLogs != null)
                 {
-                    ProcessOutput(tempLogs);
+                    Dispatcher.Invoke(() =>
+                    {
+                        ProcessOutput(tempLogs);
+                    });
                 }
                 tempLogs = msg;
             }
         }
 
-
         private void ProcessOutput(string msg)
         {
-            Dispatcher.Invoke(() =>
+            Paragraph p = new Paragraph();
+            msg = ProcessOutLogAnsiChar(msg);
+            //MessageBox.Show(msg);
+            if (msg.Contains("\n"))
             {
-                msg = ProcessOutLogAnsiChar(msg);
-                //MessageBox.Show(msg);
-                if (msg.Contains("\n"))
+                if (msg.Contains("\r"))
                 {
-                    if (msg.Contains("\r"))
-                    {
-                        msg = msg.Replace("\r", string.Empty);
-                    }
-                    string[] strings = msg.Split('\n');
-                    foreach (string s in strings)
-                    {
-                        LogHandleInfo(s);
-                    }
+                    msg = msg.Replace("\r", string.Empty);
                 }
-                else
+                string[] strings = msg.Split('\n');
+                foreach (string s in strings)
                 {
-                    LogHandleInfo(msg);
+                    LogHandleInfo(s);
+                    Run run = new Run(s)
+                    {
+                        Foreground = Brushes.Black
+                    };
+                    p.Inlines.Add(run);
                 }
-            });
+            }
+            else
+            {
+                LogHandleInfo(msg);
+                Run run = new Run(msg)
+                {
+                    Foreground = Brushes.Black
+                };
+                p.Inlines.Add(run);
+            }
+            outlog.Document.Blocks.Clear();
+            outlog.Document.Blocks.Add(p);
         }
 
+        private bool solveProblemSystem;
+        private bool outlogEncodingAsk = true;
         private void ReadStdOutputAction(string msg)//日志回显实现
         {
             if (solveProblemSystem)
@@ -1470,10 +1491,6 @@ namespace MSL
                 }
                 else if (msg.Contains("WARN"))
                 {
-                    if (msg.Contains("Advanced terminal features are not available in this environment"))
-                    {
-                        return;
-                    }
                     PrintLog(msg, Brushes.Orange);
                     LogHandleWarn(msg);
                 }
@@ -1820,54 +1837,11 @@ namespace MSL
             }
             else if (msg.Contains("Mod") && msg.Contains("requires"))
             {
-                string _msg = msg;
-                if (msg.Contains("&"))
-                {
-                    _msg = "";
-                    string[] splitMsg = msg.Split('&');
-                    foreach (var everyMsg in splitMsg)
-                    {
-                        if (everyMsg == string.Empty)
-                        {
-                            continue;
-                        }
-                        string text = everyMsg.Substring(1);
-                        _msg += text;
-                    }
-                }
-                else if (msg.Contains("§"))
-                {
-                    _msg = "";
-                    string[] splitMsg = msg.Split('§');
-                    foreach (var everyMsg in splitMsg)
-                    {
-                        if (everyMsg == string.Empty)
-                        {
-                            continue;
-                        }
-                        string text = everyMsg.Substring(1);
-                        _msg += text;
-                    }
-                }
-                else if (msg.Contains("\x1B"))
-                {
-                    _msg = "";
-                    string[] splitMsg = msg.Split('\x1B');
-                    foreach (var everyMsg in splitMsg)
-                    {
-                        if (everyMsg == string.Empty)
-                        {
-                            continue;
-                        }
-                        string text = everyMsg.Substring(everyMsg.IndexOf("m") + 1);
-                        _msg += text;
-                    }
-                }
                 string modNamePattern = @"Mod (\w+) requires";
                 string preModPattern = @"requires (\w+ \d+\.\d+\.\d+)";
 
-                Match modNameMatch = Regex.Match(_msg, modNamePattern);
-                Match preModMatch = Regex.Match(_msg, preModPattern);
+                Match modNameMatch = Regex.Match(msg, modNamePattern);
+                Match preModMatch = Regex.Match(msg, preModPattern);
 
                 if (modNameMatch.Success && preModMatch.Success)
                 {
@@ -2144,6 +2118,7 @@ namespace MSL
                     Growl.Info("关服中，请耐心等待……\n双击按钮可强制关服（不建议）");
                     ServerProcess.StandardInput.WriteLine("stop");
                 }
+                getServerInfoLine = 101;
             }
         }
 
@@ -4261,11 +4236,23 @@ namespace MSL
         #region window event
         private void Window_Activated(object sender, EventArgs e)
         {
+            if (conptyWindow != null && conptyDialog?.IsClosed == false)
+            {
+                ConptyPopUp.IsOpen = true;
+                Growl.SetGrowlParent(ConptyGrowlPanel, true);
+                return;
+            }
             Growl.SetGrowlParent(GrowlPanel, true);
         }
 
         private void Window_Deactivated(object sender, EventArgs e)
         {
+            if (conptyWindow != null && conptyDialog?.IsClosed == false)
+            {
+                ConptyPopUp.IsOpen = false;
+                Growl.SetGrowlParent(ConptyGrowlPanel, false);
+                return;
+            }
             Growl.SetGrowlParent(GrowlPanel, false);
         }
 
