@@ -5,6 +5,7 @@
              xmlns:d="http://schemas.microsoft.com/expression/blend/2008" 
              xmlns:local="clr-namespace:MSL.controls"
              xmlns:hc="https://handyorg.github.io/handycontrol"
+             xmlns:langs="clr-namespace:MSL.langs"
              mc:Ignorable="d" Template="{StaticResource UserControlTemplate}">
     <Border CornerRadius="10" Background="{DynamicResource RegionBrush}" BorderBrush="{DynamicResource BorderBrush}" BorderThickness="1">
         <Grid>
@@ -13,7 +14,7 @@
                 <RowDefinition Height="70"/>
             </Grid.RowDefinitions>
             <Grid Margin="25" Grid.Row="0">
-                <TextBlock Foreground="{DynamicResource PrimaryTextBrush}" Text="输入" FontSize="24" VerticalAlignment="Top" HorizontalAlignment="Left"/>
+                <TextBlock Foreground="{DynamicResource PrimaryTextBrush}" Text="{Binding [InputDialog_Title],Source={x:Static langs:LanguageManager.Instance}}" FontSize="24" VerticalAlignment="Top" HorizontalAlignment="Left"/>
                 <TextBlock x:Name="bodyText" Foreground="{DynamicResource PrimaryTextBrush}" Text="BodyText" TextWrapping="Wrap"  FontSize="14" HorizontalAlignment="Left" VerticalAlignment="Bottom" Margin="0,45,0,40"/>
                 <hc:PasswordBox x:Name="passBox" MinWidth="200" VerticalAlignment="Bottom" ShowEyeButton="True" KeyUp="passBox_KeyUp" />
                 <TextBox x:Name="textBox" MinWidth="200" VerticalAlignment="Bottom" KeyUp="textBox_KeyUp" />
@@ -24,8 +25,8 @@
                         <ColumnDefinition/>
                         <ColumnDefinition/>
                     </Grid.ColumnDefinitions>
-                    <Button x:Name="primaryBtn" Content="确定" Style="{StaticResource ButtonPrimary}" HorizontalAlignment="Stretch" Margin="25,20,5,10" FontSize="14" Click="primaryBtn_Click" Height="30"/>
-                    <Button x:Name="closeBtn" Content="取消" HorizontalAlignment="Stretch" Margin="5,20,25,10" FontSize="14" Click="closeBtn_Click" Grid.Column="1" Height="30"/>
+                    <Button x:Name="primaryBtn" Content="{Binding [_Done],Source={x:Static langs:LanguageManager.Instance}}" Style="{StaticResource ButtonPrimary}" HorizontalAlignment="Stretch" Margin="25,20,5,10" FontSize="14" Click="primaryBtn_Click" Height="30"/>
+                    <Button x:Name="closeBtn" Content="{Binding [Cancel],Source={x:Static langs:LanguageManager.Instance}}" HorizontalAlignment="Stretch" Margin="5,20,25,10" FontSize="14" Click="closeBtn_Click" Grid.Column="1" Height="30"/>
                 </Grid>
             </Border>
         </Grid>

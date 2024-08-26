@@ -1,4 +1,5 @@
-﻿using System;
+﻿using MSL.langs;
+using System;
 using System.Windows;
 using System.Windows.Controls;
 using System.Windows.Media.Animation;
@@ -25,6 +26,14 @@ namespace MSL.controls
             }
             else
             {
+                if (closeBtnContext == "否")
+                {
+                    closeBtnContext = LanguageManager.Instance["No"];
+                }
+                if (primaryBtnContext == "是")
+                {
+                    primaryBtnContext = LanguageManager.Instance["Yes"];
+                }
                 CloseBtn.Content = closeBtnContext;
                 PrimaryBtn.Content = primaryBtnContext;
             }

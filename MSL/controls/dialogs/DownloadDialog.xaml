@@ -4,15 +4,27 @@
         xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
         xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
         xmlns:hc="https://handyorg.github.io/handycontrol"
+        xmlns:langs="clr-namespace:MSL.langs"
         xmlns:local="clr-namespace:MSL"
         mc:Ignorable="d" Template="{StaticResource UserControlTemplate}" 
-        Height="100" Width="400">
+        Height="125" MinWidth="450" MaxWidth="650">
     <Border CornerRadius="10" Background="{DynamicResource RegionBrush}" BorderBrush="{DynamicResource BorderBrush}" BorderThickness="1">
-        <Grid>
-            <TextBlock x:Name="infolabel" Foreground="{DynamicResource PrimaryTextBrush}" HorizontalAlignment="Left" Margin="15,15,0,0" TextWrapping="Wrap" Text="加载中……" VerticalAlignment="Top"/>
-            <ProgressBar x:Name="pbar" Style="{StaticResource ProgressBarFlat}" Height="5" Margin="15,0,15,0" VerticalAlignment="Center" Background="#E5C8C8C8"/>
-            <Button x:Name="button1" Style="{StaticResource ButtonPrimary}" Content="取消" HorizontalAlignment="Right" Margin="0,0,15,10" VerticalAlignment="Bottom" Width="75" Click="button1_Click" FontSize="14" MouseDoubleClick="button1_MouseDoubleClick"/>
-            <TextBlock x:Name="taskinfo" Foreground="{DynamicResource PrimaryTextBrush}" Text="当前任务：" HorizontalAlignment="Left" Margin="15,0,0,15" VerticalAlignment="Bottom" FontSize="14"/>
+        <Grid Margin="15">
+            <Grid.RowDefinitions>
+                <RowDefinition Height="Auto"/>
+                <RowDefinition/>
+                <RowDefinition Height="Auto"/>
+            </Grid.RowDefinitions>
+            <TextBlock Grid.Row="0" x:Name="taskinfo" Foreground="{DynamicResource PrimaryTextBrush}" Text="当前任务" HorizontalAlignment="Left" VerticalAlignment="Top" FontWeight="Bold" FontSize="18"/>
+            <TextBlock Grid.Row="1" x:Name="infolabel" Foreground="{DynamicResource PrimaryTextBrush}" VerticalAlignment="Center" HorizontalAlignment="Left" TextWrapping="Wrap" FontSize="14" Text="{Binding [Loading],Source={x:Static langs:LanguageManager.Instance}}"/>
+            <Grid Grid.Row="2">
+                <Grid.ColumnDefinitions>
+                    <ColumnDefinition/>
+                    <ColumnDefinition Width="Auto"/>
+                </Grid.ColumnDefinitions>
+                <ProgressBar Grid.Column="0" x:Name="pbar" Style="{StaticResource ProgressBarFlat}" Height="7" VerticalAlignment="Center" Margin="0,0,10,0"/>
+                <Button Grid.Column="1" x:Name="button1" Style="{StaticResource ButtonPrimary}" Content="{Binding [Cancel],Source={x:Static langs:LanguageManager.Instance}}" HorizontalAlignment="Right" VerticalAlignment="Bottom" MinWidth="80" Click="button1_Click" FontSize="14" MouseDoubleClick="button1_MouseDoubleClick"/>
+            </Grid>
         </Grid>
     </Border>
 </UserControl>

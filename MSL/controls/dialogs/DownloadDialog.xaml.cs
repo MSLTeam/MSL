@@ -1,4 +1,5 @@
 ﻿using Downloader;
+using MSL.langs;
 using System;
 using System.ComponentModel;
 using System.IO;
@@ -51,14 +52,17 @@ namespace MSL
             var downloadOpt = new DownloadConfiguration();
             if (headerMode == 0)
             {
-                string serverLink = MainWindow.serverLink;
-                if (serverLink.Contains("/"))
+                if (MainWindow.serverLink != null)
                 {
-                    serverLink = serverLink.Substring(0, serverLink.IndexOf("/"));
-                }
-                if (downloadurl.Contains(serverLink))
-                {
-                    downloadOpt.RequestConfiguration.UserAgent = "MSL Downloader/" + new Version(System.Reflection.Assembly.GetExecutingAssembly().GetName().Version.ToString());
+                    string serverLink = MainWindow.serverLink;
+                    if (serverLink.Contains("/"))
+                    {
+                        serverLink = serverLink.Substring(0, serverLink.IndexOf("/"));
+                    }
+                    if (downloadurl.Contains(serverLink))
+                    {
+                        downloadOpt.RequestConfiguration.UserAgent = "MSL Downloader/" + new Version(System.Reflection.Assembly.GetExecutingAssembly().GetName().Version.ToString());
+                    }
                 }
             }
             else if (headerMode == 2)
@@ -97,7 +101,7 @@ namespace MSL
         {
             Dispatcher.Invoke(() =>
             {
-                infolabel.Text = "获取下载地址……大小：" + e.TotalBytesToReceive / 1024 / 1024 + "MB";
+                infolabel.Text = string.Format(LanguageManager.Instance["DownloadDialog_OnDownloadStarted"], e.TotalBytesToReceive / 1024 / 1024);
                 // 初始化DispatcherTimer
                 updateUITimer = new DispatcherTimer
                 {
@@ -120,7 +124,7 @@ namespace MSL
             {
                 Dispatcher.Invoke(() =>
                 {
-                    infolabel.Text = "取消成功！";
+                    infolabel.Text = LanguageManager.Instance["DownloadDialog_DownloadCancel"];
                     try
                     {
                         File.Delete(downloadPath + "\\" + filename);
@@ -135,7 +139,7 @@ namespace MSL
                     _dialogReturn = 1;
                     Dispatcher.Invoke(() =>
                     {
-                        infolabel.Text = "下载完成！";
+                        infolabel.Text = LanguageManager.Instance["DownloadDialog_DownloadComplete"];
                         pbar.Value = 100;
                     });
                     if (!string.IsNullOrEmpty(expectedSha256))
@@ -147,8 +151,8 @@ namespace MSL
                             _dialogReturn = 3;
                             Dispatcher.Invoke(() =>
                             {
-                                button1.Content = "关闭";
-                                infolabel.Text = "校验完整性失败！请重新下载！";
+                                button1.Content = LanguageManager.Instance["Close"];
+                                infolabel.Text = LanguageManager.Instance["DownloadDialog_CheckIntegrityFailed"];
                                 try
                                 {
                                     File.Delete(downloadPath + "\\" + filename);
@@ -204,7 +208,7 @@ namespace MSL
                                     if (pbar != null)
                                     {
                                         pbar.Value = percent;
-                                        infolabel.Text = $"下载中，进度{percent}%";
+                                        infolabel.Text = string.Format(LanguageManager.Instance["DownloadDialog_Mode2_Downloading"], percent);
                                     }
                                 });
                             });
@@ -226,12 +230,12 @@ namespace MSL
                         if (_dialogReturn == 2 && File.Exists(Path.Combine(downloadPath, filename)))
                         {
                             File.Delete(Path.Combine(downloadPath, filename));
-                            infolabel.Text = "下载取消！";
+                            infolabel.Text = LanguageManager.Instance["DownloadDialog_DownloadCancel"];
                         }
                         else
                         {
                             _dialogReturn = 1;
-                            infolabel.Text = "下载完成！";
+                            infolabel.Text = LanguageManager.Instance["DownloadDialog_DownloadComplete"];
                         }
                     });
                 }
@@ -241,8 +245,8 @@ namespace MSL
                     // 异常处理
                     Dispatcher.Invoke(() =>
                     {
-                        button1.Content = "关闭";
-                        infolabel.Text = "下载失败！" + ex.Message;
+                        button1.Content = LanguageManager.Instance["Close"];
+                        infolabel.Text = LanguageManager.Instance["DownloadDialog_DownloadFailed"] + "\n" + ex.Message;
                     });
                 }
                 Thread.Sleep(1000);
@@ -266,7 +270,11 @@ namespace MSL
             // 更新UI的方法
             if (pbar != null && infolabel != null)
             {
-                infolabel.Text = $"已下载：{receivedBytes / 1024 / 1024}MB/{totalBytesToReceive / 1024 / 1024}MB 进度：{progressPercentage:f2}% 速度：{bytesPerSecondSpeed / 1024 / 1024:f2}MB/s";
+                infolabel.Text = string.Format(LanguageManager.Instance["DownloadDialog_Downloading"],
+                    receivedBytes / 1024 / 1024,
+                    totalBytesToReceive / 1024 / 1024,
+                    progressPercentage.ToString("F2"),
+                    (bytesPerSecondSpeed / 1024 / 1024).ToString("F2"));
                 pbar.Value = progressPercentage;
             }
         }
@@ -300,7 +308,7 @@ namespace MSL
 
         private void button1_Click(object sender, RoutedEventArgs e)
         {
-            if (button1.Content.ToString() == "关闭")
+            if (button1.Content.ToString() == LanguageManager.Instance["Close"])
             {
                 Close();
             }
@@ -313,7 +321,7 @@ namespace MSL
 
         private void button1_MouseDoubleClick(object sender, MouseButtonEventArgs e)
         {
-            if (button1.Content.ToString() == "关闭")
+            if (button1.Content.ToString() == LanguageManager.Instance["Close"])
             {
                 Close();
             }

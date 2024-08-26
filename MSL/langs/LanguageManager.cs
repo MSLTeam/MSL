@@ -1,9 +1,10 @@
-﻿using System;
+﻿using HandyControl.Tools;
+using System;
 using System.ComponentModel;
 using System.Globalization;
 using System.Resources;
 
-namespace MSL.i18n
+namespace MSL.langs
 {
     public class LanguageManager : INotifyPropertyChanged
     {
@@ -34,15 +35,15 @@ namespace MSL.i18n
             if (cultureInfo.Name == "zh-CN")
             {
                 CultureInfo _cultureInfo = new CultureInfo("");
+                ConfigHelper.Instance.SetLang(_cultureInfo.Name);
                 CultureInfo.CurrentCulture = _cultureInfo;
                 CultureInfo.CurrentUICulture = _cultureInfo;
-                HandyControl.Tools.ConfigHelper.Instance.SetLang(_cultureInfo.Name);
                 PropertyChanged?.Invoke(this, new PropertyChangedEventArgs("Item[]"));
                 return;
             }
+            ConfigHelper.Instance.SetLang(cultureInfo.Name);
             CultureInfo.CurrentCulture = cultureInfo;
             CultureInfo.CurrentUICulture = cultureInfo;
-            HandyControl.Tools.ConfigHelper.Instance.SetLang(cultureInfo.Name);
             PropertyChanged?.Invoke(this, new PropertyChangedEventArgs("Item[]"));
         }
 

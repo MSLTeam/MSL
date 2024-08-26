@@ -3,7 +3,7 @@
              xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
              xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006" 
              xmlns:d="http://schemas.microsoft.com/expression/blend/2008" 
-             xmlns:langs="clr-namespace:MSL.i18n"
+             xmlns:langs="clr-namespace:MSL.langs"
              xmlns:local="clr-namespace:MSL.controls"
              mc:Ignorable="d" Template="{StaticResource UserControlTemplate}">
     <Border CornerRadius="10" Background="{DynamicResource RegionBrush}" BorderBrush="{DynamicResource BorderBrush}" BorderThickness="1">
@@ -24,8 +24,8 @@
                         <ColumnDefinition/>
                         <ColumnDefinition/>
                     </Grid.ColumnDefinitions>
-                    <Button x:Name="PrimaryBtn" Content="{Binding [Dialog_Done], Source={x:Static langs:LanguageManager.Instance}}" Style="{StaticResource ButtonPrimary}" HorizontalAlignment="Stretch" Margin="25,20,5,10" FontSize="14" Click="PrimaryBtn_Click" Height="30"/>
-                    <Button x:Name="CloseBtn" Content="{Binding [Dialog_Done], Source={x:Static langs:LanguageManager.Instance}}" HorizontalAlignment="Stretch" Margin="5,20,25,10" FontSize="14" Click="CloseBtn_Click" Grid.Column="1" Height="30"/>
+                    <Button x:Name="PrimaryBtn" Content="{Binding [_OK], Source={x:Static langs:LanguageManager.Instance}}" Style="{StaticResource ButtonPrimary}" HorizontalAlignment="Stretch" Margin="25,20,5,10" FontSize="14" Click="PrimaryBtn_Click" Height="30"/>
+                    <Button x:Name="CloseBtn" Content="{Binding [_OK], Source={x:Static langs:LanguageManager.Instance}}" HorizontalAlignment="Stretch" Margin="5,20,25,10" FontSize="14" Click="CloseBtn_Click" Grid.Column="1" Height="30"/>
                 </Grid>
             </Border>
         </Grid>

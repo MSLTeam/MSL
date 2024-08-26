@@ -1,7 +1,7 @@
 ﻿using HandyControl.Controls;
 using HandyControl.Themes;
 using Microsoft.Win32;
-using MSL.i18n;
+using MSL.langs;
 using MSL.utils;
 using Newtonsoft.Json.Linq;
 using System;
@@ -42,11 +42,11 @@ namespace MSL.pages
                 JObject jsonObject = JObject.Parse(File.ReadAllText(@"MSL\config.json", Encoding.UTF8));
                 if (jsonObject["notifyIcon"] != null && (bool)jsonObject["notifyIcon"] == true)
                 {
-                    notifyIconbtn.Content = "托盘图标:打开";
+                    notifyIconbtn.Content = LanguageManager.Instance["Page_SettingsPage_CF_BF_NotifyIcon"] + LanguageManager.Instance["Opened"];
                 }
                 if (jsonObject["mslTips"] != null && (bool)jsonObject["mslTips"] == false)
                 {
-                    MSLTips.Content = "MSL提示:关闭";
+                    MSLTips.Content = LanguageManager.Instance["Page_SettingsPage_CF_BF_MSLTips"] + LanguageManager.Instance["Closed"];
                 }
                 if (jsonObject["autoRunApp"] != null && (bool)jsonObject["autoRunApp"] == true)
                 {
@@ -85,27 +85,19 @@ namespace MSL.pages
                     autoSetTheme.IsChecked = false;
                     darkTheme.IsEnabled = true;
                 }
-                if (MainWindow.isI18N == true)
+                if (jsonObject["lang"] != null)
                 {
-                    if (jsonObject["lang"] != null)
+                    int langCombo = 0;
+                    switch (jsonObject["lang"].ToString())
                     {
-                        int langCombo = 0;
-                        switch (jsonObject["lang"].ToString())
-                        {
-                            case "zh-CN":
-                                langCombo = 0;
-                                break;
-                            case "en-US":
-                                langCombo = 1;
-                                break;
-                        }
-                        ChangeLanguage.SelectedIndex = langCombo;
+                        case "zh-CN":
+                            langCombo = 0;
+                            break;
+                        case "en-US":
+                            langCombo = 1;
+                            break;
                     }
-                }
-                else
-                {
-                    ChangeLanguage.Visibility = Visibility.Collapsed;
-                    //ChangeLanguageBtn.Visibility = Visibility.Visible;//         i18入口
+                    ChangeLanguage.SelectedIndex = langCombo;
                 }
 
                 if (jsonObject["skin"] != null)
@@ -222,9 +214,9 @@ namespace MSL.pages
 
         private void notifyIconbtn_Click(object sender, RoutedEventArgs e)
         {
-            if (notifyIconbtn.Content.ToString() == "托盘图标:开启")
+            if (notifyIconbtn.Content.ToString().Contains(LanguageManager.Instance["Opened"]))
             {
-                notifyIconbtn.Content = "托盘图标:关闭";
+                notifyIconbtn.Content = LanguageManager.Instance["Page_SettingsPage_CF_BF_NotifyIcon"] + LanguageManager.Instance["Closed"];
                 C_NotifyIcon();
                 try
                 {
@@ -244,7 +236,7 @@ namespace MSL.pages
             }
             else
             {
-                notifyIconbtn.Content = "托盘图标:开启";
+                notifyIconbtn.Content = LanguageManager.Instance["Page_SettingsPage_CF_BF_NotifyIcon"] + LanguageManager.Instance["Opened"];
                 C_NotifyIcon();
                 try
                 {
@@ -515,7 +507,7 @@ namespace MSL.pages
         private async void WesternEgg_Click(object sender, RoutedEventArgs e)
         {
 
-            bool dialog = await Shows.ShowMsgDialogAsync(Window.GetWindow(this), "点击此按钮后软件出现任何问题作者概不负责，你确定要继续吗？\n（光敏性癫痫警告！若您患有光敏性癫痫，请不要点击确定！）", "警告", true, "取消");
+            bool dialog = await Shows.ShowMsgDialogAsync(Window.GetWindow(this), "点击此按钮后软件出现任何问题作者概不负责，你确定要继续吗？\n（光敏性癫痫警告！若您患有光敏性癫痫，请不要点击确定！）", "警告", true);
             if (dialog)
             {
                 // 定义一个颜色数组
@@ -686,10 +678,6 @@ namespace MSL.pages
                             return;
                         }
                         string downloadUrl = (await HttpService.GetApiContentAsync("download/update?type=normal"))["data"]["url"].ToString(); ;
-                        if (MainWindow.isI18N)
-                        {
-                            downloadUrl = (await HttpService.GetApiContentAsync("download/update?type=i18n"))["data"]["url"].ToString();
-                        }
                         await Shows.ShowDownloader(Window.GetWindow(this), downloadUrl, AppDomain.CurrentDomain.BaseDirectory, "MSL" + _version + ".exe", "下载新版本中……");
                         if (File.Exists("MSL" + _version + ".exe"))
                         {
@@ -800,60 +788,13 @@ namespace MSL.pages
             File.WriteAllText("MSL\\config.json", convertString, Encoding.UTF8);
         }
 
-        private async void ChangeLanguageBtn_Click(object sender, RoutedEventArgs e)
-        {
-            try
-            {
-                JObject _httpReturn = (await HttpService.GetApiContentAsync("query/update"));
-                string _version = _httpReturn["data"]["latestVersion"].ToString();
-                bool dialog = await Shows.ShowMsgDialogAsync(Window.GetWindow(this), "当前版本不支持多语言！\n是否升级到MSL多语言版本？\n警告：部分系统可能不支持允许多语言版本，若升级后您无法运行MSL，请自行下载正常版本MSL！", "升级到多语言版本？", true, "取消");
-                if (dialog == true)
-                {
-                    if (MainWindow.ProcessRunningCheck())
-                    {
-                        Shows.ShowMsgDialog(Window.GetWindow(this), "您的服务器/内网映射/点对点联机正在运行中，若此时更新，会造成后台残留，请将前者关闭后再进行更新！", "警告");
-                        return;
-                    }
-                    string downloadUrl = (await HttpService.GetApiContentAsync("download/update?type=i18n"))["data"].ToString();
-                    await Shows.ShowDownloader(Window.GetWindow(this), downloadUrl, AppDomain.CurrentDomain.BaseDirectory, "MSL" + _version + ".exe", "下载多语言版本中……");
-                    if (File.Exists("MSL" + _version + ".exe"))
-                    {
-                        string oldExePath = Process.GetCurrentProcess().MainModule.ModuleName;
-                        string dwnExePath = Path.Combine(AppDomain.CurrentDomain.BaseDirectory, "MSL" + _version + ".exe");
-                        string newExeDir = AppDomain.CurrentDomain.BaseDirectory;
-
-                        string cmdCommand = "/C choice /C Y /N /D Y /T 1 & Del \"" + oldExePath + "\" & Ren \"" + "MSL" + _version + ".exe" + "\" \"MSL.exe\" & start \"\" \"MSL.exe\"";
-
-                        Application.Current.Shutdown();
-
-                        Process delProcess = new Process();
-                        delProcess.StartInfo.FileName = "cmd.exe";
-                        delProcess.StartInfo.Arguments = cmdCommand;
-                        Directory.SetCurrentDirectory(newExeDir);
-                        delProcess.StartInfo.WindowStyle = ProcessWindowStyle.Hidden;
-                        delProcess.Start();
-
-                        Process.GetCurrentProcess().Kill();
-                    }
-                    else
-                    {
-                        MessageBox.Show("升级失败！", "错误", MessageBoxButton.OK, MessageBoxImage.Error);
-                    }
-                }
-            }
-            catch (Exception ex)
-            {
-                Shows.ShowMsgDialog(Window.GetWindow(this), "升级失败！\n错误：" + ex.Message, LanguageManager.Instance["Dialog_Err"]);
-            }
-        }
-
         private async void MSLTips_Click(object sender, RoutedEventArgs e)
         {
-            if (MSLTips.Content.ToString() == "MSL提示:开启")
+            if (MSLTips.Content.ToString().Contains(LanguageManager.Instance["Opened"]))
             {
                 if (await Shows.ShowMsgDialogAsync(Window.GetWindow(this), "关闭此功能后，读取服务器信息、玩家等功能将会失效，请谨慎选择！", "警告", true) == true)
                 {
-                    MSLTips.Content = "MSL提示:关闭";
+                    MSLTips.Content = LanguageManager.Instance["Page_SettingsPage_CF_BF_MSLTips"] + LanguageManager.Instance["Closed"];
                     try
                     {
                         string jsonString = File.ReadAllText(@"MSL\config.json", Encoding.UTF8);
@@ -877,7 +818,7 @@ namespace MSL.pages
             }
             else
             {
-                MSLTips.Content = "MSL提示:开启";
+                MSLTips.Content = LanguageManager.Instance["Page_SettingsPage_CF_BF_MSLTips"] + LanguageManager.Instance["Opened"];
                 try
                 {
                     string jsonString = File.ReadAllText(@"MSL\config.json", Encoding.UTF8);

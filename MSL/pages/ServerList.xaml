@@ -5,7 +5,7 @@
       xmlns:d="http://schemas.microsoft.com/expression/blend/2008" 
       xmlns:hc="https://handyorg.github.io/handycontrol"
       xmlns:controls="clr-namespace:MSL.controls"
-      xmlns:langs="clr-namespace:MSL.i18n"
+      xmlns:langs="clr-namespace:MSL.langs"
       xmlns:local="clr-namespace:MSL.pages"
       mc:Ignorable="d" d:DesignHeight="460" d:DesignWidth="750"
       Title="ServerList" Loaded="Page_Loaded">
@@ -26,24 +26,24 @@
                 <RowDefinition Height="Auto"/>
                 <RowDefinition/>
             </Grid.RowDefinitions>
-            <Label Grid.Row="0" Style="{StaticResource BorderTitle}" Content="{Binding [Pages_ServerList_Title], Source={x:Static langs:LanguageManager.Instance}}"/>
+            <Label Grid.Row="0" Style="{StaticResource BorderTitle}" Content="{Binding [Page_ServerList_Title], Source={x:Static langs:LanguageManager.Instance}}"/>
             <Button Grid.Row="0" Content="下载服务端" x:Name="DlServerCoreBtn" HorizontalAlignment="Right" VerticalAlignment="Top" hc:IconElement.Geometry="{StaticResource DownloadGeometry}" Click="DlServerCoreBtn_Click"/>
             <Border Grid.Row="1" CornerRadius="10" BorderThickness="0" Background="{DynamicResource BackgroundBrush}">
                 <ListView x:Name="serverList" hc:Empty.ShowEmpty="true" MouseDoubleClick="serverList_MouseDoubleClick" FontSize="16" SelectionMode="Single" SelectionChanged="serverList_SelectionChanged" Background="{x:Null}" BorderBrush="{x:Null}">
                     <ListView.ContextMenu>
                         <ContextMenu FontSize="14">
-                            <MenuItem Click="refreshList_Click" Header="{Binding [Pages_ServerList_Refresh], Source={x:Static langs:LanguageManager.Instance}}"/>
-                            <MenuItem x:Name="startServerBtn" Click="startServer_Click" Header="{Binding [Pages_ServerList_LaunchServer], Source={x:Static langs:LanguageManager.Instance}}" IsEnabled="False"/>
-                            <MenuItem x:Name="startWithCmd" Click="startWithCmd_Click" Header="{Binding [Pages_ServerList_UseCMDLaunch], Source={x:Static langs:LanguageManager.Instance}}" IsEnabled="False"/>
-                            <MenuItem x:Name="setServer" Click="setServer_Click" Header="{Binding [Pages_ServerList_Setting], Source={x:Static langs:LanguageManager.Instance}}" IsEnabled="False"/>
-                            <MenuItem x:Name="setModorPlugin" Click="setModorPlugin_Click" Header="{Binding [Pages_ServerList_ManageModsOrPlugins], Source={x:Static langs:LanguageManager.Instance}}" IsEnabled="False"/>
-                            <MenuItem x:Name="openServerDir" Click="openServerDir_Click" Header="{Binding [Pages_ServerList_OpenDir], Source={x:Static langs:LanguageManager.Instance}}" IsEnabled="False"/>
-                            <MenuItem x:Name="delServer" Click="delServer_Click" Header="{Binding [Pages_ServerList_Delete], Source={x:Static langs:LanguageManager.Instance}}" IsEnabled="False"/>
+                            <MenuItem Click="refreshList_Click" Header="{Binding [Page_ServerList_Refresh], Source={x:Static langs:LanguageManager.Instance}}"/>
+                            <MenuItem x:Name="startServerBtn" Click="startServer_Click" Header="{Binding [Page_ServerList_LaunchServer], Source={x:Static langs:LanguageManager.Instance}}" IsEnabled="False"/>
+                            <MenuItem x:Name="startWithCmd" Click="startWithCmd_Click" Header="{Binding [Page_ServerList_UseCMDLaunch], Source={x:Static langs:LanguageManager.Instance}}" IsEnabled="False"/>
+                            <MenuItem x:Name="setServer" Click="setServer_Click" Header="{Binding [Page_ServerList_Setting], Source={x:Static langs:LanguageManager.Instance}}" IsEnabled="False"/>
+                            <MenuItem x:Name="setModorPlugin" Click="setModorPlugin_Click" Header="{Binding [Page_ServerList_ManageModsOrPlugins], Source={x:Static langs:LanguageManager.Instance}}" IsEnabled="False"/>
+                            <MenuItem x:Name="openServerDir" Click="openServerDir_Click" Header="{Binding [Page_ServerList_OpenDir], Source={x:Static langs:LanguageManager.Instance}}" IsEnabled="False"/>
+                            <MenuItem x:Name="delServer" Click="delServer_Click" Header="{Binding [Page_ServerList_Delete], Source={x:Static langs:LanguageManager.Instance}}" IsEnabled="False"/>
                         </ContextMenu>
                     </ListView.ContextMenu>
                     <ListView.View>
                         <GridView>
-                            <GridViewColumn Width="230" Header="{Binding [Pages_ServerList_ServerName], Source={x:Static langs:LanguageManager.Instance}}">
+                            <GridViewColumn Width="230" Header="{Binding [Page_ServerList_ServerName], Source={x:Static langs:LanguageManager.Instance}}">
                                 <GridViewColumn.CellTemplate>
                                     <DataTemplate>
                                         <Grid>
@@ -53,7 +53,7 @@
                                     </DataTemplate>
                                 </GridViewColumn.CellTemplate>
                             </GridViewColumn>
-                            <GridViewColumn Width="230" Header="{Binding [Pages_ServerList_Status], Source={x:Static langs:LanguageManager.Instance}}">
+                            <GridViewColumn Width="230" Header="{Binding [Page_ServerList_Status], Source={x:Static langs:LanguageManager.Instance}}">
                                 <GridViewColumn.CellTemplate>
                                     <DataTemplate>
                                         <Grid>
@@ -62,7 +62,7 @@
                                     </DataTemplate>
                                 </GridViewColumn.CellTemplate>
                             </GridViewColumn>
-                            <GridViewColumn Width="150" Header="{Binding [Pages_ServerList_Do], Source={x:Static langs:LanguageManager.Instance}}">
+                            <GridViewColumn Width="150" Header="{Binding [Page_ServerList_Do], Source={x:Static langs:LanguageManager.Instance}}">
                                 <GridViewColumn.CellTemplate>
                                     <DataTemplate>
                                         <StackPanel Orientation="Horizontal">

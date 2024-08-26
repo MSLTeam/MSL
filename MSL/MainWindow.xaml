@@ -4,7 +4,7 @@
         xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
         xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
         xmlns:hc="https://handyorg.github.io/handycontrol"
-        xmlns:langs="clr-namespace:MSL.i18n"
+        xmlns:langs="clr-namespace:MSL.langs"
         xmlns:controls="clr-namespace:MSL.controls"
         xmlns:local="clr-namespace:MSL"
         x:Class="MSL.MainWindow"
@@ -69,7 +69,7 @@
             <StackPanel x:Name="GrowlPanel" hc:Growl.GrowlParent="True" VerticalAlignment="Top" Margin="0,10,10,10" />
         </ScrollViewer>
 
-        <hc:NotifyIcon x:Name="MainNoticyIcon" Text="Minecraft Server Launcher" Visibility="Hidden" MouseDoubleClick="MainNoticyIcon_MouseDoubleClick">
+        <hc:NotifyIcon x:Name="MainNotifyIcon" Text="Minecraft Server Launcher" Visibility="Hidden" Click="MainNotifyIcon_Click">
             <hc:NotifyIcon.ContextMenu>
                 <ContextMenu>
                     <MenuItem Command="hc:ControlCommands.PushMainWindow2Top" Header="打开主界面"/>

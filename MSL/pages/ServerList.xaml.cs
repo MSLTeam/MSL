@@ -1,7 +1,7 @@
 ﻿using HandyControl.Controls;
 using Microsoft.VisualBasic.FileIO;
 using MSL.controls;
-using MSL.i18n;
+using MSL.langs;
 using MSL.utils;
 using Newtonsoft.Json.Linq;
 using System;
@@ -96,7 +96,7 @@ namespace MSL.pages
             {
                 await Dispatcher.InvokeAsync(async () =>
                 {
-                    bool dialogRet = await Shows.ShowMsgDialogAsync(Window.GetWindow(this), LanguageManager.Instance["Pages_ServerList_Dialog_FirstUse"], LanguageManager.Instance["Dialog_Warning"], true, LanguageManager.Instance["Dialog_Cancel"]);
+                    bool dialogRet = await Shows.ShowMsgDialogAsync(Window.GetWindow(this), LanguageManager.Instance["Page_ServerList_Dialog_NoConfTip"], LanguageManager.Instance["Warning"], true, LanguageManager.Instance["Cancel"]);
                     if (dialogRet)
                     {
                         CreateServerEvent();

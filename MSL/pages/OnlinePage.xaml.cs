@@ -1,5 +1,5 @@
 ﻿using HandyControl.Controls;
-using MSL.i18n;
+using MSL.langs;
 using MSL.utils;
 using Newtonsoft.Json;
 using Newtonsoft.Json.Linq;
@@ -50,7 +50,7 @@ namespace MSL.pages
             else
             {
                 //Shows.ShowMsgDialog(Window.GetWindow(this),"注意：此功能目前不稳定，无法穿透所有类型的NAT，若联机失败，请尝试开服务器并使用内网映射联机！\r\n该功能可能需要正版账户，若无法联机，请从网络上寻找解决方法或尝试开服务器并使用内网映射联机！", "警告");
-                Shows.ShowMsgDialog(Window.GetWindow(this), LanguageManager.Instance["Pages_OnlinePage_Dialog_Tips"], LanguageManager.Instance["Dialog_Warning"]);
+                Shows.ShowMsgDialog(Window.GetWindow(this), LanguageManager.Instance["Page_OnlinePage_Announce"], LanguageManager.Instance["Warning"]);
                 masterExp.IsExpanded = true;
             }
             await GetFrpcInfo();
@@ -89,7 +89,7 @@ namespace MSL.pages
                         Dispatcher.Invoke(() =>
                         {
                             //服务器活着，太好了！
-                            serverState.Text = LanguageManager.Instance["Pages_Online_ServerStatusOK"];
+                            serverState.Text = LanguageManager.Instance["Page_OnlinePage_ServerStatusOK"];
                         });
                     }
                     else
@@ -97,14 +97,14 @@ namespace MSL.pages
                         Dispatcher.Invoke(() =>
                         {
                             //跑路了.jpg
-                            serverState.Text = LanguageManager.Instance["Pages_Online_ServerStatusDown"];
+                            serverState.Text = LanguageManager.Instance["Page_OnlinePage_ServerStatusDown"];
                         });
                     }
                 });
             }
             catch
             {
-                serverState.Text = LanguageManager.Instance["Pages_Online_ServerStatusDown"];
+                serverState.Text = LanguageManager.Instance["Page_OnlinePage_ServerStatusDown"];
             }
         }
 
@@ -150,7 +150,7 @@ namespace MSL.pages
 
         private void createRoom_Click(object sender, RoutedEventArgs e)
         {
-            if (createRoom.Content.ToString() != LanguageManager.Instance["Pages_Online_Close"])
+            if (createRoom.Content.ToString() != LanguageManager.Instance["Page_OnlinePage_Close"])
             {
                 string a = "[common]\r\nserver_port = " + ipPort + "\r\nserver_addr = " + ipAddress + "\r\n\r\n[" + masterQQ.Text + "]\r\ntype = xtcp\r\nlocal_ip = 127.0.0.1\r\nlocal_port = " + masterPort.Text + "\r\nsk = " + masterKey.Text + "\r\n";
                 Directory.CreateDirectory("MSL\\frp");
@@ -170,7 +170,7 @@ namespace MSL.pages
 
         private void joinRoom_Click(object sender, RoutedEventArgs e)
         {
-            if (joinRoom.Content.ToString() != LanguageManager.Instance["Pages_Online_ExitRoom"])
+            if (joinRoom.Content.ToString() != LanguageManager.Instance["Page_OnlinePage_ExitRoom"])
             {
                 string a = "[common]\r\nserver_port = " + ipPort + "\r\nserver_addr = " + ipAddress + "\r\n\r\n[p2p_ssh_visitor]\r\ntype = xtcp\r\nrole = visitor\r\nbind_addr = 127.0.0.1\r\nbind_port = " + visiterPort.Text + "\r\nserver_name = " + visiterQQ.Text + "\r\nsk = " + visiterKey.Text + "\r\n";
                 Directory.CreateDirectory("MSL\\frp");
@@ -207,7 +207,7 @@ namespace MSL.pages
                         _dnfrpc = (await HttpService.GetApiContentAsync("/download/frpc/MSLFrp/amd64?os=" + os))["data"]["url"].ToString();
                         await Dispatcher.Invoke(async () =>
                         {
-                            await Shows.ShowDownloader(Window.GetWindow(this), _dnfrpc, "MSL\\frp", "frpc.exe", LanguageManager.Instance["Pages_Online_DlFrpc"]);
+                            await Shows.ShowDownloader(Window.GetWindow(this), _dnfrpc, "MSL\\frp", "frpc.exe", LanguageManager.Instance["Download_Frpc_Info"]);
                         });
                     }
                 }
@@ -219,11 +219,11 @@ namespace MSL.pages
                 {
                     if (isMaster)
                     {
-                        createRoom.Content = LanguageManager.Instance["Pages_Online_Close"];
+                        createRoom.Content = LanguageManager.Instance["Page_OnlinePage_Close"];
                     }
                     else
                     {
-                        joinRoom.Content = LanguageManager.Instance["Pages_Online_ExitRoom"];
+                        joinRoom.Content = LanguageManager.Instance["Page_OnlinePage_ExitRoom"];
                     }
                     frpcOutlog.Text = string.Empty;
                 });
@@ -242,19 +242,19 @@ namespace MSL.pages
                 {
                     if (isMaster)
                     {
-                        createRoom.Content = LanguageManager.Instance["Pages_Online_CreateBtn"];
+                        createRoom.Content = LanguageManager.Instance["Page_OnlinePage_CreateRoom"];
                         visiterExp.IsEnabled = true;
                     }
                     else
                     {
-                        joinRoom.Content = LanguageManager.Instance["Pages_Online_EnterBtn"];
+                        joinRoom.Content = LanguageManager.Instance["Page_OnlinePage_JoinRoom"];
                         masterExp.IsEnabled = true;
                     }
                 });
             }
             catch (Exception e)
             {
-                MessageBox.Show(LanguageManager.Instance["Pages_Online_ErrMsg1"] + e.Message, LanguageManager.Instance["Dialog_Err"], MessageBoxButton.OK, MessageBoxImage.Error);
+                MessageBox.Show(LanguageManager.Instance["Page_OnlinePage_ErrMsg1"] + e.Message, LanguageManager.Instance["Error"], MessageBoxButton.OK, MessageBoxImage.Error);
             }
         }
 
@@ -296,7 +296,7 @@ namespace MSL.pages
             {
                 if (msg.IndexOf("failed") + 1 != 0)
                 {
-                    Growl.Error(LanguageManager.Instance["Pages_Online_Err"]);
+                    Growl.Error(LanguageManager.Instance["Page_OnlinePage_Err"]);
                     if (!FrpcProcess.HasExited)
                     {
                         Task.Run(() => Functions.StopProcess(FrpcProcess));
@@ -304,20 +304,20 @@ namespace MSL.pages
                 }
                 if (msg.IndexOf("success") + 1 != 0)
                 {
-                    frpcOutlog.Text = frpcOutlog.Text + LanguageManager.Instance["Pages_Online_LoginSuc"] + "\n";
+                    frpcOutlog.Text = frpcOutlog.Text + LanguageManager.Instance["Page_OnlinePage_LoginSuc"] + "\n";
                 }
             }
             if (msg.IndexOf("start") + 1 != 0)
             {
                 if (msg.IndexOf("success") + 1 != 0)
                 {
-                    frpcOutlog.Text = frpcOutlog.Text + LanguageManager.Instance["Pages_Online_Suc"] + "\n";
-                    Growl.Success(LanguageManager.Instance["Pages_Online_Suc"]);
+                    frpcOutlog.Text = frpcOutlog.Text + LanguageManager.Instance["Page_OnlinePage_Suc"] + "\n";
+                    Growl.Success(LanguageManager.Instance["Page_OnlinePage_Suc"]);
                 }
                 if (msg.IndexOf("error") + 1 != 0)
                 {
-                    frpcOutlog.Text = frpcOutlog.Text + LanguageManager.Instance["Pages_Online_Err"] + "\n";
-                    Growl.Error(LanguageManager.Instance["Pages_Online_Err"]);
+                    frpcOutlog.Text = frpcOutlog.Text + LanguageManager.Instance["Page_OnlinePage_Err"] + "\n";
+                    Growl.Error(LanguageManager.Instance["Page_OnlinePage_Err"]);
                     FrpcProcess.Kill();
                 }
             }

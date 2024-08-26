@@ -30,7 +30,7 @@ namespace MSL.utils
         /// <param name="closeBtnContext">关闭按钮文字内容</param>
         /// <param name="primaryBtnContext">确认按钮文字内容</param>
         /// <returns>返回值：true；false</returns>
-        public static async Task<bool> ShowMsgDialogAsync(Window _window, string text, string title, bool showPrimaryBtn = false, string closeBtnContext = "取消", string primaryBtnContext = "确定")
+        public static async Task<bool> ShowMsgDialogAsync(Window _window, string text, string title, bool showPrimaryBtn = false, string closeBtnContext = "否", string primaryBtnContext = "是")
         {
             ShowDialogs showDialogs = new ShowDialogs();
             bool _ret = await showDialogs.ShowMsgDialog(_window, text, title, showPrimaryBtn, closeBtnContext, primaryBtnContext);
@@ -47,7 +47,7 @@ namespace MSL.utils
         /// <param name="closeText">关闭按钮文字</param>
         /// <param name="primaryText">确认按钮文字</param>
         /// <returns>返回值：0代表点击取消按钮；1代表点击确认按钮；2代表窗体被关闭</returns>
-        public static int ShowMsg(Window window, string dialogText, string dialogTitle, bool primaryBtnVisible = false, string closeText = "确定", string primaryText = "确定")
+        public static int ShowMsg(Window window, string dialogText, string dialogTitle, bool primaryBtnVisible = false, string closeText = "否", string primaryText = "是")
         {
             try
             {
@@ -165,7 +165,7 @@ namespace MSL.utils
             _tcs = new TaskCompletionSource<bool>();
         }
 
-        public async Task<bool> ShowMsgDialog(Window _window, string text, string title, bool showPrimaryBtn, string closeBtnContext = "取消", string primaryBtnContext = "确定")
+        public async Task<bool> ShowMsgDialog(Window _window, string text, string title, bool showPrimaryBtn, string closeBtnContext, string primaryBtnContext)
         {
             window = _window;
             MessageDialog msgDialog = new MessageDialog(text, title, showPrimaryBtn, closeBtnContext, primaryBtnContext);

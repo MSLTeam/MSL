@@ -1,6 +1,10 @@
-﻿using System;
+﻿using MSL.langs;
+using Newtonsoft.Json.Linq;
+using System;
+using System.Globalization;
 using System.IO;
 using System.Reflection;
+using System.Text;
 using System.Threading;
 using System.Windows;
 
@@ -38,7 +42,7 @@ namespace MSL
                     Environment.Exit(0);
                 }
             }
-            base.OnStartup(e);
+
             /*
             // Logger
             if (!Directory.Exists("MSL"))
@@ -50,6 +54,64 @@ namespace MSL
             Logger.Clear();
             Logger.LogInfo("MSL，启动！");
             */
+
+            if (Directory.GetCurrentDirectory() + "\\" != AppDomain.CurrentDomain.BaseDirectory)
+            {
+                Directory.SetCurrentDirectory(AppDomain.CurrentDomain.BaseDirectory);
+            }
+
+            try
+            {
+                Directory.CreateDirectory("MSL");
+                //firstLauchEvent
+                if (!File.Exists(@"MSL\config.json"))
+                {
+                    //Logger.LogWarning("未检测到config.json文件，创建config.json……");
+                    File.WriteAllText(@"MSL\config.json", string.Format("{{{0}}}", "\n"));
+                }
+            }
+            catch (Exception ex)
+            {
+                //Logger.LogError("生成config.json文件失败，原因："+ex.Message);
+                MessageBox.Show(LanguageManager.Instance["MainWindow_GrowlMsg_InitErr"] + ex.Message, LanguageManager.Instance["Error"], MessageBoxButton.OK, MessageBoxImage.Error);
+                Environment.Exit(0);
+            }
+            //Logger.LogInfo("读取配置文件……");
+            JObject jsonObject;
+            try
+            {
+                jsonObject = JObject.Parse(File.ReadAllText(@"MSL\config.json", Encoding.UTF8));
+                //Logger.LogInfo("读取配置文件成功！");
+            }
+            catch (Exception ex)
+            {
+                //Logger.LogError("读取config.json失败！尝试重新载入……");
+                MessageBox.Show(LanguageManager.Instance["MainWindow_GrowlMsg_ConfigErr2"] + ex.Message, LanguageManager.Instance["Error"], MessageBoxButton.OK, MessageBoxImage.Error);
+                File.WriteAllText(@"MSL\config.json", string.Format("{{{0}}}", "\n"));
+                jsonObject = JObject.Parse(File.ReadAllText(@"MSL\config.json", Encoding.UTF8));
+                //Logger.LogInfo("读取config.json成功！");
+            }
+            try
+            {
+                if (jsonObject["lang"] == null)
+                {
+                    jsonObject.Add("lang", "zh-CN");
+                    string convertString = Convert.ToString(jsonObject);
+                    File.WriteAllText(@"MSL\config.json", convertString, Encoding.UTF8);
+                    LanguageManager.Instance.ChangeLanguage(new CultureInfo("zh-CN"));
+                    //Logger.LogInfo("Language: " + "ZH-CN");
+                }
+                else
+                {
+                    LanguageManager.Instance.ChangeLanguage(new CultureInfo(jsonObject["lang"].ToString()));
+                    //Logger.LogInfo("Language: " + jsonObject["lang"].ToString().ToUpper());
+                }
+            }
+            finally
+            {
+                jsonObject = null;
+                base.OnStartup(e);
+            }
         }
 
         /// <summary>

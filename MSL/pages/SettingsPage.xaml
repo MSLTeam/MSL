@@ -4,9 +4,10 @@
       xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006" 
       xmlns:d="http://schemas.microsoft.com/expression/blend/2008" 
       xmlns:hc="https://handyorg.github.io/handycontrol"
+      xmlns:lang="clr-namespace:MSL.langs"
       xmlns:local="clr-namespace:MSL.pages"
       xmlns:controls="clr-namespace:MSL.controls"
-      mc:Ignorable="d" d:DesignHeight="460" d:DesignWidth="750"
+      mc:Ignorable="d" d:DesignHeight="1000" d:DesignWidth="750"
       Title="SettingsPage" Loaded="Page_Loaded">
     <Page.RenderTransform>
         <TranslateTransform/>
@@ -16,6 +17,9 @@
             <BeginStoryboard Storyboard="{StaticResource ShowPage}"/>
         </EventTrigger>
     </Page.Triggers>
+    <Page.Resources>
+        <controls:StringConcatConverter x:Key="StringConcatConverter"/>
+    </Page.Resources>
     <ScrollViewer>
         <StackPanel>
             <StackPanel.Resources>
@@ -30,36 +34,52 @@
                     </Style>
                 </ResourceDictionary>
             </StackPanel.Resources>
-            <controls:MagicCard Title="功能调整" MarginOverride="10,10,10,0">
+            <controls:MagicCard Title="{Binding [Page_SettingsPage_Card_ChangeFunctions],Source={x:Static lang:LanguageManager.Instance}}" MarginOverride="10,10,10,0">
                 <StackPanel>
-                    <Grid Margin="0,0,0,10">
+                    <Grid Margin="0,-5,0,10">
                         <Grid.ColumnDefinitions>
                             <ColumnDefinition Width="Auto"/>
                             <ColumnDefinition/>
                         </Grid.ColumnDefinitions>
-                        <Label Grid.Column="0" Content="基础功能：" VerticalAlignment="Center"/>
-                        <WrapPanel Grid.Column="1">
-                            <Button Name="setdefault" Margin="5,0,5,0" Content="恢复默认设置" FontSize="14" Height="30" Click="setdefault_Click" />
-                            <Button Name="notifyIconbtn" Margin="5,0,5,0" Content="托盘图标:关闭" FontSize="14" Height="30" Click="notifyIconbtn_Click" />
-                            <Button Name="MSLTips" Margin="5,0,5,0" Content="MSL提示:开启" FontSize="14" Height="30" Click="MSLTips_Click" />
-                            <Button Name="WikiButton" Margin="5,0,5,0" Content="软件文档" FontSize="14" Height="30" Click="WikiButton_Click"/>
-                            <Button x:Name="checkUpdateBtn" Margin="5,0,5,0" Content="检查更新" Style="{StaticResource ButtonPrimary}" FontSize="14" Height="30" Click="checkUpdateBtn_Click"/>
-                            <ComboBox x:Name="ChangeLanguage" Margin="5,0,5,0" FontSize="14" Height="30" SelectionChanged="ChangeLanguage_SelectionChanged">
-                                <ComboBoxItem Content="简体中文"/>
-                                <ComboBoxItem Content="English"/>
-                            </ComboBox>
-                            <Button Content="切换语言" Margin="5" x:Name="ChangeLanguageBtn" FontSize="14" Height="30" Visibility="Collapsed" Click="ChangeLanguageBtn_Click" />
+                        <Label Grid.Column="0" Content="{Binding [Page_SettingsPage_CF_BasicFunction],Source={x:Static lang:LanguageManager.Instance}}" VerticalAlignment="Center"/>
+                        <WrapPanel Orientation="Horizontal" Grid.Column="1">
+                            <Button Name="setdefault" Margin="5" Content="{Binding [Page_SettingsPage_CF_BF_RecoveryBtn],Source={x:Static lang:LanguageManager.Instance}}" Height="32" FontSize="14" Click="setdefault_Click" />
+                            <Button Name="notifyIconbtn" Margin="5" Height="32" FontSize="14" Click="notifyIconbtn_Click">
+                                <Button.Content>
+                                    <MultiBinding Converter="{StaticResource StringConcatConverter}">
+                                        <Binding Path="[Page_SettingsPage_CF_BF_NotifyIcon]" Source="{x:Static lang:LanguageManager.Instance}"/>
+                                        <Binding Path="[Closed]" Source="{x:Static lang:LanguageManager.Instance}"/>
+                                    </MultiBinding>
+                                </Button.Content>
+                            </Button>
+                            <Button Name="MSLTips" Margin="5" Height="32" FontSize="14" Click="MSLTips_Click">
+                                <Button.Content>
+                                    <MultiBinding Converter="{StaticResource StringConcatConverter}">
+                                        <Binding Path="[Page_SettingsPage_CF_BF_MSLTips]" Source="{x:Static lang:LanguageManager.Instance}"/>
+                                        <Binding Path="[Opened]" Source="{x:Static lang:LanguageManager.Instance}"/>
+                                    </MultiBinding>
+                                </Button.Content>
+                            </Button>
+                            <Button Name="WikiButton" Margin="5" Content="{Binding [Page_SettingsPage_CF_BF_SoftwareWiki],Source={x:Static lang:LanguageManager.Instance}}" Height="32" FontSize="14" Click="WikiButton_Click"/>
+                            <Button x:Name="checkUpdateBtn" Margin="5" Content="{Binding [Page_SettingsPage_CF_BF_CheckUpdate],Source={x:Static lang:LanguageManager.Instance}}" Height="32" Style="{StaticResource ButtonPrimary}" FontSize="14" Click="checkUpdateBtn_Click"/>
                         </WrapPanel>
                     </Grid>
-                    <Grid Margin="0,0,0,10">
+                    <StackPanel Orientation="Horizontal" Margin="0,0,0,15">
+                        <Label Grid.Column="0" Content="{Binding [Page_SettingsPage_CF_Language],Source={x:Static lang:LanguageManager.Instance}}" VerticalAlignment="Center"/>
+                        <ComboBox x:Name="ChangeLanguage" Height="32" FontSize="14" Margin="5,0,0,0" SelectionChanged="ChangeLanguage_SelectionChanged">
+                            <ComboBoxItem Content="简体中文"/>
+                            <ComboBoxItem Content="English"/>
+                        </ComboBox>
+                    </StackPanel>
+                    <Grid Margin="0,0,0,15">
                         <Grid.ColumnDefinitions>
                             <ColumnDefinition Width="Auto"/>
                             <ColumnDefinition/>
                             <ColumnDefinition Width="Auto"/>
                         </Grid.ColumnDefinitions>
-                        <Label Grid.Column="0" Content="下载线程（默认为8，建议不超过16）："/>
-                        <TextBox Grid.Column="1" Name="downthreadCount" Text="8" VerticalAlignment="Top" FontSize="14" />
-                        <Button Grid.Column="2" Name="mulitDownthread" FontSize="14" Content="确定" HorizontalAlignment="Right" Click="mulitDownthread_Click" />
+                        <Label Grid.Column="0" Content="{Binding [Page_SettingsPage_CF_DownloadThread],Source={x:Static lang:LanguageManager.Instance}}"/>
+                        <TextBox Grid.Column="1" Name="downthreadCount" Text="8" FontSize="14"/>
+                        <Button Grid.Column="2" Name="mulitDownthread" Content="{Binding [_Done],Source={x:Static lang:LanguageManager.Instance}}" MinWidth="60" Click="mulitDownthread_Click" />
                     </Grid>
                     <Grid Margin="0,0,0,5">
                         <Grid.ColumnDefinitions>
@@ -67,17 +87,17 @@
                             <ColumnDefinition/>
                             <ColumnDefinition Width="Auto"/>
                         </Grid.ColumnDefinitions>
-                        <Label Grid.Column="0" Content="添加下载任务："/>
-                        <TextBox Grid.Column="1" Name="DownloadUrl" Text="" VerticalAlignment="Top" FontSize="14" />
-                        <Button Grid.Column="2" Name="AddDownloadTask" FontSize="14" Content="确定" HorizontalAlignment="Right" Click="AddDownloadTask_Click" />
+                        <Label Grid.Column="0" Content="{Binding [Page_SettingsPage_CF_AddDownloadTask],Source={x:Static lang:LanguageManager.Instance}}"/>
+                        <TextBox Grid.Column="1" Name="DownloadUrl" Text="" FontSize="14"/>
+                        <Button Grid.Column="2" Name="AddDownloadTask" Content="{Binding [_Done],Source={x:Static lang:LanguageManager.Instance}}" MinWidth="60" Click="AddDownloadTask_Click" />
                     </Grid>
                 </StackPanel>
             </controls:MagicCard>
-            <controls:MagicCard Title="自动化选项" MarginOverride="10,10,10,0">
+            <controls:MagicCard Title="{Binding [Page_SettingsPage_Card_AutomationSettings],Source={x:Static lang:LanguageManager.Instance}}" MarginOverride="10,10,10,0">
                 <StackPanel>
                     <StackPanel Margin="0,0,0,5">
                         <StackPanel Orientation="Horizontal">
-                            <Label Content="启动软件自动打开启动列表中的服务器："/>
+                            <Label Content="{Binding [Page_SettingsPage_AS_AutoLaunchServer],Source={x:Static lang:LanguageManager.Instance}}" Margin="0,0,10,0"/>
                             <ToggleButton Name="openserversOnStart" Style="{StaticResource ToggleButtonSwitch}" VerticalAlignment="Center" Click="openserversOnStart_Click" />
                         </StackPanel>
                         <Grid Margin="0,5,200,0" Height="150">
@@ -86,39 +106,43 @@
                                 <ColumnDefinition Width="Auto"/>
                                 <ColumnDefinition/>
                             </Grid.ColumnDefinitions>
-                            <Label Grid.Column="0" Content="服务器列表："/>
+                            <Label Grid.Column="0" Content="{Binding [Page_SettingsPage_AS_ALS_ServerList],Source={x:Static lang:LanguageManager.Instance}}"/>
                             <ListBox Grid.Column="0" x:Name="ServersList" Margin="0,30,5,0"/>
                             <Button Grid.Column="1" x:Name="TransferOut" hc:IconElement.Geometry="{StaticResource LeftGeometry}" Margin="0,0,0,10" Click="TransferOut_Click"/>
                             <Button Grid.Column="1" x:Name="TransferIn" hc:IconElement.Geometry="{StaticResource RightGeometry}" Margin="0,50,0,0" Click="TransferIn_Click"/>
-                            <Label Grid.Column="2" Content="启动列表："/>
+                            <Label Grid.Column="2" Content="{Binding [Page_SettingsPage_AS_ALS_AutoLaunchServers],Source={x:Static lang:LanguageManager.Instance}}"/>
                             <ListBox Grid.Column="2" x:Name="AutoStartServers" Margin="5,30,0,0"/>
                         </Grid>
                         <hc:Divider Margin="0,10,0,10"/>
                         <StackPanel Orientation="Horizontal">
-                            <Label Content="启动软件自动打开内网映射："/>
+                            <Label Content="{Binding [Page_SettingsPage_AS_AutoLaunchFrpc],Source={x:Static lang:LanguageManager.Instance}}" Margin="0,0,10,0"/>
                             <ToggleButton Name="openfrpOnStart" Style="{StaticResource ToggleButtonSwitch}" VerticalAlignment="Center" Click="openfrpOnStart_Click" />
                         </StackPanel>
-                        <StackPanel Orientation="Horizontal" Margin="0,5,0,0">
-                            <Label Content="在此输入需要自启动Frpc的ID（使用半角逗号分隔和结尾）："/>
-                            <TextBox x:Name="AutoOpenFrpcList" Width="150"/>
-                        </StackPanel>
+                        <WrapPanel Orientation="Horizontal" Margin="0,5,0,0">
+                            <Label Content="{Binding [Page_SettingsPage_AS_ALF_FrpcList],Source={x:Static lang:LanguageManager.Instance}}"/>
+                            <TextBox x:Name="AutoOpenFrpcList" Width="150" FontSize="14"/>
+                        </WrapPanel>
                         <hc:Divider Margin="0,10,0,10"/>
-                        <StackPanel Orientation="Horizontal">
-                            <Label Content="开机自动启动MSL:" Margin="0,0,10,0"/>
-                            <ToggleButton x:Name="autoRunApp" Style="{StaticResource ToggleButtonSwitch}" VerticalAlignment="Center" Click="autoRunApp_Click"/>
-                            <Label Content="遇到更新时自动更新MSL:" Margin="20,0,10,0" VerticalAlignment="Center"/>
-                            <ToggleButton x:Name="autoUpdateApp" Style="{StaticResource ToggleButtonSwitch}" VerticalAlignment="Center" Click="autoUpdateApp_Click"/>
-                        </StackPanel>
+                        <WrapPanel Orientation="Horizontal">
+                            <StackPanel Orientation="Horizontal">
+                                <Label Content="{Binding [Page_SettingsPage_AS_AutoRunAtStartup],Source={x:Static lang:LanguageManager.Instance}}" Margin="0,0,10,0"/>
+                                <ToggleButton x:Name="autoRunApp" Style="{StaticResource ToggleButtonSwitch}" VerticalAlignment="Center" Click="autoRunApp_Click" Margin="0,0,30,0"/>
+                            </StackPanel>
+                            <StackPanel Orientation="Horizontal">
+                                <Label Content="{Binding [Page_SettingsPage_AS_AutoUpdate],Source={x:Static lang:LanguageManager.Instance}}" VerticalAlignment="Center"/>
+                                <ToggleButton x:Name="autoUpdateApp" Style="{StaticResource ToggleButtonSwitch}" VerticalAlignment="Center" Click="autoUpdateApp_Click"/>
+                            </StackPanel>
+                        </WrapPanel>
                         <hc:Divider Margin="0,10,0,10"/>
-                        <StackPanel Orientation="Horizontal">
-                            <Label Content="开服时自动开启:" Margin="0,0,10,0"/>
-                            <ToggleButton x:Name="autoGetPlayerInfo" Style="{StaticResource ToggleButtonSwitch}" VerticalAlignment="Center" Click="autoGetPlayerInfo_Click" Content="记录玩家功能"/>
-                            <ToggleButton x:Name="autoGetServerInfo" Margin="30,0,0,0" Style="{StaticResource ToggleButtonSwitch}" VerticalAlignment="Center" Click="autoGetServerInfo_Click" Content="显示占用功能"/>
-                        </StackPanel>
+                        <WrapPanel Orientation="Horizontal">
+                            <Label Content="{Binding [Page_SettingsPage_AS_AutoRunAtServerLaunched],Source={x:Static lang:LanguageManager.Instance}}" Margin="0,0,10,0"/>
+                            <ToggleButton x:Name="autoGetPlayerInfo" Margin="0,0,30,0" Style="{StaticResource ToggleButtonSwitch}" VerticalAlignment="Center" Click="autoGetPlayerInfo_Click" Content="{Binding [Page_SettingsPage_AS_ARASL_RecordPlayers],Source={x:Static lang:LanguageManager.Instance}}"/>
+                            <ToggleButton x:Name="autoGetServerInfo" Style="{StaticResource ToggleButtonSwitch}" VerticalAlignment="Center" Click="autoGetServerInfo_Click" Content="{Binding [Page_SettingsPage_AS_ARASL_ShowSysOccupation],Source={x:Static lang:LanguageManager.Instance}}"/>
+                        </WrapPanel>
                     </StackPanel>
                 </StackPanel>
             </controls:MagicCard>
-            <controls:MagicCard Title="皮肤选项" MarginOverride="10,10,10,0">
+            <controls:MagicCard Title="{Binding [Page_SettingsPage_Card_SkinSettings],Source={x:Static lang:LanguageManager.Instance}}" MarginOverride="10,10,10,0">
                 <StackPanel>
                     <StackPanel.Resources>
                         <ResourceDictionary>
@@ -129,29 +153,29 @@
                             </Style>
                         </ResourceDictionary>
                     </StackPanel.Resources>
-                    <StackPanel Orientation="Horizontal" Margin="0,0,0,10">
-                        <Label Content="主题颜色:" Margin="0,0,10,0"/>
-                        <ToggleButton x:Name="autoSetTheme" Margin="0,0,20,0" Style="{StaticResource ToggleButtonSwitch}" VerticalAlignment="Center" Click="autoSetTheme_Click" IsChecked="True" Content="使用系统样式" Height="25"/>
-                        <ToggleButton x:Name="darkTheme" Margin="0,0,20,0" Style="{StaticResource ToggleButtonSwitch}" VerticalAlignment="Center" Click="darkTheme_Click" IsEnabled="False" Content="暗色模式" Height="25"/>
-                        <ToggleButton x:Name="semitransparentTitle" Margin="0,0,20,0" Style="{StaticResource ToggleButtonSwitch}" VerticalAlignment="Center" Content="半透明标题栏" Height="25" Click="semitransparentTitle_Click"/>
-                        <Button x:Name="WesternEgg" Content="千万别点" Style="{StaticResource ButtonDanger}" HorizontalAlignment="Left" VerticalAlignment="Center" Click="WesternEgg_Click" Height="30" Width="100"/>
-                    </StackPanel>
-                    <StackPanel Orientation="Horizontal" Margin="0,0,0,10" >
-                        <RadioButton Name="BlueSkinBtn" Margin="0,0,20,0" Content="蓝色皮肤(默认)" Click="ChangeSkin" Foreground="#0078D4"/>
-                        <RadioButton Name="RedSkinBtn" Margin="0,0,20,0" Content="红色皮肤" Checked="ChangeSkin" Foreground="Red"/>
-                        <RadioButton Name="GreenSkinBtn" Margin="0,0,20,0" Content="绿色皮肤" Checked="ChangeSkin" Foreground="Green"/>
-                        <RadioButton Name="OrangeSkinBtn" Margin="0,0,20,0" Content="橙色皮肤" Checked="ChangeSkin" Foreground="Orange"/>
-                        <RadioButton Name="PurpleSkinBtn" Margin="0,0,20,0" Content="紫色皮肤" Checked="ChangeSkin" Foreground="Purple"/>
-                        <RadioButton Name="PinkSkinBtn" Content="粉色皮肤" Checked="ChangeSkin" Foreground="DeepPink"/>
-                    </StackPanel>
+                    <WrapPanel Orientation="Horizontal" Margin="0,0,0,10">
+                        <Label Content="{Binding [Page_SettingsPage_SS_ThemeColor],Source={x:Static lang:LanguageManager.Instance}}" Margin="0,0,10,0"/>
+                        <ToggleButton x:Name="autoSetTheme" Margin="0,0,20,0" Style="{StaticResource ToggleButtonSwitch}" VerticalAlignment="Center" Click="autoSetTheme_Click" IsChecked="True" Content="{Binding [Page_SettingsPage_SS_UseSysTheme],Source={x:Static lang:LanguageManager.Instance}}" Height="25"/>
+                        <ToggleButton x:Name="darkTheme" Margin="0,0,20,0" Style="{StaticResource ToggleButtonSwitch}" VerticalAlignment="Center" Click="darkTheme_Click" IsEnabled="False" Content="{Binding [Page_SettingsPage_SS_DarkTheme],Source={x:Static lang:LanguageManager.Instance}}" Height="25"/>
+                        <ToggleButton x:Name="semitransparentTitle" Style="{StaticResource ToggleButtonSwitch}" VerticalAlignment="Center" Content="{Binding [Page_SettingsPage_SS_SemitransparentTitle],Source={x:Static lang:LanguageManager.Instance}}" Height="25" Click="semitransparentTitle_Click"/>
+                    </WrapPanel>
+                    <WrapPanel Orientation="Horizontal" Margin="0,0,0,10" >
+                        <RadioButton Name="BlueSkinBtn" Margin="0,0,20,0" Content="{Binding [Page_SettingsPage_SS_BlueSkinBtn],Source={x:Static lang:LanguageManager.Instance}}" Click="ChangeSkin" Foreground="#0078D4"/>
+                        <RadioButton Name="RedSkinBtn" Margin="0,0,20,0" Content="{Binding [Page_SettingsPage_SS_RedSkinBtn],Source={x:Static lang:LanguageManager.Instance}}" Checked="ChangeSkin" Foreground="Red"/>
+                        <RadioButton Name="GreenSkinBtn" Margin="0,0,20,0" Content="{Binding [Page_SettingsPage_SS_GreenSkinBtn],Source={x:Static lang:LanguageManager.Instance}}" Checked="ChangeSkin" Foreground="Green"/>
+                        <RadioButton Name="OrangeSkinBtn" Margin="0,0,20,0" Content="{Binding [Page_SettingsPage_SS_OrangeSkinBtn],Source={x:Static lang:LanguageManager.Instance}}" Checked="ChangeSkin" Foreground="Orange"/>
+                        <RadioButton Name="PurpleSkinBtn" Margin="0,0,20,0" Content="{Binding [Page_SettingsPage_SS_PurpleSkinBtn],Source={x:Static lang:LanguageManager.Instance}}" Checked="ChangeSkin" Foreground="Purple"/>
+                        <RadioButton Name="PinkSkinBtn" Content="{Binding [Page_SettingsPage_SS_PinkSkinBtn],Source={x:Static lang:LanguageManager.Instance}}" Checked="ChangeSkin" Foreground="DeepPink"/>
+                    </WrapPanel>
                     <StackPanel Orientation="Horizontal" Margin="0,0,0,5">
-                        <Label Content="背景图片:" Margin="0,0,10,0"/>
-                        <Button x:Name="changeBackImg" Margin="0,0,10,0" Content="更改背景图片" VerticalAlignment="Center" Click="changeBackImg_Click"/>
-                        <Button x:Name="delBackImg"  Content="清除背景图片" VerticalAlignment="Center" Click="delBackImg_Click"/>
+                        <Label Content="{Binding [Page_SettingsPage_SS_BackgroundImg],Source={x:Static lang:LanguageManager.Instance}}" Margin="0,0,10,0"/>
+                        <Button x:Name="changeBackImg" Margin="0,0,10,0" Content="{Binding [Page_SettingsPage_SS_BI_ChangeBackImg],Source={x:Static lang:LanguageManager.Instance}}" VerticalAlignment="Center" Click="changeBackImg_Click"/>
+                        <Button x:Name="delBackImg" Margin="0,0,10,0" Content="{Binding [Page_SettingsPage_SS_BI_DelBackImg],Source={x:Static lang:LanguageManager.Instance}}" VerticalAlignment="Center" Click="delBackImg_Click"/>
+                        <Button x:Name="WesternEgg" Content="{Binding [Page_SettingsPage_SS_WesternEgg],Source={x:Static lang:LanguageManager.Instance}}" Style="{StaticResource ButtonDanger}" HorizontalAlignment="Left" VerticalAlignment="Center" Click="WesternEgg_Click" MinWidth="100"/>
                     </StackPanel>
                 </StackPanel>
             </controls:MagicCard>
-            <controls:MagicCard Title="设备信息" MarginOverride="10,10,10,20">
+            <controls:MagicCard Title="{Binding [Page_SettingsPage_Card_DeviceInfo],Source={x:Static lang:LanguageManager.Instance}}" MarginOverride="10,10,10,20">
                 <StackPanel>
                     <StackPanel.Resources>
                         <ResourceDictionary>
@@ -163,13 +187,13 @@
                         </ResourceDictionary>
                     </StackPanel.Resources>
                     <StackPanel Orientation="Horizontal" Margin="0,0,0,10">
-                        <Label Content="设备ID:" Margin="0,0,10,0" VerticalAlignment="Center"/>
-                        <Label Content="AAA" x:Name="DCID" Margin="0,0,10,0" VerticalAlignment="Center"/>
-                        <Button Name="CopyDCID" Content="复制设备ID" FontSize="14" Height="30" Click="CopyDCID_Click"  />
+                        <Label Content="{Binding [Page_SettingsPage_DI_DeviceID],Source={x:Static lang:LanguageManager.Instance}}" Margin="0,0,10,0" VerticalAlignment="Center"/>
+                        <Label Content="NULL" x:Name="DCID" Margin="0,0,10,0" VerticalAlignment="Center"/>
+                        <Button Name="CopyDCID" Content="{Binding [Page_SettingsPage_DI_CopyDID],Source={x:Static lang:LanguageManager.Instance}}" Click="CopyDCID_Click"  />
                     </StackPanel>
                     <StackPanel Margin="0,0,0,5">
-                        <Label Content="设备ID是MSL开发团队追踪MSL发生意外错误的重要依据，需要时请提供给我们！" Margin="0,0,10,0" VerticalAlignment="Center"/>
-                        <Label Content="每台设备的设备ID是唯一的（仅当重装系统/切换用户会变化）" Margin="0,0,10,0" VerticalAlignment="Center"/>
+                        <TextBlock Text="{Binding [Page_SettingsPage_DI_Tips1],Source={x:Static lang:LanguageManager.Instance}}" FontSize="14" TextWrapping="Wrap" Foreground="{DynamicResource PrimaryTextBrush}" Margin="5,0,10,10" VerticalAlignment="Center"/>
+                        <TextBlock Text="{Binding [Page_SettingsPage_DI_Tips2],Source={x:Static lang:LanguageManager.Instance}}" FontSize="14" TextWrapping="Wrap" Foreground="{DynamicResource PrimaryTextBrush}" Margin="5,0,10,0" VerticalAlignment="Center"/>
                     </StackPanel>
                 </StackPanel>
             </controls:MagicCard>

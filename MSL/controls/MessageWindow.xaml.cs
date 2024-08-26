@@ -1,4 +1,5 @@
-﻿using System.Windows;
+﻿using MSL.langs;
+using System.Windows;
 
 namespace MSL.controls
 {
@@ -17,11 +18,22 @@ namespace MSL.controls
             Title = dialogTitle;
             titleText.Text = dialogTitle;
             bodyText.Text = dialogText;
-            closeBtn.Content = closeText;
-            primaryBtn.Content = primaryText;
             if (!primaryBtnVisible)
             {
                 primaryBtn.Visibility = Visibility.Hidden;
+            }
+            else
+            {
+                if (closeText == "否")
+                {
+                    closeText = LanguageManager.Instance["No"];
+                }
+                if (primaryText == "是")
+                {
+                    primaryText = LanguageManager.Instance["Yes"];
+                }
+                closeBtn.Content = closeText;
+                primaryBtn.Content = primaryText;
             }
         }
 

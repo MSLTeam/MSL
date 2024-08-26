@@ -6,7 +6,7 @@
       xmlns:hc="https://handyorg.github.io/handycontrol"
       xmlns:local="clr-namespace:MSL.pages"
       xmlns:controls="clr-namespace:MSL.controls"
-      xmlns:langs="clr-namespace:MSL.i18n"
+      xmlns:langs="clr-namespace:MSL.langs"
       mc:Ignorable="d" d:DesignHeight="460" d:DesignWidth="750"
       Title="Home" Initialized="Page_Initialized" Loaded="Page_Loaded">
     <Page.RenderTransform>
@@ -24,26 +24,26 @@
         </Grid.RowDefinitions>
         <ScrollViewer Grid.Row="0">
             <StackPanel>
-                <controls:MagicCard x:Name="noticeBorder" Title="{Binding [Pages_Home_Notice], Source={x:Static langs:LanguageManager.Instance}}" VerticalAlignment="Top" MarginOverride="10,10,10,0">
+                <controls:MagicCard x:Name="noticeBorder" Title="{Binding [Page_Home_Notice], Source={x:Static langs:LanguageManager.Instance}}" VerticalAlignment="Top" MarginOverride="10,10,10,0">
                     <Grid>
                         <Image x:Name="noticeImage"/>
-                        <TextBox x:Name="noticeLab" Text="加载中……" TextBlock.LineHeight="24" IsReadOnly="True" VerticalScrollBarVisibility="Auto" TextWrapping="Wrap" BorderThickness="0" Background="{x:Null}" FontSize="14"/>
+                        <TextBox x:Name="noticeLab" Text="{Binding [Loading],Source={x:Static langs:LanguageManager.Instance},Mode=OneWay}" TextBlock.LineHeight="24" IsReadOnly="True" VerticalScrollBarVisibility="Auto" TextWrapping="Wrap" BorderThickness="0" Background="{x:Null}" FontSize="14"/>
                     </Grid>
                 </controls:MagicCard>
-                <controls:MagicCard x:Name="recommendBorder" Title="{Binding [Pages_Home_Recommendations], Source={x:Static langs:LanguageManager.Instance}}" VerticalAlignment="Top" MarginOverride="10,10,10,0" Visibility="Collapsed">
+                <controls:MagicCard x:Name="recommendBorder" Title="{Binding [Page_Home_Recommendations], Source={x:Static langs:LanguageManager.Instance}}" VerticalAlignment="Top" MarginOverride="10,10,10,0" Visibility="Collapsed">
                     <Grid x:Name="RecommendGrid"/>
                 </controls:MagicCard>
             </StackPanel>
         </ScrollViewer>
         <StackPanel Orientation="Horizontal" Grid.Row="1" HorizontalAlignment="Right" VerticalAlignment="Bottom">
-            <Button x:Name="gotoFrpBtn" Content="{Binding [Pages_Home_P2PPlay], Source={x:Static langs:LanguageManager.Instance}}" HorizontalAlignment="Right" Height="60" Margin="10" VerticalAlignment="Bottom" Width="120" Click="gotoFrpBtn_Click" FontSize="16"/>
+            <Button x:Name="gotoFrpBtn" Content="{Binding [Page_Home_P2PPlay], Source={x:Static langs:LanguageManager.Instance}}" HorizontalAlignment="Right" Height="60" Margin="10" VerticalAlignment="Bottom" Width="120" Click="gotoFrpBtn_Click" FontSize="16"/>
             <hc:SplitButton x:Name="startServer" Style="{StaticResource SplitButtonPrimary}" Margin="0,0,10,10" VerticalAlignment="Bottom" Height="60" Width="220" Click="startServer_Click" HorizontalAlignment="Right">
                 <hc:SplitButton.DropDownContent>
                     <ListBox x:Name="startServerDropdown" BorderThickness="0" SelectionChanged="startServerDropdown_SelectionChanged"/>
                 </hc:SplitButton.DropDownContent>
                 <StackPanel>
-                    <TextBlock Text="{Binding [Pages_Home_LaunchServer], Source={x:Static langs:LanguageManager.Instance}}" FontSize="18" HorizontalAlignment="Center" Foreground="White" />
-                    <TextBlock x:Name="selectedItemTextBlock" Text="{Binding [Pages_Home_CreateServer], Source={x:Static langs:LanguageManager.Instance}}" HorizontalAlignment="Center" Margin="0,5,0,0" Foreground="White"/>
+                    <TextBlock Text="{Binding [Page_Home_LaunchServer],Source={x:Static langs:LanguageManager.Instance}}" FontSize="18" HorizontalAlignment="Center" Foreground="White" />
+                    <TextBlock x:Name="selectedItemTextBlock" Text="{Binding [Page_Home_CreateServer],Source={x:Static langs:LanguageManager.Instance}}" HorizontalAlignment="Center" Margin="0,5,0,0" Foreground="White"/>
                 </StackPanel>
             </hc:SplitButton>
         </StackPanel> 

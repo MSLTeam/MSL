@@ -799,7 +799,7 @@ namespace MSL.controls
                         else
                         {
                             //处理下载失败
-                            Log_in($"下载 {url} 失败！重试……错误的状态码" + responseMessage.StatusCode);
+                            Log_in($"下载 {url} 失败！错误的状态码" + responseMessage.StatusCode + " 将重试……");
                             Thread.Sleep(1000);
                             continue;
                         }
@@ -823,7 +823,7 @@ namespace MSL.controls
                         else
                         {
                             //校验Sha1失败
-                            Log_in($"下载 {url} 失败！重试……校验Sha1失败！");
+                            Log_in($"下载 {url} 失败！校验Sha1失败！ 将重试……");
                             Thread.Sleep(1000);
                             continue;
                         }
@@ -838,7 +838,7 @@ namespace MSL.controls
                 catch (Exception err)
                 {
                     //处理下载失败
-                    Log_in($"下载 {url} 失败！重试……" + err.Message);
+                    Log_in($"下载 {url} 失败！" + err.Message + " 将重试……");
                     Thread.Sleep(1000);
                     continue;
                 }

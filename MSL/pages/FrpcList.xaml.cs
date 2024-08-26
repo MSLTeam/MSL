@@ -49,6 +49,10 @@ namespace MSL.pages
 
         private void FrpcListBox_MouseDoubleClick(object sender, MouseButtonEventArgs e)
         {
+            if (FrpcListBox.SelectedIndex == -1)
+            {
+                return;
+            }
             FrpcID = int.Parse(FrpcListBox.SelectedItem.ToString());
             OpenFrpcPage();
         }
@@ -57,6 +61,10 @@ namespace MSL.pages
         {
             if (e.Key == Key.Space)
             {
+                if (FrpcListBox.SelectedIndex == -1)
+                {
+                    return;
+                }
                 FrpcID = int.Parse(FrpcListBox.SelectedItem.ToString());
                 OpenFrpcPage();
             }

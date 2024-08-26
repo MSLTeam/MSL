@@ -6,7 +6,7 @@
       xmlns:hc="https://handyorg.github.io/handycontrol"
       xmlns:local="clr-namespace:MSL.pages"
       xmlns:controls="clr-namespace:MSL.controls"
-      xmlns:langs="clr-namespace:MSL.i18n"
+      xmlns:langs="clr-namespace:MSL.langs"
       mc:Ignorable="d" 
       d:DesignHeight="460" d:DesignWidth="750"
       Title="FrpcList" Loaded="Page_Loaded">
@@ -18,7 +18,7 @@
             <BeginStoryboard Storyboard="{StaticResource ShowPage}"/>
         </EventTrigger>
     </Page.Triggers>
-    <controls:MagicCard Title="{Binding [Pages_Frpc_Title], Source={x:Static langs:LanguageManager.Instance}}">
+    <controls:MagicCard Title="{Binding [Page_FrpcPage_Title], Source={x:Static langs:LanguageManager.Instance}}">
         <Grid>
             <Border CornerRadius="10" BorderThickness="0" Background="{DynamicResource BackgroundBrush}">
                 <ListBox x:Name="FrpcListBox" Background="{x:Null}" BorderBrush="{x:Null}" hc:Empty.ShowEmpty="true" MouseDoubleClick="FrpcListBox_MouseDoubleClick" KeyUp="FrpcListBox_KeyUp"/>

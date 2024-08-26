@@ -5,7 +5,7 @@
       xmlns:d="http://schemas.microsoft.com/expression/blend/2008" 
       xmlns:hc="https://handyorg.github.io/handycontrol"
       xmlns:local="clr-namespace:MSL.pages"
-      xmlns:langs="clr-namespace:MSL.i18n"
+      xmlns:langs="clr-namespace:MSL.langs"
       mc:Ignorable="d" d:DesignHeight="460" d:DesignWidth="750"
       Title="FrpcPage" Loaded="Page_Loaded">
     <Page.RenderTransform>
@@ -20,19 +20,23 @@
         <Grid>
             <Grid.RowDefinitions>
                 <RowDefinition Height="auto"/>
-                <RowDefinition Height="*"/>
+                <RowDefinition/>
             </Grid.RowDefinitions>
             <StackPanel Grid.Row="0">
-                <StackPanel Orientation="Horizontal">
-                    <Button x:Name="Return" hc:IconElement.Geometry="{StaticResource LeftGeometry}" Content="返回Frpc列表" HorizontalAlignment="Left" Click="Return_Click"/>
-                    <Button x:Name="startfrpc" Margin="10,0,10,0" Content="{Binding [Pages_Frpc_Launch], Source={x:Static langs:LanguageManager.Instance}}" Style="{StaticResource ButtonPrimary}" IsEnabled="False" Click="startfrpc_Click"/>
-                    <TextBlock x:Name="frplab1" Text="{Binding [Pages_Frpc_Status], Source={x:Static langs:LanguageManager.Instance}}" VerticalAlignment="Center" FontSize="16" Foreground="{DynamicResource DarkPrimaryBrush}"/>
-                    
-                </StackPanel>
+                <Grid>
+                    <Grid.ColumnDefinitions>
+                        <ColumnDefinition Width="Auto"/>
+                        <ColumnDefinition Width="Auto"/>
+                        <ColumnDefinition/>
+                    </Grid.ColumnDefinitions>
+                    <Button x:Name="Return" Grid.Column="0" hc:IconElement.Geometry="{StaticResource LeftGeometry}" Content="返回Frpc列表" HorizontalAlignment="Left" Click="Return_Click"/>
+                    <Button x:Name="startfrpc" Grid.Column="1" Margin="10,0,10,0" Content="{Binding [Page_FrpcPage_Launch], Source={x:Static langs:LanguageManager.Instance}}" Style="{StaticResource ButtonPrimary}" IsEnabled="False" Click="startfrpc_Click"/>
+                    <TextBlock x:Name="frplab1" Grid.Column="2" Text="节点状态" TextWrapping="Wrap" FontSize="16" Foreground="{DynamicResource DarkPrimaryBrush}" VerticalAlignment="Center"/>
+                </Grid>
                 <StackPanel Orientation="Horizontal" Margin="0,10,0,0">
-                    <TextBlock Text="{Binding [Pages_Frpc_IP], Source={x:Static langs:LanguageManager.Instance}}" HorizontalAlignment="Center"  VerticalAlignment="Center" FontSize="16" Foreground="{DynamicResource PrimaryTextBrush}"/>
-                    <TextBlock x:Name="frplab3" Text="{Binding [Pages_Frpc_IPNull], Source={x:Static langs:LanguageManager.Instance}}" HorizontalAlignment="Left" VerticalAlignment="Center" FontSize="16" Foreground="{DynamicResource PrimaryTextBrush}" Margin="3,0,30,0"/>
-                    <Button x:Name="copyFrpc" Content="{Binding [Pages_Frpc_Copy], Source={x:Static langs:LanguageManager.Instance}}" HorizontalAlignment="Right" FontSize="14" VerticalAlignment="Top" Width="100" Height="35" FontWeight="Normal" IsEnabled="False" Click="copyFrpc_Click"/>
+                    <TextBlock Text="{Binding [Page_FrpcPage_IP], Source={x:Static langs:LanguageManager.Instance}}" HorizontalAlignment="Center"  VerticalAlignment="Center" FontSize="16" Foreground="{DynamicResource PrimaryTextBrush}"/>
+                    <TextBlock x:Name="frplab3" Text="{Binding [Page_FrpcPage_IPNull], Source={x:Static langs:LanguageManager.Instance}}" HorizontalAlignment="Left" VerticalAlignment="Center" FontSize="16" Foreground="{DynamicResource PrimaryTextBrush}" Margin="3,0,30,0"/>
+                    <Button x:Name="copyFrpc" Content="{Binding [Page_FrpcPage_Copy], Source={x:Static langs:LanguageManager.Instance}}" HorizontalAlignment="Right" FontSize="14" VerticalAlignment="Top" Width="100" Height="35" FontWeight="Normal" IsEnabled="False" Click="copyFrpc_Click"/>
                 </StackPanel>
             </StackPanel>
             <TextBox x:Name="frpcOutlog" Grid.Row="1" Margin="0,10,0,0" TextWrapping="Wrap" Text="Logs" IsReadOnly="True" HorizontalScrollBarVisibility="Visible" VerticalScrollBarVisibility="Auto" VerticalContentAlignment="Top" Padding="10"/>

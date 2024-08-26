@@ -1,0 +1,625 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<root>
+  <!-- 
+    Microsoft ResX Schema 
+    
+    Version 2.0
+    
+    The primary goals of this format is to allow a simple XML format 
+    that is mostly human readable. The generation and parsing of the 
+    various data types are done through the TypeConverter classes 
+    associated with the data types.
+    
+    Example:
+    
+    ... ado.net/XML headers & schema ...
+    <resheader name="resmimetype">text/microsoft-resx</resheader>
+    <resheader name="version">2.0</resheader>
+    <resheader name="reader">System.Resources.ResXResourceReader, System.Windows.Forms, ...</resheader>
+    <resheader name="writer">System.Resources.ResXResourceWriter, System.Windows.Forms, ...</resheader>
+    <data name="Name1"><value>this is my long string</value><comment>this is a comment</comment></data>
+    <data name="Color1" type="System.Drawing.Color, System.Drawing">Blue</data>
+    <data name="Bitmap1" mimetype="application/x-microsoft.net.object.binary.base64">
+        <value>[base64 mime encoded serialized .NET Framework object]</value>
+    </data>
+    <data name="Icon1" type="System.Drawing.Icon, System.Drawing" mimetype="application/x-microsoft.net.object.bytearray.base64">
+        <value>[base64 mime encoded string representing a byte array form of the .NET Framework object]</value>
+        <comment>This is a comment</comment>
+    </data>
+                
+    There are any number of "resheader" rows that contain simple 
+    name/value pairs.
+    
+    Each data row contains a name, and value. The row also contains a 
+    type or mimetype. Type corresponds to a .NET class that support 
+    text/value conversion through the TypeConverter architecture. 
+    Classes that don't support this are serialized and stored with the 
+    mimetype set.
+    
+    The mimetype is used for serialized objects, and tells the 
+    ResXResourceReader how to depersist the object. This is currently not 
+    extensible. For a given mimetype the value must be set accordingly:
+    
+    Note - application/x-microsoft.net.object.binary.base64 is the format 
+    that the ResXResourceWriter will generate, however the reader can 
+    read any of the formats listed below.
+    
+    mimetype: application/x-microsoft.net.object.binary.base64
+    value   : The object must be serialized with 
+            : System.Runtime.Serialization.Formatters.Binary.BinaryFormatter
+            : and then encoded with base64 encoding.
+    
+    mimetype: application/x-microsoft.net.object.soap.base64
+    value   : The object must be serialized with 
+            : System.Runtime.Serialization.Formatters.Soap.SoapFormatter
+            : and then encoded with base64 encoding.
+
+    mimetype: application/x-microsoft.net.object.bytearray.base64
+    value   : The object must be serialized into a byte array 
+            : using a System.ComponentModel.TypeConverter
+            : and then encoded with base64 encoding.
+    -->
+  <xsd:schema id="root" xmlns="" xmlns:xsd="http://www.w3.org/2001/XMLSchema" xmlns:msdata="urn:schemas-microsoft-com:xml-msdata">
+    <xsd:import namespace="http://www.w3.org/XML/1998/namespace" />
+    <xsd:element name="root" msdata:IsDataSet="true">
+      <xsd:complexType>
+        <xsd:choice maxOccurs="unbounded">
+          <xsd:element name="metadata">
+            <xsd:complexType>
+              <xsd:sequence>
+                <xsd:element name="value" type="xsd:string" minOccurs="0" />
+              </xsd:sequence>
+              <xsd:attribute name="name" use="required" type="xsd:string" />
+              <xsd:attribute name="type" type="xsd:string" />
+              <xsd:attribute name="mimetype" type="xsd:string" />
+              <xsd:attribute ref="xml:space" />
+            </xsd:complexType>
+          </xsd:element>
+          <xsd:element name="assembly">
+            <xsd:complexType>
+              <xsd:attribute name="alias" type="xsd:string" />
+              <xsd:attribute name="name" type="xsd:string" />
+            </xsd:complexType>
+          </xsd:element>
+          <xsd:element name="data">
+            <xsd:complexType>
+              <xsd:sequence>
+                <xsd:element name="value" type="xsd:string" minOccurs="0" msdata:Ordinal="1" />
+                <xsd:element name="comment" type="xsd:string" minOccurs="0" msdata:Ordinal="2" />
+              </xsd:sequence>
+              <xsd:attribute name="name" type="xsd:string" use="required" msdata:Ordinal="1" />
+              <xsd:attribute name="type" type="xsd:string" msdata:Ordinal="3" />
+              <xsd:attribute name="mimetype" type="xsd:string" msdata:Ordinal="4" />
+              <xsd:attribute ref="xml:space" />
+            </xsd:complexType>
+          </xsd:element>
+          <xsd:element name="resheader">
+            <xsd:complexType>
+              <xsd:sequence>
+                <xsd:element name="value" type="xsd:string" minOccurs="0" msdata:Ordinal="1" />
+              </xsd:sequence>
+              <xsd:attribute name="name" type="xsd:string" use="required" />
+            </xsd:complexType>
+          </xsd:element>
+        </xsd:choice>
+      </xsd:complexType>
+    </xsd:element>
+  </xsd:schema>
+  <resheader name="resmimetype">
+    <value>text/microsoft-resx</value>
+  </resheader>
+  <resheader name="version">
+    <value>2.0</value>
+  </resheader>
+  <resheader name="reader">
+    <value>System.Resources.ResXResourceReader, System.Windows.Forms, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089</value>
+  </resheader>
+  <resheader name="writer">
+    <value>System.Resources.ResXResourceWriter, System.Windows.Forms, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089</value>
+  </resheader>
+  <data name="MainWindow_GrowlMsg_LatestVersion" xml:space="preserve">
+    <value>Your MSL is already the latest version!</value>
+  </data>
+  <data name="MainWindow_Menu_About" xml:space="preserve">
+    <value>About</value>
+  </data>
+  <data name="MainWindow_Menu_Frpc" xml:space="preserve">
+    <value>Frpc</value>
+  </data>
+  <data name="MainWindow_Menu_Home" xml:space="preserve">
+    <value>Home</value>
+  </data>
+  <data name="MainWindow_Menu_OnlinePlay" xml:space="preserve">
+    <value>P2P</value>
+  </data>
+  <data name="MainWindow_Menu_ServerList" xml:space="preserve">
+    <value>Servers</value>
+  </data>
+  <data name="MainWindow_Menu_Setting" xml:space="preserve">
+    <value>Settings</value>
+  </data>
+  <data name="Cancel" xml:space="preserve">
+    <value>Cancel</value>
+  </data>
+  <data name="Warning" xml:space="preserve">
+    <value>Warning</value>
+  </data>
+  <data name="Page_About_AboutMSL" xml:space="preserve">
+    <value>About Software</value>
+  </data>
+  <data name="Page_About_MainContent" xml:space="preserve">
+    <value>Minecraft Server Launcher (MSL) Copyright © 2021-2024 By MSLTeam
+This software is not affiliated with Microsoft or Mojang Studios (Mojang AB).
+This software is open source, and any actions performed by users are not related to the developers.
+The rights to third-party services integrated with this software belong to the respective third parties.
+
+Special thanks to the following download sources/sites crucial for the proper functioning of the server:
+CurseForge — Mod and modpack download source API
+BMCLAPI — Forge server download source
+And other official and third-party server download sources...
+
+Also, thanks to all MSL users and those who have provided suggestions and reported bugs.
+Thank you for your support and trust!</value>
+  </data>
+  <data name="Page_About_OpenSource" xml:space="preserve">
+    <value>OpenSource(Github)</value>
+  </data>
+  <data name="OpenWebsite" xml:space="preserve">
+    <value>Open</value>
+  </data>
+  <data name="Page_About_Package" xml:space="preserve">
+    <value>Package</value>
+  </data>
+  <data name="Page_About_Sponsor" xml:space="preserve">
+    <value>Sponsor</value>
+  </data>
+  <data name="Page_About_SponsorText" xml:space="preserve">
+    <value>Software develop is not easy, you can sponsor us if you have the ability~</value>
+  </data>
+  <data name="Page_About_Website" xml:space="preserve">
+    <value>Offical Website: https://www.mslmc.cn/</value>
+  </data>
+  <data name="Page_Home_LaunchServer" xml:space="preserve">
+    <value>Launch Server</value>
+  </data>
+  <data name="Page_Home_Notice" xml:space="preserve">
+    <value>Notice</value>
+  </data>
+  <data name="Page_Home_P2PPlay" xml:space="preserve">
+    <value>P2P Play</value>
+  </data>
+  <data name="Page_Home_Recommendations" xml:space="preserve">
+    <value>Recommendations</value>
+  </data>
+  <data name="Page_OnlinePage_Announce" xml:space="preserve">
+    <value>Note: This feature is currently unstable and cannot penetrate all types of NAT. If online play fails, try setting up a server and using internal network mapping to connect!
+This feature may require a genuine account. If you cannot connect, please seek solutions online or try setting up a server and using internal network mapping!</value>
+  </data>
+  <data name="Page_ServerList_Delete" xml:space="preserve">
+    <value>Delete Server</value>
+  </data>
+  <data name="Page_ServerList_Dialog_NoConfTip" xml:space="preserve">
+    <value>There has detected an error in the configuration file. Is this the first time using it? 
+Do you want to create a new server?</value>
+  </data>
+  <data name="Page_ServerList_Do" xml:space="preserve">
+    <value>Control</value>
+  </data>
+  <data name="Page_ServerList_LaunchServer" xml:space="preserve">
+    <value>Launch Server</value>
+  </data>
+  <data name="Page_ServerList_ManageModsOrPlugins" xml:space="preserve">
+    <value>Manage Mods/Plugins</value>
+  </data>
+  <data name="Page_ServerList_OpenDir" xml:space="preserve">
+    <value>Open Server Folder</value>
+  </data>
+  <data name="Page_ServerList_Refresh" xml:space="preserve">
+    <value>Refresh</value>
+  </data>
+  <data name="Page_ServerList_ServerName" xml:space="preserve">
+    <value>Name</value>
+  </data>
+  <data name="Page_ServerList_Setting" xml:space="preserve">
+    <value>Change Setting</value>
+  </data>
+  <data name="Page_ServerList_Status" xml:space="preserve">
+    <value>Server Status</value>
+  </data>
+  <data name="Page_ServerList_Title" xml:space="preserve">
+    <value>Server List (Double-click to launch selected server)</value>
+  </data>
+  <data name="Page_ServerList_UseCMDLaunch" xml:space="preserve">
+    <value>Launch Server By CMD</value>
+  </data>
+  <data name="Page_FrpcPage_Close" xml:space="preserve">
+    <value>Stop Frpc</value>
+  </data>
+  <data name="Page_FrpcPage_Copy" xml:space="preserve">
+    <value>Copy</value>
+  </data>
+  <data name="Page_FrpcPage_IP" xml:space="preserve">
+    <value>Connect IP:</value>
+  </data>
+  <data name="Page_FrpcPage_IPNull" xml:space="preserve">
+    <value>Null</value>
+  </data>
+  <data name="Page_FrpcPage_Launch" xml:space="preserve">
+    <value>Launch Frpc</value>
+  </data>
+  <data name="Page_FrpcPage_Status_Checking" xml:space="preserve">
+    <value>Checking the availability of Frp service...</value>
+  </data>
+  <data name="Page_FrpcPage_Title" xml:space="preserve">
+    <value>Frpc List (Double-click to explore info)</value>
+  </data>
+  <data name="Page_Home_CreateServer" xml:space="preserve">
+    <value>Create A New Server</value>
+  </data>
+  <data name="Error" xml:space="preserve">
+    <value>Error</value>
+  </data>
+  <data name="Tip" xml:space="preserve">
+    <value>Tip</value>
+  </data>
+  <data name="MainWindow_GrowlMsg_AutoLaunchFrpc" xml:space="preserve">
+    <value>Automatically opening internal network mapping for you...</value>
+  </data>
+  <data name="MainWindow_GrowlMsg_AutoLaunchFrpcErr" xml:space="preserve">
+    <value>Failed to automatically start internal network mapping!</value>
+  </data>
+  <data name="MainWindow_GrowlMsg_AutoLaunchServer" xml:space="preserve">
+    <value>Automatically starting the corresponding server for you...</value>
+  </data>
+  <data name="MainWindow_GrowlMsg_AutoLaunchServerErr" xml:space="preserve">
+    <value>Failed to automatically start the server!</value>
+  </data>
+  <data name="MainWindow_GrowlMsg_BeatVersion" xml:space="preserve">
+    <value>This version is higher than the official release. If you encounter any bugs, please report them promptly!</value>
+  </data>
+  <data name="MainWindow_GrowlMsg_CheckUpdateErr" xml:space="preserve">
+    <value>Failed to check for updates!</value>
+  </data>
+  <data name="MainWindow_Close_Warning" xml:space="preserve">
+    <value>Your server, internal network mapping, or online functions are currently running. Closing the software may leave these processes running in the background and consuming resources! Are you sure you want to continue closing?
+Note: If you want to hide the main window, please go to settings and enable the tray icon.</value>
+  </data>
+  <data name="MainWindow_Close_Warning2" xml:space="preserve">
+    <value>Your server, internal network mapping, or online functions are currently running. Closing the software may leave these processes running in the background and consuming resources! Are you sure you want to continue closing?</value>
+  </data>
+  <data name="MainWindow_GrowlMsg_ConfigErr" xml:space="preserve">
+    <value>An error occurred while loading the MSL configuration file. This error may not affect software operation, but it's recommended to report it to the author!
+Error code:</value>
+  </data>
+  <data name="MainWindow_GrowlMsg_ConfigErr2" xml:space="preserve">
+    <value>An error occurred while loading the MSL configuration file. Retrying. If the software crashes after clicking OK, please try running it as an administrator or report this issue to the author!
+Error code:</value>
+  </data>
+  <data name="MainWindow_GrowlMsg_ReadEula" xml:space="preserve">
+    <value>Read the agreement</value>
+  </data>
+  <data name="MainWindow_GrowlMsg_Eula" xml:space="preserve">
+    <value>By using this software, you agree to the software's terms of use: https://www.mslmc.cn/eula.html
+If you do not agree, please exit the software immediately and delete related files!</value>
+  </data>
+  <data name="MainWindow_GrowlMsg_InitErr" xml:space="preserve">
+    <value>An issue occurred during the initialization of MSL. Please try running MSL as an administrator...
+Error code:</value>
+  </data>
+  <data name="MainWindow_GrowlMsg_MemoryErr" xml:space="preserve">
+    <value>Failed to retrieve system memory!</value>
+  </data>
+  <data name="MainWindow_GrowlMsg_MSLServerDown" xml:space="preserve">
+    <value>MSL main server connection timed out (possibly due to a DDoS attack), switching to the backup server!</value>
+  </data>
+  <data name="MainWindow_GrowlMsg_RefuseUpdate" xml:space="preserve">
+    <value>You refused to update to the new version. If you encounter bugs in this version, please do not report them to us!</value>
+  </data>
+  <data name="MainWindow_GrowlMsg_Update" xml:space="preserve">
+    <value>Update</value>
+  </data>
+  <data name="MainWindow_GrowlMsg_UpdateFailed" xml:space="preserve">
+    <value>Update failed!</value>
+  </data>
+  <data name="MainWindow_GrowlMsg_UpdateInfo" xml:space="preserve">
+    <value>New version found, version number: {0}. Do you want to update?
+Update log:</value>
+  </data>
+  <data name="MainWindow_GrowlMsg_UpdateWarning" xml:space="preserve">
+    <value>Your server/internal network mapping/peer-to-peer connection is running. If you update now, there may be residual processes in the background. Please close them before updating!</value>
+  </data>
+  <data name="MainWindow_GrowlMsg_BetaVersion" xml:space="preserve">
+    <value>The current version is higher than the latest official version. If you encounter bugs, please provide timely feedback to the developers!</value>
+  </data>
+  <data name="Page_OnlinePage_CloseRoom" xml:space="preserve">
+    <value>Close room</value>
+  </data>
+  <data name="Page_OnlinePage_CloseSuc" xml:space="preserve">
+    <value>Closed successfully!</value>
+  </data>
+  <data name="Page_OnlinePage_CreateRoom" xml:space="preserve">
+    <value>Click to create a room</value>
+  </data>
+  <data name="Page_OnlinePage_Create_key" xml:space="preserve">
+    <value>Room key:</value>
+  </data>
+  <data name="Page_OnlinePage_Create_Port" xml:space="preserve">
+    <value>Game port:</value>
+  </data>
+  <data name="Page_OnlinePage_Create_RoomNo." xml:space="preserve">
+    <value>Room number:</value>
+  </data>
+  <data name="Download_Frpc_Info" xml:space="preserve">
+    <value>Downloading Frpc...</value>
+  </data>
+  <data name="Page_OnlinePage_JoinRoom" xml:space="preserve">
+    <value>Click to join a room</value>
+  </data>
+  <data name="Page_OnlinePage_Join_Key" xml:space="preserve">
+    <value>Room key:</value>
+  </data>
+  <data name="Page_OnlinePage_Join_Port" xml:space="preserve">
+    <value>Bind port (default is 25565, do not change unless necessary):</value>
+  </data>
+  <data name="Page_OnlinePage_Join_RoomNo." xml:space="preserve">
+    <value>Room number:</value>
+  </data>
+  <data name="Page_OnlinePage_Err" xml:space="preserve">
+    <value>Bridge failed!</value>
+  </data>
+  <data name="Page_OnlinePage_ErrMsg1" xml:space="preserve">
+    <value>An error occurred. Please check if antivirus software blocked it by mistake and try again:</value>
+  </data>
+  <data name="Page_OnlinePage_ExitRoom" xml:space="preserve">
+    <value>Exit room</value>
+  </data>
+  <data name="Page_OnlinePage_Header_Create" xml:space="preserve">
+    <value>Create room — Host</value>
+  </data>
+  <data name="Page_OnlinePage_Header_Join" xml:space="preserve">
+    <value>Join room — Member</value>
+  </data>
+  <data name="Page_OnlinePage_Log" xml:space="preserve">
+    <value>Log</value>
+  </data>
+  <data name="Page_OnlinePage_LoginSuc" xml:space="preserve">
+    <value>Successfully logged into the server!</value>
+  </data>
+  <data name="Page_OnlinePage_ServerStatusChecking" xml:space="preserve">
+    <value>Server status: Checking</value>
+  </data>
+  <data name="Page_OnlinePage_ServerStatusDown" xml:space="preserve">
+    <value>Server status: Timeout detected, the server might be down</value>
+  </data>
+  <data name="Page_OnlinePage_ServerStatusOK" xml:space="preserve">
+    <value>Server status: Available</value>
+  </data>
+  <data name="Page_OnlinePage_Suc" xml:space="preserve">
+    <value>Bridge successful!</value>
+  </data>
+  <data name="Page_OnlinePage_UseTip" xml:space="preserve">
+    <value>Online tutorial</value>
+  </data>
+  <data name="Page_OnlinePage_Title" xml:space="preserve">
+    <value>P2P Play</value>
+  </data>
+  <data name="Update_Frpc_Info" xml:space="preserve">
+    <value>Updating Frpc...</value>
+  </data>
+  <data name="Done" xml:space="preserve">
+    <value>Done</value>
+  </data>
+  <data name="Close" xml:space="preserve">
+    <value>Close</value>
+  </data>
+  <data name="InputDialog_Title" xml:space="preserve">
+    <value>Input</value>
+  </data>
+  <data name="Loading" xml:space="preserve">
+    <value>Loading...</value>
+  </data>
+  <data name="Loading_PlzWait" xml:space="preserve">
+    <value>Loading, Please wait...</value>
+  </data>
+  <data name="DownloadDialog_CheckIntegrityFailed" xml:space="preserve">
+    <value>Verification of integrity failed! Please try again!</value>
+  </data>
+  <data name="DownloadDialog_DownloadCancel" xml:space="preserve">
+    <value>Cancelled!</value>
+  </data>
+  <data name="DownloadDialog_DownloadComplete" xml:space="preserve">
+    <value>Completed!</value>
+  </data>
+  <data name="DownloadDialog_DownloadFailed" xml:space="preserve">
+    <value>Download failed！</value>
+  </data>
+  <data name="DownloadDialog_Downloading" xml:space="preserve">
+    <value>Downloading：{0}MB/{1}MB Progress：{2}% Speed：{3}MB/s</value>
+  </data>
+  <data name="DownloadDialog_Mode2_Downloading" xml:space="preserve">
+    <value>Downloading, Progress:{0}%</value>
+  </data>
+  <data name="DownloadDialog_OnDownloadStarted" xml:space="preserve">
+    <value>Starting Download...Size：{0}MB</value>
+  </data>
+  <data name="No" xml:space="preserve">
+    <value>No</value>
+  </data>
+  <data name="OK" xml:space="preserve">
+    <value>OK</value>
+  </data>
+  <data name="Yes" xml:space="preserve">
+    <value>Yes</value>
+  </data>
+  <data name="_Done" xml:space="preserve">
+    <value>Done</value>
+  </data>
+  <data name="_OK" xml:space="preserve">
+    <value>OK</value>
+  </data>
+  <data name="Page_SettingsPage_Card_AutomationSettings" xml:space="preserve">
+    <value>Automation Settings</value>
+  </data>
+  <data name="Page_SettingsPage_Card_ChangeFunctions" xml:space="preserve">
+    <value>Change Functions</value>
+  </data>
+  <data name="Page_SettingsPage_Card_DeviceInfo" xml:space="preserve">
+    <value>Device Info</value>
+  </data>
+  <data name="Page_SettingsPage_Card_SkinSettings" xml:space="preserve">
+    <value>Skin Settings</value>
+  </data>
+  <data name="Closed" xml:space="preserve">
+    <value>Closed</value>
+  </data>
+  <data name="Opened" xml:space="preserve">
+    <value>Opened</value>
+  </data>
+  <data name="Page_SettingsPage_AS_ALF_FrpcList" xml:space="preserve">
+    <value>Enter the ID of the Frpc to auto-start here (separate with commas):</value>
+  </data>
+  <data name="Page_SettingsPage_AS_ALS_AutoLaunchServers" xml:space="preserve">
+    <value>Startup list:</value>
+  </data>
+  <data name="Page_SettingsPage_AS_ALS_ServerList" xml:space="preserve">
+    <value>Server list:</value>
+  </data>
+  <data name="Page_SettingsPage_AS_ARASL_RecordPlayers" xml:space="preserve">
+    <value>Record players feature</value>
+  </data>
+  <data name="Page_SettingsPage_AS_ARASL_ShowSysOccupation" xml:space="preserve">
+    <value>Show system occupation feature</value>
+  </data>
+  <data name="Page_SettingsPage_AS_AutoLaunchFrpc" xml:space="preserve">
+    <value>Auto-open Frpc when launching the software:</value>
+  </data>
+  <data name="Page_SettingsPage_AS_AutoLaunchServer" xml:space="preserve">
+    <value>Start the software to automatically open the servers in the startup list:</value>
+  </data>
+  <data name="Page_SettingsPage_AS_AutoRunAtServerLaunched" xml:space="preserve">
+    <value>Automatically start when the server is launched:</value>
+  </data>
+  <data name="Page_SettingsPage_AS_AutoRunAtStartup" xml:space="preserve">
+    <value>Automatically start MSL on boot:</value>
+  </data>
+  <data name="Page_SettingsPage_AS_AutoUpdate" xml:space="preserve">
+    <value>Automatically update MSL when an update is available:</value>
+  </data>
+  <data name="Page_SettingsPage_CF_AddDownloadTask" xml:space="preserve">
+    <value>Add download task:</value>
+  </data>
+  <data name="Page_SettingsPage_CF_BasicFunction" xml:space="preserve">
+    <value>Basic functions:</value>
+  </data>
+  <data name="Page_SettingsPage_CF_BF_CheckUpdate" xml:space="preserve">
+    <value>Check for updates</value>
+  </data>
+  <data name="Page_SettingsPage_CF_BF_MSLTips" xml:space="preserve">
+    <value>MSL tips:</value>
+  </data>
+  <data name="Page_SettingsPage_CF_BF_NotifyIcon" xml:space="preserve">
+    <value>NotifyIcon:</value>
+  </data>
+  <data name="Page_SettingsPage_CF_BF_RecoveryBtn" xml:space="preserve">
+    <value>Restore default settings</value>
+  </data>
+  <data name="Page_SettingsPage_CF_BF_SoftwareWiki" xml:space="preserve">
+    <value>Software documentation</value>
+  </data>
+  <data name="Page_SettingsPage_CF_DownloadThread" xml:space="preserve">
+    <value>Download threads (default is 8, recommended not to exceed 16):</value>
+  </data>
+  <data name="Page_SettingsPage_CF_Language" xml:space="preserve">
+    <value>Language:</value>
+  </data>
+  <data name="Page_SettingsPage_DI_CopyDID" xml:space="preserve">
+    <value>Copy device ID</value>
+  </data>
+  <data name="Page_SettingsPage_DI_DeviceID" xml:space="preserve">
+    <value>Device ID:</value>
+  </data>
+  <data name="Page_SettingsPage_DI_Tips1" xml:space="preserve">
+    <value>The device ID is an important reference for the MSL development team to track unexpected errors in MSL. Please provide it to us when necessary!</value>
+  </data>
+  <data name="Page_SettingsPage_DI_Tips2" xml:space="preserve">
+    <value>The device ID is unique to each device (it only changes when reinstalling the system or switching users).</value>
+  </data>
+  <data name="Page_SettingsPage_SS_BackgroundImg" xml:space="preserve">
+    <value>Background image:</value>
+  </data>
+  <data name="Page_SettingsPage_SS_BI_ChangeBackImg" xml:space="preserve">
+    <value>Change background image</value>
+  </data>
+  <data name="Page_SettingsPage_SS_BI_DelBackImg" xml:space="preserve">
+    <value>Clear background image</value>
+  </data>
+  <data name="Page_SettingsPage_SS_BlueSkinBtn" xml:space="preserve">
+    <value>Blue skin (default)</value>
+  </data>
+  <data name="Page_SettingsPage_SS_DarkTheme" xml:space="preserve">
+    <value>Dark mode</value>
+  </data>
+  <data name="Page_SettingsPage_SS_GreenSkinBtn" xml:space="preserve">
+    <value>Green skin</value>
+  </data>
+  <data name="Page_SettingsPage_SS_OrangeSkinBtn" xml:space="preserve">
+    <value>Orange skin</value>
+  </data>
+  <data name="Page_SettingsPage_SS_PinkSkinBtn" xml:space="preserve">
+    <value>Pink skin</value>
+  </data>
+  <data name="Page_SettingsPage_SS_PurpleSkinBtn" xml:space="preserve">
+    <value>Purple skin</value>
+  </data>
+  <data name="Page_SettingsPage_SS_RedSkinBtn" xml:space="preserve">
+    <value>Red skin</value>
+  </data>
+  <data name="Page_SettingsPage_SS_SemitransparentTitle" xml:space="preserve">
+    <value>Semitransparent title bar</value>
+  </data>
+  <data name="Page_SettingsPage_SS_ThemeColor" xml:space="preserve">
+    <value>Theme color:</value>
+  </data>
+  <data name="Page_SettingsPage_SS_UseSysTheme" xml:space="preserve">
+    <value>Use system style</value>
+  </data>
+  <data name="Page_SettingsPage_SS_WesternEgg" xml:space="preserve">
+    <value>Do not click me!</value>
+  </data>
+  <data name="None" xml:space="preserve">
+    <value>None</value>
+  </data>
+  <data name="Page_FrpcPage_Status_BedrockVersion" xml:space="preserve">
+    <value>Bedrock Version:</value>
+  </data>
+  <data name="Page_FrpcPage_Status_ChmlFrp" xml:space="preserve">
+    <value>ChmlFrp Service</value>
+  </data>
+  <data name="Page_FrpcPage_Status_CustomFrp" xml:space="preserve">
+    <value>CustomFrp Service</value>
+  </data>
+  <data name="Page_FrpcPage_Status_Failed" xml:space="preserve">
+    <value>Failed to obtain Frp information, we recommended you to reconfigure!</value>
+  </data>
+  <data name="Page_FrpcPage_Status_IP" xml:space="preserve">
+    <value>IP:</value>
+  </data>
+  <data name="Page_FrpcPage_Status_JavaVersion" xml:space="preserve">
+    <value>Java Version:</value>
+  </data>
+  <data name="Page_FrpcPage_Status_OpenFrp" xml:space="preserve">
+    <value>OpenFrp Service</value>
+  </data>
+  <data name="Page_FrpcPage_Status_OpenFrp_ViewIP" xml:space="preserve">
+    <value>Please Launch Frpc to view IP address</value>
+  </data>
+  <data name="Page_FrpcPage_Status_Ping" xml:space="preserve">
+    <value>Ping:</value>
+  </data>
+  <data name="Page_FrpcPage_Status_Port" xml:space="preserve">
+    <value>Port:</value>
+  </data>
+  <data name="Page_FrpcPage_Status_Offline" xml:space="preserve">
+    <value>Service offline or Ping disabled. If unable to connect, please reconfigure!</value>
+  </data>
+</root>

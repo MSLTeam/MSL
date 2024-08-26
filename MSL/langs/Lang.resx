@@ -1,0 +1,625 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<root>
+  <!-- 
+    Microsoft ResX Schema 
+    
+    Version 2.0
+    
+    The primary goals of this format is to allow a simple XML format 
+    that is mostly human readable. The generation and parsing of the 
+    various data types are done through the TypeConverter classes 
+    associated with the data types.
+    
+    Example:
+    
+    ... ado.net/XML headers & schema ...
+    <resheader name="resmimetype">text/microsoft-resx</resheader>
+    <resheader name="version">2.0</resheader>
+    <resheader name="reader">System.Resources.ResXResourceReader, System.Windows.Forms, ...</resheader>
+    <resheader name="writer">System.Resources.ResXResourceWriter, System.Windows.Forms, ...</resheader>
+    <data name="Name1"><value>this is my long string</value><comment>this is a comment</comment></data>
+    <data name="Color1" type="System.Drawing.Color, System.Drawing">Blue</data>
+    <data name="Bitmap1" mimetype="application/x-microsoft.net.object.binary.base64">
+        <value>[base64 mime encoded serialized .NET Framework object]</value>
+    </data>
+    <data name="Icon1" type="System.Drawing.Icon, System.Drawing" mimetype="application/x-microsoft.net.object.bytearray.base64">
+        <value>[base64 mime encoded string representing a byte array form of the .NET Framework object]</value>
+        <comment>This is a comment</comment>
+    </data>
+                
+    There are any number of "resheader" rows that contain simple 
+    name/value pairs.
+    
+    Each data row contains a name, and value. The row also contains a 
+    type or mimetype. Type corresponds to a .NET class that support 
+    text/value conversion through the TypeConverter architecture. 
+    Classes that don't support this are serialized and stored with the 
+    mimetype set.
+    
+    The mimetype is used for serialized objects, and tells the 
+    ResXResourceReader how to depersist the object. This is currently not 
+    extensible. For a given mimetype the value must be set accordingly:
+    
+    Note - application/x-microsoft.net.object.binary.base64 is the format 
+    that the ResXResourceWriter will generate, however the reader can 
+    read any of the formats listed below.
+    
+    mimetype: application/x-microsoft.net.object.binary.base64
+    value   : The object must be serialized with 
+            : System.Runtime.Serialization.Formatters.Binary.BinaryFormatter
+            : and then encoded with base64 encoding.
+    
+    mimetype: application/x-microsoft.net.object.soap.base64
+    value   : The object must be serialized with 
+            : System.Runtime.Serialization.Formatters.Soap.SoapFormatter
+            : and then encoded with base64 encoding.
+
+    mimetype: application/x-microsoft.net.object.bytearray.base64
+    value   : The object must be serialized into a byte array 
+            : using a System.ComponentModel.TypeConverter
+            : and then encoded with base64 encoding.
+    -->
+  <xsd:schema id="root" xmlns="" xmlns:xsd="http://www.w3.org/2001/XMLSchema" xmlns:msdata="urn:schemas-microsoft-com:xml-msdata">
+    <xsd:import namespace="http://www.w3.org/XML/1998/namespace" />
+    <xsd:element name="root" msdata:IsDataSet="true">
+      <xsd:complexType>
+        <xsd:choice maxOccurs="unbounded">
+          <xsd:element name="metadata">
+            <xsd:complexType>
+              <xsd:sequence>
+                <xsd:element name="value" type="xsd:string" minOccurs="0" />
+              </xsd:sequence>
+              <xsd:attribute name="name" use="required" type="xsd:string" />
+              <xsd:attribute name="type" type="xsd:string" />
+              <xsd:attribute name="mimetype" type="xsd:string" />
+              <xsd:attribute ref="xml:space" />
+            </xsd:complexType>
+          </xsd:element>
+          <xsd:element name="assembly">
+            <xsd:complexType>
+              <xsd:attribute name="alias" type="xsd:string" />
+              <xsd:attribute name="name" type="xsd:string" />
+            </xsd:complexType>
+          </xsd:element>
+          <xsd:element name="data">
+            <xsd:complexType>
+              <xsd:sequence>
+                <xsd:element name="value" type="xsd:string" minOccurs="0" msdata:Ordinal="1" />
+                <xsd:element name="comment" type="xsd:string" minOccurs="0" msdata:Ordinal="2" />
+              </xsd:sequence>
+              <xsd:attribute name="name" type="xsd:string" use="required" msdata:Ordinal="1" />
+              <xsd:attribute name="type" type="xsd:string" msdata:Ordinal="3" />
+              <xsd:attribute name="mimetype" type="xsd:string" msdata:Ordinal="4" />
+              <xsd:attribute ref="xml:space" />
+            </xsd:complexType>
+          </xsd:element>
+          <xsd:element name="resheader">
+            <xsd:complexType>
+              <xsd:sequence>
+                <xsd:element name="value" type="xsd:string" minOccurs="0" msdata:Ordinal="1" />
+              </xsd:sequence>
+              <xsd:attribute name="name" type="xsd:string" use="required" />
+            </xsd:complexType>
+          </xsd:element>
+        </xsd:choice>
+      </xsd:complexType>
+    </xsd:element>
+  </xsd:schema>
+  <resheader name="resmimetype">
+    <value>text/microsoft-resx</value>
+  </resheader>
+  <resheader name="version">
+    <value>2.0</value>
+  </resheader>
+  <resheader name="reader">
+    <value>System.Resources.ResXResourceReader, System.Windows.Forms, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089</value>
+  </resheader>
+  <resheader name="writer">
+    <value>System.Resources.ResXResourceWriter, System.Windows.Forms, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089</value>
+  </resheader>
+  <data name="Cancel" xml:space="preserve">
+    <value>取消</value>
+  </data>
+  <data name="Close" xml:space="preserve">
+    <value>关闭</value>
+  </data>
+  <data name="Closed" xml:space="preserve">
+    <value>已关闭</value>
+  </data>
+  <data name="Done" xml:space="preserve">
+    <value>完成</value>
+  </data>
+  <data name="DownloadDialog_CheckIntegrityFailed" xml:space="preserve">
+    <value>校验完整性失败！请尝试重新下载！</value>
+  </data>
+  <data name="DownloadDialog_DownloadCancel" xml:space="preserve">
+    <value>下载取消！</value>
+  </data>
+  <data name="DownloadDialog_DownloadComplete" xml:space="preserve">
+    <value>下载完成！</value>
+  </data>
+  <data name="DownloadDialog_DownloadFailed" xml:space="preserve">
+    <value>下载失败！</value>
+  </data>
+  <data name="DownloadDialog_Downloading" xml:space="preserve">
+    <value>已下载：{0}MB/{1}MB 进度：{2}% 速度：{3}MB/s</value>
+  </data>
+  <data name="DownloadDialog_Mode2_Downloading" xml:space="preserve">
+    <value>下载中，进度{0}%</value>
+  </data>
+  <data name="DownloadDialog_OnDownloadStarted" xml:space="preserve">
+    <value>开始下载……大小：{0}MB</value>
+  </data>
+  <data name="Download_Frpc_Info" xml:space="preserve">
+    <value>下载内网映射中……</value>
+  </data>
+  <data name="Error" xml:space="preserve">
+    <value>错误</value>
+  </data>
+  <data name="InputDialog_Title" xml:space="preserve">
+    <value>输入</value>
+  </data>
+  <data name="Loading" xml:space="preserve">
+    <value>加载中……</value>
+  </data>
+  <data name="Loading_PlzWait" xml:space="preserve">
+    <value>加载中，请稍等……</value>
+  </data>
+  <data name="MainWindow_Close_Warning" xml:space="preserve">
+    <value>您的服务器、内网映射或联机功能正在运行中，关闭软件可能会让这些进程在后台一直运行并占用资源！确定要继续关闭吗？
+注：如果想隐藏主窗口的话，请前往设置打开托盘图标</value>
+  </data>
+  <data name="MainWindow_Close_Warning2" xml:space="preserve">
+    <value>您的服务器、内网映射或联机功能正在运行中，关闭软件可能会让这些进程在后台一直运行并占用资源！确定要继续关闭吗？</value>
+  </data>
+  <data name="MainWindow_GrowlMsg_AutoLaunchFrpc" xml:space="preserve">
+    <value>正在为你自动打开内网映射……</value>
+  </data>
+  <data name="MainWindow_GrowlMsg_AutoLaunchFrpcErr" xml:space="preserve">
+    <value>自动启动内网映射失败！</value>
+  </data>
+  <data name="MainWindow_GrowlMsg_AutoLaunchServer" xml:space="preserve">
+    <value>正在为你自动打开相应服务器……</value>
+  </data>
+  <data name="MainWindow_GrowlMsg_AutoLaunchServerErr" xml:space="preserve">
+    <value>自动启动服务器失败！</value>
+  </data>
+  <data name="MainWindow_GrowlMsg_BeatVersion" xml:space="preserve">
+    <value>当前版本高于正式版本，若使用中遇到BUG，请及时反馈！</value>
+  </data>
+  <data name="MainWindow_GrowlMsg_BetaVersion" xml:space="preserve">
+    <value>当前版本高于最新正式版，若遇到Bug，请及时向开发者反馈！</value>
+  </data>
+  <data name="MainWindow_GrowlMsg_CheckUpdateErr" xml:space="preserve">
+    <value>检查更新失败！</value>
+  </data>
+  <data name="MainWindow_GrowlMsg_ConfigErr" xml:space="preserve">
+    <value>MSL在加载配置文件时出现错误，此报错可能不影响软件运行，但还是建议您将其反馈给作者！
+错误代码：</value>
+  </data>
+  <data name="MainWindow_GrowlMsg_ConfigErr2" xml:space="preserve">
+    <value>MSL在加载配置文件时出现错误，将进行重试，若点击确定后软件突然闪退，请尝试使用管理员身份运行或将此问题报告给作者！
+错误代码：</value>
+  </data>
+  <data name="MainWindow_GrowlMsg_Eula" xml:space="preserve">
+    <value>使用本软件，即代表您已阅读并接受本软件的使用协议：https://www.mslmc.cn/eula.html
+如果您不接受，请立即退出本软件并删除相关文件！</value>
+  </data>
+  <data name="MainWindow_GrowlMsg_InitErr" xml:space="preserve">
+    <value>MSL在初始化加载过程中出现问题，请尝试用管理员身份运行MSL……
+错误代码：</value>
+  </data>
+  <data name="MainWindow_GrowlMsg_LatestVersion" xml:space="preserve">
+    <value>软件已是最新版本！</value>
+  </data>
+  <data name="MainWindow_GrowlMsg_MemoryErr" xml:space="preserve">
+    <value>获取系统内存失败！</value>
+  </data>
+  <data name="MainWindow_GrowlMsg_MSLServerDown" xml:space="preserve">
+    <value>软件主服务器连接超时，已切换至备用服务器！</value>
+  </data>
+  <data name="MainWindow_GrowlMsg_ReadEula" xml:space="preserve">
+    <value>阅读协议</value>
+  </data>
+  <data name="MainWindow_GrowlMsg_RefuseUpdate" xml:space="preserve">
+    <value>您拒绝了更新到新版本，若在此版本中遇到bug，请勿报告给作者！</value>
+  </data>
+  <data name="MainWindow_GrowlMsg_Update" xml:space="preserve">
+    <value>更新</value>
+  </data>
+  <data name="MainWindow_GrowlMsg_UpdateFailed" xml:space="preserve">
+    <value>更新失败！</value>
+  </data>
+  <data name="MainWindow_GrowlMsg_UpdateInfo" xml:space="preserve">
+    <value>发现新版本，版本号为：{0}，是否进行更新？
+更新日志：</value>
+  </data>
+  <data name="MainWindow_GrowlMsg_UpdateWarning" xml:space="preserve">
+    <value>您的服务器/内网映射/点对点联机正在运行中，若此时更新，会造成后台残留，请将前者关闭后再进行更新！</value>
+  </data>
+  <data name="MainWindow_Menu_About" xml:space="preserve">
+    <value>关于</value>
+  </data>
+  <data name="MainWindow_Menu_Frpc" xml:space="preserve">
+    <value>映射</value>
+  </data>
+  <data name="MainWindow_Menu_Home" xml:space="preserve">
+    <value>主页</value>
+  </data>
+  <data name="MainWindow_Menu_OnlinePlay" xml:space="preserve">
+    <value>联机</value>
+  </data>
+  <data name="MainWindow_Menu_ServerList" xml:space="preserve">
+    <value>服务器</value>
+  </data>
+  <data name="MainWindow_Menu_Setting" xml:space="preserve">
+    <value>设置</value>
+  </data>
+  <data name="No" xml:space="preserve">
+    <value>否</value>
+  </data>
+  <data name="None" xml:space="preserve">
+    <value>无</value>
+  </data>
+  <data name="OK" xml:space="preserve">
+    <value>好的</value>
+  </data>
+  <data name="Opened" xml:space="preserve">
+    <value>已开启</value>
+  </data>
+  <data name="OpenWebsite" xml:space="preserve">
+    <value>打开网站</value>
+  </data>
+  <data name="Page_About_AboutMSL" xml:space="preserve">
+    <value>关于软件</value>
+  </data>
+  <data name="Page_About_MainContent" xml:space="preserve">
+    <value>Minecraft Server Launcher(MSL) Copyright © 2021-2024 By MSLTeam
+本软件与Microsoft、Mojang Studio(Mojang AB)无任何隶属关系
+本软件为开源软件，用户使用本软件从事的任何行为均与开发者无关
+本软件接入的第三方服务，其相关权利归第三方所有
+
+开服器的正常运行离不开下面的下载源/站点，特此感谢：
+CurseForge —— 模组、模组整合包下载源API
+BMCLAPI —— Forge服务端下载源
+以及其他服务端官方和第三方下载源……
+
+同时感谢所有使用MSL的用户，以及给MSL提出过改进建议和Bug的用户
+感谢各位的支持与信任！</value>
+  </data>
+  <data name="Page_About_OpenSource" xml:space="preserve">
+    <value>开源（Github）</value>
+  </data>
+  <data name="Page_About_Package" xml:space="preserve">
+    <value>依赖/包</value>
+  </data>
+  <data name="Page_About_Sponsor" xml:space="preserve">
+    <value>赞助</value>
+  </data>
+  <data name="Page_About_SponsorText" xml:space="preserve">
+    <value>软件制作不易，您的支持就是我们的动力！</value>
+  </data>
+  <data name="Page_About_Website" xml:space="preserve">
+    <value>官方网站/文档：https://www.mslmc.cn/</value>
+  </data>
+  <data name="Page_FrpcPage_Close" xml:space="preserve">
+    <value>关闭内网映射</value>
+  </data>
+  <data name="Page_FrpcPage_Copy" xml:space="preserve">
+    <value>复制</value>
+  </data>
+  <data name="Page_FrpcPage_IP" xml:space="preserve">
+    <value>使用此IP来连接：</value>
+  </data>
+  <data name="Page_FrpcPage_IPNull" xml:space="preserve">
+    <value>无</value>
+  </data>
+  <data name="Page_FrpcPage_Launch" xml:space="preserve">
+    <value>启动内网映射</value>
+  </data>
+  <data name="Page_FrpcPage_Status_BedrockVersion" xml:space="preserve">
+    <value>基岩版：</value>
+  </data>
+  <data name="Page_FrpcPage_Status_Checking" xml:space="preserve">
+    <value>检测节点信息中……</value>
+  </data>
+  <data name="Page_FrpcPage_Status_ChmlFrp" xml:space="preserve">
+    <value>ChmlFrp节点</value>
+  </data>
+  <data name="Page_FrpcPage_Status_CustomFrp" xml:space="preserve">
+    <value>自定义节点</value>
+  </data>
+  <data name="Page_FrpcPage_Status_Failed" xml:space="preserve">
+    <value>获取Frp信息失败，建议重新配置！</value>
+  </data>
+  <data name="Page_FrpcPage_Status_IP" xml:space="preserve">
+    <value>IP：</value>
+  </data>
+  <data name="Page_FrpcPage_Status_JavaVersion" xml:space="preserve">
+    <value>Java版：</value>
+  </data>
+  <data name="Page_FrpcPage_Status_Offline" xml:space="preserve">
+    <value>节点离线或禁Ping，若无法连接，请重新配置！</value>
+  </data>
+  <data name="Page_FrpcPage_Status_OpenFrp" xml:space="preserve">
+    <value>OpenFrp节点</value>
+  </data>
+  <data name="Page_FrpcPage_Status_OpenFrp_ViewIP" xml:space="preserve">
+    <value>请启动内网映射以查看IP</value>
+  </data>
+  <data name="Page_FrpcPage_Status_Ping" xml:space="preserve">
+    <value>延迟：</value>
+  </data>
+  <data name="Page_FrpcPage_Status_Port" xml:space="preserve">
+    <value>端口：</value>
+  </data>
+  <data name="Page_FrpcPage_Title" xml:space="preserve">
+    <value>内网映射列表（双击进入详情页）</value>
+  </data>
+  <data name="Page_Home_CreateServer" xml:space="preserve">
+    <value>创建一个新的服务器</value>
+  </data>
+  <data name="Page_Home_LaunchServer" xml:space="preserve">
+    <value>开启服务器</value>
+  </data>
+  <data name="Page_Home_Notice" xml:space="preserve">
+    <value>公告</value>
+  </data>
+  <data name="Page_Home_P2PPlay" xml:space="preserve">
+    <value>点对点联机</value>
+  </data>
+  <data name="Page_Home_Recommendations" xml:space="preserve">
+    <value>推荐</value>
+  </data>
+  <data name="Page_OnlinePage_Announce" xml:space="preserve">
+    <value>注意：此功能目前不稳定，无法穿透所有类型的NAT，若联机失败，请尝试开服务器并使用内网映射联机！
+该功能可能需要正版账户，若无法联机，请从网络上寻找解决方法或尝试开服务器并使用内网映射联机！</value>
+  </data>
+  <data name="Page_OnlinePage_CloseRoom" xml:space="preserve">
+    <value>关闭房间</value>
+  </data>
+  <data name="Page_OnlinePage_CloseSuc" xml:space="preserve">
+    <value>关闭成功！</value>
+  </data>
+  <data name="Page_OnlinePage_CreateRoom" xml:space="preserve">
+    <value>点击创建房间</value>
+  </data>
+  <data name="Page_OnlinePage_Create_key" xml:space="preserve">
+    <value>房间密钥：</value>
+  </data>
+  <data name="Page_OnlinePage_Create_Port" xml:space="preserve">
+    <value>游戏端口：</value>
+  </data>
+  <data name="Page_OnlinePage_Create_RoomNo." xml:space="preserve">
+    <value>房间号：</value>
+  </data>
+  <data name="Page_OnlinePage_Err" xml:space="preserve">
+    <value>桥接失败！</value>
+  </data>
+  <data name="Page_OnlinePage_ErrMsg1" xml:space="preserve">
+    <value>出现错误，请检查是否有杀毒软件误杀并重试:</value>
+  </data>
+  <data name="Page_OnlinePage_ExitRoom" xml:space="preserve">
+    <value>退出房间</value>
+  </data>
+  <data name="Page_OnlinePage_Header_Create" xml:space="preserve">
+    <value>创建房间——房主</value>
+  </data>
+  <data name="Page_OnlinePage_Header_Join" xml:space="preserve">
+    <value>进入房间——成员</value>
+  </data>
+  <data name="Page_OnlinePage_JoinRoom" xml:space="preserve">
+    <value>点击加入房间</value>
+  </data>
+  <data name="Page_OnlinePage_Join_Key" xml:space="preserve">
+    <value>房间密钥：</value>
+  </data>
+  <data name="Page_OnlinePage_Join_Port" xml:space="preserve">
+    <value>绑定端口（默认25565，非必要别改）：</value>
+  </data>
+  <data name="Page_OnlinePage_Join_RoomNo." xml:space="preserve">
+    <value>房间号：</value>
+  </data>
+  <data name="Page_OnlinePage_Log" xml:space="preserve">
+    <value>日志</value>
+  </data>
+  <data name="Page_OnlinePage_LoginSuc" xml:space="preserve">
+    <value>登录服务器成功！</value>
+  </data>
+  <data name="Page_OnlinePage_ServerStatusChecking" xml:space="preserve">
+    <value>服务器状态：检测中</value>
+  </data>
+  <data name="Page_OnlinePage_ServerStatusDown" xml:space="preserve">
+    <value>服务器状态：检测超时，服务器可能下线</value>
+  </data>
+  <data name="Page_OnlinePage_ServerStatusOK" xml:space="preserve">
+    <value>服务器状态：可用</value>
+  </data>
+  <data name="Page_OnlinePage_Suc" xml:space="preserve">
+    <value>桥接成功！</value>
+  </data>
+  <data name="Page_OnlinePage_Title" xml:space="preserve">
+    <value>点对点联机</value>
+  </data>
+  <data name="Page_OnlinePage_UseTip" xml:space="preserve">
+    <value>联机教程</value>
+  </data>
+  <data name="Page_ServerList_Delete" xml:space="preserve">
+    <value>删除所选服务器</value>
+  </data>
+  <data name="Page_ServerList_Dialog_NoConfTip" xml:space="preserve">
+    <value>开服器检测到配置文件出现了错误，是第一次使用吗？
+是否创建一个新的服务器？</value>
+  </data>
+  <data name="Page_ServerList_Do" xml:space="preserve">
+    <value>操作</value>
+  </data>
+  <data name="Page_ServerList_LaunchServer" xml:space="preserve">
+    <value>开启服务器</value>
+  </data>
+  <data name="Page_ServerList_ManageModsOrPlugins" xml:space="preserve">
+    <value>管理服务器模组/插件</value>
+  </data>
+  <data name="Page_ServerList_OpenDir" xml:space="preserve">
+    <value>打开服务器文件夹</value>
+  </data>
+  <data name="Page_ServerList_Refresh" xml:space="preserve">
+    <value>刷新</value>
+  </data>
+  <data name="Page_ServerList_ServerName" xml:space="preserve">
+    <value>服务器名称</value>
+  </data>
+  <data name="Page_ServerList_Setting" xml:space="preserve">
+    <value>更改服务器设置</value>
+  </data>
+  <data name="Page_ServerList_Status" xml:space="preserve">
+    <value>服务器状态</value>
+  </data>
+  <data name="Page_ServerList_Title" xml:space="preserve">
+    <value>服务器列表（双击可快捷启动服务器）</value>
+  </data>
+  <data name="Page_ServerList_UseCMDLaunch" xml:space="preserve">
+    <value>使用命令行开服</value>
+  </data>
+  <data name="Page_SettingsPage_AS_ALF_FrpcList" xml:space="preserve">
+    <value>在此输入需要自启动Frpc的ID（使用半角逗号分隔和结尾）：</value>
+  </data>
+  <data name="Page_SettingsPage_AS_ALS_AutoLaunchServers" xml:space="preserve">
+    <value>启动列表：</value>
+  </data>
+  <data name="Page_SettingsPage_AS_ALS_ServerList" xml:space="preserve">
+    <value>服务器列表：</value>
+  </data>
+  <data name="Page_SettingsPage_AS_ARASL_RecordPlayers" xml:space="preserve">
+    <value>记录玩家功能</value>
+  </data>
+  <data name="Page_SettingsPage_AS_ARASL_ShowSysOccupation" xml:space="preserve">
+    <value>显示占用功能</value>
+  </data>
+  <data name="Page_SettingsPage_AS_AutoLaunchFrpc" xml:space="preserve">
+    <value>启动软件自动打开内网映射：</value>
+  </data>
+  <data name="Page_SettingsPage_AS_AutoLaunchServer" xml:space="preserve">
+    <value>启动软件自动打开启动列表中的服务器：</value>
+  </data>
+  <data name="Page_SettingsPage_AS_AutoRunAtServerLaunched" xml:space="preserve">
+    <value>开服时自动开启:</value>
+  </data>
+  <data name="Page_SettingsPage_AS_AutoRunAtStartup" xml:space="preserve">
+    <value>开机自动启动MSL:</value>
+  </data>
+  <data name="Page_SettingsPage_AS_AutoUpdate" xml:space="preserve">
+    <value>遇到更新时自动更新MSL:</value>
+  </data>
+  <data name="Page_SettingsPage_Card_AutomationSettings" xml:space="preserve">
+    <value>自动化选项</value>
+  </data>
+  <data name="Page_SettingsPage_Card_ChangeFunctions" xml:space="preserve">
+    <value>功能调整</value>
+  </data>
+  <data name="Page_SettingsPage_Card_DeviceInfo" xml:space="preserve">
+    <value>设备信息</value>
+  </data>
+  <data name="Page_SettingsPage_Card_SkinSettings" xml:space="preserve">
+    <value>皮肤选项</value>
+  </data>
+  <data name="Page_SettingsPage_CF_AddDownloadTask" xml:space="preserve">
+    <value>添加下载任务：</value>
+  </data>
+  <data name="Page_SettingsPage_CF_BasicFunction" xml:space="preserve">
+    <value>基础功能：</value>
+  </data>
+  <data name="Page_SettingsPage_CF_BF_CheckUpdate" xml:space="preserve">
+    <value>检查更新</value>
+  </data>
+  <data name="Page_SettingsPage_CF_BF_MSLTips" xml:space="preserve">
+    <value>MSL提示：</value>
+  </data>
+  <data name="Page_SettingsPage_CF_BF_NotifyIcon" xml:space="preserve">
+    <value>托盘图标：</value>
+  </data>
+  <data name="Page_SettingsPage_CF_BF_RecoveryBtn" xml:space="preserve">
+    <value>恢复默认设置</value>
+  </data>
+  <data name="Page_SettingsPage_CF_BF_SoftwareWiki" xml:space="preserve">
+    <value>软件文档</value>
+  </data>
+  <data name="Page_SettingsPage_CF_DownloadThread" xml:space="preserve">
+    <value>下载线程（默认为8，建议不超过16）：</value>
+  </data>
+  <data name="Page_SettingsPage_CF_Language" xml:space="preserve">
+    <value>语言（Language）：</value>
+  </data>
+  <data name="Page_SettingsPage_DI_CopyDID" xml:space="preserve">
+    <value>复制设备ID</value>
+  </data>
+  <data name="Page_SettingsPage_DI_DeviceID" xml:space="preserve">
+    <value>设备ID：</value>
+  </data>
+  <data name="Page_SettingsPage_DI_Tips1" xml:space="preserve">
+    <value>设备ID是MSL开发团队追踪MSL发生意外错误的重要依据，需要时请提供给我们！</value>
+  </data>
+  <data name="Page_SettingsPage_DI_Tips2" xml:space="preserve">
+    <value>每台设备的设备ID是唯一的（仅当重装系统/切换用户会变化）</value>
+  </data>
+  <data name="Page_SettingsPage_SS_BackgroundImg" xml:space="preserve">
+    <value>背景图片：</value>
+  </data>
+  <data name="Page_SettingsPage_SS_BI_ChangeBackImg" xml:space="preserve">
+    <value>更改背景图片</value>
+  </data>
+  <data name="Page_SettingsPage_SS_BI_DelBackImg" xml:space="preserve">
+    <value>清除背景图片</value>
+  </data>
+  <data name="Page_SettingsPage_SS_BlueSkinBtn" xml:space="preserve">
+    <value>蓝色皮肤（默认）</value>
+  </data>
+  <data name="Page_SettingsPage_SS_DarkTheme" xml:space="preserve">
+    <value>暗色模式</value>
+  </data>
+  <data name="Page_SettingsPage_SS_GreenSkinBtn" xml:space="preserve">
+    <value>绿色皮肤</value>
+  </data>
+  <data name="Page_SettingsPage_SS_OrangeSkinBtn" xml:space="preserve">
+    <value>橙色皮肤</value>
+  </data>
+  <data name="Page_SettingsPage_SS_PinkSkinBtn" xml:space="preserve">
+    <value>粉色皮肤</value>
+  </data>
+  <data name="Page_SettingsPage_SS_PurpleSkinBtn" xml:space="preserve">
+    <value>紫色皮肤</value>
+  </data>
+  <data name="Page_SettingsPage_SS_RedSkinBtn" xml:space="preserve">
+    <value>红色皮肤</value>
+  </data>
+  <data name="Page_SettingsPage_SS_SemitransparentTitle" xml:space="preserve">
+    <value>半透明标题栏</value>
+  </data>
+  <data name="Page_SettingsPage_SS_ThemeColor" xml:space="preserve">
+    <value>主题颜色：</value>
+  </data>
+  <data name="Page_SettingsPage_SS_UseSysTheme" xml:space="preserve">
+    <value>使用系统样式</value>
+  </data>
+  <data name="Page_SettingsPage_SS_WesternEgg" xml:space="preserve">
+    <value>千万别点！</value>
+  </data>
+  <data name="Tip" xml:space="preserve">
+    <value>提示</value>
+  </data>
+  <data name="Update_Frpc_Info" xml:space="preserve">
+    <value>更新内网映射中……</value>
+  </data>
+  <data name="Warning" xml:space="preserve">
+    <value>警告</value>
+  </data>
+  <data name="Yes" xml:space="preserve">
+    <value>是</value>
+  </data>
+  <data name="_Done" xml:space="preserve">
+    <value>确定</value>
+  </data>
+  <data name="_OK" xml:space="preserve">
+    <value>确定</value>
+  </data>
+</root>

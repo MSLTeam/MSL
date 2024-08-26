@@ -49,14 +49,17 @@ namespace MSL.utils
             WebClient webClient = new WebClient();
             if (headerMode == 0)
             {
-                string serverLink = MainWindow.serverLink;
-                if (serverLink.Contains("/"))
+                if (MainWindow.serverLink != null)
                 {
-                    serverLink = serverLink.Substring(0, serverLink.IndexOf("/"));
-                }
-                if (url.Contains(serverLink))
-                {
-                    webClient.Headers.Add("User-Agent", "MSL/" + new Version(System.Reflection.Assembly.GetExecutingAssembly().GetName().Version.ToString()));
+                    string serverLink = MainWindow.serverLink;
+                    if (serverLink?.Contains("/") == true)
+                    {
+                        serverLink = serverLink.Substring(0, serverLink.IndexOf("/"));
+                    }
+                    if (url.Contains(serverLink))
+                    {
+                        webClient.Headers.Add("User-Agent", "MSL/" + new Version(System.Reflection.Assembly.GetExecutingAssembly().GetName().Version.ToString()));
+                    }
                 }
             }
             else if (headerMode == 2)

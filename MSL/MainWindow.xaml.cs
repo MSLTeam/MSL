@@ -1,15 +1,13 @@
 ﻿using HandyControl.Controls;
 using HandyControl.Themes;
-using MSL.i18n;
+using MSL.langs;
 using MSL.pages;
 using MSL.utils;
 using Newtonsoft.Json.Linq;
 using System;
 using System.Collections.Generic;
 using System.Diagnostics;
-using System.Globalization;
 using System.IO;
-using System.Management;
 using System.Text;
 using System.Threading.Tasks;
 using System.Windows;
@@ -39,10 +37,8 @@ namespace MSL
         public static event DeleControl AutoOpenServer;
         public static string serverLink = null;
         public static string deviceID = null; //用于记录设备id
-        public static float PhisicalMemory;
         public static bool getServerInfo = false;
         public static bool getPlayerInfo = false;
-        public static readonly bool isI18N = false; //标识当前版本是否支持i18n
 
         public MainWindow()
         {
@@ -62,76 +58,19 @@ namespace MSL
             Topmost = true;
             Focus();
             Topmost = false;
-            if (Directory.GetCurrentDirectory() + "\\" != AppDomain.CurrentDomain.BaseDirectory)
-            {
-                Directory.SetCurrentDirectory(AppDomain.CurrentDomain.BaseDirectory);
-            }
-
-            /*
-            if (await EulaEvent())
-            {
-                Directory.CreateDirectory("MSL");
-            }
-            */
-
             try
             {
-                Directory.CreateDirectory("MSL");
-                //firstLauchEvent
-                if (!File.Exists(@"MSL\config.json"))
-                {
-                    //Logger.LogWarning("未检测到config.json文件，创建config.json……");
-                    File.WriteAllText(@"MSL\config.json", string.Format("{{{0}}}", "\n"));
-                }
-            }
-            catch (Exception ex)
-            {
-                //Logger.LogError("生成config.json文件失败，原因："+ex.Message);
-                await Shows.ShowMsgDialogAsync(this, LanguageManager.Instance["MainWindow_GrowlMsg_InitErr"] + ex.Message, LanguageManager.Instance["Dialog_Err"]);
-                Close();
-            }
-            //Logger.LogInfo("读取配置文件……");
-            JObject jsonObject;
-            try
-            {
-                jsonObject = JObject.Parse(File.ReadAllText(@"MSL\config.json", Encoding.UTF8));
-                //Logger.LogInfo("读取配置文件成功！");
-            }
-            catch (Exception ex)
-            {
-                //Logger.LogError("读取config.json失败！尝试重新载入……");
-                await Shows.ShowMsgDialogAsync(this, LanguageManager.Instance["MainWindow_GrowlMsg_ConfigErr2"] + ex.Message, LanguageManager.Instance["Dialog_Err"]);
-                File.WriteAllText(@"MSL\config.json", string.Format("{{{0}}}", "\n"));
-                jsonObject = JObject.Parse(File.ReadAllText(@"MSL\config.json", Encoding.UTF8));
-                //Logger.LogInfo("读取config.json成功！");
-            }
-            try
-            {
-                if (jsonObject["lang"] == null)
-                {
-                    jsonObject.Add("lang", "zh-CN");
-                    string convertString = Convert.ToString(jsonObject);
-                    File.WriteAllText(@"MSL\config.json", convertString, Encoding.UTF8);
-                    LanguageManager.Instance.ChangeLanguage(new CultureInfo("zh-CN"));
-                    //Logger.LogInfo("Language: " + "ZH-CN");
-                }
-                else
-                {
-                    LanguageManager.Instance.ChangeLanguage(new CultureInfo(jsonObject["lang"].ToString()));
-                    //Logger.LogInfo("Language: " + jsonObject["lang"].ToString().ToUpper());
-                }
-            }
-            finally
-            {
+                JObject jsonObject = JObject.Parse(File.ReadAllText(@"MSL\config.json", Encoding.UTF8));
                 //await EulaEvent(jsonObject);
-                await Task.Run(() =>
-                {
-                    //Logger.LogInfo("异步载入配置……");
-                    AsyncLoadEvent(jsonObject);
-                    //Logger.LogInfo("异步载入联网功能……");
-                    OnlineService(jsonObject);
-                });
+                //Logger.LogInfo("载入配置……");
+                await LoadConfigEvent(jsonObject);
+                //Logger.LogInfo("异步载入联网功能……");
+                _ = OnlineService(jsonObject);
                 //Logger.LogInfo("启动事件完成！");
+            }
+            catch (Exception ex)
+            {
+                await Shows.ShowMsgDialogAsync(this, ex.Message, "EEEOR");
             }
         }
 
@@ -140,7 +79,7 @@ namespace MSL
         {
             if (!Directory.Exists("MSL"))
             {
-                bool dialog = await Shows.ShowMsgDialogAsync(this, LanguageManager.Instance["MainWindow_GrowlMsg_Eula"], LanguageManager.Instance["Dialog_Tip"], true, LanguageManager.Instance["Dialog_Done"], LanguageManager.Instance["MainWindow_GrowlMsg_ReadEula"]);
+                bool dialog = await Shows.ShowMsgDialogAsync(this, LanguageManager.Instance["MainWindow_GrowlMsg_Eula"], LanguageManager.Instance["Tip"], true, LanguageManager.Instance["Done"], LanguageManager.Instance["MainWindow_GrowlMsg_ReadEula"]);
                 if (!dialog)
                 {
                     return true;
@@ -165,7 +104,7 @@ namespace MSL
             string _deviceID = Functions.GetDeviceID();
             if (jsonObject["deviceID"] == null || jsonObject["deviceID"].ToString() != _deviceID)
             {
-                bool dialog = await Shows.ShowMsgDialogAsync(this, LanguageManager.Instance["MainWindow_GrowlMsg_Eula"], LanguageManager.Instance["Dialog_Tip"], true, LanguageManager.Instance["Dialog_Done"], LanguageManager.Instance["MainWindow_GrowlMsg_ReadEula"]);
+                bool dialog = await Shows.ShowMsgDialogAsync(this, LanguageManager.Instance["MainWindow_GrowlMsg_Eula"], LanguageManager.Instance["Tip"], true, LanguageManager.Instance["Done"], LanguageManager.Instance["MainWindow_GrowlMsg_ReadEula"]);
                 if (!dialog)
                 {
                     if (jsonObject["deviceID"] == null)
@@ -196,7 +135,7 @@ namespace MSL
         }
         */
 
-        private void AsyncLoadEvent(JObject jsonObject)
+        private async Task LoadConfigEvent(JObject jsonObject)
         {
             //下面是加载配置部分
             try
@@ -211,10 +150,7 @@ namespace MSL
                 }
                 else if ((bool)jsonObject["notifyIcon"] == true)
                 {
-                    Dispatcher.Invoke(() =>
-                    {
-                        CtrlNotifyIcon();
-                    });
+                    CtrlNotifyIcon();
                 }
                 //Logger.LogInfo("读取托盘图标配置成功！");
                 if (jsonObject["sidemenuExpanded"] == null)
@@ -224,24 +160,15 @@ namespace MSL
                     jobject.Add("sidemenuExpanded", true);
                     string convertString = Convert.ToString(jobject);
                     File.WriteAllText(@"MSL\config.json", convertString, Encoding.UTF8);
-                    Dispatcher.Invoke(() =>
-                    {
-                        SideMenu.Width = double.NaN;
-                    });
+                    SideMenu.Width = double.NaN;
                 }
                 else if ((bool)jsonObject["sidemenuExpanded"] == true)
                 {
-                    Dispatcher.Invoke(() =>
-                    {
-                        SideMenu.Width = double.NaN;
-                    });
+                    SideMenu.Width = double.NaN;
                 }
                 else
                 {
-                    Dispatcher.Invoke(() =>
-                    {
-                        SideMenu.Width = 50;
-                    });
+                    SideMenu.Width = 50;
                 }
                 //Logger.LogInfo("读取侧栏配置成功！");
                 if (jsonObject["skin"] == null)
@@ -251,11 +178,8 @@ namespace MSL
                     jobject.Add("skin", 1);
                     string convertString = Convert.ToString(jobject);
                     File.WriteAllText(@"MSL\config.json", convertString, Encoding.UTF8);
-                    Dispatcher.Invoke(() =>
-                    {
-                        BrushConverter brushConverter = new BrushConverter();
-                        ThemeManager.Current.AccentColor = (Brush)brushConverter.ConvertFromString("#0078D4");
-                    });
+                    BrushConverter brushConverter = new BrushConverter();
+                    ThemeManager.Current.AccentColor = (Brush)brushConverter.ConvertFromString("#0078D4");
                 }
                 else
                 {
@@ -303,10 +227,7 @@ namespace MSL
                 }
                 else if (jsonObject["darkTheme"].ToString() == "True")
                 {
-                    Dispatcher.Invoke(() =>
-                    {
-                        ThemeManager.Current.ApplicationTheme = ApplicationTheme.Dark;
-                    });
+                    ThemeManager.Current.ApplicationTheme = ApplicationTheme.Dark;
                 }
                 //Logger.LogInfo("读取暗色模式配置成功！");
                 if (File.Exists("MSL\\Background_.png"))
@@ -316,11 +237,8 @@ namespace MSL
                 }
                 if (File.Exists("MSL\\Background.png"))
                 {
-                    Dispatcher.Invoke(() =>
-                    {
-                        Background = new ImageBrush(SettingsPage.GetImage("MSL\\Background.png"));
-                        frame.BorderThickness = new Thickness(0);
-                    });
+                    Background = new ImageBrush(SettingsPage.GetImage("MSL\\Background.png"));
+                    frame.BorderThickness = new Thickness(0);
                 }
                 //Logger.LogInfo("加载背景图片成功！");
                 if (jsonObject["semitransparentTitle"] == null)
@@ -333,10 +251,7 @@ namespace MSL
                 }
                 else if ((bool)jsonObject["semitransparentTitle"] == true)
                 {
-                    Dispatcher.Invoke(() =>
-                    {
-                        ChangeTitleStyle(true);
-                    });
+                    ChangeTitleStyle(true);
                 }
                 //Logger.LogInfo("读取标题栏样式成功！");
                 if (jsonObject["autoGetServerInfo"] == null)
@@ -369,25 +284,10 @@ namespace MSL
             }
             catch (Exception ex)
             {
-                //Logger.LogError("读取配置时出现错误！错误代码："+ex.Message);
                 Growl.Error(LanguageManager.Instance["MainWindow_GrowlMsg_ConfigErr"] + ex.Message);
                 File.WriteAllText(@"MSL\config.json", string.Format("{{{0}}}", "\n"));
-                //jsonObject = JObject.Parse(File.ReadAllText(@"MSL\config.json", Encoding.UTF8));
-                //Growl.Info("配置文件已更新！");
             }
 
-            //获取电脑内存
-            try
-            {
-                //Logger.LogInfo("读取系统内存……");
-                PhisicalMemory = GetPhisicalMemory();
-            }
-            catch (Exception ex)
-            {
-                //Logger.LogError("读取系统内存失败！");
-                MessageBox.Show(LanguageManager.Instance["MainWindow_GrowlMsg_MemoryErr"] + ex.Message, LanguageManager.Instance["Dialog_Err"], MessageBoxButton.OK, MessageBoxImage.Error);
-                PhisicalMemory = 0;
-            }
             //自动开启服务器
             try
             {
@@ -412,6 +312,7 @@ namespace MSL
                             AutoOpenServer();
                         });
                         servers = servers.Replace(ServerList.ServerID.ToString() + ",", "");
+                        await Task.Delay(100);
                     }
                 }
                 //Logger.LogInfo("读取自动开启（服务器）配置成功！");
@@ -419,7 +320,7 @@ namespace MSL
             catch (Exception ex)
             {
                 //Logger.LogError("读取自动开启（服务器）配置失败！");
-                MessageBox.Show(LanguageManager.Instance["MainWindow_GrowlMsg_AutoLaunchServerErr"] + ex.Message, LanguageManager.Instance["Dialog_Err"], MessageBoxButton.OK, MessageBoxImage.Error);
+                MessageBox.Show(LanguageManager.Instance["MainWindow_GrowlMsg_AutoLaunchServerErr"] + ex.Message, LanguageManager.Instance["Error"], MessageBoxButton.OK, MessageBoxImage.Error);
             }
             //自动开启Frpc
             try
@@ -440,14 +341,12 @@ namespace MSL
                     {
                         int afrpc = frpcs.IndexOf(",");
                         FrpcList.FrpcID = int.Parse(frpcs.Substring(0, afrpc));
-                        Dispatcher.Invoke(() =>
+                        if (!FrpcList.FrpcPageList.ContainsKey(FrpcList.FrpcID))
                         {
-                            if (!FrpcList.FrpcPageList.ContainsKey(FrpcList.FrpcID))
-                            {
-                                FrpcList.FrpcPageList.Add(FrpcList.FrpcID, new FrpcPage(FrpcList.FrpcID, true));
-                            }
-                        });
+                            FrpcList.FrpcPageList.Add(FrpcList.FrpcID, new FrpcPage(FrpcList.FrpcID, true));
+                        }
                         frpcs = frpcs.Replace(FrpcList.FrpcID.ToString() + ",", "");
+                        await Task.Delay(100);
                     }
                 }
                 //Logger.LogInfo("读取自动开启（内网映射）配置成功！");
@@ -455,18 +354,15 @@ namespace MSL
             catch (Exception ex)
             {
                 //Logger.LogError("读取自动开启（内网映射）配置失败！");
-                MessageBox.Show(LanguageManager.Instance["MainWindow_GrowlMsg_AutoLaunchFrpsErr"] + ex.Message, LanguageManager.Instance["Dialog_Err"], MessageBoxButton.OK, MessageBoxImage.Error);
+                MessageBox.Show(LanguageManager.Instance["MainWindow_GrowlMsg_AutoLaunchFrpsErr"] + ex.Message, LanguageManager.Instance["Error"], MessageBoxButton.OK, MessageBoxImage.Error);
             }
 
             //Logger.LogInfo("所有配置载入完毕！调整UI界面……");
-            Dispatcher.Invoke(() =>
-            {
-                SideMenu.SelectedIndex = 0;
-            });
+            SideMenu.SelectedIndex = 0;
             //Logger.LogInfo("配置加载完毕！");
         }
 
-        private async void OnlineService(JObject jsonObject)
+        private async Task OnlineService(JObject jsonObject)
         {
             //get serverlink
             try
@@ -521,9 +417,9 @@ namespace MSL
                         //Logger.LogInfo("自动更新功能已打开，更新新版本……");
                         UpdateApp(_version);
                     }
-                    await Dispatcher.Invoke(async() =>
+                    await Dispatcher.Invoke(async () =>
                     {
-                        if (await Shows.ShowMsgDialogAsync(this, LanguageManager.Instance["MainWindow_GrowlMsg_UpdateInfo1"] + _version + LanguageManager.Instance["MainWindow_GrowlMsg_UpdateInfo2"] + updatelog, LanguageManager.Instance["MainWindow_GrowlMsg_Update"], true))
+                        if (await Shows.ShowMsgDialogAsync(this, string.Format(LanguageManager.Instance["MainWindow_GrowlMsg_UpdateInfo"] + "\n" + updatelog, _version), LanguageManager.Instance["MainWindow_GrowlMsg_Update"], true))
                         {
                             //Logger.LogInfo("更新新版本……");
                             UpdateApp(_version);
@@ -557,14 +453,10 @@ namespace MSL
             {
                 if (ProcessRunningCheck())
                 {
-                    Shows.ShowMsgDialog(this, LanguageManager.Instance["MainWindow_GrowlMsg_UpdateWarning"], LanguageManager.Instance["Dialog_Warning"]);
+                    Shows.ShowMsgDialog(this, LanguageManager.Instance["MainWindow_GrowlMsg_UpdateWarning"], LanguageManager.Instance["Warning"]);
                     return;
                 }
                 string downloadUrl = (await HttpService.GetApiContentAsync("download/update?type=normal"))["data"].ToString(); ;
-                if (isI18N)
-                {
-                    downloadUrl = (await HttpService.GetApiContentAsync("download/update?type=i18n"))["data"].ToString();
-                }
                 await Shows.ShowDownloader(this, downloadUrl, AppDomain.CurrentDomain.BaseDirectory, "MSL" + latestVersion + ".exe", "下载新版本中……");
                 if (File.Exists("MSL" + latestVersion + ".exe"))
                 {
@@ -590,35 +482,19 @@ namespace MSL
                 }
                 else
                 {
-                    MessageBox.Show(LanguageManager.Instance["MainWindow_GrowlMsg_UpdateFailed"], LanguageManager.Instance["Dialog_Err"], MessageBoxButton.OK, MessageBoxImage.Error);
+                    MessageBox.Show(LanguageManager.Instance["MainWindow_GrowlMsg_UpdateFailed"], LanguageManager.Instance["Error"], MessageBoxButton.OK, MessageBoxImage.Error);
                 }
             }
             catch (Exception ex)
             {
-                MessageBox.Show("出现错误，更新失败！\n" + ex.Message);
+                MessageBox.Show("出现错误，更新失败！\n" + ex.Message, "Error", MessageBoxButton.OK, MessageBoxImage.Error);
             }
-        }
-
-        private static long GetPhisicalMemory()
-        {
-            long amemory = 0;
-            //获得物理内存 
-            ManagementClass mc = new ManagementClass("Win32_ComputerSystem");
-            ManagementObjectCollection moc = mc.GetInstances();
-            foreach (ManagementObject mo in moc)
-            {
-                if (mo["TotalPhysicalMemory"] != null)
-                {
-                    amemory = long.Parse(mo["TotalPhysicalMemory"].ToString());
-                }
-            }
-            return amemory;
         }
 
         private void Window_Closing(object sender, System.ComponentModel.CancelEventArgs e)
         {
             //Logger.LogInfo("MSL，关闭！");
-            if (MainNoticyIcon.Visibility == Visibility.Visible)
+            if (MainNotifyIcon.Visibility == Visibility.Visible)
             {
                 //Logger.LogWarning("托盘图标已打开，取消关闭事件！");
                 e.Cancel = true;
@@ -627,7 +503,7 @@ namespace MSL
             }
             else if (ProcessRunningCheck())
             {
-                int dialog = Shows.ShowMsg(this, LanguageManager.Instance["MainWindow_GrowlMsg_Close"], LanguageManager.Instance["Dialog_Warning"], true, LanguageManager.Instance["Dialog_Cancel"]);
+                int dialog = Shows.ShowMsg(this, LanguageManager.Instance["MainWindow_Close_Warning"], LanguageManager.Instance["Warning"], true, LanguageManager.Instance["Cancel"]);
                 if (dialog != 1)
                 {
                     e.Cancel = true;
@@ -676,13 +552,13 @@ namespace MSL
 
         private void CtrlNotifyIcon()//C_NotifyIcon
         {
-            if (MainNoticyIcon.Visibility == Visibility.Hidden)
+            if (MainNotifyIcon.Visibility == Visibility.Hidden)
             {
-                MainNoticyIcon.Visibility = Visibility.Visible;
+                MainNotifyIcon.Visibility = Visibility.Visible;
             }
             else
             {
-                MainNoticyIcon.Visibility = Visibility.Hidden;
+                MainNotifyIcon.Visibility = Visibility.Hidden;
             }
         }
 
@@ -802,7 +678,7 @@ namespace MSL
             }
         }
 
-        private void MainNoticyIcon_MouseDoubleClick(object sender, RoutedEventArgs e)
+        private void MainNotifyIcon_Click(object sender, RoutedEventArgs e)
         {
             this.Visibility = Visibility.Visible;
         }
@@ -811,7 +687,7 @@ namespace MSL
         {
             if (ProcessRunningCheck())
             {
-                int dialog = Shows.ShowMsg(this, LanguageManager.Instance["MainWindow_GrowlMsg_Close2"], LanguageManager.Instance["Dialog_Warning"], true, LanguageManager.Instance["Dialog_Cancel"]);
+                int dialog = Shows.ShowMsg(this, LanguageManager.Instance["MainWindow_Close_Warning2"], LanguageManager.Instance["Warning"], true, LanguageManager.Instance["Cancel"]);
                 if (dialog == 1)
                 {
                     Application.Current.Shutdown();
