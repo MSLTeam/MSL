@@ -469,11 +469,11 @@ Update log:</value>
   <data name="Page_SettingsPage_Card_SkinSettings" xml:space="preserve">
     <value>Skin Settings</value>
   </data>
-  <data name="Closed" xml:space="preserve">
-    <value>Closed</value>
+  <data name="Disabled" xml:space="preserve">
+    <value>Disabled</value>
   </data>
-  <data name="Opened" xml:space="preserve">
-    <value>Opened</value>
+  <data name="Enabled" xml:space="preserve">
+    <value>Enabled</value>
   </data>
   <data name="Page_SettingsPage_AS_ALF_FrpcList" xml:space="preserve">
     <value>Enter the ID of the Frpc to auto-start here (separate with commas):</value>
@@ -494,7 +494,7 @@ Update log:</value>
     <value>Auto-open Frpc when launching the software:</value>
   </data>
   <data name="Page_SettingsPage_AS_AutoLaunchServer" xml:space="preserve">
-    <value>Start the software to automatically open the servers in the startup list:</value>
+    <value>Automatically open the servers in the startup list when software started:</value>
   </data>
   <data name="Page_SettingsPage_AS_AutoRunAtServerLaunched" xml:space="preserve">
     <value>Automatically start when the server is launched:</value>

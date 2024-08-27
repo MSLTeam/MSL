@@ -123,7 +123,7 @@
   <data name="Close" xml:space="preserve">
     <value>关闭</value>
   </data>
-  <data name="Closed" xml:space="preserve">
+  <data name="Disabled" xml:space="preserve">
     <value>已关闭</value>
   </data>
   <data name="Done" xml:space="preserve">
@@ -152,6 +152,9 @@
   </data>
   <data name="Download_Frpc_Info" xml:space="preserve">
     <value>下载内网映射中……</value>
+  </data>
+  <data name="Enabled" xml:space="preserve">
+    <value>已开启</value>
   </data>
   <data name="Error" xml:space="preserve">
     <value>错误</value>
@@ -263,9 +266,6 @@
   </data>
   <data name="OK" xml:space="preserve">
     <value>好的</value>
-  </data>
-  <data name="Opened" xml:space="preserve">
-    <value>已开启</value>
   </data>
   <data name="OpenWebsite" xml:space="preserve">
     <value>打开网站</value>

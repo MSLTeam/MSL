@@ -48,7 +48,7 @@
                                 <Button.Content>
                                     <MultiBinding Converter="{StaticResource StringConcatConverter}">
                                         <Binding Path="[Page_SettingsPage_CF_BF_NotifyIcon]" Source="{x:Static lang:LanguageManager.Instance}"/>
-                                        <Binding Path="[Closed]" Source="{x:Static lang:LanguageManager.Instance}"/>
+                                        <Binding Path="[Disabled]" Source="{x:Static lang:LanguageManager.Instance}"/>
                                     </MultiBinding>
                                 </Button.Content>
                             </Button>
@@ -56,7 +56,7 @@
                                 <Button.Content>
                                     <MultiBinding Converter="{StaticResource StringConcatConverter}">
                                         <Binding Path="[Page_SettingsPage_CF_BF_MSLTips]" Source="{x:Static lang:LanguageManager.Instance}"/>
-                                        <Binding Path="[Opened]" Source="{x:Static lang:LanguageManager.Instance}"/>
+                                        <Binding Path="[Enabled]" Source="{x:Static lang:LanguageManager.Instance}"/>
                                     </MultiBinding>
                                 </Button.Content>
                             </Button>

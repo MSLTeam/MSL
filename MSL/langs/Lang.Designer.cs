@@ -99,9 +99,9 @@ namespace MSL.langs {
         /// <summary>
         ///   查找类似 已关闭 的本地化字符串。
         /// </summary>
-        public static string Closed {
+        public static string Disabled {
             get {
-                return ResourceManager.GetString("Closed", resourceCulture);
+                return ResourceManager.GetString("Disabled", resourceCulture);
             }
         }
         
@@ -183,6 +183,15 @@ namespace MSL.langs {
         public static string DownloadDialog_OnDownloadStarted {
             get {
                 return ResourceManager.GetString("DownloadDialog_OnDownloadStarted", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   查找类似 已开启 的本地化字符串。
+        /// </summary>
+        public static string Enabled {
+            get {
+                return ResourceManager.GetString("Enabled", resourceCulture);
             }
         }
         
@@ -504,15 +513,6 @@ namespace MSL.langs {
         public static string OK {
             get {
                 return ResourceManager.GetString("OK", resourceCulture);
-            }
-        }
-        
-        /// <summary>
-        ///   查找类似 已开启 的本地化字符串。
-        /// </summary>
-        public static string Opened {
-            get {
-                return ResourceManager.GetString("Opened", resourceCulture);
             }
         }
         

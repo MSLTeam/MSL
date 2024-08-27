@@ -42,11 +42,11 @@ namespace MSL.pages
                 JObject jsonObject = JObject.Parse(File.ReadAllText(@"MSL\config.json", Encoding.UTF8));
                 if (jsonObject["notifyIcon"] != null && (bool)jsonObject["notifyIcon"] == true)
                 {
-                    notifyIconbtn.Content = LanguageManager.Instance["Page_SettingsPage_CF_BF_NotifyIcon"] + LanguageManager.Instance["Opened"];
+                    notifyIconbtn.Content = LanguageManager.Instance["Page_SettingsPage_CF_BF_NotifyIcon"] + LanguageManager.Instance["Enabled"];
                 }
                 if (jsonObject["mslTips"] != null && (bool)jsonObject["mslTips"] == false)
                 {
-                    MSLTips.Content = LanguageManager.Instance["Page_SettingsPage_CF_BF_MSLTips"] + LanguageManager.Instance["Closed"];
+                    MSLTips.Content = LanguageManager.Instance["Page_SettingsPage_CF_BF_MSLTips"] + LanguageManager.Instance["Disabled"];
                 }
                 if (jsonObject["autoRunApp"] != null && (bool)jsonObject["autoRunApp"] == true)
                 {
@@ -214,9 +214,9 @@ namespace MSL.pages
 
         private void notifyIconbtn_Click(object sender, RoutedEventArgs e)
         {
-            if (notifyIconbtn.Content.ToString().Contains(LanguageManager.Instance["Opened"]))
+            if (notifyIconbtn.Content.ToString().Contains(LanguageManager.Instance["Enabled"]))
             {
-                notifyIconbtn.Content = LanguageManager.Instance["Page_SettingsPage_CF_BF_NotifyIcon"] + LanguageManager.Instance["Closed"];
+                notifyIconbtn.Content = LanguageManager.Instance["Page_SettingsPage_CF_BF_NotifyIcon"] + LanguageManager.Instance["Disabled"];
                 C_NotifyIcon();
                 try
                 {
@@ -236,7 +236,7 @@ namespace MSL.pages
             }
             else
             {
-                notifyIconbtn.Content = LanguageManager.Instance["Page_SettingsPage_CF_BF_NotifyIcon"] + LanguageManager.Instance["Opened"];
+                notifyIconbtn.Content = LanguageManager.Instance["Page_SettingsPage_CF_BF_NotifyIcon"] + LanguageManager.Instance["Enabled"];
                 C_NotifyIcon();
                 try
                 {
@@ -790,11 +790,11 @@ namespace MSL.pages
 
         private async void MSLTips_Click(object sender, RoutedEventArgs e)
         {
-            if (MSLTips.Content.ToString().Contains(LanguageManager.Instance["Opened"]))
+            if (MSLTips.Content.ToString().Contains(LanguageManager.Instance["Enabled"]))
             {
                 if (await Shows.ShowMsgDialogAsync(Window.GetWindow(this), "关闭此功能后，读取服务器信息、玩家等功能将会失效，请谨慎选择！", "警告", true) == true)
                 {
-                    MSLTips.Content = LanguageManager.Instance["Page_SettingsPage_CF_BF_MSLTips"] + LanguageManager.Instance["Closed"];
+                    MSLTips.Content = LanguageManager.Instance["Page_SettingsPage_CF_BF_MSLTips"] + LanguageManager.Instance["Disabled"];
                     try
                     {
                         string jsonString = File.ReadAllText(@"MSL\config.json", Encoding.UTF8);
@@ -818,7 +818,7 @@ namespace MSL.pages
             }
             else
             {
-                MSLTips.Content = LanguageManager.Instance["Page_SettingsPage_CF_BF_MSLTips"] + LanguageManager.Instance["Opened"];
+                MSLTips.Content = LanguageManager.Instance["Page_SettingsPage_CF_BF_MSLTips"] + LanguageManager.Instance["Enabled"];
                 try
                 {
                     string jsonString = File.ReadAllText(@"MSL\config.json", Encoding.UTF8);
