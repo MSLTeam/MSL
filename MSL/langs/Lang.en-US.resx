@@ -431,7 +431,7 @@ Update log:</value>
     <value>Completed!</value>
   </data>
   <data name="DownloadDialog_DownloadFailed" xml:space="preserve">
-    <value>Download failed！</value>
+    <value>Download failed!</value>
   </data>
   <data name="DownloadDialog_Downloading" xml:space="preserve">
     <value>Downloading：{0}MB/{1}MB Progress：{2}% Speed：{3}MB/s</value>

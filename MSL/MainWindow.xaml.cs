@@ -150,7 +150,13 @@ namespace MSL
                 }
                 else if ((bool)jsonObject["notifyIcon"] == true)
                 {
-                    CtrlNotifyIcon();
+                    await Task.Run(() =>
+                    {
+                        Dispatcher.Invoke(() =>
+                        {
+                            CtrlNotifyIcon();
+                        });
+                    });
                 }
                 //Logger.LogInfo("读取托盘图标配置成功！");
                 if (jsonObject["sidemenuExpanded"] == null)
@@ -183,38 +189,35 @@ namespace MSL
                 }
                 else
                 {
-                    Dispatcher.Invoke(() =>
+                    switch ((int)jsonObject["skin"])
                     {
-                        switch ((int)jsonObject["skin"])
-                        {
-                            case 0:
-                                ThemeManager.Current.UsingSystemTheme = true;
-                                break;
-                            case 1:
-                                BrushConverter brushConverter = new BrushConverter();
-                                ThemeManager.Current.AccentColor = (Brush)brushConverter.ConvertFromString("#0078D4");
-                                break;
-                            case 2:
-                                ThemeManager.Current.AccentColor = Brushes.Red;
-                                break;
-                            case 3:
-                                ThemeManager.Current.AccentColor = Brushes.Green;
-                                break;
-                            case 4:
-                                ThemeManager.Current.AccentColor = Brushes.Orange;
-                                break;
-                            case 5:
-                                ThemeManager.Current.AccentColor = Brushes.Purple;
-                                break;
-                            case 6:
-                                ThemeManager.Current.AccentColor = Brushes.DeepPink;
-                                break;
-                            default:
-                                BrushConverter _brushConverter = new BrushConverter();
-                                ThemeManager.Current.AccentColor = (Brush)_brushConverter.ConvertFromString("#0078D4");
-                                break;
-                        }
-                    });
+                        case 0:
+                            ThemeManager.Current.UsingSystemTheme = true;
+                            break;
+                        case 1:
+                            BrushConverter brushConverter = new BrushConverter();
+                            ThemeManager.Current.AccentColor = (Brush)brushConverter.ConvertFromString("#0078D4");
+                            break;
+                        case 2:
+                            ThemeManager.Current.AccentColor = Brushes.Red;
+                            break;
+                        case 3:
+                            ThemeManager.Current.AccentColor = Brushes.Green;
+                            break;
+                        case 4:
+                            ThemeManager.Current.AccentColor = Brushes.Orange;
+                            break;
+                        case 5:
+                            ThemeManager.Current.AccentColor = Brushes.Purple;
+                            break;
+                        case 6:
+                            ThemeManager.Current.AccentColor = Brushes.DeepPink;
+                            break;
+                        default:
+                            BrushConverter _brushConverter = new BrushConverter();
+                            ThemeManager.Current.AccentColor = (Brush)_brushConverter.ConvertFromString("#0078D4");
+                            break;
+                    }
                 }
                 //Logger.LogInfo("读取皮肤配置成功！");
                 if (jsonObject["darkTheme"] == null)
@@ -312,7 +315,7 @@ namespace MSL
                             AutoOpenServer();
                         });
                         servers = servers.Replace(ServerList.ServerID.ToString() + ",", "");
-                        await Task.Delay(100);
+                        //await Task.Delay(100);
                     }
                 }
                 //Logger.LogInfo("读取自动开启（服务器）配置成功！");
@@ -346,7 +349,7 @@ namespace MSL
                             FrpcList.FrpcPageList.Add(FrpcList.FrpcID, new FrpcPage(FrpcList.FrpcID, true));
                         }
                         frpcs = frpcs.Replace(FrpcList.FrpcID.ToString() + ",", "");
-                        await Task.Delay(100);
+                        //await Task.Delay(100);
                     }
                 }
                 //Logger.LogInfo("读取自动开启（内网映射）配置成功！");
@@ -552,13 +555,14 @@ namespace MSL
 
         private void CtrlNotifyIcon()//C_NotifyIcon
         {
-            if (MainNotifyIcon.Visibility == Visibility.Hidden)
+            if (MainNotifyIcon.Visibility == Visibility.Collapsed)
             {
+                //MessageBox.Show("111");
                 MainNotifyIcon.Visibility = Visibility.Visible;
             }
             else
             {
-                MainNotifyIcon.Visibility = Visibility.Hidden;
+                MainNotifyIcon.Visibility = Visibility.Collapsed;
             }
         }
 

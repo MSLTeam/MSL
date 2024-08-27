@@ -69,7 +69,7 @@
             <StackPanel x:Name="GrowlPanel" hc:Growl.GrowlParent="True" VerticalAlignment="Top" Margin="0,10,10,10" />
         </ScrollViewer>
 
-        <hc:NotifyIcon x:Name="MainNotifyIcon" Text="Minecraft Server Launcher" Visibility="Hidden" Click="MainNotifyIcon_Click">
+        <hc:NotifyIcon x:Name="MainNotifyIcon" Text="Minecraft Server Launcher" Visibility="Collapsed" Click="MainNotifyIcon_Click">
             <hc:NotifyIcon.ContextMenu>
                 <ContextMenu>
                     <MenuItem Command="hc:ControlCommands.PushMainWindow2Top" Header="打开主界面"/>
