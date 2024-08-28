@@ -117,7 +117,7 @@ namespace MSL
         {
             try
             {
-                updateUITimer.Stop();
+                updateUITimer?.Stop();
             }
             catch { Console.WriteLine("Stop UITimer Failed"); }
             if (_dialogReturn == 2)
