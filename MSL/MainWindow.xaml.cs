@@ -65,7 +65,7 @@ namespace MSL
                 //Logger.LogInfo("载入配置……");
                 await LoadConfigEvent(jsonObject);
                 //Logger.LogInfo("异步载入联网功能……");
-                _ = OnlineService(jsonObject);
+                await OnlineService(jsonObject);
                 //Logger.LogInfo("启动事件完成！");
             }
             catch (Exception ex)
@@ -310,10 +310,7 @@ namespace MSL
                     {
                         int aserver = servers.IndexOf(",");
                         ServerList.ServerID = int.Parse(servers.Substring(0, aserver));
-                        Dispatcher.Invoke(() =>
-                        {
-                            AutoOpenServer();
-                        });
+                        AutoOpenServer();
                         servers = servers.Replace(ServerList.ServerID.ToString() + ",", "");
                         //await Task.Delay(100);
                     }
@@ -420,19 +417,16 @@ namespace MSL
                         //Logger.LogInfo("自动更新功能已打开，更新新版本……");
                         UpdateApp(_version);
                     }
-                    await Dispatcher.Invoke(async () =>
+                    if (await Shows.ShowMsgDialogAsync(this, string.Format(LanguageManager.Instance["MainWindow_GrowlMsg_UpdateInfo"] + "\n" + updatelog, _version), LanguageManager.Instance["MainWindow_GrowlMsg_Update"], true))
                     {
-                        if (await Shows.ShowMsgDialogAsync(this, string.Format(LanguageManager.Instance["MainWindow_GrowlMsg_UpdateInfo"] + "\n" + updatelog, _version), LanguageManager.Instance["MainWindow_GrowlMsg_Update"], true))
-                        {
-                            //Logger.LogInfo("更新新版本……");
-                            UpdateApp(_version);
-                        }
-                        else
-                        {
-                            //Logger.LogInfo("用户拒绝更新！");
-                            Growl.Error(LanguageManager.Instance["MainWindow_GrowlMsg_RefuseUpdate"]);
-                        }
-                    });
+                        //Logger.LogInfo("更新新版本……");
+                        UpdateApp(_version);
+                    }
+                    else
+                    {
+                        //Logger.LogInfo("用户拒绝更新！");
+                        Growl.Error(LanguageManager.Instance["MainWindow_GrowlMsg_RefuseUpdate"]);
+                    }
                 }
                 else if (newVersion < version)
                 {
