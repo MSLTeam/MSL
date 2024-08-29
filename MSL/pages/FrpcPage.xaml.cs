@@ -7,6 +7,7 @@ using MSL.utils;
 using Newtonsoft.Json;
 using Newtonsoft.Json.Linq;
 using System;
+using System.Collections.Generic;
 using System.Diagnostics;
 using System.IO;
 using System.Net.NetworkInformation;
@@ -86,9 +87,10 @@ namespace MSL.pages
                 //默认的玩意
                 string frpcServer = jobject[frpID.ToString()]["frpcServer"].ToString();
                 string frpcversion = Config.Read("frpcversion");
-                string frpcExeName = "frpc.exe"; //frpc客户端主程序
-                string downloadUrl = "download/frpc/MSLFrp/amd64"; //frpc客户端在api的调用位置
-                string arguments = "-c frpc.toml"; //启动命令
+                string frpcExeName; //frpc客户端主程序
+                string downloadUrl = ""; //frpc客户端在api的调用位置
+                string arguments; //启动命令
+                string downloadFileName;
                 string osver = "10";
                 if (Environment.OSVersion.Version.Major == 6 && Environment.OSVersion.Version.Minor == 1)
                 {
@@ -96,52 +98,118 @@ namespace MSL.pages
                 }
                 switch (frpcServer)
                 {
+                    case "0":
+                        frpcExeName = "frpc.exe"; //frpc客户端主程序
+                        arguments = "-c frpc.toml"; //启动命令
+                        downloadFileName = "frpc.exe";
+                        if (File.Exists($"MSL\\frp\\{frpcExeName}") && frpcversion != "0581") //mslfrp的特别更新qwq
+                        {
+                            downloadUrl = (await HttpService.GetApiContentAsync("download/frpc/MSLFrp/amd64?os=" + osver))["data"]["url"].ToString();//丢os版本号
+                            await Shows.ShowDownloader(Window.GetWindow(this), downloadUrl, "MSL\\frp", downloadFileName, LanguageManager.Instance["Update_Frpc_Info"]);
+                            Config.Write("frpcversion", "0581");
+                            downloadUrl = "";
+                        }
+                        else if (!File.Exists($"MSL\\frp\\{frpcExeName}"))
+                        {
+                            downloadUrl = (await HttpService.GetApiContentAsync("download/frpc/MSLFrp/amd64?os=" + osver))["data"]["url"].ToString();//丢os版本号
+                        }
+                        break;
                     case "1"://openfrp
                         frpcExeName = "frpc_of.exe";
-                        downloadUrl = "download/frpc/OpenFrp/amd64";
                         arguments = File.ReadAllText($"MSL\\frp\\{frpID}\\frpc");
+                        if (!File.Exists($"MSL\\frp\\{frpcExeName}"))
+                        {
+                            downloadUrl = "OpenFrp";
+                        }
+                        downloadFileName = "frpc_of.zip";
                         break;
                     case "2"://chmlfrp
                         frpcExeName = "frpc_chml.exe";
-                        downloadUrl = "download/frpc/ChmlFrp/amd64";
                         arguments = "-c frpc"; //启动命令
+                        if (!File.Exists($"MSL\\frp\\{frpcExeName}"))
+                        {
+                            downloadUrl = "ChmlFrp";
+                        }
+                        downloadFileName = "frpc_chml.zip";
                         break;
                     case "-1"://自定义frp，使用官版
                         frpcExeName = "frpc_official.exe";
-                        downloadUrl = "download/frpc/Official/amd64";
+                        arguments = "-c frpc.toml"; //启动命令
+                        downloadFileName = "frpc.exe";
+                        if (!File.Exists($"MSL\\frp\\{frpcExeName}"))
+                        {
+                            downloadUrl = (await HttpService.GetApiContentAsync("download/frpc/Official/amd64?os=" + osver))["data"]["url"].ToString();
+                        }
                         break;
                     case "-2"://自定义frp，使用自己的
                         frpcExeName = "frpc_custom.exe";
+                        arguments = "-c frpc.toml"; //启动命令
+                        downloadFileName = "";
+                        break;
+                    default:
+                        frpcExeName = "frpc.exe"; //frpc客户端主程序
+                        downloadUrl = (await HttpService.GetApiContentAsync("download/frpc/Official/amd64?os=" + osver))["data"]["url"].ToString();
+                        arguments = "-c frpc.toml"; //启动命令
+                        downloadFileName = "frpc.exe";
                         break;
                 }
-                if ((frpcversion == "" || frpcversion != "0581") && frpcServer == "0") //mslfrp的特别更新qwq
-                {
-                    string _dnfrpc;
-                    _dnfrpc = (await HttpService.GetApiContentAsync(downloadUrl + "?os=" + osver))["data"]["url"].ToString();//丢os版本号
 
-                    await Shows.ShowDownloader(Window.GetWindow(this), _dnfrpc, "MSL\\frp", $"{frpcExeName}", LanguageManager.Instance["Update_Frpc_Info"]);
-                    Config.Write("frpcversion", "0581");
-                }
-
-                if (!File.Exists($"MSL\\frp\\{frpcExeName}") && frpcServer != "-2")//检查frpc是否存在，不存在就下崽崽
+                if (frpcServer != "-2")//检查frpc是否存在，同时-2是用户自己设置frpc客户端，不用管
                 {
-                    string _dnfrpc;
-                    _dnfrpc = (await HttpService.GetApiContentAsync(downloadUrl + "?os=" + osver))["data"]["url"].ToString();//丢os版本号
-                    if (frpcServer == "0" || frpcServer == "-1")//下载exe or zip
+                    if (downloadUrl == "OpenFrp")
                     {
-                        await Shows.ShowDownloader(Window.GetWindow(this), _dnfrpc, "MSL\\frp", $"{frpcExeName}", LanguageManager.Instance["Download_Frpc_Info"]);
+                        //List<string> downloadSource = new();
+                        JObject apiData = (JObject)JObject.Parse((await HttpService.GetContentAsync("https://api.openfrp.net/commonQuery/get?key=software")).ToString())["data"];
+                        string latestVer = apiData["latest"].ToString();
+                        JArray downSourceList = (JArray)apiData["source"];
+                        if (osver == "6")
+                        {
+                            latestVer = "/OpenFRP_0.54.0_835276e2_20240205/";
+                        }
+                        foreach (JObject downSource in downSourceList)
+                        {
+                            //downloadSource.Add(downSource["value"].ToString());
+                            int _return = await Shows.ShowDownloaderWithIntReturn(Window.GetWindow(this), downSource["value"].ToString() + latestVer + "frpc_windows_amd64.zip", "MSL\\frp", downloadFileName, LanguageManager.Instance["Download_Frpc_Info"], "", true);
+                            if (_return == 2)
+                            {
+                                return;
+                            }
+                            else if (_return == 1)
+                            {
+                                break;
+                            }
+                        }
                     }
-                    else
+                    else if (downloadUrl == "ChmlFrp")
                     {
-                        await Shows.ShowDownloader(Window.GetWindow(this), _dnfrpc, "MSL\\frp", $"{frpcExeName}.zip", LanguageManager.Instance["Download_Frpc_Info"]);
+                        JObject apiData = (JObject)JObject.Parse((await HttpService.GetContentAsync("https://cf-v1.uapis.cn/api/dw.php")).ToString());
+                        if ((int)apiData["code"] != 200)
+                        {
+                            Growl.Error("获取ChmlFrp下载地址失败！");
+                            return;
+                        }
+                        string link = apiData["link"].ToString();
+                        JArray fileList = (JArray)apiData["system"]["windows"];
+                        foreach (JObject file in fileList)
+                        {
+                            if (file["architecture"].ToString() == "amd64")
+                            {
+                                await Shows.ShowDownloader(Window.GetWindow(this), link + file["route"].ToString(), "MSL\\frp", downloadFileName, LanguageManager.Instance["Download_Frpc_Info"]);
+                                break;
+                            }
+                        }
+                    }
+                    else if (downloadUrl != "")
+                    {
+                        await Shows.ShowDownloader(Window.GetWindow(this), downloadUrl, "MSL\\frp", downloadFileName, LanguageManager.Instance["Download_Frpc_Info"]);
                     }
 
                     //只有mslfrp+gh不需要
-                    if (frpcServer != "0" && frpcServer != "-1")
+                    if (downloadUrl == "OpenFrp" || downloadUrl == "ChmlFrp")
                     {
                         //很寻常的解压
                         string fileName = "";
-                        using (ZipFile zip = new ZipFile($@"MSL\frp\{frpcExeName}.zip"))
+                        using (ZipFile zip = new ZipFile($@"MSL\frp\{downloadFileName}"))
                         {
                             foreach (ZipEntry entry in zip)
                             {
@@ -150,8 +218,8 @@ namespace MSL.pages
                             }
                         }
                         FastZip fastZip = new FastZip();
-                        fastZip.ExtractZip($@"MSL\frp\{frpcExeName}.zip", "MSL\\frp", "");
-                        File.Delete($@"MSL\frp\{frpcExeName}.zip");
+                        fastZip.ExtractZip($@"MSL\frp\{downloadFileName}", "MSL\\frp", "");
+                        File.Delete($@"MSL\frp\{downloadFileName}");
                         if (frpcServer == "1") //这是of的解压处理
                         {
                             File.Move("MSL\\frp\\" + fileName, $"MSL\\frp\\{frpcExeName}");
@@ -166,7 +234,7 @@ namespace MSL.pages
                     }
 
                 }
-                else if (!File.Exists($"MSL\\frp\\{frpcExeName}") && frpcServer == "-2")
+                else if (frpcServer == "-2" && !File.Exists($"MSL\\frp\\{frpcExeName}"))
                 {
                     //找不到自定义的frp，直接失败
                     throw new FileNotFoundException("Frpc Not Found");

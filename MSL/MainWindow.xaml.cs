@@ -369,26 +369,29 @@ namespace MSL
             {
                 deviceID = Functions.GetDeviceID();
                 //serverLink = "mslmc.cn/v3";
-                serverLink = (await HttpService.GetContentAsync("https://msl-api.oss-cn-hangzhou.aliyuncs.com/")).ToString();
-                //Logger.LogInfo("连接到api：" + "https://api." + serverLink);
+                string _link = (await HttpService.GetContentAsync("https://msl-api.oss-cn-hangzhou.aliyuncs.com/")).ToString();
+                //Logger.LogInfo("连接到api：" + "https://api." + _link);
                 try
                 {
-                    //MessageBox.Show((await HttpService.GetApiContentAsync("")).ToString());
-                    if (((int)(await HttpService.GetApiContentAsync(""))["code"]) != 200)
+                    if (((int)(JObject.Parse((await HttpService.GetContentAsync("https://api." + _link, null, 1)).ToString()))["code"]) == 200)
                     {
-                        serverLink = "waheal.top";
+                        serverLink = _link;
+                    }
+                    else
+                    {
+                        serverLink = "waheal.top/v3";
                         Growl.Info(LanguageManager.Instance["MainWindow_GrowlMsg_MslServerDown"]);
                     }
                 }
                 catch
                 {
-                    serverLink = "waheal.top";
+                    serverLink = "waheal.top/v3";
                     Growl.Info(LanguageManager.Instance["MainWindow_GrowlMsg_MSLServerDown"]);
                 }
             }
             catch
             {
-                serverLink = "waheal.top";
+                serverLink = "waheal.top/v3";
                 //Logger.LogError("在匹配在线服务器时出现错误，已连接至备用服务器");
             }
             //更新
