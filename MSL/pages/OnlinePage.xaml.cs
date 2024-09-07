@@ -150,7 +150,7 @@ namespace MSL.pages
 
         private void createRoom_Click(object sender, RoutedEventArgs e)
         {
-            if (createRoom.Content.ToString() != LanguageManager.Instance["Page_OnlinePage_Close"])
+            if (createRoom.Content.ToString() != LanguageManager.Instance["Page_OnlinePage_CloseRoom"])
             {
                 string a = "[common]\r\nserver_port = " + ipPort + "\r\nserver_addr = " + ipAddress + "\r\n\r\n[" + masterQQ.Text + "]\r\ntype = xtcp\r\nlocal_ip = 127.0.0.1\r\nlocal_port = " + masterPort.Text + "\r\nsk = " + masterKey.Text + "\r\n";
                 Directory.CreateDirectory("MSL\\frp");
@@ -219,7 +219,7 @@ namespace MSL.pages
                 {
                     if (isMaster)
                     {
-                        createRoom.Content = LanguageManager.Instance["Page_OnlinePage_Close"];
+                        createRoom.Content = LanguageManager.Instance["Page_OnlinePage_CloseRoom"];
                     }
                     else
                     {
