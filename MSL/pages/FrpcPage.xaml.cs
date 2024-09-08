@@ -131,6 +131,15 @@ namespace MSL.pages
                         }
                         downloadFileName = "frpc_chml.zip";
                         break;
+                    case "3"://sakura
+                        frpcExeName = "frpc_sakura.exe";
+                        arguments = "-c frpc"; //启动命令
+                        if (!File.Exists($"MSL\\frp\\{frpcExeName}"))
+                        {
+                            downloadUrl = "SakuraFrp";
+                        }
+                        downloadFileName = "frpc_sakura.zip";
+                        break;
                     case "-1"://自定义frp，使用官版
                         frpcExeName = "frpc_official.exe";
                         arguments = "-c frpc.toml"; //启动命令
