@@ -4,6 +4,8 @@ using System;
 using System.Collections.Generic;
 using System.Collections.ObjectModel;
 using System.Linq;
+using System.Net;
+using System.Net.Http.Headers;
 using System.Text;
 using System.Threading.Tasks;
 using System.Windows;
@@ -134,6 +136,29 @@ namespace MSL.pages.frpProviders
             catch (Exception ex) {
 
             } 
+        }
+
+        //获取某个隧道的配置文件
+        private async void GetTunnelConfig(string token,int id)
+        {
+            try
+            {
+                //请求头 token
+                var headersAction = new Action<HttpRequestHeaders>(headers =>
+                {
+                    headers.Add("Authorization", $"Bearer {token}");
+                });
+
+                //请求body
+                var body = new JObject
+                {
+                    ["query"] = id
+                };
+                HttpResponse res = await HttpService.PostAsync(ApiUrl + "/tunnel/config",0,body,headersAction);
+                MessageBox.Show((string)res.HttpResponseContent);
+            }
+            catch (Exception ex) { 
+            }
         }
     }
 }
