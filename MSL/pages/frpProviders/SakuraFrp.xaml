@@ -136,8 +136,8 @@
                             <ColumnDefinition Width="*"/>
                             <ColumnDefinition Width="*"/>
                         </Grid.ColumnDefinitions>
-                        <Button Content="删除所选隧道" x:Name="Del_Tunnel" Style="{DynamicResource ButtonDanger}" Grid.Column="0" HorizontalAlignment="Stretch" Margin="0,0,3,0" />
-                        <Button Content="刷新" x:Name="RefreshBtn"  Style="{StaticResource ButtonPrimary}" HorizontalAlignment="Stretch" Grid.Column="1" Margin="3,0,0,0"/>
+                        <Button Content="删除所选隧道" x:Name="Del_Tunnel" Style="{DynamicResource ButtonDanger}" Grid.Column="0" HorizontalAlignment="Stretch" Margin="0,0,3,0" Click="Del_Tunnel_Click" />
+                        <Button Content="刷新" x:Name="RefreshBtn"  Style="{StaticResource ButtonPrimary}" HorizontalAlignment="Stretch" Grid.Column="1" Margin="3,0,0,0" Click="RefreshBtn_Click"/>
 
                     </Grid>
 

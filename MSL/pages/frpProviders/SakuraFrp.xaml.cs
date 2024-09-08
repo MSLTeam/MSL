@@ -28,6 +28,7 @@ namespace MSL.pages.frpProviders
     public partial class SakuraFrp : Page
     {
         string ApiUrl = "https://api.natfrp.com/v4";
+        string UserToken = null;
 
         public SakuraFrp()
         {
@@ -63,6 +64,7 @@ namespace MSL.pages.frpProviders
                 HttpResponse res = await HttpService.GetAsync(ApiUrl+"/user/info?token="+token);
                 if (res.HttpResponseCode == System.Net.HttpStatusCode.OK)
                 {
+                    UserToken = token;
                     Dispatcher.Invoke(() =>
                     {
                         //显示main页面
@@ -100,7 +102,6 @@ namespace MSL.pages.frpProviders
             public string Name { get; set; }
             public string Node { get; set; }
             public bool Online { get; set; }
-            public string Token { get; set; }
         }
 
         private async void GetTunnelList(string token)
@@ -129,7 +130,6 @@ namespace MSL.pages.frpProviders
                                 LPort = $"{item["local_port"]}", //本地端口
                                 RPort = $"{item["remote"]}", //远程端口
                                 Online = (bool)item["online"], //在线吗亲
-                                Token = token //用户token
                             });
                         });
                       
@@ -208,8 +208,48 @@ namespace MSL.pages.frpProviders
             var listBox = FrpList as System.Windows.Controls.ListBox;
             if (listBox.SelectedItem is TunnelInfo selectedTunnel)
             {
-                Task.Run(() => GetTunnelConfig(selectedTunnel.Token,selectedTunnel.ID));
+                Task.Run(() => GetTunnelConfig(UserToken,selectedTunnel.ID));
             }
+        }
+
+        private void RefreshBtn_Click(object sender, RoutedEventArgs e)
+        {
+            Task.Run(()=> GetTunnelList(UserToken));
+        }
+
+        //获取某个隧道的配置文件
+        private async void DelTunnel(string token, int id)
+        {
+            try
+            {
+                //请求头 token
+                var headersAction = new Action<HttpRequestHeaders>(headers =>
+                {
+                    headers.Add("Authorization", $"Bearer {token}");
+                });
+
+                //请求body
+                var body = new JObject
+                {
+                    ["ids"] = id
+                };
+                HttpResponse res = await HttpService.PostAsync(ApiUrl + "/tunnel/delete", 0, body, headersAction);
+                MessageBox.Show((string)res.HttpResponseContent);
+                Task.Run(() => GetTunnelList(UserToken));
+            }
+            catch (Exception ex)
+            {
+            }
+        }
+
+        private void Del_Tunnel_Click(object sender, RoutedEventArgs e)
+        {
+            var listBox = FrpList as System.Windows.Controls.ListBox;
+            if (listBox.SelectedItem is TunnelInfo selectedTunnel)
+            {
+                Task.Run(() => DelTunnel(UserToken,selectedTunnel.ID));
+            }
+           
         }
     }
 }
