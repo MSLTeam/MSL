@@ -2,6 +2,7 @@
 using Newtonsoft.Json.Linq;
 using System;
 using System.Collections.Generic;
+using System.Collections.ObjectModel;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
@@ -14,6 +15,7 @@ using System.Windows.Media;
 using System.Windows.Media.Imaging;
 using System.Windows.Navigation;
 using System.Windows.Shapes;
+using Windows.Data.Json;
 
 namespace MSL.pages.frpProviders
 {
@@ -23,6 +25,7 @@ namespace MSL.pages.frpProviders
     public partial class SakuraFrp : Page
     {
         string ApiUrl = "https://api.natfrp.com/v4";
+        string SakuraToken = null;
 
         public SakuraFrp()
         {
@@ -70,6 +73,9 @@ namespace MSL.pages.frpProviders
                     {
                         UserInfo.Text = $"用户名: {JsonUserInfo["name"]}\n用户类型: {JsonUserInfo["group"]["name"]}\n限速: {JsonUserInfo["speed"]}";
                     });
+
+                    //获取隧道
+                    Task.Run(() => GetTunnelList(token));
                 }
                 else
                 {
@@ -80,6 +86,54 @@ namespace MSL.pages.frpProviders
             {
 
             }
+        }
+
+        //隧道相关
+        internal class TunnelInfo
+        {
+            public string ID { get; set; }
+            public string Type { get; set; }
+            public string LPort { get; set; }
+            public string RPort { get; set; }
+            public string LIP { get; set; }
+            public string Name { get; set; }
+            public string Node { get; set; }
+        }
+
+        private async void GetTunnelList(string token)
+        {
+            try
+            {
+                //绑定对象
+                ObservableCollection<TunnelInfo> tunnels = new ObservableCollection<TunnelInfo>();
+                Dispatcher.Invoke(() =>
+                {
+                    FrpList.ItemsSource = tunnels;
+                });
+                HttpResponse res = await HttpService.GetAsync(ApiUrl + "/tunnels?token=" + token);
+                if (res.HttpResponseCode == System.Net.HttpStatusCode.OK) {
+                    JArray JsonTunnels = JArray.Parse((string)res.HttpResponseContent);
+                    foreach (var item in JsonTunnels)
+                    {
+                        Dispatcher.Invoke(() =>
+                        {
+                            tunnels.Add(new TunnelInfo
+                            {
+                                Name = $"{item["name"]}", //隧道名字
+                                Node = $"{item["node"]}", //节点id
+                                ID = $"{item["id"]}", //隧道id
+                                LIP = $"{item["local_ip"]}", //本地ip
+                                LPort = $"{item["local_port"]}", //本地端口
+                                RPort = $"{item["remote"]}", //远程端口
+                            });
+                        });
+                      
+                    }
+                }
+            }
+            catch (Exception ex) {
+
+            } 
         }
     }
 }
