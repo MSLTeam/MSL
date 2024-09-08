@@ -120,7 +120,7 @@
                         <RowDefinition Height="*"/>
                         <RowDefinition Height="auto"/>
                     </Grid.RowDefinitions>
-                    <ListBox x:Name="FrpList" MinWidth="300" Grid.Row="0" hc:Empty.ShowEmpty="true" >
+                    <ListBox x:Name="FrpList" MinWidth="300" Grid.Row="0" hc:Empty.ShowEmpty="true" SelectionChanged="FrpList_SelectionChanged" >
                         <ListBox.ItemTemplate>
                             <DataTemplate>
                                 <StackPanel Orientation="Horizontal">
@@ -166,9 +166,9 @@
                                 <TextBlock x:Name="TunnelInfo_Text" LineHeight="20" Foreground="{DynamicResource PrimaryTextBrush}" Text="请选择一条隧道~" FontSize="14" HorizontalAlignment="Left" Margin="10,0,0,0"/>
                                 <StackPanel Orientation="Horizontal" Margin="0,2,0,0">
                                     <Label Content="本地IP:" BorderThickness="0" FontSize="14" HorizontalAlignment="Left"/>
-                                    <TextBox MinWidth="100" x:Name="LocalIp"/>
+                                    <TextBox MinWidth="100" x:Name="LocalIp" IsReadOnly="True"/>
                                     <Label Content="本地端口:" BorderThickness="0" FontSize="14" HorizontalAlignment="Left" Margin="10,0,0,0"/>
-                                    <TextBox MinWidth="100" x:Name="LocalPort"/>
+                                    <TextBox MinWidth="100" x:Name="LocalPort" IsReadOnly="True"/>
                                 </StackPanel>
                             </StackPanel>
                         </hc:Card>
@@ -194,7 +194,7 @@
                     <StackPanel Orientation="Horizontal">
 
                         <Button Content="新建隧道" MinWidth="100" MinHeight="60" Margin="0,0,8,0" FontSize="16" x:Name="CreateBtn" />
-                        <Button Content="确定" MinWidth="100" MinHeight="60" Style="{StaticResource ButtonPrimary}" FontSize="16" x:Name="OKBtn" />
+                        <Button Content="确定" MinWidth="100" MinHeight="60" Style="{StaticResource ButtonPrimary}" FontSize="16" x:Name="OKBtn" Click="OKBtn_Click" />
                     </StackPanel>
                 </Grid>
             </Grid>
