@@ -155,8 +155,8 @@
                                     <TextBlock x:Name="UserInfo" LineHeight="20" Foreground="{DynamicResource PrimaryTextBrush}" Text="Loadings······" FontSize="14" HorizontalAlignment="Left" Margin="10,0,0,0"/>
                                 </StackPanel>
                                 <StackPanel Grid.Column="1" Margin="0,5,8,5" >
-                                    <Button Content="打开官网" x:Name="OpenWeb" Margin="0,0,0,3" Style="{DynamicResource ButtonPrimary}" HorizontalAlignment="Stretch" />
-                                    <Button Content="退出登录" x:Name="ExitBtn" Margin="0,3,0,0" Style="{StaticResource ButtonDanger}" HorizontalAlignment="Stretch" />
+                                    <Button Content="打开官网" x:Name="OpenWeb" Margin="0,0,0,3" Style="{DynamicResource ButtonPrimary}" HorizontalAlignment="Stretch" Click="OpenWeb_Click" />
+                                    <Button Content="退出登录" x:Name="ExitBtn" Margin="0,3,0,0" Style="{StaticResource ButtonDanger}" HorizontalAlignment="Stretch" Click="ExitBtn_Click" />
                                 </StackPanel>
                             </Grid>
                         </hc:Card>
@@ -193,7 +193,7 @@
                 <Grid Grid.Column="1" Margin="0,10,10,10">
                     <StackPanel Orientation="Horizontal">
 
-                        <Button Content="新建隧道" MinWidth="100" MinHeight="60" Margin="0,0,8,0" FontSize="16" x:Name="CreateBtn" />
+                        <Button Content="新建隧道" MinWidth="100" MinHeight="60" Margin="0,0,8,0" FontSize="16" x:Name="CreateBtn" Click="CreateBtn_Click" />
                         <Button Content="确定" MinWidth="100" MinHeight="60" Style="{StaticResource ButtonPrimary}" FontSize="16" x:Name="OKBtn" Click="OKBtn_Click" />
                     </StackPanel>
                 </Grid>

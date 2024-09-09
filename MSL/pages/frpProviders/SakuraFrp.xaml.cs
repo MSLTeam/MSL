@@ -3,6 +3,7 @@ using Newtonsoft.Json.Linq;
 using System;
 using System.Collections.Generic;
 using System.Collections.ObjectModel;
+using System.Diagnostics;
 using System.IO;
 using System.Linq;
 using System.Net;
@@ -225,7 +226,7 @@ namespace MSL.pages.frpProviders
                     ["ids"] = id
                 };
                 HttpResponse res = await HttpService.PostAsync(ApiUrl + "/tunnel/delete", 0, body, headersAction);
-                MessageBox.Show((string)res.HttpResponseContent);
+                //MessageBox.Show((string)res.HttpResponseContent);
                 Task.Run(() => GetTunnelList(UserToken));
             }
             catch (Exception ex)
@@ -246,6 +247,25 @@ namespace MSL.pages.frpProviders
                 await Shows.ShowMsgDialogAsync(Window.GetWindow(this), "您似乎没有选择任何隧道！", "错误");
             }
            
+        }
+
+        private void OpenWeb_Click(object sender, RoutedEventArgs e)
+        {
+            Process.Start("https://www.natfrp.com/user/");
+        }
+
+        private void ExitBtn_Click(object sender, RoutedEventArgs e)
+        {
+            //显示登录页面
+            LoginGrid.Visibility = Visibility.Visible;
+            MainGrid.Visibility = Visibility.Collapsed;
+            CreateGrid.Visibility = Visibility.Collapsed;
+            UserToken = null;
+        }
+
+        private async void CreateBtn_Click(object sender, RoutedEventArgs e)
+        {
+            await Shows.ShowMsgDialogAsync(Window.GetWindow(this), "新建隧道功能正在施工中···\n敬请期待！", "信息");
         }
     }
 }
