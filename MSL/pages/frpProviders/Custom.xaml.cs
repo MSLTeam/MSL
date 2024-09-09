@@ -96,6 +96,7 @@ namespace MSL.pages.frpProviders
                     JObject keyValues = new JObject()
                     {
                         ["frpcServer"] = "-2",
+                        ["name"]="自定义隧道"
                     };
                     jobject.Add(number.ToString(), keyValues);
                     //自定义模式-自定义frpc客户端
@@ -110,6 +111,7 @@ namespace MSL.pages.frpProviders
                 JObject keyValues = new JObject()
                 {
                     ["frpcServer"] = "-1",
+                    ["name"] = "自定义隧道(官方客户端)"
                 };
                 jobject.Add(number.ToString(), keyValues);
                 //自定义模式-Gh上的客户端

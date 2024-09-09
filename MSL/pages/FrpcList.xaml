@@ -26,8 +26,7 @@
                         <DataTemplate>
                             <StackPanel Orientation="Horizontal">
                                 <TextBlock Text="{Binding Name}" Margin="3"/>
-                                <TextBlock Text=" ID:" Margin="3"/>
-                                <TextBlock Text="{Binding ID}" Margin="3"/>
+                                
                                 
                             </StackPanel>
                         </DataTemplate>

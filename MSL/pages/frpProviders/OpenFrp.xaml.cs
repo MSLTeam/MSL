@@ -190,24 +190,7 @@ namespace MSL.pages.frpProviders
                 return;
             }
             string id = nodelist[o.ToString()];
-
-            Directory.CreateDirectory("MSL\\frp");
-            int number = Functions.Frpc_GenerateRandomInt();
-            if (!File.Exists(@"MSL\frp\config.json"))
-            {
-                //Logger.LogWarning("未检测到config.json文件，创建config.json……");
-                File.WriteAllText(@"MSL\frp\config.json", string.Format("{{{0}}}", "\n"));
-            }
-            Directory.CreateDirectory("MSL\\frp\\" + number);
-            File.WriteAllText($"MSL\\frp\\{number}\\frpc", $"-u {token} -p {id}");
-            JObject keyValues = new JObject()
-            {
-                ["frpcServer"] = "1",
-            };
-            JObject jobject = JObject.Parse(File.ReadAllText(@"MSL\frp\config.json", Encoding.UTF8));
-            jobject.Add(number.ToString(), keyValues);
-            string convertString = Convert.ToString(jobject);
-            File.WriteAllText(@"MSL\frp\config.json", convertString, Encoding.UTF8);
+            Config.WriteFrpcConfig(1, $"-u {token} -p {id}", $"OpenFrp节点 - {o.ToString()}");
             await Shows.ShowMsgDialogAsync(window, "映射配置成功，请您点击“启动内网映射”以启动映射！", "信息");
             window.Close();
         }

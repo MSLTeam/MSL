@@ -244,13 +244,15 @@ namespace MSL.pages.frpProviders
                                 LIP = $"{item["localip"]}",
                                 LPort = $"{item["nport"]}",
                                 RPort = $"{item["dorp"]}",
-                                Addr = $"{item["ip"]}",
+                                //ip为什么会没有呢
+                                Addr = item.ContainsKey("ip") ? $"{item["ip"]}" : string.Empty, //ip没的时候 empty！
                                 Token = token,
                                 Compression = $"{item["compression"]}",
                                 Encryption = $"{item["encryption"]}"
                             });
                         });
                     }
+
                 }
                 catch (JsonSerializationException)
                 {
@@ -313,23 +315,8 @@ namespace MSL.pages.frpProviders
                         $"local_port = {LocalPort.Text}\r\nremote_port = {selectedTunnel.RPort}\r\n" +
                         $"use_encryption = {selectedTunnel.Encryption}\r\n" +
                         $"use_compression = {selectedTunnel.Compression}\r\n \r\n";
-
-                    Directory.CreateDirectory("MSL\\frp");
-                    int number = Functions.Frpc_GenerateRandomInt();
-                    if (!File.Exists(@"MSL\frp\config.json"))
-                    {
-                        File.WriteAllText(@"MSL\frp\config.json", string.Format("{{{0}}}", "\n"));
-                    }
-                    Directory.CreateDirectory("MSL\\frp\\" + number);
-                    File.WriteAllText($"MSL\\frp\\{number}\\frpc", FrpcConfig);
-                    JObject keyValues = new JObject()
-                    {
-                        ["frpcServer"] = "2",
-                    };
-                    JObject jobject = JObject.Parse(File.ReadAllText(@"MSL\frp\config.json", Encoding.UTF8));
-                    jobject.Add(number.ToString(), keyValues);
-                    string convertString = Convert.ToString(jobject);
-                    File.WriteAllText(@"MSL\frp\config.json", convertString, Encoding.UTF8);
+                    //输出配置
+                    Config.WriteFrpcConfig(2, FrpcConfig,$"ChmlFrp - {selectedTunnel.Name}({selectedTunnel.Node})");
                     await Shows.ShowMsgDialogAsync(Window.GetWindow(this), "映射配置成功，请您点击“启动内网映射”以启动映射！", "信息");
                     Window.GetWindow(this).Close();
                 }

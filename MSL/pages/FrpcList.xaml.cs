@@ -103,7 +103,7 @@ namespace MSL.pages
 
         private void DelFrpc_Click(object sender, RoutedEventArgs e)
         {
-            var listBox = sender as System.Windows.Controls.ListBox;
+            var listBox = FrpcListBox as System.Windows.Controls.ListBox;
             if (listBox.SelectedItem is FrpcInfo selectedTunnel)
             {
                 if (RunningFrpc.Contains(int.Parse(selectedTunnel.ID)))
