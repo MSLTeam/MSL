@@ -32,9 +32,7 @@
                             <StackPanel Orientation="Horizontal">
                                 <TextBlock Text="{Binding Name}" Margin="3"/>
                                 <TextBlock Text="-" Margin="3"/>
-                                <TextBlock Text="{Binding Area}" Margin="3"/>
-                                <TextBlock Text="-" Margin="3"/>
-                                <TextBlock Text="{Binding NodeGroupName}" Margin="3"/>
+                                <TextBlock Text="{Binding VipName}" Margin="3"/>
                             </StackPanel>
                         </DataTemplate>
                     </ListBox.ItemTemplate>

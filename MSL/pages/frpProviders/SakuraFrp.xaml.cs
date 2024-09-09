@@ -1,4 +1,5 @@
 ﻿using MSL.utils;
+using Newtonsoft.Json;
 using Newtonsoft.Json.Linq;
 using System;
 using System.Collections.Generic;
@@ -30,6 +31,7 @@ namespace MSL.pages.frpProviders
     {
         string ApiUrl = "https://api.natfrp.com/v4";
         string UserToken = null;
+        int UserLevel = 0;
 
         public SakuraFrp()
         {
@@ -78,7 +80,7 @@ namespace MSL.pages.frpProviders
                     {
                         UserInfo.Text = $"用户名: {JsonUserInfo["name"]}\n用户类型: {JsonUserInfo["group"]["name"]}\n限速: {JsonUserInfo["speed"]}";
                     });
-
+                    UserLevel = int.Parse((string)JsonUserInfo["group"]["level"]);
                     //获取隧道
                     Task.Run(() => GetTunnelList(token));
                 }
@@ -263,9 +265,69 @@ namespace MSL.pages.frpProviders
             UserToken = null;
         }
 
+        //下面是创建隧道相关
+
+        internal class NodeInfo
+        {
+            public int ID {  get; set; }
+            public string Name { get; set; }
+            public string Host {  get; set; }
+            public string Description { get; set; }
+            public int Vip {  get; set; }
+            public string VipName { get; set; }
+            public int Flag { get; set; }
+            public string Band { get; set; }
+        }
         private async void CreateBtn_Click(object sender, RoutedEventArgs e)
         {
-            await Shows.ShowMsgDialogAsync(Window.GetWindow(this), "新建隧道功能正在施工中···\n敬请期待！", "信息");
+            //显示create页面
+            LoginGrid.Visibility = Visibility.Collapsed;
+            MainGrid.Visibility = Visibility.Collapsed;
+            CreateGrid.Visibility = Visibility.Visible;
+
+            Task.Run(() => GetNodeList());
+        }
+
+        private async void GetNodeList()
+        {
+            HttpResponse res = await HttpService.GetAsync(ApiUrl + "/nodes?token=" + UserToken);
+            if (res.HttpResponseCode == HttpStatusCode.OK)
+            {
+                ObservableCollection<NodeInfo> nodes = new ObservableCollection<NodeInfo>();
+                Dispatcher.Invoke(() =>
+                {
+                    NodeList.ItemsSource = nodes;
+                });
+                JObject json = JObject.Parse((string)res.HttpResponseContent);
+
+                //遍历查询
+                foreach (var nodeProperty in json.Properties())
+                {
+                    int nodeId = int.Parse(nodeProperty.Name);
+                    JObject nodeData = (JObject)nodeProperty.Value;
+                    if(UserLevel >= (int)nodeData["vip"])
+                    {
+                        Dispatcher.Invoke(() =>
+                        {
+                            nodes.Add(new NodeInfo
+                            {
+                                ID = nodeId,
+                                Name = (string)nodeData["name"],
+                                Host = (string)nodeData["host"],
+                                Description = (string)nodeData["description"],
+                                Vip = (int)nodeData["vip"],
+                                VipName = ((int)nodeData["vip"] == 0 ? "普通节点" :((int)nodeData["vip"] == 3 ? "青铜节点": "白银节点")),
+                                Flag = (int)nodeData["flag"],
+                                Band = (string)nodeData["band"]
+                            });
+                        });
+                    }
+                   
+                }
+
+
+            }
+
         }
     }
 }
