@@ -83,12 +83,12 @@ namespace MSL.pages.frpProviders
                 }
                 else
                 {
-                    MessageBox.Show(res.HttpResponseContent.ToString());
+                    await Shows.ShowMsgDialogAsync(Window.GetWindow(this), "登陆失败！", "错误");
                 }
             }
             catch (Exception ex)
             {
-
+                await Shows.ShowMsgDialogAsync(Window.GetWindow(this), "登陆失败！"+ex.Message, "错误");
             }
         }
 
@@ -137,7 +137,7 @@ namespace MSL.pages.frpProviders
                 }
             }
             catch (Exception ex) {
-
+                await Shows.ShowMsgDialogAsync(Window.GetWindow(this), "获取隧道列表失败！"+ex.Message, "错误");
             } 
         }
 
@@ -191,10 +191,15 @@ namespace MSL.pages.frpProviders
                     {
                         await Shows.ShowMsgDialogAsync(Window.GetWindow(this), "映射配置成功，请您点击“启动内网映射”以启动映射！", "信息");
                         Window.GetWindow(this).Close();
-                    }
-
-
-
+                }
+                else
+                {
+                    await Shows.ShowMsgDialogAsync(Window.GetWindow(this), "配置输出失败！", "错误");
+                }
+            }
+            else
+            {
+                await Shows.ShowMsgDialogAsync(Window.GetWindow(this), "您似乎没有选择任何隧道！", "错误");
             }
         }
 
@@ -225,15 +230,20 @@ namespace MSL.pages.frpProviders
             }
             catch (Exception ex)
             {
+                await Shows.ShowMsgDialogAsync(Window.GetWindow(this), "删除失败！"+ex.Message, "错误");
             }
         }
 
-        private void Del_Tunnel_Click(object sender, RoutedEventArgs e)
+        private async void Del_Tunnel_Click(object sender, RoutedEventArgs e)
         {
             var listBox = FrpList as System.Windows.Controls.ListBox;
             if (listBox.SelectedItem is TunnelInfo selectedTunnel)
             {
                 Task.Run(() => DelTunnel(UserToken,selectedTunnel.ID));
+            }
+            else
+            {
+                await Shows.ShowMsgDialogAsync(Window.GetWindow(this), "您似乎没有选择任何隧道！", "错误");
             }
            
         }
