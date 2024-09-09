@@ -142,7 +142,7 @@ namespace MSL.pages.frpProviders
         }
 
         //获取某个隧道的配置文件
-        private async void GetTunnelConfig(string token,int id)
+        private async Task<string> GetTunnelConfig(string token,int id)
         {
             try
             {
@@ -158,34 +158,11 @@ namespace MSL.pages.frpProviders
                     ["query"] = id
                 };
                 HttpResponse res = await HttpService.PostAsync(ApiUrl + "/tunnel/config",0,body,headersAction);
-                MessageBox.Show((string)res.HttpResponseContent);
+                return (string)res.HttpResponseContent;
 
-                //输出配置文件
-                //我也不知道为啥这么写
-                //反正就是cv O(∩_∩)O
-                Directory.CreateDirectory("MSL\\frp");
-                int number = Functions.Frpc_GenerateRandomInt();
-                if (!File.Exists(@"MSL\frp\config.json"))
-                {
-                    File.WriteAllText(@"MSL\frp\config.json", string.Format("{{{0}}}", "\n"));
-                }
-                Directory.CreateDirectory("MSL\\frp\\" + number);
-                File.WriteAllText($"MSL\\frp\\{number}\\frpc", (string)res.HttpResponseContent);
-                JObject keyValues = new JObject()
-                {
-                    ["frpcServer"] = "3", //3在msl代表sakuarfrp
-                };
-                JObject jobject = JObject.Parse(File.ReadAllText(@"MSL\frp\config.json", Encoding.UTF8));
-                jobject.Add(number.ToString(), keyValues);
-                string convertString = Convert.ToString(jobject);
-                File.WriteAllText(@"MSL\frp\config.json", convertString, Encoding.UTF8);
-                await Shows.ShowMsgDialogAsync(Window.GetWindow(this), "映射配置成功，请您点击“启动内网映射”以启动映射！", "信息");
-                Dispatcher.Invoke(() =>
-                {
-                    Window.GetWindow(this).Close();
-                });
             }
             catch (Exception ex) { 
+                return "MSL-ERR:"+ex.Message;
             }
         }
 
@@ -203,12 +180,23 @@ namespace MSL.pages.frpProviders
         }
 
         //确定 输出config
-        private void OKBtn_Click(object sender, RoutedEventArgs e)
+        private async void OKBtn_Click(object sender, RoutedEventArgs e)
         {
             var listBox = FrpList as System.Windows.Controls.ListBox;
             if (listBox.SelectedItem is TunnelInfo selectedTunnel)
             {
-                Task.Run(() => GetTunnelConfig(UserToken,selectedTunnel.ID));
+               string content = await Task.Run(() => GetTunnelConfig(UserToken,selectedTunnel.ID));
+                if (!content.Contains("MSL-ERR:"))
+                {
+                    //输出配置文件
+                   if( Config.WriteFrpcConfig(3, content, $"SakuraFrp - {selectedTunnel.Name}") == true)
+                    {
+                        await Shows.ShowMsgDialogAsync(Window.GetWindow(this), "映射配置成功，请您点击“启动内网映射”以启动映射！", "信息");
+                        Window.GetWindow(this).Close();
+                    }
+
+                }
+
             }
         }
 
