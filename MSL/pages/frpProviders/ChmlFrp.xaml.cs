@@ -400,15 +400,8 @@ namespace MSL.pages.frpProviders
             Random rand = new Random();
             int randomNumber = rand.Next(10000, 65536);
             Create_RemotePort.Text = randomNumber.ToString();
-            Random rand2 = new Random();
-            string chars = "abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789";
-            string randomString = "MSL";
-
-            for (int i = 0; i < 5; i++)
-            {
-                randomString += chars[rand.Next(chars.Length)];
-            }
-            Create_Name.Text = randomString.ToString();
+            
+            Create_Name.Text = Functions.RandomString("MSL_",5);
         }
 
         public class NodeInfo

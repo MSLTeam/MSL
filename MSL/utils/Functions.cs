@@ -8,6 +8,7 @@ using System.Text;
 using System.Text.RegularExpressions;
 using System.Threading;
 using System.Threading.Tasks;
+using static System.Windows.Forms.VisualStyles.VisualStyleElement.Rebar;
 
 namespace MSL.utils
 {
@@ -139,6 +140,19 @@ namespace MSL.utils
             {
                 return Frpc_GenerateRandomInt();
             }
+        }
+
+        public static string RandomString(string prefix, int length)
+        {
+            Random rand = new Random();
+            string chars = "abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789";
+            string randomString = prefix;
+
+            for (int i = 0; i < length; i++)
+            {
+                randomString += chars[rand.Next(chars.Length)];
+            }
+            return randomString.ToString();
         }
 
         #region Install Forge

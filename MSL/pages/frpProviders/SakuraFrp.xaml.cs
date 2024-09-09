@@ -38,12 +38,20 @@ namespace MSL.pages.frpProviders
             InitializeComponent();
         }
 
-        private void Page_Initialized(object sender, EventArgs e)
+        private async void Page_Initialized(object sender, EventArgs e)
         {
             //显示登录页面
             LoginGrid.Visibility=Visibility.Visible;
             MainGrid.Visibility=Visibility.Collapsed;
             CreateGrid.Visibility=Visibility.Collapsed;
+
+            if(Config.Read("SakuraFrpToken") != "")
+            {
+                ShowDialogs showDialogs = new ShowDialogs();
+                showDialogs.ShowTextDialog(Window.GetWindow(this), "登录中……");
+                await Task.Run(() => VerifyUserToken(Config.Read("SakuraFrpToken"), false)); //移除空格，防止笨蛋
+                showDialogs.CloseTextDialog();
+            }
         }
 
         private async void userTokenLogin_Click(object sender, RoutedEventArgs e)
@@ -68,6 +76,11 @@ namespace MSL.pages.frpProviders
                 if (res.HttpResponseCode == System.Net.HttpStatusCode.OK)
                 {
                     UserToken = token;
+                    if (save)
+                    {
+                        Config.Write("SakuraFrpToken", token);
+                    }
+
                     Dispatcher.Invoke(() =>
                     {
                         //显示main页面
@@ -263,6 +276,7 @@ namespace MSL.pages.frpProviders
             MainGrid.Visibility = Visibility.Collapsed;
             CreateGrid.Visibility = Visibility.Collapsed;
             UserToken = null;
+            Config.Write("SakuraFrpToken", "");
         }
 
         //下面是创建隧道相关
@@ -286,6 +300,7 @@ namespace MSL.pages.frpProviders
             CreateGrid.Visibility = Visibility.Visible;
 
             Task.Run(() => GetNodeList());
+            Create_Name.Text = Functions.RandomString("MSL_", 6);
         }
 
         private async void GetNodeList()
@@ -328,6 +343,73 @@ namespace MSL.pages.frpProviders
 
             }
 
+        }
+
+        private async void NodeList_SelectionChanged(object sender, SelectionChangedEventArgs e)
+        {
+            var listBox = NodeList as System.Windows.Controls.ListBox;
+            if (listBox.SelectedItem is NodeInfo selectedNode)
+            {
+               NodeTips.Text=(selectedNode.Description == "" ? "节点没有备注": selectedNode.Description) +"\n节点带宽: "+selectedNode.Band;
+            }
+        }
+
+        private void Create_BackBtn_Click(object sender, RoutedEventArgs e)
+        {
+            //显示main页面
+            LoginGrid.Visibility = Visibility.Collapsed; ;
+            MainGrid.Visibility = Visibility.Visible;
+            CreateGrid.Visibility = Visibility.Collapsed;
+        }
+
+        private async void Create_OKBtn_Click(object sender, RoutedEventArgs e)
+        {
+            var listBox = NodeList as System.Windows.Controls.ListBox;
+            if (listBox.SelectedItem is NodeInfo selectedNode)
+            {
+                //请求头 token
+                var headersAction = new Action<HttpRequestHeaders>(headers =>
+                {
+                    headers.Add("Authorization", $"Bearer {UserToken}");
+                });
+
+                //请求body
+                var body = new JObject
+                {
+                    ["node"] = selectedNode.ID,
+                    ["name"] = Create_Name.Text,
+                    ["type"]=Create_Protocol.Text,
+                    ["note"]="Create By MSL",
+                    ["extra"]="",
+                    ["local_ip"]=Create_LocalIP.Text,
+                    ["local_port"] = Create_LocalPort.Text,
+                    ["remote"]=Create_BindDomain.Text,
+                };
+                HttpResponse res = await HttpService.PostAsync(ApiUrl + "/tunnels", 0, body, headersAction);
+                if (res.HttpResponseCode == HttpStatusCode.Created)
+                {
+                    JObject jsonres=JObject.Parse((string)res.HttpResponseContent);
+                    await Shows.ShowMsgDialogAsync(Window.GetWindow(this), $"{jsonres["name"]}隧道创建成功！\nID: {jsonres["id"]} 远程端口: {jsonres["remote"]}", "成功");
+                    //显示main页面
+                    LoginGrid.Visibility = Visibility.Collapsed; ;
+                    MainGrid.Visibility = Visibility.Visible;
+                    CreateGrid.Visibility = Visibility.Collapsed;
+                    Task.Run(() => GetTunnelList(UserToken));
+                }
+                else
+                {
+                    await Shows.ShowMsgDialogAsync(Window.GetWindow(this), "创建失败！请尝试更换隧道名称/节点！", "错误");
+                }
+            }
+            else
+            {
+                await Shows.ShowMsgDialogAsync(Window.GetWindow(this), "您似乎没有选择任何节点！", "错误");
+            }
+        }
+
+        private void userRegister_Click(object sender, RoutedEventArgs e)
+        {
+            Process.Start("https://www.natfrp.com/user/profile");
         }
     }
 }
