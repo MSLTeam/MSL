@@ -16,6 +16,7 @@ using System.Threading.Tasks;
 using System.Windows;
 using System.Windows.Controls;
 using System.Windows.Threading;
+using static System.Windows.Forms.LinkLabel;
 using MessageBox = System.Windows.MessageBox;
 using Window = System.Windows.Window;
 
@@ -133,12 +134,12 @@ namespace MSL.pages
                         break;
                     case "3"://sakura
                         frpcExeName = "frpc_sakura.exe";
-                        arguments = "-c frpc"; //启动命令
+                        arguments = File.ReadAllText($"MSL\\frp\\{frpID}\\frpc"); //启动命令
                         if (!File.Exists($"MSL\\frp\\{frpcExeName}"))
                         {
                             downloadUrl = "SakuraFrp";
                         }
-                        downloadFileName = "frpc_sakura.zip";
+                        downloadFileName = "frpc_sakura.exe";
                         break;
                     case "-1"://自定义frp，使用官版
                         frpcExeName = "frpc_official.exe";
@@ -187,6 +188,10 @@ namespace MSL.pages
                                 break;
                             }
                         }
+                    }else if(downloadUrl == "SakuraFrp")
+                    {
+                        JObject apiData = JObject.Parse((await HttpService.GetContentAsync("https://api.natfrp.com/v4/system/clients")).ToString());
+                        await Shows.ShowDownloader(Window.GetWindow(this), (string)apiData["frpc"]["archs"]["windows_amd64"]["url"], "MSL\\frp", downloadFileName, LanguageManager.Instance["Download_Frpc_Info"]);
                     }
                     else if (downloadUrl == "ChmlFrp")
                     {
@@ -212,7 +217,7 @@ namespace MSL.pages
                         await Shows.ShowDownloader(Window.GetWindow(this), downloadUrl, "MSL\\frp", downloadFileName, LanguageManager.Instance["Download_Frpc_Info"]);
                     }
 
-                    //只有mslfrp+gh不需要
+                    //只有官方版本+sakura不需要
                     if (downloadUrl == "OpenFrp" || downloadUrl == "ChmlFrp")
                     {
                         //很寻常的解压
@@ -589,7 +594,7 @@ namespace MSL.pages
                 copyFrpc.IsEnabled = true;
                 startfrpc.IsEnabled = true;
                 frplab1.Text = LanguageManager.Instance["Page_FrpcPage_Status_Checking"];
-                if (jobject[frpID.ToString()]["frpcServer"].ToString() == "0" || jobject[frpID.ToString()]["frpcServer"].ToString() == "2" || jobject[frpID.ToString()]["frpcServer"].ToString() == "-2" || jobject[frpID.ToString()]["frpcServer"].ToString() == "-1")
+                if (jobject[frpID.ToString()]["frpcServer"].ToString() == "0" || jobject[frpID.ToString()]["frpcServer"].ToString() == "2" || jobject[frpID.ToString()]["frpcServer"].ToString() == "-2" || jobject[frpID.ToString()]["frpcServer"].ToString() == "-1" )
                 {
 
                     string configText;
@@ -614,6 +619,7 @@ namespace MSL.pages
                     {
                         nodeName = LanguageManager.Instance["Page_FrpcPage_Status_ChmlFrp"];
                     }
+                    
                     else
                     {
                         nodeName = LanguageManager.Instance["Page_FrpcPage_Status_CustomFrp"];
@@ -652,6 +658,10 @@ namespace MSL.pages
                         else if (jobject[frpID.ToString()]["frpcServer"].ToString() == "2" && lines[i].StartsWith("[") && readServerInfo)//针对chmlfrp的节点名字读取
                         {
                             nodeName = LanguageManager.Instance["Page_FrpcPage_Status_ChmlFrp"] + "-" + lines[i].Replace("[", "").Replace("]", "").Replace("\r", "").ToString();
+                        }
+                        else if (jobject[frpID.ToString()]["frpcServer"].ToString() == "3")
+                        {
+                            nodeName = "SakuraFrp节点";
                         }
                     }
 
@@ -697,6 +707,11 @@ namespace MSL.pages
                             });
                         }
                     });
+                }else if( jobject[frpID.ToString()]["frpcServer"].ToString() == "3")
+                {
+                    copyFrpc.IsEnabled = false;
+                    frplab1.Text = "SakuraFrp节点";
+                    frplab3.Text = LanguageManager.Instance["Page_FrpcPage_Status_OpenFrp_ViewIP"];
                 }
                 else
                 {

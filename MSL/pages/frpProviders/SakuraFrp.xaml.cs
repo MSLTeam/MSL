@@ -185,17 +185,15 @@ namespace MSL.pages.frpProviders
             var listBox = FrpList as System.Windows.Controls.ListBox;
             if (listBox.SelectedItem is TunnelInfo selectedTunnel)
             {
-               string content = await Task.Run(() => GetTunnelConfig(UserToken,selectedTunnel.ID));
-                if (!content.Contains("MSL-ERR:"))
-                {
+               //string content = await Task.Run(() => GetTunnelConfig(UserToken,selectedTunnel.ID));
                     //输出配置文件
-                   if( Config.WriteFrpcConfig(3, content, $"SakuraFrp - {selectedTunnel.Name}") == true)
+                   if( Config.WriteFrpcConfig(3, $"-f {UserToken}:{selectedTunnel.ID}", $"SakuraFrp - {selectedTunnel.Name}") == true)
                     {
                         await Shows.ShowMsgDialogAsync(Window.GetWindow(this), "映射配置成功，请您点击“启动内网映射”以启动映射！", "信息");
                         Window.GetWindow(this).Close();
                     }
 
-                }
+
 
             }
         }
