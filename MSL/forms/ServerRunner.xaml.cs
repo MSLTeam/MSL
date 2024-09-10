@@ -3468,14 +3468,22 @@ namespace MSL
         {
             GetIPV6.IsEnabled = false;
             Growl.Info("获取中，请稍后……");
-            string ipv6 = "";
+            //string ipv6 = "";
             //HttpListener listener = null;
             try
             {
-                ipv6 = (string)await HttpService.GetContentAsync("https://6.ipw.cn");
-                Clipboard.Clear();
-                Clipboard.SetText(ipv6);
-                Shows.ShowMsgDialog(this, $"您的IPV6公网地址是：{ipv6}\n已经帮您复制到剪贴板啦！\n注意：IPV6地址格式是：[IP]:端口\n若无法使用IPV6连接，请检查：\n-连接方是否有IPV6地址\n-防火墙是否拦截", "成功获取IPV6公网地址！");
+                HttpResponse response = await HttpService.GetAsync("https://6.ipw.cn");
+                if (response?.HttpResponseCode == HttpStatusCode.OK)
+                {
+                    string ipv6 = response?.HttpResponseContent.ToString();
+                    Clipboard.Clear();
+                    Clipboard.SetText(ipv6);
+                    Shows.ShowMsgDialog(this, $"您的IPV6公网地址是：{ipv6}\n已经帮您复制到剪贴板啦！\n注意：IPV6地址格式是：[IP]:端口\n若无法使用IPV6连接，请检查：\n-连接方是否有IPV6地址\n-防火墙是否拦截", "成功获取IPV6公网地址！");
+                }
+                else
+                {
+                    throw new Exception(response?.HttpResponseContent.ToString());
+                }
                 /*
                 //监听到21102端口
                 listener = new HttpListener();
@@ -3523,6 +3531,8 @@ namespace MSL
             }
             catch (Exception ex)
             {
+                Shows.ShowMsgDialog(this, "出现错误，您当前的网络可能没有IPV6支持\n您可上网搜索IPV6开启教程或联系运营商以获取帮助\n错误信息：" + ex.Message, "获取IPV6地址失败！");
+                /*
                 if (ipv6 == "")
                 {
                     Shows.ShowMsgDialog(this, "您当前的网络没有IPV6支持\n建议上网搜索如何开启IPV6\n或者联系运营商获取帮助~", "获取IPV6地址失败！");
@@ -3532,6 +3542,7 @@ namespace MSL
                     Shows.ShowMsgDialog(this, $"获取到了IPv6地址:{ipv6}，但是公网连接测试失败\n请检查：\n-您是否放行防火墙（包含电脑，路由器防火墙）\n-路由器是否使用桥接模式（若使用NAT，IPV6地址将不是公网）\n错误信息：{ex.Message}", "测试连接失败！");
                 }
                 MessageBox.Show(ex.ToString());
+                */
             }
             finally
             {

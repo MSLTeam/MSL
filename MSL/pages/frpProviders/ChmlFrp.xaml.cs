@@ -270,7 +270,7 @@ namespace MSL.pages.frpProviders
 
         private void FrpList_SelectionChanged(object sender, SelectionChangedEventArgs e)
         {
-            var listBox = sender as System.Windows.Controls.ListBox;
+            var listBox = sender as ListBox;
             if (listBox.SelectedItem is TunnelInfo selectedTunnel)
             {
                 TunnelInfo_Text.Text = $"隧道名:{selectedTunnel.Name}\n" +
@@ -284,7 +284,7 @@ namespace MSL.pages.frpProviders
         private async void OKBtn_Click(object sender, RoutedEventArgs e)
         {
             string FrpcConfig, FrpsPort = "7000", FrpsToken = "ChmlFrpToken";
-            var listBox = FrpList as System.Windows.Controls.ListBox;
+            var listBox = FrpList;
             if (listBox.SelectedItem is TunnelInfo selectedTunnel)
             {
                 try
@@ -316,7 +316,7 @@ namespace MSL.pages.frpProviders
                         $"use_encryption = {selectedTunnel.Encryption}\r\n" +
                         $"use_compression = {selectedTunnel.Compression}\r\n \r\n";
                     //输出配置
-                    Config.WriteFrpcConfig(2, FrpcConfig,$"ChmlFrp - {selectedTunnel.Name}({selectedTunnel.Node})");
+                    Config.WriteFrpcConfig(2, FrpcConfig, $"ChmlFrp - {selectedTunnel.Name}({selectedTunnel.Node})");
                     await Shows.ShowMsgDialogAsync(Window.GetWindow(this), "映射配置成功，请您点击“启动内网映射”以启动映射！", "信息");
                     Window.GetWindow(this).Close();
                 }
@@ -400,8 +400,8 @@ namespace MSL.pages.frpProviders
             Random rand = new Random();
             int randomNumber = rand.Next(10000, 65536);
             Create_RemotePort.Text = randomNumber.ToString();
-            
-            Create_Name.Text = Functions.RandomString("MSL_",5);
+
+            Create_Name.Text = Functions.RandomString("MSL_", 5);
         }
 
         public class NodeInfo

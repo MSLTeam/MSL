@@ -338,7 +338,7 @@ Update log:</value>
     <value>Closed successfully!</value>
   </data>
   <data name="Page_OnlinePage_CreateRoom" xml:space="preserve">
-    <value>Click to create a room</value>
+    <value>Create a room</value>
   </data>
   <data name="Page_OnlinePage_Create_key" xml:space="preserve">
     <value>Room key:</value>
@@ -353,7 +353,7 @@ Update log:</value>
     <value>Downloading Frpc...</value>
   </data>
   <data name="Page_OnlinePage_JoinRoom" xml:space="preserve">
-    <value>Click to join a room</value>
+    <value>Join the room</value>
   </data>
   <data name="Page_OnlinePage_Join_Key" xml:space="preserve">
     <value>Room key:</value>
@@ -476,7 +476,7 @@ Update log:</value>
     <value>Enabled</value>
   </data>
   <data name="Page_SettingsPage_AS_ALF_FrpcList" xml:space="preserve">
-    <value>Enter the ID of the Frpc to auto-start here (separate with commas):</value>
+    <value>Enter the ID of the Frpc to auto-start (separate with commas):</value>
   </data>
   <data name="Page_SettingsPage_AS_ALS_AutoLaunchServers" xml:space="preserve">
     <value>Startup list:</value>

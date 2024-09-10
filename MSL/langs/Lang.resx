@@ -482,7 +482,7 @@ BMCLAPI —— Forge服务端下载源
     <value>使用命令行开服</value>
   </data>
   <data name="Page_SettingsPage_AS_ALF_FrpcList" xml:space="preserve">
-    <value>在此输入需要自启动Frpc的ID（使用半角逗号分隔和结尾）：</value>
+    <value>输入需要自启动Frpc的ID（ID在方括号内，使用半角逗号分隔和结尾）：</value>
   </data>
   <data name="Page_SettingsPage_AS_ALS_AutoLaunchServers" xml:space="preserve">
     <value>启动列表：</value>

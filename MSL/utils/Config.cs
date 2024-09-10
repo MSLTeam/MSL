@@ -43,7 +43,7 @@ namespace MSL.utils
         }
 
         //输出frpc配置文件
-        public static bool WriteFrpcConfig(int ServerID,string Content,string Name)
+        public static bool WriteFrpcConfig(int ServerID, string Content, string Name)
         {
             try
             {
@@ -58,7 +58,7 @@ namespace MSL.utils
                 JObject keyValues = new JObject()
                 {
                     ["frpcServer"] = ServerID, //服务ID
-                    ["name"]=Name,//备注
+                    ["name"] = Name,//备注
                 };
                 JObject jobject = JObject.Parse(File.ReadAllText(@"MSL\frp\config.json", Encoding.UTF8));
                 jobject.Add(number.ToString(), keyValues);
@@ -66,7 +66,8 @@ namespace MSL.utils
                 File.WriteAllText(@"MSL\frp\config.json", convertString, Encoding.UTF8);
                 return true;
             }
-            catch (Exception ex) { 
+            catch// (Exception ex)
+            {
                 return false;
             }
         }

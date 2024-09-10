@@ -1133,7 +1133,7 @@ namespace MSL.langs {
         }
         
         /// <summary>
-        ///   查找类似 在此输入需要自启动Frpc的ID（使用半角逗号分隔和结尾）： 的本地化字符串。
+        ///   查找类似 输入需要自启动Frpc的ID（ID在方括号内，使用半角逗号分隔和结尾）： 的本地化字符串。
         /// </summary>
         public static string Page_SettingsPage_AS_ALF_FrpcList {
             get {

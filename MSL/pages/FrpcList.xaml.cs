@@ -4,7 +4,6 @@ using System;
 using System.Collections.Generic;
 using System.Collections.ObjectModel;
 using System.IO;
-using System.Web.UI.WebControls;
 using System.Windows;
 using System.Windows.Controls;
 using System.Windows.Input;
@@ -57,13 +56,13 @@ namespace MSL.pages
                 string key = keyValue.Key;
                 if (key != "MSLFrpAccount" && key != "MSLFrpPasswd")
                 {
-                    if(keyValuePairs[key]["name"] != null)
+                    if (keyValuePairs[key]["name"] != null)
                     {
-                        frplist.Add(new FrpcInfo { ID = key, Name = (string)keyValuePairs[key]["name"] });
+                        frplist.Add(new FrpcInfo { ID = key, Name = $"[{key}]{keyValuePairs[key]["name"]}" });
                     }
                     else
                     {
-                        frplist.Add(new FrpcInfo { ID = key, Name = "未命名的隧道" });
+                        frplist.Add(new FrpcInfo { ID = key, Name = $"[{key}]未命名的隧道" });
                     }
                 }
             }
@@ -77,7 +76,6 @@ namespace MSL.pages
                 FrpcID = int.Parse(selectedTunnel.ID);
                 OpenFrpcPage();
             }
-            
         }
 
         private void FrpcListBox_KeyUp(object sender, KeyEventArgs e)
@@ -117,7 +115,7 @@ namespace MSL.pages
                 Directory.Delete(Path.Combine("MSL", "frp", selectedTunnel.ID), true);
                 GetFrpcConfig();
             }
-            
+
         }
     }
 }

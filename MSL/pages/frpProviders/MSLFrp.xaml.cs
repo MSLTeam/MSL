@@ -303,7 +303,7 @@ namespace MSL.pages.frpProviders
             }
             catch (Exception a)
             {
-                Shows.ShowMsgDialog(Window.GetWindow(this), "出现错误，请确保选择节点后再试：" + a, "错误");
+                Shows.ShowMsgDialog(window, "出现错误，请确保选择节点后再试：" + a, "错误");
                 return;
             }
             Directory.CreateDirectory("MSL\\frp");
@@ -315,12 +315,11 @@ namespace MSL.pages.frpProviders
             }
             Directory.CreateDirectory("MSL\\frp\\" + number);
             File.WriteAllText($"MSL\\frp\\{number}\\frpc.toml", frpc);
-            string sn = serversList.Items[serversList.SelectedIndex].ToString();
-            if (sn.Contains("(")) sn = sn.Substring(0, sn.IndexOf("("));
+            string sn = await Shows.ShowInput(window, "给此隧道取一个名字吧：", "我的MSLFrp节点");
             JObject keyValues = new JObject()
             {
                 ["frpcServer"] = "0",
-                ["name"]="MSLFrp - "+ sn
+                ["name"] = "MSLFrp - " + sn
             };
             JObject jobject = JObject.Parse(File.ReadAllText(@"MSL\frp\config.json", Encoding.UTF8));
             jobject.Add(number.ToString(), keyValues);

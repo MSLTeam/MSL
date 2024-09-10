@@ -78,6 +78,7 @@ namespace MSL.pages.frpProviders
                 //Logger.LogWarning("未检测到config.json文件，创建config.json……");
                 File.WriteAllText(@"MSL\frp\config.json", string.Format("{{{0}}}", "\n"));
             }
+            string sn = await Shows.ShowInput(Window.GetWindow(this), "给此隧道取一个名字吧：", "我的自定义Frp节点");
             JObject jobject = JObject.Parse(File.ReadAllText(@"MSL\frp\config.json", Encoding.UTF8));
             if (CustomFrpcClient.IsChecked == true)//自定义的话要导入进MSL文件夹
             {
@@ -96,7 +97,7 @@ namespace MSL.pages.frpProviders
                     JObject keyValues = new JObject()
                     {
                         ["frpcServer"] = "-2",
-                        ["name"]="自定义隧道"
+                        ["name"] = "自定义隧道 - " + sn
                     };
                     jobject.Add(number.ToString(), keyValues);
                     //自定义模式-自定义frpc客户端
@@ -111,7 +112,7 @@ namespace MSL.pages.frpProviders
                 JObject keyValues = new JObject()
                 {
                     ["frpcServer"] = "-1",
-                    ["name"] = "自定义隧道(官方客户端)"
+                    ["name"] = "自定义隧道(官方客户端) - " + sn
                 };
                 jobject.Add(number.ToString(), keyValues);
                 //自定义模式-Gh上的客户端

@@ -16,7 +16,6 @@ using System.Threading.Tasks;
 using System.Windows;
 using System.Windows.Controls;
 using System.Windows.Threading;
-using static System.Windows.Forms.LinkLabel;
 using MessageBox = System.Windows.MessageBox;
 using Window = System.Windows.Window;
 
@@ -188,7 +187,8 @@ namespace MSL.pages
                                 break;
                             }
                         }
-                    }else if(downloadUrl == "SakuraFrp")
+                    }
+                    else if (downloadUrl == "SakuraFrp")
                     {
                         JObject apiData = JObject.Parse((await HttpService.GetContentAsync("https://api.natfrp.com/v4/system/clients")).ToString());
                         await Shows.ShowDownloader(Window.GetWindow(this), (string)apiData["frpc"]["archs"]["windows_amd64"]["url"], "MSL\\frp", downloadFileName, LanguageManager.Instance["Download_Frpc_Info"]);
@@ -594,7 +594,7 @@ namespace MSL.pages
                 copyFrpc.IsEnabled = true;
                 startfrpc.IsEnabled = true;
                 frplab1.Text = LanguageManager.Instance["Page_FrpcPage_Status_Checking"];
-                if (jobject[frpID.ToString()]["frpcServer"].ToString() == "0" || jobject[frpID.ToString()]["frpcServer"].ToString() == "2" || jobject[frpID.ToString()]["frpcServer"].ToString() == "-2" || jobject[frpID.ToString()]["frpcServer"].ToString() == "-1" )
+                if (jobject[frpID.ToString()]["frpcServer"].ToString() == "0" || jobject[frpID.ToString()]["frpcServer"].ToString() == "2" || jobject[frpID.ToString()]["frpcServer"].ToString() == "-2" || jobject[frpID.ToString()]["frpcServer"].ToString() == "-1")
                 {
 
                     string configText;
@@ -619,7 +619,7 @@ namespace MSL.pages
                     {
                         nodeName = LanguageManager.Instance["Page_FrpcPage_Status_ChmlFrp"];
                     }
-                    
+
                     else
                     {
                         nodeName = LanguageManager.Instance["Page_FrpcPage_Status_CustomFrp"];
@@ -707,7 +707,8 @@ namespace MSL.pages
                             });
                         }
                     });
-                }else if( jobject[frpID.ToString()]["frpcServer"].ToString() == "3")
+                }
+                else if (jobject[frpID.ToString()]["frpcServer"].ToString() == "3")
                 {
                     copyFrpc.IsEnabled = false;
                     frplab1.Text = "SakuraFrp节点";
