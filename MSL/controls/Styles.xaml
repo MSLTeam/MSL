@@ -1,6 +1,8 @@
 ﻿<ResourceDictionary xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
                     xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
-                    xmlns:local="clr-namespace:MSL.controls">
+                    xmlns:local="clr-namespace:MSL.controls"
+                    xmlns:hc="https://handyorg.github.io/handycontrol"
+                    xmlns:lang="clr-namespace:MSL.langs">
     <Style x:Key="MagicBorder" TargetType="Border">
         <Setter Property="Margin" Value="10,10,10,0"/>
         <Setter Property="Padding" Value="10"/>
@@ -22,7 +24,20 @@
         <Setter Property="Padding" Value="0"/>
         <Setter Property="Margin" Value="0,0,0,10"/>
     </Style>
-    
+
+    <Style x:Key="ExtendedToggleButtonSwitch" TargetType="ToggleButton" BasedOn="{hc:StaticResource ToggleButtonSwitchBaseStyle}">
+        <Style.Triggers>
+            <Trigger Property="IsChecked" Value="True">
+                <Setter Property="Content"
+                        Value="{Binding [Enabled], Source={x:Static lang:LanguageManager.Instance}}" />
+            </Trigger>
+            <Trigger Property="IsChecked" Value="False">
+                <Setter Property="Content"
+                        Value="{Binding [Disabled], Source={x:Static lang:LanguageManager.Instance}}" />
+            </Trigger>
+        </Style.Triggers>
+    </Style>
+
     <Style x:Key="ListItemSideMenu" TargetType="{x:Type ListBoxItem}">
         <Setter Property="ContentTemplate">
             <Setter.Value>

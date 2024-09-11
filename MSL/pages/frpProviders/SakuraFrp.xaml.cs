@@ -43,8 +43,7 @@ namespace MSL.pages.frpProviders
 
         private async void userTokenLogin_Click(object sender, RoutedEventArgs e)
         {
-            string token;
-            token = await Shows.ShowInput(Window.GetWindow(this), "请输入Sakura账户Token", "", true);
+            string token = await Shows.ShowInput(Window.GetWindow(this), "请输入Sakura账户Token", "", true);
             if (token != null)
             {
                 bool save = (bool)SaveToken.IsChecked;

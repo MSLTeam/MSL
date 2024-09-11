@@ -44,22 +44,6 @@
                         <Label Grid.Column="0" Content="{Binding [Page_SettingsPage_CF_BasicFunction],Source={x:Static lang:LanguageManager.Instance}}" VerticalAlignment="Center"/>
                         <WrapPanel Orientation="Horizontal" Grid.Column="1">
                             <Button Name="setdefault" Margin="5" Content="{Binding [Page_SettingsPage_CF_BF_RecoveryBtn],Source={x:Static lang:LanguageManager.Instance}}" Height="32" FontSize="14" Click="setdefault_Click" />
-                            <Button Name="notifyIconbtn" Margin="5" Height="32" FontSize="14" Click="notifyIconbtn_Click">
-                                <Button.Content>
-                                    <MultiBinding Converter="{StaticResource StringConcatConverter}">
-                                        <Binding Path="[Page_SettingsPage_CF_BF_NotifyIcon]" Source="{x:Static lang:LanguageManager.Instance}"/>
-                                        <Binding Path="[Disabled]" Source="{x:Static lang:LanguageManager.Instance}"/>
-                                    </MultiBinding>
-                                </Button.Content>
-                            </Button>
-                            <Button Name="MSLTips" Margin="5" Height="32" FontSize="14" Click="MSLTips_Click">
-                                <Button.Content>
-                                    <MultiBinding Converter="{StaticResource StringConcatConverter}">
-                                        <Binding Path="[Page_SettingsPage_CF_BF_MSLTips]" Source="{x:Static lang:LanguageManager.Instance}"/>
-                                        <Binding Path="[Enabled]" Source="{x:Static lang:LanguageManager.Instance}"/>
-                                    </MultiBinding>
-                                </Button.Content>
-                            </Button>
                             <Button Name="WikiButton" Margin="5" Content="{Binding [Page_SettingsPage_CF_BF_SoftwareWiki],Source={x:Static lang:LanguageManager.Instance}}" Height="32" FontSize="14" Click="WikiButton_Click"/>
                             <Button x:Name="checkUpdateBtn" Margin="5" Content="{Binding [Page_SettingsPage_CF_BF_CheckUpdate],Source={x:Static lang:LanguageManager.Instance}}" Height="32" Style="{StaticResource ButtonPrimary}" FontSize="14" Click="checkUpdateBtn_Click"/>
                         </WrapPanel>
@@ -70,6 +54,14 @@
                             <ComboBoxItem Content="简体中文"/>
                             <ComboBoxItem Content="English"/>
                         </ComboBox>
+                    </StackPanel>
+                    <StackPanel Margin="0,0,0,15" Orientation="Horizontal">
+                        <Label Grid.Column="0" Content="{Binding [Page_SettingsPage_CF_BF_NotifyIcon],Source={x:Static lang:LanguageManager.Instance}}" Margin="0,0,10,0"/>
+                        <ToggleButton Name="notifyIconbtn" Style="{StaticResource ExtendedToggleButtonSwitch}" HorizontalAlignment="Left" VerticalAlignment="Center" Click="notifyIconbtn_Click"/>
+                    </StackPanel>
+                    <StackPanel Margin="0,0,0,15" Orientation="Horizontal">
+                        <Label Grid.Column="0" Content="{Binding [Page_SettingsPage_CF_BF_MSLTips],Source={x:Static lang:LanguageManager.Instance}}" Margin="0,0,10,0"/>
+                        <ToggleButton Name="MSLTips" IsChecked="True" Style="{StaticResource ExtendedToggleButtonSwitch}" HorizontalAlignment="Left" VerticalAlignment="Center" Click="MSLTips_Click"/>
                     </StackPanel>
                     <Grid Margin="0,0,0,15">
                         <Grid.ColumnDefinitions>
@@ -96,49 +88,51 @@
             <controls:MagicCard Title="{Binding [Page_SettingsPage_Card_AutomationSettings],Source={x:Static lang:LanguageManager.Instance}}" MarginOverride="10,10,10,0">
                 <StackPanel>
                     <StackPanel Margin="0,0,0,5">
-                        <StackPanel Orientation="Horizontal">
-                            <Label Content="{Binding [Page_SettingsPage_AS_AutoLaunchServer],Source={x:Static lang:LanguageManager.Instance}}" Margin="0,0,10,0"/>
-                            <ToggleButton Name="openserversOnStart" Style="{StaticResource ToggleButtonSwitch}" VerticalAlignment="Center" Click="openserversOnStart_Click" />
-                        </StackPanel>
-                        <Grid Margin="0,5,200,0" Height="150">
-                            <Grid.ColumnDefinitions>
-                                <ColumnDefinition/>
-                                <ColumnDefinition Width="Auto"/>
-                                <ColumnDefinition/>
-                            </Grid.ColumnDefinitions>
-                            <Label Grid.Column="0" Content="{Binding [Page_SettingsPage_AS_ALS_ServerList],Source={x:Static lang:LanguageManager.Instance}}"/>
-                            <ListBox Grid.Column="0" x:Name="ServersList" Margin="0,30,5,0"/>
-                            <Button Grid.Column="1" x:Name="TransferOut" hc:IconElement.Geometry="{StaticResource LeftGeometry}" Margin="0,0,0,10" Click="TransferOut_Click"/>
-                            <Button Grid.Column="1" x:Name="TransferIn" hc:IconElement.Geometry="{StaticResource RightGeometry}" Margin="0,50,0,0" Click="TransferIn_Click"/>
-                            <Label Grid.Column="2" Content="{Binding [Page_SettingsPage_AS_ALS_AutoLaunchServers],Source={x:Static lang:LanguageManager.Instance}}"/>
-                            <ListBox Grid.Column="2" x:Name="AutoStartServers" Margin="5,30,0,0"/>
-                        </Grid>
-                        <hc:Divider Margin="0,10,0,10"/>
-                        <StackPanel Orientation="Horizontal">
-                            <Label Content="{Binding [Page_SettingsPage_AS_AutoLaunchFrpc],Source={x:Static lang:LanguageManager.Instance}}" Margin="0,0,10,0"/>
-                            <ToggleButton Name="openfrpOnStart" Style="{StaticResource ToggleButtonSwitch}" VerticalAlignment="Center" Click="openfrpOnStart_Click" />
-                        </StackPanel>
-                        <WrapPanel Orientation="Horizontal" Margin="0,5,0,0">
-                            <Label Content="{Binding [Page_SettingsPage_AS_ALF_FrpcList],Source={x:Static lang:LanguageManager.Instance}}"/>
-                            <TextBox x:Name="AutoOpenFrpcList" Width="150" FontSize="14"/>
-                        </WrapPanel>
-                        <hc:Divider Margin="0,10,0,10"/>
-                        <WrapPanel Orientation="Horizontal">
-                            <StackPanel Orientation="Horizontal">
-                                <Label Content="{Binding [Page_SettingsPage_AS_AutoRunAtStartup],Source={x:Static lang:LanguageManager.Instance}}" Margin="0,0,10,0"/>
-                                <ToggleButton x:Name="autoRunApp" Style="{StaticResource ToggleButtonSwitch}" VerticalAlignment="Center" Click="autoRunApp_Click" Margin="0,0,30,0"/>
+                        <Expander FontSize="14" Header="{Binding [Page_SettingsPage_AS_AutoLaunchServer],Source={x:Static lang:LanguageManager.Instance}}">
+                            <StackPanel Margin="10,10,10,0">
+                                <ToggleButton Name="openserversOnStart" Style="{StaticResource ExtendedToggleButtonSwitch}" HorizontalAlignment="Left" VerticalAlignment="Center" Click="openserversOnStart_Click" />
+                                    <Grid Margin="0,5,200,0" Height="150">
+                                    <Grid.ColumnDefinitions>
+                                        <ColumnDefinition/>
+                                        <ColumnDefinition Width="Auto"/>
+                                        <ColumnDefinition/>
+                                    </Grid.ColumnDefinitions>
+                                    <Label Grid.Column="0" Content="{Binding [Page_SettingsPage_AS_ALS_ServerList],Source={x:Static lang:LanguageManager.Instance}}"/>
+                                    <ListBox Grid.Column="0" x:Name="ServersList" Margin="0,30,5,0"/>
+                                    <Button Grid.Column="1" x:Name="TransferOut" hc:IconElement.Geometry="{StaticResource LeftGeometry}" Margin="0,0,0,10" Click="TransferOut_Click"/>
+                                    <Button Grid.Column="1" x:Name="TransferIn" hc:IconElement.Geometry="{StaticResource RightGeometry}" Margin="0,50,0,0" Click="TransferIn_Click"/>
+                                    <Label Grid.Column="2" Content="{Binding [Page_SettingsPage_AS_ALS_AutoLaunchServers],Source={x:Static lang:LanguageManager.Instance}}"/>
+                                    <ListBox Grid.Column="2" x:Name="AutoStartServers" Margin="5,30,0,0"/>
+                                </Grid>
                             </StackPanel>
-                            <StackPanel Orientation="Horizontal">
-                                <Label Content="{Binding [Page_SettingsPage_AS_AutoUpdate],Source={x:Static lang:LanguageManager.Instance}}" VerticalAlignment="Center"/>
-                                <ToggleButton x:Name="autoUpdateApp" Style="{StaticResource ToggleButtonSwitch}" VerticalAlignment="Center" Click="autoUpdateApp_Click"/>
-                            </StackPanel>
-                        </WrapPanel>
+                        </Expander>
                         <hc:Divider Margin="0,10,0,10"/>
-                        <WrapPanel Orientation="Horizontal">
-                            <Label Content="{Binding [Page_SettingsPage_AS_AutoRunAtServerLaunched],Source={x:Static lang:LanguageManager.Instance}}" Margin="0,0,10,0"/>
-                            <ToggleButton x:Name="autoGetPlayerInfo" Margin="0,0,30,0" Style="{StaticResource ToggleButtonSwitch}" VerticalAlignment="Center" Click="autoGetPlayerInfo_Click" Content="{Binding [Page_SettingsPage_AS_ARASL_RecordPlayers],Source={x:Static lang:LanguageManager.Instance}}"/>
-                            <ToggleButton x:Name="autoGetServerInfo" Style="{StaticResource ToggleButtonSwitch}" VerticalAlignment="Center" Click="autoGetServerInfo_Click" Content="{Binding [Page_SettingsPage_AS_ARASL_ShowSysOccupation],Source={x:Static lang:LanguageManager.Instance}}"/>
-                        </WrapPanel>
+                        <Expander FontSize="14" Header="{Binding [Page_SettingsPage_AS_AutoLaunchFrpc],Source={x:Static lang:LanguageManager.Instance}}">
+                            <StackPanel Margin="10,10,10,0">
+                                <ToggleButton Name="openfrpOnStart" Style="{StaticResource ExtendedToggleButtonSwitch}" HorizontalAlignment="Left" VerticalAlignment="Center" Click="openfrpOnStart_Click"/>
+                                <WrapPanel Orientation="Horizontal" Margin="0,5,0,0">
+                                    <Label Content="{Binding [Page_SettingsPage_AS_ALF_FrpcList],Source={x:Static lang:LanguageManager.Instance}}"/>
+                                    <TextBox x:Name="AutoOpenFrpcList" Width="150" FontSize="14"/>
+                                </WrapPanel>
+                            </StackPanel>
+                        </Expander>
+                        <hc:Divider Margin="0,10,0,10"/>
+                        <Expander FontSize="14" Header="{Binding [Page_SettingsPage_AS_AutoRunAtServerLaunched],Source={x:Static lang:LanguageManager.Instance}}">
+                            <StackPanel Orientation="Horizontal" Margin="10,10,10,0">
+                                <ToggleButton x:Name="autoGetPlayerInfo" Margin="0,0,30,0" Style="{StaticResource ToggleButtonSwitch}" VerticalAlignment="Center" Click="autoGetPlayerInfo_Click" Content="{Binding [Page_SettingsPage_AS_ARASL_RecordPlayers],Source={x:Static lang:LanguageManager.Instance}}"/>
+                                <ToggleButton x:Name="autoGetServerInfo" Style="{StaticResource ToggleButtonSwitch}" VerticalAlignment="Center" Click="autoGetServerInfo_Click" Content="{Binding [Page_SettingsPage_AS_ARASL_ShowSysOccupation],Source={x:Static lang:LanguageManager.Instance}}"/>
+                            </StackPanel>
+                        </Expander>
+                    </StackPanel>
+                    <hc:Divider Margin="0,10,0,10"/>
+                    <StackPanel Orientation="Horizontal">
+                        <Label Content="{Binding [Page_SettingsPage_AS_AutoRunAtStartup],Source={x:Static lang:LanguageManager.Instance}}" Margin="0,0,10,0"/>
+                        <ToggleButton x:Name="autoRunApp" Style="{StaticResource ToggleButtonSwitch}" VerticalAlignment="Center" Click="autoRunApp_Click" Margin="0,0,30,0"/>
+                    </StackPanel>
+                    <hc:Divider Margin="0,10,0,10"/>
+                    <StackPanel Orientation="Horizontal">
+                        <Label Content="{Binding [Page_SettingsPage_AS_AutoUpdate],Source={x:Static lang:LanguageManager.Instance}}" VerticalAlignment="Center" Margin="0,0,10,0"/>
+                        <ToggleButton x:Name="autoUpdateApp" Style="{StaticResource ToggleButtonSwitch}" VerticalAlignment="Center" Click="autoUpdateApp_Click"/>
                     </StackPanel>
                 </StackPanel>
             </controls:MagicCard>

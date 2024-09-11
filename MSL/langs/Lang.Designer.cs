@@ -99,6 +99,15 @@ namespace MSL.langs {
         /// <summary>
         ///   查找类似 已关闭 的本地化字符串。
         /// </summary>
+        public static string Closed {
+            get {
+                return ResourceManager.GetString("Closed", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   查找类似 已禁用 的本地化字符串。
+        /// </summary>
         public static string Disabled {
             get {
                 return ResourceManager.GetString("Disabled", resourceCulture);
@@ -187,7 +196,7 @@ namespace MSL.langs {
         }
         
         /// <summary>
-        ///   查找类似 已开启 的本地化字符串。
+        ///   查找类似 已启用 的本地化字符串。
         /// </summary>
         public static string Enabled {
             get {
@@ -513,6 +522,15 @@ namespace MSL.langs {
         public static string OK {
             get {
                 return ResourceManager.GetString("OK", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   查找类似 已开启 的本地化字符串。
+        /// </summary>
+        public static string Opened {
+            get {
+                return ResourceManager.GetString("Opened", resourceCulture);
             }
         }
         
@@ -1178,7 +1196,7 @@ namespace MSL.langs {
         }
         
         /// <summary>
-        ///   查找类似 启动软件自动打开内网映射： 的本地化字符串。
+        ///   查找类似 启动软件时自动运行Frpc隧道 的本地化字符串。
         /// </summary>
         public static string Page_SettingsPage_AS_AutoLaunchFrpc {
             get {
@@ -1187,7 +1205,7 @@ namespace MSL.langs {
         }
         
         /// <summary>
-        ///   查找类似 启动软件自动打开启动列表中的服务器： 的本地化字符串。
+        ///   查找类似 启动软件时自动运行服务器 的本地化字符串。
         /// </summary>
         public static string Page_SettingsPage_AS_AutoLaunchServer {
             get {
@@ -1196,7 +1214,7 @@ namespace MSL.langs {
         }
         
         /// <summary>
-        ///   查找类似 开服时自动开启: 的本地化字符串。
+        ///   查找类似 开服时自动开启 的本地化字符串。
         /// </summary>
         public static string Page_SettingsPage_AS_AutoRunAtServerLaunched {
             get {
@@ -1205,7 +1223,7 @@ namespace MSL.langs {
         }
         
         /// <summary>
-        ///   查找类似 开机自动启动MSL: 的本地化字符串。
+        ///   查找类似 开机自动启动MSL： 的本地化字符串。
         /// </summary>
         public static string Page_SettingsPage_AS_AutoRunAtStartup {
             get {
@@ -1214,7 +1232,7 @@ namespace MSL.langs {
         }
         
         /// <summary>
-        ///   查找类似 遇到更新时自动更新MSL: 的本地化字符串。
+        ///   查找类似 遇到更新时自动更新MSL： 的本地化字符串。
         /// </summary>
         public static string Page_SettingsPage_AS_AutoUpdate {
             get {

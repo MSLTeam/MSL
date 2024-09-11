@@ -27,7 +27,7 @@
                     <RowDefinition/>
                 </Grid.RowDefinitions>
                 <StackPanel Grid.Row="0">
-                    <Expander x:Name="masterExp" Margin="10,0,10,0" VerticalAlignment="Top" Expanded="masterExp_Expanded" Header="{Binding [Page_OnlinePage_Header_Create], Source={x:Static langs:LanguageManager.Instance}}" >
+                    <Expander x:Name="masterExp" Margin="10,0,10,0" Expanded="masterExp_Expanded" Header="{Binding [Page_OnlinePage_Header_Create], Source={x:Static langs:LanguageManager.Instance}}" >
                         <WrapPanel Background="{DynamicResource BackgroundBrush}">
                             <StackPanel Orientation="Horizontal" Margin="10">
                                 <Label Content="{Binding [Page_OnlinePage_Create_RoomNo.], Source={x:Static langs:LanguageManager.Instance}}" Height="30" FontSize="14" Background="{x:Null}" BorderBrush="{x:Null}"/>
@@ -44,7 +44,7 @@
                             <Button x:Name="createRoom" Margin="10" Content="{Binding [Page_OnlinePage_CreateRoom], Source={x:Static langs:LanguageManager.Instance}}" Height="30" Click="createRoom_Click" MinWidth="130"/>
                         </WrapPanel>
                     </Expander>
-                    <Expander x:Name="visiterExp" Margin="10,10,10,0" VerticalAlignment="Top" Expanded="visiterExp_Expanded" Header="{Binding [Page_OnlinePage_Header_Join], Source={x:Static langs:LanguageManager.Instance}}">
+                    <Expander x:Name="visiterExp" Margin="10,10,10,0" Expanded="visiterExp_Expanded" Header="{Binding [Page_OnlinePage_Header_Join], Source={x:Static langs:LanguageManager.Instance}}">
                         <WrapPanel Background="{DynamicResource BackgroundBrush}">
                             <StackPanel Orientation="Horizontal" Margin="10">
                                 <Label Content="{Binding [Page_OnlinePage_Join_RoomNo.], Source={x:Static langs:LanguageManager.Instance}}" Height="30" FontSize="14" Background="{x:Null}" BorderBrush="{x:Null}"/>

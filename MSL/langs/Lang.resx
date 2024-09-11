@@ -123,8 +123,11 @@
   <data name="Close" xml:space="preserve">
     <value>关闭</value>
   </data>
-  <data name="Disabled" xml:space="preserve">
+  <data name="Closed" xml:space="preserve">
     <value>已关闭</value>
+  </data>
+  <data name="Disabled" xml:space="preserve">
+    <value>已禁用</value>
   </data>
   <data name="Done" xml:space="preserve">
     <value>完成</value>
@@ -154,7 +157,7 @@
     <value>下载内网映射中……</value>
   </data>
   <data name="Enabled" xml:space="preserve">
-    <value>已开启</value>
+    <value>已启用</value>
   </data>
   <data name="Error" xml:space="preserve">
     <value>错误</value>
@@ -266,6 +269,9 @@
   </data>
   <data name="OK" xml:space="preserve">
     <value>好的</value>
+  </data>
+  <data name="Opened" xml:space="preserve">
+    <value>已开启</value>
   </data>
   <data name="OpenWebsite" xml:space="preserve">
     <value>打开网站</value>
@@ -497,19 +503,19 @@ BMCLAPI —— Forge服务端下载源
     <value>显示占用功能</value>
   </data>
   <data name="Page_SettingsPage_AS_AutoLaunchFrpc" xml:space="preserve">
-    <value>启动软件自动打开内网映射：</value>
+    <value>启动软件时自动运行Frpc隧道</value>
   </data>
   <data name="Page_SettingsPage_AS_AutoLaunchServer" xml:space="preserve">
-    <value>启动软件自动打开启动列表中的服务器：</value>
+    <value>启动软件时自动运行服务器</value>
   </data>
   <data name="Page_SettingsPage_AS_AutoRunAtServerLaunched" xml:space="preserve">
-    <value>开服时自动开启:</value>
+    <value>开服时自动开启</value>
   </data>
   <data name="Page_SettingsPage_AS_AutoRunAtStartup" xml:space="preserve">
-    <value>开机自动启动MSL:</value>
+    <value>开机自动启动MSL：</value>
   </data>
   <data name="Page_SettingsPage_AS_AutoUpdate" xml:space="preserve">
-    <value>遇到更新时自动更新MSL:</value>
+    <value>遇到更新时自动更新MSL：</value>
   </data>
   <data name="Page_SettingsPage_Card_AutomationSettings" xml:space="preserve">
     <value>自动化选项</value>

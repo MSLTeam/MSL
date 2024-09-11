@@ -491,13 +491,13 @@ Update log:</value>
     <value>Show system occupation feature</value>
   </data>
   <data name="Page_SettingsPage_AS_AutoLaunchFrpc" xml:space="preserve">
-    <value>Auto-open Frpc when launching the software:</value>
+    <value>Automatically launch the Frpc-tunnels when software started</value>
   </data>
   <data name="Page_SettingsPage_AS_AutoLaunchServer" xml:space="preserve">
-    <value>Automatically open the servers in the startup list when software started:</value>
+    <value>Automatically launch the servers when software started</value>
   </data>
   <data name="Page_SettingsPage_AS_AutoRunAtServerLaunched" xml:space="preserve">
-    <value>Automatically start when the server is launched:</value>
+    <value>Automatically start when the server is launched</value>
   </data>
   <data name="Page_SettingsPage_AS_AutoRunAtStartup" xml:space="preserve">
     <value>Automatically start MSL on boot:</value>
@@ -521,7 +521,7 @@ Update log:</value>
     <value>NotifyIcon:</value>
   </data>
   <data name="Page_SettingsPage_CF_BF_RecoveryBtn" xml:space="preserve">
-    <value>Restore default settings</value>
+    <value>Restore to default settings</value>
   </data>
   <data name="Page_SettingsPage_CF_BF_SoftwareWiki" xml:space="preserve">
     <value>Software documentation</value>
@@ -621,5 +621,11 @@ Update log:</value>
   </data>
   <data name="Page_FrpcPage_Status_Offline" xml:space="preserve">
     <value>Service offline or Ping disabled. If unable to connect, please reconfigure!</value>
+  </data>
+  <data name="Closed" xml:space="preserve">
+    <value>Closed</value>
+  </data>
+  <data name="Opened" xml:space="preserve">
+    <value>Opened</value>
   </data>
 </root>

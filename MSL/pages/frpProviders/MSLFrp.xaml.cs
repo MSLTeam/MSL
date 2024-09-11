@@ -149,7 +149,7 @@ namespace MSL.pages.frpProviders
                     {
                         Dispatcher.Invoke(() =>
                         {
-                            serversList.Items[id] = serversList.Items[id].ToString() + "(检测失败,可能被DDoS或下线)";
+                            serversList.Items[id] = serversList.Items[id].ToString() + "\n(检测失败,可能被DDoS或下线)";
                         });
                     }
                 });
@@ -306,6 +306,11 @@ namespace MSL.pages.frpProviders
                 Shows.ShowMsgDialog(window, "出现错误，请确保选择节点后再试：" + a, "错误");
                 return;
             }
+            string sn = await Shows.ShowInput(window, "给此隧道取一个名字吧：", "我的MSLFrp节点");
+            if (sn == null)
+            {
+                return;
+            }
             Directory.CreateDirectory("MSL\\frp");
             int number = Functions.Frpc_GenerateRandomInt();
             if (!File.Exists(@"MSL\frp\config.json"))
@@ -315,7 +320,6 @@ namespace MSL.pages.frpProviders
             }
             Directory.CreateDirectory("MSL\\frp\\" + number);
             File.WriteAllText($"MSL\\frp\\{number}\\frpc.toml", frpc);
-            string sn = await Shows.ShowInput(window, "给此隧道取一个名字吧：", "我的MSLFrp节点");
             JObject keyValues = new JObject()
             {
                 ["frpcServer"] = "0",

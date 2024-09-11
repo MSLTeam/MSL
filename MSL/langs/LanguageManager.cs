@@ -32,15 +32,6 @@ namespace MSL.langs
 
         public void ChangeLanguage(CultureInfo cultureInfo)
         {
-            if (cultureInfo.Name == "zh-CN")
-            {
-                CultureInfo _cultureInfo = new CultureInfo("");
-                ConfigHelper.Instance.SetLang(_cultureInfo.Name);
-                CultureInfo.CurrentCulture = _cultureInfo;
-                CultureInfo.CurrentUICulture = _cultureInfo;
-                PropertyChanged?.Invoke(this, new PropertyChangedEventArgs("Item[]"));
-                return;
-            }
             ConfigHelper.Instance.SetLang(cultureInfo.Name);
             CultureInfo.CurrentCulture = cultureInfo;
             CultureInfo.CurrentUICulture = cultureInfo;
