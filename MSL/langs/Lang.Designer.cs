@@ -214,6 +214,24 @@ namespace MSL.langs {
         }
         
         /// <summary>
+        ///   查找类似 开服 的本地化字符串。
+        /// </summary>
+        public static string Form_ServerRunner_Launch {
+            get {
+                return ResourceManager.GetString("Form_ServerRunner_Launch", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   查找类似 关服 的本地化字符串。
+        /// </summary>
+        public static string Form_ServerRunner_Stop {
+            get {
+                return ResourceManager.GetString("Form_ServerRunner_Stop", resourceCulture);
+            }
+        }
+        
+        /// <summary>
         ///   查找类似 输入 的本地化字符串。
         /// </summary>
         public static string InputDialog_Title {

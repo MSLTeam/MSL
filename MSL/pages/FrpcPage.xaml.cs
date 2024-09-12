@@ -77,7 +77,6 @@ namespace MSL.pages
             {
                 Directory.CreateDirectory("MSL\\frp");
                 //ui提示
-                startfrpc.Content = LanguageManager.Instance["Page_FrpcPage_Close"];
                 Growl.Info("正在启动内网映射！");
                 startfrpc.IsEnabled = false;
                 frpcOutlog.Text = "启动中，请稍候……\n";
@@ -288,7 +287,7 @@ namespace MSL.pages
             finally
             {
                 startfrpc.IsEnabled = true;
-                startfrpc.Content = LanguageManager.Instance["Page_FrpcPage_Launch"];
+                startfrpc.IsChecked = false;
             }
         }
 
@@ -556,21 +555,20 @@ namespace MSL.pages
 
         private async void startfrpc_Click(object sender, RoutedEventArgs e)
         {
-            if (startfrpc.Content.ToString() == LanguageManager.Instance["Page_FrpcPage_Launch"])
+            if (startfrpc.IsChecked == true)
             {
                 await StartFrpc();
             }
             else
             {
+                startfrpc.IsEnabled = false;
                 try
                 {
-                    startfrpc.IsEnabled = false;
-                    Growl.Info("正在关闭内网映射！");
-                    await Functions.StopProcess(FrpcProcess);
+                    await Functions.StopProcess(FrpcProcess); // 尝试使用CTRL+C
                 }
                 catch
                 {
-                    Growl.Error("关闭失败！请尝试手动结束frpc进程！");
+                    FrpcProcess.Kill(); // CTRL+C失败后直接Kill
                 }
             }
         }

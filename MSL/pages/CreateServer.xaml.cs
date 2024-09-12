@@ -148,6 +148,7 @@ namespace MSL.pages
                     if (strings != null)
                     {
                         selectJavaComb.ItemsSource = strings.ToList();
+                        selectJavaComb.SelectedIndex = 0;
                     }
                     else
                     {
@@ -223,6 +224,7 @@ namespace MSL.pages
                             if (strings != null)
                             {
                                 selectJavaComb.ItemsSource = strings.ToList();
+                                selectJavaComb.SelectedIndex = 0;
                             }
                             else
                             {
@@ -549,6 +551,7 @@ namespace MSL.pages
             if (strings != null)
             {
                 selectJavaComb.ItemsSource = strings.ToList();
+                selectJavaComb.SelectedIndex = 0;
             }
             else
             {

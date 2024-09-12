@@ -41,7 +41,20 @@
                                 <Label Content="{Binding [Page_OnlinePage_Create_Port], Source={x:Static langs:LanguageManager.Instance}}" Height="30" FontSize="14" Background="{x:Null}" BorderBrush="{x:Null}"/>
                                 <TextBox x:Name="masterPort" Height="30" TextWrapping="Wrap" Text="" Width="180"/>
                             </StackPanel>
-                            <Button x:Name="createRoom" Margin="10" Content="{Binding [Page_OnlinePage_CreateRoom], Source={x:Static langs:LanguageManager.Instance}}" Height="30" Click="createRoom_Click" MinWidth="130"/>
+                            <ToggleButton x:Name="createRoom" Margin="10" Height="30" Click="createRoom_Click" MinWidth="130">
+                                <ToggleButton.Style>
+                                    <Style TargetType="ToggleButton" BasedOn="{StaticResource ToggleButton.NoCheckedBorder}">
+                                        <Style.Triggers>
+                                            <Trigger Property="IsChecked" Value="True">
+                                                <Setter Property="Content" Value="{Binding [Page_OnlinePage_CloseRoom], Source={x:Static langs:LanguageManager.Instance}}" />
+                                            </Trigger>
+                                            <Trigger Property="IsChecked" Value="False">
+                                                <Setter Property="Content" Value="{Binding [Page_OnlinePage_CreateRoom], Source={x:Static langs:LanguageManager.Instance}}" />
+                                            </Trigger>
+                                        </Style.Triggers>
+                                    </Style>
+                                </ToggleButton.Style>
+                            </ToggleButton>
                         </WrapPanel>
                     </Expander>
                     <Expander x:Name="visiterExp" Margin="10,10,10,0" Expanded="visiterExp_Expanded" Header="{Binding [Page_OnlinePage_Header_Join], Source={x:Static langs:LanguageManager.Instance}}">
@@ -58,7 +71,20 @@
                                 <Label Content="{Binding [Page_OnlinePage_Join_Port], Source={x:Static langs:LanguageManager.Instance}}" Height="30" FontSize="14" Background="{x:Null}" BorderBrush="{x:Null}"/>
                                 <TextBox x:Name="visiterPort" Height="30" TextWrapping="Wrap" Text="25565" VerticalAlignment="Top" Width="180"/>
                             </StackPanel>
-                            <Button x:Name="joinRoom" Margin="10" Content="{Binding [Page_OnlinePage_JoinRoom], Source={x:Static langs:LanguageManager.Instance}}" Height="30" Click="joinRoom_Click" MinWidth="130"/>
+                            <ToggleButton x:Name="joinRoom" Margin="10" Height="30" Click="joinRoom_Click" MinWidth="130">
+                                <ToggleButton.Style>
+                                    <Style TargetType="ToggleButton" BasedOn="{StaticResource ToggleButton.NoCheckedBorder}">
+                                        <Style.Triggers>
+                                            <Trigger Property="IsChecked" Value="True">
+                                                <Setter Property="Content" Value="{Binding [Page_OnlinePage_ExitRoom], Source={x:Static langs:LanguageManager.Instance}}" />
+                                            </Trigger>
+                                            <Trigger Property="IsChecked" Value="False">
+                                                <Setter Property="Content" Value="{Binding [Page_OnlinePage_JoinRoom], Source={x:Static langs:LanguageManager.Instance}}" />
+                                            </Trigger>
+                                        </Style.Triggers>
+                                    </Style>
+                                </ToggleButton.Style>
+                            </ToggleButton>
                         </WrapPanel>
                     </Expander>
                 </StackPanel>

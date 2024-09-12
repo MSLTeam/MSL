@@ -42,5 +42,10 @@ namespace MSL.forms
                 "\n\n终端特殊功能：\n在输入指令时，按一下Tab键可进行一键补全（或指令提示）操作。" +
                 "\n使用上下方向键可以回溯历史指令，左右方向键可以移动当前光标。", "操作提示");
         }
+
+        private void ClearLog_Click(object sender, RoutedEventArgs e)
+        {
+            ConptyConsole.ConPTYTerm.ClearUITerminal();
+        }
     }
 }

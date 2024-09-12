@@ -84,7 +84,7 @@ namespace MSL.pages.frpProviders
                 //Logger.LogWarning("未检测到config.json文件，创建config.json……");
                 File.WriteAllText(@"MSL\frp\config.json", string.Format("{{{0}}}", "\n"));
             }
-            
+
             JObject jobject = JObject.Parse(File.ReadAllText(@"MSL\frp\config.json", Encoding.UTF8));
             if (CustomFrpcClient.IsChecked == true)//自定义的话要导入进MSL文件夹
             {

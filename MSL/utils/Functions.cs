@@ -105,7 +105,7 @@ namespace MSL.utils
 
         public static string GetDeviceID()
         {
-            //获取windows-sid
+            // 获取windows-sid
             try
             {
                 System.Security.Principal.WindowsIdentity currentUser = System.Security.Principal.WindowsIdentity.GetCurrent();
@@ -114,7 +114,7 @@ namespace MSL.utils
                 byte[] dataToHash = new ASCIIEncoding().GetBytes(sid);
                 byte[] hashvalue = ((System.Security.Cryptography.HashAlgorithm)System.Security.Cryptography.CryptoConfig.CreateFromName("MD5")).ComputeHash(dataToHash);
                 string ATR = "";
-                //32 hash
+                // 32 hash
                 for (int i = 0; i < 16; i++)
                 {
                     ATR += hashvalue[i].ToString("x2");
@@ -446,7 +446,5 @@ namespace MSL.utils
             }
         }
         #endregion
-
-
     }
 }

@@ -57,11 +57,11 @@
                     </StackPanel>
                     <StackPanel Margin="0,0,0,15" Orientation="Horizontal">
                         <Label Grid.Column="0" Content="{Binding [Page_SettingsPage_CF_BF_NotifyIcon],Source={x:Static lang:LanguageManager.Instance}}" Margin="0,0,10,0"/>
-                        <ToggleButton Name="notifyIconbtn" Style="{StaticResource ExtendedToggleButtonSwitch}" HorizontalAlignment="Left" VerticalAlignment="Center" Click="notifyIconbtn_Click"/>
+                        <ToggleButton Name="notifyIconbtn" Style="{StaticResource ToggleButtonSwitch.Content}" HorizontalAlignment="Left" VerticalAlignment="Center" Click="notifyIconbtn_Click"/>
                     </StackPanel>
                     <StackPanel Margin="0,0,0,15" Orientation="Horizontal">
                         <Label Grid.Column="0" Content="{Binding [Page_SettingsPage_CF_BF_MSLTips],Source={x:Static lang:LanguageManager.Instance}}" Margin="0,0,10,0"/>
-                        <ToggleButton Name="MSLTips" IsChecked="True" Style="{StaticResource ExtendedToggleButtonSwitch}" HorizontalAlignment="Left" VerticalAlignment="Center" Click="MSLTips_Click"/>
+                        <ToggleButton Name="MSLTips" IsChecked="True" Style="{StaticResource ToggleButtonSwitch.Content}" HorizontalAlignment="Left" VerticalAlignment="Center" Click="MSLTips_Click"/>
                     </StackPanel>
                     <Grid Margin="0,0,0,15">
                         <Grid.ColumnDefinitions>
@@ -90,7 +90,7 @@
                     <StackPanel Margin="0,0,0,5">
                         <Expander FontSize="14" Header="{Binding [Page_SettingsPage_AS_AutoLaunchServer],Source={x:Static lang:LanguageManager.Instance}}">
                             <StackPanel Margin="10,10,10,0">
-                                <ToggleButton Name="openserversOnStart" Style="{StaticResource ExtendedToggleButtonSwitch}" HorizontalAlignment="Left" VerticalAlignment="Center" Click="openserversOnStart_Click" />
+                                <ToggleButton Name="openserversOnStart" Style="{StaticResource ToggleButtonSwitch.Content}" HorizontalAlignment="Left" VerticalAlignment="Center" Click="openserversOnStart_Click" />
                                     <Grid Margin="0,5,200,0" Height="150">
                                     <Grid.ColumnDefinitions>
                                         <ColumnDefinition/>
@@ -109,7 +109,7 @@
                         <hc:Divider Margin="0,10,0,10"/>
                         <Expander FontSize="14" Header="{Binding [Page_SettingsPage_AS_AutoLaunchFrpc],Source={x:Static lang:LanguageManager.Instance}}">
                             <StackPanel Margin="10,10,10,0">
-                                <ToggleButton Name="openfrpOnStart" Style="{StaticResource ExtendedToggleButtonSwitch}" HorizontalAlignment="Left" VerticalAlignment="Center" Click="openfrpOnStart_Click"/>
+                                <ToggleButton Name="openfrpOnStart" Style="{StaticResource ToggleButtonSwitch.Content}" HorizontalAlignment="Left" VerticalAlignment="Center" Click="openfrpOnStart_Click"/>
                                 <WrapPanel Orientation="Horizontal" Margin="0,5,0,0">
                                     <Label Content="{Binding [Page_SettingsPage_AS_ALF_FrpcList],Source={x:Static lang:LanguageManager.Instance}}"/>
                                     <TextBox x:Name="AutoOpenFrpcList" Width="150" FontSize="14"/>

@@ -162,6 +162,12 @@
   <data name="Error" xml:space="preserve">
     <value>错误</value>
   </data>
+  <data name="Form_ServerRunner_Launch" xml:space="preserve">
+    <value>开服</value>
+  </data>
+  <data name="Form_ServerRunner_Stop" xml:space="preserve">
+    <value>关服</value>
+  </data>
   <data name="InputDialog_Title" xml:space="preserve">
     <value>输入</value>
   </data>

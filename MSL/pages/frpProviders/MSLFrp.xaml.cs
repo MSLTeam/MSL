@@ -149,7 +149,7 @@ namespace MSL.pages.frpProviders
                     {
                         Dispatcher.Invoke(() =>
                         {
-                            serversList.Items[id] = serversList.Items[id].ToString() + "\n(检测失败,可能被DDoS或下线)";
+                            serversList.Items[id] = serversList.Items[id].ToString() + "(检测失败,可能被DDoS或下线)";
                         });
                     }
                 });
@@ -358,25 +358,14 @@ namespace MSL.pages.frpProviders
             {
                 return;
             }
-            if (serversList.SelectedItem.ToString().IndexOf("付费") + 1 != 0)
+            if (serversList.SelectedItem.ToString().Contains("付费"))
             {
-                lab2.Margin = new Thickness(290, 90, 0, 0);
-                accountBox.Margin = new Thickness(330, 120, 0, 0);
-                paidProtocolLabel.Visibility = Visibility.Visible;
-                usePaidProtocol.Visibility = Visibility.Visible;
-                paidPasswordLabel.Visibility = Visibility.Visible;
-                passwordBox.Visibility = Visibility.Visible;
-                rememberPasswd.Visibility = Visibility.Visible;
+                paidPasswordPannel.Visibility = Visibility.Visible;
+                paidProtocolPannel.Visibility = Visibility.Visible;
                 return;
             }
-
-            lab2.Margin = new Thickness(290, 115, 0, 0);
-            accountBox.Margin = new Thickness(330, 150, 0, 0);
-            paidProtocolLabel.Visibility = Visibility.Hidden;
-            usePaidProtocol.Visibility = Visibility.Hidden;
-            paidPasswordLabel.Visibility = Visibility.Hidden;
-            passwordBox.Visibility = Visibility.Hidden;
-            rememberPasswd.Visibility = Visibility.Hidden;
+            paidPasswordPannel.Visibility = Visibility.Collapsed;
+            paidProtocolPannel.Visibility = Visibility.Collapsed;
         }
 
         private void frpcType_SelectionChanged(object sender, SelectionChangedEventArgs e)

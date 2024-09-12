@@ -6,6 +6,7 @@
         xmlns:hc="https://handyorg.github.io/handycontrol"
         xmlns:controls="clr-namespace:MSL.controls"
         xmlns:term="clr-namespace:ConPtyTermEmulatorLib;assembly=ConPtyTermEmulatorLib"
+        xmlns:langs="clr-namespace:MSL.langs"
         xmlns:local="clr-namespace:MSL"
         mc:Ignorable="d"
         Title="ServerRunner"
@@ -45,9 +46,8 @@
                     </Grid.RowDefinitions>
                     <Grid>
                         <Grid.ColumnDefinitions>
-                            <ColumnDefinition Width="5*"/>
-                            <ColumnDefinition Width="4*"/>
-                            <ColumnDefinition Width="5*"/>
+                            <ColumnDefinition Width="*"/>
+                            <ColumnDefinition Width="*"/>
                         </Grid.ColumnDefinitions>
                         <Border Style="{StaticResource MagicBorder}" Grid.Column="0" VerticalAlignment="Stretch" Margin="10">
                             <ScrollViewer>
@@ -106,45 +106,54 @@
                                 </StackPanel>
                             </ScrollViewer>
                         </Border>
-                        <Border Style="{StaticResource MagicBorder}" Margin="0,10,0,10" Grid.Column="1" VerticalAlignment="Stretch" >
-                            <Grid>
-                                <Label Content="日志输出" Style="{StaticResource BorderTitle}"/>
-                                <TextBox x:Name="previewOutlog" Margin="5,35,5,5" IsReadOnly="True" TextWrapping="Wrap" VerticalContentAlignment="Top" FontSize="14" Padding="10" VerticalScrollBarVisibility="Auto"/>
-                            </Grid>
-                        </Border>
-                        <Border Style="{StaticResource MagicBorder}" Grid.Column="2" VerticalAlignment="Stretch" Margin="10,10,10,10" >
-                            <Grid>
-                                <Label Content="玩家列表" Style="{StaticResource BorderTitle}"/>
-                                <ListBox x:Name="serverPlayerList" hc:Empty.ShowEmpty="true" Margin="5,35,5,5">
-                                    <ListBox.ContextMenu>
-                                        <ContextMenu>
-                                            <MenuItem x:Name="kickPlayer" Click="kickPlayer_Click" Header="踢出玩家"/>
-                                            <MenuItem x:Name="banPlayer" Click="banPlayer_Click" Header="封禁玩家"/>
-                                        </ContextMenu>
-                                    </ListBox.ContextMenu>
-                                </ListBox>
-                            </Grid>
-                        </Border>
+                        <Grid Grid.Column="1">
+                            <Grid.RowDefinitions>
+                                <RowDefinition/>
+                                <RowDefinition/>
+                            </Grid.RowDefinitions>
+                            <Border Grid.Row="0" Style="{StaticResource MagicBorder}" Margin="0,10,10,10" VerticalAlignment="Stretch" >
+                                <Grid>
+                                    <Label Content="日志输出" Style="{StaticResource BorderTitle}"/>
+                                    <TextBox x:Name="previewOutlog" Margin="5,35,5,5" IsReadOnly="True" TextWrapping="Wrap" VerticalContentAlignment="Top" FontSize="14" Padding="10" VerticalScrollBarVisibility="Auto"/>
+                                </Grid>
+                            </Border>
+                            <Border Grid.Row="1" Style="{StaticResource MagicBorder}" VerticalAlignment="Stretch" Margin="0,0,10,10" >
+                                <Grid>
+                                    <Label Content="玩家列表" Style="{StaticResource BorderTitle}"/>
+                                    <ListBox x:Name="serverPlayerList" hc:Empty.ShowEmpty="true" Margin="5,35,5,5">
+                                        <ListBox.ContextMenu>
+                                            <ContextMenu>
+                                                <MenuItem x:Name="kickPlayer" Click="kickPlayer_Click" Header="踢出玩家"/>
+                                                <MenuItem x:Name="banPlayer" Click="banPlayer_Click" Header="封禁玩家"/>
+                                            </ContextMenu>
+                                        </ListBox.ContextMenu>
+                                    </ListBox>
+                                </Grid>
+                            </Border>
+                        </Grid>
                     </Grid>
                     <Grid Grid.Row="1">
                         <Grid.ColumnDefinitions>
                             <ColumnDefinition Width="*"/>
-                            <ColumnDefinition Width="Auto"/>
-                            <ColumnDefinition Width="150"/>
-                            <ColumnDefinition Width="150"/>
-                            <ColumnDefinition Width="100"/>
+                            <ColumnDefinition Width="*"/>
+                            <ColumnDefinition Width="*"/>
                         </Grid.ColumnDefinitions>
-                        <Button x:Name="controlServer_Copy" Grid.Column="0" hc:IconElement.Geometry="{StaticResource CheckedGeometry}" hc:IconElement.Width="20" Style="{StaticResource ButtonPrimary}" Content="开服" Height="60" Click="controlServer_Click" MouseDoubleClick="controlServer_MouseDoubleClick" FontSize="14" VerticalAlignment="Bottom" HorizontalAlignment="Stretch" Margin="10,0,10,10"/>
-                        <Button x:Name="ShowConptyWindowBtn" Grid.Column="1" Visibility="Collapsed" Width="150" Height="60" Click="ShowConptyWindow_Click" FontSize="14" VerticalAlignment="Bottom" HorizontalAlignment="Stretch" Margin="0,0,10,10">
-                            <StackPanel Orientation="Horizontal">
-                                <Image Source="{DynamicResource terminal_2DrawingImage}" Width="22"/>
-                                <TextBlock Text="打开终端" Foreground="{DynamicResource PrimaryTextBrush}" Margin="5,0,0,0" VerticalAlignment="Center"/>
-                            </StackPanel>
-                        </Button>
-                        <Button x:Name="solveProblemBtn" Grid.Column="2" hc:IconElement.Geometry="{StaticResource AskGeometry}" hc:IconElement.Width="20" Style="{StaticResource ButtonDanger}" Content="崩溃检测"  Height="60" Click="solveProblemBtn_Click" FontSize="14" VerticalAlignment="Bottom" Margin="0,0,10,10" HorizontalAlignment="Stretch"/>
-                        <Button x:Name="openServerDir" Grid.Column="3" Content="打开服务器目录" Height="60" VerticalAlignment="Bottom" HorizontalAlignment="Stretch" Margin="0,0,10,10" FontSize="14" Click="openServerDir_Click"/>
-                        <Button x:Name="systemInfoBtn" Grid.Column="4" Content="显示占用:开" Click="systemInfoBtn_Click" VerticalAlignment="Top" HorizontalAlignment="Stretch" Margin="0,0,10,10"/>
-                        <Button x:Name="playerInfoBtn" Grid.Column="4" Content="记录玩家:开" Click="playerInfoBtn_Click" VerticalAlignment="Bottom" HorizontalAlignment="Stretch" Margin="0,0,10,10"/>
+                        <ToggleButton x:Name="controlServer1" Grid.Column="0" hc:IconElement.Geometry="{StaticResource CheckedGeometry}" hc:IconElement.Width="18" FontSize="14" Margin="10,0,10,10" Click="controlServer_Click" MouseDoubleClick="controlServer_MouseDoubleClick">
+                            <ToggleButton.Style>
+                                <Style TargetType="ToggleButton" BasedOn="{StaticResource ToggleButtonPrimary.NoCheckedBorder}">
+                                    <Style.Triggers>
+                                        <Trigger Property="IsChecked" Value="True">
+                                            <Setter Property="Content" Value="{Binding [Form_ServerRunner_Stop], Source={x:Static langs:LanguageManager.Instance}}" />
+                                        </Trigger>
+                                        <Trigger Property="IsChecked" Value="False">
+                                            <Setter Property="Content" Value="{Binding [Form_ServerRunner_Launch], Source={x:Static langs:LanguageManager.Instance}}" />
+                                        </Trigger>
+                                    </Style.Triggers>
+                                </Style>
+                            </ToggleButton.Style>
+                        </ToggleButton>
+                        <Button x:Name="solveProblemBtn" Grid.Column="1" hc:IconElement.Geometry="{StaticResource AskGeometry}" hc:IconElement.Height="18" Style="{StaticResource ButtonDanger}" Content="崩溃检测"  Height="60" Click="solveProblemBtn_Click" FontSize="14" VerticalAlignment="Bottom" Margin="0,0,10,10" HorizontalAlignment="Stretch"/>
+                        <Button x:Name="openServerDir" Grid.Column="2" Content="打开服务器目录" Height="60" VerticalAlignment="Bottom" HorizontalAlignment="Stretch" Margin="0,0,10,10" FontSize="14" Click="openServerDir_Click"/>
                     </Grid>
                 </Grid>
                 
@@ -190,7 +199,21 @@
                         </ComboBox>
                         <TextBox x:Name="cmdtext" Grid.Column="1" Margin="0,0,5,10" Text="服务器已关闭" KeyDown="cmdtext_KeyDown" IsEnabled="False"/>
                         <Button x:Name="sendcmd" Grid.Column="2" Content="发送" Style="{StaticResource ButtonPrimary}" Width="60" Height="32" Margin="0,0,5,10" Click="sendcmd_Click" IsEnabled="False"/>
-                        <Button x:Name="controlServer" Grid.Column="3" Content="开服" Margin="0,0,10,10" Width="60" Height="32" Click="controlServer_Click" MouseDoubleClick="controlServer_MouseDoubleClick"/>
+                        <ToggleButton x:Name="controlServer" Grid.Column="3" Margin="0,0,10,10" MinWidth="60" Height="32" Click="controlServer_Click" MouseDoubleClick="controlServer_MouseDoubleClick">
+                            <ToggleButton.Style>
+                                <Style TargetType="ToggleButton" BasedOn="{StaticResource ToggleButton.NoCheckedBorder}">
+
+                                    <Style.Triggers>
+                                        <Trigger Property="IsChecked" Value="True">
+                                            <Setter Property="Content" Value="{Binding [Form_ServerRunner_Stop], Source={x:Static langs:LanguageManager.Instance}}" />
+                                        </Trigger>
+                                        <Trigger Property="IsChecked" Value="False">
+                                            <Setter Property="Content" Value="{Binding [Form_ServerRunner_Launch], Source={x:Static langs:LanguageManager.Instance}}" />
+                                        </Trigger>
+                                    </Style.Triggers>
+                                </Style>
+                            </ToggleButton.Style>
+                        </ToggleButton>
                     </Grid>
                 </Grid>
             </TabItem>
@@ -244,8 +267,8 @@
                                                     <GridViewColumn.CellTemplate>
                                                         <DataTemplate>
                                                             <Grid>
-                                                                <Button Margin="0,0,0,0" hc:IconElement.Geometry="{StaticResource WindowMinGeometry}" HorizontalAlignment="Left" hc:Poptip.Content="禁用/启用该插件" hc:Poptip.HorizontalOffset="40" hc:Poptip.Placement="Left" Click="disPlugin_Click"/>
-                                                                <Button Margin="40,0,0,0" hc:IconElement.Geometry="{StaticResource DeleteFillCircleGeometry}" HorizontalAlignment="Left" hc:Poptip.Content="删除该插件" hc:Poptip.HorizontalOffset="40" hc:Poptip.Placement="Left" Click="delPlugin_Click"/>
+                                                                <Button Margin="0,0,0,0" hc:IconElement.Geometry="{StaticResource WindowMinGeometry}" hc:IconElement.Width="14" HorizontalAlignment="Left" hc:Poptip.Content="禁用/启用该插件" hc:Poptip.HorizontalOffset="40" hc:Poptip.Placement="Left" Click="disPlugin_Click"/>
+                                                                <Button Margin="40,0,0,0" hc:IconElement.Geometry="{StaticResource DeleteFillCircleGeometry}" hc:IconElement.Height="14" HorizontalAlignment="Left" hc:Poptip.Content="删除该插件" hc:Poptip.HorizontalOffset="40" hc:Poptip.Placement="Left" Click="delPlugin_Click"/>
                                                             </Grid>
                                                         </DataTemplate>
                                                     </GridViewColumn.CellTemplate>
@@ -253,7 +276,7 @@
                                             </GridView>
                                         </ListView.View>
                                     </ListView>
-                                    <Button x:Name="addPluginBtn" Margin="0,0,12,12" Style="{StaticResource ButtonPrimary}" hc:BorderElement.CornerRadius="30" VerticalAlignment="Bottom" Height="48" Width="48" Content="+" Click="addPlugin_Click" HorizontalAlignment="Right" FontSize="24"/>
+                                    <Button x:Name="addPluginBtn" Margin="0,0,12,12" Style="{StaticResource ButtonPrimary}" hc:IconElement.Geometry="{StaticResource AddGeometry}" hc:IconElement.Height="16" hc:BorderElement.CornerRadius="30" VerticalAlignment="Bottom" Height="48" Width="48" Click="addPlugin_Click" HorizontalAlignment="Right"/>
                                 </Grid>
                             </controls:MagicCard>
                         </TabItem>
@@ -294,8 +317,8 @@
                                                     <GridViewColumn.CellTemplate>
                                                         <DataTemplate>
                                                             <Grid>
-                                                                <Button Margin="0,0,0,0" hc:IconElement.Geometry="{StaticResource WindowMinGeometry}" HorizontalAlignment="Left" hc:Poptip.Content="禁用/启用该模组" hc:Poptip.HorizontalOffset="40" hc:Poptip.Placement="Left" Click="disMod_Click"/>
-                                                                <Button Margin="40,0,0,0" hc:IconElement.Geometry="{StaticResource DeleteFillCircleGeometry}" HorizontalAlignment="Left" hc:Poptip.Content="删除该模组" hc:Poptip.HorizontalOffset="40" hc:Poptip.Placement="Left" Click="delMod_Click"/>
+                                                                <Button Margin="0,0,0,0" hc:IconElement.Geometry="{StaticResource WindowMinGeometry}" hc:IconElement.Width="14" HorizontalAlignment="Left" hc:Poptip.Content="禁用/启用该模组" hc:Poptip.HorizontalOffset="40" hc:Poptip.Placement="Left" Click="disMod_Click"/>
+                                                                <Button Margin="40,0,0,0" hc:IconElement.Geometry="{StaticResource DeleteFillCircleGeometry}" hc:IconElement.Height="14" HorizontalAlignment="Left" hc:Poptip.Content="删除该模组" hc:Poptip.HorizontalOffset="40" hc:Poptip.Placement="Left" Click="delMod_Click"/>
                                                             </Grid>
                                                         </DataTemplate>
                                                     </GridViewColumn.CellTemplate>
@@ -303,13 +326,13 @@
                                             </GridView>
                                         </ListView.View>
                                     </ListView>
-                                    <Button x:Name="addModBtn" Margin="0,0,12,12" Style="{StaticResource ButtonPrimary}" hc:BorderElement.CornerRadius="30" VerticalAlignment="Bottom" Height="48" Width="48" Content="+" Click="addMod_Click" HorizontalAlignment="Right" FontSize="24"/>
+                                    <Button x:Name="addModBtn" Margin="0,0,12,12" Style="{StaticResource ButtonPrimary}" hc:IconElement.Geometry="{StaticResource AddGeometry}" hc:IconElement.Height="16" hc:BorderElement.CornerRadius="30" VerticalAlignment="Bottom" Height="48" Width="48" Click="addMod_Click" HorizontalAlignment="Right"/>
                                 </Grid>
                             </controls:MagicCard>
                         </TabItem>
                     </TabControl>
                     <Button x:Name="reFresh" Content="刷新" Style="{StaticResource ButtonPrimary}" Height="32" Click="reFresh_Click" Width="70" FontSize="16" VerticalAlignment="Top" HorizontalAlignment="Right" Margin="0,10,10,0"/>
-                    <Label x:Name="lab001" Content="未检测到任何插件或模组，请重启服务器并检查所用服务端是否支持相应功能" Foreground="{DynamicResource DarkPrimaryBrush}" FontSize="18" VerticalAlignment="Center" HorizontalAlignment="Center" Padding="10,0,10,0"/>
+                    <Label x:Name="lab001" Content="未检测到任何插件或模组，请重启服务器并检查所用服务端是否支持相应功能" Foreground="{DynamicResource DarkPrimaryBrush}" FontSize="18" VerticalAlignment="Center" HorizontalAlignment="Center"/>
                 </Grid>
             </TabItem>
             <TabItem x:Name="Tab_Settings" Width="50" Style="{StaticResource TabItemSideMenu}">
@@ -369,7 +392,7 @@
                                         <Label Content="服务端核心文件:"/>
                                         <TextBox x:Name="server" MaxLines="1" AutoWordSelection="True" Margin="125,0,210,0"/>
                                         <Button x:Name="a01" Content="浏览" Width="60" Click="a01_Click" HorizontalAlignment="Right" Margin="0,0,150,0"/>
-                                        <Button x:Name="downloadServer" hc:IconElement.Geometry="{StaticResource DownloadGeometry}" hc:IconElement.Width="15" Content="下载服务端" Width="150" Click="downloadServer_Click" HorizontalAlignment="Right"/>
+                                        <Button x:Name="downloadServer" hc:IconElement.Geometry="{StaticResource DownloadGeometry}" Content="下载服务端" Width="150" Click="downloadServer_Click" HorizontalAlignment="Right"/>
                                     </Grid>
                                     <hc:Divider Margin="0,10,0,10"/>
                                     <Grid>
@@ -516,7 +539,6 @@
                                 </Grid>
                             </StackPanel>
                         </controls:MagicCard>
-
                     </StackPanel>
                 </ScrollViewer>
             </TabItem>
@@ -525,78 +547,107 @@
                     <controls:TabControlHeader Icon="{DynamicResource category_plusDrawingImage}" Text="更多功能"/>
                 </TabItem.Header>
                 <ScrollViewer>
-                    <Grid>
-                        <Grid.RowDefinitions>
-                            <RowDefinition Height="auto"/>
-                            <RowDefinition Height="*"/>
-                        </Grid.RowDefinitions>
-                        <Grid.RenderTransform>
+                    <StackPanel>
+                        <StackPanel.RenderTransform>
                             <TranslateTransform/>
-                        </Grid.RenderTransform>
-                        <Grid.Triggers>
+                        </StackPanel.RenderTransform>
+                        <StackPanel.Triggers>
                             <EventTrigger RoutedEvent="Loaded">
                                 <BeginStoryboard Storyboard="{StaticResource ShowPage}"/>
                             </EventTrigger>
-                        </Grid.Triggers>
-                        <Border Style="{StaticResource MagicBorder}" Grid.Row="0">
-                            <Grid>
-                                <Grid.RowDefinitions>
-                                    <RowDefinition Height="auto"/>
-                                    <RowDefinition Height="auto"/>
-                                    <RowDefinition Height="auto"/>
-                                    <RowDefinition Height="auto"/>
-                                    <RowDefinition Height="auto"/>
-                                    <RowDefinition Height="*"/>
-                                </Grid.RowDefinitions>
-                                <Grid.ColumnDefinitions>
-                                    <ColumnDefinition Width="*"/>
-                                </Grid.ColumnDefinitions>
-                                <Label Grid.Row="0" Content="开服器功能" Style="{StaticResource BorderTitle}"/>
-                                <Grid Grid.Row="1">
+                        </StackPanel.Triggers>
+                        <controls:MagicCard Title="开服器功能">
+                            <hc:UniformSpacingPanel Spacing="10" Orientation="Vertical">
+                                <Grid>
                                     <Grid.ColumnDefinitions>
                                         <ColumnDefinition Width="auto"/>
                                         <ColumnDefinition Width="*"/>
                                     </Grid.ColumnDefinitions>
-                                    <Label Content="服务器控制:" Grid.Column="0" BorderBrush="{x:Null}" Background="{x:Null}" FontSize="16" Width="120" Height="36" HorizontalContentAlignment="Left" VerticalAlignment="Top"/>
-                                    <WrapPanel Grid.Column="1" >
-                                        <Button x:Name="useConpty" Content="使用高级终端（ConPty）:关" Click="useConpty_Click" FontSize="16" Height="35"  Margin="0,0,5,5"/>
-                                        <Button x:Name="onlineMode" Content="关闭正版验证" Click="onlineMode_Click" FontSize="16" Height="35"  Margin="0,0,5,5"/>
-                                        <Button x:Name="autoStartserver" Content="关服自动重启:禁用"  Click="autostartServer_Click" FontSize="16" Height="35" Margin="0,0,5,5"/>
-                                        <Button x:Name="fileforceUTF8encoding" Content="强制服务器文件UTF8编码:关"  FontSize="16" Height="35" Click="fileforceUTF8encoding_Click" Margin="0,0,5,5"/>
-                                        <Button x:Name="inputCmdEncoding" Content="输入编码:UTF8"  FontSize="16" Height="35" Click="inputCmdEncoding_Click" Margin="0,0,5,5"/>
-                                        <Button x:Name="outputCmdEncoding" Content="输出编码:UTF8" FontSize="16" Height="35" Click="outputCmdEncoding_Click" Margin="0,0,5,5"/>
-                                    </WrapPanel>
+                                    <Label Content="仪表盘功能：" Grid.Column="0" Margin="0,0,10,0" Padding="10,0,10,0" BorderThickness="0" FontSize="16" HorizontalContentAlignment="Left" VerticalAlignment="Top"/>
+                                    <hc:UniformSpacingPanel Spacing="10" Orientation="Vertical" Grid.Column="1" >
+                                        <StackPanel Orientation="Horizontal">
+                                            <Label Content="显示占用：" Margin="0,0,5,0" FontSize="14" Padding="0" BorderThickness="0"/>
+                                            <ToggleButton x:Name="systemInfoBtn" Style="{StaticResource ToggleButtonSwitch.Content}" Click="systemInfoBtn_Click"/>
+                                        </StackPanel>
+                                        <StackPanel Orientation="Horizontal">
+                                            <Label Content="记录玩家：" Margin="0,0,5,0" FontSize="14" Padding="0" BorderThickness="0"/>
+                                            <ToggleButton x:Name="playerInfoBtn" Style="{StaticResource ToggleButtonSwitch.Content}" Click="playerInfoBtn_Click"/>
+                                        </StackPanel>
+                                    </hc:UniformSpacingPanel>
                                 </Grid>
-                                <Grid Grid.Row="2" Margin="0,5,0,0" x:Name="Tradition_LogFunGrid">
+                                <hc:Divider Margin="0"/>
+                                <Grid>
                                     <Grid.ColumnDefinitions>
                                         <ColumnDefinition Width="auto"/>
                                         <ColumnDefinition Width="*"/>
                                     </Grid.ColumnDefinitions>
-                                    <Label Content="日志输出:" Grid.Column="0" FontSize="16" Width="120" Height="36" BorderBrush="{x:Null}" Background="{x:Null}" VerticalAlignment="Top" HorizontalContentAlignment="Left"/>
-
+                                    <Label Content="服务器控制：" Grid.Column="0" Margin="0,0,10,0" Padding="10,0,10,0" BorderThickness="0" FontSize="16" HorizontalContentAlignment="Left" VerticalAlignment="Top"/>
+                                    <hc:UniformSpacingPanel Spacing="10" Orientation="Vertical"  Grid.Column="1" >
+                                        <StackPanel Orientation="Horizontal">
+                                            <Label Content="使用高级终端（ConPty）：" Margin="0,0,5,0" FontSize="14" Padding="0" BorderThickness="0"/>
+                                            <ToggleButton x:Name="useConpty" Style="{StaticResource ToggleButtonSwitch.Content}" Click="useConpty_Click"/>
+                                        </StackPanel>
+                                        <StackPanel Orientation="Horizontal">
+                                            <Label Content="关服自动重启：" Margin="0,0,5,0" FontSize="14" Padding="0" BorderThickness="0"/>
+                                            <ToggleButton x:Name="autoStartserver" Style="{StaticResource ToggleButtonSwitch.Content}" Click="autostartServer_Click"/>
+                                        </StackPanel>
+                                        <StackPanel Orientation="Horizontal">
+                                            <Label Content="强制服务器文件UTF8编码：" Margin="0,0,5,0" FontSize="14" Padding="0" BorderThickness="0"/>
+                                            <ToggleButton x:Name="fileforceUTF8encoding" Style="{StaticResource ToggleButtonSwitch.Content}" Click="fileforceUTF8encoding_Click"/>
+                                        </StackPanel>
+                                    </hc:UniformSpacingPanel>
+                                </Grid>
+                                <hc:Divider Margin="0"/>
+                                <Grid x:Name="Tradition_LogFunGrid">
+                                    <Grid.ColumnDefinitions>
+                                        <ColumnDefinition Width="auto"/>
+                                        <ColumnDefinition Width="*"/>
+                                    </Grid.ColumnDefinitions>
+                                    <Label Content="服务器终端：" Grid.Column="0" Margin="0,0,10,0" Padding="10,0,10,0" BorderThickness="0" FontSize="16" VerticalAlignment="Top" HorizontalContentAlignment="Left"/>
+                                    <hc:UniformSpacingPanel Spacing="10" Orientation="Vertical" Grid.Column="1">
+                                        <StackPanel Orientation="Horizontal">
+                                            <Label Content="日志输出：" Margin="0,0,5,0"  FontSize="14" Padding="0" BorderThickness="0"/>
+                                            <ToggleButton x:Name="showOutlog" IsChecked="True" Style="{StaticResource ToggleButtonSwitch.Content}" Click="showOutlog_Click"/>
+                                        </StackPanel>
+                                        <StackPanel Orientation="Horizontal">
+                                            <Label Content="自动清屏：" Margin="0,0,5,0" FontSize="14" Padding="0" BorderThickness="0"/>
+                                            <ToggleButton x:Name="autoClearOutlog" IsChecked="True" Style="{StaticResource ToggleButtonSwitch.Content}" Click="autoClearOutlog_Click"/>
+                                        </StackPanel>
+                                        <StackPanel Orientation="Horizontal">
+                                            <Label Content="屏蔽关键字日志：" Margin="0,0,5,0" FontSize="14" Padding="0" BorderThickness="0"/>
+                                            <ToggleButton x:Name="shieldLogBtn" Style="{StaticResource ToggleButtonSwitch.Content}" Click="shieldLogBtn_Click"/>
+                                        </StackPanel>
+                                        <StackPanel Orientation="Horizontal">
+                                            <Label Content="屏蔽堆栈追踪：" Margin="0,0,5,0" FontSize="14" Padding="0" BorderThickness="0"/>
+                                            <ToggleButton x:Name="shieldStackOut" IsChecked="True" Style="{StaticResource ToggleButtonSwitch.Content}" Click="shieldStackOut_Click"/>
+                                        </StackPanel>
+                                        <StackPanel Orientation="Horizontal">
+                                            <Label Content="输入编码：" Margin="0,0,5,0" FontSize="14" Padding="0" BorderThickness="0"/>
+                                            <Button x:Name="inputCmdEncoding" Content="UTF8" Click="inputCmdEncoding_Click"/>
+                                        </StackPanel>
+                                        <StackPanel Orientation="Horizontal">
+                                            <Label Content="输出编码：" Margin="0,0,5,0" FontSize="14" Padding="0" BorderThickness="0"/>
+                                            <Button x:Name="outputCmdEncoding" Content="UTF8" Click="outputCmdEncoding_Click"/>
+                                        </StackPanel>
+                                    </hc:UniformSpacingPanel>
+                                </Grid>
+                                <hc:Divider x:Name="Tradition_LogFunDivider" Margin="0"/>
+                                <Grid>
+                                    <Grid.ColumnDefinitions>
+                                        <ColumnDefinition Width="auto"/>
+                                        <ColumnDefinition Width="*"/>
+                                    </Grid.ColumnDefinitions>
+                                    <Label Content="其它功能项：" Grid.Column="0" Margin="0,0,10,0" Padding="10,0,10,0" BorderThickness="0" FontSize="16" VerticalAlignment="Top" HorizontalContentAlignment="Left"/>
                                     <WrapPanel Grid.Column="1">
-                                        <Button x:Name="closeOutlog" Content="日志输出:开" FontSize="16" Height="35" Click="closeOutlog_Click" Margin="0,0,5,5"/>
-                                        <Button x:Name="closeOutlog_Copy" Content="屏蔽关键字日志:关" FontSize="16" Height="35" Click="closeOutlog_Copy_Click"  Margin="0,0,5,5"/>
-                                        <Button x:Name="shieldStackOut" Content="屏蔽堆栈追踪:开" FontSize="16" Height="35" Click="shieldStackOut_Click" Margin="0,0,5,5"/>
-                                        <Button x:Name="autoClearOutlog" Content="自动清屏:开" FontSize="16" Height="35" Click="autoClearOutlog_Click" Margin="0,0,5,5"/>
+                                        <Button x:Name="onlineMode" Content="关闭正版验证" Click="onlineMode_Click" FontSize="14" Margin="0,0,5,5"/>
+                                        <Button x:Name="shareLog" Content="上传服务器控制台日志" FontSize="14" Margin="0,0,5,5" Click="shareLog_Click" MouseDoubleClick="controlServer_MouseDoubleClick"/>
+                                        <Button x:Name="forgeInstallLogUpload" Content="上传Forge安装日志" FontSize="14" Click="forgeInstallLogUpload_Click" Margin="0,0,5,5"/>
+                                        <Button x:Name="GetIPV6" Content="查看IPV6公网地址" FontSize="14" Click="GetIPV6_Click" Margin="0,0,5,5"/>
                                     </WrapPanel>
                                 </Grid>
-
-                                <Grid Grid.Row="3" Margin="0,5,0,0">
-                                    <Grid.ColumnDefinitions>
-                                        <ColumnDefinition Width="auto"/>
-                                        <ColumnDefinition Width="*"/>
-                                    </Grid.ColumnDefinitions>
-                                    <Label Content="其它功能:" Grid.Column="0" FontSize="16" Width="120" Height="36" BorderBrush="{x:Null}" Background="{x:Null}" VerticalAlignment="Top" HorizontalContentAlignment="Left"/>
-                                    <WrapPanel Grid.Column="1">
-                                        <Button x:Name="shareLog" Content="上传服务器控制台日志" FontSize="16" Margin="0,0,5,5" Height="35" Click="shareLog_Click" MouseDoubleClick="controlServer_MouseDoubleClick"/>
-                                        <Button x:Name="forgeInstallLogUpload" Content="上传Forge安装日志" FontSize="16" Height="35" Click="forgeInstallLogUpload_Click" Margin="0,0,5,5"/>
-                                        <Button x:Name="GetIPV6" Content="获取IPV6公网地址" FontSize="16" Height="35" Click="GetIPV6_Click" Margin="0,0,5,5"/>
-                                    </WrapPanel>
-                                </Grid>
-                            </Grid>
-                        </Border>
-                        <Border Style="{StaticResource MagicBorder}" Grid.Row="1" Margin="10,10,10,20">
+                            </hc:UniformSpacingPanel>
+                        </controls:MagicCard>
+                        <Border Style="{StaticResource MagicBorder}" Grid.Row="1" Margin="10,0,10,20">
                             <Grid>
                                 <Grid.RowDefinitions>
                                     <RowDefinition Height="auto"/>
@@ -619,7 +670,7 @@
                                 </Grid>
                             </Grid>
                         </Border>
-                    </Grid>
+                    </StackPanel>
                 </ScrollViewer>
             </TabItem>
             <TabItem x:Name="Tab_Timer" Width="50" Style="{StaticResource TabItemSideMenu}">

@@ -23,7 +23,7 @@
                 <RowDefinition/>
             </Grid.RowDefinitions>
             <StackPanel Grid.Row="0" Orientation="Horizontal" Margin="10,10,10,0" VerticalAlignment="Top">
-                <Button x:Name="CancelBtn" Grid.Row="4" hc:IconElement.Geometry="{StaticResource LeftGeometry}" Content="返回服务器列表" Click="CancelBtn_Click"/>
+                <Button x:Name="CancelBtn" hc:IconElement.Geometry="{StaticResource LeftGeometry}" Content="返回服务器列表" Click="CancelBtn_Click"/>
                 <Label Content="将通过几个步骤为您创建服务器……" Margin="5,0,0,0" Foreground="{DynamicResource DarkPrimaryBrush}" FontSize="14"/>
             </StackPanel>
             <Border Grid.Row="1" Style="{StaticResource MagicBorder}" Margin="10" VerticalAlignment="Stretch">
