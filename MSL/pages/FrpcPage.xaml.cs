@@ -416,31 +416,6 @@ namespace MSL.pages
 
         private async void PayService()
         {
-            string userAccount = "";
-            string userPassword = "";
-
-            //保险起见，还是加个try吧（
-            try
-            {
-                string _text = File.ReadAllText(@"MSL\frp\frpc.toml");
-                string pattern = @"user\s*=\s*""(\w+)""\s*metadatas\.token\s*=\s*""(\w+)""";
-                Match match = Regex.Match(_text, pattern);
-
-                if (match.Success)
-                {
-                    userAccount = match.Groups[1].Value;
-                    userPassword = match.Groups[2].Value;
-                }
-            }
-            catch
-            {
-                Dispatcher.Invoke(() =>
-                {
-                    Shows.ShowMsgDialog(Window.GetWindow(this), "您的付费资格已过期，但自动续费功能出现问题，请手动前往爱发电续费或重新配置节点再试！", "错误");
-                });
-                return;
-            }
-
             bool _ret = false;
             await Dispatcher.Invoke(async () =>
             {
@@ -524,7 +499,7 @@ namespace MSL.pages
                 {
                     Dispatcher.Invoke(() =>
                     {
-                        Shows.ShowMsgDialog(Window.GetWindow(this), "您的付费密码为：" + keyValues["password"].ToString() + "\n注册时间：" + keyValues["registration"].ToString() + "\n本次续费：" + keyValues["days"].ToString() + "天\n到期时间：" + keyValues["expiration"].ToString(), "续费成功！");
+                        Shows.ShowMsgDialog(Window.GetWindow(this), "您的密码为：" + keyValues["password"].ToString() + "\n注册时间：" + keyValues["registration"].ToString() + "\n本次续费：" + keyValues["days"].ToString() + "天\n到期时间：" + keyValues["expiration"].ToString(), "续费成功！");
                     });
                 }
                 else if (keyValues != null)
