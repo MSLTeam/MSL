@@ -110,6 +110,9 @@ namespace MSL
                     {
                         if (conptyWindow != null)
                         {
+                            ConptyPopUp.IsOpen = false;
+                            Growl.SetGrowlParent(ConptyGrowlPanel, false);
+                            Growl.SetGrowlParent(GrowlPanel, true);
                             conptyWindow.Visibility = Visibility.Collapsed;
                             //CloseConptyDialog();
                         }
@@ -141,10 +144,15 @@ namespace MSL
             ServerProcess.Dispose();
             if (conptyWindow != null)
             {
-                conptyWindow.Closing -= ConptyWindowClosing;
-                conptyWindow.ControlServer.Click -= ConptyWindowControlServer;
-                conptyWindow.ControlServer.MouseDoubleClick -= KillConptyServer;
-                conptyWindow = null;
+                try
+                {
+                    conptyWindow.Close();
+                    conptyWindow.Closing -= ConptyWindowClosing;
+                    conptyWindow.ControlServer.Click -= ConptyWindowControlServer;
+                    conptyWindow.ControlServer.MouseDoubleClick -= KillConptyServer;
+                    conptyWindow = null;
+                }
+                catch { }
             }
             ShieldLog = null;
             conptyWindow = null;
@@ -797,23 +805,6 @@ namespace MSL
             }
         }
 
-        private void Window_LocationChanged(object sender, EventArgs e)
-        {
-            if (conptyWindow != null && conptyWindow.Visibility == Visibility.Visible)
-            {
-                UpdateChildWindowPosition();
-            }
-        }
-
-        private async void Window_SizeChanged(object sender, SizeChangedEventArgs e)
-        {
-            if (conptyWindow != null && conptyWindow.Visibility == Visibility.Visible)
-            {
-                await UpdateChildWindowSize();
-                UpdateChildWindowPosition();
-            }
-        }
-
         // 更新子窗口大小
         private async Task UpdateChildWindowSize()
         {
@@ -855,7 +846,7 @@ namespace MSL
         private void ConptyWindowClosing(object sender, System.ComponentModel.CancelEventArgs e)
         {
             e.Cancel = true;
-            conptyWindow.Visibility = Visibility.Collapsed;
+            this.Close();
         }
 
         private void ConptyWindowControlServer(object sender, RoutedEventArgs e)
@@ -4262,6 +4253,36 @@ namespace MSL
             Growl.SetGrowlParent(GrowlPanel, false);
         }
 
+        private void Window_IsVisibleChanged(object sender, DependencyPropertyChangedEventArgs e)
+        {
+            if (this.Visibility == Visibility.Visible)
+            {
+                if (conptyWindow != null && TabCtrl.SelectedIndex == 1)
+                {
+                    ShowConptyWindow();
+                    ConptyPopUp.IsOpen = true;
+                    Growl.SetGrowlParent(GrowlPanel, false);
+                    Growl.SetGrowlParent(ConptyGrowlPanel, true);
+                }
+            }
+        }
+
+        private void Window_LocationChanged(object sender, EventArgs e)
+        {
+            if (conptyWindow != null && conptyWindow.Visibility == Visibility.Visible)
+            {
+                UpdateChildWindowPosition();
+            }
+        }
+
+        private async void Window_SizeChanged(object sender, SizeChangedEventArgs e)
+        {
+            if (conptyWindow != null && conptyWindow.Visibility == Visibility.Visible)
+            {
+                await UpdateChildWindowSize();
+                UpdateChildWindowPosition();
+            }
+        }
         #endregion
     }
 }

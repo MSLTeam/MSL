@@ -19,7 +19,7 @@
         ShowTitle="False" Icon="../icon.ico"
         Loaded="Window_Loaded" Closing="Window_Closing" Activated="Window_Activated" Deactivated="Window_Deactivated"
         LocationChanged="Window_LocationChanged" SizeChanged="Window_SizeChanged"
-        WindowStartupLocation="CenterScreen">
+        WindowStartupLocation="CenterScreen" IsVisibleChanged="Window_IsVisibleChanged">
     <hc:Window.NonClientAreaContent>
         <StackPanel VerticalAlignment="Stretch" Height="40" Orientation="Horizontal" IsHitTestVisible="False">
             <TextBlock x:Name="TitleBox" Text="{Binding Title, RelativeSource={RelativeSource AncestorType={x:Type Window}, Mode=FindAncestor}}" Foreground="White" FontSize="14" VerticalAlignment="Center" Margin="5,0,0,0"/>
