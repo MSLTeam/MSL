@@ -146,8 +146,8 @@ namespace MSL
             {
                 try
                 {
-                    conptyWindow.Close();
                     conptyWindow.Closing -= ConptyWindowClosing;
+                    conptyWindow.Close();
                     conptyWindow.ControlServer.Click -= ConptyWindowControlServer;
                     conptyWindow.ControlServer.MouseDoubleClick -= KillConptyServer;
                     conptyWindow = null;
@@ -3632,8 +3632,8 @@ namespace MSL
                 {
                     if (conptyWindow != null)
                     {
-                        conptyWindow.Close();
                         conptyWindow.Closing -= ConptyWindowClosing;
+                        conptyWindow.Close();
                         conptyWindow.ControlServer.Click -= ConptyWindowControlServer;
                         conptyWindow.ControlServer.MouseDoubleClick -= KillConptyServer;
                         conptyWindow = null;
