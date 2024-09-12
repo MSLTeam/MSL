@@ -3619,6 +3619,14 @@ namespace MSL
             if (CheckServerRunning())
             {
                 Shows.ShowMsgDialog(this, "请关闭服务器后再进行更改！", "提示");
+                if (useConpty.IsChecked == false)
+                {
+                    useConpty.IsChecked = true;
+                }
+                else
+                {
+                    useConpty.IsChecked = false;
+                }
                 return;
             }
             JObject jsonObject = JObject.Parse(File.ReadAllText(@"MSL\ServerList.json", Encoding.UTF8));
