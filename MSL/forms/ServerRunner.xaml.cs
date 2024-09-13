@@ -428,7 +428,6 @@ namespace MSL
             }
         }
 
-        //private bool isProcessing = true;
         private async void TabCtrl_SelectionChanged(object sender, SelectionChangedEventArgs e)
         {
             if (!this.IsLoaded)
@@ -439,10 +438,6 @@ namespace MSL
             {
                 return;
             }
-            /*
-            if (!isProcessing) return;
-            isProcessing = true;
-            */
             if (conptyWindow != null && conptyWindow.Visibility == Visibility.Visible)
             {
                 ConptyPopUp.IsOpen = false;
@@ -471,9 +466,6 @@ namespace MSL
                 default:
                     break;
             }
-            //isProcessing = false;
-            //await Task.Delay(50);
-            //isProcessing = true;
         }
 
         private bool CheckServerRunning()
@@ -2521,17 +2513,16 @@ namespace MSL
             else
             {
                 modsTabItem.IsEnabled = false;
+                pluginsAndModsTab.SelectedIndex = 0;
             }
             if (hideList)
             {
-                lab001.Visibility = Visibility.Visible;
-                reFresh.Visibility = Visibility.Visible;
-                pluginsAndModsTab.Visibility = Visibility.Hidden;
+                NoPluginModTip.Visibility = Visibility.Visible;
+                pluginsAndModsTab.Visibility = Visibility.Collapsed;
             }
-            else if (lab001.Visibility == Visibility.Visible)
+            else if (NoPluginModTip.Visibility == Visibility.Visible)
             {
-                lab001.Visibility = Visibility.Hidden;
-                reFresh.Visibility = Visibility.Hidden;
+                NoPluginModTip.Visibility = Visibility.Collapsed;
                 pluginsAndModsTab.Visibility = Visibility.Visible;
             }
         }
@@ -2906,25 +2897,49 @@ namespace MSL
         {
             try
             {
-                if (MainWindow.serverLink == null)
+                try
                 {
-                    Thread.Sleep(5000);
+                    JObject keyValuePairs = new JObject((JObject)JsonConvert.DeserializeObject(File.ReadAllText("MSL\\config.json")));
+                    Dispatcher.Invoke(() =>
+                    {
+                        if (keyValuePairs["javaList"] != null)
+                        {
+                            selectCheckedJavaComb.ItemsSource = keyValuePairs["javaList"];
+                            selectCheckedJavaComb.SelectedIndex = 0;
+                        }
+                        if (jAva.Text == "Java")
+                        {
+                            useJvpath.IsChecked = true;
+                        }
+                    });
+                }
+                catch
+                {
+                    Console.WriteLine("Load Local-Java-List Failed(From Config)");
+                }
+
+                for (int i = 0; i <= 10; i++)
+                {
+                    if (MainWindow.serverLink == null)
+                    {
+                        Thread.Sleep(1000);
+                    }
+                    else
+                    {
+                        break;
+                    }
+                }
+                string response = (await HttpService.GetApiContentAsync("query/java"))["data"]["versionList"].ToString();
+                JArray jArray = JArray.Parse(response);
+                List<string> list = new List<string>();
+                foreach (var j in jArray)
+                {
+                    list.Add(j.ToString());
                 }
                 Dispatcher.Invoke(() =>
                 {
                     selectJava.Items.Clear();
-                });
-                string response = (await HttpService.GetApiContentAsync("query/java"))["data"]["versionList"].ToString();
-                JArray jArray = JArray.Parse(response);
-                foreach (var j in jArray)
-                {
-                    Dispatcher.Invoke(() =>
-                    {
-                        selectJava.Items.Add(j.ToString());
-                    });
-                }
-                Dispatcher.Invoke(() =>
-                {
+                    selectJava.ItemsSource = list;
                     selectJava.SelectedIndex = 0;
                 });
             }
@@ -2934,19 +2949,13 @@ namespace MSL
             }
             Dispatcher.Invoke(() =>
             {
-                if (jAva.Text == "Java")
-                {
-                    useJvpath.IsChecked = true;
-                }
-                else
+                if(jAva.Text != "Java")
                 {
                     // 使用正则表达式来提取Java版本
-                    Regex pattern = new Regex(@"(Java\d+)");
+                    Regex pattern = new Regex(@"(?:MSL\\)?(Java\d+)");
                     Match m = pattern.Match(jAva.Text);
                     string javaVersion = m.Groups[1].Value;
 
-                    // 和selectJava.Items里的每一项比对
-                    bool found = false;
                     foreach (var item in selectJava.Items)
                     {
                         if (item.ToString() == javaVersion)
@@ -2954,13 +2963,8 @@ namespace MSL
                             // 如果有相等的，就把selectJava切换到相应的栏
                             useDownJv.IsChecked = true;
                             selectJava.SelectedItem = item;
-                            found = true;
                             break;
                         }
-                    }
-                    if (!found)
-                    {
-                        useSelf.IsChecked = true;
                     }
                 }
             });
@@ -3387,7 +3391,27 @@ namespace MSL
 
             if (strings != null)
             {
-                selectCheckedJavaComb.ItemsSource = strings.Select(info => $"Java{info.Version}: {info.Path}").ToList();
+                var javaList = strings.Select(info => $"Java{info.Version}: {info.Path}").ToList();
+                selectCheckedJavaComb.ItemsSource = javaList;
+                try
+                {
+                    JObject keyValuePairs = new JObject((JObject)JsonConvert.DeserializeObject(File.ReadAllText("MSL\\config.json")));
+                    JArray jArray = new JArray(javaList);
+                    if (keyValuePairs["javaList"] == null)
+                    {
+                        keyValuePairs.Add("javaList", jArray);
+                    }
+                    else
+                    {
+                        keyValuePairs["javaList"] = jArray;
+                    }
+                    File.WriteAllText("MSL\\config.json", Convert.ToString(keyValuePairs), Encoding.UTF8);
+                }
+                catch
+                {
+                    Console.WriteLine("Write Local-Java-List Failed(From Configuration)");
+                }
+                
                 /*
                 foreach (JavaScanner.JavaInfo info in strings)
                 {

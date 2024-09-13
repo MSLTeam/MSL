@@ -6,16 +6,8 @@
         xmlns:hc="https://handyorg.github.io/handycontrol"
         xmlns:local="clr-namespace:MSL.pages"
         mc:Ignorable="d" Title="CreateServer"
-        d:DesignHeight="460" d:DesignWidth="750"
+        d:DesignHeight="460" d:DesignWidth="750" Style="{StaticResource AnimationPage}"
         Loaded="Page_Loaded">
-    <Page.RenderTransform>
-        <TranslateTransform/>
-    </Page.RenderTransform>
-    <Page.Triggers>
-        <EventTrigger RoutedEvent="Loaded">
-            <BeginStoryboard Storyboard="{StaticResource ShowPage}"/>
-        </EventTrigger>
-    </Page.Triggers>
     <Grid x:Name="BodyGrid">
         <Grid x:Name="MainGrid" Visibility="Visible">
             <Grid.RowDefinitions>
@@ -152,11 +144,12 @@
                             <Label Content="Java环境" Style="{StaticResource BorderTitle}"/>
                             <TextBlock Text="在此选择一个Java环境" Foreground="{DynamicResource PrimaryTextBrush}" Margin="20,35,0,0" HorizontalAlignment="Left" VerticalAlignment="Top" FontSize="16"/>
                             <RadioButton x:Name="usedownloadjv" Content="开服器下载（推荐）" IsChecked="True" Margin="20,70,0,0" VerticalAlignment="Top" HorizontalAlignment="Left" FontSize="14" Checked="usedownloadjv_Checked"/>
-                            <RadioButton x:Name="usecheckedjv" Content="检查电脑上的Java" Margin="20,110,0,0" VerticalAlignment="Top" HorizontalAlignment="Left" FontSize="14" Checked="usecheckedjv_Checked"/>
+                            <RadioButton x:Name="usecheckedjv" Content="电脑上的Java" Margin="20,110,0,0" VerticalAlignment="Top" HorizontalAlignment="Left" FontSize="14" Checked="usecheckedjv_Checked"/>
                             <ComboBox x:Name="selectJavaComb" Margin="180,65,0,0" HorizontalAlignment="Left" VerticalAlignment="Top" Width="150" SelectedIndex="0"/>
                             <RadioButton x:Name="usejvPath" Content="使用环境变量" HorizontalAlignment="Left" Margin="20,150,0,0" VerticalAlignment="Top" FontSize="14" Checked="usejvPath_Checked"/>
                             <RadioButton x:Name="useJVself" Content="选择地址" Margin="20,190,0,0" VerticalAlignment="Top" Checked="useJVself_Checked" HorizontalAlignment="Left" FontSize="14"/>
                             <ComboBox x:Name="selectCheckedJavaComb" Margin="180,105,0,0" HorizontalAlignment="Left" VerticalAlignment="Top" Width="150"/>
+                            <Button x:Name="SearchJavaBtn" Content="点我检测" Margin="340,105,0,0" HorizontalAlignment="Left" VerticalAlignment="Top" Click="SearchJavaBtn_Click"/>
                             <TextBox x:Name="txjava" Margin="115,185,60,0" VerticalAlignment="Top" IsEnabled="False" MaxLines="1"/>
                             <Button x:Name="a0002_Copy" Content="浏览" IsEnabled="False" Margin="0,185,0,0" VerticalAlignment="Top" Width="60" FontWeight="Normal" Click="a0002_Copy_Click" HorizontalAlignment="Right"/>
                             <Grid HorizontalAlignment="Right" VerticalAlignment="Top">

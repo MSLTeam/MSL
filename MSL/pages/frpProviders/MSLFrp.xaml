@@ -15,8 +15,8 @@
         </Grid.RowDefinitions>
         <Grid Grid.Row="0" Margin="10">
             <Grid.ColumnDefinitions>
-                <ColumnDefinition MinWidth="350" Width="Auto"/>
-                <ColumnDefinition MinWidth="250"/>
+                <ColumnDefinition MinWidth="350" MaxWidth="450" Width="Auto"/>
+                <ColumnDefinition/>
             </Grid.ColumnDefinitions>
             <Grid Grid.Column="0">
                 <Grid.RowDefinitions>
@@ -24,7 +24,7 @@
                     <RowDefinition/>
                 </Grid.RowDefinitions>
                 <Label Grid.Row="0" Content="节点列表：（选择一个节点）" HorizontalAlignment="Left" VerticalAlignment="Top" FontSize="18" Background="{x:Null}" BorderBrush="{x:Null}" Padding="0" FontWeight="Bold"/>
-                <ListBox Grid.Row="1" x:Name="serversList" SelectionChanged="serversList_SelectionChanged" SelectionMode="Single" Margin="0,5,10,0"/>
+                <ListBox Grid.Row="1" x:Name="serversList" hc:ScrollViewer.HorizontalScrollBarVisibility="Auto" SelectionChanged="serversList_SelectionChanged" SelectionMode="Single" Margin="0,5,10,0"/>
             </Grid>
             <ScrollViewer Grid.Column="1" >
                 <hc:UniformSpacingPanel Spacing="5" Orientation="Vertical" VerticalAlignment="Center">
@@ -38,7 +38,7 @@
                             <Setter Property="Padding" Value="3"/>
                         </Style>
                     </hc:UniformSpacingPanel.Resources>
-                    <Label x:Name="lab1" Content="输入本地端口&#xA;(Java版默认25565,基岩版默认19132,双协议用|分割)："/>
+                    <TextBlock x:Name="lab1" TextWrapping="Wrap" FontSize="14" Foreground="{DynamicResource PrimaryTextBrush}" Text="输入本地端口&#xA;(Java版默认25565,基岩版默认19132,双协议用|分割)："/>
                     <TextBox x:Name="portBox" Text="25565"/>
                     <Label x:Name="lab2" Content="输入账号（QQ号）："/>
                     <TextBox x:Name="accountBox"/>

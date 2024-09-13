@@ -92,19 +92,6 @@
         <Setter Property="BorderBrush" Value="{DynamicResource PrimaryBrush}"/>
     </Style>
 
-    <Style x:Key="ToggleButtonSwitch.Content" TargetType="ToggleButton" BasedOn="{hc:StaticResource ToggleButtonSwitch}">
-        <Style.Triggers>
-            <Trigger Property="IsChecked" Value="True">
-                <Setter Property="Content"
-                Value="{Binding [Enabled],Source={x:Static langs:LanguageManager.Instance}}" />
-            </Trigger>
-            <Trigger Property="IsChecked" Value="False">
-                <Setter Property="Content"
-                Value="{Binding [Disabled],Source={x:Static langs:LanguageManager.Instance}}" />
-            </Trigger>
-        </Style.Triggers>
-    </Style>
-
     <Style x:Key="ListItemSideMenu" TargetType="{x:Type ListBoxItem}">
         <Setter Property="ContentTemplate">
             <Setter.Value>
@@ -227,7 +214,7 @@
         <Setter Property="Template">
             <Setter.Value>
                 <ControlTemplate TargetType="{x:Type local:MagicCard}">
-                    <Border Margin="{TemplateBinding MarginOverride}" Padding="10" CornerRadius="7" BorderBrush="{DynamicResource BorderBrush}" Background="{DynamicResource BorderBackground}" BorderThickness="1">
+                    <Border Padding="{TemplateBinding Padding}" CornerRadius="7" BorderBrush="{DynamicResource BorderBrush}" Background="{DynamicResource BorderBackground}" BorderThickness="1">
                         <Grid>
                             <Grid.RowDefinitions>
                                 <RowDefinition Height="Auto"/>
@@ -262,6 +249,45 @@
                 </ControlTemplate>
             </Setter.Value>
         </Setter>
+    </Style>
+
+    <Style TargetType="{x:Type local:MagicScrollViewer}">
+        <Setter Property="Template">
+            <Setter.Value>
+                <ControlTemplate TargetType="{x:Type local:MagicScrollViewer}">
+                    <hc:ScrollViewer Margin="10,0,5,0" Padding="0,0,5,0" IsInertiaEnabled="True">
+                        <ItemsPresenter>
+                            <ItemsPresenter.Resources>
+                                <Style TargetType="hc:UniformSpacingPanel">
+                                    <Setter Property="Orientation" Value="Vertical"/>
+                                    <Setter Property="Spacing" Value="10"/>
+                                </Style>
+                            </ItemsPresenter.Resources>
+                        </ItemsPresenter>
+                    </hc:ScrollViewer>
+                </ControlTemplate>
+            </Setter.Value>
+        </Setter>
+        <Setter Property="ItemsPanel">
+            <Setter.Value>
+                <ItemsPanelTemplate>
+                    <hc:UniformSpacingPanel/>
+                </ItemsPanelTemplate>
+            </Setter.Value>
+        </Setter>
+    </Style>
+
+    <Style TargetType="Page" x:Key="AnimationPage">
+        <Setter Property="RenderTransform">
+            <Setter.Value>
+                <TranslateTransform/>
+            </Setter.Value>
+        </Setter>
+        <Style.Triggers>
+            <EventTrigger RoutedEvent="Loaded">
+                <BeginStoryboard Storyboard="{StaticResource ShowPage}"/>
+            </EventTrigger>
+        </Style.Triggers>
     </Style>
 
 </ResourceDictionary>

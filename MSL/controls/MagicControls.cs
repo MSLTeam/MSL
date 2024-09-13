@@ -1,6 +1,7 @@
 ﻿using System.Windows;
 using System.Windows.Controls;
 
+
 namespace MSL.controls
 {
     /// <summary>
@@ -29,9 +30,10 @@ namespace MSL.controls
     /// 步骤 2)
     /// 继续操作并在 XAML 文件中使用控件。
     ///
-    ///     <MyNamespace:MagicCard/>
+    ///     <MyNamespace:MagicControls/>
     ///
     /// </summary>
+
     public class MagicCard : ContentControl
     {
         static MagicCard()
@@ -48,14 +50,21 @@ namespace MSL.controls
             get { return (string)GetValue(TitleProperty); }
             set { SetValue(TitleProperty, value); }
         }
+        public static new readonly DependencyProperty PaddingProperty =
+            DependencyProperty.Register("Padding", typeof(Thickness), typeof(MagicCard), new PropertyMetadata(new Thickness(10)));
 
-        public static readonly DependencyProperty MarginOverrideProperty =
-            DependencyProperty.Register("MarginOverride", typeof(Thickness), typeof(MagicCard), new PropertyMetadata(new Thickness(10)));
-
-        public Thickness MarginOverride
+        public new Thickness Padding
         {
-            get { return (Thickness)GetValue(MarginOverrideProperty); }
-            set { SetValue(MarginOverrideProperty, value); }
+            get { return (Thickness)GetValue(PaddingProperty); }
+            set { SetValue(PaddingProperty, value); }
+        }
+    }
+
+    public class MagicScrollViewer : ItemsControl
+    {
+        static MagicScrollViewer()
+        {
+            DefaultStyleKeyProperty.OverrideMetadata(typeof(MagicScrollViewer), new FrameworkPropertyMetadata(typeof(MagicScrollViewer)));
         }
     }
 }

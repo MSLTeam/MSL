@@ -99,7 +99,7 @@
       <Generator>MSBuild:Compile</Generator>
       <SubType>Designer</SubType>
     </ApplicationDefinition>
-    <Compile Include="controls\MagicCard.cs" />
+    <Compile Include="controls\MagicControls.cs" />
     <Compile Include="controls\StringConcatConverter.cs" />
     <Compile Include="forms\ConptyWindow.xaml.cs">
       <DependentUpon>ConptyWindow.xaml</DependentUpon>

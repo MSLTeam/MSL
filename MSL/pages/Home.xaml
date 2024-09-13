@@ -7,16 +7,8 @@
       xmlns:local="clr-namespace:MSL.pages"
       xmlns:controls="clr-namespace:MSL.controls"
       xmlns:langs="clr-namespace:MSL.langs"
-      mc:Ignorable="d" d:DesignHeight="460" d:DesignWidth="750"
+      mc:Ignorable="d" d:DesignHeight="460" d:DesignWidth="750" Style="{StaticResource AnimationPage}"
       Title="Home" Initialized="Page_Initialized" Loaded="Page_Loaded">
-    <Page.RenderTransform>
-        <TranslateTransform/>
-    </Page.RenderTransform>
-    <Page.Triggers>
-        <EventTrigger RoutedEvent="Loaded">
-            <BeginStoryboard Storyboard="{StaticResource ShowPage}"/>
-        </EventTrigger>
-    </Page.Triggers>
     <Grid>
         <Grid.RowDefinitions>
             <RowDefinition Height="*"/>
@@ -24,13 +16,13 @@
         </Grid.RowDefinitions>
         <ScrollViewer Grid.Row="0">
             <StackPanel>
-                <controls:MagicCard x:Name="noticeBorder" Title="{Binding [Page_Home_Notice], Source={x:Static langs:LanguageManager.Instance}}" VerticalAlignment="Top" MarginOverride="10,10,10,0">
+                <controls:MagicCard x:Name="noticeBorder" Title="{Binding [Page_Home_Notice], Source={x:Static langs:LanguageManager.Instance}}" VerticalAlignment="Top" Margin="10,10,10,0">
                     <Grid>
                         <Image x:Name="noticeImage"/>
                         <TextBox x:Name="noticeLab" Text="{Binding [Loading],Source={x:Static langs:LanguageManager.Instance},Mode=OneWay}" TextBlock.LineHeight="24" IsReadOnly="True" VerticalScrollBarVisibility="Auto" TextWrapping="Wrap" BorderThickness="0" Background="{x:Null}" FontSize="14"/>
                     </Grid>
                 </controls:MagicCard>
-                <controls:MagicCard x:Name="recommendBorder" Title="{Binding [Page_Home_Recommendations], Source={x:Static langs:LanguageManager.Instance}}" VerticalAlignment="Top" MarginOverride="10,10,10,0" Visibility="Collapsed">
+                <controls:MagicCard x:Name="recommendBorder" Title="{Binding [Page_Home_Recommendations], Source={x:Static langs:LanguageManager.Instance}}" VerticalAlignment="Top" Margin="10,10,10,0" Visibility="Collapsed">
                     <Grid x:Name="RecommendGrid"/>
                 </controls:MagicCard>
             </StackPanel>

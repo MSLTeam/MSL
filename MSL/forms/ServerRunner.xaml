@@ -5,7 +5,6 @@
         xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
         xmlns:hc="https://handyorg.github.io/handycontrol"
         xmlns:controls="clr-namespace:MSL.controls"
-        xmlns:term="clr-namespace:ConPtyTermEmulatorLib;assembly=ConPtyTermEmulatorLib"
         xmlns:langs="clr-namespace:MSL.langs"
         xmlns:local="clr-namespace:MSL"
         mc:Ignorable="d"
@@ -27,19 +26,25 @@
     </hc:Window.NonClientAreaContent>
     <Grid x:Name="MainGrid">
         <TabControl x:Name="TabCtrl" SelectionChanged="TabCtrl_SelectionChanged" Style="{StaticResource TabControlSideMenu}">
+            <TabControl.Resources>
+                <Style x:Key="GridAnimation" TargetType="Grid">
+                    <Setter Property="RenderTransform">
+                        <Setter.Value>
+                            <TranslateTransform/>
+                        </Setter.Value>
+                    </Setter>
+                    <Style.Triggers>
+                        <EventTrigger RoutedEvent="Loaded">
+                            <BeginStoryboard Storyboard="{StaticResource ShowPage}"/>
+                        </EventTrigger>
+                    </Style.Triggers>
+                </Style>
+            </TabControl.Resources>
             <TabItem x:Name="Tab_Home" Width="50" Style="{StaticResource TabItemSideMenu}">
                 <TabItem.Header>
                     <controls:TabControlHeader Icon="{DynamicResource homeDrawingImage}" Text="仪表盘"/>
                 </TabItem.Header>
-                <Grid>
-                    <Grid.RenderTransform>
-                        <TranslateTransform/>
-                    </Grid.RenderTransform>
-                    <Grid.Triggers>
-                        <EventTrigger RoutedEvent="Loaded">
-                            <BeginStoryboard Storyboard="{StaticResource ShowPage}"/>
-                        </EventTrigger>
-                    </Grid.Triggers>
+                <Grid Style="{StaticResource GridAnimation}">
                     <Grid.RowDefinitions>
                         <RowDefinition/>
                         <RowDefinition Height="Auto"/>
@@ -49,8 +54,8 @@
                             <ColumnDefinition Width="*"/>
                             <ColumnDefinition Width="*"/>
                         </Grid.ColumnDefinitions>
-                        <Border Style="{StaticResource MagicBorder}" Grid.Column="0" VerticalAlignment="Stretch" Margin="10">
-                            <ScrollViewer>
+                        <controls:MagicCard Grid.Column="0" Margin="10" Padding="0">
+                            <hc:ScrollViewer IsInertiaEnabled="True" Margin="5" Padding="5">
                                 <StackPanel>
                                     <Label Content="服务器基本信息" Style="{StaticResource BorderTitle}"/>
                                     <Grid>
@@ -104,8 +109,8 @@
                                         <ProgressBar x:Name="availableMemoryInfoBar" Style="{StaticResource ProgressBarFlat}" Height="25" Margin="0,265,0,0" VerticalAlignment="Top"/>
                                     </Grid>
                                 </StackPanel>
-                            </ScrollViewer>
-                        </Border>
+                            </hc:ScrollViewer>
+                        </controls:MagicCard>
                         <Grid Grid.Column="1">
                             <Grid.RowDefinitions>
                                 <RowDefinition/>
@@ -120,7 +125,7 @@
                             <Border Grid.Row="1" Style="{StaticResource MagicBorder}" VerticalAlignment="Stretch" Margin="0,0,10,10" >
                                 <Grid>
                                     <Label Content="玩家列表" Style="{StaticResource BorderTitle}"/>
-                                    <ListBox x:Name="serverPlayerList" hc:Empty.ShowEmpty="true" Margin="5,35,5,5">
+                                    <ListBox x:Name="serverPlayerList" hc:ScrollViewer.HorizontalScrollBarVisibility="Auto" hc:Empty.ShowEmpty="true" Margin="5,35,5,5">
                                         <ListBox.ContextMenu>
                                             <ContextMenu>
                                                 <MenuItem x:Name="kickPlayer" Click="kickPlayer_Click" Header="踢出玩家"/>
@@ -156,21 +161,12 @@
                         <Button x:Name="openServerDir" Grid.Column="2" Content="打开服务器目录" Height="60" VerticalAlignment="Bottom" HorizontalAlignment="Stretch" Margin="0,0,10,10" FontSize="14" Click="openServerDir_Click"/>
                     </Grid>
                 </Grid>
-                
             </TabItem>
             <TabItem x:Name="Tab_Console" Width="50" Style="{StaticResource TabItemSideMenu}">
                 <TabItem.Header>
                     <controls:TabControlHeader Icon="{DynamicResource terminal_2DrawingImage}" Text="控制台"/>
                 </TabItem.Header>
-                <Grid x:Name="CmdGrid">
-                    <Grid.RenderTransform>
-                        <TranslateTransform/>
-                    </Grid.RenderTransform>
-                    <Grid.Triggers>
-                        <EventTrigger RoutedEvent="Loaded">
-                            <BeginStoryboard Storyboard="{StaticResource ShowPage}"/>
-                        </EventTrigger>
-                    </Grid.Triggers>
+                <Grid x:Name="CmdGrid" Style="{StaticResource GridAnimation}">
                     <RichTextBox x:Name="outlog" IsUndoEnabled="False" UndoLimit="0" Background="{DynamicResource BorderBackground}" IsReadOnly="True" Block.LineHeight="1" Margin="10,10,10,47" ContextMenu="{StaticResource UIContextMenu}" VerticalScrollBarVisibility="Visible">
                         <FlowDocument>
                             <Paragraph>
@@ -219,29 +215,21 @@
             </TabItem>
             <TabItem x:Name="Tab_Plugins" Width="50" Style="{StaticResource TabItemSideMenu}">
                 <TabItem.Header>
-                    <controls:TabControlHeader Icon="{DynamicResource filesDrawingImage}" Text="插件与模组"/>
+                    <controls:TabControlHeader Icon="{DynamicResource filesDrawingImage}" Text="插件/模组"/>
                 </TabItem.Header>
-                <Grid>
-                    <Grid.RenderTransform>
-                        <TranslateTransform/>
-                    </Grid.RenderTransform>
-                    <Grid.Triggers>
-                        <EventTrigger RoutedEvent="Loaded">
-                            <BeginStoryboard Storyboard="{StaticResource ShowPage}"/>
-                        </EventTrigger>
-                    </Grid.Triggers>
+                <Grid Style="{StaticResource GridAnimation}">
                     <TabControl x:Name="pluginsAndModsTab" Style="{StaticResource TabControlInLine}" Visibility="Hidden" Background="{x:Null}" BorderThickness="0,1,0,0">
                         <TabItem x:Name="pluginsTabItem" Header="服务器插件" Background="{DynamicResource SideMenuBrush}">
-                            <controls:MagicCard>
+                            <controls:MagicCard Margin="10">
                                 <Grid>
                                     <StackPanel Orientation="Horizontal" HorizontalAlignment="Left" VerticalAlignment="Top">
                                         <TextBlock Text="插件列表" VerticalAlignment="Center" FontSize="18" FontWeight="Bold" Foreground="{DynamicResource PrimaryTextBrush}"/>
-                                        <TextBlock Text="(插件变动在服务器重启后生效)" VerticalAlignment="Center" FontSize="16" Foreground="{DynamicResource DarkPrimaryBrush}"/>
+                                        <TextBlock Text="(插件变动在服务器重启后生效)" VerticalAlignment="Center" FontSize="16" Foreground="{DynamicResource PrimaryTextBrush}"/>
                                         <Button x:Name="reFresh_Copy" Content="刷新" Style="{StaticResource ButtonPrimary}" Click="reFresh_Click" Width="70" FontSize="14" Margin="5,0,0,0"/>
                                         <Button x:Name="openpluginweb" Content="下载插件" Width="80" FontSize="14" Click="openpluginweb_Click" Margin="5,0,0,0"/>
                                         <Button Content="帮助" Click="mpHelp_Click" Width="80" FontSize="14" Margin="5,0,0,0"/>
                                     </StackPanel>
-                                    <ListView x:Name="pluginslist" hc:Empty.ShowEmpty="true" Margin="0,35,0,0" BorderBrush="{x:Null}" Background="{DynamicResource BorderBackground}" FontSize="14">
+                                    <ListView x:Name="pluginslist" hc:Empty.ShowEmpty="true" Margin="0,35,0,0" Padding="0" BorderThickness="0" Background="{DynamicResource BorderBackground}" FontSize="14">
                                         <ListBox.ContextMenu>
                                             <ContextMenu FontSize="14">
                                                 <MenuItem Click="reFresh_Click" Header="刷新"/>
@@ -281,17 +269,17 @@
                             </controls:MagicCard>
                         </TabItem>
                         <TabItem x:Name="modsTabItem" Header="服务器模组" Background="{DynamicResource SideMenuBrush}">
-                            <controls:MagicCard>
+                            <controls:MagicCard Margin="10">
                                 <Grid>
                                     <StackPanel Orientation="Horizontal" HorizontalAlignment="Left" VerticalAlignment="Top">
                                         <TextBlock Text="模组列表" VerticalAlignment="Center" FontSize="18" FontWeight="Bold" Foreground="{DynamicResource PrimaryTextBrush}"/>
-                                        <TextBlock Text="(模组变动在服务器重启后生效)" VerticalAlignment="Center" FontSize="16" Foreground="{DynamicResource DarkPrimaryBrush}"/>
+                                        <TextBlock Text="(模组变动在服务器重启后生效)" VerticalAlignment="Center" FontSize="16" Foreground="{DynamicResource PrimaryTextBrush}"/>
                                         <Button x:Name="reFresh_Copy2" Content="刷新" Style="{StaticResource ButtonPrimary}" Click="reFresh_Click" Width="60" FontSize="14" Margin="5,0,0,0"/>
                                         <Button x:Name="addModsTip" Content="添加模组必看" Style="{StaticResource ButtonPrimary}" FontSize="14" Margin="5,0,0,0" Width="110" Click="addModsTip_Click"/>
                                         <Button x:Name="opencurseforge" Content="下载模组" Click="opencurseforge_Click" Width="80" FontSize="14" Margin="5,0,0,0"/>
                                         <Button Content="帮助" Click="mpHelp_Click" Width="60" FontSize="14" Margin="5,0,0,0"/>
                                     </StackPanel>
-                                    <ListView x:Name="modslist" hc:Empty.ShowEmpty="true" BorderBrush="{x:Null}" Margin="0,35,0,0" Background="{DynamicResource BorderBackground}" FontSize="14">
+                                    <ListView x:Name="modslist" hc:Empty.ShowEmpty="true" BorderThickness="0" Margin="0,35,0,0" Padding="0" Background="{DynamicResource BorderBackground}" FontSize="14">
                                         <ListBox.ContextMenu>
                                             <ContextMenu FontSize="14">
                                                 <MenuItem Click="reFresh_Click" Header="刷新"/>
@@ -331,25 +319,22 @@
                             </controls:MagicCard>
                         </TabItem>
                     </TabControl>
-                    <Button x:Name="reFresh" Content="刷新" Style="{StaticResource ButtonPrimary}" Height="32" Click="reFresh_Click" Width="70" FontSize="16" VerticalAlignment="Top" HorizontalAlignment="Right" Margin="0,10,10,0"/>
-                    <Label x:Name="lab001" Content="未检测到任何插件或模组，请重启服务器并检查所用服务端是否支持相应功能" Foreground="{DynamicResource DarkPrimaryBrush}" FontSize="18" VerticalAlignment="Center" HorizontalAlignment="Center"/>
+                    <controls:MagicCard x:Name="NoPluginModTip" HorizontalAlignment="Center" VerticalAlignment="Center" Padding="15">
+                        <StackPanel>
+                            <TextBlock Text="未检测到任何插件或模组" Foreground="{DynamicResource DarkPrimaryBrush}" FontSize="24" FontWeight="Bold" HorizontalAlignment="Center" Margin="10"/>
+                            <TextBlock Text="未检测到plugins和mods文件夹，您所使用的服务端核心支持这些功能吗？&#xA;请重启服务器并检查所用服务端是否支持相应功能后再试" TextAlignment="Center" TextWrapping="Wrap" Foreground="{DynamicResource PrimaryTextBrush}" FontSize="18"/>
+                            <Button x:Name="reFresh" Content="刷新" Style="{StaticResource ButtonPrimary}" Height="32" Click="reFresh_Click" Margin="10" Width="100" FontSize="16"/>
+                        </StackPanel>
+                    </controls:MagicCard>
                 </Grid>
             </TabItem>
             <TabItem x:Name="Tab_Settings" Width="50" Style="{StaticResource TabItemSideMenu}">
                 <TabItem.Header>
                     <controls:TabControlHeader Icon="{DynamicResource adjustments_horizontalDrawingImage}" Text="服务器设置"/>
                 </TabItem.Header>
-                <ScrollViewer>
-                    <ScrollViewer.RenderTransform>
-                        <TranslateTransform/>
-                    </ScrollViewer.RenderTransform>
-                    <ScrollViewer.Triggers>
-                        <EventTrigger RoutedEvent="Loaded">
-                            <BeginStoryboard Storyboard="{StaticResource ShowPage}"/>
-                        </EventTrigger>
-                    </ScrollViewer.Triggers>
-                    <StackPanel>
-                        <StackPanel.Resources>
+                <Grid Style="{StaticResource GridAnimation}">
+                    <controls:MagicScrollViewer>
+                        <controls:MagicScrollViewer.Resources>
                             <ResourceDictionary>
                                 <Style TargetType="Label">
                                     <Setter Property="Foreground" Value="{DynamicResource PrimaryTextBrush}"/>
@@ -360,8 +345,8 @@
                                     <Setter Property="FontSize" Value="14"/>
                                 </Style>
                             </ResourceDictionary>
-                        </StackPanel.Resources>
-                        <controls:MagicCard>
+                        </controls:MagicScrollViewer.Resources>
+                        <controls:MagicCard Margin="0,10,0,0">
                             <StackPanel>
                                 <StackPanel>
                                     <Label Content="服务器信息" Style="{StaticResource BorderTitle}"/>
@@ -420,7 +405,7 @@
                                 </StackPanel>
                             </StackPanel>
                         </controls:MagicCard>
-                        <controls:MagicCard Margin="0,0,0,10">
+                        <controls:MagicCard Margin="0,0,0,20">
                             <StackPanel>
                                 <StackPanel Orientation="Horizontal">
                                     <TextBlock x:Name="changeServerPropertiesLab" VerticalAlignment="Center" FontSize="18" FontWeight="Bold" Foreground="{DynamicResource PrimaryTextBrush}" Text="更改服务器配置"/>
@@ -539,24 +524,16 @@
                                 </Grid>
                             </StackPanel>
                         </controls:MagicCard>
-                    </StackPanel>
-                </ScrollViewer>
+                    </controls:MagicScrollViewer>
+                </Grid>
             </TabItem>
             <TabItem x:Name="Tab_MoreFunctions" Width="50" Style="{StaticResource TabItemSideMenu}">
                 <TabItem.Header>
                     <controls:TabControlHeader Icon="{DynamicResource category_plusDrawingImage}" Text="更多功能"/>
                 </TabItem.Header>
-                <ScrollViewer>
-                    <StackPanel>
-                        <StackPanel.RenderTransform>
-                            <TranslateTransform/>
-                        </StackPanel.RenderTransform>
-                        <StackPanel.Triggers>
-                            <EventTrigger RoutedEvent="Loaded">
-                                <BeginStoryboard Storyboard="{StaticResource ShowPage}"/>
-                            </EventTrigger>
-                        </StackPanel.Triggers>
-                        <controls:MagicCard Title="开服器功能">
+                <Grid Style="{StaticResource GridAnimation}">
+                    <controls:MagicScrollViewer>
+                        <controls:MagicCard Title="开服器功能" Margin="0,10,0,0">
                             <hc:UniformSpacingPanel Spacing="10" Orientation="Vertical">
                                 <Grid>
                                     <Grid.ColumnDefinitions>
@@ -647,79 +624,66 @@
                                 </Grid>
                             </hc:UniformSpacingPanel>
                         </controls:MagicCard>
-                        <Border Style="{StaticResource MagicBorder}" Grid.Row="1" Margin="10,0,10,20">
+                        <controls:MagicCard Title="快捷指令栏（非高级终端模式之功能）" Grid.Row="1" Margin="0,0,0,20">
                             <Grid>
-                                <Grid.RowDefinitions>
-                                    <RowDefinition Height="auto"/>
-                                    <RowDefinition Height="*"/>
-                                </Grid.RowDefinitions>
-                                <Label Content="快捷指令栏（非高级终端模式之功能）" Grid.Row="0" Style="{StaticResource BorderTitle}"/>
-                                <Grid Grid.Row="1">
-                                    <Grid.ColumnDefinitions>
-                                        <ColumnDefinition Width="*"/>
-                                        <ColumnDefinition Width="auto"/>
-                                        <ColumnDefinition Width="auto"/>
-                                    </Grid.ColumnDefinitions>
-                                    <ListBox x:Name="fastCmdList" Margin="5" Grid.Column="0" Height="160"/>
-                                    <StackPanel Grid.Column="1">
-                                        <Button x:Name="refrushFastCmd" Content="刷新" Height="70" Width="110" Click="refrushFastCmd_Click" FontSize="18" VerticalAlignment="Top" HorizontalAlignment="Center" Margin="0,5,0,0"/>
-                                        <Button x:Name="addFastCmd" Content="添加" Margin="5" Height="40" Width="110" Click="addFastCmd_Click" FontSize="18" VerticalAlignment="Top" HorizontalAlignment="Right" />
-                                        <Button x:Name="delFastCmd" Content="删除" Height="40" Width="110" Click="delFastCmd_Click" FontSize="18" HorizontalAlignment="Center" VerticalAlignment="Top" Margin="0,0,0,5" />
-                                    </StackPanel>
-                                    <Button Grid.Column="2" x:Name="resetFastCmd" Content="重置" Width="110" Height="160" Click="resetFastCmd_Click" FontSize="18" HorizontalAlignment="Right"/>
-                                </Grid>
+                                <Grid.ColumnDefinitions>
+                                    <ColumnDefinition Width="*"/>
+                                    <ColumnDefinition Width="auto"/>
+                                    <ColumnDefinition Width="auto"/>
+                                </Grid.ColumnDefinitions>
+                                <ListBox x:Name="fastCmdList" Margin="5" Grid.Column="0" Height="160"/>
+                                <StackPanel Grid.Column="1">
+                                    <Button x:Name="refrushFastCmd" Content="刷新" Height="70" Width="110" Click="refrushFastCmd_Click" FontSize="18" VerticalAlignment="Top" HorizontalAlignment="Center" Margin="0,5,0,0"/>
+                                    <Button x:Name="addFastCmd" Content="添加" Margin="5" Height="40" Width="110" Click="addFastCmd_Click" FontSize="18" VerticalAlignment="Top" HorizontalAlignment="Right" />
+                                    <Button x:Name="delFastCmd" Content="删除" Height="40" Width="110" Click="delFastCmd_Click" FontSize="18" HorizontalAlignment="Center" VerticalAlignment="Top" Margin="0,0,0,5" />
+                                </StackPanel>
+                                <Button Grid.Column="2" x:Name="resetFastCmd" Content="重置" Width="110" Height="160" Click="resetFastCmd_Click" FontSize="18" HorizontalAlignment="Right"/>
                             </Grid>
-                        </Border>
-                    </StackPanel>
-                </ScrollViewer>
+                        </controls:MagicCard>
+                    </controls:MagicScrollViewer>
+                </Grid>
             </TabItem>
             <TabItem x:Name="Tab_Timer" Width="50" Style="{StaticResource TabItemSideMenu}">
                 <TabItem.Header>
                     <controls:TabControlHeader Icon="{DynamicResource alarmDrawingImage}" Text="定时任务"/>
                 </TabItem.Header>
-                <StackPanel>
-                    <StackPanel.RenderTransform>
-                        <TranslateTransform/>
-                    </StackPanel.RenderTransform>
-                    <StackPanel.Triggers>
-                        <EventTrigger RoutedEvent="Loaded">
-                            <BeginStoryboard Storyboard="{StaticResource ShowPage}"/>
-                        </EventTrigger>
-                    </StackPanel.Triggers>
-                    <controls:MagicCard Title="任务列表" VerticalAlignment="Top" MarginOverride="10,10,10,0">
-                        <Grid>
-                            <Grid.ColumnDefinitions>
-                                <ColumnDefinition/>
-                                <ColumnDefinition Width="Auto"/>
-                            </Grid.ColumnDefinitions>
-                            <ListBox Grid.Column="0" x:Name="tasksList" hc:Empty.ShowEmpty="true" SelectionChanged="tasksList_SelectionChanged"/>
-                            <Grid Grid.Column="1" Margin="10,0,0,0" HorizontalAlignment="Right">
-                                <Grid.RowDefinitions>
-                                    <RowDefinition Height="80"/>
-                                    <RowDefinition Height="90"/>
-                                    <RowDefinition Height="70"/>
-                                </Grid.RowDefinitions>
-                                <Button Grid.Row="0" x:Name="addTask" Height="80" Width="300" Click="addTask_Click" Content="添加新任务" FontSize="18"/>
-                                <Button Grid.Row="1" x:Name="delTask" Height="80" Width="300" Click="delTask_Click" FontSize="18" Content="删除所选任务"/>
-                                <Button Grid.Row="2" x:Name="loadOrSaveTaskConfig" Height="70" Width="145" Click="loadOrSaveTaskConfig_Click" FontSize="18" Content="加载任务配置" HorizontalAlignment="Left"/>
-                                <Button Grid.Row="2" x:Name="delTaskConfig" Height="70" Width="145" Click="delTaskConfig_Click" FontSize="18" Content="删除任务配置" HorizontalAlignment="Right"/>
+                <Grid Style="{StaticResource GridAnimation}">
+                    <StackPanel>
+                        <controls:MagicCard Title="任务列表" VerticalAlignment="Top" Margin="10,10,10,0">
+                            <Grid>
+                                <Grid.ColumnDefinitions>
+                                    <ColumnDefinition/>
+                                    <ColumnDefinition Width="Auto"/>
+                                </Grid.ColumnDefinitions>
+                                <ListBox Grid.Column="0" x:Name="tasksList" hc:Empty.ShowEmpty="true" SelectionChanged="tasksList_SelectionChanged"/>
+                                <Grid Grid.Column="1" Margin="10,0,0,0" HorizontalAlignment="Right">
+                                    <Grid.RowDefinitions>
+                                        <RowDefinition Height="80"/>
+                                        <RowDefinition Height="90"/>
+                                        <RowDefinition Height="70"/>
+                                    </Grid.RowDefinitions>
+                                    <Button Grid.Row="0" x:Name="addTask" Height="80" Width="300" Click="addTask_Click" Content="添加新任务" FontSize="18"/>
+                                    <Button Grid.Row="1" x:Name="delTask" Height="80" Width="300" Click="delTask_Click" FontSize="18" Content="删除所选任务"/>
+                                    <Button Grid.Row="2" x:Name="loadOrSaveTaskConfig" Height="70" Width="145" Click="loadOrSaveTaskConfig_Click" FontSize="18" Content="加载任务配置" HorizontalAlignment="Left"/>
+                                    <Button Grid.Row="2" x:Name="delTaskConfig" Height="70" Width="145" Click="delTaskConfig_Click" FontSize="18" Content="删除任务配置" HorizontalAlignment="Right"/>
+                                </Grid>
                             </Grid>
-                        </Grid>
-                    </controls:MagicCard>
-                    <Border Style="{StaticResource MagicBorder}" VerticalAlignment="Bottom" Margin="10">
-                        <Grid>
-                            <Label Content="任务设置（请先添加任务，然后选择一个任务进行更改）" Style="{StaticResource BorderTitle}" />
-                            <Label Content="周期：" FontSize="16" Height="32" BorderBrush="{x:Null}" Background="{x:Null}" VerticalAlignment="Top" Width="60" HorizontalAlignment="Left" Margin="0,35,0,0"/>
-                            <TextBox x:Name="timercmdTime" HorizontalAlignment="Left" VerticalAlignment="Top" Width="110" Height="32" Margin="60,35,0,0" TextChanged="timercmdTime_TextChanged"/>
-                            <Label Content="秒(s)" FontSize="16" HorizontalAlignment="Left" VerticalAlignment="Top" Width="60" Height="32" Background="{x:Null}" BorderBrush="{x:Null}" Margin="170,35,0,0"/>
-                            <TextBox x:Name="timercmdCmd" VerticalAlignment="Top" Height="32" Margin="300,35,0,0" TextChanged="timercmdCmd_TextChanged"/>
-                            <Label Content="指令：" FontSize="16" HorizontalAlignment="Left" VerticalAlignment="Top" Width="60" Height="32" BorderBrush="{x:Null}" Background="{x:Null}" Margin="235,35,0,0"/>
-                            <Button x:Name="startTimercmd" Height="36" Width="120" Content="启动定时任务" Click="startTimercmd_Click" HorizontalAlignment="Right" Margin="0,70,0,0" VerticalAlignment="Top"/>
-                            <Label Content="上次执行结果：" FontSize="16" HorizontalAlignment="Left" VerticalAlignment="Top" Width="130" Height="35" BorderBrush="{x:Null}" Background="{x:Null}" Margin="0,70,0,0"/>
-                            <Label x:Name="timerCmdout" Content="无" FontSize="16" VerticalAlignment="Top" Height="35" HorizontalAlignment="Left" Background="{x:Null}" BorderBrush="{x:Null}" Margin="130,70,0,0"/>
-                        </Grid>
-                    </Border>
-                </StackPanel>
+                        </controls:MagicCard>
+                        <Border Style="{StaticResource MagicBorder}" VerticalAlignment="Bottom" Margin="10">
+                            <Grid>
+                                <Label Content="任务设置（请先添加任务，然后选择一个任务进行更改）" Style="{StaticResource BorderTitle}" />
+                                <Label Content="周期：" FontSize="16" Height="32" BorderBrush="{x:Null}" Background="{x:Null}" VerticalAlignment="Top" Width="60" HorizontalAlignment="Left" Margin="0,35,0,0"/>
+                                <TextBox x:Name="timercmdTime" HorizontalAlignment="Left" VerticalAlignment="Top" Width="110" Height="32" Margin="60,35,0,0" TextChanged="timercmdTime_TextChanged"/>
+                                <Label Content="秒(s)" FontSize="16" HorizontalAlignment="Left" VerticalAlignment="Top" Width="60" Height="32" Background="{x:Null}" BorderBrush="{x:Null}" Margin="170,35,0,0"/>
+                                <TextBox x:Name="timercmdCmd" VerticalAlignment="Top" Height="32" Margin="300,35,0,0" TextChanged="timercmdCmd_TextChanged"/>
+                                <Label Content="指令：" FontSize="16" HorizontalAlignment="Left" VerticalAlignment="Top" Width="60" Height="32" BorderBrush="{x:Null}" Background="{x:Null}" Margin="235,35,0,0"/>
+                                <Button x:Name="startTimercmd" Height="36" Width="120" Content="启动定时任务" Click="startTimercmd_Click" HorizontalAlignment="Right" Margin="0,70,0,0" VerticalAlignment="Top"/>
+                                <Label Content="上次执行结果：" FontSize="16" HorizontalAlignment="Left" VerticalAlignment="Top" Width="130" Height="35" BorderBrush="{x:Null}" Background="{x:Null}" Margin="0,70,0,0"/>
+                                <Label x:Name="timerCmdout" Content="无" FontSize="16" VerticalAlignment="Top" Height="35" HorizontalAlignment="Left" Background="{x:Null}" BorderBrush="{x:Null}" Margin="130,70,0,0"/>
+                            </Grid>
+                        </Border>
+                    </StackPanel>
+                </Grid>
             </TabItem>
         </TabControl>
         <Button x:Name="SideMenuContextOpen" HorizontalAlignment="Left" VerticalAlignment="Bottom" Width="50" Height="42" BorderThickness="0" Background="Transparent" Click="SideMenuContextOpen_Click">

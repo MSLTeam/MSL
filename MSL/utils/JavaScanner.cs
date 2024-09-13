@@ -234,8 +234,6 @@ namespace MSL.utils
             {
                 // 获取磁盘的驱动器字母
                 string driveLetter = drive.Name.Substring(0, 1);
-                // 如果是浅度扫描模式，只搜索预定的文件夹
-                // 如果是深度扫描模式，搜索所有文件夹
                 // 拼接完整的磁盘路径
                 string diskPath = Path.Combine(driveLetter + ":\\");
                 // 搜索该磁盘下的所有子文件夹和 release 文件

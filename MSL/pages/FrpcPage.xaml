@@ -6,17 +6,9 @@
       xmlns:hc="https://handyorg.github.io/handycontrol"
       xmlns:local="clr-namespace:MSL.pages"
       xmlns:langs="clr-namespace:MSL.langs"
-      mc:Ignorable="d" d:DesignHeight="460" d:DesignWidth="750"
+      mc:Ignorable="d" d:DesignHeight="460" d:DesignWidth="750" Style="{StaticResource AnimationPage}"
       Title="FrpcPage" Loaded="Page_Loaded">
-    <Page.RenderTransform>
-        <TranslateTransform/>
-    </Page.RenderTransform>
-    <Page.Triggers>
-        <EventTrigger RoutedEvent="Loaded">
-            <BeginStoryboard Storyboard="{StaticResource ShowPage}"/>
-        </EventTrigger>
-    </Page.Triggers>
-    <Border Style="{StaticResource MagicBorder}" VerticalAlignment="Stretch">
+    <Border Style="{StaticResource MagicBorder}" VerticalAlignment="Stretch" Margin="10">
         <Grid>
             <Grid.RowDefinitions>
                 <RowDefinition Height="auto"/>

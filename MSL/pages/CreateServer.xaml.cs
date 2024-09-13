@@ -443,13 +443,23 @@ namespace MSL.pages
                 a0002_Copy.IsEnabled = false;
             }
         }
-        private async void usecheckedjv_Checked(object sender, RoutedEventArgs e)
+
+        private void usecheckedjv_Checked(object sender, RoutedEventArgs e)
+        {
+            if (selectCheckedJavaComb.Items.Count == 0)
+            {
+                Shows.ShowMsgDialog(Window.GetWindow(this), "请先进行检测", "提示");
+                usedownloadjv.IsChecked = true;
+                return;
+            }
+        }
+
+        private async void SearchJavaBtn_Click(object sender, RoutedEventArgs e)
         {
             List<JavaScanner.JavaInfo> strings = null;
             int dialog = Shows.ShowMsg(Window.GetWindow(Window.GetWindow(this)), "即将开始检测电脑上的Java，此过程可能需要一些时间，请耐心等待。\n目前有两种检测模式，一种是简单检测，只检测一些关键目录，用时较少，普通用户可优先使用此模式。\n第二种是深度检测，将检测所有磁盘的所有目录，耗时可能会很久，请慎重选择！", "提示", true, "开始深度检测", "开始简单检测");
             if (dialog == 2)
             {
-                usedownloadjv.IsChecked = true;
                 return;
             }
             txjava.IsEnabled = false;
@@ -468,7 +478,27 @@ namespace MSL.pages
             waitDialog.Close();
             if (strings != null)
             {
-                selectCheckedJavaComb.ItemsSource = strings.Select(info => $"Java{info.Version}: {info.Path}").ToList();
+                var javaList = strings.Select(info => $"Java{info.Version}: {info.Path}").ToList();
+                selectCheckedJavaComb.ItemsSource = javaList;
+                try
+                {
+                    JObject keyValuePairs = new JObject((JObject)JsonConvert.DeserializeObject(File.ReadAllText("MSL\\config.json")));
+                    JArray jArray = new JArray(javaList);
+                    if (keyValuePairs["javaList"] == null)
+                    {
+                        keyValuePairs.Add("javaList", jArray);
+                    }
+                    else
+                    {
+                        keyValuePairs["javaList"] = jArray;
+                    }
+                    File.WriteAllText("MSL\\config.json", Convert.ToString(keyValuePairs), Encoding.UTF8);
+                }
+                catch
+                {
+                    Console.WriteLine("Write Local-Java-List Failed(To Configuration)");
+                }
+                
                 /*
                 foreach (JavaScanner.JavaInfo info in strings)
                 {
@@ -557,7 +587,19 @@ namespace MSL.pages
             {
                 Growl.Error("出现错误，获取Java版本列表失败！");
             }
-
+            try
+            {
+                JObject keyValuePairs = new JObject((JObject)JsonConvert.DeserializeObject(File.ReadAllText("MSL\\config.json")));
+                if (keyValuePairs["javaList"] != null)
+                {
+                    selectCheckedJavaComb.ItemsSource = keyValuePairs["javaList"];
+                    selectCheckedJavaComb.SelectedIndex = 0;
+                }
+            }
+            catch
+            {
+                Console.WriteLine("Load Local-Java-List Failed(From Configuration)");
+            }
             sjava.IsSelected = true;
             sjava.IsEnabled = true;
             welcome.IsEnabled = false;

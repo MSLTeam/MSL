@@ -36,10 +36,6 @@ namespace MSL.langs
             CultureInfo.CurrentCulture = cultureInfo;
             CultureInfo.CurrentUICulture = cultureInfo;
             PropertyChanged?.Invoke(this, new PropertyChangedEventArgs("Item[]"));
-
         }
-
-
-
     }
 }
