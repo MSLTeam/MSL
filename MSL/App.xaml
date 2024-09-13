@@ -2,6 +2,7 @@
              xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
              xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
              xmlns:hc="https://handyorg.github.io/handycontrol"
+             xmlns:langs="clr-namespace:MSL.langs"
              xmlns:local="clr-namespace:MSL"
              StartupUri="MainWindow.xaml">
     <Application.Resources>
@@ -36,8 +37,20 @@
                 <!-- Other merged dictionaries here -->
             </ResourceDictionary.MergedDictionaries>
             <!-- Other app resources here -->
+            <!-- 这个是Textbox的现代化右键菜单 -->
             <Style TargetType="TextBox" BasedOn="{StaticResource TextBoxBaseStyle}">
                 <Setter Property="ContextMenu" Value="{StaticResource UIContextMenu}"/>
+            </Style>
+            <!-- 这个是带有“开启”“禁用”标签的切换按钮（放到Style.xaml后设计器会报错，强迫症很难受，只能放这里咯） -->
+            <Style x:Key="ToggleButtonSwitch.Content" TargetType="ToggleButton" BasedOn="{hc:StaticResource ToggleButtonSwitch}">
+                <Style.Triggers>
+                    <Trigger Property="IsChecked" Value="True">
+                        <Setter Property="Content"  Value="{Binding [Enabled],Source={x:Static langs:LanguageManager.Instance}}" />
+                    </Trigger>
+                    <Trigger Property="IsChecked" Value="False">
+                        <Setter Property="Content" Value="{Binding [Disabled],Source={x:Static langs:LanguageManager.Instance}}" />
+                    </Trigger>
+                </Style.Triggers>
             </Style>
         </ResourceDictionary>
     </Application.Resources>
