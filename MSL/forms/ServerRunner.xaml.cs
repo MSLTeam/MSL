@@ -147,16 +147,16 @@ namespace MSL
                 try
                 {
                     conptyWindow.Closing -= ConptyWindowClosing;
-                    conptyWindow.Close();
                     conptyWindow.ControlServer.Click -= ConptyWindowControlServer;
                     conptyWindow.ControlServer.MouseDoubleClick -= KillConptyServer;
+                    conptyWindow.Close();
+                }
+                finally
+                {
                     conptyWindow = null;
                 }
-                catch { }
             }
             ShieldLog = null;
-            conptyWindow = null;
-            //conptyDialog = null;
             DownjavaName = null;
             Rservername = null;
             Rserverjava = null;
@@ -931,8 +931,17 @@ namespace MSL
                         Growl.Warning("高级终端（ConPty）启动失败，已自动使用传统终端来开服！");
                         try
                         {
-                            conptyWindow.Close();
-                            conptyWindow = null;
+                            try
+                            {
+                                conptyWindow.Closing -= ConptyWindowClosing;
+                                conptyWindow.ControlServer.Click -= ConptyWindowControlServer;
+                                conptyWindow.ControlServer.MouseDoubleClick -= KillConptyServer;
+                                conptyWindow.Close();
+                            }
+                            finally
+                            {
+                                conptyWindow = null;
+                            }
                         }
                         catch (Exception ex)
                         {
@@ -3664,11 +3673,17 @@ namespace MSL
                 {
                     if (conptyWindow != null)
                     {
-                        conptyWindow.Closing -= ConptyWindowClosing;
-                        conptyWindow.Close();
-                        conptyWindow.ControlServer.Click -= ConptyWindowControlServer;
-                        conptyWindow.ControlServer.MouseDoubleClick -= KillConptyServer;
-                        conptyWindow = null;
+                        try
+                        {
+                            conptyWindow.Closing -= ConptyWindowClosing;
+                            conptyWindow.ControlServer.Click -= ConptyWindowControlServer;
+                            conptyWindow.ControlServer.MouseDoubleClick -= KillConptyServer;
+                            conptyWindow.Close();
+                        }
+                        finally
+                        {
+                            conptyWindow = null;
+                        }
                     }
                 }
                 catch { }
