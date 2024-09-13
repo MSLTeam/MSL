@@ -2949,7 +2949,7 @@ namespace MSL
             }
             Dispatcher.Invoke(() =>
             {
-                if(jAva.Text != "Java")
+                if (jAva.Text != "Java")
                 {
                     // 使用正则表达式来提取Java版本
                     Regex pattern = new Regex(@"(?:MSL\\)?(Java\d+)");
@@ -3411,7 +3411,7 @@ namespace MSL
                 {
                     Console.WriteLine("Write Local-Java-List Failed(From Configuration)");
                 }
-                
+
                 /*
                 foreach (JavaScanner.JavaInfo info in strings)
                 {

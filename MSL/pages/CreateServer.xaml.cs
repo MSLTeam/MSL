@@ -498,7 +498,7 @@ namespace MSL.pages
                 {
                     Console.WriteLine("Write Local-Java-List Failed(To Configuration)");
                 }
-                
+
                 /*
                 foreach (JavaScanner.JavaInfo info in strings)
                 {
