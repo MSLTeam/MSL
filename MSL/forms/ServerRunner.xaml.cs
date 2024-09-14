@@ -4,6 +4,7 @@ using ICSharpCode.SharpZipLib.Zip;
 using Microsoft.Win32;
 using MSL.controls;
 using MSL.forms;
+using MSL.langs;
 using MSL.pages;
 using MSL.utils;
 using Newtonsoft.Json;
@@ -718,29 +719,16 @@ namespace MSL
                 string path1 = Rserverbase + "\\eula.txt";
                 if (!File.Exists(path1) || (File.Exists(path1) && !File.ReadAllText(path1).Contains("eula=true")))
                 {
-
-                    bool dialog = await MagicShow.ShowMsgDialogAsync(this, "开启Minecraft服务器需要接受Mojang的EULA，是否仔细阅读EULA条款（https://aka.ms/MinecraftEULA）并继续开服？", "提示", true, "取消");
+                    var shield = new Shield
+                    {
+                        Command = HandyControl.Interactivity.ControlCommands.OpenLink,
+                        CommandParameter = "https://aka.ms/MinecraftEULA",
+                        Subject = "https://aka.ms/MinecraftEULA",
+                        Status = LanguageManager.Instance["OpenWebsite"]
+                    };
+                    bool dialog = await MagicShow.ShowMsgDialogAsync(this, "开启Minecraft服务器需要接受Mojang的EULA，是否仔细阅读EULA条款（https://aka.ms/MinecraftEULA）并继续开服？", "提示", true, "否","是", shield);
                     if (dialog == true)
                     {
-                        try
-                        {
-                            Process p = new Process();
-                            p.StartInfo.FileName = "cmd.exe";
-                            p.StartInfo.UseShellExecute = false;
-                            p.StartInfo.RedirectStandardInput = true;
-                            p.StartInfo.RedirectStandardOutput = false;
-                            p.StartInfo.RedirectStandardError = true;
-                            p.StartInfo.CreateNoWindow = true;
-                            p.Start();
-                            p.StandardInput.WriteLine("start https://aka.ms/MinecraftEULA &exit");
-                            p.StandardInput.AutoFlush = true;
-                            p.WaitForExit();
-                            p.Close();
-                        }
-                        catch
-                        {
-                            MagicShow.ShowMsgDialog(this, "打开链接失败！请手动打开：https://aka.ms/MinecraftEULA\n若您不同意EULA，请立刻关闭服务器！", "错误");
-                        }
                         try
                         {
                             File.WriteAllText(path1, string.Empty);
@@ -761,7 +749,6 @@ namespace MSL
                         {
                             MessageBox.Show("出现错误，请手动修改eula文件或重试:" + a, "错误", MessageBoxButton.OK, MessageBoxImage.Error);
                         }
-                        //Process.Start("https://account.mojang.com/documents/minecraft_eula");
                     }
                     else
                     {
