@@ -596,13 +596,20 @@ namespace MSL
         private bool getSystemInfo = false;
         private void GetSystemInfo()
         {
-            var cpuCounter = new PerformanceCounter("Processor Information", "% Processor Utility", "_Total");
-            var ramCounter = new PerformanceCounter("Memory", "Available MBytes");
-            var phisicalMemory = GetPhisicalMemory();
-
-            while (getSystemInfo)
+            try
             {
-                try
+                var cpuCounter = new PerformanceCounter();
+                if (PerformanceCounterCategory.Exists("Processor Information") && PerformanceCounterCategory.CounterExists("% Processor Utility", "Processor Information"))
+                {
+                    cpuCounter = new PerformanceCounter("Processor Information", "% Processor Utility", "_Total");
+                }
+                else
+                {
+                    cpuCounter = new PerformanceCounter("Processor", "% Processor Time", "_Total");
+                }
+                var ramCounter = new PerformanceCounter("Memory", "Available MBytes");
+                var phisicalMemory = GetPhisicalMemory();
+                while (getSystemInfo)
                 {
                     float cpuUsage = cpuCounter.NextValue();
                     float ramAvailable = ramCounter.NextValue() / 1024;
@@ -618,17 +625,17 @@ namespace MSL
                         UpdateMemoryInfo(ramAvailable, allMemory);
                         UpdateLogPreview();
                     });
+                    Thread.Sleep(3000);
                 }
-                catch
+            }
+            catch
+            {
+                Dispatcher.Invoke(() =>
                 {
-                    Dispatcher.Invoke(() =>
-                    {
-                        Growl.Error("无法获取系统占用信息！显示占用功能已自动关闭！\n通常此问题是因为系统原因造成的，不影响软件正常使用！");
-                        previewOutlog.Text = "预览功能已关闭，请前往服务器控制台界面查看日志信息！";
-                    });
-                    getSystemInfo = false;
-                }
-                Thread.Sleep(3000);
+                    Growl.Error("无法获取系统占用信息！显示占用功能已自动关闭！\n通常此问题是因为系统原因造成的，不影响软件正常使用！");
+                    previewOutlog.Text = "预览功能已关闭，请前往服务器控制台界面查看日志信息！";
+                });
+                getSystemInfo = false;
             }
         }
 
