@@ -84,7 +84,7 @@ namespace MSL.pages
                 JObject jobject = JObject.Parse(File.ReadAllText(@"MSL\frp\config.json", Encoding.UTF8));
                 //默认的玩意
                 string frpcServer = jobject[frpID.ToString()]["frpcServer"].ToString();
-                string frpcversion = Config.Read("frpcversion") as string ?? "";
+                string frpcversion = Config.Read("frpcversion")?.ToString() ?? "";
                 string frpcExeName; //frpc客户端主程序
                 string downloadUrl = ""; //frpc客户端在api的调用位置
                 string arguments; //启动命令

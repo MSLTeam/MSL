@@ -31,7 +31,7 @@ namespace MSL.pages.frpProviders
             LoginGrid.Visibility = Visibility.Visible;
             MainGrid.Visibility = Visibility.Collapsed;
             CreateGrid.Visibility = Visibility.Collapsed;
-            var token = Config.Read("SakuraFrpToken") as string ?? "";
+            var token = Config.Read("SakuraFrpToken")?.ToString() ?? "";
             if (token != "")
             {
                 MagicDialog MagicDialog = new MagicDialog();

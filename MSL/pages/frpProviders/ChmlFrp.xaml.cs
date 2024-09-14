@@ -34,7 +34,7 @@ namespace MSL.pages.frpProviders
             LoginGrid.Visibility = Visibility.Visible;
             CreateGrid.Visibility = Visibility.Collapsed;
             //自动登录
-            var token = Config.Read("ChmlToken") as string ?? "";
+            var token = Config.Read("ChmlToken")?.ToString() ?? "";
             if (token != "")
             {
                 MagicDialog MagicDialog = new MagicDialog();
