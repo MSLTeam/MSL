@@ -99,8 +99,8 @@ namespace MSL
             var shield = new Shield
             {
                 Command = HandyControl.Interactivity.ControlCommands.OpenLink,
-                CommandParameter = "https://www.mslmc.cn/",
-                Subject = "https://www.mslmc.cn/",
+                CommandParameter = "https://www.mslmc.cn/eula.html",
+                Subject = "https://www.mslmc.cn/eula.html",
                 Status = LanguageManager.Instance["MainWindow_GrowlMsg_ReadEula"]
             };
             bool dialog = await MagicShow.ShowMsgDialogAsync(this, LanguageManager.Instance["MainWindow_GrowlMsg_Eula"], LanguageManager.Instance["Tip"], true, LanguageManager.Instance["No"], LanguageManager.Instance["Yes"],shield);
