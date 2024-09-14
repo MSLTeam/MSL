@@ -2930,7 +2930,6 @@ namespace MSL
                 }
                 Dispatcher.Invoke(() =>
                 {
-                    selectJava.Items.Clear();
                     selectJava.ItemsSource = list;
                     selectJava.SelectedIndex = 0;
                 });
