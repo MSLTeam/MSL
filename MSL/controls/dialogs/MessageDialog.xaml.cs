@@ -14,7 +14,7 @@ namespace MSL.controls
         public event DeleControl CloseDialog;
         public bool _dialogReturn;
 
-        public MessageDialog(string dialogText, string dialogTitle, bool showPrimaryBtn, string closeBtnContext, string primaryBtnContext)
+        public MessageDialog(string dialogText, string dialogTitle, bool showPrimaryBtn, string closeBtnContext, string primaryBtnContext, UIElement uIElement = null)
         {
             InitializeComponent();
             Margin = new Thickness(50);
@@ -36,6 +36,10 @@ namespace MSL.controls
                 }
                 CloseBtn.Content = closeBtnContext;
                 PrimaryBtn.Content = primaryBtnContext;
+            }
+            if (uIElement != null)
+            {
+                BodyPanel.Children.Add(uIElement);
             }
         }
 

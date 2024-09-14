@@ -36,7 +36,7 @@ namespace MSL.forms
 
         private void Help_Click(object sender, RoutedEventArgs e)
         {
-            Shows.ShowMsg(this, "终端操作：\n复制：使用鼠标选中需要复制的内容，接着点击右键，即可进行复制操作。" +
+            MagicShow.ShowMsg(this, "终端操作：\n复制：使用鼠标选中需要复制的内容，接着点击右键，即可进行复制操作。" +
                 "\n粘贴：在终端没有选择任何内容的情况下，直接点击鼠标右键，即可进行粘贴操作。" +
                 "\n取消选择：直接点击鼠标右键。" +
                 "\n\n终端特殊功能：\n在输入指令时，按一下Tab键可进行一键补全（或指令提示）操作。" +

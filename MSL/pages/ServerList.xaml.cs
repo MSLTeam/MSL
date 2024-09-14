@@ -96,7 +96,7 @@ namespace MSL.pages
             {
                 await Dispatcher.InvokeAsync(async () =>
                 {
-                    bool dialogRet = await Shows.ShowMsgDialogAsync(Window.GetWindow(this), LanguageManager.Instance["Page_ServerList_Dialog_NoConfTip"], LanguageManager.Instance["Warning"], true, LanguageManager.Instance["Cancel"]);
+                    bool dialogRet = await MagicShow.ShowMsgDialogAsync(Window.GetWindow(this), LanguageManager.Instance["Page_ServerList_Dialog_NoConfTip"], LanguageManager.Instance["Warning"], true, LanguageManager.Instance["Cancel"]);
                     if (dialogRet)
                     {
                         CreateServerEvent();
@@ -197,10 +197,10 @@ namespace MSL.pages
             int serverID = serverInfo.ServerID;
             if (ServerWindowList.ContainsKey(serverID))
             {
-                Shows.ShowMsgDialog(Window.GetWindow(this), "请在关闭服务器并关掉服务器窗口后再进行删除！", "警告");
+                MagicShow.ShowMsgDialog(Window.GetWindow(this), "请在关闭服务器并关掉服务器窗口后再进行删除！", "警告");
                 return;
             }
-            bool dialogRet = await Shows.ShowMsgDialogAsync(Window.GetWindow(this), "您确定要删除该服务器吗？", "提示", true, "取消");
+            bool dialogRet = await MagicShow.ShowMsgDialogAsync(Window.GetWindow(this), "您确定要删除该服务器吗？", "提示", true, "取消");
             if (!dialogRet)
             {
                 return;
@@ -208,7 +208,7 @@ namespace MSL.pages
             //ServerInfo _server = serverList.SelectedItem as ServerInfo;
             try
             {
-                bool _dialogRet = await Shows.ShowMsgDialogAsync(Window.GetWindow(this), "是否删除该服务器的目录？（服务器目录中的所有文件都会被移至回收站）", "提示", true, "取消");
+                bool _dialogRet = await MagicShow.ShowMsgDialogAsync(Window.GetWindow(this), "是否删除该服务器的目录？（服务器目录中的所有文件都会被移至回收站）", "提示", true, "取消");
                 if (_dialogRet)
                 {
                     JObject jsonObject = JObject.Parse(File.ReadAllText(@"MSL\ServerList.json", Encoding.UTF8));
@@ -220,7 +220,7 @@ namespace MSL.pages
             }
             catch (Exception ex)
             {
-                Shows.ShowMsgDialog(Window.GetWindow(this), "服务器目录删除失败！\n" + ex.Message, "警告");
+                MagicShow.ShowMsgDialog(Window.GetWindow(this), "服务器目录删除失败！\n" + ex.Message, "警告");
             }
             try
             {
@@ -233,7 +233,7 @@ namespace MSL.pages
             catch
             {
                 Growl.Error("删除服务器失败！");
-                Shows.ShowMsgDialog(Window.GetWindow(this), "服务器删除失败！", "警告");
+                MagicShow.ShowMsgDialog(Window.GetWindow(this), "服务器删除失败！", "警告");
                 GetServerConfig();
             }
         }
@@ -384,7 +384,7 @@ namespace MSL.pages
         //单独的下载按钮
         private async void DlServerCoreBtn_Click(object sender, RoutedEventArgs e)
         {
-            await Shows.ShowMsgDialogAsync(Window.GetWindow(this), "这是单独的服务端下载界面\n下载的服务端均在MSL文件夹下的ServerCores文件夹", "提示");
+            await MagicShow.ShowMsgDialogAsync(Window.GetWindow(this), "这是单独的服务端下载界面\n下载的服务端均在MSL文件夹下的ServerCores文件夹", "提示");
             DownloadServer downloadServer = new DownloadServer("MSL\\ServerCores\\", "", false)
             {
                 Owner = Window.GetWindow(Window.GetWindow(this))

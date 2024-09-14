@@ -20,13 +20,6 @@ namespace MSL.pages.frpProviders
             InitializeComponent();
         }
 
-        /*
-        private void WebBtn_Click(object sender, RoutedEventArgs e)
-        {
-
-        }
-        */
-
         private void OKBtn_Click(object sender, RoutedEventArgs e)
         {
             Directory.CreateDirectory("MSL\\frp");
@@ -37,7 +30,7 @@ namespace MSL.pages.frpProviders
                 //检测必备数据写了没，防止小傻瓜
                 if (ServerIP.Text == "" || ServerPort.Text == "" || ClientRemotePort.Text == "" || ClientIP.Text == "" || ClientPort.Text == "")
                 {
-                    Shows.ShowMsg(Window.GetWindow(this), "存在未填写的数据！\n请检查！", "错误！");
+                    MagicShow.ShowMsg(Window.GetWindow(this), "存在未填写的数据！\n请检查！", "错误！");
                 }
                 else
                 {
@@ -73,7 +66,7 @@ namespace MSL.pages.frpProviders
 
         private async void SetFrpcPath(int number)
         {
-            string sn = await Shows.ShowInput(Window.GetWindow(this), "给此隧道取一个名字吧：", "我的自定义Frp节点");
+            string sn = await MagicShow.ShowInput(Window.GetWindow(this), "给此隧道取一个名字吧：", "我的自定义Frp节点");
             if (sn == null)
             {
                 return;
@@ -126,7 +119,7 @@ namespace MSL.pages.frpProviders
             //最后结束
             string convertString = Convert.ToString(jobject);
             File.WriteAllText(@"MSL\frp\config.json", convertString, Encoding.UTF8);
-            await Shows.ShowMsgDialogAsync(Window.GetWindow(this), "隧道配置成功，请您点击“启动内网映射”以启动映射！", "信息");
+            await MagicShow.ShowMsgDialogAsync(Window.GetWindow(this), "隧道配置成功，请您点击“启动内网映射”以启动映射！", "信息");
             Window.GetWindow(this).Close();
         }
 

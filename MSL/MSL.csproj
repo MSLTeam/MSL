@@ -129,7 +129,7 @@
       <DependentUpon>MessageWindow.xaml</DependentUpon>
     </Compile>
     <Compile Include="utils\MCServerService.cs" />
-    <Compile Include="utils\Shows.cs" />
+    <Compile Include="utils\ShowService.cs" />
     <Compile Include="controls\dialogs\TextDialog.xaml.cs">
       <DependentUpon>TextDialog.xaml</DependentUpon>
     </Compile>

@@ -31,26 +31,26 @@ namespace MSL.pages.frpProviders
             LoginGrid.Visibility = Visibility.Visible;
             MainGrid.Visibility = Visibility.Collapsed;
             CreateGrid.Visibility = Visibility.Collapsed;
-
-            if (Config.Read("SakuraFrpToken") != "")
+            var token = Config.Read("SakuraFrpToken").ToString();
+            if (token != "")
             {
-                ShowDialogs showDialogs = new ShowDialogs();
-                showDialogs.ShowTextDialog(Window.GetWindow(this), "登录中……");
-                await VerifyUserToken(Config.Read("SakuraFrpToken"), false); //移除空格，防止笨蛋
-                showDialogs.CloseTextDialog();
+                MagicDialog MagicDialog = new MagicDialog();
+                MagicDialog.ShowTextDialog(Window.GetWindow(this), "登录中……");
+                await VerifyUserToken(token, false); //移除空格，防止笨蛋
+                MagicDialog.CloseTextDialog();
             }
         }
 
         private async void userTokenLogin_Click(object sender, RoutedEventArgs e)
         {
-            string token = await Shows.ShowInput(Window.GetWindow(this), "请输入Sakura账户Token", "", true);
+            string token = await MagicShow.ShowInput(Window.GetWindow(this), "请输入Sakura账户Token", "", true);
             if (token != null)
             {
                 bool save = (bool)SaveToken.IsChecked;
-                ShowDialogs showDialogs = new ShowDialogs();
-                showDialogs.ShowTextDialog(Window.GetWindow(this), "登录中……");
+                MagicDialog MagicDialog = new MagicDialog();
+                MagicDialog.ShowTextDialog(Window.GetWindow(this), "登录中……");
                 await VerifyUserToken(token.Trim(), save); //移除空格，防止笨蛋
-                showDialogs.CloseTextDialog();
+                MagicDialog.CloseTextDialog();
             }
         }
 
@@ -85,12 +85,12 @@ namespace MSL.pages.frpProviders
                 }
                 else
                 {
-                    await Shows.ShowMsgDialogAsync(Window.GetWindow(this), "登陆失败！", "错误");
+                    await MagicShow.ShowMsgDialogAsync(Window.GetWindow(this), "登陆失败！", "错误");
                 }
             }
             catch (Exception ex)
             {
-                await Shows.ShowMsgDialogAsync(Window.GetWindow(this), "登陆失败！" + ex.Message, "错误");
+                await MagicShow.ShowMsgDialogAsync(Window.GetWindow(this), "登陆失败！" + ex.Message, "错误");
             }
         }
 
@@ -134,7 +134,7 @@ namespace MSL.pages.frpProviders
             }
             catch (Exception ex)
             {
-                await Shows.ShowMsgDialogAsync(Window.GetWindow(this), "获取隧道列表失败！" + ex.Message, "错误");
+                await MagicShow.ShowMsgDialogAsync(Window.GetWindow(this), "获取隧道列表失败！" + ex.Message, "错误");
             }
         }
 
@@ -167,7 +167,7 @@ namespace MSL.pages.frpProviders
         //显示隧道信息
         private void FrpList_SelectionChanged(object sender, SelectionChangedEventArgs e)
         {
-            var listBox = sender as System.Windows.Controls.ListBox;
+            var listBox = sender as ListBox;
             if (listBox.SelectedItem is TunnelInfo selectedTunnel)
             {
                 TunnelInfo_Text.Text = $"隧道名: {selectedTunnel.Name}" +
@@ -180,24 +180,24 @@ namespace MSL.pages.frpProviders
         //确定 输出config
         private async void OKBtn_Click(object sender, RoutedEventArgs e)
         {
-            var listBox = FrpList as System.Windows.Controls.ListBox;
+            var listBox = FrpList;
             if (listBox.SelectedItem is TunnelInfo selectedTunnel)
             {
                 //string content = await Task.Run(() => GetTunnelConfig(UserToken,selectedTunnel.ID));
                 //输出配置文件
-                if (Config.WriteFrpcConfig(3, $"-f {UserToken}:{selectedTunnel.ID}", $"SakuraFrp - {selectedTunnel.Name}") == true)
+                if (Config.WriteFrpcConfig(3, $"SakuraFrp - {selectedTunnel.Name}", $"-f {UserToken}:{selectedTunnel.ID}","") == true)
                 {
-                    await Shows.ShowMsgDialogAsync(Window.GetWindow(this), "映射配置成功，请您点击“启动内网映射”以启动映射！", "信息");
+                    await MagicShow.ShowMsgDialogAsync(Window.GetWindow(this), "映射配置成功，请您点击“启动内网映射”以启动映射！", "信息");
                     Window.GetWindow(this).Close();
                 }
                 else
                 {
-                    await Shows.ShowMsgDialogAsync(Window.GetWindow(this), "配置输出失败！", "错误");
+                    await MagicShow.ShowMsgDialogAsync(Window.GetWindow(this), "配置输出失败！", "错误");
                 }
             }
             else
             {
-                await Shows.ShowMsgDialogAsync(Window.GetWindow(this), "您似乎没有选择任何隧道！", "错误");
+                await MagicShow.ShowMsgDialogAsync(Window.GetWindow(this), "您似乎没有选择任何隧道！", "错误");
             }
         }
 
@@ -228,7 +228,7 @@ namespace MSL.pages.frpProviders
             }
             catch (Exception ex)
             {
-                await Shows.ShowMsgDialogAsync(Window.GetWindow(this), "删除失败！" + ex.Message, "错误");
+                await MagicShow.ShowMsgDialogAsync(Window.GetWindow(this), "删除失败！" + ex.Message, "错误");
             }
         }
 
@@ -241,7 +241,7 @@ namespace MSL.pages.frpProviders
             }
             else
             {
-                await Shows.ShowMsgDialogAsync(Window.GetWindow(this), "您似乎没有选择任何隧道！", "错误");
+                await MagicShow.ShowMsgDialogAsync(Window.GetWindow(this), "您似乎没有选择任何隧道！", "错误");
             }
 
         }
@@ -362,7 +362,7 @@ namespace MSL.pages.frpProviders
                 if (res.HttpResponseCode == HttpStatusCode.Created)
                 {
                     JObject jsonres = JObject.Parse((string)res.HttpResponseContent);
-                    await Shows.ShowMsgDialogAsync(Window.GetWindow(this), $"{jsonres["name"]}隧道创建成功！\nID: {jsonres["id"]} 远程端口: {jsonres["remote"]}", "成功");
+                    await MagicShow.ShowMsgDialogAsync(Window.GetWindow(this), $"{jsonres["name"]}隧道创建成功！\nID: {jsonres["id"]} 远程端口: {jsonres["remote"]}", "成功");
                     //显示main页面
                     LoginGrid.Visibility = Visibility.Collapsed; ;
                     MainGrid.Visibility = Visibility.Visible;
@@ -371,12 +371,12 @@ namespace MSL.pages.frpProviders
                 }
                 else
                 {
-                    await Shows.ShowMsgDialogAsync(Window.GetWindow(this), "创建失败！请尝试更换隧道名称/节点！", "错误");
+                    await MagicShow.ShowMsgDialogAsync(Window.GetWindow(this), "创建失败！请尝试更换隧道名称/节点！", "错误");
                 }
             }
             else
             {
-                await Shows.ShowMsgDialogAsync(Window.GetWindow(this), "您似乎没有选择任何节点！", "错误");
+                await MagicShow.ShowMsgDialogAsync(Window.GetWindow(this), "您似乎没有选择任何节点！", "错误");
             }
         }
 

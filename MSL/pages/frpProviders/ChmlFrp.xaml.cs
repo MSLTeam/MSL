@@ -34,12 +34,13 @@ namespace MSL.pages.frpProviders
             LoginGrid.Visibility = Visibility.Visible;
             CreateGrid.Visibility = Visibility.Collapsed;
             //自动登录
-            if (Config.Read("ChmlToken") != "")
+            var token = Config.Read("ChmlToken").ToString();
+            if (token != "")
             {
-                ShowDialogs showDialogs = new ShowDialogs();
-                showDialogs.ShowTextDialog(Window.GetWindow(this), "登录中……");
-                await Task.Run(() => verifyUserToken(Config.Read("ChmlToken"), false));
-                showDialogs.CloseTextDialog();
+                MagicDialog MagicDialog = new MagicDialog();
+                MagicDialog.ShowTextDialog(Window.GetWindow(this), "登录中……");
+                await Task.Run(() => verifyUserToken(token, false));
+                MagicDialog.CloseTextDialog();
             }
         }
 
@@ -47,14 +48,14 @@ namespace MSL.pages.frpProviders
         private async void userTokenLogin_Click(object sender, RoutedEventArgs e)
         {
             string token;
-            token = await Shows.ShowInput(Window.GetWindow(this), "请输入Chml账户Token", "", true);
+            token = await MagicShow.ShowInput(Window.GetWindow(this), "请输入Chml账户Token", "", true);
             if (token != null)
             {
                 bool save = (bool)SaveToken.IsChecked;
-                ShowDialogs showDialogs = new ShowDialogs();
-                showDialogs.ShowTextDialog(Window.GetWindow(this), "登录中……");
+                MagicDialog MagicDialog = new MagicDialog();
+                MagicDialog.ShowTextDialog(Window.GetWindow(this), "登录中……");
                 await Task.Run(() => verifyUserToken(token.Trim(), save)); //移除空格，防止笨蛋
-                showDialogs.CloseTextDialog();
+                MagicDialog.CloseTextDialog();
             }
         }
 
@@ -62,21 +63,21 @@ namespace MSL.pages.frpProviders
         private async void userLogin_Click(object sender, RoutedEventArgs e)
         {
             string frpUser, frpPassword;
-            frpUser = await Shows.ShowInput(Window.GetWindow(this), "请输入ChmlFrp的账户名/邮箱/QQ号");
+            frpUser = await MagicShow.ShowInput(Window.GetWindow(this), "请输入ChmlFrp的账户名/邮箱/QQ号");
             if (frpUser == null)
             {
                 return;
             }
-            frpPassword = await Shows.ShowInput(Window.GetWindow(this), "请输入密码", "", true);
+            frpPassword = await MagicShow.ShowInput(Window.GetWindow(this), "请输入密码", "", true);
             if (frpPassword == null)
             {
                 return;
             }
             bool save = (bool)SaveToken.IsChecked;
-            ShowDialogs showDialogs = new ShowDialogs();
-            showDialogs.ShowTextDialog(Window.GetWindow(this), "登录中……");
+            MagicDialog MagicDialog = new MagicDialog();
+            MagicDialog.ShowTextDialog(Window.GetWindow(this), "登录中……");
             await Task.Run(() => getUserToken(frpUser, frpPassword, save));
-            showDialogs.CloseTextDialog();
+            MagicDialog.CloseTextDialog();
         }
 
         //注册一个可爱的账户
@@ -98,9 +99,7 @@ namespace MSL.pages.frpProviders
                     {
                         string token = jsonResponse["token"].ToString();
                         ChmlID = jsonResponse["userid"].ToString();//id丢全局
-                                                                   //这里就拿到token了
-                                                                   //保存？写到配置
-                        if (save == true)
+                        if (save == true) //保存？写到配置
                         {
                             Config.Write("ChmlToken", token);
                         }
@@ -110,7 +109,7 @@ namespace MSL.pages.frpProviders
                     {
                         Dispatcher.Invoke(() =>
                         {
-                            Shows.ShowMsgDialog(Window.GetWindow(this), "登陆失败！" + jsonResponse["message"].ToString(), LanguageManager.Instance["Error"]);
+                            MagicShow.ShowMsgDialog(Window.GetWindow(this), "登陆失败！" + jsonResponse["message"].ToString(), LanguageManager.Instance["Error"]);
                         });
 
                     }
@@ -121,7 +120,7 @@ namespace MSL.pages.frpProviders
                     {
                         Dispatcher.Invoke(() =>
                         {
-                            Shows.ShowMsgDialog(Window.GetWindow(this), "登陆失败！\n" + jsonResponse["error"].ToString(), LanguageManager.Instance["Error"]);
+                            MagicShow.ShowMsgDialog(Window.GetWindow(this), "登陆失败！\n" + jsonResponse["error"].ToString(), LanguageManager.Instance["Error"]);
                         });
                     }
 
@@ -131,7 +130,7 @@ namespace MSL.pages.frpProviders
             {
                 Dispatcher.Invoke(() =>
                 {
-                    Shows.ShowMsgDialog(Window.GetWindow(this), "登陆失败！\n" + e.Message, LanguageManager.Instance["Error"]);
+                    MagicShow.ShowMsgDialog(Window.GetWindow(this), "登陆失败！\n" + e.Message, LanguageManager.Instance["Error"]);
                 });
             }
         }
@@ -146,9 +145,7 @@ namespace MSL.pages.frpProviders
                 if (jsonResponse.ContainsKey("userid"))
                 {
                     ChmlID = jsonResponse["userid"].ToString();//id丢全局
-                                                               //这里就拿到token了(确定有效）
-                                                               //保存？写到配置
-                    if (save == true)
+                    if (save == true) //保存？写到配置
                     {
                         Config.Write("ChmlToken", userToken);
                     }
@@ -166,7 +163,7 @@ namespace MSL.pages.frpProviders
                     {
                         Dispatcher.Invoke(() =>
                         {
-                            Shows.ShowMsgDialog(Window.GetWindow(this), "Token登陆失败！\n可以尝试账号密码登录！\n" + jsonResponse["error"].ToString(), LanguageManager.Instance["Error"]);
+                            MagicShow.ShowMsgDialog(Window.GetWindow(this), "Token登陆失败！\n可以尝试账号密码登录！\n" + jsonResponse["error"].ToString(), LanguageManager.Instance["Error"]);
                         });
                     }
 
@@ -176,7 +173,7 @@ namespace MSL.pages.frpProviders
             {
                 Dispatcher.Invoke(() =>
                 {
-                    Shows.ShowMsgDialog(Window.GetWindow(this), "Token登陆失败！\n可以尝试账号密码登录！\n" + e.Message, LanguageManager.Instance["Error"]);
+                    MagicShow.ShowMsgDialog(Window.GetWindow(this), "Token登陆失败！\n可以尝试账号密码登录！\n" + e.Message, LanguageManager.Instance["Error"]);
                 });
             }
 
@@ -258,13 +255,13 @@ namespace MSL.pages.frpProviders
                 {
                     Dispatcher.Invoke(() =>
                     {
-                        Shows.ShowMsgDialog(Window.GetWindow(this), "建议创建一个哦~", "您似乎没有隧道");
+                        MagicShow.ShowMsgDialog(Window.GetWindow(this), "建议创建一个哦~", "您似乎没有隧道");
                     });
                 }
             }
             catch (Exception e)
             {
-                Shows.ShowMsgDialog(Window.GetWindow(this), e.Message, "出错了！");
+                MagicShow.ShowMsgDialog(Window.GetWindow(this), e.Message, "出错了！");
             }
         }
 
@@ -316,18 +313,18 @@ namespace MSL.pages.frpProviders
                         $"use_encryption = {selectedTunnel.Encryption}\r\n" +
                         $"use_compression = {selectedTunnel.Compression}\r\n \r\n";
                     //输出配置
-                    Config.WriteFrpcConfig(2, FrpcConfig, $"ChmlFrp - {selectedTunnel.Name}({selectedTunnel.Node})");
-                    await Shows.ShowMsgDialogAsync(Window.GetWindow(this), "映射配置成功，请您点击“启动内网映射”以启动映射！", "信息");
+                    Config.WriteFrpcConfig(2, $"ChmlFrp - {selectedTunnel.Name}({selectedTunnel.Node})", FrpcConfig,"");
+                    await MagicShow.ShowMsgDialogAsync(Window.GetWindow(this), "映射配置成功，请您点击“启动内网映射”以启动映射！", "信息");
                     Window.GetWindow(this).Close();
                 }
                 catch (Exception ex)
                 {
-                    await Shows.ShowMsgDialogAsync(Window.GetWindow(this), "写入Frpc配置失败！\n" + ex.Message, "出错");
+                    await MagicShow.ShowMsgDialogAsync(Window.GetWindow(this), "写入Frpc配置失败！\n" + ex.Message, "出错");
                 }
             }
             else
             {
-                await Shows.ShowMsgDialogAsync(Window.GetWindow(this), "请您选择一个隧道再按确定哦~", "隧道呢？");
+                await MagicShow.ShowMsgDialogAsync(Window.GetWindow(this), "请您选择一个隧道再按确定哦~", "隧道呢？");
             }
         }
 
@@ -340,7 +337,7 @@ namespace MSL.pages.frpProviders
         private async void Del_Tunnel_Click(object sender, RoutedEventArgs e)
         {
 
-            bool dialog = await Shows.ShowMsgDialogAsync(Window.GetWindow(this), "确定删除所选隧道吗？", "删除隧道", true);
+            bool dialog = await MagicShow.ShowMsgDialogAsync(Window.GetWindow(this), "确定删除所选隧道吗？", "删除隧道", true);
             if (dialog == true)
             {
                 try
@@ -356,7 +353,7 @@ namespace MSL.pages.frpProviders
                             //好了
                             Dispatcher.Invoke(() =>
                             {
-                                Shows.ShowMsgDialog(Window.GetWindow(this), "隧道删除成功！", "删除");
+                                MagicShow.ShowMsgDialog(Window.GetWindow(this), "隧道删除成功！", "删除");
                             });
                             _ = Task.Run(() => GetFrpList(ChmlToken));//刷新下列表
                         }
@@ -365,7 +362,7 @@ namespace MSL.pages.frpProviders
                             //创建失败的处理
                             Dispatcher.Invoke(() =>
                             {
-                                Shows.ShowMsgDialog(Window.GetWindow(this), $"隧道删除失败！\n{PostResponse["error"]}", "失败！");
+                                MagicShow.ShowMsgDialog(Window.GetWindow(this), $"隧道删除失败！\n{PostResponse["error"]}", "失败！");
                             });
 
                         }
@@ -374,7 +371,7 @@ namespace MSL.pages.frpProviders
                     {
                         Dispatcher.Invoke(() =>
                         {
-                            Shows.ShowMsgDialog(Window.GetWindow(this), $"请选择一个隧道再操作！", "失败！");
+                            MagicShow.ShowMsgDialog(Window.GetWindow(this), $"请选择一个隧道再操作！", "失败！");
                         });
                     }
                 }
@@ -382,7 +379,7 @@ namespace MSL.pages.frpProviders
                 {
                     Dispatcher.Invoke(() =>
                     {
-                        Shows.ShowMsgDialog(Window.GetWindow(this), ex.Message, "失败！");
+                        MagicShow.ShowMsgDialog(Window.GetWindow(this), ex.Message, "失败！");
                     });
                 }
             }
@@ -458,7 +455,7 @@ namespace MSL.pages.frpProviders
             {
                 Dispatcher.Invoke(() =>
                 {
-                    Shows.ShowMsgDialog(Window.GetWindow(this), "无法加载节点信息！", "错误");
+                    MagicShow.ShowMsgDialog(Window.GetWindow(this), "无法加载节点信息！", "错误");
                 });
             }
         }
@@ -505,7 +502,7 @@ namespace MSL.pages.frpProviders
             }
             else
             {
-                Shows.ShowMsgDialog(Window.GetWindow(this), "您似乎没有选择节点！", "错误");
+                MagicShow.ShowMsgDialog(Window.GetWindow(this), "您似乎没有选择节点！", "错误");
             }
         }
 
@@ -535,7 +532,7 @@ namespace MSL.pages.frpProviders
                 //好了
                 Dispatcher.Invoke(() =>
                 {
-                    Shows.ShowMsgDialog(Window.GetWindow(this), "隧道创建成功！\n即将返回主页···", "创建成功！");
+                    MagicShow.ShowMsgDialog(Window.GetWindow(this), "隧道创建成功！\n即将返回主页···", "创建成功！");
                     MainGrid.Visibility = Visibility.Visible;
                     LoginGrid.Visibility = Visibility.Collapsed;
                     CreateGrid.Visibility = Visibility.Collapsed;
@@ -547,7 +544,7 @@ namespace MSL.pages.frpProviders
                 //创建失败的处理
                 Dispatcher.Invoke(() =>
                 {
-                    Shows.ShowMsgDialog(Window.GetWindow(this), $"隧道创建失败！\n{PostResponse["error"]}", "创建失败！");
+                    MagicShow.ShowMsgDialog(Window.GetWindow(this), $"隧道创建失败！\n{PostResponse["error"]}", "创建失败！");
                 });
             }
         }

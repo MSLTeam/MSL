@@ -361,8 +361,7 @@ namespace MSL.langs {
         }
         
         /// <summary>
-        ///   查找类似 使用本软件，即代表您已阅读并接受本软件的使用协议：https://www.mslmc.cn/eula.html
-        ///如果您不接受，请立即退出本软件并删除相关文件！ 的本地化字符串。
+        ///   查找类似 使用本软件，即代表您已阅读并接受本软件的使用协议：https://www.mslmc.cn/eula.html 的本地化字符串。
         /// </summary>
         public static string MainWindow_GrowlMsg_Eula {
             get {

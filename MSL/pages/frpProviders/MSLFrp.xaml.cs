@@ -69,7 +69,7 @@ namespace MSL.pages.frpProviders
             }
             catch (Exception ex)
             {
-                Shows.ShowMsgDialog(Window.GetWindow(this), "连接服务器失败！" + ex.Message, "错误");
+                MagicShow.ShowMsgDialog(Window.GetWindow(this), "连接服务器失败！" + ex.Message, "错误");
             }
             try
             {
@@ -165,7 +165,7 @@ namespace MSL.pages.frpProviders
             Window window = Window.GetWindow(Window.GetWindow(this));
             if (serversList.SelectedIndex == -1)
             {
-                Shows.ShowMsgDialog(window, "请确保您选择了一个节点！", "信息");
+                MagicShow.ShowMsgDialog(window, "请确保您选择了一个节点！", "信息");
                 return;
             }
             //MSL-FRP
@@ -180,7 +180,7 @@ namespace MSL.pages.frpProviders
                     int n = ran.Next(int.Parse(list3[a].ToString()), int.Parse(list4[a].ToString()));
                     if (portBox.Text == "" || accountBox.Text == "")
                     {
-                        Shows.ShowMsgDialog(window, "请确保内网端口和QQ号不为空", "错误");
+                        MagicShow.ShowMsgDialog(window, "请确保内网端口和QQ号不为空", "错误");
                         return;
                     }
                     //string frptype = "";
@@ -231,7 +231,7 @@ namespace MSL.pages.frpProviders
                     int n = ran.Next(int.Parse(list3[a].ToString()), int.Parse(list4[a].ToString()));
                     if (portBox.Text == "" || accountBox.Text == "")
                     {
-                        Shows.ShowMsgDialog(window, "请确保没有漏填信息", "错误");
+                        MagicShow.ShowMsgDialog(window, "请确保没有漏填信息", "错误");
                         return;
                     }
                     //string frptype = "";
@@ -303,10 +303,10 @@ namespace MSL.pages.frpProviders
             }
             catch (Exception a)
             {
-                Shows.ShowMsgDialog(window, "出现错误，请确保选择节点后再试：" + a, "错误");
+                MagicShow.ShowMsgDialog(window, "出现错误，请确保选择节点后再试：" + a, "错误");
                 return;
             }
-            string sn = await Shows.ShowInput(window, "给此隧道取一个名字吧：", "我的MSLFrp节点");
+            string sn = await MagicShow.ShowInput(window, "给此隧道取一个名字吧：", "我的MSLFrp节点");
             if (sn == null)
             {
                 return;
@@ -315,7 +315,6 @@ namespace MSL.pages.frpProviders
             int number = Functions.Frpc_GenerateRandomInt();
             if (!File.Exists(@"MSL\frp\config.json"))
             {
-                //Logger.LogWarning("未检测到config.json文件，创建config.json……");
                 File.WriteAllText(@"MSL\frp\config.json", string.Format("{{{0}}}", "\n"));
             }
             Directory.CreateDirectory("MSL\\frp\\" + number);
@@ -348,7 +347,7 @@ namespace MSL.pages.frpProviders
             }
             string convertString = Convert.ToString(jobject);
             File.WriteAllText(@"MSL\frp\config.json", convertString, Encoding.UTF8);
-            await Shows.ShowMsgDialogAsync(window, "映射配置成功，请您点击“启动内网映射”以启动映射！", "信息");
+            await MagicShow.ShowMsgDialogAsync(window, "映射配置成功，请您点击“启动内网映射”以启动映射！", "信息");
             window.Close();
         }
 
@@ -386,7 +385,7 @@ namespace MSL.pages.frpProviders
 
         private async void gotoWeb_Click(object sender, RoutedEventArgs e)
         {
-            if (!await Shows.ShowMsgDialogAsync(Window.GetWindow(this), "您是否已经购买了MSLFrp？", "购买/激活MSLFrp服务", true, "我已购买，点击激活", "我未购买，点击购买"))
+            if (!await MagicShow.ShowMsgDialogAsync(Window.GetWindow(this), "您是否已经购买了MSLFrp？", "购买/激活MSLFrp服务", true, "我已购买，点击激活", "我未购买，点击购买"))
             {
                 //直接激活
                 ActiveOrder();
@@ -395,7 +394,7 @@ namespace MSL.pages.frpProviders
             {
                 //购买
                 Process.Start("https://afdian.com/a/makabaka123");
-                if (!await Shows.ShowMsgDialogAsync(Window.GetWindow(this), "请在弹出的浏览器网站中进行购买，购买完毕后点击确定进行下一步操作……", "购买须知", true, "取消购买", "确定"))
+                if (!await MagicShow.ShowMsgDialogAsync(Window.GetWindow(this), "请在弹出的浏览器网站中进行购买，购买完毕后点击确定进行下一步操作……", "购买须知", true, "取消购买", "确定"))
                 {
                     return;
                 }
@@ -410,27 +409,27 @@ namespace MSL.pages.frpProviders
         //激活方法
         private async void ActiveOrder()
         {
-            string order = await Shows.ShowInput(Window.GetWindow(this), "输入爱发电订单号：\n（头像→订单→找到发电项目→复制项目下方订单号）");
+            string order = await MagicShow.ShowInput(Window.GetWindow(this), "输入爱发电订单号：\n（头像→订单→找到发电项目→复制项目下方订单号）");
             if (order == null)
             {
                 return;
             }
             if (Regex.IsMatch(order, "[^0-9]") || order.Length < 5)
             {
-                Shows.ShowMsgDialog(Window.GetWindow(this), "请输入合法订单号：仅含数字且长度不小于5位！", "获取失败！");
+                MagicShow.ShowMsgDialog(Window.GetWindow(this), "请输入合法订单号：仅含数字且长度不小于5位！", "获取失败！");
                 return;
             }
-            string qq = await Shows.ShowInput(Window.GetWindow(this), "输入账号(QQ号)：");
+            string qq = await MagicShow.ShowInput(Window.GetWindow(this), "输入账号(QQ号)：");
             if (qq == null)
             {
                 return;
             }
             if (Regex.IsMatch(qq, "[^0-9]") || qq.Length < 5)
             {
-                Shows.ShowMsgDialog(Window.GetWindow(this), "请输入合法账号：仅含数字且长度不小于5位！", "获取失败！");
+                MagicShow.ShowMsgDialog(Window.GetWindow(this), "请输入合法账号：仅含数字且长度不小于5位！", "获取失败！");
                 return;
             }
-            ShowDialogs _dialog = new ShowDialogs();
+            MagicDialog _dialog = new MagicDialog();
             try
             {
                 _dialog.ShowTextDialog(Window.GetWindow(this), "发送请求中，请稍等……");
@@ -446,7 +445,7 @@ namespace MSL.pages.frpProviders
                 {
                     string passwd = keyValues["password"].ToString();
                     passwordBox.Password = passwd;
-                    bool dialog = await Shows.ShowMsgDialogAsync(Window.GetWindow(this), "您的付费密码为：" + passwd + "\n已自动填入到密码栏中！\n注册时间：" + keyValues["registration"].ToString() + "\n付费时长：" + keyValues["days"].ToString() + "天\n到期时间：" + keyValues["expiration"].ToString(), "购买成功！", true, "确定", "复制密码");
+                    bool dialog = await MagicShow.ShowMsgDialogAsync(Window.GetWindow(this), "您的付费密码为：" + passwd + "\n已自动填入到密码栏中！\n注册时间：" + keyValues["registration"].ToString() + "\n付费时长：" + keyValues["days"].ToString() + "天\n到期时间：" + keyValues["expiration"].ToString(), "购买成功！", true, "确定", "复制密码");
                     if (dialog)
                     {
                         Clipboard.SetDataObject(passwd);
@@ -454,17 +453,17 @@ namespace MSL.pages.frpProviders
                 }
                 else if (keyValues != null)
                 {
-                    Shows.ShowMsgDialog(Window.GetWindow(this), keyValues["reason"].ToString(), "获取失败！");
+                    MagicShow.ShowMsgDialog(Window.GetWindow(this), keyValues["reason"].ToString(), "获取失败！");
                 }
                 else
                 {
-                    Shows.ShowMsgDialog(Window.GetWindow(this), "返回内容为空！", "获取失败！");
+                    MagicShow.ShowMsgDialog(Window.GetWindow(this), "返回内容为空！", "获取失败！");
                 }
             }
             catch
             {
                 _dialog.CloseTextDialog();
-                Shows.ShowMsgDialog(Window.GetWindow(this), "获取失败，请添加QQ：483232994（昵称：MSL-FRP），\n并发送发电成功截图+订单号来手动获取密码\n（注：回复消息不一定及时，请耐心等待！\n如果没有添加成功，或者添加后长时间无人回复，请进入MSL交流群然后从群里私聊）", "获取失败！");
+                MagicShow.ShowMsgDialog(Window.GetWindow(this), "获取失败，请添加QQ：483232994（昵称：MSL-FRP），\n并发送发电成功截图+订单号来手动获取密码\n（注：回复消息不一定及时，请耐心等待！\n如果没有添加成功，或者添加后长时间无人回复，请进入MSL交流群然后从群里私聊）", "获取失败！");
             }
         }
     }

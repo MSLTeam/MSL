@@ -44,7 +44,7 @@ namespace MSL.pages
         {
             if (serverlist1.SelectedIndex == -1)
             {
-                Shows.ShowMsgDialog(this, "请先选择一个版本！", "警告");
+                MagicShow.ShowMsgDialog(this, "请先选择一个版本！", "警告");
                 return;
             }
             serverlist1.IsEnabled = false;
@@ -58,7 +58,7 @@ namespace MSL.pages
         {
             if (serverlist1.SelectedIndex == -1)
             {
-                Shows.ShowMsgDialog(this, "请先选择一个版本！", "警告");
+                MagicShow.ShowMsgDialog(this, "请先选择一个版本！", "警告");
                 return;
             }
             serverlist1.IsEnabled = false;
@@ -82,19 +82,19 @@ namespace MSL.pages
                 filename = downServer + "-" + downVersion + ".jar";
                 if (downServer == "forge" || downServer == "spongeforge" || downServer == "neoforge")
                 {
-                    int dwnDialog = await Shows.ShowDownloaderWithIntReturn(this, downUrl, downPath, filename, "下载服务端中……", sha256Exp, true);
+                    int dwnDialog = await MagicShow.ShowDownloaderWithIntReturn(this, downUrl, downPath, filename, "下载服务端中……", sha256Exp, true);
                     if (dwnDialog == 2)
                     {
-                        Shows.ShowMsgDialog(this, "下载取消！（或服务端文件不存在）", "错误");
+                        MagicShow.ShowMsgDialog(this, "下载取消！（或服务端文件不存在）", "错误");
                         return;
                     }
                 }
                 else
                 {
-                    bool dwnDialog = await Shows.ShowDownloader(this, downUrl, downPath, filename, "下载服务端中……", sha256Exp);
+                    bool dwnDialog = await MagicShow.ShowDownloader(this, downUrl, downPath, filename, "下载服务端中……", sha256Exp);
                     if (!dwnDialog || !File.Exists(downPath + "\\" + filename))
                     {
-                        Shows.ShowMsgDialog(this, "下载取消！（或服务端文件不存在）", "错误");
+                        MagicShow.ShowMsgDialog(this, "下载取消！（或服务端文件不存在）", "错误");
                         return;
                     }
                 }
@@ -106,11 +106,11 @@ namespace MSL.pages
                     JObject _dlContext = await HttpService.GetApiContentAsync("download/server/" + forgeName + "/" + downVersion);
                     string _dlUrl = _dlContext["data"]["url"].ToString();
                     string _sha256Exp = _dlContext["data"]["sha256"]?.ToString() ?? string.Empty;
-                    int _dwnDialog = await Shows.ShowDownloaderWithIntReturn(this, _dlUrl, downPath, _filename, "下载服务端中……", _sha256Exp, true);
+                    int _dwnDialog = await MagicShow.ShowDownloaderWithIntReturn(this, _dlUrl, downPath, _filename, "下载服务端中……", _sha256Exp, true);
 
                     if (_dwnDialog == 2)
                     {
-                        Shows.ShowMsgDialog(this, "下载取消！", "提示");
+                        MagicShow.ShowMsgDialog(this, "下载取消！", "提示");
                         return;
                     }
 
@@ -135,16 +135,16 @@ namespace MSL.pages
                         string backupUrl = $"https://maven.minecraftforge.net/net/minecraftforge/forge/{mcVersion}-{forgeVersion}/{forgeName}-{mcVersion}-{forgeVersion}-installer.jar";
 
                         // Attempt to download from backup URL
-                        bool backupDownloadSuccess = await Shows.ShowDownloader(GetWindow(this), backupUrl, downPath, _filename, "备用链接下载中……", _sha256Exp);
+                        bool backupDownloadSuccess = await MagicShow.ShowDownloader(GetWindow(this), backupUrl, downPath, _filename, "备用链接下载中……", _sha256Exp);
                         if (!backupDownloadSuccess || !File.Exists(downPath + "\\" + _filename))
                         {
-                            Shows.ShowMsgDialog(this, "下载取消！（或服务端文件不存在）", "错误");
+                            MagicShow.ShowMsgDialog(this, "下载取消！（或服务端文件不存在）", "错误");
                             return;
                         }
                     }
                     if (!isInstallSomeCore)
                     {
-                        Shows.ShowMsgDialog(this, "下载完成！服务端核心放置在“MSL\\ServerCores”文件夹中！", "提示");
+                        MagicShow.ShowMsgDialog(this, "下载完成！服务端核心放置在“MSL\\ServerCores”文件夹中！", "提示");
                         return;
                     }
                     //sponge应当作为模组加载，所以要再下载一个forge才是服务端
@@ -160,13 +160,13 @@ namespace MSL.pages
                     }
                     catch (Exception e)
                     {
-                        Shows.ShowMsgDialog(this, "Sponge核心移动失败！\n请重试！" + e.Message, "错误");
+                        MagicShow.ShowMsgDialog(this, "Sponge核心移动失败！\n请重试！" + e.Message, "错误");
                         return;
                     }
                     string installReturn = await InstallForge(_filename);
                     if (installReturn == null)
                     {
-                        Shows.ShowMsgDialog(this, "安装失败！", "错误");
+                        MagicShow.ShowMsgDialog(this, "安装失败！", "错误");
                         return;
                     }
 
@@ -176,18 +176,18 @@ namespace MSL.pages
                 {
                     if (!File.Exists(downPath + "\\" + filename))
                     {
-                        Shows.ShowMsgDialog(this, "下载失败！（或服务端文件不存在）", "提示");
+                        MagicShow.ShowMsgDialog(this, "下载失败！（或服务端文件不存在）", "提示");
                         return;
                     }
                     if (!isInstallSomeCore)
                     {
-                        Shows.ShowMsgDialog(this, "下载完成！服务端核心放置在“MSL\\ServerCores”文件夹中！", "提示");
+                        MagicShow.ShowMsgDialog(this, "下载完成！服务端核心放置在“MSL\\ServerCores”文件夹中！", "提示");
                         return;
                     }
                     string installReturn = await InstallForge(filename);
                     if (installReturn == null)
                     {
-                        Shows.ShowMsgDialog(this, "安装失败！", "错误");
+                        MagicShow.ShowMsgDialog(this, "安装失败！", "错误");
                         return;
                     }
 
@@ -216,22 +216,22 @@ namespace MSL.pages
                         string backupUrl = $"https://maven.minecraftforge.net/net/minecraftforge/forge/{mcVersion}-{forgeVersion}/{downServer}-{mcVersion}-{forgeVersion}-installer.jar";
 
                         // Attempt to download from backup URL
-                        bool backupDownloadSuccess = await Shows.ShowDownloader(this, backupUrl, downPath, filename, "备用链接下载中……", sha256Exp);
+                        bool backupDownloadSuccess = await MagicShow.ShowDownloader(this, backupUrl, downPath, filename, "备用链接下载中……", sha256Exp);
                         if (!backupDownloadSuccess || !File.Exists(downPath + "\\" + filename))
                         {
-                            Shows.ShowMsgDialog(this, "下载取消！（或服务端文件不存在）", "错误");
+                            MagicShow.ShowMsgDialog(this, "下载取消！（或服务端文件不存在）", "错误");
                             return;
                         }
                     }
                     if (!isInstallSomeCore)
                     {
-                        Shows.ShowMsgDialog(this, "下载完成！服务端核心放置在“MSL\\ServerCores”文件夹中！", "提示");
+                        MagicShow.ShowMsgDialog(this, "下载完成！服务端核心放置在“MSL\\ServerCores”文件夹中！", "提示");
                         return;
                     }
                     string installReturn = await InstallForge(filename);
                     if (installReturn == null)
                     {
-                        Shows.ShowMsgDialog(this, "安装失败！", "错误");
+                        MagicShow.ShowMsgDialog(this, "安装失败！", "错误");
                         return;
                     }
 
@@ -241,7 +241,7 @@ namespace MSL.pages
                 {
                     if (!isInstallSomeCore)
                     {
-                        Shows.ShowMsgDialog(this, "下载完成！服务端核心放置在“MSL\\ServerCores”文件夹中！", "提示");
+                        MagicShow.ShowMsgDialog(this, "下载完成！服务端核心放置在“MSL\\ServerCores”文件夹中！", "提示");
                         return;
                     }
                     //banner应当作为模组加载，所以要再下载一个fabric才是服务端
@@ -257,17 +257,17 @@ namespace MSL.pages
                     }
                     catch (Exception e)
                     {
-                        Shows.ShowMsgDialog(this, "Banner端移动失败！\n请重试！" + e.Message, "错误");
+                        MagicShow.ShowMsgDialog(this, "Banner端移动失败！\n请重试！" + e.Message, "错误");
                         return;
                     }
 
                     //下载一个fabric端
                     //获取版本号
                     string bannerVersion = filename.Replace("banner-", "").Replace(".jar", "");
-                    bool dwnFabric = await Shows.ShowDownloader(GetWindow(this), (await HttpService.GetApiContentAsync("download/server/fabric/" + bannerVersion))["data"]["url"].ToString(), downloadServerBase, $"fabric-{bannerVersion}.jar", "下载Fabric端中···");
+                    bool dwnFabric = await MagicShow.ShowDownloader(GetWindow(this), (await HttpService.GetApiContentAsync("download/server/fabric/" + bannerVersion))["data"]["url"].ToString(), downloadServerBase, $"fabric-{bannerVersion}.jar", "下载Fabric端中···");
                     if (!dwnFabric || !File.Exists(downloadServerBase + "\\" + $"fabric-{bannerVersion}.jar"))
                     {
-                        Shows.ShowMsgDialog(this, "Fabric端下载取消（或服务端文件不存在）！", "错误");
+                        MagicShow.ShowMsgDialog(this, "Fabric端下载取消（或服务端文件不存在）！", "错误");
                         return;
                     }
 
@@ -277,7 +277,7 @@ namespace MSL.pages
                 {
                     if (!isInstallSomeCore)
                     {
-                        Shows.ShowMsgDialog(this, "下载完成！服务端核心放置在“MSL\\ServerCores”文件夹中！", "提示");
+                        MagicShow.ShowMsgDialog(this, "下载完成！服务端核心放置在“MSL\\ServerCores”文件夹中！", "提示");
                         return;
                     }
                     downloadServerName = filename;
@@ -289,11 +289,11 @@ namespace MSL.pages
         private async Task<string> InstallForge(string filename)
         {
             //调用新版forge安装器
-            string[] installForge = await Shows.ShowInstallForge(this, downPath + "\\" + filename, downPath, downloadServerJava);
+            string[] installForge = await MagicShow.ShowInstallForge(this, downPath + "\\" + filename, downPath, downloadServerJava);
             Functions functions = new Functions();
             if (installForge[0] == "0")
             {
-                if (await Shows.ShowMsgDialogAsync(this, "自动安装失败！是否尝试使用命令行安装方式？", "错误", true))
+                if (await MagicShow.ShowMsgDialogAsync(this, "自动安装失败！是否尝试使用命令行安装方式？", "错误", true))
                 {
                     return Functions.InstallForge(downloadServerJava, downloadServerBase, filename, string.Empty, false);
                 }

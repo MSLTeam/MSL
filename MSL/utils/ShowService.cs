@@ -1,11 +1,12 @@
 ﻿using HandyControl.Controls;
 using MSL.controls;
 using System.Threading.Tasks;
+using System.Windows;
 using Window = System.Windows.Window;
 
 namespace MSL.utils
 {
-    internal class Shows
+    internal class MagicShow
     {
         /// <summary>
         /// 显示MSG对话框（异步执行，不可等待）
@@ -13,11 +14,10 @@ namespace MSL.utils
         /// <param name="_window">对话框父窗体</param>
         /// <param name="text">对话框内容</param>
         /// <param name="title">对话框标题</param>
-        public static void ShowMsgDialog(Window _window, string text, string title)
+        public static void ShowMsgDialog(Window _window, string text, string title, UIElement uIElement = null)
         {
-
-            ShowDialogs showDialogs = new ShowDialogs();
-            showDialogs.ShowMsgDialog(_window, text, title);
+            MagicDialog MagicDialog = new MagicDialog();
+            MagicDialog.ShowMsgDialog(_window, text, title, uIElement);
         }
 
         /// <summary>
@@ -30,10 +30,10 @@ namespace MSL.utils
         /// <param name="closeBtnContext">关闭按钮文字内容</param>
         /// <param name="primaryBtnContext">确认按钮文字内容</param>
         /// <returns>返回值：true；false</returns>
-        public static async Task<bool> ShowMsgDialogAsync(Window _window, string text, string title, bool showPrimaryBtn = false, string closeBtnContext = "否", string primaryBtnContext = "是")
+        public static async Task<bool> ShowMsgDialogAsync(Window _window, string text, string title, bool showPrimaryBtn = false, string closeBtnContext = "否", string primaryBtnContext = "是", UIElement uIElement = null)
         {
-            ShowDialogs showDialogs = new ShowDialogs();
-            bool _ret = await showDialogs.ShowMsgDialog(_window, text, title, showPrimaryBtn, closeBtnContext, primaryBtnContext);
+            MagicDialog MagicDialog = new MagicDialog();
+            bool _ret = await MagicDialog.ShowMsgDialog(_window, text, title, showPrimaryBtn, closeBtnContext, primaryBtnContext, uIElement);
             return _ret;
         }
 
@@ -80,15 +80,16 @@ namespace MSL.utils
 
         public static async Task<string> ShowInput(Window _window, string dialogText, string textboxText = "", bool passwordMode = false)
         {
-            ShowDialogs showDialogs = new ShowDialogs();
-            string _ret = await showDialogs.ShowInpputDialog(_window, dialogText, textboxText, passwordMode);
+            MagicDialog MagicDialog = new MagicDialog();
+            string _ret = await MagicDialog.ShowInpputDialog(_window, dialogText, textboxText, passwordMode);
             return _ret;
         }
 
         public static async Task<string[]> ShowInstallForge(Window _window, string forgePath, string downPath, string java)
         {
-            ShowDialogs showDialogs = new ShowDialogs();
-            return await showDialogs.ShowInstallForgeDialog(_window, forgePath, downPath, java);
+            MagicDialog MagicDialog = new MagicDialog();
+            return await MagicDialog.ShowInstallForgeDialog(_window, forgePath, downPath, java);
+
         }
 
         /// <summary>
@@ -105,8 +106,8 @@ namespace MSL.utils
         /// <returns>true下载成功；false下载取消/失败</returns>
         public static async Task<bool> ShowDownloader(Window _window, string downloadurl, string downloadPath, string filename, string downloadinfo, string sha256 = "", bool closeDirectly = false, int headerMode = 0)
         {
-            ShowDialogs showDialogs = new ShowDialogs();
-            int _ret = await showDialogs.ShowDownloadDialog(_window, downloadurl, downloadPath, filename, downloadinfo, sha256, closeDirectly, headerMode);
+            MagicDialog MagicDialog = new MagicDialog();
+            int _ret = await MagicDialog.ShowDownloadDialog(_window, downloadurl, downloadPath, filename, downloadinfo, sha256, closeDirectly, headerMode);
             if (_ret == 1)
             {
                 return true;
@@ -128,13 +129,13 @@ namespace MSL.utils
         /// <returns>0未开始下载（或下载中），1下载完成，2下载取消，3下载失败</returns>
         public static async Task<int> ShowDownloaderWithIntReturn(Window _window, string downloadurl, string downloadPath, string filename, string downloadinfo, string sha256 = "", bool closeDirectly = false, int headerMode = 0)
         {
-            ShowDialogs showDialogs = new ShowDialogs();
-            int _ret = await showDialogs.ShowDownloadDialog(_window, downloadurl, downloadPath, filename, downloadinfo, sha256, closeDirectly, headerMode);
+            MagicDialog MagicDialog = new MagicDialog();
+            int _ret = await MagicDialog.ShowDownloadDialog(_window, downloadurl, downloadPath, filename, downloadinfo, sha256, closeDirectly, headerMode);
             return _ret;
         }
     }
 
-    internal class ShowDialogs
+    internal class MagicDialog
     {
         private Window window;
         private Dialog dialog;
@@ -155,20 +156,20 @@ namespace MSL.utils
 
 
         private TaskCompletionSource<bool> _tcs;
-        public void ShowMsgDialog(Window _window, string text, string title)
+        public void ShowMsgDialog(Window _window, string text, string title, UIElement uIElement)
         {
             window = _window;
-            MessageDialog msgDialog = new MessageDialog(text, title, false, "", "");
+            MessageDialog msgDialog = new MessageDialog(text, title, false, "", "", uIElement);
             msgDialog.CloseDialog += CloseMsgDialog;
             window?.Focus();
             dialog = Dialog.Show(msgDialog);
             _tcs = new TaskCompletionSource<bool>();
         }
 
-        public async Task<bool> ShowMsgDialog(Window _window, string text, string title, bool showPrimaryBtn, string closeBtnContext, string primaryBtnContext)
+        public async Task<bool> ShowMsgDialog(Window _window, string text, string title, bool showPrimaryBtn, string closeBtnContext, string primaryBtnContext, UIElement uIElement)
         {
             window = _window;
-            MessageDialog msgDialog = new MessageDialog(text, title, showPrimaryBtn, closeBtnContext, primaryBtnContext);
+            MessageDialog msgDialog = new MessageDialog(text, title, showPrimaryBtn, closeBtnContext, primaryBtnContext, uIElement);
             msgDialog.CloseDialog += CloseMsgDialog;
             window?.Focus();
             dialog = Dialog.Show(msgDialog);

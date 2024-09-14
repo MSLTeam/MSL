@@ -61,7 +61,27 @@ namespace MSL
             try
             {
                 JObject jsonObject = JObject.Parse(File.ReadAllText(@"MSL\config.json", Encoding.UTF8));
-                //await EulaEvent(jsonObject);
+                deviceID = Functions.GetDeviceID();
+                if (jsonObject["deviceID_Prefix"] == null || jsonObject["deviceID_Prefix"].ToString() != deviceID.Substring(0, 10))
+                {
+                    if (await EulaEvent())
+                    {
+                        if (jsonObject["deviceID_Prefix"] == null)
+                        {
+                            jsonObject.Add("deviceID_Prefix", deviceID.Substring(0, 10));
+                        }
+                        else
+                        {
+                            jsonObject["deviceID_Prefix"] = deviceID.Substring(0, 10);
+                        }
+                        string convertString = Convert.ToString(jsonObject);
+                        File.WriteAllText(@"MSL\config.json", convertString, Encoding.UTF8);
+                    }
+                    else
+                    {
+                        Application.Current.Shutdown();
+                    }
+                }
                 //Logger.LogInfo("载入配置……");
                 await LoadConfigEvent(jsonObject);
                 //Logger.LogInfo("异步载入联网功能……");
@@ -70,70 +90,31 @@ namespace MSL
             }
             catch (Exception ex)
             {
-                await Shows.ShowMsgDialogAsync(this, ex.Message, "EEEOR");
+                await MagicShow.ShowMsgDialogAsync(this, ex.Message, "EEEOR");
             }
         }
 
-        /*
         private async Task<bool> EulaEvent()
         {
-            if (!Directory.Exists("MSL"))
+            var shield = new Shield
             {
-                bool dialog = await Shows.ShowMsgDialogAsync(this, LanguageManager.Instance["MainWindow_GrowlMsg_Eula"], LanguageManager.Instance["Tip"], true, LanguageManager.Instance["Done"], LanguageManager.Instance["MainWindow_GrowlMsg_ReadEula"]);
-                if (!dialog)
-                {
-                    return true;
-                }
-                else
-                {
-                    //Logger.LogInfo("打开EULA网页……");
-                    Process.Start("https://www.mslmc.cn/eula.html");
-                    return await EulaEvent();
-                }
-            }
-            return true;
-        }
-        */
-        /*
-        private async Task<bool> EulaEvent(JObject jsonObject)
-        {
-            if (jsonObject.ContainsKey("eula"))
-            {
-                jsonObject.Remove("eula");
-            }
-            string _deviceID = Functions.GetDeviceID();
-            if (jsonObject["deviceID"] == null || jsonObject["deviceID"].ToString() != _deviceID)
-            {
-                bool dialog = await Shows.ShowMsgDialogAsync(this, LanguageManager.Instance["MainWindow_GrowlMsg_Eula"], LanguageManager.Instance["Tip"], true, LanguageManager.Instance["Done"], LanguageManager.Instance["MainWindow_GrowlMsg_ReadEula"]);
-                if (!dialog)
-                {
-                    if (jsonObject["deviceID"] == null)
-                    {
-                        jsonObject.Add("deviceID", _deviceID);
-                    }
-                    else
-                    {
-                        jsonObject["deviceID"] = _deviceID;
-                    }
-                    string convertString = Convert.ToString(jsonObject);
-                    File.WriteAllText(@"MSL\config.json", convertString, Encoding.UTF8);
-                    //Logger.LogInfo("EULA=TRUE");
-                    return true;
-                }
-                else
-                {
-                    //Logger.LogInfo("打开EULA网页……");
-                    Process.Start("https://www.mslmc.cn/eula.html");
-                    return await EulaEvent(jsonObject);
-                }
-            }
-            else
+                Command = HandyControl.Interactivity.ControlCommands.OpenLink,
+                CommandParameter = "https://www.mslmc.cn/",
+                Subject = "https://www.mslmc.cn/",
+                Status = LanguageManager.Instance["MainWindow_GrowlMsg_ReadEula"]
+            };
+            bool dialog = await MagicShow.ShowMsgDialogAsync(this, LanguageManager.Instance["MainWindow_GrowlMsg_Eula"], LanguageManager.Instance["Tip"], true, LanguageManager.Instance["No"], LanguageManager.Instance["Yes"],shield);
+            if (dialog)
             {
                 //Logger.LogInfo("EULA=TRUE");
                 return true;
             }
+            else
+            {
+                //Logger.LogInfo("EULA=False");
+                return false;
+            }
         }
-        */
 
         private async Task LoadConfigEvent(JObject jsonObject)
         {
@@ -367,7 +348,6 @@ namespace MSL
             //get serverlink
             try
             {
-                deviceID = Functions.GetDeviceID();
                 //serverLink = "mslmc.cn/v3";
                 string _link = (await HttpService.GetContentAsync("https://msl-api.oss-cn-hangzhou.aliyuncs.com/")).ToString();
                 //Logger.LogInfo("连接到api：" + "https://api." + _link);
@@ -409,10 +389,8 @@ namespace MSL
                     var updatelog = _httpReturn["data"]["log"].ToString();
                     if (jsonObject["autoUpdateApp"] == null)
                     {
-                        string jsonString = File.ReadAllText(@"MSL\config.json", Encoding.UTF8);
-                        JObject jobject = JObject.Parse(jsonString);
-                        jobject.Add("autoUpdateApp", "False");
-                        string convertString = Convert.ToString(jobject);
+                        jsonObject.Add("autoUpdateApp", "False");
+                        string convertString = Convert.ToString(jsonObject);
                         File.WriteAllText(@"MSL\config.json", convertString, Encoding.UTF8);
                     }
                     else if (jsonObject["autoUpdateApp"].ToString() == "True")
@@ -420,7 +398,7 @@ namespace MSL
                         //Logger.LogInfo("自动更新功能已打开，更新新版本……");
                         UpdateApp(_version);
                     }
-                    if (await Shows.ShowMsgDialogAsync(this, string.Format(LanguageManager.Instance["MainWindow_GrowlMsg_UpdateInfo"] + "\n" + updatelog, _version), LanguageManager.Instance["MainWindow_GrowlMsg_Update"], true))
+                    if (await MagicShow.ShowMsgDialogAsync(this, string.Format(LanguageManager.Instance["MainWindow_GrowlMsg_UpdateInfo"] + "\n" + updatelog, _version), LanguageManager.Instance["MainWindow_GrowlMsg_Update"], true))
                     {
                         //Logger.LogInfo("更新新版本……");
                         UpdateApp(_version);
@@ -453,11 +431,11 @@ namespace MSL
             {
                 if (ProcessRunningCheck())
                 {
-                    Shows.ShowMsgDialog(this, LanguageManager.Instance["MainWindow_GrowlMsg_UpdateWarning"], LanguageManager.Instance["Warning"]);
+                    MagicShow.ShowMsgDialog(this, LanguageManager.Instance["MainWindow_GrowlMsg_UpdateWarning"], LanguageManager.Instance["Warning"]);
                     return;
                 }
                 string downloadUrl = (await HttpService.GetApiContentAsync("download/update?type=normal"))["data"].ToString(); ;
-                await Shows.ShowDownloader(this, downloadUrl, AppDomain.CurrentDomain.BaseDirectory, "MSL" + latestVersion + ".exe", "下载新版本中……");
+                await MagicShow.ShowDownloader(this, downloadUrl, AppDomain.CurrentDomain.BaseDirectory, "MSL" + latestVersion + ".exe", "下载新版本中……");
                 if (File.Exists("MSL" + latestVersion + ".exe"))
                 {
                     string oldExePath = Process.GetCurrentProcess().MainModule.ModuleName;
@@ -503,7 +481,7 @@ namespace MSL
             }
             else if (ProcessRunningCheck())
             {
-                int dialog = Shows.ShowMsg(this, LanguageManager.Instance["MainWindow_Close_Warning"], LanguageManager.Instance["Warning"], true, LanguageManager.Instance["Cancel"]);
+                int dialog = MagicShow.ShowMsg(this, LanguageManager.Instance["MainWindow_Close_Warning"], LanguageManager.Instance["Warning"], true, LanguageManager.Instance["Cancel"]);
                 if (dialog != 1)
                 {
                     e.Cancel = true;
@@ -688,7 +666,7 @@ namespace MSL
         {
             if (ProcessRunningCheck())
             {
-                int dialog = Shows.ShowMsg(this, LanguageManager.Instance["MainWindow_Close_Warning2"], LanguageManager.Instance["Warning"], true, LanguageManager.Instance["Cancel"]);
+                int dialog = MagicShow.ShowMsg(this, LanguageManager.Instance["MainWindow_Close_Warning2"], LanguageManager.Instance["Warning"], true, LanguageManager.Instance["Cancel"]);
                 if (dialog == 1)
                 {
                     Application.Current.Shutdown();
@@ -706,8 +684,8 @@ namespace MSL
 
         private void Window_Closed(object sender, EventArgs e)
         {
-            //Application.Current.Shutdown();
-            Environment.Exit(0);
+            Application.Current.Shutdown();
+            //Environment.Exit(0);
         }
 
         private void Window_Activated(object sender, EventArgs e)

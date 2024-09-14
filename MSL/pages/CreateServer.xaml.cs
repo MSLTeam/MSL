@@ -97,10 +97,10 @@ namespace MSL.pages
                 downloadMods.ShowDialog();
                 if (!File.Exists("MSL\\ServerPack.zip"))
                 {
-                    Shows.ShowMsgDialog(Window.GetWindow(this), "下载失败！", "错误");
+                    MagicShow.ShowMsgDialog(Window.GetWindow(this), "下载失败！", "错误");
                     return;
                 }
-                string input = await Shows.ShowInput(Window.GetWindow(this), "服务器名称：", "MyServer");
+                string input = await MagicShow.ShowInput(Window.GetWindow(this), "服务器名称：", "MyServer");
                 if (input != null)
                 {
                     servername = input;
@@ -134,7 +134,7 @@ namespace MSL.pages
                     {
                         Window.GetWindow(this).Focus();
                         waitDialog.Close();
-                        Shows.ShowMsgDialog(Window.GetWindow(this), "整合包解压失败！请确认您的整合包是.zip格式！\n错误代码：" + ex.Message, "错误");
+                        MagicShow.ShowMsgDialog(Window.GetWindow(this), "整合包解压失败！请确认您的整合包是.zip格式！\n错误代码：" + ex.Message, "错误");
                         return;
                     }
                     Window.GetWindow(this).Focus();
@@ -165,10 +165,10 @@ namespace MSL.pages
             else if (ImportPack.SelectedIndex == 2)
             {
                 ImportPack.SelectedIndex = 0;
-                bool dialog = await Shows.ShowMsgDialogAsync(Window.GetWindow(this), "目前仅支持导入.zip格式的整合包文件，如果您要导入的是模组整合包，请确保您下载的整合包是服务器专用包（如RLCraft下载界面就有一个ServerPack的压缩包），否则可能会出现无法开服或者崩溃的问题！", "提示", true, "取消");
+                bool dialog = await MagicShow.ShowMsgDialogAsync(Window.GetWindow(this), "目前仅支持导入.zip格式的整合包文件，如果您要导入的是模组整合包，请确保您下载的整合包是服务器专用包（如RLCraft下载界面就有一个ServerPack的压缩包），否则可能会出现无法开服或者崩溃的问题！", "提示", true, "取消");
                 if (dialog == true)
                 {
-                    string input = await Shows.ShowInput(Window.GetWindow(this), "服务器名称：", "MyServer");
+                    string input = await MagicShow.ShowInput(Window.GetWindow(this), "服务器名称：", "MyServer");
                     if (input != null)
                     {
                         servername = input;
@@ -195,11 +195,11 @@ namespace MSL.pages
                         var res = openfile.ShowDialog();
                         if (res == true)
                         {
-                            ShowDialogs showDialogs = new ShowDialogs();
+                            MagicDialog MagicDialog = new MagicDialog();
                             //Dialog waitDialog = null;
                             try
                             {
-                                showDialogs.ShowTextDialog(Window.GetWindow(this), "解压整合包中，请稍等……");
+                                MagicDialog.ShowTextDialog(Window.GetWindow(this), "解压整合包中，请稍等……");
                                 //waitDialog = Dialog.Show(new TextDialog("解压整合包中，请稍等……"));
                                 await Task.Run(() => new FastZip().ExtractZip(openfile.FileName, serverPath, ""));
                                 DirectoryInfo[] dirs = new DirectoryInfo(serverPath).GetDirectories();
@@ -210,11 +210,11 @@ namespace MSL.pages
                             }
                             catch (Exception ex)
                             {
-                                showDialogs.CloseTextDialog();
-                                Shows.ShowMsgDialog(Window.GetWindow(this), "整合包解压失败！请确认您的整合包是.zip格式！\n错误代码：" + ex.Message, "错误");
+                                MagicDialog.CloseTextDialog();
+                                MagicShow.ShowMsgDialog(Window.GetWindow(this), "整合包解压失败！请确认您的整合包是.zip格式！\n错误代码：" + ex.Message, "错误");
                                 return;
                             }
-                            showDialogs.CloseTextDialog();
+                            MagicDialog.CloseTextDialog();
                             MainGrid.Visibility = Visibility.Hidden;
                             tabCtrl.Visibility = Visibility.Visible;
                             isImportPack = true;
@@ -265,19 +265,19 @@ namespace MSL.pages
                         filestr += "\n" + i.ToString() + "." + file;
                         i++;
                     }
-                    string selectFile = await Shows.ShowInput(Window.GetWindow(this), "开服器在整合包中检测到了以下jar文件，你可输选择一个作为开服核心（输入文件前对应的数字，取消为不选择以下文件）\n" + filestr);
+                    string selectFile = await MagicShow.ShowInput(Window.GetWindow(this), "开服器在整合包中检测到了以下jar文件，你可输选择一个作为开服核心（输入文件前对应的数字，取消为不选择以下文件）\n" + filestr);
                     if (selectFile != null)
                     {
                         txb3.Text = files[int.Parse(selectFile)];
                         if (Functions.CheckForgeInstaller(serverbase + "\\" + txb3.Text))
                         {
-                            bool dialog = await Shows.ShowMsgDialogAsync(Window.GetWindow(this), "您选择的服务端疑似是forge安装器，是否将其展开安装？\n如果不展开安装，服务器可能无法开启！", "提示", true, "取消");
+                            bool dialog = await MagicShow.ShowMsgDialogAsync(Window.GetWindow(this), "您选择的服务端疑似是forge安装器，是否将其展开安装？\n如果不展开安装，服务器可能无法开启！", "提示", true, "取消");
                             if (dialog)
                             {
                                 string installReturn = await InstallForge(txb3.Text);
                                 if (installReturn == null)
                                 {
-                                    Shows.ShowMsgDialog(Window.GetWindow(this), "下载失败！", "错误");
+                                    MagicShow.ShowMsgDialog(Window.GetWindow(this), "下载失败！", "错误");
                                     return;
                                 }
                                 txb3.Text = installReturn;
@@ -291,19 +291,19 @@ namespace MSL.pages
                 }
                 else if (files.Count == 1)
                 {
-                    bool ret = await Shows.ShowMsgDialogAsync(Window.GetWindow(this), "开服器在整合包中检测到了jar文件" + files[0] + "，是否选择此文件为开服核心？", "提示", true, "取消");
+                    bool ret = await MagicShow.ShowMsgDialogAsync(Window.GetWindow(this), "开服器在整合包中检测到了jar文件" + files[0] + "，是否选择此文件为开服核心？", "提示", true, "取消");
                     if (ret)
                     {
                         txb3.Text = files[0];
                         if (Functions.CheckForgeInstaller(serverbase + "\\" + txb3.Text))
                         {
-                            bool dialog = await Shows.ShowMsgDialogAsync(Window.GetWindow(this), "您选择的服务端疑似是forge安装器，是否将其展开安装？\n如果不展开安装，服务器可能无法开启！", "提示", true, "取消");
+                            bool dialog = await MagicShow.ShowMsgDialogAsync(Window.GetWindow(this), "您选择的服务端疑似是forge安装器，是否将其展开安装？\n如果不展开安装，服务器可能无法开启！", "提示", true, "取消");
                             if (dialog)
                             {
                                 string installReturn = await InstallForge(txb3.Text);
                                 if (installReturn == null)
                                 {
-                                    Shows.ShowMsgDialog(Window.GetWindow(this), "下载失败！", "错误");
+                                    MagicShow.ShowMsgDialog(Window.GetWindow(this), "下载失败！", "错误");
                                     return;
                                 }
                                 txb3.Text = installReturn;
@@ -325,10 +325,10 @@ namespace MSL.pages
         {
             if (!File.Exists(@"MSL\" + fileName + @"\bin\java.exe"))
             {
-                await Shows.ShowMsgDialogAsync(Window.GetWindow(this), "下载Java即代表您接受Java的服务条款：\nhttps://www.oracle.com/downloads/licenses/javase-license1.html", "信息");
+                await MagicShow.ShowMsgDialogAsync(Window.GetWindow(this), "下载Java即代表您接受Java的服务条款：\nhttps://www.oracle.com/downloads/licenses/javase-license1.html", "信息");
                 DownjavaName = fileName;
 
-                bool downDialog = await Shows.ShowDownloader(Window.GetWindow(this), downUrl, "MSL", "Java.zip", "下载" + fileName + "中……");
+                bool downDialog = await MagicShow.ShowDownloader(Window.GetWindow(this), downUrl, "MSL", "Java.zip", "下载" + fileName + "中……");
                 if (downDialog)
                 {
                     return 1;
@@ -380,7 +380,7 @@ namespace MSL.pages
             }
             catch (Exception ex)
             {
-                Shows.ShowMsgDialog(Window.GetWindow(this), "解压失败，Java压缩包可能已损坏，请重试！错误代码：" + ex.Message + "\n（注：若多次重试均无法解压的话，请自行去网络上下载安装并使用自定义模式来创建服务器）", "错误");
+                MagicShow.ShowMsgDialog(Window.GetWindow(this), "解压失败，Java压缩包可能已损坏，请重试！错误代码：" + ex.Message + "\n（注：若多次重试均无法解压的话，请自行去网络上下载安装并使用自定义模式来创建服务器）", "错误");
                 return false;
             }
         }
@@ -448,7 +448,7 @@ namespace MSL.pages
         {
             if (selectCheckedJavaComb.Items.Count == 0)
             {
-                Shows.ShowMsgDialog(Window.GetWindow(this), "请先进行检测", "提示");
+                MagicShow.ShowMsgDialog(Window.GetWindow(this), "请先进行检测", "提示");
                 usedownloadjv.IsChecked = true;
                 return;
             }
@@ -457,7 +457,7 @@ namespace MSL.pages
         private async void SearchJavaBtn_Click(object sender, RoutedEventArgs e)
         {
             List<JavaScanner.JavaInfo> strings = null;
-            int dialog = Shows.ShowMsg(Window.GetWindow(Window.GetWindow(this)), "即将开始检测电脑上的Java，此过程可能需要一些时间，请耐心等待。\n目前有两种检测模式，一种是简单检测，只检测一些关键目录，用时较少，普通用户可优先使用此模式。\n第二种是深度检测，将检测所有磁盘的所有目录，耗时可能会很久，请慎重选择！", "提示", true, "开始深度检测", "开始简单检测");
+            int dialog = MagicShow.ShowMsg(Window.GetWindow(Window.GetWindow(this)), "即将开始检测电脑上的Java，此过程可能需要一些时间，请耐心等待。\n目前有两种检测模式，一种是简单检测，只检测一些关键目录，用时较少，普通用户可优先使用此模式。\n第二种是深度检测，将检测所有磁盘的所有目录，耗时可能会很久，请慎重选择！", "提示", true, "开始深度检测", "开始简单检测");
             if (dialog == 2)
             {
                 return;
@@ -533,7 +533,7 @@ namespace MSL.pages
             else
             {
                 Growl.Error("检测环境变量失败");
-                Shows.ShowMsgDialog(Window.GetWindow(this), "检测环境变量失败，您的环境变量似乎不存在！", "错误");
+                MagicShow.ShowMsgDialog(Window.GetWindow(this), "检测环境变量失败，您的环境变量似乎不存在！", "错误");
                 usedownloadjv.IsChecked = true;
             }
         }
@@ -562,7 +562,7 @@ namespace MSL.pages
             servername = serverNameBox.Text;
             if ((new Regex("[\u4E00-\u9FA5]").IsMatch(txb6.Text)) || txb6.Text.Contains(" "))
             {
-                if (!await Shows.ShowMsgDialogAsync(Window.GetWindow(this), "使用带有中文字符或空格的路径可能造成编码错误，导致无法开服，您确定要继续吗？", "警告", true))
+                if (!await MagicShow.ShowMsgDialogAsync(Window.GetWindow(this), "使用带有中文字符或空格的路径可能造成编码错误，导致无法开服，您确定要继续吗？", "警告", true))
                 {
                     return;
                 }
@@ -622,7 +622,7 @@ namespace MSL.pages
                 else
                 {
                     Growl.Error("检测Java可用性失败");
-                    Shows.ShowMsgDialog(Window.GetWindow(this), "检测Java可用性失败，您的Java似乎不可用！请检查是否选择正确！", "错误");
+                    MagicShow.ShowMsgDialog(Window.GetWindow(this), "检测Java可用性失败，您的Java似乎不可用！请检查是否选择正确！", "错误");
                     usedownloadjv.IsChecked = true;
                     noNext = true;
                 }
@@ -648,10 +648,10 @@ namespace MSL.pages
                     dwnJava = await DownloadJava(selectJavaComb.SelectedItem.ToString(), (await HttpService.GetApiContentAsync("download/java/" + selectJavaComb.SelectedItem.ToString()))["data"]["url"].ToString());
                     if (dwnJava == 1)
                     {
-                        ShowDialogs showDialogs = new ShowDialogs();
-                        showDialogs.ShowTextDialog(Window.GetWindow(this), "解压Java中……");
+                        MagicDialog MagicDialog = new MagicDialog();
+                        MagicDialog.ShowTextDialog(Window.GetWindow(this), "解压Java中……");
                         bool unzipJava = await UnzipJava();
-                        showDialogs.CloseTextDialog();
+                        MagicDialog.CloseTextDialog();
                         if (unzipJava)
                         {
                             await CheckServerPackCore();
@@ -667,7 +667,7 @@ namespace MSL.pages
                     }
                     else
                     {
-                        Shows.ShowMsgDialog(Window.GetWindow(this), "下载取消！", "提示");
+                        MagicShow.ShowMsgDialog(Window.GetWindow(this), "下载取消！", "提示");
                         noNext = true;
                     }
                 }
@@ -728,10 +728,10 @@ namespace MSL.pages
                     {
                         if (Path.GetDirectoryName(txb3.Text) != serverbase)
                         {
-                            if (await Shows.ShowMsgDialogAsync(Window.GetWindow(this), "所选的服务端核心文件并不在服务器目录中，是否将其复制进服务器目录？\n若不复制，请留意勿将核心文件删除！", "提示", true))
+                            if (await MagicShow.ShowMsgDialogAsync(Window.GetWindow(this), "所选的服务端核心文件并不在服务器目录中，是否将其复制进服务器目录？\n若不复制，请留意勿将核心文件删除！", "提示", true))
                             {
                                 File.Copy(txb3.Text, serverbase + "\\" + _filename, true);
-                                await Shows.ShowMsgDialogAsync(Window.GetWindow(this), "已将服务端核心复制到了服务器目录之中，您现在可以将源文件删除了！", "提示");
+                                await MagicShow.ShowMsgDialogAsync(Window.GetWindow(this), "已将服务端核心复制到了服务器目录之中，您现在可以将源文件删除了！", "提示");
                                 txb3.Text = _filename;
                             }
                         }
@@ -751,13 +751,13 @@ namespace MSL.pages
                     }
                     if (Functions.CheckForgeInstaller(fullFileName))
                     {
-                        bool dialog = await Shows.ShowMsgDialogAsync(Window.GetWindow(this), "您选择的服务端疑似是forge安装器，是否将其展开安装？\n如果不展开安装，服务器可能无法开启！", "提示", true, "取消");
+                        bool dialog = await MagicShow.ShowMsgDialogAsync(Window.GetWindow(this), "您选择的服务端疑似是forge安装器，是否将其展开安装？\n如果不展开安装，服务器可能无法开启！", "提示", true, "取消");
                         if (dialog)
                         {
                             string installReturn = await InstallForge(txb3.Text);
                             if (installReturn == null)
                             {
-                                Shows.ShowMsgDialog(Window.GetWindow(this), "下载失败！", "错误");
+                                MagicShow.ShowMsgDialog(Window.GetWindow(this), "下载失败！", "错误");
                                 return;
                             }
                             txb3.Text = installReturn;
@@ -771,7 +771,7 @@ namespace MSL.pages
                 }
                 catch (Exception ex)
                 {
-                    Shows.ShowMsgDialog(Window.GetWindow(this), ex.Message, "错误");
+                    MagicShow.ShowMsgDialog(Window.GetWindow(this), ex.Message, "错误");
                 }
             }
         }
@@ -800,7 +800,7 @@ namespace MSL.pages
         {
             if ((bool)usebasicfastJvm.IsChecked)
             {
-                await Shows.ShowMsgDialogAsync(Window.GetWindow(this), "使用优化参数需要手动设置大小相同的内存，请对上面的内存进行更改！Java11及以上请勿选择此优化参数！", "警告");
+                await MagicShow.ShowMsgDialogAsync(Window.GetWindow(this), "使用优化参数需要手动设置大小相同的内存，请对上面的内存进行更改！Java11及以上请勿选择此优化参数！", "警告");
                 useJVM.IsChecked = true;
                 usefastJvm.IsChecked = false;
                 txb7.Text = "-XX:+AggressiveOpts";
@@ -817,7 +817,7 @@ namespace MSL.pages
         {
             if ((bool)usefastJvm.IsChecked)
             {
-                await Shows.ShowMsgDialogAsync(Window.GetWindow(this), "使用优化参数需要手动设置大小相同的内存，请对上面的内存进行更改！", "警告");
+                await MagicShow.ShowMsgDialogAsync(Window.GetWindow(this), "使用优化参数需要手动设置大小相同的内存，请对上面的内存进行更改！", "警告");
                 useJVM.IsChecked = true;
                 usebasicfastJvm.IsChecked = false;
                 txb7.Text = "-XX:+UseG1GC -XX:+UnlockExperimentalVMOptions -XX:+ParallelRefProcEnabled -XX:MaxGCPauseMillis=200 -XX:+UnlockExperimentalVMOptions -XX:+DisableExplicitGC -XX:+AlwaysPreTouch -XX:G1NewSizePercent=30 -XX:G1MaxNewSizePercent=40 -XX:G1HeapRegionSize=8M -XX:G1ReservePercent=20 -XX:G1HeapWastePercent=5 -XX:G1MixedGCCountTarget=4 -XX:InitiatingHeapOccupancyPercent=15 -XX:G1MixedGCLiveThresholdPercent=90 -XX:G1RSetUpdatingPauseTimePercent=5 -XX:SurvivorRatio=32 -XX:+PerfDisableSharedMem -XX:MaxTenuringThreshold=1 -Dusing.aikars.flags=https://mcflags.emc.gs -Daikars.new.flags=true";
@@ -863,7 +863,7 @@ namespace MSL.pages
             tempServerCore.Clear();
             if (serverTypes == null)
             {
-                Shows.ShowMsgDialog(Window.GetWindow(this), "服务端正在加载中，请稍后再选择！", "提示");
+                MagicShow.ShowMsgDialog(Window.GetWindow(this), "服务端正在加载中，请稍后再选择！", "提示");
                 return;
             }
             await GetServerVersion();
@@ -888,7 +888,7 @@ namespace MSL.pages
             }
             catch (Exception ex)
             {
-                Shows.ShowMsgDialog(Window.GetWindow(this), "出现错误：" + ex.Message, "ERR");
+                MagicShow.ShowMsgDialog(Window.GetWindow(this), "出现错误：" + ex.Message, "ERR");
                 FastModeNextBtn.IsEnabled = true;
                 return;
             }
@@ -934,7 +934,7 @@ namespace MSL.pages
                 var serverVersions = await TryGetServerVersions(coreType.ToString());
                 if (serverVersions == null)
                 {
-                    Shows.ShowMsgDialog(Window.GetWindow(this), "获取服务端失败！请重试！", "错误");
+                    MagicShow.ShowMsgDialog(Window.GetWindow(this), "获取服务端失败！请重试！", "错误");
                     return;
                 }
 
@@ -968,7 +968,7 @@ namespace MSL.pages
             servername = ServerNameBox.Text;
             if ((new Regex("[\u4E00-\u9FA5]").IsMatch(txb6.Text)) || txb6.Text.Contains(" "))
             {
-                if (!await Shows.ShowMsgDialogAsync(Window.GetWindow(this), "开服器被放置于带有中文字符或空格的目录里，这可能会造成编码错误，从而无法开服，您确定要继续吗？", "警告", true))
+                if (!await MagicShow.ShowMsgDialogAsync(Window.GetWindow(this), "开服器被放置于带有中文字符或空格的目录里，这可能会造成编码错误，从而无法开服，您确定要继续吗？", "警告", true))
                 {
                     return;
                 }
@@ -1073,8 +1073,8 @@ namespace MSL.pages
 
         private async Task<List<string>> AsyncGetJavaVersion()
         {
-            ShowDialogs showDialogs = new ShowDialogs();
-            showDialogs.ShowTextDialog(Window.GetWindow(this), "获取Java版本列表中，请稍等……");
+            MagicDialog MagicDialog = new MagicDialog();
+            MagicDialog.ShowTextDialog(Window.GetWindow(this), "获取Java版本列表中，请稍等……");
             await Task.Delay(100);
             try
             {
@@ -1087,12 +1087,12 @@ namespace MSL.pages
                 {
                     strings.Add(j.ToString());
                 }
-                showDialogs.CloseTextDialog();
+                MagicDialog.CloseTextDialog();
                 return strings;
             }
             catch
             {
-                showDialogs.CloseTextDialog();
+                MagicDialog.CloseTextDialog();
                 return null;
             }
         }
@@ -1107,10 +1107,10 @@ namespace MSL.pages
             if (dwnJava == 1)
             {
                 FastInstallProcess.Text = "当前进度:解压Java……";
-                ShowDialogs showDialogs = new ShowDialogs();
-                showDialogs.ShowTextDialog(Window.GetWindow(this), "解压Java中……");
+                MagicDialog MagicDialog = new MagicDialog();
+                MagicDialog.ShowTextDialog(Window.GetWindow(this), "解压Java中……");
                 bool unzipJava = await UnzipJava();
-                showDialogs.CloseTextDialog();
+                MagicDialog.CloseTextDialog();
                 if (unzipJava)
                 {
                     FastInstallProcess.Text = "当前进度:下载服务端……";
@@ -1130,7 +1130,7 @@ namespace MSL.pages
             }
             else
             {
-                Shows.ShowMsgDialog(Window.GetWindow(this), "下载取消！", "提示");
+                MagicShow.ShowMsgDialog(Window.GetWindow(this), "下载取消！", "提示");
                 FastInstallProcess.Text = "取消安装！";
                 FastModeReturnBtn.IsEnabled = true;
                 FastModeInstallBtn.IsEnabled = true;
@@ -1149,10 +1149,10 @@ namespace MSL.pages
             string sha256Exp = dlContext["data"]["sha256"]?.ToString() ?? string.Empty;
             if (serverCoreType == "forge" || serverCoreType == "spongeforge" || serverCoreType == "neoforge")
             {
-                int dwnDialog = await Shows.ShowDownloaderWithIntReturn(Window.GetWindow(this), dlUrl, serverbase, filename, "下载服务端中……", sha256Exp, true); //从这里请求服务端下载
+                int dwnDialog = await MagicShow.ShowDownloaderWithIntReturn(Window.GetWindow(this), dlUrl, serverbase, filename, "下载服务端中……", sha256Exp, true); //从这里请求服务端下载
                 if (dwnDialog == 2)
                 {
-                    Shows.ShowMsgDialog(Window.GetWindow(this), "下载取消！（或服务端文件不存在）", "提示");
+                    MagicShow.ShowMsgDialog(Window.GetWindow(this), "下载取消！（或服务端文件不存在）", "提示");
                     FastInstallProcess.Text = "取消安装！";
                     FastModeReturnBtn.IsEnabled = true;
                     FastModeInstallBtn.IsEnabled = true;
@@ -1161,10 +1161,10 @@ namespace MSL.pages
             }
             else
             {
-                bool dwnDialog = await Shows.ShowDownloader(Window.GetWindow(this), dlUrl, serverbase, filename, "下载服务端中……", sha256Exp); //从这里请求服务端下载
+                bool dwnDialog = await MagicShow.ShowDownloader(Window.GetWindow(this), dlUrl, serverbase, filename, "下载服务端中……", sha256Exp); //从这里请求服务端下载
                 if (!dwnDialog || !File.Exists(serverbase + "\\" + filename))
                 {
-                    Shows.ShowMsgDialog(Window.GetWindow(this), "下载取消！（或服务端文件不存在）", "提示");
+                    MagicShow.ShowMsgDialog(Window.GetWindow(this), "下载取消！（或服务端文件不存在）", "提示");
                     FastInstallProcess.Text = "取消安装！";
                     FastModeReturnBtn.IsEnabled = true;
                     FastModeInstallBtn.IsEnabled = true;
@@ -1179,11 +1179,11 @@ namespace MSL.pages
                 JObject _dlContext = await HttpService.GetApiContentAsync("download/server/" + forgeName.Replace("-", "/"));
                 string _dlUrl = _dlContext["data"]["url"].ToString();
                 string _sha256Exp = _dlContext["data"]["sha256"]?.ToString() ?? string.Empty;
-                int _dwnDialog = await Shows.ShowDownloaderWithIntReturn(Window.GetWindow(this), _dlUrl, serverbase, _filename, "下载服务端中……", _sha256Exp, true);
+                int _dwnDialog = await MagicShow.ShowDownloaderWithIntReturn(Window.GetWindow(this), _dlUrl, serverbase, _filename, "下载服务端中……", _sha256Exp, true);
 
                 if (_dwnDialog == 2)
                 {
-                    Shows.ShowMsgDialog(Window.GetWindow(this), "下载取消！", "提示");
+                    MagicShow.ShowMsgDialog(Window.GetWindow(this), "下载取消！", "提示");
                     FastInstallProcess.Text = "取消安装！";
                     FastModeReturnBtn.IsEnabled = true;
                     FastModeInstallBtn.IsEnabled = true;
@@ -1211,10 +1211,10 @@ namespace MSL.pages
                     string backupUrl = $"https://maven.minecraftforge.net/net/minecraftforge/forge/{mcVersion}-{forgeVersion}/{forgeName}-{forgeVersion}-installer.jar";
 
                     // Attempt to download from backup URL
-                    bool backupDownloadSuccess = await Shows.ShowDownloader(Window.GetWindow(this), backupUrl, serverbase, _filename, "备用链接下载中……", _sha256Exp);
+                    bool backupDownloadSuccess = await MagicShow.ShowDownloader(Window.GetWindow(this), backupUrl, serverbase, _filename, "备用链接下载中……", _sha256Exp);
                     if (!backupDownloadSuccess || !File.Exists(serverbase + "\\" + _filename))
                     {
-                        Shows.ShowMsgDialog(Window.GetWindow(this), "下载取消！（或服务端文件不存在）", "错误");
+                        MagicShow.ShowMsgDialog(Window.GetWindow(this), "下载取消！（或服务端文件不存在）", "错误");
                         FastInstallProcess.Text = "取消安装！";
                         FastModeReturnBtn.IsEnabled = true;
                         FastModeInstallBtn.IsEnabled = true;
@@ -1234,13 +1234,13 @@ namespace MSL.pages
                 }
                 catch (Exception e)
                 {
-                    Shows.ShowMsgDialog(Window.GetWindow(this), "Sponge核心移动失败！\n请重试！" + e.Message, "错误");
+                    MagicShow.ShowMsgDialog(Window.GetWindow(this), "Sponge核心移动失败！\n请重试！" + e.Message, "错误");
                     return;
                 }
                 string installReturn = await InstallForge(_filename);
                 if (installReturn == null)
                 {
-                    Shows.ShowMsgDialog(Window.GetWindow(this), "安装失败！", "错误");
+                    MagicShow.ShowMsgDialog(Window.GetWindow(this), "安装失败！", "错误");
                     FastModeReturnBtn.IsEnabled = true;
                     FastModeInstallBtn.IsEnabled = true;
                     return;
@@ -1263,17 +1263,17 @@ namespace MSL.pages
                 }
                 catch (Exception e)
                 {
-                    Shows.ShowMsgDialog(Window.GetWindow(this), "Banner端移动失败！\n请重试！" + e.Message, "错误");
+                    MagicShow.ShowMsgDialog(Window.GetWindow(this), "Banner端移动失败！\n请重试！" + e.Message, "错误");
                     return;
                 }
 
                 //下载一个fabric端
                 //获取版本号
                 string bannerVersion = filename.Replace("banner-", "").Replace(".jar", "");
-                bool dwnFabric = await Shows.ShowDownloader(Window.GetWindow(this), (await HttpService.GetApiContentAsync("download/server/fabric/" + bannerVersion))["data"]["url"].ToString(), serverbase, $"fabric-{bannerVersion}.jar", "下载Fabric端中···");
+                bool dwnFabric = await MagicShow.ShowDownloader(Window.GetWindow(this), (await HttpService.GetApiContentAsync("download/server/fabric/" + bannerVersion))["data"]["url"].ToString(), serverbase, $"fabric-{bannerVersion}.jar", "下载Fabric端中···");
                 if (!dwnFabric || !File.Exists(serverbase + "\\" + $"fabric-{bannerVersion}.jar"))
                 {
-                    Shows.ShowMsgDialog(Window.GetWindow(this), "Fabric端下载取消（或服务端文件不存在）！", "错误");
+                    MagicShow.ShowMsgDialog(Window.GetWindow(this), "Fabric端下载取消（或服务端文件不存在）！", "错误");
                     return;
                 }
 
@@ -1283,7 +1283,7 @@ namespace MSL.pages
             {
                 if (!File.Exists(serverbase + "\\" + filename))
                 {
-                    Shows.ShowMsgDialog(Window.GetWindow(this), "下载失败！（或服务端文件不存在）", "提示");
+                    MagicShow.ShowMsgDialog(Window.GetWindow(this), "下载失败！（或服务端文件不存在）", "提示");
                     FastInstallProcess.Text = "取消安装！";
                     FastModeReturnBtn.IsEnabled = true;
                     FastModeInstallBtn.IsEnabled = true;
@@ -1292,7 +1292,7 @@ namespace MSL.pages
                 string installReturn = await InstallForge(filename);
                 if (installReturn == null)
                 {
-                    Shows.ShowMsgDialog(Window.GetWindow(this), "安装失败！", "错误");
+                    MagicShow.ShowMsgDialog(Window.GetWindow(this), "安装失败！", "错误");
                     FastModeReturnBtn.IsEnabled = true;
                     FastModeInstallBtn.IsEnabled = true;
                     return;
@@ -1322,10 +1322,10 @@ namespace MSL.pages
                     string backupUrl = $"https://maven.minecraftforge.net/net/minecraftforge/forge/{mcVersion}-{forgeVersion}/{finallyServerCore}-{forgeVersion}-installer.jar";
 
                     // Attempt to download from backup URL
-                    bool backupDownloadSuccess = await Shows.ShowDownloader(Window.GetWindow(this), backupUrl, serverbase, filename, "备用链接下载中……", sha256Exp);
+                    bool backupDownloadSuccess = await MagicShow.ShowDownloader(Window.GetWindow(this), backupUrl, serverbase, filename, "备用链接下载中……", sha256Exp);
                     if (!backupDownloadSuccess || !File.Exists(serverbase + "\\" + filename))
                     {
-                        Shows.ShowMsgDialog(Window.GetWindow(this), "下载取消！（或服务端文件不存在）", "错误");
+                        MagicShow.ShowMsgDialog(Window.GetWindow(this), "下载取消！（或服务端文件不存在）", "错误");
                         FastInstallProcess.Text = "取消安装！";
                         FastModeReturnBtn.IsEnabled = true;
                         FastModeInstallBtn.IsEnabled = true;
@@ -1335,7 +1335,7 @@ namespace MSL.pages
                 string installReturn = await InstallForge(filename);
                 if (installReturn == null)
                 {
-                    Shows.ShowMsgDialog(Window.GetWindow(this), "安装失败！", "错误");
+                    MagicShow.ShowMsgDialog(Window.GetWindow(this), "安装失败！", "错误");
                     FastModeReturnBtn.IsEnabled = true;
                     FastModeInstallBtn.IsEnabled = true;
                     return;
@@ -1357,10 +1357,10 @@ namespace MSL.pages
         private async Task<string> InstallForge(string filename)
         {
             //调用新版forge安装器
-            string[] installForge = await Shows.ShowInstallForge(Window.GetWindow(this), serverbase + "\\" + filename, serverbase, serverjava);
+            string[] installForge = await MagicShow.ShowInstallForge(Window.GetWindow(this), serverbase + "\\" + filename, serverbase, serverjava);
             if (installForge[0] == "0")
             {
-                if (await Shows.ShowMsgDialogAsync(Window.GetWindow(this), "自动安装失败！是否尝试使用命令行安装方式？", "错误", true))
+                if (await MagicShow.ShowMsgDialogAsync(Window.GetWindow(this), "自动安装失败！是否尝试使用命令行安装方式？", "错误", true))
                 {
                     return Functions.InstallForge(serverjava, serverbase, filename, string.Empty, false);
                 }
@@ -1467,7 +1467,7 @@ namespace MSL.pages
         private void ConptyModeBtn_Checked(object sender, RoutedEventArgs e)
         {
             TraditionModeBtn.IsChecked = false;
-            Shows.ShowMsgDialog(Window.GetWindow(this), "若使用此模式出现问题，可在服务器运行窗口的“更多功能”界面修改此项。", "提示");
+            MagicShow.ShowMsgDialog(Window.GetWindow(this), "若使用此模式出现问题，可在服务器运行窗口的“更多功能”界面修改此项。", "提示");
         }
 
         private async void DoneBtn_Click(object sender, RoutedEventArgs e)
@@ -1511,7 +1511,7 @@ namespace MSL.pages
                 }
                 jsonObject.Add(i.ToString(), _json);
                 File.WriteAllText(@"MSL\ServerList.json", Convert.ToString(jsonObject), Encoding.UTF8);
-                await Shows.ShowMsgDialogAsync(Window.GetWindow(this), "创建完毕，请点击“开启服务器”按钮以开服", "信息");
+                await MagicShow.ShowMsgDialogAsync(Window.GetWindow(this), "创建完毕，请点击“开启服务器”按钮以开服", "信息");
                 GotoServerList();
                 ReInit();
             }

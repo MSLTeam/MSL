@@ -97,7 +97,7 @@ namespace MSL.pages
                         noticeLabText = notice;
                         if (noticeLabText != "")
                         {
-                            Shows.ShowMsgDialog(Window.GetWindow(this), noticeLabText, "公告");
+                            MagicShow.ShowMsgDialog(Window.GetWindow(this), noticeLabText, "公告");
                         }
                     }
                     else

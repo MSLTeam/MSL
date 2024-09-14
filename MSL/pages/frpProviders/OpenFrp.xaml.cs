@@ -48,11 +48,11 @@ namespace MSL.pages.frpProviders
             OpenFrpApi control = new OpenFrpApi();
             if (OpenFrpApi.userAccount == "" || OpenFrpApi.userPass == "")
             {
-                OpenFrpApi.userAccount = await Shows.ShowInput(Window.GetWindow(this), "请输入OpenFrp的账户名/邮箱");
+                OpenFrpApi.userAccount = await MagicShow.ShowInput(Window.GetWindow(this), "请输入OpenFrp的账户名/邮箱");
 
                 if (OpenFrpApi.userAccount != null)
                 {
-                    OpenFrpApi.userPass = await Shows.ShowInput(Window.GetWindow(this), "请输入" + OpenFrpApi.userAccount + "的密码", "", true);
+                    OpenFrpApi.userPass = await MagicShow.ShowInput(Window.GetWindow(this), "请输入" + OpenFrpApi.userAccount + "的密码", "", true);
 
                     if (OpenFrpApi.userPass == null)
                     {
@@ -92,7 +92,7 @@ namespace MSL.pages.frpProviders
             }
             catch
             {
-                Shows.ShowMsgDialog(Window.GetWindow(this), "登录失败！请检查您的用户名或密码是否正确！\n" + usr_info, "错误！");
+                MagicShow.ShowMsgDialog(Window.GetWindow(this), "登录失败！请检查您的用户名或密码是否正确！\n" + usr_info, "错误！");
                 OpenFrpApi.authId = string.Empty;
                 OpenFrpApi.userAccount = string.Empty;
                 OpenFrpApi.userPass = string.Empty;
@@ -172,13 +172,13 @@ namespace MSL.pages.frpProviders
             Window window = Window.GetWindow(Window.GetWindow(this));
             if (toggleProxies.SelectedIndex != 0 || serversList.SelectedIndex == -1)
             {
-                Shows.ShowMsgDialog(Window.GetWindow(this), "请确保您选择了一个隧道", "错误");
+                MagicShow.ShowMsgDialog(Window.GetWindow(this), "请确保您选择了一个隧道", "错误");
                 toggleProxies.SelectedIndex = 0;
                 return;
             }
             if (portBox.Text == "")
             {
-                Shows.ShowMsgDialog(Window.GetWindow(this), "请确保内网端口不为空", "错误");
+                MagicShow.ShowMsgDialog(Window.GetWindow(this), "请确保内网端口不为空", "错误");
                 return;
             }
 
@@ -190,8 +190,8 @@ namespace MSL.pages.frpProviders
                 return;
             }
             string id = nodelist[o.ToString()];
-            Config.WriteFrpcConfig(1, $"-u {token} -p {id}", $"OpenFrp节点 - {o.ToString()}");
-            await Shows.ShowMsgDialogAsync(window, "映射配置成功，请您点击“启动内网映射”以启动映射！", "信息");
+            Config.WriteFrpcConfig(1, $"OpenFrp节点 - {o.ToString()}", $"-u {token} -p {id}","");
+            await MagicShow.ShowMsgDialogAsync(window, "映射配置成功，请您点击“启动内网映射”以启动映射！", "信息");
             window.Close();
         }
 
@@ -229,7 +229,7 @@ namespace MSL.pages.frpProviders
             {
                 if (toggleProxies.SelectedIndex != 1 || serversList.SelectedIndex == -1)
                 {
-                    Shows.ShowMsgDialog(Window.GetWindow(this), "请先选择一个节点", "错误");
+                    MagicShow.ShowMsgDialog(Window.GetWindow(this), "请先选择一个节点", "错误");
                     toggleProxies.SelectedIndex = 1;
                     return;
                 }
@@ -251,22 +251,22 @@ namespace MSL.pages.frpProviders
                 if (selected_node != null) selected_node_id = Convert.ToInt16(nodelist[selected_node]);
                 else
                 {
-                    Shows.ShowMsgDialog(Window.GetWindow(this), "请先选择一个节点", "错误");
+                    MagicShow.ShowMsgDialog(Window.GetWindow(this), "请先选择一个节点", "错误");
                     return;
                 }
-                string proxy_name = await Shows.ShowInput(Window.GetWindow(this), "隧道名称(不支持中文)");
+                string proxy_name = await MagicShow.ShowInput(Window.GetWindow(this), "隧道名称(不支持中文)");
                 if (proxy_name != null)
                 {
                     string returnMsg = "";
                     bool createReturn = control.CreateProxy(type, portBox.Text, zip, selected_node_id, remotePortBox.Text, proxy_name, out returnMsg);
                     if (createReturn)
                     {
-                        Shows.ShowMsgDialog(Window.GetWindow(this), "隧道创建成功！", "提示");
+                        MagicShow.ShowMsgDialog(Window.GetWindow(this), "隧道创建成功！", "提示");
                         toggleProxies.SelectedIndex = 0;
                     }
                     else
                     {
-                        Shows.ShowMsgDialog(Window.GetWindow(this), "创建失败！" + returnMsg, "错误");
+                        MagicShow.ShowMsgDialog(Window.GetWindow(this), "创建失败！" + returnMsg, "错误");
                     }
                 }
                 addProxieBtn.IsEnabled = true;
@@ -278,7 +278,7 @@ namespace MSL.pages.frpProviders
             }
             catch (Exception ex)
             {
-                Shows.ShowMsgDialog(Window.GetWindow(this), "出现错误！" + ex.Message, "错误");
+                MagicShow.ShowMsgDialog(Window.GetWindow(this), "出现错误！" + ex.Message, "错误");
             }
         }
 
@@ -325,7 +325,7 @@ namespace MSL.pages.frpProviders
             {
                 if (toggleProxies.SelectedIndex != 0 || serversList.SelectedIndex == -1)
                 {
-                    Shows.ShowMsgDialog(Window.GetWindow(this), "请先选择一个隧道", "错误");
+                    MagicShow.ShowMsgDialog(Window.GetWindow(this), "请先选择一个隧道", "错误");
                     toggleProxies.SelectedIndex = 0;
                     return;
                 }
@@ -342,11 +342,11 @@ namespace MSL.pages.frpProviders
                 bool delReturn = await Task.Run(() => control.DeleteProxy(id, out returnMsg));
                 if (delReturn)
                 {
-                    Shows.ShowMsgDialog(Window.GetWindow(this), "删除成功！", "提示");
+                    MagicShow.ShowMsgDialog(Window.GetWindow(this), "删除成功！", "提示");
                 }
                 else
                 {
-                    Shows.ShowMsgDialog(Window.GetWindow(this), "删除失败！" + returnMsg, "错误");
+                    MagicShow.ShowMsgDialog(Window.GetWindow(this), "删除失败！" + returnMsg, "错误");
                 }
                 Dictionary<string, string> process = control.GetUserNodes();
                 if (process.Count != 0)
@@ -365,7 +365,7 @@ namespace MSL.pages.frpProviders
             }
             catch (Exception ex)
             {
-                Shows.ShowMsgDialog(Window.GetWindow(this), "出现错误！" + ex.Message, "错误");
+                MagicShow.ShowMsgDialog(Window.GetWindow(this), "出现错误！" + ex.Message, "错误");
             }
         }
 
@@ -380,7 +380,7 @@ namespace MSL.pages.frpProviders
             {
                 if (toggleProxies.SelectedIndex != 1 || serversList.SelectedIndex == -1)
                 {
-                    Shows.ShowMsgDialog(Window.GetWindow(this), "请先选择一个节点", "错误");
+                    MagicShow.ShowMsgDialog(Window.GetWindow(this), "请先选择一个节点", "错误");
                     toggleProxies.SelectedIndex = 1;
                     return;
                 }
@@ -390,7 +390,7 @@ namespace MSL.pages.frpProviders
                 if (selected_node != null) selected_node_id = Convert.ToInt16(nodelist[selected_node]);
                 else
                 {
-                    Shows.ShowMsgDialog(Window.GetWindow(this), "请先选择一个节点", "错误");
+                    MagicShow.ShowMsgDialog(Window.GetWindow(this), "请先选择一个节点", "错误");
                     return;
                 }
                 foreach (var node in jArray)
@@ -542,7 +542,7 @@ namespace MSL.pages.frpProviders
                         using (var reader = new StreamReader(errorResponse.GetResponseStream()))
                         {
                             string error = reader.ReadToEnd();
-                            Shows.ShowMsgDialog(window, error, "获取用户信息失败");
+                            MagicShow.ShowMsgDialog(window, error, "获取用户信息失败");
                         }
                     }
                 }
@@ -564,23 +564,23 @@ namespace MSL.pages.frpProviders
             }
             catch
             {
-                Shows.ShowMsgDialog(window, "签到失败！请登录OpenFrp官网进行签到！", "错误");
+                MagicShow.ShowMsgDialog(window, "签到失败！请登录OpenFrp官网进行签到！", "错误");
                 return;
             }
             try
             {
                 if ((bool)JObject.Parse(responseMessage)["flag"] == true && JObject.Parse(responseMessage)["msg"].ToString() == "OK")
                 {
-                    Shows.ShowMsgDialog(window, JObject.Parse(responseMessage)["data"].ToString(), "签到成功");
+                    MagicShow.ShowMsgDialog(window, JObject.Parse(responseMessage)["data"].ToString(), "签到成功");
                 }
                 else
                 {
-                    Shows.ShowMsgDialog(window, "签到失败", "签到失败");
+                    MagicShow.ShowMsgDialog(window, "签到失败", "签到失败");
                 }
             }
             catch (Exception ex)
             {
-                Shows.ShowMsgDialog(window, "签到失败,产生的错误:\n" + ex.Message, "签到失败");
+                MagicShow.ShowMsgDialog(window, "签到失败,产生的错误:\n" + ex.Message, "签到失败");
             }
         }
         */

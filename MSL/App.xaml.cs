@@ -17,11 +17,12 @@ namespace MSL
     {
         public App()
         {
-            // 添加崩溃处理事件
+            // 崩溃处理事件
             DispatcherUnhandledException += (s, e) =>
             {
-                MessageBox.Show("程序在运行的时候发生了异常，异常代码：\n" + e.Exception.Message + "\n请检查您是否安装了.NET Framework 4.7.2，若软件闪退，请联系作者进行反馈", "错误", MessageBoxButton.OK, MessageBoxImage.Error);
                 e.Handled = true; // 设置为已处理，阻止应用程序崩溃
+                //Logger.LogError("An error has occurred:" + e.Exception.ToString());
+                MessageBox.Show("程序在运行的时候发生了异常，异常代码：\n" + e.Exception.Message + "\n请检查您是否安装了.NET Framework 4.7.2，若软件闪退，请联系作者进行反馈", "错误", MessageBoxButton.OK, MessageBoxImage.Error);
             };
         }
 
@@ -43,18 +44,6 @@ namespace MSL
                 }
             }
 
-            /*
-            // Logger
-            if (!Directory.Exists("MSL"))
-            {
-                Directory.CreateDirectory("MSL");
-                Logger.LogWarning("未检测到MSL文件夹，已进行创建");
-            }
-
-            Logger.Clear();
-            Logger.LogInfo("MSL，启动！");
-            */
-
             if (Directory.GetCurrentDirectory() + "\\" != AppDomain.CurrentDomain.BaseDirectory)
             {
                 Directory.SetCurrentDirectory(AppDomain.CurrentDomain.BaseDirectory);
@@ -63,53 +52,53 @@ namespace MSL
             try
             {
                 Directory.CreateDirectory("MSL");
-                //firstLauchEvent
                 if (!File.Exists(@"MSL\config.json"))
                 {
-                    //Logger.LogWarning("未检测到config.json文件，创建config.json……");
                     File.WriteAllText(@"MSL\config.json", string.Format("{{{0}}}", "\n"));
                 }
             }
             catch (Exception ex)
             {
-                //Logger.LogError("生成config.json文件失败，原因："+ex.Message);
                 MessageBox.Show(LanguageManager.Instance["MainWindow_GrowlMsg_InitErr"] + ex.Message, LanguageManager.Instance["Error"], MessageBoxButton.OK, MessageBoxImage.Error);
                 Environment.Exit(0);
             }
-            //Logger.LogInfo("读取配置文件……");
             JObject jsonObject;
             try
             {
                 jsonObject = JObject.Parse(File.ReadAllText(@"MSL\config.json", Encoding.UTF8));
-                //Logger.LogInfo("读取配置文件成功！");
             }
             catch (Exception ex)
             {
-                //Logger.LogError("读取config.json失败！尝试重新载入……");
                 MessageBox.Show(LanguageManager.Instance["MainWindow_GrowlMsg_ConfigErr2"] + ex.Message, LanguageManager.Instance["Error"], MessageBoxButton.OK, MessageBoxImage.Error);
                 File.WriteAllText(@"MSL\config.json", string.Format("{{{0}}}", "\n"));
                 jsonObject = JObject.Parse(File.ReadAllText(@"MSL\config.json", Encoding.UTF8));
-                //Logger.LogInfo("读取config.json成功！");
             }
             try
             {
+                /*
+                if (jsonObject["debugMode"] != null && (bool)jsonObject["debugMode"] == true)
+                {
+                    Logger.CanWriteLog = true;
+                    Logger.Clear();
+                    Logger.LogWarning("DEBUGMODE ON");
+                }
+                */
                 if (jsonObject["lang"] == null)
                 {
                     jsonObject.Add("lang", "zh-CN");
                     string convertString = Convert.ToString(jsonObject);
                     File.WriteAllText(@"MSL\config.json", convertString, Encoding.UTF8);
-                    LanguageManager.Instance.ChangeLanguage(new CultureInfo("zh-CN"));
                     //Logger.LogInfo("Language: " + "ZH-CN");
                 }
                 else
                 {
-                    LanguageManager.Instance.ChangeLanguage(new CultureInfo(jsonObject["lang"].ToString()));
+                    if (jsonObject["lang"].ToString() != "zh-CN")
+                        LanguageManager.Instance.ChangeLanguage(new CultureInfo(jsonObject["lang"].ToString()));
                     //Logger.LogInfo("Language: " + jsonObject["lang"].ToString().ToUpper());
                 }
             }
             finally
             {
-                jsonObject = null;
                 base.OnStartup(e);
             }
         }
@@ -165,6 +154,8 @@ namespace MSL
 
         protected override void OnExit(ExitEventArgs e)
         {
+            //Logger.LogInfo("Exiting Application.");
+            //Logger.Dispose();
             _mutex?.ReleaseMutex();
             base.OnExit(e);
         }
@@ -173,37 +164,70 @@ namespace MSL
     /*
     public class Logger
     {
+        public static bool CanWriteLog = false;
+        private static StreamWriter writer;
+        private static readonly object lockObj = new object();
+
+        static Logger()
+        {
+            // 初始化 StreamWriter，开启追加模式
+            writer = new StreamWriter("MSL\\log.txt", true)
+            {
+                AutoFlush = true // 自动刷新，保证每次写入都立即保存到文件
+            };
+        }
+
+        // 清除日志文件
         public static void Clear()
         {
-            if (File.Exists("MSL\\log.txt"))
+            lock (lockObj)
             {
-                File.WriteAllText("MSL\\log.txt",string.Empty);
+                if (File.Exists("MSL\\log.txt"))
+                {
+                    writer.Close();  // 先关闭流再清空文件
+                    File.WriteAllText("MSL\\log.txt", string.Empty); // 清空文件
+                    writer = new StreamWriter("MSL\\log.txt", true) { AutoFlush = true }; // 重新打开流
+                }
             }
         }
+
+        // 日志记录方法
         public static void LogInfo(string message)
         {
-            LogMessage("INFO", message);
+            if (CanWriteLog)
+                LogMessage("INFO", message);
         }
 
         public static void LogWarning(string message)
         {
-            LogMessage("WARNING", message);
+            if (CanWriteLog)
+                LogMessage("WARNING", message);
         }
 
         public static void LogError(string message)
         {
-            LogMessage("ERROR", message);
+            if (CanWriteLog)
+                LogMessage("ERROR", message);
         }
-        
+
+        // 核心日志写入方法
         private static void LogMessage(string level, string message)
         {
             string logEntry = $"{DateTime.Now} [{level}] {message}";
             Console.WriteLine(logEntry);
 
-            // 写入日志文件
-            using (StreamWriter writer = File.AppendText("MSL\\log.txt"))
+            lock (lockObj) // 保证线程安全
             {
-                writer.WriteLine(logEntry);
+                writer.WriteLine(logEntry); // 直接写入日志文件
+            }
+        }
+
+        // 释放资源
+        public static void Dispose()
+        {
+            lock (lockObj)
+            {
+                writer?.Dispose(); // 确保程序结束时关闭文件流
             }
         }
     }

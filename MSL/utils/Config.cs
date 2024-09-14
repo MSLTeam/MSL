@@ -10,22 +10,22 @@ namespace MSL.utils
 {
     internal class Config
     {
-        private static readonly ConcurrentQueue<KeyValuePair<string, string>> _queue = new ConcurrentQueue<KeyValuePair<string, string>>();
+        private static readonly ConcurrentQueue<KeyValuePair<string, JToken>> _queue = new ConcurrentQueue<KeyValuePair<string, JToken>>();
         private static readonly string _configPath = "MSL\\config.json";//配置文件路径
         private static Task _writeTask = Task.CompletedTask;
 
         //读取配置
-        public static string Read(string key)
+        public static object Read(string key)
         {
             JObject jobject = JObject.Parse(File.ReadAllText(_configPath, Encoding.UTF8));
-            return (string)jobject[key] ?? "";
+            return jobject[key] ?? null;
         }
 
         //写入配置
-        public static void Write(string key, string value)
+        public static void Write(string key, JToken value)
         {
             //感谢newbing写的队列
-            _queue.Enqueue(new KeyValuePair<string, string>(key, value));
+            _queue.Enqueue(new KeyValuePair<string, JToken>(key, value));
 
             if (_writeTask.IsCompleted)
             {
@@ -42,8 +42,15 @@ namespace MSL.utils
             }
         }
 
-        //输出frpc配置文件
-        public static bool WriteFrpcConfig(int ServerID, string Content, string Name)
+        /// <summary>
+        /// 写Frp信息存储文件和配置文件
+        /// </summary>
+        /// <param name="ServerID">Frp服务ID</param>
+        /// /// <param name="Name">MSL显示的Frpc隧道名字</param>
+        /// <param name="Content">FRPC配置文件内容</param>
+        /// <param name="Suffix">保存到FRPC文件的后缀名，默认为.toml</param>
+        /// <returns>bool</returns>
+        public static bool WriteFrpcConfig(int ServerID, string Name, string Content, string Suffix = ".toml")
         {
             try
             {
@@ -54,11 +61,11 @@ namespace MSL.utils
                     File.WriteAllText(@"MSL\frp\config.json", string.Format("{{{0}}}", "\n"));
                 }
                 Directory.CreateDirectory("MSL\\frp\\" + number);
-                File.WriteAllText($"MSL\\frp\\{number}\\frpc", Content);
+                File.WriteAllText($"MSL\\frp\\{number}\\frpc" + Suffix, Content);
                 JObject keyValues = new JObject()
                 {
-                    ["frpcServer"] = ServerID, //服务ID
-                    ["name"] = Name,//备注
+                    ["frpcServer"] = ServerID,
+                    ["name"] = Name,
                 };
                 JObject jobject = JObject.Parse(File.ReadAllText(@"MSL\frp\config.json", Encoding.UTF8));
                 jobject.Add(number.ToString(), keyValues);

@@ -190,14 +190,14 @@ namespace MSL.pages
             SaveFileDialog saveFileDialog = new SaveFileDialog();
             if (saveFileDialog.ShowDialog() == true)
             {
-                await Shows.ShowMsgDialogAsync(Window.GetWindow(this), "保存目录:" + Path.GetDirectoryName(saveFileDialog.FileName) + "\n文件名:" + Path.GetFileName(saveFileDialog.FileName), "信息");
-                await Shows.ShowDownloader(Window.GetWindow(this), DownloadUrl.Text, Path.GetDirectoryName(saveFileDialog.FileName), Path.GetFileName(saveFileDialog.FileName), "下载中");
+                await MagicShow.ShowMsgDialogAsync(Window.GetWindow(this), "保存目录:" + Path.GetDirectoryName(saveFileDialog.FileName) + "\n文件名:" + Path.GetFileName(saveFileDialog.FileName), "信息");
+                await MagicShow.ShowDownloader(Window.GetWindow(this), DownloadUrl.Text, Path.GetDirectoryName(saveFileDialog.FileName), Path.GetFileName(saveFileDialog.FileName), "下载中");
             }
         }
 
         private async void setdefault_Click(object sender, RoutedEventArgs e)
         {
-            bool dialogRet = await Shows.ShowMsgDialogAsync(Window.GetWindow(this), "恢复默认设置会清除MSL文件夹内的所有文件，请您谨慎选择！", "警告", true);
+            bool dialogRet = await MagicShow.ShowMsgDialogAsync(Window.GetWindow(this), "恢复默认设置会清除MSL文件夹内的所有文件，请您谨慎选择！", "警告", true);
             if (dialogRet)
             {
                 try
@@ -505,7 +505,7 @@ namespace MSL.pages
         private async void WesternEgg_Click(object sender, RoutedEventArgs e)
         {
 
-            bool dialog = await Shows.ShowMsgDialogAsync(Window.GetWindow(this), "点击此按钮后软件出现任何问题作者概不负责，你确定要继续吗？\n（光敏性癫痫警告！若您患有光敏性癫痫，请不要点击确定！）", "警告", true);
+            bool dialog = await MagicShow.ShowMsgDialogAsync(Window.GetWindow(this), "点击此按钮后软件出现任何问题作者概不负责，你确定要继续吗？\n（光敏性癫痫警告！若您患有光敏性癫痫，请不要点击确定！）", "警告", true);
             if (dialog)
             {
                 // 定义一个颜色数组
@@ -562,7 +562,7 @@ namespace MSL.pages
                 }
                 catch (Exception ex)
                 {
-                    Shows.ShowMsgDialog(Window.GetWindow(this), "更换背景图片失败！请重试！\n错误代码：" + ex.Message, "错误");
+                    MagicShow.ShowMsgDialog(Window.GetWindow(this), "更换背景图片失败！请重试！\n错误代码：" + ex.Message, "错误");
                 }
             }
         }
@@ -592,7 +592,7 @@ namespace MSL.pages
             }
             catch (Exception ex)
             {
-                Shows.ShowMsgDialog(Window.GetWindow(this), "清除背景图片失败！请重试！\n错误代码：" + ex.Message, "错误");
+                MagicShow.ShowMsgDialog(Window.GetWindow(this), "清除背景图片失败！请重试！\n错误代码：" + ex.Message, "错误");
             }
         }
 
@@ -667,16 +667,16 @@ namespace MSL.pages
                 if (newVersion > version)
                 {
                     var updatelog = _httpReturn["data"]["log"].ToString();
-                    bool dialog = await Shows.ShowMsgDialogAsync(Window.GetWindow(this), "发现新版本，版本号为：" + _version + "，是否进行更新？\n更新日志：\n" + updatelog, "更新", true, "取消");
+                    bool dialog = await MagicShow.ShowMsgDialogAsync(Window.GetWindow(this), "发现新版本，版本号为：" + _version + "，是否进行更新？\n更新日志：\n" + updatelog, "更新", true, "取消");
                     if (dialog == true)
                     {
                         if (MainWindow.ProcessRunningCheck())
                         {
-                            Shows.ShowMsgDialog(Window.GetWindow(this), "您的服务器/内网映射/点对点联机正在运行中，若此时更新，会造成后台残留，请将前者关闭后再进行更新！", "警告");
+                            MagicShow.ShowMsgDialog(Window.GetWindow(this), "您的服务器/内网映射/点对点联机正在运行中，若此时更新，会造成后台残留，请将前者关闭后再进行更新！", "警告");
                             return;
                         }
                         string downloadUrl = (await HttpService.GetApiContentAsync("download/update?type=normal"))["data"]["url"].ToString(); ;
-                        await Shows.ShowDownloader(Window.GetWindow(this), downloadUrl, AppDomain.CurrentDomain.BaseDirectory, "MSL" + _version + ".exe", "下载新版本中……");
+                        await MagicShow.ShowDownloader(Window.GetWindow(this), downloadUrl, AppDomain.CurrentDomain.BaseDirectory, "MSL" + _version + ".exe", "下载新版本中……");
                         if (File.Exists("MSL" + _version + ".exe"))
                         {
                             string oldExePath = Process.GetCurrentProcess().MainModule.ModuleName;
@@ -790,7 +790,7 @@ namespace MSL.pages
         {
             if (MSLTips.IsChecked == false)
             {
-                if (await Shows.ShowMsgDialogAsync(Window.GetWindow(this), "关闭此功能后，读取服务器信息、玩家等功能将会失效，请谨慎选择！", "警告", true) == true)
+                if (await MagicShow.ShowMsgDialogAsync(Window.GetWindow(this), "关闭此功能后，读取服务器信息、玩家等功能将会失效，请谨慎选择！", "警告", true) == true)
                 {
                     try
                     {

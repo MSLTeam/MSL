@@ -428,23 +428,23 @@
                                         <RowDefinition Height="Auto"/>
                                         <RowDefinition Height="Auto"/>
                                     </Grid.RowDefinitions>
-                                    <Label Grid.Row="0" Content="正版验证：" Margin="10" VerticalAlignment="Center" />
+                                    <Label Grid.Row="0" Content="正版验证：" Margin="5" VerticalAlignment="Center" />
                                     <TextBox Grid.Row="0" x:Name="onlineModeText" Margin="100,0,0,0" TextWrapping="Wrap" Text="" VerticalAlignment="Center" Width="90" HorizontalAlignment="Left"/>
-                                    <Label Grid.Row="1" Content="游戏模式：" Margin="10" VerticalAlignment="Center" />
+                                    <Label Grid.Row="1" Content="游戏模式：" Margin="5" VerticalAlignment="Center" />
                                     <TextBox Grid.Row="1" x:Name="gameModeText" Margin="100,0,0,0" TextWrapping="Wrap" Text="" VerticalAlignment="Center" Width="90" HorizontalAlignment="Left"/>
-                                    <Label Grid.Row="2" Content="游戏难度：" Margin="10" VerticalAlignment="Center" />
+                                    <Label Grid.Row="2" Content="游戏难度：" Margin="5" VerticalAlignment="Center" />
                                     <TextBox Grid.Row="2" x:Name="gameDifficultyText" Margin="100,0,0,0" TextWrapping="Wrap" Text="" VerticalAlignment="Center" Width="90" HorizontalAlignment="Left"/>
-                                    <Label Grid.Row="3" Content="游戏人数：" Margin="10" VerticalAlignment="Center" />
+                                    <Label Grid.Row="3" Content="游戏人数：" Margin="5" VerticalAlignment="Center" />
                                     <TextBox Grid.Row="3" x:Name="gamePlayerText" Margin="100,0,0,0" TextWrapping="Wrap" Text="" VerticalAlignment="Center" Width="90" HorizontalAlignment="Left"/>
-                                    <Label Grid.Row="4" Content="服务器端口：" Margin="10" VerticalAlignment="Center" />
+                                    <Label Grid.Row="4" Content="服务器端口：" Margin="5" VerticalAlignment="Center" />
                                     <TextBox Grid.Row="4" x:Name="gamePortText" Margin="100,0,0,0" TextWrapping="Wrap" Text="" VerticalAlignment="Center" Width="90" HorizontalAlignment="Left"/>
-                                    <Label Grid.Row="5" Content="命令方块：" Margin="10" VerticalAlignment="Center" />
+                                    <Label Grid.Row="5" Content="命令方块：" Margin="5" VerticalAlignment="Center" />
                                     <TextBox Grid.Row="5" x:Name="commandBlockText" Margin="100,0,0,0" TextWrapping="Wrap" Text="" VerticalAlignment="Center" Width="90" HorizontalAlignment="Left"/>
-                                    <Label Grid.Row="6" Content="视距：" Margin="10" VerticalAlignment="Center" />
+                                    <Label Grid.Row="6" Content="视距：" Margin="5" VerticalAlignment="Center" />
                                     <TextBox Grid.Row="6" x:Name="viewDistanceText" Margin="100,0,0,0" TextWrapping="Wrap" Text="" VerticalAlignment="Center" Width="90" HorizontalAlignment="Left"/>
-                                    <Label Grid.Row="7" Content="PVP：" Margin="10" VerticalAlignment="Center" />
+                                    <Label Grid.Row="7" Content="PVP：" Margin="5" VerticalAlignment="Center" />
                                     <TextBox Grid.Row="7" x:Name="gamePvpText" Margin="100,0,0,0" TextWrapping="Wrap" Text="" VerticalAlignment="Center" Width="90" HorizontalAlignment="Left"/>
-                                    <Label Grid.Row="8" Content="主世界地图：" Margin="10" VerticalAlignment="Center" />
+                                    <Label Grid.Row="8" Content="主世界地图：" Margin="5" VerticalAlignment="Center" />
                                     <TextBox Grid.Row="8" x:Name="gameWorldText" Margin="100,0,0,0" TextWrapping="Wrap" Text="" VerticalAlignment="Center" Width="90" HorizontalAlignment="Left"/>
                                     <TextBlock Grid.Row="0" Margin="200,0,0,0" TextWrapping="Wrap" Text="注：正版验证（online-mode），若开启（true），盗版/离线用户将无法进入该服务器，关闭请输入false" VerticalAlignment="Center"/>
                                     <TextBlock Grid.Row="1" Margin="200,0,0,0" TextWrapping="Wrap" Text="注：游戏模式（gamemode），不同版本改法不一致，具体可参照页面底部表格" VerticalAlignment="Center"/>

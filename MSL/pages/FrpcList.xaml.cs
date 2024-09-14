@@ -106,7 +106,7 @@ namespace MSL.pages
             {
                 if (RunningFrpc.Contains(int.Parse(selectedTunnel.ID)))
                 {
-                    Shows.ShowMsgDialog(Window.GetWindow(this), "该映射正在运行中，请先关闭！", "提示");
+                    MagicShow.ShowMsgDialog(Window.GetWindow(this), "该映射正在运行中，请先关闭！", "提示");
                     return;
                 }
                 JObject keyValuePairs = JObject.Parse(File.ReadAllText(Path.Combine("MSL", "frp", "config.json")));

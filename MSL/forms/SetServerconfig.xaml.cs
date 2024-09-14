@@ -90,7 +90,7 @@ namespace MSL
                     }
                     catch (Exception ex)
                     {
-                        Shows.ShowMsgDialog(this, ex.Message, "Err");
+                        MagicShow.ShowMsgDialog(this, ex.Message, "Err");
                     }
                 }
             }
@@ -160,11 +160,11 @@ namespace MSL
                 {
                     File.WriteAllText(serverbase + "\\" + path, EditorBox.Text, Encoding.Default);
                 }
-                Shows.ShowMsgDialog(this, "保存成功！重启服务器生效！", "提示");
+                MagicShow.ShowMsgDialog(this, "保存成功！重启服务器生效！", "提示");
             }
             catch (Exception ex)
             {
-                Shows.ShowMsgDialog(this, ex.Message, "Err");
+                MagicShow.ShowMsgDialog(this, ex.Message, "Err");
             }
         }
     }
