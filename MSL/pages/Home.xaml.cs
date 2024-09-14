@@ -25,39 +25,29 @@ namespace MSL.pages
             InitializeComponent();
         }
 
-        private bool isInit = false;
-        private async void Page_Initialized(object sender, EventArgs e)
+        private bool isInit = true;
+        private async void Page_Loaded(object sender, RoutedEventArgs e)
         {
             GetServerConfig();
-            for (int i = 0; i < 10; i++)
+            if (isInit)
             {
-                if (MainWindow.serverLink != null)
+                for (int i = 0; i < 10; i++)
                 {
-                    break;
+                    if (MainWindow.serverLink != null)
+                    {
+                        break;
+                    }
+                    await Task.Delay(1000);
                 }
-                await Task.Delay(1000);
-            }
-            if (MainWindow.serverLink == null)
-            {
-                noticeLab.Text = "加载失败，请检查网络连接！";
+                await GetNotice(true);
+                isInit = false;
             }
             else
             {
-                await GetNotice(true);
-            }
-            isInit = true;
-        }
-
-        private async void Page_Loaded(object sender, RoutedEventArgs e)
-        {
-            if (!isInit)
-            {
-                return;
-            }
-            GetServerConfig();
-            if (MainWindow.serverLink != null)
-            {
-                await GetNotice();
+                if (MainWindow.serverLink != null)
+                {
+                    await GetNotice();
+                }
             }
         }
 

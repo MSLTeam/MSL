@@ -62,17 +62,17 @@ namespace MSL
             {
                 JObject jsonObject = JObject.Parse(File.ReadAllText(@"MSL\config.json", Encoding.UTF8));
                 deviceID = Functions.GetDeviceID();
-                if (jsonObject["deviceID_Prefix"] == null || jsonObject["deviceID_Prefix"].ToString() != deviceID.Substring(0, 10))
+                if (jsonObject["eula"] == null || jsonObject["eula"].ToString() != deviceID.Substring(0, 5))
                 {
                     if (await EulaEvent())
                     {
-                        if (jsonObject["deviceID_Prefix"] == null)
+                        if (jsonObject["eula"] == null)
                         {
-                            jsonObject.Add("deviceID_Prefix", deviceID.Substring(0, 10));
+                            jsonObject.Add("eula", deviceID.Substring(0, 5));
                         }
                         else
                         {
-                            jsonObject["deviceID_Prefix"] = deviceID.Substring(0, 10);
+                            jsonObject["eula"] = deviceID.Substring(0, 5);
                         }
                         string convertString = Convert.ToString(jsonObject);
                         File.WriteAllText(@"MSL\config.json", convertString, Encoding.UTF8);

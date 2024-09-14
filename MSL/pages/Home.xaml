@@ -8,7 +8,7 @@
       xmlns:controls="clr-namespace:MSL.controls"
       xmlns:langs="clr-namespace:MSL.langs"
       mc:Ignorable="d" d:DesignHeight="460" d:DesignWidth="750" Style="{StaticResource AnimationPage}"
-      Title="Home" Initialized="Page_Initialized" Loaded="Page_Loaded">
+      Title="Home" Loaded="Page_Loaded">
     <Grid>
         <Grid.RowDefinitions>
             <RowDefinition Height="*"/>
