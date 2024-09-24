@@ -11,19 +11,61 @@
       NonClientAreaBackground="{DynamicResource BackgroundBrush}"
       Title="下载服务端" Loaded="Page_Loaded" Background="{DynamicResource BackgroundBrush}" ResizeMode="NoResize" WindowStartupLocation="CenterOwner">
     <Grid x:Name="BodyGrid">
-        <TextBlock Text="在此选择服务端：" Foreground="{DynamicResource PrimaryTextBrush}" HorizontalAlignment="Left" Margin="10,10,0,0" VerticalAlignment="Top" FontSize="20" FontWeight="Bold" Padding="5,0,0,0"/>
-        <ComboBox x:Name="serverlist" Margin="175,8,88,0" SelectionChanged="serverlist_SelectionChanged" Height="32" VerticalAlignment="Top"/>
-        <Button x:Name="RefreshBtn" Content="刷新" Margin="0,8,10,0" VerticalAlignment="Top" Click="RefreshBtn_Click" Height="32" Width="73" HorizontalAlignment="Right"/>
-        <ListBox x:Name="serverlist1" Margin="10,50,200,10" SelectionMode="Single" MouseDoubleClick="serverlist_MouseDoubleClick"/>
-        <Button x:Name="DownloadBtn" Content="下载" Style="{StaticResource ButtonPrimary}" Margin="0,50,10,0" VerticalAlignment="Top" Height="45" Width="185" HorizontalAlignment="Right" Click="DownloadBtn_Click" FontSize="14"/>
-        <TextBox x:Name="server_d" HorizontalAlignment="Right" Margin="0,120,10,200" TextWrapping="Wrap" VerticalScrollBarVisibility="Visible" Text="服务端描述" Width="185" Focusable="False" IsReadOnly="True" Background="{x:Null}" FontSize="14"/>
-        <Button x:Name="openChooseServerDocs" Content="不会选择服务端？点我" Margin="0,0,10,150" VerticalAlignment="Bottom" Width="185" FontSize="14" Height="45" Background="#33000000" HorizontalAlignment="Right" Click="openChooseServerDocs_Click"/>
-        <TextBlock Text="相关网站：" Foreground="{DynamicResource PrimaryTextBrush}" HorizontalAlignment="Right" Margin="0,0,135,130" VerticalAlignment="Bottom" FontWeight="Bold"/>
-        <Button x:Name="openSpigot" Content="SpigotMC" Margin="0,0,10,90" VerticalAlignment="Bottom" Width="185" FontSize="14" Height="35" Background="#33000000" Click="openSpigot_Click" HorizontalAlignment="Right"/>
-        <Button x:Name="openPaper" Content="PaperMC" Margin="0,0,10,50" VerticalAlignment="Bottom" Width="185" FontSize="14" Height="35" Background="#33000000" Click="openPaper_Click" HorizontalAlignment="Right"/>
-        <Button x:Name="openMojang" Content="Mojang" Margin="0,0,10,10" VerticalAlignment="Bottom" Width="185" FontSize="14" Height="35" Background="#33000000" Click="openMojang_Click" HorizontalAlignment="Right"/>
-        <hc:LoadingCircle x:Name="Loading_Circle" Margin="0,0,300,0"/>
-        <TextBlock x:Name="getservermsg" Margin="0,0,100,0" TextWrapping="Wrap" Text="加载中，请稍等..." FontSize="16" Foreground="{DynamicResource PrimaryBrush}" HorizontalAlignment="Center" VerticalAlignment="Center"/>
-        <TextBlock Text="所选服务端介绍：" Foreground="{DynamicResource PrimaryTextBrush}" HorizontalAlignment="Right" Margin="0,100,100,0" VerticalAlignment="Top" FontWeight="Bold"/>
+        <Grid.RowDefinitions>
+            <RowDefinition Height="Auto"/>
+            <RowDefinition/>
+        </Grid.RowDefinitions>
+        <Grid Grid.Row="0">
+            <Grid.RowDefinitions>
+                <RowDefinition/>
+                <RowDefinition/>
+            </Grid.RowDefinitions>
+            <StackPanel Orientation="Horizontal" Grid.Row="0">
+                <Button x:Name="RefreshBtn" Content="刷新" Margin="10" Click="RefreshBtn_Click" Height="36" Width="100" FontSize="14"/>
+                <Button x:Name="DownloadBtn" Content="下载" Style="{StaticResource ButtonPrimary}" Margin="10" Height="36" Width="150" FontSize="14" Click="DownloadBtn_Click"/>
+                <Button x:Name="openChooseServerDocs" Content="不会选择服务端？点我" Margin="10" Width="200" Height="36" Background="#33000000" FontSize="14" Click="openChooseServerDocs_Click"/>
+                <CheckBox x:Name="UseMirrorUrl" Content="Vanilla和Forge使用镜像源（BMCL）" IsChecked="True"/>
+            </StackPanel>
+            <TextBox Grid.Row="1" x:Name="server_d" Margin="10,0,10,0" TextWrapping="Wrap" Text="服务端描述" Focusable="False" IsReadOnly="True" Background="{DynamicResource RegionBrush}" FontSize="14"/>
+            <!--
+            <TextBlock Text="相关网站：" Foreground="{DynamicResource PrimaryTextBrush}" HorizontalAlignment="Right" Margin="0,0,135,130" VerticalAlignment="Bottom" FontWeight="Bold"/>
+            <Button x:Name="openSpigot" Content="SpigotMC" Margin="0,0,10,90" VerticalAlignment="Bottom" Width="185" FontSize="14" Height="35" Background="#33000000" Click="openSpigot_Click" HorizontalAlignment="Right"/>
+            <Button x:Name="openPaper" Content="PaperMC" Margin="0,0,10,50" VerticalAlignment="Bottom" Width="185" FontSize="14" Height="35" Background="#33000000" Click="openPaper_Click" HorizontalAlignment="Right"/>
+            <Button x:Name="openMojang" Content="Mojang" Margin="0,0,10,10" VerticalAlignment="Bottom" Width="185" FontSize="14" Height="35" Background="#33000000" Click="openMojang_Click" HorizontalAlignment="Right"/>
+            <hc:LoadingCircle x:Name="Loading_Circle" Margin="0,0,300,0"/>
+            <TextBlock x:Name="getservermsg" Margin="0,0,100,0" TextWrapping="Wrap" Text="加载中，请稍等..." FontSize="16" Foreground="{DynamicResource PrimaryBrush}" HorizontalAlignment="Center" VerticalAlignment="Center"/>
+            -->
+        </Grid>
+        <Grid Grid.Row="1">
+            <Grid.ColumnDefinitions>
+                <ColumnDefinition/>
+                <ColumnDefinition/>
+                <ColumnDefinition/>
+            </Grid.ColumnDefinitions>
+            <Grid Grid.Column="0">
+                <Grid.RowDefinitions>
+                    <RowDefinition Height="Auto"/>
+                    <RowDefinition/>
+                </Grid.RowDefinitions>
+                <Label Grid.Row="0" Margin="10,5,0,0" FontSize="14" Content="服务端列表：" HorizontalAlignment="Left"/>
+                <ListView Grid.Row="1" x:Name="serverCoreList" Background="{DynamicResource RegionBrush}" Margin="10,5,3,10" FontSize="14" SelectionChanged="serverCoreList_SelectionChanged"/>
+            </Grid>
+            <Grid Grid.Column="1">
+                <Grid.RowDefinitions>
+                    <RowDefinition Height="Auto"/>
+                    <RowDefinition/>
+                </Grid.RowDefinitions>
+                <Label Grid.Row="0" Margin="7,5,0,0" FontSize="14" Content="版本列表：" HorizontalAlignment="Left"/>
+                <ListView Grid.Row="1" x:Name="coreVersionList" Background="{DynamicResource RegionBrush}" Margin="7,5,7,10" FontSize="14" SelectionMode="Single" SelectionChanged="coreVersionList_SelectionChanged"/>
+            </Grid>
+            <Grid Grid.Column="2">
+                <Grid.RowDefinitions>
+                    <RowDefinition Height="Auto"/>
+                    <RowDefinition/>
+                </Grid.RowDefinitions>
+                <Label Grid.Row="0" Margin="3,5,0,0" FontSize="14" Content="构建列表：" HorizontalAlignment="Left"/>
+                <ListView Grid.Row="1" x:Name="versionBuildList" Background="{DynamicResource RegionBrush}" Margin="3,5,10,10" FontSize="14" SelectionMode="Single" MouseDoubleClick="versionBuildList_MouseDoubleClick"/>
+            </Grid>
+        </Grid>
     </Grid>
 </hc:Window>

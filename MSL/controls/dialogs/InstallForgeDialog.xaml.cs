@@ -33,6 +33,7 @@ namespace MSL.controls
         private readonly string javaPath;
         private StreamWriter logWriter;
         private int versionType; //由于Forge安装器的json有4种格式（太6了），在此进行规定：①1.20.3-Latest ②？-1.20.2
+        private bool useMirrorUrl = true;
 
         public InstallForgeDialog(string forge, string downPath, string java)
         {
@@ -170,6 +171,12 @@ namespace MSL.controls
                     serverJarPath = installPath + "/minecraft_server." + installJobj["minecraft"].ToString() + ".jar";
                     vanillaUrl = (await HttpService.GetApiContentAsync("download/server/vanilla/" + installJobj["minecraft"].ToString()))["data"]["url"].ToString();
                     mcVersion = installJobj["minecraft"].ToString();
+                }
+
+                //是否使用镜像源
+                if (!useMirrorUrl)
+                {
+                    vanillaUrl = vanillaUrl.Replace("bmclapi2.bangbang93.com", "piston-data.mojang.com");
                 }
 
                 bool _return = false;
@@ -585,13 +592,17 @@ namespace MSL.controls
                 mcv = installJobj["install"]["minecraft"].ToString();
             }
             str = str.Replace("{MINECRAFT_VERSION}", mcv);
-            //改成镜像源的部分
-            str = str.Replace("https://maven.neoforged.net/releases/net/neoforged/forge", "https://bmclapi2.bangbang93.com/maven/net/neoforged/forge");
-            str = str.Replace("https://maven.neoforged.net/releases/net/neoforged/neoforge", "https://bmclapi2.bangbang93.com/maven/net/neoforged/neoforge");
-            //str = str.Replace("https://maven.neoforged.net/releases", "https://bmclapi2.bangbang93.com/maven");
-            str = str.Replace("https://maven.minecraftforge.net", "https://bmclapi2.bangbang93.com/maven");
-            str = str.Replace("https://files.minecraftforge.net/maven", "https://bmclapi2.bangbang93.com/maven");
-            str = str.Replace("https://libraries.minecraft.net", "https://bmclapi2.bangbang93.com/maven");
+            //是否使用镜像源
+            if (useMirrorUrl)
+            {
+                //改成镜像源的部分
+                str = str.Replace("https://maven.neoforged.net/releases/net/neoforged/forge", "https://bmclapi2.bangbang93.com/maven/net/neoforged/forge");
+                str = str.Replace("https://maven.neoforged.net/releases/net/neoforged/neoforge", "https://bmclapi2.bangbang93.com/maven/net/neoforged/neoforge");
+                //str = str.Replace("https://maven.neoforged.net/releases", "https://bmclapi2.bangbang93.com/maven");
+                str = str.Replace("https://maven.minecraftforge.net", "https://bmclapi2.bangbang93.com/maven");
+                str = str.Replace("https://files.minecraftforge.net/maven", "https://bmclapi2.bangbang93.com/maven");
+                str = str.Replace("https://libraries.minecraft.net", "https://bmclapi2.bangbang93.com/maven");
+            }
             //构建时候的变量
             str = str.Replace("{INSTALLER}", forgePath);
             str = str.Replace("{ROOT}", installPath);
@@ -707,6 +718,19 @@ namespace MSL.controls
             catch
             {
                 return null;
+            }
+        }
+
+        private void Mirror_SelectionChanged(object sender, System.Windows.Controls.SelectionChangedEventArgs e)
+        {
+            switch (Mirror.SelectedIndex)
+            {
+                case 0:
+                    useMirrorUrl = true; break;
+                case 1:
+                    useMirrorUrl = false; break;
+                default:
+                    useMirrorUrl = true; break;
             }
         }
 

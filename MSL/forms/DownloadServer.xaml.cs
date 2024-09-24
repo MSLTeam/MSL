@@ -6,6 +6,7 @@ using System.Collections.Generic;
 using System.Diagnostics;
 using System.IO;
 using System.Linq;
+using System.Security.Policy;
 using System.Threading.Tasks;
 using System.Windows;
 using System.Windows.Controls;
@@ -25,8 +26,6 @@ namespace MSL.pages
         private readonly bool isInstallSomeCore;
         private string downPath = string.Empty;
         private string filename = string.Empty;
-        private string downServer = string.Empty;
-        private string downVersion = string.Empty;
 
         public DownloadServer(string _downloadServerBase, string _downloadServerJava, bool _isInstallSomeCore = true)
         {
@@ -42,248 +41,202 @@ namespace MSL.pages
 
         private async void DownloadBtn_Click(object sender, RoutedEventArgs e)
         {
-            if (serverlist1.SelectedIndex == -1)
+            if (versionBuildList.SelectedIndex == -1)
             {
-                MagicShow.ShowMsgDialog(this, "请先选择一个版本！", "警告");
+                MagicShow.ShowMsgDialog(this, "请先选择一个构建版本！", "警告");
                 return;
             }
-            serverlist1.IsEnabled = false;
+            versionBuildList.IsEnabled = false;
             DownloadBtn.IsEnabled = false;
             await DownloadServerFunc();
-            serverlist1.IsEnabled = true;
+            versionBuildList.IsEnabled = true;
             DownloadBtn.IsEnabled = true;
         }
 
-        private async void serverlist_MouseDoubleClick(object sender, MouseButtonEventArgs e)
+        private string MriiorCheck(string downUrl)
         {
-            if (serverlist1.SelectedIndex == -1)
+            if (UseMirrorUrl.IsChecked == false)
             {
-                MagicShow.ShowMsgDialog(this, "请先选择一个版本！", "警告");
+                downUrl = downUrl.Replace("bmclapi2.bangbang93.com", "piston-data.mojang.com");
+                if (serverCoreList.SelectedItem.ToString() == "forge")
+                {
+                    // Extract version info and create backup URL
+                    var query = new Uri(downUrl).Query;
+                    var queryDictionary = System.Web.HttpUtility.ParseQueryString(query);
+                    string mcVersion = queryDictionary["mcversion"];
+                    string forgeVersion = queryDictionary["version"];
+                    string[] components = mcVersion.Split('.');
+                    string _mcMajorVersion = mcVersion;
+                    if (components.Length >= 3 && int.TryParse(components[2], out int _))
+                    {
+                        _mcMajorVersion = $"{components[0]}.{components[1]}"; // remove the last component
+                    }
+                    if (new Version(_mcMajorVersion) < new Version("1.10"))
+                    {
+                        forgeVersion += "-" + mcVersion;
+                    }
+                    downUrl = $"https://maven.minecraftforge.net/net/minecraftforge/forge/{mcVersion}-{forgeVersion}/forge-{mcVersion}-{forgeVersion}-installer.jar";
+                }
+            }
+            return downUrl;
+        }
+
+        private async void versionBuildList_MouseDoubleClick(object sender, MouseButtonEventArgs e)
+        {
+            if (versionBuildList.SelectedIndex == -1)
+            {
+                MagicShow.ShowMsgDialog(this, "请先选择一个构建版本！", "警告");
                 return;
             }
-            serverlist1.IsEnabled = false;
+            versionBuildList.IsEnabled = false;
             DownloadBtn.IsEnabled = false;
             await DownloadServerFunc();
-            serverlist1.IsEnabled = true;
+            versionBuildList.IsEnabled = true;
             DownloadBtn.IsEnabled = true;
         }
 
         private async Task DownloadServerFunc()
         {
-            downVersion = serverlist1.SelectedItem.ToString();
-            downServer = serverlist.SelectedItem.ToString();
-
-            if (serverlist1.SelectedIndex != -1)
+            if (versionBuildList.SelectedIndex == -1)
             {
-                JObject downContext = await HttpService.GetApiContentAsync("download/server/" + downServer + "/" + downVersion);
-                string downUrl = downContext["data"]["url"].ToString();
-                string sha256Exp = downContext["data"]["sha256"]?.ToString() ?? string.Empty;
-                downPath = downloadServerBase;
-                filename = downServer + "-" + downVersion + ".jar";
-                if (downServer == "forge" || downServer == "spongeforge" || downServer == "neoforge")
-                {
-                    int dwnDialog = await MagicShow.ShowDownloaderWithIntReturn(this, downUrl, downPath, filename, "下载服务端中……", sha256Exp, true);
-                    if (dwnDialog == 2)
-                    {
-                        MagicShow.ShowMsgDialog(this, "下载取消！（或服务端文件不存在）", "错误");
-                        return;
-                    }
-                }
-                else
-                {
-                    bool dwnDialog = await MagicShow.ShowDownloader(this, downUrl, downPath, filename, "下载服务端中……", sha256Exp);
-                    if (!dwnDialog || !File.Exists(downPath + "\\" + filename))
-                    {
-                        MagicShow.ShowMsgDialog(this, "下载取消！（或服务端文件不存在）", "错误");
-                        return;
-                    }
-                }
-
-                if (downServer == "spongeforge")
-                {
-                    string forgeName = downServer.Replace("spongeforge", "forge");
-                    string _filename = forgeName + ".jar";
-                    JObject _dlContext = await HttpService.GetApiContentAsync("download/server/" + forgeName + "/" + downVersion);
-                    string _dlUrl = _dlContext["data"]["url"].ToString();
-                    string _sha256Exp = _dlContext["data"]["sha256"]?.ToString() ?? string.Empty;
-                    int _dwnDialog = await MagicShow.ShowDownloaderWithIntReturn(this, _dlUrl, downPath, _filename, "下载服务端中……", _sha256Exp, true);
-
-                    if (_dwnDialog == 2)
-                    {
-                        MagicShow.ShowMsgDialog(this, "下载取消！", "提示");
-                        return;
-                    }
-
-                    // Check if file exists and download succeeded
-                    if (!File.Exists(downPath + "\\" + _filename))
-                    {
-                        // Extract version info and create backup URL
-                        var query = new Uri(_dlUrl).Query;
-                        var queryDictionary = System.Web.HttpUtility.ParseQueryString(query);
-                        string mcVersion = queryDictionary["mcversion"];
-                        string forgeVersion = queryDictionary["version"];
-                        string[] components = mcVersion.Split('.');
-                        string _mcMajorVersion = mcVersion;
-                        if (components.Length >= 3 && int.TryParse(components[2], out int _))
-                        {
-                            _mcMajorVersion = $"{components[0]}.{components[1]}"; // remove the last component
-                        }
-                        if (new Version(_mcMajorVersion) < new Version("1.10"))
-                        {
-                            forgeVersion += "-" + mcVersion;
-                        }
-                        string backupUrl = $"https://maven.minecraftforge.net/net/minecraftforge/forge/{mcVersion}-{forgeVersion}/{forgeName}-{mcVersion}-{forgeVersion}-installer.jar";
-
-                        // Attempt to download from backup URL
-                        bool backupDownloadSuccess = await MagicShow.ShowDownloader(GetWindow(this), backupUrl, downPath, _filename, "备用链接下载中……", _sha256Exp);
-                        if (!backupDownloadSuccess || !File.Exists(downPath + "\\" + _filename))
-                        {
-                            MagicShow.ShowMsgDialog(this, "下载取消！（或服务端文件不存在）", "错误");
-                            return;
-                        }
-                    }
-                    if (!isInstallSomeCore)
-                    {
-                        MagicShow.ShowMsgDialog(this, "下载完成！服务端核心放置在“MSL\\ServerCores”文件夹中！", "提示");
-                        return;
-                    }
-                    //sponge应当作为模组加载，所以要再下载一个forge才是服务端
-                    try
-                    {
-                        //移动到mods文件夹
-                        Directory.CreateDirectory(downloadServerBase + "\\mods\\");
-                        if (File.Exists(downloadServerBase + "\\mods\\" + filename))
-                        {
-                            File.Delete(downloadServerBase + "\\mods\\" + filename);
-                        }
-                        File.Move(downloadServerBase + "\\" + filename, downloadServerBase + "\\mods\\" + filename);
-                    }
-                    catch (Exception e)
-                    {
-                        MagicShow.ShowMsgDialog(this, "Sponge核心移动失败！\n请重试！" + e.Message, "错误");
-                        return;
-                    }
-                    string installReturn = await InstallForge(_filename);
-                    if (installReturn == null)
-                    {
-                        MagicShow.ShowMsgDialog(this, "安装失败！", "错误");
-                        return;
-                    }
-
-                    downloadServerName = installReturn;
-                }
-                else if (downServer == "neoforge")
-                {
-                    if (!File.Exists(downPath + "\\" + filename))
-                    {
-                        MagicShow.ShowMsgDialog(this, "下载失败！（或服务端文件不存在）", "提示");
-                        return;
-                    }
-                    if (!isInstallSomeCore)
-                    {
-                        MagicShow.ShowMsgDialog(this, "下载完成！服务端核心放置在“MSL\\ServerCores”文件夹中！", "提示");
-                        return;
-                    }
-                    string installReturn = await InstallForge(filename);
-                    if (installReturn == null)
-                    {
-                        MagicShow.ShowMsgDialog(this, "安装失败！", "错误");
-                        return;
-                    }
-
-                    downloadServerName = installReturn;
-                }
-                else if (downServer == "forge")
-                {
-                    // Check if file exists and download succeeded
-                    if (!File.Exists(downPath + "\\" + filename))
-                    {
-                        // Extract version info and create backup URL
-                        var query = new Uri(downUrl).Query;
-                        var queryDictionary = System.Web.HttpUtility.ParseQueryString(query);
-                        string mcVersion = queryDictionary["mcversion"];
-                        string forgeVersion = queryDictionary["version"];
-                        string[] components = mcVersion.Split('.');
-                        string _mcMajorVersion = mcVersion;
-                        if (components.Length >= 3 && int.TryParse(components[2], out int _))
-                        {
-                            _mcMajorVersion = $"{components[0]}.{components[1]}"; // remove the last component
-                        }
-                        if (new Version(_mcMajorVersion) < new Version("1.10"))
-                        {
-                            forgeVersion += "-" + mcVersion;
-                        }
-                        string backupUrl = $"https://maven.minecraftforge.net/net/minecraftforge/forge/{mcVersion}-{forgeVersion}/{downServer}-{mcVersion}-{forgeVersion}-installer.jar";
-
-                        // Attempt to download from backup URL
-                        bool backupDownloadSuccess = await MagicShow.ShowDownloader(this, backupUrl, downPath, filename, "备用链接下载中……", sha256Exp);
-                        if (!backupDownloadSuccess || !File.Exists(downPath + "\\" + filename))
-                        {
-                            MagicShow.ShowMsgDialog(this, "下载取消！（或服务端文件不存在）", "错误");
-                            return;
-                        }
-                    }
-                    if (!isInstallSomeCore)
-                    {
-                        MagicShow.ShowMsgDialog(this, "下载完成！服务端核心放置在“MSL\\ServerCores”文件夹中！", "提示");
-                        return;
-                    }
-                    string installReturn = await InstallForge(filename);
-                    if (installReturn == null)
-                    {
-                        MagicShow.ShowMsgDialog(this, "安装失败！", "错误");
-                        return;
-                    }
-
-                    downloadServerName = installReturn;
-                }
-                else if (downServer == "banner")
-                {
-                    if (!isInstallSomeCore)
-                    {
-                        MagicShow.ShowMsgDialog(this, "下载完成！服务端核心放置在“MSL\\ServerCores”文件夹中！", "提示");
-                        return;
-                    }
-                    //banner应当作为模组加载，所以要再下载一个fabric才是服务端
-                    try
-                    {
-                        //移动到mods文件夹
-                        Directory.CreateDirectory(downloadServerBase + "\\mods\\");
-                        if (File.Exists(downloadServerBase + "\\mods\\" + filename))
-                        {
-                            File.Delete(downloadServerBase + "\\mods\\" + filename);
-                        }
-                        File.Move(downloadServerBase + "\\" + filename, downloadServerBase + "\\mods\\" + filename);
-                    }
-                    catch (Exception e)
-                    {
-                        MagicShow.ShowMsgDialog(this, "Banner端移动失败！\n请重试！" + e.Message, "错误");
-                        return;
-                    }
-
-                    //下载一个fabric端
-                    //获取版本号
-                    string bannerVersion = filename.Replace("banner-", "").Replace(".jar", "");
-                    bool dwnFabric = await MagicShow.ShowDownloader(GetWindow(this), (await HttpService.GetApiContentAsync("download/server/fabric/" + bannerVersion))["data"]["url"].ToString(), downloadServerBase, $"fabric-{bannerVersion}.jar", "下载Fabric端中···");
-                    if (!dwnFabric || !File.Exists(downloadServerBase + "\\" + $"fabric-{bannerVersion}.jar"))
-                    {
-                        MagicShow.ShowMsgDialog(this, "Fabric端下载取消（或服务端文件不存在）！", "错误");
-                        return;
-                    }
-
-                    downloadServerName = $"fabric-{bannerVersion}.jar";
-                }
-                else
-                {
-                    if (!isInstallSomeCore)
-                    {
-                        MagicShow.ShowMsgDialog(this, "下载完成！服务端核心放置在“MSL\\ServerCores”文件夹中！", "提示");
-                        return;
-                    }
-                    downloadServerName = filename;
-                }
-                Close();
+                return;
             }
+            string downServer = serverCoreList.SelectedItem.ToString();
+            string downVersion = coreVersionList.SelectedItem.ToString();
+            string downBuild = versionBuildList.SelectedItem.ToString();
+            if (downBuild.Contains("latest"))
+            {
+                downBuild = "latest";
+            }
+            JObject downContext = await HttpService.GetApiContentAsync("download/server/" + downServer + "/" + downVersion + "?build=" + downBuild);
+            string downUrl = downContext["data"]["url"].ToString();
+
+            downUrl= MriiorCheck(downUrl);
+            string sha256Exp = downContext["data"]["sha256"]?.ToString() ?? string.Empty;
+            downPath = downloadServerBase;
+            filename = downServer + "-" + downVersion + ".jar";
+
+            int dwnDialog = await MagicShow.ShowDownloaderWithIntReturn(this, downUrl, downPath, filename, "下载服务端中……", sha256Exp, true);
+            if (dwnDialog == 2)
+            {
+                MagicShow.ShowMsgDialog(this, "下载取消！", "错误");
+                return;
+            }
+            if (!File.Exists(downPath + "\\" + filename))
+            {
+                MagicShow.ShowMsgDialog(this, "下载失败！（或服务端文件不存在）", "提示");
+                return;
+            }
+            if (!isInstallSomeCore)
+            {
+                MagicShow.ShowMsgDialog(this, "下载完成！服务端核心放置在“MSL\\ServerCores”文件夹中！", "提示");
+                return;
+            }
+
+            if (downServer == "spongeforge")
+            {
+                string forgeName = downServer.Replace("spongeforge", "forge");
+                string _filename = forgeName + ".jar";
+                JObject _dlContext = await HttpService.GetApiContentAsync("download/server/" + forgeName + "/" + downVersion);
+                string _dlUrl = _dlContext["data"]["url"].ToString();
+                _dlUrl= MriiorCheck(_dlUrl);
+                string _sha256Exp = _dlContext["data"]["sha256"]?.ToString() ?? string.Empty;
+                int _dwnDialog = await MagicShow.ShowDownloaderWithIntReturn(this, _dlUrl, downPath, _filename, "下载依赖服务端中……", _sha256Exp, true);
+
+                if (_dwnDialog == 2)
+                {
+                    MagicShow.ShowMsgDialog(this, "下载取消！", "提示");
+                    return;
+                }
+
+                //sponge应当作为模组加载，所以要再下载一个forge才是服务端
+                try
+                {
+                    //移动到mods文件夹
+                    Directory.CreateDirectory(downloadServerBase + "\\mods\\");
+                    if (File.Exists(downloadServerBase + "\\mods\\" + filename))
+                    {
+                        File.Delete(downloadServerBase + "\\mods\\" + filename);
+                    }
+                    File.Move(downloadServerBase + "\\" + filename, downloadServerBase + "\\mods\\" + filename);
+                }
+                catch (Exception e)
+                {
+                    MagicShow.ShowMsgDialog(this, "Sponge核心移动失败！\n请重试！" + e.Message, "错误");
+                    return;
+                }
+                string installReturn = await InstallForge(_filename);
+                if (installReturn == null)
+                {
+                    MagicShow.ShowMsgDialog(this, "安装失败！", "错误");
+                    return;
+                }
+
+                downloadServerName = installReturn;
+            }
+            else if (downServer == "neoforge")
+            {
+                string installReturn = await InstallForge(filename);
+                if (installReturn == null)
+                {
+                    MagicShow.ShowMsgDialog(this, "安装失败！", "错误");
+                    return;
+                }
+
+                downloadServerName = installReturn;
+            }
+            else if (downServer == "forge")
+            {
+                string installReturn = await InstallForge(filename);
+                if (installReturn == null)
+                {
+                    MagicShow.ShowMsgDialog(this, "安装失败！", "错误");
+                    return;
+                }
+
+                downloadServerName = installReturn;
+            }
+            else if (downServer == "banner")
+            {
+                //banner应当作为模组加载，所以要再下载一个fabric才是服务端
+                try
+                {
+                    //移动到mods文件夹
+                    Directory.CreateDirectory(downloadServerBase + "\\mods\\");
+                    if (File.Exists(downloadServerBase + "\\mods\\" + filename))
+                    {
+                        File.Delete(downloadServerBase + "\\mods\\" + filename);
+                    }
+                    File.Move(downloadServerBase + "\\" + filename, downloadServerBase + "\\mods\\" + filename);
+                }
+                catch (Exception e)
+                {
+                    MagicShow.ShowMsgDialog(this, "Banner端移动失败！\n请重试！" + e.Message, "错误");
+                    return;
+                }
+
+                //下载一个fabric端
+                //获取版本号
+                string bannerVersion = filename.Replace("banner-", "").Replace(".jar", "");
+                bool dwnFabric = await MagicShow.ShowDownloader(GetWindow(this), (await HttpService.GetApiContentAsync("download/server/fabric/" + bannerVersion))["data"]["url"].ToString(), downloadServerBase, $"fabric-{bannerVersion}.jar", "下载Fabric端中···");
+                if (!dwnFabric || !File.Exists(downloadServerBase + "\\" + $"fabric-{bannerVersion}.jar"))
+                {
+                    MagicShow.ShowMsgDialog(this, "Fabric端下载取消（或服务端文件不存在）！", "错误");
+                    return;
+                }
+
+                downloadServerName = $"fabric-{bannerVersion}.jar";
+            }
+            else
+            {
+                if (!isInstallSomeCore)
+                {
+                    MagicShow.ShowMsgDialog(this, "下载完成！服务端核心放置在“MSL\\ServerCores”文件夹中！", "提示");
+                    return;
+                }
+                downloadServerName = filename;
+            }
+            Close();
         }
 
         private async Task<string> InstallForge(string filename)
@@ -326,51 +279,48 @@ namespace MSL.pages
 
         private async Task GetServer()
         {
-            serverlist.ItemsSource = null;
-            serverlist1.ItemsSource = null;
+            serverCoreList.ItemsSource = null;
+            coreVersionList.ItemsSource = null;
+            versionBuildList.ItemsSource = null;
             try
             {
                 HttpResponse httpResponse = await HttpService.GetApiAsync("query/available_server_types");
                 if (httpResponse.HttpResponseCode == System.Net.HttpStatusCode.OK)
                 {
                     string[] serverTypes = JsonConvert.DeserializeObject<string[]>(((JObject)JsonConvert.DeserializeObject(httpResponse.HttpResponseContent.ToString()))["data"]["types"].ToString());
-                    serverlist.ItemsSource = serverTypes;
-                    serverlist.SelectedIndex = 0;
+                    serverCoreList.ItemsSource = serverTypes;
+                    serverCoreList.SelectedIndex = 0;
                 }
                 else
                 {
-                    getservermsg.Text = "请求错误！请重试\n(" + httpResponse.HttpResponseCode.ToString() + ")" + httpResponse.HttpResponseContent.ToString();
-                    Loading_Circle.IsRunning = false;
-                    Loading_Circle.Visibility = Visibility.Collapsed;
+                    server_d.Text = "请求错误！请重试\n(" + httpResponse.HttpResponseCode.ToString() + ")" + httpResponse.HttpResponseContent.ToString();
+                    //Loading_Circle.IsRunning = false;
+                    //Loading_Circle.Visibility = Visibility.Collapsed;
                 }
             }
             catch (Exception a)
             {
-                getservermsg.Text = "获取服务端失败！请重试\n" + a.Message;
-                Loading_Circle.IsRunning = false;
-                Loading_Circle.Visibility = Visibility.Collapsed;
+                server_d.Text = "获取服务端失败！请重试\n" + a.Message;
+                //Loading_Circle.IsRunning = false;
+                //Loading_Circle.Visibility = Visibility.Collapsed;
             }
         }
 
-        private async void serverlist_SelectionChanged(object sender, SelectionChangedEventArgs e)
+        private async void serverCoreList_SelectionChanged(object sender, SelectionChangedEventArgs e)
         {
-            if (serverlist.Items.Count != 0)
+            if (serverCoreList.SelectedIndex == -1)
             {
-                await GetServerVersionList();
+                return;
             }
-        }
 
-        private async Task GetServerVersionList()
-        {
-            Loading_Circle.IsRunning = true;
-            Loading_Circle.Visibility = Visibility.Visible;
-            serverlist1.ItemsSource = null;
+            //Loading_Circle.IsRunning = true;
+            //Loading_Circle.Visibility = Visibility.Visible;
             try
             {
-                serverlist1.ItemsSource = null;
-                getservermsg.Visibility = Visibility.Visible;
-                getservermsg.Text = "加载中，请稍等...";
-                string serverName = serverlist.SelectedItem.ToString();
+                coreVersionList.ItemsSource = null;
+                //getservermsg.Visibility = Visibility.Visible;
+                //getservermsg.Text = "加载中，请稍等...";
+                string serverName = serverCoreList.SelectedItem.ToString();
                 HttpResponse httpResponse = await HttpService.GetApiAsync("query/available_versions/" + serverName);
                 if (httpResponse.HttpResponseCode == System.Net.HttpStatusCode.OK)
                 {
@@ -378,20 +328,62 @@ namespace MSL.pages
                     server_d.Text = (await HttpService.GetApiContentAsync("query/servers_description/" + serverName))["data"]["description"].ToString();
                     JArray serverVersions = JArray.Parse(resultData);
                     List<string> sortedVersions = serverVersions.ToObject<List<string>>().OrderByDescending(v => Functions.VersionCompare(v)).ToList();
-                    serverlist1.ItemsSource = sortedVersions;
-                    getservermsg.Visibility = Visibility.Collapsed;
+                    coreVersionList.ItemsSource = sortedVersions;
+                    coreVersionList.SelectedIndex = 0;
+                    //getservermsg.Visibility = Visibility.Collapsed;
                 }
                 else
                 {
-                    getservermsg.Text = "请求错误！请重试\n(" + httpResponse.HttpResponseCode.ToString() + ")" + httpResponse.HttpResponseContent.ToString();
+                    //getservermsg.Text = "请求错误！请重试\n(" + httpResponse.HttpResponseCode.ToString() + ")" + httpResponse.HttpResponseContent.ToString();
                 }
             }
             catch (Exception a)
             {
-                getservermsg.Text = "获取服务端失败！请重试\n" + a.Message;
+                server_d.Text = "获取服务端失败！请重试\n" + a.Message;
             }
-            Loading_Circle.IsRunning = false;
-            Loading_Circle.Visibility = Visibility.Collapsed;
+            //Loading_Circle.IsRunning = false;
+            //Loading_Circle.Visibility = Visibility.Collapsed;
+        }
+
+        private async void coreVersionList_SelectionChanged(object sender, SelectionChangedEventArgs e)
+        {
+            if (coreVersionList.SelectedIndex == -1)
+            {
+                return;
+            }
+            //Loading_Circle.IsRunning = true;
+            //Loading_Circle.Visibility = Visibility.Visible;
+            try
+            {
+                versionBuildList.ItemsSource = null;
+                //getservermsg.Visibility = Visibility.Visible;
+                //getservermsg.Text = "加载中，请稍等...";
+                string serverName = serverCoreList.SelectedItem.ToString();
+                HttpResponse httpResponse = await HttpService.GetApiAsync("query/server/" + serverName + "/" + coreVersionList.SelectedItem.ToString());
+                if (httpResponse.HttpResponseCode == System.Net.HttpStatusCode.OK)
+                {
+                    string resultData = ((JObject)JsonConvert.DeserializeObject(httpResponse.HttpResponseContent.ToString()))["data"]["builds"].ToString();
+                    if (resultData.Contains("latest"))
+                    {
+                        resultData = resultData.Replace("latest", "latest - 最新构建版本");
+                    }
+                    JArray serverVersions = JArray.Parse(resultData);
+                    List<string> sortedVersions = serverVersions.ToObject<List<string>>().OrderByDescending(v => Functions.VersionCompare(v)).ToList();
+                    versionBuildList.ItemsSource = sortedVersions;
+                    versionBuildList.SelectedIndex = 0;
+                    //getservermsg.Visibility = Visibility.Collapsed;
+                }
+                else
+                {
+                    server_d.Text = "请求错误！请重试\n(" + httpResponse.HttpResponseCode.ToString() + ")" + httpResponse.HttpResponseContent.ToString();
+                }
+            }
+            catch (Exception a)
+            {
+                server_d.Text = "获取服务端失败！请重试\n" + a.Message;
+            }
+            //Loading_Circle.IsRunning = false;
+            //Loading_Circle.Visibility = Visibility.Collapsed;
         }
 
         private async void RefreshBtn_Click(object sender, RoutedEventArgs e)

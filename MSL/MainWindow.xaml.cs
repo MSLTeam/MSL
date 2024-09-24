@@ -287,6 +287,10 @@ namespace MSL
                 {
                     string servers = jsonObject["autoOpenServer"].ToString();
                     Growl.Info(LanguageManager.Instance["MainWindow_GrowlMsg_AutoLaunchServer"]);
+                    if (!servers.Contains(","))
+                    {
+                        servers += ",";
+                    }
                     while (servers != "")
                     {
                         int aserver = servers.IndexOf(",");
@@ -318,6 +322,10 @@ namespace MSL
                 {
                     string frpcs = jsonObject["autoOpenFrpc"].ToString();
                     Growl.Info(LanguageManager.Instance["MainWindow_GrowlMsg_AutoLaunchFrpc"]);
+                    if (!frpcs.Contains(","))
+                    {
+                        frpcs += ",";
+                    }
                     while (frpcs != "")
                     {
                         int afrpc = frpcs.IndexOf(",");

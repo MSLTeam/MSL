@@ -14,6 +14,10 @@
                 <RowDefinition Height="auto"/>
             </Grid.RowDefinitions>
             <TextBlock Grid.Row="0" Foreground="{DynamicResource PrimaryTextBrush}" HorizontalAlignment="Center" VerticalAlignment="Center" TextWrapping="Wrap" Text="Forge安装器" FontSize="20"/>
+            <ComboBox x:Name="Mirror" Grid.Row="0" HorizontalAlignment="Left" Margin="10" SelectionChanged="Mirror_SelectionChanged">
+                <ComboBoxItem Content="下载源：BMCL" IsSelected="True"/>
+                <ComboBoxItem Content="下载源：官方"/>
+            </ComboBox>
             <ComboBox x:Name="MultiThreadCount" Grid.Row="0" HorizontalAlignment="Right" Margin="10" SelectionChanged="MultiThreadCount_SelectionChanged">
                 <ComboBoxItem Content="并发数：1"/>
                 <ComboBoxItem Content="并发数：2"/>
