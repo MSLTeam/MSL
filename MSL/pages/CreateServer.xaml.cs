@@ -90,11 +90,11 @@ namespace MSL.pages
             if (ImportPack.SelectedIndex == 1)
             {
                 ImportPack.SelectedIndex = 0;
-                DownloadMods downloadMods = new DownloadMods(1)
+                DownloadMod downloadMod = new DownloadMod(1)
                 {
                     Owner = Window.GetWindow(Window.GetWindow(this))
                 };
-                downloadMods.ShowDialog();
+                downloadMod.ShowDialog();
                 if (!File.Exists("MSL\\ServerPack.zip"))
                 {
                     MagicShow.ShowMsgDialog(Window.GetWindow(this), "下载失败！", "错误");

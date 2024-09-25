@@ -16,7 +16,7 @@ namespace MSL
     /// <summary>
     /// DownloadMods.xaml 的交互逻辑
     /// </summary>
-    public partial class DownloadMods : HandyControl.Controls.Window
+    public partial class DownloadMod : HandyControl.Controls.Window
     {
         private string Url;
         private string Dir;
@@ -28,7 +28,7 @@ namespace MSL
         private readonly List<string> modUrls = new List<string>();
         private readonly List<string> imageUrls = new List<string>();
         private readonly List<string> backList = new List<string>();
-        public DownloadMods(int loadtype = 0)
+        public DownloadMod(int loadtype = 0)
         {
             InitializeComponent();
             loadType = loadtype;
@@ -108,8 +108,8 @@ namespace MSL
                     }
                 }
                 lCircle.IsRunning = false;
-                lCircle.Visibility = Visibility.Hidden;
-                lb01.Visibility = Visibility.Hidden;
+                lCircle.Visibility = Visibility.Collapsed;
+                lb01.Visibility = Visibility.Collapsed;
                 searchMod.IsEnabled = true;
                 listBoxColumnName.Header = "模组列表（双击获取该模组的版本）：";
             }
@@ -147,8 +147,8 @@ namespace MSL
                     modUrls.Add(searchedMods.Data[i].Links.WebsiteUrl.ToString());
                 }
                 lCircle.IsRunning = false;
-                lCircle.Visibility = Visibility.Hidden;
-                lb01.Visibility = Visibility.Hidden;
+                lCircle.Visibility = Visibility.Collapsed;
+                lb01.Visibility = Visibility.Collapsed;
                 searchMod.IsEnabled = true;
                 listBoxColumnName.Header = "模组列表（双击获取该模组的版本）：";
             }

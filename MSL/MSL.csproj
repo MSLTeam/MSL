@@ -142,8 +142,8 @@
     <Compile Include="pages\CreateServer.xaml.cs">
       <DependentUpon>CreateServer.xaml</DependentUpon>
     </Compile>
-    <Compile Include="forms\DownloadMods.xaml.cs">
-      <DependentUpon>DownloadMods.xaml</DependentUpon>
+    <Compile Include="forms\DownloadMod.xaml.cs">
+      <DependentUpon>DownloadMod.xaml</DependentUpon>
     </Compile>
     <Compile Include="pages\About.xaml.cs">
       <DependentUpon>About.xaml</DependentUpon>
@@ -235,7 +235,7 @@
       <SubType>Designer</SubType>
       <Generator>MSBuild:Compile</Generator>
     </Page>
-    <Page Include="forms\DownloadMods.xaml">
+    <Page Include="forms\DownloadMod.xaml">
       <SubType>Designer</SubType>
       <Generator>MSBuild:Compile</Generator>
     </Page>

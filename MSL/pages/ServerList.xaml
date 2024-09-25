@@ -35,7 +35,7 @@
                     </ListView.ContextMenu>
                     <ListView.View>
                         <GridView>
-                            <GridViewColumn Width="230" Header="{Binding [Page_ServerList_ServerName], Source={x:Static langs:LanguageManager.Instance}}">
+                            <GridViewColumn Width="250" Header="{Binding [Page_ServerList_ServerName], Source={x:Static langs:LanguageManager.Instance}}">
                                 <GridViewColumn.CellTemplate>
                                     <DataTemplate>
                                         <Grid>
@@ -45,7 +45,7 @@
                                     </DataTemplate>
                                 </GridViewColumn.CellTemplate>
                             </GridViewColumn>
-                            <GridViewColumn Width="230" Header="{Binding [Page_ServerList_Status], Source={x:Static langs:LanguageManager.Instance}}">
+                            <GridViewColumn Width="200" Header="{Binding [Page_ServerList_Status], Source={x:Static langs:LanguageManager.Instance}}">
                                 <GridViewColumn.CellTemplate>
                                     <DataTemplate>
                                         <Grid>

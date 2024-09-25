@@ -1,4 +1,5 @@
-﻿using MSL.utils;
+﻿using MSL.langs;
+using MSL.utils;
 using Newtonsoft.Json;
 using Newtonsoft.Json.Linq;
 using System;
@@ -6,7 +7,6 @@ using System.Collections.Generic;
 using System.Diagnostics;
 using System.IO;
 using System.Linq;
-using System.Security.Policy;
 using System.Threading.Tasks;
 using System.Windows;
 using System.Windows.Controls;
@@ -48,7 +48,35 @@ namespace MSL.pages
             }
             versionBuildList.IsEnabled = false;
             DownloadBtn.IsEnabled = false;
-            await DownloadServerFunc();
+            try
+            {
+                await DownloadServerFunc();
+            }
+            catch(Exception ex)
+            {
+                MagicShow.ShowMsgDialog(this, ex.Message, "错误");
+            }
+            versionBuildList.IsEnabled = true;
+            DownloadBtn.IsEnabled = true;
+        }
+
+        private async void versionBuildList_MouseDoubleClick(object sender, MouseButtonEventArgs e)
+        {
+            if (versionBuildList.SelectedIndex == -1)
+            {
+                MagicShow.ShowMsgDialog(this, "请先选择一个构建版本！", "警告");
+                return;
+            }
+            versionBuildList.IsEnabled = false;
+            DownloadBtn.IsEnabled = false;
+            try
+            {
+                await DownloadServerFunc();
+            }
+            catch(Exception ex)
+            {
+                MagicShow.ShowMsgDialog(this, ex.Message, "错误");
+            }
             versionBuildList.IsEnabled = true;
             DownloadBtn.IsEnabled = true;
         }
@@ -81,24 +109,11 @@ namespace MSL.pages
             return downUrl;
         }
 
-        private async void versionBuildList_MouseDoubleClick(object sender, MouseButtonEventArgs e)
-        {
-            if (versionBuildList.SelectedIndex == -1)
-            {
-                MagicShow.ShowMsgDialog(this, "请先选择一个构建版本！", "警告");
-                return;
-            }
-            versionBuildList.IsEnabled = false;
-            DownloadBtn.IsEnabled = false;
-            await DownloadServerFunc();
-            versionBuildList.IsEnabled = true;
-            DownloadBtn.IsEnabled = true;
-        }
-
         private async Task DownloadServerFunc()
         {
-            if (versionBuildList.SelectedIndex == -1)
+            if (serverCoreList.SelectedIndex==-1||coreVersionList.SelectedIndex==-1||versionBuildList.SelectedIndex == -1)
             {
+                MagicShow.ShowMsgDialog(this, "请检查您是否已正确选择 服务端-版本-构建版本 ！", "错误");
                 return;
             }
             string downServer = serverCoreList.SelectedItem.ToString();
@@ -217,15 +232,14 @@ namespace MSL.pages
 
                 //下载一个fabric端
                 //获取版本号
-                string bannerVersion = filename.Replace("banner-", "").Replace(".jar", "");
-                bool dwnFabric = await MagicShow.ShowDownloader(GetWindow(this), (await HttpService.GetApiContentAsync("download/server/fabric/" + bannerVersion))["data"]["url"].ToString(), downloadServerBase, $"fabric-{bannerVersion}.jar", "下载Fabric端中···");
-                if (!dwnFabric || !File.Exists(downloadServerBase + "\\" + $"fabric-{bannerVersion}.jar"))
+                bool dwnFabric = await MagicShow.ShowDownloader(GetWindow(this), (await HttpService.GetApiContentAsync("download/server/fabric/" + downVersion))["data"]["url"].ToString(), downloadServerBase, $"fabric-{downVersion}.jar", "下载Fabric端中···");
+                if (!dwnFabric || !File.Exists(downloadServerBase + "\\" + $"fabric-{downVersion}.jar"))
                 {
                     MagicShow.ShowMsgDialog(this, "Fabric端下载取消（或服务端文件不存在）！", "错误");
                     return;
                 }
 
-                downloadServerName = $"fabric-{bannerVersion}.jar";
+                downloadServerName = $"fabric-{downVersion}.jar";
             }
             else
             {
@@ -280,8 +294,8 @@ namespace MSL.pages
         private async Task GetServer()
         {
             serverCoreList.ItemsSource = null;
-            coreVersionList.ItemsSource = null;
-            versionBuildList.ItemsSource = null;
+            serverCoreLoadTip.Text = LanguageManager.Instance["Loading_PlzWait"];
+            serverCoreLoadTip.Visibility = Visibility.Visible;
             try
             {
                 HttpResponse httpResponse = await HttpService.GetApiAsync("query/available_server_types");
@@ -290,19 +304,18 @@ namespace MSL.pages
                     string[] serverTypes = JsonConvert.DeserializeObject<string[]>(((JObject)JsonConvert.DeserializeObject(httpResponse.HttpResponseContent.ToString()))["data"]["types"].ToString());
                     serverCoreList.ItemsSource = serverTypes;
                     serverCoreList.SelectedIndex = 0;
+                    serverCoreLoadTip.Visibility = Visibility.Collapsed;
                 }
                 else
                 {
-                    server_d.Text = "请求错误！请重试\n(" + httpResponse.HttpResponseCode.ToString() + ")" + httpResponse.HttpResponseContent.ToString();
-                    //Loading_Circle.IsRunning = false;
-                    //Loading_Circle.Visibility = Visibility.Collapsed;
+                    server_d.Text = "请求错误！请重试！";
+                    serverCoreLoadTip.Text = "请求错误！请重试\n(" + httpResponse.HttpResponseCode.ToString() + ")" + httpResponse.HttpResponseContent.ToString();
                 }
             }
             catch (Exception a)
             {
-                server_d.Text = "获取服务端失败！请重试\n" + a.Message;
-                //Loading_Circle.IsRunning = false;
-                //Loading_Circle.Visibility = Visibility.Collapsed;
+                server_d.Text = "获取服务端失败！请重试！";
+                serverCoreLoadTip.Text = "获取服务端失败！请重试\n" + a.Message;
             }
         }
 
@@ -312,14 +325,12 @@ namespace MSL.pages
             {
                 return;
             }
-
-            //Loading_Circle.IsRunning = true;
-            //Loading_Circle.Visibility = Visibility.Visible;
+            coreVersionList.ItemsSource = null;
+            coreVersionLoadTip.Text = LanguageManager.Instance["Loading_PlzWait"];
+            coreVersionLoadTip.Visibility = Visibility.Visible;
             try
             {
-                coreVersionList.ItemsSource = null;
-                //getservermsg.Visibility = Visibility.Visible;
-                //getservermsg.Text = "加载中，请稍等...";
+                
                 string serverName = serverCoreList.SelectedItem.ToString();
                 HttpResponse httpResponse = await HttpService.GetApiAsync("query/available_versions/" + serverName);
                 if (httpResponse.HttpResponseCode == System.Net.HttpStatusCode.OK)
@@ -330,19 +341,19 @@ namespace MSL.pages
                     List<string> sortedVersions = serverVersions.ToObject<List<string>>().OrderByDescending(v => Functions.VersionCompare(v)).ToList();
                     coreVersionList.ItemsSource = sortedVersions;
                     coreVersionList.SelectedIndex = 0;
-                    //getservermsg.Visibility = Visibility.Collapsed;
+                    coreVersionLoadTip.Visibility = Visibility.Collapsed;
                 }
                 else
                 {
-                    //getservermsg.Text = "请求错误！请重试\n(" + httpResponse.HttpResponseCode.ToString() + ")" + httpResponse.HttpResponseContent.ToString();
+                    server_d.Text = "请求错误！请重试！";
+                    coreVersionLoadTip.Text = "请求错误！请重试\n(" + httpResponse.HttpResponseCode.ToString() + ")" + httpResponse.HttpResponseContent.ToString();
                 }
             }
             catch (Exception a)
             {
-                server_d.Text = "获取服务端失败！请重试\n" + a.Message;
+                server_d.Text = "获取服务端失败！请重试！";
+                coreVersionLoadTip.Text = "获取服务端失败！请重试\n" + a.Message;
             }
-            //Loading_Circle.IsRunning = false;
-            //Loading_Circle.Visibility = Visibility.Collapsed;
         }
 
         private async void coreVersionList_SelectionChanged(object sender, SelectionChangedEventArgs e)
@@ -351,13 +362,11 @@ namespace MSL.pages
             {
                 return;
             }
-            //Loading_Circle.IsRunning = true;
-            //Loading_Circle.Visibility = Visibility.Visible;
+            versionBuildList.ItemsSource = null;
+            versionBuildLoadTip.Text = LanguageManager.Instance["Loading_PlzWait"];
+            versionBuildLoadTip.Visibility = Visibility.Visible;
             try
             {
-                versionBuildList.ItemsSource = null;
-                //getservermsg.Visibility = Visibility.Visible;
-                //getservermsg.Text = "加载中，请稍等...";
                 string serverName = serverCoreList.SelectedItem.ToString();
                 HttpResponse httpResponse = await HttpService.GetApiAsync("query/server/" + serverName + "/" + coreVersionList.SelectedItem.ToString());
                 if (httpResponse.HttpResponseCode == System.Net.HttpStatusCode.OK)
@@ -371,19 +380,19 @@ namespace MSL.pages
                     List<string> sortedVersions = serverVersions.ToObject<List<string>>().OrderByDescending(v => Functions.VersionCompare(v)).ToList();
                     versionBuildList.ItemsSource = sortedVersions;
                     versionBuildList.SelectedIndex = 0;
-                    //getservermsg.Visibility = Visibility.Collapsed;
+                    versionBuildLoadTip.Visibility = Visibility.Collapsed;
                 }
                 else
                 {
-                    server_d.Text = "请求错误！请重试\n(" + httpResponse.HttpResponseCode.ToString() + ")" + httpResponse.HttpResponseContent.ToString();
+                    server_d.Text = "请求错误！请重试！";
+                    versionBuildLoadTip.Text = "请求错误！请重试\n(" + httpResponse.HttpResponseCode.ToString() + ")" + httpResponse.HttpResponseContent.ToString();
                 }
             }
             catch (Exception a)
             {
-                server_d.Text = "获取服务端失败！请重试\n" + a.Message;
+                server_d.Text = "获取服务端失败！请重试！";
+                versionBuildLoadTip.Text = "获取服务端失败！请重试\n" + a.Message;
             }
-            //Loading_Circle.IsRunning = false;
-            //Loading_Circle.Visibility = Visibility.Collapsed;
         }
 
         private async void RefreshBtn_Click(object sender, RoutedEventArgs e)

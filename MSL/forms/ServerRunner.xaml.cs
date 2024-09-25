@@ -2811,12 +2811,12 @@ namespace MSL
         }
         private void opencurseforge_Click(object sender, RoutedEventArgs e)
         {
-            DownloadMods downloadMods = new DownloadMods
+            DownloadMod downloadMod = new DownloadMod
             {
                 serverbase = Rserverbase,
                 Owner = this
             };
-            downloadMods.ShowDialog();
+            downloadMod.ShowDialog();
             ReFreshPluginsAndMods();
         }
         private async void openpluginweb_Click(object sender, RoutedEventArgs e)
