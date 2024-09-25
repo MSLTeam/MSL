@@ -166,19 +166,13 @@ namespace MSL.pages
         private void LoadRecommendations(JArray recommendations)
         {
             recommendBorder.Visibility = Visibility.Visible;
-            for (int x = 1; x < 100; x++)
+            for (int x = 0; x < 100; x++)
             {
-                TextBlock textBlock = RecommendGrid.FindName("RecText" + x.ToString()) as TextBlock;
-                if (textBlock != null)
+                StackPanel pannel = RecommendGrid.FindName("RecPannel" + x.ToString()) as StackPanel;
+                if (pannel != null)
                 {
-                    RecommendGrid.Children.Remove(textBlock);
-                    RecommendGrid.UnregisterName("RecText" + x.ToString());
-                    Image img = RecommendGrid.FindName("RecImg" + x.ToString()) as Image;
-                    if (img != null)
-                    {
-                        RecommendGrid.Children.Remove(img);
-                        RecommendGrid.UnregisterName("RecImg" + x.ToString());
-                    }
+                    RecommendGrid.Children.Remove(pannel);
+                    RecommendGrid.UnregisterName("RecPannel" + x.ToString());
                 }
                 else
                 {
@@ -189,18 +183,9 @@ namespace MSL.pages
             int i = 0;
             foreach (var recommendation in recommendations)
             {
-                i++;
+                StackPanel stackPanel = new StackPanel();
+                stackPanel.Orientation = Orientation.Horizontal;
                 Image image = new Image();
-                if (i == 1)
-                {
-                    image.Margin = new Thickness(5, 35 * i, 5, 5);
-                }
-                else
-                {
-                    image.Margin = new Thickness(5, 35 + (53 * (i - 1)), 5, 5);
-                }
-                image.HorizontalAlignment = HorizontalAlignment.Left;
-                image.VerticalAlignment = VerticalAlignment.Top;
                 image.Width = 48;
                 image.Height = 48;
                 if (recommendation.ToString().StartsWith("*"))
@@ -216,22 +201,17 @@ namespace MSL.pages
                     }
                     image.Source = new BitmapImage(new Uri("https://file." + _serverLink + "/recommendImg/" + i.ToString() + ".png"));
                 }
-                RecommendGrid.Children.Add(image);
-                RecommendGrid.RegisterName("RecImg" + i.ToString(), image);
-
+                stackPanel.Children.Add(image);
                 TextBlock textBlock = new TextBlock();
                 textBlock.Text = recommendation.ToString();
                 textBlock.SetResourceReference(ForegroundProperty, "PrimaryTextBrush");
-                if (i == 1)
-                {
-                    textBlock.Margin = new Thickness(58, 35 * i, 5, 5);
-                }
-                else
-                {
-                    textBlock.Margin = new Thickness(58, 35 + (53 * (i - 1)), 5, 5);
-                }
-                RecommendGrid.Children.Add(textBlock);
-                RecommendGrid.RegisterName("RecText" + i.ToString(), textBlock);
+                textBlock.Margin = new Thickness(5, 0, 0, 0);
+                textBlock.TextWrapping = TextWrapping.Wrap;
+                textBlock.VerticalAlignment = VerticalAlignment.Center;
+                stackPanel.Children.Add(textBlock);
+                RecommendGrid.Children.Add(stackPanel);
+                RecommendGrid.RegisterName("RecPannel" + i.ToString(), textBlock);
+                i++;
             }
         }
 
