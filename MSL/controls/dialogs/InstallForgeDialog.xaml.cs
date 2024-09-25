@@ -53,6 +53,7 @@ namespace MSL.controls
             Log_in("准备安装Forge···");
             Log_in("3秒后开始安装···");
             await Task.Delay(3000);
+            Mirror.IsEnabled = false;
             MultiThreadCount.IsEnabled = false;
             await Task.Run(Install);
         }
