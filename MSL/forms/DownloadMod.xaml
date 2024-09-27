@@ -8,7 +8,7 @@
         xmlns:local="clr-namespace:MSL"
         mc:Ignorable="d"
         NonClientAreaBackground="{DynamicResource BackgroundBrush}"
-        Title="下载Mod" Height="450" Width="750" WindowStartupLocation="CenterOwner" ResizeMode="NoResize" Loaded="Window_Loaded" Closing="Window_Closing" Background="{DynamicResource BackgroundBrush}">
+        Title="下载Mod/整合包" Height="450" Width="750" WindowStartupLocation="CenterOwner" ResizeMode="NoResize" Loaded="Window_Loaded" Closing="Window_Closing" Background="{DynamicResource BackgroundBrush}">
     <Grid x:Name="BodyGrid">
         <Grid.RowDefinitions>
             <RowDefinition Height="Auto"/>
