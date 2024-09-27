@@ -20,10 +20,10 @@
                 <ColumnDefinition Width="Auto"/>
             </Grid.ColumnDefinitions>
             <StackPanel Grid.Column="0" Orientation="Horizontal">
-                <Button x:Name="backBtn" Content="返回" Click="backBtn_Click" Width="60" IsEnabled="False" FontSize="14"/>
+                <Button x:Name="backBtn" Content="返回" Click="backBtn_Click" Width="70" IsEnabled="False" FontSize="14"/>
                 <StackPanel Orientation="Horizontal">
                     <Label Content="搜索：" FontSize="16" BorderBrush="{x:Null}" Background="{x:Null}" Padding="10,0,10,0"/>
-                    <TextBox x:Name="textBox1" MinWidth="150"/>
+                    <TextBox x:Name="textBox1" MinWidth="100"/>
                     <Button x:Name="searchMod" Content="搜索" Click="searchMod_Click" Width="60" FontSize="14" IsEnabled="False"/>
                     <Button x:Name="homeBtn" Content="主页" Click="homeBtn_Click" Width="60" FontSize="14"/>
                 </StackPanel>
