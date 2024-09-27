@@ -10,7 +10,6 @@ using System.Threading.Tasks;
 using System.Windows;
 using System.Windows.Forms;
 using System.Windows.Input;
-using MessageBox = System.Windows.MessageBox;
 
 namespace MSL
 {
@@ -21,16 +20,16 @@ namespace MSL
     {
         private int LoadType = 0;  //0: mods , 1: modpacks 
         private int LoadSource = 0;  //0: Curseforge , 1: Modrinth 
+        private bool CloseImmediately;  //0: Curseforge , 1: Modrinth 
         private readonly string SavingPath;
         private readonly List<int> modIds = new List<int>();
         private readonly List<string> modVersions = new List<string>();
         private readonly List<string> modVersionurl = new List<string>();
         private readonly List<string> modUrls = new List<string>();
-        private readonly List<string> imageUrls = new List<string>();
-        private readonly List<string> backList = new List<string>();
+        private List<DM_ModInfo> backList = new List<DM_ModInfo>();
         private CurseForge.APIClient.ApiClient cfApiClient;
 
-        public DownloadMod(string savingPath, int loadtype = 0,bool canChangeLoadType=true,bool canChangeSource=true)
+        public DownloadMod(string savingPath, int loadtype = 0, bool canChangeLoadType = true, bool canChangeSource = true, bool closeImmediately = false)
         {
             InitializeComponent();
             SavingPath = savingPath;
@@ -44,6 +43,7 @@ namespace MSL
             {
                 LoadSourceBox.IsEnabled = false;
             }
+            CloseImmediately = closeImmediately;
         }
 
         private async void Window_Loaded(object sender, RoutedEventArgs e)
@@ -67,12 +67,12 @@ namespace MSL
                     token = decodedString;
                     cfApiClient = new CurseForge.APIClient.ApiClient(token);
                 }
-                backList.Clear();
+                backList = null;
                 modIds.Clear();
                 modVersionurl.Clear();
                 modUrls.Clear();
-                imageUrls.Clear();
                 listBox.ItemsSource = null;
+                listBox.Items.Clear();
                 List<DM_ModInfo> list = new List<DM_ModInfo>();
                 if (LoadType == 0)
                 {
@@ -86,8 +86,6 @@ namespace MSL
                     foreach (var featuredMod in featuredMods.Data.Popular)
                     {
                         list.Add(new DM_ModInfo(featuredMod.Logo.ThumbnailUrl, featuredMod.Name));
-                        imageUrls.Add(featuredMod.Logo.ThumbnailUrl);
-                        backList.Add(featuredMod.Name);
                         modIds.Add(featuredMod.Id);
                         modUrls.Add(featuredMod.Links.WebsiteUrl.ToString());
                     }
@@ -98,18 +96,17 @@ namespace MSL
                     foreach (var modPack in modpacks.Data)
                     {
                         list.Add(new DM_ModInfo(modPack.Logo.ThumbnailUrl, modPack.Name));
-                        imageUrls.Add(modPack.Logo.ThumbnailUrl);
-                        backList.Add(modPack.Name);
                         modIds.Add(modPack.Id);
                         modUrls.Add(modPack.Links.WebsiteUrl.ToString());
                     }
                 }
                 listBox.ItemsSource = list;
+                backList = list;
                 lCircle.IsRunning = false;
                 lCircle.Visibility = Visibility.Collapsed;
                 lb01.Visibility = Visibility.Collapsed;
                 searchMod.IsEnabled = true;
-                listBoxColumnName.Header = "模组列表（双击获取该模组的版本）：";
+                listBoxColumnName.Header = "列表（双击获取该内容的版本）：";
             }
             catch (Exception ex)
             {
@@ -127,28 +124,28 @@ namespace MSL
                 lCircle.Visibility = Visibility.Visible;
                 lb01.Visibility = Visibility.Visible;
                 var searchedMods = await cfApiClient.SearchModsAsync(432, null, null, null, null, null, textBox1.Text);
-                backList.Clear();
+                backList = null;
                 modIds.Clear();
                 modVersionurl.Clear();
                 modUrls.Clear();
-                imageUrls.Clear();
+                listBox.ItemsSource = null;
+                listBox.Items.Clear();
                 List<DM_ModInfo> list = new List<DM_ModInfo>();
                 foreach (var mod in searchedMods.Data)
                 {
                     list.Add(new DM_ModInfo(mod.Logo.ThumbnailUrl, mod.Name));
-                    imageUrls.Add(mod.Logo.ThumbnailUrl);
-                    backList.Add(mod.Name);
                     modIds.Add(mod.Id);
                     modUrls.Add(mod.Links.WebsiteUrl.ToString());
                 }
                 listBox.ItemsSource = list;
+                backList = list;
                 lCircle.IsRunning = false;
                 lCircle.Visibility = Visibility.Collapsed;
                 lb01.Visibility = Visibility.Collapsed;
                 searchMod.IsEnabled = true;
-                listBoxColumnName.Header = "模组列表（双击获取该模组的版本）：";
+                listBoxColumnName.Header = "列表（双击获取该内容的版本）：";
             }
-            catch(Exception ex)
+            catch (Exception ex)
             {
                 await MagicShow.ShowMsgDialogAsync(this, "搜索失败！请重试或尝试连接代理后再试！\n" + ex.Message, "错误");
             }
@@ -158,52 +155,49 @@ namespace MSL
         {
             try
             {
-                if (listBoxColumnName.Header.ToString() == "模组列表（双击获取该模组的版本）：")
+                if (listBoxColumnName.Header.ToString() == "列表（双击获取该内容的版本）：")
                 {
-                    string imageurl = imageUrls[listBox.SelectedIndex];
+                    var info = listBox.SelectedItem as DM_ModInfo;
+                    string imageurl = info.Icon;
                     searchMod.IsEnabled = false;
                     backBtn.IsEnabled = false;
                     backBtn.Content = "加载中……";
-                    try
+
+                    var selectedModId = modIds[listBox.SelectedIndex];
+                    var modFiles = await cfApiClient.GetModFilesAsync(selectedModId);
+
+                    listBox.ItemsSource = null;
+                    listBox.Items.Clear();
+                    modVersions.Clear();
+
+                    listBoxColumnName.Header = "版本列表（双击下载）：";
+                    if (LoadType == 0)
                     {
-                        var selectedModId = modIds[listBox.SelectedIndex];
-                        var modFiles = await cfApiClient.GetModFilesAsync(selectedModId);
-
-                        listBox.ItemsSource = null;
-                        modVersions.Clear();
-
-                        listBoxColumnName.Header = "版本列表（双击下载）：";
-                        if (LoadType == 0)
+                        foreach (var modData in modFiles.Data)
                         {
-                            List<DM_ModInfo> list = new List<DM_ModInfo>();
-
-                            foreach (var modData in modFiles.Data)
-                            {
-                                listBox.Items.Add(new DM_ModInfo(imageurl, modData.DisplayName));
-                                modVersions.Add(modData.DisplayName);
-                                modVersionurl.Add(modData.DownloadUrl);
-                            }
+                            listBox.Items.Add(new DM_ModInfo(imageurl, modData.DisplayName));
+                            modVersions.Add(modData.DisplayName);
+                            modVersionurl.Add(modData.DownloadUrl);
                         }
-                        else if (LoadType == 1)
+                    }
+                    else if (LoadType == 1)
+                    {
+                        foreach (var modData in modFiles.Data)
                         {
-                            foreach (var modData in modFiles.Data)
+                            try
                             {
-                                try
-                                {
-                                    var serverPackFileId = modData.ServerPackFileId.Value;
-                                    var modFile = await cfApiClient.GetModFileAsync(selectedModId, serverPackFileId);
-                                    listBox.Items.Add(new DM_ModInfo(imageurl, modFile.Data.DisplayName));
-                                    modVersions.Add(modFile.Data.DisplayName);
-                                    modVersionurl.Add(modFile.Data.DownloadUrl);
-                                }
-                                catch
-                                {
-                                    continue;
-                                }
+                                var serverPackFileId = modData.ServerPackFileId.Value;
+                                var modFile = await cfApiClient.GetModFileAsync(selectedModId, serverPackFileId);
+                                listBox.Items.Add(new DM_ModInfo(imageurl, modFile.Data.DisplayName));
+                                modVersions.Add(modFile.Data.DisplayName);
+                                modVersionurl.Add(modFile.Data.DownloadUrl);
+                            }
+                            catch
+                            {
+                                continue;
                             }
                         }
                     }
-                    catch (Exception ex) { MessageBox.Show(ex.ToString()); }
 
                     if (listBox.Items.Count > 0)
                     {
@@ -250,7 +244,11 @@ namespace MSL
                         bool dwnRet = await MagicShow.ShowDownloader(this, modVersionurl[listBox.SelectedIndex], savingDir, filename, "下载中……");
                         if (dwnRet)
                         {
-                            MagicShow.ShowMsgDialog(this, "下载完成！", "提升");
+                            if (CloseImmediately)
+                            {
+                                Close();
+                            }
+                            MagicShow.ShowMsgDialog(this, "下载完成！", "提示");
                         }
                     }
                     else if (LoadType == 1)
@@ -258,25 +256,27 @@ namespace MSL
                         bool dwnRet = await MagicShow.ShowDownloader(this, modVersionurl[listBox.SelectedIndex], SavingPath, "ServerPack.zip", "下载中……");
                         if (dwnRet)
                         {
-                            Close();
+                            if (CloseImmediately)
+                            {
+                                Close();
+                            }
+                            MagicShow.ShowMsgDialog(this, "下载完成！", "提示");
                         }
                     }
                 }
             }
-            catch
+            catch (Exception ex)
             {
-                MessageBox.Show("获取MOD失败！您的系统版本可能过旧，请再次尝试或前往浏览器自行下载！", "错误", MessageBoxButton.OK, MessageBoxImage.Error);
+                await MagicShow.ShowMsgDialogAsync(this, "获取失败！请重试或尝试连接代理后再试！\n" + ex.Message, "错误");
             }
         }
 
         private void backBtn_Click(object sender, RoutedEventArgs e)
         {
+            listBox.ItemsSource = null;
             listBox.Items.Clear();
-            for (int i = 0; i < backList.Count; i++)
-            {
-                listBox.Items.Add(new DM_ModInfo(imageUrls[i], backList[i]));
-            }
-            listBoxColumnName.Header = "模组列表（双击获取该模组的版本）：";
+            listBox.ItemsSource = backList;
+            listBoxColumnName.Header = "列表（双击获取该内容的版本）：";
         }
 
         private void Window_Closing(object sender, System.ComponentModel.CancelEventArgs e)
@@ -285,9 +285,9 @@ namespace MSL
             modVersions.Clear();
             modVersionurl.Clear();
             modUrls.Clear();
-            imageUrls.Clear();
-            backList.Clear();
+            backList = null;
             listBox.ItemsSource = null;
+            listBox.Items.Clear();
         }
 
         private void Modrinth_Click(object sender, RoutedEventArgs e)

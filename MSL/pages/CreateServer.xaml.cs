@@ -90,7 +90,7 @@ namespace MSL.pages
             if (ImportPack.SelectedIndex == 1)
             {
                 ImportPack.SelectedIndex = 0;
-                DownloadMod downloadMod = new DownloadMod("MSL",1,false)
+                DownloadMod downloadMod = new DownloadMod("MSL", 1, false, true, true)
                 {
                     Owner = Window.GetWindow(Window.GetWindow(this))
                 };

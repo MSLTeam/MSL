@@ -15,30 +15,26 @@
             <RowDefinition/>
         </Grid.RowDefinitions>
         <Grid Margin="10,10,10,0">
-            <Grid.ColumnDefinitions>
-                <ColumnDefinition/>
-                <ColumnDefinition Width="Auto"/>
-            </Grid.ColumnDefinitions>
-            <StackPanel Grid.Column="0" Orientation="Horizontal">
-                <Button x:Name="backBtn" Content="返回" Click="backBtn_Click" Width="70" IsEnabled="False" FontSize="14"/>
+            <StackPanel Orientation="Horizontal">
+                <Button x:Name="backBtn" Content="返回" Click="backBtn_Click" Width="80" IsEnabled="False"/>
                 <StackPanel Orientation="Horizontal">
-                    <Label Content="搜索：" FontSize="16" BorderBrush="{x:Null}" Background="{x:Null}" Padding="10,0,10,0"/>
-                    <TextBox x:Name="textBox1" MinWidth="100"/>
-                    <Button x:Name="searchMod" Content="搜索" Click="searchMod_Click" Width="60" FontSize="14" IsEnabled="False"/>
-                    <Button x:Name="homeBtn" Content="主页" Click="homeBtn_Click" Width="60" FontSize="14"/>
+                    <Label Content="搜索：" FontSize="14" BorderBrush="{x:Null}" Background="{x:Null}" Padding="10,0,10,0"/>
+                    <TextBox x:Name="textBox1" MinWidth="120"/>
+                    <Button x:Name="searchMod" Content="搜索" Click="searchMod_Click" Width="60" IsEnabled="False"/>
+                    <Button x:Name="homeBtn" Content="主页" Click="homeBtn_Click" Width="60" />
                 </StackPanel>
             </StackPanel>
-            <StackPanel Grid.Column="1" Orientation="Horizontal">
+            <StackPanel HorizontalAlignment="Right" Orientation="Horizontal">
                 <StackPanel Orientation="Horizontal">
-                    <Label Content="下载源：" FontSize="16" BorderBrush="{x:Null}" Background="{x:Null}" Padding="10,0,10,0"/>
-                    <ComboBox x:Name="LoadSourceBox" SelectionChanged="LoadSourceBox_SelectionChanged">
+                    <Label Content="下载源：" FontSize="14" BorderBrush="{x:Null}" Background="{x:Null}" Padding="10,0,10,0"/>
+                    <ComboBox x:Name="LoadSourceBox" Width="120" SelectionChanged="LoadSourceBox_SelectionChanged">
                         <ComboBoxItem Content="CurseForge" IsSelected="True"/>
                         <ComboBoxItem Content="Modrinth（开发中）"/>
                     </ComboBox>
                 </StackPanel>
                 <StackPanel Orientation="Horizontal">
-                    <Label Content="模式：" FontSize="16" BorderBrush="{x:Null}" Background="{x:Null}" Padding="10,0,10,0"/>
-                    <ComboBox x:Name="LoadTypeBox" SelectionChanged="LoadTypeBox_SelectionChanged">
+                    <Label Content="模式：" FontSize="14" BorderBrush="{x:Null}" Background="{x:Null}" Padding="10,0,10,0"/>
+                    <ComboBox x:Name="LoadTypeBox" Width="80" SelectionChanged="LoadTypeBox_SelectionChanged">
                         <ComboBoxItem Content="Mod" IsSelected="True"/>
                         <ComboBoxItem Content="整合包"/>
                     </ComboBox>
