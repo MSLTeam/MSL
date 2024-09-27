@@ -85,10 +85,10 @@ namespace MSL.utils
             return _ret;
         }
 
-        public static async Task<string[]> ShowInstallForge(Window _window, string forgePath, string downPath, string java)
+        public static async Task<string[]> ShowInstallForge(Window _window, string installPath, string forgeFileName, string javaPath)
         {
             MagicDialog MagicDialog = new MagicDialog();
-            return await MagicDialog.ShowInstallForgeDialog(_window, forgePath, downPath, java);
+            return await MagicDialog.ShowInstallForgeDialog(_window, installPath, forgeFileName, javaPath);
 
         }
 
@@ -202,16 +202,16 @@ namespace MSL.utils
             return inputDialog._dialogReturn;
         }
 
-        public async Task<string[]> ShowInstallForgeDialog(Window _window, string forgePath, string downPath, string java)
+        public async Task<string[]> ShowInstallForgeDialog(Window _window, string installPath, string forgeFileName, string javaPath)
         {
             window = _window;
-            InstallForgeDialog _dialog = new InstallForgeDialog(forgePath, downPath, java);
+            InstallForgeDialog _dialog = new InstallForgeDialog(installPath, forgeFileName, javaPath);
             _dialog.CloseDialog += CloseMsgDialog;
             window?.Focus();
             dialog = Dialog.Show(_dialog);
             _tcs = new TaskCompletionSource<bool>();
             await _tcs.Task;
-            string[] strings = [_dialog._dialogReturn.ToString(), _dialog.mcVersion];
+            string[] strings = [_dialog.DialogReturn.ToString(), _dialog.McVersion];
             return strings;
         }
 

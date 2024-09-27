@@ -4,14 +4,14 @@ using System.Windows.Media;
 
 namespace MSL.controls
 {
-    internal class ServerInfo
+    internal class SL_ServerInfo
     {
         public int ServerID { get; set; }
         public string ServerName { get; set; }
         public string ServerIcon { get; set; }
         public string ServerState { get; set; }
         public Brush ServerStateFore { get; set; }
-        public ServerInfo(int serverID, string serverName, string serverIcon, string serverState, Brush serverStateFore)
+        public SL_ServerInfo(int serverID, string serverName, string serverIcon, string serverState, Brush serverStateFore)
         {
             ServerID = serverID;
             ServerName = serverName;
@@ -21,23 +21,36 @@ namespace MSL.controls
         }
     }
 
-    internal class PluginInfo
+    internal class SR_PluginInfo
     {
         public string PluginName { get; set; }
-        public PluginInfo(string pluginName)
+        public SR_PluginInfo(string pluginName)
         {
             PluginName = pluginName;
         }
     }
 
-    internal class ModInfo
+    internal class SR_ModInfo
     {
         public string ModName { get; set; }
-        public ModInfo(string modName)
+        public SR_ModInfo(string modName)
         {
             ModName = modName;
         }
     }
+
+    internal class DM_ModInfo
+    {
+        public string Icon { set; get; }
+        public string State { set; get; }
+
+        public DM_ModInfo(string icon, string state)
+        {
+            Icon = icon;
+            State = state;
+        }
+    }
+
     internal class ListBoxSideMenu : Control
     {
         public ImageSource Icon { get; set; }

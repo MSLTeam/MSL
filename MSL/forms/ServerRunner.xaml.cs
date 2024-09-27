@@ -2456,18 +2456,18 @@ namespace MSL
             bool hideList = true;
             if (Directory.Exists(Rserverbase + @"\plugins"))
             {
-                List<PluginInfo> list = new List<PluginInfo>();
+                List<SR_PluginInfo> list = new List<SR_PluginInfo>();
                 DirectoryInfo directoryInfo = new DirectoryInfo(Rserverbase + @"\plugins");
                 FileInfo[] file = directoryInfo.GetFiles("*.*");
                 foreach (FileInfo f in file)
                 {
                     if (f.Name.EndsWith(".disabled"))
                     {
-                        list.Add(new PluginInfo("[已禁用]" + f.Name));
+                        list.Add(new SR_PluginInfo("[已禁用]" + f.Name));
                     }
                     else if (f.Name.EndsWith(".jar"))
                     {
-                        list.Add(new PluginInfo(f.Name));
+                        list.Add(new SR_PluginInfo(f.Name));
                     }
                 }
                 pluginslist.ItemsSource = list;
@@ -2480,18 +2480,18 @@ namespace MSL
             }
             if (Directory.Exists(Rserverbase + @"\mods"))
             {
-                List<ModInfo> list = new List<ModInfo>();
+                List<SR_ModInfo> list = new List<SR_ModInfo>();
                 DirectoryInfo directoryInfo1 = new DirectoryInfo(Rserverbase + @"\mods");
                 FileInfo[] file1 = directoryInfo1.GetFiles("*.*");
                 foreach (FileInfo f1 in file1)
                 {
                     if (f1.Name.EndsWith(".disabled"))
                     {
-                        list.Add(new ModInfo("[已禁用]" + f1.Name));
+                        list.Add(new SR_ModInfo("[已禁用]" + f1.Name));
                     }
                     else if (f1.Name.EndsWith(".jar"))
                     {
-                        list.Add(new ModInfo(f1.Name));
+                        list.Add(new SR_ModInfo(f1.Name));
                     }
                 }
                 modslist.ItemsSource = list;
@@ -2629,17 +2629,17 @@ namespace MSL
                         item.IsSelected = true;
                     }
                 }
-                PluginInfo pluginInfo = pluginslist.SelectedItem as PluginInfo;
-                if (pluginInfo.PluginName.ToString().IndexOf("[已禁用]") == -1)
+                SR_PluginInfo SR_PluginInfo = pluginslist.SelectedItem as SR_PluginInfo;
+                if (SR_PluginInfo.PluginName.ToString().IndexOf("[已禁用]") == -1)
                 {
-                    File.Copy(Rserverbase + @"\plugins\" + pluginInfo.PluginName, Rserverbase + @"\plugins\" + pluginInfo.PluginName + ".disabled", true);
-                    File.Delete(Rserverbase + @"\plugins\" + pluginInfo.PluginName);
+                    File.Copy(Rserverbase + @"\plugins\" + SR_PluginInfo.PluginName, Rserverbase + @"\plugins\" + SR_PluginInfo.PluginName + ".disabled", true);
+                    File.Delete(Rserverbase + @"\plugins\" + SR_PluginInfo.PluginName);
                     ReFreshPluginsAndMods();
                 }
                 else
                 {
-                    File.Copy(Rserverbase + @"\plugins\" + pluginInfo.PluginName.Substring(5, pluginInfo.PluginName.Length - 5), Rserverbase + @"\plugins\" + pluginInfo.PluginName.Substring(5, pluginInfo.PluginName.Length - 13), true);
-                    File.Delete(Rserverbase + @"\plugins\" + pluginInfo.PluginName.Substring(5, pluginInfo.PluginName.Length - 5));
+                    File.Copy(Rserverbase + @"\plugins\" + SR_PluginInfo.PluginName.Substring(5, SR_PluginInfo.PluginName.Length - 5), Rserverbase + @"\plugins\" + SR_PluginInfo.PluginName.Substring(5, SR_PluginInfo.PluginName.Length - 13), true);
+                    File.Delete(Rserverbase + @"\plugins\" + SR_PluginInfo.PluginName.Substring(5, SR_PluginInfo.PluginName.Length - 5));
                     ReFreshPluginsAndMods();
                 }
             }
@@ -2668,14 +2668,14 @@ namespace MSL
                     }
                 }
 
-                PluginInfo pluginInfo = pluginslist.SelectedItem as PluginInfo;
-                if (pluginInfo.PluginName.ToString().Contains("[已禁用]"))
+                SR_PluginInfo SR_PluginInfo = pluginslist.SelectedItem as SR_PluginInfo;
+                if (SR_PluginInfo.PluginName.ToString().Contains("[已禁用]"))
                 {
-                    File.Delete(Rserverbase + @"\plugins\" + pluginInfo.PluginName.Substring(5, pluginInfo.PluginName.Length - 5));
+                    File.Delete(Rserverbase + @"\plugins\" + SR_PluginInfo.PluginName.Substring(5, SR_PluginInfo.PluginName.Length - 5));
                 }
                 else
                 {
-                    File.Delete(Rserverbase + @"\plugins\" + pluginInfo.PluginName);
+                    File.Delete(Rserverbase + @"\plugins\" + SR_PluginInfo.PluginName);
                 }
                 ReFreshPluginsAndMods();
             }
@@ -2703,17 +2703,17 @@ namespace MSL
                         item.IsSelected = true;
                     }
                 }
-                ModInfo modInfo = modslist.SelectedItem as ModInfo;
-                if (modInfo.ModName.ToString().IndexOf("[已禁用]") == -1)
+                SR_ModInfo SR_ModInfo = modslist.SelectedItem as SR_ModInfo;
+                if (SR_ModInfo.ModName.ToString().IndexOf("[已禁用]") == -1)
                 {
-                    File.Copy(Rserverbase + @"\mods\" + modInfo.ModName, Rserverbase + @"\mods\" + modInfo.ModName + ".disabled", true);
-                    File.Delete(Rserverbase + @"\mods\" + modInfo.ModName);
+                    File.Copy(Rserverbase + @"\mods\" + SR_ModInfo.ModName, Rserverbase + @"\mods\" + SR_ModInfo.ModName + ".disabled", true);
+                    File.Delete(Rserverbase + @"\mods\" + SR_ModInfo.ModName);
                     ReFreshPluginsAndMods();
                 }
                 else
                 {
-                    File.Copy(Rserverbase + @"\mods\" + modInfo.ModName.Substring(5, modInfo.ModName.Length - 5), Rserverbase + @"\mods\" + modInfo.ModName.Substring(5, modInfo.ModName.Length - 13), true);
-                    File.Delete(Rserverbase + @"\mods\" + modInfo.ModName.Substring(5, modInfo.ModName.Length - 5));
+                    File.Copy(Rserverbase + @"\mods\" + SR_ModInfo.ModName.Substring(5, SR_ModInfo.ModName.Length - 5), Rserverbase + @"\mods\" + SR_ModInfo.ModName.Substring(5, SR_ModInfo.ModName.Length - 13), true);
+                    File.Delete(Rserverbase + @"\mods\" + SR_ModInfo.ModName.Substring(5, SR_ModInfo.ModName.Length - 5));
                     ReFreshPluginsAndMods();
                 }
             }
@@ -2741,14 +2741,14 @@ namespace MSL
                         item.IsSelected = true;
                     }
                 }
-                ModInfo modInfo = modslist.SelectedItem as ModInfo;
-                if (modInfo.ModName.ToString().Contains("[已禁用]"))
+                SR_ModInfo SR_ModInfo = modslist.SelectedItem as SR_ModInfo;
+                if (SR_ModInfo.ModName.ToString().Contains("[已禁用]"))
                 {
-                    File.Delete(Rserverbase + @"\mods\" + modInfo.ModName.Substring(5, modInfo.ModName.Length - 5));
+                    File.Delete(Rserverbase + @"\mods\" + SR_ModInfo.ModName.Substring(5, SR_ModInfo.ModName.Length - 5));
                 }
                 else
                 {
-                    File.Delete(Rserverbase + @"\mods\" + modInfo.ModName);
+                    File.Delete(Rserverbase + @"\mods\" + SR_ModInfo.ModName);
                 }
                 ReFreshPluginsAndMods();
             }
@@ -2768,20 +2768,21 @@ namespace MSL
             catch { }
             foreach (var x in pluginslist.Items)
             {
-                PluginInfo pluginInfo = x as PluginInfo;
-                if (pluginInfo.PluginName.ToString().IndexOf("[已禁用]") == -1)
+                SR_PluginInfo SR_PluginInfo = x as SR_PluginInfo;
+                if (SR_PluginInfo.PluginName.ToString().IndexOf("[已禁用]") == -1)
                 {
-                    File.Copy(Rserverbase + @"\plugins\" + pluginInfo.PluginName, Rserverbase + @"\plugins\" + pluginInfo.PluginName + ".disabled", true);
-                    File.Delete(Rserverbase + @"\plugins\" + pluginInfo.PluginName);
+                    File.Copy(Rserverbase + @"\plugins\" + SR_PluginInfo.PluginName, Rserverbase + @"\plugins\" + SR_PluginInfo.PluginName + ".disabled", true);
+                    File.Delete(Rserverbase + @"\plugins\" + SR_PluginInfo.PluginName);
                 }
                 else
                 {
-                    File.Copy(Rserverbase + @"\plugins\" + pluginInfo.PluginName.Substring(5, pluginInfo.PluginName.Length - 5), Rserverbase + @"\plugins\" + pluginInfo.PluginName.Substring(5, pluginInfo.PluginName.Length - 13), true);
-                    File.Delete(Rserverbase + @"\plugins\" + pluginInfo.PluginName.Substring(5, pluginInfo.PluginName.Length - 5));
+                    File.Copy(Rserverbase + @"\plugins\" + SR_PluginInfo.PluginName.Substring(5, SR_PluginInfo.PluginName.Length - 5), Rserverbase + @"\plugins\" + SR_PluginInfo.PluginName.Substring(5, SR_PluginInfo.PluginName.Length - 13), true);
+                    File.Delete(Rserverbase + @"\plugins\" + SR_PluginInfo.PluginName.Substring(5, SR_PluginInfo.PluginName.Length - 5));
                 }
             }
             ReFreshPluginsAndMods();
         }
+
         private void disAllMod_Click(object sender, RoutedEventArgs e)
         {
             try
@@ -2795,30 +2796,31 @@ namespace MSL
             catch { }
             foreach (var x in modslist.Items)
             {
-                ModInfo modInfo = x as ModInfo;
-                if (modInfo.ModName.ToString().IndexOf("[已禁用]") == -1)
+                SR_ModInfo SR_ModInfo = x as SR_ModInfo;
+                if (SR_ModInfo.ModName.ToString().IndexOf("[已禁用]") == -1)
                 {
-                    File.Copy(Rserverbase + @"\mods\" + modInfo.ModName, Rserverbase + @"\mods\" + modInfo.ModName + ".disabled", true);
-                    File.Delete(Rserverbase + @"\mods\" + modInfo.ModName);
+                    File.Copy(Rserverbase + @"\mods\" + SR_ModInfo.ModName, Rserverbase + @"\mods\" + SR_ModInfo.ModName + ".disabled", true);
+                    File.Delete(Rserverbase + @"\mods\" + SR_ModInfo.ModName);
                 }
                 else
                 {
-                    File.Copy(Rserverbase + @"\mods\" + modInfo.ModName.Substring(5, modInfo.ModName.Length - 5), Rserverbase + @"\mods\" + modInfo.ModName.Substring(5, modInfo.ModName.Length - 13), true);
-                    File.Delete(Rserverbase + @"\mods\" + modInfo.ModName.Substring(5, modInfo.ModName.Length - 5));
+                    File.Copy(Rserverbase + @"\mods\" + SR_ModInfo.ModName.Substring(5, SR_ModInfo.ModName.Length - 5), Rserverbase + @"\mods\" + SR_ModInfo.ModName.Substring(5, SR_ModInfo.ModName.Length - 13), true);
+                    File.Delete(Rserverbase + @"\mods\" + SR_ModInfo.ModName.Substring(5, SR_ModInfo.ModName.Length - 5));
                 }
             }
             ReFreshPluginsAndMods();
         }
+
         private void opencurseforge_Click(object sender, RoutedEventArgs e)
         {
-            DownloadMod downloadMod = new DownloadMod
+            DownloadMod downloadMod = new DownloadMod(Rserverbase+"\\mods",0,false)
             {
-                serverbase = Rserverbase,
                 Owner = this
             };
             downloadMod.ShowDialog();
             ReFreshPluginsAndMods();
         }
+
         private async void openpluginweb_Click(object sender, RoutedEventArgs e)
         {
             await MagicShow.ShowMsgDialogAsync(this, "开服器暂时无法提供插件下载功能，即将为您打开Spigot网站，请您自行寻找插件并下载（下载后点击右下角“+”将其添加入服务器）。", "提示");
@@ -3080,7 +3082,7 @@ namespace MSL
                     {
                         string installReturn;
                         //调用新版forge安装器
-                        string[] installForge = await MagicShow.ShowInstallForge(this, Rserverbase + "\\" + server.Text, Rserverbase, Rserverjava);
+                        string[] installForge = await MagicShow.ShowInstallForge(this, Rserverbase ,server.Text, Rserverjava);
                         if (installForge[0] == "0")
                         {
                             if (await MagicShow.ShowMsgDialogAsync(this, "自动安装失败！是否尝试使用命令行安装方式？", "错误", true))
@@ -3270,6 +3272,7 @@ namespace MSL
                 jAva.Text = openfile.FileName;
             }
         }
+
         private void downloadServer_Click(object sender, RoutedEventArgs e)
         {
             if (jVMcmd.Text.Contains("@libraries/net/minecraftforge/forge/"))
@@ -3281,14 +3284,14 @@ namespace MSL
                 Owner = this
             };
             downloadServer.ShowDialog();
-            if (File.Exists(Rserverbase + @"\" + downloadServer.downloadServerName))
+            if (File.Exists(Rserverbase + @"\" + downloadServer.FileName))
             {
-                server.Text = downloadServer.downloadServerName;
+                server.Text = downloadServer.FileName;
                 Growl.Success("服务端下载完毕！已自动选择该服务端核心，请记得保存哦~");
             }
-            else if (downloadServer.downloadServerName.StartsWith("@libraries/"))
+            else if (downloadServer.FileName.StartsWith("@libraries/"))
             {
-                server.Text = downloadServer.downloadServerName;
+                server.Text = downloadServer.FileName;
                 Growl.Success("服务端下载完毕！已自动选择该服务端核心，请记得保存哦~");
             }
         }

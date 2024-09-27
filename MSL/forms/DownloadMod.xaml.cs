@@ -1,4 +1,5 @@
 ﻿using CurseForge.APIClient.Models.Mods;
+using MSL.controls;
 using MSL.utils;
 using System;
 using System.Collections.Generic;
@@ -18,64 +19,62 @@ namespace MSL
     /// </summary>
     public partial class DownloadMod : HandyControl.Controls.Window
     {
-        private string Url;
-        private string Dir;
-        public string serverbase;
-        private readonly int loadType = 0;  //0: mods , 1: modpacks 
+        private int LoadType = 0;  //0: mods , 1: modpacks 
+        private int LoadSource = 0;  //0: Curseforge , 1: Modrinth 
+        private readonly string SavingPath;
         private readonly List<int> modIds = new List<int>();
         private readonly List<string> modVersions = new List<string>();
         private readonly List<string> modVersionurl = new List<string>();
         private readonly List<string> modUrls = new List<string>();
         private readonly List<string> imageUrls = new List<string>();
         private readonly List<string> backList = new List<string>();
-        public DownloadMod(int loadtype = 0)
+        private CurseForge.APIClient.ApiClient cfApiClient;
+
+        public DownloadMod(string savingPath, int loadtype = 0,bool canChangeLoadType=true,bool canChangeSource=true)
         {
             InitializeComponent();
-            loadType = loadtype;
-        }
-        class MODsInfo
-        {
-            public string Icon { set; get; }
-            public string State { set; get; }
-
-            public MODsInfo(string icon, string state)
+            SavingPath = savingPath;
+            LoadType = loadtype;
+            LoadTypeBox.SelectedIndex = loadtype;
+            if (!canChangeLoadType)
             {
-                this.Icon = icon;
-                this.State = state;
+                LoadTypeBox.IsEnabled = false;
+            }
+            if (!canChangeSource)
+            {
+                LoadSourceBox.IsEnabled = false;
             }
         }
 
-        CurseForge.APIClient.ApiClient cfApiClient = null;
-
         private async void Window_Loaded(object sender, RoutedEventArgs e)
+        {
+            await LoadEvent_CurseForge();
+        }
+
+        private async Task LoadEvent_CurseForge()
         {
             try
             {
+                lCircle.IsRunning = true;
                 lCircle.Visibility = Visibility.Visible;
                 lb01.Visibility = Visibility.Visible;
-                string token = string.Empty;
-                await Task.Run(async () =>
+                if (cfApiClient == null)
                 {
+                    string token = string.Empty;
                     string _token = (await HttpService.GetApiContentAsync("query/cf_token"))["data"]["cfToken"].ToString();
-                    try
-                    {
-                        byte[] data = Convert.FromBase64String(_token);
-                        string decodedString = Encoding.UTF8.GetString(data);
-                        token = decodedString;
-                    }
-                    catch (Exception ex)
-                    {
-                        MessageBox.Show("出现错误！请及时向开发者反馈！\n" + ex.Message);
-                    }
-                });
+                    byte[] data = Convert.FromBase64String(_token);
+                    string decodedString = Encoding.UTF8.GetString(data);
+                    token = decodedString;
+                    cfApiClient = new CurseForge.APIClient.ApiClient(token);
+                }
                 backList.Clear();
-                imageUrls.Clear();
-                listBox.Items.Clear();
                 modIds.Clear();
                 modVersionurl.Clear();
                 modUrls.Clear();
-                cfApiClient = new CurseForge.APIClient.ApiClient(token);
-                if (loadType == 0)
+                imageUrls.Clear();
+                listBox.ItemsSource = null;
+                List<DM_ModInfo> list = new List<DM_ModInfo>();
+                if (LoadType == 0)
                 {
                     var featuredMods = await cfApiClient.GetFeaturedModsAsync(new GetFeaturedModsRequestBody
                     {
@@ -83,30 +82,29 @@ namespace MSL
                         ExcludedModIds = new List<int>(),
                         GameVersionTypeId = null
                     });
-                    for (int i = 0; i < featuredMods.Data.Popular.Count; i++)
+
+                    foreach (var featuredMod in featuredMods.Data.Popular)
                     {
-                        listBox.Items.Add(new MODsInfo(featuredMods.Data.Popular[i].Logo.ThumbnailUrl, featuredMods.Data.Popular[i].Name));
-                        imageUrls.Add(featuredMods.Data.Popular[i].Logo.ThumbnailUrl);
-                        backList.Add(featuredMods.Data.Popular[i].Name);
-                        modIds.Add(featuredMods.Data.Popular[i].Id);
-                        modUrls.Add(featuredMods.Data.Popular[i].Links.WebsiteUrl.ToString());
+                        list.Add(new DM_ModInfo(featuredMod.Logo.ThumbnailUrl, featuredMod.Name));
+                        imageUrls.Add(featuredMod.Logo.ThumbnailUrl);
+                        backList.Add(featuredMod.Name);
+                        modIds.Add(featuredMod.Id);
+                        modUrls.Add(featuredMod.Links.WebsiteUrl.ToString());
                     }
                 }
-                else if (loadType == 1)
+                else if (LoadType == 1)
                 {
                     var modpacks = await cfApiClient.SearchModsAsync(432, null, 5128);
-
-                    for (int i = 0; i < modpacks.Data.Count; i++)
+                    foreach (var modPack in modpacks.Data)
                     {
-
-                        listBox.Items.Add(new MODsInfo(modpacks.Data[i].Logo.ThumbnailUrl, modpacks.Data[i].Name));
-                        imageUrls.Add(modpacks.Data[i].Logo.ThumbnailUrl);
-                        backList.Add(modpacks.Data[i].Name);
-
-                        modIds.Add(modpacks.Data[i].Id);
-                        modUrls.Add(modpacks.Data[i].Links.WebsiteUrl.ToString());
+                        list.Add(new DM_ModInfo(modPack.Logo.ThumbnailUrl, modPack.Name));
+                        imageUrls.Add(modPack.Logo.ThumbnailUrl);
+                        backList.Add(modPack.Name);
+                        modIds.Add(modPack.Id);
+                        modUrls.Add(modPack.Links.WebsiteUrl.ToString());
                     }
                 }
+                listBox.ItemsSource = list;
                 lCircle.IsRunning = false;
                 lCircle.Visibility = Visibility.Collapsed;
                 lb01.Visibility = Visibility.Collapsed;
@@ -116,7 +114,6 @@ namespace MSL
             catch (Exception ex)
             {
                 await MagicShow.ShowMsgDialogAsync(this, "获取模组/整合包失败！请重试或尝试连接代理后再试！\n" + ex.Message, "错误");
-                Close();
             }
         }
 
@@ -131,30 +128,29 @@ namespace MSL
                 lb01.Visibility = Visibility.Visible;
                 var searchedMods = await cfApiClient.SearchModsAsync(432, null, null, null, null, null, textBox1.Text);
                 backList.Clear();
-                listBox.Items.Clear();
                 modIds.Clear();
                 modVersionurl.Clear();
                 modUrls.Clear();
                 imageUrls.Clear();
-                for (int i = 0; i < searchedMods.Data.Count; i++)
+                List<DM_ModInfo> list = new List<DM_ModInfo>();
+                foreach (var mod in searchedMods.Data)
                 {
-
-                    listBox.Items.Add(new MODsInfo(searchedMods.Data[i].Logo.ThumbnailUrl, searchedMods.Data[i].Name));
-                    imageUrls.Add(searchedMods.Data[i].Logo.ThumbnailUrl);
-                    backList.Add(searchedMods.Data[i].Name);
-
-                    modIds.Add(searchedMods.Data[i].Id);
-                    modUrls.Add(searchedMods.Data[i].Links.WebsiteUrl.ToString());
+                    list.Add(new DM_ModInfo(mod.Logo.ThumbnailUrl, mod.Name));
+                    imageUrls.Add(mod.Logo.ThumbnailUrl);
+                    backList.Add(mod.Name);
+                    modIds.Add(mod.Id);
+                    modUrls.Add(mod.Links.WebsiteUrl.ToString());
                 }
+                listBox.ItemsSource = list;
                 lCircle.IsRunning = false;
                 lCircle.Visibility = Visibility.Collapsed;
                 lb01.Visibility = Visibility.Collapsed;
                 searchMod.IsEnabled = true;
                 listBoxColumnName.Header = "模组列表（双击获取该模组的版本）：";
             }
-            catch
+            catch(Exception ex)
             {
-                MessageBox.Show("获取MOD失败！您的系统版本可能过旧，请再次尝试或前往浏览器自行下载！", "错误", MessageBoxButton.OK, MessageBoxImage.Error);
+                await MagicShow.ShowMsgDialogAsync(this, "搜索失败！请重试或尝试连接代理后再试！\n" + ex.Message, "错误");
             }
         }
 
@@ -173,29 +169,30 @@ namespace MSL
                         var selectedModId = modIds[listBox.SelectedIndex];
                         var modFiles = await cfApiClient.GetModFilesAsync(selectedModId);
 
-                        listBox.Items.Clear();
+                        listBox.ItemsSource = null;
                         modVersions.Clear();
 
                         listBoxColumnName.Header = "版本列表（双击下载）：";
-                        if (loadType == 0)
+                        if (LoadType == 0)
                         {
-                            for (int i = 0; i < modFiles.Data.Count; i++)
+                            List<DM_ModInfo> list = new List<DM_ModInfo>();
+
+                            foreach (var modData in modFiles.Data)
                             {
-                                listBox.Items.Add(new MODsInfo(imageurl, modFiles.Data[i].DisplayName));
-                                modVersions.Add(modFiles.Data[i].DisplayName);
-                                modVersionurl.Add(modFiles.Data[i].DownloadUrl);
+                                listBox.Items.Add(new DM_ModInfo(imageurl, modData.DisplayName));
+                                modVersions.Add(modData.DisplayName);
+                                modVersionurl.Add(modData.DownloadUrl);
                             }
                         }
-                        else if (loadType == 1)
+                        else if (LoadType == 1)
                         {
-                            for (int i = 0; i < modFiles.Data.Count; i++)
+                            foreach (var modData in modFiles.Data)
                             {
                                 try
                                 {
-                                    var serverPackFileId = modFiles.Data[i].ServerPackFileId.Value;
-                                    //MessageBox.Show(serverPackFileId.ToString());
+                                    var serverPackFileId = modData.ServerPackFileId.Value;
                                     var modFile = await cfApiClient.GetModFileAsync(selectedModId, serverPackFileId);
-                                    listBox.Items.Add(new MODsInfo(imageurl, modFile.Data.DisplayName));
+                                    listBox.Items.Add(new DM_ModInfo(imageurl, modFile.Data.DisplayName));
                                     modVersions.Add(modFile.Data.DisplayName);
                                     modVersionurl.Add(modFile.Data.DownloadUrl);
                                 }
@@ -222,11 +219,12 @@ namespace MSL
                     {
                         return;
                     }
-                    if (loadType == 0)
+                    if (LoadType == 0)
                     {
-                        if (Directory.Exists(serverbase + @"\mods"))
+                        string savingDir;
+                        if (Directory.Exists(SavingPath))
                         {
-                            Dir = serverbase + @"\mods";
+                            savingDir = SavingPath;
                         }
                         else
                         {
@@ -236,27 +234,28 @@ namespace MSL
                             };
                             if (dialog.ShowDialog() == System.Windows.Forms.DialogResult.OK)
                             {
-                                Dir = dialog.SelectedPath;
+                                savingDir = dialog.SelectedPath;
+                            }
+                            else
+                            {
+                                return;
                             }
                         }
-                        Url = modVersionurl[listBox.SelectedIndex];
                         string filename = modVersions[listBox.SelectedIndex].ToString();
                         if (!filename.EndsWith(".jar"))
                         {
                             filename += ".jar";
                         }
 
-                        bool dwnRet = await MagicShow.ShowDownloader(this, Url, Dir, filename, "下载中……");
+                        bool dwnRet = await MagicShow.ShowDownloader(this, modVersionurl[listBox.SelectedIndex], savingDir, filename, "下载中……");
                         if (dwnRet)
                         {
                             MagicShow.ShowMsgDialog(this, "下载完成！", "提升");
                         }
                     }
-                    else if (loadType == 1)
+                    else if (LoadType == 1)
                     {
-                        Dir = "MSL";
-                        Url = modVersionurl[listBox.SelectedIndex];
-                        bool dwnRet = await MagicShow.ShowDownloader(this, Url, Dir, "ServerPack.zip", "下载中……");
+                        bool dwnRet = await MagicShow.ShowDownloader(this, modVersionurl[listBox.SelectedIndex], SavingPath, "ServerPack.zip", "下载中……");
                         if (dwnRet)
                         {
                             Close();
@@ -275,7 +274,7 @@ namespace MSL
             listBox.Items.Clear();
             for (int i = 0; i < backList.Count; i++)
             {
-                listBox.Items.Add(new MODsInfo(imageUrls[i], backList[i]));
+                listBox.Items.Add(new DM_ModInfo(imageUrls[i], backList[i]));
             }
             listBoxColumnName.Header = "模组列表（双击获取该模组的版本）：";
         }
@@ -289,13 +288,50 @@ namespace MSL
             imageUrls.Clear();
             backList.Clear();
             listBox.ItemsSource = null;
-            //GC.Collect();
-            //listBox.Items.Clear();
         }
 
         private void Modrinth_Click(object sender, RoutedEventArgs e)
         {
             Process.Start("https://modrinth.com/");
+        }
+
+        private async void LoadSourceBox_SelectionChanged(object sender, System.Windows.Controls.SelectionChangedEventArgs e)
+        {
+            if (!IsLoaded)
+            {
+                return;
+            }
+            LoadSource = LoadSourceBox.SelectedIndex;
+            if (LoadSource == 0)
+            {
+                await LoadEvent_CurseForge();
+            }
+            else if (LoadSource == 1)
+            {
+
+            }
+        }
+
+        private async void LoadTypeBox_SelectionChanged(object sender, System.Windows.Controls.SelectionChangedEventArgs e)
+        {
+            if (!IsLoaded)
+            {
+                return;
+            }
+            LoadType = LoadTypeBox.SelectedIndex;
+            await LoadEvent_CurseForge();
+        }
+
+        private async void homeBtn_Click(object sender, RoutedEventArgs e)
+        {
+            if (LoadSource == 0)
+            {
+                await LoadEvent_CurseForge();
+            }
+            else if (LoadSource == 1)
+            {
+
+            }
         }
     }
 }

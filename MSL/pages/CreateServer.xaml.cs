@@ -90,7 +90,7 @@ namespace MSL.pages
             if (ImportPack.SelectedIndex == 1)
             {
                 ImportPack.SelectedIndex = 0;
-                DownloadMod downloadMod = new DownloadMod(1)
+                DownloadMod downloadMod = new DownloadMod("MSL",1,false)
                 {
                     Owner = Window.GetWindow(Window.GetWindow(this))
                 };
@@ -697,17 +697,17 @@ namespace MSL.pages
                     Owner = Window.GetWindow(Window.GetWindow(this))
                 };
                 downloadServer.ShowDialog();
-                if (File.Exists(serverbase + "\\" + downloadServer.downloadServerName))
+                if (File.Exists(serverbase + "\\" + downloadServer.FileName))
                 {
-                    servercore = downloadServer.downloadServerName;
+                    servercore = downloadServer.FileName;
                     sJVM.IsSelected = true;
                     sJVM.IsEnabled = true;
                     sserver.IsEnabled = false;
                     returnMode = 6;
                 }
-                else if (downloadServer.downloadServerName.StartsWith("@libraries/"))
+                else if (downloadServer.FileName.StartsWith("@libraries/"))
                 {
-                    servercore = downloadServer.downloadServerName;
+                    servercore = downloadServer.FileName;
                     sJVM.IsSelected = true;
                     sJVM.IsEnabled = true;
                     sserver.IsEnabled = false;
@@ -1357,7 +1357,7 @@ namespace MSL.pages
         private async Task<string> InstallForge(string filename)
         {
             //调用新版forge安装器
-            string[] installForge = await MagicShow.ShowInstallForge(Window.GetWindow(this), serverbase + "\\" + filename, serverbase, serverjava);
+            string[] installForge = await MagicShow.ShowInstallForge(Window.GetWindow(this), serverbase, filename, serverjava);
             if (installForge[0] == "0")
             {
                 if (await MagicShow.ShowMsgDialogAsync(Window.GetWindow(this), "自动安装失败！是否尝试使用命令行安装方式？", "错误", true))

@@ -20,20 +20,20 @@ namespace MSL.pages
     /// </summary>
     public partial class DownloadServer : HandyControl.Controls.Window
     {
-        public string downloadServerName = string.Empty;
-        private readonly string downloadServerBase;
-        private readonly string downloadServerJava;
-        private readonly bool isInstallSomeCore;
-        private string downPath = string.Empty;
-        private string filename = string.Empty;
+        public string FileName { get; set; }
+        private readonly string SavingPath;
+        private readonly string JavaPath; // The Java Path for install Forge-ServerCore
+        private readonly bool IsInstallForge; // Whether to install Forge-ServerCore or not
+        //private string filename = string.Empty;
 
-        public DownloadServer(string _downloadServerBase, string _downloadServerJava, bool _isInstallSomeCore = true)
+        public DownloadServer(string savingPath, string javaPath = "", bool isInstallForge = true)
         {
             InitializeComponent();
-            downloadServerBase = _downloadServerBase;
-            downloadServerJava = _downloadServerJava;
-            isInstallSomeCore = _isInstallSomeCore;
+            SavingPath = savingPath;
+            IsInstallForge = isInstallForge;
+            JavaPath = javaPath;
         }
+
         private async void Page_Loaded(object sender, RoutedEventArgs e)
         {
             await GetServer();
@@ -128,21 +128,20 @@ namespace MSL.pages
 
             downUrl= MriiorCheck(downUrl);
             string sha256Exp = downContext["data"]["sha256"]?.ToString() ?? string.Empty;
-            downPath = downloadServerBase;
-            filename = downServer + "-" + downVersion + ".jar";
+            string filename = downServer + "-" + downVersion + ".jar";
 
-            int dwnDialog = await MagicShow.ShowDownloaderWithIntReturn(this, downUrl, downPath, filename, "下载服务端中……", sha256Exp, true);
+            int dwnDialog = await MagicShow.ShowDownloaderWithIntReturn(this, downUrl, SavingPath, filename, "下载服务端中……", sha256Exp, true);
             if (dwnDialog == 2)
             {
                 MagicShow.ShowMsgDialog(this, "下载取消！", "错误");
                 return;
             }
-            if (!File.Exists(downPath + "\\" + filename))
+            if (!File.Exists(SavingPath + "\\" + filename))
             {
                 MagicShow.ShowMsgDialog(this, "下载失败！（或服务端文件不存在）", "提示");
                 return;
             }
-            if (!isInstallSomeCore)
+            if (!IsInstallForge)
             {
                 MagicShow.ShowMsgDialog(this, "下载完成！服务端核心放置在“MSL\\ServerCores”文件夹中！", "提示");
                 return;
@@ -156,7 +155,7 @@ namespace MSL.pages
                 string _dlUrl = _dlContext["data"]["url"].ToString();
                 _dlUrl= MriiorCheck(_dlUrl);
                 string _sha256Exp = _dlContext["data"]["sha256"]?.ToString() ?? string.Empty;
-                int _dwnDialog = await MagicShow.ShowDownloaderWithIntReturn(this, _dlUrl, downPath, _filename, "下载依赖服务端中……", _sha256Exp, true);
+                int _dwnDialog = await MagicShow.ShowDownloaderWithIntReturn(this, _dlUrl, SavingPath, _filename, "下载依赖服务端中……", _sha256Exp, true);
 
                 if (_dwnDialog == 2)
                 {
@@ -168,12 +167,12 @@ namespace MSL.pages
                 try
                 {
                     //移动到mods文件夹
-                    Directory.CreateDirectory(downloadServerBase + "\\mods\\");
-                    if (File.Exists(downloadServerBase + "\\mods\\" + filename))
+                    Directory.CreateDirectory(SavingPath + "\\mods\\");
+                    if (File.Exists(SavingPath + "\\mods\\" + filename))
                     {
-                        File.Delete(downloadServerBase + "\\mods\\" + filename);
+                        File.Delete(SavingPath + "\\mods\\" + filename);
                     }
-                    File.Move(downloadServerBase + "\\" + filename, downloadServerBase + "\\mods\\" + filename);
+                    File.Move(SavingPath + "\\" + filename, SavingPath + "\\mods\\" + filename);
                 }
                 catch (Exception e)
                 {
@@ -187,7 +186,7 @@ namespace MSL.pages
                     return;
                 }
 
-                downloadServerName = installReturn;
+                FileName = installReturn;
             }
             else if (downServer == "neoforge")
             {
@@ -198,7 +197,7 @@ namespace MSL.pages
                     return;
                 }
 
-                downloadServerName = installReturn;
+                FileName = installReturn;
             }
             else if (downServer == "forge")
             {
@@ -209,7 +208,7 @@ namespace MSL.pages
                     return;
                 }
 
-                downloadServerName = installReturn;
+                FileName = installReturn;
             }
             else if (downServer == "banner")
             {
@@ -217,12 +216,12 @@ namespace MSL.pages
                 try
                 {
                     //移动到mods文件夹
-                    Directory.CreateDirectory(downloadServerBase + "\\mods\\");
-                    if (File.Exists(downloadServerBase + "\\mods\\" + filename))
+                    Directory.CreateDirectory(SavingPath + "\\mods\\");
+                    if (File.Exists(SavingPath + "\\mods\\" + filename))
                     {
-                        File.Delete(downloadServerBase + "\\mods\\" + filename);
+                        File.Delete(SavingPath + "\\mods\\" + filename);
                     }
-                    File.Move(downloadServerBase + "\\" + filename, downloadServerBase + "\\mods\\" + filename);
+                    File.Move(SavingPath + "\\" + filename, SavingPath + "\\mods\\" + filename);
                 }
                 catch (Exception e)
                 {
@@ -232,23 +231,18 @@ namespace MSL.pages
 
                 //下载一个fabric端
                 //获取版本号
-                bool dwnFabric = await MagicShow.ShowDownloader(GetWindow(this), (await HttpService.GetApiContentAsync("download/server/fabric/" + downVersion))["data"]["url"].ToString(), downloadServerBase, $"fabric-{downVersion}.jar", "下载Fabric端中···");
-                if (!dwnFabric || !File.Exists(downloadServerBase + "\\" + $"fabric-{downVersion}.jar"))
+                bool dwnFabric = await MagicShow.ShowDownloader(GetWindow(this), (await HttpService.GetApiContentAsync("download/server/fabric/" + downVersion))["data"]["url"].ToString(), SavingPath, $"fabric-{downVersion}.jar", "下载Fabric端中···");
+                if (!dwnFabric || !File.Exists(SavingPath + "\\" + $"fabric-{downVersion}.jar"))
                 {
                     MagicShow.ShowMsgDialog(this, "Fabric端下载取消（或服务端文件不存在）！", "错误");
                     return;
                 }
 
-                downloadServerName = $"fabric-{downVersion}.jar";
+                FileName = $"fabric-{downVersion}.jar";
             }
             else
             {
-                if (!isInstallSomeCore)
-                {
-                    MagicShow.ShowMsgDialog(this, "下载完成！服务端核心放置在“MSL\\ServerCores”文件夹中！", "提示");
-                    return;
-                }
-                downloadServerName = filename;
+                FileName = filename;
             }
             Close();
         }
@@ -256,13 +250,13 @@ namespace MSL.pages
         private async Task<string> InstallForge(string filename)
         {
             //调用新版forge安装器
-            string[] installForge = await MagicShow.ShowInstallForge(this, downPath + "\\" + filename, downPath, downloadServerJava);
+            string[] installForge = await MagicShow.ShowInstallForge(this, SavingPath, filename,JavaPath);
             Functions functions = new Functions();
             if (installForge[0] == "0")
             {
                 if (await MagicShow.ShowMsgDialogAsync(this, "自动安装失败！是否尝试使用命令行安装方式？", "错误", true))
                 {
-                    return Functions.InstallForge(downloadServerJava, downloadServerBase, filename, string.Empty, false);
+                    return Functions.InstallForge(JavaPath, SavingPath, filename, string.Empty, false);
                 }
                 else
                 {
@@ -271,10 +265,10 @@ namespace MSL.pages
             }
             else if (installForge[0] == "1")
             {
-                string _ret = Functions.InstallForge(downloadServerJava, downloadServerBase, filename, installForge[1]);
+                string _ret = Functions.InstallForge(JavaPath, SavingPath, filename, installForge[1]);
                 if (_ret == null)
                 {
-                    return Functions.InstallForge(downloadServerJava, downloadServerBase, filename, string.Empty, false);
+                    return Functions.InstallForge(JavaPath, SavingPath, filename, string.Empty, false);
                 }
                 else
                 {
@@ -283,7 +277,7 @@ namespace MSL.pages
             }
             else if (installForge[0] == "3")
             {
-                return Functions.InstallForge(downloadServerJava, downloadServerBase, filename, string.Empty, false);
+                return Functions.InstallForge(JavaPath, SavingPath, filename, string.Empty, false);
             }
             else
             {

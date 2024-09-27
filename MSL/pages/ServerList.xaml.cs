@@ -76,15 +76,15 @@ namespace MSL.pages
                     }
                     if (File.Exists(item.Value["base"].ToString() + "\\server-icon.png"))
                     {
-                        list.Add(new ServerInfo(int.Parse(item.Key), item.Value["name"].ToString(), item.Value["base"].ToString() + "\\server-icon.png", status, brushes));
+                        list.Add(new SL_ServerInfo(int.Parse(item.Key), item.Value["name"].ToString(), item.Value["base"].ToString() + "\\server-icon.png", status, brushes));
                     }
                     else if (item.Value["core"].ToString().IndexOf("forge") + 1 != 0 || item.Value["core"].ToString() == "")
                     {
-                        list.Add(new ServerInfo(int.Parse(item.Key), item.Value["name"].ToString(), "pack://application:,,,/images/150px-Anvil.png", status, brushes));
+                        list.Add(new SL_ServerInfo(int.Parse(item.Key), item.Value["name"].ToString(), "pack://application:,,,/images/150px-Anvil.png", status, brushes));
                     }
                     else
                     {
-                        list.Add(new ServerInfo(int.Parse(item.Key), item.Value["name"].ToString(), "pack://application:,,,/images/150px-Impulse_Command_Block.png", status, brushes));
+                        list.Add(new SL_ServerInfo(int.Parse(item.Key), item.Value["name"].ToString(), "pack://application:,,,/images/150px-Impulse_Command_Block.png", status, brushes));
                     }
                 }
                 Dispatcher.Invoke(() =>
@@ -121,8 +121,8 @@ namespace MSL.pages
 
         private void OpenServerWindowEvent(int ctrlTab = 0)
         {
-            ServerInfo serverInfo = serverList.SelectedItem as ServerInfo;
-            int serverID = serverInfo.ServerID;
+            SL_ServerInfo SL_ServerInfo = serverList.SelectedItem as SL_ServerInfo;
+            int serverID = SL_ServerInfo.ServerID;
             if (ServerWindowList.ContainsKey(serverID))
             {
                 ServerWindowList.TryGetValue(serverID, out Window window);
@@ -193,8 +193,8 @@ namespace MSL.pages
 
         private async void DelServerEvent()
         {
-            ServerInfo serverInfo = serverList.SelectedItem as ServerInfo;
-            int serverID = serverInfo.ServerID;
+            SL_ServerInfo SL_ServerInfo = serverList.SelectedItem as SL_ServerInfo;
+            int serverID = SL_ServerInfo.ServerID;
             if (ServerWindowList.ContainsKey(serverID))
             {
                 MagicShow.ShowMsgDialog(Window.GetWindow(this), "请在关闭服务器并关掉服务器窗口后再进行删除！", "警告");
@@ -205,7 +205,7 @@ namespace MSL.pages
             {
                 return;
             }
-            //ServerInfo _server = serverList.SelectedItem as ServerInfo;
+            //SL_ServerInfo _server = serverList.SelectedItem as SL_ServerInfo;
             try
             {
                 bool _dialogRet = await MagicShow.ShowMsgDialogAsync(Window.GetWindow(this), "是否删除该服务器的目录？（服务器目录中的所有文件都会被移至回收站）", "提示", true, "取消");
@@ -242,8 +242,8 @@ namespace MSL.pages
         {
             try
             {
-                ServerInfo serverInfo = serverList.SelectedItem as ServerInfo;
-                string serverID = serverInfo.ServerID.ToString();
+                SL_ServerInfo SL_ServerInfo = serverList.SelectedItem as SL_ServerInfo;
+                string serverID = SL_ServerInfo.ServerID.ToString();
                 JObject jsonObject = JObject.Parse(File.ReadAllText(@"MSL\ServerList.json", Encoding.UTF8));
                 JObject _json = (JObject)jsonObject[serverID];
                 Process process = new Process();
@@ -266,8 +266,8 @@ namespace MSL.pages
         {
             try
             {
-                ServerInfo serverInfo = serverList.SelectedItem as ServerInfo;
-                string serverID = serverInfo.ServerID.ToString();
+                SL_ServerInfo SL_ServerInfo = serverList.SelectedItem as SL_ServerInfo;
+                string serverID = SL_ServerInfo.ServerID.ToString();
                 JObject jsonObject = JObject.Parse(File.ReadAllText(@"MSL\ServerList.json", Encoding.UTF8));
                 JObject _json = (JObject)jsonObject[serverID];
                 Growl.Info("正在为您打开服务器文件夹……");
@@ -382,10 +382,20 @@ namespace MSL.pages
         }
 
         //单独的下载按钮
+        private async void DlModBtn_Click(object sender, RoutedEventArgs e)
+        {
+            await MagicShow.ShowMsgDialogAsync(Window.GetWindow(this), "这是单独的模组/整合包下载界面\n下载的文件均在MSL\\Downloads文件夹内", "提示");
+            DownloadMod downloadMod = new DownloadMod("MSL\\Downloads")
+            {
+                Owner = Window.GetWindow(Window.GetWindow(this))
+            };
+            downloadMod.ShowDialog();
+        }
+
         private async void DlServerCoreBtn_Click(object sender, RoutedEventArgs e)
         {
-            await MagicShow.ShowMsgDialogAsync(Window.GetWindow(this), "这是单独的服务端下载界面\n下载的服务端均在MSL文件夹下的ServerCores文件夹", "提示");
-            DownloadServer downloadServer = new DownloadServer("MSL\\ServerCores\\", "", false)
+            await MagicShow.ShowMsgDialogAsync(Window.GetWindow(this), "这是单独的服务端下载界面\n下载的服务端均在MSL\\Downloads文件夹内", "提示");
+            DownloadServer downloadServer = new DownloadServer("MSL\\Downloads", "", false)
             {
                 Owner = Window.GetWindow(Window.GetWindow(this))
             };
