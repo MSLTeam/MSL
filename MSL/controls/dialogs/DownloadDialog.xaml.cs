@@ -50,29 +50,7 @@ namespace MSL
         private void Downloader()
         {
             var downloadOpt = new DownloadConfiguration();
-            if (headerMode == 0)
-            {
-                if (MainWindow.serverLink != null)
-                {
-                    string serverLink = MainWindow.serverLink;
-                    if (serverLink.Contains("/"))
-                    {
-                        serverLink = serverLink.Substring(0, serverLink.IndexOf("/"));
-                    }
-                    if (downloadurl.Contains(serverLink))
-                    {
-                        downloadOpt.RequestConfiguration.UserAgent = "MSL Downloader/" + new Version(System.Reflection.Assembly.GetExecutingAssembly().GetName().Version.ToString());
-                    }
-                }
-            }
-            else if (headerMode == 2)
-            {
-                downloadOpt.RequestConfiguration.UserAgent = "MSL Downloader/" + new Version(System.Reflection.Assembly.GetExecutingAssembly().GetName().Version.ToString());
-            }
-            else if (headerMode == 3)
-            {
-                downloadOpt.RequestConfiguration.UserAgent = "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/126.0.0.0 Safari/537.36";
-            }
+            downloadOpt.RequestConfiguration.UserAgent = DownloadUA();
             downloadOpt.Timeout = 5000;
             downloadOpt.ChunkCount = downloadthread; // file parts to download, default value is 1
             downloadOpt.ParallelDownload = true; // download parts of file as parallel or not. Default value is false
@@ -183,6 +161,34 @@ namespace MSL
             Dispatcher.Invoke(Close);
         }
 
+        private string DownloadUA()
+        {
+            if (headerMode == 0)
+            {
+                if (MainWindow.serverLink != null)
+                {
+                    string serverLink = MainWindow.serverLink;
+                    if (serverLink.Contains("/"))
+                    {
+                        serverLink = serverLink.Substring(0, serverLink.IndexOf("/"));
+                    }
+                    if (downloadurl.Contains(serverLink))
+                    {
+                        return "MSL Downloader/" + new Version(System.Reflection.Assembly.GetExecutingAssembly().GetName().Version.ToString());
+                    }
+                }
+            }
+            else if (headerMode == 2)
+            {
+                return "MSL Downloader/" + new Version(System.Reflection.Assembly.GetExecutingAssembly().GetName().Version.ToString());
+            }
+            else if (headerMode == 3)
+            {
+                return "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/126.0.0.0 Safari/537.36";
+            }
+            return null;
+        }
+
         private void DownloadFile()
         {
             // 使用Task异步执行下载任务
@@ -191,6 +197,7 @@ namespace MSL
                 try
                 {
                     HttpWebRequest request = (HttpWebRequest)WebRequest.Create(downloadurl);
+                    request.UserAgent = DownloadUA();
                     using (HttpWebResponse response = (HttpWebResponse)request.GetResponse())
                     {
                         long totalBytes = response.ContentLength;

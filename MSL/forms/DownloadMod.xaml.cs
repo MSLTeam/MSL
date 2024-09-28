@@ -188,7 +188,7 @@ namespace MSL
                 GenericListResponse<Mod> mods = null;
                 if (LoadType == 0)
                 {
-                    mods = await CurseForgeApiClient.SearchModsAsync(432, searchFilter: name,index: index);
+                    mods = await CurseForgeApiClient.SearchModsAsync(432, searchFilter: name, index: index);
                 }
                 else if (LoadType == 1)
                 {
@@ -206,7 +206,7 @@ namespace MSL
             }
         }
 
-        private async Task Search_Modrinth(string name,ulong offset=0)
+        private async Task Search_Modrinth(string name, ulong offset = 0)
         {
             try
             {
@@ -271,6 +271,90 @@ namespace MSL
             catch (Exception ex)
             {
                 MagicShow.ShowMsgDialog(this, "搜索失败！请重试或尝试连接代理后再试！\n" + ex.Message, "错误");
+            }
+        }
+
+        private async void homeBtn_Click(object sender, RoutedEventArgs e)
+        {
+            SearchTextBox.Clear();
+            await LoadEvent();
+        }
+
+        private async void LastPageBtn_Click(object sender, RoutedEventArgs e)
+        {
+            try
+            {
+                ulong nowPage;
+                if (NowPageLabel.Content.ToString() == "精选")
+                {
+                    nowPage = 0;
+                }
+                else
+                {
+                    nowPage = ulong.Parse(NowPageLabel.Content.ToString());
+                }
+                if (nowPage <= 1)
+                {
+                    return;
+                }
+                ModListGrid.IsEnabled = false;
+                lCircle.IsRunning = true;
+                lCircle.Visibility = Visibility.Visible;
+                lb01.Visibility = Visibility.Visible;
+                if (LoadSource == 0)
+                {
+                    await Search_CurseForge(SearchTextBox.Text, ((int)nowPage - 2) * 50);
+                }
+                else if (LoadSource == 1)
+                {
+                    await Search_Modrinth(SearchTextBox.Text, (nowPage - 2) * 10);
+                }
+                lCircle.IsRunning = false;
+                lCircle.Visibility = Visibility.Collapsed;
+                lb01.Visibility = Visibility.Collapsed;
+                ModListGrid.IsEnabled = true;
+                NowPageLabel.Content = nowPage - 1;
+            }
+            catch (Exception ex)
+            {
+                MagicShow.ShowMsgDialog(this, "加载失败！请重试或尝试连接代理后再试！\n" + ex.Message, "错误");
+            }
+        }
+
+        private async void NextPageBtn_Click(object sender, RoutedEventArgs e)
+        {
+            try
+            {
+                ulong nowPage;
+                if (NowPageLabel.Content.ToString() == "精选")
+                {
+                    nowPage = 0;
+                }
+                else
+                {
+                    nowPage = ulong.Parse(NowPageLabel.Content.ToString());
+                }
+                ModListGrid.IsEnabled = false;
+                lCircle.IsRunning = true;
+                lCircle.Visibility = Visibility.Visible;
+                lb01.Visibility = Visibility.Visible;
+                if (LoadSource == 0)
+                {
+                    await Search_CurseForge(SearchTextBox.Text, (int)nowPage * 50);
+                }
+                else if (LoadSource == 1)
+                {
+                    await Search_Modrinth(SearchTextBox.Text, nowPage * 10);
+                }
+                lCircle.IsRunning = false;
+                lCircle.Visibility = Visibility.Collapsed;
+                lb01.Visibility = Visibility.Collapsed;
+                ModListGrid.IsEnabled = true;
+                NowPageLabel.Content = nowPage + 1;
+            }
+            catch (Exception ex)
+            {
+                MagicShow.ShowMsgDialog(this, "加载失败！请重试或尝试连接代理后再试！\n" + ex.Message, "错误");
             }
         }
 
@@ -435,7 +519,7 @@ namespace MSL
 
         private async void ModList_MouseDoubleClick(object sender, MouseButtonEventArgs e)
         {
-            if(ModList.Items.Count == 0 || ModList.SelectedIndex == -1)
+            if (ModList.Items.Count == 0 || ModList.SelectedIndex == -1)
             {
                 return;
             }
@@ -508,11 +592,15 @@ namespace MSL
                 }
                 VerFilter_VersList.Clear();
                 List<DM_ModInfo> list = new List<DM_ModInfo>();
+                string selectedVersion = VerFilterCombo.SelectedItem.ToString();
+
                 foreach (var item in ModVerList.Items)
                 {
                     var _item = item as DM_ModInfo;
                     VerFilter_VersList.Add(_item);
-                    if (_item.MCVersion.Contains(VerFilterCombo.SelectedItem.ToString()))
+                    var versionRanges = ParseVersionRanges(_item.MCVersion);
+
+                    if (IsVersionInRanges(selectedVersion, versionRanges))
                     {
                         list.Add(_item);
                     }
@@ -523,6 +611,57 @@ namespace MSL
                     ModVerList.Items.Add(item);
                 }
             }
+        }
+
+        public static List<(string Start, string End)> ParseVersionRanges(string versionString)
+        {
+            var ranges = new List<(string Start, string End)>();
+            var parts = versionString.Split(new[] { " / " }, StringSplitOptions.RemoveEmptyEntries);
+
+            foreach (var part in parts)
+            {
+                var versions = part.Split(new[] { " - " }, StringSplitOptions.RemoveEmptyEntries);
+                if (versions.Length == 1)
+                {
+                    ranges.Add((versions[0], versions[0]));
+                }
+                else if (versions.Length == 2)
+                {
+                    ranges.Add((versions[0], versions[1]));
+                }
+            }
+
+            return ranges;
+        }
+
+        private bool IsVersionInRanges(string version, List<(string Start, string End)> ranges)
+        {
+            foreach (var range in ranges)
+            {
+                if (CompareVersions(version, range.Start) >= 0 && CompareVersions(version, range.End) <= 0)
+                {
+                    return true;
+                }
+            }
+            return false;
+        }
+
+
+        private int CompareVersions(string v1, string v2)
+        {
+            var v1Parts = v1.Split('.').Select(int.Parse).ToArray();
+            var v2Parts = v2.Split('.').Select(int.Parse).ToArray();
+
+            for (int i = 0; i < Math.Max(v1Parts.Length, v2Parts.Length); i++)
+            {
+                int v1Part = i < v1Parts.Length ? v1Parts[i] : 0;
+                int v2Part = i < v2Parts.Length ? v2Parts[i] : 0;
+
+                if (v1Part < v2Part) return -1;
+                if (v1Part > v2Part) return 1;
+            }
+
+            return 0;
         }
 
         private async Task LoadEvent()
@@ -581,12 +720,6 @@ namespace MSL
             await LoadEvent();
         }
 
-        private async void homeBtn_Click(object sender, RoutedEventArgs e)
-        {
-            SearchTextBox.Clear();
-            await LoadEvent();
-        }
-
         private async void ModVerList_MouseDoubleClick(object sender, MouseButtonEventArgs e)
         {
             if (ModVerList.Items.Count == 0 || ModVerList.SelectedIndex == -1)
@@ -596,8 +729,8 @@ namespace MSL
             var iteminfo = ModVerList.SelectedItem as DM_ModInfo;
             Directory.CreateDirectory(SavingPath);
             string filename = iteminfo.FileName;
-
-            bool dwnRet = await MagicShow.ShowDownloader(this, iteminfo.DownloadUrl, SavingPath, filename, "下载中……");
+            //MessageBox.Show(iteminfo.DownloadUrl);
+            bool dwnRet = await MagicShow.ShowDownloader(this, iteminfo.DownloadUrl, SavingPath, filename, "下载中……", "", false, 2);
             if (dwnRet)
             {
                 if (CloseImmediately)
@@ -611,84 +744,6 @@ namespace MSL
         private void Window_Closing(object sender, System.ComponentModel.CancelEventArgs e)
         {
             ModList.ItemsSource = null;
-        }
-
-        private async void LastPageBtn_Click(object sender, RoutedEventArgs e)
-        {
-            try
-            {
-                ulong nowPage;
-                if (NowPageLabel.Content.ToString() == "精选")
-                {
-                    nowPage = 0;
-                }
-                else
-                {
-                    nowPage = ulong.Parse(NowPageLabel.Content.ToString());
-                }
-                if (nowPage <= 1)
-                {
-                    return;
-                }
-                ModListGrid.IsEnabled = false;
-                lCircle.IsRunning = true;
-                lCircle.Visibility = Visibility.Visible;
-                lb01.Visibility = Visibility.Visible;
-                if (LoadSource == 0)
-                {
-                    await Search_CurseForge(SearchTextBox.Text, ((int)nowPage - 2) * 50);
-                }
-                else if (LoadSource == 1)
-                {
-                    await Search_Modrinth(SearchTextBox.Text, (nowPage - 2) * 10);
-                }
-                lCircle.IsRunning = false;
-                lCircle.Visibility = Visibility.Collapsed;
-                lb01.Visibility = Visibility.Collapsed;
-                ModListGrid.IsEnabled = true;
-                NowPageLabel.Content = nowPage - 1;
-            }
-            catch (Exception ex)
-            {
-                MagicShow.ShowMsgDialog(this, "搜索失败！请重试或尝试连接代理后再试！\n" + ex.Message, "错误");
-            }
-        }
-
-        private async void NextPageBtn_Click(object sender, RoutedEventArgs e)
-        {
-            try
-            {
-                ulong nowPage;
-                if (NowPageLabel.Content.ToString() == "精选")
-                {
-                    nowPage = 0;
-                }
-                else
-                {
-                    nowPage = ulong.Parse(NowPageLabel.Content.ToString());
-                }
-                ModListGrid.IsEnabled = false;
-                lCircle.IsRunning = true;
-                lCircle.Visibility = Visibility.Visible;
-                lb01.Visibility = Visibility.Visible;
-                if (LoadSource == 0)
-                {
-                    await Search_CurseForge(SearchTextBox.Text, (int)nowPage * 50);
-                }
-                else if (LoadSource == 1)
-                {
-                    await Search_Modrinth(SearchTextBox.Text, nowPage * 10);
-                }
-                lCircle.IsRunning = false;
-                lCircle.Visibility = Visibility.Collapsed;
-                lb01.Visibility = Visibility.Collapsed;
-                ModListGrid.IsEnabled = true;
-                NowPageLabel.Content = nowPage + 1;
-            }
-            catch (Exception ex)
-            {
-                MagicShow.ShowMsgDialog(this, "搜索失败！请重试或尝试连接代理后再试！\n" + ex.Message, "错误");
-            }
         }
     }
 }
