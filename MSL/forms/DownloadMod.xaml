@@ -5,59 +5,105 @@
         xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
         xmlns:hc="https://handyorg.github.io/handycontrol"
         xmlns:controls="clr-namespace:MSL.controls"
+        xmlns:langs="clr-namespace:MSL.langs"
         xmlns:local="clr-namespace:MSL"
         mc:Ignorable="d"
         NonClientAreaBackground="{DynamicResource BackgroundBrush}"
         Title="下载Mod/整合包" Height="450" Width="750" WindowStartupLocation="CenterOwner" ResizeMode="NoResize" Loaded="Window_Loaded" Closing="Window_Closing" Background="{DynamicResource BackgroundBrush}">
     <Grid x:Name="BodyGrid">
-        <Grid.RowDefinitions>
-            <RowDefinition Height="Auto"/>
-            <RowDefinition/>
-        </Grid.RowDefinitions>
-        <Grid Margin="10,10,10,0">
-            <StackPanel Orientation="Horizontal">
-                <Button x:Name="backBtn" Content="返回" Click="backBtn_Click" Width="80" IsEnabled="False"/>
+        <Grid x:Name="ModListGrid">
+            <Grid.RowDefinitions>
+                <RowDefinition Height="Auto"/>
+                <RowDefinition/>
+            </Grid.RowDefinitions>
+            <Grid Margin="10,10,10,0">
                 <StackPanel Orientation="Horizontal">
-                    <Label Content="搜索：" FontSize="14" BorderBrush="{x:Null}" Background="{x:Null}" Padding="10,0,10,0"/>
-                    <TextBox x:Name="textBox1" MinWidth="120"/>
-                    <Button x:Name="searchMod" Content="搜索" Click="searchMod_Click" Width="60" IsEnabled="False"/>
                     <Button x:Name="homeBtn" Content="主页" Click="homeBtn_Click" Width="60" />
+                    <StackPanel Orientation="Horizontal">
+                        <Label Content="搜索：" FontSize="14" BorderBrush="{x:Null}" Background="{x:Null}" Padding="10,0,10,0"/>
+                        <TextBox x:Name="SearchTextBox" MinWidth="150"/>
+                        <Button x:Name="searchMod" Content="搜索" Click="searchMod_Click" Width="60" IsEnabled="False"/>
+                        
+                    </StackPanel>
                 </StackPanel>
-            </StackPanel>
-            <StackPanel HorizontalAlignment="Right" Orientation="Horizontal">
-                <StackPanel Orientation="Horizontal">
-                    <Label Content="下载源：" FontSize="14" BorderBrush="{x:Null}" Background="{x:Null}" Padding="10,0,10,0"/>
-                    <ComboBox x:Name="LoadSourceBox" Width="120" SelectionChanged="LoadSourceBox_SelectionChanged">
-                        <ComboBoxItem Content="CurseForge" IsSelected="True"/>
-                        <ComboBoxItem Content="Modrinth（开发中）"/>
-                    </ComboBox>
+                <StackPanel HorizontalAlignment="Right" Orientation="Horizontal">
+                    <StackPanel Orientation="Horizontal">
+                        <Label Content="下载源：" FontSize="14" BorderBrush="{x:Null}" Background="{x:Null}" Padding="10,0,10,0"/>
+                        <ComboBox x:Name="LoadSourceBox" SelectionChanged="LoadSourceBox_SelectionChanged">
+                            <ComboBoxItem Content="CurseForge" IsSelected="True"/>
+                            <ComboBoxItem Content="Modrinth"/>
+                        </ComboBox>
+                    </StackPanel>
+                    <StackPanel Orientation="Horizontal">
+                        <Label Content="模式：" FontSize="14" BorderBrush="{x:Null}" Background="{x:Null}" Padding="10,0,10,0"/>
+                        <ComboBox x:Name="LoadTypeBox" SelectionChanged="LoadTypeBox_SelectionChanged">
+                            <ComboBoxItem Content="Mod" IsSelected="True"/>
+                            <ComboBoxItem Content="整合包"/>
+                        </ComboBox>
+                    </StackPanel>
                 </StackPanel>
-                <StackPanel Orientation="Horizontal">
-                    <Label Content="模式：" FontSize="14" BorderBrush="{x:Null}" Background="{x:Null}" Padding="10,0,10,0"/>
-                    <ComboBox x:Name="LoadTypeBox" Width="80" SelectionChanged="LoadTypeBox_SelectionChanged">
-                        <ComboBoxItem Content="Mod" IsSelected="True"/>
-                        <ComboBoxItem Content="整合包"/>
-                    </ComboBox>
-                </StackPanel>
-            </StackPanel>
+            </Grid>
+            <ListView Grid.Row="1" x:Name="ModList" MouseDoubleClick="ModList_MouseDoubleClick" Background="{DynamicResource BorderBackground}" Margin="10">
+                <ListView.View>
+                    <GridView>
+                        <GridViewColumn Width="500" Header="列表（双击查看详情）">
+                            <GridViewColumn.CellTemplate>
+                                <DataTemplate>
+                                    <Grid>
+                                        <Image Height="18" Width="18" Source="{Binding Icon}" HorizontalAlignment="Left"/>
+                                        <TextBlock Margin="30,0,0,0" Width="Auto" Text="{Binding Name}"/>
+                                    </Grid>
+                                </DataTemplate>
+                            </GridViewColumn.CellTemplate>
+                        </GridViewColumn>
+                    </GridView>
+                </ListView.View>
+            </ListView>
         </Grid>
-        <ListView Grid.Row="1" x:Name="listBox" MouseDoubleClick="listBox_MouseDoubleClick" Background="{DynamicResource BorderBackground}" Margin="10">
-            <ListView.View>
-                <GridView>
-                    <GridViewColumn x:Name="listBoxColumnName" Width="500">
-                        <GridViewColumn.CellTemplate>
-                            <DataTemplate>
-                                <Grid>
-                                    <Image Height="18" Width="18" Name="imageName"  Source="{Binding Icon}" HorizontalAlignment="Left"/>
-                                    <TextBlock Margin="30,0,0,0" Width="Auto" Text="{Binding State}"/>
-                                </Grid>
-                            </DataTemplate>
-                        </GridViewColumn.CellTemplate>
-                    </GridViewColumn>
-                </GridView>
-            </ListView.View>
-        </ListView>
-        <hc:LoadingCircle Grid.Row="1" x:Name="lCircle" HorizontalAlignment="Center" VerticalAlignment="Center" Width="38" Height="38" Margin="0,0,150,0"/>
-        <Label Grid.Row="1" x:Name="lb01" Content="加载中，请耐心等待……" Margin="50,0,0,0" HorizontalAlignment="Center" VerticalAlignment="Center" Background="{x:Null}" BorderBrush="{x:Null}" Foreground="{DynamicResource DarkPrimaryBrush}"/>
+        <Grid x:Name="ModInfoGrid" Background="{DynamicResource BackgroundBrush}" Visibility="Visible">
+            <Grid.RowDefinitions>
+                <RowDefinition Height="Auto"/>
+                <RowDefinition/>
+            </Grid.RowDefinitions>
+            <Grid Margin="10,0,10,0">
+                <WrapPanel>
+                    <Button x:Name="backBtn" Margin="0,10,10,0" Content="返回" Click="backBtn_Click" Width="80"/>
+                    <Label x:Name="ModNameLabel" Margin="0,10,10,0" Content="ModName"/>
+                    <hc:Shield x:Name="ModWebsiteUrl" Margin="0,10,10,0" Subject="Website" Status="{Binding [OpenWebsite], Source={x:Static langs:LanguageManager.Instance}}" Command="hc:ControlCommands.OpenLink"/>
+                    <StackPanel x:Name="VerFilterPannel" Margin="0,10,10,0" Orientation="Horizontal">
+                        <Label Content="版本筛选："/>
+                        <ComboBox x:Name="VerFilterCombo" SelectionChanged="VerFilter_SelectionChanged"/>
+                    </StackPanel>
+                    <Label x:Name="ModInfoLoadingProcess" Margin="0,10,10,0"/>
+                </WrapPanel>
+            </Grid>
+            <ListView Grid.Row="1" x:Name="ModVerList" MouseDoubleClick="ModVerList_MouseDoubleClick"  Background="{DynamicResource BorderBackground}" Margin="10">
+                <ListView.View>
+                    <GridView>
+                        <GridViewColumn Width="300" Header="文件列表（双击下载）">
+                            <GridViewColumn.CellTemplate>
+                                <DataTemplate>
+                                    <Grid>
+                                        <Image Height="18" Width="18" Source="{Binding Icon}" HorizontalAlignment="Left"/>
+                                        <TextBlock Margin="30,0,0,0" Width="Auto" Text="{Binding Name}"/>
+                                    </Grid>
+                                </DataTemplate>
+                            </GridViewColumn.CellTemplate>
+                        </GridViewColumn>
+                        <GridViewColumn Width="200" Header="支持的MC版本">
+                            <GridViewColumn.CellTemplate>
+                                <DataTemplate>
+                                    <Grid>
+                                        <TextBlock Width="Auto" Text="{Binding MCVersion}"/>
+                                    </Grid>
+                                </DataTemplate>
+                            </GridViewColumn.CellTemplate>
+                        </GridViewColumn>
+                    </GridView>
+                </ListView.View>
+            </ListView>
+        </Grid>
+        <hc:LoadingCircle x:Name="lCircle" HorizontalAlignment="Center" VerticalAlignment="Center" Width="38" Height="38" Margin="0,0,150,0"/>
+        <Label x:Name="lb01" Content="加载中，请耐心等待……" Margin="50,0,0,0" HorizontalAlignment="Center" VerticalAlignment="Center" Background="{x:Null}" BorderBrush="{x:Null}" Foreground="{DynamicResource DarkPrimaryBrush}"/>
     </Grid>
 </hc:Window>

@@ -39,15 +39,37 @@ namespace MSL.controls
         }
     }
 
+    internal class DM_ModsInfo
+    {
+        public string ID { set; get; }
+        public string Icon { set; get; }
+        public string Name { set; get; }
+        public string WebsiteUrl { set; get; }
+
+        public DM_ModsInfo(string id, string icon, string name, string websiteurl)
+        {
+            ID = id;
+            Icon = icon;
+            Name = name;
+            WebsiteUrl = websiteurl;
+        }
+    }
+
     internal class DM_ModInfo
     {
         public string Icon { set; get; }
-        public string State { set; get; }
+        public string Name { set; get; }
+        public string DownloadUrl { set; get; }
+        public string FileName { set; get; }
+        public string MCVersion { set; get; }
 
-        public DM_ModInfo(string icon, string state)
+        public DM_ModInfo(string icon, string name, string downloadurl, string filename, string mcversion)
         {
             Icon = icon;
-            State = state;
+            Name = name;
+            DownloadUrl = downloadurl;
+            FileName = filename;
+            MCVersion = mcversion;
         }
     }
 
