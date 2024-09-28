@@ -60,7 +60,7 @@
                 </ListView.View>
             </ListView>
         </Grid>
-        <Grid x:Name="ModInfoGrid" Background="{DynamicResource BackgroundBrush}" Visibility="Visible">
+        <Grid x:Name="ModInfoGrid" Background="{DynamicResource BackgroundBrush}" Visibility="Collapsed">
             <Grid.RowDefinitions>
                 <RowDefinition Height="Auto"/>
                 <RowDefinition/>
