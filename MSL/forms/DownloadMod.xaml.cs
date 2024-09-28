@@ -370,7 +370,7 @@ namespace MSL
                         modVersion.Files[0].FileName,
                         string.Join(",", modVersion.Loaders),
                         string.Join(",", (await Task.WhenAll(modVersion.Dependencies.Select(s => ModrinthApiClient.Project.GetAsync(s.ProjectId)))).Select(p => p.Title)),
-                        string.Join(",", modVersion.GameVersions)
+                        //string.Join(",", modVersion.GameVersions)
                         GetMcVersion(modVersion.GameVersions)
                     );
 
