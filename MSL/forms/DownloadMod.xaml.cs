@@ -14,7 +14,6 @@ using Modrinth.Models;
 using CurseForge.APIClient.Models;
 using System.Linq;
 using System.Threading;
-using Microsoft.VisualBasic;
 
 namespace MSL
 {
@@ -83,13 +82,14 @@ namespace MSL
                     {
                         GameId = 432,
                         ExcludedModIds = new List<int>(),
-                        GameVersionTypeId = null
+                        GameVersionTypeId = null,
                     });
 
                     foreach (var featuredMod in featuredMods.Data.Popular)
                     {
                         list.Add(new DM_ModsInfo(featuredMod.Id.ToString(), featuredMod.Logo.ThumbnailUrl, featuredMod.Name, featuredMod.Links.WebsiteUrl.ToString()));
                     }
+                    NowPageLabel.Content = "精选";
                 }
                 else if (LoadType == 1)
                 {
@@ -98,6 +98,7 @@ namespace MSL
                     {
                         list.Add(new DM_ModsInfo(modPack.Id.ToString(), modPack.Logo.ThumbnailUrl, modPack.Name, modPack.Links.WebsiteUrl.ToString()));
                     }
+                    NowPageLabel.Content = "1";
                 }
                 ModList.ItemsSource = list;
             }
@@ -161,6 +162,7 @@ namespace MSL
                 }
 
                 ModList.ItemsSource = list;
+                NowPageLabel.Content = "1";
             }
             catch (Exception ex)
             {
@@ -168,7 +170,7 @@ namespace MSL
             }
         }
 
-        private async Task Search_CurseForge(string name)
+        private async Task Search_CurseForge(string name, int index = 0)
         {
             try
             {
@@ -186,11 +188,11 @@ namespace MSL
                 GenericListResponse<Mod> mods = null;
                 if (LoadType == 0)
                 {
-                    mods = await CurseForgeApiClient.SearchModsAsync(432, searchFilter: name);
+                    mods = await CurseForgeApiClient.SearchModsAsync(432, searchFilter: name,index: index);
                 }
                 else if (LoadType == 1)
                 {
-                    mods = await CurseForgeApiClient.SearchModsAsync(432, categoryId: 5128, searchFilter: name);
+                    mods = await CurseForgeApiClient.SearchModsAsync(432, categoryId: 5128, searchFilter: name, index: index);
                 }
                 foreach (var mod in mods.Data)
                 {
@@ -204,7 +206,7 @@ namespace MSL
             }
         }
 
-        private async Task Search_Modrinth(string name)
+        private async Task Search_Modrinth(string name,ulong offset=0)
         {
             try
             {
@@ -213,7 +215,7 @@ namespace MSL
                 SearchResponse mods = null;
                 if (LoadType == 0)
                 {
-                    mods = await ModrinthApiClient.Project.SearchAsync(name);
+                    mods = await ModrinthApiClient.Project.SearchAsync(name, offset: offset);
                 }
                 else if (LoadType == 1)
                 {
@@ -221,7 +223,7 @@ namespace MSL
                     {
                         Facet.ProjectType(Modrinth.Models.Enums.Project.ProjectType.Modpack)
                     };
-                    mods = await ModrinthApiClient.Project.SearchAsync(name, facets: facets);
+                    mods = await ModrinthApiClient.Project.SearchAsync(name, facets: facets, offset: offset);
                 }
                 else
                 {
@@ -229,7 +231,7 @@ namespace MSL
                     {
                         Facet.ProjectType(Modrinth.Models.Enums.Project.ProjectType.Plugin)
                     };
-                    mods = await ModrinthApiClient.Project.SearchAsync(name, facets: facets);
+                    mods = await ModrinthApiClient.Project.SearchAsync(name, facets: facets, offset: offset);
                 }
                 foreach (var mod in mods?.Hits)
                 {
@@ -248,7 +250,7 @@ namespace MSL
         {
             try
             {
-                searchMod.IsEnabled = false;
+                ModListGrid.IsEnabled = false;
                 lCircle.IsRunning = true;
                 lCircle.Visibility = Visibility.Visible;
                 lb01.Visibility = Visibility.Visible;
@@ -263,7 +265,8 @@ namespace MSL
                 lCircle.IsRunning = false;
                 lCircle.Visibility = Visibility.Collapsed;
                 lb01.Visibility = Visibility.Collapsed;
-                searchMod.IsEnabled = true;
+                ModListGrid.IsEnabled = true;
+                NowPageLabel.Content = 1;
             }
             catch (Exception ex)
             {
@@ -432,6 +435,10 @@ namespace MSL
 
         private async void ModList_MouseDoubleClick(object sender, MouseButtonEventArgs e)
         {
+            if(ModList.Items.Count == 0 || ModList.SelectedIndex == -1)
+            {
+                return;
+            }
             try
             {
                 var info = ModList.SelectedItem as DM_ModsInfo;
@@ -474,37 +481,37 @@ namespace MSL
         {
             ModInfoGrid.Visibility = Visibility.Collapsed;
             ModVerList.Items.Clear();
-            ModVersList.Clear();
+            VerFilter_VersList.Clear();
         }
 
-        private List<DM_ModInfo> ModVersList = new List<DM_ModInfo>();
+        private List<DM_ModInfo> VerFilter_VersList = new List<DM_ModInfo>();
         private void VerFilter_SelectionChanged(object sender, System.Windows.Controls.SelectionChangedEventArgs e)
         {
             if (VerFilterCombo.Items.Count == 0) return;
             if (VerFilterCombo.SelectedItem.ToString() == "全部")
             {
                 ModVerList.Items.Clear();
-                foreach (var item in ModVersList)
+                foreach (var item in VerFilter_VersList)
                 {
                     ModVerList.Items.Add(item);
                 }
             }
             else
             {
-                if (ModVersList.Count != 0)
+                if (VerFilter_VersList.Count != 0)
                 {
                     ModVerList.Items.Clear();
-                    foreach (var item in ModVersList)
+                    foreach (var item in VerFilter_VersList)
                     {
                         ModVerList.Items.Add(item);
                     }
                 }
-                ModVersList.Clear();
+                VerFilter_VersList.Clear();
                 List<DM_ModInfo> list = new List<DM_ModInfo>();
                 foreach (var item in ModVerList.Items)
                 {
                     var _item = item as DM_ModInfo;
-                    ModVersList.Add(_item);
+                    VerFilter_VersList.Add(_item);
                     if (_item.MCVersion.Contains(VerFilterCombo.SelectedItem.ToString()))
                     {
                         list.Add(_item);
@@ -523,7 +530,7 @@ namespace MSL
             lCircle.IsRunning = true;
             lCircle.Visibility = Visibility.Visible;
             lb01.Visibility = Visibility.Visible;
-            searchMod.IsEnabled = false;
+            ModListGrid.IsEnabled = false;
             if (LoadSource == 0)
             {
                 await LoadEvent_CurseForge();
@@ -535,7 +542,7 @@ namespace MSL
             lCircle.IsRunning = false;
             lCircle.Visibility = Visibility.Collapsed;
             lb01.Visibility = Visibility.Collapsed;
-            searchMod.IsEnabled = true;
+            ModListGrid.IsEnabled = true;
         }
 
         private async void LoadSourceBox_SelectionChanged(object sender, System.Windows.Controls.SelectionChangedEventArgs e)
@@ -576,12 +583,13 @@ namespace MSL
 
         private async void homeBtn_Click(object sender, RoutedEventArgs e)
         {
+            SearchTextBox.Clear();
             await LoadEvent();
         }
 
         private async void ModVerList_MouseDoubleClick(object sender, MouseButtonEventArgs e)
         {
-            if (ModVerList.Items.Count == 0)
+            if (ModVerList.Items.Count == 0 || ModVerList.SelectedIndex == -1)
             {
                 return;
             }
@@ -603,6 +611,84 @@ namespace MSL
         private void Window_Closing(object sender, System.ComponentModel.CancelEventArgs e)
         {
             ModList.ItemsSource = null;
+        }
+
+        private async void LastPageBtn_Click(object sender, RoutedEventArgs e)
+        {
+            try
+            {
+                ulong nowPage;
+                if (NowPageLabel.Content.ToString() == "精选")
+                {
+                    nowPage = 0;
+                }
+                else
+                {
+                    nowPage = ulong.Parse(NowPageLabel.Content.ToString());
+                }
+                if (nowPage <= 1)
+                {
+                    return;
+                }
+                ModListGrid.IsEnabled = false;
+                lCircle.IsRunning = true;
+                lCircle.Visibility = Visibility.Visible;
+                lb01.Visibility = Visibility.Visible;
+                if (LoadSource == 0)
+                {
+                    await Search_CurseForge(SearchTextBox.Text, ((int)nowPage - 2) * 50);
+                }
+                else if (LoadSource == 1)
+                {
+                    await Search_Modrinth(SearchTextBox.Text, (nowPage - 2) * 10);
+                }
+                lCircle.IsRunning = false;
+                lCircle.Visibility = Visibility.Collapsed;
+                lb01.Visibility = Visibility.Collapsed;
+                ModListGrid.IsEnabled = true;
+                NowPageLabel.Content = nowPage - 1;
+            }
+            catch (Exception ex)
+            {
+                MagicShow.ShowMsgDialog(this, "搜索失败！请重试或尝试连接代理后再试！\n" + ex.Message, "错误");
+            }
+        }
+
+        private async void NextPageBtn_Click(object sender, RoutedEventArgs e)
+        {
+            try
+            {
+                ulong nowPage;
+                if (NowPageLabel.Content.ToString() == "精选")
+                {
+                    nowPage = 0;
+                }
+                else
+                {
+                    nowPage = ulong.Parse(NowPageLabel.Content.ToString());
+                }
+                ModListGrid.IsEnabled = false;
+                lCircle.IsRunning = true;
+                lCircle.Visibility = Visibility.Visible;
+                lb01.Visibility = Visibility.Visible;
+                if (LoadSource == 0)
+                {
+                    await Search_CurseForge(SearchTextBox.Text, (int)nowPage * 50);
+                }
+                else if (LoadSource == 1)
+                {
+                    await Search_Modrinth(SearchTextBox.Text, nowPage * 10);
+                }
+                lCircle.IsRunning = false;
+                lCircle.Visibility = Visibility.Collapsed;
+                lb01.Visibility = Visibility.Collapsed;
+                ModListGrid.IsEnabled = true;
+                NowPageLabel.Content = nowPage + 1;
+            }
+            catch (Exception ex)
+            {
+                MagicShow.ShowMsgDialog(this, "搜索失败！请重试或尝试连接代理后再试！\n" + ex.Message, "错误");
+            }
         }
     }
 }

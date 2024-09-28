@@ -384,7 +384,7 @@ namespace MSL.pages
         //单独的下载按钮
         private async void DlModBtn_Click(object sender, RoutedEventArgs e)
         {
-            await MagicShow.ShowMsgDialogAsync(Window.GetWindow(this), "这是单独的模组/整合包下载界面\n下载的文件均在MSL\\Downloads文件夹内", "提示");
+            await MagicShow.ShowMsgDialogAsync(Window.GetWindow(this), "这是单独的模组/插件/整合包下载界面\n下载的文件均在MSL\\Downloads文件夹内", "提示");
             DownloadMod downloadMod = new DownloadMod("MSL\\Downloads")
             {
                 Owner = Window.GetWindow(Window.GetWindow(this))
