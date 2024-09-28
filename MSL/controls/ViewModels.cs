@@ -61,14 +61,18 @@ namespace MSL.controls
         public string Name { set; get; }
         public string DownloadUrl { set; get; }
         public string FileName { set; get; }
+        public string Platform { set; get; }
+        public string Dependency { set; get; }
         public string MCVersion { set; get; }
 
-        public DM_ModInfo(string icon, string name, string downloadurl, string filename, string mcversion)
+        public DM_ModInfo(string icon, string name, string downloadurl, string filename, string platform, string dependency, string mcversion)
         {
             Icon = icon;
             Name = name;
             DownloadUrl = downloadurl;
             FileName = filename;
+            Platform = platform;
+            Dependency = dependency;
             MCVersion = mcversion;
         }
     }

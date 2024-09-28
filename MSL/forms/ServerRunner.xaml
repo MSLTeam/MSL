@@ -226,7 +226,7 @@
                                         <TextBlock Text="插件列表" VerticalAlignment="Center" FontSize="18" FontWeight="Bold" Foreground="{DynamicResource PrimaryTextBrush}"/>
                                         <TextBlock Text="(插件变动在服务器重启后生效)" VerticalAlignment="Center" FontSize="16" Foreground="{DynamicResource PrimaryTextBrush}"/>
                                         <Button x:Name="reFresh_Copy" Content="刷新" Style="{StaticResource ButtonPrimary}" Click="reFresh_Click" Width="70" FontSize="14" Margin="5,0,0,0"/>
-                                        <Button x:Name="openpluginweb" Content="下载插件" Width="80" FontSize="14" Click="openpluginweb_Click" Margin="5,0,0,0"/>
+                                        <Button x:Name="DownloadPluginBtn" Content="下载插件" Width="80" FontSize="14" Click="DownloadPluginBtn_Click" Margin="5,0,0,0"/>
                                         <Button Content="帮助" Click="mpHelp_Click" Width="80" FontSize="14" Margin="5,0,0,0"/>
                                     </StackPanel>
                                     <ListView x:Name="pluginslist" hc:Empty.ShowEmpty="true" Margin="0,35,0,0" Padding="0" BorderThickness="0" Background="{DynamicResource BorderBackground}" FontSize="14">
@@ -276,7 +276,7 @@
                                         <TextBlock Text="(模组变动在服务器重启后生效)" VerticalAlignment="Center" FontSize="16" Foreground="{DynamicResource PrimaryTextBrush}"/>
                                         <Button x:Name="reFresh_Copy2" Content="刷新" Style="{StaticResource ButtonPrimary}" Click="reFresh_Click" Width="60" FontSize="14" Margin="5,0,0,0"/>
                                         <Button x:Name="addModsTip" Content="添加模组必看" Style="{StaticResource ButtonPrimary}" FontSize="14" Margin="5,0,0,0" Width="110" Click="addModsTip_Click"/>
-                                        <Button x:Name="opencurseforge" Content="下载模组" Click="opencurseforge_Click" Width="80" FontSize="14" Margin="5,0,0,0"/>
+                                        <Button x:Name="DownloadModBtn" Content="下载模组" Click="DownloadModBtn_Click" Width="80" FontSize="14" Margin="5,0,0,0"/>
                                         <Button Content="帮助" Click="mpHelp_Click" Width="60" FontSize="14" Margin="5,0,0,0"/>
                                     </StackPanel>
                                     <ListView x:Name="modslist" hc:Empty.ShowEmpty="true" BorderThickness="0" Margin="0,35,0,0" Padding="0" Background="{DynamicResource BorderBackground}" FontSize="14">

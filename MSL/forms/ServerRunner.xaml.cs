@@ -726,7 +726,7 @@ namespace MSL
                         Subject = "https://aka.ms/MinecraftEULA",
                         Status = LanguageManager.Instance["OpenWebsite"]
                     };
-                    bool dialog = await MagicShow.ShowMsgDialogAsync(this, "开启Minecraft服务器需要接受Mojang的EULA，是否仔细阅读EULA条款（https://aka.ms/MinecraftEULA）并继续开服？", "提示", true, "否","是", shield);
+                    bool dialog = await MagicShow.ShowMsgDialogAsync(this, "开启Minecraft服务器需要接受Mojang的EULA，是否仔细阅读EULA条款（https://aka.ms/MinecraftEULA）并继续开服？", "提示", true, "否", "是", shield);
                     if (dialog == true)
                     {
                         try
@@ -2811,9 +2811,9 @@ namespace MSL
             ReFreshPluginsAndMods();
         }
 
-        private void opencurseforge_Click(object sender, RoutedEventArgs e)
+        private void DownloadModBtn_Click(object sender, RoutedEventArgs e)
         {
-            DownloadMod downloadMod = new DownloadMod(Rserverbase+"\\mods",0,false)
+            DownloadMod downloadMod = new DownloadMod(Rserverbase + "\\mods", 0, 0, false)
             {
                 Owner = this
             };
@@ -2821,10 +2821,14 @@ namespace MSL
             ReFreshPluginsAndMods();
         }
 
-        private async void openpluginweb_Click(object sender, RoutedEventArgs e)
+        private void DownloadPluginBtn_Click(object sender, RoutedEventArgs e)
         {
-            await MagicShow.ShowMsgDialogAsync(this, "开服器暂时无法提供插件下载功能，即将为您打开Spigot网站，请您自行寻找插件并下载（下载后点击右下角“+”将其添加入服务器）。", "提示");
-            Process.Start("https://www.spigotmc.org/resources/");
+            DownloadMod downloadMod = new DownloadMod(Rserverbase + "\\plugins", 1, 2, false)
+            {
+                Owner = this
+            };
+            downloadMod.ShowDialog();
+            ReFreshPluginsAndMods();
         }
         #endregion
 
@@ -3082,7 +3086,7 @@ namespace MSL
                     {
                         string installReturn;
                         //调用新版forge安装器
-                        string[] installForge = await MagicShow.ShowInstallForge(this, Rserverbase ,server.Text, Rserverjava);
+                        string[] installForge = await MagicShow.ShowInstallForge(this, Rserverbase, server.Text, Rserverjava);
                         if (installForge[0] == "0")
                         {
                             if (await MagicShow.ShowMsgDialogAsync(this, "自动安装失败！是否尝试使用命令行安装方式？", "错误", true))
