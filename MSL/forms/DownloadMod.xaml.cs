@@ -347,9 +347,10 @@ namespace MSL
         private async Task ModInfo_Modrinth(DM_ModsInfo info)
         {
             var modInfo = await ModrinthApiClient.Project.GetAsync(info.ID);
+            string[] versions = modInfo.Versions.Reverse().ToArray();//反转列表
             VerFilterCombo.Items.Add("全部");
             VerFilterCombo.SelectedIndex = 0;
-            foreach (var gameVersion in modInfo.GameVersions)
+            foreach (var gameVersion in modInfo.GameVersions.Reverse())
             {
                 VerFilterCombo.Items.Add(gameVersion);
             }
@@ -370,6 +371,7 @@ namespace MSL
                         string.Join(",", modVersion.Loaders),
                         string.Join(",", (await Task.WhenAll(modVersion.Dependencies.Select(s => ModrinthApiClient.Project.GetAsync(s.ProjectId)))).Select(p => p.Title)),
                         string.Join(",", modVersion.GameVersions)
+                        GetMcVersion(modVersion.GameVersions)
                     );
 
                     await Dispatcher.InvokeAsync(() =>
@@ -385,8 +387,46 @@ namespace MSL
                 }
             }
 
-            var loadTasks = modInfo.Versions.Select(LoadAndAddVersion);
+            var loadTasks = versions.Select(LoadAndAddVersion);
             await Task.WhenAll(loadTasks);
+        }
+
+        public static string GetMcVersion(string[] lists)
+        {
+            string output = "";
+            if (lists.Length == 1)
+            {
+                output = lists[0];
+            }
+            else
+            {
+                string startVersion = lists[0];
+                string lastVersion = startVersion;
+
+                for (int i = 1; i < lists.Length; i++)
+                {
+                    string currentVersion = lists[i];
+                    string[] lastVersionSplit = lastVersion.Split('.');
+                    string[] currentVersionSplit = currentVersion.Split('.');
+
+                    if (currentVersionSplit.Length > 1 && lastVersionSplit.Length > 1)
+                    {
+                        int lastVersionNumber;
+                        int currentVersionNumber;
+                        if (int.TryParse(lastVersionSplit[1], out lastVersionNumber) && int.TryParse(currentVersionSplit[1], out currentVersionNumber) && currentVersionNumber - lastVersionNumber > 1)
+                        {
+                            output += startVersion + " - " + lastVersion + " / ";
+                            startVersion = currentVersion;
+                        }
+                    }
+
+                    lastVersion = currentVersion;
+                }
+
+                output += startVersion + " - " + lastVersion;
+            }
+
+            return output;
         }
 
         private async void ModList_MouseDoubleClick(object sender, MouseButtonEventArgs e)
