@@ -72,7 +72,7 @@
                     <Label x:Name="ModNameLabel" Margin="0,10,10,0" Content="ModName"/>
                     <hc:Shield x:Name="ModWebsiteUrl" Margin="0,10,10,0" Subject="Website" Status="{Binding [OpenWebsite], Source={x:Static langs:LanguageManager.Instance}}" Command="hc:ControlCommands.OpenLink"/>
                     <StackPanel x:Name="VerFilterPannel" Margin="0,10,10,0" Orientation="Horizontal">
-                        <Label Content="MC版本："/>
+                        <Label Content="版本筛选："/>
                         <ComboBox x:Name="VerFilterCombo" SelectionChanged="VerFilter_SelectionChanged"/>
                     </StackPanel>
                     <Label x:Name="ModInfoLoadingProcess" Margin="0,10,10,0"/>
@@ -91,7 +91,7 @@
                                 </DataTemplate>
                             </GridViewColumn.CellTemplate>
                         </GridViewColumn>
-                        <GridViewColumn Width="100" Header="平台">
+                        <GridViewColumn x:Name="MVL_Platform" Width="100" Header="平台">
                             <GridViewColumn.CellTemplate>
                                 <DataTemplate>
                                     <Grid>

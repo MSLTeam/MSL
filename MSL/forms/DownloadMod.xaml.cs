@@ -14,6 +14,7 @@ using Modrinth.Models;
 using CurseForge.APIClient.Models;
 using System.Linq;
 using System.Threading;
+using Microsoft.VisualBasic;
 
 namespace MSL
 {
@@ -297,8 +298,8 @@ namespace MSL
                             modData.DisplayName,
                             modData.DownloadUrl,
                             modData.FileName,
-                            "",
-                            string.Join(",", modData.FileName, modData.Dependencies),
+                        "",
+                            string.Join(",", (await Task.WhenAll(modData.Dependencies.Select(s => CurseForgeApiClient.GetModAsync(s.ModId)))).Select(p => p.Data.Name)),
                             string.Join(",", modData.GameVersions));
                     }
                     else if (LoadType == 1)
@@ -308,10 +309,10 @@ namespace MSL
                             if (!onlyShowServerPack)
                             {
                                 var _modFile = await CurseForgeApiClient.GetModFileAsync(int.Parse(info.ID), modData.Id);
-                                _modInfo = new DM_ModInfo(info.Icon, _modFile.Data.DisplayName, _modFile.Data.DownloadUrl, _modFile.Data.FileName, "", string.Join(",", _modFile.Data.Dependencies), string.Join(",", _modFile.Data.GameVersions));
+                                _modInfo = new DM_ModInfo(info.Icon, _modFile.Data.DisplayName, _modFile.Data.DownloadUrl, _modFile.Data.FileName, "", string.Join(",", (await Task.WhenAll(_modFile.Data.Dependencies.Select(s => CurseForgeApiClient.GetModAsync(s.ModId)))).Select(p => p.Data.Name)), string.Join(",", _modFile.Data.GameVersions));
                             }
                             var modFile = await CurseForgeApiClient.GetModFileAsync(int.Parse(info.ID), modData.ServerPackFileId.Value);
-                            modInfo = new DM_ModInfo(info.Icon, modFile.Data.DisplayName, modFile.Data.DownloadUrl, modFile.Data.FileName, "", string.Join(",", modFile.Data.Dependencies), string.Join(",", modFile.Data.GameVersions));
+                            modInfo = new DM_ModInfo(info.Icon, modFile.Data.DisplayName, modFile.Data.DownloadUrl, modFile.Data.FileName, "", string.Join(",", (await Task.WhenAll(modFile.Data.Dependencies.Select(s => CurseForgeApiClient.GetModAsync(s.ModId)))).Select(p => p.Data.Name)), string.Join(",", modFile.Data.GameVersions));
                         }
                         catch
                         {
@@ -440,20 +441,23 @@ namespace MSL
                 ModWebsiteUrl.Subject = info.WebsiteUrl;
                 ModWebsiteUrl.CommandParameter = info.WebsiteUrl;
                 ModInfoLoadingProcess.Content = "0/0";
+                ModInfoLoadingProcess.Visibility = Visibility.Visible;
                 VerFilterCombo.Items.Clear();
                 VerFilterCombo.IsEnabled = false;
 
                 if (LoadSource == 0)
                 {
                     VerFilterPannel.Visibility = Visibility.Collapsed;
+                    MVL_Platform.Width = 0;
                     await ModInfo_CurseForge(info);
                 }
                 else
                 {
                     VerFilterPannel.Visibility = Visibility.Visible;
+                    MVL_Platform.Width = 100;
                     await ModInfo_Modrinth(info);
                 }
-                ModInfoLoadingProcess.Content = "已完成";
+                ModInfoLoadingProcess.Visibility = Visibility.Collapsed;
             }
             catch (Exception ex)
             {
