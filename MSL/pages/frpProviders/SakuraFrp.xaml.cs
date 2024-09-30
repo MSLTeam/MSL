@@ -185,7 +185,7 @@ namespace MSL.pages.frpProviders
             {
                 //string content = await Task.Run(() => GetTunnelConfig(UserToken,selectedTunnel.ID));
                 //输出配置文件
-                if (Config.WriteFrpcConfig(3, $"SakuraFrp - {selectedTunnel.Name}", $"-f {UserToken}:{selectedTunnel.ID}","") == true)
+                if (Config.WriteFrpcConfig(3, $"SakuraFrp - {selectedTunnel.Name}", $"-f {UserToken}:{selectedTunnel.ID}", "") == true)
                 {
                     await MagicShow.ShowMsgDialogAsync(Window.GetWindow(this), "映射配置成功，请您点击“启动内网映射”以启动映射！", "信息");
                     Window.GetWindow(this).Close();

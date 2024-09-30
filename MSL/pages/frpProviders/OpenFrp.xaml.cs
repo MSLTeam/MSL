@@ -190,7 +190,7 @@ namespace MSL.pages.frpProviders
                 return;
             }
             string id = nodelist[o.ToString()];
-            Config.WriteFrpcConfig(1, $"OpenFrp节点 - {o.ToString()}", $"-u {token} -p {id}","");
+            Config.WriteFrpcConfig(1, $"OpenFrp节点 - {o.ToString()}", $"-u {token} -p {id}", "");
             await MagicShow.ShowMsgDialogAsync(window, "映射配置成功，请您点击“启动内网映射”以启动映射！", "信息");
             window.Close();
         }

@@ -103,7 +103,7 @@ namespace MSL
                 Subject = "https://www.mslmc.cn/eula.html",
                 Status = LanguageManager.Instance["MainWindow_GrowlMsg_ReadEula"]
             };
-            bool dialog = await MagicShow.ShowMsgDialogAsync(this, LanguageManager.Instance["MainWindow_GrowlMsg_Eula"], LanguageManager.Instance["Tip"], true, LanguageManager.Instance["No"], LanguageManager.Instance["Yes"],shield);
+            bool dialog = await MagicShow.ShowMsgDialogAsync(this, LanguageManager.Instance["MainWindow_GrowlMsg_Eula"], LanguageManager.Instance["Tip"], true, LanguageManager.Instance["No"], LanguageManager.Instance["Yes"], shield);
             if (dialog)
             {
                 //Logger.LogInfo("EULA=TRUE");

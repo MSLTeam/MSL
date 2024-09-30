@@ -161,6 +161,9 @@ namespace MSL
             RserverJVM = null;
             RserverJVMcmd = null;
             Rserverbase = null;
+            GC.Collect(); // find finalizable objects
+            GC.WaitForPendingFinalizers(); // wait until finalizers executed
+            GC.Collect(); // collect finalized objects
         }
 
         private void LoadingInfoEvent()
@@ -3288,15 +3291,18 @@ namespace MSL
                 Owner = this
             };
             downloadServer.ShowDialog();
-            if (File.Exists(Rserverbase + @"\" + downloadServer.FileName))
+            if (downloadServer.FileName != null)
             {
-                server.Text = downloadServer.FileName;
-                Growl.Success("服务端下载完毕！已自动选择该服务端核心，请记得保存哦~");
-            }
-            else if (downloadServer.FileName.StartsWith("@libraries/"))
-            {
-                server.Text = downloadServer.FileName;
-                Growl.Success("服务端下载完毕！已自动选择该服务端核心，请记得保存哦~");
+                if (File.Exists(Rserverbase + @"\" + downloadServer.FileName))
+                {
+                    server.Text = downloadServer.FileName;
+                    Growl.Success("服务端下载完毕！已自动选择该服务端核心，请记得保存哦~");
+                }
+                else if (downloadServer.FileName.StartsWith("@libraries/"))
+                {
+                    server.Text = downloadServer.FileName;
+                    Growl.Success("服务端下载完毕！已自动选择该服务端核心，请记得保存哦~");
+                }
             }
         }
 

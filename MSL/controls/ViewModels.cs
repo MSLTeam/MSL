@@ -1,4 +1,5 @@
-﻿using System.Windows;
+﻿using System.ComponentModel;
+using System.Windows;
 using System.Windows.Controls;
 using System.Windows.Media;
 
@@ -55,25 +56,44 @@ namespace MSL.controls
         }
     }
 
-    internal class DM_ModInfo
+    internal class DM_ModInfo : INotifyPropertyChanged
     {
-        public string Icon { set; get; }
         public string Name { set; get; }
         public string DownloadUrl { set; get; }
         public string FileName { set; get; }
         public string Platform { set; get; }
         public string Dependency { set; get; }
         public string MCVersion { set; get; }
-
-        public DM_ModInfo(string icon, string name, string downloadurl, string filename, string platform, string dependency, string mcversion)
+        public bool IsVisible
         {
-            Icon = icon;
+            get => _isVisible;
+            set
+            {
+                if (_isVisible != value)
+                {
+                    _isVisible = value;
+                    OnPropertyChanged(nameof(IsVisible));
+                }
+            }
+        }
+        private bool _isVisible = true;
+
+        public event PropertyChangedEventHandler PropertyChanged;
+
+        protected virtual void OnPropertyChanged(string propertyName)
+        {
+            PropertyChanged?.Invoke(this, new PropertyChangedEventArgs(propertyName));
+        }
+
+        public DM_ModInfo(string name, string downloadurl, string filename, string platform, string dependency, string mcversion, bool isvisivle = true)
+        {
             Name = name;
             DownloadUrl = downloadurl;
             FileName = filename;
             Platform = platform;
             Dependency = dependency;
             MCVersion = mcversion;
+            IsVisible = isvisivle;
         }
     }
 

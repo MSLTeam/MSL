@@ -10,6 +10,9 @@
         mc:Ignorable="d"
         NonClientAreaBackground="{DynamicResource BackgroundBrush}"
         Title="下载资源" Height="450" Width="750" WindowStartupLocation="CenterOwner" ResizeMode="NoResize" Loaded="Window_Loaded" Closing="Window_Closing" Background="{DynamicResource BackgroundBrush}">
+    <Window.Resources>
+        <BooleanToVisibilityConverter x:Key="BooleanToVisibilityConverter"/>
+    </Window.Resources>
     <Grid x:Name="BodyGrid">
         <Grid x:Name="ModListGrid">
             <Grid.RowDefinitions>
@@ -53,18 +56,16 @@
                         <GridViewColumn Width="500" Header="列表（双击查看详情）">
                             <GridViewColumn.CellTemplate>
                                 <DataTemplate>
-                                    <Grid>
-                                        <Image Height="18" Width="18" Source="{Binding Icon}" HorizontalAlignment="Left"/>
-                                        <TextBlock Margin="30,0,0,0" Width="Auto" Text="{Binding Name}"/>
-                                    </Grid>
+                                    <StackPanel Orientation="Horizontal">
+                                        <Image Height="24" Width="24" Source="{Binding Icon}"/>
+                                        <TextBlock Margin="10,0,0,0" Text="{Binding Name}" VerticalAlignment="Center"/>
+                                    </StackPanel>
                                 </DataTemplate>
                             </GridViewColumn.CellTemplate>
                         </GridViewColumn>
                     </GridView>
                 </ListView.View>
             </ListView>
-            <hc:LoadingCircle Grid.Row="2" x:Name="lCircle" HorizontalAlignment="Center" VerticalAlignment="Center" Width="38" Height="38" Margin="0,0,150,0"/>
-            <Label Grid.Row="2" x:Name="lb01" Content="加载中，请耐心等待……" Margin="50,0,0,0" HorizontalAlignment="Center" VerticalAlignment="Center" Background="{x:Null}" BorderBrush="{x:Null}" Foreground="{DynamicResource DarkPrimaryBrush}"/>
         </Grid>
         <Grid x:Name="ModInfoGrid" Background="{DynamicResource BackgroundBrush}" Visibility="Collapsed">
             <Grid.RowDefinitions>
@@ -74,6 +75,7 @@
             <Grid Margin="10,0,10,0">
                 <WrapPanel>
                     <Button x:Name="backBtn" Margin="0,10,10,0" Content="返回" Click="backBtn_Click" Width="60"/>
+                    <Image x:Name="ModIconLabel" Margin="0,10,0,0" Height="24" Width="24"/>
                     <Label x:Name="ModNameLabel" Margin="0,10,10,0" Content="ModName"/>
                     <hc:Shield x:Name="ModWebsiteUrl" Margin="0,10,10,0" Subject="Website" Status="{Binding [OpenWebsite], Source={x:Static langs:LanguageManager.Instance}}" Command="hc:ControlCommands.OpenLink"/>
                     <StackPanel x:Name="VerFilterPannel" Margin="0,10,10,0" Orientation="Horizontal">
@@ -83,49 +85,22 @@
                     <Label x:Name="ModInfoLoadingProcess" Margin="0,10,10,0"/>
                 </WrapPanel>
             </Grid>
-            <ListView Grid.Row="1" x:Name="ModVerList" FontSize="14" MouseDoubleClick="ModVerList_MouseDoubleClick"  Background="{DynamicResource BorderBackground}" Margin="10">
+            <ListView Grid.Row="1" x:Name="ModVerList" MouseDoubleClick="ModVerList_MouseDoubleClick"  Background="{DynamicResource BorderBackground}" Margin="10">
+                <ListView.ItemContainerStyle>
+                    <Style TargetType="ListViewItem" BasedOn="{StaticResource ListViewItemBaseStyle}">
+                        <Setter Property="Visibility" Value="{Binding IsVisible, Converter={StaticResource BooleanToVisibilityConverter}}"/>
+                    </Style>
+                </ListView.ItemContainerStyle>
                 <ListView.View>
                     <GridView>
-                        <GridViewColumn Width="250" Header="文件列表（双击下载）">
-                            <GridViewColumn.CellTemplate>
-                                <DataTemplate>
-                                    <Grid>
-                                        <Image Height="18" Width="18" Source="{Binding Icon}" HorizontalAlignment="Left"/>
-                                        <TextBlock Margin="30,0,0,0" Text="{Binding Name}"/>
-                                    </Grid>
-                                </DataTemplate>
-                            </GridViewColumn.CellTemplate>
-                        </GridViewColumn>
-                        <GridViewColumn x:Name="MVL_Platform" Width="100" Header="平台">
-                            <GridViewColumn.CellTemplate>
-                                <DataTemplate>
-                                    <Grid>
-                                        <TextBlock Text="{Binding Platform}"/>
-                                    </Grid>
-                                </DataTemplate>
-                            </GridViewColumn.CellTemplate>
-                        </GridViewColumn>
-                        <GridViewColumn Width="100" Header="依赖">
-                            <GridViewColumn.CellTemplate>
-                                <DataTemplate>
-                                    <Grid>
-                                        <TextBlock Text="{Binding Dependency}"/>
-                                    </Grid>
-                                </DataTemplate>
-                            </GridViewColumn.CellTemplate>
-                        </GridViewColumn>
-                        <GridViewColumn Width="200" Header="支持的MC版本">
-                            <GridViewColumn.CellTemplate>
-                                <DataTemplate>
-                                    <Grid>
-                                        <TextBlock Text="{Binding MCVersion}"/>
-                                    </Grid>
-                                </DataTemplate>
-                            </GridViewColumn.CellTemplate>
-                        </GridViewColumn>
+                        <GridViewColumn Width="300" Header="文件列表（双击下载）" DisplayMemberBinding="{Binding Name}"/>
+                        <GridViewColumn x:Name="MVL_Platform" Width="100" Header="平台" DisplayMemberBinding="{Binding Platform}"/>
+                        <GridViewColumn Width="100" Header="依赖" DisplayMemberBinding="{Binding Dependency}"/>
+                        <GridViewColumn Width="150" Header="支持的MC版本" DisplayMemberBinding="{Binding MCVersion}"/>
                     </GridView>
                 </ListView.View>
             </ListView>
         </Grid>
+        <TextBlock x:Name="lb01" Text="{Binding [Loading_PlzWait], Source={x:Static langs:LanguageManager.Instance}}" FontSize="16" HorizontalAlignment="Center" VerticalAlignment="Center" Foreground="{DynamicResource DarkPrimaryBrush}"/>
     </Grid>
 </hc:Window>

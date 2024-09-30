@@ -52,7 +52,7 @@ namespace MSL.pages
             {
                 await DownloadServerFunc();
             }
-            catch(Exception ex)
+            catch (Exception ex)
             {
                 MagicShow.ShowMsgDialog(this, ex.Message, "错误");
             }
@@ -73,7 +73,7 @@ namespace MSL.pages
             {
                 await DownloadServerFunc();
             }
-            catch(Exception ex)
+            catch (Exception ex)
             {
                 MagicShow.ShowMsgDialog(this, ex.Message, "错误");
             }
@@ -111,7 +111,7 @@ namespace MSL.pages
 
         private async Task DownloadServerFunc()
         {
-            if (serverCoreList.SelectedIndex==-1||coreVersionList.SelectedIndex==-1||versionBuildList.SelectedIndex == -1)
+            if (serverCoreList.SelectedIndex == -1 || coreVersionList.SelectedIndex == -1 || versionBuildList.SelectedIndex == -1)
             {
                 MagicShow.ShowMsgDialog(this, "请检查您是否已正确选择 服务端-版本-构建版本 ！", "错误");
                 return;
@@ -126,7 +126,7 @@ namespace MSL.pages
             JObject downContext = await HttpService.GetApiContentAsync("download/server/" + downServer + "/" + downVersion + "?build=" + downBuild);
             string downUrl = downContext["data"]["url"].ToString();
 
-            downUrl= MriiorCheck(downUrl);
+            downUrl = MriiorCheck(downUrl);
             string sha256Exp = downContext["data"]["sha256"]?.ToString() ?? string.Empty;
             string filename = downServer + "-" + downVersion + ".jar";
 
@@ -153,7 +153,7 @@ namespace MSL.pages
                 string _filename = forgeName + ".jar";
                 JObject _dlContext = await HttpService.GetApiContentAsync("download/server/" + forgeName + "/" + downVersion);
                 string _dlUrl = _dlContext["data"]["url"].ToString();
-                _dlUrl= MriiorCheck(_dlUrl);
+                _dlUrl = MriiorCheck(_dlUrl);
                 string _sha256Exp = _dlContext["data"]["sha256"]?.ToString() ?? string.Empty;
                 int _dwnDialog = await MagicShow.ShowDownloaderWithIntReturn(this, _dlUrl, SavingPath, _filename, "下载依赖服务端中……", _sha256Exp, true);
 
@@ -250,7 +250,7 @@ namespace MSL.pages
         private async Task<string> InstallForge(string filename)
         {
             //调用新版forge安装器
-            string[] installForge = await MagicShow.ShowInstallForge(this, SavingPath, filename,JavaPath);
+            string[] installForge = await MagicShow.ShowInstallForge(this, SavingPath, filename, JavaPath);
             Functions functions = new Functions();
             if (installForge[0] == "0")
             {
@@ -324,7 +324,7 @@ namespace MSL.pages
             coreVersionLoadTip.Visibility = Visibility.Visible;
             try
             {
-                
+
                 string serverName = serverCoreList.SelectedItem.ToString();
                 HttpResponse httpResponse = await HttpService.GetApiAsync("query/available_versions/" + serverName);
                 if (httpResponse.HttpResponseCode == System.Net.HttpStatusCode.OK)
@@ -397,21 +397,6 @@ namespace MSL.pages
         private void openChooseServerDocs_Click(object sender, RoutedEventArgs e)
         {
             Process.Start("https://www.mslmc.cn/docs/other/choose-server-tips.html");
-        }
-
-        private void openSpigot_Click(object sender, RoutedEventArgs e)
-        {
-            Process.Start("https://www.spigotmc.org/");
-        }
-
-        private void openPaper_Click(object sender, RoutedEventArgs e)
-        {
-            Process.Start("https://papermc.io/");
-        }
-
-        private void openMojang_Click(object sender, RoutedEventArgs e)
-        {
-            Process.Start("https://www.minecraft.net/zh-hans/download/server");
         }
     }
 }

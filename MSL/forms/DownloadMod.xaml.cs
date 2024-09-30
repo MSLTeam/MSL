@@ -1,19 +1,20 @@
-﻿using CurseForge.APIClient.Models.Mods;
-using CurseForge.APIClient;
+﻿using CurseForge.APIClient;
+using CurseForge.APIClient.Models;
+using CurseForge.APIClient.Models.Mods;
 using Modrinth;
+using Modrinth.Models;
 using MSL.controls;
 using MSL.utils;
 using System;
 using System.Collections.Generic;
 using System.IO;
+using System.Linq;
 using System.Text;
+using System.Threading;
 using System.Threading.Tasks;
 using System.Windows;
 using System.Windows.Input;
-using Modrinth.Models;
-using CurseForge.APIClient.Models;
-using System.Linq;
-using System.Threading;
+using System.Windows.Media.Imaging;
 
 namespace MSL
 {
@@ -251,8 +252,8 @@ namespace MSL
             try
             {
                 ModListGrid.IsEnabled = false;
-                lCircle.IsRunning = true;
-                lCircle.Visibility = Visibility.Visible;
+                //lCircle.IsRunning = true;
+                //lCircle.Visibility = Visibility.Visible;
                 lb01.Visibility = Visibility.Visible;
                 if (LoadSource == 0)
                 {
@@ -262,8 +263,8 @@ namespace MSL
                 {
                     await Search_Modrinth(SearchTextBox.Text);
                 }
-                lCircle.IsRunning = false;
-                lCircle.Visibility = Visibility.Collapsed;
+                //lCircle.IsRunning = false;
+                //lCircle.Visibility = Visibility.Collapsed;
                 lb01.Visibility = Visibility.Collapsed;
                 ModListGrid.IsEnabled = true;
                 NowPageLabel.Content = 1;
@@ -298,8 +299,8 @@ namespace MSL
                     return;
                 }
                 ModListGrid.IsEnabled = false;
-                lCircle.IsRunning = true;
-                lCircle.Visibility = Visibility.Visible;
+                //lCircle.IsRunning = true;
+                //lCircle.Visibility = Visibility.Visible;
                 lb01.Visibility = Visibility.Visible;
                 if (LoadSource == 0)
                 {
@@ -309,8 +310,8 @@ namespace MSL
                 {
                     await Search_Modrinth(SearchTextBox.Text, (nowPage - 2) * 10);
                 }
-                lCircle.IsRunning = false;
-                lCircle.Visibility = Visibility.Collapsed;
+                //lCircle.IsRunning = false;
+                //lCircle.Visibility = Visibility.Collapsed;
                 lb01.Visibility = Visibility.Collapsed;
                 ModListGrid.IsEnabled = true;
                 NowPageLabel.Content = nowPage - 1;
@@ -335,8 +336,8 @@ namespace MSL
                     nowPage = ulong.Parse(NowPageLabel.Content.ToString());
                 }
                 ModListGrid.IsEnabled = false;
-                lCircle.IsRunning = true;
-                lCircle.Visibility = Visibility.Visible;
+                //lCircle.IsRunning = true;
+                //lCircle.Visibility = Visibility.Visible;
                 lb01.Visibility = Visibility.Visible;
                 if (LoadSource == 0)
                 {
@@ -346,8 +347,8 @@ namespace MSL
                 {
                     await Search_Modrinth(SearchTextBox.Text, nowPage * 10);
                 }
-                lCircle.IsRunning = false;
-                lCircle.Visibility = Visibility.Collapsed;
+                //lCircle.IsRunning = false;
+                //lCircle.Visibility = Visibility.Collapsed;
                 lb01.Visibility = Visibility.Collapsed;
                 ModListGrid.IsEnabled = true;
                 NowPageLabel.Content = nowPage + 1;
@@ -381,7 +382,7 @@ namespace MSL
                     DM_ModInfo _modInfo = null;
                     if (LoadType == 0)
                     {
-                        modInfo = new DM_ModInfo(info.Icon,
+                        modInfo = new DM_ModInfo(
                             modData.DisplayName,
                             modData.DownloadUrl,
                             modData.FileName,
@@ -396,14 +397,13 @@ namespace MSL
                             if (!onlyShowServerPack)
                             {
                                 var _modFile = await CurseForgeApiClient.GetModFileAsync(int.Parse(info.ID), modData.Id);
-                                _modInfo = new DM_ModInfo(info.Icon, _modFile.Data.DisplayName, _modFile.Data.DownloadUrl, _modFile.Data.FileName, "", string.Join(",", (await Task.WhenAll(_modFile.Data.Dependencies.Select(s => CurseForgeApiClient.GetModAsync(s.ModId)))).Select(p => p.Data.Name)), string.Join(",", _modFile.Data.GameVersions));
+                                _modInfo = new DM_ModInfo(_modFile.Data.DisplayName, _modFile.Data.DownloadUrl, _modFile.Data.FileName, "", string.Join(",", (await Task.WhenAll(_modFile.Data.Dependencies.Select(s => CurseForgeApiClient.GetModAsync(s.ModId)))).Select(p => p.Data.Name)), string.Join(",", _modFile.Data.GameVersions));
                             }
-                            var modFile = await CurseForgeApiClient.GetModFileAsync(int.Parse(info.ID), modData.ServerPackFileId.Value);
-                            modInfo = new DM_ModInfo(info.Icon, modFile.Data.DisplayName, modFile.Data.DownloadUrl, modFile.Data.FileName, "", string.Join(",", (await Task.WhenAll(modFile.Data.Dependencies.Select(s => CurseForgeApiClient.GetModAsync(s.ModId)))).Select(p => p.Data.Name)), string.Join(",", modFile.Data.GameVersions));
                         }
-                        catch
+                        finally
                         {
-                            return;
+                            var modFile = await CurseForgeApiClient.GetModFileAsync(int.Parse(info.ID), modData.ServerPackFileId.Value);
+                            modInfo = new DM_ModInfo(modFile.Data.DisplayName, modFile.Data.DownloadUrl, modFile.Data.FileName, "", string.Join(",", (await Task.WhenAll(modFile.Data.Dependencies.Select(s => CurseForgeApiClient.GetModAsync(s.ModId)))).Select(p => p.Data.Name)), string.Join(",", modFile.Data.GameVersions));
                         }
                     }
                     else
@@ -451,20 +451,21 @@ namespace MSL
                 try
                 {
                     var modVersion = await ModrinthApiClient.Version.GetAsync(modID);
+                    var modGameVer = modVersion.GameVersions;
                     var modInfo = new DM_ModInfo(
-                        info.Icon,
                         modVersion.Name,
                         modVersion.Files[0].Url,
                         modVersion.Files[0].FileName,
                         string.Join(",", modVersion.Loaders),
                         string.Join(",", (await Task.WhenAll(modVersion.Dependencies.Select(s => ModrinthApiClient.Project.GetAsync(s.ProjectId)))).Select(p => p.Title)),
                         //string.Join(",", modVersion.GameVersions)
-                        GetMcVersion(modVersion.GameVersions)
+                        GetMcVersion(modGameVer)
                     );
 
                     await Dispatcher.InvokeAsync(() =>
                     {
                         ModVerList.Items.Add(modInfo);
+                        VerFilter_VersList.Add(modGameVer);
                         loadedCount++;
                         ModInfoLoadingProcess.Content = $"{loadedCount}/{totalCount}";
                     });
@@ -528,6 +529,7 @@ namespace MSL
                 var info = ModList.SelectedItem as DM_ModsInfo;
                 backBtn.IsEnabled = false;
                 ModInfoGrid.Visibility = Visibility.Visible;
+                ModIconLabel.Source = new BitmapImage(new Uri(info.Icon));
                 ModNameLabel.Content = info.Name;
                 ModWebsiteUrl.Subject = info.WebsiteUrl;
                 ModWebsiteUrl.CommandParameter = info.WebsiteUrl;
@@ -568,106 +570,50 @@ namespace MSL
             VerFilter_VersList.Clear();
         }
 
-        private List<DM_ModInfo> VerFilter_VersList = new List<DM_ModInfo>();
+        private List<string[]> VerFilter_VersList = new List<string[]>();
         private void VerFilter_SelectionChanged(object sender, System.Windows.Controls.SelectionChangedEventArgs e)
         {
             if (VerFilterCombo.Items.Count == 0) return;
             if (VerFilterCombo.SelectedItem.ToString() == "全部")
             {
-                ModVerList.Items.Clear();
-                foreach (var item in VerFilter_VersList)
+                foreach (DM_ModInfo item in ModVerList.Items)
                 {
-                    ModVerList.Items.Add(item);
+                    if (item.IsVisible == false)
+                    {
+                        item.IsVisible = true;
+                    }
+                    else
+                    {
+                        continue;
+                    }
                 }
             }
             else
             {
-                if (VerFilter_VersList.Count != 0)
+                int i = 0;
+                foreach (var item in VerFilter_VersList)
                 {
-                    ModVerList.Items.Clear();
-                    foreach (var item in VerFilter_VersList)
+                    DM_ModInfo dM_ModInfo = ModVerList.Items[i] as DM_ModInfo;
+                    if (!item.Contains(VerFilterCombo.SelectedItem.ToString()))
                     {
-                        ModVerList.Items.Add(item);
+                        dM_ModInfo.IsVisible = false;
                     }
-                }
-                VerFilter_VersList.Clear();
-                List<DM_ModInfo> list = new List<DM_ModInfo>();
-                string selectedVersion = VerFilterCombo.SelectedItem.ToString();
-
-                foreach (var item in ModVerList.Items)
-                {
-                    var _item = item as DM_ModInfo;
-                    VerFilter_VersList.Add(_item);
-                    var versionRanges = ParseVersionRanges(_item.MCVersion);
-
-                    if (IsVersionInRanges(selectedVersion, versionRanges))
+                    else
                     {
-                        list.Add(_item);
+                        if (dM_ModInfo.IsVisible == false)
+                        {
+                            dM_ModInfo.IsVisible = true;
+                        }
                     }
-                }
-                ModVerList.Items.Clear();
-                foreach (var item in list)
-                {
-                    ModVerList.Items.Add(item);
+                    i++;
                 }
             }
-        }
-
-        public static List<(string Start, string End)> ParseVersionRanges(string versionString)
-        {
-            var ranges = new List<(string Start, string End)>();
-            var parts = versionString.Split(new[] { " / " }, StringSplitOptions.RemoveEmptyEntries);
-
-            foreach (var part in parts)
-            {
-                var versions = part.Split(new[] { " - " }, StringSplitOptions.RemoveEmptyEntries);
-                if (versions.Length == 1)
-                {
-                    ranges.Add((versions[0], versions[0]));
-                }
-                else if (versions.Length == 2)
-                {
-                    ranges.Add((versions[0], versions[1]));
-                }
-            }
-
-            return ranges;
-        }
-
-        private bool IsVersionInRanges(string version, List<(string Start, string End)> ranges)
-        {
-            foreach (var range in ranges)
-            {
-                if (CompareVersions(version, range.Start) >= 0 && CompareVersions(version, range.End) <= 0)
-                {
-                    return true;
-                }
-            }
-            return false;
-        }
-
-
-        private int CompareVersions(string v1, string v2)
-        {
-            var v1Parts = v1.Split('.').Select(int.Parse).ToArray();
-            var v2Parts = v2.Split('.').Select(int.Parse).ToArray();
-
-            for (int i = 0; i < Math.Max(v1Parts.Length, v2Parts.Length); i++)
-            {
-                int v1Part = i < v1Parts.Length ? v1Parts[i] : 0;
-                int v2Part = i < v2Parts.Length ? v2Parts[i] : 0;
-
-                if (v1Part < v2Part) return -1;
-                if (v1Part > v2Part) return 1;
-            }
-
-            return 0;
         }
 
         private async Task LoadEvent()
         {
-            lCircle.IsRunning = true;
-            lCircle.Visibility = Visibility.Visible;
+            //lCircle.IsRunning = true;
+            //lCircle.Visibility = Visibility.Visible;
             lb01.Visibility = Visibility.Visible;
             ModListGrid.IsEnabled = false;
             if (LoadSource == 0)
@@ -678,8 +624,8 @@ namespace MSL
             {
                 await LoadEvent_Modrinth();
             }
-            lCircle.IsRunning = false;
-            lCircle.Visibility = Visibility.Collapsed;
+            //lCircle.IsRunning = false;
+            //lCircle.Visibility = Visibility.Collapsed;
             lb01.Visibility = Visibility.Collapsed;
             ModListGrid.IsEnabled = true;
         }
@@ -744,6 +690,22 @@ namespace MSL
         private void Window_Closing(object sender, System.ComponentModel.CancelEventArgs e)
         {
             ModList.ItemsSource = null;
+            ModList.Items.Clear();
+            ModVerList.Items.Clear();
+            VerFilter_VersList.Clear();
+            if (CurseForgeApiClient != null)
+            {
+                CurseForgeApiClient.Dispose();
+                CurseForgeApiClient = null;
+            }
+            if (ModrinthApiClient != null)
+            {
+                ModrinthApiClient.Dispose();
+                ModrinthApiClient = null;
+            }
+            GC.Collect(); // find finalizable objects
+            GC.WaitForPendingFinalizers(); // wait until finalizers executed
+            GC.Collect(); // collect finalized objects
         }
     }
 }

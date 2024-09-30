@@ -697,21 +697,24 @@ namespace MSL.pages
                     Owner = Window.GetWindow(Window.GetWindow(this))
                 };
                 downloadServer.ShowDialog();
-                if (File.Exists(serverbase + "\\" + downloadServer.FileName))
+                if (downloadServer.FileName != null)
                 {
-                    servercore = downloadServer.FileName;
-                    sJVM.IsSelected = true;
-                    sJVM.IsEnabled = true;
-                    sserver.IsEnabled = false;
-                    returnMode = 6;
-                }
-                else if (downloadServer.FileName.StartsWith("@libraries/"))
-                {
-                    servercore = downloadServer.FileName;
-                    sJVM.IsSelected = true;
-                    sJVM.IsEnabled = true;
-                    sserver.IsEnabled = false;
-                    returnMode = 6;
+                    if (File.Exists(serverbase + "\\" + downloadServer.FileName))
+                    {
+                        servercore = downloadServer.FileName;
+                        sJVM.IsSelected = true;
+                        sJVM.IsEnabled = true;
+                        sserver.IsEnabled = false;
+                        returnMode = 6;
+                    }
+                    else if (downloadServer.FileName.StartsWith("@libraries/"))
+                    {
+                        servercore = downloadServer.FileName;
+                        sJVM.IsSelected = true;
+                        sJVM.IsEnabled = true;
+                        sserver.IsEnabled = false;
+                        returnMode = 6;
+                    }
                 }
             }
             else
@@ -1560,6 +1563,9 @@ namespace MSL.pages
             sjava.IsEnabled = false;
             sserver.IsEnabled = false;
             sJVM.IsEnabled = false;
+            GC.Collect(); // find finalizable objects
+            GC.WaitForPendingFinalizers(); // wait until finalizers executed
+            GC.Collect(); // collect finalized objects
         }
     }
 }
