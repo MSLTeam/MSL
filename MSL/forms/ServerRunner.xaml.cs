@@ -1849,18 +1849,18 @@ namespace MSL
                     solveProblemSystem = false;
                     if (foundProblems == null)
                     {
-                        Growl.Info("服务器已关闭！开服器未检测到相关问题，您可前往“更多功能”界面上传服务器日志，并发送给他人以寻求帮助！");
+                        MagicShow.ShowMsgDialog(this, "服务器已关闭！开服器未检测到相关问题，您可将服务器日志发送给他人以寻求帮助！\n日志发送方式：\n1.直接截图控制台内容\n2.服务器目录\\logs\\latest.log\n3.前往“更多功能”界面上传至Internet", "崩溃分析系统");
                     }
                     else
                     {
                         Growl.Info("服务器已关闭！即将为您展示分析报告！");
-                        MagicShow.ShowMsgDialog(this, foundProblems, "服务器分析报告");
+                        MagicShow.ShowMsgDialog(this, foundProblems+ "\nPS:软件检测不一定准确，若您无法解决，可将服务器日志发送给他人以寻求帮助，但请不要截图此弹窗！！！\n日志发送方式：\n1.直接截图控制台内容\n2.服务器目录\\logs\\latest.log\n3.前往“更多功能”界面上传至Internet", "服务器分析报告");
                         foundProblems = null;
                     }
                 }
                 else if (ServerProcess.ExitCode != 0 && getServerInfoLine <= 100)
                 {
-                    bool dialogRet = await MagicShow.ShowMsgDialogAsync(this, "服务器疑似异常关闭，是您人为关闭的吗？\n您可使用MSL的崩溃分析系统进行检测，也可前往“更多功能”界面上传服务器日志，并发送给他人以寻求帮助！（请不要截图此弹窗！）\n点击确定开始进行崩溃分析", "提示", true, "取消");
+                    bool dialogRet = await MagicShow.ShowMsgDialogAsync(this, "服务器疑似异常关闭，是您人为关闭的吗？\n您可使用MSL的崩溃分析系统进行检测，也可将服务器日志发送给他人以寻求帮助！\nPS:请不要截图此弹窗！！！\n日志发送方式：\n1.直接截图控制台内容；2.服务器目录\\logs\\latest.log；3.前往“更多功能”界面上传至Internet\n\n点击确定开始进行崩溃分析", "提示", true);
                     if (dialogRet)
                     {
                         TabCtrl.SelectedIndex = 1;
@@ -1919,12 +1919,12 @@ namespace MSL
 
                     if (string.IsNullOrEmpty(foundProblems))
                     {
-                        MagicShow.ShowMsgDialog(this, "服务器已关闭！开服器未检测到相关问题，您可前往“更多功能”界面上传服务器日志，并发送给他人以寻求帮助！", "崩溃分析系统");
+                        MagicShow.ShowMsgDialog(this, "服务器已关闭！开服器未检测到相关问题，您可将服务器日志发送给他人以寻求帮助！\n日志发送方式：\n1.直接截图控制台内容\n2.服务器目录\\logs\\latest.log\n3.前往“更多功能”界面上传至Internet", "崩溃分析系统");
                     }
                     else
                     {
                         Growl.Info("服务器已关闭！即将为您展示分析报告！");
-                        MagicShow.ShowMsgDialog(this, foundProblems, "服务器分析报告");
+                        MagicShow.ShowMsgDialog(this, foundProblems + "\nPS:软件检测不一定准确，若您无法解决，可将服务器日志发送给他人以寻求帮助，但请不要截图此弹窗！！！\n日志发送方式：\n1.直接截图控制台内容\n2.服务器目录\\logs\\latest.log\n3.前往“更多功能”界面上传至Internet", "服务器分析报告");
                         foundProblems = null;
                     }
                 }
@@ -1932,7 +1932,7 @@ namespace MSL
                 {
                     conptyWindow.Visibility = Visibility.Collapsed;
                     //CloseConptyDialog();
-                    bool dialogRet = await MagicShow.ShowMsgDialogAsync(this, "服务器疑似异常关闭，是您人为关闭的吗？\n您可使用MSL的崩溃分析系统进行检测，也可前往“更多功能”界面上传服务器日志，并发送给他人以寻求帮助！（请不要截图此弹窗！）\n点击确定开始进行崩溃分析", "提示", true, "取消");
+                    bool dialogRet = await MagicShow.ShowMsgDialogAsync(this, "服务器疑似异常关闭，是您人为关闭的吗？\n您可使用MSL的崩溃分析系统进行检测，也可将服务器日志发送给他人以寻求帮助，但请不要截图此弹窗！！！\n日志发送方式：\n1.直接截图控制台内容\n2.服务器目录\\logs\\latest.log\n3.前往“更多功能”界面上传至Internet\n\n点击确定开始进行崩溃分析", "提示", true);
                     if (dialogRet)
                     {
                         solveProblemSystem = true;
@@ -2890,7 +2890,7 @@ namespace MSL
             }
             catch
             {
-                MessageBox.Show("Error!!!");
+                MessageBox.Show("Error!");
             }
         }
 
@@ -3022,7 +3022,7 @@ namespace MSL
                         }
                         else if (dwnJava == 2)
                         {
-                            Growl.Info("完成！");
+                            Growl.Success("完成！");
                         }
                         else
                         {
