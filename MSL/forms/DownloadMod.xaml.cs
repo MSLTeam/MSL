@@ -25,7 +25,7 @@ namespace MSL
     {
         private int LoadType = 0;  //0: mods , 1: modpacks  , 2: plugins
         private int LoadSource = 0;  //0: Curseforge , 1: Modrinth 
-        private bool CloseImmediately;
+        private readonly bool CloseImmediately;
         private readonly string SavingPath;
         private ApiClient CurseForgeApiClient;
         private ModrinthClient ModrinthApiClient;
@@ -164,6 +164,10 @@ namespace MSL
 
                 ModList.ItemsSource = list;
                 NowPageLabel.Content = "1";
+            }
+            catch(OperationCanceledException)
+            { 
+                return;
             }
             catch (Exception ex)
             {
@@ -676,7 +680,7 @@ namespace MSL
             Directory.CreateDirectory(SavingPath);
             string filename = iteminfo.FileName;
             //MessageBox.Show(iteminfo.DownloadUrl);
-            bool dwnRet = await MagicShow.ShowDownloader(this, iteminfo.DownloadUrl, SavingPath, filename, "下载中……", "", false, 2);
+            bool dwnRet = await MagicShow.ShowDownloader(this, iteminfo.DownloadUrl, SavingPath, filename, "下载中……", "", false);
             if (dwnRet)
             {
                 if (CloseImmediately)
@@ -689,10 +693,6 @@ namespace MSL
 
         private void Window_Closing(object sender, System.ComponentModel.CancelEventArgs e)
         {
-            ModList.ItemsSource = null;
-            ModList.Items.Clear();
-            ModVerList.Items.Clear();
-            VerFilter_VersList.Clear();
             if (CurseForgeApiClient != null)
             {
                 CurseForgeApiClient.Dispose();
@@ -703,6 +703,10 @@ namespace MSL
                 ModrinthApiClient.Dispose();
                 ModrinthApiClient = null;
             }
+            ModList.ItemsSource = null;
+            ModList.Items.Clear();
+            ModVerList.Items.Clear();
+            VerFilter_VersList.Clear();
             GC.Collect(); // find finalizable objects
             GC.WaitForPendingFinalizers(); // wait until finalizers executed
             GC.Collect(); // collect finalized objects

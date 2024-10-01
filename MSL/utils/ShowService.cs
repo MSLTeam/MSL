@@ -104,7 +104,7 @@ namespace MSL.utils
         /// <param name="closeDirectly">下载失败后是否直接关闭下载对话框</param>
         /// <param name="headerMode">UA标识：0等于自动检测（MSL Downloader或无Header），1等于无Header，2等于MSL Downloader，3等于伪装浏览器Header</param>
         /// <returns>true下载成功；false下载取消/失败</returns>
-        public static async Task<bool> ShowDownloader(Window _window, string downloadurl, string downloadPath, string filename, string downloadinfo, string sha256 = "", bool closeDirectly = false, int headerMode = 0)
+        public static async Task<bool> ShowDownloader(Window _window, string downloadurl, string downloadPath, string filename, string downloadinfo, string sha256 = "", bool closeDirectly = false, int headerMode = 1)
         {
             MagicDialog MagicDialog = new MagicDialog();
             int _ret = await MagicDialog.ShowDownloadDialog(_window, downloadurl, downloadPath, filename, downloadinfo, sha256, closeDirectly, headerMode);
@@ -127,7 +127,7 @@ namespace MSL.utils
         /// <param name="closeDirectly">下载失败后是否直接关闭下载对话框</param>
         /// <param name="headerMode">UA标识：0等于自动检测（MSL Downloader或无Header），1等于无Header，2等于MSL Downloader，3等于伪装浏览器Header</param>
         /// <returns>0未开始下载（或下载中），1下载完成，2下载取消，3下载失败</returns>
-        public static async Task<int> ShowDownloaderWithIntReturn(Window _window, string downloadurl, string downloadPath, string filename, string downloadinfo, string sha256 = "", bool closeDirectly = false, int headerMode = 0)
+        public static async Task<int> ShowDownloaderWithIntReturn(Window _window, string downloadurl, string downloadPath, string filename, string downloadinfo, string sha256 = "", bool closeDirectly = false, int headerMode = 1)
         {
             MagicDialog MagicDialog = new MagicDialog();
             int _ret = await MagicDialog.ShowDownloadDialog(_window, downloadurl, downloadPath, filename, downloadinfo, sha256, closeDirectly, headerMode);
@@ -178,7 +178,7 @@ namespace MSL.utils
             return msgDialog._dialogReturn;
         }
 
-        public async Task<int> ShowDownloadDialog(Window _window, string downloadurl, string downloadPath, string filename, string downloadinfo, string sha256 = "", bool closeDirectly = false, int headerMode = 0)
+        public async Task<int> ShowDownloadDialog(Window _window, string downloadurl, string downloadPath, string filename, string downloadinfo, string sha256 = "", bool closeDirectly = false, int headerMode = 1)
         {
             window = _window;
             DownloadDialog dwnDialog = new DownloadDialog(downloadurl, downloadPath, filename, downloadinfo, sha256, closeDirectly, headerMode);

@@ -29,11 +29,11 @@ namespace MSL
         private readonly string downloadurl;
         private readonly string expectedSha256;
         private readonly bool closeDirectly;
-        private readonly int headerMode; //0等于自动检测（MSL Downloader或无Header），1等于无Header，2等于MSL Downloader，3等于伪装浏览器Header
+        private readonly int headerMode; // 0等于无Header，1等于MSL Downloader，2等于伪装浏览器Header
         private DownloadService downloader;
         private DispatcherTimer updateUITimer;
 
-        public DownloadDialog(string _downloadurl, string _downloadPath, string _filename, string downloadinfo, string sha256 = "", bool _closeDirectly = false, int header = 0)
+        public DownloadDialog(string _downloadurl, string _downloadPath, string _filename, string downloadinfo, string sha256 = "", bool _closeDirectly = false, int header = 1)
         {
             InitializeComponent();
             Directory.CreateDirectory(_downloadPath);
@@ -163,26 +163,11 @@ namespace MSL
 
         private string DownloadUA()
         {
-            if (headerMode == 0)
+            if (headerMode == 1)
             {
-                if (MainWindow.serverLink != null)
-                {
-                    string serverLink = MainWindow.serverLink;
-                    if (serverLink.Contains("/"))
-                    {
-                        serverLink = serverLink.Substring(0, serverLink.IndexOf("/"));
-                    }
-                    if (downloadurl.Contains(serverLink))
-                    {
-                        return "MSL Downloader/" + new Version(System.Reflection.Assembly.GetExecutingAssembly().GetName().Version.ToString());
-                    }
-                }
+                return "MSLTeam/MSL/" + new Version(System.Reflection.Assembly.GetExecutingAssembly().GetName().Version.ToString()) + "/Downloader";
             }
             else if (headerMode == 2)
-            {
-                return "MSL Downloader/" + new Version(System.Reflection.Assembly.GetExecutingAssembly().GetName().Version.ToString());
-            }
-            else if (headerMode == 3)
             {
                 return "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/126.0.0.0 Safari/537.36";
             }

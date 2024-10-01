@@ -58,13 +58,13 @@ namespace MSL.utils
                     }
                     if (url.Contains(serverLink))
                     {
-                        webClient.Headers.Add("User-Agent", "MSL/" + new Version(System.Reflection.Assembly.GetExecutingAssembly().GetName().Version.ToString()));
+                        webClient.Headers.Add("User-Agent", "MSLTeam/MSL/" + new Version(System.Reflection.Assembly.GetExecutingAssembly().GetName().Version.ToString()));
                     }
                 }
             }
             else if (headerMode == 2)
             {
-                webClient.Headers.Add("User-Agent", "MSL/" + new Version(System.Reflection.Assembly.GetExecutingAssembly().GetName().Version.ToString()));
+                webClient.Headers.Add("User-Agent", "MSLTeam/MSL/" + new Version(System.Reflection.Assembly.GetExecutingAssembly().GetName().Version.ToString()));
             }
             else if (headerMode == 3)
             {
@@ -135,7 +135,7 @@ namespace MSL.utils
             configureHeaders?.Invoke(httpClient.DefaultRequestHeaders);
             if (headerUAMode == 1)
             {
-                httpClient.DefaultRequestHeaders.UserAgent.TryParseAdd("MSL/" + new Version(System.Reflection.Assembly.GetExecutingAssembly().GetName().Version.ToString()));
+                httpClient.DefaultRequestHeaders.UserAgent.TryParseAdd("MSLTeam/MSL/" + new Version(System.Reflection.Assembly.GetExecutingAssembly().GetName().Version.ToString()));
             }
             else if (headerUAMode == 2)
             {

@@ -3007,8 +3007,10 @@ namespace MSL
                         dwnJava = await DownloadJava(selectJava.SelectedItem.ToString(), (await HttpService.GetApiContentAsync("download/java/" + selectJava.SelectedItem.ToString()))["data"]["url"].ToString());
                         if (dwnJava == 1)
                         {
-                            Growl.Info("解压中……");
+                            MagicDialog dialog = new MagicDialog();
+                            dialog.ShowTextDialog(this, "解压中……");
                             bool unzipJava = await UnzipJava();
+                            dialog.CloseTextDialog();
                             if (!unzipJava)
                             {
                                 MagicShow.ShowMsgDialog(this, "安装失败，请查看是否有杀毒软件进行拦截！请确保添加信任或关闭杀毒软件后进行重新安装！", "错误");
