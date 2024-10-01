@@ -9,7 +9,10 @@
         xmlns:local="clr-namespace:MSL"
         mc:Ignorable="d"
         NonClientAreaBackground="{DynamicResource BackgroundBrush}"
-        Title="下载资源" Height="450" Width="750" WindowStartupLocation="CenterOwner" ResizeMode="NoResize" Loaded="Window_Loaded" Closing="Window_Closing" Background="{DynamicResource BackgroundBrush}">
+        Title="下载资源"
+        MinHeight="450" MinWidth="750" Height="450" Width="750"
+        WindowStartupLocation="CenterOwner" ResizeMode="CanResize"
+        Loaded="Window_Loaded" Closing="Window_Closing" Background="{DynamicResource BackgroundBrush}">
     <Window.Resources>
         <BooleanToVisibilityConverter x:Key="BooleanToVisibilityConverter"/>
     </Window.Resources>
@@ -20,20 +23,33 @@
                 <RowDefinition Height="Auto"/>
                 <RowDefinition/>
             </Grid.RowDefinitions>
-            <StackPanel Grid.Row="0" Margin="10,10,10,0" Orientation="Horizontal">
-                <Button x:Name="homeBtn" Content="主页" Click="homeBtn_Click" Width="60" />
-                <StackPanel Orientation="Horizontal">
-                    <Label Content="搜索：" FontSize="14" BorderBrush="{x:Null}" Background="{x:Null}" Margin="10,0,0,0" Padding="0"/>
-                    <TextBox x:Name="SearchTextBox" MinWidth="250"/>
-                    <Button x:Name="searchMod" Content="搜索" Click="searchMod_Click" Width="60"/>
-                    <Button x:Name="LastPageBtn" Margin="10,0,0,0" Content="上一页" Click="LastPageBtn_Click"/>
-                    <Label Content="第" FontSize="14" BorderBrush="{x:Null}" Background="{x:Null}" Padding="5,0,0,0"/>
-                    <Label x:Name="NowPageLabel" Content="1" FontSize="14" BorderBrush="{x:Null}" Background="{x:Null}" Padding="0"/>
-                    <Label Content="页" FontSize="14" BorderBrush="{x:Null}" Background="{x:Null}" Padding="0,0,5,0"/>
-                    <Button x:Name="NextPageBtn" Content="下一页" Click="NextPageBtn_Click"/>
-                </StackPanel>
-            </StackPanel>
-            <StackPanel Grid.Row="1" Margin="10,5,10,0" Orientation="Horizontal">
+            <Grid Grid.Row="0" Margin="10,10,10,0">
+                    <Grid.ColumnDefinitions>
+                        <ColumnDefinition Width="Auto"/>
+                        <ColumnDefinition/>
+                        <ColumnDefinition Width="Auto"/>
+                    </Grid.ColumnDefinitions>
+                    <Button Grid.Column="0" x:Name="homeBtn" Content="主页" Click="homeBtn_Click" Width="60" />
+                    <Grid Grid.Column="1">
+                        <Grid.ColumnDefinitions>
+                            <ColumnDefinition Width="Auto"/>
+                            <ColumnDefinition/>
+                            <ColumnDefinition Width="Auto"/>
+                        </Grid.ColumnDefinitions>
+                        <Label Grid.Column="0" Content="搜索：" FontSize="14" BorderBrush="{x:Null}" Background="{x:Null}" Margin="10,0,0,0" Padding="0"/>
+                        <TextBox Grid.Column="1" x:Name="SearchTextBox"/>
+                        <Button Grid.Column="2" x:Name="searchMod" Content="搜索" Click="searchMod_Click" Width="60"/>
+                    </Grid>
+                    <StackPanel Grid.Column="2" Orientation="Horizontal">
+                        <Button x:Name="LastPageBtn" Margin="10,0,0,0" Content="上一页" Click="LastPageBtn_Click"/>
+                        <Label Content="第" FontSize="14" BorderBrush="{x:Null}" Background="{x:Null}" Padding="5,0,0,0"/>
+                        <Label x:Name="NowPageLabel" Content="1" FontSize="14" BorderBrush="{x:Null}" Background="{x:Null}" Padding="0"/>
+                        <Label Content="页" FontSize="14" BorderBrush="{x:Null}" Background="{x:Null}" Padding="0,0,5,0"/>
+                        <Button x:Name="NextPageBtn" Content="下一页" Click="NextPageBtn_Click"/>
+                    </StackPanel>
+
+                </Grid>
+                <StackPanel Grid.Row="1" Margin="10,5,10,0" Orientation="Horizontal">
                 <StackPanel Orientation="Horizontal">
                     <Label Content="下载源：" FontSize="14" BorderBrush="{x:Null}" Background="{x:Null}" Padding="10,0,10,0"/>
                     <ComboBox x:Name="LoadSourceBox" SelectionChanged="LoadSourceBox_SelectionChanged">

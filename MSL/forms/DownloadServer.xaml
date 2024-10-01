@@ -7,9 +7,10 @@
       xmlns:controls="clr-namespace:MSL.controls"
       xmlns:local="clr-namespace:MSL"
       mc:Ignorable="d" 
-      Height="450" Width="750"
+      MinHeight="450" MinWidth="750" Height="450" Width="750"
       NonClientAreaBackground="{DynamicResource BackgroundBrush}"
-      Title="下载服务端" Loaded="Page_Loaded" Background="{DynamicResource BackgroundBrush}" ResizeMode="NoResize" WindowStartupLocation="CenterOwner">
+      Title="下载服务端" Loaded="Page_Loaded" Background="{DynamicResource BackgroundBrush}"
+      ResizeMode="CanResize" WindowStartupLocation="CenterOwner">
     <Grid x:Name="BodyGrid">
         <Grid.RowDefinitions>
             <RowDefinition Height="Auto"/>

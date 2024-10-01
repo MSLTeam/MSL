@@ -426,20 +426,16 @@ namespace MSL.pages.frpProviders
             if (toggleAddProxiesGroup.Content.ToString() == "收起")
             {
                 toggleAddProxiesGroup.Content = "新建隧道（点击展开）";
-                toggleAddProxiesGroup.Margin = new Thickness(300, 245, 0, 0);
-                delProxieBtn.Margin = new Thickness(515, 245, 0, 0);
-                signBtn.Margin = new Thickness(630, 245, 0, 0);
-                userInfo.Height = 235;
-                addProxiesGroup.Visibility = Visibility.Hidden;
+                userInfoGrid.Visibility = Visibility.Visible;
+                delProxieBtn.IsEnabled = true;
+                addProxiesGroup.Visibility = Visibility.Collapsed;
                 toggleProxies.SelectedIndex = 0;
             }
             else
             {
                 toggleAddProxiesGroup.Content = "收起";
-                toggleAddProxiesGroup.Margin = new Thickness(300, 145, 0, 0);
-                delProxieBtn.Margin = new Thickness(515, 145, 0, 0);
-                signBtn.Margin = new Thickness(630, 145, 0, 0);
-                userInfo.Height = 135;
+                userInfoGrid.Visibility = Visibility.Collapsed;
+                delProxieBtn.IsEnabled = false;
                 addProxiesGroup.Visibility = Visibility.Visible;
                 toggleProxies.SelectedIndex = 1;
                 RandRemotePort(false);

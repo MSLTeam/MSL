@@ -8,7 +8,9 @@
         xmlns:local="clr-namespace:MSL"
         mc:Ignorable="d"
         NonClientAreaBackground="{DynamicResource BackgroundBrush}" Background="{DynamicResource BackgroundBrush}"
-        Title="配置内网映射" Height="450" Width="750" ResizeMode="NoResize" WindowStartupLocation="CenterOwner">
+        Title="配置内网映射"
+        MinHeight="450" MinWidth="750" Height="450" Width="750"
+        ResizeMode="CanResize" WindowStartupLocation="CenterOwner">
     <Grid x:Name="MainGrid">
         <TabControl Background="{x:Null}" BorderThickness="0,1,0,0">
             <TabItem Header="MSL-Frp" Background="Transparent">

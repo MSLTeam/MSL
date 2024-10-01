@@ -8,7 +8,6 @@
       xmlns:hc="https://handyorg.github.io/handycontrol"
       d:DesignHeight="450" d:DesignWidth="800"
       Title="SakuraFrp" Initialized="Page_Initialized">
-
     <Grid>
         <Grid x:Name="CreateGrid" Margin="10" Visibility="Collapsed">
             <Grid.ColumnDefinitions>
@@ -43,61 +42,57 @@
                     <RowDefinition Height="*"/>
                     <RowDefinition Height="auto"/>
                 </Grid.RowDefinitions>
-                <Grid Grid.Row="0">
-                    <StackPanel>
-                        <hc:Card>
-                            <StackPanel Margin="3" HorizontalAlignment="Left">
-                                <Label Content="节点信息" BorderThickness="0" FontSize="16" FontWeight="Bold" HorizontalAlignment="Left"/>
-                                <TextBlock x:Name="NodeTips" LineHeight="20" Foreground="{DynamicResource PrimaryTextBrush}" Text="选择一个节点才知道呀~" FontSize="14" HorizontalAlignment="Left" Margin="10,0,0,0"/>
-                            </StackPanel>
-                        </hc:Card>
-                        <hc:Card Margin="0,3,0,0">
-                            <StackPanel Margin="3">
-                                <Label Content="填写隧道参数" BorderThickness="0" FontSize="16" FontWeight="Bold" HorizontalAlignment="Left"/>
-                                <WrapPanel>
-                                    <StackPanel Orientation="Horizontal" Margin="0,0,0,6">
-                                        <TextBlock LineHeight="20" Foreground="{DynamicResource PrimaryTextBrush}" Text="隧道名称(英文):" FontSize="14" Margin="10,0,6,0" VerticalAlignment="Center"/>
-                                        <TextBox Text="MySakuraFrp" x:Name="Create_Name" MinWidth="100"/>
-                                    </StackPanel>
-                                    <StackPanel Orientation="Horizontal" Margin="0,0,0,6">
-                                        <TextBlock LineHeight="20" Foreground="{DynamicResource PrimaryTextBrush}" Text="本地IP:" FontSize="14" Margin="10,0,6,0" VerticalAlignment="Center"/>
-                                        <TextBox Text="127.0.0.1" x:Name="Create_LocalIP" MinWidth="100"/>
-                                    </StackPanel>
-                                    <StackPanel Orientation="Horizontal" Margin="0,0,0,6">
-                                        <TextBlock LineHeight="20" Foreground="{DynamicResource PrimaryTextBrush}" Text="本地端口:" FontSize="14" Margin="10,0,6,0" VerticalAlignment="Center"/>
-                                        <TextBox Text="25565" x:Name="Create_LocalPort" MinWidth="100"/>
-                                    </StackPanel>
-                                    <StackPanel Orientation="Horizontal" Margin="0,0,0,6">
-                                        <TextBlock LineHeight="20" Foreground="{DynamicResource PrimaryTextBrush}" Text="远程端口(留空随机):" FontSize="14" Margin="10,0,6,0" VerticalAlignment="Center"/>
-                                        <TextBox Text="" x:Name="Create_RemotePort" MinWidth="100"/>
-                                    </StackPanel>
-                                    <StackPanel Orientation="Horizontal" Margin="0,0,0,6">
-                                        <TextBlock LineHeight="20" Foreground="{DynamicResource PrimaryTextBrush}" Text="网络协议:" FontSize="14" Margin="10,0,6,0" VerticalAlignment="Center"/>
-                                        <hc:ComboBox SelectedIndex="0" MinWidth="80" x:Name="Create_Protocol">
-                                            <ComboBoxItem Content="tcp"/>
-                                            <ComboBoxItem Content="udp"/>
-                                            <ComboBoxItem Content="http"/>
-                                            <ComboBoxItem Content="https"/>
-                                        </hc:ComboBox>
-                                    </StackPanel>
-                                    <StackPanel Orientation="Horizontal" Margin="0,0,0,6">
-                                        <TextBlock LineHeight="20" Foreground="{DynamicResource PrimaryTextBrush}" Text="绑定域名(不会别写):" FontSize="14" Margin="10,0,6,0" VerticalAlignment="Center"/>
-                                        <TextBox Text="" x:Name="Create_BindDomain" MinWidth="100"/>
-                                    </StackPanel>
-                                </WrapPanel>
-                            </StackPanel>
-                        </hc:Card>
-                    </StackPanel>
-                </Grid>
+                <StackPanel Grid.Row="0">
+                    <hc:Card>
+                        <StackPanel Margin="3" HorizontalAlignment="Left">
+                            <Label Content="节点信息" BorderThickness="0" FontSize="16" FontWeight="Bold" HorizontalAlignment="Left"/>
+                            <TextBlock x:Name="NodeTips" LineHeight="20" Foreground="{DynamicResource PrimaryTextBrush}" Text="选择一个节点才知道呀~" FontSize="14" HorizontalAlignment="Left" Margin="10,0,0,0"/>
+                        </StackPanel>
+                    </hc:Card>
+                    <hc:Card Margin="0,3,0,0">
+                        <StackPanel Margin="3">
+                            <Label Content="填写隧道参数" BorderThickness="0" FontSize="16" FontWeight="Bold" HorizontalAlignment="Left"/>
+                            <WrapPanel>
+                                <StackPanel Orientation="Horizontal" Margin="0,0,0,6">
+                                    <TextBlock LineHeight="20" Foreground="{DynamicResource PrimaryTextBrush}" Text="隧道名称(英文):" FontSize="14" Margin="10,0,6,0" VerticalAlignment="Center"/>
+                                    <TextBox Text="MySakuraFrp" x:Name="Create_Name" MinWidth="100"/>
+                                </StackPanel>
+                                <StackPanel Orientation="Horizontal" Margin="0,0,0,6">
+                                    <TextBlock LineHeight="20" Foreground="{DynamicResource PrimaryTextBrush}" Text="本地IP:" FontSize="14" Margin="10,0,6,0" VerticalAlignment="Center"/>
+                                    <TextBox Text="127.0.0.1" x:Name="Create_LocalIP" MinWidth="100"/>
+                                </StackPanel>
+                                <StackPanel Orientation="Horizontal" Margin="0,0,0,6">
+                                    <TextBlock LineHeight="20" Foreground="{DynamicResource PrimaryTextBrush}" Text="本地端口:" FontSize="14" Margin="10,0,6,0" VerticalAlignment="Center"/>
+                                    <TextBox Text="25565" x:Name="Create_LocalPort" MinWidth="100"/>
+                                </StackPanel>
+                                <StackPanel Orientation="Horizontal" Margin="0,0,0,6">
+                                    <TextBlock LineHeight="20" Foreground="{DynamicResource PrimaryTextBrush}" Text="远程端口(留空随机):" FontSize="14" Margin="10,0,6,0" VerticalAlignment="Center"/>
+                                    <TextBox Text="" x:Name="Create_RemotePort" MinWidth="100"/>
+                                </StackPanel>
+                                <StackPanel Orientation="Horizontal" Margin="0,0,0,6">
+                                    <TextBlock LineHeight="20" Foreground="{DynamicResource PrimaryTextBrush}" Text="网络协议:" FontSize="14" Margin="10,0,6,0" VerticalAlignment="Center"/>
+                                    <hc:ComboBox SelectedIndex="0" MinWidth="80" x:Name="Create_Protocol">
+                                        <ComboBoxItem Content="tcp"/>
+                                        <ComboBoxItem Content="udp"/>
+                                        <ComboBoxItem Content="http"/>
+                                        <ComboBoxItem Content="https"/>
+                                    </hc:ComboBox>
+                                </StackPanel>
+                                <StackPanel Orientation="Horizontal" Margin="0,0,0,6">
+                                    <TextBlock LineHeight="20" Foreground="{DynamicResource PrimaryTextBrush}" Text="绑定域名(不会别写):" FontSize="14" Margin="10,0,6,0" VerticalAlignment="Center"/>
+                                    <TextBox Text="" x:Name="Create_BindDomain" MinWidth="100"/>
+                                </StackPanel>
+                            </WrapPanel>
+                        </StackPanel>
+                    </hc:Card>
+                </StackPanel>
                 <Grid Grid.Row="1">
-                    <Grid>
-                        <Grid.ColumnDefinitions>
-                            <ColumnDefinition Width="*"/>
-                            <ColumnDefinition Width="*"/>
-                        </Grid.ColumnDefinitions>
-                        <Button Content="返回" HorizontalAlignment="Stretch" Grid.Column="0" Margin="0,0,10,0" MinHeight="38" FontSize="18" x:Name="Create_BackBtn" Click="Create_BackBtn_Click"/>
-                        <Button Content="确定创建" HorizontalAlignment="Stretch" Grid.Column="1" Style="{DynamicResource ButtonPrimary}" MinHeight="38" FontSize="18" x:Name="Create_OKBtn" Click="Create_OKBtn_Click"/>
-                    </Grid>
+                    <Grid.ColumnDefinitions>
+                        <ColumnDefinition Width="*"/>
+                        <ColumnDefinition Width="*"/>
+                    </Grid.ColumnDefinitions>
+                    <Button Content="返回" HorizontalAlignment="Stretch" Grid.Column="0" Margin="0,0,10,0" MinHeight="38" FontSize="18" x:Name="Create_BackBtn" Click="Create_BackBtn_Click"/>
+                    <Button Content="确定创建" HorizontalAlignment="Stretch" Grid.Column="1" Style="{DynamicResource ButtonPrimary}" MinHeight="38" FontSize="18" x:Name="Create_OKBtn" Click="Create_OKBtn_Click"/>
                 </Grid>
             </Grid>
         </Grid>
@@ -134,65 +129,51 @@
                         </Grid.ColumnDefinitions>
                         <Button Content="删除所选隧道" x:Name="Del_Tunnel" Style="{DynamicResource ButtonDanger}" Grid.Column="0" HorizontalAlignment="Stretch" Margin="0,0,3,0" Click="Del_Tunnel_Click" />
                         <Button Content="刷新" x:Name="RefreshBtn"  Style="{StaticResource ButtonPrimary}" HorizontalAlignment="Stretch" Grid.Column="1" Margin="3,0,0,0" Click="RefreshBtn_Click"/>
-
                     </Grid>
-
                 </Grid>
-                <Grid Grid.Column="1" Margin="10,0,0,0" >
-                    <StackPanel>
-                        <hc:Card>
-                            <Grid>
-                                <Grid.ColumnDefinitions>
-                                    <ColumnDefinition Width="*"/>
-                                    <ColumnDefinition Width="auto"/>
-                                </Grid.ColumnDefinitions>
-                                <StackPanel Margin="3" Grid.Column="0" HorizontalAlignment="Left">
-                                    <Label Content="用户信息" BorderThickness="0" FontSize="16" FontWeight="Bold" HorizontalAlignment="Left"/>
-                                    <TextBlock x:Name="UserInfo" LineHeight="20" Foreground="{DynamicResource PrimaryTextBrush}" Text="Loadings······" FontSize="14" HorizontalAlignment="Left" Margin="10,0,0,0"/>
-                                </StackPanel>
-                                <StackPanel Grid.Column="1" Margin="0,5,8,5" >
-                                    <Button Content="打开官网" x:Name="OpenWeb" Margin="0,0,0,3" Style="{DynamicResource ButtonPrimary}" HorizontalAlignment="Stretch" Click="OpenWeb_Click" />
-                                    <Button Content="退出登录" x:Name="ExitBtn" Margin="0,3,0,0" Style="{StaticResource ButtonDanger}" HorizontalAlignment="Stretch" Click="ExitBtn_Click" />
-                                </StackPanel>
-                            </Grid>
-                        </hc:Card>
-                        <hc:Card Margin="0,5,0,0">
-                            <StackPanel Margin="3,3,3,6" HorizontalAlignment="Left">
-                                <Label Content="隧道信息" BorderThickness="0" FontSize="16" FontWeight="Bold" HorizontalAlignment="Left"/>
-                                <TextBlock x:Name="TunnelInfo_Text" LineHeight="20" Foreground="{DynamicResource PrimaryTextBrush}" Text="请选择一条隧道~" FontSize="14" HorizontalAlignment="Left" Margin="10,0,0,0"/>
-                                <StackPanel Orientation="Horizontal" Margin="0,2,0,0">
-                                    <Label Content="本地IP:" BorderThickness="0" FontSize="14" HorizontalAlignment="Left"/>
-                                    <TextBox MinWidth="100" x:Name="LocalIp" IsReadOnly="True"/>
-                                    <Label Content="本地端口:" BorderThickness="0" FontSize="14" HorizontalAlignment="Left" Margin="10,0,0,0"/>
-                                    <TextBox MinWidth="100" x:Name="LocalPort" IsReadOnly="True"/>
-                                </StackPanel>
+                <StackPanel Grid.Column="1" Margin="10,0,0,0" >
+                    <hc:Card>
+                        <Grid>
+                            <Grid.ColumnDefinitions>
+                                <ColumnDefinition Width="*"/>
+                                <ColumnDefinition Width="auto"/>
+                            </Grid.ColumnDefinitions>
+                            <StackPanel Margin="3" Grid.Column="0" HorizontalAlignment="Left">
+                                <Label Content="用户信息" BorderThickness="0" FontSize="16" FontWeight="Bold" HorizontalAlignment="Left"/>
+                                <TextBlock x:Name="UserInfo" LineHeight="20" Foreground="{DynamicResource PrimaryTextBrush}" Text="Loadings······" FontSize="14" HorizontalAlignment="Left" Margin="10,0,0,0"/>
                             </StackPanel>
-                        </hc:Card>
-                    </StackPanel>
-                </Grid>
+                            <StackPanel Grid.Column="1" Margin="0,5,8,5" >
+                                <Button Content="打开官网" x:Name="OpenWeb" Margin="0,0,0,3" Style="{DynamicResource ButtonPrimary}" HorizontalAlignment="Stretch" Click="OpenWeb_Click" />
+                                <Button Content="退出登录" x:Name="ExitBtn" Margin="0,3,0,0" Style="{StaticResource ButtonDanger}" HorizontalAlignment="Stretch" Click="ExitBtn_Click" />
+                            </StackPanel>
+                        </Grid>
+                    </hc:Card>
+                    <hc:Card Margin="0,5,0,0">
+                        <StackPanel Margin="3,3,3,6" HorizontalAlignment="Left">
+                            <Label Content="隧道信息" BorderThickness="0" FontSize="16" FontWeight="Bold" HorizontalAlignment="Left"/>
+                            <TextBlock x:Name="TunnelInfo_Text" LineHeight="20" Foreground="{DynamicResource PrimaryTextBrush}" Text="请选择一条隧道~" FontSize="14" HorizontalAlignment="Left" Margin="10,0,0,0"/>
+                            <StackPanel Orientation="Horizontal" Margin="0,2,0,0">
+                                <Label Content="本地IP:" BorderThickness="0" FontSize="14" HorizontalAlignment="Left"/>
+                                <TextBox MinWidth="100" x:Name="LocalIp" IsReadOnly="True"/>
+                                <Label Content="本地端口:" BorderThickness="0" FontSize="14" HorizontalAlignment="Left" Margin="10,0,0,0"/>
+                                <TextBox MinWidth="100" x:Name="LocalPort" IsReadOnly="True"/>
+                            </StackPanel>
+                        </StackPanel>
+                    </hc:Card>
+                </StackPanel>
             </Grid>
             <Grid Grid.Row="1">
                 <Grid.ColumnDefinitions>
                     <ColumnDefinition Width="*"/>
                     <ColumnDefinition Width="auto"/>
                 </Grid.ColumnDefinitions>
-                <Grid Grid.Column="0" Margin="10,10,10,10">
-                    <Grid.ColumnDefinitions>
-                        <ColumnDefinition Width="auto"/>
-                        <ColumnDefinition Width="*"/>
-                    </Grid.ColumnDefinitions>
-
-                    <Border VerticalAlignment="Top" Grid.Column="1" Style="{StaticResource BorderTipPrimary}">
-                        <TextBlock x:Name="Notice" Text="本服务由SakuraFrp提供&#13;MSL仅提供接入，其服务内容均与MSL无关" Foreground="{DynamicResource PrimaryTextBrush}" FontSize="16"/>
-                    </Border>
-                </Grid>
-                <Grid Grid.Column="1" Margin="0,10,10,10">
-                    <StackPanel Orientation="Horizontal">
-
-                        <Button Content="新建隧道" MinWidth="100" MinHeight="60" Margin="0,0,8,0" FontSize="16" x:Name="CreateBtn" Click="CreateBtn_Click" />
-                        <Button Content="确定" MinWidth="100" MinHeight="60" Style="{StaticResource ButtonPrimary}" FontSize="16" x:Name="OKBtn" Click="OKBtn_Click" />
-                    </StackPanel>
-                </Grid>
+                <Border Grid.Column="0" Margin="10" VerticalAlignment="Stretch" Style="{StaticResource BorderTipPrimary}">
+                    <TextBlock x:Name="Notice" Text="本服务由SakuraFrp提供&#13;MSL仅提供接入，其服务内容均与MSL无关" VerticalAlignment="Center" Foreground="{DynamicResource PrimaryTextBrush}" FontSize="16"/>
+                </Border>
+                <StackPanel Grid.Column="1" Margin="0,10,10,10" Orientation="Horizontal">
+                    <Button Content="新建隧道" MinWidth="100" MinHeight="60" Margin="0,0,8,0" FontSize="16" x:Name="CreateBtn" Click="CreateBtn_Click" />
+                    <Button Content="确定" MinWidth="100" MinHeight="60" Style="{StaticResource ButtonPrimary}" FontSize="16" x:Name="OKBtn" Click="OKBtn_Click" />
+                </StackPanel>
             </Grid>
         </Grid>
         <Grid x:Name="LoginGrid" Visibility="Collapsed">
@@ -205,7 +186,6 @@
                 <CheckBox Content="保存登录状态（风险自负哦~）" HorizontalAlignment="Center" Margin="0,10,0,0" x:Name="SaveToken"/>
                 <TextBlock Text="如果您不知道什么是访问密钥，请前往Sakura用户中心寻找" HorizontalAlignment="Center"  VerticalAlignment="Center"  FontSize="13" Foreground="{DynamicResource PrimaryTextBrush}" Margin="0,10,0,0"/>
             </StackPanel>
-
         </Grid>
     </Grid>
 </Page>

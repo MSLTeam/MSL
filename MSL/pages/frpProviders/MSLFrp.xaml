@@ -23,31 +23,32 @@
                     <RowDefinition Height="Auto"/>
                     <RowDefinition/>
                 </Grid.RowDefinitions>
-                <Label Grid.Row="0" Content="节点列表：（选择一个节点）" HorizontalAlignment="Left" VerticalAlignment="Top" FontSize="18" Background="{x:Null}" BorderBrush="{x:Null}" Padding="0" FontWeight="Bold"/>
+                <Label Grid.Row="0" Content="节点列表" HorizontalAlignment="Left" VerticalAlignment="Top" FontSize="18" Background="{x:Null}" BorderBrush="{x:Null}" Padding="0" FontWeight="Bold"/>
                 <ListBox Grid.Row="1" x:Name="serversList" hc:ScrollViewer.HorizontalScrollBarVisibility="Auto" SelectionChanged="serversList_SelectionChanged" SelectionMode="Single" Margin="0,5,10,0"/>
             </Grid>
             <ScrollViewer Grid.Column="1" >
-                <hc:UniformSpacingPanel Spacing="5" Orientation="Vertical" VerticalAlignment="Center">
+                <hc:UniformSpacingPanel Spacing="5" Orientation="Vertical" VerticalAlignment="Top">
                     <hc:UniformSpacingPanel.Resources>
-                        <Style TargetType="Label">
+                        <Style TargetType="Label" BasedOn="{StaticResource LabelDefault}">
                             <Setter Property="HorizontalAlignment" Value="Left"/>
                             <Setter Property="HorizontalContentAlignment" Value="Left"/>
                             <Setter Property="Background" Value="Transparent"/>
                             <Setter Property="FontSize" Value="14"/>
                             <Setter Property="BorderThickness" Value="0"/>
-                            <Setter Property="Padding" Value="3"/>
+                            <Setter Property="Padding" Value="0"/>
                         </Style>
                     </hc:UniformSpacingPanel.Resources>
-                    <TextBlock x:Name="lab1" TextWrapping="Wrap" FontSize="14" Foreground="{DynamicResource PrimaryTextBrush}" Text="输入本地端口&#xA;(Java版默认25565,基岩版默认19132,双协议用|分割)："/>
+                    <Label Content="Frpc配置" HorizontalAlignment="Left" VerticalAlignment="Top" FontSize="18" Background="Transparent" BorderThickness="0" Padding="0" FontWeight="Bold"/>
+                    <Label x:Name="lab1" Padding="0,3,0,3" Content="输入本地端口&#xA;(Java版默认25565,基岩版默认19132,双协议用|分割)："/>
                     <TextBox x:Name="portBox" Text="25565"/>
-                    <Label x:Name="lab2" Content="输入账号（QQ号）："/>
+                    <Label x:Name="lab2" Margin="0,5,0,0" Content="输入账号（QQ号）："/>
                     <TextBox x:Name="accountBox"/>
                     <hc:UniformSpacingPanel  x:Name="paidPasswordPannel" Spacing="5" Orientation="Vertical" Visibility="Collapsed">
                         <Label Content="输入您的付费密码：" />
                         <hc:PasswordBox x:Name="passwordBox" HorizontalAlignment="Left" ShowEyeButton="True"/>
                         <CheckBox x:Name="rememberPasswd" Content="记住账号密码" HorizontalAlignment="Left" IsChecked="True"/>
                     </hc:UniformSpacingPanel>
-                    <StackPanel Orientation="Horizontal">
+                    <StackPanel Margin="0,5,0,0" Orientation="Horizontal">
                         <Label Content="传输协议："/>
                         <ComboBox x:Name="frpcType" HorizontalAlignment="Left" SelectionChanged="frpcType_SelectionChanged">
                             <ComboBoxItem IsSelected="True" Content="TCP（Java版）"/>
@@ -55,7 +56,7 @@
                             <ComboBoxItem Content="TCP和UDP双协议（互通服用）"/>
                         </ComboBox>
                     </StackPanel>
-                    <StackPanel x:Name="paidProtocolPannel" Orientation="Horizontal" Visibility="Collapsed">
+                    <StackPanel Margin="0,5,0,0" x:Name="paidProtocolPannel" Orientation="Horizontal" Visibility="Collapsed">
                         <Label x:Name="paidProtocolLabel" Content="付费节点加速协议："/>
                         <ComboBox x:Name="usePaidProtocol" HorizontalAlignment="Left">
                             <ComboBoxItem IsSelected="True" Content="Quic加速协议"/>
@@ -63,7 +64,7 @@
                             <ComboBoxItem Content="默认（无加速协议）"/>
                         </ComboBox>
                     </StackPanel>
-                    <CheckBox x:Name="enableCompression" Content="启用数据压缩" HorizontalAlignment="Left" IsChecked="True"/>
+                    <CheckBox Margin="0,5,0,5" x:Name="enableCompression" Content="启用数据压缩" HorizontalAlignment="Left" IsChecked="True"/>
                 </hc:UniformSpacingPanel>
             </ScrollViewer>
         </Grid>
