@@ -700,7 +700,7 @@
                                     </Grid.ColumnDefinitions>
                                     <StackPanel Grid.Column="0" Orientation="Horizontal">
                                         <Label Content="上次执行结果：" FontSize="16" BorderThickness="0" Background="Transparent"/>
-                                        <TextBlock x:Name="timerCmdout" Text="无" FontSize="14" VerticalAlignment="Center" TextWrapping="Wrap"/>
+                                        <TextBlock x:Name="timerCmdout" Text="无" FontSize="14" Foreground="{DynamicResource PrimaryTextBrush}" VerticalAlignment="Center" TextWrapping="Wrap"/>
                                     </StackPanel>
                                     <Button Grid.Column="1" x:Name="startTimercmd" Height="36" Width="120" Content="启动定时任务" Click="startTimercmd_Click" Margin="5,0,0,0"/>
                                 </Grid>
