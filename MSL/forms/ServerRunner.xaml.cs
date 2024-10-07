@@ -4086,7 +4086,7 @@ namespace MSL
                 {
                     startTimercmd.Content = "启动定时任务";
                 }
-                timerCmdout.Content = "无";
+                timerCmdout.Text = "无";
                 timercmdTime.Text = taskTimers[taskID[tasksList.SelectedIndex]].ToString();
                 timercmdCmd.Text = taskCmds[taskID[tasksList.SelectedIndex]];
             }
@@ -4096,11 +4096,40 @@ namespace MSL
                 timercmdCmd.Text = "";
             }
         }
+
         private void timercmdTime_TextChanged(object sender, TextChangedEventArgs e)
         {
-            if (tasksList.SelectedIndex != -1)
+            if (IsLoaded && tasksList.SelectedIndex != -1 && TaskUnit.SelectedIndex != -1 && !string.IsNullOrEmpty(timercmdTime.Text))
             {
-                taskTimers[taskID[tasksList.SelectedIndex]] = int.Parse(timercmdTime.Text);
+                SwitchTaskTimerUnit();
+            }
+        }
+
+        private void TaskUnit_SelectionChanged(object sender, SelectionChangedEventArgs e)
+        {
+            if (IsLoaded && tasksList.SelectedIndex != -1 && TaskUnit.SelectedIndex != -1 && !string.IsNullOrEmpty(timercmdTime.Text))
+            {
+                SwitchTaskTimerUnit();
+            }
+        }
+
+        private void SwitchTaskTimerUnit()
+        {
+            try
+            {
+                switch (TaskUnit.SelectedIndex)
+                {
+                    case 0:
+                        taskTimers[taskID[tasksList.SelectedIndex]] = int.Parse(timercmdTime.Text) * 1000;
+                        break;
+                    case 1:
+                        taskTimers[taskID[tasksList.SelectedIndex]] = int.Parse(timercmdTime.Text);
+                        break;
+                }
+            }
+            catch
+            {
+                MagicShow.ShowMsgDialog(this, "出现错误，请检查您所填写的内容是否正确！", "错误");
             }
         }
 
@@ -4111,6 +4140,7 @@ namespace MSL
                 taskCmds[taskID[tasksList.SelectedIndex]] = timercmdCmd.Text;
             }
         }
+
         private void startTimercmd_Click(object sender, RoutedEventArgs e)
         {
             try
@@ -4130,7 +4160,7 @@ namespace MSL
             }
             catch (Exception a)
             {
-                timerCmdout.Content = "执行失败，" + a.Message;
+                timerCmdout.Text = "执行失败，" + a.Message;
             }
         }
 
@@ -4156,12 +4186,12 @@ namespace MSL
                                 }
                                 if (tasksList.SelectedIndex != -1 && taskID[tasksList.SelectedIndex] == id)
                                 {
-                                    timerCmdout.Content = "执行成功  时间：" + DateTime.Now.ToString("F");
+                                    timerCmdout.Text = "执行成功  时间：" + DateTime.Now.ToString("F");
                                 }
                             }
                             else
                             {
-                                timerCmdout.Content = "服务器未开启  时间：" + DateTime.Now.ToString("F");
+                                timerCmdout.Text = "服务器未开启  时间：" + DateTime.Now.ToString("F");
                             }
                         });
                     }
@@ -4171,11 +4201,11 @@ namespace MSL
                         {
                             if (tasksList.SelectedIndex != -1 && taskID[tasksList.SelectedIndex] == id)
                             {
-                                timerCmdout.Content = "执行失败  时间：" + DateTime.Now.ToString("F");
+                                timerCmdout.Text = "执行失败  时间：" + DateTime.Now.ToString("F");
                             }
                         });
                     }
-                    Thread.Sleep(timer * 1000);
+                    Thread.Sleep(timer);
                 }
             }
             catch
