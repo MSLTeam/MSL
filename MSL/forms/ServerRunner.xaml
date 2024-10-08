@@ -684,7 +684,7 @@
                                     </Grid.ColumnDefinitions>
                                     <StackPanel Grid.Column="0" Orientation="Horizontal">
                                         <Label Content="周期：" FontSize="16" Height="32" BorderThickness="0" Background="Transparent" Width="60"/>
-                                        <TextBox x:Name="timercmdTime" Width="100" Height="32" TextChanged="timercmdTime_TextChanged"/>
+                                        <TextBox x:Name="timercmdTime" Width="100" Height="32" InputMethod.IsInputMethodEnabled="False" PreviewTextInput="NumberValidationTextBox" TextChanged="timercmdTime_TextChanged"/>
                                         <ComboBox x:Name="TaskUnit" FontSize="16" Height="32" SelectionChanged="TaskUnit_SelectionChanged">
                                             <ComboBoxItem Content="秒（s）" IsSelected="True"/>
                                             <ComboBoxItem Content="毫秒（ms）"/>
