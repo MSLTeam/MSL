@@ -5,6 +5,7 @@ using System;
 using System.Collections.Generic;
 using System.Diagnostics;
 using System.IO;
+using System.Linq;
 using System.Net.NetworkInformation;
 using System.Text;
 using System.Text.RegularExpressions;
@@ -160,12 +161,39 @@ namespace MSL.pages.frpProviders
             }
         }
 
+        public static bool IsValidQQFormat(string qq)
+        {
+            //6-10位
+            if (qq.Length < 6 || qq.Length > 10)
+            {
+                return false;
+            }
+
+            //数字？
+            if (!qq.All(char.IsDigit))
+            {
+                return false;
+            }
+
+            //全都是1-2个数字肯定是瞎写
+            if (qq.Distinct().Count() <= 2)
+            {
+                return false;
+            }
+
+            return true;
+        }
+
         private async void Button_Click(object sender, RoutedEventArgs e)
         {
             Window window = Window.GetWindow(Window.GetWindow(this));
             if (serversList.SelectedIndex == -1)
             {
                 MagicShow.ShowMsgDialog(window, "请确保您选择了一个节点！", "信息");
+                return;
+            }
+            if (!IsValidQQFormat(accountBox.Text)) {
+                MagicShow.ShowMsgDialog(window, "请填写正确的QQ号！", "错误");
                 return;
             }
             //MSL-FRP

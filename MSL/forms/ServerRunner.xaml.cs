@@ -491,6 +491,12 @@ namespace MSL
             return false;
         }
 
+        //检验输入合法性
+        private void NumberValidationTextBox(object sender, TextCompositionEventArgs e)
+        {
+            Regex regex = new Regex("[^0-9]+"); //匹配非数字
+            e.Handled = regex.IsMatch(e.Text);
+        }
         #region 仪表盘
 
         //////////////////
@@ -4399,5 +4405,7 @@ namespace MSL
             }
         }
         #endregion
+
+
     }
 }
