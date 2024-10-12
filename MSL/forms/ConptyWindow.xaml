@@ -11,8 +11,7 @@
     <Grid>
         <term:BasicTerminalControl x:Name="ConptyConsole" Margin="0,0,0,40" LogConPTYOutput="True" Win32InputMode="True" InputCapture="TabKey,DirectionKeys" >
             <term:BasicTerminalControl.Resources>
-                <Style TargetType="ScrollBar" BasedOn="{StaticResource {x:Type ScrollBar}}">
-                    <Setter Property="Opacity" Value="0.7"/>
+                <Style TargetType="ScrollBar" BasedOn="{StaticResource ScrollBarBaseStyle}">
                 </Style>
             </term:BasicTerminalControl.Resources>
         </term:BasicTerminalControl>

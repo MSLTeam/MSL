@@ -937,8 +937,8 @@ namespace MSL.pages
                 var serverVersions = await TryGetServerVersions(coreType.ToString());
                 if (serverVersions == null)
                 {
-                    MagicShow.ShowMsgDialog(Window.GetWindow(this), "获取服务端失败！请重试！", "错误");
-                    return;
+                    Console.WriteLine("获取" + coreType + "服务端失败！继续下一个……");
+                    continue;
                 }
 
                 foreach (var version in serverVersions)

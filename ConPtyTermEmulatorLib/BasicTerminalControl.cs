@@ -19,7 +19,7 @@ namespace ConPtyTermEmulatorLib
             SetKBCaptureOptions();
         }
         [Flags]
-        [System.ComponentModel.TypeConverter(typeof(System.ComponentModel.EnumConverter))]
+        [TypeConverter(typeof(EnumConverter))]
         public enum INPUT_CAPTURE { None = 1 << 0, TabKey = 1 << 1, DirectionKeys = 1 << 2 };
 
 
@@ -168,15 +168,12 @@ namespace ConPtyTermEmulatorLib
         {
             if (ConPTYTerm == null)
                 return;
+            var cmd = StartupCommandLine;//thread safety for dp
+            var dir = WorkingDirectory;
+            var term = ConPTYTerm;
+            var logOutput = LogConPTYOutput;
+            Task.Run(() => term.Start(cmd, dir, logOutput));
             ConPTYTerm.TermReady += Term_TermReady;
-            this.Dispatcher.Invoke(() =>
-            {
-                var cmd = StartupCommandLine;//thread safety for dp
-                var dir = WorkingDirectory;
-                var term = ConPTYTerm;
-                var logOutput = LogConPTYOutput;
-                Task.Run(() => term.Start(cmd, dir, logOutput));
-            });
         }
 
         public void ResetTerm()

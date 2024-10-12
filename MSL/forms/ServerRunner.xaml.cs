@@ -431,12 +431,15 @@ namespace MSL
             {
                 return;
             }
-            if (conptyWindow != null && conptyWindow.Visibility == Visibility.Visible)
+            if (conptyWindow != null && conptyWindow.Visibility == Visibility.Visible && TabCtrl.SelectedIndex != 1)
             {
+                conptyWindow.Visibility = Visibility.Collapsed;
                 ConptyPopUp.IsOpen = false;
                 Growl.SetGrowlParent(ConptyGrowlPanel, false);
+                // 下面三行别动，就是这么写的，要不然会出问题
                 Growl.SetGrowlParent(GrowlPanel, true);
-                conptyWindow.Visibility = Visibility.Collapsed;
+                Growl.SetGrowlParent(GrowlPanel, false);
+                Growl.SetGrowlParent(GrowlPanel, true);
             }
             switch (TabCtrl.SelectedIndex)
             {
@@ -797,7 +800,8 @@ namespace MSL
         // 更新子窗口位置
         private void UpdateChildWindowPosition()
         {
-            conptyWindow.ConptyConsole.ConPTYTerm.CanOutLog = false;
+            //conptyWindow.ConptyConsole.ConPTYTerm.CanOutLog = false;
+            ConptyCanOutLog = false;
             if (this.WindowState == WindowState.Maximized)
             {
                 // 获取屏幕工作区的宽度和高度
@@ -1309,12 +1313,20 @@ namespace MSL
         }
         #endregion
 
+        private bool ConptyCanOutLog = true;
         private string tempLogs;
         private void ProcessOutputEvent(string msg)
         {
+            if (!ConptyCanOutLog)
+            {
+                ConptyCanOutLog=true;
+                return;
+            }
             //MessageBox.Show(msg);
+            /*
             if (msg.Contains("\x1B[15;68H"))
             {
+                MessageBox.Show("111");
                 tempLogs += msg;
                 //MessageBox.Show(tempLogs);
                 Dispatcher.Invoke(() =>
@@ -1334,12 +1346,21 @@ namespace MSL
                 }
                 tempLogs = msg;
             }
+            */
+            if (tempLogs != null)
+            {
+                Dispatcher.Invoke(() =>
+                {
+                    ProcessOutput(tempLogs);
+                });
+            }
+            tempLogs = msg;
         }
 
         private void ProcessOutput(string msg)
         {
             Paragraph p = new Paragraph();
-            msg = ProcessOutLogAnsiChar(msg);
+            //msg = ProcessOutLogAnsiChar(msg);
             //MessageBox.Show(msg);
             if (msg.Contains("\n"))
             {
@@ -1877,6 +1898,7 @@ namespace MSL
         }
 
         #region ConptyExitEvent
+        /*
         private string CleanAnsiEscapeCodes(string input)
         {
             string pattern = @"\x1B\[[0-9;]*[A-Za-z]";
@@ -1889,6 +1911,7 @@ namespace MSL
             str = CleanAnsiEscapeCodes(str);
             return str;
         }
+        */
 
         private void OnTermExited(object sender, EventArgs e)
         {
@@ -1902,13 +1925,14 @@ namespace MSL
                 if (solveProblemSystem)
                 {
                     solveProblemSystem = false;
-                    var logs = conptyWindow.ConptyConsole.ConPTYTerm.ConsoleOutputLog.ToString();
+                    /*
                     logs = ProcessOutLogAnsiChar(logs);
                     if (logs.Contains("\r"))
                     {
                         logs = logs.Replace("\r", string.Empty);
                     }
-                    string[] strings = logs.Split('\n');
+                    */
+                    string[] strings = (conptyWindow.ConptyConsole.ConPTYTerm.GetConsoleText()).Split('\n');
                     foreach (var log in strings)
                     {
                         //MessageBox.Show(log);
@@ -3835,52 +3859,72 @@ namespace MSL
 
         #region 上传日志到mclo.gs
 
-        private void shareLog_Click(object sender, RoutedEventArgs e)
+        private async void shareLog_Click(object sender, RoutedEventArgs e)
         {
+            shareLog.IsEnabled = false;
+            Growl.Info("请稍等……");
             string logs = string.Empty;
-            if (useConpty.IsChecked == true)
+            string uploadMode = "A";
+            try
             {
-                if (conptyWindow != null)
+                if (File.Exists(Rserverbase + "\\logs\\latest.log"))
                 {
-                    logs = ProcessOutLogAnsiChar(conptyWindow.ConptyConsole.ConPTYTerm.ConsoleOutputLog.ToString());
+                    FileStream fileStream = new FileStream(Rserverbase + "\\logs\\latest.log", FileMode.Open, FileAccess.Read, FileShare.ReadWrite);
+                    StreamReader streamReader = new StreamReader(fileStream);
+                    logs = streamReader.ReadToEnd();
+                    fileStream.Dispose();
+                    streamReader.Dispose();
+                }
+                else
+                {
+                    throw new Exception();
                 }
             }
-            else
+            catch
             {
-                TextRange textRange = new TextRange(outlog.Document.Blocks.FirstBlock.ContentStart, outlog.Document.Blocks.LastBlock.ContentEnd);
-                logs = textRange.Text;
+                if (useConpty.IsChecked == true)
+                {
+                    if (conptyWindow != null)
+                    {
+                        uploadMode = "B";
+                        logs = conptyWindow.ConptyConsole.ConPTYTerm.GetConsoleText();
+                    }
+                }
+                else
+                {
+                    uploadMode = "C";
+                    TextRange textRange = new TextRange(outlog.Document.Blocks.FirstBlock.ContentStart, outlog.Document.Blocks.LastBlock.ContentEnd);
+                    logs = textRange.Text;
+                }
             }
+
             if (string.IsNullOrEmpty(logs))
             {
+                Growl.Info("日志为空，请重试！");
+                shareLog.IsEnabled = true;
                 return;
             }
+            Growl.Info("正在上传，模式 " + uploadMode);
             //启动线程上传日志
-            Task.Run(() =>
-            {
-                UploadLogs(logs);
-            });
-            Growl.Info("正在上传···");
+            await UploadLogs(logs);
+            shareLog.IsEnabled = true;
         }
 
-        private void UploadLogs(string logs)
+        private async Task UploadLogs(string logs)
         {
-            string path = "1/log";
-            string customUrl = "https://api.mclo.gs";
+            string customUrl = "https://api.mclo.gs/1/log";
             int contentType = 2;
             //请求内容
             string parameterData = "content=" + logs;
 
-            string response = HttpService.Post(path, contentType, parameterData, customUrl);
+            var response = await HttpService.PostAsync(customUrl, contentType, parameterData);
             //解析返回的东东
-            var jsonResponse = JsonConvert.DeserializeObject<dynamic>(response);
+            var jsonResponse = JsonConvert.DeserializeObject<dynamic>(response.HttpResponseContent.ToString());
 
-            if (jsonResponse.success == true)
+            if (response.HttpResponseCode == HttpStatusCode.OK && jsonResponse.success == true)
             {
-                Dispatcher.Invoke(() =>
-                {
-                    Clipboard.Clear();
-                    Clipboard.SetText(jsonResponse.url.ToString());
-                });
+                Clipboard.Clear();
+                Clipboard.SetText(jsonResponse.url.ToString());
                 Growl.Success("日志地址: " + jsonResponse.url + "\n已经复制到剪贴板啦！\n如果遇到问题且不会看日志,\n请把链接粘贴给别人寻求帮助，\n记得要详细描述你的问题哦！");
             }
             else
@@ -3890,7 +3934,7 @@ namespace MSL
         }
 
         //上传Forge安装日志
-        private void forgeInstallLogUpload_Click(object sender, RoutedEventArgs e)
+        private async void forgeInstallLogUpload_Click(object sender, RoutedEventArgs e)
         {
             string logsContent = "";
             try
@@ -3910,10 +3954,7 @@ namespace MSL
                 else
                 {
                     //启动线程上传日志
-                    Task.Run(() =>
-                    {
-                        UploadLogs(logsContent);
-                    });
+                    await UploadLogs(logsContent);
                     Growl.Info("正在上传···");
                 }
             }

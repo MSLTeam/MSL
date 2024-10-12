@@ -4,7 +4,6 @@ using System;
 using System.IO;
 using System.Text;
 using System.Text.RegularExpressions;
-using System.Threading;
 using System.Threading.Tasks;
 using Windows.Win32;
 
@@ -15,8 +14,7 @@ namespace ConPtyTermEmulatorLib
     /// </summary>
     public class Term : ITerminalConnection
     {
-
-        private static bool IsDesignMode = System.ComponentModel.DesignerProperties.GetIsInDesignMode(new System.Windows.DependencyObject());
+        //private static bool IsDesignMode = System.ComponentModel.DesignerProperties.GetIsInDesignMode(new System.Windows.DependencyObject());
         private SafeFileHandle _consoleInputPipeWriteHandle;
         private StreamWriter _consoleInputWriter;
         private BinaryWriter _consoleInputWriterB;
@@ -27,11 +25,12 @@ namespace ConPtyTermEmulatorLib
         }
         private bool USE_BINARY_WRITER;
 
-        public bool CanOutLog { get; set; }
+        //public bool CanOutLog { get; set; }
         public StringBuilder ConsoleOutputLog { get; private set; }
         private static Regex NewlineReduce = new(@"\n\s*?\n\s*?[\s]+", RegexOptions.Singleline);
         public static Regex colorStrip = new(@"((\x1B\[\??[0-9;]*[a-zA-Z])|\uFEFF|\u200B|\x1B\]0;|[\a\b])", RegexOptions.Compiled | RegexOptions.ExplicitCapture); //also strips BOM, bells, backspaces etc
         public string GetConsoleText(bool stripVTCodes = true) => NewlineReduce.Replace((stripVTCodes ? StripColors(ConsoleOutputLog.ToString()) : ConsoleOutputLog.ToString()).Replace("\r", ""), "\n\n").Trim();
+        private string GetLogText(string log,bool stripVTCodes = true) => NewlineReduce.Replace((stripVTCodes ? StripColors(log) : log).Replace("\r", ""), "\n\n").Trim();
 
         public static string StripColors(String str)
         {
@@ -96,9 +95,9 @@ namespace ConPtyTermEmulatorLib
                 OnClose(() => DisposeResources(process, pseudoConsole, outputPipe, inputPipe, _consoleInputWriter));
 
                 process.Process.WaitForExit();
+                TermProcIsRunning=false;
                 //WriteToUITerminal("Session Terminated".AsSpan());
-                TermProcIsRunning = false;
-                TheConsole.Dispose();
+                TheConsole?.Dispose();
                 CloseStdinToApp();
                 TermExited?.Invoke(this, EventArgs.Empty);
             }
@@ -111,8 +110,10 @@ namespace ConPtyTermEmulatorLib
         /// <param name="input">A string of characters to write to the console. Supports VT-100 codes.</param>
         public void WriteToTerm(ReadOnlySpan<char> input)
         {
+            /*
             if (IsDesignMode)
                 return;
+            */
             if (TheConsole.IsDisposed)
                 return;
             if (_consoleInputWriter == null && _consoleInputWriterB == null)
@@ -180,12 +181,13 @@ namespace ConPtyTermEmulatorLib
 
         public void Start()
         {
+            /*
             if (IsDesignMode)
             {
                 WriteToUITerminal("MyShell DesignMode:> Your command window content here\r\n".AsSpan());
                 return;
             }
-
+            */
             Task.Run(ReadOutputLoop);
         }
 
@@ -249,12 +251,14 @@ namespace ConPtyTermEmulatorLib
 
                     while ((state.readChars = reader.Read(tempBuffer, 0, tempBuffer.Length)) != 0)
                     {
+                        /*
                         if (!CanOutLog)
                         {
                             CanOutLog = true;
                             Thread.Sleep(50);
                             continue;
                         }
+                        */
                         tempBuffer.AsSpan(0, state.readChars).CopyTo(state.curBuffer);
 
                         var sendSpan = HandleRead(ref state);
@@ -267,8 +271,8 @@ namespace ConPtyTermEmulatorLib
                                 var str = sendSpan.ToString();
                                 WriteToUITerminal(str.AsSpan());
                                 ConsoleOutputLog?.Append(str);
-                                Console.WriteLine(str);
-                                OnOutputReceived?.Invoke(str);
+                                Console.WriteLine(GetLogText(str));
+                                OnOutputReceived?.Invoke(GetLogText(str));
                             }
                         }
                     }
@@ -323,7 +327,17 @@ namespace ConPtyTermEmulatorLib
         /// 
         /// </summary>
         /// <param name="fullReset">Means near all parameters of the term are reset to defaults rather than just clearing the screen</param>
-        public void ClearUITerminal(bool fullReset = false) => WriteToUITerminal((fullReset ? "\x001bc\x1b]104\x1b\\" : "\x1b[H\x1b[2J\u001b[3J").AsSpan());
+        public void ClearUITerminal(bool fullReset = false)
+        {
+            try
+            {
+                ConsoleOutputLog?.Clear();
+            }
+            finally
+            {
+                WriteToUITerminal((fullReset ? "\x001bc\x1b]104\x1b\\" : "\x1b[H\x1b[2J\u001b[3J").AsSpan());
+            }
+        }
 
 
         void ITerminalConnection.Close()
