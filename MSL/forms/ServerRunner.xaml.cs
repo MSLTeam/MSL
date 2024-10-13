@@ -490,13 +490,7 @@ namespace MSL
             }
             return false;
         }
-
-        //检验输入合法性
-        private void NumberValidationTextBox(object sender, TextCompositionEventArgs e)
-        {
-            Regex regex = new Regex("[^0-9]+"); //匹配非数字
-            e.Handled = regex.IsMatch(e.Text);
-        }
+        
         #region 仪表盘
 
         //////////////////
@@ -3871,37 +3865,31 @@ namespace MSL
             Growl.Info("请稍等……");
             string logs = string.Empty;
             string uploadMode = "A";
-            try
+            if (File.Exists(Rserverbase + "\\logs\\latest.log"))
             {
-                if (File.Exists(Rserverbase + "\\logs\\latest.log"))
+                FileStream fileStream = new FileStream(Rserverbase + "\\logs\\latest.log", FileMode.Open, FileAccess.Read, FileShare.ReadWrite);
+                StreamReader streamReader = new StreamReader(fileStream);
+                try
                 {
-                    FileStream fileStream = new FileStream(Rserverbase + "\\logs\\latest.log", FileMode.Open, FileAccess.Read, FileShare.ReadWrite);
-                    StreamReader streamReader = new StreamReader(fileStream);
                     logs = streamReader.ReadToEnd();
+                }
+                catch
+                {
+                    string[] strings = GetLogOtherPlan();
+                    uploadMode = strings[0];
+                    logs = strings[1];
+                }
+                finally
+                {
                     fileStream.Dispose();
                     streamReader.Dispose();
                 }
-                else
-                {
-                    throw new Exception();
-                }
             }
-            catch
+            else
             {
-                if (useConpty.IsChecked == true)
-                {
-                    if (conptyWindow != null)
-                    {
-                        uploadMode = "B";
-                        logs = conptyWindow.ConptyConsole.ConPTYTerm.GetConsoleText();
-                    }
-                }
-                else
-                {
-                    uploadMode = "C";
-                    TextRange textRange = new TextRange(outlog.Document.Blocks.FirstBlock.ContentStart, outlog.Document.Blocks.LastBlock.ContentEnd);
-                    logs = textRange.Text;
-                }
+                string[] strings = GetLogOtherPlan();
+                uploadMode = strings[0];
+                logs = strings[1];
             }
 
             if (string.IsNullOrEmpty(logs))
@@ -3910,13 +3898,55 @@ namespace MSL
                 shareLog.IsEnabled = true;
                 return;
             }
-            Growl.Info("正在上传，模式 " + uploadMode);
+            Growl.Info("正在上传，模式 " + uploadMode+"，请稍等……");
             //启动线程上传日志
-            await UploadLogs(logs);
+            await UploadLogs(logs, true);
             shareLog.IsEnabled = true;
         }
 
-        private async Task UploadLogs(string logs)
+        private string[] GetLogOtherPlan()
+        {
+            string[] strings = new string[2];
+            if (useConpty.IsChecked == true)
+            {
+                if (conptyWindow != null)
+                {
+                    strings[0] = "B";
+                    strings[1] = conptyWindow.ConptyConsole.ConPTYTerm.GetConsoleText();
+                    
+                }
+            }
+            else
+            {
+                strings[0] = "C";
+                TextRange textRange = new TextRange(outlog.Document.Blocks.FirstBlock.ContentStart, outlog.Document.Blocks.LastBlock.ContentEnd);
+                strings[1] = textRange.Text;
+            }
+            return strings;
+        }
+
+        private async Task UpdateLogOtherPlan()
+        {
+            Growl.Info("请稍等……");
+            string logs = string.Empty;
+            string uploadMode = "A";
+
+            string[] strings = GetLogOtherPlan();
+            uploadMode = strings[0];
+            logs = strings[1];
+
+            if (string.IsNullOrEmpty(logs))
+            {
+                Growl.Info("日志为空，请重试！");
+                shareLog.IsEnabled = true;
+                return;
+            }
+            Growl.Info("正在上传，模式 " + uploadMode + "，请稍等……");
+            //启动线程上传日志
+            await UploadLogs(logs);
+        }
+
+        private async Task UploadLogs(string logs,bool canUseOtherPlan=false)
         {
             string customUrl = "https://api.mclo.gs/1/log";
             int contentType = 2;
@@ -3924,18 +3954,47 @@ namespace MSL
             string parameterData = "content=" + logs;
 
             var response = await HttpService.PostAsync(customUrl, contentType, parameterData);
-            //解析返回的东东
-            var jsonResponse = JsonConvert.DeserializeObject<dynamic>(response.HttpResponseContent.ToString());
-
-            if (response.HttpResponseCode == HttpStatusCode.OK && jsonResponse.success == true)
+            if (response.HttpResponseCode == HttpStatusCode.OK)
             {
-                Clipboard.Clear();
-                Clipboard.SetText(jsonResponse.url.ToString());
-                Growl.Success("日志地址: " + jsonResponse.url + "\n已经复制到剪贴板啦！\n如果遇到问题且不会看日志,\n请把链接粘贴给别人寻求帮助，\n记得要详细描述你的问题哦！");
+                try
+                {
+                    //解析返回的东东
+                    var jsonResponse = JsonConvert.DeserializeObject<dynamic>(response.HttpResponseContent.ToString());
+
+                    if (jsonResponse.success == true)
+                    {
+                        Clipboard.Clear();
+                        Clipboard.SetText(jsonResponse.url.ToString());
+                        Growl.Success("日志地址: " + jsonResponse.url + "\n已经复制到剪贴板啦！\n如果遇到问题且不会看日志,\n请把链接粘贴给别人寻求帮助，\n记得要详细描述你的问题哦！");
+                    }
+                    else
+                    {
+                        Growl.Error("请求失败: " + jsonResponse.error);
+                    }
+                }
+                catch
+                {
+                    Growl.Error("解析失败");
+                }
             }
             else
             {
-                Growl.Error("请求失败: " + jsonResponse.error);
+                if (canUseOtherPlan)
+                {
+                    if ((await MagicShow.ShowMsgDialogAsync(this, "请求失败：可能由于日志过大，请尝试手动上传日志或使用其他模式！\n" + response.HttpResponseCode + " " + response.HttpResponseContent + "\n点击确定将使用其他模式进行上传", "错误", true) == true))
+                    {
+                        await UpdateLogOtherPlan();
+                    }
+                    else
+                    {
+                        return;
+                    }
+                }
+                else
+                {
+                    Growl.Error("请求失败: 可能日志过大，请尝试手动上传日志！\n" + response.HttpResponseCode + " " + response.HttpResponseContent);
+                    return;
+                }
             }
         }
 
@@ -4142,6 +4201,13 @@ namespace MSL
                 timercmdTime.Text = "";
                 timercmdCmd.Text = "";
             }
+        }
+
+        //检验输入合法性
+        private void NumberValidationTextBox(object sender, TextCompositionEventArgs e)
+        {
+            Regex regex = new Regex("[^0-9]+"); //匹配非数字
+            e.Handled = regex.IsMatch(e.Text);
         }
 
         private void timercmdTime_TextChanged(object sender, TextChangedEventArgs e)
@@ -4405,7 +4471,5 @@ namespace MSL
             }
         }
         #endregion
-
-
     }
 }
