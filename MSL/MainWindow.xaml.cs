@@ -35,8 +35,9 @@ namespace MSL
             new CreateServer()
         };
         public static event DeleControl AutoOpenServer;
-        public static string serverLink = null;
-        public static string deviceID = null; //用于记录设备id
+        public static string ServerLink = null;
+        public static Version MSLVersion = null; //用于记录设备id
+        public static string DeviceID = null; //用于记录设备id
         public static bool getServerInfo = false;
         public static bool getPlayerInfo = false;
 
@@ -58,21 +59,22 @@ namespace MSL
             Topmost = true;
             Focus();
             Topmost = false;
+            MSLVersion = System.Reflection.Assembly.GetExecutingAssembly().GetName().Version;
             try
             {
                 JObject jsonObject = JObject.Parse(File.ReadAllText(@"MSL\config.json", Encoding.UTF8));
-                deviceID = Functions.GetDeviceID();
-                if (jsonObject["eula"] == null || jsonObject["eula"].ToString() != deviceID.Substring(0, 5))
+                DeviceID = Functions.GetDeviceID();
+                if (jsonObject["eula"] == null || jsonObject["eula"].ToString() != DeviceID.Substring(0, 5))
                 {
                     if (await EulaEvent())
                     {
                         if (jsonObject["eula"] == null)
                         {
-                            jsonObject.Add("eula", deviceID.Substring(0, 5));
+                            jsonObject.Add("eula", DeviceID.Substring(0, 5));
                         }
                         else
                         {
-                            jsonObject["eula"] = deviceID.Substring(0, 5);
+                            jsonObject["eula"] = DeviceID.Substring(0, 5);
                         }
                         string convertString = Convert.ToString(jsonObject);
                         File.WriteAllText(@"MSL\config.json", convertString, Encoding.UTF8);
@@ -356,30 +358,23 @@ namespace MSL
             //get serverlink
             try
             {
-                //serverLink = "mslmc.cn/v3";
+                //ServerLink = "mslmc.cn/v3";
                 string _link = (await HttpService.GetContentAsync("https://msl-api.oss-cn-hangzhou.aliyuncs.com/")).ToString();
                 //Logger.LogInfo("连接到api：" + "https://api." + _link);
-                try
+                if (((int)JObject.Parse((await HttpService.GetContentAsync("https://api." + _link, headers => { headers.Add("DeviceID", DeviceID); }, 1)).ToString())["code"]) == 200)
                 {
-                    if (((int)(JObject.Parse((await HttpService.GetContentAsync("https://api." + _link, null, 1)).ToString()))["code"]) == 200)
-                    {
-                        serverLink = _link;
-                    }
-                    else
-                    {
-                        serverLink = "waheal.top/v3";
-                        Growl.Info(LanguageManager.Instance["MainWindow_GrowlMsg_MslServerDown"]);
-                    }
+                    ServerLink = _link;
                 }
-                catch
+                else
                 {
-                    serverLink = "waheal.top/v3";
-                    Growl.Info(LanguageManager.Instance["MainWindow_GrowlMsg_MSLServerDown"]);
+                    //ServerLink = "waheal.top/v3";
+                    Growl.Info(LanguageManager.Instance["MainWindow_GrowlMsg_MslServerDown"]);
                 }
             }
             catch
             {
-                serverLink = "waheal.top/v3";
+                Growl.Info(LanguageManager.Instance["MainWindow_GrowlMsg_MSLServerDown"]);
+                //ServerLink = "waheal.top/v3";
                 //Logger.LogError("在匹配在线服务器时出现错误，已连接至备用服务器");
             }
             //更新

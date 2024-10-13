@@ -1,4 +1,5 @@
-﻿using Newtonsoft.Json;
+﻿using Modrinth.Models;
+using Newtonsoft.Json;
 using Newtonsoft.Json.Linq;
 using System;
 using System.IO;
@@ -6,6 +7,7 @@ using System.Linq;
 using System.Net;
 using System.Net.Http;
 using System.Net.Http.Headers;
+using System.Runtime.InteropServices;
 using System.Text;
 using System.Threading.Tasks;
 
@@ -34,10 +36,10 @@ namespace MSL.utils
         public static string Get(string path, string customUrl = "", int headerMode = 0)
         {
             ServicePointManager.SecurityProtocol = SecurityProtocolType.Tls12;
-            string url = "https://api." + MainWindow.serverLink;
+            string url = "https://api." + MainWindow.ServerLink;
             if (customUrl == "")
             {
-                if (MainWindow.serverLink == null)
+                if (MainWindow.ServerLink == null)
                 {
                     return string.Empty;
                 }
@@ -49,22 +51,22 @@ namespace MSL.utils
             WebClient webClient = new WebClient();
             if (headerMode == 0)
             {
-                if (MainWindow.serverLink != null)
+                if (MainWindow.ServerLink != null)
                 {
-                    string serverLink = MainWindow.serverLink;
-                    if (serverLink?.Contains("/") == true)
+                    string ServerLink = MainWindow.ServerLink;
+                    if (ServerLink?.Contains("/") == true)
                     {
-                        serverLink = serverLink.Substring(0, serverLink.IndexOf("/"));
+                        ServerLink = ServerLink.Substring(0, ServerLink.IndexOf("/"));
                     }
-                    if (url.Contains(serverLink))
+                    if (url.Contains(ServerLink))
                     {
-                        webClient.Headers.Add("User-Agent", "MSLTeam/MSL/" + new Version(System.Reflection.Assembly.GetExecutingAssembly().GetName().Version.ToString()));
+                        webClient.Headers.Add("User-Agent", "MSLTeam-MSL/" + MainWindow.MSLVersion);
                     }
                 }
             }
             else if (headerMode == 2)
             {
-                webClient.Headers.Add("User-Agent", "MSLTeam/MSL/" + new Version(System.Reflection.Assembly.GetExecutingAssembly().GetName().Version.ToString()));
+                webClient.Headers.Add("User-Agent", "MSLTeam-MSL/" + MainWindow.MSLVersion);
             }
             else if (headerMode == 3)
             {
@@ -100,10 +102,10 @@ namespace MSL.utils
         /// <returns>strings[0]=0出现错误，此时strings[1]=错误信息；strings[0]=1请求成功，此时strings[1]=页内容，strings[2]=sha256（若开启getSha256）</returns>
         public static async Task<HttpResponse> GetApiAsync(string path)
         {
-            string url = "https://api." + MainWindow.serverLink;
+            string url = "https://api." + MainWindow.ServerLink;
             return await GetAsync(url + "/" + path, headers =>
             {
-                headers.Add("deviceID", MainWindow.deviceID);
+                headers.Add("DeviceID", MainWindow.DeviceID);
             }, 1);
         }
 
@@ -135,7 +137,7 @@ namespace MSL.utils
             configureHeaders?.Invoke(httpClient.DefaultRequestHeaders);
             if (headerUAMode == 1)
             {
-                httpClient.DefaultRequestHeaders.UserAgent.TryParseAdd("MSLTeam/MSL/" + new Version(System.Reflection.Assembly.GetExecutingAssembly().GetName().Version.ToString()));
+                httpClient.DefaultRequestHeaders.UserAgent.TryParseAdd($"MSLTeam-MSL/{MainWindow.MSLVersion}");
             }
             else if (headerUAMode == 2)
             {
@@ -175,10 +177,10 @@ namespace MSL.utils
         public static string Post(string path, int contentType = 0, string parameterData = "", string customUrl = "", WebHeaderCollection header = null)
         {
             ServicePointManager.SecurityProtocol = SecurityProtocolType.Tls12;
-            string url = "https://api." + MainWindow.serverLink;
+            string url = "https://api." + MainWindow.ServerLink;
             if (customUrl == "")
             {
-                if (MainWindow.serverLink == null)
+                if (MainWindow.ServerLink == null)
                 {
                     return string.Empty;
                 }

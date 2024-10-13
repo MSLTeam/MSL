@@ -33,7 +33,7 @@ namespace MSL.pages
             {
                 for (int i = 0; i < 10; i++)
                 {
-                    if (MainWindow.serverLink != null)
+                    if (MainWindow.ServerLink != null)
                     {
                         break;
                     }
@@ -44,7 +44,7 @@ namespace MSL.pages
             }
             else
             {
-                if (MainWindow.serverLink != null)
+                if (MainWindow.ServerLink != null)
                 {
                     await GetNotice();
                 }
@@ -148,12 +148,12 @@ namespace MSL.pages
             {
                 noticeLab.Visibility = Visibility.Collapsed;
                 noticeLab.Text = "";
-                string _serverLink = MainWindow.serverLink;
-                if (_serverLink.Contains("/"))
+                string _ServerLink = MainWindow.ServerLink;
+                if (_ServerLink.Contains("/"))
                 {
-                    _serverLink = _serverLink.Substring(0, _serverLink.IndexOf("/"));
+                    _ServerLink = _ServerLink.Substring(0, _ServerLink.IndexOf("/"));
                 }
-                noticeImage.Source = new BitmapImage(new Uri("https://file." + _serverLink + "/notice.png"));
+                noticeImage.Source = new BitmapImage(new Uri("https://file." + _ServerLink + "/notice.png"));
             }
             else
             {
@@ -194,12 +194,12 @@ namespace MSL.pages
                 }
                 else
                 {
-                    string _serverLink = MainWindow.serverLink;
-                    if (_serverLink.Contains("/"))
+                    string _ServerLink = MainWindow.ServerLink;
+                    if (_ServerLink.Contains("/"))
                     {
-                        _serverLink = _serverLink.Substring(0, _serverLink.IndexOf("/"));
+                        _ServerLink = _ServerLink.Substring(0, _ServerLink.IndexOf("/"));
                     }
-                    image.Source = new BitmapImage(new Uri("https://file." + _serverLink + "/recommendImg/" + i.ToString() + ".png"));
+                    image.Source = new BitmapImage(new Uri("https://file." + _ServerLink + "/recommendImg/" + i.ToString() + ".png"));
                 }
                 stackPanel.Children.Add(image);
                 TextBlock textBlock = new TextBlock();

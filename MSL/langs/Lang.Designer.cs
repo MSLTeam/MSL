@@ -398,7 +398,7 @@ namespace MSL.langs {
         }
         
         /// <summary>
-        ///   查找类似 软件主服务器连接超时，已切换至备用服务器！ 的本地化字符串。
+        ///   查找类似 连接MSL服务器失败！ 的本地化字符串。
         /// </summary>
         public static string MainWindow_GrowlMsg_MSLServerDown {
             get {

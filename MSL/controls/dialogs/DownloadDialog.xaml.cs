@@ -165,7 +165,7 @@ namespace MSL
         {
             if (headerMode == 1)
             {
-                return "MSLTeam/MSL/" + new Version(System.Reflection.Assembly.GetExecutingAssembly().GetName().Version.ToString()) + "/Downloader";
+                return "MSLTeam-MSL/" + MainWindow.MSLVersion + " (Downloader)";
             }
             else if (headerMode == 2)
             {

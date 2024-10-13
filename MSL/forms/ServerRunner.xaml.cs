@@ -2945,7 +2945,7 @@ namespace MSL
 
                 for (int i = 0; i <= 10; i++)
                 {
-                    if (MainWindow.serverLink == null)
+                    if (MainWindow.ServerLink == null)
                     {
                         Thread.Sleep(1000);
                     }

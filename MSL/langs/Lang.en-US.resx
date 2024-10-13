@@ -310,7 +310,7 @@ Error code:</value>
     <value>Failed to retrieve system memory!</value>
   </data>
   <data name="MainWindow_GrowlMsg_MSLServerDown" xml:space="preserve">
-    <value>MSL main server connection timed out (possibly due to a DDoS attack), switching to the backup server!</value>
+    <value>Failed to connect to MSL service!</value>
   </data>
   <data name="MainWindow_GrowlMsg_RefuseUpdate" xml:space="preserve">
     <value>You refused to update to the new version. If you encounter bugs in this version, please do not report them to us!</value>

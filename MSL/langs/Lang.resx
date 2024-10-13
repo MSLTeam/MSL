@@ -227,7 +227,7 @@
     <value>获取系统内存失败！</value>
   </data>
   <data name="MainWindow_GrowlMsg_MSLServerDown" xml:space="preserve">
-    <value>软件主服务器连接超时，已切换至备用服务器！</value>
+    <value>连接MSL服务器失败！</value>
   </data>
   <data name="MainWindow_GrowlMsg_ReadEula" xml:space="preserve">
     <value>阅读协议</value>
