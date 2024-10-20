@@ -235,9 +235,16 @@ namespace MSL
                     string convertString = Convert.ToString(jobject);
                     File.WriteAllText(@"MSL\config.json", convertString, Encoding.UTF8);
                 }
-                else if ((bool)jsonObject["semitransparentTitle"] == true)
+                else
                 {
-                    ChangeTitleStyle(true);
+                    if ((bool)jsonObject["semitransparentTitle"] == true)
+                    {
+                        ChangeTitleStyle(true);
+                    }
+                    else
+                    {
+                        ChangeTitleStyle(false);
+                    }
                 }
                 //Logger.LogInfo("读取标题栏样式成功！");
                 if (jsonObject["autoGetServerInfo"] == null)
@@ -613,7 +620,7 @@ namespace MSL
             if (isOpen)
             {
                 this.SetResourceReference(NonClientAreaBackgroundProperty, "SideMenuBrush");
-                TitleBox.SetResourceReference(ForegroundProperty, "PrimaryTextBrush");
+                this.SetResourceReference(NonClientAreaForegroundProperty, "PrimaryTextBrush");
                 this.SetResourceReference(CloseButtonForegroundProperty, "PrimaryTextBrush");
                 this.SetResourceReference(OtherButtonForegroundProperty, "PrimaryTextBrush");
                 this.SetResourceReference(OtherButtonHoverForegroundProperty, "PrimaryTextBrush");
@@ -621,7 +628,7 @@ namespace MSL
             else
             {
                 this.SetResourceReference(NonClientAreaBackgroundProperty, "PrimaryBrush");
-                TitleBox.Foreground = Brushes.White;
+                NonClientAreaForeground = Brushes.White;
                 CloseButtonForeground = Brushes.White;
                 OtherButtonForeground = Brushes.White;
                 OtherButtonHoverForeground = Brushes.White;

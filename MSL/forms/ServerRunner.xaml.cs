@@ -272,7 +272,11 @@ namespace MSL
             }
             else if (File.Exists(Rserverbase + "\\server-icon.png"))//check server-icon,if exist,set icon to server-icon
             {
-                this.Icon = new BitmapImage(new Uri(Rserverbase + "\\server-icon.png"));
+                try
+                {
+                    Icon = new BitmapImage(new Uri(Rserverbase + "\\server-icon.png"));
+                }
+                catch { Icon = null; }
             }
             if (Rserverjava != "Java" && Rserverjava != "java")
             {
@@ -358,7 +362,7 @@ namespace MSL
             if (isOpen)
             {
                 this.SetResourceReference(NonClientAreaBackgroundProperty, "SideMenuBrush");
-                TitleBox.SetResourceReference(ForegroundProperty, "PrimaryTextBrush");
+                this.SetResourceReference(NonClientAreaForegroundProperty, "PrimaryTextBrush");
                 this.SetResourceReference(CloseButtonForegroundProperty, "PrimaryTextBrush");
                 this.SetResourceReference(OtherButtonForegroundProperty, "PrimaryTextBrush");
                 this.SetResourceReference(OtherButtonHoverForegroundProperty, "PrimaryTextBrush");
@@ -366,7 +370,7 @@ namespace MSL
             else
             {
                 this.SetResourceReference(NonClientAreaBackgroundProperty, "PrimaryBrush");
-                TitleBox.Foreground = Brushes.White;
+                NonClientAreaForeground = Brushes.White;
                 CloseButtonForeground = Brushes.White;
                 OtherButtonForeground = Brushes.White;
                 OtherButtonHoverForeground = Brushes.White;

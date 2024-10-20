@@ -9,17 +9,24 @@ namespace MSL.controls
     {
         public object Convert(object value, Type targetType, object parameter, CultureInfo culture)
         {
-            string imagePath = value as string;
-            if (string.IsNullOrEmpty(imagePath))
+            try
+            {
+                string imagePath = value as string;
+                if (string.IsNullOrEmpty(imagePath))
+                    return null;
+                    BitmapImage bitmapImage = new BitmapImage();
+
+                    bitmapImage.BeginInit();
+                    bitmapImage.CacheOption = BitmapCacheOption.OnLoad;
+                    bitmapImage.UriSource = new Uri(imagePath, UriKind.RelativeOrAbsolute);
+                    bitmapImage.EndInit();
+
+                    return bitmapImage;
+            }
+            catch
+            {
                 return null;
-
-            BitmapImage bitmapImage = new BitmapImage();
-            bitmapImage.BeginInit();
-            bitmapImage.CacheOption = BitmapCacheOption.OnLoad;
-            bitmapImage.UriSource = new Uri(imagePath, UriKind.RelativeOrAbsolute);
-            bitmapImage.EndInit();
-
-            return bitmapImage;
+            }
         }
 
         public object ConvertBack(object value, Type targetType, object parameter, CultureInfo culture)
