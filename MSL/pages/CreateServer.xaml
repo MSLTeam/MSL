@@ -164,7 +164,8 @@
                                         <TextBlock Text="1.8之前：可以使用Java7-Java8" />
                                         <TextBlock Text="1.8-1.12.2：可以使用Java8-Java11" />
                                         <TextBlock Text="1.13-1.16.5：可以使用Java11-Java17" />
-                                        <TextBlock Text="1.17-最新版：可以使用Java17及以上" />
+                                        <TextBlock Text="1.17-1.20.4：可以使用Java17及以上" />
+                                        <TextBlock Text="1.20.5-最新版：可以使用Java21及以上" />
                                     </StackPanel>
                                 </Border>
                             </Grid>
