@@ -152,6 +152,8 @@ namespace MSL.utils
         {
             window?.Focus();
             dialog.Close();
+            window = null;
+            dialog = null;
         }
 
 
@@ -225,6 +227,9 @@ namespace MSL.utils
             {
                 window?.Focus();
                 dialog.Close();
+                _tcs = null;
+                window = null;
+                dialog = null;
             }
         }
     }

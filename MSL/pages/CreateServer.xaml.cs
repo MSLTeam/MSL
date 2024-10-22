@@ -249,6 +249,22 @@ namespace MSL.pages
                 sserver.IsSelected = true;
                 sserver.IsEnabled = true;
                 sjava.IsEnabled = false;
+
+                string forge = Functions.InstallForge("", serverbase, "", "");
+                if (forge != null)
+                {
+                    bool ret = await MagicShow.ShowMsgDialogAsync(Window.GetWindow(this), "开服器在整合包中检测到了Forge服务端启动文件" + forge + "，是否选择为开服核心？", "提示", true, "取消");
+                    if (ret)
+                    {
+                        txb3.Text = forge;
+                        servercore = txb3.Text;
+                        sJVM.IsSelected = true;
+                        sJVM.IsEnabled = true;
+                        sserver.IsEnabled = false;
+                    }
+                    return;
+                }
+
                 DirectoryInfo directoryInfo = new DirectoryInfo(serverbase);
                 FileInfo[] fileInfo = directoryInfo.GetFiles("*.jar");
                 List<string> files = new List<string>();
@@ -1004,12 +1020,12 @@ namespace MSL.pages
 
             string javaVersion;
             string versionString = ServerVersionCombo.Items[ServerVersionCombo.SelectedIndex].ToString();
-            if (versionString != "latest")
+            if (versionString.Contains("-"))
             {
-                if (versionString.Contains("-"))
-                {
-                    versionString = versionString.Substring(0, versionString.IndexOf("-"));
-                }
+                versionString = versionString.Substring(0, versionString.IndexOf("-"));
+            }
+            if (Regex.IsMatch(versionString, @"^[\d.]+$"))
+            {
                 string[] components = versionString.Split('.');
                 if (components.Length >= 3 && int.TryParse(components[2], out int _))
                 {
