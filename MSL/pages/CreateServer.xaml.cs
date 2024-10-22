@@ -224,7 +224,7 @@ namespace MSL.pages
                             if (strings != null)
                             {
                                 selectJavaComb.ItemsSource = strings.ToList();
-                                selectJavaComb.SelectedIndex = 0;
+                                selectJavaComb.SelectedIndex = selectJavaComb.Items.Count - 1;
                             }
                             else
                             {
