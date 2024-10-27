@@ -2973,7 +2973,7 @@ namespace MSL
             }
             catch
             {
-                Growl.Error("出现错误，获取Java版本列表失败！");
+                Console.WriteLine("Failed to get Java-Version List");
             }
             Dispatcher.Invoke(() =>
             {

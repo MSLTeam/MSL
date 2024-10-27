@@ -744,7 +744,7 @@ namespace MSL.langs {
         }
         
         /// <summary>
-        ///   查找类似 节点离线或禁Ping，若无法连接，请重新配置！ 的本地化字符串。
+        ///   查找类似 检测节点状态失败，若无法连接，请重新配置！ 的本地化字符串。
         /// </summary>
         public static string Page_FrpcPage_Status_Offline {
             get {

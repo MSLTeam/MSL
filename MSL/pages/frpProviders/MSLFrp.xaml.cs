@@ -142,7 +142,7 @@ namespace MSL.pages.frpProviders
                         int roundTripTime = (int)reply.RoundtripTime;
                         Dispatcher.Invoke(() =>
                         {
-                            serversList.Items[id] = serversList.Items[id].ToString() + "(延迟：" + roundTripTime + "ms)";
+                            serversList.Items[id] = serversList.Items[id].ToString() + "（延迟：" + roundTripTime + "ms）";
                         });
 
                     }
@@ -150,14 +150,14 @@ namespace MSL.pages.frpProviders
                     {
                         Dispatcher.Invoke(() =>
                         {
-                            serversList.Items[id] = serversList.Items[id].ToString() + "(检测失败,可能被DDoS或下线)";
+                            serversList.Items[id] = serversList.Items[id].ToString() + "（延迟检测失败）";
                         });
                     }
                 });
             }
             catch
             {
-                serversList.Items.Add(serverAddr + "(检测失败,可能被DDoS或下线)");
+                serversList.Items.Add(serverAddr + "（延迟检测失败）");
             }
         }
 
@@ -215,7 +215,7 @@ namespace MSL.pages.frpProviders
                     string serverName = serversList.Items[serversList.SelectedIndex].ToString();
                     string compressionArg = "";
                     if (enableCompression.IsChecked == true) compressionArg = "transport.useCompression = true\n";
-                    if (serverName.Contains("(")) serverName = serverName.Substring(0, serverName.IndexOf("("));
+                    if (serverName.Contains("（")) serverName = serverName.Substring(0, serverName.IndexOf("（"));
                     if (frpcType.SelectedIndex == 0) frptype = "tcp";
                     else if (frpcType.SelectedIndex == 1) frptype = "udp";
 
@@ -292,7 +292,7 @@ namespace MSL.pages.frpProviders
                     string serverName = serversList.Items[serversList.SelectedIndex].ToString();
                     string compressionArg = "";
                     if (enableCompression.IsChecked == true) compressionArg = "transport.useCompression = true\n";
-                    if (serverName.Contains("(")) serverName = serverName.Substring(0, serverName.IndexOf("("));
+                    if (serverName.Contains("（")) serverName = serverName.Substring(0, serverName.IndexOf("（"));
                     frpc = "#" + serverName + "\n";
                     frpc += "serverAddr = \"" + list1[a].ToString() + "\"\n";
                     frpc += "serverPort = " + frpPort + "\n";

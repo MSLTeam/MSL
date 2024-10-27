@@ -351,7 +351,7 @@ BMCLAPI —— Vanilla服务端、Forge服务端（及其库文件）国内镜�
     <value>Java版：</value>
   </data>
   <data name="Page_FrpcPage_Status_Offline" xml:space="preserve">
-    <value>节点离线或禁Ping，若无法连接，请重新配置！</value>
+    <value>检测节点状态失败，若无法连接，请重新配置！</value>
   </data>
   <data name="Page_FrpcPage_Status_OpenFrp" xml:space="preserve">
     <value>OpenFrp节点</value>

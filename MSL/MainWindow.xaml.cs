@@ -8,6 +8,7 @@ using System;
 using System.Collections.Generic;
 using System.Diagnostics;
 using System.IO;
+using System.Runtime.InteropServices;
 using System.Text;
 using System.Threading.Tasks;
 using System.Windows;
@@ -360,27 +361,28 @@ namespace MSL
             //Logger.LogInfo("配置加载完毕！");
         }
 
+        [DllImport("kernel32", SetLastError = true, CharSet = CharSet.Unicode)]
+        public static extern IntPtr LoadLibraryEx(string lpFileName, IntPtr hReservedNull, uint dwFlags);
         private async Task OnlineService(JObject jsonObject)
         {
             //get serverlink
             try
             {
                 //ServerLink = "mslmc.cn/v3";
-                string _link = (await HttpService.GetContentAsync("https://msl-api.oss-cn-hangzhou.aliyuncs.com/")).ToString();
+                _ = HttpService.GetContentAsync("https://msl-api.oss-cn-hangzhou.aliyuncs.com/");
+                ServerLink = "mslmc.cn/v3";
                 //Logger.LogInfo("连接到api：" + "https://api." + _link);
-                if (((int)JObject.Parse((await HttpService.GetContentAsync("https://api." + _link, headers => { headers.Add("DeviceID", DeviceID); }, 1)).ToString())["code"]) == 200)
-                {
-                    ServerLink = _link;
-                }
-                else
+                if (!(((int)JObject.Parse((await HttpService.GetContentAsync("https://api." + ServerLink, headers => { headers.Add("DeviceID", DeviceID); }, 1)).ToString())["code"]) == 200))
                 {
                     //ServerLink = "waheal.top/v3";
                     Growl.Info(LanguageManager.Instance["MainWindow_GrowlMsg_MslServerDown"]);
+                    return;
                 }
             }
             catch
             {
                 Growl.Info(LanguageManager.Instance["MainWindow_GrowlMsg_MSLServerDown"]);
+                return;
                 //ServerLink = "waheal.top/v3";
                 //Logger.LogError("在匹配在线服务器时出现错误，已连接至备用服务器");
             }
@@ -432,6 +434,19 @@ namespace MSL
             {
                 //Logger.LogError("检测更新失败！");
                 Growl.Error(LanguageManager.Instance["MainWindow_GrowlMsg_CheckUpdateErr"]);
+            }
+            if (!(Environment.OSVersion.Version.Major == 6 && Environment.OSVersion.Version.Minor == 1))
+            {
+                if (File.Exists("MSL\\Microsoft.Terminal.Control.dll"))
+                {
+                    LoadLibraryEx("MSL\\Microsoft.Terminal.Control.dll", IntPtr.Zero, 0x00000008);
+                    return;
+                }
+                var result = await MagicShow.ShowDownloader(this, "https://file.mslmc.cn/Microsoft.Terminal.Control.dll", "MSL", "Microsoft.Terminal.Control.dll", "下载必要文件……");
+                if (result)
+                {
+                    LoadLibraryEx("MSL\\Microsoft.Terminal.Control.dll", IntPtr.Zero, 0x00000008);
+                }
             }
         }
 

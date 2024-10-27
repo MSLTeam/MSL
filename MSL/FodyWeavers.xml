@@ -1,11 +1,5 @@
 ﻿<Weavers xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:noNamespaceSchemaLocation="FodyWeavers.xsd">
-  <Costura DisableCleanup='true'>
-    <ExcludeAssemblies>
-      HandyControl.resources
-      MSL.resources
-    </ExcludeAssemblies>
-    <Unmanaged64Assemblies>
-      Microsoft.Terminal.Control
-    </Unmanaged64Assemblies>
+  <Costura DisableCleanup='true' IgnoreSatelliteAssemblies='true'>
+    
   </Costura>
 </Weavers>
