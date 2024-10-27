@@ -447,7 +447,7 @@ namespace MSL
                     catch (Exception ex)
                     {
                         File.Delete("MSL\\Microsoft.Terminal.Control.dll");
-                        MagicShow.ShowMsg(this, $"必要DLL“Microsoft.Terminal.Control.dll”加载失败！可能是文件不完整，已将其删除，请重启软件以确保其被重新下载并加载。{ex.Message}\n若不重启软件，高级终端（ConPty）功能将失效！", "错误");
+                        MagicShow.ShowMsg(this, $"必要DLL“Microsoft.Terminal.Control.dll”加载失败！可能是文件不完整，已将其删除，请重启软件以确保其被重新下载并加载。（{ex.Message}）\n若不重启软件，高级终端（ConPty）功能将失效！", "错误");
                     }
                 }
                 else
@@ -462,7 +462,7 @@ namespace MSL
                         catch (Exception ex)
                         {
                             File.Delete("MSL\\Microsoft.Terminal.Control.dll");
-                            MagicShow.ShowMsg(this, $"必要DLL“Microsoft.Terminal.Control.dll”加载失败！可能是文件不完整，已将其删除，请重启软件以确保其被重新下载并加载。{ex.Message}\n如果不重启软件，高级终端（ConPty）功能将失效！\n若您多次重启软件后，此问题依旧未被解决，请联系作者进行反馈！", "错误");
+                            MagicShow.ShowMsg(this, $"必要DLL“Microsoft.Terminal.Control.dll”加载失败！可能是文件不完整，已将其删除，请重启软件以确保其被重新下载并加载。（{ex.Message}）\n如果不重启软件，高级终端（ConPty）功能将失效！\n若您多次重启软件后，此问题依旧未被解决，请联系作者进行反馈！", "错误");
                         }
                     }
                 }
