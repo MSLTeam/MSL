@@ -85,9 +85,20 @@ namespace MSL.pages
                     if (!string.IsNullOrEmpty(notice))
                     {
                         noticeLabText = notice;
+                        //Console.WriteLine("Notice Loaded");
                         if (noticeLabText != "")
                         {
-                            MagicShow.ShowMsgDialog(Window.GetWindow(this), noticeLabText, "公告");
+                            _ = Task.Run(async () =>
+                            {
+                                while (!MainWindow.LoadingCompleted)
+                                {
+                                    await Task.Delay(1000);
+                                }
+                                Dispatcher.Invoke(() =>
+                                {
+                                    MagicShow.ShowMsgDialog(Window.GetWindow(this), noticeLabText, "公告");
+                                });
+                            });
                         }
                     }
                     else
@@ -144,6 +155,7 @@ namespace MSL.pages
                 }
             }
 
+            /*
             if (noticeLabText == "")
             {
                 noticeLab.Visibility = Visibility.Collapsed;
@@ -161,6 +173,8 @@ namespace MSL.pages
                 noticeImage.Source = null;
                 noticeLab.Text = noticeLabText;
             }
+            */
+            noticeLab.Text = noticeLabText;
         }
 
         private void LoadRecommendations(JArray recommendations)

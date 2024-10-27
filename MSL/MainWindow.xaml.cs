@@ -9,6 +9,7 @@ using System.Collections.Generic;
 using System.Diagnostics;
 using System.IO;
 using System.Runtime.InteropServices;
+using System.Security.Cryptography;
 using System.Text;
 using System.Threading.Tasks;
 using System.Windows;
@@ -36,6 +37,7 @@ namespace MSL
             new CreateServer()
         };
         public static event DeleControl AutoOpenServer;
+        public static bool LoadingCompleted = false;
         public static string ServerLink = null;
         public static Version MSLVersion = null; //用于记录设备id
         public static string DeviceID = null; //用于记录设备id
@@ -90,6 +92,7 @@ namespace MSL
                 //Logger.LogInfo("异步载入联网功能……");
                 await OnlineService(jsonObject);
                 //Logger.LogInfo("启动事件完成！");
+                LoadingCompleted = true;
             }
             catch (Exception ex)
             {
@@ -361,8 +364,6 @@ namespace MSL
             //Logger.LogInfo("配置加载完毕！");
         }
 
-        [DllImport("kernel32", SetLastError = true, CharSet = CharSet.Unicode)]
-        public static extern IntPtr LoadLibraryEx(string lpFileName, IntPtr hReservedNull, uint dwFlags);
         private async Task OnlineService(JObject jsonObject)
         {
             //get serverlink
@@ -439,14 +440,62 @@ namespace MSL
             {
                 if (File.Exists("MSL\\Microsoft.Terminal.Control.dll"))
                 {
-                    LoadLibraryEx("MSL\\Microsoft.Terminal.Control.dll", IntPtr.Zero, 0x00000008);
-                    return;
+                    try
+                    {
+                        LoadLibEx();
+                    }
+                    catch (Exception ex)
+                    {
+                        File.Delete("MSL\\Microsoft.Terminal.Control.dll");
+                        MagicShow.ShowMsg(this, $"必要DLL“Microsoft.Terminal.Control.dll”加载失败！可能是文件不完整，已将其删除，请重启软件以确保其被重新下载并加载。{ex.Message}\n若不重启软件，高级终端（ConPty）功能将失效！", "错误");
+                    }
                 }
-                var result = await MagicShow.ShowDownloader(this, "https://file.mslmc.cn/Microsoft.Terminal.Control.dll", "MSL", "Microsoft.Terminal.Control.dll", "下载必要文件……");
-                if (result)
+                else
                 {
-                    LoadLibraryEx("MSL\\Microsoft.Terminal.Control.dll", IntPtr.Zero, 0x00000008);
+                    var result = await MagicShow.ShowDownloader(this, "https://file.mslmc.cn/Microsoft.Terminal.Control.dll", "MSL", "Microsoft.Terminal.Control.dll", "下载必要文件……");
+                    if (result)
+                    {
+                        try
+                        {
+                            LoadLibEx();
+                        }
+                        catch (Exception ex)
+                        {
+                            File.Delete("MSL\\Microsoft.Terminal.Control.dll");
+                            MagicShow.ShowMsg(this, $"必要DLL“Microsoft.Terminal.Control.dll”加载失败！可能是文件不完整，已将其删除，请重启软件以确保其被重新下载并加载。{ex.Message}\n如果不重启软件，高级终端（ConPty）功能将失效！\n若您多次重启软件后，此问题依旧未被解决，请联系作者进行反馈！", "错误");
+                        }
+                    }
                 }
+            }
+        }
+
+        [DllImport("kernel32", SetLastError = true, CharSet = CharSet.Unicode)]
+        public static extern IntPtr LoadLibraryEx(string lpFileName, IntPtr hReservedNull, uint dwFlags);
+        private void LoadLibEx()
+        {
+            string md5Vaule = "";
+            using (FileStream file = new FileStream("MSL\\Microsoft.Terminal.Control.dll", FileMode.Open))
+            {
+                MD5 md5 = new MD5CryptoServiceProvider();
+
+                byte[] retVal = md5.ComputeHash(file);
+
+                StringBuilder sb = new StringBuilder();
+                for (int i = 0; i < retVal.Length; i++)
+                {
+                    sb.Append(retVal[i].ToString("x2"));
+                }
+
+                //Console.WriteLine(sb.ToString());
+                md5Vaule = sb.ToString();
+            }
+            if (md5Vaule == "d01fd30d79d02f008d18565a9df8077d")
+            {
+                LoadLibraryEx("MSL\\Microsoft.Terminal.Control.dll", IntPtr.Zero, 0x00000008);
+            }
+            else
+            {
+                throw new Exception("错误的MD5值");
             }
         }
 
