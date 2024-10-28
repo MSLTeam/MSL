@@ -7,7 +7,8 @@
 ![GitHub Issues or Pull Requests](https://img.shields.io/github/issues/MSLTeam/MSL)
 ![GitHub Repo stars](https://img.shields.io/github/stars/MSLTeam/MSL)
 
-这是一个使用WPF制作的面向Win系统的Minecraft玩家联机工具    
+这是一个使用WPF制作的面向Win系统的Minecraft玩家联机工具
+  
 本软件支持：  
   开服联机：界面友好，操作简单，方便您创建和管理您的联机服务器  
   FRP局域网联机：我们接入了OpenFrp、ChmlFrp等诸多映射服务商，一键式配置、启动映射服务  
@@ -29,11 +30,13 @@ Windows 7 及以上系统
 
 ### 下载地址：
 官网：  
-[点击下载](https://file.mslmc.cn/MSL.exe)  
+[点击下载](https://file.mslmc.cn/MSL.exe)
+  
 蓝奏云：  
 https://wwyo.lanzouy.com/b02vailjc  
-密码:6666  
-Github Release  
+密码:6666
+  
+Github Release：  
 https://github.com/MSLTeam/MSL/releases
 
 ### 文档：
