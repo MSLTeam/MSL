@@ -1,4 +1,4 @@
-<img src="MSL/icon.ico" height="256">
+<img src="MSL/icon.ico" height="128">
 
 # Minecraft Server Launcher（MSL）
 ![GitHub Release](https://img.shields.io/github/v/release/MSLTeam/MSL)
@@ -7,7 +7,7 @@
 ![GitHub Issues or Pull Requests](https://img.shields.io/github/issues/MSLTeam/MSL)
 ![GitHub Repo stars](https://img.shields.io/github/stars/MSLTeam/MSL)
 
-这是一个使用WPF制作的面向Win系统的Minecraft玩家联机工具  
+这是一个使用WPF制作的面向Win系统的Minecraft玩家联机工具    
 本软件支持：  
   开服联机：界面友好，操作简单，方便您创建和管理您的联机服务器  
   FRP局域网联机：我们接入了OpenFrp、ChmlFrp等诸多映射服务商，一键式配置、启动映射服务  
