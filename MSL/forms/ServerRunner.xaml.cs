@@ -1812,7 +1812,7 @@ namespace MSL
                 }
                 else if (msg.Contains("Exception in thread \"main\""))
                 {
-                    foundProblems += "*服务端核心Main方法报错，可能是Java版本不正确，请尝试更换Java版本！\n";
+                    foundProblems += "*服务端核心Main方法报错，可能是Java版本不正确或服务端（及库文件）不完整，请尝试更换Java版本或重新下载安装服务端核心！\n";
                 }
             }
             if (msg.Contains("Could not load") && msg.Contains("plugin"))
