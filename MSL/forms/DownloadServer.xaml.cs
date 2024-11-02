@@ -143,7 +143,7 @@ namespace MSL.pages
             }
             if (!IsInstallForge)
             {
-                MagicShow.ShowMsgDialog(this, "下载完成！服务端核心放置在“MSL\\ServerCores”文件夹中！", "提示");
+                MagicShow.ShowMsgDialog(this, "下载完成！服务端核心放置在“MSL\\Downloads”文件夹中！", "提示");
                 return;
             }
 
