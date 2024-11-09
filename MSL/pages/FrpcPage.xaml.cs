@@ -142,7 +142,7 @@ namespace MSL.pages
                     case "-1"://自定义frp，使用官版
                         frpcExeName = "frpc_official.exe";
                         arguments = "-c frpc.toml"; //启动命令
-                        downloadFileName = "frpc.exe";
+                        downloadFileName = "frpc_official.exe";
                         if (!File.Exists($"MSL\\frp\\{frpcExeName}"))
                         {
                             downloadUrl = (await HttpService.GetApiContentAsync("download/frpc/Official/amd64?os=" + osver))["data"]["url"].ToString();

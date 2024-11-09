@@ -49,8 +49,47 @@ namespace MSL.pages.frpProviders
                 {
                     string serverInfo = valuePair.Key;
                     JObject serverDetails = (JObject)valuePair.Value;
+                    int freeC = 0;
                     foreach (var value in serverDetails)
                     {
+                        if (serverInfo.Contains("免费"))
+                        {
+                            freeC++;
+                        }
+                    }
+                    Random random = new Random();
+                    int free = freeC = random.Next(0, freeC+1);
+                    if (free != 0)
+                    {
+                        foreach (var value in serverDetails)
+                        {
+                            free--;
+                            if (free != 0)
+                            {
+                                continue;
+                            }
+                            string serverName = value.Key;
+                            string serverAddress = value.Value["server_addr"].ToString();
+                            string serverPort = value.Value["server_port"].ToString();
+                            string minPort = value.Value["min_open_port"].ToString();
+                            string maxPort = value.Value["max_open_port"].ToString();
+
+                            list1.Add(serverAddress);
+                            list2.Add(serverPort);
+                            list3.Add(minPort);
+                            list4.Add(maxPort);
+
+                            string _serverName = "[" + serverInfo + "]" + serverName;
+                            ServerPingTest(_serverName, serverAddress, id);
+                            id++;
+                        }
+                    }
+                    foreach (var value in serverDetails)
+                    {
+                        if (!serverInfo.Contains("付费"))
+                        {
+                            continue;
+                        }
                         string serverName = value.Key;
                         string serverAddress = value.Value["server_addr"].ToString();
                         string serverPort = value.Value["server_port"].ToString();
