@@ -4135,25 +4135,24 @@ namespace MSL
 
         ///////////这是定时任务
 
-        List<int> taskID = new List<int>();
-        Dictionary<int, int> taskTimers = new Dictionary<int, int>();
+        SortedDictionary<int,bool> taskFlag = new SortedDictionary<int, bool>(); // 后面的bool表示该任务是否运行
+        Dictionary<int, KeyValuePair<int,int>> taskTimers = new Dictionary<int, KeyValuePair<int, int>>(); // KeyValuePair里，前面的int为timer的周期，后面的为周期单位（1为秒，2为毫秒）
         Dictionary<int, string> taskCmds = new Dictionary<int, string>();
-        Dictionary<int, bool> stopTasks = new Dictionary<int, bool>();
         private void addTask_Click(object sender, RoutedEventArgs e)
         {
-            if (taskID.Count == 0)
+            if (taskFlag.Count == 0)
             {
-                taskID.Add(0);
+                taskFlag.Add(0, false);
             }
             else
             {
-                taskID.Add(taskID.Max() + 1);
+                taskFlag.Add(taskFlag.Keys.Max() + 1, false);
             }
             //MessageBox.Show(taskID.Max().ToString());
-            tasksList.ItemsSource = taskID.ToArray();
-            stopTasks.Add(taskID.Max(), true);
-            taskTimers.Add(taskID.Max(), 10);
-            taskCmds.Add(taskID.Max(), "say Hello World!");
+            tasksList.ItemsSource = taskFlag.Keys.ToArray();
+            KeyValuePair<int,int> defaultTimerTick = new KeyValuePair<int, int>(10,1);
+            taskTimers.Add(taskFlag.Keys.Max(), defaultTimerTick);
+            taskCmds.Add(taskFlag.Keys.Max(), "say Hello World!");
             //tasksList.Items.Add(taskID.Max());
             loadOrSaveTaskConfig.Content = "保存任务配置";
         }
@@ -4167,15 +4166,14 @@ namespace MSL
                     MagicShow.ShowMsgDialog(this, "请先停止任务！", "警告");
                     return;
                 }
-                int selectedIndex = tasksList.SelectedIndex;
-                int selectedTaskID = taskID[selectedIndex];
+                int selectedID = int.Parse(tasksList.SelectedItem.ToString());
+                //int selectedTaskID = taskID[selectedIndex];
 
-                stopTasks.Remove(selectedTaskID);
-                taskTimers.Remove(selectedTaskID);
-                taskCmds.Remove(selectedTaskID);
+                taskTimers.Remove(selectedID);
+                taskCmds.Remove(selectedID);
 
-                taskID.RemoveAt(selectedIndex);
-                tasksList.ItemsSource = taskID.ToArray();
+                taskFlag.Remove(selectedID);
+                tasksList.ItemsSource = taskFlag.Keys.ToArray();
 
                 if (tasksList.Items.Count == 0)
                 {
@@ -4188,7 +4186,8 @@ namespace MSL
         {
             if (tasksList.SelectedIndex != -1)
             {
-                if (stopTasks[taskID[tasksList.SelectedIndex]] == false)
+                int selectedID = int.Parse(tasksList.SelectedItem.ToString());
+                if (taskFlag[selectedID] == true)
                 {
                     startTimercmd.Content = "停止定时任务";
                 }
@@ -4197,8 +4196,9 @@ namespace MSL
                     startTimercmd.Content = "启动定时任务";
                 }
                 timerCmdout.Text = "无";
-                timercmdTime.Text = taskTimers[taskID[tasksList.SelectedIndex]].ToString();
-                timercmdCmd.Text = taskCmds[taskID[tasksList.SelectedIndex]];
+                timercmdTime.Text = taskTimers[selectedID].Key.ToString();
+                TaskUnit.SelectedIndex = taskTimers[selectedID].Value - 1;
+                timercmdCmd.Text = taskCmds[selectedID];
             }
             else
             {
@@ -4234,15 +4234,17 @@ namespace MSL
         {
             try
             {
+                int selectedUnit = 0;
                 switch (TaskUnit.SelectedIndex)
                 {
                     case 0:
-                        taskTimers[taskID[tasksList.SelectedIndex]] = int.Parse(timercmdTime.Text) * 1000;
+                        selectedUnit = 1;
                         break;
                     case 1:
-                        taskTimers[taskID[tasksList.SelectedIndex]] = int.Parse(timercmdTime.Text);
+                        selectedUnit = 2;
                         break;
                 }
+                taskTimers[int.Parse(tasksList.SelectedItem.ToString())] = new KeyValuePair<int, int>(int.Parse(timercmdTime.Text), selectedUnit);
             }
             catch
             {
@@ -4254,7 +4256,7 @@ namespace MSL
         {
             if (tasksList.SelectedIndex != -1)
             {
-                taskCmds[taskID[tasksList.SelectedIndex]] = timercmdCmd.Text;
+                taskCmds[int.Parse(tasksList.SelectedItem.ToString())] = timercmdCmd.Text;
             }
         }
 
@@ -4262,16 +4264,23 @@ namespace MSL
         {
             try
             {
+                int selectedID = int.Parse(tasksList.SelectedItem.ToString());
                 if (startTimercmd.Content.ToString() == "启动定时任务")
                 {
-                    stopTasks[taskID[tasksList.SelectedIndex]] = false;
-                    int i = taskID[tasksList.SelectedIndex];
-                    Task.Run(() => TimedTasks(i, taskTimers[i], taskCmds[i]));
+                    taskFlag[selectedID] = true;
+                    int time = taskTimers[selectedID].Key;
+                    switch (taskTimers[selectedID].Value)
+                    {
+                        case 1:
+                            time = time * 1000;
+                            break;
+                    }
+                    Task.Run(() => TimedTasks(selectedID, time, taskCmds[selectedID]));
                     startTimercmd.Content = "停止定时任务";
                 }
                 else
                 {
-                    stopTasks[taskID[tasksList.SelectedIndex]] = true;
+                    taskFlag[selectedID] = false;
                     startTimercmd.Content = "启动定时任务";
                 }
             }
@@ -4285,7 +4294,7 @@ namespace MSL
         {
             try
             {
-                while (!stopTasks[id])
+                while (taskFlag[id])
                 {
                     try
                     {
@@ -4301,7 +4310,7 @@ namespace MSL
                                 {
                                     ServerProcess.StandardInput.WriteLine(cmd);
                                 }
-                                if (tasksList.SelectedIndex != -1 && taskID[tasksList.SelectedIndex] == id)
+                                if (tasksList.SelectedIndex != -1 && int.Parse(tasksList.SelectedItem.ToString()) == id)
                                 {
                                     timerCmdout.Text = "执行成功  时间：" + DateTime.Now.ToString("F");
                                 }
@@ -4316,7 +4325,7 @@ namespace MSL
                     {
                         Dispatcher.Invoke(() =>
                         {
-                            if (tasksList.SelectedIndex != -1 && taskID[tasksList.SelectedIndex] == id)
+                            if (tasksList.SelectedIndex != -1 && int.Parse(tasksList.SelectedItem.ToString()) == id)
                             {
                                 timerCmdout.Text = "执行失败  时间：" + DateTime.Now.ToString("F");
                             }
@@ -4331,84 +4340,73 @@ namespace MSL
             }
         }
 
-        private void loadOrSaveTaskConfig_Click(object sender, RoutedEventArgs e)
+        private void LoadOrSaveTaskConfig_Click(object sender, RoutedEventArgs e)
         {
+            string filePath = @"MSL\ServerList.json";
+
+            // 加载任务配置
             if (loadOrSaveTaskConfig.Content.ToString() == "加载任务配置")
             {
-                JObject jsonObject = JObject.Parse(File.ReadAllText(@"MSL\ServerList.json", Encoding.UTF8));
-                JObject _json = (JObject)jsonObject[RserverID.ToString()];
+                JObject jsonObject = JObject.Parse(File.ReadAllText(filePath, Encoding.UTF8));
+                JObject serverJson = (JObject)jsonObject[RserverID.ToString()];
 
-                if (_json["timedtasks"] != null)
+                if (serverJson["timedtasks"] != null)
                 {
-                    // Access data
-                    //JArray taskNameFromFile = (JArray)_json["timedtasks"]["taskName"];
-                    JArray taskIDFromFile = (JArray)_json["timedtasks"]["taskID"];
-                    JObject taskTimersFromFile = (JObject)_json["timedtasks"]["taskTimers"];
-                    JObject taskCmdsFromFile = (JObject)_json["timedtasks"]["taskCmds"];
-                    JObject stopTasksFromFile = (JObject)_json["timedtasks"]["stopTasks"];
-
-                    // Process data and clear existing lists
-                    //tasksList.Items.Clear();
-                    taskID.Clear();
+                    // 清空现有任务列表
+                    taskFlag.Clear();
                     taskTimers.Clear();
                     taskCmds.Clear();
-                    stopTasks.Clear();
 
-                    // Process taskName
-                    /*
-                    foreach (var taskname in taskNameFromFile)
+                    // 解析 JSON 数据
+                    JObject taskTimersFromFile = (JObject)serverJson["timedtasks"];
+                    foreach (var taskJson in taskTimersFromFile)
                     {
-                        tasksList.Items.Add(taskname);
-                    }*/
+                        int taskId = int.Parse(taskJson.Key);
+                        JObject taskDetails = (JObject)taskJson.Value;
 
-                    // Process taskID
-                    foreach (var taskid in taskIDFromFile)
-                    {
-                        taskID.Add((int)taskid);
+                        // 直接更新现有集合
+                        taskFlag.Add(taskId,false);
+                        taskTimers[taskId] = new KeyValuePair<int, int>(
+                            (int)taskDetails["Interval"],
+                            (int)taskDetails["Unit"]
+                        );
+                        taskCmds[taskId] = (string)taskDetails["Command"];
                     }
 
-                    // Process taskTimers
-                    foreach (var tasktimer in taskTimersFromFile)
-                    {
-                        taskTimers.Add(int.Parse(tasktimer.Key), (int)tasktimer.Value);
-                    }
-
-                    // Process taskCmds
-                    foreach (var taskcmd in taskCmdsFromFile)
-                    {
-                        taskCmds.Add(int.Parse(taskcmd.Key), (string)taskcmd.Value);
-                    }
-
-                    // Process stopTasks
-                    foreach (var stoptask in stopTasksFromFile)
-                    {
-                        stopTasks.Add(int.Parse(stoptask.Key), (bool)stoptask.Value);
-                    }
-                    tasksList.ItemsSource = taskID.ToArray();
+                    // 更新任务列表显示
+                    tasksList.ItemsSource = taskFlag.Keys.ToArray();
                 }
+
                 Growl.Success("加载成功！");
                 if (tasksList.Items.Count != 0)
                 {
                     loadOrSaveTaskConfig.Content = "保存任务配置";
                 }
             }
+            // 保存任务配置
             else
             {
-                JObject data = new JObject(
-            new JProperty("taskName", new JArray(tasksList.Items)),
-            new JProperty("taskID", new JArray(taskID)),
-            new JProperty("taskTimers", new JObject(taskTimers.Select(kv => new JProperty(kv.Key.ToString(), kv.Value)))),
-            new JProperty("taskCmds", new JObject(taskCmds.Select(kv => new JProperty(kv.Key.ToString(), kv.Value)))),
-            new JProperty("stopTasks", new JObject(stopTasks.Select(kv => new JProperty(kv.Key.ToString(), kv.Value))))
-        );
-                JObject jsonObject = JObject.Parse(File.ReadAllText(@"MSL\ServerList.json", Encoding.UTF8));
-                JObject _json = (JObject)jsonObject[RserverID.ToString()];
-                _json["timedtasks"] = data;
-                jsonObject[RserverID.ToString()] = _json;
-                File.WriteAllText("MSL\\ServerList.json", Convert.ToString(jsonObject), Encoding.UTF8);
+                JObject taskTimersJson = new JObject(
+                    taskFlag.Select(id => new JProperty(
+                        id.Key.ToString(),
+                        new JObject(
+                            new JProperty("Interval", taskTimers[id.Key].Key),
+                            new JProperty("Unit", taskTimers[id.Key].Value),
+                            new JProperty("Command", taskCmds[id.Key])
+                        )
+                    ))
+                );
+
+                JObject jsonObject = JObject.Parse(File.ReadAllText(filePath, Encoding.UTF8));
+                JObject serverJson = (JObject)jsonObject[RserverID.ToString()];
+                serverJson["timedtasks"] = taskTimersJson;
+                jsonObject[RserverID.ToString()] = serverJson;
+
+                File.WriteAllText(filePath, Convert.ToString(jsonObject), Encoding.UTF8);
                 Growl.Success("保存成功！");
             }
         }
+
 
         private void delTaskConfig_Click(object sender, RoutedEventArgs e)
         {
@@ -4417,7 +4415,7 @@ namespace MSL
             _json.Remove("timedtasks");
             jsonObject[RserverID.ToString()] = _json;
             File.WriteAllText("MSL\\ServerList.json", Convert.ToString(jsonObject), Encoding.UTF8);
-            Growl.Success("删除成功！");
+            Growl.Success("清除成功！");
         }
         #endregion
 

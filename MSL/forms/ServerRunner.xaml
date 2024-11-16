@@ -659,8 +659,8 @@
                                     </Grid.RowDefinitions>
                                     <Button Grid.Row="0" x:Name="addTask" Height="80" Width="300" Click="addTask_Click" Content="添加新任务" FontSize="18"/>
                                     <Button Grid.Row="1" x:Name="delTask" Height="80" Width="300" Click="delTask_Click" FontSize="18" Content="删除所选任务"/>
-                                    <Button Grid.Row="2" x:Name="loadOrSaveTaskConfig" Height="70" Width="145" Click="loadOrSaveTaskConfig_Click" FontSize="18" Content="加载任务配置" HorizontalAlignment="Left"/>
-                                    <Button Grid.Row="2" x:Name="delTaskConfig" Height="70" Width="145" Click="delTaskConfig_Click" FontSize="18" Content="删除任务配置" HorizontalAlignment="Right"/>
+                                    <Button Grid.Row="2" x:Name="loadOrSaveTaskConfig" Height="70" Width="145" Click="LoadOrSaveTaskConfig_Click" FontSize="18" Content="加载任务配置" HorizontalAlignment="Left"/>
+                                    <Button Grid.Row="2" x:Name="delTaskConfig" Height="70" Width="145" Click="delTaskConfig_Click" FontSize="18" Content="清除任务配置" HorizontalAlignment="Right"/>
                                 </Grid>
                             </Grid>
                         </controls:MagicCard>
