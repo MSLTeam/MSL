@@ -56,6 +56,7 @@ namespace MSL
         private string RserverJVM;
         private string RserverJVMcmd;
         private string Rserverbase;
+        private int Rservermode;
 
         /// <summary>
         /// 服务器运行窗口
@@ -218,6 +219,15 @@ namespace MSL
             Rserverserver = _json["core"].ToString();
             RserverJVM = _json["memory"].ToString();
             RserverJVMcmd = _json["args"].ToString();
+            if (_json.ContainsKey("mode")) // 1为自定义模式
+            {
+                Rservermode = int.Parse(_json["mode"].ToString());
+            }
+            else
+            {
+                Rservermode = 0;
+            }
+            
             if (_json["autostartServer"] != null && _json["autostartServer"].ToString() == "True")
             {
                 autoStartserver.IsChecked = true;
@@ -767,20 +777,28 @@ namespace MSL
                 }
 
                 string fileforceUTF8Jvm = "";
-                if (fileforceUTF8encoding.IsChecked == true && !RserverJVMcmd.Contains("-Dfile.encoding=UTF-8"))
+                if(Rservermode == 0)
                 {
-                    fileforceUTF8Jvm = "-Dfile.encoding=UTF-8 ";
-                }
+                    if (fileforceUTF8encoding.IsChecked == true && !RserverJVMcmd.Contains("-Dfile.encoding=UTF-8"))
+                    {
+                        fileforceUTF8Jvm = "-Dfile.encoding=UTF-8 ";
+                    }
 
-                if (Rserverserver.StartsWith("@libraries/"))
-                {
-                    StartServer(RserverJVM + " " + fileforceUTF8Jvm + RserverJVMcmd + " " + Rserverserver + " nogui");
+                    if (Rserverserver.StartsWith("@libraries/"))
+                    {
+                        StartServer(RserverJVM + " " + fileforceUTF8Jvm + RserverJVMcmd + " " + Rserverserver + " nogui");
+                    }
+                    else
+                    {
+                        StartServer(RserverJVM + " " + fileforceUTF8Jvm + RserverJVMcmd + " -jar \"" + Rserverserver + "\" nogui");
+                    }
+                    //GC.Collect();
                 }
                 else
                 {
-                    StartServer(RserverJVM + " " + fileforceUTF8Jvm + RserverJVMcmd + " -jar \"" + Rserverserver + "\" nogui");
+                    StartServer(RserverJVMcmd);
                 }
-                //GC.Collect();
+
             }
             catch (Exception a)
             {
@@ -906,8 +924,16 @@ namespace MSL
                         conptyWindow.Activated += Window_Activated;
                         conptyWindow.Deactivated += Window_Deactivated;
                         conptyWindow.serverbase = Rserverbase;
-                        conptyWindow.java = Rserverjava;
-                        conptyWindow.launcharg = StartFileArg;
+                        if (Rservermode == 0)
+                        {
+                            conptyWindow.java = Rserverjava;
+                            conptyWindow.launcharg = StartFileArg;
+                        }
+                        else
+                        {
+                            conptyWindow.java = "cmd.exe";
+                            conptyWindow.launcharg = "/c " + StartFileArg;
+                        }
                         conptyWindow.Owner = this;
                         conptyWindow.Width = this.ActualWidth - Tab_Home.ActualWidth - 10;
                         conptyWindow.Height = this.ActualHeight - this.NonClientAreaHeight - 15;
@@ -975,8 +1001,16 @@ namespace MSL
             {
                 Directory.CreateDirectory(Rserverbase);
                 ServerProcess.StartInfo.WorkingDirectory = Rserverbase;
-                ServerProcess.StartInfo.FileName = Rserverjava;
-                ServerProcess.StartInfo.Arguments = StartFileArg;
+                if(Rservermode == 0) 
+                {
+                    ServerProcess.StartInfo.FileName = Rserverjava;
+                    ServerProcess.StartInfo.Arguments = StartFileArg;
+                }
+                else
+                {
+                    ServerProcess.StartInfo.FileName = "cmd.exe";
+                    ServerProcess.StartInfo.Arguments = "/c " + StartFileArg;
+                }
                 ServerProcess.StartInfo.CreateNoWindow = true;
                 ServerProcess.StartInfo.UseShellExecute = false;
                 ServerProcess.StartInfo.RedirectStandardInput = true;
@@ -2871,6 +2905,29 @@ namespace MSL
         {
             try
             {
+                //检测是否自定义模式
+                if(Rservermode == 1)
+                {
+                    LabelArgsText.Content = "自定义启动参数:";
+                    GridServerCore.Visibility = Visibility.Collapsed;
+                    GridJavaSet.Visibility = Visibility.Collapsed;
+                    GridJavaRem.Visibility = Visibility.Collapsed;
+                    DivJavaSet.Visibility = Visibility.Collapsed;
+                    DivJvmSet.Visibility = Visibility.Collapsed;
+                    DivRemSet.Visibility = Visibility.Collapsed;
+                    TextArgsTips.Text = "提示：您正在使用自定义参数模式哦~";
+                }
+                else
+                {
+                    LabelArgsText.Content = "服务器JVM参数:";
+                    GridServerCore.Visibility = Visibility.Visible;
+                    GridJavaSet.Visibility = Visibility.Visible;
+                    GridJavaRem.Visibility = Visibility.Visible;
+                    DivJavaSet.Visibility = Visibility.Visible;
+                    DivJvmSet.Visibility = Visibility.Visible;
+                    DivRemSet.Visibility = Visibility.Visible;
+                    TextArgsTips.Text = "提示：一般格式为 -参数，如 -Dlog4j2.formatMsgNoLookups=true，非必要无需填写";
+                }
                 nAme.Text = Rservername;
                 server.Text = Rserverserver;
                 memorySlider.Maximum = GetPhisicalMemory() / 1024.0 / 1024.0;

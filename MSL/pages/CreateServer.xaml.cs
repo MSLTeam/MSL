@@ -36,6 +36,7 @@ namespace MSL.pages
         private string servercore;
         private string servermemory;
         private string serverargs;
+        private int launchmode = 0; //0为默认启动jar的模式 1为完全自定启动指令模式
 
         public CreateServer()
         {
@@ -554,6 +555,12 @@ namespace MSL.pages
             }
         }
 
+        private async void usejvNull_Checked(object sender, RoutedEventArgs e)
+        {
+            txjava.IsEnabled = false;
+            a0002_Copy.IsEnabled = false;
+        }
+
         private void useJVself_Checked(object sender, RoutedEventArgs e)
         {
             txjava.IsEnabled = true;
@@ -565,12 +572,21 @@ namespace MSL.pages
             {
                 txb3.IsEnabled = false;
                 a0002.IsEnabled = false;
+                textCustomCmd.IsEnabled = false;
             }
         }
         private void useServerself_Checked(object sender, RoutedEventArgs e)
         {
             txb3.IsEnabled = true;
             a0002.IsEnabled = true;
+            textCustomCmd.IsEnabled = false;
+        }
+
+        private void useCustomCmd_Checked(object sender, RoutedEventArgs e)
+        {
+            textCustomCmd.IsEnabled = true;
+            txb3.IsEnabled = false;
+            a0002.IsEnabled = false;
         }
 
         private async void CustomModeDirNext_Click(object sender, RoutedEventArgs e)
@@ -629,6 +645,9 @@ namespace MSL.pages
             bool noNext = false;
             CustomModeJavaNext.IsEnabled = false;
             CustomModeJavaReturn.IsEnabled = false;
+            usedownloadserver.IsEnabled = true;
+            usedownloadserver.IsChecked = true;
+            useServerself.IsEnabled = true;
             if (useJVself.IsChecked == true)
             {
                 Growl.Info("正在检查所选Java可用性，请稍等……");
@@ -650,6 +669,14 @@ namespace MSL.pages
             else if (usejvPath.IsChecked == true)
             {
                 serverjava = "Java";
+                await CheckServerPackCore();
+            }
+            else if (usejvNull.IsChecked == true)
+            {
+                serverjava = "";
+                usedownloadserver.IsEnabled = false;
+                useServerself.IsEnabled = false;
+                useCustomCmd.IsChecked = true;
                 await CheckServerPackCore();
             }
             else if (usecheckedjv.IsChecked == true)
@@ -735,11 +762,12 @@ namespace MSL.pages
                     }
                 }
             }
-            else
+            else if(useServerself.IsChecked == true) //自定义服务端核心文件
             {
                 try
                 {
                     Directory.CreateDirectory(serverbase);
+                    //检查文件是否存在在那个文件夹
                     string _filename = Path.GetFileName(txb3.Text);
                     if (File.Exists(serverbase + "\\" + _filename))
                     {
@@ -761,6 +789,8 @@ namespace MSL.pages
                             txb3.Text = AppDomain.CurrentDomain.BaseDirectory + txb3.Text;
                         }
                     }
+
+                    //检测用户输入的是单个文件还是完整路径
                     string fullFileName;
                     if (File.Exists(serverbase + "\\" + txb3.Text))
                     {
@@ -770,6 +800,8 @@ namespace MSL.pages
                     {
                         fullFileName = txb3.Text;
                     }
+
+                    //检查是否为forge端
                     if (Functions.CheckForgeInstaller(fullFileName))
                     {
                         bool dialog = await MagicShow.ShowMsgDialogAsync(Window.GetWindow(this), "您选择的服务端疑似是forge安装器，是否将其展开安装？\n如果不展开安装，服务器可能无法开启！", "提示", true, "取消");
@@ -794,6 +826,16 @@ namespace MSL.pages
                 {
                     MagicShow.ShowMsgDialog(Window.GetWindow(this), ex.Message, "错误");
                 }
+            }
+            else //自定义指令模式
+            {
+                //不懂 直接copy了
+                sJVM.IsSelected = true;
+                sJVM.IsEnabled = true;
+                sserver.IsEnabled = false;
+                launchmode = 1; // 1是自定义命令模式
+                serverargs = textCustomCmd.Text; //存放完整的args
+                returnMode = 6;//我猜 这应该是步骤代码吧...
             }
         }
 
@@ -1506,7 +1548,8 @@ namespace MSL.pages
                         { "base", serverbase },
                         { "core", servercore },
                         { "memory", servermemory },
-                        { "args", serverargs }
+                        { "args", serverargs },
+                        {"mode",launchmode }
                         };
                 if (ConptyModeBtn.IsChecked == true)
                 {
@@ -1585,5 +1628,7 @@ namespace MSL.pages
             GC.WaitForPendingFinalizers(); // wait until finalizers executed
             GC.Collect(); // collect finalized objects
         }
+
+
     }
 }
