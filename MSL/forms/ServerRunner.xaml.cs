@@ -2990,6 +2990,7 @@ namespace MSL
                     {
                         if (keyValuePairs["javaList"] != null)
                         {
+                            selectCheckedJavaComb.ItemsSource = null;
                             selectCheckedJavaComb.ItemsSource = keyValuePairs["javaList"];
                             selectCheckedJavaComb.SelectedIndex = 0;
                         }
