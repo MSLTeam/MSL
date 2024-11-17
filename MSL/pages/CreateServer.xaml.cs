@@ -603,19 +603,21 @@ namespace MSL.pages
             {
                 Growl.Error("出现错误，获取Java版本列表失败！");
             }
+            
             try
             {
                 JObject keyValuePairs = new JObject((JObject)JsonConvert.DeserializeObject(File.ReadAllText("MSL\\config.json")));
                 if (keyValuePairs["javaList"] != null)
                 {
+                    selectCheckedJavaComb.ItemsSource = null;
                     selectCheckedJavaComb.ItemsSource = keyValuePairs["javaList"];
                     selectCheckedJavaComb.SelectedIndex = 0;
                 }
             }
-            catch
+            catch(Exception ex)
             {
-                Console.WriteLine("Load Local-Java-List Failed(From Configuration)");
-            }
+                Console.WriteLine("Load Local-Java-List Failed(From Configuration)" + ex.ToString());
+            } 
             sjava.IsSelected = true;
             sjava.IsEnabled = true;
             welcome.IsEnabled = false;
