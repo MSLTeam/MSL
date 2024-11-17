@@ -1017,7 +1017,7 @@ namespace MSL
                 ServerProcess.StartInfo.RedirectStandardOutput = true;
                 ServerProcess.StartInfo.RedirectStandardError = true;
                 ServerProcess.EnableRaisingEvents = true;
-                if (outputCmdEncoding.Content.ToString() == "输出编码:UTF8")
+                if (outputCmdEncoding.Content.ToString() == "UTF8")
                 {
                     ServerProcess.StartInfo.StandardOutputEncoding = Encoding.UTF8;
                     ServerProcess.StartInfo.StandardErrorEncoding = Encoding.UTF8;
