@@ -3530,14 +3530,22 @@ namespace MSL
             try
             {
                 string content;
-                if (Rserverserver.StartsWith("@libraries/"))
+                if(Rservermode == 0)
                 {
-                    content = "@ECHO OFF\r\n\"" + Rserverjava + "\" " + RserverJVM + " " + RserverJVMcmd + " " + Rserverserver + " nogui" + "\r\npause";
+                    if (Rserverserver.StartsWith("@libraries/"))
+                    {
+                        content = "@ECHO OFF\r\n\"" + Rserverjava + "\" " + RserverJVM + " " + RserverJVMcmd + " " + Rserverserver + " nogui" + "\r\npause";
+                    }
+                    else
+                    {
+                        content = "@ECHO OFF\r\n\"" + Rserverjava + "\" " + RserverJVM + " " + RserverJVMcmd + " -jar \"" + Rserverserver + "\" nogui" + "\r\npause";
+                    }
                 }
                 else
                 {
-                    content = "@ECHO OFF\r\n\"" + Rserverjava + "\" " + RserverJVM + " " + RserverJVMcmd + " -jar \"" + Rserverserver + "\" nogui" + "\r\npause";
+                    content = "@ECHO OFF\r\n\""  + RserverJVMcmd + "\r\npause";
                 }
+
 
                 string filePath = Path.Combine(Rserverbase, "StartServer.bat");
                 File.WriteAllText(filePath, content, Encoding.Default);
