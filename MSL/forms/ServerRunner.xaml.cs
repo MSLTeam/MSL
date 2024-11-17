@@ -3083,77 +3083,80 @@ namespace MSL
                 {
                     RserverJVM = "-Xms" + memorySlider.ValueStart.ToString("f0") + "M" + " -Xmx" + memorySlider.ValueEnd.ToString("f0") + "M";
                 }
-                if (useDownJv.IsChecked == true)
-                {
-                    Growl.Info("获取Java地址……");
-                    int dwnJava = 0;
-                    try
+                if(Rservermode == 0) {
+                    if (useDownJv.IsChecked == true)
                     {
-                        dwnJava = await DownloadJava(selectJava.SelectedItem.ToString(), (await HttpService.GetApiContentAsync("download/java/" + selectJava.SelectedItem.ToString()))["data"]["url"].ToString());
-                        if (dwnJava == 1)
+                        Growl.Info("获取Java地址……");
+                        int dwnJava = 0;
+                        try
                         {
-                            MagicDialog dialog = new MagicDialog();
-                            dialog.ShowTextDialog(this, "解压中……");
-                            bool unzipJava = await UnzipJava();
-                            dialog.CloseTextDialog();
-                            if (!unzipJava)
+                            dwnJava = await DownloadJava(selectJava.SelectedItem.ToString(), (await HttpService.GetApiContentAsync("download/java/" + selectJava.SelectedItem.ToString()))["data"]["url"].ToString());
+                            if (dwnJava == 1)
                             {
-                                MagicShow.ShowMsgDialog(this, "安装失败，请查看是否有杀毒软件进行拦截！请确保添加信任或关闭杀毒软件后进行重新安装！", "错误");
+                                MagicDialog dialog = new MagicDialog();
+                                dialog.ShowTextDialog(this, "解压中……");
+                                bool unzipJava = await UnzipJava();
+                                dialog.CloseTextDialog();
+                                if (!unzipJava)
+                                {
+                                    MagicShow.ShowMsgDialog(this, "安装失败，请查看是否有杀毒软件进行拦截！请确保添加信任或关闭杀毒软件后进行重新安装！", "错误");
+                                    doneBtn1.IsEnabled = true;
+                                    refreahConfig.IsEnabled = true;
+                                    return;
+                                }
+                                Growl.Info("Java下载完成！");
+                            }
+                            else if (dwnJava == 2)
+                            {
+                                Growl.Success("完成！");
+                            }
+                            else
+                            {
+                                MagicShow.ShowMsgDialog(this, "下载取消！", "提示");
                                 doneBtn1.IsEnabled = true;
                                 refreahConfig.IsEnabled = true;
                                 return;
                             }
-                            Growl.Info("Java下载完成！");
                         }
-                        else if (dwnJava == 2)
+                        catch
                         {
-                            Growl.Success("完成！");
-                        }
-                        else
-                        {
-                            MagicShow.ShowMsgDialog(this, "下载取消！", "提示");
+                            Growl.Error("出现错误，请检查网络连接！");
                             doneBtn1.IsEnabled = true;
                             refreahConfig.IsEnabled = true;
                             return;
                         }
                     }
-                    catch
+                    else if (useSelf.IsChecked == true)
                     {
-                        Growl.Error("出现错误，请检查网络连接！");
-                        doneBtn1.IsEnabled = true;
-                        refreahConfig.IsEnabled = true;
-                        return;
+                        if (!Path.IsPathRooted(jAva.Text))
+                        {
+                            jAva.Text = AppDomain.CurrentDomain.BaseDirectory.ToString() + jAva.Text;
+                        }
+                        Growl.Info("正在检查所选Java可用性，请稍等……");
+                        (bool javaAvailability, string javainfo) = await JavaScanner.CheckJavaAvailabilityAsync(jAva.Text);
+                        if (javaAvailability)
+                        {
+                            Growl.Success("检测完毕，Java可用！\n" + "版本：" + javainfo);
+                        }
+                        else
+                        {
+                            MagicShow.ShowMsgDialog(this, "检测Java可用性失败，您的Java似乎不可用！请检查是否选择正确！", "错误");
+                            doneBtn1.IsEnabled = true;
+                            refreahConfig.IsEnabled = true;
+                            return;
+                        }
+                    }
+                    else if (usecheckedjv.IsChecked == true)
+                    {
+                        string a = selectCheckedJavaComb.Items[selectCheckedJavaComb.SelectedIndex].ToString();
+                        jAva.Text = a.Substring(a.IndexOf(":") + 2);
+                    }
+                    else// (useJvpath.IsChecked == true)
+                    {
+                        jAva.Text = "Java";
                     }
                 }
-                else if (useSelf.IsChecked == true)
-                {
-                    if (!Path.IsPathRooted(jAva.Text))
-                    {
-                        jAva.Text = AppDomain.CurrentDomain.BaseDirectory.ToString() + jAva.Text;
-                    }
-                    Growl.Info("正在检查所选Java可用性，请稍等……");
-                    (bool javaAvailability, string javainfo) = await JavaScanner.CheckJavaAvailabilityAsync(jAva.Text);
-                    if (javaAvailability)
-                    {
-                        Growl.Success("检测完毕，Java可用！\n" + "版本：" + javainfo);
-                    }
-                    else
-                    {
-                        MagicShow.ShowMsgDialog(this, "检测Java可用性失败，您的Java似乎不可用！请检查是否选择正确！", "错误");
-                        doneBtn1.IsEnabled = true;
-                        refreahConfig.IsEnabled = true;
-                        return;
-                    }
-                }
-                else if (usecheckedjv.IsChecked == true)
-                {
-                    string a = selectCheckedJavaComb.Items[selectCheckedJavaComb.SelectedIndex].ToString();
-                    jAva.Text = a.Substring(a.IndexOf(":") + 2);
-                }
-                else// (useJvpath.IsChecked == true)
-                {
-                    jAva.Text = "Java";
-                }
+                
                 //Directory.CreateDirectory(bAse.Text);
                 doneBtn1.IsEnabled = true;
                 refreahConfig.IsEnabled = true;
