@@ -288,7 +288,7 @@ namespace MSL
                 }
                 catch { Icon = null; }
             }
-            if (Rserverjava != "Java" && Rserverjava != "java")
+            if (Rserverjava != "Java" && Rserverjava != "java" && Rservermode == 0)
             {
                 if (!Path.IsPathRooted(Rserverjava))
                 {
