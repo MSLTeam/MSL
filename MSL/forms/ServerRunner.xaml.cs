@@ -1562,7 +1562,7 @@ namespace MSL
                                 File.WriteAllText("MSL\\ServerList.json", Convert.ToString(jsonObject), Encoding.UTF8);
                                 Dispatcher.InvokeAsync(() =>
                                 {
-                                    outputCmdEncoding.Content = "输出编码:" + encoding;
+                                    outputCmdEncoding.Content = encoding;
                                     Growl.Success("更改完毕！");
                                 });
                                 Task.Run(async () =>
