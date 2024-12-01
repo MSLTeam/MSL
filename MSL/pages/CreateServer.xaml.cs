@@ -555,7 +555,7 @@ namespace MSL.pages
             }
         }
 
-        private async void usejvNull_Checked(object sender, RoutedEventArgs e)
+        private void usejvNull_Checked(object sender, RoutedEventArgs e)
         {
             txjava.IsEnabled = false;
             a0002_Copy.IsEnabled = false;
@@ -619,7 +619,7 @@ namespace MSL.pages
             {
                 Growl.Error("出现错误，获取Java版本列表失败！");
             }
-            
+
             try
             {
                 JObject keyValuePairs = new JObject((JObject)JsonConvert.DeserializeObject(File.ReadAllText("MSL\\config.json")));
@@ -630,10 +630,10 @@ namespace MSL.pages
                     selectCheckedJavaComb.SelectedIndex = 0;
                 }
             }
-            catch(Exception ex)
+            catch (Exception ex)
             {
                 Console.WriteLine("Load Local-Java-List Failed(From Configuration)" + ex.ToString());
-            } 
+            }
             sjava.IsSelected = true;
             sjava.IsEnabled = true;
             welcome.IsEnabled = false;
@@ -762,7 +762,7 @@ namespace MSL.pages
                     }
                 }
             }
-            else if(useServerself.IsChecked == true) //自定义服务端核心文件
+            else if (useServerself.IsChecked == true) //自定义服务端核心文件
             {
                 try
                 {
@@ -1542,15 +1542,15 @@ namespace MSL.pages
                     File.WriteAllText(@"MSL\ServerList.json", string.Format("{{{0}}}", "\n"));
                 }
                 JObject _json = new JObject
-                        {
+                {
                         { "name", servername },
                         { "java", serverjava },
                         { "base", serverbase },
                         { "core", servercore },
                         { "memory", servermemory },
                         { "args", serverargs },
-                        {"mode",launchmode }
-                        };
+                        { "mode", launchmode }
+                };
                 if (ConptyModeBtn.IsChecked == true)
                 {
                     _json.Add("useConpty", "True");
@@ -1628,7 +1628,5 @@ namespace MSL.pages
             GC.WaitForPendingFinalizers(); // wait until finalizers executed
             GC.Collect(); // collect finalized objects
         }
-
-
     }
 }

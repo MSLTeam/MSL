@@ -56,7 +56,6 @@ namespace MSL
         private string RserverJVM;
         private string RserverJVMcmd;
         private string Rserverbase;
-        private int Rservermode;
 
         /// <summary>
         /// 服务器运行窗口
@@ -219,15 +218,6 @@ namespace MSL
             Rserverserver = _json["core"].ToString();
             RserverJVM = _json["memory"].ToString();
             RserverJVMcmd = _json["args"].ToString();
-            if (_json.ContainsKey("mode")) // 1为自定义模式
-            {
-                Rservermode = int.Parse(_json["mode"].ToString());
-            }
-            else
-            {
-                Rservermode = 0;
-            }
-            
             if (_json["autostartServer"] != null && _json["autostartServer"].ToString() == "True")
             {
                 autoStartserver.IsChecked = true;
@@ -288,7 +278,7 @@ namespace MSL
                 }
                 catch { Icon = null; }
             }
-            if (Rserverjava != "Java" && Rserverjava != "java" && Rservermode == 0)
+            if (Rserverjava != "Java" && Rserverjava != "java")
             {
                 if (!Path.IsPathRooted(Rserverjava))
                 {
@@ -504,7 +494,7 @@ namespace MSL
             }
             return false;
         }
-        
+
         #region 仪表盘
 
         //////////////////
@@ -777,28 +767,20 @@ namespace MSL
                 }
 
                 string fileforceUTF8Jvm = "";
-                if(Rservermode == 0)
+                if (fileforceUTF8encoding.IsChecked == true && !RserverJVMcmd.Contains("-Dfile.encoding=UTF-8"))
                 {
-                    if (fileforceUTF8encoding.IsChecked == true && !RserverJVMcmd.Contains("-Dfile.encoding=UTF-8"))
-                    {
-                        fileforceUTF8Jvm = "-Dfile.encoding=UTF-8 ";
-                    }
+                    fileforceUTF8Jvm = "-Dfile.encoding=UTF-8 ";
+                }
 
-                    if (Rserverserver.StartsWith("@libraries/"))
-                    {
-                        StartServer(RserverJVM + " " + fileforceUTF8Jvm + RserverJVMcmd + " " + Rserverserver + " nogui");
-                    }
-                    else
-                    {
-                        StartServer(RserverJVM + " " + fileforceUTF8Jvm + RserverJVMcmd + " -jar \"" + Rserverserver + "\" nogui");
-                    }
-                    //GC.Collect();
+                if (Rserverserver.StartsWith("@libraries/"))
+                {
+                    StartServer(RserverJVM + " " + fileforceUTF8Jvm + RserverJVMcmd + " " + Rserverserver + " nogui");
                 }
                 else
                 {
-                    StartServer(RserverJVMcmd);
+                    StartServer(RserverJVM + " " + fileforceUTF8Jvm + RserverJVMcmd + " -jar \"" + Rserverserver + "\" nogui");
                 }
-
+                //GC.Collect();
             }
             catch (Exception a)
             {
@@ -924,16 +906,8 @@ namespace MSL
                         conptyWindow.Activated += Window_Activated;
                         conptyWindow.Deactivated += Window_Deactivated;
                         conptyWindow.serverbase = Rserverbase;
-                        if (Rservermode == 0)
-                        {
-                            conptyWindow.java = Rserverjava;
-                            conptyWindow.launcharg = StartFileArg;
-                        }
-                        else
-                        {
-                            conptyWindow.java = "cmd.exe";
-                            conptyWindow.launcharg = "/c " + StartFileArg;
-                        }
+                        conptyWindow.java = Rserverjava;
+                        conptyWindow.launcharg = StartFileArg;
                         conptyWindow.Owner = this;
                         conptyWindow.Width = this.ActualWidth - Tab_Home.ActualWidth - 10;
                         conptyWindow.Height = this.ActualHeight - this.NonClientAreaHeight - 15;
@@ -1001,23 +975,15 @@ namespace MSL
             {
                 Directory.CreateDirectory(Rserverbase);
                 ServerProcess.StartInfo.WorkingDirectory = Rserverbase;
-                if(Rservermode == 0) 
-                {
-                    ServerProcess.StartInfo.FileName = Rserverjava;
-                    ServerProcess.StartInfo.Arguments = StartFileArg;
-                }
-                else
-                {
-                    ServerProcess.StartInfo.FileName = "cmd.exe";
-                    ServerProcess.StartInfo.Arguments = "/c " + StartFileArg;
-                }
+                ServerProcess.StartInfo.FileName = Rserverjava;
+                ServerProcess.StartInfo.Arguments = StartFileArg;
                 ServerProcess.StartInfo.CreateNoWindow = true;
                 ServerProcess.StartInfo.UseShellExecute = false;
                 ServerProcess.StartInfo.RedirectStandardInput = true;
                 ServerProcess.StartInfo.RedirectStandardOutput = true;
                 ServerProcess.StartInfo.RedirectStandardError = true;
                 ServerProcess.EnableRaisingEvents = true;
-                if (outputCmdEncoding.Content.ToString() == "UTF8")
+                if (outputCmdEncoding.Content.ToString() == "输出编码:UTF8")
                 {
                     ServerProcess.StartInfo.StandardOutputEncoding = Encoding.UTF8;
                     ServerProcess.StartInfo.StandardErrorEncoding = Encoding.UTF8;
@@ -1357,7 +1323,7 @@ namespace MSL
         {
             if (!ConptyCanOutLog)
             {
-                ConptyCanOutLog=true;
+                ConptyCanOutLog = true;
                 return;
             }
             //MessageBox.Show(msg);
@@ -1562,7 +1528,7 @@ namespace MSL
                                 File.WriteAllText("MSL\\ServerList.json", Convert.ToString(jsonObject), Encoding.UTF8);
                                 Dispatcher.InvokeAsync(() =>
                                 {
-                                    outputCmdEncoding.Content = encoding;
+                                    outputCmdEncoding.Content = "输出编码:" + encoding;
                                     Growl.Success("更改完毕！");
                                 });
                                 Task.Run(async () =>
@@ -1589,10 +1555,22 @@ namespace MSL
 
         private void LogHandleInfo(string msg)
         {
-            if ((msg.Contains("Done") && msg.Contains("For help")) || (msg.Contains("加载完成") && msg.Contains("如需帮助") || (msg.Contains("Server started."))))
+            if (msg.Contains("Done") && msg.Contains("For help"))
             {
                 getServerInfoLine = 101;
-                PrintLog("已成功开启服务器！你可以输入stop来关闭服务器！\r\n服务器本地IP通常为:127.0.0.1，想要远程进入服务器，需要开通公网IP或使用内网映射，详情查看开服器的内网映射界面。\r\n若控制台输出乱码日志，请去更多功能界面修改“输出编码”。", Brushes.Green);
+                PrintLog("已成功开启服务器！你可以输入stop来关闭服务器！\r\n服务器本地IP通常为:127.0.0.1，想要远程进入服务器，需要开通公网IP或使用内网映射，详情查看开服器的内网映射界面。", Brushes.Green);
+                Growl.Success("已成功开启服务器！");
+                serverStateLab.Content = "已开服";
+                if (conptyWindow != null)
+                {
+                    conptyWindow.ServerStatus.Text = "已开服";
+                }
+                GetServerInfoSys();
+            }
+            else if (msg.Contains("加载完成") && msg.Contains("如需帮助"))
+            {
+                getServerInfoLine = 101;
+                PrintLog("已成功开启服务器！你可以输入stop来关闭服务器！\r\n服务器本地IP通常为:127.0.0.1，想要远程进入服务器，需要开通公网IP或使用内网映射，详情参照开服器的内网映射界面。", Brushes.Green);
                 Growl.Success("已成功开启服务器！");
                 serverStateLab.Content = "已开服";
                 if (conptyWindow != null)
@@ -1901,7 +1879,7 @@ namespace MSL
                     else
                     {
                         Growl.Info("服务器已关闭！即将为您展示分析报告！");
-                        MagicShow.ShowMsgDialog(this, foundProblems+ "\nPS:软件检测不一定准确，若您无法解决，可将服务器日志发送给他人以寻求帮助，但请不要截图此弹窗！！！\n日志发送方式：\n1.直接截图控制台内容\n2.服务器目录\\logs\\latest.log\n3.前往“更多功能”界面上传至Internet", "服务器分析报告");
+                        MagicShow.ShowMsgDialog(this, foundProblems + "\nPS:软件检测不一定准确，若您无法解决，可将服务器日志发送给他人以寻求帮助，但请不要截图此弹窗！！！\n日志发送方式：\n1.直接截图控制台内容\n2.服务器目录\\logs\\latest.log\n3.前往“更多功能”界面上传至Internet", "服务器分析报告");
                         foundProblems = null;
                     }
                 }
@@ -2893,29 +2871,6 @@ namespace MSL
         {
             try
             {
-                //检测是否自定义模式
-                if(Rservermode == 1)
-                {
-                    LabelArgsText.Content = "自定义启动参数:";
-                    GridServerCore.Visibility = Visibility.Collapsed;
-                    GridJavaSet.Visibility = Visibility.Collapsed;
-                    GridJavaRem.Visibility = Visibility.Collapsed;
-                    DivJavaSet.Visibility = Visibility.Collapsed;
-                    DivJvmSet.Visibility = Visibility.Collapsed;
-                    DivRemSet.Visibility = Visibility.Collapsed;
-                    TextArgsTips.Text = "提示：您正在使用自定义参数模式哦~";
-                }
-                else
-                {
-                    LabelArgsText.Content = "服务器JVM参数:";
-                    GridServerCore.Visibility = Visibility.Visible;
-                    GridJavaSet.Visibility = Visibility.Visible;
-                    GridJavaRem.Visibility = Visibility.Visible;
-                    DivJavaSet.Visibility = Visibility.Visible;
-                    DivJvmSet.Visibility = Visibility.Visible;
-                    DivRemSet.Visibility = Visibility.Visible;
-                    TextArgsTips.Text = "提示：一般格式为 -参数，如 -Dlog4j2.formatMsgNoLookups=true，非必要无需填写";
-                }
                 nAme.Text = Rservername;
                 server.Text = Rserverserver;
                 memorySlider.Maximum = GetPhisicalMemory() / 1024.0 / 1024.0;
@@ -2978,7 +2933,6 @@ namespace MSL
                     {
                         if (keyValuePairs["javaList"] != null)
                         {
-                            selectCheckedJavaComb.ItemsSource = null;
                             selectCheckedJavaComb.ItemsSource = keyValuePairs["javaList"];
                             selectCheckedJavaComb.SelectedIndex = 0;
                         }
@@ -3072,80 +3026,77 @@ namespace MSL
                 {
                     RserverJVM = "-Xms" + memorySlider.ValueStart.ToString("f0") + "M" + " -Xmx" + memorySlider.ValueEnd.ToString("f0") + "M";
                 }
-                if(Rservermode == 0) {
-                    if (useDownJv.IsChecked == true)
+                if (useDownJv.IsChecked == true)
+                {
+                    Growl.Info("获取Java地址……");
+                    int dwnJava = 0;
+                    try
                     {
-                        Growl.Info("获取Java地址……");
-                        int dwnJava = 0;
-                        try
+                        dwnJava = await DownloadJava(selectJava.SelectedItem.ToString(), (await HttpService.GetApiContentAsync("download/java/" + selectJava.SelectedItem.ToString()))["data"]["url"].ToString());
+                        if (dwnJava == 1)
                         {
-                            dwnJava = await DownloadJava(selectJava.SelectedItem.ToString(), (await HttpService.GetApiContentAsync("download/java/" + selectJava.SelectedItem.ToString()))["data"]["url"].ToString());
-                            if (dwnJava == 1)
+                            MagicDialog dialog = new MagicDialog();
+                            dialog.ShowTextDialog(this, "解压中……");
+                            bool unzipJava = await UnzipJava();
+                            dialog.CloseTextDialog();
+                            if (!unzipJava)
                             {
-                                MagicDialog dialog = new MagicDialog();
-                                dialog.ShowTextDialog(this, "解压中……");
-                                bool unzipJava = await UnzipJava();
-                                dialog.CloseTextDialog();
-                                if (!unzipJava)
-                                {
-                                    MagicShow.ShowMsgDialog(this, "安装失败，请查看是否有杀毒软件进行拦截！请确保添加信任或关闭杀毒软件后进行重新安装！", "错误");
-                                    doneBtn1.IsEnabled = true;
-                                    refreahConfig.IsEnabled = true;
-                                    return;
-                                }
-                                Growl.Info("Java下载完成！");
-                            }
-                            else if (dwnJava == 2)
-                            {
-                                Growl.Success("完成！");
-                            }
-                            else
-                            {
-                                MagicShow.ShowMsgDialog(this, "下载取消！", "提示");
+                                MagicShow.ShowMsgDialog(this, "安装失败，请查看是否有杀毒软件进行拦截！请确保添加信任或关闭杀毒软件后进行重新安装！", "错误");
                                 doneBtn1.IsEnabled = true;
                                 refreahConfig.IsEnabled = true;
                                 return;
                             }
+                            Growl.Info("Java下载完成！");
                         }
-                        catch
+                        else if (dwnJava == 2)
                         {
-                            Growl.Error("出现错误，请检查网络连接！");
-                            doneBtn1.IsEnabled = true;
-                            refreahConfig.IsEnabled = true;
-                            return;
-                        }
-                    }
-                    else if (useSelf.IsChecked == true)
-                    {
-                        if (!Path.IsPathRooted(jAva.Text))
-                        {
-                            jAva.Text = AppDomain.CurrentDomain.BaseDirectory.ToString() + jAva.Text;
-                        }
-                        Growl.Info("正在检查所选Java可用性，请稍等……");
-                        (bool javaAvailability, string javainfo) = await JavaScanner.CheckJavaAvailabilityAsync(jAva.Text);
-                        if (javaAvailability)
-                        {
-                            Growl.Success("检测完毕，Java可用！\n" + "版本：" + javainfo);
+                            Growl.Success("完成！");
                         }
                         else
                         {
-                            MagicShow.ShowMsgDialog(this, "检测Java可用性失败，您的Java似乎不可用！请检查是否选择正确！", "错误");
+                            MagicShow.ShowMsgDialog(this, "下载取消！", "提示");
                             doneBtn1.IsEnabled = true;
                             refreahConfig.IsEnabled = true;
                             return;
                         }
                     }
-                    else if (usecheckedjv.IsChecked == true)
+                    catch
                     {
-                        string a = selectCheckedJavaComb.Items[selectCheckedJavaComb.SelectedIndex].ToString();
-                        jAva.Text = a.Substring(a.IndexOf(":") + 2);
-                    }
-                    else// (useJvpath.IsChecked == true)
-                    {
-                        jAva.Text = "Java";
+                        Growl.Error("出现错误，请检查网络连接！");
+                        doneBtn1.IsEnabled = true;
+                        refreahConfig.IsEnabled = true;
+                        return;
                     }
                 }
-                
+                else if (useSelf.IsChecked == true)
+                {
+                    if (!Path.IsPathRooted(jAva.Text))
+                    {
+                        jAva.Text = AppDomain.CurrentDomain.BaseDirectory.ToString() + jAva.Text;
+                    }
+                    Growl.Info("正在检查所选Java可用性，请稍等……");
+                    (bool javaAvailability, string javainfo) = await JavaScanner.CheckJavaAvailabilityAsync(jAva.Text);
+                    if (javaAvailability)
+                    {
+                        Growl.Success("检测完毕，Java可用！\n" + "版本：" + javainfo);
+                    }
+                    else
+                    {
+                        MagicShow.ShowMsgDialog(this, "检测Java可用性失败，您的Java似乎不可用！请检查是否选择正确！", "错误");
+                        doneBtn1.IsEnabled = true;
+                        refreahConfig.IsEnabled = true;
+                        return;
+                    }
+                }
+                else if (usecheckedjv.IsChecked == true)
+                {
+                    string a = selectCheckedJavaComb.Items[selectCheckedJavaComb.SelectedIndex].ToString();
+                    jAva.Text = a.Substring(a.IndexOf(":") + 2);
+                }
+                else// (useJvpath.IsChecked == true)
+                {
+                    jAva.Text = "Java";
+                }
                 //Directory.CreateDirectory(bAse.Text);
                 doneBtn1.IsEnabled = true;
                 refreahConfig.IsEnabled = true;
@@ -3519,22 +3470,14 @@ namespace MSL
             try
             {
                 string content;
-                if(Rservermode == 0)
+                if (Rserverserver.StartsWith("@libraries/"))
                 {
-                    if (Rserverserver.StartsWith("@libraries/"))
-                    {
-                        content = "@ECHO OFF\r\n\"" + Rserverjava + "\" " + RserverJVM + " " + RserverJVMcmd + " " + Rserverserver + " nogui" + "\r\npause";
-                    }
-                    else
-                    {
-                        content = "@ECHO OFF\r\n\"" + Rserverjava + "\" " + RserverJVM + " " + RserverJVMcmd + " -jar \"" + Rserverserver + "\" nogui" + "\r\npause";
-                    }
+                    content = "@ECHO OFF\r\n\"" + Rserverjava + "\" " + RserverJVM + " " + RserverJVMcmd + " " + Rserverserver + " nogui" + "\r\npause";
                 }
                 else
                 {
-                    content = "@ECHO OFF\r\n\""  + RserverJVMcmd + "\r\npause";
+                    content = "@ECHO OFF\r\n\"" + Rserverjava + "\" " + RserverJVM + " " + RserverJVMcmd + " -jar \"" + Rserverserver + "\" nogui" + "\r\npause";
                 }
-
 
                 string filePath = Path.Combine(Rserverbase, "StartServer.bat");
                 File.WriteAllText(filePath, content, Encoding.Default);
@@ -3959,7 +3902,7 @@ namespace MSL
                 shareLog.IsEnabled = true;
                 return;
             }
-            Growl.Info("正在上传，模式 " + uploadMode+"，请稍等……");
+            Growl.Info("正在上传，模式 " + uploadMode + "，请稍等……");
             //启动线程上传日志
             await UploadLogs(logs, true);
             shareLog.IsEnabled = true;
@@ -3974,7 +3917,7 @@ namespace MSL
                 {
                     strings[0] = "B";
                     strings[1] = conptyWindow.ConptyConsole.ConPTYTerm.GetConsoleText();
-                    
+
                 }
             }
             else
@@ -4007,7 +3950,7 @@ namespace MSL
             await UploadLogs(logs);
         }
 
-        private async Task UploadLogs(string logs,bool canUseOtherPlan=false)
+        private async Task UploadLogs(string logs, bool canUseOtherPlan = false)
         {
             string customUrl = "https://api.mclo.gs/1/log";
             int contentType = 2;
@@ -4192,8 +4135,8 @@ namespace MSL
 
         ///////////这是定时任务
 
-        SortedDictionary<int,bool> taskFlag = new SortedDictionary<int, bool>(); // 后面的bool表示该任务是否运行
-        Dictionary<int, KeyValuePair<int,int>> taskTimers = new Dictionary<int, KeyValuePair<int, int>>(); // KeyValuePair里，前面的int为timer的周期，后面的为周期单位（1为秒，2为毫秒）
+        SortedDictionary<int, bool> taskFlag = new SortedDictionary<int, bool>(); // 后面的bool表示该任务是否运行
+        Dictionary<int, KeyValuePair<int, int>> taskTimers = new Dictionary<int, KeyValuePair<int, int>>(); // KeyValuePair里，前面的int为timer的周期，后面的为周期单位（1为秒，2为毫秒）
         Dictionary<int, string> taskCmds = new Dictionary<int, string>();
         private void addTask_Click(object sender, RoutedEventArgs e)
         {
@@ -4207,7 +4150,7 @@ namespace MSL
             }
             //MessageBox.Show(taskID.Max().ToString());
             tasksList.ItemsSource = taskFlag.Keys.ToArray();
-            KeyValuePair<int,int> defaultTimerTick = new KeyValuePair<int, int>(10,1);
+            KeyValuePair<int, int> defaultTimerTick = new KeyValuePair<int, int>(10, 1);
             taskTimers.Add(taskFlag.Keys.Max(), defaultTimerTick);
             taskCmds.Add(taskFlag.Keys.Max(), "say Hello World!");
             //tasksList.Items.Add(taskID.Max());
@@ -4422,7 +4365,7 @@ namespace MSL
                         JObject taskDetails = (JObject)taskJson.Value;
 
                         // 直接更新现有集合
-                        taskFlag.Add(taskId,false);
+                        taskFlag.Add(taskId, false);
                         taskTimers[taskId] = new KeyValuePair<int, int>(
                             (int)taskDetails["Interval"],
                             (int)taskDetails["Unit"]
