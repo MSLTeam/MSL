@@ -165,8 +165,8 @@ namespace MSL
                 ModList.ItemsSource = list;
                 NowPageLabel.Content = "1";
             }
-            catch (OperationCanceledException)
-            {
+            catch(OperationCanceledException)
+            { 
                 return;
             }
             catch (Exception ex)
