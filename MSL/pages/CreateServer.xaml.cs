@@ -1628,7 +1628,5 @@ namespace MSL.pages
             GC.WaitForPendingFinalizers(); // wait until finalizers executed
             GC.Collect(); // collect finalized objects
         }
-
-
     }
 }

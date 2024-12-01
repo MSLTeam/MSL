@@ -736,46 +736,8 @@ namespace MSL
         {
             try
             {
-                string path1 = Rserverbase + "\\eula.txt";
-                if (!File.Exists(path1) || (File.Exists(path1) && !File.ReadAllText(path1).Contains("eula=true")))
-                {
-                    var shield = new Shield
-                    {
-                        Command = HandyControl.Interactivity.ControlCommands.OpenLink,
-                        CommandParameter = "https://aka.ms/MinecraftEULA",
-                        Subject = "https://aka.ms/MinecraftEULA",
-                        Status = LanguageManager.Instance["OpenWebsite"]
-                    };
-                    bool dialog = await MagicShow.ShowMsgDialogAsync(this, "开启Minecraft服务器需要接受Mojang的EULA，是否仔细阅读EULA条款（https://aka.ms/MinecraftEULA）并继续开服？", "提示", true, "否", "是", shield);
-                    if (dialog == true)
-                    {
-                        try
-                        {
-                            File.WriteAllText(path1, string.Empty);
-                            FileStream fs = new FileStream(path1, FileMode.Open, FileAccess.Read, FileShare.ReadWrite);
-                            StreamReader sr = new StreamReader(fs, Encoding.Default);
-
-                            StreamWriter streamWriter = new StreamWriter(path1);
-                            // 写入注释和日期
-                            streamWriter.WriteLine("#By changing the setting below to TRUE you are indicating your agreement to our EULA (https://aka.ms/MinecraftEULA).");
-                            streamWriter.WriteLine($"#{DateTime.Now.ToString("ddd MMM dd HH:mm:ss zzz yyyy", CultureInfo.InvariantCulture)}");
-
-                            // 写入eula=true
-                            streamWriter.WriteLine("eula=true");
-                            streamWriter.Flush();
-                            streamWriter.Close();
-                        }
-                        catch (Exception a)
-                        {
-                            MessageBox.Show("出现错误，请手动修改eula文件或重试:" + a, "错误", MessageBoxButton.OK, MessageBoxImage.Error);
-                        }
-                    }
-                    else
-                    {
-                        return;
-                    }
-                }
-
+                if (await MCEulaEvent() != true)
+                    return;
                 string fileforceUTF8Jvm = "";
                 if (Rservermode == 0)
                 {
@@ -805,6 +767,57 @@ namespace MSL
                 MessageBox.Show("出现错误！开服失败！\n错误代码: " + a.Message, "", MessageBoxButton.OK, MessageBoxImage.Question);
                 cmdtext.IsEnabled = false;
                 fastCMD.IsEnabled = false;
+            }
+        }
+
+        private async Task<bool> MCEulaEvent()
+        {
+            if (Rservermode != 0) // 以自定义命令方式启动时，不执行接受eula事件
+                return true;
+            string path1 = Rserverbase + "\\eula.txt";
+            if (!File.Exists(path1) || (File.Exists(path1) && !File.ReadAllText(path1).Contains("eula=true")))
+            {
+                var shield = new Shield
+                {
+                    Command = HandyControl.Interactivity.ControlCommands.OpenLink,
+                    CommandParameter = "https://aka.ms/MinecraftEULA",
+                    Subject = "https://aka.ms/MinecraftEULA",
+                    Status = LanguageManager.Instance["OpenWebsite"]
+                };
+                bool dialog = await MagicShow.ShowMsgDialogAsync(this, "开启Minecraft服务器需要接受Mojang的EULA，是否仔细阅读EULA条款（https://aka.ms/MinecraftEULA）并继续开服？", "提示", true, "否", "是", shield);
+                if (dialog == true)
+                {
+                    try
+                    {
+                        File.WriteAllText(path1, string.Empty);
+                        FileStream fs = new FileStream(path1, FileMode.Open, FileAccess.Read, FileShare.ReadWrite);
+                        StreamReader sr = new StreamReader(fs, Encoding.Default);
+
+                        StreamWriter streamWriter = new StreamWriter(path1);
+                        // 写入注释和日期
+                        streamWriter.WriteLine("#By changing the setting below to TRUE you are indicating your agreement to our EULA (https://aka.ms/MinecraftEULA).");
+                        streamWriter.WriteLine($"#{DateTime.Now.ToString("ddd MMM dd HH:mm:ss zzz yyyy", CultureInfo.InvariantCulture)}");
+
+                        // 写入eula=true
+                        streamWriter.WriteLine("eula=true");
+                        streamWriter.Flush();
+                        streamWriter.Close();
+                        return true;
+                    }
+                    catch (Exception a)
+                    {
+                        MessageBox.Show("出现错误，请手动修改eula文件或重试:" + a, "错误", MessageBoxButton.OK, MessageBoxImage.Error);
+                        return false;
+                    }
+                }
+                else
+                {
+                    return false;
+                }
+            }
+            else
+            {
+                return true;
             }
         }
 
@@ -1835,6 +1848,10 @@ namespace MSL
                 else if (msg.Contains("Exception in thread \"main\""))
                 {
                     foundProblems += "*服务端核心Main方法报错，可能是Java版本不正确或服务端（及库文件）不完整，请尝试更换Java版本或重新下载安装服务端核心！\n";
+                }
+                else if (msg.Contains("@libraries.net.")|| msg.Contains("找不到或无法加载主类"))
+                {
+                    foundProblems += "*Java版本过低，请勿使用Java8及以下版本的Java！\n";
                 }
             }
             if (msg.Contains("Could not load") && msg.Contains("plugin"))
