@@ -14,14 +14,14 @@ namespace MSL.controls
                 string imagePath = value as string;
                 if (string.IsNullOrEmpty(imagePath))
                     return null;
-                    BitmapImage bitmapImage = new BitmapImage();
+                BitmapImage bitmapImage = new BitmapImage();
 
-                    bitmapImage.BeginInit();
-                    bitmapImage.CacheOption = BitmapCacheOption.OnLoad;
-                    bitmapImage.UriSource = new Uri(imagePath, UriKind.RelativeOrAbsolute);
-                    bitmapImage.EndInit();
+                bitmapImage.BeginInit();
+                bitmapImage.CacheOption = BitmapCacheOption.OnLoad;
+                bitmapImage.UriSource = new Uri(imagePath, UriKind.RelativeOrAbsolute);
+                bitmapImage.EndInit();
 
-                    return bitmapImage;
+                return bitmapImage;
             }
             catch
             {

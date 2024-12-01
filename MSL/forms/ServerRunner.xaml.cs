@@ -227,7 +227,7 @@ namespace MSL
             {
                 Rservermode = 0;
             }
-            
+
             if (_json["autostartServer"] != null && _json["autostartServer"].ToString() == "True")
             {
                 autoStartserver.IsChecked = true;
@@ -504,7 +504,7 @@ namespace MSL
             }
             return false;
         }
-        
+
         #region 仪表盘
 
         //////////////////
@@ -777,7 +777,7 @@ namespace MSL
                 }
 
                 string fileforceUTF8Jvm = "";
-                if(Rservermode == 0)
+                if (Rservermode == 0)
                 {
                     if (fileforceUTF8encoding.IsChecked == true && !RserverJVMcmd.Contains("-Dfile.encoding=UTF-8"))
                     {
@@ -1001,7 +1001,7 @@ namespace MSL
             {
                 Directory.CreateDirectory(Rserverbase);
                 ServerProcess.StartInfo.WorkingDirectory = Rserverbase;
-                if(Rservermode == 0) 
+                if (Rservermode == 0)
                 {
                     ServerProcess.StartInfo.FileName = Rserverjava;
                     ServerProcess.StartInfo.Arguments = StartFileArg;
@@ -1357,7 +1357,7 @@ namespace MSL
         {
             if (!ConptyCanOutLog)
             {
-                ConptyCanOutLog=true;
+                ConptyCanOutLog = true;
                 return;
             }
             //MessageBox.Show(msg);
@@ -1901,7 +1901,7 @@ namespace MSL
                     else
                     {
                         Growl.Info("服务器已关闭！即将为您展示分析报告！");
-                        MagicShow.ShowMsgDialog(this, foundProblems+ "\nPS:软件检测不一定准确，若您无法解决，可将服务器日志发送给他人以寻求帮助，但请不要截图此弹窗！！！\n日志发送方式：\n1.直接截图控制台内容\n2.服务器目录\\logs\\latest.log\n3.前往“更多功能”界面上传至Internet", "服务器分析报告");
+                        MagicShow.ShowMsgDialog(this, foundProblems + "\nPS:软件检测不一定准确，若您无法解决，可将服务器日志发送给他人以寻求帮助，但请不要截图此弹窗！！！\n日志发送方式：\n1.直接截图控制台内容\n2.服务器目录\\logs\\latest.log\n3.前往“更多功能”界面上传至Internet", "服务器分析报告");
                         foundProblems = null;
                     }
                 }
@@ -2894,7 +2894,7 @@ namespace MSL
             try
             {
                 //检测是否自定义模式
-                if(Rservermode == 1)
+                if (Rservermode == 1)
                 {
                     LabelArgsText.Content = "自定义启动参数:";
                     GridServerCore.Visibility = Visibility.Collapsed;
@@ -3072,7 +3072,8 @@ namespace MSL
                 {
                     RserverJVM = "-Xms" + memorySlider.ValueStart.ToString("f0") + "M" + " -Xmx" + memorySlider.ValueEnd.ToString("f0") + "M";
                 }
-                if(Rservermode == 0) {
+                if (Rservermode == 0)
+                {
                     if (useDownJv.IsChecked == true)
                     {
                         Growl.Info("获取Java地址……");
@@ -3145,7 +3146,7 @@ namespace MSL
                         jAva.Text = "Java";
                     }
                 }
-                
+
                 //Directory.CreateDirectory(bAse.Text);
                 doneBtn1.IsEnabled = true;
                 refreahConfig.IsEnabled = true;
@@ -3519,7 +3520,7 @@ namespace MSL
             try
             {
                 string content;
-                if(Rservermode == 0)
+                if (Rservermode == 0)
                 {
                     if (Rserverserver.StartsWith("@libraries/"))
                     {
@@ -3532,7 +3533,7 @@ namespace MSL
                 }
                 else
                 {
-                    content = "@ECHO OFF\r\n\""  + RserverJVMcmd + "\r\npause";
+                    content = "@ECHO OFF\r\n\"" + RserverJVMcmd + "\r\npause";
                 }
 
 
@@ -3959,7 +3960,7 @@ namespace MSL
                 shareLog.IsEnabled = true;
                 return;
             }
-            Growl.Info("正在上传，模式 " + uploadMode+"，请稍等……");
+            Growl.Info("正在上传，模式 " + uploadMode + "，请稍等……");
             //启动线程上传日志
             await UploadLogs(logs, true);
             shareLog.IsEnabled = true;
@@ -3974,7 +3975,7 @@ namespace MSL
                 {
                     strings[0] = "B";
                     strings[1] = conptyWindow.ConptyConsole.ConPTYTerm.GetConsoleText();
-                    
+
                 }
             }
             else
@@ -4007,7 +4008,7 @@ namespace MSL
             await UploadLogs(logs);
         }
 
-        private async Task UploadLogs(string logs,bool canUseOtherPlan=false)
+        private async Task UploadLogs(string logs, bool canUseOtherPlan = false)
         {
             string customUrl = "https://api.mclo.gs/1/log";
             int contentType = 2;
@@ -4192,8 +4193,8 @@ namespace MSL
 
         ///////////这是定时任务
 
-        SortedDictionary<int,bool> taskFlag = new SortedDictionary<int, bool>(); // 后面的bool表示该任务是否运行
-        Dictionary<int, KeyValuePair<int,int>> taskTimers = new Dictionary<int, KeyValuePair<int, int>>(); // KeyValuePair里，前面的int为timer的周期，后面的为周期单位（1为秒，2为毫秒）
+        SortedDictionary<int, bool> taskFlag = new SortedDictionary<int, bool>(); // 后面的bool表示该任务是否运行
+        Dictionary<int, KeyValuePair<int, int>> taskTimers = new Dictionary<int, KeyValuePair<int, int>>(); // KeyValuePair里，前面的int为timer的周期，后面的为周期单位（1为秒，2为毫秒）
         Dictionary<int, string> taskCmds = new Dictionary<int, string>();
         private void addTask_Click(object sender, RoutedEventArgs e)
         {
@@ -4207,7 +4208,7 @@ namespace MSL
             }
             //MessageBox.Show(taskID.Max().ToString());
             tasksList.ItemsSource = taskFlag.Keys.ToArray();
-            KeyValuePair<int,int> defaultTimerTick = new KeyValuePair<int, int>(10,1);
+            KeyValuePair<int, int> defaultTimerTick = new KeyValuePair<int, int>(10, 1);
             taskTimers.Add(taskFlag.Keys.Max(), defaultTimerTick);
             taskCmds.Add(taskFlag.Keys.Max(), "say Hello World!");
             //tasksList.Items.Add(taskID.Max());
@@ -4422,7 +4423,7 @@ namespace MSL
                         JObject taskDetails = (JObject)taskJson.Value;
 
                         // 直接更新现有集合
-                        taskFlag.Add(taskId,false);
+                        taskFlag.Add(taskId, false);
                         taskTimers[taskId] = new KeyValuePair<int, int>(
                             (int)taskDetails["Interval"],
                             (int)taskDetails["Unit"]

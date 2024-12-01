@@ -325,7 +325,7 @@ namespace MSL.pages.frpProviders
                         $"[{selectedTunnel.Name}]\r\nprivilege_mode = true\r\n" +
                         $"type = {selectedTunnel.Type}\r\nlocal_ip = {LocalIp.Text}\r\n" +
                         $"local_port = {LocalPort.Text}\r\nremote_port = {conf_rport}\r\n" +
-                        ((conf_rport == "80" || conf_rport == "443" )? $"custom_domains = {selectedTunnel.RPort}\r\n":"")+
+                        ((conf_rport == "80" || conf_rport == "443") ? $"custom_domains = {selectedTunnel.RPort}\r\n" : "") +
                         $"use_encryption = {selectedTunnel.Encryption}\r\n" +
                         $"use_compression = {selectedTunnel.Compression}\r\n \r\n";
                     //输出配置

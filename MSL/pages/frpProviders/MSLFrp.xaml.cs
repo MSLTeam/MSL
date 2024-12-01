@@ -58,7 +58,7 @@ namespace MSL.pages.frpProviders
                         }
                     }
                     Random random = new Random();
-                    int free = freeC = random.Next(0, freeC+1);
+                    int free = freeC = random.Next(0, freeC + 1);
                     if (free != 0)
                     {
                         foreach (var value in serverDetails)
@@ -231,7 +231,8 @@ namespace MSL.pages.frpProviders
                 MagicShow.ShowMsgDialog(window, "请确保您选择了一个节点！", "信息");
                 return;
             }
-            if (!IsValidQQFormat(accountBox.Text)) {
+            if (!IsValidQQFormat(accountBox.Text))
+            {
                 MagicShow.ShowMsgDialog(window, "请填写正确的QQ号！", "错误");
                 return;
             }
