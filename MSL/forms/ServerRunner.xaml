@@ -355,7 +355,7 @@
                                 </StackPanel>
                                 <StackPanel Margin="0,10,0,0">
                                     <Label Content="服务器设置" Style="{StaticResource BorderTitle}"/>
-                                    <Grid>
+                                    <Grid x:Name="GridJavaSet">
                                         <Label Content="Java地址:"/>
                                         <RadioButton x:Name="useSelf" Content="手动选择Java" IsChecked="True" VerticalAlignment="Top" HorizontalAlignment="Left" Margin="125,5,0,0"/>
                                         <TextBox x:Name="jAva" MaxLines="1" AutoWordSelection="True" VerticalAlignment="Top" Margin="250,0,60,0"/>
@@ -367,27 +367,27 @@
                                         <Button x:Name="ScanJava" Content="点我搜索" HorizontalAlignment="Left" Margin="455,70,0,0" VerticalAlignment="Top" Click="ScanJava_Click"/>
                                         <RadioButton x:Name="useJvpath" Content="使用环境变量" VerticalAlignment="Top" HorizontalAlignment="Left" Margin="125,110,0,0" Click="useJvpath_Click"/>
                                     </Grid>
-                                    <hc:Divider Margin="0,10,0,10"/>
-                                    <Grid>
+                                    <hc:Divider Margin="0,10,0,10" x:Name="DivJavaSet"/>
+                                    <Grid x:Name="GridServerCore">
                                         <Label Content="服务端核心文件:"/>
                                         <TextBox x:Name="server" MaxLines="1" AutoWordSelection="True" Margin="125,0,210,0"/>
                                         <Button x:Name="a01" Content="浏览" Width="60" Click="a01_Click" HorizontalAlignment="Right" Margin="0,0,150,0"/>
                                         <Button x:Name="downloadServer" hc:IconElement.Geometry="{StaticResource DownloadGeometry}" Content="下载服务端" Width="150" Click="downloadServer_Click" HorizontalAlignment="Right"/>
                                     </Grid>
-                                    <hc:Divider Margin="0,10,0,10"/>
-                                    <Grid>
+                                    <hc:Divider Margin="0,10,0,10" x:Name="DivRemSet"/>
+                                    <Grid x:Name="GridJavaRem">
                                         <Label Content="服务器运行内存:"/>
                                         <ToggleButton x:Name="autoSetMemory" Content="让Java自动分配" VerticalAlignment="Top" HorizontalAlignment="Left" Margin="125,0,0,0" Style="{StaticResource ToggleButtonSwitch}" Click="autoSetMemory_Click"/>
                                         <hc:RangeSlider x:Name="memorySlider" ValueChanged="memorySlider_ValueChanged" Height="18" VerticalAlignment="Top" Margin="125,35,180,5"/>
                                         <TextBox x:Name="memoryInfo" Text="当前为自动分配" Foreground="{DynamicResource DarkPrimaryBrush}" TextAlignment="Center" TextChanged="memoryInfo_TextChanged" Width="165" HorizontalAlignment="Right" VerticalAlignment="Bottom"/>
                                     </Grid>
-                                    <hc:Divider Margin="0,10,0,10"/>
+                                    <hc:Divider Margin="0,10,0,10" x:Name="DivJvmSet"/>
                                     <Grid>
-                                        <Label Content="服务器JVM参数:"/>
+                                        <Label Content="服务器JVM参数:" x:Name="LabelArgsText"/>
                                         <StackPanel Margin="125,0,0,0">
                                             <TextBox x:Name="jVMcmd" AutoWordSelection="True" VerticalAlignment="Top" AcceptsReturn="True" TextWrapping="Wrap"/>
                                             <Border Margin="0,5" Style="{StaticResource BorderTipPrimary}">
-                                                <TextBlock Text="提示：一般格式为 -参数，如 -Dlog4j2.formatMsgNoLookups=true，非必要无需填写" TextWrapping="Wrap" Foreground="{DynamicResource DarkPrimaryBrush}" FontSize="14" HorizontalAlignment="Left" VerticalAlignment="Top"/>
+                                                <TextBlock x:Name="TextArgsTips" Text="提示：一般格式为 -参数，如 -Dlog4j2.formatMsgNoLookups=true，非必要无需填写" TextWrapping="Wrap" Foreground="{DynamicResource DarkPrimaryBrush}" FontSize="14" HorizontalAlignment="Left" VerticalAlignment="Top"/>
                                             </Border>
                                         </StackPanel>
                                     </Grid>

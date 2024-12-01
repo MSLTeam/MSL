@@ -152,6 +152,7 @@
                             <Button x:Name="SearchJavaBtn" Content="点我检测" Margin="340,105,0,0" HorizontalAlignment="Left" VerticalAlignment="Top" Click="SearchJavaBtn_Click"/>
                             <TextBox x:Name="txjava" Margin="115,185,60,0" VerticalAlignment="Top" IsEnabled="False" MaxLines="1"/>
                             <Button x:Name="a0002_Copy" Content="浏览" IsEnabled="False" Margin="0,185,0,0" VerticalAlignment="Top" Width="60" FontWeight="Normal" Click="a0002_Copy_Click" HorizontalAlignment="Right"/>
+                            <RadioButton x:Name="usejvNull" Content="不使用Java (若服务端不依赖于Java，请选择此项)" HorizontalAlignment="Left" Margin="20,230,0,0" VerticalAlignment="Top" FontSize="14" Checked="usejvNull_Checked"/>
                             <Grid HorizontalAlignment="Right" VerticalAlignment="Top">
                                 <Grid.RowDefinitions>
                                     <RowDefinition Height="Auto"/>
@@ -187,6 +188,8 @@
                             <RadioButton x:Name="useServerself" Content="备有服务端，选择地址" Margin="20,110,0,0" VerticalAlignment="Top" Checked="useServerself_Checked" HorizontalAlignment="Left" FontSize="14"/>
                             <TextBox x:Name="txb3" Margin="20,135,60,0" VerticalAlignment="Top" MaxLines="1" FontSize="14" IsEnabled="False"/>
                             <Button x:Name="a0002" Content="浏览" IsEnabled="False" Margin="0,135,0,0" Width="60" Click="a0002_Click" FontWeight="Normal" HorizontalAlignment="Right" VerticalAlignment="Top"/>
+                            <RadioButton x:Name="useCustomCmd" Content="自定义启动指令" Margin="20,175,0,0" VerticalAlignment="Top" Checked="useCustomCmd_Checked" HorizontalAlignment="Left" FontSize="14"/>
+                            <TextBox x:Name="textCustomCmd" Margin="20,200,60,0" VerticalAlignment="Top" MaxLines="1" FontSize="14" IsEnabled="False"/>
                         </Grid>
                     </Border>
                     <Grid Margin="0,20,0,0">

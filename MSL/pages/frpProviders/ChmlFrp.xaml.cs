@@ -301,6 +301,21 @@ namespace MSL.pages.frpProviders
                         }
                     }
 
+                    //根据类型选择rport
+                    string conf_rport;
+                    switch (selectedTunnel.Type)
+                    {
+                        case "http":
+                            conf_rport = "80";
+                            break;
+                        case "https":
+                            conf_rport = "443";
+                            break;
+                        default:
+                            conf_rport = selectedTunnel.RPort;
+                            break;
+
+                    }
                     //输出配置文件
                     Uri host = new Uri("http://" + selectedTunnel.Addr);
                     FrpcConfig = $"[common]\r\nserver_addr = {host.Host}\r\n" +
@@ -309,7 +324,8 @@ namespace MSL.pages.frpProviders
                         $"dns_server = 223.6.6.6\r\ntls_enable = false\r\n" +
                         $"[{selectedTunnel.Name}]\r\nprivilege_mode = true\r\n" +
                         $"type = {selectedTunnel.Type}\r\nlocal_ip = {LocalIp.Text}\r\n" +
-                        $"local_port = {LocalPort.Text}\r\nremote_port = {selectedTunnel.RPort}\r\n" +
+                        $"local_port = {LocalPort.Text}\r\nremote_port = {conf_rport}\r\n" +
+                        ((conf_rport == "80" || conf_rport == "443" )? $"custom_domains = {selectedTunnel.RPort}\r\n":"")+
                         $"use_encryption = {selectedTunnel.Encryption}\r\n" +
                         $"use_compression = {selectedTunnel.Compression}\r\n \r\n";
                     //输出配置
