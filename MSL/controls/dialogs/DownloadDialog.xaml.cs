@@ -79,6 +79,7 @@ namespace MSL
         {
             Dispatcher.Invoke(() =>
             {
+                PauseBtn.IsEnabled = true;
                 infolabel.Text = string.Format(LanguageManager.Instance["DownloadDialog_OnDownloadStarted"], e.TotalBytesToReceive / 1024 / 1024);
                 // 初始化DispatcherTimer
                 updateUITimer = new DispatcherTimer
@@ -87,6 +88,7 @@ namespace MSL
                 };
                 updateUITimer.Tick += UpdateUITick;
                 updateUITimer.Start();
+                StatusLab.Text = "下载中……";
             });
         }
 
@@ -103,12 +105,16 @@ namespace MSL
                 Dispatcher.Invoke(() =>
                 {
                     infolabel.Text = LanguageManager.Instance["DownloadDialog_DownloadCancel"];
+                    StatusLab.Text = LanguageManager.Instance["DownloadDialog_DownloadCancel"];
+                    button1.Content = LanguageManager.Instance["Close"];
+                    PauseBtn.IsEnabled = false;
                     try
                     {
                         File.Delete(downloadPath + "\\" + filename);
                     }
                     catch { Console.WriteLine("Delete File Failed"); }
                 });
+                return;
             }
             else
             {
@@ -223,6 +229,9 @@ namespace MSL
                         {
                             File.Delete(Path.Combine(downloadPath, filename));
                             infolabel.Text = LanguageManager.Instance["DownloadDialog_DownloadCancel"];
+                            StatusLab.Text = LanguageManager.Instance["DownloadDialog_DownloadCancel"];
+                            button1.Content = LanguageManager.Instance["Close"];
+                            PauseBtn.IsEnabled = false;
                         }
                         else
                         {
@@ -298,6 +307,22 @@ namespace MSL
             }
         }
 
+        private void PauseBtn_Click(object sender, RoutedEventArgs e)
+        {
+            if (PauseBtn.Content.ToString() == "暂停")
+            {
+                downloader.Pause();
+                PauseBtn.Content = "继续";
+                StatusLab.Text = "已暂停";
+            }
+            else
+            {
+                downloader.Resume();
+                PauseBtn.Content = "暂停";
+                StatusLab.Text = "下载中……";
+            }
+        }
+
         private void button1_Click(object sender, RoutedEventArgs e)
         {
             if (button1.Content.ToString() == LanguageManager.Instance["Close"])
@@ -308,6 +333,17 @@ namespace MSL
             {
                 downloader.CancelAsync();
                 _dialogReturn = 2;
+                Task.Run(async () =>
+                {
+                    await Task.Delay(1000);
+                    Dispatcher.Invoke(() =>
+                    {
+                        if (StatusLab.Text.ToString() != LanguageManager.Instance["DownloadDialog_DownloadCancel"])
+                        {
+                            StatusLab.Text = "取消任务中，请稍等……\n双击取消按钮可强制关闭此对话框（不推荐）";
+                        }
+                    });
+                });
             }
         }
 
@@ -361,6 +397,9 @@ namespace MSL
                 storyboard.Completed += (s, a) =>
                 {
                     Visibility = Visibility.Collapsed;
+                    downloader.DownloadStarted -= OnDownloadStarted;
+                    downloader.DownloadProgressChanged -= OnDownloadProgressChanged;
+                    downloader.DownloadFileCompleted -= OnDownloadFileCompleted;
                     CloseDialog();
                 };
 

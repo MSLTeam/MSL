@@ -9,22 +9,33 @@
         mc:Ignorable="d" Template="{StaticResource UserControlTemplate}" 
         Height="125" MinWidth="450" MaxWidth="650">
     <Border CornerRadius="10" Background="{DynamicResource RegionBrush}" BorderBrush="{DynamicResource BorderBrush}" BorderThickness="1">
-        <Grid Margin="15">
+        <Grid Margin="10">
             <Grid.RowDefinitions>
                 <RowDefinition Height="Auto"/>
                 <RowDefinition/>
-                <RowDefinition Height="Auto"/>
             </Grid.RowDefinitions>
             <TextBlock Grid.Row="0" x:Name="taskinfo" Foreground="{DynamicResource PrimaryTextBrush}" Text="当前任务" HorizontalAlignment="Left" VerticalAlignment="Top" FontWeight="Bold" FontSize="18"/>
-            <TextBlock Grid.Row="1" x:Name="infolabel" Foreground="{DynamicResource PrimaryTextBrush}" VerticalAlignment="Center" HorizontalAlignment="Left" TextWrapping="Wrap" FontSize="14" Text="{Binding [Loading],Source={x:Static langs:LanguageManager.Instance}}"/>
-            <Grid Grid.Row="2">
-                <Grid.ColumnDefinitions>
-                    <ColumnDefinition/>
-                    <ColumnDefinition Width="Auto"/>
-                </Grid.ColumnDefinitions>
-                <ProgressBar Grid.Column="0" x:Name="pbar" Style="{StaticResource ProgressBarFlat}" Height="7" VerticalAlignment="Center" Margin="0,0,10,0"/>
-                <Button Grid.Column="1" x:Name="button1" Style="{StaticResource ButtonPrimary}" Content="{Binding [Cancel],Source={x:Static langs:LanguageManager.Instance}}" HorizontalAlignment="Right" VerticalAlignment="Bottom" MinWidth="80" Click="button1_Click" FontSize="14" MouseDoubleClick="button1_MouseDoubleClick"/>
+            <Grid Grid.Row="1" Margin="5,5,5,0">
+                <Grid.RowDefinitions>
+                    <RowDefinition Height="2*"/>
+                    <RowDefinition Height="Auto" />
+                    <RowDefinition Height="3*"/>
+                </Grid.RowDefinitions>
+                <TextBlock x:Name="infolabel" Grid.Row="0" Foreground="{DynamicResource PrimaryTextBrush}" VerticalAlignment="Center" HorizontalAlignment="Left" TextWrapping="Wrap" FontSize="14" Text="{Binding [Loading],Source={x:Static langs:LanguageManager.Instance}}"/>
+                <ProgressBar x:Name="pbar" Grid.Row="1" Style="{StaticResource ProgressBarFlat}" Height="7" VerticalAlignment="Center"/>
+                <Grid Grid.Row="2">
+                    <Grid.ColumnDefinitions>
+                        <ColumnDefinition/>
+                        <ColumnDefinition Width="Auto"/>
+                    </Grid.ColumnDefinitions>
+                    <TextBlock Grid.Row="1" x:Name="StatusLab" Foreground="{DynamicResource DarkPrimaryBrush}" VerticalAlignment="Center" HorizontalAlignment="Left" TextWrapping="Wrap" FontSize="14" Text="{Binding [Loading],Source={x:Static langs:LanguageManager.Instance}}"/>
+                    <hc:UniformSpacingPanel Grid.Column="1" Spacing="10" VerticalAlignment="Bottom">
+                        <Button Grid.Column="1" x:Name="PauseBtn" IsEnabled="False" Style="{StaticResource ButtonPrimary}" Content="暂停" MinWidth="80" Click="PauseBtn_Click" FontSize="14"/>
+                        <Button Grid.Column="1" x:Name="button1" Style="{StaticResource ButtonPrimary}" Content="{Binding [Cancel],Source={x:Static langs:LanguageManager.Instance}}" MinWidth="80" Click="button1_Click" FontSize="14" MouseDoubleClick="button1_MouseDoubleClick"/>
+                    </hc:UniformSpacingPanel>
+                </Grid>
             </Grid>
+            
         </Grid>
     </Border>
 </UserControl>
