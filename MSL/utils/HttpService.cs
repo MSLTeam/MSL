@@ -25,6 +25,22 @@ namespace MSL.utils
     internal class HttpService
     {
         /// <summary>
+        /// Get Official Api Link
+        /// </summary>
+        private static string GetOALink()
+        {
+            return "https://api." + GetOSLink();
+        }
+
+        /// <summary>
+        /// Get Official Service Link
+        /// </summary>
+        private static string GetOSLink()
+        {
+            return MainWindow.ServerLink;
+        }
+
+        /// <summary>
         /// WebGet
         /// </summary>
         /// <param name="path">位置（默认为软件在线链接的位置）</param>
@@ -34,7 +50,7 @@ namespace MSL.utils
         public static string Get(string path, string customUrl = "", int headerMode = 0)
         {
             ServicePointManager.SecurityProtocol = SecurityProtocolType.Tls12;
-            string url = "https://api." + MainWindow.ServerLink;
+            string url = GetOALink();
             if (customUrl == "")
             {
                 if (MainWindow.ServerLink == null)
@@ -51,7 +67,7 @@ namespace MSL.utils
             {
                 if (MainWindow.ServerLink != null)
                 {
-                    string ServerLink = MainWindow.ServerLink;
+                    string ServerLink = GetOSLink();
                     if (ServerLink?.Contains("/") == true)
                     {
                         ServerLink = ServerLink.Substring(0, ServerLink.IndexOf("/"));
@@ -71,6 +87,8 @@ namespace MSL.utils
                 webClient.Headers.Add("Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/126.0.0.0 Safari/537.36");
             }
             webClient.Credentials = CredentialCache.DefaultCredentials;
+            if (url.EndsWith("/"))
+                url = url.Substring(0, url.Length - 1);
             byte[] pageData = webClient.DownloadData(url + "/" + path);
             return Encoding.UTF8.GetString(pageData);
         }
@@ -100,8 +118,8 @@ namespace MSL.utils
         /// <returns>strings[0]=0出现错误，此时strings[1]=错误信息；strings[0]=1请求成功，此时strings[1]=页内容，strings[2]=sha256（若开启getSha256）</returns>
         public static async Task<HttpResponse> GetApiAsync(string path)
         {
-            string url = "https://api." + MainWindow.ServerLink;
-            return await GetAsync(url + "/" + path, headers =>
+            string url = GetOALink();
+            return await GetAsync(url + path, headers =>
             {
                 headers.Add("DeviceID", MainWindow.DeviceID);
             }, 1);
@@ -175,7 +193,7 @@ namespace MSL.utils
         public static string Post(string path, int contentType = 0, string parameterData = "", string customUrl = "", WebHeaderCollection header = null)
         {
             ServicePointManager.SecurityProtocol = SecurityProtocolType.Tls12;
-            string url = "https://api." + MainWindow.ServerLink;
+            string url = GetOALink();
             if (customUrl == "")
             {
                 if (MainWindow.ServerLink == null)
@@ -188,6 +206,8 @@ namespace MSL.utils
                 url = customUrl;
             }
 
+            if (url.EndsWith("/"))
+                url = url.Substring(0, url.Length - 1);
             HttpWebRequest myRequest = (HttpWebRequest)WebRequest.Create(url + "/" + path);
             byte[] buf = Encoding.GetEncoding("UTF-8").GetBytes(parameterData);
             myRequest.Method = "POST";

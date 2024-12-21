@@ -219,18 +219,12 @@ namespace MSL.utils
 
         private void CloseMsgDialog()
         {
-            try
-            {
-                _tcs.TrySetResult(true);
-            }
-            finally
-            {
-                window?.Focus();
-                dialog.Close();
-                _tcs = null;
-                window = null;
-                dialog = null;
-            }
+            _tcs?.TrySetResult(true);
+            window?.Focus();
+            dialog?.Close();
+            _tcs = null;
+            window = null;
+            dialog = null;
         }
     }
 }

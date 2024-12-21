@@ -369,13 +369,11 @@ namespace MSL
             //get serverlink
             try
             {
-                //ServerLink = "mslmc.cn/v3";
                 _ = HttpService.GetContentAsync("https://msl-api.oss-cn-hangzhou.aliyuncs.com/");
-                ServerLink = "mslmc.cn/v3";
+                ServerLink = "mslmc.cn/v3/";
                 //Logger.LogInfo("连接到api：" + "https://api." + _link);
                 if (!(((int)JObject.Parse((await HttpService.GetContentAsync("https://api." + ServerLink, headers => { headers.Add("DeviceID", DeviceID); }, 1)).ToString())["code"]) == 200))
                 {
-                    //ServerLink = "waheal.top/v3";
                     Growl.Info(LanguageManager.Instance["MainWindow_GrowlMsg_MslServerDown"]);
                     return;
                 }
@@ -384,7 +382,6 @@ namespace MSL
             {
                 Growl.Info(LanguageManager.Instance["MainWindow_GrowlMsg_MSLServerDown"]);
                 return;
-                //ServerLink = "waheal.top/v3";
                 //Logger.LogError("在匹配在线服务器时出现错误，已连接至备用服务器");
             }
             //更新

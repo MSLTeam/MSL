@@ -44,9 +44,9 @@ namespace MSL
             closeDirectly = _closeDirectly;
             headerMode = header;
             taskinfo.Text = downloadinfo;
-            Thread thread = new Thread(Downloader);
-            thread.Start();
+            Task.Run(Downloader);
         }
+
         private void Downloader()
         {
             var downloadOpt = new DownloadConfiguration();
@@ -92,67 +92,35 @@ namespace MSL
             });
         }
 
-        //下载完成的事件
+        // 下载完成的事件
         private void OnDownloadFileCompleted(object sender, AsyncCompletedEventArgs e)
         {
             try
             {
-                updateUITimer?.Stop();
+                Dispatcher.Invoke(() =>
+                {
+                    PauseBtn.IsEnabled = false;
+                    updateUITimer?.Stop();
+                });
             }
             catch { Console.WriteLine("Stop UITimer Failed"); }
-            if (_dialogReturn == 2)
+            if (e.Cancelled || _dialogReturn == 2)
             {
                 Dispatcher.Invoke(() =>
                 {
                     infolabel.Text = LanguageManager.Instance["DownloadDialog_DownloadCancel"];
                     StatusLab.Text = LanguageManager.Instance["DownloadDialog_DownloadCancel"];
                     button1.Content = LanguageManager.Instance["Close"];
-                    PauseBtn.IsEnabled = false;
                     try
                     {
                         File.Delete(downloadPath + "\\" + filename);
                     }
                     catch { Console.WriteLine("Delete File Failed"); }
                 });
-                return;
             }
             else
             {
-                if (File.Exists(downloadPath + "\\" + filename))
-                {
-                    _dialogReturn = 1;
-                    Dispatcher.Invoke(() =>
-                    {
-                        infolabel.Text = LanguageManager.Instance["DownloadDialog_DownloadComplete"];
-                        pbar.Value = 100;
-                    });
-                    if (!string.IsNullOrEmpty(expectedSha256))
-                    {
-                        //有传入sha256，进行校验
-                        if (VerifyFileSHA256(downloadPath + "\\" + filename, expectedSha256) == false)
-                        {
-                            //失败
-                            _dialogReturn = 3;
-                            Dispatcher.Invoke(() =>
-                            {
-                                button1.Content = LanguageManager.Instance["Close"];
-                                infolabel.Text = LanguageManager.Instance["DownloadDialog_CheckIntegrityFailed"];
-                                try
-                                {
-                                    File.Delete(downloadPath + "\\" + filename);
-                                }
-                                catch { }
-                            });
-                            if (closeDirectly)
-                            {
-                                Thread.Sleep(1000);
-                                Dispatcher.Invoke(Close);
-                            }
-                            return;
-                        }
-                    }
-                }
-                else
+                if (e.Error != null || !File.Exists(downloadPath + "\\" + filename))
                 {
                     Dispatcher.Invoke(() =>
                     {
@@ -160,8 +128,48 @@ namespace MSL
                         Thread thread = new Thread(DownloadFile);
                         thread.Start();
                     });
+                    /* 此处已转移至备用下载方案（Thread(DownloadFile)）失败时的执行逻辑
+                    if (closeDirectly)
+                    {
+                        Thread.Sleep(1000);
+                        Dispatcher.Invoke(Close);
+                    }
+                    */
                     return;
                 }
+
+                if (!string.IsNullOrEmpty(expectedSha256))
+                {
+                    //有传入sha256，进行校验
+                    if (VerifyFileSHA256(downloadPath + "\\" + filename, expectedSha256) == false)
+                    {
+                        //失败
+                        _dialogReturn = 3;
+                        Dispatcher.Invoke(() =>
+                        {
+                            button1.Content = LanguageManager.Instance["Close"];
+                            infolabel.Text = LanguageManager.Instance["DownloadDialog_CheckIntegrityFailed"];
+                            try
+                            {
+                                File.Delete(downloadPath + "\\" + filename);
+                            }
+                            catch { }
+                        });
+                        if (closeDirectly)
+                        {
+                            Thread.Sleep(1000);
+                            Dispatcher.Invoke(Close);
+                        }
+                    }
+                }
+
+                Dispatcher.Invoke(() =>
+                {
+                    infolabel.Text = LanguageManager.Instance["DownloadDialog_DownloadComplete"];
+                    pbar.Value = 100;
+                });
+
+                _dialogReturn = 1;
             }
             Thread.Sleep(1000);
             Dispatcher.Invoke(Close);
@@ -247,7 +255,8 @@ namespace MSL
                     Dispatcher.Invoke(() =>
                     {
                         button1.Content = LanguageManager.Instance["Close"];
-                        infolabel.Text = LanguageManager.Instance["DownloadDialog_DownloadFailed"] + "\n" + ex.Message;
+                        infolabel.Text = LanguageManager.Instance["DownloadDialog_DownloadFailed"];
+                        StatusLab.Text = LanguageManager.Instance["DownloadDialog_DownloadFailed"] + "\n" + ex.Message;
                     });
                 }
                 Thread.Sleep(1000);
@@ -361,7 +370,7 @@ namespace MSL
             }
         }
 
-        //用于校验sha256的函数
+        // 用于校验sha256的函数
         public bool VerifyFileSHA256(string filePath, string expectedHash)
         {
             using (FileStream stream = File.OpenRead(filePath)) //文件流
@@ -373,6 +382,7 @@ namespace MSL
                 return string.Equals(calculatedHash, expectedHash, StringComparison.OrdinalIgnoreCase);
             }
         }
+
         private void Close()
         {
             Storyboard storyboard = new Storyboard();

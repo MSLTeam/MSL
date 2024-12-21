@@ -643,8 +643,12 @@
                     <controls:TabControlHeader Icon="{DynamicResource alarmDrawingImage}" Text="定时任务"/>
                 </TabItem.Header>
                 <Grid Style="{StaticResource GridAnimation}">
-                    <StackPanel>
-                        <controls:MagicCard Title="任务列表" VerticalAlignment="Top" Margin="10,10,10,0">
+                    <Grid>
+                        <Grid.RowDefinitions>
+                            <RowDefinition/>
+                            <RowDefinition Height="Auto"/>
+                        </Grid.RowDefinitions>
+                        <controls:MagicCard Title="任务列表" Grid.Row="0" Margin="10,10,10,0">
                             <Grid>
                                 <Grid.ColumnDefinitions>
                                     <ColumnDefinition/>
@@ -664,7 +668,7 @@
                                 </Grid>
                             </Grid>
                         </controls:MagicCard>
-                        <Border Style="{StaticResource MagicBorder}" VerticalAlignment="Bottom" Margin="10">
+                        <Border Style="{StaticResource MagicBorder}" Grid.Row="1" VerticalAlignment="Bottom" Margin="10">
                             <Grid>
                                 <Grid.RowDefinitions>
                                     <RowDefinition/>
@@ -702,7 +706,7 @@
                                 
                             </Grid>
                         </Border>
-                    </StackPanel>
+                    </Grid>
                 </Grid>
             </TabItem>
         </TabControl>
