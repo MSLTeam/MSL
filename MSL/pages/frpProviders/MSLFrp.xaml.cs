@@ -58,7 +58,7 @@ namespace MSL.pages.frpProviders
                         }
                     }
                     Random random = new Random();
-                    int free = freeC = random.Next(0, freeC + 1);
+                    int free = random.Next(1, freeC + 1); //确保出来一个免费节点
                     if (free != 0)
                     {
                         foreach (var value in serverDetails)
@@ -82,6 +82,10 @@ namespace MSL.pages.frpProviders
                             string _serverName = "[" + serverInfo + "]" + serverName;
                             ServerPingTest(_serverName, serverAddress, id);
                             id++;
+
+                            //移除已显示的免费节点 不然付费会重复一个（）
+                            serverDetails.Remove(serverName);
+                            break;
                         }
                     }
                     foreach (var value in serverDetails)
