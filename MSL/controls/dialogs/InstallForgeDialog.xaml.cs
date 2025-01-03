@@ -271,9 +271,24 @@ namespace MSL.controls
                         string _savepath = LibPath + "/" + lib["downloads"]["artifact"]["path"].ToString();
                         string _sha1 = lib["downloads"]["artifact"]["sha1"].ToString();
                         Log_in("[LIB]下载：" + lib["downloads"]["artifact"]["path"].ToString());
-                        //if (!_dlurl.Contains("mcp")) //mcp那个zip会用js redirect，所以只能用downloader，真神奇！
-                        //{
-                        downloadTasks.Add(DownloadFile(_dlurl, _savepath, _sha1));
+                        if (_dlurl.Contains("mcp_config")) //mcp那个zip会用js redirect，所以只能用downloader，真神奇！
+                        {
+                            await Dispatcher.Invoke(async () => //下载
+                            {
+                                bool dwnDialog = await MagicShow.ShowDownloader(Window.GetWindow(this), _dlurl, Path.GetDirectoryName(_savepath), Path.GetFileName(_savepath), "下载MCP配置文件中···");
+                                if (!dwnDialog)
+                                {
+                                    //下载失败，跑路了！
+                                    Log_in("下载MCP配置文件中···下载失败！安装失败！");
+                                    _return = true;
+                                }
+                            });
+
+                        }
+                        else { 
+                            downloadTasks.Add(DownloadFile(_dlurl, _savepath, _sha1)); 
+                        }
+                        
                         //bool dlStatus = await DownloadFile(_dlurl, _savepath, _sha1);
                         //Status_change("正在下载Forge运行Lib···(" + libCount + "/" + libALLCount + ")");
                         /*
@@ -312,7 +327,25 @@ namespace MSL.controls
                         Log_in("[LIB]下载：" + NameToPath(SafeGetValue(lib, "name")));
                         //if (!_dlurl.Contains("mcp")) //mcp那个zip会用js redirect，所以只能用downloader，真神奇！
                         //{
-                        downloadTasks.Add(DownloadFile(_dlurl, _savepath));
+                        if (_dlurl.Contains("mcp_config")) //mcp那个zip会用js redirect，所以只能用downloader，真神奇！
+                        {
+                            await Dispatcher.Invoke(async () => //下载
+                            {
+                                bool dwnDialog = await MagicShow.ShowDownloader(Window.GetWindow(this), _dlurl, Path.GetDirectoryName(_savepath), Path.GetFileName(_savepath), "下载MCP配置文件中···");
+                                if (!dwnDialog)
+                                {
+                                    //下载失败，跑路了！
+                                    Log_in("下载MCP配置文件中···下载失败！安装失败！");
+                                    _return = true;
+                                }
+                            });
+
+                        }
+                        else
+                        {
+                            downloadTasks.Add(DownloadFile(_dlurl, _savepath));
+                        }
+                        //downloadTasks.Add(DownloadFile(_dlurl, _savepath));
                         //bool dlStatus = await DownloadFile(_dlurl, _savepath);
                         //Status_change("正在下载Forge运行Lib···(" + libCount + "/" + libALLCount + ")");
                         /*
@@ -464,6 +497,7 @@ namespace MSL.controls
                         CancelButton.IsEnabled = false;
                     });
                     Log_in("正在编译Forge……\n");
+                    StartLogging(); // 启动编译缓慢日志
                     foreach (string cmdLine in cmdLines)
                     {
                         Process process = new Process();
@@ -481,9 +515,12 @@ namespace MSL.controls
                         process.StartInfo.CreateNoWindow = true;
                         process.StartInfo.UseShellExecute = false;
                         process.StartInfo.RedirectStandardOutput = true;
+                        process.StartInfo.RedirectStandardError = true;
+                        process.ErrorDataReceived += new DataReceivedEventHandler(Process_OutputDataReceived);
                         process.OutputDataReceived += new DataReceivedEventHandler(Process_OutputDataReceived);
                         process.Start();
                         process.BeginOutputReadLine();
+                        process.BeginErrorReadLine();
                         process.WaitForExit();
                         process.CancelOutputRead();
                     }
@@ -498,6 +535,7 @@ namespace MSL.controls
 
                 Log_in("安装结束！");
                 Status_change("结束！本对话框将自动关闭！");
+                timer.Enabled = false; // 关闭日志计时器
                 try
                 {
                     //File.Delete(InstallPath + "/install.bat");
@@ -521,20 +559,33 @@ namespace MSL.controls
             catch (OperationCanceledException) { return; }
         }
 
+        // forge编译缓慢日志输出
         private string logTemp = "";
-        private int counter = 100;
+        private System.Timers.Timer timer;
+
+        public void StartLogging()
+        {
+            timer = new System.Timers.Timer(1000); 
+            timer.Elapsed += OnTimedEvent;
+            timer.AutoReset = true;
+            timer.Enabled = true;
+        }
+
+        private void OnTimedEvent(Object source, System.Timers.ElapsedEventArgs e)
+        {
+            if (logTemp != "")
+            {
+                Log_in(logTemp);
+                logTemp = "";
+            }
+            
+        }
+
         private void Process_OutputDataReceived(object sender, DataReceivedEventArgs e)
         {
             if (e.Data != null)
             {
-                if (counter == 100)
-                {
-                    counter = 0;
-                    Log_in(logTemp);
-                    logTemp = "";
-                }
                 logTemp += e.Data + "\n";
-                counter++;
             }
         }
 
