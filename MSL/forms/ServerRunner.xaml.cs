@@ -1472,7 +1472,10 @@ namespace MSL
                             Task.Run(async () =>
                             {
                                 getServerInfoLine = 102;
-                                autoStartserver.IsChecked = true;
+                                Dispatcher.Invoke(() =>
+                                {
+                                    autoStartserver.IsChecked = true;
+                                });
                                 await Task.Delay(200);
                                 try
                                 {
@@ -1480,7 +1483,10 @@ namespace MSL
                                 }
                                 catch { }
                                 await Task.Delay(200);
-                                autoStartserver.IsChecked = false;
+                                Dispatcher.Invoke(() =>
+                                {
+                                    autoStartserver.IsChecked = false;
+                                });
                             });
                         }
                         return true;
@@ -1598,7 +1604,7 @@ namespace MSL
         private void GetPlayerInfoSys(string msg)
         {
             // 正则表达式提取用户名
-            Regex loginRegex = new Regex(@":\s*(\S+)\[/.*\]\s*logged in with entity id");
+            Regex loginRegex = new Regex(@":\s*(\S+\[[^\]]+\])\s*logged in with entity id");
             Regex disconnectRegex = new Regex(@":\s*(\S+)\s*lost connection:");
             Regex serverDisconnectRegex = new Regex(@":\s*(\S+)\s*与服务器失去连接");
 
