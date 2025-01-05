@@ -57,6 +57,7 @@ namespace MSL
         private string RserverJVMcmd;
         private string Rserverbase;
         private int Rservermode;
+        private MCSLogHandler MCSLogHandler;
 
         /// <summary>
         /// 服务器运行窗口
@@ -66,13 +67,25 @@ namespace MSL
         public ServerRunner(int serverID, int controlTab = 0)
         {
             InitializeComponent();
+            InitializeLogHandler();
             InitializeColorDict();
+
             ServerProcess.OutputDataReceived += new DataReceivedEventHandler(OutputDataReceived);
             ServerProcess.ErrorDataReceived += new DataReceivedEventHandler(OutputDataReceived);
             ServerProcess.Exited += new EventHandler(ServerExitEvent);
             SettingsPage.ChangeSkinStyle += ChangeSkinStyle;
             RserverID = serverID;
             FirstStartTab = controlTab;
+        }
+
+        private void InitializeLogHandler()
+        {
+            MCSLogHandler = new MCSLogHandler(
+                logAction: PrintLog,
+                infoHandler: LogHandleInfo,
+                warnHandler: LogHandleWarn,
+                encodingIssueHandler: HandleEncodingIssue
+            );
         }
 
         private async void Window_Loaded(object sender, RoutedEventArgs e)
@@ -1155,22 +1168,31 @@ namespace MSL
             }
         }
 
+        private bool solveProblemSystem;
         private void OutputDataReceived(object sender, DataReceivedEventArgs e)
         {
             if (e.Data != null)
             {
+                string msg = e.Data;
                 Dispatcher.Invoke(() =>
                 {
-                    ReadStdOutputAction(e.Data);
+                    if (solveProblemSystem)
+                        ProblemSystemShow(msg);
+                    if (outlog.Document.Blocks.Count >= 1000 && autoClearOutlog.IsChecked == true)
+                        outlog.Document.Blocks.Clear();
+                    if ((msg.Contains("\tat ") && shieldStackOut.IsChecked == true) || (ShieldLog != null && msg.Contains(ShieldLog)) || showOutlog.IsChecked == false)
+                        return;
+                    if (mslTips != false)
+                        MCSLogHandler.ProcessLogMessage(e.Data);
                 });
             }
         }
 
         #region 日志显示功能、彩色日志
-        private Brush tempbrush = Brushes.Green;
+
         private void PrintLog(string msg, Brush color)
         {
-            tempbrush = color;
+            MCSLogHandler.LogConfig[MCSLogHandler.LogLevel.Default].Color = (SolidColorBrush)color;
             Paragraph p = new Paragraph();
             try
             {
@@ -1305,7 +1327,7 @@ namespace MSL
         {
             colorDict = new Dictionary<char, SolidColorBrush>
             {
-                ['r'] = (SolidColorBrush)tempbrush,
+                ['r'] = MCSLogHandler.LogConfig[MCSLogHandler.LogLevel.Default].Color,
                 ['0'] = Brushes.Black,
                 ['1'] = Brushes.DarkBlue,
                 ['2'] = Brushes.DarkGreen,
@@ -1373,31 +1395,6 @@ namespace MSL
                 ConptyCanOutLog = true;
                 return;
             }
-            //MessageBox.Show(msg);
-            /*
-            if (msg.Contains("\x1B[15;68H"))
-            {
-                MessageBox.Show("111");
-                tempLogs += msg;
-                //MessageBox.Show(tempLogs);
-                Dispatcher.Invoke(() =>
-                {
-                    ProcessOutput(tempLogs);
-                });
-                tempLogs = null;
-            }
-            else
-            {
-                if (tempLogs != null)
-                {
-                    Dispatcher.Invoke(() =>
-                    {
-                        ProcessOutput(tempLogs);
-                    });
-                }
-                tempLogs = msg;
-            }
-            */
             if (tempLogs != null)
             {
                 Dispatcher.Invoke(() =>
@@ -1411,8 +1408,6 @@ namespace MSL
         private void ProcessOutput(string msg)
         {
             Paragraph p = new Paragraph();
-            //msg = ProcessOutLogAnsiChar(msg);
-            //MessageBox.Show(msg);
             if (msg.Contains("\n"))
             {
                 if (msg.Contains("\r"))
@@ -1443,160 +1438,55 @@ namespace MSL
             outlog.Document.Blocks.Add(p);
         }
 
-        private bool solveProblemSystem;
         private bool outlogEncodingAsk = true;
-        private void ReadStdOutputAction(string msg)//日志回显实现
+        private void HandleEncodingIssue()
         {
-            if (solveProblemSystem)
+            Brush brush = MCSLogHandler.LogConfig[MCSLogHandler.LogLevel.Default].Color;
+            PrintLog("MSL检测到您的服务器输出了乱码日志，请尝试去“更多功能”界面更改服务器的“输出编码”来解决此问题！", Brushes.Red);
+            MCSLogHandler.LogConfig[MCSLogHandler.LogLevel.Default].Color = (SolidColorBrush)brush;
+            if (outlogEncodingAsk)
             {
-                ProblemSystemShow(msg);
-            }
-            if (outlog.Document.Blocks.Count >= 1000 && autoClearOutlog.IsChecked == true)
-            {
-                outlog.Document.Blocks.Clear();
-            }
-            if ((msg.Contains("\tat ") && shieldStackOut.IsChecked == true) || (ShieldLog != null && msg.Contains(ShieldLog)) || showOutlog.IsChecked == false)
-            {
-                return;
-            }
-            if (mslTips == false)
-            {
-                if (msg.StartsWith("["))
+                outlogEncodingAsk = false;
+                string encoding = "UTF8";
+                if (outputCmdEncoding.Content.ToString().Contains("UTF8"))
                 {
-                    if (msg.Contains("INFO]"))
-                    {
-                        PrintLog(msg, Brushes.Green);
-                    }
-                    else if (msg.Contains("WARN]"))
-                    {
-                        PrintLog(msg, Brushes.Orange);
-                    }
-                    else if (msg.Contains("ERROR]"))
-                    {
-                        PrintLog(msg, Brushes.Red);
-                    }
-                    else
-                    {
-                        PrintLog(msg, tempbrush);
-                    }
+                    encoding = "ANSI";
                 }
-                else
+                Growl.Ask(new GrowlInfo
                 {
-                    if (msg.Contains("INFO"))
+                    Message = "MSL检测到您的服务器输出了乱码日志，是否将服务器输出编码更改为“" + encoding + "”？\n点击确定后将自动更改编码并重启服务器",
+                    ActionBeforeClose = isConfirmed =>
                     {
-                        PrintLog(msg, Brushes.Green);
-                    }
-                    else if (msg.Contains("WARN"))
-                    {
-                        PrintLog(msg, Brushes.Orange);
-                    }
-                    else if (msg.Contains("ERROR"))
-                    {
-                        PrintLog(msg, Brushes.Red);
-                    }
-                    else
-                    {
-                        PrintLog(msg, tempbrush);
-                    }
-                }
-                return;
-            }
-            if (msg.StartsWith("["))
-            {
-                if (msg.Contains("INFO]"))
-                {
-                    PrintLog("[" + DateTime.Now.ToString("T") + " 信息]" + msg.Substring(msg.IndexOf("INFO]") + 5), Brushes.Green);
-                    //服务器启动成功和关闭时的提示
-                    LogHandleInfo(msg);
-                }
-                else if (msg.Contains("WARN]"))
-                {
-                    if (msg.Contains("Advanced terminal features are not available in this environment"))
-                    {
-                        return;
-                    }
-                    PrintLog("[" + DateTime.Now.ToString("T") + " 警告]" + msg.Substring(msg.IndexOf("WARN]") + 5), Brushes.Orange);
-                    LogHandleWarn(msg);
-                }
-                else if (msg.Contains("ERROR]"))
-                {
-                    PrintLog("[" + DateTime.Now.ToString("T") + " 错误]" + msg.Substring(msg.IndexOf("ERROR]") + 6), Brushes.Red);
-                }
-                else
-                {
-                    PrintLog(msg, Brushes.Green);
-                }
-            }
-            else
-            {
-                if (msg.Contains("INFO"))
-                {
-                    PrintLog(msg, Brushes.Green);
-                    LogHandleInfo(msg);
-                }
-                else if (msg.Contains("WARN"))
-                {
-                    PrintLog(msg, Brushes.Orange);
-                    LogHandleWarn(msg);
-                }
-                else if (msg.Contains("ERROR"))
-                {
-                    PrintLog(msg, Brushes.Red);
-                }
-                else
-                {
-                    PrintLog(msg, tempbrush);
-                }
-            }
-            if (msg.Contains("�"))
-            {
-                Brush brush = tempbrush;
-                PrintLog("MSL检测到您的服务器输出了乱码日志，请尝试去“更多功能”界面更改服务器的“输出编码”来解决此问题！", Brushes.Red);
-                tempbrush = brush;
-                if (outlogEncodingAsk)
-                {
-                    outlogEncodingAsk = false;
-                    string encoding = "UTF8";
-                    if (outputCmdEncoding.Content.ToString().Contains("UTF8"))
-                    {
-                        encoding = "ANSI";
-                    }
-                    Growl.Ask(new GrowlInfo
-                    {
-                        Message = "MSL检测到您的服务器输出了乱码日志，是否将服务器输出编码更改为“" + encoding + "”？\n点击确定后将自动更改编码并重启服务器",
-                        ActionBeforeClose = isConfirmed =>
+                        if (isConfirmed)
                         {
-                            if (isConfirmed)
+                            JObject jsonObject = JObject.Parse(File.ReadAllText("MSL\\ServerList.json", Encoding.UTF8));
+                            JObject _json = (JObject)jsonObject[RserverID.ToString()];
+                            _json["encoding_out"] = encoding;
+                            jsonObject[RserverID.ToString()] = _json;
+                            File.WriteAllText("MSL\\ServerList.json", Convert.ToString(jsonObject), Encoding.UTF8);
+                            Dispatcher.InvokeAsync(() =>
                             {
-                                JObject jsonObject = JObject.Parse(File.ReadAllText("MSL\\ServerList.json", Encoding.UTF8));
-                                JObject _json = (JObject)jsonObject[RserverID.ToString()];
-                                _json["encoding_out"] = encoding;
-                                jsonObject[RserverID.ToString()] = _json;
-                                File.WriteAllText("MSL\\ServerList.json", Convert.ToString(jsonObject), Encoding.UTF8);
-                                Dispatcher.InvokeAsync(() =>
+                                outputCmdEncoding.Content = encoding;
+                                Growl.Success("更改完毕！");
+                            });
+                            Task.Run(async () =>
+                            {
+                                getServerInfoLine = 102;
+                                autoStartserver.IsChecked = true;
+                                await Task.Delay(200);
+                                try
                                 {
-                                    outputCmdEncoding.Content = encoding;
-                                    Growl.Success("更改完毕！");
-                                });
-                                Task.Run(async () =>
-                                {
-                                    getServerInfoLine = 102;
-                                    autoStartserver.IsChecked = true;
-                                    await Task.Delay(200);
-                                    try
-                                    {
-                                        ServerProcess.Kill();
-                                    }
-                                    catch { }
-                                    await Task.Delay(200);
-                                    autoStartserver.IsChecked = false;
-                                });
-                            }
-                            return true;
-                        },
-                        ShowDateTime = false
-                    });
-                }
+                                    ServerProcess.Kill();
+                                }
+                                catch { }
+                                await Task.Delay(200);
+                                autoStartserver.IsChecked = false;
+                            });
+                        }
+                        return true;
+                    },
+                    ShowDateTime = false
+                });
             }
         }
 
@@ -1707,198 +1597,137 @@ namespace MSL
 
         private void GetPlayerInfoSys(string msg)
         {
-            if (msg.Contains("logged in with entity id"))
-            {
-                string a = msg.Substring(0, msg.IndexOf(" logged in with entity id"));
-                while (a.Contains(" "))
-                {
-                    a = a.Substring(a.IndexOf(" ") + 1);
-                }
-                if (!serverPlayerList.Items.Contains(a))
-                {
-                    serverPlayerList.Items.Add(a);
-                }
+            // 正则表达式提取用户名
+            Regex loginRegex = new Regex(@":\s*(\S+)\[/.*\]\s*logged in with entity id");
+            Regex disconnectRegex = new Regex(@":\s*(\S+)\s*lost connection:");
+            Regex serverDisconnectRegex = new Regex(@":\s*(\S+)\s*与服务器失去连接");
 
-            }
-            else if (msg.Contains("lost connection:"))
+            if (loginRegex.IsMatch(msg))
             {
-                try
+                string playerName = loginRegex.Match(msg).Groups[1].Value;
+                if (!serverPlayerList.Items.Contains(playerName))
                 {
-                    string a = msg.Substring(0, msg.IndexOf(" lost connection:"));
-                    while (a.Contains(" "))
-                    {
-                        a = a.Substring(a.IndexOf(" ") + 1);
-                    }
-                    foreach (string x in serverPlayerList.Items)
-                    {
-                        if (x.IndexOf(a + "[/") + 1 != 0)
-                        {
-                            serverPlayerList.Items.Remove(x);
-                            break;
-                        }
-                    }
-                }
-                catch
-                {
-                    Growl.Error("好像出现了点错误……");
+                    serverPlayerList.Items.Add(playerName);
                 }
             }
-            else if (msg.Contains("与服务器失去连接:"))
+            else if (disconnectRegex.IsMatch(msg))
             {
-                try
-                {
-                    string a = msg.Substring(0, msg.IndexOf(" 与服务器失去连接"));
-                    while (a.IndexOf(" ") + 1 != 0)
-                    {
-                        a = a.Substring(a.IndexOf(" ") + 1);
-                    }
-                    foreach (string x in serverPlayerList.Items)
-                    {
-                        if (x.IndexOf(a + "[/") + 1 != 0)
-                        {
-                            serverPlayerList.Items.Remove(x);
-                            break;
-                        }
-                    }
-                }
-                catch
-                {
-                    Growl.Error("好像出现了点错误……");
-                }
+                string playerName = disconnectRegex.Match(msg).Groups[1].Value;
+                RemovePlayerFromList(playerName);
+            }
+            else if (serverDisconnectRegex.IsMatch(msg))
+            {
+                string playerName = serverDisconnectRegex.Match(msg).Groups[1].Value;
+                RemovePlayerFromList(playerName);
+            }
+            else
+            {
+                //Growl.Error("无法识别的消息格式");
+                return;
             }
         }
 
-        private string foundProblems;
+        private void RemovePlayerFromList(string playerName)
+        {
+            try
+            {
+                foreach (string x in serverPlayerList.Items)
+                {
+                    if (x.StartsWith(playerName + "[/"))
+                    {
+                        serverPlayerList.Items.Remove(x);
+                        break;
+                    }
+                }
+            }
+            catch
+            {
+                Growl.Error("好像出现了点错误……");
+            }
+        }
+
+        private string foundProblems = string.Empty;
+
+        private readonly List<(string pattern, string message)> errorPatterns = new()
+        {
+            (@"UnsupportedClassVersionError.*\(class file version (\d+)", "*不支持的Class版本：您的Java版本可能太低！\n\t请使用Java{0}或以上版本！\n"),
+            (@"Unsupported Java detected.*Only up to (\S+)", "*不匹配的Java版本：\n\t请使用{0}！\n"),
+            (@"requires running the server with (\S+)", "*不匹配的Java版本：\n\t请使用{0}！\n"),
+            (@"Invalid or corrupt jarfile", "*服务端核心不完整，请重新下载！\n"),
+            (@"OutOfMemoryError", "*服务器内存分配过低或过高！\n"),
+            (@"Invalid maximum heap size.*", "*服务器最大内存分配有误！\n\t{0}\n"),
+            (@"Unrecognized VM option '([^']+)'", "*服务器JVM参数有误！请前往设置界面进行查看！\n\t错误的参数为：{0}\n"),
+            (@"There is insufficient memory for the Java Runtime Environment to continue", "*JVM内存分配不足，请尝试增加系统的虚拟内存（不是内存条！具体方法请自行上网查找）！\n"),
+            (@"进程无法访问", "*文件被占用，您的服务器可能多开，可尝试重启电脑解决！\n"),
+            (@"FAILED TO BIND TO PORT", "*端口被占用，您的服务器可能多开，可尝试重启电脑解决！\n"),
+            (@"Unable to access jarfile", "*无法访问JAR文件！您的服务端可能已损坏或路径中含有中文或其他特殊字符，请及时修改！\n"),
+            (@"加载 Java 代理时出错", "*无法访问JAR文件！您的服务端可能已损坏或路径中含有中文或其他特殊字符，请及时修改！\n"),
+            (@"ArrayIndexOutOfBoundsException", "*开启服务器时发生数组越界错误，请尝试更换服务端再试！\n"),
+            (@"ClassCastException", "*开启服务器时发生类转换异常，请检查Java版本是否匹配，或者让开服器为您下载Java环境（设置界面更改）！\n"),
+            (@"could not open.*jvm.cfg", "*Java异常，请检查Java环境是否正常，或者让开服器为您下载Java环境（设置界面更改）！\n"),
+            (@"Failed to download vanilla jar", "*下载原版核心文件失败，您可尝试使用代理或更换服务端为Spigot端！\n"),
+            (@"Exception in thread ""main""", "*服务端核心Main方法报错，可能是Java版本不正确或服务端（及库文件）不完整，请尝试更换Java版本或重新下载安装服务端核心！\n"),
+            (@"@libraries.net|找不到或无法加载主类", "*Java版本过低，请勿使用Java8及以下版本的Java！\n"),
+            (@"Could not load '([^']+)' plugin", "*无法加载插件！\n\t插件名称：{0}\n"),
+            (@"Error loading plugin '([^']+)'", "*无法加载插件！\n\t插件名称：{0}\n"),
+            (@"Error occurred while enabling (\S+) ", "*在启用 {0} 时发生了错误\n"),
+            (@"Encountered an unexpected exception", "*服务器出现意外崩溃，可能是由于模组冲突，请检查您的模组列表（如果使用的是整合包，请使用整合包制作方提供的Server专用包开服）\n"),
+        };
+
         private void ProblemSystemShow(string msg)
         {
-            if (getServerInfoLine <= 50)
-            {
-                getServerInfoLine++;
-                if (msg.Contains("UnsupportedClassVersionError"))
-                {
-                    foundProblems += "*不支持的Class版本：您的Java版本可能太低！\n";
-                    int a = int.Parse(msg.Substring(msg.IndexOf("(class file version ") + 20, 2));
-                    foundProblems += $"请使用Java{a - 44}或以上版本！\n";
-                }
-                else if (msg.Contains("Unsupported Java detected"))
-                {
-                    foundProblems += "*不匹配的Java版本：\n";
-                    foundProblems += "请使用" + msg.Substring(msg.IndexOf("Only up to ") + 11, 7) + "！\n";
-                }
-                else if (msg.Contains("requires running the server with"))
-                {
-                    foundProblems += "*不匹配的Java版本：\n";
-                    foundProblems += "请使用" + msg.Substring(msg.IndexOf("requires running the server with ") + 33, 7) + "！\n";
-                }
-                else if (msg.Contains("Invalid or corrupt jarfile"))
-                {
-                    foundProblems += "*服务端核心不完整，请重新下载！\n";
-                }
-                else if (msg.Contains("OutOfMemoryError"))
-                {
-                    foundProblems += "*服务器内存分配过低或过高！\n";
-                }
-                else if (msg.Contains("Invalid maximum heap size"))
-                {
-                    foundProblems += "*服务器最大内存分配有误！\n" + msg + "\n";
-                }
-                else if (msg.Contains("Unrecognized VM option"))
-                {
-                    foundProblems += "*服务器JVM参数有误！请前往设置界面进行查看！\n错误的参数为：" + msg.Substring(msg.IndexOf("'") + 1, msg.Length - 3 - msg.IndexOf(" '")) + "\n";
-                }
-                else if (msg.Contains("There is insufficient memory for the Java Runtime Environment to continue"))
-                {
-                    foundProblems += "*JVM内存分配不足，请尝试增加系统的虚拟内存（不是内存条！具体方法请自行上网查找）！\n";
-                }
-                else if (msg.Contains("进程无法访问"))
-                {
-                    if (foundProblems == null || !foundProblems.Contains("*文件被占用，您的服务器可能多开，可尝试重启电脑解决！\n"))
-                    {
-                        foundProblems += "*文件被占用，您的服务器可能多开，可尝试重启电脑解决！\n";
-                    }
-                }
-                else if (msg.Contains("FAILED TO BIND TO PORT"))
-                {
-                    foundProblems += "*端口被占用，您的服务器可能多开，可尝试重启电脑解决！\n";
-                }
-                else if (msg.Contains("Unable to access jarfile"))
-                {
-                    foundProblems += "*无法访问JAR文件！您的服务端可能已损坏或路径中含有中文或其他特殊字符,请及时修改！\n";
-                }
-                else if (msg.Contains("加载 Java 代理时出错"))
-                {
-                    foundProblems += "*无法访问JAR文件！您的服务端可能已损坏或路径中含有中文或其他特殊字符,请及时修改！\n";
-                }
-                else if (msg.Contains("ArraylndexOutOfBoundsException"))
-                {
-                    foundProblems += "*开启服务器时发生数组越界错误，请尝试更换服务端再试！\n";
-                }
-                else if (msg.Contains("ClassCastException"))
-                {
-                    foundProblems += "*开启服务器时发生类转换异常，请检查Java版本是否匹配，或者让开服器为您下载Java环境（设置界面更改）！\n";
-                }
-                else if (msg.Contains("could not open") && msg.Contains("jvm.cfg"))
-                {
-                    foundProblems += "*Java异常，请检查Java环境是否正常，或者让开服器为您下载Java环境（设置界面更改）！\n";
-                }
-                else if (msg.Contains("Failed to download vanilla jar"))
-                {
-                    foundProblems += "*下载原版核心文件失败，您可尝试使用代理或更换服务端为Spigot端！\n";
-                }
-                else if (msg.Contains("Exception in thread \"main\""))
-                {
-                    foundProblems += "*服务端核心Main方法报错，可能是Java版本不正确或服务端（及库文件）不完整，请尝试更换Java版本或重新下载安装服务端核心！\n";
-                }
-                else if (msg.Contains("@libraries.net.")|| msg.Contains("找不到或无法加载主类"))
-                {
-                    foundProblems += "*Java版本过低，请勿使用Java8及以下版本的Java！\n";
-                }
-            }
-            if (msg.Contains("Could not load") && msg.Contains("plugin"))
-            {
-                foundProblems += "*无法加载插件！\n";
-                foundProblems += "插件名称：" + msg.Substring(msg.IndexOf("Could not load '") + 16, msg.IndexOf("' ") - (msg.IndexOf("Could not load '") + 16)) + "\n";
-            }
-            else if (msg.Contains("Error loading plugin"))
-            {
-                foundProblems += "*无法加载插件！\n";
-                foundProblems += "插件名称：" + msg.Substring(msg.IndexOf(" '") + 2, msg.IndexOf("' ") - (msg.IndexOf(" '") + 2)) + "\n";
-            }
-            else if (msg.Contains("Error occurred while enabling "))
-            {
-                foundProblems += "*在启用 " + msg.Substring(msg.IndexOf("enabling ") + 9, msg.IndexOf(" (") - (msg.IndexOf("enabling ") + 9)) + " 时发生了错误\n"; ;
-            }
-            else if (msg.Contains("Encountered an unexpected exception"))
-            {
-                foundProblems += "*服务器出现意外崩溃，可能是由于模组冲突，请检查您的模组列表（如果使用的是整合包，请使用整合包制作方提供的Server专用包开服）\n";
-            }
-            else if (msg.Contains("Mod") && msg.Contains("requires"))
-            {
-                string modNamePattern = @"Mod (\w+) requires";
-                string preModPattern = @"requires (\w+ \d+\.\d+\.\d+)";
+            if (getServerInfoLine > 50)
+                return;
 
-                Match modNameMatch = Regex.Match(msg, modNamePattern);
-                Match preModMatch = Regex.Match(msg, preModPattern);
+            getServerInfoLine++;
 
-                if (modNameMatch.Success && preModMatch.Success)
+            foreach (var (pattern, message) in errorPatterns)
+            {
+                var match = Regex.Match(msg, pattern);
+                if (match.Success)
                 {
-                    string modName = modNameMatch.Groups[1].Value;
-                    string preMod = preModMatch.Groups[1].Value;
+                    var resolvedMessage = message;
+                    for (int i = 1; i < match.Groups.Count; i++)
+                    {
+                        resolvedMessage = resolvedMessage.Replace($"{{{i - 1}}}", match.Groups[i].Value);
+                    }
 
-                    if (msg.Contains("or above"))
+                    if (foundProblems == null || !foundProblems.Contains(resolvedMessage))
                     {
-                        if (foundProblems == null || !foundProblems.Contains("*" + modName + " 模组出现问题！该模组需要 " + preMod + " 或以上版本！\n"))
-                        {
-                            foundProblems += "*" + modName + " 模组出现问题！该模组需要 " + preMod + " 或以上版本！\n";
-                        }
+                        foundProblems += resolvedMessage;
                     }
-                    else
-                    {
-                        if (foundProblems == null || !foundProblems.Contains("*" + modName + " 模组出现问题！该模组需要 " + preMod + " ！\n"))
-                        {
-                            foundProblems += "*" + modName + " 模组出现问题！该模组需要 " + preMod + " ！\n";
-                        }
-                    }
+                    return;
+                }
+            }
+
+            if (msg.Contains("Mod") && msg.Contains("requires"))
+            {
+                HandleModRequirement(msg);
+            }
+        }
+
+        private void HandleModRequirement(string msg)
+        {
+            string modNamePattern = @"Mod (\w+) requires";
+            string preModPattern = @"requires (\w+ \d+\.\d+\.\d+)";
+
+            Match modNameMatch = Regex.Match(msg, modNamePattern);
+            Match preModMatch = Regex.Match(msg, preModPattern);
+
+            if (modNameMatch.Success && preModMatch.Success)
+            {
+                string modName = modNameMatch.Groups[1].Value;
+                string preMod = preModMatch.Groups[1].Value;
+                string resolvedMessage = $"*{modName} 模组出现问题！该模组需要 {preMod}！\n";
+
+                if (msg.Contains("or above"))
+                {
+                    resolvedMessage = $"*{modName} 模组出现问题！该模组需要 {preMod} 或以上版本！\n";
+                }
+
+                if (foundProblems == null || !foundProblems.Contains(resolvedMessage))
+                {
+                    foundProblems += resolvedMessage;
                 }
             }
         }
@@ -1941,20 +1770,6 @@ namespace MSL
         }
 
         #region ConptyExitEvent
-        /*
-        private string CleanAnsiEscapeCodes(string input)
-        {
-            string pattern = @"\x1B\[[0-9;]*[A-Za-z]";
-            return Regex.Replace(input, pattern, string.Empty);
-        }
-
-        private string ProcessOutLogAnsiChar(string str)
-        {
-            str = Regex.Replace(str, @"(\r?\n)+\x1B\[15;68H.", string.Empty);
-            str = CleanAnsiEscapeCodes(str);
-            return str;
-        }
-        */
 
         private void OnTermExited(object sender, EventArgs e)
         {
@@ -1968,21 +1783,12 @@ namespace MSL
                 if (solveProblemSystem)
                 {
                     solveProblemSystem = false;
-                    /*
-                    logs = ProcessOutLogAnsiChar(logs);
-                    if (logs.Contains("\r"))
-                    {
-                        logs = logs.Replace("\r", string.Empty);
-                    }
-                    */
                     string[] strings = (conptyWindow.ConptyConsole.ConPTYTerm.GetConsoleText()).Split('\n');
                     foreach (var log in strings)
                     {
-                        //MessageBox.Show(log);
                         ProblemSystemShow(log);
                     }
                     conptyWindow.Visibility = Visibility.Collapsed;
-                    //CloseConptyDialog();
 
                     if (string.IsNullOrEmpty(foundProblems))
                     {
@@ -1998,7 +1804,6 @@ namespace MSL
                 else if (getServerInfoLine <= 100)
                 {
                     conptyWindow.Visibility = Visibility.Collapsed;
-                    //CloseConptyDialog();
                     bool dialogRet = await MagicShow.ShowMsgDialogAsync(this, "服务器疑似异常关闭，是您人为关闭的吗？\n您可使用MSL的崩溃分析系统进行检测，也可将服务器日志发送给他人以寻求帮助，但请不要截图此弹窗！！！\n日志发送方式：\n1.直接截图控制台内容\n2.服务器目录\\logs\\latest.log\n3.前往“更多功能”界面上传至Internet\n\n点击确定开始进行崩溃分析", "提示", true);
                     if (dialogRet)
                     {
@@ -2019,7 +1824,7 @@ namespace MSL
         {
             try
             {
-                if (inputCmdEncoding.Content.ToString() == "输入编码:UTF8")
+                if (inputCmdEncoding.Content.ToString() == "UTF8")
                 {
                     if (fastCMD.SelectedIndex == 0)
                     {
@@ -2099,7 +1904,7 @@ namespace MSL
             catch
             {
                 fastCMD.SelectedIndex = 0;
-                if (inputCmdEncoding.Content.ToString() == "输入编码:UTF8")
+                if (inputCmdEncoding.Content.ToString() == "UTF8")
                 {
                     SendCmdUTF8(cmdtext.Text);
                 }
