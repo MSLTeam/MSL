@@ -1183,8 +1183,15 @@ namespace MSL
                     if ((msg.Contains("\tat ") && shieldStackOut.IsChecked == true) || (ShieldLog != null && msg.Contains(ShieldLog)) || showOutlog.IsChecked == false)
                         return;
                     if (mslTips != false)
-                        MCSLogHandler.ProcessLogMessage(e.Data);
+                    {
+                        MCSLogHandler.ProcessLogMessage(msg);
+                    }
+                    else
+                    {
+                        PrintLog(msg, HandyControl.Themes.ThemeResources.Current.AccentColor);
+                    }
                 });
+                msg = null;
             }
         }
 
