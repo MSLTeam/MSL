@@ -87,10 +87,31 @@ namespace MSL
                         Application.Current.Shutdown();
                     }
                 }
+
+                bool downloadTermDll = false;
+                if (!(Environment.OSVersion.Version.Major == 6 && Environment.OSVersion.Version.Minor == 1))
+                {
+                    if (File.Exists("MSL\\Microsoft.Terminal.Control.dll"))
+                    {
+                        try
+                        {
+                            LoadLibEx();
+                        }
+                        catch
+                        {
+                            File.Delete("MSL\\Microsoft.Terminal.Control.dll");
+                            downloadTermDll = true;
+                        }
+                    }
+                    else
+                    {
+                        downloadTermDll = true;
+                    }
+                }
                 //Logger.LogInfo("载入配置……");
                 await LoadConfigEvent(jsonObject);
                 //Logger.LogInfo("异步载入联网功能……");
-                await OnlineService(jsonObject);
+                await OnlineService(jsonObject, downloadTermDll);
                 //Logger.LogInfo("启动事件完成！");
                 LoadingCompleted = true;
             }
@@ -364,7 +385,7 @@ namespace MSL
             //Logger.LogInfo("配置加载完毕！");
         }
 
-        private async Task OnlineService(JObject jsonObject)
+        private async Task OnlineService(JObject jsonObject, bool downloadTermDll)
         {
             //get serverlink
             try
@@ -433,9 +454,10 @@ namespace MSL
                 //Logger.LogError("检测更新失败！");
                 Growl.Error(LanguageManager.Instance["MainWindow_GrowlMsg_CheckUpdateErr"]);
             }
-            if (!(Environment.OSVersion.Version.Major == 6 && Environment.OSVersion.Version.Minor == 1))
+            if (downloadTermDll)
             {
-                if (File.Exists("MSL\\Microsoft.Terminal.Control.dll"))
+                var result = await MagicShow.ShowDownloader(this, "https://file.mslmc.cn/Microsoft.Terminal.Control.dll", "MSL", "Microsoft.Terminal.Control.dll", "下载必要文件……");
+                if (result)
                 {
                     try
                     {
@@ -444,23 +466,7 @@ namespace MSL
                     catch (Exception ex)
                     {
                         File.Delete("MSL\\Microsoft.Terminal.Control.dll");
-                        MagicShow.ShowMsg(this, $"必要DLL“Microsoft.Terminal.Control.dll”加载失败！可能是文件不完整，已将其删除，请重启软件以确保其被重新下载并加载。（{ex.Message}）\n若不重启软件，高级终端（ConPty）功能将失效！", "错误");
-                    }
-                }
-                else
-                {
-                    var result = await MagicShow.ShowDownloader(this, "https://file.mslmc.cn/Microsoft.Terminal.Control.dll", "MSL", "Microsoft.Terminal.Control.dll", "下载必要文件……");
-                    if (result)
-                    {
-                        try
-                        {
-                            LoadLibEx();
-                        }
-                        catch (Exception ex)
-                        {
-                            File.Delete("MSL\\Microsoft.Terminal.Control.dll");
-                            MagicShow.ShowMsg(this, $"必要DLL“Microsoft.Terminal.Control.dll”加载失败！可能是文件不完整，已将其删除，请重启软件以确保其被重新下载并加载。（{ex.Message}）\n如果不重启软件，高级终端（ConPty）功能将失效！\n若您多次重启软件后，此问题依旧未被解决，请联系作者进行反馈！", "错误");
-                        }
+                        MagicShow.ShowMsg(this, $"必要DLL“Microsoft.Terminal.Control.dll”加载失败！可能是文件不完整，已将其删除，请重启软件以确保其被重新下载并加载。（{ex.Message}）\n如果不重启软件，高级终端（ConPty）功能将失效！\n若您多次重启软件后，此问题依旧未被解决，请联系作者进行反馈！", "错误");
                     }
                 }
             }
