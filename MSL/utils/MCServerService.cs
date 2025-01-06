@@ -72,26 +72,21 @@ namespace MSL.utils
         private readonly Action<string> _warnHandler;
         private readonly Action _encodingIssueHandler;
 
-        public enum LogLevel
+        public class LogConfig
         {
-            Info,
-            Warn,
-            Error,
-            Default
-        }
-
-        public class LogSettings
-        {
-            public string Label { get; set; }
+            public string Prefix { get; set; }
             public SolidColorBrush Color { get; set; }
         }
 
-        public Dictionary<LogLevel, LogSettings> LogConfig = new()
+        public Dictionary<int, LogConfig> LogInfo = new()
         {
-            { LogLevel.Info, new LogSettings { Label = "信息", Color = Brushes.Green } },
-            { LogLevel.Warn, new LogSettings { Label = "警告", Color = Brushes.Orange } },
-            { LogLevel.Error, new LogSettings { Label = "错误", Color = Brushes.Red } },
-            { LogLevel.Default, new LogSettings { Label = string.Empty, Color = Brushes.Green } }
+            { 1, new LogConfig { Prefix = "信息", Color = Brushes.Green } }, // 以“[”开头并含有INFO字样的日志
+            { 2, new LogConfig { Prefix = "警告", Color = Brushes.Orange } }, // 以“[”开头并含有WARN字样的日志
+            { 3, new LogConfig { Prefix = "错误", Color = Brushes.Red } }, // 以“[”开头并含有ERROR字样的日志
+            { 11, new LogConfig { Prefix = string.Empty, Color = Brushes.Green } }, // 不以“[”开头但含有INFO字样的日志
+            { 12, new LogConfig { Prefix = string.Empty, Color = Brushes.Orange } }, // 不以“[”开头但含有WARN字样的日志
+            { 13, new LogConfig { Prefix = string.Empty, Color = Brushes.Red } }, // 不以“[”开头但含有ERROR字样的日志
+            { 0, new LogConfig { Prefix = string.Empty, Color = Brushes.Green } } // 啥也不含的日志
         };
 
         public MCSLogHandler(
@@ -115,7 +110,7 @@ namespace MSL.utils
                 HandleEncodingIssue();
         }
 
-        private (LogLevel Level, string Content) ParseLogMessage(string message)
+        private (int Level, string Content) ParseLogMessage(string message)
         {
             if (message.StartsWith("["))
             {
@@ -135,37 +130,45 @@ namespace MSL.utils
                 {
                     if (message.Contains(level))
                     {
-                        return (GetLogLevelFromString(level), message);
+                        return (GetLogLevelFromString(level) + 10, message);
                     }
                 }
             }
 
-            return (LogLevel.Default, message);
+            return (0, message);
         }
 
-        private LogLevel GetLogLevelFromString(string level) => level switch
+        private int GetLogLevelFromString(string level) => level switch
         {
-            "INFO" => LogLevel.Info,
-            "WARN" => LogLevel.Warn,
-            "ERROR" => LogLevel.Error,
-            _ => LogLevel.Default
+            "INFO" => 1,
+            "WARN" => 2,
+            "ERROR" => 3,
+            _ => 0
         };
 
-        private void PrintFormattedLog(LogLevel level, string content)
+        private void PrintFormattedLog(int level, string content)
         {
-            if (level != LogLevel.Default)
+            if (level != 0)
             {
-                var timestamp = DateTime.Now.ToString("T");
-                PrintLog($"[{timestamp} {LogConfig[level].Label}]{content}", LogConfig[level].Color);
+                if (level > 10)
+                {
+                    var tempColor = LogInfo[0].Color;
+                    PrintLog(content, LogInfo[level].Color);
+                    LogInfo[0].Color = tempColor;
+                }
+                else
+                {
+                    PrintLog($"[{DateTime.Now:T} {LogInfo[level].Prefix}]{content}", LogInfo[level].Color);
+                }
 
-                if (level == LogLevel.Info)
+                if (level == 1 || level - 10 == 1)
                     LogHandleInfo(content);
-                else if (level == LogLevel.Warn && !content.Contains("Advanced terminal features"))
+                else if ((level == 2 || level - 10 == 2) && !content.Contains("Advanced terminal features"))
                     LogHandleWarn(content);
             }
             else
             {
-                PrintLog(content, LogConfig[level].Color);
+                PrintLog(content, LogInfo[level].Color);
             }
         }
 

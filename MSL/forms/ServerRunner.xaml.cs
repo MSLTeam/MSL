@@ -1192,7 +1192,7 @@ namespace MSL
 
         private void PrintLog(string msg, Brush color)
         {
-            MCSLogHandler.LogConfig[MCSLogHandler.LogLevel.Default].Color = (SolidColorBrush)color;
+            MCSLogHandler.LogInfo[0].Color = (SolidColorBrush)color;
             Paragraph p = new Paragraph();
             try
             {
@@ -1327,7 +1327,7 @@ namespace MSL
         {
             colorDict = new Dictionary<char, SolidColorBrush>
             {
-                ['r'] = MCSLogHandler.LogConfig[MCSLogHandler.LogLevel.Default].Color,
+                ['r'] = MCSLogHandler.LogInfo[0].Color,
                 ['0'] = Brushes.Black,
                 ['1'] = Brushes.DarkBlue,
                 ['2'] = Brushes.DarkGreen,
@@ -1441,9 +1441,9 @@ namespace MSL
         private bool outlogEncodingAsk = true;
         private void HandleEncodingIssue()
         {
-            Brush brush = MCSLogHandler.LogConfig[MCSLogHandler.LogLevel.Default].Color;
+            Brush brush = MCSLogHandler.LogInfo[0].Color;
             PrintLog("MSL检测到您的服务器输出了乱码日志，请尝试去“更多功能”界面更改服务器的“输出编码”来解决此问题！", Brushes.Red);
-            MCSLogHandler.LogConfig[MCSLogHandler.LogLevel.Default].Color = (SolidColorBrush)brush;
+            MCSLogHandler.LogInfo[0].Color = (SolidColorBrush)brush;
             if (outlogEncodingAsk)
             {
                 outlogEncodingAsk = false;
