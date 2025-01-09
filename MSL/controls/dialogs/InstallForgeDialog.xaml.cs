@@ -396,7 +396,16 @@ namespace MSL.controls
                                 }
                                 else if (buildarg.Contains("AutoRenamingTool"))
                                 {
-                                    buildarg += "net.minecraftforge.fart.Main ";
+                                    //大于等于1.21的版本
+                                    if(SafeGetValue(installJobj, "minecraft")!="" && CompareMinecraftVersions(installJobj["minecraft"].ToString(), "1.21") >=0)
+                                    {
+                                        buildarg += "net.neoforged.art.Main ";
+                                    }
+                                    else
+                                    {
+                                        buildarg += "net.minecraftforge.fart.Main ";
+                                    }
+                                    
                                 }
                                 else if (buildarg.Contains("jarsplitter"))
                                 {
