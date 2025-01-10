@@ -820,6 +820,7 @@ namespace MSL.pages
                     sJVM.IsSelected = true;
                     sJVM.IsEnabled = true;
                     sserver.IsEnabled = false;
+                    launchmode = 0; // 0是正常模式
                     returnMode = 6;
                 }
                 catch (Exception ex)
