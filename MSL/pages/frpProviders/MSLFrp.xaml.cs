@@ -26,6 +26,7 @@ namespace MSL.pages.frpProviders
         private readonly List<string> list2 = new List<string>();
         private readonly List<string> list3 = new List<string>();
         private readonly List<string> list4 = new List<string>();
+        private readonly List<string> list_token = new List<string>();
 
         public MSLFrp()
         {
@@ -73,11 +74,13 @@ namespace MSL.pages.frpProviders
                             string serverPort = value.Value["server_port"].ToString();
                             string minPort = value.Value["min_open_port"].ToString();
                             string maxPort = value.Value["max_open_port"].ToString();
+                            string token = value.Value.SelectToken("token") != null ? value.Value["token"].ToString() : "";
 
                             list1.Add(serverAddress);
                             list2.Add(serverPort);
                             list3.Add(minPort);
                             list4.Add(maxPort);
+                            list_token.Add(token);
 
                             string _serverName = "[" + serverInfo + "]" + serverName;
                             ServerPingTest(_serverName, serverAddress, id);
@@ -99,11 +102,13 @@ namespace MSL.pages.frpProviders
                         string serverPort = value.Value["server_port"].ToString();
                         string minPort = value.Value["min_open_port"].ToString();
                         string maxPort = value.Value["max_open_port"].ToString();
+                        string token = value.Value.SelectToken("token") != null ? value.Value["token"].ToString() : "";
 
                         list1.Add(serverAddress);
                         list2.Add(serverPort);
                         list3.Add(minPort);
                         list4.Add(maxPort);
+                        list_token.Add(token);
 
                         string _serverName = "[" + serverInfo + "]" + serverName;
                         ServerPingTest(_serverName, serverAddress, id);
@@ -267,7 +272,10 @@ namespace MSL.pages.frpProviders
                     frpc += "serverAddr = \"" + list1[a].ToString() + "\"\n";
                     frpc += "serverPort = " + list2[a].ToString() + "\n";
                     frpc += "user = \"" + accountBox.Text + "\"\n";
-                    //frpc += "auth.token = \"\"\n";
+                    if(list_token[a].ToString() != "")
+                    {
+                        frpc += $"auth.token = \"{list_token[a].ToString()}\"\n";
+                    }
                     if (frpcType.SelectedIndex == 2)
                     {
                         string a100 = portBox.Text.Substring(0, portBox.Text.IndexOf("|"));
