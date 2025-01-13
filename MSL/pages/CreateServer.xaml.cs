@@ -767,7 +767,7 @@ namespace MSL.pages
                 try
                 {
                     Directory.CreateDirectory(serverbase);
-                    // 检查文件是否存在在那个文件夹
+                    // 检查文件是否存在在服务器文件夹
                     string _filename = Path.GetFileName(txb3.Text);
                     if (File.Exists(serverbase + "\\" + _filename)) // 存在
                     {
@@ -775,14 +775,14 @@ namespace MSL.pages
                     }
                     else // 不存在（？）
                     {
-                        if (Path.GetDirectoryName(txb3.Text) != serverbase) // 绝对不存在！！！（恼！）
+                        if (!Path.IsPathRooted(txb3.Text) && File.Exists(AppDomain.CurrentDomain.BaseDirectory + txb3.Text))  // 哦其实是相对路径，在MSL.exe所在的文件夹内（呼~）
+                        {
+                            txb3.Text = AppDomain.CurrentDomain.BaseDirectory + txb3.Text; // 如果是相对路径的话就得改成绝对路径了（因为服务端文件在MSL.exe所在文件夹而非服务器运行目录）
+                            await MoveFileInServerBase(_filename); // 然后再询问是否将文件移动到服务器目录（见此代码块下方代码块）
+                        }
+                        else if (Path.GetDirectoryName(txb3.Text) != serverbase) // 绝对不存在！！！（恼！）
                         {
                             await MoveFileInServerBase(_filename); // 是否将文件移动到服务器目录（见此代码块下方代码块）
-                        }
-                        else if (!Path.IsPathRooted(txb3.Text) && File.Exists(AppDomain.CurrentDomain.BaseDirectory + txb3.Text))  // 哦其实是相对路径（呼~）
-                        {
-                            txb3.Text = AppDomain.CurrentDomain.BaseDirectory + txb3.Text;
-                            await MoveFileInServerBase(_filename);
                         }
                     }
 
