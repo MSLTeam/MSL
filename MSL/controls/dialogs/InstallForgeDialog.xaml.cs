@@ -312,7 +312,7 @@ namespace MSL.controls
 
                         string _savepath = LibPath + "/" + NameToPath(SafeGetValue(lib, "name"));
                         Log_in("[LIB]下载：" + NameToPath(SafeGetValue(lib, "name")));
-                        if (_dlurl.Contains("mcp_config")|| _dlurl.Contains(".zip")) //mcp那个zip会用js redirect，所以只能用downloader，真神奇！
+                        if (_dlurl.Contains("mcp_config") || _dlurl.Contains(".zip")) //mcp那个zip会用js redirect，所以只能用downloader，真神奇！
                         {
                             await Dispatcher.Invoke(async () => //下载
                             {
@@ -397,7 +397,7 @@ namespace MSL.controls
                                 else if (buildarg.Contains("AutoRenamingTool"))
                                 {
                                     //大于等于1.21的版本
-                                    if(SafeGetValue(installJobj, "minecraft")!="" && CompareMinecraftVersions(installJobj["minecraft"].ToString(), "1.21") >=0)
+                                    if (SafeGetValue(installJobj, "minecraft") != "" && CompareMinecraftVersions(installJobj["minecraft"].ToString(), "1.21") >= 0)
                                     {
                                         buildarg += "net.neoforged.art.Main ";
                                     }
@@ -405,7 +405,7 @@ namespace MSL.controls
                                     {
                                         buildarg += "net.minecraftforge.fart.Main ";
                                     }
-                                    
+
                                 }
                                 else if (buildarg.Contains("jarsplitter"))
                                 {

@@ -1,5 +1,4 @@
-﻿using MSL.controls;
-using MSL.utils;
+﻿using MSL.utils;
 using Newtonsoft.Json;
 using Newtonsoft.Json.Linq;
 using System;
@@ -246,7 +245,7 @@ namespace MSL.pages.frpProviders
                 MagicShow.ShowMsgDialog(window, "请填写正确的QQ号！", "错误");
                 return;
             }
-            bool checkPortSuccessful=false;
+            bool checkPortSuccessful = false;
             JObject jsonObject = JObject.Parse(File.ReadAllText(@"MSL\ServerList.json", Encoding.UTF8));
             foreach (var item in jsonObject)
             {
@@ -260,7 +259,7 @@ namespace MSL.pages.frpProviders
                     int pt1 = config.IndexOf("server-port=") + 12;
                     string pt2 = config.Substring(pt1);
                     string port = pt2.Substring(0, pt2.IndexOf("\n"));
-                    if(port == portBox.Text)
+                    if (port == portBox.Text)
                     {
                         checkPortSuccessful = true;
                         break;
@@ -301,7 +300,7 @@ namespace MSL.pages.frpProviders
                     frpc += "serverAddr = \"" + list1[a].ToString() + "\"\n";
                     frpc += "serverPort = " + list2[a].ToString() + "\n";
                     frpc += "user = \"" + accountBox.Text + "\"\n";
-                    if(list_token[a].ToString() != "")
+                    if (list_token[a].ToString() != "")
                     {
                         frpc += $"auth.token = \"{list_token[a].ToString()}\"\n";
                     }

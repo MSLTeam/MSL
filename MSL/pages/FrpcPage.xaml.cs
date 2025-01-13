@@ -380,7 +380,7 @@ namespace MSL.pages
                     }
                 }
             }
-            if(msg.Contains("No connection could be made because the target machine actively refused it."))
+            if (msg.Contains("No connection could be made because the target machine actively refused it."))
             {
                 frpcOutlog.Text += "无法连接到本地服务器，请检查服务器是否开启，或内网映射本地端口和服务器本地端口是否相匹配！\n";
             }

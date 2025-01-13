@@ -1521,7 +1521,12 @@ namespace MSL.pages
                     sserver.IsSelected = true;
                     sserver.IsEnabled = true;
                     sJVM.IsEnabled = false;
-                    launchmode = 0;
+                    if (launchmode == 1)
+                    {
+                        tabCtrl.Visibility = Visibility.Visible;
+                        SelectTerminalGrid.Visibility = Visibility.Collapsed;
+                        launchmode = 0;
+                    }
                     returnMode = 5;
                     break;
                 case 7:
