@@ -271,7 +271,7 @@ namespace MSL.controls
                         string _savepath = LibPath + "/" + lib["downloads"]["artifact"]["path"].ToString();
                         string _sha1 = lib["downloads"]["artifact"]["sha1"].ToString();
                         Log_in("[LIB]下载：" + lib["downloads"]["artifact"]["path"].ToString());
-                        if (_dlurl.Contains("mcp_config")) //mcp那个zip会用js redirect，所以只能用downloader，真神奇！
+                        if (_dlurl.Contains("mcp_config") || _dlurl.Contains(".zip")) //mcp那个zip会用js redirect，所以只能用downloader，真神奇！
                         {
                             await Dispatcher.Invoke(async () => //下载
                             {
@@ -312,7 +312,7 @@ namespace MSL.controls
 
                         string _savepath = LibPath + "/" + NameToPath(SafeGetValue(lib, "name"));
                         Log_in("[LIB]下载：" + NameToPath(SafeGetValue(lib, "name")));
-                        if (_dlurl.Contains("mcp_config")) //mcp那个zip会用js redirect，所以只能用downloader，真神奇！
+                        if (_dlurl.Contains("mcp_config")|| _dlurl.Contains(".zip")) //mcp那个zip会用js redirect，所以只能用downloader，真神奇！
                         {
                             await Dispatcher.Invoke(async () => //下载
                             {
@@ -396,7 +396,16 @@ namespace MSL.controls
                                 }
                                 else if (buildarg.Contains("AutoRenamingTool"))
                                 {
-                                    buildarg += "net.minecraftforge.fart.Main ";
+                                    //大于等于1.21的版本
+                                    if(SafeGetValue(installJobj, "minecraft")!="" && CompareMinecraftVersions(installJobj["minecraft"].ToString(), "1.21") >=0)
+                                    {
+                                        buildarg += "net.neoforged.art.Main ";
+                                    }
+                                    else
+                                    {
+                                        buildarg += "net.minecraftforge.fart.Main ";
+                                    }
+                                    
                                 }
                                 else if (buildarg.Contains("jarsplitter"))
                                 {
@@ -598,10 +607,10 @@ namespace MSL.controls
                 //改成镜像源的部分
                 str = str.Replace("https://maven.neoforged.net/releases/net/neoforged/forge", "https://bmclapi2.bangbang93.com/maven/net/neoforged/forge");
                 str = str.Replace("https://maven.neoforged.net/releases/net/neoforged/neoforge", "https://bmclapi2.bangbang93.com/maven/net/neoforged/neoforge");
-                //str = str.Replace("https://maven.neoforged.net/releases", "https://bmclapi2.bangbang93.com/maven");
                 str = str.Replace("https://maven.minecraftforge.net", "https://bmclapi2.bangbang93.com/maven");
                 str = str.Replace("https://files.minecraftforge.net/maven", "https://bmclapi2.bangbang93.com/maven");
                 str = str.Replace("https://libraries.minecraft.net", "https://bmclapi2.bangbang93.com/maven");
+                str = str.Replace("https://maven.neoforged.net/releases", "https://bmclapi2.bangbang93.com/maven");
             }
             //构建时候的变量
             str = str.Replace("{INSTALLER}", ForgePath);
