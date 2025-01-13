@@ -36,7 +36,7 @@ namespace MSL.pages
         private string servercore;
         private string servermemory;
         private string serverargs;
-        private int launchmode = 0; //0为默认启动jar的模式 1为完全自定启动指令模式
+        private short launchmode = 0; // 启动模式（指启动服务器所用的cmd参数），默认为0，即"-jar server.jar"；若为1，即是自定义启动命令模式
 
         public CreateServer()
         {
@@ -735,7 +735,7 @@ namespace MSL.pages
 
         private async void CustomModeServerCoreNext_Click(object sender, RoutedEventArgs e)
         {
-            if (usedownloadserver.IsChecked == true)
+            if (usedownloadserver.IsChecked == true) // 下载服务端核心
             {
                 DownloadServer downloadServer = new DownloadServer(serverbase, serverjava)
                 {
@@ -762,20 +762,20 @@ namespace MSL.pages
                     }
                 }
             }
-            else if (useServerself.IsChecked == true) //自定义服务端核心文件
+            else if (useServerself.IsChecked == true) // 自定义服务端核心文件
             {
                 try
                 {
                     Directory.CreateDirectory(serverbase);
-                    //检查文件是否存在在那个文件夹
+                    // 检查文件是否存在在那个文件夹
                     string _filename = Path.GetFileName(txb3.Text);
-                    if (File.Exists(serverbase + "\\" + _filename))
+                    if (File.Exists(serverbase + "\\" + _filename)) // 存在
                     {
                         txb3.Text = _filename;
                     }
-                    else
+                    else // 不存在（？）
                     {
-                        if (Path.GetDirectoryName(txb3.Text) != serverbase)
+                        if (Path.GetDirectoryName(txb3.Text) != serverbase) // 绝对不存在！！！（恼！）
                         {
                             if (await MagicShow.ShowMsgDialogAsync(Window.GetWindow(this), "所选的服务端核心文件并不在服务器目录中，是否将其复制进服务器目录？\n若不复制，请留意勿将核心文件删除！", "提示", true))
                             {
@@ -784,13 +784,19 @@ namespace MSL.pages
                                 txb3.Text = _filename;
                             }
                         }
-                        else if (!Path.IsPathRooted(txb3.Text) && File.Exists(AppDomain.CurrentDomain.BaseDirectory + txb3.Text))
+                        else if (!Path.IsPathRooted(txb3.Text) && File.Exists(AppDomain.CurrentDomain.BaseDirectory + txb3.Text))  // 哦其实是相对路径（呼~）
                         {
                             txb3.Text = AppDomain.CurrentDomain.BaseDirectory + txb3.Text;
+                            if (await MagicShow.ShowMsgDialogAsync(Window.GetWindow(this), "所选的服务端核心文件并不在服务器目录中，是否将其复制进服务器目录？\n若不复制，请留意勿将核心文件删除！", "提示", true))
+                            {
+                                File.Copy(txb3.Text, serverbase + "\\" + _filename, true);
+                                await MagicShow.ShowMsgDialogAsync(Window.GetWindow(this), "已将服务端核心复制到了服务器目录之中，您现在可以将源文件删除了！", "提示");
+                                txb3.Text = _filename;
+                            }
                         }
                     }
 
-                    //检测用户输入的是单个文件还是完整路径
+                    // 检测用户输入的是单个文件还是完整路径
                     string fullFileName;
                     if (File.Exists(serverbase + "\\" + txb3.Text))
                     {
@@ -801,7 +807,7 @@ namespace MSL.pages
                         fullFileName = txb3.Text;
                     }
 
-                    //检查是否为forge端
+                    // 检查是否为forge端
                     if (Functions.CheckForgeInstaller(fullFileName))
                     {
                         bool dialog = await MagicShow.ShowMsgDialogAsync(Window.GetWindow(this), "您选择的服务端疑似是forge安装器，是否将其展开安装？\n如果不展开安装，服务器可能无法开启！", "提示", true, "取消");
@@ -827,15 +833,21 @@ namespace MSL.pages
                     MagicShow.ShowMsgDialog(Window.GetWindow(this), ex.Message, "错误");
                 }
             }
-            else //自定义指令模式
+            else // 自定义指令模式
             {
+                launchmode = 1; // 1是自定义命令模式
+                serverargs = textCustomCmd.Text; //存放完整的args
                 //不懂 直接copy了
+                /*
                 sJVM.IsSelected = true;
                 sJVM.IsEnabled = true;
                 sserver.IsEnabled = false;
-                launchmode = 1; // 1是自定义命令模式
-                serverargs = textCustomCmd.Text; //存放完整的args
-                returnMode = 6;//我猜 这应该是步骤代码吧...
+                */
+                // 若为自定义命令模式，就跳过设置开服内存和JVM参数的阶段
+                servermemory = "";
+                SelectTerminalGrid.Visibility = Visibility.Visible;
+                tabCtrl.Visibility = Visibility.Collapsed;
+                returnMode = 6;
             }
         }
 
@@ -1509,6 +1521,7 @@ namespace MSL.pages
                     sserver.IsSelected = true;
                     sserver.IsEnabled = true;
                     sJVM.IsEnabled = false;
+                    launchmode = 0;
                     returnMode = 5;
                     break;
                 case 7:
@@ -1542,15 +1555,15 @@ namespace MSL.pages
                     File.WriteAllText(@"MSL\ServerList.json", string.Format("{{{0}}}", "\n"));
                 }
                 JObject _json = new JObject
-                        {
+                    {
                         { "name", servername },
                         { "java", serverjava },
                         { "base", serverbase },
                         { "core", servercore },
                         { "memory", servermemory },
                         { "args", serverargs },
-                        {"mode",launchmode }
-                        };
+                        { "mode", launchmode }
+                    };
                 if (ConptyModeBtn.IsChecked == true)
                 {
                     _json.Add("useConpty", "True");
@@ -1588,6 +1601,7 @@ namespace MSL.pages
         private void ReInit()
         {
             returnMode = 0;
+            launchmode = 0;
             DownjavaName = null;
             servername = null;
             serverjava = null;

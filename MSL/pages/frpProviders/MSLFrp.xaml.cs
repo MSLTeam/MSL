@@ -1,4 +1,5 @@
-﻿using MSL.utils;
+﻿using MSL.controls;
+using MSL.utils;
 using Newtonsoft.Json;
 using Newtonsoft.Json.Linq;
 using System;
@@ -239,6 +240,34 @@ namespace MSL.pages.frpProviders
             {
                 MagicShow.ShowMsgDialog(window, "请填写正确的QQ号！", "错误");
                 return;
+            }
+            bool checkPortSuccessful=false;
+            JObject jsonObject = JObject.Parse(File.ReadAllText(@"MSL\ServerList.json", Encoding.UTF8));
+            foreach (var item in jsonObject)
+            {
+                if (File.Exists(item.Value["base"].ToString() + "\\server.properties"))
+                {
+                    string config = File.ReadAllText(item.Value["base"].ToString() + "\\server.properties");
+                    if (config.Contains("\r")) // 去除win系统专用换行符
+                    {
+                        config = config.Replace("\r", string.Empty);
+                    }
+                    int pt1 = config.IndexOf("server-port=") + 12;
+                    string pt2 = config.Substring(pt1);
+                    string port = pt2.Substring(0, pt2.IndexOf("\n"));
+                    if(port == portBox.Text)
+                    {
+                        checkPortSuccessful = true;
+                        break;
+                    }
+                }
+            }
+            if (!checkPortSuccessful)
+            {
+                if (!await MagicShow.ShowMsgDialogAsync(window, "您所填的端口不与您服务器列表中任何服务器的端口相匹配，您确定要继续吗？\n若非高技术力用户，请勿随意修改本地端口栏里的端口！否则出现任何问题，我们概不负责！", "警告", true))
+                {
+                    return;
+                }
             }
             //MSL-FRP
             string frptype = "";

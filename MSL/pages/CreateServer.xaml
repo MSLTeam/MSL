@@ -158,7 +158,6 @@
                                     <RowDefinition Height="Auto"/>
                                     <RowDefinition Height="Auto"/>
                                 </Grid.RowDefinitions>
-
                                 <Border Grid.Row="1" Style="{StaticResource BorderTipPrimary}">
                                     <StackPanel>
                                         <TextBlock Text="帮助：如何选择Java？" FontSize="16" Foreground="{DynamicResource PrimaryTextBrush}" FontWeight="Bold" HorizontalAlignment="Center" Margin="0,0,0,5"/>

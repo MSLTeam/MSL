@@ -46,8 +46,8 @@ namespace MSL
         private string ShieldLog = null;
         private bool mslTips = true;
         private ConptyWindow conptyWindow = null;
-        private int getServerInfoLine = 0;
-        private readonly int FirstStartTab;
+        private short getServerInfoLine = 0;
+        private readonly short FirstStartTab;
         private string DownjavaName;
         private readonly int RserverID;
         private string Rservername;
@@ -56,7 +56,7 @@ namespace MSL
         private string RserverJVM;
         private string RserverJVMcmd;
         private string Rserverbase;
-        private int Rservermode;
+        private short Rservermode;
         private MCSLogHandler MCSLogHandler;
 
         /// <summary>
@@ -64,7 +64,7 @@ namespace MSL
         /// </summary>
         /// <param name="serverID">服务器ID</param>
         /// <param name="controlTab">Tab标签</param>
-        public ServerRunner(int serverID, int controlTab = 0)
+        public ServerRunner(int serverID, short controlTab = 0)
         {
             InitializeComponent();
             InitializeLogHandler();
@@ -234,7 +234,7 @@ namespace MSL
             RserverJVMcmd = _json["args"].ToString();
             if (_json.ContainsKey("mode")) // 1为自定义模式
             {
-                Rservermode = int.Parse(_json["mode"].ToString());
+                Rservermode = short.Parse(_json["mode"].ToString());
             }
             else
             {
@@ -2059,7 +2059,7 @@ namespace MSL
             string[] strings = new string[9];
             Encoding encoding = Functions.GetTextFileEncodingType(Rserverbase + @"\server.properties");
             string config = File.ReadAllText(Rserverbase + @"\server.properties", encoding);
-            if (config.Contains("\r"))
+            if (config.Contains("\r")) // 去除win系统专用换行符
             {
                 config = config.Replace("\r", string.Empty);
             }
