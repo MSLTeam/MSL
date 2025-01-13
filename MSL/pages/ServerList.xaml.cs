@@ -119,7 +119,7 @@ namespace MSL.pages
             OpenServerWindowEvent();
         }
 
-        private void OpenServerWindowEvent(int ctrlTab = 0)
+        private void OpenServerWindowEvent(short ctrlTab = 0)
         {
             SL_ServerInfo SL_ServerInfo = serverList.SelectedItem as SL_ServerInfo;
             int serverID = SL_ServerInfo.ServerID;

@@ -777,22 +777,12 @@ namespace MSL.pages
                     {
                         if (Path.GetDirectoryName(txb3.Text) != serverbase) // 绝对不存在！！！（恼！）
                         {
-                            if (await MagicShow.ShowMsgDialogAsync(Window.GetWindow(this), "所选的服务端核心文件并不在服务器目录中，是否将其复制进服务器目录？\n若不复制，请留意勿将核心文件删除！", "提示", true))
-                            {
-                                File.Copy(txb3.Text, serverbase + "\\" + _filename, true);
-                                await MagicShow.ShowMsgDialogAsync(Window.GetWindow(this), "已将服务端核心复制到了服务器目录之中，您现在可以将源文件删除了！", "提示");
-                                txb3.Text = _filename;
-                            }
+                            await MoveFileInServerBase(_filename); // 是否将文件移动到服务器目录（见此代码块下方代码块）
                         }
                         else if (!Path.IsPathRooted(txb3.Text) && File.Exists(AppDomain.CurrentDomain.BaseDirectory + txb3.Text))  // 哦其实是相对路径（呼~）
                         {
                             txb3.Text = AppDomain.CurrentDomain.BaseDirectory + txb3.Text;
-                            if (await MagicShow.ShowMsgDialogAsync(Window.GetWindow(this), "所选的服务端核心文件并不在服务器目录中，是否将其复制进服务器目录？\n若不复制，请留意勿将核心文件删除！", "提示", true))
-                            {
-                                File.Copy(txb3.Text, serverbase + "\\" + _filename, true);
-                                await MagicShow.ShowMsgDialogAsync(Window.GetWindow(this), "已将服务端核心复制到了服务器目录之中，您现在可以将源文件删除了！", "提示");
-                                txb3.Text = _filename;
-                            }
+                            await MoveFileInServerBase(_filename);
                         }
                     }
 
@@ -848,6 +838,16 @@ namespace MSL.pages
                 SelectTerminalGrid.Visibility = Visibility.Visible;
                 tabCtrl.Visibility = Visibility.Collapsed;
                 returnMode = 6;
+            }
+        }
+
+        private async Task MoveFileInServerBase(string _filename)
+        {
+            if (await MagicShow.ShowMsgDialogAsync(Window.GetWindow(this), "所选的服务端核心文件并不在服务器目录中，是否将其复制进服务器目录？\n若不复制，请留意勿将核心文件删除！", "提示", true))
+            {
+                File.Copy(txb3.Text, serverbase + "\\" + _filename, true);
+                await MagicShow.ShowMsgDialogAsync(Window.GetWindow(this), "已将服务端核心复制到了服务器目录之中，您现在可以将源文件删除了！", "提示");
+                txb3.Text = _filename;
             }
         }
 
@@ -1566,9 +1566,12 @@ namespace MSL.pages
                         { "base", serverbase },
                         { "core", servercore },
                         { "memory", servermemory },
-                        { "args", serverargs },
-                        { "mode", launchmode }
+                        { "args", serverargs }
                     };
+                if (launchmode == 1)
+                {
+                    _json.Add("mode", launchmode);
+                }
                 if (ConptyModeBtn.IsChecked == true)
                 {
                     _json.Add("useConpty", "True");
@@ -1625,6 +1628,7 @@ namespace MSL.pages
             txjava.Text = string.Empty;
             usedownloadserver.IsChecked = true;
             txb3.Text = string.Empty;
+            textCustomCmd.Text = string.Empty;
             usedefault.IsChecked = true;
             txb4.Text = string.Empty;
             txb5.Text = string.Empty;
