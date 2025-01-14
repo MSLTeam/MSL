@@ -245,34 +245,48 @@ namespace MSL.pages.frpProviders
                 MagicShow.ShowMsgDialog(window, "请填写正确的QQ号！", "错误");
                 return;
             }
-            bool checkPortSuccessful = false;
-            JObject jsonObject = JObject.Parse(File.ReadAllText(@"MSL\ServerList.json", Encoding.UTF8));
-            foreach (var item in jsonObject)
+            if (File.Exists("MSL\\ServerList.json")) // 检测是否创建过服务器
             {
-                if (File.Exists(item.Value["base"].ToString() + "\\server.properties"))
+                // 好！创建过服务器，那就开始检测服务器列表有没有和所填端口所匹配的服务器
+                // 即这个端口是否被服务器使用，若未被使用，仅进行映射，那就没啥卵用
+                bool isPortUsed = false;
+                try
                 {
-                    string config = File.ReadAllText(item.Value["base"].ToString() + "\\server.properties");
-                    if (config.Contains("\r")) // 去除win系统专用换行符
+                    JObject jsonObject = JObject.Parse(File.ReadAllText(@"MSL\ServerList.json", Encoding.UTF8));
+                    foreach (var item in jsonObject)
                     {
-                        config = config.Replace("\r", string.Empty);
+                        if (File.Exists(item.Value["base"].ToString() + "\\server.properties"))
+                        {
+                            string config = File.ReadAllText(item.Value["base"].ToString() + "\\server.properties");
+                            if (config.Contains("\r")) // 去除win系统专用换行符
+                            {
+                                config = config.Replace("\r", string.Empty);
+                            }
+                            int pt1 = config.IndexOf("server-port=") + 12;
+                            string pt2 = config.Substring(pt1);
+                            string port = pt2.Substring(0, pt2.IndexOf("\n"));
+                            if (port == portBox.Text) // 很好！有和所填端口匹配的服务器！
+                            {
+                                isPortUsed = true;
+                                break;
+                            }
+                        }
                     }
-                    int pt1 = config.IndexOf("server-port=") + 12;
-                    string pt2 = config.Substring(pt1);
-                    string port = pt2.Substring(0, pt2.IndexOf("\n"));
-                    if (port == portBox.Text)
+                }
+                catch
+                {
+                    // 有异常！那就默认有吧！
+                    isPortUsed = true;
+                }
+                if (!isPortUsed) // 好，没有和所填端口相匹配的服务器，那就弹出警告[主要是防止有人乱改端口导致进不去服（恼）]
+                {
+                    if (!await MagicShow.ShowMsgDialogAsync(window, "您所填的端口不与您服务器列表中任何服务器的端口相匹配，您确定要继续吗？\n若非高技术力用户，请勿随意修改本地端口栏里的端口！否则出现任何问题，我们概不负责！", "警告", true))
                     {
-                        checkPortSuccessful = true;
-                        break;
+                        return;
                     }
                 }
             }
-            if (!checkPortSuccessful)
-            {
-                if (!await MagicShow.ShowMsgDialogAsync(window, "您所填的端口不与您服务器列表中任何服务器的端口相匹配，您确定要继续吗？\n若非高技术力用户，请勿随意修改本地端口栏里的端口！否则出现任何问题，我们概不负责！", "警告", true))
-                {
-                    return;
-                }
-            }
+            
             //MSL-FRP
             string frptype = "";
             string frpc;
