@@ -91,14 +91,25 @@ namespace MSL.pages
             if (ImportPack.SelectedIndex == 1)
             {
                 ImportPack.SelectedIndex = 0;
-                DownloadMod downloadMod = new DownloadMod("MSL", 0, 1, false, true, true)
+                await MagicShow.ShowMsgDialogAsync(Window.GetWindow(this), "请务必下载文件名含有“server”且为.zip格式的服务端整合包！否则会出现软件无法读取或开服失败的问题！", "下载须知");
+                DownloadMod downloadMod = new DownloadMod("MSL\\Downloads", 0, 1, false, true, true)
                 {
                     Owner = Window.GetWindow(Window.GetWindow(this))
                 };
                 downloadMod.ShowDialog();
-                if (!File.Exists("MSL\\ServerPack.zip"))
+                string dFilename = downloadMod.FileName;
+                if (dFilename == null)
+                {
+                    return;
+                }
+                if (!File.Exists($"MSL\\Downloads\\{dFilename}"))
                 {
                     MagicShow.ShowMsgDialog(Window.GetWindow(this), "下载失败！", "错误");
+                    return;
+                }
+                if (Path.GetExtension($"MSL\\Downloads\\{dFilename}") != ".zip")
+                {
+                    MagicShow.ShowMsgDialog(Window.GetWindow(this), "您所下载的整合包文件不符合导入格式（目前软件仅支持导入.zip文件）！请检查您所下载的文件是否为服务端专用包并重试！\n错误的格式：" + Path.GetExtension($"MSL\\Downloads\\{dFilename}"), "错误");
                     return;
                 }
                 string input = await MagicShow.ShowInput(Window.GetWindow(this), "服务器名称：", "MyServer");
@@ -123,13 +134,13 @@ namespace MSL.pages
                     try
                     {
                         waitDialog = Dialog.Show(new TextDialog("解压整合包中，请稍等……"));
-                        await Task.Run(() => new FastZip().ExtractZip("MSL\\ServerPack.zip", serverPath, ""));
+                        await Task.Run(() => new FastZip().ExtractZip("MSL\\Downloads\\" + dFilename, serverPath, ""));
                         DirectoryInfo[] dirs = new DirectoryInfo(serverPath).GetDirectories();
                         if (dirs.Length == 1)
                         {
                             Functions.MoveFolder(dirs[0].FullName, serverPath);
                         }
-                        File.Delete("MSL\\ServerPack.zip");
+                        File.Delete("MSL\\Downloads\\" + dFilename);
                     }
                     catch (Exception ex)
                     {

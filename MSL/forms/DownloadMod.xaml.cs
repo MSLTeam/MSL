@@ -23,6 +23,7 @@ namespace MSL
     /// </summary>
     public partial class DownloadMod : HandyControl.Controls.Window
     {
+        public string FileName { get; set; }
         private int LoadType = 0;  //0: mods , 1: modpacks  , 2: plugins
         private int LoadSource = 0;  //0: Curseforge , 1: Modrinth 
         private readonly bool CloseImmediately;
@@ -94,7 +95,7 @@ namespace MSL
                 }
                 else if (LoadType == 1)
                 {
-                    var modpacks = await CurseForgeApiClient.SearchModsAsync(432, null, 5128);
+                    var modpacks = await CurseForgeApiClient.SearchModsAsync(432, null, 4475);
                     foreach (var modPack in modpacks.Data)
                     {
                         list.Add(new DM_ModsInfo(modPack.Id.ToString(), modPack.Logo.ThumbnailUrl, modPack.Name, modPack.Links.WebsiteUrl.ToString()));
@@ -197,10 +198,11 @@ namespace MSL
                 }
                 else if (LoadType == 1)
                 {
-                    mods = await CurseForgeApiClient.SearchModsAsync(432, categoryId: 5128, searchFilter: name, index: index);
+                    mods = await CurseForgeApiClient.SearchModsAsync(432, categoryId: 4475, searchFilter: name, index: index);
                 }
                 foreach (var mod in mods.Data)
                 {
+                    //MessageBox.Show(mod.PrimaryCategoryId.ToString());
                     list.Add(new DM_ModsInfo(mod.Id.ToString(), mod.Logo.ThumbnailUrl, mod.Name, mod.Links.WebsiteUrl.ToString()));
                 }
                 ModList.ItemsSource = list;
@@ -370,44 +372,48 @@ namespace MSL
             var totalCount = modFiles.Data.Count;
             using var semaphore = new SemaphoreSlim(50);
             bool onlyShowServerPack = false;
-            if (LoadType == 1)
+
+            // 获取用户是否仅展示适用于服务器的整合包文件
+            if (LoadType == 1 && await MagicShow.ShowMsgDialogAsync(this,
+                "是否仅展示适用于服务器的整合包文件？\n注意：如果不使用服务器专用包开服，可能会出现无法开服/崩溃的问题！", "询问", true) == true)
             {
-                if (await MagicShow.ShowMsgDialogAsync(this, "是否仅展示适用于服务器的整合包文件？\n注意：如果不使用服务器专用包开服，可能会出现无法开服/崩溃的问题！", "询问", true) == true)
-                {
-                    onlyShowServerPack = true;
-                }
+                onlyShowServerPack = true;
             }
+
             async Task LoadAndAddModInfo(CurseForge.APIClient.Models.Files.File modData)
             {
                 await semaphore.WaitAsync();
                 try
                 {
-                    DM_ModInfo modInfo;
+                    // 用于保存要显示的 modInfo
+                    DM_ModInfo modInfo = null;
                     DM_ModInfo _modInfo = null;
+
                     if (LoadType == 0)
                     {
-                        modInfo = new DM_ModInfo(
-                            modData.DisplayName,
-                            modData.DownloadUrl,
-                            modData.FileName,
-                        "",
-                            string.Join(",", (await Task.WhenAll(modData.Dependencies.Select(s => CurseForgeApiClient.GetModAsync(s.ModId)))).Select(p => p.Data.Name)),
-                            string.Join(",", modData.GameVersions));
+                        // 直接加载 Mod 信息
+                        modInfo = await CreateModInfo(modData);
                     }
                     else if (LoadType == 1)
                     {
-                        try
+                        if (!onlyShowServerPack)
                         {
-                            if (!onlyShowServerPack)
-                            {
-                                var _modFile = await CurseForgeApiClient.GetModFileAsync(int.Parse(info.ID), modData.Id);
-                                _modInfo = new DM_ModInfo(_modFile.Data.DisplayName, _modFile.Data.DownloadUrl, _modFile.Data.FileName, "", string.Join(",", (await Task.WhenAll(_modFile.Data.Dependencies.Select(s => CurseForgeApiClient.GetModAsync(s.ModId)))).Select(p => p.Data.Name)), string.Join(",", _modFile.Data.GameVersions));
-                            }
+                            // 加载非服务器专用包文件
+                            var _modFile = await CurseForgeApiClient.GetModFileAsync(int.Parse(info.ID), modData.Id);
+                            _modInfo = await CreateModInfo(_modFile.Data);
                         }
-                        finally
+
+                        // 加载服务器专用包文件
+                        if (modData.ServerPackFileId.HasValue)
                         {
                             var modFile = await CurseForgeApiClient.GetModFileAsync(int.Parse(info.ID), modData.ServerPackFileId.Value);
-                            modInfo = new DM_ModInfo(modFile.Data.DisplayName, modFile.Data.DownloadUrl, modFile.Data.FileName, "", string.Join(",", (await Task.WhenAll(modFile.Data.Dependencies.Select(s => CurseForgeApiClient.GetModAsync(s.ModId)))).Select(p => p.Data.Name)), string.Join(",", modFile.Data.GameVersions));
+                            modInfo = await CreateModInfo(modFile.Data);
+                        }
+                        else
+                        {
+                            // 处理没有 ServerPackFileId 的情况
+                            Console.WriteLine("ServerPackFileId is null for " + modData.DisplayName);
+                            return;  // 没有服务器专用包，退出处理
                         }
                     }
                     else
@@ -415,6 +421,7 @@ namespace MSL
                         return; // 不支持的 LoadType
                     }
 
+                    // 在 UI 线程中更新界面
                     await Dispatcher.InvokeAsync(() =>
                     {
                         ModVerList.Items.Add(modInfo);
@@ -426,29 +433,89 @@ namespace MSL
                         ModInfoLoadingProcess.Content = $"{loadedCount}/{totalCount}";
                     });
                 }
+                catch (Exception ex)
+                {
+                    // 处理异常，避免整个流程崩溃
+                    Console.WriteLine($"Error loading mod info: {ex.Message}");
+                }
                 finally
                 {
                     semaphore.Release();
                 }
             }
 
+            async Task<DM_ModInfo> CreateModInfo(CurseForge.APIClient.Models.Files.File modData)
+            {
+                // 构造并返回一个 DM_ModInfo 对象
+                var dependencies = await Task.WhenAll(modData.Dependencies.Select(s => CurseForgeApiClient.GetModAsync(s.ModId)));
+                var dependenciesNames = string.Join(",", dependencies.Select(p => p.Data.Name));
+                var gameVersions = string.Join(",", modData.GameVersions);
+
+                return new DM_ModInfo(
+                    modData.DisplayName,
+                    modData.DownloadUrl,
+                    modData.FileName,
+                    "",
+                    dependenciesNames,
+                    gameVersions
+                );
+            }
+
             var loadTasks = modFiles.Data.Select(LoadAndAddModInfo);
             await Task.WhenAll(loadTasks);
+
         }
 
         private async Task ModInfo_Modrinth(DM_ModsInfo info)
         {
             var modInfo = await ModrinthApiClient.Project.GetAsync(info.ID);
-            string[] versions = modInfo.Versions.Reverse().ToArray();//反转列表
+            ModInfoLoadingProcess.Content = "加载中";
             VerFilterCombo.Items.Add("全部");
             VerFilterCombo.SelectedIndex = 0;
-            foreach (var gameVersion in modInfo.GameVersions.Reverse())
+            foreach (var gameVersion in modInfo.GameVersions)
             {
                 VerFilterCombo.Items.Add(gameVersion);
             }
-            var loadedCount = 0;
-            var totalCount = modInfo.Versions.Length;
+            //var loadedCount = 0;
+            var modInfo1 = await ModrinthApiClient.Version.GetProjectVersionListAsync(info.ID);
+            foreach (var version in modInfo1)
+            {
+                //MessageBox.Show(version.Name);
+                foreach (var file in version.Files)
+                {
+                    //MessageBox.Show(file.FileName);
+                    DM_ModInfo DMmodInfo = null;
+
+                    if (LoadType == 1)
+                    {
+                        DMmodInfo = new DM_ModInfo(
+                            version.Name,
+                            file.Url,
+                            file.FileName,
+                            string.Join(",", version.Loaders),
+                            "",
+                            GetMcVersion(version.GameVersions)
+                        );
+                    }
+                    else
+                    {
+                        DMmodInfo = new DM_ModInfo(
+                            version.Name,
+                            file.Url,
+                            file.FileName,
+                            string.Join(",", version.Loaders),
+                            "",
+                            GetMcVersion(version.GameVersions)
+                        );
+                    }
+                    ModVerList.Items.Add(DMmodInfo);  // 将每个 modInfo 添加到列表
+                    VerFilter_VersList.Add(version.GameVersions);
+                }
+            }
+
+            /*
             using var semaphore = new SemaphoreSlim(50);
+
             async Task LoadAndAddVersion(string modID)
             {
                 await semaphore.WaitAsync();
@@ -456,19 +523,47 @@ namespace MSL
                 {
                     var modVersion = await ModrinthApiClient.Version.GetAsync(modID);
                     var modGameVer = modVersion.GameVersions;
-                    var modInfo = new DM_ModInfo(
-                        modVersion.Name,
-                        modVersion.Files[0].Url,
-                        modVersion.Files[0].FileName,
-                        string.Join(",", modVersion.Loaders),
-                        string.Join(",", (await Task.WhenAll(modVersion.Dependencies.Select(s => ModrinthApiClient.Project.GetAsync(s.ProjectId)))).Select(p => p.Title)),
-                        //string.Join(",", modVersion.GameVersions)
-                        GetMcVersion(modGameVer)
-                    );
 
+                    // 遍历 modVersion.Files 中的每个文件，创建一个 DM_ModInfo 实例
+                    var modInfos = new List<DM_ModInfo>();  // 创建一个列表保存所有生成的 DM_ModInfo 实例
+
+                    foreach (var file in modVersion.Files)
+                    {
+                        DM_ModInfo modInfo = null;
+
+                        if (LoadType == 1)
+                        {
+                            modInfo = new DM_ModInfo(
+                                modVersion.Name,
+                                file.Url,
+                                file.FileName,
+                                string.Join(",", modVersion.Loaders),
+                                "",
+                                GetMcVersion(modGameVer)
+                            );
+                        }
+                        else
+                        {
+                            modInfo = new DM_ModInfo(
+                                modVersion.Name,
+                                file.Url,
+                                file.FileName,
+                                string.Join(",", modVersion.Loaders),
+                                string.Join(",", (await Task.WhenAll(modVersion.Dependencies.Select(s => ModrinthApiClient.Project.GetAsync(s.ProjectId)))).Select(p => p.Title)),
+                                GetMcVersion(modGameVer)
+                            );
+                        }
+
+                        modInfos.Add(modInfo);  // 将每个文件对应的 modInfo 添加到列表中
+                    }
+
+                    // 使用 Dispatcher 更新 UI，将所有的 modInfo 添加到 ModVerList 中
                     await Dispatcher.InvokeAsync(() =>
                     {
-                        ModVerList.Items.Add(modInfo);
+                        foreach (var info in modInfos)
+                        {
+                            ModVerList.Items.Add(info);  // 将每个 modInfo 添加到列表
+                        }
                         VerFilter_VersList.Add(modGameVer);
                         loadedCount++;
                         ModInfoLoadingProcess.Content = $"{loadedCount}/{totalCount}";
@@ -482,6 +577,7 @@ namespace MSL
 
             var loadTasks = versions.Select(LoadAndAddVersion);
             await Task.WhenAll(loadTasks);
+            */
         }
 
         public static string GetMcVersion(string[] lists)
@@ -546,12 +642,14 @@ namespace MSL
                 {
                     VerFilterPannel.Visibility = Visibility.Collapsed;
                     MVL_Platform.Width = 0;
+                    MVL_Dependency.Width = 100;
                     await ModInfo_CurseForge(info);
                 }
                 else
                 {
                     VerFilterPannel.Visibility = Visibility.Visible;
                     MVL_Platform.Width = 100;
+                    MVL_Dependency.Width = 0;
                     await ModInfo_Modrinth(info);
                 }
                 ModInfoLoadingProcess.Visibility = Visibility.Collapsed;
@@ -678,14 +776,15 @@ namespace MSL
             }
             var iteminfo = ModVerList.SelectedItem as DM_ModInfo;
             Directory.CreateDirectory(SavingPath);
-            string filename = iteminfo.FileName;
+            FileName = iteminfo.FileName;
             //MessageBox.Show(iteminfo.DownloadUrl);
-            bool dwnRet = await MagicShow.ShowDownloader(this, iteminfo.DownloadUrl, SavingPath, filename, "下载中……", "", false);
+            bool dwnRet = await MagicShow.ShowDownloader(this, iteminfo.DownloadUrl, SavingPath, FileName, "下载中……", "", false);
             if (dwnRet)
             {
                 if (CloseImmediately)
                 {
                     Close();
+                    return;
                 }
                 MagicShow.ShowMsgDialog(this, "下载完成！", "提示");
             }

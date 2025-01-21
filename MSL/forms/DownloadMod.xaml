@@ -109,9 +109,18 @@
                 </ListView.ItemContainerStyle>
                 <ListView.View>
                     <GridView>
-                        <GridViewColumn Width="300" Header="文件列表（双击下载）" DisplayMemberBinding="{Binding Name}"/>
+                        <GridViewColumn Width="300" Header="文件列表（双击下载）">
+                            <GridViewColumn.CellTemplate>
+                                <DataTemplate>
+                                    <StackPanel Orientation="Vertical">
+                                        <TextBlock Text="{Binding Name}" FontWeight="Bold"/>
+                                        <TextBlock Text="{Binding FileName}" Foreground="Gray"/>
+                                    </StackPanel>
+                                </DataTemplate>
+                            </GridViewColumn.CellTemplate>
+                        </GridViewColumn>
                         <GridViewColumn x:Name="MVL_Platform" Width="100" Header="平台" DisplayMemberBinding="{Binding Platform}"/>
-                        <GridViewColumn Width="100" Header="依赖" DisplayMemberBinding="{Binding Dependency}"/>
+                        <GridViewColumn x:Name="MVL_Dependency" Width="100" Header="依赖" DisplayMemberBinding="{Binding Dependency}"/>
                         <GridViewColumn Width="150" Header="支持的MC版本" DisplayMemberBinding="{Binding MCVersion}"/>
                     </GridView>
                 </ListView.View>
