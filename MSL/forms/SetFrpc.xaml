@@ -16,6 +16,9 @@
             <TabItem Header="MSL-Frp" Background="Transparent">
                 <Frame Source="/pages/frpProviders/MSLFrp.xaml" BorderBrush="{x:Null}"/>
             </TabItem>
+            <TabItem Header="MSL-Frp(新)" Background="Transparent">
+                <Frame Source="/pages/frpProviders/MSLFrpNew.xaml" BorderBrush="{x:Null}"/>
+            </TabItem>
             <TabItem Header="OpenFrp" Background="Transparent">
                 <Frame Source="/pages/frpProviders/OpenFrp.xaml" BorderBrush="{x:Null}"/>
             </TabItem>

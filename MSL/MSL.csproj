@@ -115,6 +115,9 @@
     <Compile Include="pages\FrpcList.xaml.cs">
       <DependentUpon>FrpcList.xaml</DependentUpon>
     </Compile>
+    <Compile Include="pages\frpProviders\MSLFrpNew.xaml.cs">
+      <DependentUpon>MSLFrpNew.xaml</DependentUpon>
+    </Compile>
     <Compile Include="pages\frpProviders\SakuraFrp.xaml.cs">
       <DependentUpon>SakuraFrp.xaml</DependentUpon>
     </Compile>
@@ -286,6 +289,10 @@
       <Generator>MSBuild:Compile</Generator>
     </Page>
     <Page Include="pages\frpProviders\MSLFrp.xaml">
+      <SubType>Designer</SubType>
+      <Generator>MSBuild:Compile</Generator>
+    </Page>
+    <Page Include="pages\frpProviders\MSLFrpNew.xaml">
       <SubType>Designer</SubType>
       <Generator>MSBuild:Compile</Generator>
     </Page>

@@ -154,6 +154,19 @@ namespace MSL.utils
             return randomString.ToString();
         }
 
+        public static DateTime ConvertUnixTimeSeconds(long seconds)
+        {
+            var epoch = new DateTime(1970, 1, 1, 0, 0, 0, DateTimeKind.Utc);
+            return epoch.AddSeconds(seconds);
+        }
+
+        public static long GetCurrentUnixTimestamp()
+        {
+            var epoch = new DateTime(1970, 1, 1, 0, 0, 0, DateTimeKind.Utc);
+            return (long)(DateTime.UtcNow - epoch).TotalSeconds;
+        }
+
+
         #region Install Forge
         public static bool CheckForgeInstaller(string _filename)
         {
