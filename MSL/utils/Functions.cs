@@ -166,6 +166,31 @@ namespace MSL.utils
             return (long)(DateTime.UtcNow - epoch).TotalSeconds;
         }
 
+        private static readonly Random _random = new Random();
+
+        /// <summary>
+        /// 生成指定范围内的随机整数（包含最小值与最大值）
+        /// </summary>
+        /// <param name="start">范围起始值（包含）</param>
+        /// <param name="end">范围结束值（包含）</param>
+        /// <returns>介于 start 和 end 之间的随机整数</returns>
+        /// <exception cref="ArgumentException">当参数无效时抛出</exception>
+        public static int GenerateRandomNumber(int start, int end)
+        {
+            // 参数有效性校验
+            if (start == end) return start;
+            if (start > end)
+            {
+                // 自动交换参数值保证范围有效性
+                int temp = start;
+                start = end;
+                end = temp;
+            }
+
+            // 生成并返回随机数（包含两端值）
+            return _random.Next(start, end + 1);
+        }
+
 
         #region Install Forge
         public static bool CheckForgeInstaller(string _filename)

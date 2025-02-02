@@ -197,7 +197,7 @@ namespace MSL.pages.frpProviders
                     await MagicShow.ShowMsgDialogAsync(Window.GetWindow(this), "获取节点列表失败！HTTP状态码：" + nodeRes.HttpResponseCode, "错误");
                     return;
                 }
-
+                
                 // 绑定对象
                 ObservableCollection<TunnelInfo> tunnels = new ObservableCollection<TunnelInfo>();
                 FrpList.ItemsSource = tunnels;
@@ -207,7 +207,6 @@ namespace MSL.pages.frpProviders
                 {
                     headers.Authorization = new AuthenticationHeaderValue("Bearer", token);
                 });
-
                 if (res.HttpResponseCode == System.Net.HttpStatusCode.OK)
                 {
                     JObject jobj_node = JObject.Parse((string)res.HttpResponseContent);
@@ -304,9 +303,9 @@ namespace MSL.pages.frpProviders
             }
         }
 
-        private void RefreshBtn_Click(object sender, RoutedEventArgs e)
+        private async void RefreshBtn_Click(object sender, RoutedEventArgs e)
         {
-            Task.Run(() => GetTunnelList(UserToken));
+            await GetTunnelList(UserToken);
         }
 
         //获取某个隧道的配置文件
@@ -390,30 +389,38 @@ namespace MSL.pages.frpProviders
 
         private async Task GetNodeList()
         {
-            HttpResponse res = await HttpService.GetAsync(ApiUrl + "/nodes?token=" + UserToken);
+            HttpResponse res = await HttpService.GetAsync(ApiUrl + "/api/frp/nodeList", headers =>
+            {
+                headers.Add("Authorization", $"Bearer {UserToken}");
+            });
             if (res.HttpResponseCode == HttpStatusCode.OK)
             {
                 ObservableCollection<NodeInfo> nodes = new ObservableCollection<NodeInfo>();
                 NodeList.ItemsSource = nodes;
                 JObject json = JObject.Parse((string)res.HttpResponseContent);
+                if(json["code"].Value<int>() != 200)
+                {
+                    await MagicShow.ShowMsgDialogAsync(Window.GetWindow(this), "获取节点列表失败！" + json["msg"], "错误");
+                    return;
+                }
 
                 //遍历查询
-                foreach (var nodeProperty in json.Properties())
+                foreach (var nodeProperty in (JArray)json["data"])
                 {
-                    int nodeId = int.Parse(nodeProperty.Name);
-                    JObject nodeData = (JObject)nodeProperty.Value;
-                    if (UserLevel >= (int)nodeData["vip"])
+                    int nodeId = (int)nodeProperty["id"];
+                    JObject nodeData = (JObject)nodeProperty;
+                    if (UserLevel >= (int)nodeData["allow_user_group"])
                     {
                         nodes.Add(new NodeInfo
                         {
                             ID = nodeId,
-                            Name = (string)nodeData["name"],
-                            Host = (string)nodeData["host"],
-                            Description = (string)nodeData["description"],
-                            Vip = (int)nodeData["vip"],
-                            VipName = ((int)nodeData["vip"] == 0 ? "普通节点" : ((int)nodeData["vip"] == 3 ? "青铜节点" : "白银节点")),
-                            Flag = (int)nodeData["flag"],
-                            Band = (string)nodeData["band"]
+                            Name = (string)nodeData["node"],
+                            Host = (string)nodeData["ip"],
+                            Description = (string)nodeData["remarks"],
+                            Vip = (int)nodeData["allow_user_group"],
+                            VipName = ((int)nodeData["allow_user_group"] == 0 ? "普通节点" : ((int)nodeData["allow_user_group"] == 1 ? "付费节点" : "超级节点")),
+                            //Flag = (int)nodeData["flag"],
+                            Band = (string)nodeData["bandwidth"]
                         });
                     }
 
@@ -440,6 +447,10 @@ namespace MSL.pages.frpProviders
 
         private async void Create_OKBtn_Click(object sender, RoutedEventArgs e)
         {
+            if(Create_RemotePort.Text == "")
+            {
+                Create_RemotePort.Text = Functions.GenerateRandomNumber(10000,60000).ToString();
+            }
             var listBox = NodeList as System.Windows.Controls.ListBox;
             if (listBox.SelectedItem is NodeInfo selectedNode)
             {
@@ -452,25 +463,32 @@ namespace MSL.pages.frpProviders
                 //请求body
                 var body = new JObject
                 {
-                    ["node"] = selectedNode.ID,
+                    ["id"] = selectedNode.ID,
                     ["name"] = Create_Name.Text,
                     ["type"] = Create_Protocol.Text,
-                    ["note"] = "Create By MSL",
-                    ["extra"] = "",
+                    ["remarks"] = "Create By MSL Client",
                     ["local_ip"] = Create_LocalIP.Text,
                     ["local_port"] = Create_LocalPort.Text,
-                    ["remote"] = Create_BindDomain.Text,
+                    ["remote_port"] = Create_RemotePort.Text,
                 };
-                HttpResponse res = await HttpService.PostAsync(ApiUrl + "/tunnels", 0, body, headersAction);
-                if (res.HttpResponseCode == HttpStatusCode.Created)
+                HttpResponse res = await HttpService.PostAsync(ApiUrl + "/api/frp/addTunnel", 0, body, headersAction);
+                if (res.HttpResponseCode == HttpStatusCode.OK)
                 {
                     JObject jsonres = JObject.Parse((string)res.HttpResponseContent);
-                    await MagicShow.ShowMsgDialogAsync(Window.GetWindow(this), $"{jsonres["name"]}隧道创建成功！\nID: {jsonres["id"]} 远程端口: {jsonres["remote"]}", "成功");
-                    //显示main页面
-                    LoginGrid.Visibility = Visibility.Collapsed; ;
-                    MainGrid.Visibility = Visibility.Visible;
-                    CreateGrid.Visibility = Visibility.Collapsed;
-                    await GetTunnelList(UserToken);
+                    if (jsonres["code"].Value<int>() == 200)
+                    {
+                        await MagicShow.ShowMsgDialogAsync(Window.GetWindow(this), $"{Create_Name.Text}隧道创建成功！\n 远程端口: {Create_RemotePort.Text}", "成功");
+                        //显示main页面
+                        LoginGrid.Visibility = Visibility.Collapsed; ;
+                        MainGrid.Visibility = Visibility.Visible;
+                        CreateGrid.Visibility = Visibility.Collapsed;
+                        await GetTunnelList(UserToken);
+                    }
+                    else
+                    {
+                        await MagicShow.ShowMsgDialogAsync(Window.GetWindow(this), "创建失败！" + jsonres["msg"], "错误");
+                    }
+                    
                 }
                 else
                 {

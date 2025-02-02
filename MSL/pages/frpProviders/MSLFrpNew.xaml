@@ -79,10 +79,11 @@
                                         <ComboBoxItem Content="https"/>
                                     </hc:ComboBox>
                                 </StackPanel>
+                                <!--
                                 <StackPanel Orientation="Horizontal" Margin="0,0,0,6">
                                     <TextBlock LineHeight="20" Foreground="{DynamicResource PrimaryTextBrush}" Text="绑定域名(不会别写):" FontSize="14" Margin="10,0,6,0" VerticalAlignment="Center"/>
                                     <TextBox Text="" x:Name="Create_BindDomain" MinWidth="100"/>
-                                </StackPanel>
+                                </StackPanel>-->
                             </WrapPanel>
                         </StackPanel>
                     </hc:Card>

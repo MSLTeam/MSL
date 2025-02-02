@@ -139,6 +139,15 @@ namespace MSL.pages
                         }
                         downloadFileName = "frpc_sakura.exe";
                         break;
+                    case "5"://msl new
+                        frpcExeName = "frpc_official.exe";
+                        arguments = "-c frpc"; //启动命令
+                        downloadFileName = "frpc_official.exe";
+                        if (!File.Exists($"MSL\\frp\\{frpcExeName}"))
+                        {
+                            downloadUrl = (await HttpService.GetApiContentAsync("download/frpc/Official/amd64?os=" + osver))["data"]["url"].ToString();
+                        }
+                        break;
                     case "-1"://自定义frp，使用官版
                         frpcExeName = "frpc_official.exe";
                         arguments = "-c frpc.toml"; //启动命令
@@ -689,6 +698,12 @@ namespace MSL.pages
                 {
                     copyFrpc.IsEnabled = false;
                     frplab1.Text = "SakuraFrp节点";
+                    frplab3.Text = LanguageManager.Instance["Page_FrpcPage_Status_OpenFrp_ViewIP"];
+                }
+                else if (jobject[frpID.ToString()]["frpcServer"].ToString() == "5")
+                {
+                    copyFrpc.IsEnabled = false;
+                    frplab1.Text = "MSL-Frp(NEW)节点";
                     frplab3.Text = LanguageManager.Instance["Page_FrpcPage_Status_OpenFrp_ViewIP"];
                 }
                 else
