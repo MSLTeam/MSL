@@ -4,7 +4,7 @@
       xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006" 
       xmlns:d="http://schemas.microsoft.com/expression/blend/2008" 
       xmlns:local="clr-namespace:MSL.pages.frpProviders"
-      mc:Ignorable="d"  Initialized="Page_Initialized"
+      mc:Ignorable="d"  Loaded="Page_Loaded"
       xmlns:hc="https://handyorg.github.io/handycontrol"
       d:DesignHeight="450" d:DesignWidth="800"
       Title="MSLFrpNew">

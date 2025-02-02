@@ -25,19 +25,24 @@ namespace MSL.pages.frpProviders
             InitializeComponent();
         }
 
-        private async void Page_Initialized(object sender, EventArgs e)
+        private bool isInit = false;
+        private async void Page_Loaded(object sender, EventArgs e)
         {
-            //显示登录页面
-            LoginGrid.Visibility = Visibility.Visible;
-            MainGrid.Visibility = Visibility.Collapsed;
-            CreateGrid.Visibility = Visibility.Collapsed;
-            var token = Config.Read("SakuraFrpToken")?.ToString() ?? "";
-            if (token != "")
+            if (!isInit)
             {
-                MagicDialog MagicDialog = new MagicDialog();
-                MagicDialog.ShowTextDialog(Window.GetWindow(this), "登录中……");
-                await VerifyUserToken(token, false); //移除空格，防止笨蛋
-                MagicDialog.CloseTextDialog();
+                isInit = true;
+                //显示登录页面
+                LoginGrid.Visibility = Visibility.Visible;
+                MainGrid.Visibility = Visibility.Collapsed;
+                CreateGrid.Visibility = Visibility.Collapsed;
+                var token = Config.Read("SakuraFrpToken")?.ToString() ?? "";
+                if (token != "")
+                {
+                    MagicDialog MagicDialog = new MagicDialog();
+                    MagicDialog.ShowTextDialog(Window.GetWindow(this), "登录中……");
+                    await VerifyUserToken(token, false); //移除空格，防止笨蛋
+                    MagicDialog.CloseTextDialog();
+                }
             }
         }
 

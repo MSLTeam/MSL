@@ -610,7 +610,7 @@ Update log:</value>
   <data name="Page_FrpcPage_Status_OpenFrp" xml:space="preserve">
     <value>OpenFrp Service</value>
   </data>
-  <data name="Page_FrpcPage_Status_OpenFrp_ViewIP" xml:space="preserve">
+  <data name="Page_FrpcPage_Status_StartToViewIP" xml:space="preserve">
     <value>Please Launch Frpc to view IP address</value>
   </data>
   <data name="Page_FrpcPage_Status_Ping" xml:space="preserve">

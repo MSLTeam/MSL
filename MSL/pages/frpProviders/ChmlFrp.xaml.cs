@@ -28,19 +28,25 @@ namespace MSL.pages.frpProviders
             InitializeComponent();
         }
 
-        private async void Page_Initialized(object sender, EventArgs e)
+        private bool isInit = false;
+        private async void Page_Loaded(object sender, EventArgs e)
         {
-            MainGrid.Visibility = Visibility.Collapsed;
-            LoginGrid.Visibility = Visibility.Visible;
-            CreateGrid.Visibility = Visibility.Collapsed;
-            //自动登录
-            var token = Config.Read("ChmlToken")?.ToString() ?? "";
-            if (token != "")
+            if (!isInit)
             {
-                MagicDialog MagicDialog = new MagicDialog();
-                MagicDialog.ShowTextDialog(Window.GetWindow(this), "登录中……");
-                await Task.Run(() => verifyUserToken(token, false));
-                MagicDialog.CloseTextDialog();
+                isInit = true;
+                //显示登录页面
+                MainGrid.Visibility = Visibility.Collapsed;
+                LoginGrid.Visibility = Visibility.Visible;
+                CreateGrid.Visibility = Visibility.Collapsed;
+                //自动登录
+                var token = Config.Read("ChmlToken")?.ToString() ?? "";
+                if (token != "")
+                {
+                    MagicDialog MagicDialog = new MagicDialog();
+                    MagicDialog.ShowTextDialog(Window.GetWindow(this), "登录中……");
+                    await Task.Run(() => verifyUserToken(token, false));
+                    MagicDialog.CloseTextDialog();
+                }
             }
         }
 
@@ -479,7 +485,7 @@ namespace MSL.pages.frpProviders
         //处理信息显示
         private void NodeList_SelectionChanged(object sender, SelectionChangedEventArgs e)
         {
-            var listBox = sender as System.Windows.Controls.ListBox;
+            var listBox = sender as ListBox;
             if (listBox.SelectedItem is NodeInfo selectedNode)
             {
                 NodeTips.Text = selectedNode.Notes;
@@ -489,7 +495,7 @@ namespace MSL.pages.frpProviders
         //确定创建摁下去了
         private void Create_OKBtn_Click(object sender, RoutedEventArgs e)
         {
-            var listBox = NodeList as System.Windows.Controls.ListBox;
+            var listBox = NodeList;
             if (listBox.SelectedItem is NodeInfo selectedNode)
             {
                 string enc, comp;

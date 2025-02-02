@@ -7,7 +7,7 @@
       mc:Ignorable="d" 
       xmlns:hc="https://handyorg.github.io/handycontrol"
       d:DesignHeight="450" d:DesignWidth="800"
-      Title="SakuraFrp" Initialized="Page_Initialized">
+      Title="SakuraFrp" Loaded="Page_Loaded">
     <Grid>
         <Grid x:Name="CreateGrid" Margin="10" Visibility="Collapsed">
             <Grid.ColumnDefinitions>

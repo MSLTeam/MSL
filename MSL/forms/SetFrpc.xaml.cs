@@ -1,5 +1,6 @@
-﻿//using MSL.utils;
-//using System.Diagnostics;
+﻿using MSL.pages.frpProviders;
+using System.Collections.Generic;
+using System.Windows.Controls;
 
 namespace MSL
 {
@@ -8,9 +9,27 @@ namespace MSL
     /// </summary>
     public partial class SetFrpc : HandyControl.Controls.Window
     {
+        private readonly List<Page> Pages = new List<Page> { new MSLFrp(), new MSLFrpNew(), new OpenFrp(), new ChmlFrp(), new SakuraFrp(), new Custom() };
         public SetFrpc()
         {
             InitializeComponent();
+        }
+
+        private void TabControl_SelectionChanged(object sender, SelectionChangedEventArgs e)
+        {
+            if (TabCtrl.SelectedIndex != -1 && TabCtrl.SelectedIndex != TabCtrl.Items.Count - 1)
+            {
+                frame.Content = Pages[TabCtrl.SelectedIndex];
+            }
+            else
+            {
+                frame.Content = null;
+            }
+        }
+
+        private void Window_Closing(object sender, System.ComponentModel.CancelEventArgs e)
+        {
+            Pages.Clear();
         }
 
         /*

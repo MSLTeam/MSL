@@ -762,15 +762,6 @@ namespace MSL.langs {
         }
         
         /// <summary>
-        ///   查找类似 请启动内网映射以查看IP 的本地化字符串。
-        /// </summary>
-        public static string Page_FrpcPage_Status_OpenFrp_ViewIP {
-            get {
-                return ResourceManager.GetString("Page_FrpcPage_Status_OpenFrp_ViewIP", resourceCulture);
-            }
-        }
-        
-        /// <summary>
         ///   查找类似 延迟： 的本地化字符串。
         /// </summary>
         public static string Page_FrpcPage_Status_Ping {
@@ -785,6 +776,15 @@ namespace MSL.langs {
         public static string Page_FrpcPage_Status_Port {
             get {
                 return ResourceManager.GetString("Page_FrpcPage_Status_Port", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   查找类似 请启动内网映射以查看IP 的本地化字符串。
+        /// </summary>
+        public static string Page_FrpcPage_Status_StartToViewIP {
+            get {
+                return ResourceManager.GetString("Page_FrpcPage_Status_StartToViewIP", resourceCulture);
             }
         }
         

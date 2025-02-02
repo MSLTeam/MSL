@@ -32,15 +32,21 @@ namespace MSL.pages.frpProviders
             InitializeComponent();
         }
 
-        private async void Page_Initialized(object sender, EventArgs e)
+        private bool isInit = false;
+        private async void Page_Loaded(object sender, EventArgs e)
         {
-            if (OpenFrpApi.authId != "")
+            if (!isInit)
             {
-                await GetFrpsInfo();
-                return;
+                isInit = true;
+                //显示登录页面
+                if (OpenFrpApi.authId != "")
+                {
+                    await GetFrpsInfo();
+                    return;
+                }
+                LoginGrid.Visibility = Visibility.Visible;
+                MainGrid.Visibility = Visibility.Hidden;
             }
-            LoginGrid.Visibility = Visibility.Visible;
-            MainGrid.Visibility = Visibility.Hidden;
         }
 
         private async Task GetFrpsInfo()

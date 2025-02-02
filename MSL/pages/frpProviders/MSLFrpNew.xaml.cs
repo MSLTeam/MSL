@@ -4,20 +4,11 @@ using System;
 using System.Collections.Generic;
 using System.Collections.ObjectModel;
 using System.Diagnostics;
-using System.Linq;
 using System.Net;
 using System.Net.Http.Headers;
-using System.Text;
 using System.Threading.Tasks;
 using System.Windows;
 using System.Windows.Controls;
-using System.Windows.Data;
-using System.Windows.Documents;
-using System.Windows.Input;
-using System.Windows.Media;
-using System.Windows.Media.Imaging;
-using System.Windows.Navigation;
-using System.Windows.Shapes;
 
 namespace MSL.pages.frpProviders
 {
@@ -36,25 +27,30 @@ namespace MSL.pages.frpProviders
             InitializeComponent();
         }
 
-        private async void Page_Initialized(object sender, EventArgs e)
+        private bool isInit = false;
+        private async void Page_Loaded(object sender, EventArgs e)
         {
-            //显示登录页面
-            LoginGrid.Visibility = Visibility.Visible;
-            MainGrid.Visibility = Visibility.Collapsed;
-            CreateGrid.Visibility = Visibility.Collapsed;
-            var token = Config.Read("MSLUserAccessToken")?.ToString() ?? "";
-            if (token != "")
+            if (!isInit)
             {
-                MagicDialog MagicDialog = new MagicDialog();
-                MagicDialog.ShowTextDialog(Window.GetWindow(this), "登录中……");
-                await VerifyUserToken(token, false); //移除空格，防止笨蛋
-                MagicDialog.CloseTextDialog();
+                isInit = true;
+                //显示登录页面
+                LoginGrid.Visibility = Visibility.Visible;
+                MainGrid.Visibility = Visibility.Collapsed;
+                CreateGrid.Visibility = Visibility.Collapsed;
+                var token = Config.Read("MSLUserAccessToken")?.ToString() ?? "";
+                if (token != "")
+                {
+                    MagicDialog MagicDialog = new MagicDialog();
+                    MagicDialog.ShowTextDialog(Window.GetWindow(this), "登录中……");
+                    await VerifyUserToken(token, false); //移除空格，防止笨蛋
+                    MagicDialog.CloseTextDialog();
+                }
             }
         }
 
         private async void userTokenLogin_Click(object sender, RoutedEventArgs e)
         {
-            string email = await MagicShow.ShowInput(Window.GetWindow(this), "请输入MSL账户的邮箱", "",false);
+            string email = await MagicShow.ShowInput(Window.GetWindow(this), "请输入MSL账户的邮箱", "", false);
             if (email != null)
             {
                 string password = await MagicShow.ShowInput(Window.GetWindow(this), "请输入MSL账户的密码", "", true);
@@ -63,16 +59,16 @@ namespace MSL.pages.frpProviders
                     bool save = (bool)SaveToken.IsChecked;
                     MagicDialog MagicDialog = new MagicDialog();
                     MagicDialog.ShowTextDialog(Window.GetWindow(this), "登录中……");
-                    await VerifyUserToken(null, save,email,password); //移除空格，防止笨蛋
+                    await VerifyUserToken(null, save, email, password); //移除空格，防止笨蛋
                     MagicDialog.CloseTextDialog();
                 }
-                    
+
             }
         }
 
-        private async Task VerifyUserToken(string token, bool save,string email = "",string password="")
+        private async Task VerifyUserToken(string token, bool save, string email = "", string password = "")
         {
-            if(token == null)
+            if (token == null)
             {
                 //获取accesstoken
                 try
@@ -87,7 +83,7 @@ namespace MSL.pages.frpProviders
                     {
 
                         JObject JsonUserInfo = JObject.Parse((string)res.HttpResponseContent);
-                        if(JsonUserInfo["code"].Value<int>() != 200)
+                        if (JsonUserInfo["code"].Value<int>() != 200)
                         {
                             await MagicShow.ShowMsgDialogAsync(Window.GetWindow(this), "登陆失败！" + JsonUserInfo["msg"], "错误");
                             return;
@@ -130,12 +126,12 @@ namespace MSL.pages.frpProviders
                     });
                     JObject JsonUserInfo = JObject.Parse((string)res.HttpResponseContent);
                     UserLevel = Functions.GetCurrentUnixTimestamp() < (long)JsonUserInfo["data"]["outdated"] ? int.Parse((string)JsonUserInfo["data"]["user_group"]) : 0;
-                    string userGroup = UserLevel == 6?"超级管理员" : UserLevel == 0?"普通用户":"赞助用户";
+                    string userGroup = UserLevel == 6 ? "超级管理员" : UserLevel == 0 ? "普通用户" : "赞助用户";
                     Dispatcher.Invoke(() =>
                     {
-                        UserInfo.Text = $"用户名: {JsonUserInfo["data"]["name"]}\n用户组: {userGroup}\n到期时间: {Functions.ConvertUnixTimeSeconds( (long)JsonUserInfo["data"]["outdated"])}";
+                        UserInfo.Text = $"用户名: {JsonUserInfo["data"]["name"]}\n用户组: {userGroup}\n到期时间: {Functions.ConvertUnixTimeSeconds((long)JsonUserInfo["data"]["outdated"])}";
                     });
-                    
+
                     //获取隧道
                     await GetTunnelList(token);
                 }
@@ -197,7 +193,7 @@ namespace MSL.pages.frpProviders
                     await MagicShow.ShowMsgDialogAsync(Window.GetWindow(this), "获取节点列表失败！HTTP状态码：" + nodeRes.HttpResponseCode, "错误");
                     return;
                 }
-                
+
                 // 绑定对象
                 ObservableCollection<TunnelInfo> tunnels = new ObservableCollection<TunnelInfo>();
                 FrpList.ItemsSource = tunnels;
@@ -251,9 +247,9 @@ namespace MSL.pages.frpProviders
                     headers.Add("Authorization", $"Bearer {token}");
                 });
 
-                HttpResponse res = await HttpService.GetAsync(ApiUrl + "/api/frp/getTunnelConfig?id="+id,headersAction);
+                HttpResponse res = await HttpService.GetAsync(ApiUrl + "/api/frp/getTunnelConfig?id=" + id, headersAction);
                 JObject json = JObject.Parse((string)res.HttpResponseContent);
-                if(json["code"].Value<int>() != 200)
+                if (json["code"].Value<int>() != 200)
                 {
                     return "MSL-ERR:" + json["msg"];
                 }
@@ -285,9 +281,9 @@ namespace MSL.pages.frpProviders
             var listBox = FrpList;
             if (listBox.SelectedItem is TunnelInfo selectedTunnel)
             {
-                string content = await Task.Run(() => GetTunnelConfig(UserToken,selectedTunnel.ID));
+                string content = await Task.Run(() => GetTunnelConfig(UserToken, selectedTunnel.ID));
                 //输出配置文件
-                if (Config.WriteFrpcConfig(5, $"MSLFrp(NEW) - {selectedTunnel.Name}", $"{content}", "") == true)
+                if (Config.WriteFrpcConfig(0, $"MSLFrp(NEW) - {selectedTunnel.Name}", content) == true)
                 {
                     await MagicShow.ShowMsgDialogAsync(Window.GetWindow(this), "映射配置成功，请您点击“启动内网映射”以启动映射！", "信息");
                     Window.GetWindow(this).Close();
@@ -324,7 +320,7 @@ namespace MSL.pages.frpProviders
                 {
                     ["id"] = id
                 };
-                HttpResponse res = await HttpService.PostAsync(ApiUrl + "/api/frp/deleteTunnel",0, body, headersAction);
+                HttpResponse res = await HttpService.PostAsync(ApiUrl + "/api/frp/deleteTunnel", 0, body, headersAction);
                 //MessageBox.Show((string)res.HttpResponseContent);
                 await GetTunnelList(UserToken);
             }
@@ -398,7 +394,7 @@ namespace MSL.pages.frpProviders
                 ObservableCollection<NodeInfo> nodes = new ObservableCollection<NodeInfo>();
                 NodeList.ItemsSource = nodes;
                 JObject json = JObject.Parse((string)res.HttpResponseContent);
-                if(json["code"].Value<int>() != 200)
+                if (json["code"].Value<int>() != 200)
                 {
                     await MagicShow.ShowMsgDialogAsync(Window.GetWindow(this), "获取节点列表失败！" + json["msg"], "错误");
                     return;
@@ -409,20 +405,20 @@ namespace MSL.pages.frpProviders
                 {
                     int nodeId = (int)nodeProperty["id"];
                     JObject nodeData = (JObject)nodeProperty;
-                    if (UserLevel >= (int)nodeData["allow_user_group"])
+                    //if (UserLevel >= (int)nodeData["allow_user_group"])
+                    //{
+                    nodes.Add(new NodeInfo
                     {
-                        nodes.Add(new NodeInfo
-                        {
-                            ID = nodeId,
-                            Name = (string)nodeData["node"],
-                            Host = (string)nodeData["ip"],
-                            Description = (string)nodeData["remarks"],
-                            Vip = (int)nodeData["allow_user_group"],
-                            VipName = ((int)nodeData["allow_user_group"] == 0 ? "普通节点" : ((int)nodeData["allow_user_group"] == 1 ? "付费节点" : "超级节点")),
-                            //Flag = (int)nodeData["flag"],
-                            Band = (string)nodeData["bandwidth"]
-                        });
-                    }
+                        ID = nodeId,
+                        Name = (string)nodeData["node"],
+                        Host = (string)nodeData["ip"],
+                        Description = (string)nodeData["remarks"],
+                        Vip = (int)nodeData["allow_user_group"],
+                        VipName = ((int)nodeData["allow_user_group"] == 0 ? "普通节点" : ((int)nodeData["allow_user_group"] == 1 ? "付费节点" : "超级节点")),
+                        //Flag = (int)nodeData["flag"],
+                        Band = (string)nodeData["bandwidth"]
+                    });
+                    //}
 
                 }
             }
@@ -447,9 +443,9 @@ namespace MSL.pages.frpProviders
 
         private async void Create_OKBtn_Click(object sender, RoutedEventArgs e)
         {
-            if(Create_RemotePort.Text == "")
+            if (Create_RemotePort.Text == "")
             {
-                Create_RemotePort.Text = Functions.GenerateRandomNumber(10000,60000).ToString();
+                Create_RemotePort.Text = Functions.GenerateRandomNumber(10000, 60000).ToString();
             }
             var listBox = NodeList as System.Windows.Controls.ListBox;
             if (listBox.SelectedItem is NodeInfo selectedNode)
@@ -488,7 +484,7 @@ namespace MSL.pages.frpProviders
                     {
                         await MagicShow.ShowMsgDialogAsync(Window.GetWindow(this), "创建失败！" + jsonres["msg"], "错误");
                     }
-                    
+
                 }
                 else
                 {

@@ -95,7 +95,7 @@ namespace MSL.pages.frpProviders
                     File.Copy(filePath, @"MSL/frp/frpc_custom.exe", true);
                     JObject keyValues = new JObject()
                     {
-                        ["frpcServer"] = "-2",
+                        ["frpcServer"] = -2,
                         ["name"] = "自定义隧道 - " + sn
                     };
                     jobject.Add(number.ToString(), keyValues);
@@ -110,7 +110,7 @@ namespace MSL.pages.frpProviders
             {
                 JObject keyValues = new JObject()
                 {
-                    ["frpcServer"] = "-1",
+                    ["frpcServer"] = -1,
                     ["name"] = "自定义隧道(官方客户端) - " + sn
                 };
                 jobject.Add(number.ToString(), keyValues);

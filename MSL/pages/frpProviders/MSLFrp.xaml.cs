@@ -443,7 +443,7 @@ namespace MSL.pages.frpProviders
             File.WriteAllText($"MSL\\frp\\{number}\\frpc.toml", frpc);
             JObject keyValues = new JObject()
             {
-                ["frpcServer"] = "0",
+                ["frpcServer"] = 0,
                 ["name"] = "MSLFrp - " + sn
             };
             JObject jobject = JObject.Parse(File.ReadAllText(@"MSL\frp\config.json", Encoding.UTF8));

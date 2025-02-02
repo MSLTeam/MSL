@@ -356,14 +356,14 @@ BMCLAPI —— Vanilla服务端、Forge服务端（及其库文件）国内镜�
   <data name="Page_FrpcPage_Status_OpenFrp" xml:space="preserve">
     <value>OpenFrp节点</value>
   </data>
-  <data name="Page_FrpcPage_Status_OpenFrp_ViewIP" xml:space="preserve">
-    <value>请启动内网映射以查看IP</value>
-  </data>
   <data name="Page_FrpcPage_Status_Ping" xml:space="preserve">
     <value>延迟：</value>
   </data>
   <data name="Page_FrpcPage_Status_Port" xml:space="preserve">
     <value>端口：</value>
+  </data>
+  <data name="Page_FrpcPage_Status_StartToViewIP" xml:space="preserve">
+    <value>请启动内网映射以查看IP</value>
   </data>
   <data name="Page_FrpcPage_Title" xml:space="preserve">
     <value>内网映射列表（双击进入详情页）</value>
