@@ -79,7 +79,7 @@ namespace MSL.pages.frpProviders
                         ["password"] = password
                     };
                     HttpResponse res = await HttpService.PostAsync(ApiUrl + "/api/user/login", 0, body);
-                    if (res.HttpResponseCode == System.Net.HttpStatusCode.OK)
+                    if (res.HttpResponseCode == HttpStatusCode.OK)
                     {
 
                         JObject JsonUserInfo = JObject.Parse((string)res.HttpResponseContent);
@@ -112,7 +112,7 @@ namespace MSL.pages.frpProviders
                 HttpResponse res = await HttpService.GetAsync(ApiUrl + "/api/frp/userInfo", headers =>
                 {
                     headers.Authorization = new AuthenticationHeaderValue("Bearer", token);
-                });
+                }, 1);
                 if (res.HttpResponseCode == System.Net.HttpStatusCode.OK)
                 {
                     UserToken = token;
@@ -169,7 +169,7 @@ namespace MSL.pages.frpProviders
                 HttpResponse nodeRes = await HttpService.GetAsync(ApiUrl + "/api/frp/nodeList", headers =>
                 {
                     headers.Authorization = new AuthenticationHeaderValue("Bearer", token);
-                });
+                }, 1);
 
                 if (nodeRes.HttpResponseCode == System.Net.HttpStatusCode.OK)
                 {
@@ -202,7 +202,7 @@ namespace MSL.pages.frpProviders
                 HttpResponse res = await HttpService.GetAsync(ApiUrl + "/api/frp/getTunnelList", headers =>
                 {
                     headers.Authorization = new AuthenticationHeaderValue("Bearer", token);
-                });
+                }, 1);
                 if (res.HttpResponseCode == System.Net.HttpStatusCode.OK)
                 {
                     JObject jobj_node = JObject.Parse((string)res.HttpResponseContent);
@@ -247,7 +247,7 @@ namespace MSL.pages.frpProviders
                     headers.Add("Authorization", $"Bearer {token}");
                 });
 
-                HttpResponse res = await HttpService.GetAsync(ApiUrl + "/api/frp/getTunnelConfig?id=" + id, headersAction);
+                HttpResponse res = await HttpService.GetAsync(ApiUrl + "/api/frp/getTunnelConfig?id=" + id, headersAction, 1);
                 JObject json = JObject.Parse((string)res.HttpResponseContent);
                 if (json["code"].Value<int>() != 200)
                 {
@@ -388,7 +388,7 @@ namespace MSL.pages.frpProviders
             HttpResponse res = await HttpService.GetAsync(ApiUrl + "/api/frp/nodeList", headers =>
             {
                 headers.Add("Authorization", $"Bearer {UserToken}");
-            });
+            }, 1);
             if (res.HttpResponseCode == HttpStatusCode.OK)
             {
                 ObservableCollection<NodeInfo> nodes = new ObservableCollection<NodeInfo>();

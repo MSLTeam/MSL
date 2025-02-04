@@ -292,9 +292,14 @@ namespace MSL.pages.frpProviders
             string frpc;
             try
             {
-                if (!serversList.SelectedValue.ToString().Contains("付费"))
+                if (!serversList.SelectedValue.ToString().Contains("付费")) // 免费
                 {
                     int a = serversList.SelectedIndex;
+                    if (list3[a] == list4[a])
+                    {
+                        MagicShow.ShowMsgDialog(window, "此节点不能创建！", "错误");
+                        return;
+                    }
                     Random ran = new Random();
                     int n = ran.Next(int.Parse(list3[a].ToString()), int.Parse(list4[a].ToString()));
                     if (portBox.Text == "" || accountBox.Text == "")
@@ -346,7 +351,7 @@ namespace MSL.pages.frpProviders
                         frpc += compressionArg;
                     }
                 }
-                else
+                else // 付费
                 {
                     int a = serversList.SelectedIndex;
                     Random ran = new Random();

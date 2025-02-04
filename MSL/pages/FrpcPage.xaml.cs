@@ -420,6 +420,11 @@ namespace MSL.pages
                     //找不到自定义的frp，直接失败
                     throw new FileNotFoundException("Frpc Not Found");
                 }
+
+                if (frpcServer == 0)
+                {
+                    tempStr= jobject[frpID.ToString()]["name"].ToString();
+                }
                 //该启动了！
                 FrpcProcess.StartInfo.WorkingDirectory = $"MSL\\frp\\{frpID}";
                 FrpcProcess.StartInfo.FileName = "MSL\\frp\\" + frpcExeName;
@@ -437,8 +442,9 @@ namespace MSL.pages
                 FrpcProcess.CancelOutputRead();
                 FrpcList.RunningFrpc.Remove(frpID);
                 //到这里就关掉了
-                Growl.Success("内网映射已关闭！");
+                Growl.Info("内网映射已关闭！");
                 startfrpc.IsEnabled = true;
+                tempStr = string.Empty;
             }
             catch (Exception e)//错误处理
             {
@@ -471,6 +477,7 @@ namespace MSL.pages
             }
         }
 
+        private string tempStr; // 临时字符串，记录MSL-Frp(NEW)的隧道名字
         private void ReadStdOutputAction(string msg)
         {
             if (msg.Contains("\x1B"))
@@ -490,6 +497,10 @@ namespace MSL.pages
                     }
                     msg = everyMsg.Substring(mIndex + 1);
                 }
+            }
+            if (!string.IsNullOrEmpty(tempStr))
+            {
+                msg = Regex.Replace(msg, @"\[([a-zA-Z0-9]+)-(\d+\..+?)\]", "[$2]");
             }
             frpcOutlog.Text = frpcOutlog.Text + msg + "\n";
             if (msg.IndexOf("login") + 1 != 0)
