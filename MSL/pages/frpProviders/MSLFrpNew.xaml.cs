@@ -35,8 +35,7 @@ namespace MSL.pages.frpProviders
                 isInit = true;
                 //显示登录页面
                 LoginGrid.Visibility = Visibility.Visible;
-                MainGrid.Visibility = Visibility.Collapsed;
-                CreateGrid.Visibility = Visibility.Collapsed;
+                MainCtrl.Visibility = Visibility.Collapsed;
                 var token = Config.Read("MSLUserAccessToken")?.ToString() ?? "";
                 if (token != "")
                 {
@@ -45,6 +44,28 @@ namespace MSL.pages.frpProviders
                     await VerifyUserToken(token, false); //移除空格，防止笨蛋
                     MagicDialog.CloseTextDialog();
                 }
+            }
+        }
+
+        private async void MainCtrl_SelectionChanged(object sender, SelectionChangedEventArgs e)
+        {
+            if (!this.IsLoaded)
+            {
+                return;
+            }
+            if (!ReferenceEquals(e.OriginalSource, this.MainCtrl))
+            {
+                return;
+            }
+            switch (MainCtrl.SelectedIndex)
+            {
+                case 0:
+                    await GetTunnelList(UserToken);
+                    break;
+                case 1:
+                    await GetNodeList();
+                    Create_Name.Text = Functions.RandomString("MSL_", 6);
+                    break;
             }
         }
 
@@ -121,8 +142,7 @@ namespace MSL.pages.frpProviders
                     {
                         //显示main页面
                         LoginGrid.Visibility = Visibility.Collapsed; ;
-                        MainGrid.Visibility = Visibility.Visible;
-                        CreateGrid.Visibility = Visibility.Collapsed;
+                        MainCtrl.Visibility = Visibility.Visible;
                     });
                     JObject JsonUserInfo = JObject.Parse((string)res.HttpResponseContent);
                     UserLevel = Functions.GetCurrentUnixTimestamp() < (long)JsonUserInfo["data"]["outdated"] ? int.Parse((string)JsonUserInfo["data"]["user_group"]) : 0;
@@ -353,8 +373,7 @@ namespace MSL.pages.frpProviders
         {
             //显示登录页面
             LoginGrid.Visibility = Visibility.Visible;
-            MainGrid.Visibility = Visibility.Collapsed;
-            CreateGrid.Visibility = Visibility.Collapsed;
+            MainCtrl.Visibility = Visibility.Collapsed;
             UserToken = null;
             Config.Write("MSLUserAccessToken", "");
         }
@@ -371,16 +390,6 @@ namespace MSL.pages.frpProviders
             public string VipName { get; set; }
             public int Flag { get; set; }
             public string Band { get; set; }
-        }
-        private async void CreateBtn_Click(object sender, RoutedEventArgs e)
-        {
-            //显示create页面
-            LoginGrid.Visibility = Visibility.Collapsed;
-            MainGrid.Visibility = Visibility.Collapsed;
-            CreateGrid.Visibility = Visibility.Visible;
-
-            await GetNodeList();
-            Create_Name.Text = Functions.RandomString("MSL_", 6);
         }
 
         private async Task GetNodeList()
@@ -433,14 +442,6 @@ namespace MSL.pages.frpProviders
             }
         }
 
-        private void Create_BackBtn_Click(object sender, RoutedEventArgs e)
-        {
-            //显示main页面
-            LoginGrid.Visibility = Visibility.Collapsed; ;
-            MainGrid.Visibility = Visibility.Visible;
-            CreateGrid.Visibility = Visibility.Collapsed;
-        }
-
         private async void Create_OKBtn_Click(object sender, RoutedEventArgs e)
         {
             if (Create_RemotePort.Text == "")
@@ -475,10 +476,7 @@ namespace MSL.pages.frpProviders
                     {
                         await MagicShow.ShowMsgDialogAsync(Window.GetWindow(this), $"{Create_Name.Text}隧道创建成功！\n 远程端口: {Create_RemotePort.Text}", "成功");
                         //显示main页面
-                        LoginGrid.Visibility = Visibility.Collapsed; ;
-                        MainGrid.Visibility = Visibility.Visible;
-                        CreateGrid.Visibility = Visibility.Collapsed;
-                        await GetTunnelList(UserToken);
+                        MainCtrl.SelectedIndex = 0;
                     }
                     else
                     {

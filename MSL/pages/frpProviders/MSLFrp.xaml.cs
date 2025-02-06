@@ -512,6 +512,9 @@ namespace MSL.pages.frpProviders
 
         private async void gotoWeb_Click(object sender, RoutedEventArgs e)
         {
+            await MagicShow.ShowMsgDialogAsync(Window.GetWindow(this), "旧版MSL-Frp服务即将停止支持！请您转至使用新版服务！", "提示");
+            return;
+            /*
             if (!await MagicShow.ShowMsgDialogAsync(Window.GetWindow(this), "您是否已经购买了MSLFrp？", "购买/激活MSLFrp服务", true, "我已购买，点击激活", "我未购买，点击购买"))
             {
                 //直接激活
@@ -531,6 +534,7 @@ namespace MSL.pages.frpProviders
                     ActiveOrder();
                 }
             }
+            */
         }
 
         //激活方法

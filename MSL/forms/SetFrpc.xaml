@@ -15,7 +15,7 @@
         <Frame x:Name="frame" BorderBrush="{x:Null}" Margin="0,29,0,0" NavigationUIVisibility="Hidden"/>
         <TabControl x:Name="TabCtrl" Background="{x:Null}" BorderThickness="0,1,0,0" SelectionChanged="TabControl_SelectionChanged">
             <TabItem Header="MSL-Frp" Background="Transparent"/>
-            <TabItem Header="MSL-Frp(新)" Background="Transparent"/>
+            <TabItem Header="MSL-Frp（旧版）" Background="Transparent"/>
             <TabItem Header="OpenFrp" Background="Transparent"/>
             <TabItem Header="ChmlFrp" Background="Transparent"/>
             <TabItem Header="SakuraFrp" Background="Transparent"/>
