@@ -178,6 +178,7 @@ namespace MSL.pages
             if (frpcServer == 0)
             {
                 frplab3.Text= frplab3.Text = LanguageManager.Instance["Page_FrpcPage_Status_StartToViewIP"];
+                copyFrpc.IsEnabled = false;
             }
             else
             {
