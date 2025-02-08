@@ -136,10 +136,7 @@ namespace MSL.pages
 
             if (frpcServer == 0)
             {
-                if (lines[0].StartsWith("#"))
-                    nodeName = lines[0].TrimStart('#').Trim();
-                else
-                    nodeName = jobject[frpID.ToString()]["name"].ToString();
+                nodeName = jobject[frpID.ToString()]["name"].ToString();
             }
 
             // 服务器地址
@@ -178,21 +175,28 @@ namespace MSL.pages
                 }
             }
 
-            if (!readServerInfo)
+            if (frpcServer == 0)
             {
-                frplab3.Text = $"{LanguageManager.Instance["Page_FrpcPage_Status_JavaVersion"]}{serverAddr}:{remotePort}" +
-                    $"\n{LanguageManager.Instance["Page_FrpcPage_Status_BedrockVersion"]}" +
-                    $"{LanguageManager.Instance["Page_FrpcPage_Status_IP"]}{serverAddr} {LanguageManager.Instance["Page_FrpcPage_Status_Port"]}{remotePort}";
+                frplab3.Text= frplab3.Text = LanguageManager.Instance["Page_FrpcPage_Status_StartToViewIP"];
             }
             else
             {
-                if (frpcType == "udp")
+                if (!readServerInfo)
                 {
-                    frplab3.Text = $"{LanguageManager.Instance["Page_FrpcPage_Status_IP"]}{serverAddr} {LanguageManager.Instance["Page_FrpcPage_Status_Port"]}{remotePort}";
+                    frplab3.Text = $"{LanguageManager.Instance["Page_FrpcPage_Status_JavaVersion"]}{serverAddr}:{remotePort}" +
+                        $"\n{LanguageManager.Instance["Page_FrpcPage_Status_BedrockVersion"]}" +
+                        $"{LanguageManager.Instance["Page_FrpcPage_Status_IP"]}{serverAddr} {LanguageManager.Instance["Page_FrpcPage_Status_Port"]}{remotePort}";
                 }
                 else
                 {
-                    frplab3.Text = serverAddr + ":" + remotePort;
+                    if (frpcType == "udp")
+                    {
+                        frplab3.Text = $"{LanguageManager.Instance["Page_FrpcPage_Status_IP"]}{serverAddr} {LanguageManager.Instance["Page_FrpcPage_Status_Port"]}{remotePort}";
+                    }
+                    else
+                    {
+                        frplab3.Text = serverAddr + ":" + remotePort;
+                    }
                 }
             }
             await Task.Run(() =>
@@ -258,11 +262,11 @@ namespace MSL.pages
                         frpcExeName = "frpc.exe"; // frpc客户端主程序
                         arguments = "-c frpc.toml"; // 启动命令
                         downloadFileName = "frpc.exe";
-                        if (File.Exists($"MSL\\frp\\{frpcExeName}") && frpcversion != "0581") //mslfrp的特别更新qwq
+                        if (File.Exists($"MSL\\frp\\{frpcExeName}") && frpcversion != "0611") //mslfrp的特别更新qwq
                         {
                             downloadUrl = (await HttpService.GetApiContentAsync("download/frpc/MSLFrp/amd64?os=" + osver))["data"]["url"].ToString();//丢os版本号
                             await MagicShow.ShowDownloader(Window.GetWindow(this), downloadUrl, "MSL\\frp", downloadFileName, LanguageManager.Instance["Update_Frpc_Info"]);
-                            Config.Write("frpcversion", "0581");
+                            Config.Write("frpcversion", "0611");
                             downloadUrl = "";
                         }
                         else if (!File.Exists($"MSL\\frp\\{frpcExeName}"))
