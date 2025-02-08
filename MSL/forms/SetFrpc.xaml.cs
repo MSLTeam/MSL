@@ -10,7 +10,7 @@ namespace MSL
     public partial class SetFrpc : HandyControl.Controls.Window
     {
         //private readonly List<Page> Pages = new List<Page> { new MSLFrp(), new MSLFrpNew(), new OpenFrp(), new ChmlFrp(), new SakuraFrp(), new Custom() };
-        private readonly List<Page> Pages = new List<Page> { new MSLFrpNew(), new MSLFrp(), new OpenFrp(), new ChmlFrp(), new SakuraFrp(), new Custom() };
+        private readonly List<Page> Pages = new List<Page> { new MSLFrpNew(), new OpenFrp(), new ChmlFrp(), new SakuraFrp(), new Custom() };
         public SetFrpc()
         {
             InitializeComponent();

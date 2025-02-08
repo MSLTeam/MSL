@@ -10,7 +10,7 @@
       Title="MSLFrpNew">
 
     <Grid>
-        <TabControl x:Name="MainCtrl" Margin="10" Style="{StaticResource TabControlCapsuleSolid}" Background="Transparent" BorderThickness="0" SelectionChanged="MainCtrl_SelectionChanged">
+        <TabControl x:Name="MainCtrl" Margin="10,5,10,10" Style="{StaticResource TabControlCapsuleSolidInLine}" Background="Transparent" BorderThickness="0" SelectionChanged="MainCtrl_SelectionChanged">
             <TabItem Header="我的隧道列表">
                 <Grid x:Name="MainGrid">
                     <Grid.ColumnDefinitions>
@@ -40,7 +40,7 @@
                                 <ColumnDefinition Width="*"/>
                             </Grid.ColumnDefinitions>
                             <Button Content="删除所选隧道" x:Name="Del_Tunnel" Style="{DynamicResource ButtonDanger}" Grid.Column="0" HorizontalAlignment="Stretch" Margin="0,0,3,0" Click="Del_Tunnel_Click" />
-                            <Button Content="刷新" x:Name="RefreshBtn"  Style="{StaticResource ButtonPrimary}" HorizontalAlignment="Stretch" Grid.Column="1" Margin="3,0,0,0" Click="RefreshBtn_Click"/>
+                            <Button Content="刷新" x:Name="RefreshBtn" HorizontalAlignment="Stretch" Grid.Column="1" Margin="3,0,0,0" Click="RefreshBtn_Click"/>
                         </Grid>
                     </Grid>
                     <Grid Grid.Column="1" Margin="10,0,0,0" >
@@ -60,8 +60,8 @@
                                     <TextBlock x:Name="UserInfo" LineHeight="20" Foreground="{DynamicResource PrimaryTextBrush}" Text="Loadings······" FontSize="14" HorizontalAlignment="Left" Margin="10,0,0,0"/>
                                 </StackPanel>
                                 <StackPanel Grid.Column="1" Margin="0,5,8,5" >
-                                    <Button Content="打开官网" x:Name="OpenWeb" Margin="0,0,0,3" Style="{DynamicResource ButtonPrimary}" HorizontalAlignment="Stretch" Click="OpenWeb_Click" />
-                                    <Button Content="退出登录" x:Name="ExitBtn" Margin="0,3,0,0" Style="{StaticResource ButtonDanger}" HorizontalAlignment="Stretch" Click="ExitBtn_Click" />
+                                    <Button Content="打开官网" x:Name="OpenWeb" Margin="0,0,0,3" HorizontalAlignment="Stretch" Click="OpenWeb_Click" />
+                                    <Button Content="退出登录" x:Name="ExitBtn" Margin="0,3,0,0" HorizontalAlignment="Stretch" Click="ExitBtn_Click" />
                                 </StackPanel>
                             </Grid>
                         </hc:Card>
@@ -78,7 +78,7 @@
                             </StackPanel>
                         </hc:Card>
                         <StackPanel Grid.Row="2" Orientation="Horizontal" HorizontalAlignment="Right" VerticalAlignment="Bottom">
-                            <Button Content="选择该隧道" MinWidth="100" MinHeight="60" Style="{StaticResource ButtonPrimary}" FontSize="16" x:Name="OKBtn" Click="OKBtn_Click" />
+                            <Button Content="选择该隧道" MinWidth="100" MinHeight="50" Style="{StaticResource ButtonPrimary}" FontSize="16" x:Name="OKBtn" Click="OKBtn_Click" />
                         </StackPanel>
                     </Grid>
                 </Grid>
@@ -94,12 +94,9 @@
                             <RowDefinition Height="auto"/>
                             <RowDefinition Height="*"/>
                         </Grid.RowDefinitions>
-                        <hc:Card  Grid.Row="0" Margin="0,0,0,6">
-                            <StackPanel Margin="3">
-                                <Label Content="创建一个隧道" MinHeight="38" BorderThickness="0" FontSize="18" FontWeight="Bold" HorizontalAlignment="Left"/>
-                                <TextBlock LineHeight="20" Foreground="{DynamicResource PrimaryTextBrush}" Text="从下面选择一个你喜欢的节点" FontSize="14" HorizontalAlignment="Left" Margin="10,0,0,0"/>
-                            </StackPanel>
-                        </hc:Card>
+                        <Border Style="{StaticResource BorderTipPrimary}" Margin="3">
+                            <TextBlock LineHeight="20" Foreground="{DynamicResource PrimaryTextBrush}" Text="从下面选择一个你喜欢的节点" FontSize="14" HorizontalAlignment="Left"/>
+                        </Border>
                         <ListBox x:Name="NodeList" Grid.Row="1" MinWidth="300"  hc:Empty.ShowEmpty="true" SelectionChanged="NodeList_SelectionChanged">
                             <ListBox.ItemTemplate>
                                 <DataTemplate>
@@ -161,11 +158,7 @@
                             </hc:Card>
                         </StackPanel>
                         <Grid Grid.Row="1">
-                            <Grid.ColumnDefinitions>
-                                <ColumnDefinition Width="*"/>
-                                <ColumnDefinition Width="*"/>
-                            </Grid.ColumnDefinitions>
-                            <Button Content="确定创建" HorizontalAlignment="Stretch" Grid.Column="1" Style="{DynamicResource ButtonPrimary}" MinHeight="38" FontSize="18" x:Name="Create_OKBtn" Click="Create_OKBtn_Click"/>
+                            <Button Content="确定创建" HorizontalAlignment="Right" Style="{DynamicResource ButtonPrimary}" MinHeight="50" FontSize="16" x:Name="Create_OKBtn" Click="Create_OKBtn_Click" VerticalAlignment="Bottom"/>
                         </Grid>
                     </Grid>
                 </Grid>

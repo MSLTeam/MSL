@@ -12,10 +12,9 @@
         MinHeight="450" MinWidth="750" Height="450" Width="750"
         ResizeMode="CanResize" WindowStartupLocation="CenterOwner">
     <Grid x:Name="MainGrid">
-        <Frame x:Name="frame" BorderBrush="{x:Null}" Margin="0,29,0,0" NavigationUIVisibility="Hidden"/>
-        <TabControl x:Name="TabCtrl" Background="{x:Null}" BorderThickness="0,1,0,0" SelectionChanged="TabControl_SelectionChanged">
+        <Frame x:Name="frame" BorderBrush="Transparent" Margin="0,29,0,0" NavigationUIVisibility="Hidden"/>
+        <TabControl x:Name="TabCtrl" Style="{StaticResource TabControlInLine}" Background="{x:Null}" BorderThickness="0,1,0,0" SelectionChanged="TabControl_SelectionChanged">
             <TabItem Header="MSL-Frp" Background="Transparent"/>
-            <TabItem Header="MSL-Frp（旧版）" Background="Transparent"/>
             <TabItem Header="OpenFrp" Background="Transparent"/>
             <TabItem Header="ChmlFrp" Background="Transparent"/>
             <TabItem Header="SakuraFrp" Background="Transparent"/>

@@ -414,11 +414,7 @@ namespace MSL
                 //frame.Margin = new Thickness(100, 0, 0, 0);
                 try
                 {
-                    string jsonString = File.ReadAllText(@"MSL\config.json", Encoding.UTF8);
-                    JObject jobject = JObject.Parse(jsonString);
-                    jobject["sidemenuExpanded"] = true;
-                    string convertString = Convert.ToString(jobject);
-                    File.WriteAllText(@"MSL\config.json", convertString, Encoding.UTF8);
+                    Config.Write("sidemenuExpanded", true);
                 }
                 catch { }
             }
@@ -433,11 +429,7 @@ namespace MSL
                 //frame.Margin = new Thickness(50, 0, 0, 0);
                 try
                 {
-                    string jsonString = File.ReadAllText(@"MSL\config.json", Encoding.UTF8);
-                    JObject jobject = JObject.Parse(jsonString);
-                    jobject["sidemenuExpanded"] = false;
-                    string convertString = Convert.ToString(jobject);
-                    File.WriteAllText(@"MSL\config.json", convertString, Encoding.UTF8);
+                    Config.Write("sidemenuExpanded", false);
                 }
                 catch { }
             }

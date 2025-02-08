@@ -213,9 +213,9 @@
                     <controls:TabControlHeader Icon="{DynamicResource filesDrawingImage}" Text="插件/模组"/>
                 </TabItem.Header>
                 <Grid Style="{StaticResource GridAnimation}">
-                    <TabControl x:Name="pluginsAndModsTab" Style="{StaticResource TabControlInLine}" Visibility="Hidden" Background="{x:Null}" BorderThickness="0,1,0,0">
-                        <TabItem x:Name="pluginsTabItem" Header="服务器插件" Background="{DynamicResource SideMenuBrush}">
-                            <controls:MagicCard Margin="10">
+                    <TabControl x:Name="pluginsAndModsTab" Margin="10,5,10,10" Style="{StaticResource TabControlCapsuleInLine}" Visibility="Hidden" Background="Transparent" BorderThickness="0">
+                        <TabItem x:Name="pluginsTabItem" Header="服务器插件">
+                            <controls:MagicCard>
                                 <Grid>
                                     <StackPanel Orientation="Horizontal" HorizontalAlignment="Left" VerticalAlignment="Top">
                                         <TextBlock Text="插件列表" VerticalAlignment="Center" FontSize="18" FontWeight="Bold" Foreground="{DynamicResource PrimaryTextBrush}"/>
@@ -263,8 +263,8 @@
                                 </Grid>
                             </controls:MagicCard>
                         </TabItem>
-                        <TabItem x:Name="modsTabItem" Header="服务器模组" Background="{DynamicResource SideMenuBrush}">
-                            <controls:MagicCard Margin="10">
+                        <TabItem x:Name="modsTabItem" Header="服务器模组">
+                            <controls:MagicCard>
                                 <Grid>
                                     <StackPanel Orientation="Horizontal" HorizontalAlignment="Left" VerticalAlignment="Top">
                                         <TextBlock Text="模组列表" VerticalAlignment="Center" FontSize="18" FontWeight="Bold" Foreground="{DynamicResource PrimaryTextBrush}"/>
@@ -316,8 +316,8 @@
                     </TabControl>
                     <controls:MagicCard x:Name="NoPluginModTip" HorizontalAlignment="Center" VerticalAlignment="Center" Padding="15">
                         <StackPanel>
-                            <TextBlock Text="未检测到任何插件或模组" Foreground="{DynamicResource DarkPrimaryBrush}" FontSize="24" FontWeight="Bold" HorizontalAlignment="Center" Margin="10"/>
-                            <TextBlock Text="未检测到plugins和mods文件夹，您所使用的服务端核心支持这些功能吗？&#xA;请重启服务器并检查所用服务端是否支持相应功能后再试" TextAlignment="Center" TextWrapping="Wrap" Foreground="{DynamicResource PrimaryTextBrush}" FontSize="18"/>
+                            <TextBlock Text="未检测到任何插件或模组" Foreground="{DynamicResource DarkPrimaryBrush}" FontSize="18" FontWeight="Bold" HorizontalAlignment="Center" Margin="10"/>
+                            <TextBlock Text="未检测到plugins和mods文件夹，您所使用的服务端核心支持这些功能吗？&#xA;请重启服务器并检查所用服务端是否支持相应功能后再试" TextAlignment="Center" TextWrapping="Wrap" Foreground="{DynamicResource PrimaryTextBrush}" FontSize="16"/>
                             <Button x:Name="reFresh" Content="刷新" Style="{StaticResource ButtonPrimary}" Height="32" Click="reFresh_Click" Margin="10" Width="100" FontSize="16"/>
                         </StackPanel>
                     </controls:MagicCard>
@@ -329,36 +329,24 @@
                 </TabItem.Header>
                 <Grid Style="{StaticResource GridAnimation}">
                     <controls:MagicScrollViewer>
-                        <controls:MagicScrollViewer.Resources>
-                            <ResourceDictionary>
-                                <Style TargetType="Label">
-                                    <Setter Property="Foreground" Value="{DynamicResource PrimaryTextBrush}"/>
-                                    <Setter Property="Background" Value="{x:Null}"/>
-                                    <Setter Property="BorderBrush" Value="{x:Null}"/>
-                                    <Setter Property="HorizontalAlignment" Value="Left"/>
-                                    <Setter Property="VerticalAlignment" Value="Top"/>
-                                    <Setter Property="FontSize" Value="14"/>
-                                </Style>
-                            </ResourceDictionary>
-                        </controls:MagicScrollViewer.Resources>
                         <controls:MagicCard Margin="0,10,0,0">
                             <StackPanel>
                                 <StackPanel>
                                     <Label Content="服务器信息" Style="{StaticResource BorderTitle}"/>
                                     <Grid>
-                                        <Label Content="服务器名称:"/>
+                                        <Label Content="服务器名称：" Style="{StaticResource MagicLabel14}"/>
                                         <TextBox x:Name="nAme" MaxLines="1" AutoWordSelection="True" Margin="125,0,0,0" VerticalAlignment="Top"/>
-                                        <Label Content="服务器存放目录:" Margin="0,35,0,0" />
-                                        <TextBox x:Name="bAse" MaxLines="1" AutoWordSelection="True" VerticalAlignment="Top" Margin="125,35,60,0"/>
+                                        <Label Content="服务器存放目录：" Style="{StaticResource MagicLabel14}" Margin="0,35,0,0" />
+                                        <TextBox x:Name="bAse" MaxLines="1" AutoWordSelection="True" VerticalAlignment="Top" Margin="125,35,65,0"/>
                                         <Button x:Name="a0" Content="浏览" Width="60" VerticalAlignment="Top" HorizontalAlignment="Right" Margin="0,35,0,0" Click="a0_Click"/>
                                     </Grid>
                                 </StackPanel>
                                 <StackPanel Margin="0,10,0,0">
                                     <Label Content="服务器设置" Style="{StaticResource BorderTitle}"/>
                                     <Grid x:Name="GridJavaSet">
-                                        <Label Content="Java地址:"/>
+                                        <Label Content="Java地址：" Style="{StaticResource MagicLabel14}"/>
                                         <RadioButton x:Name="useSelf" Content="手动选择Java" IsChecked="True" VerticalAlignment="Top" HorizontalAlignment="Left" Margin="125,5,0,0"/>
-                                        <TextBox x:Name="jAva" MaxLines="1" AutoWordSelection="True" VerticalAlignment="Top" Margin="250,0,60,0"/>
+                                        <TextBox x:Name="jAva" MaxLines="1" AutoWordSelection="True" VerticalAlignment="Top" Margin="250,0,65,0"/>
                                         <Button x:Name="a03" Content="浏览" Width="60" Click="a03_Click" FontWeight="Normal" FontSize="12" Height="28" VerticalAlignment="Top" HorizontalAlignment="Right"/>
                                         <RadioButton x:Name="useDownJv" Content="开服器在线下载" VerticalAlignment="Top" HorizontalAlignment="Left" Margin="125,40,0,0"/>
                                         <ComboBox x:Name="selectJava" Width="200" HorizontalAlignment="Left" VerticalAlignment="Top" Margin="250,35,0,0"/>
@@ -369,21 +357,21 @@
                                     </Grid>
                                     <hc:Divider Margin="0,10,0,10" x:Name="DivJavaSet"/>
                                     <Grid x:Name="GridServerCore">
-                                        <Label Content="服务端核心文件:"/>
-                                        <TextBox x:Name="server" MaxLines="1" AutoWordSelection="True" Margin="125,0,210,0"/>
-                                        <Button x:Name="a01" Content="浏览" Width="60" Click="a01_Click" HorizontalAlignment="Right" Margin="0,0,150,0"/>
+                                        <Label Content="服务端核心文件：" Style="{StaticResource MagicLabel14}"/>
+                                        <TextBox x:Name="server" MaxLines="1" AutoWordSelection="True" Margin="125,0,220,0"/>
+                                        <Button x:Name="a01" Content="浏览" Width="60" Click="a01_Click" HorizontalAlignment="Right" Margin="0,0,155,0"/>
                                         <Button x:Name="downloadServer" hc:IconElement.Geometry="{StaticResource DownloadGeometry}" Content="下载服务端" Width="150" Click="downloadServer_Click" HorizontalAlignment="Right"/>
                                     </Grid>
                                     <hc:Divider Margin="0,10,0,10" x:Name="DivRemSet"/>
                                     <Grid x:Name="GridJavaRem">
-                                        <Label Content="服务器运行内存:"/>
+                                        <Label Content="服务器运行内存：" Style="{StaticResource MagicLabel14}"/>
                                         <ToggleButton x:Name="autoSetMemory" Content="让Java自动分配" VerticalAlignment="Top" HorizontalAlignment="Left" Margin="125,0,0,0" Style="{StaticResource ToggleButtonSwitch}" Click="autoSetMemory_Click"/>
                                         <hc:RangeSlider x:Name="memorySlider" ValueChanged="memorySlider_ValueChanged" Height="18" VerticalAlignment="Top" Margin="125,35,180,5"/>
                                         <TextBox x:Name="memoryInfo" Text="当前为自动分配" Foreground="{DynamicResource DarkPrimaryBrush}" TextAlignment="Center" TextChanged="memoryInfo_TextChanged" Width="165" HorizontalAlignment="Right" VerticalAlignment="Bottom"/>
                                     </Grid>
                                     <hc:Divider Margin="0,10,0,10" x:Name="DivJvmSet"/>
                                     <Grid>
-                                        <Label Content="服务器JVM参数:" x:Name="LabelArgsText"/>
+                                        <Label x:Name="LabelArgsText" Content="服务器JVM参数：" Style="{StaticResource MagicLabel14}"/>
                                         <StackPanel Margin="125,0,0,0">
                                             <TextBox x:Name="jVMcmd" AutoWordSelection="True" VerticalAlignment="Top" AcceptsReturn="True" TextWrapping="Wrap"/>
                                             <Border Margin="0,5" Style="{StaticResource BorderTipPrimary}">
@@ -404,13 +392,14 @@
                             <StackPanel>
                                 <StackPanel Orientation="Horizontal">
                                     <TextBlock x:Name="changeServerPropertiesLab" VerticalAlignment="Center" FontSize="18" FontWeight="Bold" Foreground="{DynamicResource PrimaryTextBrush}" Text="更改服务器配置"/>
-                                    <Button x:Name="refreahServerConfig" Margin="10,0,0,0" Content="刷新" Style="{StaticResource ButtonPrimary}" Width="80" Click="refreahServerConfig_Click"/>
+                                    <Button x:Name="refreahServerConfig" Margin="10,0,0,0" Content="刷新" Width="80" Click="refreahServerConfig_Click"/>
                                 </StackPanel>
                                 <Grid x:Name="changeServerProperties" Margin="0,10,0,0">
                                     <Grid.Resources>
                                         <Style TargetType="TextBlock">
                                             <Setter Property="Foreground" Value="{DynamicResource PrimaryTextBrush}"/>
                                         </Style>
+                                        <Style TargetType="Label" BasedOn="{StaticResource MagicLabel14}"/>
                                     </Grid.Resources>
                                     <Grid.RowDefinitions>
                                         <RowDefinition Height="Auto"/>
@@ -441,15 +430,15 @@
                                     <TextBox Grid.Row="7" x:Name="gamePvpText" Margin="100,0,0,0" TextWrapping="Wrap" Text="" VerticalAlignment="Center" Width="90" HorizontalAlignment="Left"/>
                                     <Label Grid.Row="8" Content="主世界地图：" Margin="5" VerticalAlignment="Center" />
                                     <TextBox Grid.Row="8" x:Name="gameWorldText" Margin="100,0,0,0" TextWrapping="Wrap" Text="" VerticalAlignment="Center" Width="90" HorizontalAlignment="Left"/>
-                                    <TextBlock Grid.Row="0" Margin="200,0,0,0" TextWrapping="Wrap" Text="注：正版验证（online-mode），若开启（true），盗版/离线用户将无法进入该服务器，关闭请输入false" VerticalAlignment="Center"/>
-                                    <TextBlock Grid.Row="1" Margin="200,0,0,0" TextWrapping="Wrap" Text="注：游戏模式（gamemode），不同版本改法不一致，具体可参照页面底部表格" VerticalAlignment="Center"/>
-                                    <TextBlock Grid.Row="2" Margin="200,0,0,0" TextWrapping="Wrap" Text="注：游戏难度（difficulty），不同版本改法不一致，具体可参照页面底部表格" VerticalAlignment="Center"/>
-                                    <TextBlock Grid.Row="3" Margin="200,0,0,0" TextWrapping="Wrap" Text="注：游戏人数（max-player），在此输入数字来改变服务器最大人数" VerticalAlignment="Center"/>
-                                    <TextBlock Grid.Row="4" Margin="200,0,0,0" TextWrapping="Wrap" Text="注：服务器端口（server-port），非必要无需更改" VerticalAlignment="Center"/>
-                                    <TextBlock Grid.Row="5" Margin="200,0,0,0" TextWrapping="Wrap" Text="注：启用命令方块（enable-command-block），若开启(true)，服务器可使用命令方块，关闭请输入false" VerticalAlignment="Center"/>
-                                    <TextBlock Grid.Row="6" Margin="200,0,0,0" TextWrapping="Wrap" Text="注：视距（view-distance），和游戏内的渲染距离意思相近，设置过大会影响服务器性能" VerticalAlignment="Center"/>
-                                    <TextBlock Grid.Row="7" Margin="200,0,0,0" TextWrapping="Wrap" Text="注：PVP（pvp），若开启（true），玩家间可互相伤害，关闭请输入false" VerticalAlignment="Center"/>
-                                    <TextBlock Grid.Row="8" Margin="200,0,0,0" TextWrapping="Wrap" Text="注：主世界地图名称（level-name），默认为world，非必要无需更改" VerticalAlignment="Center"/>
+                                    <TextBlock Grid.Row="0" Margin="200,0,0,0" TextWrapping="Wrap" Text="注：online-mode，若开启（true），盗版/离线用户将无法进入该服务器，关闭请输入false" VerticalAlignment="Center"/>
+                                    <TextBlock Grid.Row="1" Margin="200,0,0,0" TextWrapping="Wrap" Text="注：gamemode，不同版本改法不一致，具体可参照页面底部表格" VerticalAlignment="Center"/>
+                                    <TextBlock Grid.Row="2" Margin="200,0,0,0" TextWrapping="Wrap" Text="注：difficulty，不同版本改法不一致，具体可参照页面底部表格" VerticalAlignment="Center"/>
+                                    <TextBlock Grid.Row="3" Margin="200,0,0,0" TextWrapping="Wrap" Text="注：max-player，在此输入数字来改变服务器最大人数" VerticalAlignment="Center"/>
+                                    <TextBlock Grid.Row="4" Margin="200,0,0,0" TextWrapping="Wrap" Text="注：server-port，非必要无需更改" VerticalAlignment="Center"/>
+                                    <TextBlock Grid.Row="5" Margin="200,0,0,0" TextWrapping="Wrap" Text="注：enable-command-block，若开启(true)，服务器可使用命令方块，关闭请输入false" VerticalAlignment="Center"/>
+                                    <TextBlock Grid.Row="6" Margin="200,0,0,0" TextWrapping="Wrap" Text="注：view-distance，和游戏内的渲染距离意思相近，设置过大会影响服务器性能" VerticalAlignment="Center"/>
+                                    <TextBlock Grid.Row="7" Margin="200,0,0,0" TextWrapping="Wrap" Text="注：pvp，若开启（true），玩家间可互相伤害，关闭请输入false" VerticalAlignment="Center"/>
+                                    <TextBlock Grid.Row="8" Margin="200,0,0,0" TextWrapping="Wrap" Text="注：level-name，默认为world，非必要无需更改" VerticalAlignment="Center"/>
                                 </Grid>
                                 <Grid x:Name="changeServerProperties_Add" Margin="0,10,0,0">
                                     <Grid.ColumnDefinitions>
@@ -458,7 +447,7 @@
                                         <ColumnDefinition/>
                                         <ColumnDefinition/>
                                     </Grid.ColumnDefinitions>
-                                    <Button x:Name="savaServerConfig" Grid.Column="0" Style="{StaticResource ButtonPrimary}" Content="保存" Height="35" Click="saveServerConfig_Click" FontSize="16" HorizontalAlignment="Stretch" Margin="10,0,10,0"/>
+                                    <Button x:Name="savaServerConfig" Grid.Column="0" Style="{StaticResource ButtonPrimary}" Content="保存" Height="35" Click="saveServerConfig_Click" FontSize="14" HorizontalAlignment="Stretch" Margin="10,0,10,0"/>
                                     <Button x:Name="changeServerIcon" Grid.Column="1" Content="修改服务器图标" Height="35" FontSize="14" Click="changeServerIcon_Click" VerticalAlignment="Top" HorizontalAlignment="Stretch" Margin="10,0,10,0"/>
                                     <Button x:Name="changeWorldMap" Grid.Column="2" Content="更换主世界地图" Click="changeWorldMap_Click" Height="35" FontSize="14" VerticalAlignment="Top" HorizontalAlignment="Stretch" Margin="10,0,10,0"/>
                                     <Button x:Name="setServerconfig" Grid.Column="3" Content="修改更多配置" Height="35" FontSize="14" Click="setServerconfig_Click" VerticalAlignment="Top" HorizontalAlignment="Stretch" Margin="10,0,10,0"/>
@@ -535,14 +524,14 @@
                                         <ColumnDefinition Width="auto"/>
                                         <ColumnDefinition Width="*"/>
                                     </Grid.ColumnDefinitions>
-                                    <Label Content="仪表盘功能：" Grid.Column="0" Margin="0,0,10,0" Padding="10,0,10,0" BorderThickness="0" FontSize="16" HorizontalContentAlignment="Left" VerticalAlignment="Top"/>
+                                    <Label Content="仪表盘功能：" Grid.Column="0" Style="{StaticResource MagicLabel16}"/>
                                     <hc:UniformSpacingPanel Spacing="10" Orientation="Vertical" Grid.Column="1" >
                                         <StackPanel Orientation="Horizontal">
-                                            <Label Content="显示占用：" Margin="0,0,5,0" FontSize="14" Padding="0" BorderThickness="0"/>
+                                            <Label Content="显示占用：" Style="{StaticResource MagicLabel14}"/>
                                             <ToggleButton x:Name="systemInfoBtn" Style="{StaticResource ToggleButtonSwitch.Content}" Click="systemInfoBtn_Click"/>
                                         </StackPanel>
                                         <StackPanel Orientation="Horizontal">
-                                            <Label Content="记录玩家：" Margin="0,0,5,0" FontSize="14" Padding="0" BorderThickness="0"/>
+                                            <Label Content="记录玩家：" Style="{StaticResource MagicLabel14}"/>
                                             <ToggleButton x:Name="playerInfoBtn" Style="{StaticResource ToggleButtonSwitch.Content}" Click="playerInfoBtn_Click"/>
                                         </StackPanel>
                                     </hc:UniformSpacingPanel>
@@ -553,18 +542,18 @@
                                         <ColumnDefinition Width="auto"/>
                                         <ColumnDefinition Width="*"/>
                                     </Grid.ColumnDefinitions>
-                                    <Label Content="服务器控制：" Grid.Column="0" Margin="0,0,10,0" Padding="10,0,10,0" BorderThickness="0" FontSize="16" HorizontalContentAlignment="Left" VerticalAlignment="Top"/>
+                                    <Label Content="服务器控制：" Grid.Column="0"  Style="{StaticResource MagicLabel16}"/>
                                     <hc:UniformSpacingPanel Spacing="10" Orientation="Vertical"  Grid.Column="1" >
                                         <StackPanel Orientation="Horizontal">
-                                            <Label Content="使用高级终端（ConPty）：" Margin="0,0,5,0" FontSize="14" Padding="0" BorderThickness="0"/>
+                                            <Label Content="使用高级终端（ConPty）：" Style="{StaticResource MagicLabel14}"/>
                                             <ToggleButton x:Name="useConpty" Style="{StaticResource ToggleButtonSwitch.Content}" Click="useConpty_Click"/>
                                         </StackPanel>
                                         <StackPanel Orientation="Horizontal">
-                                            <Label Content="关服自动重启：" Margin="0,0,5,0" FontSize="14" Padding="0" BorderThickness="0"/>
+                                            <Label Content="关服自动重启：" Style="{StaticResource MagicLabel14}"/>
                                             <ToggleButton x:Name="autoStartserver" Style="{StaticResource ToggleButtonSwitch.Content}" Click="autostartServer_Click"/>
                                         </StackPanel>
                                         <StackPanel Orientation="Horizontal">
-                                            <Label Content="强制服务器文件UTF8编码：" Margin="0,0,5,0" FontSize="14" Padding="0" BorderThickness="0"/>
+                                            <Label Content="强制服务器文件UTF8编码：" Style="{StaticResource MagicLabel14}"/>
                                             <ToggleButton x:Name="fileforceUTF8encoding" Style="{StaticResource ToggleButtonSwitch.Content}" Click="fileforceUTF8encoding_Click"/>
                                         </StackPanel>
                                     </hc:UniformSpacingPanel>
@@ -575,30 +564,30 @@
                                         <ColumnDefinition Width="auto"/>
                                         <ColumnDefinition Width="*"/>
                                     </Grid.ColumnDefinitions>
-                                    <Label Content="服务器终端：" Grid.Column="0" Margin="0,0,10,0" Padding="10,0,10,0" BorderThickness="0" FontSize="16" VerticalAlignment="Top" HorizontalContentAlignment="Left"/>
+                                    <Label Content="服务器终端：" Grid.Column="0" Style="{StaticResource MagicLabel16}"/>
                                     <hc:UniformSpacingPanel Spacing="10" Orientation="Vertical" Grid.Column="1">
                                         <StackPanel Orientation="Horizontal">
-                                            <Label Content="日志输出：" Margin="0,0,5,0"  FontSize="14" Padding="0" BorderThickness="0"/>
+                                            <Label Content="日志输出：" Style="{StaticResource MagicLabel14}"/>
                                             <ToggleButton x:Name="showOutlog" IsChecked="True" Style="{StaticResource ToggleButtonSwitch.Content}" Click="showOutlog_Click"/>
                                         </StackPanel>
                                         <StackPanel Orientation="Horizontal">
-                                            <Label Content="自动清屏：" Margin="0,0,5,0" FontSize="14" Padding="0" BorderThickness="0"/>
+                                            <Label Content="自动清屏：" Style="{StaticResource MagicLabel14}"/>
                                             <ToggleButton x:Name="autoClearOutlog" IsChecked="True" Style="{StaticResource ToggleButtonSwitch.Content}" Click="autoClearOutlog_Click"/>
                                         </StackPanel>
                                         <StackPanel Orientation="Horizontal">
-                                            <Label Content="屏蔽关键字日志：" Margin="0,0,5,0" FontSize="14" Padding="0" BorderThickness="0"/>
+                                            <Label Content="屏蔽关键字日志：" Style="{StaticResource MagicLabel14}"/>
                                             <ToggleButton x:Name="shieldLogBtn" Style="{StaticResource ToggleButtonSwitch.Content}" Click="shieldLogBtn_Click"/>
                                         </StackPanel>
                                         <StackPanel Orientation="Horizontal">
-                                            <Label Content="屏蔽堆栈追踪：" Margin="0,0,5,0" FontSize="14" Padding="0" BorderThickness="0"/>
+                                            <Label Content="屏蔽堆栈追踪：" Style="{StaticResource MagicLabel14}"/>
                                             <ToggleButton x:Name="shieldStackOut" IsChecked="True" Style="{StaticResource ToggleButtonSwitch.Content}" Click="shieldStackOut_Click"/>
                                         </StackPanel>
                                         <StackPanel Orientation="Horizontal">
-                                            <Label Content="输入编码：" Margin="0,0,5,0" FontSize="14" Padding="0" BorderThickness="0"/>
+                                            <Label Content="输入编码：" Style="{StaticResource MagicLabel14}"/>
                                             <Button x:Name="inputCmdEncoding" Content="UTF8" Click="inputCmdEncoding_Click"/>
                                         </StackPanel>
                                         <StackPanel Orientation="Horizontal">
-                                            <Label Content="输出编码：" Margin="0,0,5,0" FontSize="14" Padding="0" BorderThickness="0"/>
+                                            <Label Content="输出编码：" Style="{StaticResource MagicLabel14}"/>
                                             <Button x:Name="outputCmdEncoding" Content="UTF8" Click="outputCmdEncoding_Click"/>
                                         </StackPanel>
                                     </hc:UniformSpacingPanel>
@@ -684,7 +673,7 @@
                                     <StackPanel Grid.Column="0" Orientation="Horizontal">
                                         <Label Content="周期：" FontSize="16" Height="32" BorderThickness="0" Background="Transparent" Width="60"/>
                                         <TextBox x:Name="timercmdTime" Width="100" Height="32" InputMethod.IsInputMethodEnabled="False" PreviewTextInput="NumberValidationTextBox" TextChanged="timercmdTime_TextChanged"/>
-                                        <ComboBox x:Name="TaskUnit" FontSize="16" Height="32" SelectionChanged="TaskUnit_SelectionChanged">
+                                        <ComboBox x:Name="TaskUnit" Margin="5,0" FontSize="16" Height="32" SelectionChanged="TaskUnit_SelectionChanged">
                                             <ComboBoxItem Content="秒（s）" IsSelected="True"/>
                                             <ComboBoxItem Content="毫秒（ms）"/>
                                         </ComboBox>
