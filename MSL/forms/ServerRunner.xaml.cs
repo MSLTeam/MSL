@@ -43,7 +43,7 @@ namespace MSL
         public static event DeleControl SaveConfigEvent;
         public static event DeleControl ServerStateChange;
         private readonly Process ServerProcess = new Process();
-        private string ShieldLog = null;
+        private string[] ShieldLog;
         private bool mslTips = true;
         private ConptyWindow conptyWindow = null;
         private short getServerInfoLine = 0;
@@ -249,10 +249,19 @@ namespace MSL
             {
                 showOutlog.IsChecked = false;
             }
-            if (_json["shieldLog"] != null)
+            if (_json["shieldLogKeys"] != null)
             {
-                ShieldLog = _json["shieldLog"].ToString();
+                var items = _json["shieldLogKeys"];
+                List<string> tempList = new List<string>();
+                foreach (var item in items)
+                {
+                    tempList.Add(item.ToString());
+                    ShieldLogList.Items.Add(item.ToString());
+                }
+                ShieldLog = [.. tempList];
                 shieldLogBtn.IsChecked = true;
+                LogShield_Add.IsEnabled = false;
+                LogShield_Del.IsEnabled = false;
             }
             if (_json["shieldStackOut"] != null && _json["shieldStackOut"].ToString() == "False")
             {
@@ -1172,7 +1181,7 @@ namespace MSL
                         ProblemSystemShow(msg);
                     if (outlog.Document.Blocks.Count >= 1000 && autoClearOutlog.IsChecked == true)
                         outlog.Document.Blocks.Clear();
-                    if ((msg.Contains("\tat ") && shieldStackOut.IsChecked == true) || (ShieldLog != null && msg.Contains(ShieldLog)) || showOutlog.IsChecked == false)
+                    if ((msg.Contains("\tat ") && shieldStackOut.IsChecked == true) || (ShieldLog != null && ShieldLog.Any(s => msg.Contains(s))) || showOutlog.IsChecked == false)
                         return;
                     if (mslTips != false)
                     {
@@ -1394,10 +1403,13 @@ namespace MSL
                 ConptyCanOutLog = true;
                 return;
             }
+            
             if (tempLogs != null)
             {
                 Dispatcher.Invoke(() =>
                 {
+                    if (conptyWindow.ConptyConsole.ConPTYTerm.ConsoleOutputLog.Length >= 50000 && autoClearOutlog.IsChecked == true)
+                        conptyWindow.ConptyConsole.ConPTYTerm.ClearUITerminal();
                     ProcessOutput(tempLogs);
                 });
             }
@@ -1602,17 +1614,22 @@ namespace MSL
 
         private void GetPlayerInfoSys(string msg)
         {
-            // 正则表达式提取用户名
-            Regex loginRegex = new Regex(@":\s*(\S+\[[^\]]+\])\s*logged in with entity id");
-            Regex disconnectRegex = new Regex(@":\s*(\S+)\s*lost connection:");
-            Regex serverDisconnectRegex = new Regex(@":\s*(\S+)\s*与服务器失去连接");
+            Regex disconnectRegex = new Regex(@"\s*]: (\S+)\s*lost connection:");
+            Regex serverDisconnectRegex = new Regex(@"\s*]: (\S+)\s*与服务器失去连接");
 
-            if (loginRegex.IsMatch(msg))
+            if (msg.Contains("logged in with entity id"))
             {
-                string playerName = loginRegex.Match(msg).Groups[1].Value;
-                if (!serverPlayerList.Items.Contains(playerName))
+                string playerName = ExtractPlayerName(msg);
+                if (playerName != null)
                 {
-                    serverPlayerList.Items.Add(playerName);
+                    if (!serverPlayerList.Items.Contains(playerName))
+                    {
+                        serverPlayerList.Items.Add(playerName);
+                    }
+                }
+                else
+                {
+                    return;
                 }
             }
             else if (disconnectRegex.IsMatch(msg))
@@ -1627,10 +1644,45 @@ namespace MSL
             }
             else
             {
-                //Growl.Error("无法识别的消息格式");
                 return;
             }
         }
+
+        /// <summary>
+        /// 从日志消息中提取出用户标识字符串。
+        /// 例如：
+        ///   输入: "[21:58:19 INFO]: Weheal[/127.0.0.1:25565] logged in with entity id 100 at (...)" 
+        ///   输出: "Weheal[/127.0.0.1:25565]"
+        ///   
+        ///   输入: "[22:59:55] [Server thread/INF0]: Weheal[/[0000:0000:0000:0000:0000:0000:0000:0000]:25565] logged in with entity id 100 at(...)" 
+        ///   输出: "Weheal[/[0000:0000:0000:0000:0000:0000:0000:0000]:25565]"
+        /// </summary>
+        public string ExtractPlayerName(string msg)
+        {
+            // 定位登录标志所在位置
+            int endIndex = msg.IndexOf(" logged in with entity id");
+            if (endIndex == -1)
+            {
+                // 找不到登录标志，返回 null 或者其他错误处理方式
+                return null;
+            }
+
+            // 定位 "]: " 分隔符，它出现在前面的时间戳和其它信息之后，紧接着用户标识
+            string delimiter = "]: ";
+            int startIndex = msg.LastIndexOf(delimiter, endIndex);
+            if (startIndex == -1)
+            {
+                // 如果没有找到分隔符，也返回 null
+                return null;
+            }
+
+            // 实际的用户标识开始于分隔符之后
+            startIndex += delimiter.Length;
+
+            // 截取 startIndex 到 endIndex 之间的子字符串
+            return msg.Substring(startIndex, endIndex - startIndex);
+        }
+
 
         private void RemovePlayerFromList(string playerName)
         {
@@ -2765,26 +2817,35 @@ namespace MSL
                     try
                     {
                         int minMemoryIndex = RserverJVM.IndexOf("-Xms");
-                        string minMemorySubstring = RserverJVM.Substring(minMemoryIndex + 4);
-                        string minMemoryValue = minMemorySubstring.Substring(0, minMemorySubstring.IndexOf("M"));
-
                         int maxMemoryIndex = RserverJVM.IndexOf("-Xmx");
-                        string maxMemorySubstring = RserverJVM.Substring(maxMemoryIndex + 4);
-                        string maxMemoryValue = maxMemorySubstring.Substring(0, maxMemorySubstring.IndexOf("M"));
 
-                        memorySlider.ValueStart = int.Parse(minMemoryValue);
-                        memorySlider.ValueEnd = int.Parse(maxMemoryValue);
-                        memoryInfo.Text = "最小:" + minMemoryValue + "M," + "最大:" + maxMemoryValue + "M";
+                        int minMemory = 0;
+                        int maxMemory = 0;
+
+                        if (minMemoryIndex != -1) // 确保 -Xms 存在
+                        {
+                            string minMemorySubstring = RserverJVM.Substring(minMemoryIndex + 4);
+                            string minMemoryValue = ExtractMemoryValue(minMemorySubstring);
+                            int.TryParse(minMemoryValue, out minMemory);
+                        }
+
+                        if (maxMemoryIndex != -1) // 确保 -Xmx 存在
+                        {
+                            string maxMemorySubstring = RserverJVM.Substring(maxMemoryIndex + 4);
+                            string maxMemoryValue = ExtractMemoryValue(maxMemorySubstring);
+                            int.TryParse(maxMemoryValue, out maxMemory);
+                        }
+
+                        memorySlider.ValueStart = minMemory;
+                        memorySlider.ValueEnd = maxMemory;
+                        memoryInfo.Text = $"最小:{minMemory}M, 最大:{maxMemory}M";
                     }
-                    catch
+                    catch (Exception ex)
                     {
-                        int maxMemoryIndex = RserverJVM.IndexOf("-Xmx");
-                        string maxMemorySubstring = RserverJVM.Substring(maxMemoryIndex + 4);
-                        string maxMemoryValue = maxMemorySubstring.Substring(0, maxMemorySubstring.IndexOf("M"));
-
                         memorySlider.ValueStart = 0;
-                        memorySlider.ValueEnd = int.Parse(maxMemoryValue);
-                        memoryInfo.Text = "最小:0M," + "最大:" + maxMemoryValue + "M";
+                        memorySlider.ValueEnd = 0;
+                        memoryInfo.Text = "解析内存参数失败";
+                        Console.WriteLine("错误: " + ex.Message);
                     }
                 }
             }
@@ -2792,6 +2853,29 @@ namespace MSL
             {
                 MessageBox.Show("Error!");
             }
+        }
+
+        private string ExtractMemoryValue(string memoryString)
+        {
+            int endIndex = memoryString.IndexOf("M");
+            bool isGB = false;
+
+            if (endIndex == -1)
+            {
+                endIndex = memoryString.IndexOf("G");
+                isGB = true;
+            }
+
+            if (endIndex != -1)
+            {
+                string valueStr = memoryString.Substring(0, endIndex);
+                if (int.TryParse(valueStr, out int value))
+                {
+                    return isGB ? (value * 1024).ToString() : value.ToString();
+                }
+            }
+
+            return "0"; // 如果解析失败，返回0
         }
 
         private async Task LoadJavaInfo()
@@ -3681,31 +3765,63 @@ namespace MSL
             File.WriteAllText("MSL\\ServerList.json", Convert.ToString(jsonObject), Encoding.UTF8);
         }
 
-        private async void shieldLogBtn_Click(object sender, RoutedEventArgs e)
+        private void shieldLogBtn_Click(object sender, RoutedEventArgs e)
         {
             JObject jsonObject = JObject.Parse(File.ReadAllText(@"MSL\ServerList.json", Encoding.UTF8));
             JObject _json = (JObject)jsonObject[RserverID.ToString()];
             if (shieldLogBtn.IsChecked == true)
             {
-                string text = await MagicShow.ShowInput(this, "输入你想屏蔽的关键字，\n开服器将不会输出含有此关键字的日志");
-                if (text != null)
+                if (ShieldLogList.Items.Count >0)
                 {
-                    ShieldLog = text;
-                    _json["shieldLog"] = text;
+                    List<string> tempList = new List<string>();
+
+                    JArray jArray = new JArray();
+                    foreach (var item in ShieldLogList.Items)
+                    {
+                        tempList.Add(item.ToString());
+                        jArray.Add(item.ToString());
+                    }
+
+                    ShieldLog = [.. tempList];
+                    _json["shieldLogKeys"] = jArray;
+
+                    LogShield_Add.IsEnabled = false;
+                    LogShield_Del.IsEnabled = false;
                 }
                 else
                 {
+                    Growl.Error("请先进行添加！");
                     shieldLogBtn.IsChecked = false;
                 }
             }
             else
             {
                 ShieldLog = null;
-                _json.Remove("shieldLog");
+                _json.Remove("shieldLogKeys");
+                LogShield_Add.IsEnabled = true;
+                LogShield_Del.IsEnabled = true;
             }
             jsonObject[RserverID.ToString()] = _json;
             File.WriteAllText("MSL\\ServerList.json", Convert.ToString(jsonObject), Encoding.UTF8);
         }
+
+        private async void LogShield_Add_Click(object sender, RoutedEventArgs e)
+        {
+            string text = await MagicShow.ShowInput(this, "输入你想屏蔽的关键字，\n开服器将不会输出含有此关键字的日志");
+            if (!ShieldLogList.Items.Contains(text))
+            {
+                ShieldLogList.Items.Add(text);
+            }
+        }
+
+        private void LogShield_Del_Click(object sender, RoutedEventArgs e)
+        {
+            if (ShieldLogList.SelectedIndex != -1)
+            {
+                ShieldLogList.Items.Remove(ShieldLogList.SelectedItem);
+            }
+        }
+
         private void shieldStackOut_Click(object sender, RoutedEventArgs e)
         {
             JObject jsonObject = JObject.Parse(File.ReadAllText(@"MSL\ServerList.json", Encoding.UTF8));
@@ -3728,7 +3844,7 @@ namespace MSL
             JObject _json = (JObject)jsonObject[RserverID.ToString()];
             if (autoClearOutlog.IsChecked == false)
             {
-                bool msgreturn = await MagicShow.ShowMsgDialogAsync(this, "关闭此功能后，服务器输出界面超过1000行日志后将不再清屏，这样可能会造成性能损失，您确定要继续吗？", "警告", true, "取消");
+                bool msgreturn = await MagicShow.ShowMsgDialogAsync(this, "关闭此功能后，服务器输出界面超过一定数量的日志后将不再清屏（传统终端为1000行，PTY为50000字），这样可能会造成性能损失，您确定要继续吗？", "警告", true, "取消");
                 if (msgreturn)
                 {
                     _json["autoClearOutlog"] = "False";

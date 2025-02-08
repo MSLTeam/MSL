@@ -559,36 +559,63 @@
                                     </hc:UniformSpacingPanel>
                                 </Grid>
                                 <hc:Divider Margin="0"/>
-                                <Grid x:Name="Tradition_LogFunGrid">
+                                <Grid>
                                     <Grid.ColumnDefinitions>
                                         <ColumnDefinition Width="auto"/>
                                         <ColumnDefinition Width="*"/>
                                     </Grid.ColumnDefinitions>
                                     <Label Content="服务器终端：" Grid.Column="0" Style="{StaticResource MagicLabel16}"/>
                                     <hc:UniformSpacingPanel Spacing="10" Orientation="Vertical" Grid.Column="1">
-                                        <StackPanel Orientation="Horizontal">
-                                            <Label Content="日志输出：" Style="{StaticResource MagicLabel14}"/>
-                                            <ToggleButton x:Name="showOutlog" IsChecked="True" Style="{StaticResource ToggleButtonSwitch.Content}" Click="showOutlog_Click"/>
-                                        </StackPanel>
+                                        <Grid x:Name="Tradition_LogFunGrid">
+                                            <Grid.ColumnDefinitions>
+                                                <ColumnDefinition Width="Auto"/>
+                                                <ColumnDefinition Width="100"/>
+                                                <ColumnDefinition Width="Auto"/>
+                                                <ColumnDefinition/>
+                                            </Grid.ColumnDefinitions>
+                                            <hc:UniformSpacingPanel Grid.Column="0" Spacing="10" Orientation="Vertical">
+                                                <StackPanel Orientation="Horizontal">
+                                                    <Label Content="日志输出：" Style="{StaticResource MagicLabel14}"/>
+                                                    <ToggleButton x:Name="showOutlog" IsChecked="True" Style="{StaticResource ToggleButtonSwitch.Content}" Click="showOutlog_Click"/>
+                                                </StackPanel>
+                                                <StackPanel Orientation="Horizontal">
+                                                    <Label Content="屏蔽堆栈追踪：" Style="{StaticResource MagicLabel14}"/>
+                                                    <ToggleButton x:Name="shieldStackOut" IsChecked="True" Style="{StaticResource ToggleButtonSwitch.Content}" Click="shieldStackOut_Click"/>
+                                                </StackPanel>
+                                                <StackPanel Orientation="Horizontal">
+                                                    <Label Content="输入编码：" Style="{StaticResource MagicLabel14}"/>
+                                                    <Button x:Name="inputCmdEncoding" Content="UTF8" Click="inputCmdEncoding_Click"/>
+                                                </StackPanel>
+                                                <StackPanel Orientation="Horizontal">
+                                                    <Label Content="输出编码：" Style="{StaticResource MagicLabel14}"/>
+                                                    <Button x:Name="outputCmdEncoding" Content="UTF8" Click="outputCmdEncoding_Click"/>
+                                                </StackPanel>
+                                            </hc:UniformSpacingPanel>
+                                            <Grid Grid.Column="2">
+                                                <Grid.RowDefinitions>
+                                                    <RowDefinition Height="Auto"/>
+                                                    <RowDefinition/>
+                                                    <RowDefinition Height="Auto"/>
+                                                </Grid.RowDefinitions>
+                                                <StackPanel Grid.Row="0" Orientation="Horizontal" HorizontalAlignment="Left" VerticalAlignment="Top">
+                                                    <Label Content="屏蔽关键字日志：" Style="{StaticResource MagicLabel14}"/>
+                                                    <ToggleButton x:Name="shieldLogBtn" Style="{StaticResource ToggleButtonSwitch.Content}" Click="shieldLogBtn_Click"/>
+                                                </StackPanel>
+                                                <ListBox x:Name="ShieldLogList" Grid.Row="1" Margin="0,5,0,5" MaxHeight="80"/>
+                                                <Grid Grid.Row="2">
+                                                    <Grid.ColumnDefinitions>
+                                                        <ColumnDefinition/>
+                                                        <ColumnDefinition Width="5"/>
+                                                        <ColumnDefinition/>
+                                                    </Grid.ColumnDefinitions>
+                                                    <Button x:Name="LogShield_Add" Content="添加屏蔽词" Grid.Column="0" HorizontalAlignment="Stretch" Click="LogShield_Add_Click"/>
+                                                    <Button x:Name="LogShield_Del" Content="移除屏蔽词" Grid.Column="2" HorizontalAlignment="Stretch" Click="LogShield_Del_Click"/>
+                                                </Grid>
+                                            </Grid>
+                                        </Grid>
                                         <StackPanel Orientation="Horizontal">
                                             <Label Content="自动清屏：" Style="{StaticResource MagicLabel14}"/>
                                             <ToggleButton x:Name="autoClearOutlog" IsChecked="True" Style="{StaticResource ToggleButtonSwitch.Content}" Click="autoClearOutlog_Click"/>
-                                        </StackPanel>
-                                        <StackPanel Orientation="Horizontal">
-                                            <Label Content="屏蔽关键字日志：" Style="{StaticResource MagicLabel14}"/>
-                                            <ToggleButton x:Name="shieldLogBtn" Style="{StaticResource ToggleButtonSwitch.Content}" Click="shieldLogBtn_Click"/>
-                                        </StackPanel>
-                                        <StackPanel Orientation="Horizontal">
-                                            <Label Content="屏蔽堆栈追踪：" Style="{StaticResource MagicLabel14}"/>
-                                            <ToggleButton x:Name="shieldStackOut" IsChecked="True" Style="{StaticResource ToggleButtonSwitch.Content}" Click="shieldStackOut_Click"/>
-                                        </StackPanel>
-                                        <StackPanel Orientation="Horizontal">
-                                            <Label Content="输入编码：" Style="{StaticResource MagicLabel14}"/>
-                                            <Button x:Name="inputCmdEncoding" Content="UTF8" Click="inputCmdEncoding_Click"/>
-                                        </StackPanel>
-                                        <StackPanel Orientation="Horizontal">
-                                            <Label Content="输出编码：" Style="{StaticResource MagicLabel14}"/>
-                                            <Button x:Name="outputCmdEncoding" Content="UTF8" Click="outputCmdEncoding_Click"/>
                                         </StackPanel>
                                     </hc:UniformSpacingPanel>
                                 </Grid>
@@ -598,7 +625,7 @@
                                         <ColumnDefinition Width="auto"/>
                                         <ColumnDefinition Width="*"/>
                                     </Grid.ColumnDefinitions>
-                                    <Label Content="其它功能项：" Grid.Column="0" Margin="0,0,10,0" Padding="10,0,10,0" BorderThickness="0" FontSize="16" VerticalAlignment="Top" HorizontalContentAlignment="Left"/>
+                                    <Label Content="其它功能项：" Grid.Column="0" Style="{StaticResource MagicLabel16}"/>
                                     <WrapPanel Grid.Column="1">
                                         <Button x:Name="onlineMode" Content="关闭正版验证" Click="onlineMode_Click" FontSize="14" Margin="0,0,5,5"/>
                                         <Button x:Name="shareLog" Content="上传服务器控制台日志" FontSize="14" Margin="0,0,5,5" Click="shareLog_Click" MouseDoubleClick="controlServer_MouseDoubleClick"/>

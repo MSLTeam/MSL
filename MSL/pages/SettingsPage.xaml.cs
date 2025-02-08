@@ -65,6 +65,7 @@ namespace MSL.pages
                 {
                     openfrpOnStart.IsChecked = true;
                     AutoOpenFrpcList.Text = jsonObject["autoOpenFrpc"].ToString();
+                    AutoOpenFrpcList.IsEnabled = false;
                 }
                 if (jsonObject["autoGetPlayerInfo"] != null && (bool)jsonObject["autoGetPlayerInfo"] == true)
                 {
@@ -298,6 +299,7 @@ namespace MSL.pages
                 string convertString = Convert.ToString(jobject);
                 File.WriteAllText(@"MSL\config.json", convertString, Encoding.UTF8);
                 Growl.Success("开启成功！");
+                AutoOpenFrpcList.IsEnabled = false;
             }
             else
             {
@@ -307,6 +309,7 @@ namespace MSL.pages
                 string convertString = Convert.ToString(jobject);
                 File.WriteAllText(@"MSL\config.json", convertString, Encoding.UTF8);
                 Growl.Success("关闭成功！");
+                AutoOpenFrpcList.IsEnabled = true;
             }
         }
 
@@ -737,6 +740,11 @@ namespace MSL.pages
 
         private void TransferOut_Click(object sender, RoutedEventArgs e)
         {
+            if (openserversOnStart.IsChecked == true)
+            {
+                MagicShow.ShowMsgDialog(Window.GetWindow(this), "请先关闭开关后再进行调整！", "提示");
+                return;
+            }
             List<object> list = new List<object>();
             foreach (var item in AutoStartServers.SelectedItems)
             {
@@ -753,6 +761,11 @@ namespace MSL.pages
 
         private void TransferIn_Click(object sender, RoutedEventArgs e)
         {
+            if (openserversOnStart.IsChecked == true)
+            {
+                MagicShow.ShowMsgDialog(Window.GetWindow(this), "请先关闭开关后再进行调整！", "提示");
+                return;
+            }
             List<object> list = new List<object>();
             foreach (var item in ServersList.SelectedItems)
             {

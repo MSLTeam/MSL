@@ -870,7 +870,30 @@ namespace MSL.pages
             }
             else
             {
-                servermemory = "-Xms" + txb4.Text + "M -Xmx" + txb5.Text + "M";
+                if (string.IsNullOrEmpty(txb4.Text) || string.IsNullOrEmpty(txb5.Text))
+                {
+                    MagicShow.ShowMsgDialog(Window.GetWindow(this), "请填写开服内存信息！", "错误");
+                    return;
+                }
+                if (txb4.Text.All(char.IsDigit) == true && txb5.Text.All(char.IsDigit) == true)
+                {
+                    string xmsUnit = "M";
+                    string xmxUnit = "M";
+                    if (XmsUnit.SelectedIndex == 1)
+                    {
+                        xmsUnit = "G";
+                    }
+                    if (XmxUnit.SelectedIndex == 1)
+                    {
+                        xmxUnit = "G";
+                    }
+                    servermemory = "-Xms" + txb4.Text + xmsUnit + " -Xmx" + txb5.Text + xmxUnit;
+                }
+                else
+                {
+                    MagicShow.ShowMsgDialog(Window.GetWindow(this), "开服内存参数不正确（只能为纯数字）！", "错误");
+                    return;
+                }
             }
             serverargs += txb7.Text;
             if (!Directory.Exists(serverbase))

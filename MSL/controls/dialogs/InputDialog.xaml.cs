@@ -1,4 +1,5 @@
-﻿using System;
+﻿using MSL.utils;
+using System;
 using System.Windows;
 using System.Windows.Controls;
 using System.Windows.Media.Animation;
@@ -12,7 +13,8 @@ namespace MSL.controls
     {
         public event DeleControl CloseDialog;
         public string _dialogReturn = null;
-        public InputDialog(string dialogText, string textboxText, bool passwordMode = false)
+        private bool AcceptEmpty;
+        public InputDialog(string dialogText, string textboxText, bool passwordMode = false,bool acceptEmpty=false)
         {
             InitializeComponent();
             Margin = new Thickness(50);
@@ -30,10 +32,12 @@ namespace MSL.controls
                 textBox.Visibility = Visibility.Visible;
                 textBox.Focus();
             }
+            AcceptEmpty= acceptEmpty;
         }
 
         private void primaryBtn_Click(object sender, RoutedEventArgs e)
         {
+            
             if (passBox.Visibility == Visibility.Visible)
             {
                 _dialogReturn = passBox.Password;
@@ -43,8 +47,15 @@ namespace MSL.controls
                 _dialogReturn = textBox.Text;
             }
             //_dialogReturn = true;
-            //Close();
-            CloseDialog();
+            if (!AcceptEmpty)
+            {
+                if (string.IsNullOrEmpty(_dialogReturn))
+                {
+                    MagicShow.ShowMsgDialog(Window.GetWindow(this),"请输入内容！","提示");
+                    return;
+                }
+            }
+            Close();
         }
 
         private void closeBtn_Click(object sender, RoutedEventArgs e)
@@ -59,6 +70,14 @@ namespace MSL.controls
             {
                 //_dialogReturn = true;
                 _dialogReturn = textBox.Text;
+                if (!AcceptEmpty)
+                {
+                    if (string.IsNullOrEmpty(_dialogReturn))
+                    {
+                        MagicShow.ShowMsgDialog(Window.GetWindow(this), "请输入内容！", "提示");
+                        return;
+                    }
+                }
                 Close();
             }
         }
@@ -69,6 +88,14 @@ namespace MSL.controls
             {
                 //_dialogReturn = true;
                 _dialogReturn = passBox.Password;
+                if (!AcceptEmpty)
+                {
+                    if (string.IsNullOrEmpty(_dialogReturn))
+                    {
+                        MagicShow.ShowMsgDialog(Window.GetWindow(this), "请输入内容！", "提示");
+                        return;
+                    }
+                }
                 Close();
             }
         }

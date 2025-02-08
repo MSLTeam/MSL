@@ -1,10 +1,8 @@
 ﻿using HandyControl.Controls;
 using HandyControl.Data;
 using ICSharpCode.SharpZipLib.Zip;
-using MSL.controls;
 using MSL.langs;
 using MSL.utils;
-using Newtonsoft.Json;
 using Newtonsoft.Json.Linq;
 using System;
 using System.Diagnostics;
@@ -508,17 +506,19 @@ namespace MSL.pages
                 msg = Regex.Replace(msg, @"\[([a-zA-Z0-9]+)-(\d+\..+?)\]", "[$2]");
             }
             frpcOutlog.Text = frpcOutlog.Text + msg + "\n";
-            if (msg.IndexOf("login") + 1 != 0)
+            if (msg.Contains("login"))
             {
-                if (msg.IndexOf("failed") + 1 != 0)
+                if (msg.Contains("failed"))
                 {
                     frpcOutlog.Text += "内网映射桥接失败！\n";
                     Growl.Error("内网映射桥接失败！");
+                    /*
                     if (msg.Contains("付费资格已过期"))
                     {
                         Task.Run(PayService);
                     }
-                    else if (msg.IndexOf("i/o timeout") + 1 != 0)
+                    else */
+                    if (msg.Contains("i/o timeout"))
                     {
                         frpcOutlog.Text += "连接超时，该节点可能下线，请重新配置！\n";
                     }
@@ -527,37 +527,37 @@ namespace MSL.pages
                         Task.Run(() => Functions.StopProcess(FrpcProcess));
                     }
                 }
-                if (msg.IndexOf("success") + 1 != 0)
+                if (msg.Contains("success"))
                 {
                     frpcOutlog.Text += "登录服务器成功！\n";
                 }
             }
-            if (msg.IndexOf("start") + 1 != 0)
+            if (msg.Contains("start"))
             {
-                if (msg.IndexOf("success") + 1 != 0)
+                if (msg.Contains("success"))
                 {
                     frpcOutlog.Text += "内网映射桥接成功！您可复制IP进入游戏了！\n";
                     Growl.Success("内网映射桥接成功！");
                 }
-                if (msg.IndexOf("error") + 1 != 0)
+                if (msg.Contains("error"))
                 {
                     frpcOutlog.Text = frpcOutlog.Text + "内网映射桥接失败！\n";
                     Growl.Error("内网映射桥接失败！");
-                    if (msg.IndexOf("port already used") + 1 != 0)
+                    if (msg.Contains("port already used"))
                     {
-                        frpcOutlog.Text += "本地端口被占用，请不要频繁开关内网映射并等待一分钟再试。\n若一分钟后仍然占用，请尝试手动结束frpc进程或重启电脑再试。\n";
+                        frpcOutlog.Text += "本地端口被占用，请检查是否有程序占用或后台是否存在frpc进程，您可尝试手动结束frpc进程或重启电脑再试。\n";
                     }
-                    else if (msg.IndexOf("port not allowed") + 1 != 0)
+                    else if (msg.Contains("port not allowed"))
                     {
                         frpcOutlog.Text += "远程端口被占用，请尝试重新配置一下再试！\n";
                     }
-                    else if (msg.IndexOf("proxy name") + 1 != 0 && msg.IndexOf("already in use") + 1 != 0)
+                    else if (msg.Contains("proxy name") && msg.Contains("already in use"))
                     {
                         frpcOutlog.Text += "隧道名称已被占用！请打开任务管理器检查后台是否存在frpc进程并手动结束！\n若仍然占用，请尝试重启电脑再试。\n";
                     }
-                    else if (msg.IndexOf("proxy") + 1 != 0 && msg.IndexOf("already exists") + 1 != 0)
+                    else if (msg.Contains("proxy")&& msg.Contains("already exists"))
                     {
-                        frpcOutlog.Text += "隧道已被占用！请不要频繁开关内网映射并等待一分钟再试。\n若一分钟后仍然占用，请尝试手动结束frpc进程或重启电脑再试。\n";
+                        frpcOutlog.Text += "隧道已被占用！请打开任务管理器检查后台是否存在frpc进程！您可尝试手动结束frpc进程或重启电脑再试。\n";
                     }
                     if (!FrpcProcess.HasExited)
                     {
@@ -569,10 +569,10 @@ namespace MSL.pages
             {
                 frpcOutlog.Text += "无法连接到本地服务器，请检查服务器是否开启，或内网映射本地端口和服务器本地端口是否相匹配！\n";
             }
-            if (msg.Contains(" 发现新版本"))
+            if (msg.Contains("发现新版本"))
             {
                 JObject jobject = JObject.Parse(File.ReadAllText(@"MSL\frp\config.json", Encoding.UTF8));
-                if (jobject[frpID.ToString()]["frpcServer"].ToString() == "1")
+                if ((int)jobject[frpID.ToString()]["frpcServer"] == 1) // OFfrpc更新
                 {
                     Growl.Ask(new GrowlInfo
                     {
@@ -603,6 +603,7 @@ namespace MSL.pages
             frpcOutlog.ScrollToEnd();
         }
 
+        /*
         private async void PayService()
         {
             bool _ret = false;
@@ -716,6 +717,7 @@ namespace MSL.pages
                 });
             }
         }
+        */
 
         private async void startfrpc_Click(object sender, RoutedEventArgs e)
         {

@@ -211,8 +211,14 @@
                                     <TextBox x:Name="txb5" HorizontalAlignment="Left" Margin="403,105,0,0" TextWrapping="Wrap" VerticalAlignment="Top" Width="120" IsEnabled="False" FontFamily="Microsoft YaHei UI"/>
                                     <Label Content="最小" HorizontalAlignment="Left" Margin="120,105,0,0" VerticalAlignment="Top" FontSize="14" Background="{x:Null}" BorderBrush="{x:Null}"/>
                                     <Label Content="最大" HorizontalAlignment="Left" Margin="353,105,0,0" VerticalAlignment="Top" FontSize="14" Background="{x:Null}" BorderBrush="{x:Null}"/>
-                                    <Label Content="MB" HorizontalAlignment="Left" Margin="290,105,0,0" VerticalAlignment="Top" FontSize="14" BorderBrush="{x:Null}" Background="{x:Null}"/>
-                                    <Label Content="MB" HorizontalAlignment="Left" Margin="523,105,0,0" VerticalAlignment="Top" FontSize="16" BorderBrush="{x:Null}" Background="{x:Null}"/>
+                                    <ComboBox x:Name="XmsUnit" HorizontalAlignment="Left" SelectedIndex="0" Margin="290,105,0,0" VerticalAlignment="Top" FontSize="14" >
+                                        <ComboBoxItem Content="M"/>
+                                        <ComboBoxItem Content="G"/>
+                                    </ComboBox>
+                                    <ComboBox x:Name="XmxUnit" HorizontalAlignment="Left" SelectedIndex="0" Margin="523,105,0,0" VerticalAlignment="Top" FontSize="14">
+                                        <ComboBoxItem Content="M"/>
+                                        <ComboBoxItem Content="G"/>
+                                    </ComboBox>
                                     <Border Margin="15,138,0,0" Grid.Row="1" Style="{StaticResource BorderTipPrimary}">
                                         <TextBlock Text="开服内存  手动设置提示：内存分配建议为电脑运行内存的80%    单位换算：1GB=1024MB" HorizontalAlignment="Left"  VerticalAlignment="Top" FontSize="14" />
                                     </Border>
@@ -256,8 +262,8 @@
                             <ColumnDefinition Width="Auto"/>
                         </Grid.ColumnDefinitions>
                         <StackPanel Grid.Column="0" VerticalAlignment="Center">
-                            <RadioButton x:Name="TraditionModeBtn" Content="传统模式（适合小白）" Foreground="{DynamicResource DarkPrimaryBrush}" FontSize="18" VerticalAlignment="Center" HorizontalAlignment="Left" Margin="10" IsChecked="True" Checked="TraditionModeBtn_Checked"/>
-                            <TextBlock Text="传统模式：UI美观，操作简单，稳定性强。但没有指令补全和回溯功能，没有一些终端特性。PS：该模式有浅色和暗色两种主题。" Foreground="{DynamicResource PrimaryTextBrush}" FontSize="16" VerticalAlignment="Center" TextWrapping="Wrap" Margin="10"/>
+                            <RadioButton x:Name="TraditionModeBtn" Content="传统模式（适合小白）" Foreground="{DynamicResource DarkPrimaryBrush}" FontSize="16" VerticalAlignment="Center" HorizontalAlignment="Left" Margin="10" IsChecked="True" Checked="TraditionModeBtn_Checked"/>
+                            <TextBlock Text="传统（经典）模式：UI美观，操作简单，稳定性强。拥有MSL专为其定制的定时任务、关键字屏蔽、堆栈屏蔽、输入输出编码设置等功能，但没有指令补全和回溯功能，没有一些终端特性。PS：该模式有浅色和暗色两种主题。" Foreground="{DynamicResource PrimaryTextBrush}" FontSize="14" VerticalAlignment="Center" TextWrapping="Wrap" Margin="10"/>
                         </StackPanel>
                         <Image Grid.Column="1" Source="/images/TraditionTerm.png" Margin="10" HorizontalAlignment="Right" MaxWidth="350"/>
                     </Grid>
@@ -267,8 +273,8 @@
                             <ColumnDefinition Width="Auto"/>
                         </Grid.ColumnDefinitions>
                         <StackPanel Grid.Column="0" VerticalAlignment="Center">
-                            <RadioButton x:Name="ConptyModeBtn" Content="伪终端模式（适合老手）" Foreground="{DynamicResource DarkPrimaryBrush}" FontSize="18" VerticalAlignment="Center" HorizontalAlignment="Left" Margin="10" Checked="ConptyModeBtn_Checked"/>
-                            <TextBlock Text="伪终端（ConPty）模式：终端式UI，有Tab键指令补全和历史指令回溯功能，但稳定性和兼容性不强，可能会出现无法输入指令的问题。" Foreground="{DynamicResource PrimaryTextBrush}" FontSize="16" VerticalAlignment="Center" TextWrapping="Wrap" Margin="10"/>
+                            <RadioButton x:Name="ConptyModeBtn" Content="伪终端模式（适合老手）" Foreground="{DynamicResource DarkPrimaryBrush}" FontSize="16" VerticalAlignment="Center" HorizontalAlignment="Left" Margin="10" Checked="ConptyModeBtn_Checked"/>
+                            <TextBlock Text="伪终端（ConPty）模式：终端式UI，有Tab键指令补全和历史指令回溯功能，但稳定性和兼容性不强，可能会出现无法输入指令或没有输出的问题，且除自动清屏和定时任务功能外，没有传统终端中MSL专门定制的一些功能。" Foreground="{DynamicResource PrimaryTextBrush}" FontSize="14" VerticalAlignment="Center" TextWrapping="Wrap" Margin="10"/>
                         </StackPanel>
                         <Image Grid.Column="1" Source="/images/ConPtyTerm.png" Margin="10" HorizontalAlignment="Right" MaxWidth="350"/>
                     </Grid>
