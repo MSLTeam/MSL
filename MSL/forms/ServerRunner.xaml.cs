@@ -3808,7 +3808,7 @@ namespace MSL
         private async void LogShield_Add_Click(object sender, RoutedEventArgs e)
         {
             string text = await MagicShow.ShowInput(this, "输入你想屏蔽的关键字，\n开服器将不会输出含有此关键字的日志");
-            if (!ShieldLogList.Items.Contains(text))
+            if ((!string.IsNullOrEmpty(text)) && (!ShieldLogList.Items.Contains(text)))
             {
                 ShieldLogList.Items.Add(text);
             }

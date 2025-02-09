@@ -145,7 +145,7 @@
     <value>Warning</value>
   </data>
   <data name="Page_About_AboutMSL" xml:space="preserve">
-    <value>About Software</value>
+    <value>About Software({0})</value>
   </data>
   <data name="Page_About_MainContent" xml:space="preserve">
     <value>Minecraft Server Launcher (MSL) Copyright © 2021-2025 By MSLTeam
@@ -251,7 +251,7 @@ Do you want to create a new server?</value>
     <value>Checking the availability of Frp service...</value>
   </data>
   <data name="Page_FrpcPage_Title" xml:space="preserve">
-    <value>Frpc List (Double-click to explore info)</value>
+    <value>Frpc - Tunnel List (Double-click to explore info)</value>
   </data>
   <data name="Page_Home_CreateServer" xml:space="preserve">
     <value>Create A New Server</value>

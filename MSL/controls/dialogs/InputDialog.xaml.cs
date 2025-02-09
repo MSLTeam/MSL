@@ -1,7 +1,8 @@
-﻿using MSL.utils;
+﻿using HandyControl.Controls;
 using System;
 using System.Windows;
 using System.Windows.Controls;
+using System.Windows.Input;
 using System.Windows.Media.Animation;
 
 namespace MSL.controls
@@ -14,90 +15,79 @@ namespace MSL.controls
         public event DeleControl CloseDialog;
         public string _dialogReturn = null;
         private bool AcceptEmpty;
-        public InputDialog(string dialogText, string textboxText, bool passwordMode = false,bool acceptEmpty=false)
+        public InputDialog(string dialogText, string textboxText, bool passwordMode = false, bool acceptEmpty = false)
         {
             InitializeComponent();
+
             Margin = new Thickness(50);
             bodyText.Text = dialogText;
-            textBox.Text = textboxText;
+            TextBox.Text = textboxText;
             if (passwordMode)
             {
-                passBox.Visibility = Visibility.Visible;
-                textBox.Visibility = Visibility.Hidden;
-                passBox.Focus();
+                PassBox.Visibility = Visibility.Visible;
+                TextBox.Visibility = Visibility.Hidden;
             }
             else
             {
-                passBox.Visibility = Visibility.Hidden;
-                textBox.Visibility = Visibility.Visible;
-                textBox.Focus();
+                PassBox.Visibility = Visibility.Hidden;
+                TextBox.Visibility = Visibility.Visible;
             }
-            AcceptEmpty= acceptEmpty;
+            AcceptEmpty = acceptEmpty;
         }
 
-        private void primaryBtn_Click(object sender, RoutedEventArgs e)
+        private void UserControl_Loaded(object sender, RoutedEventArgs e)
         {
-            
-            if (passBox.Visibility == Visibility.Visible)
+            if (PassBox.Visibility == Visibility.Visible)
             {
-                _dialogReturn = passBox.Password;
+                PassBox.Focus();
             }
             else
             {
-                _dialogReturn = textBox.Text;
+                TextBox.Focus();
             }
-            //_dialogReturn = true;
-            if (!AcceptEmpty)
+        }
+
+        private void PrimaryBtn_Click(object sender, RoutedEventArgs e)
+        {
+            if (PassBox.Visibility == Visibility.Visible)
             {
-                if (string.IsNullOrEmpty(_dialogReturn))
-                {
-                    MagicShow.ShowMsgDialog(Window.GetWindow(this),"请输入内容！","提示");
-                    return;
-                }
+                _dialogReturn = PassBox.Password;
+            }
+            else
+            {
+                _dialogReturn = TextBox.Text;
+            }
+            if ((!AcceptEmpty) && string.IsNullOrEmpty(_dialogReturn))
+            {
+                flowMessage.ShowMessage("请输入内容！", 3);
+                //await MagicShow.ShowMsgDialogAsync(Window.GetWindow(this), "请输入内容！", "提示");
+                return;
             }
             Close();
         }
 
-        private void closeBtn_Click(object sender, RoutedEventArgs e)
+        private void TextBox_PreviewKeyDown(object sender, KeyEventArgs e)
         {
-            //_dialogReturn = false;
+            if (e.Key == Key.Enter)
+            {
+                PrimaryBtn_Click(null, null);
+                e.Handled = true;
+            }
+        }
+
+        private void PassBox_PreviewKeyDown(object sender, KeyEventArgs e)
+        {
+            if (e.Key == Key.Enter)
+            {
+                PrimaryBtn_Click(null, null);
+                e.Handled = true;
+            }
+        }
+
+        private void CloseBtn_Click(object sender, RoutedEventArgs e)
+        {
+            _dialogReturn = null;
             Close();
-        }
-
-        private void textBox_KeyUp(object sender, System.Windows.Input.KeyEventArgs e)
-        {
-            if (e.Key == System.Windows.Input.Key.Enter)
-            {
-                //_dialogReturn = true;
-                _dialogReturn = textBox.Text;
-                if (!AcceptEmpty)
-                {
-                    if (string.IsNullOrEmpty(_dialogReturn))
-                    {
-                        MagicShow.ShowMsgDialog(Window.GetWindow(this), "请输入内容！", "提示");
-                        return;
-                    }
-                }
-                Close();
-            }
-        }
-
-        private void passBox_KeyUp(object sender, System.Windows.Input.KeyEventArgs e)
-        {
-            if (e.Key == System.Windows.Input.Key.Enter)
-            {
-                //_dialogReturn = true;
-                _dialogReturn = passBox.Password;
-                if (!AcceptEmpty)
-                {
-                    if (string.IsNullOrEmpty(_dialogReturn))
-                    {
-                        MagicShow.ShowMsgDialog(Window.GetWindow(this), "请输入内容！", "提示");
-                        return;
-                    }
-                }
-                Close();
-            }
         }
 
         private void Close()

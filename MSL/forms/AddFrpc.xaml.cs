@@ -5,13 +5,13 @@ using System.Windows.Controls;
 namespace MSL
 {
     /// <summary>
-    /// SetFrpc.xaml 的交互逻辑
+    /// AddFrpc.xaml 的交互逻辑
     /// </summary>
-    public partial class SetFrpc : HandyControl.Controls.Window
+    public partial class AddFrpc : HandyControl.Controls.Window
     {
         //private readonly List<Page> Pages = new List<Page> { new MSLFrp(), new MSLFrpNew(), new OpenFrp(), new ChmlFrp(), new SakuraFrp(), new Custom() };
-        private readonly List<Page> Pages = new List<Page> { new MSLFrpNew(), new OpenFrp(), new ChmlFrp(), new SakuraFrp(), new Custom() };
-        public SetFrpc()
+        private readonly List<Page> Pages = new List<Page> { new MSLFrp(), new OpenFrp(), new ChmlFrp(), new SakuraFrp(), new Custom() };
+        public AddFrpc()
         {
             InitializeComponent();
         }

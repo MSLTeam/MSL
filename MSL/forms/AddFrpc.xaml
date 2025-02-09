@@ -1,4 +1,4 @@
-﻿<hc:Window x:Class="MSL.SetFrpc"
+﻿<hc:Window x:Class="MSL.AddFrpc"
         xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
         xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
         xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
@@ -8,7 +8,7 @@
         xmlns:local="clr-namespace:MSL"
         mc:Ignorable="d"
         NonClientAreaBackground="{DynamicResource BackgroundBrush}" Background="{DynamicResource BackgroundBrush}"
-        Title="配置内网映射" Closing="Window_Closing"
+        Title="添加隧道" Closing="Window_Closing"
         MinHeight="450" MinWidth="750" Height="450" Width="750"
         ResizeMode="CanResize" WindowStartupLocation="CenterOwner">
     <Grid x:Name="MainGrid">

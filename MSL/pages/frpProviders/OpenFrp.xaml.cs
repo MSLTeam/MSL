@@ -8,6 +8,7 @@ using System.Diagnostics;
 using System.IO;
 using System.Net;
 using System.Net.Http;
+using System.Net.Http.Headers;
 using System.Text;
 using System.Threading.Tasks;
 using System.Windows;
@@ -39,38 +40,36 @@ namespace MSL.pages.frpProviders
             {
                 isInit = true;
                 //显示登录页面
+                LoginGrid.Visibility = Visibility.Visible;
+                MainGrid.Visibility = Visibility.Collapsed;
+                OpenFrpApi.authId = Config.Read("OpenFrpToken")?.ToString() ?? "";
                 if (OpenFrpApi.authId != "")
                 {
-                    await GetFrpsInfo();
+                    await TokenLogin();
                     return;
                 }
-                LoginGrid.Visibility = Visibility.Visible;
-                MainGrid.Visibility = Visibility.Hidden;
             }
         }
 
-        private async Task GetFrpsInfo()
+        private async void userTokenLogin_Click(object sender, RoutedEventArgs e)
+        {
+            await TokenLogin();
+        }
+
+        private async Task TokenLogin()
         {
             OpenFrpApi control = new OpenFrpApi();
-            if (OpenFrpApi.userAccount == "" || OpenFrpApi.userPass == "")
+            if (string.IsNullOrEmpty(OpenFrpApi.authId))
             {
-                OpenFrpApi.userAccount = await MagicShow.ShowInput(Window.GetWindow(this), "请输入OpenFrp的账户名/邮箱");
-
-                if (OpenFrpApi.userAccount != null)
-                {
-                    OpenFrpApi.userPass = await MagicShow.ShowInput(Window.GetWindow(this), "请输入" + OpenFrpApi.userAccount + "的密码", "", true);
-
-                    if (OpenFrpApi.userPass == null)
-                    {
-                        return;
-                    }
-                }
-                else
+                string authId = await MagicShow.ShowInput(Window.GetWindow(this), "请输入Authorization");
+                if (authId == null)
                 {
                     return;
                 }
+                OpenFrpApi.authId = authId;
             }
-            LoginGrid.Visibility = Visibility.Hidden;
+            
+            LoginGrid.Visibility = Visibility.Collapsed;
             MainGrid.Visibility = Visibility.Visible;
             signBtn.IsEnabled = false;
             logoutBtn.IsEnabled = false;
@@ -79,18 +78,47 @@ namespace MSL.pages.frpProviders
             toggleProxies.IsEnabled = false;
             toggleAddProxiesGroup.IsEnabled = false;
             doneBtn.IsEnabled = false;
-            try
+            MagicDialog MagicDialog = new MagicDialog();
+            MagicDialog.ShowTextDialog(Window.GetWindow(this), "登录中……");
+            var data = await control.GetUserInfo();
+            MagicDialog.CloseTextDialog();
+            if (data.HttpResponseCode == HttpStatusCode.OK)
             {
-                LoadingCircle loadingCircle = new LoadingCircle();
-                loadingCircle.VerticalAlignment = VerticalAlignment.Top;
-                loadingCircle.HorizontalAlignment = HorizontalAlignment.Left;
-                loadingCircle.Margin = new Thickness(130, 150, 0, 0);
-                MainGrid.Children.Add(loadingCircle);
-                MainGrid.RegisterName("loadingBar", loadingCircle);
+                GetFrpsInfo(control, JObject.Parse(data.HttpResponseContent.ToString()));
             }
-            catch
-            { }
-            string usr_info = await control.Login(OpenFrpApi.userAccount, OpenFrpApi.userPass);
+            else
+            {
+                MagicShow.ShowMsgDialog(Window.GetWindow(this), "登录失败！请检查您的Authorization是否正确！\n" + data.HttpResponseCode, "错误！");
+                OpenFrpApi.authId = string.Empty;
+                LoginGrid.Visibility = Visibility.Visible;
+                MainGrid.Visibility = Visibility.Hidden;
+                return;
+            }
+        }
+
+        private async void userLogin_Click(object sender, RoutedEventArgs e)
+        {
+            string userPass;
+            OpenFrpApi control = new OpenFrpApi();
+            string userAccount = await MagicShow.ShowInput(Window.GetWindow(this), "请输入OpenFrp的账户名/邮箱");
+            if (userAccount != null)
+            {
+                userPass = await MagicShow.ShowInput(Window.GetWindow(this), "请输入" + userAccount + "的密码", "", true);
+                if (userPass == null)
+                {
+                    return;
+                }
+            }
+            else
+            {
+                return;
+            }
+            LoginGrid.Visibility = Visibility.Collapsed;
+            MainGrid.Visibility = Visibility.Visible;
+            MagicDialog MagicDialog = new MagicDialog();
+            MagicDialog.ShowTextDialog(Window.GetWindow(this), "登录中……");
+            string usr_info = await control.Login(userAccount, userPass);
+            MagicDialog.CloseTextDialog();
             JObject userdata = null;
             try
             {
@@ -100,19 +128,23 @@ namespace MSL.pages.frpProviders
             {
                 MagicShow.ShowMsgDialog(Window.GetWindow(this), "登录失败！请检查您的用户名或密码是否正确！\n" + usr_info, "错误！");
                 OpenFrpApi.authId = string.Empty;
-                OpenFrpApi.userAccount = string.Empty;
-                OpenFrpApi.userPass = string.Empty;
                 LoginGrid.Visibility = Visibility.Visible;
                 MainGrid.Visibility = Visibility.Hidden;
-                try
-                {
-                    LoadingCircle loadingCircle = MainGrid.FindName("loadingBar") as LoadingCircle;
-                    MainGrid.Children.Remove(loadingCircle);
-                    MainGrid.UnregisterName("loadingBar");
-                }
-                catch
-                { }
                 return;
+            }
+            GetFrpsInfo(control, userdata);
+        }
+
+        private void GetFrpsInfo(OpenFrpApi control,JObject userdata)
+        {
+            if ((bool)userdata["flag"] == false)
+            {
+                MagicShow.ShowMsgDialog(Window.GetWindow(this), "登录失败！请检查您输入的信息是否正确！\n" + userdata["msg"], "错误！");
+                return;
+            }
+            if (SaveToken.IsChecked == true)
+            {
+                Config.Write("OpenFrpToken", OpenFrpApi.authId);
             }
             string welcome = $"用户名：{userdata["data"]["username"]}[{userdata["data"]["friendlyGroup"]}]\n";
             string userid = $"ID：{userdata["data"]["id"]}\n";
@@ -221,11 +253,6 @@ namespace MSL.pages.frpProviders
         private void userRegister_Click(object sender, RoutedEventArgs e)
         {
             Process.Start("https://www.openfrp.net/");
-        }
-
-        private async void userLogin_Click(object sender, RoutedEventArgs e)
-        {
-            await GetFrpsInfo();
         }
 
         private async void addProxieBtn_Click(object sender, RoutedEventArgs e)
@@ -451,8 +478,7 @@ namespace MSL.pages.frpProviders
         private void logoutBtn_Click(object sender, RoutedEventArgs e)
         {
             OpenFrpApi.authId = string.Empty;
-            OpenFrpApi.userAccount = string.Empty;
-            OpenFrpApi.userPass = string.Empty;
+            Config.Write("OpenFrpToken", "");
             LoginGrid.Visibility = Visibility.Visible;
             MainGrid.Visibility = Visibility.Hidden;
             userInfo.Content = string.Empty;
@@ -464,15 +490,13 @@ namespace MSL.pages.frpProviders
     #region OpenFrp Api
     internal class OpenFrpApi
     {
-        public static string userAccount = "";
-        public static string userPass = "";
         public static string authId = "";
 
         public Dictionary<string, string> GetUserNodes()
         {
             WebHeaderCollection header = new WebHeaderCollection
             {
-                authId
+                "Authorization: " + authId
             };
             var responseMessage = HttpService.Post("getUserProxies", 0, string.Empty, "https://of-dev-api.bfsea.xyz/frp/api", header);
             try
@@ -506,7 +530,7 @@ namespace MSL.pages.frpProviders
         {
             WebHeaderCollection header = new WebHeaderCollection
             {
-                authId
+                "Authorization: " + authId
             };
             var responseMessage = HttpService.Post("getNodeList", 0, string.Empty, "https://of-dev-api.bfsea.xyz/frp/api", header);
 
@@ -587,13 +611,13 @@ namespace MSL.pages.frpProviders
         }
         */
 
-        public string GetUserInfo()
+        public async Task<utils.HttpResponse> GetUserInfo()
         {
-            WebHeaderCollection header = new WebHeaderCollection
+            var headersAction = new Action<HttpRequestHeaders>(headers =>
             {
-                authId
-            };
-            string responseMessage = HttpService.Post("getUserInfo", 0, string.Empty, "https://of-dev-api.bfsea.xyz/frp/api", header);
+                headers.Add("Authorization", authId);
+            });
+            var responseMessage = await HttpService.PostAsync("https://of-dev-api.bfsea.xyz/frp/api/getUserInfo", 0, string.Empty, headersAction);
             return responseMessage;
         }
 
@@ -647,9 +671,21 @@ namespace MSL.pages.frpProviders
                     if (authResponse.IsSuccessStatusCode)
                     {
                         authId = _loginResponse.Headers.ToString().Substring(_loginResponse.Headers.ToString().IndexOf("Authorization:"), _loginResponse.Headers.ToString().Substring(_loginResponse.Headers.ToString().IndexOf("Authorization:")).IndexOf("\n") - 1);
+                        if(authId.Contains("Authorization: "))
+                        {
+                            authId = authId.Replace("Authorization: ", "");
+                        }
                         //MessageBox.Show(authId);
-                        string ret = GetUserInfo();
-                        return ret;
+                        var ret = await GetUserInfo();
+                        if(ret.HttpResponseCode ==HttpStatusCode.OK)
+                        {
+                            return ret.HttpResponseContent.ToString();
+                        }
+                        else
+                        {
+                            return $"Login request failed: {ret.HttpResponseCode}";
+                        }
+                        
                     }
                     else
                     {
@@ -676,7 +712,7 @@ namespace MSL.pages.frpProviders
             HttpWebRequest request = (HttpWebRequest)WebRequest.Create("https://of-dev-api.bfsea.xyz/frp/api/newProxy");
             request.Method = "POST";
             request.ContentType = "application/json";
-            request.Headers.Add(authId);
+            request.Headers.Add("Authorization: " + authId);
             string json = JsonConvert.SerializeObject(new JObject()
             {
                 ["node_id"] = nodeid,
@@ -732,7 +768,7 @@ namespace MSL.pages.frpProviders
             HttpWebRequest request = (HttpWebRequest)WebRequest.Create("https://of-dev-api.bfsea.xyz/frp/api/removeProxy");
             request.Method = "POST";
             request.ContentType = "application/json";
-            request.Headers.Add(authId);
+            request.Headers.Add("Authorization: " + authId);
             JObject json = new JObject()
             {
                 ["proxy_id"] = id,

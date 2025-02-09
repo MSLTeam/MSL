@@ -106,6 +106,9 @@
       <Generator>MSBuild:Compile</Generator>
       <SubType>Designer</SubType>
     </ApplicationDefinition>
+    <Compile Include="controls\FlowMessage.xaml.cs">
+      <DependentUpon>FlowMessage.xaml</DependentUpon>
+    </Compile>
     <Compile Include="controls\MagicControls.cs" />
     <Compile Include="controls\StringConcatConverter.cs" />
     <Compile Include="forms\ConptyWindow.xaml.cs">
@@ -115,8 +118,8 @@
     <Compile Include="pages\FrpcList.xaml.cs">
       <DependentUpon>FrpcList.xaml</DependentUpon>
     </Compile>
-    <Compile Include="pages\frpProviders\MSLFrpNew.xaml.cs">
-      <DependentUpon>MSLFrpNew.xaml</DependentUpon>
+    <Compile Include="pages\frpProviders\MSLFrp.xaml.cs">
+      <DependentUpon>MSLFrp.xaml</DependentUpon>
     </Compile>
     <Compile Include="pages\frpProviders\SakuraFrp.xaml.cs">
       <DependentUpon>SakuraFrp.xaml</DependentUpon>
@@ -188,8 +191,8 @@
     <Compile Include="forms\ServerRunner.xaml.cs">
       <DependentUpon>ServerRunner.xaml</DependentUpon>
     </Compile>
-    <Compile Include="forms\SetFrpc.xaml.cs">
-      <DependentUpon>SetFrpc.xaml</DependentUpon>
+    <Compile Include="forms\AddFrpc.xaml.cs">
+      <DependentUpon>AddFrpc.xaml</DependentUpon>
     </Compile>
     <Compile Include="forms\SetServerconfig.xaml.cs">
       <DependentUpon>SetServerconfig.xaml</DependentUpon>
@@ -211,6 +214,10 @@
       <Generator>MSBuild:Compile</Generator>
     </Page>
     <Page Include="controls\dialogs\MessageDialog.xaml">
+      <SubType>Designer</SubType>
+      <Generator>MSBuild:Compile</Generator>
+    </Page>
+    <Page Include="controls\FlowMessage.xaml">
       <SubType>Designer</SubType>
       <Generator>MSBuild:Compile</Generator>
     </Page>
@@ -285,7 +292,7 @@
       <SubType>Designer</SubType>
       <Generator>MSBuild:Compile</Generator>
     </Page>
-    <Page Include="pages\frpProviders\MSLFrpNew.xaml">
+    <Page Include="pages\frpProviders\MSLFrp.xaml">
       <SubType>Designer</SubType>
       <Generator>MSBuild:Compile</Generator>
     </Page>
@@ -321,7 +328,7 @@
       <SubType>Designer</SubType>
       <Generator>MSBuild:Compile</Generator>
     </Page>
-    <Page Include="forms\SetFrpc.xaml">
+    <Page Include="forms\AddFrpc.xaml">
       <SubType>Designer</SubType>
       <Generator>MSBuild:Compile</Generator>
     </Page>

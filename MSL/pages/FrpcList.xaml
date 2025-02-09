@@ -26,8 +26,8 @@
                 </ListBox>
             </Border>
             <StackPanel Orientation="Horizontal" HorizontalAlignment="Right" VerticalAlignment="Bottom">
-                <Button x:Name="AddFrpc" Style="{StaticResource ButtonPrimary}" Content="添加" Click="AddFrpc_Click"/>
-                <Button x:Name="DelFrpc" Style="{StaticResource ButtonDanger}" Margin="10" Content="删除" Click="DelFrpc_Click"/>
+                <Button x:Name="AddFrpc" hc:IconElement.Geometry="{StaticResource AddGeometry}" Style="{StaticResource ButtonPrimary}" Content="添加隧道" Click="AddFrpc_Click"/>
+                <Button x:Name="DelFrpc" hc:IconElement.Geometry="{StaticResource DeleteGeometry}" Style="{StaticResource ButtonDanger}" Margin="10" Content="删除选中" Click="DelFrpc_Click"/>
             </StackPanel>
         </Grid>
     </controls:MagicCard>

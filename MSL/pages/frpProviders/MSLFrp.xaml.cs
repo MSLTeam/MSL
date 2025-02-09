@@ -1,19 +1,14 @@
 ﻿using MSL.utils;
-using Newtonsoft.Json;
 using Newtonsoft.Json.Linq;
 using System;
 using System.Collections.Generic;
+using System.Collections.ObjectModel;
 using System.Diagnostics;
-using System.IO;
-using System.Linq;
-using System.Net.NetworkInformation;
-using System.Text;
-using System.Text.RegularExpressions;
+using System.Net;
+using System.Net.Http.Headers;
 using System.Threading.Tasks;
 using System.Windows;
 using System.Windows.Controls;
-using Page = System.Windows.Controls.Page;
-using Window = System.Windows.Window;
 
 namespace MSL.pages.frpProviders
 {
@@ -22,580 +17,491 @@ namespace MSL.pages.frpProviders
     /// </summary>
     public partial class MSLFrp : Page
     {
-        private readonly List<string> list1 = new List<string>();
-        private readonly List<string> list2 = new List<string>();
-        private readonly List<string> list3 = new List<string>();
-        private readonly List<string> list4 = new List<string>();
-        private readonly List<string> list_token = new List<string>();
+
+        string ApiUrl = "https://user.mslmc.cn";
+        string UserToken = null;
+        int UserLevel = 0;
 
         public MSLFrp()
         {
             InitializeComponent();
         }
 
-        private async void Page_Initialized(object sender, EventArgs e)
+        private bool isInit = false;
+        private async void Page_Loaded(object sender, EventArgs e)
         {
-            serversList.Items.Clear();
-            gonggao.Text = "加载中……";
+            if (!isInit)
+            {
+                isInit = true;
+                //显示登录页面
+                LoginGrid.Visibility = Visibility.Visible;
+                MainCtrl.Visibility = Visibility.Collapsed;
+                var token = Config.Read("MSLUserAccessToken")?.ToString() ?? "";
+                if (token != "")
+                {
+                    MagicDialog MagicDialog = new MagicDialog();
+                    MagicDialog.ShowTextDialog(Window.GetWindow(this), "登录中……");
+                    await VerifyUserToken(token, false); //移除空格，防止笨蛋
+                    MagicDialog.CloseTextDialog();
+                }
+            }
+        }
+
+        private async void MainCtrl_SelectionChanged(object sender, SelectionChangedEventArgs e)
+        {
+            if (!this.IsLoaded)
+            {
+                return;
+            }
+            if (!ReferenceEquals(e.OriginalSource, this.MainCtrl))
+            {
+                return;
+            }
+            switch (MainCtrl.SelectedIndex)
+            {
+                case 0:
+                    await GetTunnelList(UserToken);
+                    break;
+                case 1:
+                    await GetNodeList();
+                    Create_Name.Text = Functions.RandomString("MSL_", 6);
+                    break;
+            }
+        }
+
+        private async void userTokenLogin_Click(object sender, RoutedEventArgs e)
+        {
+            string email = await MagicShow.ShowInput(Window.GetWindow(this), "请输入MSL账户的邮箱", "", false);
+            if (email != null)
+            {
+                string password = await MagicShow.ShowInput(Window.GetWindow(this), "请输入MSL账户的密码", "", true);
+                if (password != null)
+                {
+                    bool save = (bool)SaveToken.IsChecked;
+                    MagicDialog MagicDialog = new MagicDialog();
+                    MagicDialog.ShowTextDialog(Window.GetWindow(this), "登录中……");
+                    await VerifyUserToken(null, save, email, password); //移除空格，防止笨蛋
+                    MagicDialog.CloseTextDialog();
+                }
+            }
+        }
+
+        private async Task VerifyUserToken(string token, bool save, string email = "", string password = "")
+        {
+            if (token == null)
+            {
+                //获取accesstoken
+                try
+                {
+                    var body = new JObject
+                    {
+                        ["email"] = email,
+                        ["password"] = password
+                    };
+                    HttpResponse res = await HttpService.PostAsync(ApiUrl + "/api/user/login", 0, body);
+                    if (res.HttpResponseCode == HttpStatusCode.OK)
+                    {
+
+                        JObject JsonUserInfo = JObject.Parse((string)res.HttpResponseContent);
+                        if (JsonUserInfo["code"].Value<int>() != 200)
+                        {
+                            await MagicShow.ShowMsgDialogAsync(Window.GetWindow(this), "登陆失败！" + JsonUserInfo["msg"], "错误");
+                            return;
+                        }
+                        token = (string)JsonUserInfo["data"]["token"];
+                        if (save)
+                        {
+                            Config.Write("MSLUserAccessToken", token);
+                        }
+                    }
+                    else
+                    {
+                        await MagicShow.ShowMsgDialogAsync(Window.GetWindow(this), "登陆失败！", "错误");
+                        return;
+                    }
+                }
+                catch (Exception ex)
+                {
+                    await MagicShow.ShowMsgDialogAsync(Window.GetWindow(this), "登陆失败！" + ex.Message, "错误");
+                    return;
+                }
+            }
+
             try
             {
-                HttpResponse mslFrpInfo = await HttpService.GetApiAsync("query/frp/MSLFrps");
-                if (mslFrpInfo.HttpResponseCode != System.Net.HttpStatusCode.OK)
+                HttpResponse res = await HttpService.GetAsync(ApiUrl + "/api/frp/userInfo", headers =>
                 {
-                    throw new Exception("获取节点信息失败！");
+                    headers.Authorization = new AuthenticationHeaderValue("Bearer", token);
+                }, 1);
+                if (res.HttpResponseCode == System.Net.HttpStatusCode.OK)
+                {
+                    UserToken = token;
+
+                    Dispatcher.Invoke(() =>
+                    {
+                        //显示main页面
+                        LoginGrid.Visibility = Visibility.Collapsed; ;
+                        MainCtrl.Visibility = Visibility.Visible;
+                    });
+                    JObject JsonUserInfo = JObject.Parse((string)res.HttpResponseContent);
+                    UserLevel = Functions.GetCurrentUnixTimestamp() < (long)JsonUserInfo["data"]["outdated"] ? int.Parse((string)JsonUserInfo["data"]["user_group"]) : 0;
+                    string userGroup = UserLevel == 6 ? "超级管理员" : UserLevel == 0 ? "普通用户" : "赞助用户";
+                    Dispatcher.Invoke(() =>
+                    {
+                        UserInfo.Text = $"用户名: {JsonUserInfo["data"]["name"]}\n" +
+                        $"用户组: {userGroup} \n\n" +
+                        $"到期时间: {Functions.ConvertUnixTimeSeconds((long)JsonUserInfo["data"]["outdated"])}\n" +
+                        $"（会员服务请先前往官网进行购买！）";
+                    });
+
+                    //获取隧道
+                    await GetTunnelList(token);
                 }
-                JObject valuePairs = (JObject)((JObject)JsonConvert.DeserializeObject(mslFrpInfo.HttpResponseContent.ToString()))["data"];
-                int id = 0;
-                foreach (var valuePair in valuePairs)
+                else
                 {
-                    string serverInfo = valuePair.Key;
-                    JObject serverDetails = (JObject)valuePair.Value;
-                    int freeC = 0;
-                    foreach (var value in serverDetails)
+                    await MagicShow.ShowMsgDialogAsync(Window.GetWindow(this), "登陆失败！", "错误");
+                }
+            }
+            catch (Exception ex)
+            {
+                await MagicShow.ShowMsgDialogAsync(Window.GetWindow(this), "登陆失败！" + ex.Message, "错误");
+            }
+        }
+
+        //隧道相关
+        internal class TunnelInfo
+        {
+            public int ID { get; set; }
+            public string LPort { get; set; }
+            public string RPort { get; set; }
+            public string LIP { get; set; }
+            public string Name { get; set; }
+            public string Node { get; set; }
+            public bool Online { get; set; }
+        }
+
+        private async Task GetTunnelList(string token)
+        {
+            try
+            {
+                // 先获取节点列表以建立ID与名称的映射
+                Dictionary<int, string> nodeDictionary = new Dictionary<int, string>();
+
+                // 获取节点列表
+                HttpResponse nodeRes = await HttpService.GetAsync(ApiUrl + "/api/frp/nodeList", headers =>
+                {
+                    headers.Authorization = new AuthenticationHeaderValue("Bearer", token);
+                }, 1);
+
+                if (nodeRes.HttpResponseCode == System.Net.HttpStatusCode.OK)
+                {
+                    JObject nodeJobj = JObject.Parse((string)nodeRes.HttpResponseContent);
+                    if (nodeJobj["code"].Value<int>() != 200)
                     {
-                        if (serverInfo.Contains("免费"))
-                        {
-                            freeC++;
-                        }
+                        await MagicShow.ShowMsgDialogAsync(Window.GetWindow(this), "获取节点列表失败！" + nodeJobj["msg"], "错误");
+                        return;
                     }
-                    Random random = new Random();
-                    int free = random.Next(1, freeC + 1); //确保出来一个免费节点
-                    if (free != 0)
+
+                    JArray jsonNodes = (JArray)nodeJobj["data"];
+                    foreach (var node in jsonNodes)
                     {
-                        foreach (var value in serverDetails)
-                        {
-                            free--;
-                            if (free != 0)
-                            {
-                                continue;
-                            }
-                            string serverName = value.Key;
-                            string serverAddress = value.Value["server_addr"].ToString();
-                            string serverPort = value.Value["server_port"].ToString();
-                            string minPort = value.Value["min_open_port"].ToString();
-                            string maxPort = value.Value["max_open_port"].ToString();
-                            string token = value.Value.SelectToken("token") != null ? value.Value["token"].ToString() : "";
-
-                            list1.Add(serverAddress);
-                            list2.Add(serverPort);
-                            list3.Add(minPort);
-                            list4.Add(maxPort);
-                            list_token.Add(token);
-
-                            string _serverName = "[" + serverInfo + "]" + serverName;
-                            ServerPingTest(_serverName, serverAddress, id);
-                            id++;
-
-                            //移除已显示的免费节点 不然付费会重复一个（）
-                            serverDetails.Remove(serverName);
-                            break;
-                        }
+                        int nodeId = node["id"].Value<int>();
+                        string nodeName = node["node"].Value<string>();
+                        nodeDictionary[nodeId] = nodeName;
                     }
-                    foreach (var value in serverDetails)
+                }
+                else
+                {
+                    await MagicShow.ShowMsgDialogAsync(Window.GetWindow(this), "获取节点列表失败！HTTP状态码：" + nodeRes.HttpResponseCode, "错误");
+                    return;
+                }
+
+                // 绑定对象
+                ObservableCollection<TunnelInfo> tunnels = new ObservableCollection<TunnelInfo>();
+                FrpList.ItemsSource = tunnels;
+
+                // 获取隧道列表
+                HttpResponse res = await HttpService.GetAsync(ApiUrl + "/api/frp/getTunnelList", headers =>
+                {
+                    headers.Authorization = new AuthenticationHeaderValue("Bearer", token);
+                }, 1);
+                if (res.HttpResponseCode == System.Net.HttpStatusCode.OK)
+                {
+                    JObject jobj_node = JObject.Parse((string)res.HttpResponseContent);
+                    if (jobj_node["code"].Value<int>() != 200)
                     {
-                        if (!serverInfo.Contains("付费"))
+                        await MagicShow.ShowMsgDialogAsync(Window.GetWindow(this), "获取隧道列表失败！" + jobj_node["msg"], "错误");
+                        return;
+                    }
+
+                    JArray JsonTunnels = (JArray)jobj_node["data"];
+                    foreach (var item in JsonTunnels)
+                    {
+                        int nodeId = item["node_id"].Value<int>();
+
+                        tunnels.Add(new TunnelInfo
                         {
-                            continue;
-                        }
-                        string serverName = value.Key;
-                        string serverAddress = value.Value["server_addr"].ToString();
-                        string serverPort = value.Value["server_port"].ToString();
-                        string minPort = value.Value["min_open_port"].ToString();
-                        string maxPort = value.Value["max_open_port"].ToString();
-                        string token = value.Value.SelectToken("token") != null ? value.Value["token"].ToString() : "";
-
-                        list1.Add(serverAddress);
-                        list2.Add(serverPort);
-                        list3.Add(minPort);
-                        list4.Add(maxPort);
-                        list_token.Add(token);
-
-                        string _serverName = "[" + serverInfo + "]" + serverName;
-                        ServerPingTest(_serverName, serverAddress, id);
-                        id++;
+                            Name = $"{item["name"]}", //隧道名字
+                            Node = nodeDictionary.ContainsKey(nodeId) ? nodeDictionary[nodeId] : "未知节点", // 使用节点名称
+                            ID = item["id"].Value<int>(), //隧道id
+                            LIP = $"{item["local_ip"]}", //本地ip
+                            LPort = $"{item["local_port"]}", //本地端口
+                            RPort = $"{item["remote_port"]}", //远程端口
+                            Online = (bool)item["status"], //在线状态
+                        });
                     }
                 }
             }
             catch (Exception ex)
             {
-                MagicShow.ShowMsgDialog(Window.GetWindow(this), "连接服务器失败！" + ex.Message, "错误");
-            }
-            try
-            {
-                gonggao.Text = (await HttpService.GetApiContentAsync("query/frp/MSLFrps?query=notice"))["data"]["notice"].ToString();
-            }
-            catch
-            {
-                gonggao.Text = "无公告";
-            }
-            if (File.Exists(@"MSL\frp\frpc.toml"))
-            {
-                string text = File.ReadAllText(@"MSL\frp\frpc.toml");
-                string pattern = @"user\s*=\s*""(\w+)""\s*metadatas\.token\s*=\s*""(\w+)""";
-                Match match = Regex.Match(text, pattern);
-
-                if (match.Success)
-                {
-                    accountBox.Text = match.Groups[1].Value;
-                    passwordBox.Password = match.Groups[2].Value;
-                }
-            }
-            if (Directory.Exists("MSL\\frp"))
-            {
-                DirectoryInfo directoryInfo = new DirectoryInfo(@"MSL\frp");
-                DirectoryInfo[] dirInfo = directoryInfo.GetDirectories();
-                foreach (DirectoryInfo dir in dirInfo)
-                {
-                    if (File.Exists(dir.FullName + @"\frpc.toml"))
-                    {
-                        string text = File.ReadAllText(dir.FullName + @"\frpc.toml");
-                        string pattern = @"user\s*=\s*""(\w+)""\s*metadatas\.token\s*=\s*""(\w+)""";
-                        Match match = Regex.Match(text, pattern);
-
-                        if (match.Success)
-                        {
-                            accountBox.Text = match.Groups[1].Value;
-                            passwordBox.Password = match.Groups[2].Value;
-                            break;
-                        }
-                    }
-                }
-            }
-            if (File.Exists(@"MSL\frp\config.json"))
-            {
-                JObject jobject = JObject.Parse(File.ReadAllText(@"MSL\frp\config.json", Encoding.UTF8));
-                if (jobject["MSLFrpAccount"] != null)
-                {
-                    accountBox.Text = jobject["MSLFrpAccount"].ToString();
-                }
-                if (jobject["MSLFrpPasswd"] != null)
-                {
-                    passwordBox.Password = jobject["MSLFrpPasswd"].ToString();
-                }
+                await MagicShow.ShowMsgDialogAsync(Window.GetWindow(this), "操作失败！" + ex.Message, "错误");
             }
         }
 
-        private async void ServerPingTest(string serverName, string serverAddr, int id)
+        //获取某个隧道的配置文件
+        private async Task<string> GetTunnelConfig(string token, int id)
         {
             try
             {
-                serversList.Items.Add(serverName);
-                await Task.Run(() =>
+                //请求头 token
+                var headersAction = new Action<HttpRequestHeaders>(headers =>
                 {
-                    Ping pingSender = new Ping();
-                    PingReply reply = pingSender.Send(serverAddr, 2000);
-                    if (reply.Status == IPStatus.Success)
-                    {
-                        // 节点在线，可以获取延迟等信息
-                        int roundTripTime = (int)reply.RoundtripTime;
-                        Dispatcher.Invoke(() =>
-                        {
-                            serversList.Items[id] = serversList.Items[id].ToString() + "（延迟：" + roundTripTime + "ms）";
-                        });
-
-                    }
-                    else
-                    {
-                        Dispatcher.Invoke(() =>
-                        {
-                            serversList.Items[id] = serversList.Items[id].ToString() + "（延迟检测失败）";
-                        });
-                    }
+                    headers.Add("Authorization", $"Bearer {token}");
                 });
+
+                HttpResponse res = await HttpService.GetAsync(ApiUrl + "/api/frp/getTunnelConfig?id=" + id, headersAction, 1);
+                JObject json = JObject.Parse((string)res.HttpResponseContent);
+                if (json["code"].Value<int>() != 200)
+                {
+                    return "MSL-ERR:" + json["msg"];
+                }
+                return (string)json["data"];
+
             }
-            catch
+            catch (Exception ex)
             {
-                serversList.Items.Add(serverAddr + "（延迟检测失败）");
+                return "MSL-ERR:" + ex.Message;
             }
         }
 
-        public static bool IsValidQQFormat(string qq)
+        //显示隧道信息
+        private void FrpList_SelectionChanged(object sender, SelectionChangedEventArgs e)
         {
-            //6-10位
-            if (qq.Length < 6 || qq.Length > 10)
+            var listBox = sender as ListBox;
+            if (listBox.SelectedItem is TunnelInfo selectedTunnel)
             {
-                return false;
+                TunnelInfo_Text.Text = $"隧道名: {selectedTunnel.Name}" +
+                    $"\n隧道ID: {selectedTunnel.ID}" + $"\n远程端口: {selectedTunnel.RPort}" + $"\n隧道状态: {(selectedTunnel.Online ? "在线" : "离线")}";
+                LocalIp.Text = selectedTunnel.LIP;
+                LocalPort.Text = selectedTunnel.LPort;
             }
-
-            //数字？
-            if (!qq.All(char.IsDigit))
-            {
-                return false;
-            }
-
-            //全都是1-2个数字肯定是瞎写
-            if (qq.Distinct().Count() <= 2)
-            {
-                return false;
-            }
-
-            return true;
         }
 
-        private async void Button_Click(object sender, RoutedEventArgs e)
+        //确定 输出config
+        private async void OKBtn_Click(object sender, RoutedEventArgs e)
         {
-            Window window = Window.GetWindow(Window.GetWindow(this));
-            if (serversList.SelectedIndex == -1)
+            var listBox = FrpList;
+            if (listBox.SelectedItem is TunnelInfo selectedTunnel)
             {
-                MagicShow.ShowMsgDialog(window, "请确保您选择了一个节点！", "信息");
-                return;
-            }
-            if (!IsValidQQFormat(accountBox.Text))
-            {
-                MagicShow.ShowMsgDialog(window, "请填写正确的QQ号！", "错误");
-                return;
-            }
-            if (File.Exists("MSL\\ServerList.json")) // 检测是否创建过服务器
-            {
-                // 好！创建过服务器，那就开始检测服务器列表有没有和所填端口所匹配的服务器
-                // 即这个端口是否被服务器使用，若未被使用，仅进行映射，那就没啥卵用
-                bool isPortUsed = false;
-                try
+                string content = await Task.Run(() => GetTunnelConfig(UserToken, selectedTunnel.ID));
+                //输出配置文件
+                if (Config.WriteFrpcConfig(0, $"MSLFrp(NEW) - {selectedTunnel.Name}", content) == true)
                 {
-                    JObject jsonObject = JObject.Parse(File.ReadAllText(@"MSL\ServerList.json", Encoding.UTF8));
-                    foreach (var item in jsonObject)
-                    {
-                        if (File.Exists(item.Value["base"].ToString() + "\\server.properties"))
-                        {
-                            string config = File.ReadAllText(item.Value["base"].ToString() + "\\server.properties");
-                            if (config.Contains("\r")) // 去除win系统专用换行符
-                            {
-                                config = config.Replace("\r", string.Empty);
-                            }
-                            int pt1 = config.IndexOf("server-port=") + 12;
-                            string pt2 = config.Substring(pt1);
-                            string port = pt2.Substring(0, pt2.IndexOf("\n"));
-                            if (port == portBox.Text) // 很好！有和所填端口匹配的服务器！
-                            {
-                                isPortUsed = true;
-                                break;
-                            }
-                        }
-                    }
-                }
-                catch
-                {
-                    // 有异常！那就默认有吧！
-                    isPortUsed = true;
-                }
-                if (!isPortUsed) // 好，没有和所填端口相匹配的服务器，那就弹出警告[主要是防止有人乱改端口导致进不去服（恼）]
-                {
-                    if (!await MagicShow.ShowMsgDialogAsync(window, "您所填的端口不与您服务器列表中任何服务器的端口相匹配，您确定要继续吗？\n若非高技术力用户，请勿随意修改本地端口栏里的端口！否则出现任何问题，我们概不负责！", "警告", true))
-                    {
-                        return;
-                    }
-                }
-            }
-
-            //MSL-FRP
-            string frptype = "";
-            string frpc;
-            try
-            {
-                if (!serversList.SelectedValue.ToString().Contains("付费")) // 免费
-                {
-                    int a = serversList.SelectedIndex;
-                    if (list3[a] == list4[a])
-                    {
-                        MagicShow.ShowMsgDialog(window, "此节点不能创建！", "错误");
-                        return;
-                    }
-                    Random ran = new Random();
-                    int n = ran.Next(int.Parse(list3[a].ToString()), int.Parse(list4[a].ToString()));
-                    if (portBox.Text == "" || accountBox.Text == "")
-                    {
-                        MagicShow.ShowMsgDialog(window, "请确保内网端口和QQ号不为空", "错误");
-                        return;
-                    }
-                    //string frptype = "";
-                    string serverName = serversList.Items[serversList.SelectedIndex].ToString();
-                    string compressionArg = "";
-                    if (enableCompression.IsChecked == true) compressionArg = "transport.useCompression = true\n";
-                    if (serverName.Contains("（")) serverName = serverName.Substring(0, serverName.IndexOf("（"));
-                    if (frpcType.SelectedIndex == 0) frptype = "tcp";
-                    else if (frpcType.SelectedIndex == 1) frptype = "udp";
-
-                    frpc = "#" + serverName + "\n";
-                    frpc += "serverAddr = \"" + list1[a].ToString() + "\"\n";
-                    frpc += "serverPort = " + list2[a].ToString() + "\n";
-                    frpc += "user = \"" + accountBox.Text + "\"\n";
-                    if (list_token[a].ToString() != "")
-                    {
-                        frpc += $"auth.token = \"{list_token[a].ToString()}\"\n";
-                    }
-                    if (frpcType.SelectedIndex == 2)
-                    {
-                        string a100 = portBox.Text.Substring(0, portBox.Text.IndexOf("|"));
-                        string Ru2 = portBox.Text.Substring(portBox.Text.IndexOf("|"));
-                        string a200 = Ru2.Substring(Ru2.IndexOf("|") + 1);
-                        frpc += "\n[[proxies]]\nname = \"tcp\"\n";
-                        frpc += "type = \"tcp\"\n";
-                        frpc += "localIP = \"127.0.0.1\"\n";
-                        frpc += "localPort = " + a100 + "\n";
-                        frpc += "remotePort = " + n + "\n";
-                        frpc += compressionArg + "\n";
-                        frpc += "\n[[proxies]]\nname = \"udp\"\n";
-                        frpc += "type = \"udp\"\n";
-                        frpc += "localIP = \"127.0.0.1\"\n";
-                        frpc += "localPort = " + a200 + "\n";
-                        frpc += "remotePort = " + n + "\n";
-                        frpc += compressionArg;
-                    }
-                    else
-                    {
-                        frpc += "\n[[proxies]]\nname = \"" + frptype + "\"\n";
-                        frpc += "type = \"" + frptype + "\"\n";
-                        frpc += "localIP = \"127.0.0.1\"\n";
-                        frpc += "localPort = " + portBox.Text + "\n";
-                        frpc += "remotePort = " + n + "\n";
-                        frpc += compressionArg;
-                    }
-                }
-                else // 付费
-                {
-                    int a = serversList.SelectedIndex;
-                    Random ran = new Random();
-                    int n = ran.Next(int.Parse(list3[a].ToString()), int.Parse(list4[a].ToString()));
-                    if (portBox.Text == "" || accountBox.Text == "")
-                    {
-                        MagicShow.ShowMsgDialog(window, "请确保没有漏填信息", "错误");
-                        return;
-                    }
-                    //string frptype = "";
-                    string protocol = "";
-                    string frpPort = (int.Parse(list2[a].ToString())).ToString();
-
-                    switch (frpcType.SelectedIndex)
-                    {
-                        case 0:
-                            frptype = "tcp";
-                            break;
-
-                        case 1:
-                            frptype = "udp";
-                            break;
-                    }
-
-                    switch (usePaidProtocol.SelectedIndex)
-                    {
-                        case 0:
-                            protocol = "quic";
-                            frpPort = (int.Parse(list2[a].ToString()) + 1).ToString();
-                            break;
-
-                        case 1:
-                            protocol = "kcp";
-                            break;
-                    }
-
-                    string serverName = serversList.Items[serversList.SelectedIndex].ToString();
-                    string compressionArg = "";
-                    if (enableCompression.IsChecked == true) compressionArg = "transport.useCompression = true\n";
-                    if (serverName.Contains("（")) serverName = serverName.Substring(0, serverName.IndexOf("（"));
-                    frpc = "#" + serverName + "\n";
-                    frpc += "serverAddr = \"" + list1[a].ToString() + "\"\n";
-                    frpc += "serverPort = " + frpPort + "\n";
-                    frpc += "user = \"" + accountBox.Text + "\"\n";
-                    frpc += "metadatas.token = \"" + passwordBox.Password + "\"\n";
-                    if (protocol != "") frpc += "transport.protocol = \"" + protocol + "\"\n";
-
-                    if (frpcType.SelectedIndex == 2)
-                    {
-                        string a100 = portBox.Text.Substring(0, portBox.Text.IndexOf("|"));
-                        string Ru2 = portBox.Text.Substring(portBox.Text.IndexOf("|"));
-                        string a200 = Ru2.Substring(Ru2.IndexOf("|") + 1);
-                        frpc += "\n[[proxies]]\nname = \"tcp\"\n";
-                        frpc += "type = \"tcp\"\n";
-                        frpc += "localIp = \"127.0.0.1\"\n";
-                        frpc += "localPort = " + a100 + "\n";
-                        frpc += "remotePort = " + n + "\n";
-                        frpc += compressionArg + "\n";
-                        frpc += "\n[[proxies]]\nname = \"udp\"\n";
-                        frpc += "type = \"udp\"\n";
-                        frpc += "localIp = \"127.0.0.1\"\n";
-                        frpc += "localPort = " + a200 + "\n";
-                        frpc += "remotePort = " + n + "\n";
-                        frpc += compressionArg;
-                    }
-                    else
-                    {
-                        frpc += "\n[[proxies]]\nname = \"" + frptype + "\"\n";
-                        frpc += "type = \"" + frptype + "\"\n";
-                        frpc += "localIp = \"127.0.0.1\"\n";
-                        frpc += "localPort = " + portBox.Text + "\n";
-                        frpc += "remotePort = " + n + "\n";
-                        frpc += compressionArg;
-                    }
-                }
-            }
-            catch (Exception a)
-            {
-                MagicShow.ShowMsgDialog(window, "出现错误，请确保选择节点后再试：" + a, "错误");
-                return;
-            }
-            string sn = await MagicShow.ShowInput(window, "给此隧道取一个名字吧：", "我的MSLFrp节点");
-            if (sn == null)
-            {
-                return;
-            }
-            Directory.CreateDirectory("MSL\\frp");
-            int number = Functions.Frpc_GenerateRandomInt();
-            if (!File.Exists(@"MSL\frp\config.json"))
-            {
-                File.WriteAllText(@"MSL\frp\config.json", string.Format("{{{0}}}", "\n"));
-            }
-            Directory.CreateDirectory("MSL\\frp\\" + number);
-            File.WriteAllText($"MSL\\frp\\{number}\\frpc.toml", frpc);
-            JObject keyValues = new JObject()
-            {
-                ["frpcServer"] = 0,
-                ["name"] = "MSLFrp - " + sn
-            };
-            JObject jobject = JObject.Parse(File.ReadAllText(@"MSL\frp\config.json", Encoding.UTF8));
-            jobject.Add(number.ToString(), keyValues);
-            if (rememberPasswd.IsChecked == true)
-            {
-                if (jobject["MSLFrpAccount"] == null)
-                {
-                    jobject.Add("MSLFrpAccount", accountBox.Text);
+                    await MagicShow.ShowMsgDialogAsync(Window.GetWindow(this), "映射配置成功，请您点击“启动内网映射”以启动映射！", "信息");
+                    Window.GetWindow(this).Close();
                 }
                 else
                 {
-                    jobject["MSLFrpPasswd"] = accountBox.Text;
+                    await MagicShow.ShowMsgDialogAsync(Window.GetWindow(this), "配置输出失败！", "错误");
                 }
-                if (jobject["MSLFrpPasswd"] == null)
-                {
-                    jobject.Add("MSLFrpPasswd", passwordBox.Password);
-                }
-                else
-                {
-                    jobject["MSLFrpPasswd"] = passwordBox.Password;
-                }
-            }
-            string convertString = Convert.ToString(jobject);
-            File.WriteAllText(@"MSL\frp\config.json", convertString, Encoding.UTF8);
-            await MagicShow.ShowMsgDialogAsync(window, "映射配置成功，请您点击“启动内网映射”以启动映射！", "信息");
-            window.Close();
-        }
-
-        private void serversList_SelectionChanged(object sender, SelectionChangedEventArgs e)
-        {
-            if (serversList.SelectedIndex == -1)
-            {
-                return;
-            }
-            if (serversList.SelectedItem.ToString().Contains("付费"))
-            {
-                paidPasswordPannel.Visibility = Visibility.Visible;
-                paidProtocolPannel.Visibility = Visibility.Visible;
-                return;
-            }
-            paidPasswordPannel.Visibility = Visibility.Collapsed;
-            paidProtocolPannel.Visibility = Visibility.Collapsed;
-        }
-
-        private void frpcType_SelectionChanged(object sender, SelectionChangedEventArgs e)
-        {
-            if (frpcType.SelectedIndex == 0)
-            {
-                portBox.Text = "25565";
-            }
-            if (frpcType.SelectedIndex == 1)
-            {
-                portBox.Text = "19132";
-            }
-            if (frpcType.SelectedIndex == 2)
-            {
-                portBox.Text = "25565|19132";
-            }
-        }
-
-        private async void gotoWeb_Click(object sender, RoutedEventArgs e)
-        {
-            await MagicShow.ShowMsgDialogAsync(Window.GetWindow(this), "旧版MSL-Frp服务即将停止支持！请您转至使用新版服务！", "提示");
-            return;
-            /*
-            if (!await MagicShow.ShowMsgDialogAsync(Window.GetWindow(this), "您是否已经购买了MSLFrp？", "购买/激活MSLFrp服务", true, "我已购买，点击激活", "我未购买，点击购买"))
-            {
-                //直接激活
-                ActiveOrder();
             }
             else
             {
-                //购买
-                Process.Start("https://afdian.com/a/makabaka123");
-                if (!await MagicShow.ShowMsgDialogAsync(Window.GetWindow(this), "请在弹出的浏览器网站中进行购买，购买完毕后点击确定进行下一步操作……", "购买须知", true, "取消购买", "确定"))
-                {
-                    return;
-                }
-                else
-                {
-                    //买了，继续
-                    ActiveOrder();
-                }
+                await MagicShow.ShowMsgDialogAsync(Window.GetWindow(this), "您似乎没有选择任何隧道！", "错误");
             }
-            */
         }
 
-        //激活方法
-        private async void ActiveOrder()
+        private async void RefreshBtn_Click(object sender, RoutedEventArgs e)
         {
-            string order = await MagicShow.ShowInput(Window.GetWindow(this), "输入爱发电订单号：\n（头像→订单→找到发电项目→复制项目下方订单号）");
-            if (order == null)
-            {
-                return;
-            }
-            if (Regex.IsMatch(order, "[^0-9]") || order.Length < 5)
-            {
-                MagicShow.ShowMsgDialog(Window.GetWindow(this), "请输入合法订单号：仅含数字且长度不小于5位！", "获取失败！");
-                return;
-            }
-            string qq = await MagicShow.ShowInput(Window.GetWindow(this), "输入账号(QQ号)：");
-            if (qq == null)
-            {
-                return;
-            }
-            if (Regex.IsMatch(qq, "[^0-9]") || qq.Length < 5)
-            {
-                MagicShow.ShowMsgDialog(Window.GetWindow(this), "请输入合法账号：仅含数字且长度不小于5位！", "获取失败！");
-                return;
-            }
-            MagicDialog _dialog = new MagicDialog();
+            await GetTunnelList(UserToken);
+        }
+
+        //获取某个隧道的配置文件
+        private async Task DelTunnel(string token, int id)
+        {
             try
             {
-                _dialog.ShowTextDialog(Window.GetWindow(this), "发送请求中，请稍等……");
-                JObject keyValuePairs = new JObject()
+                //请求头 token
+                var headersAction = new Action<HttpRequestHeaders>(headers =>
                 {
-                    ["order"] = order,
-                    ["qq"] = qq,
+                    headers.Add("Authorization", $"Bearer {token}");
+                });
+
+                //请求body
+                var body = new JObject
+                {
+                    ["id"] = id
                 };
-                var ret = await Task.Run(async () => HttpService.Post("getpassword", 0, JsonConvert.SerializeObject(keyValuePairs), (await HttpService.GetApiContentAsync("query/frp/MSLFrps?query=orderapi"))["data"]["url"].ToString()));
-                _dialog.CloseTextDialog();
-                JObject keyValues = JObject.Parse(ret);
-                if (keyValues != null && (int)keyValues["status"] == 0)
+                HttpResponse res = await HttpService.PostAsync(ApiUrl + "/api/frp/deleteTunnel", 0, body, headersAction);
+                //MessageBox.Show((string)res.HttpResponseContent);
+                await GetTunnelList(UserToken);
+            }
+            catch (Exception ex)
+            {
+                await MagicShow.ShowMsgDialogAsync(Window.GetWindow(this), "删除失败！" + ex.Message, "错误");
+            }
+        }
+
+        private async void Del_Tunnel_Click(object sender, RoutedEventArgs e)
+        {
+            var listBox = FrpList as System.Windows.Controls.ListBox;
+            if (listBox.SelectedItem is TunnelInfo selectedTunnel)
+            {
+                await DelTunnel(UserToken, selectedTunnel.ID);
+            }
+            else
+            {
+                await MagicShow.ShowMsgDialogAsync(Window.GetWindow(this), "您似乎没有选择任何隧道！", "错误");
+            }
+
+        }
+
+        private void OpenWeb_Click(object sender, RoutedEventArgs e)
+        {
+            Process.Start("https://user.mslmc.cn");
+        }
+
+        private void ExitBtn_Click(object sender, RoutedEventArgs e)
+        {
+            //显示登录页面
+            LoginGrid.Visibility = Visibility.Visible;
+            MainCtrl.Visibility = Visibility.Collapsed;
+            UserToken = null;
+            Config.Write("MSLUserAccessToken", "");
+        }
+
+        //下面是创建隧道相关
+
+        internal class NodeInfo
+        {
+            public int ID { get; set; }
+            public string Name { get; set; }
+            public string Host { get; set; }
+            public string Remark { get; set; }
+            public int Vip { get; set; }
+            public string VipName { get; set; }
+            public int UDP { get; set; }
+            public int Status { get; set; }
+            public string Band { get; set; }
+        }
+
+        private async Task GetNodeList()
+        {
+            HttpResponse res = await HttpService.GetAsync(ApiUrl + "/api/frp/nodeList", headers =>
+            {
+                headers.Add("Authorization", $"Bearer {UserToken}");
+            }, 1);
+            if (res.HttpResponseCode == HttpStatusCode.OK)
+            {
+                List<NodeInfo> nodes = new List<NodeInfo>();
+                
+                JObject json = JObject.Parse((string)res.HttpResponseContent);
+                if (json["code"].Value<int>() != 200)
                 {
-                    string passwd = keyValues["password"].ToString();
-                    passwordBox.Password = passwd;
-                    bool dialog = await MagicShow.ShowMsgDialogAsync(Window.GetWindow(this), "您的付费密码为：" + passwd + "\n已自动填入到密码栏中！\n注册时间：" + keyValues["registration"].ToString() + "\n付费时长：" + keyValues["days"].ToString() + "天\n到期时间：" + keyValues["expiration"].ToString(), "购买成功！", true, "确定", "复制密码");
-                    if (dialog)
-                    {
-                        Clipboard.SetDataObject(passwd);
-                    }
+                    await MagicShow.ShowMsgDialogAsync(Window.GetWindow(this), "获取节点列表失败！" + json["msg"], "错误");
+                    return;
                 }
-                else if (keyValues != null)
+
+                //遍历查询
+                foreach (var nodeProperty in (JArray)json["data"])
                 {
-                    MagicShow.ShowMsgDialog(Window.GetWindow(this), keyValues["reason"].ToString(), "获取失败！");
+                    int nodeId = (int)nodeProperty["id"];
+                    JObject nodeData = (JObject)nodeProperty;
+                    int vip = (int)nodeData["allow_user_group"];
+                    nodes.Add(new NodeInfo
+                    {
+                        ID = nodeId,
+                        Name = (string)nodeData["node"],
+                        Host = (string)nodeData["ip"],
+                        Remark = (string)nodeData["remarks"],
+                        Vip = vip,
+                        VipName = (vip == 0 ? "普通节点" : (vip == 1 ? "付费节点" : "超级节点")),
+                        UDP = (int)nodeData["udp_support"],
+                        Status = (int)nodeData["status"],
+                        Band = (string)nodeData["bandwidth"]
+                    });
+                }
+                NodeList.ItemsSource = nodes;
+            }
+        }
+
+        private void NodeList_SelectionChanged(object sender, SelectionChangedEventArgs e)
+        {
+            var listBox = NodeList as System.Windows.Controls.ListBox;
+            if (listBox.SelectedItem is NodeInfo selectedNode)
+            {
+                NodeTips.Text = (string.IsNullOrEmpty(selectedNode.Remark) ? "节点没有备注" : selectedNode.Remark) + 
+                    "\nUDP: " + (selectedNode.UDP==1 ? "支持" : "不支持") +
+                    "\n节点状态: " + (selectedNode.Status == 1 ? "在线" : "离线");
+            }
+        }
+
+        private async void Create_OKBtn_Click(object sender, RoutedEventArgs e)
+        {
+            if (Create_RemotePort.Text == "")
+            {
+                Create_RemotePort.Text = Functions.GenerateRandomNumber(10000, 60000).ToString();
+            }
+            var listBox = NodeList as System.Windows.Controls.ListBox;
+            if (listBox.SelectedItem is NodeInfo selectedNode)
+            {
+                //请求头 token
+                var headersAction = new Action<HttpRequestHeaders>(headers =>
+                {
+                    headers.Add("Authorization", $"Bearer {UserToken}");
+                });
+
+                //请求body
+                var body = new JObject
+                {
+                    ["id"] = selectedNode.ID,
+                    ["name"] = Create_Name.Text,
+                    ["type"] = Create_Protocol.Text,
+                    ["remarks"] = "Create By MSL Client",
+                    ["local_ip"] = Create_LocalIP.Text,
+                    ["local_port"] = Create_LocalPort.Text,
+                    ["remote_port"] = Create_RemotePort.Text,
+                };
+                HttpResponse res = await HttpService.PostAsync(ApiUrl + "/api/frp/addTunnel", 0, body, headersAction);
+                if (res.HttpResponseCode == HttpStatusCode.OK)
+                {
+                    JObject jsonres = JObject.Parse((string)res.HttpResponseContent);
+                    if (jsonres["code"].Value<int>() == 200)
+                    {
+                        await MagicShow.ShowMsgDialogAsync(Window.GetWindow(this), $"{Create_Name.Text}隧道创建成功！\n 远程端口: {Create_RemotePort.Text}", "成功");
+                        //显示main页面
+                        MainCtrl.SelectedIndex = 0;
+                    }
+                    else
+                    {
+                        await MagicShow.ShowMsgDialogAsync(Window.GetWindow(this), "创建失败！" + jsonres["msg"], "错误");
+                    }
+
                 }
                 else
                 {
-                    MagicShow.ShowMsgDialog(Window.GetWindow(this), "返回内容为空！", "获取失败！");
+                    await MagicShow.ShowMsgDialogAsync(Window.GetWindow(this), "创建失败！请尝试更换隧道名称/节点！", "错误");
                 }
             }
-            catch
+            else
             {
-                _dialog.CloseTextDialog();
-                MagicShow.ShowMsgDialog(Window.GetWindow(this), "获取失败，请添加QQ：483232994（昵称：MSL-FRP），\n并发送发电成功截图+订单号来手动获取密码\n（注：回复消息不一定及时，请耐心等待！\n如果没有添加成功，或者添加后长时间无人回复，请进入MSL交流群然后从群里私聊）", "获取失败！");
+                await MagicShow.ShowMsgDialogAsync(Window.GetWindow(this), "您似乎没有选择任何节点！", "错误");
             }
+        }
+
+        private void userRegister_Click(object sender, RoutedEventArgs e)
+        {
+            Process.Start("https://user.mslmc.cn");
         }
     }
 }

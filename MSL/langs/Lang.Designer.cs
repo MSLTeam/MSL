@@ -561,7 +561,7 @@ namespace MSL.langs {
         }
         
         /// <summary>
-        ///   查找类似 关于软件 的本地化字符串。
+        ///   查找类似 关于软件（{0}） 的本地化字符串。
         /// </summary>
         public static string Page_About_AboutMSL {
             get {
@@ -789,7 +789,7 @@ namespace MSL.langs {
         }
         
         /// <summary>
-        ///   查找类似 内网映射列表（双击进入详情页） 的本地化字符串。
+        ///   查找类似 内网映射 - 隧道列表（双击进入详情页） 的本地化字符串。
         /// </summary>
         public static string Page_FrpcPage_Title {
             get {

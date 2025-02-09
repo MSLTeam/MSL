@@ -51,26 +51,33 @@ namespace MSL.pages
                 return;
             }
             JObject keyValuePairs = JObject.Parse(File.ReadAllText(Path.Combine("MSL", "frp", "config.json")));
+            if (keyValuePairs.ContainsKey("MSLFrpAccount"))
+            {
+                keyValuePairs.Remove("MSLFrpAccount");
+                File.WriteAllText(Path.Combine("MSL", "frp", "config.json"), Convert.ToString(keyValuePairs));
+            }
+            if (keyValuePairs.ContainsKey("MSLFrpPasswd"))
+            {
+                keyValuePairs.Remove("MSLFrpPasswd");
+                File.WriteAllText(Path.Combine("MSL", "frp", "config.json"), Convert.ToString(keyValuePairs));
+            }
             foreach (var keyValue in keyValuePairs)
             {
                 string key = keyValue.Key;
-                if (key != "MSLFrpAccount" && key != "MSLFrpPasswd")
+                if (keyValuePairs[key]["name"] != null)
                 {
-                    if (keyValuePairs[key]["name"] != null)
-                    {
-                        frplist.Add(new FrpcInfo { ID = key, Name = $"[{key}]{keyValuePairs[key]["name"]}" });
-                    }
-                    else
-                    {
-                        frplist.Add(new FrpcInfo { ID = key, Name = $"[{key}]未命名的隧道" });
-                    }
+                    frplist.Add(new FrpcInfo { ID = key, Name = $"[{key}] {keyValuePairs[key]["name"]}" });
+                }
+                else
+                {
+                    frplist.Add(new FrpcInfo { ID = key, Name = $"[{key}] 未命名的隧道" });
                 }
             }
         }
 
         private void FrpcListBox_MouseDoubleClick(object sender, MouseButtonEventArgs e)
         {
-            var listBox = sender as System.Windows.Controls.ListBox;
+            var listBox = sender as ListBox;
             if (listBox.SelectedItem is FrpcInfo selectedTunnel)
             {
                 FrpcID = int.Parse(selectedTunnel.ID);
@@ -82,7 +89,7 @@ namespace MSL.pages
         {
             if (e.Key == Key.Space)
             {
-                var listBox = sender as System.Windows.Controls.ListBox;
+                var listBox = sender as ListBox;
                 if (listBox.SelectedItem is FrpcInfo selectedTunnel)
                 {
                     FrpcID = int.Parse(selectedTunnel.ID);
@@ -93,9 +100,9 @@ namespace MSL.pages
 
         private void AddFrpc_Click(object sender, RoutedEventArgs e)
         {
-            SetFrpc fw = new SetFrpc();
-            fw.Owner = Window.GetWindow(this);
-            fw.ShowDialog();
+            AddFrpc af = new AddFrpc();
+            af.Owner = Window.GetWindow(this);
+            af.ShowDialog();
             GetFrpcConfig();
         }
 
