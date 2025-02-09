@@ -71,13 +71,6 @@ namespace MSL.pages.frpProviders
             
             LoginGrid.Visibility = Visibility.Collapsed;
             MainGrid.Visibility = Visibility.Visible;
-            signBtn.IsEnabled = false;
-            logoutBtn.IsEnabled = false;
-            addProxieBtn.IsEnabled = false;
-            delProxieBtn.IsEnabled = false;
-            toggleProxies.IsEnabled = false;
-            toggleAddProxiesGroup.IsEnabled = false;
-            doneBtn.IsEnabled = false;
             MagicDialog MagicDialog = new MagicDialog();
             MagicDialog.ShowTextDialog(Window.GetWindow(this), "登录中……");
             var data = await control.GetUserInfo();
@@ -140,6 +133,9 @@ namespace MSL.pages.frpProviders
             if ((bool)userdata["flag"] == false)
             {
                 MagicShow.ShowMsgDialog(Window.GetWindow(this), "登录失败！请检查您输入的信息是否正确！\n" + userdata["msg"], "错误！");
+                OpenFrpApi.authId = string.Empty;
+                LoginGrid.Visibility = Visibility.Visible;
+                MainGrid.Visibility = Visibility.Hidden;
                 return;
             }
             if (SaveToken.IsChecked == true)
@@ -155,8 +151,6 @@ namespace MSL.pages.frpProviders
             string showusrinfo = welcome + userid + email + traffic + limit + used;
             token = userdata["data"]["token"].ToString();
             userInfo.Content = showusrinfo;
-            signBtn.IsEnabled = true;
-            logoutBtn.IsEnabled = true;
             try
             {
                 int loadMode = 0;
@@ -190,11 +184,6 @@ namespace MSL.pages.frpProviders
             {
                 MessageBox.Show("err");
             }
-            addProxieBtn.IsEnabled = true;
-            delProxieBtn.IsEnabled = true;
-            toggleProxies.IsEnabled = true;
-            toggleAddProxiesGroup.IsEnabled = true;
-            doneBtn.IsEnabled = true;
             try
             {
                 LoadingCircle loadingCircle = MainGrid.FindName("loadingBar") as LoadingCircle;
