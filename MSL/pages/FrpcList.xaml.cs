@@ -1,4 +1,5 @@
-﻿using MSL.utils;
+﻿using MSL.pages.frpProviders.MSLFrp;
+using MSL.utils;
 using Newtonsoft.Json.Linq;
 using System;
 using System.Collections.Generic;
@@ -7,6 +8,7 @@ using System.IO;
 using System.Windows;
 using System.Windows.Controls;
 using System.Windows.Input;
+using System.Windows.Media;
 using Path = System.IO.Path;
 
 namespace MSL.pages
@@ -96,6 +98,31 @@ namespace MSL.pages
                     OpenFrpcPage();
                 }
             }
+        }
+
+        private void MyInfo_Click(object sender, RoutedEventArgs e)
+        {
+            HandyControl.Controls.Window window = new HandyControl.Controls.Window
+            {
+
+                NonClientAreaBackground = (Brush)FindResource("BackgroundBrush"),
+                Background = (Brush)FindResource("BackgroundBrush"),
+                Title = "我的MSL-Frp信息",
+                MinHeight = 450,
+                MinWidth = 750,
+                Height = 450,
+                Width = 750,
+                ResizeMode = ResizeMode.CanResize,
+                WindowStartupLocation = WindowStartupLocation.CenterOwner
+            };
+            Action closeWindow = () =>
+            {
+                window.Close();
+            };
+            MSLFrpProfile frpProfile = new MSLFrpProfile(close: closeWindow);
+            window.Owner = Window.GetWindow(this);
+            window.Content = frpProfile;
+            window.ShowDialog();
         }
 
         private void AddFrpc_Click(object sender, RoutedEventArgs e)

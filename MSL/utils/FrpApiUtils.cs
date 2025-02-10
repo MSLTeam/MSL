@@ -18,6 +18,44 @@ namespace MSL.utils
         private static readonly string ApiUrl = "https://user.mslmc.cn/api";
         public static string UserToken = string.Empty;
 
+        public static async Task<(int Code,string Data,string Msg)> ApiGet(string route)
+        {
+            HttpResponse nodeRes = await HttpService.GetAsync(ApiUrl + route, headers =>
+            {
+                headers.Authorization = new AuthenticationHeaderValue("Bearer", UserToken);
+            }, 1);
+
+            if (nodeRes.HttpResponseCode == HttpStatusCode.OK)
+            {
+                JObject jobj = JObject.Parse((string)nodeRes.HttpResponseContent);
+                if (jobj["code"].Value<int>() != 200)
+                {
+                    return ((int)jobj["code"], null, jobj["msg"].ToString());
+                }
+                return ((int)jobj["code"], jobj["data"].ToString(), jobj["msg"].ToString());
+            }
+            else
+            {
+                return ((int)nodeRes.HttpResponseCode, null, $"({(int)nodeRes.HttpResponseCode}){nodeRes.HttpResponseContent}");
+            }
+        }
+
+        public static async Task<(int Code, string Msg)> ApiPost(string route, int contentType, object parameterData)
+        {
+            var headersAction = new Action<HttpRequestHeaders>(headers =>
+            {
+                headers.Add("Authorization", $"Bearer {UserToken}");
+            });
+
+            HttpResponse res = await HttpService.PostAsync(ApiUrl + route, contentType, parameterData, headersAction);
+            if (res.HttpResponseCode == HttpStatusCode.OK)
+            {
+                var json = JObject.Parse((string)res.HttpResponseContent);
+                return ((int)json["code"], (string)json["msg"]);
+            }
+            return ((int)res.HttpResponseCode, $"({(int)res.HttpResponseCode}){res.HttpResponseContent}");
+        }
+
         public static async Task<(int Code, string Msg)> UserLogin(string token, string email = "", string password = "", bool saveToken = false)
         {
             if (string.IsNullOrEmpty(token))

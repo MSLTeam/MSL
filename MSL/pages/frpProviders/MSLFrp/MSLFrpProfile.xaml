@@ -4,11 +4,70 @@
       xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006" 
       xmlns:d="http://schemas.microsoft.com/expression/blend/2008" 
       xmlns:local="clr-namespace:MSL.pages.frpProviders.MSLFrp"
+      xmlns:hc="https://handyorg.github.io/handycontrol"
+      xmlns:controls="clr-namespace:MSL.controls"
       mc:Ignorable="d" 
       d:DesignHeight="450" d:DesignWidth="800"
-      Title="MSLFrpProfile">
+      Title="MSLFrpProfile" Loaded="Page_Loaded">
 
     <Grid>
-        
+        <Grid.ColumnDefinitions>
+            <ColumnDefinition/>
+            <ColumnDefinition/>
+        </Grid.ColumnDefinitions>
+        <controls:MagicCard Grid.Column="0" Margin="10,10,5,10" Title="我的信息">
+            <Grid>
+                <Grid.RowDefinitions>
+                    <RowDefinition Height="100"/>
+                    <RowDefinition/>
+                </Grid.RowDefinitions>
+                <Grid Grid.Row="0" Margin="0,0,0,5">
+                    <Grid.ColumnDefinitions>
+                        <ColumnDefinition Width="3*"/>
+                        <ColumnDefinition Width="6*"/>
+                    </Grid.ColumnDefinitions>
+                    <Image x:Name="HeadImage" Grid.Column="0" Width="100" HorizontalAlignment="Right"/>
+                    <hc:UniformSpacingPanel VerticalAlignment="Center" Orientation="Vertical" Grid.Column="1">
+                        <Label x:Name="Name_Label" Style="{StaticResource MagicLabel16}"/>
+                        <Label x:Name="Uid_Label" Style="{StaticResource MagicLabel14}"/>
+                        <Label x:Name="Email_Label" Style="{StaticResource MagicLabel14}"/>
+                    </hc:UniformSpacingPanel>
+                </Grid>
+                <hc:UniformSpacingPanel Orientation="Vertical" Spacing="5" Grid.Row="1" VerticalAlignment="Center">
+                    <Label x:Name="QQ_Label" Style="{StaticResource MagicLabel14}"/>
+                    <Label x:Name="Score_Label" Style="{StaticResource MagicLabel14}"/>
+                    <Label x:Name="RegTime_Label" Style="{StaticResource MagicLabel14}"/>
+                    <Label x:Name="LastLogin_Label" Style="{StaticResource MagicLabel14}"/>
+                    <Label x:Name="Perm_Label" Style="{StaticResource MagicLabel14}"/>
+                </hc:UniformSpacingPanel>
+            </Grid>
+        </controls:MagicCard>
+        <Grid Grid.Column="1">
+            <Grid.RowDefinitions>
+                <RowDefinition Height="auto"/>
+                <RowDefinition/>
+            </Grid.RowDefinitions>
+            <controls:MagicCard Grid.Row="0" Title="积分购买" Margin="5,10,10,5">
+                <hc:UniformSpacingPanel Orientation="Vertical" Spacing="5">
+                    <Label Style="{StaticResource MagicLabel14}">
+                        <TextBlock TextWrapping="Wrap" Text="如何操作？先前往爱发电进行购买，然后复制订单号返回此处激活。"/>
+                    </Label>
+                    <Button Content="打开爱发电"  Command="hc:ControlCommands.OpenLink" CommandParameter="https://afdian.com/a/mslteam"/>
+                    <Grid>
+                        <Grid.ColumnDefinitions>
+                            <ColumnDefinition/>
+                            <ColumnDefinition Width="Auto"/>
+                        </Grid.ColumnDefinitions>
+                        <TextBox x:Name="OrderText" Grid.Column="0"/>
+                        <Button x:Name="ActiveOrder" Click="ActiveOrder_Click" Grid.Column="1" Content="激活"/>
+                    </Grid>
+                </hc:UniformSpacingPanel>
+            </controls:MagicCard>
+            <controls:MagicCard Grid.Row="1" Title="积分兑换" Margin="5,5,10,10">
+                <hc:ScrollViewer IsInertiaEnabled="True">
+                    <hc:UniformSpacingPanel x:Name="GoodsList" Orientation="Vertical" Spacing="10"/>
+                </hc:ScrollViewer>
+            </controls:MagicCard>
+        </Grid>
     </Grid>
 </Page>

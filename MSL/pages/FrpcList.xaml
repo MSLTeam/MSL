@@ -18,9 +18,7 @@
             </Grid.RowDefinitions>
             <Label Style="{StaticResource BorderTitle}" Content="{Binding [Page_FrpcPage_Title], Source={x:Static langs:LanguageManager.Instance}}"/>
             <StackPanel Grid.Row="0" Orientation="Horizontal" HorizontalAlignment="Right" VerticalAlignment="Top">
-                <!--
-                <Button x:Name="MyInfo" Content="我的MSL-Frp信息" Click="AddFrpc_Click"/>
-                -->
+                <Button x:Name="MyInfo" Content="我的MSL-Frp信息" Click="MyInfo_Click"/>
             </StackPanel>
             <Border Grid.Row="1" CornerRadius="10" BorderThickness="0" Background="{DynamicResource BackgroundBrush}">
                 <ListBox x:Name="FrpcListBox" Background="{x:Null}" BorderBrush="{x:Null}" hc:Empty.ShowEmpty="true" MouseDoubleClick="FrpcListBox_MouseDoubleClick" KeyUp="FrpcListBox_KeyUp">

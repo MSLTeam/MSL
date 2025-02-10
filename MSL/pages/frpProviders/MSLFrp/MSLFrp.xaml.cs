@@ -5,6 +5,7 @@ using System.Diagnostics;
 using System.Threading.Tasks;
 using System.Windows;
 using System.Windows.Controls;
+using Windows.UI.Core;
 
 namespace MSL.pages.frpProviders.MSLFrp
 {
@@ -13,51 +14,97 @@ namespace MSL.pages.frpProviders.MSLFrp
     /// </summary>
     public partial class MSLFrp : Page
     {
+        private MSLFrpProfile FrpProfile;
+        private readonly Action ChangeTab;
         public MSLFrp()
         {
             InitializeComponent();
+            ChangeTab = () =>
+            {
+                MainCtrl.SelectedIndex = 0;
+            };
         }
 
         private bool isInit = false;
         private async void Page_Loaded(object sender, EventArgs e)
         {
-            if (!isInit)
-            {
-                isInit = true;
-                //显示登录页面
-                LoginGrid.Visibility = Visibility.Visible;
-                MainCtrl.Visibility = Visibility.Collapsed;
-                var token = Config.Read("MSLUserAccessToken")?.ToString() ?? "";
-                if (token != "")
-                {
-                    MagicDialog MagicDialog = new MagicDialog();
-                    MagicDialog.ShowTextDialog(Window.GetWindow(this), "登录中……");
-                    var (Code, Msg) = await MSLFrpApi.UserLogin(token);
-                    MagicDialog.CloseTextDialog();
-                    if (Code != 200)
-                    {
-                        MagicShow.ShowMsgDialog(Window.GetWindow(this), "登陆失败！\n" + Msg, "错误");
-                        return;
-                    }
-                    //显示main页面
-                    LoginGrid.Visibility = Visibility.Collapsed; ;
-                    MainCtrl.Visibility = Visibility.Visible;
-                    JObject JsonUserInfo = JObject.Parse(Msg);
-                    int userLevel = Functions.GetCurrentUnixTimestamp() < (long)JsonUserInfo["data"]["outdated"] ? int.Parse((string)JsonUserInfo["data"]["user_group"]) : 0;
-                    string userGroup = userLevel == 6 ? "超级管理员" : userLevel == 0 ? "普通用户" : "赞助用户";
-                    Dispatcher.Invoke(() =>
-                    {
-                        UserInfo.Content = $"用户名: {JsonUserInfo["data"]["name"]}\n" +
-                        $"用户组: {userGroup} \n" +
-                        $"到期时间: {Functions.ConvertUnixTimeSeconds((long)JsonUserInfo["data"]["outdated"])}\n" +
-                        $"（会员服务请先前往官网进行购买！）";
-                    });
+            if (isInit)
+                return;
 
-                    //获取隧道
-                    await GetTunnelList();
-                }
+            isInit = true;
+            FrpProfile = new MSLFrpProfile(close: ChangeTab);
+            // 显示登录页面
+            LoginGrid.Visibility = Visibility.Visible;
+            MainCtrl.Visibility = Visibility.Collapsed;
+
+            // 获取Token并尝试登录
+            var token = string.IsNullOrEmpty(MSLFrpApi.UserToken)
+                ? Config.Read("MSLUserAccessToken")?.ToString()
+                : MSLFrpApi.UserToken;
+
+            if (string.IsNullOrEmpty(token))
+            {
+                return;  // 如果没有Token，直接返回
             }
+
+            // 登录并获取用户信息
+            var loginSuccess = await AttemptLogin(token);
+            if (!loginSuccess)
+            {
+                return;  // 登录失败，返回
+            }
+
+            // 显示main页面
+            LoginGrid.Visibility = Visibility.Collapsed;
+            MainCtrl.Visibility = Visibility.Visible;
+
+            // 获取隧道列表
+            await GetTunnelList();
         }
+
+        // 封装登录操作
+        private async Task<bool> AttemptLogin(string token)
+        {
+            MagicDialog magicDialog = new MagicDialog();
+            magicDialog.ShowTextDialog(Window.GetWindow(this), "登录中……");
+
+            var (Code, Msg) = string.IsNullOrEmpty(token)
+                ? await MSLFrpApi.UserLogin(token)
+                : await MSLFrpApi.UserLogin(token);
+
+            magicDialog.CloseTextDialog();
+
+            if (Code != 200)
+            {
+                MagicShow.ShowMsgDialog(Window.GetWindow(this), "登陆失败！\n" + Msg, "错误");
+                return false;
+            }
+
+            // 解析用户信息并更新UI
+            JObject JsonUserInfo = JObject.Parse(Msg);
+            UpdateUserInfo(JsonUserInfo);
+
+            return true;
+        }
+
+        // 更新用户信息UI
+        private void UpdateUserInfo(JObject JsonUserInfo)
+        {
+            int userLevel = Functions.GetCurrentUnixTimestamp() < (long)JsonUserInfo["data"]["outdated"]
+                ? int.Parse((string)JsonUserInfo["data"]["user_group"])
+                : 0;
+
+            string userGroup = userLevel == 6 ? "超级管理员" : userLevel == 0 ? "普通用户" : "赞助用户";
+
+            Dispatcher.Invoke(() =>
+            {
+                UserInfo.Content = $"用户名: {JsonUserInfo["data"]["name"]}\n" +
+                    $"用户组: {userGroup} \n" +
+                    $"到期时间: {Functions.ConvertUnixTimeSeconds((long)JsonUserInfo["data"]["outdated"])}\n" +
+                    $"（会员服务请先前往官网进行购买！）";
+            });
+        }
+
 
         private async Task GetTunnelList()
         {
@@ -102,6 +149,9 @@ namespace MSL.pages.frpProviders.MSLFrp
                     await GetNodeList();
                     Create_Name.Text = Functions.RandomString("MSL_", 6);
                     break;
+                case 2:
+                    UserCenterFrame.Content= FrpProfile;
+                    break;
             }
         }
 
@@ -116,8 +166,26 @@ namespace MSL.pages.frpProviders.MSLFrp
                     bool save = (bool)SaveToken.IsChecked;
                     MagicDialog MagicDialog = new MagicDialog();
                     MagicDialog.ShowTextDialog(Window.GetWindow(this), "登录中……");
-                    await MSLFrpApi.UserLogin(string.Empty, email, password, save);
+                    var (Code, Msg) = await MSLFrpApi.UserLogin(string.Empty, email, password, save);
                     MagicDialog.CloseTextDialog();
+                    if (Code != 200)
+                    {
+                        MagicShow.ShowMsgDialog(Window.GetWindow(this), "登陆失败！\n" + Msg, "错误");
+                        return;
+                    }
+                    LoginGrid.Visibility = Visibility.Collapsed; ;
+                    MainCtrl.Visibility = Visibility.Visible;
+                    JObject JsonUserInfo = JObject.Parse(Msg);
+                    int userLevel = Functions.GetCurrentUnixTimestamp() < (long)JsonUserInfo["data"]["outdated"] ? int.Parse((string)JsonUserInfo["data"]["user_group"]) : 0;
+                    string userGroup = userLevel == 6 ? "超级管理员" : userLevel == 0 ? "普通用户" : "赞助用户";
+                    Dispatcher.Invoke(() =>
+                    {
+                        UserInfo.Content = $"用户名: {JsonUserInfo["data"]["name"]}\n" +
+                        $"用户组: {userGroup} \n" +
+                        $"到期时间: {Functions.ConvertUnixTimeSeconds((long)JsonUserInfo["data"]["outdated"])}\n" +
+                        $"（会员服务请先前往官网进行购买！）";
+                    });
+                    await GetTunnelList();
                 }
             }
         }
@@ -194,11 +262,6 @@ namespace MSL.pages.frpProviders.MSLFrp
 
         }
 
-        private void OpenWeb_Click(object sender, RoutedEventArgs e)
-        {
-            Process.Start("https://user.mslmc.cn");
-        }
-
         private void ExitBtn_Click(object sender, RoutedEventArgs e)
         {
             //显示登录页面
@@ -206,6 +269,7 @@ namespace MSL.pages.frpProviders.MSLFrp
             MainCtrl.Visibility = Visibility.Collapsed;
             MSLFrpApi.UserToken = string.Empty;
             Config.Remove("MSLUserAccessToken");
+            FrpProfile = new MSLFrpProfile(close: ChangeTab);
         }
 
         private void NodeList_SelectionChanged(object sender, SelectionChangedEventArgs e)
@@ -243,11 +307,6 @@ namespace MSL.pages.frpProviders.MSLFrp
             {
                 await MagicShow.ShowMsgDialogAsync(Window.GetWindow(this), "您似乎没有选择任何节点！", "错误");
             }
-        }
-
-        private void userRegister_Click(object sender, RoutedEventArgs e)
-        {
-            Process.Start("https://user.mslmc.cn");
         }
 
         private void GenerateRandomPort_Click(object sender, RoutedEventArgs e)

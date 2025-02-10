@@ -11,7 +11,7 @@
 
     <Grid>
         <TabControl x:Name="MainCtrl" Margin="10,5,10,10" Style="{StaticResource TabControlCapsuleSolidInLine}" Background="Transparent" BorderThickness="0" SelectionChanged="MainCtrl_SelectionChanged">
-            <TabItem Header="我的信息">
+            <TabItem Header="我的隧道">
                 <Grid x:Name="MainGrid">
                     <Grid.ColumnDefinitions>
                         <ColumnDefinition Width="auto"/>
@@ -65,7 +65,7 @@
                                             <Label x:Name="UserInfo" Style="{DynamicResource MagicLabel14}" Margin="5,0" Content="Loadings..."/>
                                         </StackPanel>
                                         <StackPanel Grid.Column="1" Margin="5" >
-                                            <Button Content="打开官网" x:Name="OpenWeb" Style="{StaticResource ButtonPrimary}" Margin="0,0,0,3" HorizontalAlignment="Stretch" Click="OpenWeb_Click" />
+                                            <Button Content="打开官网" x:Name="OpenWeb" Style="{StaticResource ButtonPrimary}" Margin="0,0,0,3" HorizontalAlignment="Stretch" Command="hc:ControlCommands.OpenLink" CommandParameter="https://user.mslmc.cn"/>
                                             <Button Content="退出登录" x:Name="ExitBtn" Margin="0,3,0,0" HorizontalAlignment="Stretch" Click="ExitBtn_Click" />
                                         </StackPanel>
                                     </Grid>
@@ -162,15 +162,16 @@
                     </Grid>
                 </Grid>
             </TabItem>
+            <TabItem Header="个人中心">
+                <Frame x:Name="UserCenterFrame"/>
+            </TabItem>
         </TabControl>
-        
-        
         <Grid x:Name="LoginGrid" Visibility="Collapsed">
             <StackPanel HorizontalAlignment="Center" VerticalAlignment="Center" >
                 <TextBlock Text="使用MSL-FRP(新)服务之前，请先登录您的MSL账户" HorizontalAlignment="Center"  VerticalAlignment="Center"  FontSize="16" Foreground="{DynamicResource PrimaryTextBrush}" Margin="0,0,0,20"/>
                 <StackPanel Orientation="Horizontal" HorizontalAlignment="Center">
                     <Button x:Name="userTokenLogin" Content="使用账号密码登录" Style="{StaticResource ButtonPrimary}"  Margin="0,0,5,0" Click="userTokenLogin_Click"/>
-                    <Button x:Name="userRegister" Content="注册/进入用户中心" Margin="5,0,0,0" Click="userRegister_Click"  />
+                    <Button x:Name="userRegister" Content="注册/进入用户中心" Margin="5,0,0,0" Command="hc:ControlCommands.OpenLink" CommandParameter="https://user.mslmc.cn"/>
                 </StackPanel>
                 <CheckBox Content="保存登录状态（风险自负哦~）" HorizontalAlignment="Center" Margin="0,10,0,0" x:Name="SaveToken"/>
                 <TextBlock Text="仅支持账号密码登录哦~" HorizontalAlignment="Center"  VerticalAlignment="Center"  FontSize="13" Foreground="{DynamicResource PrimaryTextBrush}" Margin="0,10,0,0"/>

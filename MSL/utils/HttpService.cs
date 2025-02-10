@@ -1,6 +1,7 @@
 ﻿using Newtonsoft.Json;
 using Newtonsoft.Json.Linq;
 using System;
+using System.Collections.Generic;
 using System.IO;
 using System.Linq;
 using System.Net;
@@ -278,10 +279,17 @@ namespace MSL.utils
                     break;
                 case 2:
                     httpClient.DefaultRequestHeaders.Accept.Add(new MediaTypeWithQualityHeaderValue("application/x-www-form-urlencoded"));
-                    var keyValuePairs = parameterData?.ToString().Split('&')
-                                        .Select(p => p.Split('='))
-                                        .ToDictionary(p => p[0], p => p[1]);
-                    content = new FormUrlEncodedContent(keyValuePairs);
+                    if (parameterData is IDictionary<string, string> data)
+                    {
+                        content = new FormUrlEncodedContent(data);
+                    }
+                    else
+                    {
+                        var keyValuePairs = parameterData?.ToString().Split('&')
+                            .Select(p => p.Split('='))
+                            .ToDictionary(p => p[0], p => p[1]);
+                        content = new FormUrlEncodedContent(keyValuePairs);
+                    }
                     break;
             }
 

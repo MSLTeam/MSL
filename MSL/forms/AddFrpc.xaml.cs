@@ -1,5 +1,6 @@
 ﻿using MSL.pages.frpProviders;
 using MSL.pages.frpProviders.MSLFrp;
+using System;
 using System.Collections.Generic;
 using System.Windows.Controls;
 
@@ -32,6 +33,9 @@ namespace MSL
         private void Window_Closing(object sender, System.ComponentModel.CancelEventArgs e)
         {
             Pages.Clear();
+            GC.Collect(); // find finalizable objects
+            GC.WaitForPendingFinalizers(); // wait until finalizers executed
+            GC.Collect(); // collect finalized objects
         }
 
         /*
