@@ -654,11 +654,29 @@ namespace MSL.langs {
         }
         
         /// <summary>
+        ///   查找类似 连接地址： 的本地化字符串。
+        /// </summary>
+        public static string Page_FrpcPage_Domain {
+            get {
+                return ResourceManager.GetString("Page_FrpcPage_Domain", resourceCulture);
+            }
+        }
+        
+        /// <summary>
         ///   查找类似 使用此IP来连接： 的本地化字符串。
         /// </summary>
         public static string Page_FrpcPage_IP {
             get {
                 return ResourceManager.GetString("Page_FrpcPage_IP", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   查找类似 若上面地址无法连接，使用此IP： 的本地化字符串。
+        /// </summary>
+        public static string Page_FrpcPage_IP2 {
+            get {
+                return ResourceManager.GetString("Page_FrpcPage_IP2", resourceCulture);
             }
         }
         
@@ -677,15 +695,6 @@ namespace MSL.langs {
         public static string Page_FrpcPage_Launch {
             get {
                 return ResourceManager.GetString("Page_FrpcPage_Launch", resourceCulture);
-            }
-        }
-        
-        /// <summary>
-        ///   查找类似 基岩版： 的本地化字符串。
-        /// </summary>
-        public static string Page_FrpcPage_Status_BedrockVersion {
-            get {
-                return ResourceManager.GetString("Page_FrpcPage_Status_BedrockVersion", resourceCulture);
             }
         }
         
@@ -726,24 +735,6 @@ namespace MSL.langs {
         }
         
         /// <summary>
-        ///   查找类似 IP： 的本地化字符串。
-        /// </summary>
-        public static string Page_FrpcPage_Status_IP {
-            get {
-                return ResourceManager.GetString("Page_FrpcPage_Status_IP", resourceCulture);
-            }
-        }
-        
-        /// <summary>
-        ///   查找类似 Java版： 的本地化字符串。
-        /// </summary>
-        public static string Page_FrpcPage_Status_JavaVersion {
-            get {
-                return ResourceManager.GetString("Page_FrpcPage_Status_JavaVersion", resourceCulture);
-            }
-        }
-        
-        /// <summary>
         ///   查找类似 检测节点状态失败，若无法连接，请重新配置！ 的本地化字符串。
         /// </summary>
         public static string Page_FrpcPage_Status_Offline {
@@ -776,15 +767,6 @@ namespace MSL.langs {
         public static string Page_FrpcPage_Status_Port {
             get {
                 return ResourceManager.GetString("Page_FrpcPage_Status_Port", resourceCulture);
-            }
-        }
-        
-        /// <summary>
-        ///   查找类似 请启动内网映射以查看IP 的本地化字符串。
-        /// </summary>
-        public static string Page_FrpcPage_Status_StartToViewIP {
-            get {
-                return ResourceManager.GetString("Page_FrpcPage_Status_StartToViewIP", resourceCulture);
             }
         }
         

@@ -38,13 +38,14 @@
                     </ToggleButton>
                     <TextBlock x:Name="frplab1" Grid.Column="2" Text="节点状态" TextWrapping="Wrap" FontSize="16" Foreground="{DynamicResource DarkPrimaryBrush}" VerticalAlignment="Center"/>
                 </Grid>
-                <StackPanel Orientation="Horizontal" Margin="0,10,0,0">
-                    <TextBlock Text="{Binding [Page_FrpcPage_IP], Source={x:Static langs:LanguageManager.Instance}}" HorizontalAlignment="Center"  VerticalAlignment="Center" FontSize="16" Foreground="{DynamicResource PrimaryTextBrush}"/>
-                    <TextBlock x:Name="frplab3" Text="{Binding [Page_FrpcPage_IPNull], Source={x:Static langs:LanguageManager.Instance}}" HorizontalAlignment="Left" VerticalAlignment="Center" FontSize="16" Foreground="{DynamicResource PrimaryTextBrush}" Margin="3,0,30,0"/>
-                    <Button x:Name="copyFrpc" Content="{Binding [Page_FrpcPage_Copy], Source={x:Static langs:LanguageManager.Instance}}" HorizontalAlignment="Right" FontSize="14" VerticalAlignment="Top" Width="100" Height="35" FontWeight="Normal" IsEnabled="False" Click="copyFrpc_Click"/>
-                </StackPanel>
+                <hc:ScrollViewer IsInertiaEnabled="True">
+                    <hc:UniformSpacingPanel x:Name="ProxiesContainer" 
+                          Orientation="Vertical" 
+                          Spacing="5" 
+                          Margin="0,10,0,0"/>
+                </hc:ScrollViewer>
             </StackPanel>
-            <TextBox x:Name="frpcOutlog" Grid.Row="1" Margin="0,10,0,0" TextWrapping="Wrap" Text="Logs" IsReadOnly="True" HorizontalScrollBarVisibility="Visible" VerticalScrollBarVisibility="Auto" VerticalContentAlignment="Top" Padding="10"/>
+            <TextBox x:Name="frpcOutlog" Grid.Row="1" MinHeight="250" Margin="0,10,0,0" TextWrapping="Wrap" Text="Logs" IsReadOnly="True" HorizontalScrollBarVisibility="Visible" VerticalScrollBarVisibility="Auto" VerticalContentAlignment="Top" Padding="10"/>
         </Grid>
     </Border>
 </Page>

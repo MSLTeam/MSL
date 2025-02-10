@@ -14,9 +14,9 @@
             <RowDefinition Height="*"/>
             <RowDefinition Height="Auto"/>
         </Grid.RowDefinitions>
-        <ScrollViewer Grid.Row="0">
+        <controls:MagicScrollViewer Grid.Row="0">
             <StackPanel>
-                <controls:MagicCard x:Name="noticeBorder" Title="{Binding [Page_Home_Notice], Source={x:Static langs:LanguageManager.Instance}}" VerticalAlignment="Top" Margin="10,10,10,0">
+                <controls:MagicCard x:Name="noticeBorder" Title="{Binding [Page_Home_Notice], Source={x:Static langs:LanguageManager.Instance}}" VerticalAlignment="Top" Margin="0,10,0,0">
                     <Grid>
                         <!--
                         <Image x:Name="noticeImage"/>
@@ -24,11 +24,11 @@
                         <TextBox x:Name="noticeLab" Text="{Binding [Loading],Source={x:Static langs:LanguageManager.Instance},Mode=OneWay}" TextBlock.LineHeight="24" IsReadOnly="True" VerticalScrollBarVisibility="Auto" TextWrapping="Wrap" BorderThickness="0" Background="{x:Null}" FontSize="14"/>
                     </Grid>
                 </controls:MagicCard>
-                <controls:MagicCard x:Name="recommendBorder" Title="{Binding [Page_Home_Recommendations], Source={x:Static langs:LanguageManager.Instance}}" VerticalAlignment="Top" Margin="10,10,10,0" Visibility="Collapsed">
+                <controls:MagicCard x:Name="recommendBorder" Title="{Binding [Page_Home_Recommendations], Source={x:Static langs:LanguageManager.Instance}}" VerticalAlignment="Top" Margin="0,10,0,0" Visibility="Collapsed">
                     <hc:UniformSpacingPanel Orientation="Vertical" Spacing="10" x:Name="RecommendGrid"/>
                 </controls:MagicCard>
             </StackPanel>
-        </ScrollViewer>
+        </controls:MagicScrollViewer>
         <StackPanel Orientation="Horizontal" Grid.Row="1" HorizontalAlignment="Right" VerticalAlignment="Bottom">
             <Button x:Name="gotoFrpBtn" Content="{Binding [Page_Home_P2PPlay], Source={x:Static langs:LanguageManager.Instance}}" HorizontalAlignment="Right" Height="60" Margin="10" VerticalAlignment="Bottom" Width="120" Click="gotoFrpBtn_Click" FontSize="16"/>
             <hc:SplitButton x:Name="startServer" Style="{StaticResource SplitButtonPrimary}" Margin="0,0,10,10" VerticalAlignment="Bottom" Height="60" Width="220" Click="startServer_Click" HorizontalAlignment="Right">

@@ -1,0 +1,266 @@
+﻿using MSL.utils;
+using Newtonsoft.Json.Linq;
+using System;
+using System.Diagnostics;
+using System.Threading.Tasks;
+using System.Windows;
+using System.Windows.Controls;
+
+namespace MSL.pages.frpProviders.MSLFrp
+{
+    /// <summary>
+    /// MSLFrp.xaml 的交互逻辑
+    /// </summary>
+    public partial class MSLFrp : Page
+    {
+        public MSLFrp()
+        {
+            InitializeComponent();
+        }
+
+        private bool isInit = false;
+        private async void Page_Loaded(object sender, EventArgs e)
+        {
+            if (!isInit)
+            {
+                isInit = true;
+                //显示登录页面
+                LoginGrid.Visibility = Visibility.Visible;
+                MainCtrl.Visibility = Visibility.Collapsed;
+                var token = Config.Read("MSLUserAccessToken")?.ToString() ?? "";
+                if (token != "")
+                {
+                    MagicDialog MagicDialog = new MagicDialog();
+                    MagicDialog.ShowTextDialog(Window.GetWindow(this), "登录中……");
+                    var (Code, Msg) = await MSLFrpApi.UserLogin(token);
+                    MagicDialog.CloseTextDialog();
+                    if (Code != 200)
+                    {
+                        MagicShow.ShowMsgDialog(Window.GetWindow(this), "登陆失败！\n" + Msg, "错误");
+                        return;
+                    }
+                    //显示main页面
+                    LoginGrid.Visibility = Visibility.Collapsed; ;
+                    MainCtrl.Visibility = Visibility.Visible;
+                    JObject JsonUserInfo = JObject.Parse(Msg);
+                    int userLevel = Functions.GetCurrentUnixTimestamp() < (long)JsonUserInfo["data"]["outdated"] ? int.Parse((string)JsonUserInfo["data"]["user_group"]) : 0;
+                    string userGroup = userLevel == 6 ? "超级管理员" : userLevel == 0 ? "普通用户" : "赞助用户";
+                    Dispatcher.Invoke(() =>
+                    {
+                        UserInfo.Content = $"用户名: {JsonUserInfo["data"]["name"]}\n" +
+                        $"用户组: {userGroup} \n" +
+                        $"到期时间: {Functions.ConvertUnixTimeSeconds((long)JsonUserInfo["data"]["outdated"])}\n" +
+                        $"（会员服务请先前往官网进行购买！）";
+                    });
+
+                    //获取隧道
+                    await GetTunnelList();
+                }
+            }
+        }
+
+        private async Task GetTunnelList()
+        {
+            //获取隧道
+            var (Code, TunnelList, Msg) = await MSLFrpApi.GetTunnelList();
+            if (Code != 200)
+            {
+                MagicShow.ShowMsgDialog(Window.GetWindow(this), "获取失败！\n" + Msg, "错误");
+                return;
+            }
+            FrpList.ItemsSource = TunnelList;
+        }
+
+        private async Task GetNodeList()
+        {
+            //获取隧道
+            var (Code, _NodeList, Msg) = await MSLFrpApi.GetNodeList();
+            if (Code != 200)
+            {
+                MagicShow.ShowMsgDialog(Window.GetWindow(this), "获取失败！\n" + Msg, "错误");
+                return;
+            }
+            NodeList.ItemsSource = _NodeList;
+        }
+
+        private async void MainCtrl_SelectionChanged(object sender, SelectionChangedEventArgs e)
+        {
+            if (!this.IsLoaded)
+            {
+                return;
+            }
+            if (!ReferenceEquals(e.OriginalSource, this.MainCtrl))
+            {
+                return;
+            }
+            switch (MainCtrl.SelectedIndex)
+            {
+                case 0:
+                    await GetTunnelList();
+                    break;
+                case 1:
+                    await GetNodeList();
+                    Create_Name.Text = Functions.RandomString("MSL_", 6);
+                    break;
+            }
+        }
+
+        private async void userTokenLogin_Click(object sender, RoutedEventArgs e)
+        {
+            string email = await MagicShow.ShowInput(Window.GetWindow(this), "请输入MSL账户的邮箱", "", false);
+            if (email != null)
+            {
+                string password = await MagicShow.ShowInput(Window.GetWindow(this), "请输入MSL账户的密码", "", true);
+                if (password != null)
+                {
+                    bool save = (bool)SaveToken.IsChecked;
+                    MagicDialog MagicDialog = new MagicDialog();
+                    MagicDialog.ShowTextDialog(Window.GetWindow(this), "登录中……");
+                    await MSLFrpApi.UserLogin(string.Empty, email, password, save);
+                    MagicDialog.CloseTextDialog();
+                }
+            }
+        }
+
+
+
+        //显示隧道信息
+        private void FrpList_SelectionChanged(object sender, SelectionChangedEventArgs e)
+        {
+            var listBox = sender as ListBox;
+            if (listBox.SelectedItem is MSLFrpApi.TunnelInfo selectedTunnel)
+            {
+                TunnelInfo_Text.Content = $"#{selectedTunnel.ID} {selectedTunnel.Name}\n" +
+                    $"本地IP：{selectedTunnel.LIP} 本地端口：{selectedTunnel.LPort}\n远程端口: {selectedTunnel.RPort}" + $"\n隧道状态: {(selectedTunnel.Online ? "在线" : "离线")}";
+            }
+        }
+
+        //确定 输出config
+        private async void OKBtn_Click(object sender, RoutedEventArgs e)
+        {
+            var listBox = FrpList;
+            if (listBox.SelectedItem is MSLFrpApi.TunnelInfo selectedTunnel)
+            {
+                OKBtn.IsEnabled = false;
+                var (Code, Content) = await Task.Run(() => MSLFrpApi.GetTunnelConfig(selectedTunnel.ID));
+                OKBtn.IsEnabled = true;
+                if (Code != 200)
+                {
+                    MagicShow.ShowMsgDialog(Window.GetWindow(this), "出现错误！" + Content, "错误");
+                    return;
+                }
+                //输出配置文件
+                if (Config.WriteFrpcConfig(0, $"MSLFrp(NEW) - {selectedTunnel.Name}", Content) == true)
+                {
+                    await MagicShow.ShowMsgDialogAsync(Window.GetWindow(this), "映射配置成功，请您点击“启动内网映射”以启动映射！", "信息");
+                    Window.GetWindow(this).Close();
+                }
+                else
+                {
+                    await MagicShow.ShowMsgDialogAsync(Window.GetWindow(this), "配置输出失败！", "错误");
+                }
+            }
+            else
+            {
+                await MagicShow.ShowMsgDialogAsync(Window.GetWindow(this), "您似乎没有选择任何隧道！", "错误");
+            }
+        }
+
+        private async void RefreshBtn_Click(object sender, RoutedEventArgs e)
+        {
+            await GetTunnelList();
+        }
+
+        private async void Del_Tunnel_Click(object sender, RoutedEventArgs e)
+        {
+            var listBox = FrpList;
+            if (listBox.SelectedItem is MSLFrpApi.TunnelInfo selectedTunnel)
+            {
+                Del_Tunnel.IsEnabled = false;
+                var (Code, Msg) = await MSLFrpApi.DelTunnel(selectedTunnel.ID);
+                Del_Tunnel.IsEnabled = true;
+                await GetTunnelList();
+                if (Code != 200)
+                {
+                    MagicShow.ShowMsgDialog(Window.GetWindow(this), Msg, "错误");
+                    return;
+                }
+                MagicShow.ShowMsgDialog(Window.GetWindow(this), Msg, "提示");
+            }
+            else
+            {
+                await MagicShow.ShowMsgDialogAsync(Window.GetWindow(this), "您似乎没有选择任何隧道！", "错误");
+            }
+
+        }
+
+        private void OpenWeb_Click(object sender, RoutedEventArgs e)
+        {
+            Process.Start("https://user.mslmc.cn");
+        }
+
+        private void ExitBtn_Click(object sender, RoutedEventArgs e)
+        {
+            //显示登录页面
+            LoginGrid.Visibility = Visibility.Visible;
+            MainCtrl.Visibility = Visibility.Collapsed;
+            MSLFrpApi.UserToken = string.Empty;
+            Config.Remove("MSLUserAccessToken");
+        }
+
+        private void NodeList_SelectionChanged(object sender, SelectionChangedEventArgs e)
+        {
+            var listBox = NodeList;
+            if (listBox.SelectedItem is MSLFrpApi.NodeInfo selectedNode)
+            {
+                NodeTips.Content = (string.IsNullOrEmpty(selectedNode.Remark) ? "节点没有备注" : selectedNode.Remark) +
+                    "\nUDP: " + (selectedNode.UDP == 1 ? "支持" : "不支持") +
+                    "\n节点状态: " + (selectedNode.Status == 1 ? "在线" : "离线");
+                Create_RemotePort.Text = Functions.GenerateRandomNumber(selectedNode.MinPort, selectedNode.MaxPort).ToString();
+            }
+        }
+
+        private async void Create_OKBtn_Click(object sender, RoutedEventArgs e)
+        {
+            var listBox = NodeList;
+            if (listBox.SelectedItem is MSLFrpApi.NodeInfo selectedNode)
+            {
+                Create_OKBtn.IsEnabled = false;
+                var (Code, Msg) = await MSLFrpApi.CreateTunnel(selectedNode.ID, Create_Name.Text, Create_Protocol.Text, "Create By MSL Client", Create_LocalIP.Text, int.Parse(Create_LocalPort.Text), int.Parse(Create_RemotePort.Text));
+                Create_OKBtn.IsEnabled = true;
+                if (Code == 200)
+                {
+                    await MagicShow.ShowMsgDialogAsync(Window.GetWindow(this), $"{Msg}\n隧道名称：{Create_Name.Text}\n远程端口： {Create_RemotePort.Text}", "成功");
+                    //显示main页面
+                    MainCtrl.SelectedIndex = 0;
+                }
+                else
+                {
+                    await MagicShow.ShowMsgDialogAsync(Window.GetWindow(this), "创建失败！请尝试更换隧道名称/节点！\n" + Msg, "错误");
+                }
+            }
+            else
+            {
+                await MagicShow.ShowMsgDialogAsync(Window.GetWindow(this), "您似乎没有选择任何节点！", "错误");
+            }
+        }
+
+        private void userRegister_Click(object sender, RoutedEventArgs e)
+        {
+            Process.Start("https://user.mslmc.cn");
+        }
+
+        private void GenerateRandomPort_Click(object sender, RoutedEventArgs e)
+        {
+            var listBox = NodeList;
+            if (listBox.SelectedItem is MSLFrpApi.NodeInfo selectedNode)
+            {
+                Create_RemotePort.Text = Functions.GenerateRandomNumber(selectedNode.MinPort, selectedNode.MaxPort).ToString();
+            }
+            else
+            {
+                MagicShow.ShowMsgDialog(Window.GetWindow(this), "您似乎没有选择任何节点！", "错误");
+            }
+        }
+    }
+}

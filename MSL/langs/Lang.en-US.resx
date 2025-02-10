@@ -589,9 +589,6 @@ Update log:</value>
   <data name="None" xml:space="preserve">
     <value>None</value>
   </data>
-  <data name="Page_FrpcPage_Status_BedrockVersion" xml:space="preserve">
-    <value>Bedrock Version:</value>
-  </data>
   <data name="Page_FrpcPage_Status_ChmlFrp" xml:space="preserve">
     <value>ChmlFrp Service</value>
   </data>
@@ -601,17 +598,14 @@ Update log:</value>
   <data name="Page_FrpcPage_Status_Failed" xml:space="preserve">
     <value>Failed to obtain Frp information, we recommended you to reconfigure!</value>
   </data>
-  <data name="Page_FrpcPage_Status_IP" xml:space="preserve">
-    <value>IP:</value>
-  </data>
-  <data name="Page_FrpcPage_Status_JavaVersion" xml:space="preserve">
-    <value>Java Version:</value>
+  <data name="Page_FrpcPage_IP2" xml:space="preserve">
+    <value>If above address couldn't connect, use this IP:</value>
   </data>
   <data name="Page_FrpcPage_Status_OpenFrp" xml:space="preserve">
     <value>OpenFrp Service</value>
   </data>
-  <data name="Page_FrpcPage_Status_StartToViewIP" xml:space="preserve">
-    <value>Please Launch Frpc to view IP address</value>
+  <data name="Page_FrpcPage_Domain" xml:space="preserve">
+    <value>Connect Address:</value>
   </data>
   <data name="Page_FrpcPage_Status_Ping" xml:space="preserve">
     <value>Ping:</value>

@@ -14,14 +14,14 @@ namespace MSL.utils
         private static readonly string _configPath = "MSL\\config.json";//配置文件路径
         private static Task _writeTask = Task.CompletedTask;
 
-        //读取配置
+        // 读取配置
         public static object Read(string key)
         {
             JObject jobject = JObject.Parse(File.ReadAllText(_configPath, Encoding.UTF8));
             return jobject[key] ?? null;
         }
 
-        //写入配置
+        // 写入配置
         public static void Write(string key, JToken value)
         {
             //感谢newbing写的队列
@@ -40,6 +40,15 @@ namespace MSL.utils
                     }
                 });
             }
+        }
+
+        // 删除配置
+        public static void Remove(string key)
+        {
+            JObject jobject = JObject.Parse(File.ReadAllText(_configPath, Encoding.UTF8));
+            jobject.Remove(key);
+            string convertString = Convert.ToString(jobject);
+            File.WriteAllText(_configPath, convertString, Encoding.UTF8);
         }
 
         /// <summary>

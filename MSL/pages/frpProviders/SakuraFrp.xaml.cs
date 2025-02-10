@@ -263,7 +263,7 @@ namespace MSL.pages.frpProviders
             MainGrid.Visibility = Visibility.Collapsed;
             CreateGrid.Visibility = Visibility.Collapsed;
             UserToken = null;
-            Config.Write("SakuraFrpToken", "");
+            Config.Remove("SakuraFrpToken");
         }
 
         //下面是创建隧道相关

@@ -5,6 +5,7 @@ using MSL.langs;
 using MSL.utils;
 using Newtonsoft.Json.Linq;
 using System;
+using System.Collections.Generic;
 using System.Diagnostics;
 using System.IO;
 using System.Net.NetworkInformation;
@@ -13,6 +14,7 @@ using System.Text.RegularExpressions;
 using System.Threading.Tasks;
 using System.Windows;
 using System.Windows.Controls;
+using System.Windows.Media;
 using System.Windows.Threading;
 using MessageBox = System.Windows.MessageBox;
 using Window = System.Windows.Window;
@@ -49,10 +51,8 @@ namespace MSL.pages
                 }
                 else
                 {
-                    copyFrpc.IsEnabled = false;
                     startfrpc.IsEnabled = false;
-                    frplab1.Text = LanguageManager.Instance["Page_FrpcPage_Status"];
-                    frplab3.Text = LanguageManager.Instance["Page_FrpcPage_IPNull"];
+                    frplab1.Text = LanguageManager.Instance["Page_FrpcPage_Status_Failed"];
                 }
             }
             catch
@@ -72,51 +72,47 @@ namespace MSL.pages
                     string convertString = Convert.ToString(jobject);
                     File.WriteAllText(@"MSL\frp\config.json", convertString, Encoding.UTF8);
                 }
-                copyFrpc.IsEnabled = true;
+                //copyFrpc.IsEnabled = true;
                 startfrpc.IsEnabled = true;
                 frplab1.Text = LanguageManager.Instance["Page_FrpcPage_Status_Checking"];
                 // 如果frpcServer为0（MSL）、2（CHML）、-2（Custom，自己提供frpc）、-1（Custom，官版frpc）时，执行下面函数
-                int frpServer = (int)jobject[frpID.ToString()]["frpcServer"];
-                if (frpServer == 0 || frpServer == 2 || frpServer == -2 || frpServer == -1)
+                FrpcServer = (int)jobject[frpID.ToString()]["frpcServer"];
+                if (FrpcServer == 0 || FrpcServer == 2 || FrpcServer == -2 || FrpcServer == -1)
                 {
-                    await LoadFrpcInfo(frpServer, jobject);
+                    await LoadFrpcInfo(jobject);
                 }
-                else if (frpServer == 1) // 否则，为1时，则为OF节点
+                else if (FrpcServer == 1) // 否则，为1时，则为OF节点
                 {
-                    copyFrpc.IsEnabled = false;
                     frplab1.Text = LanguageManager.Instance["Page_FrpcPage_Status_OpenFrp"];
-                    frplab3.Text = LanguageManager.Instance["Page_FrpcPage_Status_StartToViewIP"];
                 }
-                else if (frpServer == 3) // 否则，为3时，则为SF节点
+                else if (FrpcServer == 3) // 否则，为3时，则为SF节点
                 {
-                    copyFrpc.IsEnabled = false;
                     frplab1.Text = "SakuraFrp节点";
-                    frplab3.Text = LanguageManager.Instance["Page_FrpcPage_Status_StartToViewIP"];
                 }
-                /*
-                else if (jobject[frpID.ToString()]["frpcServer"].ToString() == "5")
-                {
-                    copyFrpc.IsEnabled = false;
-                    frplab1.Text = "MSL-Frp(NEW)节点";
-                    frplab3.Text = LanguageManager.Instance["Page_FrpcPage_Status_StartToViewIP"];
-                }
-                */
             }
             catch
             {
-                copyFrpc.IsEnabled = false;
                 frplab1.Text = LanguageManager.Instance["Page_FrpcPage_Status_Failed"];
-                frplab3.Text = LanguageManager.Instance["None"];
             }
         }
 
-        private async Task LoadFrpcInfo(int frpcServer, JObject jobject)
+        private int FrpcServer;
+        private string RemoteAddr;
+        private string RemoteDomain;
+        // 辅助类定义
+        private class ProxyConfig
+        {
+            public string Type { get; set; }
+            public string RemotePort { get; set; }
+        }
+
+        private async Task LoadFrpcInfo(JObject jobject)
         {
             // 节点名称
             string nodeName = LanguageManager.Instance["Page_FrpcPage_Status_CustomFrp"];
             // 节点配置
             string configText;
-            if (frpcServer == 2) // Load CHML-config
+            if (FrpcServer == 2) // Load CHML-config
             {
                 nodeName = LanguageManager.Instance["Page_FrpcPage_Status_ChmlFrp"];
                 configText = File.ReadAllText(@$"MSL\frp\{frpID}\frpc");
@@ -132,76 +128,66 @@ namespace MSL.pages
             }
             string[] lines = configText.Split('\n'); // 每一行分割开
 
-            if (frpcServer == 0)
+            if (FrpcServer == 0)
             {
                 nodeName = jobject[frpID.ToString()]["name"].ToString();
             }
 
-            // 服务器地址
-            string serverAddr = "";
-            int serverPort = 0;
-            string remotePort = "";
-            string frpcType = "";
-            bool readServerInfo = true;  // 是否继续读取服务器信息
+            // 清空现有内容  
+            ProxiesContainer.Children.Clear();
+
+            List<ProxyConfig> proxies = new List<ProxyConfig>();
+            ProxyConfig currentProxy = null;
+
             for (int i = 0; i < lines.Length; i++)
             {
-                if (lines[i].StartsWith("type") && frpcType != "")
+                var line = lines[i].Trim();
+                if ((line.StartsWith("serverAddr") || line.StartsWith("server_addr")))
                 {
-                    // 遇到第二个type时停止读取服务器信息
-                    readServerInfo = false;
-                    break;
+                    RemoteAddr = lines[i].Split('=')[1].Trim().Trim('"');
                 }
-                else if (lines[i].StartsWith("type") && readServerInfo)
+                if ((line.StartsWith("metadatas.mslFrpRemoteDomain")))
                 {
-                    frpcType = lines[i].Split('=')[1].Trim();
+                    RemoteDomain = lines[i].Split('=')[1].Trim().Trim('"');
                 }
-                else if ((lines[i].StartsWith("serverAddr") || lines[i].StartsWith("server_addr")) && readServerInfo)
+                // TOML格式处理
+                if (line.StartsWith("[[proxies]]"))
                 {
-                    serverAddr = lines[i].Split('=')[1].Trim().Replace("\"", string.Empty);
+                    if (currentProxy != null) proxies.Add(currentProxy);
+                    currentProxy = new ProxyConfig();
                 }
-                else if ((lines[i].StartsWith("serverPort") || lines[i].StartsWith("server_port")) && readServerInfo)
+                // INI格式处理
+                else if (line.StartsWith("[") && !line.StartsWith("[common]"))
                 {
-                    serverPort = int.Parse(lines[i].Split('=')[1].Trim());
+                    if (currentProxy != null) proxies.Add(currentProxy);
+                    currentProxy = new ProxyConfig();
                 }
-                else if ((lines[i].StartsWith("remotePort") || lines[i].StartsWith("remote_port")) && readServerInfo)
+                else if (currentProxy != null)
                 {
-                    remotePort = lines[i].Split('=')[1].Trim();
-                }
-                else if (frpcServer == 2 && lines[i].StartsWith("[") && readServerInfo) // 针对chmlfrp的节点名字读取优化
-                {
-                    nodeName += "-" + lines[i].Replace("[", "").Replace("]", "").Replace("\r", "").ToString();
+                    // 通用属性解析
+                    if (line.StartsWith("remotePort") || line.StartsWith("remote_port"))
+                    {
+                        currentProxy.RemotePort = line.Split('=')[1].Trim().Trim('"');
+                    }
+                    else if (line.StartsWith("type"))
+                    {
+                        currentProxy.Type = line.Split('=')[1].Trim().Trim('"');
+                    }
                 }
             }
 
-            if (frpcServer == 0)
+            // 处理最后一个代理项
+            if (currentProxy != null) proxies.Add(currentProxy);
+
+            // 创建UI元素
+            foreach (var proxy in proxies)
             {
-                frplab3.Text= frplab3.Text = LanguageManager.Instance["Page_FrpcPage_Status_StartToViewIP"];
-                copyFrpc.IsEnabled = false;
-            }
-            else
-            {
-                if (!readServerInfo)
-                {
-                    frplab3.Text = $"{LanguageManager.Instance["Page_FrpcPage_Status_JavaVersion"]}{serverAddr}:{remotePort}" +
-                        $"\n{LanguageManager.Instance["Page_FrpcPage_Status_BedrockVersion"]}" +
-                        $"{LanguageManager.Instance["Page_FrpcPage_Status_IP"]}{serverAddr} {LanguageManager.Instance["Page_FrpcPage_Status_Port"]}{remotePort}";
-                }
-                else
-                {
-                    if (frpcType == "udp")
-                    {
-                        frplab3.Text = $"{LanguageManager.Instance["Page_FrpcPage_Status_IP"]}{serverAddr} {LanguageManager.Instance["Page_FrpcPage_Status_Port"]}{remotePort}";
-                    }
-                    else
-                    {
-                        frplab3.Text = serverAddr + ":" + remotePort;
-                    }
-                }
+                CreateProxyItem(proxy.RemotePort, proxy.Type);
             }
             await Task.Run(() =>
             {
                 Ping pingSender = new Ping();
-                PingReply reply = pingSender.Send(serverAddr, 2000);
+                PingReply reply = pingSender.Send(RemoteAddr, 2000);
                 if (reply.Status == IPStatus.Success)
                 {
                     Dispatcher.Invoke(() =>
@@ -224,6 +210,61 @@ namespace MSL.pages
                 }
             });
         }
+
+        private void CreateProxyItem(string remotePort, string proxyType)
+        {
+            void AddProxyEntry(string labelText, string address)
+            {
+                var stackPanel = new StackPanel { Orientation = Orientation.Horizontal };
+
+                var ipTextBlock = new TextBlock
+                {
+                    Text = labelText,
+                    HorizontalAlignment = HorizontalAlignment.Center,
+                    VerticalAlignment = VerticalAlignment.Center,
+                    FontSize = 14,
+                    Foreground = (Brush)FindResource("PrimaryTextBrush")
+                };
+
+                var addressTextBlock = new TextBlock
+                {
+                    Text = address,
+                    HorizontalAlignment = HorizontalAlignment.Left,
+                    VerticalAlignment = VerticalAlignment.Center,
+                    FontSize = 14,
+                    Foreground = (Brush)FindResource("PrimaryTextBrush"),
+                    Margin = new Thickness(3, 0, 25, 0)
+                };
+
+                var copyButton = new Button
+                {
+                    Content = LanguageManager.Instance["Page_FrpcPage_Copy"],
+                    Width = 80,
+                    FontWeight = FontWeights.Normal,
+                };
+
+                copyButton.Click += (sender, e) => Clipboard.SetText(addressTextBlock.Text);
+
+                stackPanel.Children.Add(ipTextBlock);
+                stackPanel.Children.Add(addressTextBlock);
+                stackPanel.Children.Add(copyButton);
+
+                ProxiesContainer.Children.Add(stackPanel);
+            }
+
+            if (!string.IsNullOrEmpty(RemoteDomain))
+            {
+                // 添加第一个地址
+                AddProxyEntry(LanguageManager.Instance["Page_FrpcPage_Domain"], $"{RemoteDomain}:{remotePort}");
+                // 添加备用地址
+                AddProxyEntry(LanguageManager.Instance["Page_FrpcPage_IP2"], $"{RemoteAddr}:{remotePort}");
+            }
+            else
+            {
+                AddProxyEntry(LanguageManager.Instance["Page_FrpcPage_IP"], $"{RemoteAddr}:{remotePort}");
+            }
+        }
+
 
         private void AutoStartFrpc()
         {
@@ -444,12 +485,12 @@ namespace MSL.pages
                 await Task.Run(FrpcProcess.WaitForExit);
                 FrpcProcess.CancelOutputRead();
                 FrpcList.RunningFrpc.Remove(frpID);
-                //到这里就关掉了
+                // 到这里就关掉了
                 Growl.Info("内网映射已关闭！");
                 startfrpc.IsEnabled = true;
                 tempStr = string.Empty;
             }
-            catch (Exception e)//错误处理
+            catch (Exception e) // 错误处理
             {
                 if (e.Message.Contains("Frpc Not Found"))
                 {
@@ -512,12 +553,6 @@ namespace MSL.pages
                 {
                     frpcOutlog.Text += "内网映射桥接失败！\n";
                     Growl.Error("内网映射桥接失败！");
-                    /*
-                    if (msg.Contains("付费资格已过期"))
-                    {
-                        Task.Run(PayService);
-                    }
-                    else */
                     if (msg.Contains("i/o timeout"))
                     {
                         frpcOutlog.Text += "连接超时，该节点可能下线，请重新配置！\n";
@@ -537,12 +572,10 @@ namespace MSL.pages
                 if (msg.Contains("success"))
                 {
                     frpcOutlog.Text += "内网映射桥接成功！您可复制IP进入游戏了！\n";
-                    Growl.Success("内网映射桥接成功！");
                 }
                 if (msg.Contains("error"))
                 {
                     frpcOutlog.Text = frpcOutlog.Text + "内网映射桥接失败！\n";
-                    Growl.Error("内网映射桥接失败！");
                     if (msg.Contains("port already used"))
                     {
                         frpcOutlog.Text += "本地端口被占用，请检查是否有程序占用或后台是否存在frpc进程，您可尝试手动结束frpc进程或重启电脑再试。\n";
@@ -572,7 +605,7 @@ namespace MSL.pages
             if (msg.Contains("发现新版本"))
             {
                 JObject jobject = JObject.Parse(File.ReadAllText(@"MSL\frp\config.json", Encoding.UTF8));
-                if ((int)jobject[frpID.ToString()]["frpcServer"] == 1) // OFfrpc更新
+                if ((int)jobject[frpID.ToString()]["frpcServer"] == 1) // OF frpc更新
                 {
                     Growl.Ask(new GrowlInfo
                     {
@@ -603,122 +636,6 @@ namespace MSL.pages
             frpcOutlog.ScrollToEnd();
         }
 
-        /*
-        private async void PayService()
-        {
-            bool _ret = false;
-            await Dispatcher.Invoke(async () =>
-            {
-                if (!await MagicShow.ShowMsgDialogAsync(Window.GetWindow(this), "您的付费资格已过期，请进行续费！\n点击确定开始付费节点续费操作。", "提示", true, "取消"))
-                {
-                    _ret = true;
-                }
-            });
-            if (_ret)
-            {
-                return;
-            }
-
-            Process.Start("https://afdian.com/a/makabaka123");
-            await Dispatcher.Invoke(async () =>
-            {
-                if (!await MagicShow.ShowMsgDialogAsync(Window.GetWindow(this), "请在弹出的浏览器网站中进行购买，购买完毕后点击确定进行下一步操作……", "购买须知", true, "取消购买", "确定"))
-                {
-                    _ret = true;
-                }
-            });
-            if (_ret)
-            {
-                return;
-            }
-
-            string order = null;
-            string qq = null;
-            await Dispatcher.Invoke(async () =>
-            {
-                order = await MagicShow.ShowInput(Window.GetWindow(this), "输入爱发电订单号：\n（头像→订单→找到发电项目→复制项目下方订单号）");
-            });
-            if (order == null)
-            {
-                return;
-            }
-            if (Regex.IsMatch(order, "[^0-9]") || order.Length < 5)
-            {
-                Dispatcher.Invoke(() =>
-                {
-                    MagicShow.ShowMsgDialog(Window.GetWindow(this), "请输入合法订单号：仅含数字且长度不小于5位！", "获取失败！");
-                });
-                return;
-            }
-
-            await Dispatcher.Invoke(async () =>
-            {
-                qq = await MagicShow.ShowInput(Window.GetWindow(this), "输入账号(QQ号)：");
-            });
-
-            if (qq == null)
-            {
-                return;
-            }
-            if (Regex.IsMatch(qq, "[^0-9]") || qq.Length < 5)
-            {
-                Dispatcher.Invoke(() =>
-                {
-                    MagicShow.ShowMsgDialog(Window.GetWindow(this), "请输入合法账号：仅含数字且长度不小于5位！", "获取失败！");
-                });
-                return;
-            }
-
-            Dialog _dialog = null;
-            try
-            {
-                Dispatcher.Invoke(() => { _dialog = Dialog.Show(new TextDialog("发送请求中，请稍等……")); });
-                JObject keyValuePairs = new JObject()
-                {
-                    ["order"] = order,
-                    ["qq"] = qq,
-                };
-                var ret = HttpService.Post("getpassword", 0, JsonConvert.SerializeObject(keyValuePairs), (await HttpService.GetApiContentAsync("query/frp/MSLFrps?query=orderapi"))["data"]["url"].ToString());
-                Dispatcher.Invoke(() =>
-                {
-                    Window.GetWindow(this).Focus();
-                    _dialog.Close();
-                });
-                JObject keyValues = JObject.Parse(ret);
-                if (keyValues != null && (int)keyValues["status"] == 0)
-                {
-                    Dispatcher.Invoke(() =>
-                    {
-                        MagicShow.ShowMsgDialog(Window.GetWindow(this), "您的密码为：" + keyValues["password"].ToString() + "\n注册时间：" + keyValues["registration"].ToString() + "\n本次续费：" + keyValues["days"].ToString() + "天\n到期时间：" + keyValues["expiration"].ToString(), "续费成功！");
-                    });
-                }
-                else if (keyValues != null)
-                {
-                    Dispatcher.Invoke(() =>
-                    {
-                        MagicShow.ShowMsgDialog(Window.GetWindow(this), keyValues["reason"].ToString(), "获取失败！");
-                    });
-                }
-                else
-                {
-                    Dispatcher.Invoke(() =>
-                    {
-                        MagicShow.ShowMsgDialog(Window.GetWindow(this), "返回内容为空！", "获取失败！");
-                    });
-                }
-            }
-            catch
-            {
-                Dispatcher.Invoke(() =>
-                {
-                    Window.GetWindow(this).Focus();
-                    _dialog.Close();
-                    MagicShow.ShowMsgDialog(Window.GetWindow(this), "获取失败，请添加QQ：483232994（昵称：MSL-FRP），并发送发电成功截图+订单号来手动获取密码\r\n（注：回复消息不一定及时，请耐心等待！如果没有添加成功，或者添加后长时间无人回复，请进入MSL交流群然后从群里私聊）", "获取失败！");
-                });
-            }
-        }
-        */
-
         private async void startfrpc_Click(object sender, RoutedEventArgs e)
         {
             if (startfrpc.IsChecked == true)
@@ -737,11 +654,6 @@ namespace MSL.pages
                     FrpcProcess.Kill(); // CTRL+C失败后直接Kill
                 }
             }
-        }
-
-        private void copyFrpc_Click(object sender, RoutedEventArgs e)
-        {
-            Clipboard.SetDataObject(frplab3.Text.ToString());
         }
 
         private void Return_Click(object sender, RoutedEventArgs e)

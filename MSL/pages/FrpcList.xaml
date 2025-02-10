@@ -10,9 +10,19 @@
       mc:Ignorable="d" 
       d:DesignHeight="460" d:DesignWidth="750" Style="{StaticResource AnimationPage}"
       Title="FrpcList" Loaded="Page_Loaded">
-    <controls:MagicCard Margin="10" Title="{Binding [Page_FrpcPage_Title], Source={x:Static langs:LanguageManager.Instance}}">
+    <controls:MagicCard Margin="10">
         <Grid>
-            <Border CornerRadius="10" BorderThickness="0" Background="{DynamicResource BackgroundBrush}">
+            <Grid.RowDefinitions>
+                <RowDefinition Height="Auto"/>
+                <RowDefinition/>
+            </Grid.RowDefinitions>
+            <Label Style="{StaticResource BorderTitle}" Content="{Binding [Page_FrpcPage_Title], Source={x:Static langs:LanguageManager.Instance}}"/>
+            <StackPanel Grid.Row="0" Orientation="Horizontal" HorizontalAlignment="Right" VerticalAlignment="Top">
+                <!--
+                <Button x:Name="MyInfo" Content="我的MSL-Frp信息" Click="AddFrpc_Click"/>
+                -->
+            </StackPanel>
+            <Border Grid.Row="1" CornerRadius="10" BorderThickness="0" Background="{DynamicResource BackgroundBrush}">
                 <ListBox x:Name="FrpcListBox" Background="{x:Null}" BorderBrush="{x:Null}" hc:Empty.ShowEmpty="true" MouseDoubleClick="FrpcListBox_MouseDoubleClick" KeyUp="FrpcListBox_KeyUp">
                     <ListBox.ItemTemplate>
                         <DataTemplate>
@@ -25,9 +35,9 @@
                     </ListBox.ItemTemplate>
                 </ListBox>
             </Border>
-            <StackPanel Orientation="Horizontal" HorizontalAlignment="Right" VerticalAlignment="Bottom">
+            <StackPanel Grid.Row="1" Orientation="Horizontal" HorizontalAlignment="Right" VerticalAlignment="Bottom">
                 <Button x:Name="AddFrpc" hc:IconElement.Geometry="{StaticResource AddGeometry}" Style="{StaticResource ButtonPrimary}" Content="添加隧道" Click="AddFrpc_Click"/>
-                <Button x:Name="DelFrpc" hc:IconElement.Geometry="{StaticResource DeleteGeometry}" Style="{StaticResource ButtonDanger}" Margin="10" Content="删除选中" Click="DelFrpc_Click"/>
+                <Button x:Name="DelFrpc" hc:IconElement.Geometry="{StaticResource DeleteGeometry}" Style="{StaticResource ButtonDanger}" Content="删除选中" Margin="10" Click="DelFrpc_Click"/>
             </StackPanel>
         </Grid>
     </controls:MagicCard>

@@ -118,13 +118,17 @@
     <Compile Include="pages\FrpcList.xaml.cs">
       <DependentUpon>FrpcList.xaml</DependentUpon>
     </Compile>
-    <Compile Include="pages\frpProviders\MSLFrp.xaml.cs">
+    <Compile Include="pages\frpProviders\MSLFrp\MSLFrp.xaml.cs">
       <DependentUpon>MSLFrp.xaml</DependentUpon>
+    </Compile>
+    <Compile Include="pages\frpProviders\MSLFrp\MSLFrpProfile.xaml.cs">
+      <DependentUpon>MSLFrpProfile.xaml</DependentUpon>
     </Compile>
     <Compile Include="pages\frpProviders\SakuraFrp.xaml.cs">
       <DependentUpon>SakuraFrp.xaml</DependentUpon>
     </Compile>
     <Compile Include="utils\Config.cs" />
+    <Compile Include="utils\FrpApiUtils.cs" />
     <Compile Include="utils\Functions.cs" />
     <Compile Include="controls\ImagePathConverter.cs" />
     <Compile Include="controls\dialogs\InputDialog.xaml.cs">
@@ -292,7 +296,11 @@
       <SubType>Designer</SubType>
       <Generator>MSBuild:Compile</Generator>
     </Page>
-    <Page Include="pages\frpProviders\MSLFrp.xaml">
+    <Page Include="pages\frpProviders\MSLFrp\MSLFrp.xaml">
+      <SubType>Designer</SubType>
+      <Generator>MSBuild:Compile</Generator>
+    </Page>
+    <Page Include="pages\frpProviders\MSLFrp\MSLFrpProfile.xaml">
       <SubType>Designer</SubType>
       <Generator>MSBuild:Compile</Generator>
     </Page>

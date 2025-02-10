@@ -182,9 +182,7 @@ namespace MSL.utils
             if (start > end)
             {
                 // 自动交换参数值保证范围有效性
-                int temp = start;
-                start = end;
-                end = temp;
+                (end, start) = (start, end);
             }
 
             // 生成并返回随机数（包含两端值）

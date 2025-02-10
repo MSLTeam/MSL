@@ -19,9 +19,9 @@
                 <RowDefinition/>
             </Grid.RowDefinitions>
             <Label Grid.Row="0" Style="{StaticResource BorderTitle}" Content="{Binding [Page_ServerList_Title], Source={x:Static langs:LanguageManager.Instance}}"/>
-            <StackPanel Grid.Row="0" Orientation="Horizontal" HorizontalAlignment="Right">
-                <Button Content="下载资源" x:Name="DlModBtn" Margin="0,0,10,0" HorizontalAlignment="Right" VerticalAlignment="Top" hc:IconElement.Geometry="{StaticResource DownloadGeometry}" Click="DlModBtn_Click"/>
-                <Button Content="下载服务端" x:Name="DlServerCoreBtn" HorizontalAlignment="Right" VerticalAlignment="Top" hc:IconElement.Geometry="{StaticResource DownloadGeometry}" Click="DlServerCoreBtn_Click"/>
+            <StackPanel Grid.Row="0" Orientation="Horizontal" HorizontalAlignment="Right" VerticalAlignment="Top">
+                <Button Content="下载资源" x:Name="DlModBtn" Margin="0,0,10,0" hc:IconElement.Geometry="{StaticResource DownloadGeometry}" Click="DlModBtn_Click"/>
+                <Button Content="下载服务端" x:Name="DlServerCoreBtn" hc:IconElement.Geometry="{StaticResource DownloadGeometry}" Click="DlServerCoreBtn_Click"/>
             </StackPanel>
             <Border Grid.Row="1" CornerRadius="10" BorderThickness="0" Background="{DynamicResource BackgroundBrush}">
                 <ListView x:Name="serverList" hc:Empty.ShowEmpty="true" MouseDoubleClick="serverList_MouseDoubleClick" FontSize="16" SelectionMode="Single" SelectionChanged="serverList_SelectionChanged" Background="{x:Null}" BorderBrush="{x:Null}">

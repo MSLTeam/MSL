@@ -1,15 +1,10 @@
 ﻿using HandyControl.Controls;
 using MSL.utils;
-using Newtonsoft.Json;
 using Newtonsoft.Json.Linq;
 using System;
 using System.Collections.Generic;
 using System.Diagnostics;
-using System.IO;
 using System.Net;
-using System.Net.Http;
-using System.Net.Http.Headers;
-using System.Text;
 using System.Threading.Tasks;
 using System.Windows;
 using System.Windows.Controls;
@@ -42,8 +37,8 @@ namespace MSL.pages.frpProviders
                 //显示登录页面
                 LoginGrid.Visibility = Visibility.Visible;
                 MainGrid.Visibility = Visibility.Collapsed;
-                OpenFrpApi.authId = Config.Read("OpenFrpToken")?.ToString() ?? "";
-                if (OpenFrpApi.authId != "")
+                OpenFrpApi.AuthId = Config.Read("OpenFrpToken")?.ToString() ?? "";
+                if (OpenFrpApi.AuthId != "")
                 {
                     await TokenLogin();
                     return;
@@ -58,31 +53,30 @@ namespace MSL.pages.frpProviders
 
         private async Task TokenLogin()
         {
-            OpenFrpApi control = new OpenFrpApi();
-            if (string.IsNullOrEmpty(OpenFrpApi.authId))
+            if (string.IsNullOrEmpty(OpenFrpApi.AuthId))
             {
                 string authId = await MagicShow.ShowInput(Window.GetWindow(this), "请输入Authorization");
                 if (authId == null)
                 {
                     return;
                 }
-                OpenFrpApi.authId = authId;
+                OpenFrpApi.AuthId = authId;
             }
             
             LoginGrid.Visibility = Visibility.Collapsed;
             MainGrid.Visibility = Visibility.Visible;
             MagicDialog MagicDialog = new MagicDialog();
             MagicDialog.ShowTextDialog(Window.GetWindow(this), "登录中……");
-            var data = await control.GetUserInfo();
+            var data = await OpenFrpApi.GetUserInfo();
             MagicDialog.CloseTextDialog();
             if (data.HttpResponseCode == HttpStatusCode.OK)
             {
-                GetFrpsInfo(control, JObject.Parse(data.HttpResponseContent.ToString()));
+                GetFrpsInfo(JObject.Parse(data.HttpResponseContent.ToString()));
             }
             else
             {
                 MagicShow.ShowMsgDialog(Window.GetWindow(this), "登录失败！请检查您的Authorization是否正确！\n" + data.HttpResponseCode, "错误！");
-                OpenFrpApi.authId = string.Empty;
+                OpenFrpApi.AuthId = string.Empty;
                 LoginGrid.Visibility = Visibility.Visible;
                 MainGrid.Visibility = Visibility.Hidden;
                 return;
@@ -110,7 +104,7 @@ namespace MSL.pages.frpProviders
             MainGrid.Visibility = Visibility.Visible;
             MagicDialog MagicDialog = new MagicDialog();
             MagicDialog.ShowTextDialog(Window.GetWindow(this), "登录中……");
-            string usr_info = await control.Login(userAccount, userPass);
+            string usr_info = await OpenFrpApi.Login(userAccount, userPass);
             MagicDialog.CloseTextDialog();
             JObject userdata = null;
             try
@@ -120,27 +114,27 @@ namespace MSL.pages.frpProviders
             catch
             {
                 MagicShow.ShowMsgDialog(Window.GetWindow(this), "登录失败！请检查您的用户名或密码是否正确！\n" + usr_info, "错误！");
-                OpenFrpApi.authId = string.Empty;
+                OpenFrpApi.AuthId = string.Empty;
                 LoginGrid.Visibility = Visibility.Visible;
                 MainGrid.Visibility = Visibility.Hidden;
                 return;
             }
-            GetFrpsInfo(control, userdata);
+            GetFrpsInfo(userdata);
         }
 
-        private void GetFrpsInfo(OpenFrpApi control,JObject userdata)
+        private void GetFrpsInfo(JObject userdata)
         {
             if ((bool)userdata["flag"] == false)
             {
                 MagicShow.ShowMsgDialog(Window.GetWindow(this), "登录失败！请检查您输入的信息是否正确！\n" + userdata["msg"], "错误！");
-                OpenFrpApi.authId = string.Empty;
+                OpenFrpApi.AuthId = string.Empty;
                 LoginGrid.Visibility = Visibility.Visible;
                 MainGrid.Visibility = Visibility.Hidden;
                 return;
             }
             if (SaveToken.IsChecked == true)
             {
-                Config.Write("OpenFrpToken", OpenFrpApi.authId);
+                Config.Write("OpenFrpToken", OpenFrpApi.AuthId);
             }
             string welcome = $"用户名：{userdata["data"]["username"]}[{userdata["data"]["friendlyGroup"]}]\n";
             string userid = $"ID：{userdata["data"]["id"]}\n";
@@ -158,7 +152,7 @@ namespace MSL.pages.frpProviders
                 loadMode = toggleProxies.SelectedIndex;
                 if (loadMode == 0)
                 {
-                    Dictionary<string, string> process = control.GetUserNodes();
+                    Dictionary<string, string> process = OpenFrpApi.GetUserNodes();
                     if (process.Count != 0)
                     {
                         nodelist = process;
@@ -170,7 +164,7 @@ namespace MSL.pages.frpProviders
                 }
                 else
                 {
-                    (Dictionary<string, string>, JArray) process = control.GetNodeList(Window.GetWindow(this));
+                    (Dictionary<string, string>, JArray) process = OpenFrpApi.GetNodeList(Window.GetWindow(this));
                     Dictionary<string, string> item1 = process.Item1;
                     nodelist = item1;
                     jArray = process.Item2;
@@ -261,7 +255,6 @@ namespace MSL.pages.frpProviders
                 toggleProxies.IsEnabled = false;
                 toggleAddProxiesGroup.IsEnabled = false;
                 doneBtn.IsEnabled = false;
-                OpenFrpApi control = new OpenFrpApi();
                 string type;
                 if (frpcType.SelectedIndex == 0) type = "tcp";
                 else type = "udp";
@@ -280,7 +273,7 @@ namespace MSL.pages.frpProviders
                 if (proxy_name != null)
                 {
                     string returnMsg = "";
-                    bool createReturn = control.CreateProxy(type, portBox.Text, zip, selected_node_id, remotePortBox.Text, proxy_name, out returnMsg);
+                    bool createReturn = OpenFrpApi.CreateProxy(type, portBox.Text, zip, selected_node_id, remotePortBox.Text, proxy_name, out returnMsg);
                     if (createReturn)
                     {
                         MagicShow.ShowMsgDialog(Window.GetWindow(this), "隧道创建成功！", "提示");
@@ -315,7 +308,7 @@ namespace MSL.pages.frpProviders
             Window window = Window.GetWindow(Window.GetWindow(this));
             if (toggleProxies.SelectedIndex == 0)
             {
-                Dictionary<string, string> process = await Task.Run(() => control.GetUserNodes());
+                Dictionary<string, string> process = await Task.Run(() => OpenFrpApi.GetUserNodes());
                 if (process.Count != 0)
                 {
                     nodelist = process;
@@ -327,7 +320,7 @@ namespace MSL.pages.frpProviders
             }
             else
             {
-                (Dictionary<string, string>, JArray) process = await Task.Run(() => control.GetNodeList(window));
+                (Dictionary<string, string>, JArray) process = await Task.Run(() => OpenFrpApi.GetNodeList(window));
                 Dictionary<string, string> item1 = process.Item1;
                 nodelist = item1;
                 jArray = process.Item2;
@@ -359,9 +352,8 @@ namespace MSL.pages.frpProviders
                 object o = serversList.SelectedValue;
                 string id = nodelist[o.ToString()];
                 serversList.Items.Clear();
-                OpenFrpApi control = new OpenFrpApi();
                 string returnMsg = "";
-                bool delReturn = await Task.Run(() => control.DeleteProxy(id, out returnMsg));
+                bool delReturn = await Task.Run(() => OpenFrpApi.DeleteProxy(id, out returnMsg));
                 if (delReturn)
                 {
                     MagicShow.ShowMsgDialog(Window.GetWindow(this), "删除成功！", "提示");
@@ -370,7 +362,7 @@ namespace MSL.pages.frpProviders
                 {
                     MagicShow.ShowMsgDialog(Window.GetWindow(this), "删除失败！" + returnMsg, "错误");
                 }
-                Dictionary<string, string> process = control.GetUserNodes();
+                Dictionary<string, string> process = OpenFrpApi.GetUserNodes();
                 if (process.Count != 0)
                 {
                     nodelist = process;
@@ -466,8 +458,8 @@ namespace MSL.pages.frpProviders
 
         private void logoutBtn_Click(object sender, RoutedEventArgs e)
         {
-            OpenFrpApi.authId = string.Empty;
-            Config.Write("OpenFrpToken", "");
+            OpenFrpApi.AuthId = string.Empty;
+            Config.Remove("OpenFrpToken");
             LoginGrid.Visibility = Visibility.Visible;
             MainGrid.Visibility = Visibility.Hidden;
             userInfo.Content = string.Empty;
@@ -475,325 +467,4 @@ namespace MSL.pages.frpProviders
             logoutBtn.IsEnabled = false;
         }
     }
-
-    #region OpenFrp Api
-    internal class OpenFrpApi
-    {
-        public static string authId = "";
-
-        public Dictionary<string, string> GetUserNodes()
-        {
-            WebHeaderCollection header = new WebHeaderCollection
-            {
-                "Authorization: " + authId
-            };
-            var responseMessage = HttpService.Post("getUserProxies", 0, string.Empty, "https://of-dev-api.bfsea.xyz/frp/api", header);
-            try
-            {
-                Dictionary<string, string> Nodes = new Dictionary<string, string>();
-                JObject jo = (JObject)JsonConvert.DeserializeObject(responseMessage);
-                JArray jArray = JArray.Parse(jo["data"]["list"].ToString());
-                foreach (JToken node in jArray)
-                {
-                    Nodes.Add(node["proxyName"].ToString(), node["id"].ToString());
-                }
-                return Nodes;
-            }
-            catch (WebException ex)
-            {
-                if (ex.Response != null)
-                {
-                    using (var errorResponse = (HttpWebResponse)ex.Response)
-                    {
-                        using (var _reader = new StreamReader(errorResponse.GetResponseStream()))
-                        {
-                            string error = _reader.ReadToEnd();
-                        }
-                    }
-                }
-                return null;
-            }
-        }
-
-        public (Dictionary<string, string>, JArray) GetNodeList(Window window)
-        {
-            WebHeaderCollection header = new WebHeaderCollection
-            {
-                "Authorization: " + authId
-            };
-            var responseMessage = HttpService.Post("getNodeList", 0, string.Empty, "https://of-dev-api.bfsea.xyz/frp/api", header);
-
-            try
-            {
-                Dictionary<string, string> Nodes = new Dictionary<string, string>();
-                JObject jo = (JObject)JsonConvert.DeserializeObject(responseMessage);
-                var jArray = JArray.Parse(jo["data"]["list"].ToString());
-                foreach (var node in jArray)
-                {
-                    if (node["port"].ToString() != "您无权查询此节点的地址" && Convert.ToInt16(node["status"]) == 200 && !Convert.ToBoolean(node["fullyLoaded"]))
-                    {
-                        string[] targetGroup = node["group"].ToString().Split(';');
-                        string nodename = "";
-                        if (node["comments"].ToString() == "")
-                        {
-                            nodename = $"{node["name"]}";
-
-                        }
-                        else
-                        {
-                            nodename = $"[{node["comments"]}]{node["name"]}";
-                        }
-                        Nodes.Add(nodename, node["id"].ToString());
-                    }
-                }
-                return (Nodes, jArray);
-            }
-            catch (WebException ex)
-            {
-                if (ex.Response != null)
-                {
-                    using (var errorResponse = (HttpWebResponse)ex.Response)
-                    {
-                        using (var reader = new StreamReader(errorResponse.GetResponseStream()))
-                        {
-                            string error = reader.ReadToEnd();
-                            MagicShow.ShowMsgDialog(window, error, "获取用户信息失败");
-                        }
-                    }
-                }
-                return (null, null);
-            }
-        }
-
-        /*
-        public void UserSign(Window window)
-        {
-            WebHeaderCollection header = new WebHeaderCollection
-            {
-                authId
-            };
-            string responseMessage = "";
-            try
-            {
-                HttpService.Post("userSign", 0, string.Empty, "https://of-dev-api.bfsea.xyz/frp/api", header);
-            }
-            catch
-            {
-                MagicShow.ShowMsgDialog(window, "签到失败！请登录OpenFrp官网进行签到！", "错误");
-                return;
-            }
-            try
-            {
-                if ((bool)JObject.Parse(responseMessage)["flag"] == true && JObject.Parse(responseMessage)["msg"].ToString() == "OK")
-                {
-                    MagicShow.ShowMsgDialog(window, JObject.Parse(responseMessage)["data"].ToString(), "签到成功");
-                }
-                else
-                {
-                    MagicShow.ShowMsgDialog(window, "签到失败", "签到失败");
-                }
-            }
-            catch (Exception ex)
-            {
-                MagicShow.ShowMsgDialog(window, "签到失败,产生的错误:\n" + ex.Message, "签到失败");
-            }
-        }
-        */
-
-        public async Task<utils.HttpResponse> GetUserInfo()
-        {
-            var headersAction = new Action<HttpRequestHeaders>(headers =>
-            {
-                headers.Add("Authorization", authId);
-            });
-            var responseMessage = await HttpService.PostAsync("https://of-dev-api.bfsea.xyz/frp/api/getUserInfo", 0, string.Empty, headersAction);
-            return responseMessage;
-        }
-
-        public async Task<string> Login(string account, string password)
-        {
-            HttpClient client = new HttpClient();
-            JObject logininfo = new JObject
-            {
-                ["user"] = account,
-                ["password"] = password
-            };
-            string json = JsonConvert.SerializeObject(logininfo);
-            HttpContent content = new StringContent(json, Encoding.UTF8, "application/json");
-            // 发送 POST 请求到登录 API 地址
-            HttpResponseMessage loginResponse = await client.PostAsync("https://openid.17a.ink/api/public/login", content);
-            // 检查响应状态码是否为 OK
-            if (loginResponse.IsSuccessStatusCode)
-            {
-                await loginResponse.Content.ReadAsStringAsync();
-                string authUrl;
-                try
-                {
-                    WebClient webClient = new WebClient
-                    {
-                        Credentials = CredentialCache.DefaultCredentials
-                    };
-                    byte[] pageData = await webClient.DownloadDataTaskAsync("https://of-dev-api.bfsea.xyz/oauth2/login");
-                    authUrl = JObject.Parse(Encoding.UTF8.GetString(pageData))["data"].ToString();
-                    if (!authUrl.Contains("https://openid.17a.ink/api/") && authUrl.Contains("https://openid.17a.ink/"))
-                    {
-                        authUrl = authUrl.Replace("https://openid.17a.ink/", "https://openid.17a.ink/api/");
-                    }
-                }
-                catch (Exception ex)
-                {
-                    return $"Get-Login-Url request failed: {ex.Message}";
-                }
-                HttpResponseMessage authResponse = await client.GetAsync(authUrl);
-                // 检查响应状态码是否为 OK
-                if (authResponse.IsSuccessStatusCode)
-                {
-                    // 读取响应内容
-                    string authData = await authResponse.Content.ReadAsStringAsync();
-                    // 显示响应内容
-                    //MessageBox.Show(authData);
-                    // 从响应内容中提取 code
-                    authId = JObject.Parse(authData)["data"]["code"].ToString();
-
-                    HttpResponseMessage _loginResponse = await client.GetAsync("https://of-dev-api.bfsea.xyz/oauth2/callback?code=" + authId);
-                    // 检查响应状态码是否为 OK
-                    if (authResponse.IsSuccessStatusCode)
-                    {
-                        authId = _loginResponse.Headers.ToString().Substring(_loginResponse.Headers.ToString().IndexOf("Authorization:"), _loginResponse.Headers.ToString().Substring(_loginResponse.Headers.ToString().IndexOf("Authorization:")).IndexOf("\n") - 1);
-                        if(authId.Contains("Authorization: "))
-                        {
-                            authId = authId.Replace("Authorization: ", "");
-                        }
-                        //MessageBox.Show(authId);
-                        var ret = await GetUserInfo();
-                        if(ret.HttpResponseCode ==HttpStatusCode.OK)
-                        {
-                            return ret.HttpResponseContent.ToString();
-                        }
-                        else
-                        {
-                            return $"Login request failed: {ret.HttpResponseCode}";
-                        }
-                        
-                    }
-                    else
-                    {
-                        // 如果响应状态码不是 OK，抛出异常
-                        return $"Login request failed: {authResponse.StatusCode}";
-                    }
-
-                }
-                else
-                {
-                    // 如果响应状态码不是 OK，抛出异常
-                    return $"Auth request failed: {authResponse.StatusCode}";
-                }
-            }
-            else
-            {
-                // 如果响应状态码不是 OK，抛出异常
-                return $"Pre-Login request failed: {loginResponse.StatusCode}";
-            }
-        }
-
-        public bool CreateProxy(string type, string port, bool EnableZip, int nodeid, string remote_port, string proxy_name, out string returnMsg)
-        {
-            HttpWebRequest request = (HttpWebRequest)WebRequest.Create("https://of-dev-api.bfsea.xyz/frp/api/newProxy");
-            request.Method = "POST";
-            request.ContentType = "application/json";
-            request.Headers.Add("Authorization: " + authId);
-            string json = JsonConvert.SerializeObject(new JObject()
-            {
-                ["node_id"] = nodeid,
-                ["name"] = proxy_name,
-                ["type"] = type,
-                ["local_addr"] = "127.0.0.1",
-                ["local_port"] = port,
-                ["remote_port"] = remote_port,
-                ["domain_bind"] = "",
-                ["dataGzip"] = EnableZip,
-                ["dataEncrypt"] = false,
-                ["url_route"] = "",
-                ["host_rewrite"] = "",
-                ["request_from"] = "",
-                ["request_pass"] = "",
-                ["custom"] = ""
-            });//转换json格式
-            byte[] byteArray = Encoding.UTF8.GetBytes(json);
-            request.ContentLength = byteArray.Length;
-            Stream dataStream = request.GetRequestStream();
-            dataStream.Write(byteArray, 0, byteArray.Length);
-            dataStream.Close();
-            try
-            {
-                HttpWebResponse response = (HttpWebResponse)request.GetResponse();
-                dataStream = response.GetResponseStream();
-                StreamReader reader = new StreamReader(dataStream);
-                string responseMessage = reader.ReadToEnd();
-                var deserializedMessage = JObject.Parse(responseMessage);
-                reader.Close();
-                dataStream.Close();
-                response.Close();
-                if ((bool)deserializedMessage["flag"] == true)
-                {
-                    returnMsg = "";
-                    return true;
-                }
-                else
-                {
-                    returnMsg = deserializedMessage["msg"].ToString();
-                    return false;
-                }
-            }
-            catch (Exception ex)
-            {
-                returnMsg = ex.Message;
-                return false;
-            }
-        }
-
-        public bool DeleteProxy(string id, out string returnMsg)
-        {
-            HttpWebRequest request = (HttpWebRequest)WebRequest.Create("https://of-dev-api.bfsea.xyz/frp/api/removeProxy");
-            request.Method = "POST";
-            request.ContentType = "application/json";
-            request.Headers.Add("Authorization: " + authId);
-            JObject json = new JObject()
-            {
-                ["proxy_id"] = id,
-            };//转换json格式
-            byte[] byteArray = Encoding.UTF8.GetBytes(JsonConvert.SerializeObject(json));
-            request.ContentLength = byteArray.Length;
-            Stream dataStream = request.GetRequestStream();
-            dataStream.Write(byteArray, 0, byteArray.Length);
-            dataStream.Close();
-            try
-            {
-                HttpWebResponse response = (HttpWebResponse)request.GetResponse();
-                dataStream = response.GetResponseStream();
-                StreamReader reader = new StreamReader(dataStream);
-                string responseMessage = reader.ReadToEnd();
-                var deserializedMessage = JObject.Parse(responseMessage);
-                reader.Close();
-                dataStream.Close();
-                response.Close();
-                if ((bool)deserializedMessage["flag"] == true)
-                {
-                    returnMsg = "";
-                    return true;
-                }
-                else
-                {
-                    returnMsg = deserializedMessage["msg"].ToString();
-                    return false;
-                }
-            }
-            catch (Exception ex)
-            {
-                returnMsg = ex.Message;
-                return false;
-            }
-        }
-    }
-    #endregion
 }

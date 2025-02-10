@@ -1,4 +1,5 @@
 ﻿using MSL.pages.frpProviders;
+using MSL.pages.frpProviders.MSLFrp;
 using System.Collections.Generic;
 using System.Windows.Controls;
 

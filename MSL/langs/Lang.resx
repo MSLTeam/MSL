@@ -320,17 +320,20 @@ BMCLAPI —— Vanilla服务端、Forge服务端（及其库文件）国内镜�
   <data name="Page_FrpcPage_Copy" xml:space="preserve">
     <value>复制</value>
   </data>
+  <data name="Page_FrpcPage_Domain" xml:space="preserve">
+    <value>连接地址：</value>
+  </data>
   <data name="Page_FrpcPage_IP" xml:space="preserve">
     <value>使用此IP来连接：</value>
+  </data>
+  <data name="Page_FrpcPage_IP2" xml:space="preserve">
+    <value>若上面地址无法连接，使用此IP：</value>
   </data>
   <data name="Page_FrpcPage_IPNull" xml:space="preserve">
     <value>无</value>
   </data>
   <data name="Page_FrpcPage_Launch" xml:space="preserve">
     <value>启动内网映射</value>
-  </data>
-  <data name="Page_FrpcPage_Status_BedrockVersion" xml:space="preserve">
-    <value>基岩版：</value>
   </data>
   <data name="Page_FrpcPage_Status_Checking" xml:space="preserve">
     <value>检测节点信息中……</value>
@@ -344,12 +347,6 @@ BMCLAPI —— Vanilla服务端、Forge服务端（及其库文件）国内镜�
   <data name="Page_FrpcPage_Status_Failed" xml:space="preserve">
     <value>获取Frp信息失败，建议重新配置！</value>
   </data>
-  <data name="Page_FrpcPage_Status_IP" xml:space="preserve">
-    <value>IP：</value>
-  </data>
-  <data name="Page_FrpcPage_Status_JavaVersion" xml:space="preserve">
-    <value>Java版：</value>
-  </data>
   <data name="Page_FrpcPage_Status_Offline" xml:space="preserve">
     <value>检测节点状态失败，若无法连接，请重新配置！</value>
   </data>
@@ -361,9 +358,6 @@ BMCLAPI —— Vanilla服务端、Forge服务端（及其库文件）国内镜�
   </data>
   <data name="Page_FrpcPage_Status_Port" xml:space="preserve">
     <value>端口：</value>
-  </data>
-  <data name="Page_FrpcPage_Status_StartToViewIP" xml:space="preserve">
-    <value>请启动内网映射以查看IP</value>
   </data>
   <data name="Page_FrpcPage_Title" xml:space="preserve">
     <value>内网映射 - 隧道列表（双击进入详情页）</value>
