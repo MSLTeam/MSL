@@ -35,7 +35,16 @@ namespace MSL.pages.frpProviders
                 //显示登录页面
                 LoginGrid.Visibility = Visibility.Visible;
                 MainGrid.Visibility = Visibility.Collapsed;
-                string authId = Config.Read("OpenFrpToken")?.ToString() ?? "";
+
+                // 获取Token并尝试登录
+                var authId = string.IsNullOrEmpty(OpenFrpApi.AuthId)
+                    ? Config.Read("OpenFrpToken")?.ToString()
+                    : OpenFrpApi.AuthId;
+
+                if (string.IsNullOrEmpty(token))
+                {
+                    return;
+                }
                 if (authId != "")
                 {
                     await TokenLogin(authId);
@@ -61,7 +70,7 @@ namespace MSL.pages.frpProviders
 
             MagicDialog MagicDialog = new MagicDialog();
             MagicDialog.ShowTextDialog(Window.GetWindow(this), "登录中……");
-            var (Code, Msg) = await OpenFrpApi.Login("", "", token);
+            var (Code, Msg) = await OpenFrpApi.Login("", "", token, SaveToken.IsChecked == true);
             MagicDialog.CloseTextDialog();
             if (Code == 200)
             {
@@ -96,7 +105,7 @@ namespace MSL.pages.frpProviders
 
             MagicDialog MagicDialog = new MagicDialog();
             MagicDialog.ShowTextDialog(Window.GetWindow(this), "登录中……");
-            var (Code, Msg) = await OpenFrpApi.Login(userAccount, userPass);
+            var (Code, Msg) = await OpenFrpApi.Login(userAccount, userPass,save: SaveToken.IsChecked == true);
             MagicDialog.CloseTextDialog();
             if (Code == 200)
             {
