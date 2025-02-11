@@ -442,11 +442,13 @@ namespace MSL
                 }
                 else if (newVersion < version)
                 {
-                    Growl.Info(LanguageManager.Instance["MainWindow_GrowlMsg_BetaVersion"]);
+                    MagicFlowMsg.ShowMessage(LanguageManager.Instance["MainWindow_GrowlMsg_BetaVersion"], 4);
+                    //Growl.Info(LanguageManager.Instance["MainWindow_GrowlMsg_BetaVersion"]);
                 }
                 else
                 {
-                    Growl.Success(LanguageManager.Instance["MainWindow_GrowlMsg_LatestVersion"]);
+                    MagicFlowMsg.ShowMessage(LanguageManager.Instance["MainWindow_GrowlMsg_LatestVersion"], 1);
+                    //Growl.Success();
                 }
             }
             catch
@@ -763,16 +765,6 @@ namespace MSL
         {
             Application.Current.Shutdown();
             //Environment.Exit(0);
-        }
-
-        private void Window_Activated(object sender, EventArgs e)
-        {
-            Growl.SetGrowlParent(GrowlPanel, true);
-        }
-
-        private void Window_Deactivated(object sender, EventArgs e)
-        {
-            Growl.SetGrowlParent(GrowlPanel, false);
         }
     }
 }

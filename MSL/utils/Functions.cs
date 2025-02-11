@@ -1,4 +1,5 @@
-﻿using ICSharpCode.SharpZipLib.Zip;
+﻿using HandyControl.Tools;
+using ICSharpCode.SharpZipLib.Zip;
 using System;
 using System.Collections.Generic;
 using System.Diagnostics;
@@ -8,11 +9,26 @@ using System.Text;
 using System.Text.RegularExpressions;
 using System.Threading;
 using System.Threading.Tasks;
+using System.Windows;
+using System.Windows.Controls;
 
 namespace MSL.utils
 {
     internal class Functions
     {
+        public static Window GetWindow(UIElement window)
+        {
+            if (window == null)
+            {
+                window = WindowHelper.GetActiveWindow();
+            }
+            if (window is Page page)
+            {
+                window = Window.GetWindow(page);
+            }
+            return window as Window;
+        }
+
         public static Tuple<int, int, int, int> VersionCompare(string version)
         {
             if (version.StartsWith("*"))
@@ -459,9 +475,11 @@ namespace MSL.utils
                 // for clarity. A real-world program should check the result of each
                 // call and handle errors appropriately.
                 SetConsoleCtrlHandler(null, true);
+                await Task.Delay(250);
                 GenerateConsoleCtrlEvent(ConsoleCtrlEvent.CTRL_C, 0);
                 await Task.Run(() => ProcessExited(process));
                 SetConsoleCtrlHandler(null, false);
+                await Task.Delay(250);
                 FreeConsole();
             }
             else
@@ -478,7 +496,7 @@ namespace MSL.utils
         {
             while (!process.HasExited)
             {
-                Thread.Sleep(1000);
+                Thread.Sleep(500);
             }
         }
         #endregion

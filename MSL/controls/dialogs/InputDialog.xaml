@@ -8,7 +8,7 @@
              xmlns:langs="clr-namespace:MSL.langs" Loaded="UserControl_Loaded"
              mc:Ignorable="d" Template="{StaticResource UserControlTemplate}" >
     <Border CornerRadius="10" Background="{DynamicResource RegionBrush}" BorderBrush="{DynamicResource BorderBrush}" BorderThickness="1">
-        <Grid>
+        <Grid x:Name="MainGrid">
             <Grid.RowDefinitions>
                 <RowDefinition/>
                 <RowDefinition Height="70"/>
@@ -29,7 +29,6 @@
                     <Button x:Name="CloseBtn" Content="{Binding [Cancel],Source={x:Static langs:LanguageManager.Instance}}" HorizontalAlignment="Stretch" Margin="5,20,25,10" FontSize="14" Click="CloseBtn_Click" Grid.Column="1" Height="30"/>
                 </Grid>
             </Border>
-            <local:FlowMessage x:Name="flowMessage" HorizontalAlignment="Right" VerticalAlignment="Top"/>
         </Grid>
     </Border>
 </UserControl>

@@ -49,15 +49,16 @@ namespace MSL
         private short getServerInfoLine = 0;
         private readonly short FirstStartTab;
         private string DownjavaName;
-        private readonly int RserverID;
-        private string Rservername;
-        private string Rserverjava;
-        private string Rserverserver;
-        private string RserverJVM;
-        private string RserverJVMcmd;
-        private string Rserverbase;
-        private short Rservermode;
         private MCSLogHandler MCSLogHandler;
+        private int RserverID { get; }
+        private string Rservername { get; set; }
+        private string Rserverjava { get; set; }
+        private string Rserverserver { get; set; }
+        private string RserverJVM { get; set; }
+        private string RserverJVMcmd { get; set; }
+        private string Rserverbase { get; set; }
+        private short Rservermode { get; set; }
+
 
         /// <summary>
         /// 服务器运行窗口
@@ -1403,7 +1404,7 @@ namespace MSL
                 ConptyCanOutLog = true;
                 return;
             }
-            
+
             if (tempLogs != null)
             {
                 Dispatcher.Invoke(() =>
@@ -1513,7 +1514,7 @@ namespace MSL
             {
                 getServerInfoLine = 101;
                 PrintLog("已成功开启服务器！你可以输入stop来关闭服务器！\r\n服务器本地IP通常为:127.0.0.1，想要远程进入服务器，需要开通公网IP或使用内网映射，详情查看开服器的内网映射界面。\r\n若控制台输出乱码日志，请去更多功能界面修改“输出编码”。", Brushes.Green);
-                Growl.Success("已成功开启服务器！");
+                Growl.Success(string.Format("服务器 {0} 已成功开启！", Rservername));
                 serverStateLab.Content = "已开服";
                 if (conptyWindow != null)
                 {
@@ -3591,8 +3592,10 @@ namespace MSL
             }
             jsonObject[RserverID.ToString()] = _json;
             File.WriteAllText("MSL\\ServerList.json", Convert.ToString(jsonObject), Encoding.UTF8);
-            Growl.Success("编码更改已生效！");
+            //Growl.Success("编码更改已生效！");
+            MagicFlowMsg.ShowMessage("编码更改已生效！", 1);
         }
+
         private void outputCmdEncoding_Click(object sender, RoutedEventArgs e)
         {
             JObject jsonObject = JObject.Parse(File.ReadAllText(@"MSL\ServerList.json", Encoding.UTF8));
@@ -3613,16 +3616,17 @@ namespace MSL
             {
                 if (ServerProcess.HasExited)
                 {
-                    Growl.Success("编码更改已生效！");
+                    MagicFlowMsg.ShowMessage("编码更改已生效！", 1);
                 }
                 else
                 {
-                    Growl.Warning("编码已更改，重启服务器后生效！");
+                    MagicFlowMsg.ShowMessage("编码已更改，重启服务器后生效！", 3);
+                    //Growl.Warning("编码已更改，重启服务器后生效！");
                 }
             }
             catch
             {
-                Growl.Success("编码更改已生效！");
+                MagicFlowMsg.ShowMessage("编码更改已生效！", 1);
             }
         }
         private void fileforceUTF8encoding_Click(object sender, RoutedEventArgs e)
@@ -3771,7 +3775,7 @@ namespace MSL
             JObject _json = (JObject)jsonObject[RserverID.ToString()];
             if (shieldLogBtn.IsChecked == true)
             {
-                if (ShieldLogList.Items.Count >0)
+                if (ShieldLogList.Items.Count > 0)
                 {
                     List<string> tempList = new List<string>();
 
@@ -3790,7 +3794,7 @@ namespace MSL
                 }
                 else
                 {
-                    Growl.Error("请先进行添加！");
+                    MagicFlowMsg.ShowMessage("请先进行添加！", 2);
                     shieldLogBtn.IsChecked = false;
                 }
             }

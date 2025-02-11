@@ -243,7 +243,18 @@ namespace MSL.pages
                     FontWeight = FontWeights.Normal,
                 };
 
-                copyButton.Click += (sender, e) => Clipboard.SetText(addressTextBlock.Text);
+                copyButton.Click += (sender, e) =>
+                {
+                    try
+                    {
+                        Clipboard.SetText(addressTextBlock.Text);
+                        MagicFlowMsg.ShowMessage("复制成功！", 1);
+                    }
+                    catch
+                    {
+                        MagicFlowMsg.ShowMessage("复制失败！", 2);
+                    }
+                };
 
                 stackPanel.Children.Add(ipTextBlock);
                 stackPanel.Children.Add(addressTextBlock);
@@ -279,7 +290,8 @@ namespace MSL.pages
             try
             {
                 Directory.CreateDirectory("MSL\\frp");
-                Growl.Info("正在启动内网映射！");
+                MagicFlowMsg.ShowMessage("正在启动内网映射！", 4);
+                //Growl.Info("正在启动内网映射！");
                 startfrpc.IsEnabled = false;
                 frpcOutlog.Text = "启动中，请稍候……\n";
                 // 读取配置
@@ -467,7 +479,7 @@ namespace MSL.pages
 
                 if (frpcServer == 0)
                 {
-                    tempStr= jobject[frpID.ToString()]["name"].ToString();
+                    tempStr = jobject[frpID.ToString()]["name"].ToString();
                 }
                 //该启动了！
                 FrpcProcess.StartInfo.WorkingDirectory = $"MSL\\frp\\{frpID}";
@@ -486,7 +498,8 @@ namespace MSL.pages
                 FrpcProcess.CancelOutputRead();
                 FrpcList.RunningFrpc.Remove(frpID);
                 // 到这里就关掉了
-                Growl.Info("内网映射已关闭！");
+                MagicFlowMsg.ShowMessage("内网映射已关闭！", 4);
+                //Growl.Info("内网映射已关闭！");
                 startfrpc.IsEnabled = true;
                 tempStr = string.Empty;
             }
@@ -510,56 +523,59 @@ namespace MSL.pages
             }
         }
 
+        private string tempStr; // 临时字符串，记录MSL-Frp(NEW)的隧道名字
         private void OutputDataReceived(object sender, DataReceivedEventArgs e)
         {
             if (e.Data != null)
             {
+                string msg = e.Data;
+                if (msg.Contains("\x1B"))
+                {
+                    string[] splitMsg = msg.Split(new[] { '\x1B' }, StringSplitOptions.RemoveEmptyEntries);
+                    foreach (var everyMsg in splitMsg)
+                    {
+                        if (everyMsg == string.Empty)
+                        {
+                            continue;
+                        }
+                        // 提取ANSI码和文本内容
+                        int mIndex = everyMsg.IndexOf('m');
+                        if (mIndex == -1)
+                        {
+                            continue;
+                        }
+                        msg = everyMsg.Substring(mIndex + 1);
+                    }
+                }
+                if (!string.IsNullOrEmpty(tempStr))
+                {
+                    msg = Regex.Replace(msg, @"\[([a-zA-Z0-9]+)-(\d+\..+?)\]", "[$2]");
+                }
                 Dispatcher.Invoke(() =>
                 {
-                    ReadStdOutputAction(e.Data);
+                    ReadStdOutputAction(msg);
                 });
+                msg = null;
             }
         }
 
-        private string tempStr; // 临时字符串，记录MSL-Frp(NEW)的隧道名字
         private void ReadStdOutputAction(string msg)
         {
-            if (msg.Contains("\x1B"))
-            {
-                string[] splitMsg = msg.Split(new[] { '\x1B' }, StringSplitOptions.RemoveEmptyEntries);
-                foreach (var everyMsg in splitMsg)
-                {
-                    if (everyMsg == string.Empty)
-                    {
-                        continue;
-                    }
-                    // 提取ANSI码和文本内容
-                    int mIndex = everyMsg.IndexOf('m');
-                    if (mIndex == -1)
-                    {
-                        continue;
-                    }
-                    msg = everyMsg.Substring(mIndex + 1);
-                }
-            }
-            if (!string.IsNullOrEmpty(tempStr))
-            {
-                msg = Regex.Replace(msg, @"\[([a-zA-Z0-9]+)-(\d+\..+?)\]", "[$2]");
-            }
             frpcOutlog.Text = frpcOutlog.Text + msg + "\n";
             if (msg.Contains("login"))
             {
                 if (msg.Contains("failed"))
                 {
                     frpcOutlog.Text += "内网映射桥接失败！\n";
-                    Growl.Error("内网映射桥接失败！");
+                    MagicFlowMsg.ShowMessage("内网映射桥接失败！", 2);
+                    //Growl.Error("内网映射桥接失败！");
                     if (msg.Contains("i/o timeout"))
                     {
                         frpcOutlog.Text += "连接超时，该节点可能下线，请重新配置！\n";
                     }
                     if (!FrpcProcess.HasExited)
                     {
-                        Task.Run(() => Functions.StopProcess(FrpcProcess));
+                        FrpcProcess.Kill();
                     }
                 }
                 if (msg.Contains("success"))
@@ -572,10 +588,12 @@ namespace MSL.pages
                 if (msg.Contains("success"))
                 {
                     frpcOutlog.Text += "内网映射桥接成功！您可复制IP进入游戏了！\n";
+                    MagicFlowMsg.ShowMessage("内网映射桥接成功！", 1);
                 }
                 if (msg.Contains("error"))
                 {
                     frpcOutlog.Text = frpcOutlog.Text + "内网映射桥接失败！\n";
+                    MagicFlowMsg.ShowMessage("内网映射桥接失败！", 2);
                     if (msg.Contains("port already used"))
                     {
                         frpcOutlog.Text += "本地端口被占用，请检查是否有程序占用或后台是否存在frpc进程，您可尝试手动结束frpc进程或重启电脑再试。\n";
@@ -588,13 +606,13 @@ namespace MSL.pages
                     {
                         frpcOutlog.Text += "隧道名称已被占用！请打开任务管理器检查后台是否存在frpc进程并手动结束！\n若仍然占用，请尝试重启电脑再试。\n";
                     }
-                    else if (msg.Contains("proxy")&& msg.Contains("already exists"))
+                    else if (msg.Contains("proxy") && msg.Contains("already exists"))
                     {
                         frpcOutlog.Text += "隧道已被占用！请打开任务管理器检查后台是否存在frpc进程！您可尝试手动结束frpc进程或重启电脑再试。\n";
                     }
                     if (!FrpcProcess.HasExited)
                     {
-                        Task.Run(() => Functions.StopProcess(FrpcProcess));
+                        FrpcProcess.Kill();
                     }
                 }
             }
@@ -618,7 +636,7 @@ namespace MSL.pages
                                 {
                                     if (!FrpcProcess.HasExited)
                                     {
-                                        await Task.Run(() => Functions.StopProcess(FrpcProcess));
+                                        FrpcProcess.Kill();
                                     }
                                     await Task.Delay(500);
                                     await Task.Run(() => File.Delete("MSL\\frpc_of.exe"));
@@ -647,7 +665,7 @@ namespace MSL.pages
                 startfrpc.IsEnabled = false;
                 try
                 {
-                    await Functions.StopProcess(FrpcProcess); // 尝试使用CTRL+C
+                    await Functions.StopProcess(FrpcProcess); // 尝试使用CTRL+C（有风险不能随便用，调试的时候还会把程序给干掉（怪！））
                 }
                 catch
                 {

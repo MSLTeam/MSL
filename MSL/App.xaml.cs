@@ -22,7 +22,12 @@ namespace MSL
             {
                 e.Handled = true; // 设置为已处理，阻止应用程序崩溃
                 //Logger.LogError("An error has occurred:" + e.Exception.ToString());
-                MessageBox.Show("程序在运行的时候发生了异常，异常代码：\n" + e.Exception.Message + "\n请检查您是否安装了.NET Framework 4.7.2，若软件闪退，请联系作者进行反馈", "错误", MessageBoxButton.OK, MessageBoxImage.Error);
+
+                var msg = MessageBox.Show("程序在运行的时候发生了异常，异常信息：\n" + e.Exception.Message + "\n请检查您是否安装了.NET Framework 4.7.2，若软件闪退，请联系作者进行反馈！\n\n点击“是”以查看详细异常追踪。", "错误", MessageBoxButton.YesNo, MessageBoxImage.Error);
+                if (msg == MessageBoxResult.Yes)
+                {
+                    MessageBox.Show(e.Exception.ToString());
+                }
             };
         }
 

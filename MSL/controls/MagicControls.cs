@@ -67,4 +67,37 @@ namespace MSL.controls
             DefaultStyleKeyProperty.OverrideMetadata(typeof(MagicScrollViewer), new FrameworkPropertyMetadata(typeof(MagicScrollViewer)));
         }
     }
+
+    public class MagicGrowlPanel : Control
+    {
+        static MagicGrowlPanel()
+        {
+            DefaultStyleKeyProperty.OverrideMetadata(typeof(MagicGrowlPanel), new FrameworkPropertyMetadata(typeof(MagicGrowlPanel)));
+        }
+
+        public MagicGrowlPanel()
+        {
+            this.Loaded += GrowlPanelControl_Loaded;
+        }
+
+        public override void OnApplyTemplate()
+        {
+            base.OnApplyTemplate();
+            // 获取模板中的 GrowlPanel 和 ScrollViewer
+            GrowlPanel = GetTemplateChild("GrowlPanel") as StackPanel;
+            GrowlScrollViewer = GetTemplateChild("GrowlScrollViewer") as ScrollViewer;
+        }
+
+        private void GrowlPanelControl_Loaded(object sender, RoutedEventArgs e)
+        {
+            if (this.TemplatedParent is Window window)
+            {
+                window.Activated += (s, args) => HandyControl.Controls.Growl.SetGrowlParent(this.GrowlPanel, true);
+                window.Deactivated += (s, args) => HandyControl.Controls.Growl.SetGrowlParent(this.GrowlPanel, false);
+            }
+        }
+
+        public StackPanel GrowlPanel { get; private set; }
+        public ScrollViewer GrowlScrollViewer { get; private set; }
+    }
 }

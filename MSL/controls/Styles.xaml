@@ -52,6 +52,18 @@
         <Setter Property="FontSize" Value="16"/>
     </Style>
 
+    <Style TargetType="local:MagicGrowlPanel">
+        <Setter Property="Template">
+            <Setter.Value>
+                <ControlTemplate TargetType="local:MagicGrowlPanel">
+                    <ScrollViewer x:Name="GrowlScrollViewer" Grid.Column="1" VerticalScrollBarVisibility="Hidden" HorizontalAlignment="Right" VerticalAlignment="Top">
+                        <StackPanel x:Name="GrowlPanel" hc:Growl.GrowlParent="True" VerticalAlignment="Top" Margin="10" />
+                    </ScrollViewer>
+                </ControlTemplate>
+            </Setter.Value>
+        </Setter>
+    </Style>
+
     <Style x:Key="ToggleButtonBase.NoCheckedBorder" TargetType="ToggleButton">
         <Setter Property="BorderThickness" Value="1"/>
         <Setter Property="Background" Value="{DynamicResource RegionBrush}"/>

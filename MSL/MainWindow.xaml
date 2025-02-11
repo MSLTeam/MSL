@@ -17,53 +17,49 @@
         NonClientAreaForeground="White" CloseButtonForeground="White" OtherButtonForeground="White" OtherButtonHoverForeground="White"
         Icon="icon.ico"
         WindowStartupLocation="CenterScreen" Loaded="Window_Loaded" Closing="Window_Closing" Closed="Window_Closed"
-        Title="Minecraft Server Launcher" ResizeMode="CanResize"
-        Activated="Window_Activated" Deactivated="Window_Deactivated">
+        Title="Minecraft Server Launcher" ResizeMode="CanResize">
     <Grid x:Name="MainGrid">
-        <Grid.ColumnDefinitions>
-            <ColumnDefinition Width="Auto"/>
-            <ColumnDefinition Width="*"/>
-        </Grid.ColumnDefinitions>
-        <StackPanel Background="{DynamicResource SideMenuBrush}">
-            <Button x:Name="SideMenuContextOpen" HorizontalAlignment="Stretch" VerticalAlignment="Top" Height="42" BorderThickness="0" Background="Transparent" Click="SideMenuContextOpen_Click">
-                <Path Stroke="{DynamicResource PrimaryTextBrush}">
-                    <Path.Data>
-                        <GeometryGroup>
-                            <PathGeometry Figures="M 0 0 h 15"/>
-                            <PathGeometry Figures="M 0 5 h 15"/>
-                            <PathGeometry Figures="M 0 10 h 15"/>
-                        </GeometryGroup>
-                    </Path.Data>
-                </Path>
-            </Button>
-            <ListBox x:Name="SideMenu" Width="50" SelectionMode="Single" HorizontalAlignment="Stretch" SelectionChanged="SideMenu_SelectionChanged" Background="{x:Null}" BorderThickness="0" Padding="0">
-                <ListBoxItem Style="{StaticResource ListItemSideMenu}" >
-                    <controls:ListBoxSideMenu Icon="pack://application:,,,/images/150px-Grass_Block_JE7_BE6.png" Text="{Binding [MainWindow_Menu_Home], Source={x:Static langs:LanguageManager.Instance}}"/>
-                </ListBoxItem>
-                <ListBoxItem Style="{StaticResource ListItemSideMenu}" >
-                    <controls:ListBoxSideMenu Icon="pack://application:,,,/images/150px-Enchanted_Book.png" Text="{Binding [MainWindow_Menu_ServerList], Source={x:Static langs:LanguageManager.Instance}}"/>
-                </ListBoxItem>
-                <ListBoxItem Style="{StaticResource ListItemSideMenu}" >
-                    <controls:ListBoxSideMenu Icon="pack://application:,,,/images/150px-Beacon.png" Text="{Binding [MainWindow_Menu_Frpc], Source={x:Static langs:LanguageManager.Instance}}"/>
-                </ListBoxItem>
-                <ListBoxItem Style="{StaticResource ListItemSideMenu}" >
-                    <controls:ListBoxSideMenu Icon="pack://application:,,,/images/150px-Impulse_Command_Block.png" Text="{Binding [MainWindow_Menu_OnlinePlay], Source={x:Static langs:LanguageManager.Instance}}"/>
-                </ListBoxItem>
-                <ListBoxItem Style="{StaticResource ListItemSideMenu}" >
-                    <controls:ListBoxSideMenu Icon="pack://application:,,,/images/150px-Wooden_Pickaxe_JE3_BE3.png" Text="{Binding [MainWindow_Menu_Setting], Source={x:Static langs:LanguageManager.Instance}}"/>
-                </ListBoxItem>
-                <ListBoxItem Style="{StaticResource ListItemSideMenu}" >
-                    <controls:ListBoxSideMenu Icon="pack://application:,,,/images/150px-Diamond_Revision_2.png" Text="{Binding [MainWindow_Menu_About], Source={x:Static langs:LanguageManager.Instance}}"/>
-                </ListBoxItem>
-            </ListBox>
-        </StackPanel>
-
-        <Frame Grid.Column="1" x:Name="frame" hc:BorderElement.CornerRadius="0" NavigationUIVisibility="Hidden" BorderThickness="1,0,0,0"/>
-
-        <ScrollViewer Grid.Column="1" VerticalScrollBarVisibility="Hidden" HorizontalAlignment="Right" VerticalAlignment="Top">
-            <StackPanel x:Name="GrowlPanel" hc:Growl.GrowlParent="True" VerticalAlignment="Top" Margin="0,10,10,10" />
-        </ScrollViewer>
-
+        <Grid>
+            <Grid.ColumnDefinitions>
+                <ColumnDefinition Width="Auto"/>
+                <ColumnDefinition Width="*"/>
+            </Grid.ColumnDefinitions>
+            <StackPanel Background="{DynamicResource SideMenuBrush}">
+                <Button x:Name="SideMenuContextOpen" HorizontalAlignment="Stretch" VerticalAlignment="Top" Height="42" BorderThickness="0" Background="Transparent" Click="SideMenuContextOpen_Click">
+                    <Path Stroke="{DynamicResource PrimaryTextBrush}">
+                        <Path.Data>
+                            <GeometryGroup>
+                                <PathGeometry Figures="M 0 0 h 15"/>
+                                <PathGeometry Figures="M 0 5 h 15"/>
+                                <PathGeometry Figures="M 0 10 h 15"/>
+                            </GeometryGroup>
+                        </Path.Data>
+                    </Path>
+                </Button>
+                <ListBox x:Name="SideMenu" Width="50" SelectionMode="Single" HorizontalAlignment="Stretch" SelectionChanged="SideMenu_SelectionChanged" Background="{x:Null}" BorderThickness="0" Padding="0">
+                    <ListBoxItem Style="{StaticResource ListItemSideMenu}" >
+                        <controls:ListBoxSideMenu Icon="pack://application:,,,/images/150px-Grass_Block_JE7_BE6.png" Text="{Binding [MainWindow_Menu_Home], Source={x:Static langs:LanguageManager.Instance}}"/>
+                    </ListBoxItem>
+                    <ListBoxItem Style="{StaticResource ListItemSideMenu}" >
+                        <controls:ListBoxSideMenu Icon="pack://application:,,,/images/150px-Enchanted_Book.png" Text="{Binding [MainWindow_Menu_ServerList], Source={x:Static langs:LanguageManager.Instance}}"/>
+                    </ListBoxItem>
+                    <ListBoxItem Style="{StaticResource ListItemSideMenu}" >
+                        <controls:ListBoxSideMenu Icon="pack://application:,,,/images/150px-Beacon.png" Text="{Binding [MainWindow_Menu_Frpc], Source={x:Static langs:LanguageManager.Instance}}"/>
+                    </ListBoxItem>
+                    <ListBoxItem Style="{StaticResource ListItemSideMenu}" >
+                        <controls:ListBoxSideMenu Icon="pack://application:,,,/images/150px-Impulse_Command_Block.png" Text="{Binding [MainWindow_Menu_OnlinePlay], Source={x:Static langs:LanguageManager.Instance}}"/>
+                    </ListBoxItem>
+                    <ListBoxItem Style="{StaticResource ListItemSideMenu}" >
+                        <controls:ListBoxSideMenu Icon="pack://application:,,,/images/150px-Wooden_Pickaxe_JE3_BE3.png" Text="{Binding [MainWindow_Menu_Setting], Source={x:Static langs:LanguageManager.Instance}}"/>
+                    </ListBoxItem>
+                    <ListBoxItem Style="{StaticResource ListItemSideMenu}" >
+                        <controls:ListBoxSideMenu Icon="pack://application:,,,/images/150px-Diamond_Revision_2.png" Text="{Binding [MainWindow_Menu_About], Source={x:Static langs:LanguageManager.Instance}}"/>
+                    </ListBoxItem>
+                </ListBox>
+            </StackPanel>
+            <Frame Grid.Column="1" x:Name="frame" hc:BorderElement.CornerRadius="0" NavigationUIVisibility="Hidden" BorderThickness="1,0,0,0"/>
+            <controls:MagicGrowlPanel Grid.Column="1"/>
+        </Grid>
         <hc:NotifyIcon x:Name="MainNotifyIcon" Text="Minecraft Server Launcher" Visibility="Collapsed" Click="MainNotifyIcon_Click">
             <hc:NotifyIcon.ContextMenu>
                 <ContextMenu>

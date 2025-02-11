@@ -1,11 +1,12 @@
-﻿using Newtonsoft.Json.Linq;
-using Newtonsoft.Json;
+﻿using Newtonsoft.Json;
+using Newtonsoft.Json.Linq;
 using System;
 using System.Collections.Generic;
 using System.IO;
-using System.Net.Http.Headers;
-using System.Net.Http;
+using System.Linq;
 using System.Net;
+using System.Net.Http;
+using System.Net.Http.Headers;
 using System.Text;
 using System.Threading.Tasks;
 using System.Windows;
@@ -18,7 +19,7 @@ namespace MSL.utils
         private static readonly string ApiUrl = "https://user.mslmc.cn/api";
         public static string UserToken = string.Empty;
 
-        public static async Task<(int Code,string Data,string Msg)> ApiGet(string route)
+        public static async Task<(int Code, string Data, string Msg)> ApiGet(string route)
         {
             HttpResponse nodeRes = await HttpService.GetAsync(ApiUrl + route, headers =>
             {
@@ -95,7 +96,7 @@ namespace MSL.utils
                 {
                     headers.Authorization = new AuthenticationHeaderValue("Bearer", token);
                 }, 1);
-                if (res.HttpResponseCode == System.Net.HttpStatusCode.OK)
+                if (res.HttpResponseCode == HttpStatusCode.OK)
                 {
                     UserToken = token;
                     if (saveToken)
@@ -134,7 +135,7 @@ namespace MSL.utils
             public bool Online { get; set; }
         }
 
-        public static async Task<(int Code,List<TunnelInfo> Tunnels,string Msg)> GetTunnelList()
+        public static async Task<(int Code, List<TunnelInfo> Tunnels, string Msg)> GetTunnelList()
         {
             try
             {
@@ -152,7 +153,7 @@ namespace MSL.utils
                     JObject nodeJobj = JObject.Parse((string)nodeRes.HttpResponseContent);
                     if (nodeJobj["code"].Value<int>() != 200)
                     {
-                        return ((int)nodeJobj["code"],null, "获取节点列表失败！" + nodeJobj["msg"].ToString());
+                        return ((int)nodeJobj["code"], null, "获取节点列表失败！" + nodeJobj["msg"].ToString());
                     }
 
                     JArray jsonNodes = (JArray)nodeJobj["data"];
@@ -200,7 +201,7 @@ namespace MSL.utils
                             Online = (bool)item["status"],
                         });
                     }
-                    return (200, tunnels,string.Empty);
+                    return (200, tunnels, string.Empty);
                 }
                 return ((int)res.HttpResponseCode, null, $"获取隧道列表失败！({(int)res.HttpResponseCode}){res.HttpResponseContent}");
             }
@@ -315,13 +316,14 @@ namespace MSL.utils
                         MaxPort = (int)nodeData["max_open_port"],
                         Remark = (string)nodeData["remarks"],
                         Vip = vip,
-                        VipName = (vip == 0 ? "普通节点" : (vip == 1 ? "付费节点" : "超级节点")),
+                        VipName = (vip == 0 ? "普通节点" : vip == 1 ? "高级节点" : "超级节点"),
                         UDP = (int)nodeData["udp_support"],
                         Status = (int)nodeData["status"],
                         Band = (string)nodeData["bandwidth"]
                     });
                 }
-                return ((int)json["code"], nodes, string.Empty);
+                var sortedNodes = nodes.OrderBy(n => n.Vip).ToList();
+                return ((int)json["code"], sortedNodes, string.Empty);
             }
             return ((int)res.HttpResponseCode, null, $"({(int)res.HttpResponseCode}){res.HttpResponseContent}");
         }

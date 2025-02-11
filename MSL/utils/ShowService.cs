@@ -1,7 +1,13 @@
 ﻿using HandyControl.Controls;
+using HandyControl.Tools;
 using MSL.controls;
+using System;
+using System.Linq;
 using System.Threading.Tasks;
 using System.Windows;
+using System.Windows.Controls;
+using System.Windows.Media.Animation;
+using System.Windows.Threading;
 using Window = System.Windows.Window;
 
 namespace MSL.utils
@@ -34,6 +40,35 @@ namespace MSL.utils
         {
             MagicDialog MagicDialog = new MagicDialog();
             bool _ret = await MagicDialog.ShowMsgDialog(_window, text, title, showPrimaryBtn, closeBtnContext, primaryBtnContext, uIElement);
+            return _ret;
+        }
+
+        /// <summary>
+        /// 显示MSG对话框（异步执行，不可等待）
+        /// </summary>
+        /// <param name="_window">对话框父窗体</param>
+        /// <param name="text">对话框内容</param>
+        /// <param name="title">对话框标题</param>
+        public static void ShowMsgDialog(string text, string title, UIElement uIElement = null, UIElement _window = null)
+        {
+            MagicDialog MagicDialog = new MagicDialog();
+            MagicDialog.ShowMsgDialog(Functions.GetWindow(_window), text, title, uIElement);
+        }
+
+        /// <summary>
+        /// 显示MSG对话框（异步执行，可以等待）
+        /// </summary>
+        /// <param name="_window">对话框父窗体</param>
+        /// <param name="text">对话框内容</param>
+        /// <param name="title">对话框标题</param>
+        /// <param name="showPrimaryBtn">是否显示确认按钮</param>
+        /// <param name="closeBtnContext">关闭按钮文字内容</param>
+        /// <param name="primaryBtnContext">确认按钮文字内容</param>
+        /// <returns>返回值：true；false</returns>
+        public static async Task<bool> ShowMsgDialogAsync(string text, string title, bool showPrimaryBtn = false, string closeBtnContext = "否", string primaryBtnContext = "是", UIElement uIElement = null, UIElement _window = null)
+        {
+            MagicDialog MagicDialog = new MagicDialog();
+            bool _ret = await MagicDialog.ShowMsgDialog(Functions.GetWindow(_window), text, title, showPrimaryBtn, closeBtnContext, primaryBtnContext, uIElement);
             return _ret;
         }
 
@@ -133,6 +168,8 @@ namespace MSL.utils
             int _ret = await MagicDialog.ShowDownloadDialog(_window, downloadurl, downloadPath, filename, downloadinfo, sha256, closeDirectly, headerMode);
             return _ret;
         }
+
+
     }
 
     internal class MagicDialog
@@ -144,6 +181,13 @@ namespace MSL.utils
         public void ShowTextDialog(Window _window, string text)
         {
             window = _window;
+            window?.Focus();
+            dialog = Dialog.Show(new TextDialog(text));
+        }
+
+        public void ShowTextDialog(string text, UIElement _window = null)
+        {
+            window = Functions.GetWindow(_window);
             window?.Focus();
             dialog = Dialog.Show(new TextDialog(text));
         }
@@ -225,6 +269,142 @@ namespace MSL.utils
             _tcs = null;
             window = null;
             dialog = null;
+        }
+    }
+
+    public class MagicFlowMsg
+    {
+        private static UniformSpacingPanel messageStackPanel;
+        private static Panel targetContainer;
+
+        /// <summary>
+        /// 显示消息
+        /// </summary>
+        /// <param name="panel">容器</param>
+        /// <param name="message">要显示的消息文本</param>
+        /// <param name="type">消息类型，默认为0（primary），1为sucess，2为danger，3为LabelWarning，4为Info</param>
+        /// <param name="seconds">显示时长，单位：秒（默认 3 秒）</param>
+        public static void ShowMessage(string message, int type = 0, int seconds = 3, UIElement panel = null)
+        {
+            panel ??= WindowHelper.GetActiveWindow();
+            if (panel is Page page)
+            {
+                panel = Window.GetWindow(page);
+            }
+            if (panel is Window window)
+            {
+                panel = window.Content as UIElement;
+            }
+            if (panel is Panel targetPanel)
+            {
+                if (messageStackPanel == null)
+                {
+                    CreatMsgContainer(targetPanel);
+                }
+                else
+                {
+                    if (!targetPanel.Children.Contains(messageStackPanel))
+                    {
+                        messageStackPanel.Visibility = Visibility.Collapsed;
+                        targetContainer.Children.Remove(messageStackPanel);
+                        messageStackPanel = null;
+                        CreatMsgContainer(targetPanel);
+                    }
+                }
+            }
+
+            //targetContainer = panel;
+
+            // 创建 Label 控件来显示消息
+            var msgLabel = new Label
+            {
+                Content = message,
+                Visibility = Visibility.Collapsed
+            };
+
+            // 根据消息类型设置样式，可以根据需要为不同类型设置不同的样式
+            switch (type)
+            {
+                case 0:
+                    msgLabel.Style = (Style)Application.Current.Resources["LabelPrimary"];
+                    break;
+                case 1:
+                    msgLabel.Style = (Style)Application.Current.Resources["LabelSuccess"];
+                    break;
+                case 2:
+                    msgLabel.Style = (Style)Application.Current.Resources["LabelDanger"];
+                    break;
+                case 3:
+                    msgLabel.Style = (Style)Application.Current.Resources["LabelWarning"];
+                    break;
+                case 4:
+                    msgLabel.Style = (Style)Application.Current.Resources["LabelInfo"];
+                    break;
+                default:
+                    msgLabel.Style = (Style)Application.Current.Resources["LabelPrimary"];
+                    break;
+            }
+            messageStackPanel.Children.Insert(0, msgLabel);
+            //messageStackPanel.Children.Add(msgLabel);
+
+            // 显示消息并启动动画
+            ShowMessageAnimation(msgLabel, seconds);
+        }
+
+        private static void CreatMsgContainer(Panel panel)
+        {
+            messageStackPanel = new UniformSpacingPanel
+            {
+                Orientation = Orientation.Vertical,
+                VerticalAlignment = VerticalAlignment.Top,
+                HorizontalAlignment = HorizontalAlignment.Right,
+                Margin = new Thickness(10),
+                Spacing = 5
+            };
+            panel.Children.Add(messageStackPanel);
+            targetContainer = panel;
+        }
+
+        /// <summary>
+        /// 启动消息的显示动画
+        /// </summary>
+        private static void ShowMessageAnimation(Label msgLabel, int seconds)
+        {
+            // 设置为可见，并开始淡入动画
+            msgLabel.Visibility = Visibility.Visible;
+            var fadeIn = new DoubleAnimation(0, 1, TimeSpan.FromMilliseconds(300));
+            msgLabel.BeginAnimation(UIElement.OpacityProperty, fadeIn);
+
+            // 启动定时器，指定秒数后隐藏消息
+            var timer = new DispatcherTimer();
+            timer.Interval = TimeSpan.FromSeconds(seconds);
+            timer.Tick += (sender, e) =>
+            {
+                timer.Stop();
+                HideMessageAnimation(msgLabel);
+            };
+            timer.Start();
+        }
+
+        /// <summary>
+        /// 隐藏消息的动画
+        /// </summary>
+        private static void HideMessageAnimation(Label msgLabel)
+        {
+            var fadeOut = new DoubleAnimation(1, 0, TimeSpan.FromMilliseconds(300));
+            fadeOut.Completed += (s, e) =>
+            {
+                msgLabel.Visibility = Visibility.Collapsed;
+                messageStackPanel.Children.Remove(msgLabel);
+                // 如果所有消息都已隐藏，移除 StackPanel
+                if (!messageStackPanel.Children.OfType<Label>().Any())
+                {
+                    messageStackPanel.Visibility = Visibility.Collapsed;
+                    targetContainer.Children.Remove(messageStackPanel);
+                    messageStackPanel = null;
+                }
+            };
+            msgLabel.BeginAnimation(UIElement.OpacityProperty, fadeOut);
         }
     }
 }

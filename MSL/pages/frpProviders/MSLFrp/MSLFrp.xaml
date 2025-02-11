@@ -101,11 +101,14 @@
                         <ListBox x:Name="NodeList" Grid.Row="1" MinWidth="300"  hc:Empty.ShowEmpty="true" SelectionChanged="NodeList_SelectionChanged">
                             <ListBox.ItemTemplate>
                                 <DataTemplate>
-                                    <StackPanel Orientation="Horizontal">
-                                        <TextBlock Text="{Binding Name}" Margin="3"/>
-                                        <TextBlock Text="-" Margin="3"/>
-                                        <TextBlock Text="{Binding VipName}" Margin="3"/>
-                                    </StackPanel>
+                                    <TextBlock>
+                                        <TextBlock.Inlines>
+                                            <Run Text="[" />
+                                            <Run Text="{Binding VipName}" />
+                                            <Run Text="] " />
+                                            <Run Text="{Binding Name}" />
+                                        </TextBlock.Inlines>
+                                    </TextBlock>
                                 </DataTemplate>
                             </ListBox.ItemTemplate>
                         </ListBox>
@@ -118,13 +121,16 @@
                         <hc:ScrollViewer IsInertiaEnabled="True" Grid.Row="0" Margin="0,0,0,10">
                             <hc:UniformSpacingPanel Orientation="Vertical" Spacing="5">
                                 <hc:Card>
-                                    <StackPanel Margin="5" HorizontalAlignment="Left">
-                                        <Label Content="节点信息" Style="{DynamicResource MagicLabel16}"/>
+                                    <StackPanel Margin="5">
+                                        <StackPanel Orientation="Horizontal">
+                                            <Label Content="节点信息" Style="{DynamicResource MagicLabel16}"/>
+                                            <Label x:Name="NodeStatus" Margin="5,0" Content="选择一个节点才知道呀~"/>
+                                        </StackPanel>
                                         <Label x:Name="NodeTips" Style="{DynamicResource MagicLabel14}" Content="选择一个节点才知道呀~" Margin="5,0"/>
                                     </StackPanel>
                                 </hc:Card>
                                 <hc:Card>
-                                    <StackPanel Margin="3">
+                                    <StackPanel Margin="5">
                                         <Label Content="填写隧道参数" Style="{DynamicResource MagicLabel16}"/>
                                         <WrapPanel Margin="5,0">
                                             <StackPanel Orientation="Horizontal" Margin="0,0,10,5">
@@ -142,7 +148,7 @@
                                             <StackPanel Orientation="Horizontal" Margin="0,0,10,5">
                                                 <Label Style="{DynamicResource MagicLabel}" Content="远程端口：" VerticalAlignment="Center"/>
                                                 <TextBox Text="" x:Name="Create_RemotePort" MinWidth="100"/>
-                                                <Button x:Name="GenerateRandomPort" Content="随机生成" Click="GenerateRandomPort_Click"/>
+                                                <Button x:Name="GenerateRandomPort" Margin="5,0,0,0" Content="随机生成" Click="GenerateRandomPort_Click"/>
                                             </StackPanel>
                                             <StackPanel Orientation="Horizontal" Margin="0,0,10,5">
                                                 <Label Style="{DynamicResource MagicLabel}" Content="网络协议：" VerticalAlignment="Center"/>

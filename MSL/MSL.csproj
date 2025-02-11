@@ -106,9 +106,6 @@
       <Generator>MSBuild:Compile</Generator>
       <SubType>Designer</SubType>
     </ApplicationDefinition>
-    <Compile Include="controls\FlowMessage.xaml.cs">
-      <DependentUpon>FlowMessage.xaml</DependentUpon>
-    </Compile>
     <Compile Include="controls\MagicControls.cs" />
     <Compile Include="controls\StringConcatConverter.cs" />
     <Compile Include="forms\ConptyWindow.xaml.cs">
@@ -218,10 +215,6 @@
       <Generator>MSBuild:Compile</Generator>
     </Page>
     <Page Include="controls\dialogs\MessageDialog.xaml">
-      <SubType>Designer</SubType>
-      <Generator>MSBuild:Compile</Generator>
-    </Page>
-    <Page Include="controls\FlowMessage.xaml">
       <SubType>Designer</SubType>
       <Generator>MSBuild:Compile</Generator>
     </Page>

@@ -297,7 +297,7 @@ namespace MSL.pages
                     Growl.Error(LanguageManager.Instance["Page_OnlinePage_Err"]);
                     if (!FrpcProcess.HasExited)
                     {
-                        Task.Run(() => Functions.StopProcess(FrpcProcess));
+                        FrpcProcess.Kill();
                     }
                 }
                 if (msg.IndexOf("success") + 1 != 0)

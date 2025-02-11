@@ -1,11 +1,9 @@
 ﻿using MSL.utils;
 using Newtonsoft.Json.Linq;
 using System;
-using System.Diagnostics;
 using System.Threading.Tasks;
 using System.Windows;
 using System.Windows.Controls;
-using Windows.UI.Core;
 
 namespace MSL.pages.frpProviders.MSLFrp
 {
@@ -94,15 +92,13 @@ namespace MSL.pages.frpProviders.MSLFrp
                 ? int.Parse((string)JsonUserInfo["data"]["user_group"])
                 : 0;
 
-            string userGroup = userLevel == 6 ? "超级管理员" : userLevel == 0 ? "普通用户" : "赞助用户";
+            string userGroup = userLevel == 0 ? "普通用户" : userLevel == 1 ? "高级用户" : userLevel == 2 ? "超级用户" : "管理员";
+            string outDate = userLevel == 0 ? string.Empty : "\n到期时间：{0}";
 
-            Dispatcher.Invoke(() =>
-            {
-                UserInfo.Content = $"用户名: {JsonUserInfo["data"]["name"]}\n" +
-                    $"用户组: {userGroup} \n" +
-                    $"到期时间: {Functions.ConvertUnixTimeSeconds((long)JsonUserInfo["data"]["outdated"])}\n" +
-                    $"（会员服务请先前往官网进行购买！）";
-            });
+            UserInfo.Content = $"用户名：{JsonUserInfo["data"]["name"]}\n" +
+                $"用户组：{userGroup} \n" +
+                $"可创建隧道数：{JsonUserInfo["data"]["maxTunnelCount"]}" +
+                string.Format(outDate, Functions.ConvertUnixTimeSeconds((long)JsonUserInfo["data"]["outdated"]));
         }
 
 
@@ -150,7 +146,7 @@ namespace MSL.pages.frpProviders.MSLFrp
                     Create_Name.Text = Functions.RandomString("MSL_", 6);
                     break;
                 case 2:
-                    UserCenterFrame.Content= FrpProfile;
+                    UserCenterFrame.Content = FrpProfile;
                     break;
             }
         }
@@ -175,16 +171,9 @@ namespace MSL.pages.frpProviders.MSLFrp
                     }
                     LoginGrid.Visibility = Visibility.Collapsed; ;
                     MainCtrl.Visibility = Visibility.Visible;
+                    // 解析用户信息并更新UI
                     JObject JsonUserInfo = JObject.Parse(Msg);
-                    int userLevel = Functions.GetCurrentUnixTimestamp() < (long)JsonUserInfo["data"]["outdated"] ? int.Parse((string)JsonUserInfo["data"]["user_group"]) : 0;
-                    string userGroup = userLevel == 6 ? "超级管理员" : userLevel == 0 ? "普通用户" : "赞助用户";
-                    Dispatcher.Invoke(() =>
-                    {
-                        UserInfo.Content = $"用户名: {JsonUserInfo["data"]["name"]}\n" +
-                        $"用户组: {userGroup} \n" +
-                        $"到期时间: {Functions.ConvertUnixTimeSeconds((long)JsonUserInfo["data"]["outdated"])}\n" +
-                        $"（会员服务请先前往官网进行购买！）";
-                    });
+                    UpdateUserInfo(JsonUserInfo);
                     await GetTunnelList();
                 }
             }
@@ -278,8 +267,18 @@ namespace MSL.pages.frpProviders.MSLFrp
             if (listBox.SelectedItem is MSLFrpApi.NodeInfo selectedNode)
             {
                 NodeTips.Content = (string.IsNullOrEmpty(selectedNode.Remark) ? "节点没有备注" : selectedNode.Remark) +
-                    "\nUDP: " + (selectedNode.UDP == 1 ? "支持" : "不支持") +
-                    "\n节点状态: " + (selectedNode.Status == 1 ? "在线" : "离线");
+                    "\n宽带：" + selectedNode.Band + "\tUDP：" + (selectedNode.UDP == 1 ? "支持" : "不支持");
+                switch (selectedNode.Status)
+                {
+                    case 1:
+                        NodeStatus.Style = (Style)FindResource("LabelSuccess");
+                        NodeStatus.Content = "在线";
+                        break;
+                    default:
+                        NodeStatus.Style = (Style)FindResource("LabelDanger");
+                        NodeStatus.Content = "离线";
+                        break;
+                }
                 Create_RemotePort.Text = Functions.GenerateRandomNumber(selectedNode.MinPort, selectedNode.MaxPort).ToString();
             }
         }

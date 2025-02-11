@@ -62,7 +62,7 @@ namespace MSL.pages.frpProviders
                 }
                 OpenFrpApi.AuthId = authId;
             }
-            
+
             LoginGrid.Visibility = Visibility.Collapsed;
             MainGrid.Visibility = Visibility.Visible;
             MagicDialog MagicDialog = new MagicDialog();

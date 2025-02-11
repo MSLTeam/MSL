@@ -1,4 +1,5 @@
 ﻿using HandyControl.Controls;
+using MSL.utils;
 using System;
 using System.Windows;
 using System.Windows.Controls;
@@ -59,8 +60,7 @@ namespace MSL.controls
             }
             if ((!AcceptEmpty) && string.IsNullOrEmpty(_dialogReturn))
             {
-                flowMessage.ShowMessage("请输入内容！", 3);
-                //await MagicShow.ShowMsgDialogAsync(Window.GetWindow(this), "请输入内容！", "提示");
+                MagicFlowMsg.ShowMessage("请输入内容！", 2, panel: MainGrid);
                 return;
             }
             Close();
