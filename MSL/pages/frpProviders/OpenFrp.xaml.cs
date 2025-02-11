@@ -41,7 +41,7 @@ namespace MSL.pages.frpProviders
                     ? Config.Read("OpenFrpToken")?.ToString()
                     : OpenFrpApi.AuthId;
 
-                if (string.IsNullOrEmpty(token))
+                if (string.IsNullOrEmpty(authId))
                 {
                     return;
                 }
