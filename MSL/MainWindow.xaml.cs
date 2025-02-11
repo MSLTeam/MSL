@@ -442,19 +442,19 @@ namespace MSL
                 }
                 else if (newVersion < version)
                 {
-                    MagicFlowMsg.ShowMessage(LanguageManager.Instance["MainWindow_GrowlMsg_BetaVersion"], 4);
+                    MagicFlowMsg.ShowMessage(LanguageManager.Instance["MainWindow_GrowlMsg_BetaVersion"], 4, panel: this);
                     //Growl.Info(LanguageManager.Instance["MainWindow_GrowlMsg_BetaVersion"]);
                 }
                 else
                 {
-                    MagicFlowMsg.ShowMessage(LanguageManager.Instance["MainWindow_GrowlMsg_LatestVersion"], 1);
+                    MagicFlowMsg.ShowMessage(LanguageManager.Instance["MainWindow_GrowlMsg_LatestVersion"], 1, panel: this);
                     //Growl.Success();
                 }
             }
-            catch
+            catch (Exception ex)
             {
                 //Logger.LogError("检测更新失败！");
-                Growl.Error(LanguageManager.Instance["MainWindow_GrowlMsg_CheckUpdateErr"]);
+                Growl.Error(LanguageManager.Instance["MainWindow_GrowlMsg_CheckUpdateErr"] + $"\n{ex.Message}");
             }
             if (downloadTermDll)
             {

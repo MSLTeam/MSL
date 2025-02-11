@@ -4,11 +4,8 @@ using System;
 using System.Collections.Generic;
 using System.Diagnostics;
 using System.IO;
-using System.Runtime.InteropServices;
 using System.Text;
 using System.Text.RegularExpressions;
-using System.Threading;
-using System.Threading.Tasks;
 using System.Windows;
 using System.Windows.Controls;
 
@@ -447,6 +444,7 @@ namespace MSL.utils
         }
         #endregion
 
+        /* Close Process (Ctrl_C)   (暂时弃用！Debug时会关掉主程序！而且会造成伪终端失效！！！)
         #region Close Process (Ctrl_C)
         [DllImport("kernel32.dll", SetLastError = true)]
         static extern bool GenerateConsoleCtrlEvent(ConsoleCtrlEvent sigevent, int dwProcessGroupId);
@@ -475,11 +473,9 @@ namespace MSL.utils
                 // for clarity. A real-world program should check the result of each
                 // call and handle errors appropriately.
                 SetConsoleCtrlHandler(null, true);
-                await Task.Delay(250);
                 GenerateConsoleCtrlEvent(ConsoleCtrlEvent.CTRL_C, 0);
                 await Task.Run(() => ProcessExited(process));
                 SetConsoleCtrlHandler(null, false);
-                await Task.Delay(250);
                 FreeConsole();
             }
             else
@@ -500,5 +496,6 @@ namespace MSL.utils
             }
         }
         #endregion
+        */
     }
 }

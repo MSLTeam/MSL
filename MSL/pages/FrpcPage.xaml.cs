@@ -1,5 +1,4 @@
 ﻿using HandyControl.Controls;
-using HandyControl.Data;
 using ICSharpCode.SharpZipLib.Zip;
 using MSL.langs;
 using MSL.utils;
@@ -28,12 +27,13 @@ namespace MSL.pages
     {
         public static event DeleControl GotoFrpcListPage;
         public readonly Process FrpcProcess = new Process();
-        private readonly int frpID;
+        private readonly int FrpID;
+        private int FrpcServer;
 
         public FrpcPage(int frpId, bool autoStart = false)
         {
             InitializeComponent();
-            frpID = frpId;
+            FrpID = frpId;
             FrpcProcess.OutputDataReceived += new DataReceivedEventHandler(OutputDataReceived);
             if (autoStart)
             {
@@ -45,7 +45,7 @@ namespace MSL.pages
         {
             try
             {
-                if (File.Exists(@$"MSL\frp\{frpID}\frpc") || File.Exists(@$"MSL\frp\{frpID}\frpc.toml"))
+                if (File.Exists(@$"MSL\frp\{FrpID}\frpc") || File.Exists(@$"MSL\frp\{FrpID}\frpc.toml"))
                 {
                     await GetFrpcInfo();
                 }
@@ -66,9 +66,9 @@ namespace MSL.pages
             try
             {
                 JObject jobject = JObject.Parse(File.ReadAllText(@"MSL\frp\config.json", Encoding.UTF8));
-                if (jobject[frpID.ToString()]["frpcServer"] == null) // 如果frpcServer为null就给他设置为0！
+                if (jobject[FrpID.ToString()]["frpcServer"] == null) // 如果frpcServer为null就给他设置为0！
                 {
-                    jobject[frpID.ToString()]["frpcServer"] = 0;
+                    jobject[FrpID.ToString()]["frpcServer"] = 0;
                     string convertString = Convert.ToString(jobject);
                     File.WriteAllText(@"MSL\frp\config.json", convertString, Encoding.UTF8);
                 }
@@ -76,7 +76,7 @@ namespace MSL.pages
                 startfrpc.IsEnabled = true;
                 frplab1.Text = LanguageManager.Instance["Page_FrpcPage_Status_Checking"];
                 // 如果frpcServer为0（MSL）、2（CHML）、-2（Custom，自己提供frpc）、-1（Custom，官版frpc）时，执行下面函数
-                FrpcServer = (int)jobject[frpID.ToString()]["frpcServer"];
+                FrpcServer = (int)jobject[FrpID.ToString()]["frpcServer"];
                 if (FrpcServer == 0 || FrpcServer == 2 || FrpcServer == -2 || FrpcServer == -1)
                 {
                     await LoadFrpcInfo(jobject);
@@ -96,7 +96,6 @@ namespace MSL.pages
             }
         }
 
-        private int FrpcServer;
         private string RemoteAddr;
         private string RemoteDomain;
         // 辅助类定义
@@ -108,6 +107,8 @@ namespace MSL.pages
 
         private async Task LoadFrpcInfo(JObject jobject)
         {
+            RemoteAddr = string.Empty;
+            RemoteDomain = string.Empty;
             // 节点名称
             string nodeName = LanguageManager.Instance["Page_FrpcPage_Status_CustomFrp"];
             // 节点配置
@@ -115,11 +116,11 @@ namespace MSL.pages
             if (FrpcServer == 2) // Load CHML-config
             {
                 nodeName = LanguageManager.Instance["Page_FrpcPage_Status_ChmlFrp"];
-                configText = File.ReadAllText(@$"MSL\frp\{frpID}\frpc");
+                configText = File.ReadAllText(@$"MSL\frp\{FrpID}\frpc");
             }
             else // others are toml format
             {
-                configText = File.ReadAllText(@$"MSL\frp\{frpID}\frpc.toml");
+                configText = File.ReadAllText(@$"MSL\frp\{FrpID}\frpc.toml");
             }
 
             if (configText.Contains("\r")) // 替换掉\r
@@ -130,7 +131,7 @@ namespace MSL.pages
 
             if (FrpcServer == 0)
             {
-                nodeName = jobject[frpID.ToString()]["name"].ToString();
+                nodeName = jobject[FrpID.ToString()]["name"].ToString();
             }
 
             // 清空现有内容  
@@ -178,7 +179,6 @@ namespace MSL.pages
 
             // 处理最后一个代理项
             if (currentProxy != null) proxies.Add(currentProxy);
-
             // 创建UI元素
             foreach (var proxy in proxies)
             {
@@ -297,7 +297,7 @@ namespace MSL.pages
                 // 读取配置
                 JObject jobject = JObject.Parse(File.ReadAllText(@"MSL\frp\config.json", Encoding.UTF8));
                 // 默认的玩意
-                int frpcServer = (int)jobject[frpID.ToString()]["frpcServer"];
+                int frpcServer = (int)jobject[FrpID.ToString()]["frpcServer"];
                 string frpcversion = Config.Read("frpcversion")?.ToString() ?? "";
                 string frpcExeName; // frpc客户端主程序
                 string downloadUrl = ""; // frpc客户端在api的调用位置
@@ -328,7 +328,7 @@ namespace MSL.pages
                         break;
                     case 1: // openfrp
                         frpcExeName = "frpc_of.exe";
-                        arguments = File.ReadAllText($"MSL\\frp\\{frpID}\\frpc");
+                        arguments = File.ReadAllText($"MSL\\frp\\{FrpID}\\frpc");
                         if (!File.Exists($"MSL\\frp\\{frpcExeName}"))
                         {
                             downloadUrl = "OpenFrp";
@@ -346,7 +346,7 @@ namespace MSL.pages
                         break;
                     case 3: // sakura
                         frpcExeName = "frpc_sakura.exe";
-                        arguments = File.ReadAllText($"MSL\\frp\\{frpID}\\frpc"); // 启动命令
+                        arguments = File.ReadAllText($"MSL\\frp\\{FrpID}\\frpc"); // 启动命令
                         if (!File.Exists($"MSL\\frp\\{frpcExeName}"))
                         {
                             downloadUrl = "SakuraFrp";
@@ -479,10 +479,10 @@ namespace MSL.pages
 
                 if (frpcServer == 0)
                 {
-                    tempStr = jobject[frpID.ToString()]["name"].ToString();
+                    tempStr = jobject[FrpID.ToString()]["name"].ToString();
                 }
                 //该启动了！
-                FrpcProcess.StartInfo.WorkingDirectory = $"MSL\\frp\\{frpID}";
+                FrpcProcess.StartInfo.WorkingDirectory = $"MSL\\frp\\{FrpID}";
                 FrpcProcess.StartInfo.FileName = "MSL\\frp\\" + frpcExeName;
                 FrpcProcess.StartInfo.Arguments = arguments;
                 FrpcProcess.StartInfo.CreateNoWindow = true;
@@ -492,11 +492,11 @@ namespace MSL.pages
                 FrpcProcess.StartInfo.StandardOutputEncoding = Encoding.UTF8;
                 FrpcProcess.Start();
                 FrpcProcess.BeginOutputReadLine();
-                FrpcList.RunningFrpc.Add(frpID);
+                FrpcList.RunningFrpc.Add(FrpID);
                 startfrpc.IsEnabled = true;
                 await Task.Run(FrpcProcess.WaitForExit);
                 FrpcProcess.CancelOutputRead();
-                FrpcList.RunningFrpc.Remove(frpID);
+                FrpcList.RunningFrpc.Remove(FrpID);
                 // 到这里就关掉了
                 MagicFlowMsg.ShowMessage("内网映射已关闭！", 4);
                 //Growl.Info("内网映射已关闭！");
@@ -623,32 +623,9 @@ namespace MSL.pages
             if (msg.Contains("发现新版本"))
             {
                 JObject jobject = JObject.Parse(File.ReadAllText(@"MSL\frp\config.json", Encoding.UTF8));
-                if ((int)jobject[frpID.ToString()]["frpcServer"] == 1) // OF frpc更新
+                if ((int)jobject[FrpID.ToString()]["frpcServer"] == 1) // OF frpc更新
                 {
-                    Growl.Ask(new GrowlInfo
-                    {
-                        Message = "发现OpenFrp桥接软件新版本，是否更新？",
-                        ActionBeforeClose = isConfirmed =>
-                        {
-                            if (isConfirmed)
-                            {
-                                Dispatcher.InvokeAsync(async () =>
-                                {
-                                    if (!FrpcProcess.HasExited)
-                                    {
-                                        FrpcProcess.Kill();
-                                    }
-                                    await Task.Delay(500);
-                                    await Task.Run(() => File.Delete("MSL\\frpc_of.exe"));
-                                    _ = Task.Run(() => StartFrpc());
-
-                                });
-
-                            }
-                            return true;
-                        },
-                        ShowDateTime = false
-                    });
+                    frpcOutlog.Text += "发现OpenFrp桥接软件新版本，如果需要更新，请先关闭映射，然后手动前往“MSL\\frp”文件夹删除frpc_of.exe并重启映射！\n";
                 }
             }
             frpcOutlog.ScrollToEnd();
@@ -665,12 +642,12 @@ namespace MSL.pages
                 startfrpc.IsEnabled = false;
                 try
                 {
-                    await Functions.StopProcess(FrpcProcess); // 尝试使用CTRL+C（有风险不能随便用，调试的时候还会把程序给干掉（怪！））
+                    if (!FrpcProcess.HasExited)
+                    {
+                        FrpcProcess.Kill();
+                    }
                 }
-                catch
-                {
-                    FrpcProcess.Kill(); // CTRL+C失败后直接Kill
-                }
+                catch { }
             }
         }
 

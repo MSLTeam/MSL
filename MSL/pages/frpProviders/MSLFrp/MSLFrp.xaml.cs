@@ -66,9 +66,7 @@ namespace MSL.pages.frpProviders.MSLFrp
             MagicDialog magicDialog = new MagicDialog();
             magicDialog.ShowTextDialog(Window.GetWindow(this), "登录中……");
 
-            var (Code, Msg) = string.IsNullOrEmpty(token)
-                ? await MSLFrpApi.UserLogin(token)
-                : await MSLFrpApi.UserLogin(token);
+            var (Code, Msg) = await MSLFrpApi.UserLogin(token);
 
             magicDialog.CloseTextDialog();
 

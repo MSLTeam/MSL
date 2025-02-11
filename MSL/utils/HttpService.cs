@@ -262,11 +262,11 @@ namespace MSL.utils
         /// <param name="parameterData">Post参数</param>
         /// <param name="configureHeaders">Headers</param>
         /// <returns>HttpResponse</returns>
-        public static async Task<HttpResponse> PostAsync(string url, int contentType = 0, object parameterData = null, Action<HttpRequestHeaders> configureHeaders = null)
+        public static async Task<HttpResponse> PostAsync(string url, int contentType = 0, object parameterData = null, Action<HttpRequestHeaders> configureHeaders = null, int headerUAMode = 0, string headerUA = null)
         {
             HttpClient httpClient = new HttpClient();
             HttpResponse httpResponse = new HttpResponse();
-            HttpContent content = new StringContent(parameterData?.ToString() ?? string.Empty);
+            HttpContent content;
             switch (contentType)
             {
                 case 0:
@@ -291,9 +291,25 @@ namespace MSL.utils
                         content = new FormUrlEncodedContent(keyValuePairs);
                     }
                     break;
+                default:
+                    httpClient.DefaultRequestHeaders.Accept.Add(new MediaTypeWithQualityHeaderValue("text/plain"));
+                    content = new StringContent(parameterData as string, Encoding.UTF8, "text/plain");
+                    break;
             }
 
             configureHeaders?.Invoke(httpClient.DefaultRequestHeaders);
+            if (headerUAMode == 1)
+            {
+                httpClient.DefaultRequestHeaders.UserAgent.TryParseAdd($"MSLTeam-MSL/{MainWindow.MSLVersion}");
+            }
+            else if (headerUAMode == 2)
+            {
+                httpClient.DefaultRequestHeaders.UserAgent.TryParseAdd("Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/126.0.0.0 Safari/537.36");
+            }
+            else if (headerUAMode == 3 && !string.IsNullOrEmpty(headerUA))
+            {
+                httpClient.DefaultRequestHeaders.UserAgent.TryParseAdd(headerUA);
+            }
 
             try
             {

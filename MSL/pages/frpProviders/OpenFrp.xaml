@@ -62,7 +62,7 @@
                                     <ComboBoxItem Content="UDP（基岩版）"/>
                                 </ComboBox>
                             </StackPanel>
-                            <CheckBox x:Name="enableCompression" Content="启用数据压缩" IsChecked="True"/>
+                            <CheckBox x:Name="enableCompression" Content="启用数据压缩"/>
                             <Button x:Name="addProxieBtn" Content="点击新建隧道" HorizontalAlignment="Stretch" Click="addProxieBtn_Click"/>
                         </hc:UniformSpacingPanel>
                     </Border>

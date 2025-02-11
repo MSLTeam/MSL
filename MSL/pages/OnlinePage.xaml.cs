@@ -163,14 +163,7 @@ namespace MSL.pages
                 if (!FrpcProcess.HasExited)
                 {
                     createRoom.IsChecked = true;
-                    try
-                    {
-                        await Functions.StopProcess(FrpcProcess); // 尝试使用CTRL+C
-                    }
-                    catch
-                    {
-                        FrpcProcess.Kill(); // CTRL+C失败后直接Kill
-                    }
+                    FrpcProcess.Kill();
                 }
             }
         }
@@ -191,14 +184,7 @@ namespace MSL.pages
                 if (!FrpcProcess.HasExited)
                 {
                     joinRoom.IsChecked = true;
-                    try
-                    {
-                        await Functions.StopProcess(FrpcProcess);
-                    }
-                    catch
-                    {
-                        FrpcProcess.Kill();
-                    }
+                    FrpcProcess.Kill();
                 }
             }
         }
