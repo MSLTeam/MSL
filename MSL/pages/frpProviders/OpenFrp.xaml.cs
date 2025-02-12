@@ -105,7 +105,7 @@ namespace MSL.pages.frpProviders
 
             MagicDialog MagicDialog = new MagicDialog();
             MagicDialog.ShowTextDialog(Window.GetWindow(this), "登录中……");
-            var (Code, Msg) = await OpenFrpApi.Login(userAccount, userPass,save: SaveToken.IsChecked == true);
+            var (Code, Msg) = await OpenFrpApi.Login(userAccount, userPass, save: SaveToken.IsChecked == true);
             MagicDialog.CloseTextDialog();
             if (Code == 200)
             {
@@ -256,7 +256,7 @@ namespace MSL.pages.frpProviders
                 string proxy_name = await MagicShow.ShowInput(Window.GetWindow(this), "隧道名称(不支持中文)");
                 if (proxy_name != null)
                 {
-                    var (_return,msg) = await OpenFrpApi.CreateProxy(type, portBox.Text, zip, selected_node_id, remotePortBox.Text, proxy_name);
+                    var (_return, msg) = await OpenFrpApi.CreateProxy(type, portBox.Text, zip, selected_node_id, remotePortBox.Text, proxy_name);
                     if (_return)
                     {
                         MagicShow.ShowMsgDialog(Window.GetWindow(this), "隧道创建成功！", "提示");
