@@ -104,7 +104,7 @@ namespace MSL.pages
         {
             HandyControl.Controls.Window window = new HandyControl.Controls.Window
             {
-
+                Padding=new Thickness(10),
                 NonClientAreaBackground = (Brush)FindResource("BackgroundBrush"),
                 Background = (Brush)FindResource("BackgroundBrush"),
                 Title = "我的MSL-Frp信息",

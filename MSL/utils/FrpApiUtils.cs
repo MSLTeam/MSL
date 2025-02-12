@@ -2,7 +2,6 @@
 using Newtonsoft.Json.Linq;
 using System;
 using System.Collections.Generic;
-using System.IO;
 using System.Linq;
 using System.Net;
 using System.Net.Http;
@@ -372,8 +371,6 @@ namespace MSL.utils
     }
     #endregion
 
-
-
     #region OpenFrp Api
     internal class OpenFrpApi
     {
@@ -463,7 +460,7 @@ namespace MSL.utils
 
                     try
                     {
-                        HttpResponseMessage response = await httpClient.PostAsync(domainUrl + "/api/oauth2/authorize?response_type=code&redirect_uri=https://of-dev-api.bfsea.xyz/oauth_callback&client_id=openfrp", null);
+                        HttpResponseMessage response = await httpClient.PostAsync(domainUrl + $"/api/oauth2/authorize?response_type=code&redirect_uri={ApiUrl}/oauth_callback&client_id=openfrp", null);
                         httpResponse.HttpResponseCode = response.StatusCode;
                         httpResponse.HttpResponseContent = response.IsSuccessStatusCode
                             ? await response.Content.ReadAsStringAsync()
@@ -627,60 +624,19 @@ namespace MSL.utils
             return (null, null);
         }
 
-        /*
-        public static void UserSign(Window window)
-        {
-            WebHeaderCollection header = new WebHeaderCollection
-            {
-                authId
-            };
-            string responseMessage = "";
-            try
-            {
-                HttpService.Post("userSign", 0, string.Empty, "https://of-dev-api.bfsea.xyz/frp/api", header);
-            }
-            catch
-            {
-                MagicShow.ShowMsgDialog(window, "签到失败！请登录OpenFrp官网进行签到！", "错误");
-                return;
-            }
-            try
-            {
-                if ((bool)JObject.Parse(responseMessage)["flag"] == true && JObject.Parse(responseMessage)["msg"].ToString() == "OK")
-                {
-                    MagicShow.ShowMsgDialog(window, JObject.Parse(responseMessage)["data"].ToString(), "签到成功");
-                }
-                else
-                {
-                    MagicShow.ShowMsgDialog(window, "签到失败", "签到失败");
-                }
-            }
-            catch (Exception ex)
-            {
-                MagicShow.ShowMsgDialog(window, "签到失败,产生的错误:\n" + ex.Message, "签到失败");
-            }
-        }
-        */
-
-        public static async Task<utils.HttpResponse> GetUserInfo()
+        public static async Task<HttpResponse> GetUserInfo()
         {
             var headersAction = new Action<HttpRequestHeaders>(headers =>
             {
                 headers.Add("Authorization", AuthId);
             });
-            var responseMessage = await HttpService.PostAsync("https://of-dev-api.bfsea.xyz/frp/api/getUserInfo", 0, string.Empty, headersAction);
+            var responseMessage = await HttpService.PostAsync(ApiUrl + "/frp/api/getUserInfo", 0, string.Empty, headersAction);
             return responseMessage;
         }
 
-
-
-        public static bool CreateProxy(string type, string port, bool EnableZip, int nodeid, string remote_port, string proxy_name, out string returnMsg)
+        public static async Task<(bool Success, string Msg)> CreateProxy(string type, string port, bool EnableZip, int nodeid, string remote_port, string proxy_name)
         {
-            HttpWebRequest request = (HttpWebRequest)WebRequest.Create("https://of-dev-api.bfsea.xyz/frp/api/newProxy");
-            request.Method = "POST";
-            request.ContentType = "application/json";
-            request.Headers.Add("Authorization: " + AuthId);
-            string json = JsonConvert.SerializeObject(new JObject()
+            var json = new JObject()
             {
                 ["node_id"] = nodeid,
                 ["name"] = proxy_name,
@@ -696,80 +652,40 @@ namespace MSL.utils
                 ["request_from"] = "",
                 ["request_pass"] = "",
                 ["custom"] = ""
-            });//转换json格式
-            byte[] byteArray = Encoding.UTF8.GetBytes(json);
-            request.ContentLength = byteArray.Length;
-            Stream dataStream = request.GetRequestStream();
-            dataStream.Write(byteArray, 0, byteArray.Length);
-            dataStream.Close();
-            try
+            };
+            var res = await HttpService.PostAsync(ApiUrl + "/frp/api/newProxy", 0, json, header =>
             {
-                HttpWebResponse response = (HttpWebResponse)request.GetResponse();
-                dataStream = response.GetResponseStream();
-                StreamReader reader = new StreamReader(dataStream);
-                string responseMessage = reader.ReadToEnd();
-                var deserializedMessage = JObject.Parse(responseMessage);
-                reader.Close();
-                dataStream.Close();
-                response.Close();
-                if ((bool)deserializedMessage["flag"] == true)
-                {
-                    returnMsg = "";
-                    return true;
-                }
-                else
-                {
-                    returnMsg = deserializedMessage["msg"].ToString();
-                    return false;
-                }
+                header.Add("Authorization", AuthId);
+            }, 1);
+
+            if (res.HttpResponseCode == HttpStatusCode.OK && (bool)JObject.Parse(res.HttpResponseContent.ToString())["flag"] == true)
+            {
+                return (true, string.Empty);
             }
-            catch (Exception ex)
+            else
             {
-                returnMsg = ex.Message;
-                return false;
+                return (false, res.HttpResponseCode == HttpStatusCode.OK ? JObject.Parse(res.HttpResponseContent.ToString())["msg"].ToString() : string.Empty);
             }
         }
 
-        public static bool DeleteProxy(string id, out string returnMsg)
+        public static async Task<(bool Success, string Msg)> DeleteProxy(string id)
         {
-            HttpWebRequest request = (HttpWebRequest)WebRequest.Create("https://of-dev-api.bfsea.xyz/frp/api/removeProxy");
-            request.Method = "POST";
-            request.ContentType = "application/json";
-            request.Headers.Add("Authorization: " + AuthId);
             JObject json = new JObject()
             {
                 ["proxy_id"] = id,
-            };//转换json格式
-            byte[] byteArray = Encoding.UTF8.GetBytes(JsonConvert.SerializeObject(json));
-            request.ContentLength = byteArray.Length;
-            Stream dataStream = request.GetRequestStream();
-            dataStream.Write(byteArray, 0, byteArray.Length);
-            dataStream.Close();
-            try
+            };
+            var res = await HttpService.PostAsync(ApiUrl + "/frp/api/removeProxy", 0, json, header =>
             {
-                HttpWebResponse response = (HttpWebResponse)request.GetResponse();
-                dataStream = response.GetResponseStream();
-                StreamReader reader = new StreamReader(dataStream);
-                string responseMessage = reader.ReadToEnd();
-                var deserializedMessage = JObject.Parse(responseMessage);
-                reader.Close();
-                dataStream.Close();
-                response.Close();
-                if ((bool)deserializedMessage["flag"] == true)
-                {
-                    returnMsg = "";
-                    return true;
-                }
-                else
-                {
-                    returnMsg = deserializedMessage["msg"].ToString();
-                    return false;
-                }
+                header.Add("Authorization", AuthId);
+            }, 1);
+
+            if (res.HttpResponseCode == HttpStatusCode.OK && (bool)JObject.Parse(res.HttpResponseContent.ToString())["flag"] == true)
+            {
+                return (true, string.Empty);
             }
-            catch (Exception ex)
+            else
             {
-                returnMsg = ex.Message;
-                return false;
+                return (false, res.HttpResponseCode == HttpStatusCode.OK ? JObject.Parse(res.HttpResponseContent.ToString())["msg"].ToString() : string.Empty);
             }
         }
     }

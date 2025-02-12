@@ -22,7 +22,7 @@
                         <ColumnDefinition/>
                     </Grid.ColumnDefinitions>
                     <Button x:Name="Return" Grid.Column="0" hc:IconElement.Geometry="{StaticResource LeftGeometry}" Content="返回Frpc列表" HorizontalAlignment="Left" Click="Return_Click"/>
-                    <ToggleButton x:Name="startfrpc" Grid.Column="1" Margin="10,0,10,0" VerticalAlignment="Center" IsEnabled="False" Click="startfrpc_Click">
+                    <ToggleButton x:Name="startfrpcBtn" Grid.Column="1" Margin="10,0,10,0" VerticalAlignment="Center" IsEnabled="False" Click="startfrpc_Click">
                         <ToggleButton.Style>
                             <Style TargetType="ToggleButton" BasedOn="{StaticResource ToggleButtonPrimary.NoCheckedBorder}">
                                 <Style.Triggers>

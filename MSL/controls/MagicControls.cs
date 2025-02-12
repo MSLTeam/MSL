@@ -68,6 +68,7 @@ namespace MSL.controls
         }
     }
 
+    /* MagicGrowlPanel 用处不多不大，暂时弃用
     public class MagicGrowlPanel : Control
     {
         static MagicGrowlPanel()
@@ -100,4 +101,5 @@ namespace MSL.controls
         public StackPanel GrowlPanel { get; private set; }
         public ScrollViewer GrowlScrollViewer { get; private set; }
     }
+    */
 }

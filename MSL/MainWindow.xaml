@@ -15,7 +15,7 @@
         NonClientAreaBackground="{DynamicResource DarkPrimaryBrush}"
         NonClientAreaHeight="40" NonClientAreaFontsize="14" NonClientAreaIconWidth="20" NonClientAreaIconHeight="20"
         NonClientAreaForeground="White" CloseButtonForeground="White" OtherButtonForeground="White" OtherButtonHoverForeground="White"
-        Icon="icon.ico"
+        Icon="icon.ico" Activated="Window_Activated" Deactivated="Window_Deactivated"
         WindowStartupLocation="CenterScreen" Loaded="Window_Loaded" Closing="Window_Closing" Closed="Window_Closed"
         Title="Minecraft Server Launcher" ResizeMode="CanResize">
     <Grid x:Name="MainGrid">
@@ -58,7 +58,9 @@
                 </ListBox>
             </StackPanel>
             <Frame Grid.Column="1" x:Name="frame" hc:BorderElement.CornerRadius="0" NavigationUIVisibility="Hidden" BorderThickness="1,0,0,0"/>
-            <controls:MagicGrowlPanel Grid.Column="1"/>
+            <ScrollViewer x:Name="GrowlScrollViewer" Grid.Column="1" VerticalScrollBarVisibility="Hidden" HorizontalAlignment="Right" VerticalAlignment="Top">
+                <StackPanel x:Name="GrowlPanel" hc:Growl.GrowlParent="True" VerticalAlignment="Top" Margin="0,0,0,10" />
+            </ScrollViewer>
         </Grid>
         <hc:NotifyIcon x:Name="MainNotifyIcon" Text="Minecraft Server Launcher" Visibility="Collapsed" Click="MainNotifyIcon_Click">
             <hc:NotifyIcon.ContextMenu>

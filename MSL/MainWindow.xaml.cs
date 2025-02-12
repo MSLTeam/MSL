@@ -8,6 +8,7 @@ using System;
 using System.Collections.Generic;
 using System.Diagnostics;
 using System.IO;
+using System.Net;
 using System.Runtime.InteropServices;
 using System.Security.Cryptography;
 using System.Text;
@@ -387,6 +388,7 @@ namespace MSL
 
         private async Task OnlineService(JObject jsonObject, bool downloadTermDll)
         {
+            ServicePointManager.SecurityProtocol = SecurityProtocolType.Tls12;
             //get serverlink
             try
             {
@@ -765,6 +767,16 @@ namespace MSL
         {
             Application.Current.Shutdown();
             //Environment.Exit(0);
+        }
+
+        private void Window_Activated(object sender, EventArgs e)
+        {
+            Growl.SetGrowlParent(this.GrowlPanel, true);
+        }
+
+        private void Window_Deactivated(object sender, EventArgs e)
+        {
+            Growl.SetGrowlParent(this.GrowlPanel, false);
         }
     }
 }

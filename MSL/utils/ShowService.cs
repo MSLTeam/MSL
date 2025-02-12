@@ -124,7 +124,6 @@ namespace MSL.utils
         {
             MagicDialog MagicDialog = new MagicDialog();
             return await MagicDialog.ShowInstallForgeDialog(_window, installPath, forgeFileName, javaPath);
-
         }
 
         /// <summary>
@@ -274,8 +273,9 @@ namespace MSL.utils
 
     public class MagicFlowMsg
     {
-        private static UniformSpacingPanel messageStackPanel;
         private static Panel targetContainer;
+        private static StackPanel growlPanel;
+        private static StackPanel messageStackPanel;
 
         /// <summary>
         /// 显示消息
@@ -297,18 +297,26 @@ namespace MSL.utils
             }
             if (panel is Panel targetPanel)
             {
-                if (messageStackPanel == null)
+                if (targetPanel.FindName("GrowlPanel") != null)
                 {
-                    CreatMsgContainer(targetPanel);
+                    growlPanel = targetPanel.FindName("GrowlPanel") as StackPanel;
                 }
                 else
                 {
-                    if (!targetPanel.Children.Contains(messageStackPanel))
+                    growlPanel = null;
+                    if (messageStackPanel == null)
                     {
-                        messageStackPanel.Visibility = Visibility.Collapsed;
-                        targetContainer.Children.Remove(messageStackPanel);
-                        messageStackPanel = null;
                         CreatMsgContainer(targetPanel);
+                    }
+                    else
+                    {
+                        if (!targetPanel.Children.Contains(messageStackPanel))
+                        {
+                            messageStackPanel.Visibility = Visibility.Collapsed;
+                            targetContainer.Children.Remove(messageStackPanel);
+                            messageStackPanel = null;
+                            CreatMsgContainer(targetPanel);
+                        }
                     }
                 }
             }
@@ -318,8 +326,11 @@ namespace MSL.utils
             // 创建 Label 控件来显示消息
             var msgLabel = new Label
             {
+                Margin = new Thickness(10, 10, 10, 0),
                 Content = message,
-                Visibility = Visibility.Collapsed
+                Visibility = Visibility.Collapsed,
+                VerticalAlignment = VerticalAlignment.Top,
+                HorizontalAlignment = HorizontalAlignment.Right,
             };
 
             // 根据消息类型设置样式，可以根据需要为不同类型设置不同的样式
@@ -344,7 +355,14 @@ namespace MSL.utils
                     msgLabel.Style = (Style)Application.Current.Resources["LabelPrimary"];
                     break;
             }
-            messageStackPanel.Children.Insert(0, msgLabel);
+            if (growlPanel != null)
+            {
+                growlPanel.Children.Insert(0, msgLabel);
+            }
+            else
+            {
+                messageStackPanel?.Children.Insert(0, msgLabel);
+            }
             //messageStackPanel.Children.Add(msgLabel);
 
             // 显示消息并启动动画
@@ -353,13 +371,12 @@ namespace MSL.utils
 
         private static void CreatMsgContainer(Panel panel)
         {
-            messageStackPanel = new UniformSpacingPanel
+            messageStackPanel = new StackPanel
             {
                 Orientation = Orientation.Vertical,
                 VerticalAlignment = VerticalAlignment.Top,
                 HorizontalAlignment = HorizontalAlignment.Right,
-                Margin = new Thickness(10),
-                Spacing = 5
+                Margin = new Thickness(10)
             };
             panel.Children.Add(messageStackPanel);
             targetContainer = panel;
@@ -395,13 +412,20 @@ namespace MSL.utils
             fadeOut.Completed += (s, e) =>
             {
                 msgLabel.Visibility = Visibility.Collapsed;
-                messageStackPanel.Children.Remove(msgLabel);
-                // 如果所有消息都已隐藏，移除 StackPanel
-                if (!messageStackPanel.Children.OfType<Label>().Any())
+                if (growlPanel != null)
                 {
-                    messageStackPanel.Visibility = Visibility.Collapsed;
-                    targetContainer.Children.Remove(messageStackPanel);
-                    messageStackPanel = null;
+                    growlPanel.Children.Remove(msgLabel);
+                }
+                else
+                {
+                    messageStackPanel.Children.Remove(msgLabel);
+                    // 如果所有消息都已隐藏，移除 StackPanel
+                    if (!messageStackPanel.Children.OfType<Label>().Any())
+                    {
+                        messageStackPanel.Visibility = Visibility.Collapsed;
+                        targetContainer.Children.Remove(messageStackPanel);
+                        messageStackPanel = null;
+                    }
                 }
             };
             msgLabel.BeginAnimation(UIElement.OpacityProperty, fadeOut);

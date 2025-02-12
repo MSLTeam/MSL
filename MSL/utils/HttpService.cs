@@ -50,7 +50,6 @@ namespace MSL.utils
         /// <returns>页内容</returns>
         public static string Get(string path, string customUrl = "", int headerMode = 0)
         {
-            ServicePointManager.SecurityProtocol = SecurityProtocolType.Tls12;
             string url = GetOALink();
             if (customUrl == "")
             {
@@ -150,7 +149,6 @@ namespace MSL.utils
         {
             HttpClient httpClient = new HttpClient();
             HttpResponse httpResponse = new HttpResponse();
-            ServicePointManager.SecurityProtocol = SecurityProtocolType.Tls12;
             configureHeaders?.Invoke(httpClient.DefaultRequestHeaders);
             if (headerUAMode == 1)
             {
@@ -193,7 +191,6 @@ namespace MSL.utils
         /// <returns>post后，返回的内容</returns>
         public static string Post(string path, int contentType = 0, string parameterData = "", string customUrl = "", WebHeaderCollection header = null)
         {
-            ServicePointManager.SecurityProtocol = SecurityProtocolType.Tls12;
             string url = GetOALink();
             if (customUrl == "")
             {

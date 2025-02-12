@@ -169,7 +169,7 @@
                 </Grid>
             </TabItem>
             <TabItem Header="个人中心">
-                <Frame x:Name="UserCenterFrame"/>
+                <Frame x:Name="UserCenterFrame" BorderThickness="0"/>
             </TabItem>
         </TabControl>
         <Grid x:Name="LoginGrid" Visibility="Collapsed">

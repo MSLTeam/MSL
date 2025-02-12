@@ -13,9 +13,10 @@
     <Grid>
         <Grid.ColumnDefinitions>
             <ColumnDefinition/>
+            <ColumnDefinition Width="10"/>
             <ColumnDefinition/>
         </Grid.ColumnDefinitions>
-        <controls:MagicCard Grid.Column="0" Margin="10,10,5,10" Title="我的信息">
+        <controls:MagicCard Grid.Column="0" Title="我的信息">
             <Grid>
                 <Grid.RowDefinitions>
                     <RowDefinition Height="100"/>
@@ -42,12 +43,13 @@
                 </hc:UniformSpacingPanel>
             </Grid>
         </controls:MagicCard>
-        <Grid Grid.Column="1">
+        <Grid Grid.Column="2">
             <Grid.RowDefinitions>
                 <RowDefinition Height="auto"/>
+                <RowDefinition Height="10"/>
                 <RowDefinition/>
             </Grid.RowDefinitions>
-            <controls:MagicCard Grid.Row="0" Title="积分购买" Margin="5,10,10,5">
+            <controls:MagicCard Grid.Row="0" Title="积分购买">
                 <hc:UniformSpacingPanel Orientation="Vertical" Spacing="5">
                     <Label Style="{StaticResource MagicLabel14}">
                         <TextBlock TextWrapping="Wrap" Text="如何操作？先前往爱发电进行购买，然后复制订单号返回此处激活。"/>
@@ -63,7 +65,7 @@
                     </Grid>
                 </hc:UniformSpacingPanel>
             </controls:MagicCard>
-            <controls:MagicCard Grid.Row="1" Title="积分兑换" Margin="5,5,10,10">
+            <controls:MagicCard Grid.Row="2" Title="积分兑换">
                 <hc:ScrollViewer IsInertiaEnabled="True">
                     <hc:UniformSpacingPanel x:Name="GoodsList" Orientation="Vertical" Spacing="10"/>
                 </hc:ScrollViewer>

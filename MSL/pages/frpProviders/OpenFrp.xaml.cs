@@ -256,16 +256,15 @@ namespace MSL.pages.frpProviders
                 string proxy_name = await MagicShow.ShowInput(Window.GetWindow(this), "隧道名称(不支持中文)");
                 if (proxy_name != null)
                 {
-                    string returnMsg = "";
-                    bool createReturn = OpenFrpApi.CreateProxy(type, portBox.Text, zip, selected_node_id, remotePortBox.Text, proxy_name, out returnMsg);
-                    if (createReturn)
+                    var (_return,msg) = await OpenFrpApi.CreateProxy(type, portBox.Text, zip, selected_node_id, remotePortBox.Text, proxy_name);
+                    if (_return)
                     {
                         MagicShow.ShowMsgDialog(Window.GetWindow(this), "隧道创建成功！", "提示");
                         toggleProxies.SelectedIndex = 0;
                     }
                     else
                     {
-                        MagicShow.ShowMsgDialog(Window.GetWindow(this), "创建失败！" + returnMsg, "错误");
+                        MagicShow.ShowMsgDialog(Window.GetWindow(this), "创建失败！" + msg, "错误");
                     }
                 }
             }
@@ -292,22 +291,21 @@ namespace MSL.pages.frpProviders
             {
                 if (toggleProxies.SelectedIndex != 0 || serversList.SelectedIndex == -1)
                 {
-                    addProxieBtn.IsEnabled = true;
+                    delProxieBtn.IsEnabled = true;
                     MagicShow.ShowMsgDialog(Window.GetWindow(this), "请先选择一个隧道", "错误");
                     toggleProxies.SelectedIndex = 0;
                     return;
                 }
                 object o = serversList.SelectedValue;
                 string id = nodelist[o.ToString()];
-                string returnMsg = "";
-                bool delReturn = await Task.Run(() => OpenFrpApi.DeleteProxy(id, out returnMsg));
-                if (delReturn)
+                var (_return, msg) = await OpenFrpApi.DeleteProxy(id);
+                if (_return)
                 {
                     MagicShow.ShowMsgDialog(Window.GetWindow(this), "删除成功！", "提示");
                 }
                 else
                 {
-                    MagicShow.ShowMsgDialog(Window.GetWindow(this), "删除失败！" + returnMsg, "错误");
+                    MagicShow.ShowMsgDialog(Window.GetWindow(this), "删除失败！" + msg, "错误");
                 }
                 await GetUserTunnels();
             }

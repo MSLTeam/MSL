@@ -47,11 +47,12 @@ namespace MSL.pages
             {
                 if (File.Exists(@$"MSL\frp\{FrpID}\frpc") || File.Exists(@$"MSL\frp\{FrpID}\frpc.toml"))
                 {
+                    startfrpcBtn.IsEnabled = true;
                     await GetFrpcInfo();
                 }
                 else
                 {
-                    startfrpc.IsEnabled = false;
+                    startfrpcBtn.IsEnabled = false;
                     frplab1.Text = LanguageManager.Instance["Page_FrpcPage_Status_Failed"];
                 }
             }
@@ -73,7 +74,6 @@ namespace MSL.pages
                     File.WriteAllText(@"MSL\frp\config.json", convertString, Encoding.UTF8);
                 }
                 //copyFrpc.IsEnabled = true;
-                startfrpc.IsEnabled = true;
                 frplab1.Text = LanguageManager.Instance["Page_FrpcPage_Status_Checking"];
                 // 如果frpcServer为0（MSL）、2（CHML）、-2（Custom，自己提供frpc）、-1（Custom，官版frpc）时，执行下面函数
                 FrpcServer = (int)jobject[FrpID.ToString()]["frpcServer"];
@@ -292,7 +292,7 @@ namespace MSL.pages
                 Directory.CreateDirectory("MSL\\frp");
                 MagicFlowMsg.ShowMessage("正在启动内网映射！", 4);
                 //Growl.Info("正在启动内网映射！");
-                startfrpc.IsEnabled = false;
+                startfrpcBtn.IsEnabled = false;
                 frpcOutlog.Text = "启动中，请稍候……\n";
                 // 读取配置
                 JObject jobject = JObject.Parse(File.ReadAllText(@"MSL\frp\config.json", Encoding.UTF8));
@@ -493,33 +493,31 @@ namespace MSL.pages
                 FrpcProcess.Start();
                 FrpcProcess.BeginOutputReadLine();
                 FrpcList.RunningFrpc.Add(FrpID);
-                startfrpc.IsEnabled = true;
+                startfrpcBtn.IsEnabled = true;
+                startfrpcBtn.IsChecked = true;
                 await Task.Run(FrpcProcess.WaitForExit);
                 FrpcProcess.CancelOutputRead();
                 FrpcList.RunningFrpc.Remove(FrpID);
                 // 到这里就关掉了
                 MagicFlowMsg.ShowMessage("内网映射已关闭！", 4);
                 //Growl.Info("内网映射已关闭！");
-                startfrpc.IsEnabled = true;
                 tempStr = string.Empty;
             }
             catch (Exception e) // 错误处理
             {
                 if (e.Message.Contains("Frpc Not Found"))
                 {
-                    startfrpc.IsEnabled = true;
                     MagicShow.ShowMsg(Window.GetWindow(this), "找不到自定义的Frpc客户端，请重新配置！\n" + e.Message, "错误");
                 }
                 else
                 {
-                    startfrpc.IsEnabled = true;
                     MagicShow.ShowMsg(Window.GetWindow(this), "出现错误，请检查是否有杀毒软件误杀并重试:" + e.Message, "错误");
                 }
             }
             finally
             {
-                startfrpc.IsEnabled = true;
-                startfrpc.IsChecked = false;
+                startfrpcBtn.IsEnabled = true;
+                startfrpcBtn.IsChecked = false;
             }
         }
 
@@ -616,16 +614,61 @@ namespace MSL.pages
                     }
                 }
             }
-            if (msg.Contains("No connection could be made because the target machine actively refused it."))
+            if (msg.Contains("No connection could be made because the target machine actively refused it") && msg.Contains("With loginFailExit enabled, no additional retries will be attempted"))
             {
-                frpcOutlog.Text += "无法连接到本地服务器，请检查服务器是否开启，或内网映射本地端口和服务器本地端口是否相匹配！\n";
+                frpcOutlog.Text += "无法建立连接，内网映射将自动关闭！\n";
+            }
+            else if (msg.Contains("No connection could be made because the target machine actively refused it."))
+            {
+                frpcOutlog.Text += "无法建立连接，因为目标计算机主动拒绝了它。\n请检查服务器是否开启，或内网映射本地端口和服务器本地端口是否相匹配！\n";
             }
             if (msg.Contains("发现新版本"))
             {
                 JObject jobject = JObject.Parse(File.ReadAllText(@"MSL\frp\config.json", Encoding.UTF8));
                 if ((int)jobject[FrpID.ToString()]["frpcServer"] == 1) // OF frpc更新
                 {
-                    frpcOutlog.Text += "发现OpenFrp桥接软件新版本，如果需要更新，请先关闭映射，然后手动前往“MSL\\frp”文件夹删除frpc_of.exe并重启映射！\n";
+                    int _ret = 0;
+                    Growl.Ask("发现OpenFrp桥接软件新版本，是否更新？", isConfirmed =>
+                    {
+                        _ret = isConfirmed ? 1 : 2;
+                        return true;
+                    });
+                    Task.Run(async () =>
+                    {
+                        while (_ret == 0)
+                        {
+                            await Task.Delay(1000);
+                        }
+
+                        switch (_ret)
+                        {
+                            case 1:
+
+                                try
+                                {
+                                    if (!FrpcProcess.HasExited)
+                                    {
+                                        FrpcProcess.Kill();
+                                    }
+                                }
+                                catch { }
+                                finally
+                                {
+                                    await Task.Delay(500);
+                                    File.Delete("MSL\\frp\\frpc_of.exe");
+                                    await Task.Delay(250);
+                                    Dispatcher.Invoke(() =>
+                                    {
+                                        _ = StartFrpc();
+                                    });
+                                }
+                                break;
+                            case 2:
+                                break;
+                            default:
+                                break;
+                        }
+                    });
                 }
             }
             frpcOutlog.ScrollToEnd();
@@ -633,13 +676,13 @@ namespace MSL.pages
 
         private async void startfrpc_Click(object sender, RoutedEventArgs e)
         {
-            if (startfrpc.IsChecked == true)
+            if (startfrpcBtn.IsChecked == true)
             {
                 await StartFrpc();
             }
             else
             {
-                startfrpc.IsEnabled = false;
+                startfrpcBtn.IsEnabled = false;
                 try
                 {
                     if (!FrpcProcess.HasExited)
