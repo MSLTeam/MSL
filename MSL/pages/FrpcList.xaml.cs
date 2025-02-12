@@ -104,7 +104,6 @@ namespace MSL.pages
         {
             HandyControl.Controls.Window window = new HandyControl.Controls.Window
             {
-                Padding=new Thickness(10),
                 NonClientAreaBackground = (Brush)FindResource("BackgroundBrush"),
                 Background = (Brush)FindResource("BackgroundBrush"),
                 Title = "我的MSL-Frp信息",
@@ -113,6 +112,7 @@ namespace MSL.pages
                 Height = 450,
                 Width = 750,
                 ResizeMode = ResizeMode.CanResize,
+                ShowMinButton = false,
                 WindowStartupLocation = WindowStartupLocation.CenterOwner
             };
             Action closeWindow = () =>
@@ -120,6 +120,7 @@ namespace MSL.pages
                 window.Close();
             };
             MSLFrpProfile frpProfile = new MSLFrpProfile(close: closeWindow);
+            frpProfile.Margin = new Thickness(10);
             window.Owner = Window.GetWindow(this);
             window.Content = frpProfile;
             window.ShowDialog();

@@ -10,7 +10,7 @@
         NonClientAreaBackground="{DynamicResource BackgroundBrush}" Background="{DynamicResource BackgroundBrush}"
         Title="添加隧道" Closing="Window_Closing"
         MinHeight="450" MinWidth="750" Height="450" Width="750"
-        ResizeMode="CanResize" WindowStartupLocation="CenterOwner">
+        ResizeMode="CanResize" ShowMinButton="False" WindowStartupLocation="CenterOwner">
     <Grid x:Name="MainGrid">
         <Frame x:Name="frame" BorderBrush="Transparent" Margin="0,29,0,0" NavigationUIVisibility="Hidden"/>
         <TabControl x:Name="TabCtrl" Style="{StaticResource TabControlInLine}" Background="{x:Null}" BorderThickness="0,1,0,0" SelectionChanged="TabControl_SelectionChanged">

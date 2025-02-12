@@ -11,7 +11,7 @@
         NonClientAreaBackground="{DynamicResource BackgroundBrush}"
         Title="下载资源"
         MinHeight="450" MinWidth="750" Height="450" Width="750"
-        WindowStartupLocation="CenterOwner" ResizeMode="CanResize"
+        WindowStartupLocation="CenterOwner" ResizeMode="CanResize" ShowMinButton="False"
         Loaded="Window_Loaded" Closing="Window_Closing" Background="{DynamicResource BackgroundBrush}">
     <Window.Resources>
         <BooleanToVisibilityConverter x:Key="BooleanToVisibilityConverter"/>

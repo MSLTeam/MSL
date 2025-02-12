@@ -46,7 +46,7 @@
         <Grid Grid.Column="2">
             <Grid.RowDefinitions>
                 <RowDefinition Height="auto"/>
-                <RowDefinition Height="10"/>
+                <RowDefinition Height="5"/>
                 <RowDefinition/>
             </Grid.RowDefinitions>
             <controls:MagicCard Grid.Row="0" Title="积分购买">

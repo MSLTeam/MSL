@@ -7,7 +7,7 @@
         xmlns:controls="clr-namespace:MSL.controls"
         xmlns:local="clr-namespace:MSL"
         mc:Ignorable="d"
-        NonClientAreaBackground="{DynamicResource BackgroundBrush}"
+        NonClientAreaBackground="{DynamicResource BackgroundBrush}" ShowMinButton="False"
         Title="修改配置文件" Height="450" Width="750" MinHeight="450" MinWidth="750" Loaded="Window_Loaded" WindowStartupLocation="CenterOwner" Background="{DynamicResource BackgroundBrush}">
     <Grid>
         <Grid.ColumnDefinitions>
