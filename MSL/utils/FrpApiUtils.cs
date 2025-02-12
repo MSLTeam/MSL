@@ -59,7 +59,7 @@ namespace MSL.utils
         {
             if (string.IsNullOrEmpty(token))
             {
-                // 获取accesstoken(临时authToken)
+                // 发送邮箱和密码，请求登录，获取MSL-User-Token
                 try
                 {
                     var body = new JObject
@@ -90,10 +90,11 @@ namespace MSL.utils
 
             try
             {
-                HttpResponse res = await HttpService.GetAsync(ApiUrl + "/frp/userInfo", headers =>
+                var headersAction = new Action<HttpRequestHeaders>(headers =>
                 {
                     headers.Authorization = new AuthenticationHeaderValue("Bearer", token);
-                }, 1);
+                });
+                HttpResponse res = await HttpService.GetAsync(ApiUrl + "/frp/userInfo", headersAction, 1);
                 if (res.HttpResponseCode == HttpStatusCode.OK)
                 {
                     var loginRes = JObject.Parse(res.HttpResponseContent.ToString());
@@ -106,6 +107,9 @@ namespace MSL.utils
                     {
                         Config.Write("MSLUserAccessToken", token);
                     }
+
+                    // 用户登陆成功后，发送POST请求续期Token
+                    _ = await HttpService.PostAsync(ApiUrl + "/user/renewToken", 3, configureHeaders: headersAction, headerUAMode: 1);
                     return (200, (string)res.HttpResponseContent);
                 }
                 else
@@ -501,7 +505,6 @@ namespace MSL.utils
                         }
                         handler.Dispose();
                         httpClient.Dispose();
-
 
                         if (httpResponse.HttpResponseCode == HttpStatusCode.OK && (bool)JObject.Parse(httpResponse.HttpResponseContent.ToString())["flag"] == true)
                         {

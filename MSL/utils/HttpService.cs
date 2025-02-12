@@ -255,7 +255,7 @@ namespace MSL.utils
         /// WebPost
         /// </summary>
         /// <param name="url">url</param>
-        /// <param name="contentType">0为json，1为text，2为x-www-form-urlencoded</param>
+        /// <param name="contentType">0为json，1为text，2为x-www-form-urlencoded，3为none（parameterData强制null）</param>
         /// <param name="parameterData">Post参数</param>
         /// <param name="configureHeaders">Headers</param>
         /// <returns>HttpResponse</returns>
@@ -287,6 +287,9 @@ namespace MSL.utils
                             .ToDictionary(p => p[0], p => p[1]);
                         content = new FormUrlEncodedContent(keyValuePairs);
                     }
+                    break;
+                case 3:
+                    content = null;
                     break;
                 default:
                     httpClient.DefaultRequestHeaders.Accept.Add(new MediaTypeWithQualityHeaderValue("text/plain"));

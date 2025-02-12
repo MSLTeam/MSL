@@ -38,12 +38,13 @@ namespace MSL
             new CreateServer()
         };
         public static event DeleControl AutoOpenServer;
-        public static bool LoadingCompleted = false;
-        public static string ServerLink = null;
-        public static Version MSLVersion = null; //用于记录设备id
-        public static string DeviceID = null; //用于记录设备id
         public static bool getServerInfo = false;
         public static bool getPlayerInfo = false;
+        public static bool LoadingCompleted = false;
+        public static string ServerLink { get; set; }
+        public static Version MSLVersion { get; set; }
+        public static string DeviceID { get; set; }
+        
 
         public MainWindow()
         {
