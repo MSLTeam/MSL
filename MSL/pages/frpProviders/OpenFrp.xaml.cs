@@ -234,6 +234,7 @@ namespace MSL.pages.frpProviders
             {
                 if (toggleProxies.SelectedIndex != 1 || serversList.SelectedIndex == -1)
                 {
+                    addProxieBtn.IsEnabled = true;
                     MagicShow.ShowMsgDialog(Window.GetWindow(this), "请先选择一个节点", "错误");
                     toggleProxies.SelectedIndex = 1;
                     return;
