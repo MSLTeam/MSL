@@ -51,17 +51,26 @@
             </Grid.RowDefinitions>
             <controls:MagicCard Grid.Row="0" Title="积分购买">
                 <hc:UniformSpacingPanel Orientation="Vertical" Spacing="5">
-                    <Label Style="{StaticResource MagicLabel14}">
-                        <TextBlock TextWrapping="Wrap" Text="如何操作？先前往爱发电进行购买，然后复制订单号返回此处激活。"/>
-                    </Label>
-                    <Button Content="打开爱发电"  Command="hc:ControlCommands.OpenLink" CommandParameter="https://afdian.com/a/mslteam"/>
                     <Grid>
                         <Grid.ColumnDefinitions>
+                            <ColumnDefinition Width="Auto"/>
+                            <ColumnDefinition/>
+                        </Grid.ColumnDefinitions>
+                        <Label Grid.Column="0" Style="{StaticResource MagicLabel14}" Content="输入金额（￥1=100积分）："/>
+                        <TextBox x:Name="AmountText" Grid.Column="1"/>
+                    </Grid>
+                    <Grid>
+                        <Grid.ColumnDefinitions>
+                            <ColumnDefinition Width="Auto"/>
                             <ColumnDefinition/>
                             <ColumnDefinition Width="Auto"/>
                         </Grid.ColumnDefinitions>
-                        <TextBox x:Name="OrderText" Grid.Column="0"/>
-                        <Button x:Name="ActiveOrder" Click="ActiveOrder_Click" Grid.Column="1" Content="激活"/>
+                        <Label Grid.Column="0" Style="{StaticResource MagicLabel14}" Content="选择付款方式："/>
+                        <ComboBox Grid.Column="1" SelectedIndex="0" x:Name="PayMethod">
+                            <ComboBoxItem Content="支付宝"/>
+                            <ComboBoxItem Content="微信"/>
+                        </ComboBox>
+                        <Button Grid.Column="2" x:Name="PayOrder" Click="PayOrder_Click" MinWidth="100" Content="购买"/>
                     </Grid>
                 </hc:UniformSpacingPanel>
             </controls:MagicCard>

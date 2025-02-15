@@ -65,7 +65,7 @@
                                             <Label x:Name="UserInfo" Style="{DynamicResource MagicLabel14}" Margin="5,0" Content="Loadings..."/>
                                         </StackPanel>
                                         <StackPanel Grid.Column="1" Margin="5" >
-                                            <Button Content="打开官网" x:Name="OpenWeb" Style="{StaticResource ButtonPrimary}" Margin="0,0,0,3" HorizontalAlignment="Stretch" Command="hc:ControlCommands.OpenLink" CommandParameter="https://user.mslmc.cn"/>
+                                            <Button Content="打开官网" x:Name="OpenWeb" Style="{StaticResource ButtonPrimary}" Margin="0,0,0,3" HorizontalAlignment="Stretch" Command="hc:ControlCommands.OpenLink" CommandParameter="https://user.mslmc.net"/>
                                             <Button Content="退出登录" x:Name="ExitBtn" Margin="0,3,0,0" HorizontalAlignment="Stretch" Click="ExitBtn_Click" />
                                         </StackPanel>
                                     </Grid>

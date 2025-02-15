@@ -14,10 +14,10 @@ namespace MSL.utils
     #region MSLFRP Api
     internal class MSLFrpApi
     {
-        private static readonly string ApiUrl = "https://user.mslmc.cn/api";
+        private static readonly string ApiUrl = "https://user.mslmc.net/api";
         public static string UserToken { get; set; }
 
-        public static async Task<(int Code, string Data, string Msg)> ApiGet(string route)
+        public static async Task<(int Code, JToken Data, string Msg)> ApiGet(string route)
         {
             HttpResponse nodeRes = await HttpService.GetAsync(ApiUrl + route, headers =>
             {
@@ -31,7 +31,7 @@ namespace MSL.utils
                 {
                     return ((int)jobj["code"], null, jobj["msg"].ToString());
                 }
-                return ((int)jobj["code"], jobj["data"].ToString(), jobj["msg"].ToString());
+                return ((int)jobj["code"], jobj["data"]?.Type == JTokenType.Null ? null : jobj["data"], jobj["msg"]?.ToString());
             }
             else
             {
@@ -39,7 +39,7 @@ namespace MSL.utils
             }
         }
 
-        public static async Task<(int Code, string Msg)> ApiPost(string route, int contentType, object parameterData)
+        public static async Task<(int Code, JToken Data, string Msg)> ApiPost(string route, int contentType, object parameterData)
         {
             var headersAction = new Action<HttpRequestHeaders>(headers =>
             {
@@ -50,9 +50,9 @@ namespace MSL.utils
             if (res.HttpResponseCode == HttpStatusCode.OK)
             {
                 var json = JObject.Parse((string)res.HttpResponseContent);
-                return ((int)json["code"], (string)json["msg"]);
+                return ((int)json["code"], json["data"]?.Type == JTokenType.Null ? null : json["data"], (string)json["msg"]);
             }
-            return ((int)res.HttpResponseCode, $"({(int)res.HttpResponseCode}){res.HttpResponseContent}");
+            return ((int)res.HttpResponseCode, null, $"({(int)res.HttpResponseCode}){res.HttpResponseContent}");
         }
 
         public static async Task<(int Code, string Msg)> UserLogin(string token, string email = "", string password = "", bool saveToken = false)

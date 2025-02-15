@@ -1,5 +1,7 @@
-﻿using MSL.utils;
+﻿using MSL.controls;
+using MSL.utils;
 using Newtonsoft.Json.Linq;
+using QRCoder;
 using System;
 using System.Collections.Generic;
 using System.Threading.Tasks;
@@ -107,7 +109,7 @@ namespace MSL.pages.frpProviders.MSLFrp
                 Close();
                 return;
             }
-            JObject userData = JObject.Parse(Data);
+            JObject userData = JObject.Parse(Data.ToString());
             Name_Label.Content = "用户名：" + userData["username"].ToString();
             Uid_Label.Content = "UID：" + ((int)userData["uid"] + 10000).ToString();
             Email_Label.Content = "电子邮箱：\n" + userData["email"].ToString();
@@ -127,7 +129,7 @@ namespace MSL.pages.frpProviders.MSLFrp
                 await MagicShow.ShowMsgDialogAsync(Window.GetWindow(this), Msg, "ERR");
                 return;
             }
-            JArray userData = JArray.Parse(Data);
+            JArray userData = JArray.Parse(Data.ToString());
             foreach (var item in userData)
             {
                 Grid grid = new Grid
@@ -170,7 +172,7 @@ namespace MSL.pages.frpProviders.MSLFrp
         private async Task BuyGood(int id)
         {
             var parameterData = new Dictionary<string, string> { { "good", id.ToString() } };
-            var (Code, Msg) = await MSLFrpApi.ApiPost("/shop/buy", 2, parameterData);
+            var (Code,_, Msg) = await MSLFrpApi.ApiPost("/shop/buy", 2, parameterData);
             if (Code == 200)
             {
                 MagicShow.ShowMsgDialog(Window.GetWindow(this), Msg, "提示");
@@ -182,21 +184,52 @@ namespace MSL.pages.frpProviders.MSLFrp
             }
         }
 
-        private async void ActiveOrder_Click(object sender, RoutedEventArgs e)
+        private async void PayOrder_Click(object sender, RoutedEventArgs e)
         {
-            ActiveOrder.IsEnabled = false;
-            var parameterData = new Dictionary<string, string> { { "order", OrderText.Text } };
-            var (Code, Msg) = await MSLFrpApi.ApiPost("/score/activeOrder", 2, parameterData);
+            PayOrder.IsEnabled = false;
+            string payMethod = "alipay";
+            if (PayMethod.SelectedIndex == 1)
+            {
+                payMethod = "wxpay";
+            }
+            var parameterData = new Dictionary<string, string> {
+                { "price", AmountText.Text },
+                { "pay", payMethod }
+            };
+            var (Code, Data, Msg) = await MSLFrpApi.ApiPost("/shop/pay", 2, parameterData);
             if (Code == 200)
             {
-                MagicShow.ShowMsgDialog(Window.GetWindow(this), Msg, "提示");
-                await GetUserInfo();
+                Image qrCodeImageBox = new()
+                {
+                    Width = 128,
+                    Height = 128
+                };
+                QRCodeGenerator qrGenerator = new QRCodeGenerator();
+                QRCodeData qrCodeData = qrGenerator.CreateQrCode(Data["payUrl"].ToString(), QRCodeGenerator.ECCLevel.Q);
+                QRCode qrCode = new QRCode(qrCodeData);
+                using (System.Drawing.Bitmap qrCodeImage = qrCode.GetGraphic(10))
+                {
+                    qrCodeImageBox.Source = BitmapConverter.ConvertToImageSource(qrCodeImage);
+                }
+                if (await MagicShow.ShowMsgDialogAsync("订单号：" + Data["out_trade_no"], "支付", true, "取消支付", "支付完成", qrCodeImageBox))
+                {
+                    (Code, _, Msg) = await MSLFrpApi.ApiGet("/shop/getPayResult?order=" + Data["out_trade_no"]);
+                    if (Code == 200)
+                    {
+                        MagicShow.ShowMsgDialog(Msg, "成功");
+                    }
+                    else
+                    {
+                        MagicShow.ShowMsgDialog(Msg, "错误");
+                    }
+                    await GetUserInfo();
+                }
             }
             else
             {
                 MagicShow.ShowMsgDialog(Window.GetWindow(this), Msg, "错误");
             }
-            ActiveOrder.IsEnabled = true;
+            PayOrder.IsEnabled = true;
         }
 
         private void Close()
