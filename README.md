@@ -30,7 +30,7 @@ Windows 7 及以上系统
 
 ### 下载地址：
 官网：  
-[点击下载](https://file.mslmc.cn/MSL.exe)
+[点击下载](https://api.mslmc.cn/v3/download/update?direct=true)
   
 蓝奏云：  
 https://wwyo.lanzouy.com/b02vailjc  
