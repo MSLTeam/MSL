@@ -13,12 +13,14 @@
                 <RowDefinition/>
                 <RowDefinition Height="70"/>
             </Grid.RowDefinitions>
-            <hc:UniformSpacingPanel x:Name="BodyPanel" Orientation="Vertical" Spacing="10" Margin="25" Grid.Row="0">
+            <Grid Margin="25" Grid.Row="0">
                 <TextBlock x:Name="titleText" Foreground="{DynamicResource PrimaryTextBrush}" TextWrapping="NoWrap" Text="TitleText" FontSize="24" VerticalAlignment="Top" HorizontalAlignment="Left"/>
-                <ScrollViewer Margin="0,0,0,0">
-                    <TextBlock x:Name="bodyText" Foreground="{DynamicResource PrimaryTextBrush}" TextWrapping="Wrap" Text="BodyText" FontSize="14" HorizontalAlignment="Left" VerticalAlignment="Top"/>
+                <ScrollViewer Margin="0,45,0,0">
+                    <hc:UniformSpacingPanel x:Name="BodyPanel" Orientation="Vertical" Spacing="10">
+                        <TextBlock x:Name="bodyText" Foreground="{DynamicResource PrimaryTextBrush}" TextWrapping="Wrap" Text="BodyText" FontSize="14" HorizontalAlignment="Left" VerticalAlignment="Top"/>
+                    </hc:UniformSpacingPanel>
                 </ScrollViewer>
-            </hc:UniformSpacingPanel>
+            </Grid>
             <Border Grid.Row="1" CornerRadius="10" Background="{DynamicResource SecondaryRegionBrush}">
                 <Grid Background="{DynamicResource SecondaryRegionBrush}" Margin="0,0,0,10">
                     <Grid.ColumnDefinitions>
