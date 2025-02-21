@@ -50,7 +50,7 @@ namespace MSL.utils
             if (res.HttpResponseCode == HttpStatusCode.OK)
             {
                 var json = JObject.Parse((string)res.HttpResponseContent);
-                return ((int)json["code"], json["data"]?.Type == JTokenType.Null ? null : json["data"], (string)json["msg"]);
+                return ((int)json["code"], json["data"]?.Type == JTokenType.Null ? null : json["data"], json["msg"]?.ToString());
             }
             return ((int)res.HttpResponseCode, null, $"({(int)res.HttpResponseCode}){res.HttpResponseContent}");
         }
@@ -394,9 +394,9 @@ namespace MSL.utils
                     ["user"] = account,
                     ["password"] = password
                 };
-                //var loginRes = await HttpService.PostAsync("https://openid.17a.ink/api/public/login", 0, logininfo, headerUAMode: 1);
+                //var loginRes = await HttpService.PostAsync("https://account.naids.com/api/public/login", 0, logininfo, headerUAMode: 1);
 
-                string domainUrl = "https://openid.17a.ink";
+                string domainUrl = "https://account.naids.com";
                 string auth17a_name = string.Empty;
                 string auth17a_token = string.Empty;
 
@@ -569,62 +569,73 @@ namespace MSL.utils
 
         public static async Task<(int Code, Dictionary<string, string> Data, string Msg)> GetUserNodes()
         {
-            HttpResponse res = await HttpService.PostAsync(ApiUrl + "/frp/api/getUserProxies", configureHeaders: headers =>
+            try
             {
-                headers.Add("Authorization", AuthId);
-            }, headerUAMode: 1);
-            if (res.HttpResponseCode == HttpStatusCode.OK && (bool)JObject.Parse(res.HttpResponseContent.ToString())["flag"] == true)
-            {
-                Dictionary<string, string> Nodes = new Dictionary<string, string>();
-                JObject jo = (JObject)JsonConvert.DeserializeObject(res.HttpResponseContent.ToString());
-                if (jo["data"]["list"] != null)
+                HttpResponse res = await HttpService.PostAsync(ApiUrl + "/frp/api/getUserProxies", configureHeaders: headers =>
                 {
-                    JArray jArray = JArray.Parse(jo["data"]["list"].ToString());
-                    foreach (JToken node in jArray)
+                    headers.Add("Authorization", AuthId);
+                }, headerUAMode: 1);
+                if (res.HttpResponseCode == HttpStatusCode.OK && (bool)JObject.Parse(res.HttpResponseContent.ToString())["flag"] == true)
+                {
+                    Dictionary<string, string> Nodes = new Dictionary<string, string>();
+                    JObject jo = (JObject)JsonConvert.DeserializeObject(res.HttpResponseContent.ToString());
+                    if (jo["data"]["list"] != null)
                     {
-                        if (node == null) continue;
-                        if (node["proxyName"] == null) continue;
-                        if (node["id"] == null) continue;
-                        Nodes.Add(node["proxyName"].ToString(), node["id"].ToString());
+                        JArray jArray = JArray.Parse(jo["data"]["list"].ToString());
+                        foreach (JToken node in jArray)
+                        {
+                            Nodes.Add(node["proxyName"].ToString(), node["id"].ToString());
+                        }
                     }
+                    return (200, Nodes, string.Empty);
                 }
-                return (200, Nodes, string.Empty);
+                return ((int)res.HttpResponseCode, null, res.HttpResponseCode == HttpStatusCode.OK ? JObject.Parse(res.HttpResponseContent.ToString())["msg"].ToString() : string.Empty);
             }
-            return ((int)res.HttpResponseCode, null, res.HttpResponseCode == HttpStatusCode.OK ? JObject.Parse(res.HttpResponseContent.ToString())["msg"].ToString() : string.Empty);
+            catch(Exception ex)
+            {
+                return (0, null, ex.Message);
+            }
         }
 
         public static async Task<(Dictionary<string, string>, JArray)> GetNodeList()
         {
-            HttpResponse res = await HttpService.PostAsync(ApiUrl + "/frp/api/getNodeList", configureHeaders: headers =>
+            try
             {
-                headers.Add("Authorization", AuthId);
-            }, headerUAMode: 1);
-            if (res.HttpResponseCode == HttpStatusCode.OK && (bool)JObject.Parse(res.HttpResponseContent.ToString())["flag"] == true)
-            {
-                Dictionary<string, string> Nodes = new Dictionary<string, string>();
-                JObject jo = (JObject)JsonConvert.DeserializeObject(res.HttpResponseContent.ToString());
-                var jArray = JArray.Parse(jo["data"]["list"].ToString());
-                foreach (var node in jArray)
+                HttpResponse res = await HttpService.PostAsync(ApiUrl + "/frp/api/getNodeList", configureHeaders: headers =>
                 {
-                    if (node["port"].ToString() != "您无权查询此节点的地址" && Convert.ToInt16(node["status"]) == 200 && !Convert.ToBoolean(node["fullyLoaded"]))
+                    headers.Add("Authorization", AuthId);
+                }, headerUAMode: 1);
+                if (res.HttpResponseCode == HttpStatusCode.OK && (bool)JObject.Parse(res.HttpResponseContent.ToString())["flag"] == true)
+                {
+                    Dictionary<string, string> Nodes = new Dictionary<string, string>();
+                    JObject jo = (JObject)JsonConvert.DeserializeObject(res.HttpResponseContent.ToString());
+                    var jArray = JArray.Parse(jo["data"]["list"].ToString());
+                    foreach (var node in jArray)
                     {
-                        string[] targetGroup = node["group"].ToString().Split(';');
-                        string nodename = "";
-                        if (node["comments"].ToString() == "")
+                        if (node["port"].ToString() != "您无权查询此节点的地址" && Convert.ToInt16(node["status"]) == 200 && !Convert.ToBoolean(node["fullyLoaded"]))
                         {
-                            nodename = $"{node["name"]}";
+                            string[] targetGroup = node["group"].ToString().Split(';');
+                            string nodename = "";
+                            if (node["comments"].ToString() == "")
+                            {
+                                nodename = $"{node["name"]}";
 
+                            }
+                            else
+                            {
+                                nodename = $"[{node["comments"]}]{node["name"]}";
+                            }
+                            Nodes.Add(nodename, node["id"].ToString());
                         }
-                        else
-                        {
-                            nodename = $"[{node["comments"]}]{node["name"]}";
-                        }
-                        Nodes.Add(nodename, node["id"].ToString());
                     }
+                    return (Nodes, jArray);
                 }
-                return (Nodes, jArray);
+                return (null, null);
             }
-            return (null, null);
+            catch
+            {
+                return (null, null);
+            }
         }
 
         public static async Task<HttpResponse> GetUserInfo()

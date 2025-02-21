@@ -118,7 +118,71 @@ namespace MSL.pages.frpProviders.MSLFrp
             RegTime_Label.Content = "注册时间：" + Functions.ConvertUnixTimeSeconds((long)userData["regTime"]);
             LastLogin_Label.Content = "最后登录：" + Functions.ConvertUnixTimeSeconds((long)userData["lastLoginTime"]);
             Perm_Label.Content = "权限组：" + userData["permission"].ToString();
+            RealnameVerify_Label.Content = "实名认证：" + ((bool)userData["realName"] == true ? "已通过" : "未通过");
+            if ((bool)userData["realName"])
+            {
+                RealnameVerify_Button.Visibility = Visibility.Collapsed;
+            }
+            else
+            {
+                RealnameVerify_Button.Visibility = Visibility.Visible;
+            }
             HeadImage.Source = BitmapFrame.Create(new Uri(userData["avatar"].ToString()), BitmapCreateOptions.None, BitmapCacheOption.Default);
+        }
+
+        private async void RealnameVerify_Button_Click(object sender, RoutedEventArgs e)
+        {
+            if(await MagicShow.ShowMsgDialogAsync("目前软件仅支持使用中国大陆二代身份证+支付宝方式进行实名，若您不符合上述条件，请前往官网进行实名！\n您确定要继续吗？", "提示", true) == false)
+            {
+                return;
+            }
+            RealnameVerify_Button.IsEnabled = false;
+            string certID=await MagicShow.ShowInput(Window.GetWindow(this), "请输入您的身份证号码", "");
+            string certName = await MagicShow.ShowInput(Window.GetWindow(this), "请输入您的真实姓名", "");
+
+            var parameterData = new Dictionary<string, string> {
+                { "cert_id", certID },
+                { "cert_name", certName },
+                { "cert_type", "IDENTITY_CARD" },
+                { "verify_type", "alipay" }
+            };
+            var (Code, Data, Msg) = await MSLFrpApi.ApiPost("/user/submitRealNameVerify",2,parameterData);
+            if (Code == 200)
+            {
+                Image qrCodeImageBox = new()
+                {
+                    Width = 144,
+                    Height = 144
+                };
+                QRCodeGenerator qrGenerator = new QRCodeGenerator();
+                QRCodeData qrCodeData = qrGenerator.CreateQrCode(Data["url"].ToString(), QRCodeGenerator.ECCLevel.Q);
+                QRCode qrCode = new QRCode(qrCodeData);
+                using (System.Drawing.Bitmap qrCodeImage = qrCode.GetGraphic(10))
+                {
+                    qrCodeImageBox.Source = BitmapConverter.ConvertToImageSource(qrCodeImage);
+                }
+                if (await MagicShow.ShowMsgDialogAsync(Msg, "实名认证", true, "取消实名", "认证完成", qrCodeImageBox))
+                {
+                    (Code, Data, Msg) = await MSLFrpApi.ApiGet("/user/getRealNameVerifyResult");
+                    if (Code == 200)
+                    {
+                        if((bool)Data["passed"])
+                            MagicShow.ShowMsgDialog("实名认证成功！", "成功");
+                        else
+                            MagicShow.ShowMsgDialog("实名认证未通过！", "失败");
+                    }
+                    else
+                    {
+                        MagicShow.ShowMsgDialog(Msg, "错误");
+                    }
+                    await GetUserInfo();
+                }
+            }
+            else
+            {
+                MagicShow.ShowMsgDialog(Msg, "错误");
+            }
+            RealnameVerify_Button.IsEnabled = true;
         }
 
         private async Task GetGoods()

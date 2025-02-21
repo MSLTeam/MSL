@@ -34,12 +34,17 @@
                         <Label x:Name="Email_Label" Style="{StaticResource MagicLabel14}"/>
                     </hc:UniformSpacingPanel>
                 </Grid>
-                <hc:UniformSpacingPanel Orientation="Vertical" Spacing="5" Grid.Row="1" VerticalAlignment="Center">
+                <hc:UniformSpacingPanel Orientation="Vertical" Spacing="3" Grid.Row="1" VerticalAlignment="Center">
                     <Label x:Name="QQ_Label" Style="{StaticResource MagicLabel14}"/>
                     <Label x:Name="Score_Label" Style="{StaticResource MagicLabel14}"/>
                     <Label x:Name="RegTime_Label" Style="{StaticResource MagicLabel14}"/>
                     <Label x:Name="LastLogin_Label" Style="{StaticResource MagicLabel14}"/>
                     <Label x:Name="Perm_Label" Style="{StaticResource MagicLabel14}"/>
+                    <StackPanel Orientation="Horizontal">
+                        <Label x:Name="RealnameVerify_Label" Style="{StaticResource MagicLabel14}"/>
+                        <Button x:Name="RealnameVerify_Button" Click="RealnameVerify_Button_Click" Visibility="Collapsed" Content="点我实名"/>
+                    </StackPanel>
+                    
                 </hc:UniformSpacingPanel>
             </Grid>
         </controls:MagicCard>
