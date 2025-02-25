@@ -7,6 +7,7 @@ using System;
 using System.Collections.Generic;
 using System.Diagnostics;
 using System.IO;
+using System.Linq;
 using System.Net.NetworkInformation;
 using System.Text;
 using System.Text.RegularExpressions;
@@ -15,6 +16,7 @@ using System.Windows;
 using System.Windows.Controls;
 using System.Windows.Media;
 using System.Windows.Threading;
+using static System.Windows.Forms.LinkLabel;
 using MessageBox = System.Windows.MessageBox;
 using Window = System.Windows.Window;
 
@@ -88,6 +90,10 @@ namespace MSL.pages
                 else if (FrpcServer == 3) // 否则，为3时，则为SF节点
                 {
                     frplab1.Text = "SakuraFrp节点";
+                }
+                else if (FrpcServer == 4) // 否则，为4时，则为me节点
+                {
+                    frplab1.Text = "MeFrp节点";
                 }
             }
             catch
@@ -353,6 +359,15 @@ namespace MSL.pages
                         }
                         downloadFileName = "frpc_sakura.exe";
                         break;
+                    case 4: // me
+                        frpcExeName = "frpc_mefrp.exe";
+                        arguments = File.ReadAllText($"MSL\\frp\\{FrpID}\\frpc"); // 启动命令
+                        if (!File.Exists($"MSL\\frp\\{frpcExeName}"))
+                        {
+                            downloadUrl = "MeFrp";
+                        }
+                        downloadFileName = "frpc_mefrp.zip";
+                        break;
                     /*
                     case 5: // msl new
                         frpcExeName = "frpc.exe";
@@ -436,13 +451,48 @@ namespace MSL.pages
                             }
                         }
                     }
+                    else if(downloadUrl == "MeFrp")
+                    {
+                        HttpResponse res = await HttpService.GetAsync("https://api.mefrp.com/api/auth/products", headers =>
+                        {
+                            headers.Add("Authorization", $"Bearer {Config.Read("MeFrpToken")}");
+                        });
+                        JObject apiData = JObject.Parse((string)res.HttpResponseContent);
+                        if ((int)apiData["code"] != 200)
+                        {
+                            Growl.Error("获取MeFrp下载地址失败！");
+                            return;
+                        }
+
+                        string version = apiData["data"][0]["version"].ToString();
+
+                        string alistUrl = $"https://resources.mefrp.com/api/fs/list?path=%2FME-Frp%2FLocal%2FMEFrpc%2F{version}";
+                        JObject apiData_alist = JObject.Parse((await HttpService.GetContentAsync(alistUrl)).ToString());
+
+                        if ((int)apiData_alist["code"] != 200)
+                        {
+                            Growl.Error("获取MeFrp下载地址失败！");
+                            return;
+                        }
+                        var targetFile = ((JArray)apiData_alist["data"]["content"])
+                            .FirstOrDefault(f => f["name"].ToString().Contains("windows_amd64"));
+
+                        if (targetFile == null)
+                        {
+                            Growl.Error("未找到Windows AMD64版本文件");
+                            return;
+                        }
+
+                        string fileName = $"https://resources.mefrp.com/d/ME-Frp/Local/MEFrpc/{version}/{targetFile["name"].ToString()}";
+                        await MagicShow.ShowDownloader(Window.GetWindow(this), fileName, "MSL\\frp", downloadFileName, LanguageManager.Instance["Download_Frpc_Info"]);
+                    }
                     else if (downloadUrl != "")
                     {
                         await MagicShow.ShowDownloader(Window.GetWindow(this), downloadUrl, "MSL\\frp", downloadFileName, LanguageManager.Instance["Download_Frpc_Info"]);
                     }
 
                     //只有官方版本+sakura不需要
-                    if (downloadUrl == "OpenFrp" || downloadUrl == "ChmlFrp")
+                    if (downloadUrl == "OpenFrp" || downloadUrl == "ChmlFrp" || downloadUrl == "MeFrp")
                     {
                         //很寻常的解压
                         string fileName = "";
@@ -461,6 +511,11 @@ namespace MSL.pages
                         {
                             File.Move("MSL\\frp\\" + fileName, $"MSL\\frp\\{frpcExeName}");
                             File.Delete("MSL\\frp\\" + fileName);
+                        }
+                        else if(frpcServer ==4) //这是chml的解压处理
+                        {
+                            File.Move("MSL\\frp\\" + fileName + $"\\mefrpc.exe", $"MSL\\frp\\{frpcExeName}");
+                            Directory.Delete("MSL\\frp\\" + fileName, true);
                         }
                         else //这是chml的解压处理
                         {
