@@ -79,6 +79,8 @@ namespace MSL.pages.frpProviders
             else
             {
                 MagicShow.ShowMsgDialog(Window.GetWindow(this), "登录失败！请检查您的Authorization是否正确！" + Msg, "错误！");
+                if (Config.Read("OpenFrpToken") != null)
+                    Config.Remove("OpenFrpToken");
                 return;
             }
             return;
