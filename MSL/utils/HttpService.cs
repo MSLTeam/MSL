@@ -145,7 +145,7 @@ namespace MSL.utils
         /// <param name="headerUAMode">UA标识：0等于无Header，1等于MSL，2等于伪装浏览器Header，3等于自己设置header</param>
         /// <param name="headerUA">若headerMode=4，此处设置header</param>
         /// <returns>HttpGet 包含响应代码和页内容</returns>
-        public static async Task<HttpResponse> GetAsync(string url, Action<HttpRequestHeaders> configureHeaders = null, int headerUAMode = 0, string headerUA = null)
+        public static async Task<HttpResponse> GetAsync(string url, Action<HttpRequestHeaders> configureHeaders = null, int headerUAMode = 1, string headerUA = null)
         {
             HttpClient httpClient = new HttpClient();
             HttpResponse httpResponse = new HttpResponse();
@@ -259,7 +259,7 @@ namespace MSL.utils
         /// <param name="parameterData">Post参数</param>
         /// <param name="configureHeaders">Headers</param>
         /// <returns>HttpResponse</returns>
-        public static async Task<HttpResponse> PostAsync(string url, int contentType = 0, object parameterData = null, Action<HttpRequestHeaders> configureHeaders = null, int headerUAMode = 0, string headerUA = null)
+        public static async Task<HttpResponse> PostAsync(string url, int contentType = 0, object parameterData = null, Action<HttpRequestHeaders> configureHeaders = null, int headerUAMode = 1, string headerUA = null)
         {
             HttpClient httpClient = new HttpClient();
             HttpResponse httpResponse = new HttpResponse();

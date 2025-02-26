@@ -2,7 +2,6 @@
 using Newtonsoft.Json.Linq;
 using System;
 using System.Collections.ObjectModel;
-using System.Diagnostics;
 using System.Net;
 using System.Net.Http.Headers;
 using System.Threading.Tasks;
@@ -16,9 +15,9 @@ namespace MSL.pages.frpProviders
     /// </summary>
     public partial class SakuraFrp : Page
     {
-        string ApiUrl = "https://api.natfrp.com/v4";
-        string UserToken = null;
-        int UserLevel = 0;
+        private string ApiUrl { get; } = "https://api.natfrp.com/v4";
+        private string UserToken { get; set; }
+        private int UserLevel = 0;
 
         public SakuraFrp()
         {
@@ -33,8 +32,7 @@ namespace MSL.pages.frpProviders
                 isInit = true;
                 //显示登录页面
                 LoginGrid.Visibility = Visibility.Visible;
-                MainGrid.Visibility = Visibility.Collapsed;
-                CreateGrid.Visibility = Visibility.Collapsed;
+                MainCtrl.Visibility = Visibility.Collapsed;
                 var token = Config.Read("SakuraFrpToken")?.ToString() ?? "";
                 if (token != "")
                 {
@@ -46,7 +44,29 @@ namespace MSL.pages.frpProviders
             }
         }
 
-        private async void userTokenLogin_Click(object sender, RoutedEventArgs e)
+        private async void MainCtrl_SelectionChanged(object sender, SelectionChangedEventArgs e)
+        {
+            if (!this.IsLoaded)
+            {
+                return;
+            }
+            if (!ReferenceEquals(e.OriginalSource, this.MainCtrl))
+            {
+                return;
+            }
+            switch (MainCtrl.SelectedIndex)
+            {
+                case 0:
+                    await GetTunnelList();
+                    break;
+                case 1:
+                    await GetNodeList();
+                    Create_Name.Text = Functions.RandomString("MSL_", 6);
+                    break;
+            }
+        }
+
+        private async void UserTokenLogin_Click(object sender, RoutedEventArgs e)
         {
             string token = await MagicShow.ShowInput(Window.GetWindow(this), "请输入Sakura账户Token", "", true);
             if (token != null)
@@ -64,7 +84,7 @@ namespace MSL.pages.frpProviders
             try
             {
                 HttpResponse res = await HttpService.GetAsync(ApiUrl + "/user/info?token=" + token);
-                if (res.HttpResponseCode == System.Net.HttpStatusCode.OK)
+                if (res.HttpResponseCode == HttpStatusCode.OK)
                 {
                     UserToken = token;
                     if (save)
@@ -72,29 +92,26 @@ namespace MSL.pages.frpProviders
                         Config.Write("SakuraFrpToken", token);
                     }
 
-                    Dispatcher.Invoke(() =>
-                    {
-                        //显示main页面
-                        LoginGrid.Visibility = Visibility.Collapsed; ;
-                        MainGrid.Visibility = Visibility.Visible;
-                        CreateGrid.Visibility = Visibility.Collapsed;
-                    });
+                    //显示main页面
+                    LoginGrid.Visibility = Visibility.Collapsed; ;
+                    MainCtrl.Visibility = Visibility.Visible;
                     JObject JsonUserInfo = JObject.Parse((string)res.HttpResponseContent);
-                    Dispatcher.Invoke(() =>
-                    {
-                        UserInfo.Text = $"用户名: {JsonUserInfo["name"]}\n用户类型: {JsonUserInfo["group"]["name"]}\n限速: {JsonUserInfo["speed"]}";
-                    });
+                    UserInfo.Text = $"用户名: {JsonUserInfo["name"]}\n用户类型: {JsonUserInfo["group"]["name"]}\n限速: {JsonUserInfo["speed"]}";
                     UserLevel = int.Parse((string)JsonUserInfo["group"]["level"]);
                     //获取隧道
-                    await GetTunnelList(token);
+                    await GetTunnelList();
                 }
                 else
                 {
+                    if (Config.Read("SakuraFrpToken") != null)
+                        Config.Remove("SakuraFrpToken");
                     await MagicShow.ShowMsgDialogAsync(Window.GetWindow(this), "登陆失败！", "错误");
                 }
             }
             catch (Exception ex)
             {
+                if (Config.Read("SakuraFrpToken") != null)
+                    Config.Remove("SakuraFrpToken");
                 await MagicShow.ShowMsgDialogAsync(Window.GetWindow(this), "登陆失败！" + ex.Message, "错误");
             }
         }
@@ -111,14 +128,14 @@ namespace MSL.pages.frpProviders
             public bool Online { get; set; }
         }
 
-        private async Task GetTunnelList(string token)
+        private async Task GetTunnelList()
         {
             try
             {
                 //绑定对象
                 ObservableCollection<TunnelInfo> tunnels = new ObservableCollection<TunnelInfo>();
                 FrpList.ItemsSource = tunnels;
-                HttpResponse res = await HttpService.GetAsync(ApiUrl + "/tunnels?token=" + token);
+                HttpResponse res = await HttpService.GetAsync(ApiUrl + "/tunnels?token=" + UserToken);
                 if (res.HttpResponseCode == System.Net.HttpStatusCode.OK)
                 {
                     JArray JsonTunnels = JArray.Parse((string)res.HttpResponseContent);
@@ -143,7 +160,8 @@ namespace MSL.pages.frpProviders
             }
         }
 
-        //获取某个隧道的配置文件
+        /*
+        //获取某个隧道的配置文件 ***疑似弃用，故注释
         private async Task<string> GetTunnelConfig(string token, int id)
         {
             try
@@ -168,6 +186,7 @@ namespace MSL.pages.frpProviders
                 return "MSL-ERR:" + ex.Message;
             }
         }
+        */
 
         //显示隧道信息
         private void FrpList_SelectionChanged(object sender, SelectionChangedEventArgs e)
@@ -188,7 +207,6 @@ namespace MSL.pages.frpProviders
             var listBox = FrpList;
             if (listBox.SelectedItem is TunnelInfo selectedTunnel)
             {
-                //string content = await Task.Run(() => GetTunnelConfig(UserToken,selectedTunnel.ID));
                 //输出配置文件
                 if (Config.WriteFrpcConfig(3, $"SakuraFrp - {selectedTunnel.Name}", $"-f {UserToken}:{selectedTunnel.ID}", "") == true)
                 {
@@ -206,9 +224,11 @@ namespace MSL.pages.frpProviders
             }
         }
 
-        private void RefreshBtn_Click(object sender, RoutedEventArgs e)
+        private async void RefreshBtn_Click(object sender, RoutedEventArgs e)
         {
-            Task.Run(() => GetTunnelList(UserToken));
+            (sender as Button).IsEnabled = false;
+            await GetTunnelList();
+            (sender as Button).IsEnabled = true;
         }
 
         //获取某个隧道的配置文件
@@ -229,7 +249,7 @@ namespace MSL.pages.frpProviders
                 };
                 HttpResponse res = await HttpService.PostAsync(ApiUrl + "/tunnel/delete", 0, body, headersAction);
                 //MessageBox.Show((string)res.HttpResponseContent);
-                await GetTunnelList(UserToken);
+                await GetTunnelList();
             }
             catch (Exception ex)
             {
@@ -239,7 +259,8 @@ namespace MSL.pages.frpProviders
 
         private async void Del_Tunnel_Click(object sender, RoutedEventArgs e)
         {
-            var listBox = FrpList as System.Windows.Controls.ListBox;
+            (sender as Button).IsEnabled = false;
+            var listBox = FrpList;
             if (listBox.SelectedItem is TunnelInfo selectedTunnel)
             {
                 await DelTunnel(UserToken, selectedTunnel.ID);
@@ -248,20 +269,14 @@ namespace MSL.pages.frpProviders
             {
                 await MagicShow.ShowMsgDialogAsync(Window.GetWindow(this), "您似乎没有选择任何隧道！", "错误");
             }
-
-        }
-
-        private void OpenWeb_Click(object sender, RoutedEventArgs e)
-        {
-            Process.Start("https://www.natfrp.com/user/");
+            (sender as Button).IsEnabled = true;
         }
 
         private void ExitBtn_Click(object sender, RoutedEventArgs e)
         {
             //显示登录页面
             LoginGrid.Visibility = Visibility.Visible;
-            MainGrid.Visibility = Visibility.Collapsed;
-            CreateGrid.Visibility = Visibility.Collapsed;
+            MainCtrl.Visibility = Visibility.Collapsed;
             UserToken = null;
             Config.Remove("SakuraFrpToken");
         }
@@ -278,16 +293,6 @@ namespace MSL.pages.frpProviders
             public string VipName { get; set; }
             public int Flag { get; set; }
             public string Band { get; set; }
-        }
-        private async void CreateBtn_Click(object sender, RoutedEventArgs e)
-        {
-            //显示create页面
-            LoginGrid.Visibility = Visibility.Collapsed;
-            MainGrid.Visibility = Visibility.Collapsed;
-            CreateGrid.Visibility = Visibility.Visible;
-
-            await GetNodeList();
-            Create_Name.Text = Functions.RandomString("MSL_", 6);
         }
 
         private async Task GetNodeList()
@@ -318,7 +323,6 @@ namespace MSL.pages.frpProviders
                             Band = (string)nodeData["band"]
                         });
                     }
-
                 }
             }
         }
@@ -332,17 +336,9 @@ namespace MSL.pages.frpProviders
             }
         }
 
-        private void Create_BackBtn_Click(object sender, RoutedEventArgs e)
-        {
-            //显示main页面
-            LoginGrid.Visibility = Visibility.Collapsed; ;
-            MainGrid.Visibility = Visibility.Visible;
-            CreateGrid.Visibility = Visibility.Collapsed;
-        }
-
         private async void Create_OKBtn_Click(object sender, RoutedEventArgs e)
         {
-            var listBox = NodeList as System.Windows.Controls.ListBox;
+            var listBox = NodeList;
             if (listBox.SelectedItem is NodeInfo selectedNode)
             {
                 //请求头 token
@@ -363,16 +359,14 @@ namespace MSL.pages.frpProviders
                     ["local_port"] = Create_LocalPort.Text,
                     ["remote"] = Create_BindDomain.Text,
                 };
+                (sender as Button).IsEnabled = false;
                 HttpResponse res = await HttpService.PostAsync(ApiUrl + "/tunnels", 0, body, headersAction);
+                (sender as Button).IsEnabled = true;
                 if (res.HttpResponseCode == HttpStatusCode.Created)
                 {
                     JObject jsonres = JObject.Parse((string)res.HttpResponseContent);
                     await MagicShow.ShowMsgDialogAsync(Window.GetWindow(this), $"{jsonres["name"]}隧道创建成功！\nID: {jsonres["id"]} 远程端口: {jsonres["remote"]}", "成功");
-                    //显示main页面
-                    LoginGrid.Visibility = Visibility.Collapsed; ;
-                    MainGrid.Visibility = Visibility.Visible;
-                    CreateGrid.Visibility = Visibility.Collapsed;
-                    await GetTunnelList(UserToken);
+                    MainCtrl.SelectedIndex = 0;
                 }
                 else
                 {
@@ -383,11 +377,6 @@ namespace MSL.pages.frpProviders
             {
                 await MagicShow.ShowMsgDialogAsync(Window.GetWindow(this), "您似乎没有选择任何节点！", "错误");
             }
-        }
-
-        private void userRegister_Click(object sender, RoutedEventArgs e)
-        {
-            Process.Start("https://www.natfrp.com/user/profile");
         }
     }
 }

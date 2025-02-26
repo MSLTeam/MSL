@@ -12,7 +12,7 @@ namespace MSL.utils
     #region MSLFRP Api
     internal class MSLFrpApi
     {
-        private static readonly string ApiUrl = "https://user.mslmc.net/api";
+        private static string ApiUrl { get; } = "https://user.mslmc.net/api";
         public static string UserToken { get; set; }
 
         public static async Task<(int Code, JToken Data, string Msg)> ApiGet(string route)
@@ -98,6 +98,8 @@ namespace MSL.utils
                     var loginRes = JObject.Parse(res.HttpResponseContent.ToString());
                     if ((int)loginRes["code"] != 200)
                     {
+                        if (Config.Read("MSLUserAccessToken") != null)
+                            Config.Remove("MSLUserAccessToken");
                         return ((int)loginRes["code"], loginRes["msg"].ToString());
                     }
                     UserToken = token;
@@ -112,6 +114,8 @@ namespace MSL.utils
                 }
                 else
                 {
+                    if (Config.Read("MSLUserAccessToken") != null)
+                        Config.Remove("MSLUserAccessToken");
                     return ((int)res.HttpResponseCode, res.HttpResponseContent.ToString());
                 }
             }
@@ -376,7 +380,7 @@ namespace MSL.utils
     #region OpenFrp Api
     internal class OpenFrpApi
     {
-        private static readonly string ApiUrl = "https://of-dev-api.bfsea.xyz";
+        private static string ApiUrl { get; } = "https://of-dev-api.bfsea.xyz";
         public static string AuthId { get; set; }
 
         public static async Task<(int Code, string Msg)> Login(string authToken = null, bool save = false)

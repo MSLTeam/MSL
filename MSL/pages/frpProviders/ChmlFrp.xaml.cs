@@ -5,8 +5,8 @@ using Newtonsoft.Json.Linq;
 using System;
 using System.Collections.Generic;
 using System.Collections.ObjectModel;
-using System.Diagnostics;
 using System.IO;
+using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 using System.Windows;
@@ -35,23 +35,48 @@ namespace MSL.pages.frpProviders
             {
                 isInit = true;
                 //显示登录页面
-                MainGrid.Visibility = Visibility.Collapsed;
+                MainCtrl.Visibility = Visibility.Collapsed;
                 LoginGrid.Visibility = Visibility.Visible;
-                CreateGrid.Visibility = Visibility.Collapsed;
                 //自动登录
                 var token = Config.Read("ChmlToken")?.ToString() ?? "";
                 if (token != "")
                 {
                     MagicDialog MagicDialog = new MagicDialog();
                     MagicDialog.ShowTextDialog(Window.GetWindow(this), "登录中……");
-                    await Task.Run(() => verifyUserToken(token, false));
+                    await VerifyUserToken(token, false);
                     MagicDialog.CloseTextDialog();
                 }
             }
         }
 
+        private async void MainCtrl_SelectionChanged(object sender, SelectionChangedEventArgs e)
+        {
+            if (!this.IsLoaded)
+            {
+                return;
+            }
+            if (!ReferenceEquals(e.OriginalSource, this.MainCtrl))
+            {
+                return;
+            }
+            switch (MainCtrl.SelectedIndex)
+            {
+                case 0:
+                    await GetFrpList();
+                    break;
+                case 1:
+                    await GetNodeList();
+                    //随机一些数据
+                    Random rand = new Random();
+                    int randomNumber = rand.Next(10000, 65536);
+                    Create_RemotePort.Text = randomNumber.ToString();
+                    Create_Name.Text = Functions.RandomString("MSL_", 5);
+                    break;
+            }
+        }
+
         //使用token登录
-        private async void userTokenLogin_Click(object sender, RoutedEventArgs e)
+        private async void UserTokenLogin_Click(object sender, RoutedEventArgs e)
         {
             string token;
             token = await MagicShow.ShowInput(Window.GetWindow(this), "请输入Chml账户Token", "", true);
@@ -60,13 +85,13 @@ namespace MSL.pages.frpProviders
                 bool save = (bool)SaveToken.IsChecked;
                 MagicDialog MagicDialog = new MagicDialog();
                 MagicDialog.ShowTextDialog(Window.GetWindow(this), "登录中……");
-                await Task.Run(() => verifyUserToken(token.Trim(), save)); //移除空格，防止笨蛋
+                await VerifyUserToken(token.Trim(), save);
                 MagicDialog.CloseTextDialog();
             }
         }
 
         //账号密码
-        private async void userLogin_Click(object sender, RoutedEventArgs e)
+        private async void UserLogin_Click(object sender, RoutedEventArgs e)
         {
             string frpUser, frpPassword;
             frpUser = await MagicShow.ShowInput(Window.GetWindow(this), "请输入ChmlFrp的账户名/邮箱/QQ号");
@@ -82,22 +107,16 @@ namespace MSL.pages.frpProviders
             bool save = (bool)SaveToken.IsChecked;
             MagicDialog MagicDialog = new MagicDialog();
             MagicDialog.ShowTextDialog(Window.GetWindow(this), "登录中……");
-            await Task.Run(() => getUserToken(frpUser, frpPassword, save));
+            await GetUserToken(frpUser, frpPassword, save);
             MagicDialog.CloseTextDialog();
         }
 
-        //注册一个可爱的账户
-        private void userRegister_Click(object sender, RoutedEventArgs e)
-        {
-            Process.Start("https://panel.chmlfrp.cn/register");
-        }
-
         //异步登录，获取到用户token
-        private void getUserToken(string user, string pwd, bool save)
+        private async Task GetUserToken(string user, string pwd, bool save)
         {
             try
             {
-                string response = HttpService.Post("api/login.php", 2, $"username={user}&password={pwd}", ChmlFrpApiUrl);
+                string response = (await HttpService.PostAsync($"{ChmlFrpApiUrl}/api/login.php", 2, $"username={user}&password={pwd}")).HttpResponseContent.ToString();
                 var jsonResponse = JsonConvert.DeserializeObject<Dictionary<string, object>>(response);
                 if (jsonResponse.ContainsKey("code"))
                 {
@@ -109,44 +128,39 @@ namespace MSL.pages.frpProviders
                         {
                             Config.Write("ChmlToken", token);
                         }
-                        Task.Run(() => GetFrpList(token));
+                        ChmlToken = token;
+                        MainCtrl.Visibility = Visibility.Visible;
+                        LoginGrid.Visibility = Visibility.Collapsed;
+                        await GetFrpList();
+                        return;
                     }
                     else
                     {
-                        Dispatcher.Invoke(() =>
-                        {
-                            MagicShow.ShowMsgDialog(Window.GetWindow(this), "登陆失败！" + jsonResponse["message"].ToString(), LanguageManager.Instance["Error"]);
-                        });
-
+                        MagicShow.ShowMsgDialog(Window.GetWindow(this), "登陆失败！" + jsonResponse["message"].ToString(), LanguageManager.Instance["Error"]);
                     }
                 }
                 else
                 {
                     if (jsonResponse.ContainsKey("error"))
                     {
-                        Dispatcher.Invoke(() =>
-                        {
-                            MagicShow.ShowMsgDialog(Window.GetWindow(this), "登陆失败！\n" + jsonResponse["error"].ToString(), LanguageManager.Instance["Error"]);
-                        });
+                        MagicShow.ShowMsgDialog(Window.GetWindow(this), "登陆失败！\n" + jsonResponse["error"].ToString(), LanguageManager.Instance["Error"]);
                     }
-
                 }
             }
             catch (Exception e)
             {
-                Dispatcher.Invoke(() =>
-                {
-                    MagicShow.ShowMsgDialog(Window.GetWindow(this), "登陆失败！\n" + e.Message, LanguageManager.Instance["Error"]);
-                });
+                MagicShow.ShowMsgDialog(Window.GetWindow(this), "登陆失败！\n" + e.Message, LanguageManager.Instance["Error"]);
             }
+            if (Config.Read("ChmlToken") != null)
+                Config.Remove("ChmlToken");
         }
 
         //直接token登录，那么验证下咯~
-        private void verifyUserToken(string userToken, bool save)
+        private async Task VerifyUserToken(string userToken, bool save)
         {
             try
             {
-                string response = HttpService.Get($"api/userinfo.php?usertoken={userToken}", ChmlFrpApiUrl);
+                string response = (await HttpService.GetAsync($"{ChmlFrpApiUrl}/api/userinfo.php?usertoken={userToken}")).HttpResponseContent.ToString();
                 var jsonResponse = JsonConvert.DeserializeObject<Dictionary<string, object>>(response);
                 if (jsonResponse.ContainsKey("userid"))
                 {
@@ -155,34 +169,27 @@ namespace MSL.pages.frpProviders
                     {
                         Config.Write("ChmlToken", userToken);
                     }
-                    Task.Run(() => GetFrpList(userToken));
+                    ChmlToken = userToken;
+                    MainCtrl.Visibility = Visibility.Visible;
+                    LoginGrid.Visibility = Visibility.Collapsed;
+                    await GetFrpList();
+                    return;
 
                 }
                 else
                 {
-                    //清理保存的token
-                    JObject jobject = JObject.Parse(File.ReadAllText(@"MSL\config.json", Encoding.UTF8));
-                    jobject["ChmlToken"] = "";
-                    string convertString = Convert.ToString(jobject);
-                    File.WriteAllText(@"MSL\config.json", convertString, Encoding.UTF8);
                     if (jsonResponse.ContainsKey("error"))
                     {
-                        Dispatcher.Invoke(() =>
-                        {
-                            MagicShow.ShowMsgDialog(Window.GetWindow(this), "Token登陆失败！\n可以尝试账号密码登录！\n" + jsonResponse["error"].ToString(), LanguageManager.Instance["Error"]);
-                        });
+                        MagicShow.ShowMsgDialog(Window.GetWindow(this), "Token登陆失败！\n可以尝试账号密码登录！\n" + jsonResponse["error"].ToString(), LanguageManager.Instance["Error"]);
                     }
-
                 }
             }
             catch (Exception e)
             {
-                Dispatcher.Invoke(() =>
-                {
-                    MagicShow.ShowMsgDialog(Window.GetWindow(this), "Token登陆失败！\n可以尝试账号密码登录！\n" + e.Message, LanguageManager.Instance["Error"]);
-                });
+                MagicShow.ShowMsgDialog(Window.GetWindow(this), "Token登陆失败！\n可以尝试账号密码登录！\n" + e.Message, LanguageManager.Instance["Error"]);
             }
-
+            if (Config.Read("ChmlToken") != null)
+                Config.Remove("ChmlToken");
         }
 
         internal class TunnelInfo
@@ -200,69 +207,54 @@ namespace MSL.pages.frpProviders
             public string Compression { get; set; }
         }
 
-        //登录成功了，然后就是获取隧道,丢到ui去
-        private void GetFrpList(string token)
+        //登录成功了，然后就是获取隧道
+        private async Task GetFrpList()
         {
-            ChmlToken = token;//丢到全局
-            //处理ui界面交接
-            Dispatcher.Invoke(() =>
-            {
-                MainGrid.Visibility = Visibility.Visible;
-                LoginGrid.Visibility = Visibility.Collapsed;
-                CreateGrid.Visibility = Visibility.Collapsed;
-            });
             try
             {
                 //获取userinfo
-                var jsonUserInfo = JsonConvert.DeserializeObject<Dictionary<string, object>>(HttpService.Get($"api/userinfo.php?usertoken={token}", ChmlFrpApiUrl));
-                Dispatcher.Invoke(() =>
-                {
-                    UserInfo.Text = $"用户ID:{jsonUserInfo["userid"]}  " +
-                    $"用户名:{jsonUserInfo["username"]}\n" +
-                    $"邮箱:{jsonUserInfo["email"]}  " +
-                    $"会员类型:{jsonUserInfo["usergroup"]}\n" +
-                    $"隧道数:{jsonUserInfo["tunnelstate"]}/{jsonUserInfo["tunnel"]}";
-                });
+                var jsonUserInfo = JsonConvert.DeserializeObject<Dictionary<string, object>>
+                    ((await HttpService.GetAsync($"{ChmlFrpApiUrl}/api/userinfo.php?usertoken={ChmlToken}")).HttpResponseContent.ToString());
+
+                UserInfo.Text = $"用户：#{jsonUserInfo["userid"]} {jsonUserInfo["username"]}\n" +
+                $"邮箱：{jsonUserInfo["email"]}\n" +
+                $"会员类型：{jsonUserInfo["usergroup"]}\n" +
+                $"隧道数：{jsonUserInfo["tunnelstate"]}/{jsonUserInfo["tunnel"]}";
 
                 //获取隧道
                 ObservableCollection<TunnelInfo> tunnels = new ObservableCollection<TunnelInfo>();
-                Dispatcher.Invoke(() =>
-                {
-                    FrpList.ItemsSource = tunnels;
-                });
-                string response = HttpService.Get($"api/usertunnel.php?token={token}", ChmlFrpApiUrl);
+                FrpList.ItemsSource = tunnels;
+                string response = (await HttpService.GetAsync($"{ChmlFrpApiUrl}/api/usertunnel.php?token={ChmlToken}")).HttpResponseContent.ToString();
                 try
                 {
                     var jsonArray = JsonConvert.DeserializeObject<List<Dictionary<string, object>>>(response);
                     foreach (var item in jsonArray)
                     {
-                        Dispatcher.Invoke(() =>
+                        tunnels.Add(new TunnelInfo
                         {
-                            tunnels.Add(new TunnelInfo
-                            {
-                                Name = $"{item["name"]}",
-                                Node = $"{item["node"]}",
-                                ID = $"{item["id"]}",
-                                Type = $"{item["type"]}",
-                                LIP = $"{item["localip"]}",
-                                LPort = $"{item["nport"]}",
-                                RPort = $"{item["dorp"]}",
-                                //ip为什么会没有呢
-                                Addr = item.ContainsKey("ip") ? $"{item["ip"]}" : string.Empty, //ip没的时候 empty！
-                                Token = token,
-                                Compression = $"{item["compression"]}",
-                                Encryption = $"{item["encryption"]}"
-                            });
+                            Name = $"{item["name"]}",
+                            Node = $"{item["node"]}",
+                            ID = $"{item["id"]}",
+                            Type = $"{item["type"]}",
+                            LIP = $"{item["localip"]}",
+                            LPort = $"{item["nport"]}",
+                            RPort = $"{item["dorp"]}",
+                            //ip为什么会没有呢
+                            Addr = item.ContainsKey("ip") ? $"{item["ip"]}" : string.Empty, //ip没的时候 empty！
+                            Token = ChmlToken,
+                            Compression = $"{item["compression"]}",
+                            Encryption = $"{item["encryption"]}"
                         });
                     }
 
                 }
                 catch (JsonSerializationException)
                 {
-                    Dispatcher.Invoke(() =>
-                    {
-                        MagicShow.ShowMsgDialog(Window.GetWindow(this), "建议创建一个哦~", "您似乎没有隧道");
-                    });
+                    return;
+                }
+                catch(Exception ex)
+                {
+                    MagicShow.ShowMsgDialog(ex.Message, "错误");
                 }
             }
             catch (Exception e)
@@ -292,9 +284,10 @@ namespace MSL.pages.frpProviders
             {
                 try
                 {
+                    (sender as Button).IsEnabled = false;
                     //获取frps端口
-                    JArray frps = JArray.Parse(HttpService.Get("api/unode.php", ChmlFrpApiUrl));
-                    foreach (JObject frp in frps)
+                    JArray frps = JArray.Parse((await HttpService.GetAsync(ChmlFrpApiUrl + "/api/unode.php")).HttpResponseContent.ToString());
+                    foreach (JObject frp in frps.Cast<JObject>())
                     {
                         if (frp.ContainsKey("name"))
                         {
@@ -306,6 +299,7 @@ namespace MSL.pages.frpProviders
                             }
                         }
                     }
+                    (sender as Button).IsEnabled = true;
 
                     //根据类型选择rport
                     string conf_rport;
@@ -341,6 +335,7 @@ namespace MSL.pages.frpProviders
                 }
                 catch (Exception ex)
                 {
+                    (sender as Button).IsEnabled = true;
                     await MagicShow.ShowMsgDialogAsync(Window.GetWindow(this), "写入Frpc配置失败！\n" + ex.Message, "出错");
                 }
             }
@@ -350,77 +345,45 @@ namespace MSL.pages.frpProviders
             }
         }
 
-        private void OpenWeb_Click(object sender, RoutedEventArgs e)
-        {
-            Process.Start("https://panel.chmlfrp.cn/tunnelm/manage");
-        }
-
         //删除隧道的
         private async void Del_Tunnel_Click(object sender, RoutedEventArgs e)
         {
-
+            (sender as Button).IsEnabled = false;
             bool dialog = await MagicShow.ShowMsgDialogAsync(Window.GetWindow(this), "确定删除所选隧道吗？", "删除隧道", true);
             if (dialog == true)
             {
                 try
                 {
-                    var listBox = FrpList as System.Windows.Controls.ListBox;
+                    var listBox = FrpList;
                     if (listBox.SelectedItem is TunnelInfo selectedTunnel)
                     {
-                        string res = HttpService.Get($"api/deletetl.php?token={ChmlToken}&nodeid={selectedTunnel.ID}&userid={ChmlID}", ChmlFrpApiUrl);
+                        string res = (await HttpService.GetAsync($"{ChmlFrpApiUrl}/api/deletetl.php?token={ChmlToken}&nodeid={selectedTunnel.ID}&userid={ChmlID}")).HttpResponseContent.ToString();
                         //处理结果
                         var PostResponse = JsonConvert.DeserializeObject<Dictionary<string, object>>(res);
                         if (PostResponse["code"].ToString() == "200")
                         {
                             //好了
-                            Dispatcher.Invoke(() =>
-                            {
-                                MagicShow.ShowMsgDialog(Window.GetWindow(this), "隧道删除成功！", "删除");
-                            });
-                            _ = Task.Run(() => GetFrpList(ChmlToken));//刷新下列表
+                            MagicShow.ShowMsgDialog(Window.GetWindow(this), "隧道删除成功！", "删除");
+                            _ =  GetFrpList();//刷新下列表
                         }
                         else
                         {
                             //创建失败的处理
-                            Dispatcher.Invoke(() =>
-                            {
-                                MagicShow.ShowMsgDialog(Window.GetWindow(this), $"隧道删除失败！\n{PostResponse["error"]}", "失败！");
-                            });
+                            MagicShow.ShowMsgDialog(Window.GetWindow(this), $"隧道删除失败！\n{PostResponse["error"]}", "失败！");
 
                         }
                     }
                     else
                     {
-                        Dispatcher.Invoke(() =>
-                        {
-                            MagicShow.ShowMsgDialog(Window.GetWindow(this), $"请选择一个隧道再操作！", "失败！");
-                        });
+                        MagicShow.ShowMsgDialog(Window.GetWindow(this), $"请选择一个隧道再操作！", "失败！");
                     }
                 }
                 catch (Exception ex)
                 {
-                    Dispatcher.Invoke(() =>
-                    {
-                        MagicShow.ShowMsgDialog(Window.GetWindow(this), ex.Message, "失败！");
-                    });
+                    MagicShow.ShowMsgDialog(Window.GetWindow(this), ex.Message, "失败！");
                 }
             }
-        }
-
-
-        //创建隧道相关
-        private void CreateBtn_Click(object sender, RoutedEventArgs e)
-        {
-            MainGrid.Visibility = Visibility.Collapsed;
-            LoginGrid.Visibility = Visibility.Collapsed;
-            CreateGrid.Visibility = Visibility.Visible;
-            Task.Run(() => GetNodeList());//获取列表
-            //随机一些数据
-            Random rand = new Random();
-            int randomNumber = rand.Next(10000, 65536);
-            Create_RemotePort.Text = randomNumber.ToString();
-
-            Create_Name.Text = Functions.RandomString("MSL_", 5);
+            (sender as Button).IsEnabled = true;
         }
 
         public class NodeInfo
@@ -432,53 +395,50 @@ namespace MSL.pages.frpProviders
             public string NodeGroupName { get; set; }
         }
         //获取节点列表
-        private void GetNodeList()
+        private async Task GetNodeList()
         {
             ObservableCollection<NodeInfo> nodes = new ObservableCollection<NodeInfo>();
-            Dispatcher.Invoke(() =>
-            {
-                NodeList.ItemsSource = nodes;
-            });
+            NodeList.ItemsSource = nodes;
             //从api获取节点列表
-            string response = HttpService.Get($"api/unode.php", ChmlFrpApiUrl);
+            var _response = await HttpService.GetAsync($"{ChmlFrpApiUrl}/api/unode.php");
+            if (_response.HttpResponseCode != System.Net.HttpStatusCode.OK)
+            {
+                MagicShow.ShowMsgDialog(Window.GetWindow(this), "隧道创建失败！\n" + _response.HttpResponseContent, "创建失败！");
+                return;
+            }
+            string response = _response.HttpResponseContent.ToString();
             try
             {
                 var jsonArray = JsonConvert.DeserializeObject<List<Dictionary<string, object>>>(response);
                 foreach (var item in jsonArray)
                 {
-                    Dispatcher.Invoke(() =>
+                    if (item["nodegroup"].ToString() == "vip")
                     {
-                        if (item["nodegroup"].ToString() == "vip")
+                        nodes.Add(new NodeInfo
                         {
-                            nodes.Add(new NodeInfo
-                            {
-                                Name = $"{item["name"]}",
-                                Area = $"{item["area"]}",
-                                Notes = $"{item["notes"]}",
-                                NodeGroup = $"{item["nodegroup"]}",
-                                NodeGroupName = "VIP节点",
-                            });
-                        }
-                        else
+                            Name = $"{item["name"]}",
+                            Area = $"{item["area"]}",
+                            Notes = $"{item["notes"]}",
+                            NodeGroup = $"{item["nodegroup"]}",
+                            NodeGroupName = "VIP节点",
+                        });
+                    }
+                    else
+                    {
+                        nodes.Add(new NodeInfo
                         {
-                            nodes.Add(new NodeInfo
-                            {
-                                Name = $"{item["name"]}",
-                                Area = $"{item["area"]}",
-                                Notes = $"{item["notes"]}",
-                                NodeGroup = $"{item["nodegroup"]}",
-                                NodeGroupName = "普通节点",
-                            });
-                        }
-                    });
+                            Name = $"{item["name"]}",
+                            Area = $"{item["area"]}",
+                            Notes = $"{item["notes"]}",
+                            NodeGroup = $"{item["nodegroup"]}",
+                            NodeGroupName = "普通节点",
+                        });
+                    }
                 }
             }
             catch (JsonSerializationException)
             {
-                Dispatcher.Invoke(() =>
-                {
-                    MagicShow.ShowMsgDialog(Window.GetWindow(this), "无法加载节点信息！", "错误");
-                });
+                MagicShow.ShowMsgDialog(Window.GetWindow(this), "无法加载节点信息！", "错误");
             }
         }
 
@@ -493,8 +453,9 @@ namespace MSL.pages.frpProviders
         }
 
         //确定创建摁下去了
-        private void Create_OKBtn_Click(object sender, RoutedEventArgs e)
+        private async void Create_OKBtn_Click(object sender, RoutedEventArgs e)
         {
+            (sender as Button).IsEnabled = false;
             var listBox = NodeList;
             if (listBox.SelectedItem is NodeInfo selectedNode)
             {
@@ -520,80 +481,71 @@ namespace MSL.pages.frpProviders
                 string proc = Create_Protocol.Text;
                 string lport = Create_LocalPort.Text;
                 string rport = Create_RemotePort.Text;
-                Task.Run(() => PostCreate(lip, name, selectedNode.Name, proc, lport, rport, enc, comp));
+                await PostCreate(lip, name, selectedNode.Name, proc, lport, rport, enc, comp);
             }
             else
             {
                 MagicShow.ShowMsgDialog(Window.GetWindow(this), "您似乎没有选择节点！", "错误");
             }
+            (sender as Button).IsEnabled = true;
         }
 
         //post把数据丢过去
-        private void PostCreate(string localip, string name, string node, string type, string nport, string dorp, string encryption, string compression)
+        private async Task PostCreate(string localip, string name, string node, string type, string nport, string dorp, string encryption, string compression)
         {
+            var body = new JObject
+            {
+                ["token"] = ChmlToken,
+                ["userid"] = ChmlID,
+                ["localip"] = localip,
+                ["name"] = name,
+                ["node"] = node,
+                ["type"] = type,
+                ["nport"] = nport,
+                ["dorp"] = dorp,
+                ["ap"] = string.Empty,
+                ["encryption"] = encryption,
+                ["compression"] = compression
+            };
 
-            string parameterData = $@"
-{{
-    ""token"": ""{ChmlToken}"",
-    ""userid"": ""{ChmlID}"",
-    ""localip"": ""{localip}"",
-    ""name"": ""{name}"",
-    ""node"": ""{node}"",
-    ""type"": ""{type}"",
-    ""nport"": {nport},
-    ""dorp"": {dorp},
-    ""ap"": """",
-    ""encryption"": ""{encryption}"",
-    ""compression"": ""{compression}""
-}}";
-            string response = HttpService.Post("api/tunnel.php", 0, parameterData, ChmlFrpApiUrl, null);
+            var _response = await HttpService.PostAsync($"{ChmlFrpApiUrl}/api/tunnel.php", 0, body);
+            if (_response.HttpResponseCode != System.Net.HttpStatusCode.OK)
+            {
+                MagicShow.ShowMsgDialog(Window.GetWindow(this), "隧道创建失败！\n" + _response.HttpResponseContent, "创建失败！");
+                return;
+            }
+            string response = _response.HttpResponseContent.ToString();
             //处理结果
             var PostResponse = JsonConvert.DeserializeObject<Dictionary<string, object>>(response);
             if (PostResponse["code"].ToString() == "200")
             {
                 //好了
-                Dispatcher.Invoke(() =>
-                {
-                    MagicShow.ShowMsgDialog(Window.GetWindow(this), "隧道创建成功！\n即将返回主页···", "创建成功！");
-                    MainGrid.Visibility = Visibility.Visible;
-                    LoginGrid.Visibility = Visibility.Collapsed;
-                    CreateGrid.Visibility = Visibility.Collapsed;
-                });
-                Task.Run(() => GetFrpList(ChmlToken));//刷新下列表
+                MagicShow.ShowMsgDialog(Window.GetWindow(this), "隧道创建成功！\n即将返回主页···", "创建成功！");
+                MainCtrl.SelectedIndex = 0;
             }
             else
             {
                 //创建失败的处理
-                Dispatcher.Invoke(() =>
-                {
-                    MagicShow.ShowMsgDialog(Window.GetWindow(this), $"隧道创建失败！\n{PostResponse["error"]}", "创建失败！");
-                });
+                MagicShow.ShowMsgDialog(Window.GetWindow(this), $"隧道创建失败！\n{PostResponse["error"]}", "创建失败！");
             }
         }
 
-        private void RefreshBtn_Click(object sender, RoutedEventArgs e)
+        private async void RefreshBtn_Click(object sender, RoutedEventArgs e)
         {
-            Task.Run(() => GetFrpList(ChmlToken));
+            (sender as Button).IsEnabled = false;
+            await GetFrpList();
+            (sender as Button).IsEnabled = true;
         }
 
         private void ExitBtn_Click(object sender, RoutedEventArgs e)
         {
-            MainGrid.Visibility = Visibility.Collapsed;
+            MainCtrl.Visibility = Visibility.Collapsed;
             LoginGrid.Visibility = Visibility.Visible;
-            CreateGrid.Visibility = Visibility.Collapsed;
             //清理保存的token
             JObject jobject = JObject.Parse(File.ReadAllText(@"MSL\config.json", Encoding.UTF8));
             jobject["ChmlToken"] = "";
             string convertString = Convert.ToString(jobject);
             File.WriteAllText(@"MSL\config.json", convertString, Encoding.UTF8);
-        }
-
-        //返回按钮
-        private void Create_BackBtn_Click(object sender, RoutedEventArgs e)
-        {
-            MainGrid.Visibility = Visibility.Visible;
-            LoginGrid.Visibility = Visibility.Collapsed;
-            CreateGrid.Visibility = Visibility.Collapsed;
         }
     }
 }

@@ -249,16 +249,6 @@ namespace MSL.pages.frpProviders.MSLFrp
 
         }
 
-        private void ExitBtn_Click(object sender, RoutedEventArgs e)
-        {
-            //显示登录页面
-            LoginGrid.Visibility = Visibility.Visible;
-            MainCtrl.Visibility = Visibility.Collapsed;
-            MSLFrpApi.UserToken = string.Empty;
-            Config.Remove("MSLUserAccessToken");
-            FrpProfile = new MSLFrpProfile(close: ChangeTab);
-        }
-
         private void NodeList_SelectionChanged(object sender, SelectionChangedEventArgs e)
         {
             var listBox = NodeList;
@@ -317,6 +307,16 @@ namespace MSL.pages.frpProviders.MSLFrp
             {
                 MagicShow.ShowMsgDialog(Window.GetWindow(this), "您似乎没有选择任何节点！", "错误");
             }
+        }
+
+        private void ExitBtn_Click(object sender, RoutedEventArgs e)
+        {
+            //显示登录页面
+            LoginGrid.Visibility = Visibility.Visible;
+            MainCtrl.Visibility = Visibility.Collapsed;
+            MSLFrpApi.UserToken = string.Empty;
+            Config.Remove("MSLUserAccessToken");
+            FrpProfile = new MSLFrpProfile(close: ChangeTab);
         }
     }
 }
