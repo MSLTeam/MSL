@@ -2,7 +2,6 @@
 using Newtonsoft.Json.Linq;
 using System;
 using System.Collections.Generic;
-using System.Diagnostics;
 using System.Threading.Tasks;
 using System.Windows;
 using System.Windows.Controls;
@@ -16,7 +15,6 @@ namespace MSL.pages.frpProviders
     /// </summary>
     public partial class OpenFrp : Page
     {
-        //private CancellationTokenSource cts;
         private string token;
         private JArray jArray;
         private Dictionary<string, string> nodelist;
@@ -70,7 +68,7 @@ namespace MSL.pages.frpProviders
 
             MagicDialog MagicDialog = new MagicDialog();
             MagicDialog.ShowTextDialog(Window.GetWindow(this), "登录中……");
-            var (Code, Msg) = await OpenFrpApi.Login("", "", token, SaveToken.IsChecked == true);
+            var (Code, Msg) = await OpenFrpApi.Login(token, SaveToken.IsChecked == true);
             MagicDialog.CloseTextDialog();
             if (Code == 200)
             {
@@ -81,42 +79,6 @@ namespace MSL.pages.frpProviders
             else
             {
                 MagicShow.ShowMsgDialog(Window.GetWindow(this), "登录失败！请检查您的Authorization是否正确！" + Msg, "错误！");
-                return;
-            }
-            return;
-        }
-
-        private async void userLogin_Click(object sender, RoutedEventArgs e)
-        {
-            string userAccount = await MagicShow.ShowInput(Window.GetWindow(this), "请输入OpenFrp的账户名/邮箱");
-            string userPass;
-            if (userAccount != null)
-            {
-                userPass = await MagicShow.ShowInput(Window.GetWindow(this), "请输入" + userAccount + "的密码", "", true);
-                if (userPass == null)
-                {
-                    return;
-                }
-            }
-            else
-            {
-                return;
-            }
-
-            MagicDialog MagicDialog = new MagicDialog();
-            MagicDialog.ShowTextDialog(Window.GetWindow(this), "登录中……");
-            var (Code, Msg) = await OpenFrpApi.Login(userAccount, userPass, save: SaveToken.IsChecked == true);
-            MagicDialog.CloseTextDialog();
-            if (Code == 200)
-            {
-                LoginGrid.Visibility = Visibility.Collapsed;
-                MainGrid.Visibility = Visibility.Visible;
-                GetUserInfo(JObject.Parse(Msg));
-            }
-            else
-            {
-                //Console.WriteLine(Msg);
-                MagicShow.ShowMsgDialog(Window.GetWindow(this), "登录失败！请检查您的用户名或密码是否正确！" + Msg, "错误！");
                 return;
             }
             return;
@@ -214,16 +176,6 @@ namespace MSL.pages.frpProviders
             {
                 portBox.Text = "19132";
             }
-        }
-
-        private void gotoWeb_Click(object sender, RoutedEventArgs e)
-        {
-            Process.Start("https://www.openfrp.net/");
-        }
-
-        private void userRegister_Click(object sender, RoutedEventArgs e)
-        {
-            Process.Start("https://www.openfrp.net/");
         }
 
         private async void addProxieBtn_Click(object sender, RoutedEventArgs e)

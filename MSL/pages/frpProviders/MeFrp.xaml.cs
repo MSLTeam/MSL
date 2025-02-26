@@ -3,21 +3,11 @@ using Newtonsoft.Json.Linq;
 using System;
 using System.Collections.Generic;
 using System.Collections.ObjectModel;
-using System.Diagnostics;
-using System.Linq;
 using System.Net;
 using System.Net.Http.Headers;
-using System.Text;
 using System.Threading.Tasks;
 using System.Windows;
 using System.Windows.Controls;
-using System.Windows.Data;
-using System.Windows.Documents;
-using System.Windows.Input;
-using System.Windows.Media;
-using System.Windows.Media.Imaging;
-using System.Windows.Navigation;
-using System.Windows.Shapes;
 
 namespace MSL.pages.frpProviders
 {
@@ -30,10 +20,9 @@ namespace MSL.pages.frpProviders
         {
             InitializeComponent();
         }
-        string ApiUrl = "\r\nhttps://api.mefrp.com/api";
-        string UserToken = null;
-        string UserLevel = "";
 
+        string ApiUrl = "https://api.mefrp.com/api";
+        string UserToken = null;
 
         private bool isInit = false;
         private async void Page_Loaded(object sender, EventArgs e)
@@ -97,7 +86,7 @@ namespace MSL.pages.frpProviders
                     {
                         UserInfo.Text = $"用户名: {JsonUserInfo["data"]["username"]}\n用户类型: {JsonUserInfo["data"]["friendlyGroup"]}\n限速: {int.Parse(JsonUserInfo["data"]["outBound"]?.ToString() ?? "")/128} Mbps";
                     });
-                    UserLevel = (string)JsonUserInfo["data"]["group"];
+                    //UserLevel = (string)JsonUserInfo["data"]["group"];
                     //获取隧道
                     await GetTunnelList(token);
                 }
@@ -283,11 +272,6 @@ namespace MSL.pages.frpProviders
 
         }
 
-        private void OpenWeb_Click(object sender, RoutedEventArgs e)
-        {
-            Process.Start("https://www.mefrp.com/dashboard/");
-        }
-
         private void ExitBtn_Click(object sender, RoutedEventArgs e)
         {
             //显示登录页面
@@ -417,11 +401,6 @@ namespace MSL.pages.frpProviders
             {
                 await MagicShow.ShowMsgDialogAsync(Window.GetWindow(this), "您似乎没有选择任何节点！", "错误");
             }
-        }
-
-        private void userRegister_Click(object sender, RoutedEventArgs e)
-        {
-            Process.Start("https://www.natfrp.com/user/profile");
         }
     }
 }

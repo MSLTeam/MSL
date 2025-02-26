@@ -4,9 +4,7 @@ using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Net;
-using System.Net.Http;
 using System.Net.Http.Headers;
-using System.Text;
 using System.Threading.Tasks;
 
 namespace MSL.utils
@@ -381,162 +379,9 @@ namespace MSL.utils
         private static readonly string ApiUrl = "https://of-dev-api.bfsea.xyz";
         public static string AuthId { get; set; }
 
-        public static async Task<(int Code, string Msg)> Login(string account, string password, string authToken = null, bool save = false)
+        public static async Task<(int Code, string Msg)> Login(string authToken = null, bool save = false)
         {
-            if (string.IsNullOrEmpty(authToken)) // 检测用户是否传入auth Token，若没有，就使用账户密码登录方式
-            {
-                // OpenFrp的API真的折磨人，这部分代码就这样了，以后再也不碰了
-                // 真的是倒爷，倒过来倒过去，比我还能倒😡😡😡
-                // 首先是登录第一步，传账户密码，然后获取Cookies里的17a
-
-                JObject logininfo = new JObject
-                {
-                    ["user"] = account,
-                    ["password"] = password
-                };
-                //var loginRes = await HttpService.PostAsync("https://account.naids.com/api/public/login", 0, logininfo, headerUAMode: 1);
-
-                string domainUrl = "https://account.naids.com";
-                string auth17a_name = string.Empty;
-                string auth17a_token = string.Empty;
-
-                HttpClientHandler handler = new HttpClientHandler();
-                CookieContainer cookieContainer = new CookieContainer();
-                handler.CookieContainer = cookieContainer;
-
-                HttpClient httpClient = new HttpClient(handler);
-                HttpResponse httpResponse = new HttpResponse();
-
-                httpClient.DefaultRequestHeaders.Accept.Add(new MediaTypeWithQualityHeaderValue("application/json"));
-                HttpContent content = new StringContent(JsonConvert.SerializeObject(logininfo), Encoding.UTF8, "application/json");
-
-                httpClient.DefaultRequestHeaders.UserAgent.TryParseAdd($"MSLTeam-MSL/{MainWindow.MSLVersion}");
-
-                try
-                {
-                    HttpResponseMessage response = await httpClient.PostAsync(domainUrl + "/api/public/login", content);
-                    httpResponse.HttpResponseCode = response.StatusCode;
-                    httpResponse.HttpResponseContent = response.IsSuccessStatusCode
-                        ? await response.Content.ReadAsStringAsync()
-                        : response.ReasonPhrase;
-
-                    Uri uri = new Uri(domainUrl);
-                    var cookies = cookieContainer.GetCookies(uri);
-
-                    foreach (Cookie cookie in cookies)
-                    {
-                        if (cookie.Name == "17a")
-                        {
-                            auth17a_name = cookie.Name;
-                            auth17a_token = cookie.Value;
-                            //Console.WriteLine(auth17a_name + "=" + auth17a_token);
-                            break;
-                        }
-                    }
-                    if (string.IsNullOrEmpty(auth17a_name))
-                    {
-                        auth17a_name = cookies[0].Name;
-                        auth17a_token = cookies[0].Value;
-                    }
-                    //Console.WriteLine(auth17a_name + "=" + auth17a_token);
-                }
-                catch (Exception ex)
-                {
-                    httpResponse.HttpResponseCode = 0;
-                    httpResponse.HttpResponseContent = ex.Message;
-                }
-
-                if (httpResponse.HttpResponseCode == HttpStatusCode.OK)
-                {
-                    // 获取成功后，是第二步，将17a设为cookies请求第二个接口，获取json-data里的code
-
-                    handler = new HttpClientHandler();
-                    cookieContainer = new CookieContainer();
-                    handler.CookieContainer = cookieContainer;
-
-                    httpClient = new HttpClient(handler);
-                    httpResponse = new HttpResponse();
-
-                    httpClient.DefaultRequestHeaders.UserAgent.TryParseAdd($"MSLTeam-MSL/{MainWindow.MSLVersion}");
-
-                    Uri uri = new Uri(domainUrl);
-                    cookieContainer.Add(uri, new Cookie(auth17a_name, auth17a_token));
-
-                    try
-                    {
-                        HttpResponseMessage response = await httpClient.PostAsync(domainUrl + $"/api/oauth2/authorize?response_type=code&redirect_uri={ApiUrl}/oauth_callback&client_id=openfrp", null);
-                        httpResponse.HttpResponseCode = response.StatusCode;
-                        httpResponse.HttpResponseContent = response.IsSuccessStatusCode
-                            ? await response.Content.ReadAsStringAsync()
-                            : response.ReasonPhrase;
-                    }
-                    catch (Exception ex)
-                    {
-                        httpResponse.HttpResponseCode = 0;
-                        httpResponse.HttpResponseContent = ex.Message;
-                    }
-
-                    if (httpResponse.HttpResponseCode == HttpStatusCode.OK && (bool)JObject.Parse(httpResponse.HttpResponseContent.ToString())["flag"] == true)
-                    {
-                        // 然后是第三步，将上述得到的code与这个地址拼接：https://of-dev-api.bfsea.xyz/oauth2/callback?code=
-                        // 然后获取到返回header里的authID（到这里才真正获取到AuthID！！！！！！！！）
-
-                        string authCode = JObject.Parse(httpResponse.HttpResponseContent.ToString())["data"]["code"].ToString();
-                        HttpResponseHeaders headers = null;
-
-                        httpClient = new HttpClient();
-                        httpResponse = new HttpResponse();
-
-                        httpClient.DefaultRequestHeaders.UserAgent.TryParseAdd($"MSLTeam-MSL/{MainWindow.MSLVersion}");
-
-                        try
-                        {
-                            HttpResponseMessage response = await httpClient.GetAsync(ApiUrl + "/oauth2/callback?code=" + authCode);
-                            headers = response.Headers;
-                            httpResponse.HttpResponseCode = response.StatusCode;
-                            httpResponse.HttpResponseContent = response.IsSuccessStatusCode
-                                ? await response.Content.ReadAsStringAsync()
-                                : response.ReasonPhrase;
-                        }
-                        catch (Exception ex)
-                        {
-                            httpResponse.HttpResponseCode = 0;
-                            httpResponse.HttpResponseContent = ex.Message;
-                        }
-                        handler.Dispose();
-                        httpClient.Dispose();
-
-                        if (httpResponse.HttpResponseCode == HttpStatusCode.OK && (bool)JObject.Parse(httpResponse.HttpResponseContent.ToString())["flag"] == true)
-                        {
-                            // 第四步，最后一步，获取返回的header里的AuthID，然后就可以正常请求API辣！！！
-
-                            foreach (var header in headers)
-                            {
-                                if (header.Key == "Authorization")
-                                {
-                                    AuthId = header.Value.FirstOrDefault();
-                                }
-                            }
-                        }
-                        else
-                        {
-                            return (0, httpResponse.HttpResponseCode == HttpStatusCode.OK ? JObject.Parse(httpResponse.HttpResponseContent.ToString())["msg"].ToString() : string.Empty);
-                        }
-                    }
-                    else
-                    {
-                        return (0, httpResponse.HttpResponseCode == HttpStatusCode.OK ? JObject.Parse(httpResponse.HttpResponseContent.ToString())["msg"].ToString() : string.Empty);
-                    }
-                }
-                else
-                {
-                    return (0, httpResponse.HttpResponseCode == HttpStatusCode.OK ? JObject.Parse(httpResponse.HttpResponseContent.ToString())["msg"].ToString() : string.Empty);
-                }
-            }
-            else
-            {
-                AuthId = authToken;
-            }
+            AuthId = authToken;
             // 获取用户信息！
             try
             {
@@ -591,7 +436,7 @@ namespace MSL.utils
                 }
                 return ((int)res.HttpResponseCode, null, res.HttpResponseCode == HttpStatusCode.OK ? JObject.Parse(res.HttpResponseContent.ToString())["msg"].ToString() : string.Empty);
             }
-            catch(Exception ex)
+            catch (Exception ex)
             {
                 return (0, null, ex.Message);
             }
