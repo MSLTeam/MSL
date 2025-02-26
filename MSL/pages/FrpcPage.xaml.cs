@@ -453,38 +453,46 @@ namespace MSL.pages
                     }
                     else if(downloadUrl == "MeFrp")
                     {
-                        HttpResponse res = await HttpService.GetAsync("https://api.mefrp.com/api/auth/products", headers =>
+                        try
                         {
-                            headers.Add("Authorization", $"Bearer {Config.Read("MeFrpToken")}");
-                        });
-                        JObject apiData = JObject.Parse((string)res.HttpResponseContent);
-                        if ((int)apiData["code"] != 200)
-                        {
-                            Growl.Error("获取MeFrp下载地址失败！");
+                            HttpResponse res = await HttpService.GetAsync("https://api.mefrp.com/api/auth/products", headers =>
+                            {
+                                headers.Add("Authorization", $"Bearer {Config.Read("MeFrpToken")}");
+                            });
+                            JObject apiData = JObject.Parse((string)res.HttpResponseContent);
+                            if ((int)apiData["code"] != 200)
+                            {
+                                Growl.Error("获取MeFrp下载地址失败！");
+                                return;
+                            }
+
+                            string version = osver == "6" ? apiData["data"][1]["version"].ToString() : apiData["data"][0]["version"].ToString();
+
+                            string alistUrl = $"https://resources.mefrp.com/api/fs/list?path=%2FME-Frp%2FLocal%2FMEFrpc%2F{version}";
+                            JObject apiData_alist = JObject.Parse((await HttpService.GetContentAsync(alistUrl)).ToString());
+
+                            if ((int)apiData_alist["code"] != 200)
+                            {
+                                Growl.Error("获取MeFrp下载地址失败！");
+                                return;
+                            }
+                            var targetFile = ((JArray)apiData_alist["data"]["content"])
+                                .FirstOrDefault(f => f["name"].ToString().Contains("windows_amd64"));
+
+                            if (targetFile == null)
+                            {
+                                Growl.Error("未找到Windows AMD64版本文件");
+                                return;
+                            }
+                            string fileName = $"https://resources.mefrp.com/d/ME-Frp/Local/MEFrpc/{version}/{targetFile["name"].ToString()}";
+                            await MagicShow.ShowDownloader(Window.GetWindow(this), fileName, "MSL\\frp", downloadFileName, LanguageManager.Instance["Download_Frpc_Info"]);
+                        }
+                        catch (Exception ex) {
+                            Growl.Error("MeFrp下载失败！"+ex.Message);
                             return;
                         }
 
-                        string version = apiData["data"][0]["version"].ToString();
-
-                        string alistUrl = $"https://resources.mefrp.com/api/fs/list?path=%2FME-Frp%2FLocal%2FMEFrpc%2F{version}";
-                        JObject apiData_alist = JObject.Parse((await HttpService.GetContentAsync(alistUrl)).ToString());
-
-                        if ((int)apiData_alist["code"] != 200)
-                        {
-                            Growl.Error("获取MeFrp下载地址失败！");
-                            return;
-                        }
-                        var targetFile = ((JArray)apiData_alist["data"]["content"])
-                            .FirstOrDefault(f => f["name"].ToString().Contains("windows_amd64"));
-
-                        if (targetFile == null)
-                        {
-                            Growl.Error("未找到Windows AMD64版本文件");
-                            return;
-                        }
-
-                        string fileName = $"https://resources.mefrp.com/d/ME-Frp/Local/MEFrpc/{version}/{targetFile["name"].ToString()}";
-                        await MagicShow.ShowDownloader(Window.GetWindow(this), fileName, "MSL\\frp", downloadFileName, LanguageManager.Instance["Download_Frpc_Info"]);
+                       
                     }
                     else if (downloadUrl != "")
                     {
