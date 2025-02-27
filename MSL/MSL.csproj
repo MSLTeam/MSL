@@ -404,9 +404,6 @@
       <IncludeAssets>runtime; compile; build; native; contentfiles; analyzers; buildtransitive</IncludeAssets>
       <PrivateAssets>all</PrivateAssets>
     </PackageReference>
-    <PackageReference Include="libsodium">
-      <Version>1.0.20.1</Version>
-    </PackageReference>
     <PackageReference Include="Microsoft.Windows.SDK.Contracts">
       <Version>10.0.26100.1742</Version>
     </PackageReference>
@@ -421,9 +418,6 @@
     </PackageReference>
     <PackageReference Include="SharpZipLib">
       <Version>1.4.2</Version>
-    </PackageReference>
-    <PackageReference Include="Sodium.Core">
-      <Version>1.3.5</Version>
     </PackageReference>
     <PackageReference Include="System.Memory">
       <Version>4.6.0</Version>

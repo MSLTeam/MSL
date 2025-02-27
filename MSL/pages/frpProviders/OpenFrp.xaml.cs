@@ -1,7 +1,6 @@
 ﻿using MSL.utils;
 using Newtonsoft.Json;
 using Newtonsoft.Json.Linq;
-using Sodium;
 using System;
 using System.Collections.Generic;
 using System.Diagnostics;
@@ -166,10 +165,9 @@ namespace MSL.pages.frpProviders
                 Console.WriteLine($"服务器公钥长度: {serverPublicKeyBytes.Length}");
                 */
 
-                // 方法 1:
                 try
                 {
-                    byte[] decryptedBytes = PublicKeyBox.Open(
+                    byte[] decryptedBytes = PublicKeyBoxCompat.Open(
                         cipherText,
                         nonce,
                         privateKeyBytes,
