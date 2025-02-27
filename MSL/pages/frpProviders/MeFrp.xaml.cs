@@ -8,6 +8,7 @@ using System.Net.Http.Headers;
 using System.Threading.Tasks;
 using System.Windows;
 using System.Windows.Controls;
+using static System.Windows.Forms.VisualStyles.VisualStyleElement.Tab;
 
 namespace MSL.pages.frpProviders
 {
@@ -79,6 +80,56 @@ namespace MSL.pages.frpProviders
             }
         }
 
+        private async void userPasswordLogin_Click(object sender, RoutedEventArgs e)
+        {
+            string user = await MagicShow.ShowInput(Window.GetWindow(this), "请输入MeFrp账户的邮箱", "");
+            if (user != null)
+            {
+                string password = await MagicShow.ShowInput(Window.GetWindow(this), "请输入MeFrp账户的密码", "", true);
+                if (password != null)
+                {
+                    bool save = (bool)SaveToken.IsChecked;
+                    MagicDialog MagicDialog = new MagicDialog();
+                    MagicDialog.ShowTextDialog(Window.GetWindow(this), "登录中……");
+                    await GetUserToken(user.Trim(), password.Trim(), save); //移除空格，防止笨蛋
+                    MagicDialog.CloseTextDialog();
+                }
+
+            }
+        }
+
+        private async Task GetUserToken(string user,string password,bool save)
+        {
+            try
+            {
+                HttpResponse res = await HttpService.PostAsync(ApiUrl + "/public/login", 0, new JObject
+                {
+                    ["username"] = user,
+                    ["password"] = password
+                });
+                if(res.HttpResponseCode == HttpStatusCode.OK)
+                {
+                    JObject jres = JObject.Parse((string)res.HttpResponseContent);
+                    if(jres["code"].Value<int>() == 200)
+                    {
+                        await VerifyUserToken(jres["data"]["token"].ToString(), save);
+                    }
+                    else
+                    {
+                        await MagicShow.ShowMsgDialogAsync(Window.GetWindow(this), "登陆失败！" + jres["message"], "错误");
+                    }
+                }
+                else
+                {
+                    await MagicShow.ShowMsgDialogAsync(Window.GetWindow(this), "登陆失败！请检查账号密码！" , "错误");
+                }
+            }
+            catch(Exception ex)
+            {
+                await MagicShow.ShowMsgDialogAsync(Window.GetWindow(this), "登陆失败！" + ex.Message, "错误");
+            }
+        }
+
         private async Task VerifyUserToken(string token, bool save)
         {
             try
@@ -99,7 +150,15 @@ namespace MSL.pages.frpProviders
                     LoginGrid.Visibility = Visibility.Collapsed; ;
                     MainCtrl.Visibility = Visibility.Visible;
                     JObject JsonUserInfo = JObject.Parse((string)res.HttpResponseContent);
-                    UserInfo.Text = $"用户名: {JsonUserInfo["data"]["username"]}\n用户类型: {JsonUserInfo["data"]["friendlyGroup"]}\n限速: {int.Parse(JsonUserInfo["data"]["outBound"]?.ToString() ?? "") / 128} Mbps";
+                    if(JsonUserInfo["data"]["todaySigned"].Value<bool>() == true)
+                    {
+                        SignBtn.IsEnabled = false;
+                    }
+                    if(JsonUserInfo["data"]["friendlyGroup"].Value<string>() != "未实名")
+                    {
+                        RealNameTips.Visibility = Visibility.Collapsed;
+                    }
+                    UserInfo.Text = $"用户名: {JsonUserInfo["data"]["username"]}\n用户类型: {JsonUserInfo["data"]["friendlyGroup"]}\n限速: {int.Parse(JsonUserInfo["data"]["outBound"]?.ToString() ?? "") / 128} Mbps\n隧道数: {JsonUserInfo["data"]["usedProxies"]} / {JsonUserInfo["data"]["maxProxies"]}\n剩余流量: {int.Parse(JsonUserInfo["data"]["traffic"]?.ToString() ?? "") / 1024} GB";
                     //UserLevel = (string)JsonUserInfo["data"]["group"];
                     //获取隧道
                     await GetTunnelList();
@@ -226,7 +285,7 @@ namespace MSL.pages.frpProviders
             if (listBox.SelectedItem is TunnelInfo selectedTunnel)
             {
                 //输出配置文件
-                if (Config.WriteFrpcConfig(4, $"MeFrp - {selectedTunnel.Name}", $"-t {UserToken} -p {selectedTunnel.ID}", "") == true)
+                if (Config.WriteFrpcConfig(4, $"MEFrp - {selectedTunnel.Name}", $"-t {UserToken} -p {selectedTunnel.ID}", "") == true)
                 {
                     await MagicShow.ShowMsgDialogAsync(Window.GetWindow(this), "映射配置成功，请您点击“启动内网映射”以启动映射！", "信息");
                     Window.GetWindow(this).Close();
@@ -398,5 +457,27 @@ namespace MSL.pages.frpProviders
             }
             (sender as Button).IsEnabled = true;
         }
+
+        private async void SignBtn_Click(object sender, RoutedEventArgs e)
+        {
+            try
+            {
+                HttpResponse res = await HttpService.GetAsync(ApiUrl + "/auth/user/info", headers =>
+                {
+                    headers.Add("Authorization", $"Bearer {UserToken}");
+                });
+                if (res.HttpResponseCode == HttpStatusCode.OK)
+                {
+                    JObject jsonres = JObject.Parse((string)res.HttpResponseContent);
+                    await MagicShow.ShowMsgDialogAsync(Window.GetWindow(this), $"签到成功！\n获得流量: {jsonres["data"]["extraTraffic"]} G", "签到成功");
+                    SignBtn.IsEnabled = false;
+                }
+            }
+            catch {
+                await MagicShow.ShowMsgDialogAsync(Window.GetWindow(this), "签到失败！", "错误");
+            }
+        }
+
+
     }
 }

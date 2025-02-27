@@ -47,36 +47,40 @@
                                 <Button Content="刷新" x:Name="RefreshBtn"  Style="{StaticResource ButtonPrimary}" HorizontalAlignment="Stretch" Grid.Column="1" Margin="3,0,0,0" Click="RefreshBtn_Click"/>
                             </Grid>
                         </Grid>
-                        <StackPanel Grid.Column="1" Margin="10,0,0,0" >
-                            <hc:Card>
-                                <Grid>
-                                    <Grid.ColumnDefinitions>
-                                        <ColumnDefinition Width="*"/>
-                                        <ColumnDefinition Width="auto"/>
-                                    </Grid.ColumnDefinitions>
-                                    <StackPanel Margin="3" Grid.Column="0" HorizontalAlignment="Left">
-                                        <Label Content="用户信息" BorderThickness="0" FontSize="16" FontWeight="Bold" HorizontalAlignment="Left"/>
-                                        <TextBlock x:Name="UserInfo" LineHeight="20" Foreground="{DynamicResource PrimaryTextBrush}" Text="Loadings······" FontSize="14" HorizontalAlignment="Left" Margin="10,0,0,0"/>
+                        <hc:ScrollViewer  Grid.Column="1" Margin="10,0,0,0">
+                            <StackPanel >
+                                <hc:Card>
+                                    <Grid>
+                                        <Grid.ColumnDefinitions>
+                                            <ColumnDefinition Width="*"/>
+                                            <ColumnDefinition Width="auto"/>
+                                        </Grid.ColumnDefinitions>
+                                        <StackPanel Margin="3" Grid.Column="0" HorizontalAlignment="Left">
+                                            <Label Content="用户信息" BorderThickness="0" FontSize="16" FontWeight="Bold" HorizontalAlignment="Left"/>
+                                            <TextBlock x:Name="UserInfo" LineHeight="20" Foreground="{DynamicResource PrimaryTextBrush}" Text="Loadings······" FontSize="14" HorizontalAlignment="Left" Margin="10,0,0,0"/>
+                                        </StackPanel>
+                                        <StackPanel Grid.Column="1" Margin="0,5,8,5" >
+                                            <Button Content="打开官网" x:Name="OpenWeb" Margin="0,0,0,3" Style="{DynamicResource ButtonPrimary}" HorizontalAlignment="Stretch"  Command="hc:ControlCommands.OpenLink" CommandParameter="https://www.mefrp.com/dashboard/"/>
+                                            <Button Content="签到" x:Name="SignBtn" Margin="0,3,0,0" Style="{StaticResource ButtonPrimary}" HorizontalAlignment="Stretch" Click="SignBtn_Click" />
+                                            <Button Content="退出登录" x:Name="ExitBtn" Margin="0,3,0,0" Style="{StaticResource ButtonDanger}" HorizontalAlignment="Stretch" Click="ExitBtn_Click" />
+                                        </StackPanel>
+                                    </Grid>
+                                </hc:Card>
+                                <hc:Card Margin="0,5,0,0">
+                                    <StackPanel Margin="3,3,3,6" HorizontalAlignment="Left">
+                                        <Label Content="隧道信息" BorderThickness="0" FontSize="16" FontWeight="Bold" HorizontalAlignment="Left"/>
+                                        <TextBlock x:Name="TunnelInfo_Text" LineHeight="20" Foreground="{DynamicResource PrimaryTextBrush}" Text="请选择一条隧道~" FontSize="14" HorizontalAlignment="Left" Margin="10,0,0,0"/>
+                                        <StackPanel Orientation="Horizontal" Margin="0,2,0,0">
+                                            <Label Content="本地IP:" BorderThickness="0" FontSize="14" HorizontalAlignment="Left"/>
+                                            <TextBox MinWidth="100" x:Name="LocalIp" IsReadOnly="True"/>
+                                            <Label Content="本地端口:" BorderThickness="0" FontSize="14" HorizontalAlignment="Left" Margin="10,0,0,0"/>
+                                            <TextBox MinWidth="100" x:Name="LocalPort" IsReadOnly="True"/> 
+                                        </StackPanel>
                                     </StackPanel>
-                                    <StackPanel Grid.Column="1" Margin="0,5,8,5" >
-                                        <Button Content="打开官网" x:Name="OpenWeb" Margin="0,0,0,3" Style="{DynamicResource ButtonPrimary}" HorizontalAlignment="Stretch"  Command="hc:ControlCommands.OpenLink" CommandParameter="https://www.mefrp.com/dashboard/"/>
-                                        <Button Content="退出登录" x:Name="ExitBtn" Margin="0,3,0,0" Style="{StaticResource ButtonDanger}" HorizontalAlignment="Stretch" Click="ExitBtn_Click" />
-                                    </StackPanel>
-                                </Grid>
-                            </hc:Card>
-                            <hc:Card Margin="0,5,0,0">
-                                <StackPanel Margin="3,3,3,6" HorizontalAlignment="Left">
-                                    <Label Content="隧道信息" BorderThickness="0" FontSize="16" FontWeight="Bold" HorizontalAlignment="Left"/>
-                                    <TextBlock x:Name="TunnelInfo_Text" LineHeight="20" Foreground="{DynamicResource PrimaryTextBrush}" Text="请选择一条隧道~" FontSize="14" HorizontalAlignment="Left" Margin="10,0,0,0"/>
-                                    <StackPanel Orientation="Horizontal" Margin="0,2,0,0">
-                                        <Label Content="本地IP:" BorderThickness="0" FontSize="14" HorizontalAlignment="Left"/>
-                                        <TextBox MinWidth="100" x:Name="LocalIp" IsReadOnly="True"/>
-                                        <Label Content="本地端口:" BorderThickness="0" FontSize="14" HorizontalAlignment="Left" Margin="10,0,0,0"/>
-                                        <TextBox MinWidth="100" x:Name="LocalPort" IsReadOnly="True"/>
-                                    </StackPanel>
-                                </StackPanel>
-                            </hc:Card>
-                        </StackPanel>
+                                </hc:Card>
+                            </StackPanel>
+                        </hc:ScrollViewer>
+                        
                     </Grid>
                     <Grid Grid.Row="1">
                         <Grid.ColumnDefinitions>
@@ -126,6 +130,7 @@
                                 <StackPanel Margin="3" HorizontalAlignment="Left">
                                     <Label Content="节点信息" BorderThickness="0" FontSize="16" FontWeight="Bold" HorizontalAlignment="Left"/>
                                     <TextBlock x:Name="NodeTips" LineHeight="20" Foreground="{DynamicResource PrimaryTextBrush}" Text="选择一个节点才知道呀~" FontSize="14" HorizontalAlignment="Left" Margin="10,0,0,0"/>
+                                    <TextBlock x:Name="RealNameTips" LineHeight="20" Foreground="{DynamicResource PrimaryTextBrush}" Text="可爱落雪提醒您: 实名才可以使用全部节点哦~" FontSize="14" HorizontalAlignment="Left" Margin="10,3,0,0"/>
                                 </StackPanel>
                             </hc:Card>
                             <hc:Card Margin="0,3,0,0">
@@ -175,6 +180,7 @@
             <StackPanel HorizontalAlignment="Center" VerticalAlignment="Center" >
                 <TextBlock Text="使用ME Frp服务之前，请先登录您的ME Frp账户" HorizontalAlignment="Center"  VerticalAlignment="Center"  FontSize="16" Foreground="{DynamicResource PrimaryTextBrush}" Margin="0,0,0,20"/>
                 <StackPanel Orientation="Horizontal" HorizontalAlignment="Center">
+                    <Button x:Name="userPasswordLogin" Style="{StaticResource ButtonPrimary}" Content="使用账户密码登录"   Margin="0,0,5,0" Click="userPasswordLogin_Click"/>
                     <Button x:Name="userTokenLogin" Content="使用访问密钥登录"   Margin="0,0,5,0" Click="UserTokenLogin_Click"/>
                     <Button x:Name="userRegister" Content="注册/进入用户中心" Margin="5,0,0,0" Command="hc:ControlCommands.OpenLink" CommandParameter="https://www.mefrp.com/auth/login" />
                 </StackPanel>
