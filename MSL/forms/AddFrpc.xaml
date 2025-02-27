@@ -18,7 +18,7 @@
             <TabItem Header="OpenFrp" Background="Transparent"/>
             <TabItem Header="ChmlFrp" Background="Transparent"/>
             <TabItem Header="SakuraFrp" Background="Transparent"/>
-            <TabItem Header="MeFrp" Background="Transparent"/>
+            <TabItem Header="MEFrp" Background="Transparent"/>
             <TabItem Header="自定义Frp" Background="Transparent"/>
             <TabItem Header="更多Frp" Background="Transparent">
                 <Grid>

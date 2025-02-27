@@ -60,6 +60,7 @@
                                     </StackPanel>
                                     <StackPanel Grid.Column="1" Margin="0,5,8,5" >
                                         <Button Content="打开官网" x:Name="OpenWeb" Margin="0,0,0,3" Style="{DynamicResource ButtonPrimary}" HorizontalAlignment="Stretch"  Command="hc:ControlCommands.OpenLink" CommandParameter="https://www.natfrp.com/user/profile"/>
+                                        <Button Content="签到" x:Name="SignBtn" Margin="0,3,0,0" Style="{StaticResource ButtonPrimary}" HorizontalAlignment="Stretch" Click="SignBtn_Click" />
                                         <Button Content="退出登录" x:Name="ExitBtn" Margin="0,3,0,0" Style="{StaticResource ButtonDanger}" HorizontalAlignment="Stretch" Click="ExitBtn_Click" />
                                     </StackPanel>
                                 </Grid>
@@ -84,7 +85,7 @@
                             <ColumnDefinition Width="auto"/>
                         </Grid.ColumnDefinitions>
                         <Border Grid.Column="0" Margin="0,10,0,0" VerticalAlignment="Stretch" Style="{StaticResource BorderTipPrimary}">
-                            <TextBlock x:Name="Notice" Text="本服务由MeFrp提供&#13;MSL仅提供接入，其服务内容均与MSL无关" VerticalAlignment="Center" Foreground="{DynamicResource PrimaryTextBrush}" FontSize="16"/>
+                            <TextBlock x:Name="Notice" Text="本服务由MEFrp提供&#13;MSL仅提供接入，其服务内容均与MSL无关" VerticalAlignment="Center" Foreground="{DynamicResource PrimaryTextBrush}" FontSize="16"/>
                         </Border>
                         <Button Grid.Column="1" Margin="0,10,0,0" Content="确定" MinWidth="100" MinHeight="60" Style="{StaticResource ButtonPrimary}" FontSize="16" x:Name="OKBtn" Click="OKBtn_Click" />
                     </Grid>
@@ -126,6 +127,7 @@
                                 <StackPanel Margin="3" HorizontalAlignment="Left">
                                     <Label Content="节点信息" BorderThickness="0" FontSize="16" FontWeight="Bold" HorizontalAlignment="Left"/>
                                     <TextBlock x:Name="NodeTips" LineHeight="20" Foreground="{DynamicResource PrimaryTextBrush}" Text="选择一个节点才知道呀~" FontSize="14" HorizontalAlignment="Left" Margin="10,0,0,0"/>
+                                    <TextBlock x:Name="RealNameTips" LineHeight="20" Foreground="{DynamicResource PrimaryTextBrush}" Text="可爱落雪提醒您: 实名才可以使用全部节点哦~" FontSize="14" HorizontalAlignment="Left" Margin="10,3,0,0"/>
                                 </StackPanel>
                             </hc:Card>
                             <hc:Card Margin="0,3,0,0">
@@ -175,6 +177,7 @@
             <StackPanel HorizontalAlignment="Center" VerticalAlignment="Center" >
                 <TextBlock Text="使用MeFrp服务之前，请先登录您的MeFrp账户" HorizontalAlignment="Center"  VerticalAlignment="Center"  FontSize="16" Foreground="{DynamicResource PrimaryTextBrush}" Margin="0,0,0,20"/>
                 <StackPanel Orientation="Horizontal" HorizontalAlignment="Center">
+                    <Button x:Name="userPasswordLogin" Style="{StaticResource ButtonPrimary}" Content="使用账户密码登录"   Margin="0,0,5,0" Click="userPasswordLogin_Click"/>
                     <Button x:Name="userTokenLogin" Content="使用访问密钥登录"   Margin="0,0,5,0" Click="UserTokenLogin_Click"/>
                     <Button x:Name="userRegister" Content="注册/进入用户中心" Margin="5,0,0,0" Command="hc:ControlCommands.OpenLink" CommandParameter="https://www.mefrp.com/dashboard/" />
                 </StackPanel>
