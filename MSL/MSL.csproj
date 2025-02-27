@@ -76,7 +76,6 @@
     <Reference Include="Downloader, Version=3.1.2.0, Culture=neutral, PublicKeyToken=844973e732f6cdf4, processorArchitecture=MSIL">
       <SpecificVersion>False</SpecificVersion>
       <HintPath>..\Libraries\Downloader.dll</HintPath>
-      <Private>True</Private>
     </Reference>
     <Reference Include="Microsoft.Terminal.Wpf">
       <HintPath>..\Libraries\Microsoft.Terminal.Wpf.dll</HintPath>
