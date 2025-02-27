@@ -23,7 +23,7 @@
                     </Grid.ColumnDefinitions>
                     <StackPanel Margin="5" Grid.Column="0">
                         <Label Content="自定义Frpc隧道（适用于高级用户）" MinHeight="38" BorderThickness="0" FontSize="18" FontWeight="Bold" HorizontalAlignment="Left"/>
-                        <TextBlock LineHeight="20" Foreground="{DynamicResource PrimaryTextBrush}" Text="通常需要您拥有自己的Frp服务器。&#13;当然，你也可以通过这里实现使用未被MSL支持的第三方Frp服务。" FontSize="14" HorizontalAlignment="Left" Margin="10,0,0,0"/>
+                        <TextBlock LineHeight="20" Foreground="{DynamicResource PrimaryTextBrush}" Text="通常需要您拥有自己的Frp服务器。&#xA;当然，你也可以通过这里实现使用未被MSL支持的第三方Frp服务。" FontSize="14" HorizontalAlignment="Left" Margin="10,0,0,0"/>
                     </StackPanel>
                     <StackPanel Margin="5,5,10,5" Grid.Column="1" VerticalAlignment="Center">
                         <RadioButton Content="引导模式" x:Name="EasyMode" GroupName="mode" Margin="0,0,0,3" FontSize="14" IsChecked="True" Checked="EasyMode_Checked"/>

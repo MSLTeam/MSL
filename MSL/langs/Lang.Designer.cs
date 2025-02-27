@@ -106,6 +106,15 @@ namespace MSL.langs {
         }
         
         /// <summary>
+        ///   查找类似 收起 的本地化字符串。
+        /// </summary>
+        public static string Collapse {
+            get {
+                return ResourceManager.GetString("Collapse", resourceCulture);
+            }
+        }
+        
+        /// <summary>
         ///   查找类似 已禁用 的本地化字符串。
         /// </summary>
         public static string Disabled {
@@ -210,6 +219,15 @@ namespace MSL.langs {
         public static string Error {
             get {
                 return ResourceManager.GetString("Error", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   查找类似 展开 的本地化字符串。
+        /// </summary>
+        public static string Expand {
+            get {
+                return ResourceManager.GetString("Expand", resourceCulture);
             }
         }
         
@@ -539,6 +557,15 @@ namespace MSL.langs {
         public static string OK {
             get {
                 return ResourceManager.GetString("OK", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   查找类似 打开 的本地化字符串。
+        /// </summary>
+        public static string Open {
+            get {
+                return ResourceManager.GetString("Open", resourceCulture);
             }
         }
         

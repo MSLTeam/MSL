@@ -128,7 +128,7 @@ namespace MSL.pages
 
         private void AddFrpc_Click(object sender, RoutedEventArgs e)
         {
-            AddFrpc af = new AddFrpc();
+            FrpProvider af = new FrpProvider();
             af.Owner = Window.GetWindow(this);
             af.ShowDialog();
             GetFrpcConfig();

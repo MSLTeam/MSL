@@ -104,6 +104,12 @@ namespace MSL.utils
         public void ProcessLogMessage(string message)
         {
             var (level, content) = ParseLogMessage(message);
+
+            if (level == 1 || level - 10 == 1)
+                LogHandleInfo(message);
+            else if ((level == 2 || level - 10 == 2) && !content.Contains("Advanced terminal features"))
+                LogHandleWarn(message);
+
             PrintFormattedLog(level, content);
 
             if (message.Contains("�"))
@@ -160,11 +166,6 @@ namespace MSL.utils
                 {
                     PrintLog($"[{DateTime.Now:T} {LogInfo[level].Prefix}]{content}", LogInfo[level].Color);
                 }
-
-                if (level == 1 || level - 10 == 1)
-                    LogHandleInfo(content);
-                else if ((level == 2 || level - 10 == 2) && !content.Contains("Advanced terminal features"))
-                    LogHandleWarn(content);
             }
             else
             {

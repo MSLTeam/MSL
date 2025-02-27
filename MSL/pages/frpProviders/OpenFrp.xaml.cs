@@ -1,11 +1,20 @@
 ﻿using MSL.utils;
+using Newtonsoft.Json;
 using Newtonsoft.Json.Linq;
+using Org.BouncyCastle.Crypto.Agreement;
+using Org.BouncyCastle.Crypto.Generators;
+using Org.BouncyCastle.Crypto.Parameters;
+using Org.BouncyCastle.Security;
+using Sodium;
 using System;
 using System.Collections.Generic;
+using System.Diagnostics;
+using System.Linq;
+using System.Net.Http;
+using System.Text;
 using System.Threading.Tasks;
 using System.Windows;
 using System.Windows.Controls;
-using MessageBox = System.Windows.MessageBox;
 using Window = System.Windows.Window;
 
 namespace MSL.pages.frpProviders
@@ -16,8 +25,9 @@ namespace MSL.pages.frpProviders
     public partial class OpenFrp : Page
     {
         private string token;
-        private JArray jArray;
-        private Dictionary<string, string> nodelist;
+        private Dictionary<string, string> UserTunnelList;
+        private JArray ApiNodeJArray;
+        private Dictionary<string, string> ApiNodeList;
 
         public OpenFrp()
         {
@@ -32,7 +42,7 @@ namespace MSL.pages.frpProviders
                 isInit = true;
                 //显示登录页面
                 LoginGrid.Visibility = Visibility.Visible;
-                MainGrid.Visibility = Visibility.Collapsed;
+                MainCtrl.Visibility = Visibility.Collapsed;
 
                 // 获取Token并尝试登录
                 var authId = string.IsNullOrEmpty(OpenFrpApi.AuthId)
@@ -50,7 +60,232 @@ namespace MSL.pages.frpProviders
             }
         }
 
-        private async void userTokenLogin_Click(object sender, RoutedEventArgs e)
+        private async void MainCtrl_SelectionChanged(object sender, SelectionChangedEventArgs e)
+        {
+            if (!this.IsLoaded)
+            {
+                return;
+            }
+            if (!ReferenceEquals(e.OriginalSource, this.MainCtrl))
+            {
+                return;
+            }
+            switch (MainCtrl.SelectedIndex)
+            {
+                case 0:
+                    await GetUserTunnels();
+                    break;
+                case 1:
+                    await GetNodeList();
+                    break;
+            }
+        }
+
+        private async void UserLogin_Click(object sender, RoutedEventArgs e)
+        {
+            // 生成密钥对
+            var keyGen = new X25519KeyPairGenerator();
+            keyGen.Init(new X25519KeyGenerationParameters(new SecureRandom()));
+            var keyPair = keyGen.GenerateKeyPair();
+
+            // 获取公钥和私钥（Base64格式）
+            var publicKeyBytes = ((X25519PublicKeyParameters)keyPair.Public).GetEncoded();
+            var privateKeyBytes = ((X25519PrivateKeyParameters)keyPair.Private).GetEncoded();
+            string publicKeyBase64 = Convert.ToBase64String(publicKeyBytes);
+            string privateKeyBase64 = Convert.ToBase64String(privateKeyBytes);
+
+            var postData = new { public_key = publicKeyBase64 };
+            UserLogin.IsEnabled = false;
+            var response = await HttpService.PostAsync(
+                "https://access.openfrp.net/argoAccess/requestLogin",
+                contentType: 0,
+                parameterData: postData
+            );
+            UserLogin.IsEnabled = true;
+
+            if (response.HttpResponseCode != System.Net.HttpStatusCode.OK)
+            {
+                MagicShow.ShowMsgDialog(response.HttpResponseContent.ToString() + "\n请重试！", "错误");
+                return;
+            }
+
+            // 解析响应
+            dynamic responseData = JsonConvert.DeserializeObject(response.HttpResponseContent.ToString());
+            Process.Start(responseData.data.authorization_url.ToString());
+            string requestUuid = responseData.data.request_uuid.ToString();
+
+            MagicDialog magicDialog = new MagicDialog();
+            magicDialog.ShowTextDialog("请在打开的浏览器网页中确认授权……");
+            var (PubKey, PollData) = await GetPublicKey(requestUuid);
+            magicDialog.CloseTextDialog();
+
+            if (PollData == null)
+            {
+                MagicShow.ShowMsgDialog(Window.GetWindow(this), "获取公钥失败！", "错误");
+                return;
+            }
+            else
+            {
+                if (PollData["code"].ToString() != "200")
+                {
+                    MagicShow.ShowMsgDialog(Window.GetWindow(this), "获取公钥失败！" + PollData["msg"].ToString(), "错误");
+                    return;
+                }
+            }
+
+            try
+            {
+                // 处理 base64 URL 安全格式
+                PubKey = PubKey.Trim().Replace('-', '+').Replace('_', '/');
+                switch (PubKey.Length % 4)
+                {
+                    case 2: PubKey += "=="; break;
+                    case 3: PubKey += "="; break;
+                }
+                // Console.WriteLine($"处理后的服务器公钥: {PubKey}");
+
+                // 获取服务器公钥
+                var serverPublicKeyBytes = Convert.FromBase64String(PubKey);
+
+                // 获取加密数据
+                var encryptedDataBase64 = PollData["data"]["authorization_data"].ToString();
+                var encryptedData = Convert.FromBase64String(encryptedDataBase64);
+
+                // 标准 NaCl Box 格式：前24字节是 nonce
+                const int NONCE_SIZE = 24; // NaCl box 使用的标准 nonce 大小
+                byte[] nonce = new byte[NONCE_SIZE];
+                Buffer.BlockCopy(encryptedData, 0, nonce, 0, nonce.Length);
+
+                // 提取密文部分 (去掉nonce后的部分)
+                byte[] cipherText = new byte[encryptedData.Length - nonce.Length];
+                Buffer.BlockCopy(encryptedData, nonce.Length, cipherText, 0, cipherText.Length);
+
+                /*
+                Console.WriteLine($"Nonce 长度: {nonce.Length}");
+                Console.WriteLine($"密文长度: {cipherText.Length}");
+
+                // 确保密钥长度正确
+                Console.WriteLine($"公钥长度: {publicKeyBytes.Length}");
+                Console.WriteLine($"私钥长度: {privateKeyBytes.Length}");
+                Console.WriteLine($"服务器公钥长度: {serverPublicKeyBytes.Length}");
+                */
+
+                // 方法 1:
+                try
+                {
+                    byte[] decryptedBytes = PublicKeyBox.Open(
+                        cipherText,
+                        nonce,
+                        privateKeyBytes,
+                        serverPublicKeyBytes
+                    );
+
+                    string decryptedText = Encoding.UTF8.GetString(decryptedBytes);
+                    MagicFlowMsg.ShowMessage($"成功解密(方法1)： {decryptedText.Substring(0, 5)}***{decryptedText.Substring(decryptedText.Length - 6, 5)}");
+                    await TokenLogin(decryptedText);
+                    return;
+                }
+                catch (Exception ex)
+                {
+                    Console.WriteLine($"方法1解密失败: {ex.Message}");
+                }
+
+                // 方法 2: 尝试密钥格式转换为 libsodium 期望的格式
+                try
+                {
+                    // X25519KeyAgreement 的输出是 32 字节，但 libsodium 可能期望不同的格式
+                    var agreement = new X25519Agreement();
+                    agreement.Init(new X25519PrivateKeyParameters(privateKeyBytes, 0));
+                    byte[] sharedSecret = new byte[32];
+                    agreement.CalculateAgreement(new X25519PublicKeyParameters(serverPublicKeyBytes, 0), sharedSecret, 0);
+
+                    // 使用共享密钥和 SecretBox 进行解密
+                    byte[] decryptedBytes = SecretBox.Open(cipherText, nonce, sharedSecret);
+
+                    string decryptedText = Encoding.UTF8.GetString(decryptedBytes);
+                    MagicFlowMsg.ShowMessage($"成功解密(方法2)： {decryptedText.Substring(0, 5)}***{decryptedText.Substring(decryptedText.Length - 6, 5)}");
+                    await TokenLogin(decryptedText);
+                    return;
+                }
+                catch (Exception ex)
+                {
+                    Console.WriteLine($"方法2解密失败: {ex.Message}");
+                }
+
+                // 方法 3: 尝试使用 SealedPublicKeyBox (匿名发件人)
+                try
+                {
+                    // 某些实现可能使用了密封盒子，没有单独的 nonce
+                    byte[] combinedCipherText = encryptedData;
+
+                    byte[] decryptedBytes = SealedPublicKeyBox.Open(
+                        combinedCipherText,
+                        serverPublicKeyBytes,
+                        privateKeyBytes
+                    );
+
+                    string decryptedText = Encoding.UTF8.GetString(decryptedBytes);
+                    MagicFlowMsg.ShowMessage($"成功解密(方法3)： {decryptedText.Substring(0, 5)}***{decryptedText.Substring(decryptedText.Length - 6, 5)}");
+                    await TokenLogin(decryptedText);
+                    return;
+                }
+                catch (Exception ex)
+                {
+                    Console.WriteLine($"方法3解密失败: {ex.Message}");
+                }
+
+                MagicShow.ShowMsgDialog("所有解密方法都失败了。登陆失败。", "err");
+            }
+            catch (Exception ex)
+            {
+                MagicShow.ShowMsgDialog($"解密过程中出错: {ex.Message}\n{ex.StackTrace}", "err");
+            }
+        }
+
+        private async Task<(string PubKey, JObject PollData)> GetPublicKey(string requestUuid)
+        {
+            HttpClient httpClient = new HttpClient();
+            httpClient.DefaultRequestHeaders.UserAgent.TryParseAdd($"MSLTeam-MSL/{MainWindow.MSLVersion}");
+            HttpResponse httpResponse = new HttpResponse();
+            JObject pollData = null;
+            string serverPublicKeyBase64 = null;
+            int i = 0;
+            while (httpResponse.HttpResponseCode != System.Net.HttpStatusCode.OK)
+            {
+                if (i >= 60)
+                    break;
+                i++;
+                await Task.Delay(5000);
+
+                try
+                {
+                    HttpResponseMessage response = await httpClient.GetAsync($"https://access.openfrp.net/argoAccess/pollLogin?request_uuid={requestUuid}");
+                    if (response.StatusCode != System.Net.HttpStatusCode.OK)
+                        continue;
+                    httpResponse.HttpResponseCode = response.StatusCode;
+                    httpResponse.HttpResponseContent = response.IsSuccessStatusCode
+                        ? await response.Content.ReadAsStringAsync()
+                        : response.ReasonPhrase;
+
+                    // 从 Headers 获取服务器公钥
+                    if (response.Headers.TryGetValues("x-request-public-key", out var values))
+                    {
+                        serverPublicKeyBase64 = values.First();
+                    }
+                    pollData = JObject.Parse(httpResponse.HttpResponseContent.ToString());
+                }
+                catch (Exception ex)
+                {
+                    httpResponse.HttpResponseCode = 0;
+                    httpResponse.HttpResponseContent = ex.Message;
+                    break;
+                }
+            }
+            httpClient.Dispose();
+            return (serverPublicKeyBase64, pollData);
+        }
+
+        private async void UserTokenLogin_Click(object sender, RoutedEventArgs e)
         {
             await TokenLogin();
         }
@@ -73,7 +308,7 @@ namespace MSL.pages.frpProviders
             if (Code == 200)
             {
                 LoginGrid.Visibility = Visibility.Collapsed;
-                MainGrid.Visibility = Visibility.Visible;
+                MainCtrl.Visibility = Visibility.Visible;
                 GetUserInfo(JObject.Parse(Msg));
             }
             else
@@ -102,73 +337,58 @@ namespace MSL.pages.frpProviders
 
         private async Task GetUserTunnels()
         {
-            serversList.Items.Clear();
-            if (toggleProxies.SelectedIndex == 0)
+            TunnelList.Items.Clear();
+            var (Code, Data, Msg) = await OpenFrpApi.GetUserNodes();
+            if (Code == 200)
             {
-                var (Code, Data, Msg) = await OpenFrpApi.GetUserNodes();
-                if (Code == 200)
+                if (Data.Count != 0)
                 {
-                    if (Data.Count != 0)
+                    UserTunnelList = Data;
+                    foreach (KeyValuePair<string, string> node in UserTunnelList)
                     {
-                        nodelist = Data;
-                        foreach (KeyValuePair<string, string> node in nodelist)
-                        {
-                            serversList.Items.Add(node.Key);
-                        }
+                        TunnelList.Items.Add(node.Key);
                     }
-                }
-                else
-                {
-                    MagicShow.ShowMsgDialog(Window.GetWindow(this), "获取失败！" + Msg, "错误！");
                 }
             }
             else
             {
-                (Dictionary<string, string>, JArray) process = await OpenFrpApi.GetNodeList();
-                if (process == (null, null))
-                {
-                    MagicShow.ShowMsgDialog("获取节点列表失败！", "ERR");
-                    return;
-                }
-                Dictionary<string, string> item1 = process.Item1;
-                nodelist = item1;
-                jArray = process.Item2;
-                foreach (var node in item1)
-                {
-                    serversList.Items.Add(node.Key);
-                }
+                MagicShow.ShowMsgDialog(Window.GetWindow(this), "获取失败！" + Msg, "错误！");
+            }
+        }
+
+        private async Task GetNodeList()
+        {
+            NodeList.Items.Clear();
+            (Dictionary<string, string>, JArray) process = await OpenFrpApi.GetNodeList();
+            if (process == (null, null))
+            {
+                MagicShow.ShowMsgDialog("获取节点列表失败！", "ERR");
+                return;
+            }
+            ApiNodeList = process.Item1;
+            ApiNodeJArray = process.Item2;
+            foreach (var node in ApiNodeList)
+            {
+                NodeList.Items.Add(node.Key);
             }
         }
 
         private async void Button_Click(object sender, RoutedEventArgs e)
         {
-            Window window = Window.GetWindow(Window.GetWindow(this));
-            if (toggleProxies.SelectedIndex != 0 || serversList.SelectedIndex == -1)
+            if (TunnelList.SelectedIndex == -1)
             {
-                MagicShow.ShowMsgDialog(Window.GetWindow(this), "请确保您选择了一个隧道", "错误");
-                toggleProxies.SelectedIndex = 0;
-                return;
-            }
-            if (portBox.Text == "")
-            {
-                MagicShow.ShowMsgDialog(Window.GetWindow(this), "请确保内网端口不为空", "错误");
+                MagicShow.ShowMsgDialog("请确保您选择了一个隧道", "错误");
                 return;
             }
 
-            //现有隧道
-            object o = serversList.SelectedValue;
-            if (Equals(o, null))
-            {
-                MessageBox.Show("请确保选择了节点", "错误", MessageBoxButton.OK, MessageBoxImage.Error);
-                return;
-            }
-            string id = nodelist[o.ToString()];
+            object o = TunnelList.SelectedValue;
+            string id = UserTunnelList[o.ToString()];
             Config.WriteFrpcConfig(1, $"OpenFrp节点 - {o}", $"-u {token} -p {id}", "");
-            await MagicShow.ShowMsgDialogAsync(window, "映射配置成功，请您点击“启动内网映射”以启动映射！", "信息");
-            window.Close();
+            await MagicShow.ShowMsgDialogAsync("映射配置成功，请您点击“启动内网映射”以启动映射！", "信息");
+            Window.GetWindow(this).Close();
         }
 
-        private void frpcType_SelectionChanged(object sender, SelectionChangedEventArgs e)
+        private void FrpcType_SelectionChanged(object sender, SelectionChangedEventArgs e)
         {
             if (frpcType.SelectedIndex == 0)
             {
@@ -180,17 +400,13 @@ namespace MSL.pages.frpProviders
             }
         }
 
-        private async void addProxieBtn_Click(object sender, RoutedEventArgs e)
+        private async void AddProxieBtn_Click(object sender, RoutedEventArgs e)
         {
-            addProxieBtn.IsEnabled = false;
-            Window window = Window.GetWindow(Window.GetWindow(this));
             try
             {
-                if (toggleProxies.SelectedIndex != 1 || serversList.SelectedIndex == -1)
+                if (NodeList.SelectedIndex == -1)
                 {
-                    addProxieBtn.IsEnabled = true;
-                    MagicShow.ShowMsgDialog(Window.GetWindow(this), "请先选择一个节点", "错误");
-                    toggleProxies.SelectedIndex = 1;
+                    MagicShow.ShowMsgDialog("请先选择一个节点", "错误");
                     return;
                 }
                 string type;
@@ -199,27 +415,29 @@ namespace MSL.pages.frpProviders
                 bool zip;
                 if ((bool)enableCompression.IsChecked) zip = true;
                 else zip = false;
-                string selected_node = serversList.SelectedItem.ToString();
+                string selected_node = NodeList.SelectedItem.ToString();
                 int selected_node_id;
-                if (selected_node != null) selected_node_id = Convert.ToInt16(nodelist[selected_node]);
+                if (selected_node != null) selected_node_id = Convert.ToInt16(ApiNodeList[selected_node]);
                 else
                 {
                     addProxieBtn.IsEnabled = true;
-                    MagicShow.ShowMsgDialog(Window.GetWindow(this), "请先选择一个节点", "错误");
+                    MagicShow.ShowMsgDialog("请先选择一个节点", "错误");
                     return;
                 }
                 string proxy_name = await MagicShow.ShowInput(Window.GetWindow(this), "隧道名称(不支持中文)");
                 if (proxy_name != null)
                 {
+                    addProxieBtn.IsEnabled = false;
                     var (_return, msg) = await OpenFrpApi.CreateProxy(type, portBox.Text, zip, selected_node_id, remotePortBox.Text, proxy_name);
+                    addProxieBtn.IsEnabled = true;
                     if (_return)
                     {
-                        MagicShow.ShowMsgDialog(Window.GetWindow(this), "隧道创建成功！", "提示");
-                        toggleProxies.SelectedIndex = 0;
+                        MainCtrl.SelectedIndex = 0;
+                        MagicShow.ShowMsgDialog("隧道创建成功！", "提示");
                     }
                     else
                     {
-                        MagicShow.ShowMsgDialog(Window.GetWindow(this), "创建失败！" + msg, "错误");
+                        MagicShow.ShowMsgDialog("创建失败！" + msg, "错误");
                     }
                 }
             }
@@ -230,48 +448,45 @@ namespace MSL.pages.frpProviders
             addProxieBtn.IsEnabled = true;
         }
 
-        private async void toggleProxies_SelectionChanged(object sender, SelectionChangedEventArgs e)
+        private void RefreshTunnelList_Click(object sender, RoutedEventArgs e)
         {
-            if (!IsLoaded)
-            {
-                return;
-            }
-            await GetUserTunnels();
+            _ = GetUserTunnels();
         }
 
-        private async void delProxieBtn_Click(object sender, RoutedEventArgs e)
+        private async void DelProxieBtn_Click(object sender, RoutedEventArgs e)
         {
-            delProxieBtn.IsEnabled = false;
             try
             {
-                if (toggleProxies.SelectedIndex != 0 || serversList.SelectedIndex == -1)
+                if (TunnelList.SelectedIndex == -1)
                 {
-                    delProxieBtn.IsEnabled = true;
-                    MagicShow.ShowMsgDialog(Window.GetWindow(this), "请先选择一个隧道", "错误");
-                    toggleProxies.SelectedIndex = 0;
+                    MagicShow.ShowMsgDialog("请先选择一个隧道", "错误");
                     return;
                 }
-                object o = serversList.SelectedValue;
-                string id = nodelist[o.ToString()];
+                object o = TunnelList.SelectedValue;
+                string id = UserTunnelList[o.ToString()];
+                delProxieBtn.IsEnabled = false;
                 var (_return, msg) = await OpenFrpApi.DeleteProxy(id);
                 if (_return)
                 {
-                    MagicShow.ShowMsgDialog(Window.GetWindow(this), "删除成功！", "提示");
+                    MagicShow.ShowMsgDialog("删除成功！", "提示");
                 }
                 else
                 {
-                    MagicShow.ShowMsgDialog(Window.GetWindow(this), "删除失败！" + msg, "错误");
+                    MagicShow.ShowMsgDialog("删除失败！" + msg, "错误");
                 }
                 await GetUserTunnels();
             }
             catch (Exception ex)
             {
-                MagicShow.ShowMsgDialog(Window.GetWindow(this), "出现错误！" + ex.Message, "错误");
+                MagicShow.ShowMsgDialog("出现错误！" + ex.Message, "错误");
             }
-            delProxieBtn.IsEnabled = true;
+            finally
+            {
+                delProxieBtn.IsEnabled = true;
+            }
         }
 
-        private void randomRemotePort_Click(object sender, RoutedEventArgs e)
+        private void RandomRemotePortBtn_Click(object sender, RoutedEventArgs e)
         {
             RandRemotePort(true);
         }
@@ -280,22 +495,21 @@ namespace MSL.pages.frpProviders
         {
             if (tips)
             {
-                if (toggleProxies.SelectedIndex != 1 || serversList.SelectedIndex == -1)
+                if (NodeList.SelectedIndex == -1)
                 {
-                    MagicShow.ShowMsgDialog(Window.GetWindow(this), "请先选择一个节点", "错误");
-                    toggleProxies.SelectedIndex = 1;
+                    MagicShow.ShowMsgDialog("请先选择一个节点", "错误");
                     return;
                 }
                 (int, int) remote_port_limit = (10000, 99999);
-                string selected_node = serversList.SelectedItem.ToString();
+                string selected_node = NodeList.SelectedItem.ToString();
                 int selected_node_id;
-                if (selected_node != null) selected_node_id = Convert.ToInt16(nodelist[selected_node]);
+                if (selected_node != null) selected_node_id = Convert.ToInt16(ApiNodeList[selected_node]);
                 else
                 {
                     MagicShow.ShowMsgDialog(Window.GetWindow(this), "请先选择一个节点", "错误");
                     return;
                 }
-                foreach (var node in jArray)
+                foreach (var node in ApiNodeJArray)
                 {
                     if (Convert.ToInt32(node["id"]) == selected_node_id)
                     {
@@ -323,31 +537,12 @@ namespace MSL.pages.frpProviders
             }
         }
 
-        private void toggleAddProxiesGroup_Click(object sender, RoutedEventArgs e)
-        {
-            if (toggleAddProxiesGroup.Content.ToString() == "收起")
-            {
-                toggleAddProxiesGroup.Content = "新建隧道（点击展开）";
-                userInfoGrid.Visibility = Visibility.Visible;
-                addProxiesGroup.Visibility = Visibility.Collapsed;
-                toggleProxies.SelectedIndex = 0;
-            }
-            else
-            {
-                toggleAddProxiesGroup.Content = "收起";
-                userInfoGrid.Visibility = Visibility.Collapsed;
-                addProxiesGroup.Visibility = Visibility.Visible;
-                toggleProxies.SelectedIndex = 1;
-                RandRemotePort(false);
-            }
-        }
-
-        private void logoutBtn_Click(object sender, RoutedEventArgs e)
+        private void LogoutBtn_Click(object sender, RoutedEventArgs e)
         {
             OpenFrpApi.AuthId = string.Empty;
             Config.Remove("OpenFrpToken");
             LoginGrid.Visibility = Visibility.Visible;
-            MainGrid.Visibility = Visibility.Hidden;
+            MainCtrl.Visibility = Visibility.Collapsed;
             userInfo.Content = string.Empty;
         }
     }

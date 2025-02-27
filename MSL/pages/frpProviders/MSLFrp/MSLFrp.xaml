@@ -26,7 +26,7 @@
                         <Border Style="{StaticResource BorderTipPrimary}" Margin="3">
                             <TextBlock LineHeight="20" Foreground="{DynamicResource PrimaryTextBrush}" Text="我创建的隧道：" FontSize="14" HorizontalAlignment="Left"/>
                         </Border>
-                        <ListBox x:Name="FrpList" Grid.Row="1" MinWidth="300" hc:Empty.ShowEmpty="true" SelectionChanged="FrpList_SelectionChanged" >
+                        <ListBox x:Name="FrpList" Grid.Row="1" MinWidth="300" hc:Empty.ShowEmpty="true" SelectionMode="Single" SelectionChanged="FrpList_SelectionChanged" >
                             <ListBox.ItemTemplate>
                                 <DataTemplate>
                                     <StackPanel Orientation="Horizontal">
@@ -98,7 +98,7 @@
                         <Border Style="{StaticResource BorderTipPrimary}" Margin="3">
                             <TextBlock LineHeight="20" Foreground="{DynamicResource PrimaryTextBrush}" Text="从下面选择一个你喜欢的节点" FontSize="14" HorizontalAlignment="Left"/>
                         </Border>
-                        <ListBox x:Name="NodeList" Grid.Row="1" MinWidth="300"  hc:Empty.ShowEmpty="true" SelectionChanged="NodeList_SelectionChanged">
+                        <ListBox x:Name="NodeList" Grid.Row="1" MinWidth="300" SelectionMode="Single" hc:Empty.ShowEmpty="true" SelectionChanged="NodeList_SelectionChanged">
                             <ListBox.ItemTemplate>
                                 <DataTemplate>
                                     <TextBlock>

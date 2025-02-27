@@ -327,7 +327,11 @@ namespace MSL.utils
             var msgLabel = new Label
             {
                 Margin = new Thickness(10, 10, 10, 0),
-                Content = message,
+                Content = new TextBlock
+                {
+                    TextWrapping = TextWrapping.Wrap,
+                    Text = message
+                },
                 Visibility = Visibility.Collapsed,
                 VerticalAlignment = VerticalAlignment.Top,
                 HorizontalAlignment = HorizontalAlignment.Right,

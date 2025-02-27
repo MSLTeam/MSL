@@ -126,6 +126,9 @@
   <data name="Closed" xml:space="preserve">
     <value>已关闭</value>
   </data>
+  <data name="Collapse" xml:space="preserve">
+    <value>收起</value>
+  </data>
   <data name="Disabled" xml:space="preserve">
     <value>已禁用</value>
   </data>
@@ -161,6 +164,9 @@
   </data>
   <data name="Error" xml:space="preserve">
     <value>错误</value>
+  </data>
+  <data name="Expand" xml:space="preserve">
+    <value>展开</value>
   </data>
   <data name="Form_ServerRunner_Launch" xml:space="preserve">
     <value>开服</value>
@@ -274,6 +280,9 @@
   </data>
   <data name="OK" xml:space="preserve">
     <value>好的</value>
+  </data>
+  <data name="Open" xml:space="preserve">
+    <value>打开</value>
   </data>
   <data name="Opened" xml:space="preserve">
     <value>已开启</value>

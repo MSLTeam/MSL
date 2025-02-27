@@ -9,11 +9,10 @@ namespace MSL
     /// <summary>
     /// AddFrpc.xaml 的交互逻辑
     /// </summary>
-    public partial class AddFrpc : HandyControl.Controls.Window
+    public partial class FrpProvider : HandyControl.Controls.Window
     {
-        //private readonly List<Page> Pages = new List<Page> { new MSLFrp(), new MSLFrpNew(), new OpenFrp(), new ChmlFrp(), new SakuraFrp(), new Custom() };
-        private readonly List<Page> Pages = new List<Page> { new MSLFrp(), new OpenFrp(), new ChmlFrp(), new SakuraFrp(),new MeFrp(), new Custom() };
-        public AddFrpc()
+        private readonly List<Page> Pages = new List<Page> { new MSLFrp(), new SakuraFrp(), new OpenFrp(), new ChmlFrp(), new MeFrp(), new Custom() };
+        public FrpProvider()
         {
             InitializeComponent();
         }

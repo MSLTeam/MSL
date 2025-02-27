@@ -1,0 +1,3 @@
+请将Microsoft.Terminal.Control.dll放入构建输出文件夹中
+即bin\Debug和bin\Release文件夹
+否则在Visual Studio IDE中，设计器无法预览ConptyWindow

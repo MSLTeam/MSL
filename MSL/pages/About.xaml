@@ -7,7 +7,7 @@
       xmlns:langs="clr-namespace:MSL.langs"
       xmlns:local="clr-namespace:MSL.pages"
       xmlns:controls="clr-namespace:MSL.controls"
-      mc:Ignorable="d" d:DesignHeight="2000" d:DesignWidth="750" Style="{StaticResource AnimationPage}"
+      mc:Ignorable="d" d:DesignHeight="460" d:DesignWidth="750" Style="{StaticResource AnimationPage}"
       Title="About" Loaded="Page_Loaded">
     <controls:MagicScrollViewer>
         <controls:MagicCard x:Name="AbortSoftwareCard" Title="{Binding [Page_About_AboutMSL], Source={x:Static langs:LanguageManager.Instance}}" Margin="0,10,0,0">
@@ -36,98 +36,127 @@
             </StackPanel>
         </controls:MagicCard>
         <controls:MagicCard Title="{Binding [Page_About_Package], Source={x:Static langs:LanguageManager.Instance}}">
-            <StackPanel>
-                <StackPanel>
-                    <TextBlock Text="1.HandyControls" Margin="20,0,0,5" FontSize="16" VerticalAlignment="Top" HorizontalAlignment="Left" FontWeight="Bold" Foreground="{DynamicResource PrimaryTextBrush}"/>
-                    <TextBlock Text="Copyright (c) 2018-2022 HandyOrg.&#xA;Licensed under the MIT License." Margin="20,0,0,5" VerticalAlignment="Top" HorizontalAlignment="Left" Foreground="{DynamicResource PrimaryTextBrush}"/>
-                    <hc:Shield Subject="..." Status="{Binding [OpenWebsite], Source={x:Static langs:LanguageManager.Instance}}" Margin="0,-45,20,0" Command="hc:ControlCommands.OpenLink" CommandParameter="https://github.com/ghost1372/HandyControls" HorizontalAlignment="Right" VerticalAlignment="Top"/>
-                </StackPanel>
+            <Expander >
+                <Expander.Style>
+                    <Style TargetType="Expander" BasedOn="{StaticResource ExpanderBaseStyle}">
+                        <Style.Triggers>
+                            <Trigger Property="IsExpanded" Value="True">
+                                <Setter Property="Header" Value="{Binding [Collapse], Source={x:Static langs:LanguageManager.Instance}}"/>
+                            </Trigger>
+                            <Trigger Property="IsExpanded" Value="False">
+                                <Setter Property="Header" Value="{Binding [Expand], Source={x:Static langs:LanguageManager.Instance}}"/>
+                            </Trigger>
+                        </Style.Triggers>
+                    </Style>
+                </Expander.Style>
                 <StackPanel Margin="0,10,0,0">
-                    <TextBlock Text="2.Fody" Margin="20,0,0,5" FontSize="16" VerticalAlignment="Top" HorizontalAlignment="Left" FontWeight="Bold" Foreground="{DynamicResource PrimaryTextBrush}"/>
-                    <TextBlock Text="Copyright (c) Simon Cropp.&#xA;Licensed under the MIT License." Margin="20,0,0,5" VerticalAlignment="Top" HorizontalAlignment="Left" Foreground="{DynamicResource PrimaryTextBrush}"/>
-                    <hc:Shield Subject="..." Status="{Binding [OpenWebsite], Source={x:Static langs:LanguageManager.Instance}}" Margin="0,-45,20,0" Command="hc:ControlCommands.OpenLink" CommandParameter="https://github.com/Fody/Fody" HorizontalAlignment="Right" VerticalAlignment="Top"/>
+                    <StackPanel>
+                        <TextBlock Text="1.HandyControls" Margin="20,0,0,5" FontSize="16" VerticalAlignment="Top" HorizontalAlignment="Left" FontWeight="Bold" Foreground="{DynamicResource PrimaryTextBrush}"/>
+                        <TextBlock Text="Copyright (c) 2018-2022 HandyOrg.&#xA;Licensed under the MIT License." Margin="20,0,0,5" VerticalAlignment="Top" HorizontalAlignment="Left" Foreground="{DynamicResource PrimaryTextBrush}"/>
+                        <hc:Shield Subject="..." Status="{Binding [OpenWebsite], Source={x:Static langs:LanguageManager.Instance}}" Margin="0,-45,20,0" Command="hc:ControlCommands.OpenLink" CommandParameter="https://github.com/ghost1372/HandyControls" HorizontalAlignment="Right" VerticalAlignment="Top"/>
+                    </StackPanel>
+                    <StackPanel Margin="0,10,0,0">
+                        <TextBlock Text="2.Fody" Margin="20,0,0,5" FontSize="16" VerticalAlignment="Top" HorizontalAlignment="Left" FontWeight="Bold" Foreground="{DynamicResource PrimaryTextBrush}"/>
+                        <TextBlock Text="Copyright (c) Simon Cropp.&#xA;Licensed under the MIT License." Margin="20,0,0,5" VerticalAlignment="Top" HorizontalAlignment="Left" Foreground="{DynamicResource PrimaryTextBrush}"/>
+                        <hc:Shield Subject="..." Status="{Binding [OpenWebsite], Source={x:Static langs:LanguageManager.Instance}}" Margin="0,-45,20,0" Command="hc:ControlCommands.OpenLink" CommandParameter="https://github.com/Fody/Fody" HorizontalAlignment="Right" VerticalAlignment="Top"/>
+                    </StackPanel>
+                    <StackPanel Margin="0,10,0,0">
+                        <TextBlock Text="3.Costura.Fody" Margin="20,0,0,5" FontSize="16" VerticalAlignment="Top" HorizontalAlignment="Left" FontWeight="Bold" Foreground="{DynamicResource PrimaryTextBrush}"/>
+                        <TextBlock Text="Copyright (c) 2012 Simon Cropp and contributors.&#xA;Licensed under the MIT License." Margin="20,0,0,5" VerticalAlignment="Top" HorizontalAlignment="Left" Foreground="{DynamicResource PrimaryTextBrush}"/>
+                        <hc:Shield Subject="..." Status="{Binding [OpenWebsite], Source={x:Static langs:LanguageManager.Instance}}" Margin="0,-45,20,0" Command="hc:ControlCommands.OpenLink" CommandParameter="https://github.com/Fody/Costura" HorizontalAlignment="Right" VerticalAlignment="Top"/>
+                    </StackPanel>
+                    <StackPanel Margin="0,10,0,0">
+                        <TextBlock Text="4.CurseForge.APIClient" Margin="20,0,0,5" FontSize="16" VerticalAlignment="Top" HorizontalAlignment="Left" FontWeight="Bold" Foreground="{DynamicResource PrimaryTextBrush}"/>
+                        <TextBlock Text="Copyright (c) 2021 Chris Gårdenberg (NoLifeKing85 / It's Simple Studios).&#xA;Licensed under the MIT License." Margin="20,0,0,5" VerticalAlignment="Top" HorizontalAlignment="Left" Foreground="{DynamicResource PrimaryTextBrush}"/>
+                        <hc:Shield Subject="..." Status="{Binding [OpenWebsite], Source={x:Static langs:LanguageManager.Instance}}" Margin="0,-45,20,0" Command="hc:ControlCommands.OpenLink" CommandParameter="https://github.com/CurseForgeCommunity/.NET-APIClient" HorizontalAlignment="Right" VerticalAlignment="Top"/>
+                    </StackPanel>
+                    <StackPanel Margin="0,10,0,0">
+                        <TextBlock Text="5.Modrinth.Net" Margin="20,0,0,5" FontSize="16" VerticalAlignment="Top" HorizontalAlignment="Left" FontWeight="Bold" Foreground="{DynamicResource PrimaryTextBrush}"/>
+                        <TextBlock Text="Copyright (c) 2022 Zechiax.&#xA;Licensed under the MIT License." Margin="20,0,0,5" VerticalAlignment="Top" HorizontalAlignment="Left" Foreground="{DynamicResource PrimaryTextBrush}"/>
+                        <hc:Shield Subject="..." Status="{Binding [OpenWebsite], Source={x:Static langs:LanguageManager.Instance}}" Margin="0,-45,20,0" Command="hc:ControlCommands.OpenLink" CommandParameter="https://github.com/Zechiax/Modrinth.Net" HorizontalAlignment="Right" VerticalAlignment="Top"/>
+                    </StackPanel>
+                    <StackPanel Margin="0,10,0,0">
+                        <TextBlock Text="6.Downloader" Margin="20,0,0,5" FontSize="16" VerticalAlignment="Top" HorizontalAlignment="Left" FontWeight="Bold" Foreground="{DynamicResource PrimaryTextBrush}"/>
+                        <TextBlock Text="Copyright (c) 2021 Behzad Khosravifar.&#xA;Licensed under the MIT License." Margin="20,0,0,5" VerticalAlignment="Top" HorizontalAlignment="Left" Foreground="{DynamicResource PrimaryTextBrush}"/>
+                        <hc:Shield Subject="..." Status="{Binding [OpenWebsite], Source={x:Static langs:LanguageManager.Instance}}" Margin="0,-45,20,0" Command="hc:ControlCommands.OpenLink" CommandParameter="https://github.com/bezzad/Downloader" HorizontalAlignment="Right" VerticalAlignment="Top"/>
+                    </StackPanel>
+                    <StackPanel Margin="0,10,0,0">
+                        <TextBlock Text="7.Microsoft.Windows.SDK.Contracts" Margin="20,0,0,5" FontSize="16" VerticalAlignment="Top" HorizontalAlignment="Left" FontWeight="Bold" Foreground="{DynamicResource PrimaryTextBrush}"/>
+                        <TextBlock Text="Copyright (c) MICROSOFT SOFTWARE.&#xA;Licensed under the MICROSOFT SOFTWARE LICENSE TERMS." Margin="20,0,0,5" VerticalAlignment="Top" HorizontalAlignment="Left" Foreground="{DynamicResource PrimaryTextBrush}"/>
+                        <hc:Shield Subject="..." Status="{Binding [OpenWebsite], Source={x:Static langs:LanguageManager.Instance}}" Margin="0,-45,20,0" Command="hc:ControlCommands.OpenLink" CommandParameter="https://www.nuget.org/packages/Microsoft.Windows.SDK.Contracts" HorizontalAlignment="Right" VerticalAlignment="Top"/>
+                    </StackPanel>
+                    <StackPanel Margin="0,10,0,0">
+                        <TextBlock Text="8.Newtonsoft.Json" Margin="20,0,0,5" FontSize="16" VerticalAlignment="Top" HorizontalAlignment="Left" FontWeight="Bold" Foreground="{DynamicResource PrimaryTextBrush}"/>
+                        <TextBlock Text="Copyright (c) 2007 James Newton-King.&#xA;Licensed under the MIT License." Margin="20,0,0,5" VerticalAlignment="Top" HorizontalAlignment="Left" Foreground="{DynamicResource PrimaryTextBrush}"/>
+                        <hc:Shield Subject="..." Status="{Binding [OpenWebsite], Source={x:Static langs:LanguageManager.Instance}}" Margin="0,-45,20,0" Command="hc:ControlCommands.OpenLink" CommandParameter="https://www.newtonsoft.com/json" HorizontalAlignment="Right" VerticalAlignment="Top"/>
+                    </StackPanel>
+                    <StackPanel Margin="0,10,0,0">
+                        <TextBlock Text="9.SharpZipLib" Margin="20,0,0,5" FontSize="16" VerticalAlignment="Top" HorizontalAlignment="Left" FontWeight="Bold" Foreground="{DynamicResource PrimaryTextBrush}"/>
+                        <TextBlock Text="Copyright © 2000-2018 SharpZipLib Contributors.&#xA;Licensed under the MIT License." Margin="20,0,0,5" VerticalAlignment="Top" HorizontalAlignment="Left" Foreground="{DynamicResource PrimaryTextBrush}"/>
+                        <hc:Shield Subject="..." Status="{Binding [OpenWebsite], Source={x:Static langs:LanguageManager.Instance}}" Margin="0,-45,20,0" Command="hc:ControlCommands.OpenLink" CommandParameter="https://github.com/icsharpcode/SharpZipLib" HorizontalAlignment="Right" VerticalAlignment="Top"/>
+                    </StackPanel>
+                    <StackPanel Margin="0,10,0,0">
+                        <TextBlock Text="10.System.Runtime.WindowsRuntime" Margin="20,0,0,5" FontSize="16" VerticalAlignment="Top" HorizontalAlignment="Left" FontWeight="Bold" Foreground="{DynamicResource PrimaryTextBrush}"/>
+                        <TextBlock Text="11.System.Runtime.WindowsRuntime.UI.Xaml" Margin="20,0,0,5" FontSize="16" VerticalAlignment="Top" HorizontalAlignment="Left" FontWeight="Bold" Foreground="{DynamicResource PrimaryTextBrush}"/>
+                        <TextBlock Text="12.System.ValueTuple" Margin="20,0,0,5" FontSize="16" VerticalAlignment="Top" HorizontalAlignment="Left" FontWeight="Bold" Foreground="{DynamicResource PrimaryTextBrush}"/>
+                        <TextBlock Text="13.System.Memory" Margin="20,0,0,5" FontSize="16" VerticalAlignment="Top" HorizontalAlignment="Left" FontWeight="Bold" Foreground="{DynamicResource PrimaryTextBrush}"/>
+                        <TextBlock Text="14.Microsoft.NETFrameworkReferenceAssemblies" Margin="20,0,0,5" FontSize="16" VerticalAlignment="Top" HorizontalAlignment="Left" FontWeight="Bold" Foreground="{DynamicResource PrimaryTextBrush}"/>
+                        <TextBlock Text="Copyright (c) .NET Foundation and Contributors.&#xA;Licensed under the MIT License." Margin="20,0,0,5" VerticalAlignment="Top" HorizontalAlignment="Left" Foreground="{DynamicResource PrimaryTextBrush}"/>
+                        <hc:Shield Subject="..." Status="{Binding [OpenWebsite], Source={x:Static langs:LanguageManager.Instance}}" Margin="0,-45,20,0" Command="hc:ControlCommands.OpenLink" CommandParameter="https://github.com/dotnet/runtime" HorizontalAlignment="Right" VerticalAlignment="Top"/>
+                    </StackPanel>
+                    <StackPanel Margin="0,10,0,0">
+                        <TextBlock Text="15.XAMLTools.MSBuild" Margin="20,0,0,5" FontSize="16" VerticalAlignment="Top" HorizontalAlignment="Left" FontWeight="Bold" Foreground="{DynamicResource PrimaryTextBrush}"/>
+                        <TextBlock Text="Copyright (c) 2017 - 2022 Bastian Schmidt.&#xA;Licensed under the MIT License." Margin="20,0,0,5" VerticalAlignment="Top" HorizontalAlignment="Left" Foreground="{DynamicResource PrimaryTextBrush}"/>
+                        <hc:Shield Subject="..." Status="{Binding [OpenWebsite], Source={x:Static langs:LanguageManager.Instance}}" Margin="0,-45,20,0" Command="hc:ControlCommands.OpenLink" CommandParameter="https://github.com/batzen/XAMLTools" HorizontalAlignment="Right" VerticalAlignment="Top"/>
+                    </StackPanel>
+                    <StackPanel Margin="0,10,0,0">
+                        <TextBlock Text="16.Microsoft.Terminal.Wpf" Margin="20,0,0,5" FontSize="16" VerticalAlignment="Top" HorizontalAlignment="Left" FontWeight="Bold" Foreground="{DynamicResource PrimaryTextBrush}"/>
+                        <TextBlock Text="17.Microsoft.Terminal.Control" Margin="20,0,0,5" FontSize="16" VerticalAlignment="Top" HorizontalAlignment="Left" FontWeight="Bold" Foreground="{DynamicResource PrimaryTextBrush}"/>
+                        <TextBlock Text="Copyright (c) Microsoft Corporation. All rights reserved.&#xA;Licensed under the MIT License." Margin="20,0,0,5" VerticalAlignment="Top" HorizontalAlignment="Left" Foreground="{DynamicResource PrimaryTextBrush}"/>
+                        <hc:Shield Subject="..." Status="{Binding [OpenWebsite], Source={x:Static langs:LanguageManager.Instance}}" Margin="0,-45,20,0" Command="hc:ControlCommands.OpenLink" CommandParameter="https://github.com/microsoft/terminal" HorizontalAlignment="Right" VerticalAlignment="Top"/>
+                    </StackPanel>
+                    <StackPanel Margin="0,10,0,0">
+                        <TextBlock Text="18.Microsoft.Windows.CsWin32" Margin="20,0,0,5" FontSize="16" VerticalAlignment="Top" HorizontalAlignment="Left" FontWeight="Bold" Foreground="{DynamicResource PrimaryTextBrush}"/>
+                        <TextBlock Text="Copyright (c) Microsoft Corporation.&#xA;Licensed under the MIT License." Margin="20,0,0,5" VerticalAlignment="Top" HorizontalAlignment="Left" Foreground="{DynamicResource PrimaryTextBrush}"/>
+                        <hc:Shield Subject="..." Status="{Binding [OpenWebsite], Source={x:Static langs:LanguageManager.Instance}}" Margin="0,-45,20,0" Command="hc:ControlCommands.OpenLink" CommandParameter="https://github.com/Microsoft/CsWin32" HorizontalAlignment="Right" VerticalAlignment="Top"/>
+                    </StackPanel>
+                    <StackPanel Margin="0,10,0,0">
+                        <TextBlock Text="19.ConPtyTermEmulatorLib" Margin="20,0,0,5" FontSize="16" VerticalAlignment="Top" HorizontalAlignment="Left" FontWeight="Bold" Foreground="{DynamicResource PrimaryTextBrush}"/>
+                        <TextBlock Text="By Mitch Capper(Github)." Margin="20,0,0,5" VerticalAlignment="Top" HorizontalAlignment="Left" Foreground="{DynamicResource PrimaryTextBrush}"/>
+                        <hc:Shield Subject="..." Status="{Binding [OpenWebsite], Source={x:Static langs:LanguageManager.Instance}}" Margin="0,-45,20,0" Command="hc:ControlCommands.OpenLink" CommandParameter="https://github.com/mitchcapper/ConPtyTermEmulator" HorizontalAlignment="Right" VerticalAlignment="Top"/>
+                    </StackPanel>
+                    <StackPanel Margin="0,10,0,0">
+                        <TextBlock Text="20.Resource.Embedder" Margin="20,0,0,5" FontSize="16" VerticalAlignment="Top" HorizontalAlignment="Left" FontWeight="Bold" Foreground="{DynamicResource PrimaryTextBrush}"/>
+                        <TextBlock Text="Licensed under the MIT License." Margin="20,0,0,5" VerticalAlignment="Top" HorizontalAlignment="Left" Foreground="{DynamicResource PrimaryTextBrush}"/>
+                        <hc:Shield Subject="..." Status="{Binding [OpenWebsite], Source={x:Static langs:LanguageManager.Instance}}" Margin="0,-45,20,0" Command="hc:ControlCommands.OpenLink" CommandParameter="https://www.nuget.org/packages/Resource.Embedder" HorizontalAlignment="Right" VerticalAlignment="Top"/>
+                    </StackPanel>
+                    <StackPanel Margin="0,10,0,0">
+                        <TextBlock Text="21.QRCoder" Margin="20,0,0,5" FontSize="16" VerticalAlignment="Top" HorizontalAlignment="Left" FontWeight="Bold" Foreground="{DynamicResource PrimaryTextBrush}"/>
+                        <TextBlock Text="Copyright (c) 2013-2018 Raffael Herrmann.&#xA;Licensed under the MIT License." Margin="20,0,0,5" VerticalAlignment="Top" HorizontalAlignment="Left" Foreground="{DynamicResource PrimaryTextBrush}"/>
+                        <hc:Shield Subject="..." Status="{Binding [OpenWebsite], Source={x:Static langs:LanguageManager.Instance}}" Margin="0,-45,20,0" Command="hc:ControlCommands.OpenLink" CommandParameter="https://github.com/codebude/QRCoder" HorizontalAlignment="Right" VerticalAlignment="Top"/>
+                    </StackPanel>
+                    <StackPanel Margin="0,10,0,0">
+                        <TextBlock Text="22.Portable.BouncyCastle" Margin="20,0,0,5" FontSize="16" VerticalAlignment="Top" HorizontalAlignment="Left" FontWeight="Bold" Foreground="{DynamicResource PrimaryTextBrush}"/>
+                        <TextBlock Text="Copyright (c) 2000-2025 The Legion of the Bouncy Castle Inc.&#xA;Licensed under the MIT License." Margin="20,0,0,5" VerticalAlignment="Top" HorizontalAlignment="Left" Foreground="{DynamicResource PrimaryTextBrush}"/>
+                        <hc:Shield Subject="..." Status="{Binding [OpenWebsite], Source={x:Static langs:LanguageManager.Instance}}" Margin="0,-45,20,0" Command="hc:ControlCommands.OpenLink" CommandParameter="https://github.com/bcgit/bc-csharp" HorizontalAlignment="Right" VerticalAlignment="Top"/>
+                    </StackPanel>
+                    <StackPanel Margin="0,10,0,0">
+                        <TextBlock Text="23.Resource.Embedder" Margin="20,0,0,5" FontSize="16" VerticalAlignment="Top" HorizontalAlignment="Left" FontWeight="Bold" Foreground="{DynamicResource PrimaryTextBrush}"/>
+                        <TextBlock Text="Copyright (c) 2025 Adam Caudill, Trond Arne Bråthen &amp; Contributors.&#xA;Licensed under the MIT License." Margin="20,0,0,5" VerticalAlignment="Top" HorizontalAlignment="Left" Foreground="{DynamicResource PrimaryTextBrush}"/>
+                        <hc:Shield Subject="..." Status="{Binding [OpenWebsite], Source={x:Static langs:LanguageManager.Instance}}" Margin="0,-45,20,0" Command="hc:ControlCommands.OpenLink" CommandParameter="https://github.com/ektrah/libsodium-core" HorizontalAlignment="Right" VerticalAlignment="Top"/>
+                    </StackPanel>
+                    <StackPanel Margin="0,10,0,0">
+                        <TextBlock Text="24.Tabler Icons" Margin="20,0,0,5" FontSize="16" VerticalAlignment="Top" HorizontalAlignment="Left" FontWeight="Bold" Foreground="{DynamicResource PrimaryTextBrush}"/>
+                        <TextBlock Text="Copyright (c) 2020-2024 Paweł Kuna.&#xA;Licensed under the MIT License." Margin="20,0,0,5" VerticalAlignment="Top" HorizontalAlignment="Left" Foreground="{DynamicResource PrimaryTextBrush}"/>
+                        <hc:Shield Subject="..." Status="{Binding [OpenWebsite], Source={x:Static langs:LanguageManager.Instance}}" Margin="0,-45,20,0" Command="hc:ControlCommands.OpenLink" CommandParameter="https://github.com/tabler/tabler-icons" HorizontalAlignment="Right" VerticalAlignment="Top"/>
+                    </StackPanel>
+                    <StackPanel Margin="0,10,0,0">
+                        <TextBlock Text="25.MCSL Java Scanner" Margin="20,0,0,5" FontSize="16" VerticalAlignment="Top" HorizontalAlignment="Left" FontWeight="Bold" Foreground="{DynamicResource PrimaryTextBrush}"/>
+                        <TextBlock Text="Copyright (c) 2022-2024 MCSLTeam.&#xA;Original Author: LxHTT &amp; AresConnor &amp; Tigercrl" Margin="20,0,0,5" VerticalAlignment="Top" HorizontalAlignment="Left" Foreground="{DynamicResource PrimaryTextBrush}"/>
+                        <hc:Shield Subject="..." Status="{Binding [OpenWebsite], Source={x:Static langs:LanguageManager.Instance}}" Margin="0,-45,20,0" Command="hc:ControlCommands.OpenLink" CommandParameter="https://mcsl.com.cn/" HorizontalAlignment="Right" VerticalAlignment="Top"/>
+                    </StackPanel>
                 </StackPanel>
-                <StackPanel Margin="0,10,0,0">
-                    <TextBlock Text="3.Costura.Fody" Margin="20,0,0,5" FontSize="16" VerticalAlignment="Top" HorizontalAlignment="Left" FontWeight="Bold" Foreground="{DynamicResource PrimaryTextBrush}"/>
-                    <TextBlock Text="Copyright (c) 2012 Simon Cropp and contributors.&#xA;Licensed under the MIT License." Margin="20,0,0,5" VerticalAlignment="Top" HorizontalAlignment="Left" Foreground="{DynamicResource PrimaryTextBrush}"/>
-                    <hc:Shield Subject="..." Status="{Binding [OpenWebsite], Source={x:Static langs:LanguageManager.Instance}}" Margin="0,-45,20,0" Command="hc:ControlCommands.OpenLink" CommandParameter="https://github.com/Fody/Costura" HorizontalAlignment="Right" VerticalAlignment="Top"/>
-                </StackPanel>
-                <StackPanel Margin="0,10,0,0">
-                    <TextBlock Text="4.CurseForge.APIClient" Margin="20,0,0,5" FontSize="16" VerticalAlignment="Top" HorizontalAlignment="Left" FontWeight="Bold" Foreground="{DynamicResource PrimaryTextBrush}"/>
-                    <TextBlock Text="Copyright (c) 2021 Chris Gårdenberg (NoLifeKing85 / It's Simple Studios).&#xA;Licensed under the MIT License." Margin="20,0,0,5" VerticalAlignment="Top" HorizontalAlignment="Left" Foreground="{DynamicResource PrimaryTextBrush}"/>
-                    <hc:Shield Subject="..." Status="{Binding [OpenWebsite], Source={x:Static langs:LanguageManager.Instance}}" Margin="0,-45,20,0" Command="hc:ControlCommands.OpenLink" CommandParameter="https://github.com/CurseForgeCommunity/.NET-APIClient" HorizontalAlignment="Right" VerticalAlignment="Top"/>
-                </StackPanel>
-                <StackPanel Margin="0,10,0,0">
-                    <TextBlock Text="5.Modrinth.Net" Margin="20,0,0,5" FontSize="16" VerticalAlignment="Top" HorizontalAlignment="Left" FontWeight="Bold" Foreground="{DynamicResource PrimaryTextBrush}"/>
-                    <TextBlock Text="Copyright (c) 2022 Zechiax.&#xA;Licensed under the MIT License." Margin="20,0,0,5" VerticalAlignment="Top" HorizontalAlignment="Left" Foreground="{DynamicResource PrimaryTextBrush}"/>
-                    <hc:Shield Subject="..." Status="{Binding [OpenWebsite], Source={x:Static langs:LanguageManager.Instance}}" Margin="0,-45,20,0" Command="hc:ControlCommands.OpenLink" CommandParameter="https://github.com/Zechiax/Modrinth.Net" HorizontalAlignment="Right" VerticalAlignment="Top"/>
-                </StackPanel>
-                <StackPanel Margin="0,10,0,0">
-                    <TextBlock Text="6.Downloader" Margin="20,0,0,5" FontSize="16" VerticalAlignment="Top" HorizontalAlignment="Left" FontWeight="Bold" Foreground="{DynamicResource PrimaryTextBrush}"/>
-                    <TextBlock Text="Copyright (c) 2021 Behzad Khosravifar.&#xA;Licensed under the MIT License." Margin="20,0,0,5" VerticalAlignment="Top" HorizontalAlignment="Left" Foreground="{DynamicResource PrimaryTextBrush}"/>
-                    <hc:Shield Subject="..." Status="{Binding [OpenWebsite], Source={x:Static langs:LanguageManager.Instance}}" Margin="0,-45,20,0" Command="hc:ControlCommands.OpenLink" CommandParameter="https://github.com/bezzad/Downloader" HorizontalAlignment="Right" VerticalAlignment="Top"/>
-                </StackPanel>
-                <StackPanel Margin="0,10,0,0">
-                    <TextBlock Text="7.Microsoft.Windows.SDK.Contracts" Margin="20,0,0,5" FontSize="16" VerticalAlignment="Top" HorizontalAlignment="Left" FontWeight="Bold" Foreground="{DynamicResource PrimaryTextBrush}"/>
-                    <TextBlock Text="Copyright (c) MICROSOFT SOFTWARE.&#xA;Licensed under the MICROSOFT SOFTWARE LICENSE TERMS." Margin="20,0,0,5" VerticalAlignment="Top" HorizontalAlignment="Left" Foreground="{DynamicResource PrimaryTextBrush}"/>
-                    <hc:Shield Subject="..." Status="{Binding [OpenWebsite], Source={x:Static langs:LanguageManager.Instance}}" Margin="0,-45,20,0" Command="hc:ControlCommands.OpenLink" CommandParameter="https://www.nuget.org/packages/Microsoft.Windows.SDK.Contracts" HorizontalAlignment="Right" VerticalAlignment="Top"/>
-                </StackPanel>
-                <StackPanel Margin="0,10,0,0">
-                    <TextBlock Text="8.Newtonsoft.Json" Margin="20,0,0,5" FontSize="16" VerticalAlignment="Top" HorizontalAlignment="Left" FontWeight="Bold" Foreground="{DynamicResource PrimaryTextBrush}"/>
-                    <TextBlock Text="Copyright (c) 2007 James Newton-King.&#xA;Licensed under the MIT License." Margin="20,0,0,5" VerticalAlignment="Top" HorizontalAlignment="Left" Foreground="{DynamicResource PrimaryTextBrush}"/>
-                    <hc:Shield Subject="..." Status="{Binding [OpenWebsite], Source={x:Static langs:LanguageManager.Instance}}" Margin="0,-45,20,0" Command="hc:ControlCommands.OpenLink" CommandParameter="https://www.newtonsoft.com/json" HorizontalAlignment="Right" VerticalAlignment="Top"/>
-                </StackPanel>
-                <StackPanel Margin="0,10,0,0">
-                    <TextBlock Text="9.SharpZipLib" Margin="20,0,0,5" FontSize="16" VerticalAlignment="Top" HorizontalAlignment="Left" FontWeight="Bold" Foreground="{DynamicResource PrimaryTextBrush}"/>
-                    <TextBlock Text="Copyright © 2000-2018 SharpZipLib Contributors.&#xA;Licensed under the MIT License." Margin="20,0,0,5" VerticalAlignment="Top" HorizontalAlignment="Left" Foreground="{DynamicResource PrimaryTextBrush}"/>
-                    <hc:Shield Subject="..." Status="{Binding [OpenWebsite], Source={x:Static langs:LanguageManager.Instance}}" Margin="0,-45,20,0" Command="hc:ControlCommands.OpenLink" CommandParameter="https://github.com/icsharpcode/SharpZipLib" HorizontalAlignment="Right" VerticalAlignment="Top"/>
-                </StackPanel>
-                <StackPanel Margin="0,10,0,0">
-                    <TextBlock Text="10.System.Runtime.WindowsRuntime" Margin="20,0,0,5" FontSize="16" VerticalAlignment="Top" HorizontalAlignment="Left" FontWeight="Bold" Foreground="{DynamicResource PrimaryTextBrush}"/>
-                    <TextBlock Text="11.System.Runtime.WindowsRuntime.UI.Xaml" Margin="20,0,0,5" FontSize="16" VerticalAlignment="Top" HorizontalAlignment="Left" FontWeight="Bold" Foreground="{DynamicResource PrimaryTextBrush}"/>
-                    <TextBlock Text="12.System.ValueTuple" Margin="20,0,0,5" FontSize="16" VerticalAlignment="Top" HorizontalAlignment="Left" FontWeight="Bold" Foreground="{DynamicResource PrimaryTextBrush}"/>
-                    <TextBlock Text="13.System.Memory" Margin="20,0,0,5" FontSize="16" VerticalAlignment="Top" HorizontalAlignment="Left" FontWeight="Bold" Foreground="{DynamicResource PrimaryTextBrush}"/>
-                    <TextBlock Text="14.Microsoft.NETFrameworkReferenceAssemblies" Margin="20,0,0,5" FontSize="16" VerticalAlignment="Top" HorizontalAlignment="Left" FontWeight="Bold" Foreground="{DynamicResource PrimaryTextBrush}"/>
-                    <TextBlock Text="Copyright (c) .NET Foundation and Contributors.&#xA;Licensed under the MIT License." Margin="20,0,0,5" VerticalAlignment="Top" HorizontalAlignment="Left" Foreground="{DynamicResource PrimaryTextBrush}"/>
-                    <hc:Shield Subject="..." Status="{Binding [OpenWebsite], Source={x:Static langs:LanguageManager.Instance}}" Margin="0,-45,20,0" Command="hc:ControlCommands.OpenLink" CommandParameter="https://github.com/dotnet/runtime" HorizontalAlignment="Right" VerticalAlignment="Top"/>
-                </StackPanel>
-                <StackPanel Margin="0,10,0,0">
-                    <TextBlock Text="15.XAMLTools.MSBuild" Margin="20,0,0,5" FontSize="16" VerticalAlignment="Top" HorizontalAlignment="Left" FontWeight="Bold" Foreground="{DynamicResource PrimaryTextBrush}"/>
-                    <TextBlock Text="Copyright (c) 2017 - 2022 Bastian Schmidt.&#xA;Licensed under the MIT License." Margin="20,0,0,5" VerticalAlignment="Top" HorizontalAlignment="Left" Foreground="{DynamicResource PrimaryTextBrush}"/>
-                    <hc:Shield Subject="..." Status="{Binding [OpenWebsite], Source={x:Static langs:LanguageManager.Instance}}" Margin="0,-45,20,0" Command="hc:ControlCommands.OpenLink" CommandParameter="https://github.com/batzen/XAMLTools" HorizontalAlignment="Right" VerticalAlignment="Top"/>
-                </StackPanel>
-                <StackPanel Margin="0,10,0,0">
-                    <TextBlock Text="16.Microsoft.Terminal.Wpf" Margin="20,0,0,5" FontSize="16" VerticalAlignment="Top" HorizontalAlignment="Left" FontWeight="Bold" Foreground="{DynamicResource PrimaryTextBrush}"/>
-                    <TextBlock Text="17.Microsoft.Terminal.Control" Margin="20,0,0,5" FontSize="16" VerticalAlignment="Top" HorizontalAlignment="Left" FontWeight="Bold" Foreground="{DynamicResource PrimaryTextBrush}"/>
-                    <TextBlock Text="Copyright (c) Microsoft Corporation. All rights reserved.&#xA;Licensed under the MIT License." Margin="20,0,0,5" VerticalAlignment="Top" HorizontalAlignment="Left" Foreground="{DynamicResource PrimaryTextBrush}"/>
-                    <hc:Shield Subject="..." Status="{Binding [OpenWebsite], Source={x:Static langs:LanguageManager.Instance}}" Margin="0,-45,20,0" Command="hc:ControlCommands.OpenLink" CommandParameter="https://github.com/microsoft/terminal" HorizontalAlignment="Right" VerticalAlignment="Top"/>
-                </StackPanel>
-                <StackPanel Margin="0,10,0,0">
-                    <TextBlock Text="18.Microsoft.Windows.CsWin32" Margin="20,0,0,5" FontSize="16" VerticalAlignment="Top" HorizontalAlignment="Left" FontWeight="Bold" Foreground="{DynamicResource PrimaryTextBrush}"/>
-                    <TextBlock Text="Copyright (c) Microsoft Corporation.&#xA;Licensed under the MIT License." Margin="20,0,0,5" VerticalAlignment="Top" HorizontalAlignment="Left" Foreground="{DynamicResource PrimaryTextBrush}"/>
-                    <hc:Shield Subject="..." Status="{Binding [OpenWebsite], Source={x:Static langs:LanguageManager.Instance}}" Margin="0,-45,20,0" Command="hc:ControlCommands.OpenLink" CommandParameter="https://github.com/Microsoft/CsWin32" HorizontalAlignment="Right" VerticalAlignment="Top"/>
-                </StackPanel>
-                <StackPanel Margin="0,10,0,0">
-                    <TextBlock Text="19.ConPtyTermEmulatorLib" Margin="20,0,0,5" FontSize="16" VerticalAlignment="Top" HorizontalAlignment="Left" FontWeight="Bold" Foreground="{DynamicResource PrimaryTextBrush}"/>
-                    <TextBlock Text="By Mitch Capper(Github)" Margin="20,0,0,5" VerticalAlignment="Top" HorizontalAlignment="Left" Foreground="{DynamicResource PrimaryTextBrush}"/>
-                    <hc:Shield Subject="..." Status="{Binding [OpenWebsite], Source={x:Static langs:LanguageManager.Instance}}" Margin="0,-45,20,0" Command="hc:ControlCommands.OpenLink" CommandParameter="https://github.com/mitchcapper/ConPtyTermEmulator" HorizontalAlignment="Right" VerticalAlignment="Top"/>
-                </StackPanel>
-                <StackPanel Margin="0,10,0,0">
-                    <TextBlock Text="20.Resource.Embedder" Margin="20,0,0,5" FontSize="16" VerticalAlignment="Top" HorizontalAlignment="Left" FontWeight="Bold" Foreground="{DynamicResource PrimaryTextBrush}"/>
-                    <TextBlock Text="Licensed under the MIT License." Margin="20,0,0,5" VerticalAlignment="Top" HorizontalAlignment="Left" Foreground="{DynamicResource PrimaryTextBrush}"/>
-                    <hc:Shield Subject="..." Status="{Binding [OpenWebsite], Source={x:Static langs:LanguageManager.Instance}}" Margin="0,-45,20,0" Command="hc:ControlCommands.OpenLink" CommandParameter="https://www.nuget.org/packages/Resource.Embedder" HorizontalAlignment="Right" VerticalAlignment="Top"/>
-                </StackPanel>
-                <StackPanel Margin="0,10,0,0">
-                    <TextBlock Text="21.Tabler Icons" Margin="20,0,0,5" FontSize="16" VerticalAlignment="Top" HorizontalAlignment="Left" FontWeight="Bold" Foreground="{DynamicResource PrimaryTextBrush}"/>
-                    <TextBlock Text="Copyright (c) 2020-2024 Paweł Kuna.&#xA;Licensed under the MIT License." Margin="20,0,0,5" VerticalAlignment="Top" HorizontalAlignment="Left" Foreground="{DynamicResource PrimaryTextBrush}"/>
-                    <hc:Shield Subject="..." Status="{Binding [OpenWebsite], Source={x:Static langs:LanguageManager.Instance}}" Margin="0,-45,20,0" Command="hc:ControlCommands.OpenLink" CommandParameter="https://github.com/tabler/tabler-icons" HorizontalAlignment="Right" VerticalAlignment="Top"/>
-                </StackPanel>
-                <StackPanel Margin="0,10,0,0">
-                    <TextBlock Text="22.MCSL Java Scanner" Margin="20,0,0,5" FontSize="16" VerticalAlignment="Top" HorizontalAlignment="Left" FontWeight="Bold" Foreground="{DynamicResource PrimaryTextBrush}"/>
-                    <TextBlock Text="Copyright (c) 2022-2024 MCSLTeam.&#xA;Original Author: LxHTT &amp; AresConnor &amp; Tigercrl" Margin="20,0,0,5" VerticalAlignment="Top" HorizontalAlignment="Left" Foreground="{DynamicResource PrimaryTextBrush}"/>
-                    <hc:Shield Subject="..." Status="{Binding [OpenWebsite], Source={x:Static langs:LanguageManager.Instance}}" Margin="0,-45,20,0" Command="hc:ControlCommands.OpenLink" CommandParameter="https://mcsl.com.cn/" HorizontalAlignment="Right" VerticalAlignment="Top"/>
-                </StackPanel>
-            </StackPanel>
+            </Expander>
         </controls:MagicCard>
         <controls:MagicCard Margin="0,0,0,20" Title="{Binding [Page_About_Sponsor], Source={x:Static langs:LanguageManager.Instance}}">
             <StackPanel>

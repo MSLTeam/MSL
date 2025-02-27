@@ -27,7 +27,7 @@
                                 <RowDefinition Height="*"/>
                                 <RowDefinition Height="auto"/>
                             </Grid.RowDefinitions>
-                            <ListBox x:Name="FrpList" MinWidth="300" Grid.Row="0" hc:Empty.ShowEmpty="true" SelectionChanged="FrpList_SelectionChanged" >
+                            <ListBox x:Name="FrpList" MinWidth="300" Grid.Row="0" hc:Empty.ShowEmpty="true" SelectionMode="Single" SelectionChanged="FrpList_SelectionChanged" >
                                 <ListBox.ItemTemplate>
                                     <DataTemplate>
                                         <StackPanel Orientation="Horizontal">
@@ -59,7 +59,7 @@
                                         <TextBlock x:Name="UserInfo" LineHeight="20" Foreground="{DynamicResource PrimaryTextBrush}" Text="Loadings······" FontSize="14" HorizontalAlignment="Left" Margin="10,0,0,0"/>
                                     </StackPanel>
                                     <StackPanel Grid.Column="1" Margin="0,5,8,5" >
-                                        <Button Content="打开官网" x:Name="OpenWeb" Margin="0,0,0,3" Style="{DynamicResource ButtonPrimary}" HorizontalAlignment="Stretch"  Command="hc:ControlCommands.OpenLink" CommandParameter="https://www.natfrp.com/user/profile"/>
+                                        <Button Content="打开官网" x:Name="OpenWeb" Margin="0,0,0,3" Style="{DynamicResource ButtonPrimary}" HorizontalAlignment="Stretch"  Command="hc:ControlCommands.OpenLink" CommandParameter="https://www.mefrp.com/dashboard/"/>
                                         <Button Content="退出登录" x:Name="ExitBtn" Margin="0,3,0,0" Style="{StaticResource ButtonDanger}" HorizontalAlignment="Stretch" Click="ExitBtn_Click" />
                                     </StackPanel>
                                 </Grid>
@@ -84,13 +84,13 @@
                             <ColumnDefinition Width="auto"/>
                         </Grid.ColumnDefinitions>
                         <Border Grid.Column="0" Margin="0,10,0,0" VerticalAlignment="Stretch" Style="{StaticResource BorderTipPrimary}">
-                            <TextBlock x:Name="Notice" Text="本服务由MeFrp提供&#13;MSL仅提供接入，其服务内容均与MSL无关" VerticalAlignment="Center" Foreground="{DynamicResource PrimaryTextBrush}" FontSize="16"/>
+                            <TextBlock x:Name="Notice" Text="本服务由ME Frp提供&#xA;MSL仅提供接入，其服务内容均与MSL无关" VerticalAlignment="Center" Foreground="{DynamicResource PrimaryTextBrush}" FontSize="16"/>
                         </Border>
-                        <Button Grid.Column="1" Margin="0,10,0,0" Content="确定" MinWidth="100" MinHeight="60" Style="{StaticResource ButtonPrimary}" FontSize="16" x:Name="OKBtn" Click="OKBtn_Click" />
+                        <Button Grid.Column="1" Margin="10,10,0,0" Content="确定" MinWidth="100" HorizontalAlignment="Stretch" VerticalAlignment="Stretch" Style="{StaticResource ButtonPrimary}" FontSize="16" x:Name="OKBtn" Click="OKBtn_Click" />
                     </Grid>
                 </Grid>
             </TabItem>
-            <TabItem Header="隧道列表">
+            <TabItem Header="创建隧道">
                 <Grid x:Name="CreateGrid">
                     <Grid.ColumnDefinitions>
                         <ColumnDefinition Width="auto"/>
@@ -104,7 +104,7 @@
                         <Border Style="{StaticResource BorderTipPrimary}" Margin="3">
                             <TextBlock LineHeight="20" Foreground="{DynamicResource PrimaryTextBrush}" Text="从下面选择一个你喜欢的节点" FontSize="14" HorizontalAlignment="Left"/>
                         </Border>
-                        <ListBox x:Name="NodeList" Grid.Row="1" MinWidth="300"  hc:Empty.ShowEmpty="true" SelectionChanged="NodeList_SelectionChanged">
+                        <ListBox x:Name="NodeList" Grid.Row="1" MinWidth="300" SelectionMode="Single" hc:Empty.ShowEmpty="true" SelectionChanged="NodeList_SelectionChanged">
                             <ListBox.ItemTemplate>
                                 <DataTemplate>
                                     <StackPanel Orientation="Horizontal">
@@ -173,10 +173,10 @@
 
         <Grid x:Name="LoginGrid" Visibility="Collapsed">
             <StackPanel HorizontalAlignment="Center" VerticalAlignment="Center" >
-                <TextBlock Text="使用MeFrp服务之前，请先登录您的MeFrp账户" HorizontalAlignment="Center"  VerticalAlignment="Center"  FontSize="16" Foreground="{DynamicResource PrimaryTextBrush}" Margin="0,0,0,20"/>
+                <TextBlock Text="使用ME Frp服务之前，请先登录您的ME Frp账户" HorizontalAlignment="Center"  VerticalAlignment="Center"  FontSize="16" Foreground="{DynamicResource PrimaryTextBrush}" Margin="0,0,0,20"/>
                 <StackPanel Orientation="Horizontal" HorizontalAlignment="Center">
                     <Button x:Name="userTokenLogin" Content="使用访问密钥登录"   Margin="0,0,5,0" Click="UserTokenLogin_Click"/>
-                    <Button x:Name="userRegister" Content="注册/进入用户中心" Margin="5,0,0,0" Command="hc:ControlCommands.OpenLink" CommandParameter="https://www.mefrp.com/dashboard/" />
+                    <Button x:Name="userRegister" Content="注册/进入用户中心" Margin="5,0,0,0" Command="hc:ControlCommands.OpenLink" CommandParameter="https://www.mefrp.com/auth/login" />
                 </StackPanel>
                 <CheckBox Content="保存登录状态（风险自负哦~）" HorizontalAlignment="Center" Margin="0,10,0,0" x:Name="SaveToken"/>
                 <TextBlock Text="如果您不知道什么是访问密钥，请前往MeFrp用户中心寻找" HorizontalAlignment="Center"  VerticalAlignment="Center"  FontSize="13" Foreground="{DynamicResource PrimaryTextBrush}" Margin="0,10,0,0"/>

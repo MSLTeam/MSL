@@ -9,100 +9,123 @@
       d:DesignHeight="400" d:DesignWidth="750"
       Title="OpenFrp" Loaded="Page_Loaded">
     <Grid>
-        <Grid x:Name="MainGrid">
-            <Grid.RowDefinitions>
-                <RowDefinition/>
-                <RowDefinition Height="Auto"/>
-            </Grid.RowDefinitions>
-            <Grid Grid.Row="0" Margin="10">
-                <Grid.ColumnDefinitions>
-                    <ColumnDefinition/>
-                    <ColumnDefinition/>
-                </Grid.ColumnDefinitions>
-                <Grid Grid.Column="0" Margin="0,0,10,0">
-                    <Grid.RowDefinitions>
-                        <RowDefinition Height="Auto"/>
-                        <RowDefinition/>
-                    </Grid.RowDefinitions>
-                    <ComboBox Grid.Row="0" x:Name="toggleProxies" SelectedIndex="0" SelectionChanged="toggleProxies_SelectionChanged">
-                        <ComboBoxItem Content="隧道列表"/>
-                        <ComboBoxItem Content="节点列表"/>
-                    </ComboBox>
-                    <ListBox Grid.Row="1" x:Name="serversList" SelectionMode="Single" hc:Empty.ShowEmpty="true"/>
-                </Grid>
-                <Grid Grid.Column="1">
+        <TabControl x:Name="MainCtrl" Margin="10,5,10,10" Style="{StaticResource TabControlCapsuleSolidInLine}" Background="Transparent" BorderThickness="0" SelectionChanged="MainCtrl_SelectionChanged">
+            <TabItem Header="我的隧道">
+                <Grid x:Name="MainGrid">
                     <Grid.RowDefinitions>
                         <RowDefinition/>
                         <RowDefinition Height="Auto"/>
                     </Grid.RowDefinitions>
-                    <Grid Grid.Row="0" x:Name="userInfoGrid">
-                        <Label Grid.Row="0" x:Name="userInfo" HorizontalAlignment="Stretch" VerticalAlignment="Stretch" FontSize="16"/>
-                        <Button Grid.Row="0" x:Name="logoutBtn" Content="登出" Style="{StaticResource ButtonDanger}" VerticalAlignment="Top" HorizontalAlignment="Right" Width="80" Click="logoutBtn_Click"/>
-                    </Grid>
-                    <Border Padding="10" Grid.Row="0" x:Name="addProxiesGroup" CornerRadius="7" Background="{DynamicResource RegionBrush}" BorderThickness="1" Visibility="Collapsed">
-                        <hc:UniformSpacingPanel Orientation="Vertical" Spacing="10" >
-                            <StackPanel>
-                                <Label Content="本地端口(Java版默认25565,基岩版默认19132)：" HorizontalAlignment="Left" Background="Transparent" BorderThickness="0" Padding="0" FontSize="14"/>
-                                <TextBox x:Name="portBox" Text="25565"/>
-                            </StackPanel>
-                            <Grid>
-                                <Grid.ColumnDefinitions>
-                                    <ColumnDefinition Width="Auto"/>
-                                    <ColumnDefinition/>
-                                    <ColumnDefinition Width="Auto"/>
-                                </Grid.ColumnDefinitions>
-                                <Label Grid.Column="0" Content="远程端口：" Background="Transparent" BorderThickness="0" Padding="0" FontSize="14"/>
-                                <TextBox Grid.Column="1" x:Name="remotePortBox" HorizontalAlignment="Stretch" Text="25565"/>
-                                <Button Grid.Column="2" x:Name="randomRemotePort" Content="随机" VerticalAlignment="Stretch" Width="75" Click="randomRemotePort_Click"/>
-                            </Grid>
-                            <StackPanel Orientation="Horizontal">
-                                <Label Content="传输协议：" Background="Transparent" BorderThickness="0" Padding="0" FontSize="14" />
-                                <ComboBox x:Name="frpcType" SelectionChanged="frpcType_SelectionChanged">
-                                    <ComboBoxItem IsSelected="True" Content="TCP（Java版）"/>
-                                    <ComboBoxItem Content="UDP（基岩版）"/>
-                                </ComboBox>
-                            </StackPanel>
-                            <CheckBox x:Name="enableCompression" Content="启用数据压缩"/>
-                            <Button x:Name="addProxieBtn" Content="点击新建隧道" HorizontalAlignment="Stretch" Click="addProxieBtn_Click"/>
-                        </hc:UniformSpacingPanel>
-                    </Border>
-                    <Grid Grid.Row="1" Margin="0,5,0,0">
+                    <Grid Grid.Row="0">
                         <Grid.ColumnDefinitions>
                             <ColumnDefinition/>
-                            <ColumnDefinition Width="5"/>
                             <ColumnDefinition/>
                         </Grid.ColumnDefinitions>
-                        <Button Grid.Column="0" x:Name="toggleAddProxiesGroup" Content="新建隧道（点击展开）" HorizontalAlignment="Stretch" Click="toggleAddProxiesGroup_Click"/>
-                        <Button Grid.Column="2" x:Name="delProxieBtn" Content="删除列表所选隧道" HorizontalAlignment="Stretch" Click="delProxieBtn_Click"/>
+                        <Grid Grid.Column="0" Margin="0,0,10,0">
+                            <Grid.RowDefinitions>
+                                <RowDefinition/>
+                                <RowDefinition Height="Auto"/>
+                            </Grid.RowDefinitions>
+                            <ListBox Grid.Row="0" x:Name="TunnelList" SelectionMode="Single" hc:Empty.ShowEmpty="true"/>
+                            <Grid Grid.Row="1" Margin="0,5,0,0">
+                                <Grid.ColumnDefinitions>
+                                    <ColumnDefinition/>
+                                    <ColumnDefinition Width="5"/>
+                                    <ColumnDefinition/>
+                                </Grid.ColumnDefinitions>
+                                <Button x:Name="refreshProxieBtn" Content="刷新" HorizontalAlignment="Stretch" Click="RefreshTunnelList_Click"/>
+                                <Button Grid.Column="2" x:Name="delProxieBtn" Content="删除列表所选隧道" HorizontalAlignment="Stretch" Click="DelProxieBtn_Click"/>
+                            </Grid>
+                        </Grid>
+                        <Grid Grid.Column="1">
+                            <Label x:Name="userInfo" HorizontalAlignment="Stretch" VerticalAlignment="Stretch" FontSize="16"/>
+                            <StackPanel VerticalAlignment="Top" HorizontalAlignment="Right" Margin="5">
+                                <Button x:Name="signBtn" Content="进入官网" Margin="0,0,0,5" Command="hc:ControlCommands.OpenLink" CommandParameter="https://www.openfrp.net/"/>
+                                <Button x:Name="logoutBtn" Content="登出" Style="{StaticResource ButtonDanger}" HorizontalAlignment="Stretch" Click="LogoutBtn_Click"/>
+                            </StackPanel>
+                            
+                        </Grid>
+                    </Grid>
+                    <Grid Grid.Row="1" Margin="0,10,0,0">
+                        <Grid.ColumnDefinitions>
+                            <ColumnDefinition/>
+                            <ColumnDefinition Width="Auto"/>
+                        </Grid.ColumnDefinitions>
+                        <Border Grid.Column="0" Style="{StaticResource BorderTipPrimary}">
+                            <TextBlock Text="本服务由OpenFrp提供&#xA;MSL仅提供接入，其服务内容均与MSL无关" Foreground="{DynamicResource PrimaryTextBrush}" FontSize="16"/>
+                        </Border>
+                        <Button Grid.Column="1" Margin="10,0,0,0" MinWidth="100" x:Name="doneBtn" Content="确定" Style="{StaticResource ButtonPrimary}" HorizontalAlignment="Stretch" VerticalAlignment="Stretch" Click="Button_Click" FontSize="16"/>
                     </Grid>
                 </Grid>
-            </Grid>
-            <Grid Grid.Row="1" Margin="10,0,10,10">
-                <Grid.ColumnDefinitions>
-                    <ColumnDefinition/>
-                    <ColumnDefinition Width="Auto"/>
-                </Grid.ColumnDefinitions>
-                <Border Grid.Column="0" Style="{StaticResource BorderTipPrimary}">
-                    <TextBlock Text="您正在使用的是OpenFrp映射服务！官方网站：https://www.openfrp.net/&#xA;您可登入此网站来管理您的更多信息！&#xA;上面列表将会显示您已创建的映射隧道或可用的映射节点。&#xA;如要新建隧道，请点击上方新建按钮进行创建！" Foreground="{DynamicResource PrimaryTextBrush}" FontSize="16"/>
-                </Border>
-                <Grid Grid.Column="1" Margin="10,0,0,0">
-                    <Grid.RowDefinitions>
-                        <RowDefinition Height="Auto"/>
-                        <RowDefinition/>
-                    </Grid.RowDefinitions>
-                    <Button Grid.Row="0" x:Name="signBtn" Content="进入官网" Width="100" Margin="0,0,0,5" Command="hc:ControlCommands.OpenLink" CommandParameter="https://www.openfrp.net/"/>
-                    <Button Grid.Row="1" x:Name="doneBtn" Content="确定" Style="{StaticResource ButtonPrimary}" HorizontalAlignment="Stretch" VerticalAlignment="Stretch" Click="Button_Click" FontSize="18"/>
+            </TabItem>
+            <TabItem Header="创建隧道">
+                <Grid x:Name="CreateGrid">
+                    <Grid.ColumnDefinitions>
+                        <ColumnDefinition Width="auto"/>
+                        <ColumnDefinition Width="*"/>
+                    </Grid.ColumnDefinitions>
+                    <Grid Grid.Column="0" Margin="0,0,10,0">
+                        <Grid.RowDefinitions>
+                            <RowDefinition Height="auto"/>
+                            <RowDefinition Height="*"/>
+                        </Grid.RowDefinitions>
+                        <Border Style="{StaticResource BorderTipPrimary}" Margin="3">
+                            <TextBlock LineHeight="20" Foreground="{DynamicResource PrimaryTextBrush}" Text="从下面选择一个你喜欢的节点" FontSize="14" HorizontalAlignment="Left"/>
+                        </Border>
+                        <ListBox x:Name="NodeList" Grid.Row="1" MinWidth="300" SelectionMode="Single" hc:Empty.ShowEmpty="true"/>
+                    </Grid>
+                    <Grid Grid.Column="1">
+                        <Grid.RowDefinitions>
+                            <RowDefinition Height="*"/>
+                            <RowDefinition Height="auto"/>
+                        </Grid.RowDefinitions>
+                        <StackPanel Grid.Row="0">
+                            <hc:Card Margin="0,3,0,0">
+                                <StackPanel Margin="3">
+                                    <Label Content="填写隧道参数" BorderThickness="0" FontSize="16" FontWeight="Bold" HorizontalAlignment="Left"/>
+                                    <hc:UniformSpacingPanel Orientation="Vertical" Spacing="10" Margin="10,0,10,10">
+                                        <StackPanel>
+                                            <Label Content="本地端口(Java版默认25565,基岩版默认19132)：" HorizontalAlignment="Left" Background="Transparent" BorderThickness="0" Padding="0" FontSize="14"/>
+                                            <TextBox x:Name="portBox" Text="25565"/>
+                                        </StackPanel>
+                                        <Grid>
+                                            <Grid.ColumnDefinitions>
+                                                <ColumnDefinition Width="Auto"/>
+                                                <ColumnDefinition/>
+                                                <ColumnDefinition Width="Auto"/>
+                                            </Grid.ColumnDefinitions>
+                                            <Label Grid.Column="0" Content="远程端口：" Background="Transparent" BorderThickness="0" Padding="0" FontSize="14"/>
+                                            <TextBox Grid.Column="1" x:Name="remotePortBox" HorizontalAlignment="Stretch" Text="25565"/>
+                                            <Button Grid.Column="2" x:Name="randomRemotePort" Content="随机" VerticalAlignment="Stretch" Width="75" Click="RandomRemotePortBtn_Click"/>
+                                        </Grid>
+                                        <StackPanel Orientation="Horizontal">
+                                            <Label Content="传输协议：" Background="Transparent" BorderThickness="0" Padding="0" FontSize="14" />
+                                            <ComboBox x:Name="frpcType" SelectionChanged="FrpcType_SelectionChanged">
+                                                <ComboBoxItem IsSelected="True" Content="TCP（Java版）"/>
+                                                <ComboBoxItem Content="UDP（基岩版）"/>
+                                            </ComboBox>
+                                        </StackPanel>
+                                        <CheckBox x:Name="enableCompression" Content="启用数据压缩"/>
+                                    </hc:UniformSpacingPanel>
+                                </StackPanel>
+                            </hc:Card>
+                        </StackPanel>
+                        <Button Grid.Row="1" Content="确定创建" HorizontalAlignment="Right" Style="{DynamicResource ButtonPrimary}" MinHeight="42" MinWidth="120" FontSize="16" x:Name="addProxieBtn" Click="AddProxieBtn_Click"/>
+                    </Grid>
                 </Grid>
-            </Grid>
-        </Grid>
+            </TabItem>
+        </TabControl>
+        
         <Grid x:Name="LoginGrid" Visibility="Collapsed">
             <StackPanel HorizontalAlignment="Center" VerticalAlignment="Center" >
-                <TextBlock Margin="20,0,20,10" TextAlignment="Center" Text="使用OpenFrp服务之前，请先登录您的OpenFrp账户：目前仅支持Authorization登录（请进入官网的个人中心获取），且该登陆方式后续可能会被OF官方禁用" TextWrapping="Wrap" HorizontalAlignment="Center" VerticalAlignment="Center" FontSize="16" Foreground="{DynamicResource PrimaryTextBrush}"/>
+                <TextBlock Text="使用OpenFrp服务之前，请先登录您的OpenFrp账户" HorizontalAlignment="Center"  VerticalAlignment="Center"  FontSize="16" Foreground="{DynamicResource PrimaryTextBrush}" Margin="0,0,0,20"/>
                 <StackPanel Orientation="Horizontal" HorizontalAlignment="Center">
-                    <Button x:Name="userTokenLogin" Content="使用Authorization登录" Click="userTokenLogin_Click" Margin="0,0,10,0"/>
+                    <Button x:Name="UserLogin" Content="使用网页授权登录"  Margin="0,0,5,0" Click="UserLogin_Click"/>
+                    <Button x:Name="userTokenLogin" Content="手动输入Authorization登录"  Margin="0,0,5,0" Click="UserTokenLogin_Click"/>
                     <Button x:Name="userRegister" Content="进入官网" Command="hc:ControlCommands.OpenLink" CommandParameter="https://www.openfrp.net/"/>
                 </StackPanel>
                 <CheckBox Content="保存登录状态（风险自负哦~）" HorizontalAlignment="Center" Margin="0,10,0,0" x:Name="SaveToken"/>
+                <TextBlock Text="如果您不知道什么是Authorization，请使用授权方式登录" HorizontalAlignment="Center"  VerticalAlignment="Center"  FontSize="13" Foreground="{DynamicResource PrimaryTextBrush}" Margin="0,10,0,0"/>
             </StackPanel>
         </Grid>
     </Grid>
