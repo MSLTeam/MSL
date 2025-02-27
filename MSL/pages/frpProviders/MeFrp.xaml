@@ -178,11 +178,11 @@
 
         <Grid x:Name="LoginGrid" Visibility="Collapsed">
             <StackPanel HorizontalAlignment="Center" VerticalAlignment="Center" >
-                <TextBlock Text="使用ME Frp服务之前，请先登录您的ME Frp账户" HorizontalAlignment="Center"  VerticalAlignment="Center"  FontSize="16" Foreground="{DynamicResource PrimaryTextBrush}" Margin="0,0,0,20"/>
+                <TextBlock Text="使用 ME Frp 服务之前，请先登录您的 ME Frp 账户" HorizontalAlignment="Center"  VerticalAlignment="Center"  FontSize="16" Foreground="{DynamicResource PrimaryTextBrush}" Margin="0,0,0,20"/>
                 <StackPanel Orientation="Horizontal" HorizontalAlignment="Center">
-                    <Button x:Name="userTokenLogin" Content="使用访问密钥登录" Style="{StaticResource ButtonPrimary}" Margin="0,0,5,0" Click="UserTokenLogin_Click"/>
-                    <Button x:Name="userPasswordLogin" Content="使用账户密码登录" Margin="0,0,5,0" Click="userPasswordLogin_Click"/>
-                    <Button x:Name="userRegister" Content="注册/进入用户中心" Margin="5,0,0,0" Command="hc:ControlCommands.OpenLink" CommandParameter="https://www.mefrp.com/auth/login" />
+                    <Button x:Name="userTokenLogin" Content="使用访问密钥登录" Style="{StaticResource ButtonPrimary}" Click="UserTokenLogin_Click"/>
+                    <Button x:Name="userPasswordLogin" Content="使用账户密码登录" Margin="10,0,10,0" Click="userPasswordLogin_Click"/>
+                    <Button x:Name="userRegister" Content="注册/进入用户中心" Command="hc:ControlCommands.OpenLink" CommandParameter="https://www.mefrp.com/auth/login" />
                 </StackPanel>
                 <CheckBox Content="保存登录状态（风险自负哦~）" HorizontalAlignment="Center" Margin="0,10,0,0" x:Name="SaveToken"/>
                 <TextBlock Text="如果您不知道什么是访问密钥，请前往MeFrp用户中心寻找" HorizontalAlignment="Center"  VerticalAlignment="Center"  FontSize="13" Foreground="{DynamicResource PrimaryTextBrush}" Margin="0,10,0,0"/>

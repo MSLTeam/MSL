@@ -44,7 +44,7 @@ namespace MSL
         public static string ServerLink { get; set; }
         public static Version MSLVersion { get; set; }
         public static string DeviceID { get; set; }
-        
+
 
         public MainWindow()
         {

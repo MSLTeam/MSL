@@ -175,10 +175,10 @@
         </TabControl>
         <Grid x:Name="LoginGrid" Visibility="Collapsed">
             <StackPanel HorizontalAlignment="Center" VerticalAlignment="Center" >
-                <TextBlock Text="使用ChmlFrp服务之前，请先登录您的ChmlFrp账户" HorizontalAlignment="Center"  VerticalAlignment="Center"  FontSize="16" Foreground="{DynamicResource PrimaryTextBrush}" Margin="0,0,0,20"/>
+                <TextBlock Text="使用 ChmlFrp 服务之前，请先登录您的 ChmlFrp 账户" HorizontalAlignment="Center"  VerticalAlignment="Center"  FontSize="16" Foreground="{DynamicResource PrimaryTextBrush}" Margin="0,0,0,20"/>
                 <StackPanel Orientation="Horizontal">
-                    <Button x:Name="userTokenLogin" Content="使用Token登录"  Click="UserTokenLogin_Click" Margin="0,0,10,0"/>
-                    <Button x:Name="userLogin" Content="使用账户密码登录"  Click="UserLogin_Click" Margin="0,0,10,0"/>
+                    <Button x:Name="userTokenLogin" Content="使用Token登录" Style="{StaticResource ButtonPrimary}" Click="UserTokenLogin_Click"/>
+                    <Button x:Name="userLogin" Content="使用账户密码登录" Margin="10,0,10,0" Click="UserLogin_Click"/>
                     <Button x:Name="userRegister" Content="我没有ChmlFrp账户，点击注册" Command="hc:ControlCommands.OpenLink" CommandParameter="https://panel.chmlfrp.cn/register"/>
                 </StackPanel>
                 <CheckBox Content="保存登录状态（风险自负哦~）" HorizontalAlignment="Center" Margin="0,10,0,0" x:Name="SaveToken"/>

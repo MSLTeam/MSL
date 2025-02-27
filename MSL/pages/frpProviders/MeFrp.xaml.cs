@@ -8,7 +8,6 @@ using System.Net.Http.Headers;
 using System.Threading.Tasks;
 using System.Windows;
 using System.Windows.Controls;
-using static System.Windows.Forms.VisualStyles.VisualStyleElement.Tab;
 
 namespace MSL.pages.frpProviders
 {
@@ -98,7 +97,7 @@ namespace MSL.pages.frpProviders
             }
         }
 
-        private async Task GetUserToken(string user,string password,bool save)
+        private async Task GetUserToken(string user, string password, bool save)
         {
             try
             {
@@ -107,10 +106,10 @@ namespace MSL.pages.frpProviders
                     ["username"] = user,
                     ["password"] = password
                 });
-                if(res.HttpResponseCode == HttpStatusCode.OK)
+                if (res.HttpResponseCode == HttpStatusCode.OK)
                 {
                     JObject jres = JObject.Parse((string)res.HttpResponseContent);
-                    if(jres["code"].Value<int>() == 200)
+                    if (jres["code"].Value<int>() == 200)
                     {
                         await VerifyUserToken(jres["data"]["token"].ToString(), save);
                     }
@@ -121,10 +120,10 @@ namespace MSL.pages.frpProviders
                 }
                 else
                 {
-                    await MagicShow.ShowMsgDialogAsync(Window.GetWindow(this), "登陆失败！请检查账号密码！" , "错误");
+                    await MagicShow.ShowMsgDialogAsync(Window.GetWindow(this), "登陆失败！请检查账号密码！", "错误");
                 }
             }
-            catch(Exception ex)
+            catch (Exception ex)
             {
                 await MagicShow.ShowMsgDialogAsync(Window.GetWindow(this), "登陆失败！" + ex.Message, "错误");
             }
@@ -150,11 +149,11 @@ namespace MSL.pages.frpProviders
                     LoginGrid.Visibility = Visibility.Collapsed; ;
                     MainCtrl.Visibility = Visibility.Visible;
                     JObject JsonUserInfo = JObject.Parse((string)res.HttpResponseContent);
-                    if(JsonUserInfo["data"]["todaySigned"].Value<bool>() == true)
+                    if (JsonUserInfo["data"]["todaySigned"].Value<bool>() == true)
                     {
                         SignBtn.IsEnabled = false;
                     }
-                    if(JsonUserInfo["data"]["friendlyGroup"].Value<string>() != "未实名")
+                    if (JsonUserInfo["data"]["friendlyGroup"].Value<string>() != "未实名")
                     {
                         RealNameTips.Visibility = Visibility.Collapsed;
                     }
@@ -425,16 +424,16 @@ namespace MSL.pages.frpProviders
                 //请求body
                 var body = new JObject
                 {
-                    ["accessKey"]="",
-                    ["headerXFromWhere"]="",
-                    ["hostHeaderRewrite"]="",
-                    ["proxyProtocolVersion"]="",
+                    ["accessKey"] = "",
+                    ["headerXFromWhere"] = "",
+                    ["hostHeaderRewrite"] = "",
+                    ["proxyProtocolVersion"] = "",
                     ["nodeId"] = selectedNode.ID,
                     ["proxyName"] = Create_Name.Text,
                     ["proxyType"] = Create_Protocol.Text,
                     ["localIp"] = Create_LocalIP.Text,
                     ["localPort"] = int.Parse(Create_LocalPort.Text),
-                    ["remotePort"]=int.Parse(Create_RemotePort.Text),
+                    ["remotePort"] = int.Parse(Create_RemotePort.Text),
                     ["domain"] = Create_BindDomain.Text,
                     ["useCompression"] = false,
                     ["useEncryption"] = false,
@@ -473,7 +472,8 @@ namespace MSL.pages.frpProviders
                     SignBtn.IsEnabled = false;
                 }
             }
-            catch {
+            catch
+            {
                 await MagicShow.ShowMsgDialogAsync(Window.GetWindow(this), "签到失败！", "错误");
             }
         }

@@ -1,10 +1,6 @@
 ﻿using MSL.utils;
 using Newtonsoft.Json;
 using Newtonsoft.Json.Linq;
-using Org.BouncyCastle.Crypto.Agreement;
-using Org.BouncyCastle.Crypto.Generators;
-using Org.BouncyCastle.Crypto.Parameters;
-using Org.BouncyCastle.Security;
 using Sodium;
 using System;
 using System.Collections.Generic;
@@ -181,60 +177,17 @@ namespace MSL.pages.frpProviders
                     );
 
                     string decryptedText = Encoding.UTF8.GetString(decryptedBytes);
-                    MagicFlowMsg.ShowMessage($"成功解密(方法1)： {decryptedText.Substring(0, 5)}***{decryptedText.Substring(decryptedText.Length - 6, 5)}");
+                    MagicFlowMsg.ShowMessage($"成功解密： {decryptedText.Substring(0, 5)}***{decryptedText.Substring(decryptedText.Length - 6, 5)}");
                     await TokenLogin(decryptedText);
                     return;
                 }
                 catch (Exception ex)
                 {
-                    Console.WriteLine($"方法1解密失败: {ex.Message}");
+                    MagicFlowMsg.ShowMessage($"解密失败: {ex.Message}", 2);
+                    // Console.WriteLine($"解密失败: {ex.Message}");
                 }
 
-                // 方法 2: 尝试密钥格式转换为 libsodium 期望的格式
-                try
-                {
-                    // X25519KeyAgreement 的输出是 32 字节，但 libsodium 可能期望不同的格式
-                    var agreement = new X25519Agreement();
-                    agreement.Init(new X25519PrivateKeyParameters(privateKeyBytes, 0));
-                    byte[] sharedSecret = new byte[32];
-                    agreement.CalculateAgreement(new X25519PublicKeyParameters(serverPublicKeyBytes, 0), sharedSecret, 0);
-
-                    // 使用共享密钥和 SecretBox 进行解密
-                    byte[] decryptedBytes = SecretBox.Open(cipherText, nonce, sharedSecret);
-
-                    string decryptedText = Encoding.UTF8.GetString(decryptedBytes);
-                    MagicFlowMsg.ShowMessage($"成功解密(方法2)： {decryptedText.Substring(0, 5)}***{decryptedText.Substring(decryptedText.Length - 6, 5)}");
-                    await TokenLogin(decryptedText);
-                    return;
-                }
-                catch (Exception ex)
-                {
-                    Console.WriteLine($"方法2解密失败: {ex.Message}");
-                }
-
-                // 方法 3: 尝试使用 SealedPublicKeyBox (匿名发件人)
-                try
-                {
-                    // 某些实现可能使用了密封盒子，没有单独的 nonce
-                    byte[] combinedCipherText = encryptedData;
-
-                    byte[] decryptedBytes = SealedPublicKeyBox.Open(
-                        combinedCipherText,
-                        serverPublicKeyBytes,
-                        privateKeyBytes
-                    );
-
-                    string decryptedText = Encoding.UTF8.GetString(decryptedBytes);
-                    MagicFlowMsg.ShowMessage($"成功解密(方法3)： {decryptedText.Substring(0, 5)}***{decryptedText.Substring(decryptedText.Length - 6, 5)}");
-                    await TokenLogin(decryptedText);
-                    return;
-                }
-                catch (Exception ex)
-                {
-                    Console.WriteLine($"方法3解密失败: {ex.Message}");
-                }
-
-                MagicShow.ShowMsgDialog("所有解密方法都失败了。登陆失败。", "err");
+                MagicShow.ShowMsgDialog("登陆失败！", "err");
             }
             catch (Exception ex)
             {

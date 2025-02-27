@@ -16,7 +16,6 @@ using System.Windows;
 using System.Windows.Controls;
 using System.Windows.Media;
 using System.Windows.Threading;
-using static System.Windows.Forms.LinkLabel;
 using MessageBox = System.Windows.MessageBox;
 using Window = System.Windows.Window;
 
@@ -451,7 +450,7 @@ namespace MSL.pages
                             }
                         }
                     }
-                    else if(downloadUrl == "MeFrp")
+                    else if (downloadUrl == "MeFrp")
                     {
                         try
                         {
@@ -487,12 +486,13 @@ namespace MSL.pages
                             string fileName = $"https://resources.mefrp.com/d/ME-Frp/Local/MEFrpc/{version}/{targetFile["name"].ToString()}";
                             await MagicShow.ShowDownloader(Window.GetWindow(this), fileName, "MSL\\frp", downloadFileName, LanguageManager.Instance["Download_Frpc_Info"]);
                         }
-                        catch (Exception ex) {
-                            Growl.Error("MeFrp下载失败！"+ex.Message);
+                        catch (Exception ex)
+                        {
+                            Growl.Error("MeFrp下载失败！" + ex.Message);
                             return;
                         }
 
-                       
+
                     }
                     else if (downloadUrl != "")
                     {
@@ -520,7 +520,7 @@ namespace MSL.pages
                             File.Move("MSL\\frp\\" + fileName, $"MSL\\frp\\{frpcExeName}");
                             File.Delete("MSL\\frp\\" + fileName);
                         }
-                        else if(frpcServer ==4) //这是chml的解压处理
+                        else if (frpcServer == 4) //这是chml的解压处理
                         {
                             File.Move("MSL\\frp\\" + fileName + $"\\mefrpc.exe", $"MSL\\frp\\{frpcExeName}");
                             Directory.Delete("MSL\\frp\\" + fileName, true);

@@ -173,10 +173,10 @@
         
         <Grid x:Name="LoginGrid" Visibility="Collapsed">
             <StackPanel HorizontalAlignment="Center" VerticalAlignment="Center" >
-                <TextBlock Text="使用Sakura Frp服务之前，请先登录您的Sakura Frp账户" HorizontalAlignment="Center"  VerticalAlignment="Center"  FontSize="16" Foreground="{DynamicResource PrimaryTextBrush}" Margin="0,0,0,20"/>
+                <TextBlock Text="使用 Sakura Frp 服务之前，请先登录您的 Sakura Frp 账户" HorizontalAlignment="Center"  VerticalAlignment="Center"  FontSize="16" Foreground="{DynamicResource PrimaryTextBrush}" Margin="0,0,0,20"/>
                 <StackPanel Orientation="Horizontal" HorizontalAlignment="Center">
-                    <Button x:Name="userTokenLogin" Content="使用访问密钥登录"  Style="{StaticResource ButtonPrimary}" Margin="0,0,5,0" Click="UserTokenLogin_Click"/>
-                    <Button x:Name="userRegister" Content="注册/进入用户中心" Margin="5,0,0,0" Command="hc:ControlCommands.OpenLink" CommandParameter="https://www.natfrp.com/user/profile" />
+                    <Button x:Name="userTokenLogin" Content="使用访问密钥登录" Style="{StaticResource ButtonPrimary}" Margin="0,0,10,0" Click="UserTokenLogin_Click"/>
+                    <Button x:Name="userRegister" Content="注册/进入用户中心" Command="hc:ControlCommands.OpenLink" CommandParameter="https://www.natfrp.com/user/profile" />
                 </StackPanel>
                 <CheckBox Content="保存登录状态（风险自负哦~）" HorizontalAlignment="Center" Margin="0,10,0,0" x:Name="SaveToken"/>
                 <TextBlock Text="如果您不知道什么是访问密钥，请前往Sakura用户中心寻找" HorizontalAlignment="Center"  VerticalAlignment="Center"  FontSize="13" Foreground="{DynamicResource PrimaryTextBrush}" Margin="0,10,0,0"/>

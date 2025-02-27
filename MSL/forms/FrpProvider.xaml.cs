@@ -11,7 +11,7 @@ namespace MSL
     /// </summary>
     public partial class FrpProvider : HandyControl.Controls.Window
     {
-        private readonly List<Page> Pages = new List<Page> { new MSLFrp(), new SakuraFrp(), new OpenFrp(), new ChmlFrp(), new MeFrp(), new Custom() };
+        private readonly List<Page> Pages = new List<Page> { new MSLFrp(), new OpenFrp(), new SakuraFrp(), new ChmlFrp(), new MeFrp(), new Custom() };
         public FrpProvider()
         {
             InitializeComponent();

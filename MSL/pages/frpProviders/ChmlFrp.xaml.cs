@@ -252,7 +252,7 @@ namespace MSL.pages.frpProviders
                 {
                     return;
                 }
-                catch(Exception ex)
+                catch (Exception ex)
                 {
                     MagicShow.ShowMsgDialog(ex.Message, "错误");
                 }
@@ -364,7 +364,7 @@ namespace MSL.pages.frpProviders
                         {
                             //好了
                             MagicShow.ShowMsgDialog(Window.GetWindow(this), "隧道删除成功！", "删除");
-                            _ =  GetFrpList();//刷新下列表
+                            _ = GetFrpList();//刷新下列表
                         }
                         else
                         {

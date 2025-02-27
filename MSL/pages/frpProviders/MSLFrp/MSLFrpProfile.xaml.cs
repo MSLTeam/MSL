@@ -132,12 +132,12 @@ namespace MSL.pages.frpProviders.MSLFrp
 
         private async void RealnameVerify_Button_Click(object sender, RoutedEventArgs e)
         {
-            if(await MagicShow.ShowMsgDialogAsync("目前软件仅支持使用中国大陆二代身份证+支付宝方式进行实名，若您不符合上述条件，请前往官网进行实名！\n您确定要继续吗？", "提示", true) == false)
+            if (await MagicShow.ShowMsgDialogAsync("目前软件仅支持使用中国大陆二代身份证+支付宝方式进行实名，若您不符合上述条件，请前往官网进行实名！\n您确定要继续吗？", "提示", true) == false)
             {
                 return;
             }
             RealnameVerify_Button.IsEnabled = false;
-            string certID=await MagicShow.ShowInput(Window.GetWindow(this), "请输入您的身份证号码", "");
+            string certID = await MagicShow.ShowInput(Window.GetWindow(this), "请输入您的身份证号码", "");
             string certName = await MagicShow.ShowInput(Window.GetWindow(this), "请输入您的真实姓名", "");
 
             var parameterData = new Dictionary<string, string> {
@@ -146,7 +146,7 @@ namespace MSL.pages.frpProviders.MSLFrp
                 { "cert_type", "IDENTITY_CARD" },
                 { "verify_type", "alipay" }
             };
-            var (Code, Data, Msg) = await MSLFrpApi.ApiPost("/user/submitRealNameVerify",2,parameterData);
+            var (Code, Data, Msg) = await MSLFrpApi.ApiPost("/user/submitRealNameVerify", 2, parameterData);
             if (Code == 200)
             {
                 Image qrCodeImageBox = new()
@@ -166,7 +166,7 @@ namespace MSL.pages.frpProviders.MSLFrp
                     (Code, Data, Msg) = await MSLFrpApi.ApiGet("/user/getRealNameVerifyResult");
                     if (Code == 200)
                     {
-                        if((bool)Data["passed"])
+                        if ((bool)Data["passed"])
                             MagicShow.ShowMsgDialog("实名认证成功！", "成功");
                         else
                             MagicShow.ShowMsgDialog("实名认证未通过！", "失败");
@@ -236,7 +236,7 @@ namespace MSL.pages.frpProviders.MSLFrp
         private async Task BuyGood(int id)
         {
             var parameterData = new Dictionary<string, string> { { "good", id.ToString() } };
-            var (Code,_, Msg) = await MSLFrpApi.ApiPost("/shop/buy", 2, parameterData);
+            var (Code, _, Msg) = await MSLFrpApi.ApiPost("/shop/buy", 2, parameterData);
             if (Code == 200)
             {
                 MagicShow.ShowMsgDialog(Window.GetWindow(this), Msg, "提示");
