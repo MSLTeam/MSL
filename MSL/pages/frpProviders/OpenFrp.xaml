@@ -120,7 +120,7 @@
             <StackPanel HorizontalAlignment="Center" VerticalAlignment="Center" >
                 <TextBlock Text="使用OpenFrp服务之前，请先登录您的OpenFrp账户" HorizontalAlignment="Center"  VerticalAlignment="Center"  FontSize="16" Foreground="{DynamicResource PrimaryTextBrush}" Margin="0,0,0,20"/>
                 <StackPanel Orientation="Horizontal" HorizontalAlignment="Center">
-                    <Button x:Name="UserLogin" Content="使用网页授权登录"  Margin="0,0,5,0" Click="UserLogin_Click"/>
+                    <Button x:Name="UserLogin" Content="使用网页授权登录"  Style="{StaticResource ButtonPrimary}" Margin="0,0,5,0" Click="UserLogin_Click"/>
                     <Button x:Name="userTokenLogin" Content="手动输入Authorization登录"  Margin="0,0,5,0" Click="UserTokenLogin_Click"/>
                     <Button x:Name="userRegister" Content="进入官网" Command="hc:ControlCommands.OpenLink" CommandParameter="https://www.openfrp.net/"/>
                 </StackPanel>

@@ -139,7 +139,7 @@
                                     <WrapPanel>
                                         <StackPanel Orientation="Horizontal" Margin="0,0,0,6">
                                             <TextBlock LineHeight="20" Foreground="{DynamicResource PrimaryTextBrush}" Text="隧道名称(英文):" FontSize="14" Margin="10,0,6,0" VerticalAlignment="Center"/>
-                                            <TextBox Text="MySakuraFrp" x:Name="Create_Name" MinWidth="100"/>
+                                            <TextBox Text="MyMEFrp" x:Name="Create_Name" MinWidth="100"/>
                                         </StackPanel>
                                         <StackPanel Orientation="Horizontal" Margin="0,0,0,6">
                                             <TextBlock LineHeight="20" Foreground="{DynamicResource PrimaryTextBrush}" Text="本地IP:" FontSize="14" Margin="10,0,6,0" VerticalAlignment="Center"/>
@@ -180,8 +180,8 @@
             <StackPanel HorizontalAlignment="Center" VerticalAlignment="Center" >
                 <TextBlock Text="使用ME Frp服务之前，请先登录您的ME Frp账户" HorizontalAlignment="Center"  VerticalAlignment="Center"  FontSize="16" Foreground="{DynamicResource PrimaryTextBrush}" Margin="0,0,0,20"/>
                 <StackPanel Orientation="Horizontal" HorizontalAlignment="Center">
-                    <Button x:Name="userPasswordLogin" Style="{StaticResource ButtonPrimary}" Content="使用账户密码登录"   Margin="0,0,5,0" Click="userPasswordLogin_Click"/>
-                    <Button x:Name="userTokenLogin" Content="使用访问密钥登录"   Margin="0,0,5,0" Click="UserTokenLogin_Click"/>
+                    <Button x:Name="userTokenLogin" Content="使用访问密钥登录" Style="{StaticResource ButtonPrimary}" Margin="0,0,5,0" Click="UserTokenLogin_Click"/>
+                    <Button x:Name="userPasswordLogin" Content="使用账户密码登录" Margin="0,0,5,0" Click="userPasswordLogin_Click"/>
                     <Button x:Name="userRegister" Content="注册/进入用户中心" Margin="5,0,0,0" Command="hc:ControlCommands.OpenLink" CommandParameter="https://www.mefrp.com/auth/login" />
                 </StackPanel>
                 <CheckBox Content="保存登录状态（风险自负哦~）" HorizontalAlignment="Center" Margin="0,10,0,0" x:Name="SaveToken"/>
