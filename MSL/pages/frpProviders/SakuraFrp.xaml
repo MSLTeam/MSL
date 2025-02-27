@@ -89,7 +89,7 @@
                     </Grid>
                 </Grid>
             </TabItem>
-            <TabItem Header="隧道列表">
+            <TabItem Header="新建隧道">
                 <Grid x:Name="CreateGrid">
                     <Grid.ColumnDefinitions>
                         <ColumnDefinition Width="auto"/>
