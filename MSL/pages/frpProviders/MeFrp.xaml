@@ -47,37 +47,40 @@
                                 <Button Content="刷新" x:Name="RefreshBtn"  Style="{StaticResource ButtonPrimary}" HorizontalAlignment="Stretch" Grid.Column="1" Margin="3,0,0,0" Click="RefreshBtn_Click"/>
                             </Grid>
                         </Grid>
-                        <StackPanel Grid.Column="1" Margin="10,0,0,0" >
-                            <hc:Card>
-                                <Grid>
-                                    <Grid.ColumnDefinitions>
-                                        <ColumnDefinition Width="*"/>
-                                        <ColumnDefinition Width="auto"/>
-                                    </Grid.ColumnDefinitions>
-                                    <StackPanel Margin="3" Grid.Column="0" HorizontalAlignment="Left">
-                                        <Label Content="用户信息" BorderThickness="0" FontSize="16" FontWeight="Bold" HorizontalAlignment="Left"/>
-                                        <TextBlock x:Name="UserInfo" LineHeight="20" Foreground="{DynamicResource PrimaryTextBrush}" Text="Loadings······" FontSize="14" HorizontalAlignment="Left" Margin="10,0,0,0"/>
+                        <hc:ScrollViewer  Grid.Column="1" Margin="10,0,0,0">
+                            <StackPanel >
+                                <hc:Card>
+                                    <Grid>
+                                        <Grid.ColumnDefinitions>
+                                            <ColumnDefinition Width="*"/>
+                                            <ColumnDefinition Width="auto"/>
+                                        </Grid.ColumnDefinitions>
+                                        <StackPanel Margin="3" Grid.Column="0" HorizontalAlignment="Left">
+                                            <Label Content="用户信息" BorderThickness="0" FontSize="16" FontWeight="Bold" HorizontalAlignment="Left"/>
+                                            <TextBlock x:Name="UserInfo" LineHeight="20" Foreground="{DynamicResource PrimaryTextBrush}" Text="Loadings······" FontSize="14" HorizontalAlignment="Left" Margin="10,0,0,0"/>
+                                        </StackPanel>
+                                        <StackPanel Grid.Column="1" Margin="0,5,8,5" >
+                                            <Button Content="打开官网" x:Name="OpenWeb" Margin="0,0,0,3" Style="{DynamicResource ButtonPrimary}" HorizontalAlignment="Stretch"  Command="hc:ControlCommands.OpenLink" CommandParameter="https://www.natfrp.com/user/profile"/>
+                                            <Button Content="签到" x:Name="SignBtn" Margin="0,3,0,0" Style="{StaticResource ButtonPrimary}" HorizontalAlignment="Stretch" Click="SignBtn_Click" />
+                                            <Button Content="退出登录" x:Name="ExitBtn" Margin="0,3,0,0" Style="{StaticResource ButtonDanger}" HorizontalAlignment="Stretch" Click="ExitBtn_Click" />
+                                        </StackPanel>
+                                    </Grid>
+                                </hc:Card>
+                                <hc:Card Margin="0,5,0,0">
+                                    <StackPanel Margin="3,3,3,6" HorizontalAlignment="Left">
+                                        <Label Content="隧道信息" BorderThickness="0" FontSize="16" FontWeight="Bold" HorizontalAlignment="Left"/>
+                                        <TextBlock x:Name="TunnelInfo_Text" LineHeight="20" Foreground="{DynamicResource PrimaryTextBrush}" Text="请选择一条隧道~" FontSize="14" HorizontalAlignment="Left" Margin="10,0,0,0"/>
+                                        <StackPanel Orientation="Horizontal" Margin="0,2,0,0">
+                                            <Label Content="本地IP:" BorderThickness="0" FontSize="14" HorizontalAlignment="Left"/>
+                                            <TextBox MinWidth="100" x:Name="LocalIp" IsReadOnly="True"/>
+                                            <Label Content="本地端口:" BorderThickness="0" FontSize="14" HorizontalAlignment="Left" Margin="10,0,0,0"/>
+                                            <TextBox MinWidth="100" x:Name="LocalPort" IsReadOnly="True"/> 
+                                        </StackPanel>
                                     </StackPanel>
-                                    <StackPanel Grid.Column="1" Margin="0,5,8,5" >
-                                        <Button Content="打开官网" x:Name="OpenWeb" Margin="0,0,0,3" Style="{DynamicResource ButtonPrimary}" HorizontalAlignment="Stretch"  Command="hc:ControlCommands.OpenLink" CommandParameter="https://www.natfrp.com/user/profile"/>
-                                        <Button Content="签到" x:Name="SignBtn" Margin="0,3,0,0" Style="{StaticResource ButtonPrimary}" HorizontalAlignment="Stretch" Click="SignBtn_Click" />
-                                        <Button Content="退出登录" x:Name="ExitBtn" Margin="0,3,0,0" Style="{StaticResource ButtonDanger}" HorizontalAlignment="Stretch" Click="ExitBtn_Click" />
-                                    </StackPanel>
-                                </Grid>
-                            </hc:Card>
-                            <hc:Card Margin="0,5,0,0">
-                                <StackPanel Margin="3,3,3,6" HorizontalAlignment="Left">
-                                    <Label Content="隧道信息" BorderThickness="0" FontSize="16" FontWeight="Bold" HorizontalAlignment="Left"/>
-                                    <TextBlock x:Name="TunnelInfo_Text" LineHeight="20" Foreground="{DynamicResource PrimaryTextBrush}" Text="请选择一条隧道~" FontSize="14" HorizontalAlignment="Left" Margin="10,0,0,0"/>
-                                    <StackPanel Orientation="Horizontal" Margin="0,2,0,0">
-                                        <Label Content="本地IP:" BorderThickness="0" FontSize="14" HorizontalAlignment="Left"/>
-                                        <TextBox MinWidth="100" x:Name="LocalIp" IsReadOnly="True"/>
-                                        <Label Content="本地端口:" BorderThickness="0" FontSize="14" HorizontalAlignment="Left" Margin="10,0,0,0"/>
-                                        <TextBox MinWidth="100" x:Name="LocalPort" IsReadOnly="True"/>
-                                    </StackPanel>
-                                </StackPanel>
-                            </hc:Card>
-                        </StackPanel>
+                                </hc:Card>
+                            </StackPanel>
+                        </hc:ScrollViewer>
+                        
                     </Grid>
                     <Grid Grid.Row="1">
                         <Grid.ColumnDefinitions>
