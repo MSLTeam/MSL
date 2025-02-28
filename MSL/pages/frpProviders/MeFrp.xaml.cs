@@ -461,7 +461,7 @@ namespace MSL.pages.frpProviders
         {
             try
             {
-                HttpResponse res = await HttpService.GetAsync(ApiUrl + "/auth/user/info", headers =>
+                HttpResponse res = await HttpService.GetAsync(ApiUrl + "/auth/user/sign", headers =>
                 {
                     headers.Add("Authorization", $"Bearer {UserToken}");
                 });
@@ -470,6 +470,7 @@ namespace MSL.pages.frpProviders
                     JObject jsonres = JObject.Parse((string)res.HttpResponseContent);
                     await MagicShow.ShowMsgDialogAsync(Window.GetWindow(this), $"签到成功！\n获得流量: {jsonres["data"]["extraTraffic"]} G", "签到成功");
                     SignBtn.IsEnabled = false;
+                    await VerifyUserToken(UserToken, false);
                 }
             }
             catch
