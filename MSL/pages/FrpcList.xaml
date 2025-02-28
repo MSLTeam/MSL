@@ -20,14 +20,12 @@
             <StackPanel Grid.Row="0" Orientation="Horizontal" HorizontalAlignment="Right" VerticalAlignment="Top">
                 <Button x:Name="MyInfo" Content="我的MSL-Frp信息" Click="MyInfo_Click"/>
             </StackPanel>
-            <Border Grid.Row="1" CornerRadius="10" BorderThickness="0" Background="{DynamicResource BackgroundBrush}">
-                <ListBox x:Name="FrpcListBox" Background="{x:Null}" BorderBrush="{x:Null}" hc:Empty.ShowEmpty="true" MouseDoubleClick="FrpcListBox_MouseDoubleClick" KeyUp="FrpcListBox_KeyUp">
+            <Border Grid.Row="1" CornerRadius="10" BorderThickness="0" Background="{DynamicResource BackgroundBrush}" Padding="3">
+                <ListBox x:Name="FrpcListBox" Background="Transparent" BorderThickness="0" hc:Empty.ShowEmpty="true" MouseDoubleClick="FrpcListBox_MouseDoubleClick" KeyUp="FrpcListBox_KeyUp">
                     <ListBox.ItemTemplate>
                         <DataTemplate>
                             <StackPanel Orientation="Horizontal">
                                 <TextBlock Text="{Binding Name}" Margin="3"/>
-                                
-                                
                             </StackPanel>
                         </DataTemplate>
                     </ListBox.ItemTemplate>

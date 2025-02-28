@@ -387,7 +387,7 @@ BMCLAPI —— Vanilla服务端、Forge服务端（及其库文件）国内镜�
     <value>推荐</value>
   </data>
   <data name="Page_OnlinePage_Announce" xml:space="preserve">
-    <value>注意：此功能目前不稳定，无法穿透所有类型的NAT，若联机失败，请尝试开服务器并使用内网映射联机！
+    <value>注意：此功能尚不稳定，无法穿透所有类型的NAT，若联机失败，请尝试开服务器并使用内网映射联机！
 该功能可能需要正版账户，若无法联机，请从网络上寻找解决方法或尝试开服务器并使用内网映射联机！</value>
   </data>
   <data name="Page_OnlinePage_CloseRoom" xml:space="preserve">

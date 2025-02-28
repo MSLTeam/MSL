@@ -24,7 +24,7 @@
                 <Button Content="下载服务端" x:Name="DlServerCoreBtn" hc:IconElement.Geometry="{StaticResource DownloadGeometry}" Click="DlServerCoreBtn_Click"/>
             </StackPanel>
             <Border Grid.Row="1" CornerRadius="10" BorderThickness="0" Background="{DynamicResource BackgroundBrush}">
-                <ListView x:Name="serverList" hc:Empty.ShowEmpty="true" MouseDoubleClick="serverList_MouseDoubleClick" FontSize="16" SelectionMode="Single" SelectionChanged="serverList_SelectionChanged" Background="{x:Null}" BorderBrush="{x:Null}">
+                <ListView x:Name="serverList" hc:Empty.ShowEmpty="true" MouseDoubleClick="serverList_MouseDoubleClick" FontSize="16" SelectionMode="Single" SelectionChanged="serverList_SelectionChanged" Background="Transparent" BorderThickness="0">
                     <ListView.ContextMenu>
                         <ContextMenu FontSize="14">
                             <MenuItem Click="refreshList_Click" Header="{Binding [Page_ServerList_Refresh], Source={x:Static langs:LanguageManager.Instance}}"/>

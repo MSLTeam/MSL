@@ -18,7 +18,6 @@ namespace MSL.pages
     {
         public static event DeleControl CreateServerEvent;
         public static event DeleControl AutoOpenServer;
-        public static event DeleControl GotoP2PEvent;
 
         public Home()
         {
@@ -288,11 +287,6 @@ namespace MSL.pages
                 }
                 AutoOpenServer();
             }
-        }
-
-        private void gotoFrpBtn_Click(object sender, RoutedEventArgs e)
-        {
-            GotoP2PEvent();
         }
 
         private void startServerDropdown_SelectionChanged(object sender, SelectionChangedEventArgs e)

@@ -17,7 +17,6 @@ using System.Windows;
 using System.Windows.Controls;
 using System.Windows.Media;
 using System.Windows.Threading;
-using MessageBox = System.Windows.MessageBox;
 
 namespace MSL
 {
@@ -43,13 +42,13 @@ namespace MSL
         public static bool LoadingCompleted = false;
         public static string ServerLink { get; set; }
         public static Version MSLVersion { get; set; }
+        // public static bool IsOldVersion { get; set; } 旧版本会加一个叹号提示（现在暂没使用此功能），后续可能会用上此字段
         public static string DeviceID { get; set; }
 
 
         public MainWindow()
         {
             InitializeComponent();
-            Home.GotoP2PEvent += GotoOnlinePage;
             Home.CreateServerEvent += GotoCreatePage;
             ServerList.CreateServerEvent += GotoCreatePage;
             FrpcList.OpenFrpcPage += OpenFrpcPage;
@@ -321,19 +320,10 @@ namespace MSL
                 }
                 else if (jsonObject["autoOpenServer"].ToString() != "False")
                 {
-                    string servers = jsonObject["autoOpenServer"].ToString();
-                    Growl.Info(LanguageManager.Instance["MainWindow_GrowlMsg_AutoLaunchServer"]);
-                    if (!servers.Contains(","))
+                    // 判断是否开了自动更新软件，如果开了自动更新软件，先不执行此操作
+                    if (jsonObject["autoUpdateApp"] == null || jsonObject["autoUpdateApp"].ToString() != "True")
                     {
-                        servers += ",";
-                    }
-                    while (servers != "")
-                    {
-                        int aserver = servers.IndexOf(",");
-                        ServerList.ServerID = int.Parse(servers.Substring(0, aserver));
-                        AutoOpenServer();
-                        servers = servers.Replace(ServerList.ServerID.ToString() + ",", "");
-                        //await Task.Delay(100);
+                        await AutoRunServer(jsonObject);
                     }
                 }
                 //Logger.LogInfo("读取自动开启（服务器）配置成功！");
@@ -341,7 +331,7 @@ namespace MSL
             catch (Exception ex)
             {
                 //Logger.LogError("读取自动开启（服务器）配置失败！");
-                MessageBox.Show(LanguageManager.Instance["MainWindow_GrowlMsg_AutoLaunchServerErr"] + ex.Message, LanguageManager.Instance["Error"], MessageBoxButton.OK, MessageBoxImage.Error);
+                MagicShow.ShowMsgDialog(this, LanguageManager.Instance["MainWindow_GrowlMsg_AutoLaunchServerErr"] + ex.Message, LanguageManager.Instance["Error"]);
             }
             //自动开启Frpc
             try
@@ -356,22 +346,10 @@ namespace MSL
                 }
                 else if (jsonObject["autoOpenFrpc"].ToString() != "False")
                 {
-                    string frpcs = jsonObject["autoOpenFrpc"].ToString();
-                    Growl.Info(LanguageManager.Instance["MainWindow_GrowlMsg_AutoLaunchFrpc"]);
-                    if (!frpcs.Contains(","))
+                    // 判断是否开了自动更新软件，如果开了自动更新软件，先不执行此操作
+                    if (jsonObject["autoUpdateApp"] == null || jsonObject["autoUpdateApp"].ToString() != "True")
                     {
-                        frpcs += ",";
-                    }
-                    while (frpcs != "")
-                    {
-                        int afrpc = frpcs.IndexOf(",");
-                        FrpcList.FrpcID = int.Parse(frpcs.Substring(0, afrpc));
-                        if (!FrpcList.FrpcPageList.ContainsKey(FrpcList.FrpcID))
-                        {
-                            FrpcList.FrpcPageList.Add(FrpcList.FrpcID, new FrpcPage(FrpcList.FrpcID, true));
-                        }
-                        frpcs = frpcs.Replace(FrpcList.FrpcID.ToString() + ",", "");
-                        //await Task.Delay(100);
+                        await AutoRunFrpc(jsonObject);
                     }
                 }
                 //Logger.LogInfo("读取自动开启（内网映射）配置成功！");
@@ -379,12 +357,51 @@ namespace MSL
             catch (Exception ex)
             {
                 //Logger.LogError("读取自动开启（内网映射）配置失败！");
-                MessageBox.Show(LanguageManager.Instance["MainWindow_GrowlMsg_AutoLaunchFrpsErr"] + ex.Message, LanguageManager.Instance["Error"], MessageBoxButton.OK, MessageBoxImage.Error);
+                MagicShow.ShowMsgDialog(this, LanguageManager.Instance["MainWindow_GrowlMsg_AutoLaunchFrpcErr"] + ex.Message, LanguageManager.Instance["Error"]);
             }
 
             //Logger.LogInfo("所有配置载入完毕！调整UI界面……");
             SideMenu.SelectedIndex = 0;
             //Logger.LogInfo("配置加载完毕！");
+        }
+
+        private async Task AutoRunServer(JObject json)
+        {
+            string servers = json["autoOpenServer"].ToString();
+            MagicFlowMsg.ShowMessage(LanguageManager.Instance["MainWindow_GrowlMsg_AutoLaunchServer"]);
+            if (!servers.Contains(","))
+            {
+                servers += ",";
+            }
+            while (servers != "")
+            {
+                int aserver = servers.IndexOf(",");
+                ServerList.ServerID = int.Parse(servers.Substring(0, aserver));
+                AutoOpenServer();
+                servers = servers.Replace(ServerList.ServerID.ToString() + ",", "");
+                await Task.Delay(50);
+            }
+        }
+
+        private async Task AutoRunFrpc(JObject json)
+        {
+            string frpcs = json["autoOpenFrpc"].ToString();
+            MagicFlowMsg.ShowMessage(LanguageManager.Instance["MainWindow_GrowlMsg_AutoLaunchFrpc"]);
+            if (!frpcs.Contains(","))
+            {
+                frpcs += ",";
+            }
+            while (frpcs != "")
+            {
+                int afrpc = frpcs.IndexOf(",");
+                FrpcList.FrpcID = int.Parse(frpcs.Substring(0, afrpc));
+                if (!FrpcList.FrpcPageList.ContainsKey(FrpcList.FrpcID))
+                {
+                    FrpcList.FrpcPageList.Add(FrpcList.FrpcID, new FrpcPage(FrpcList.FrpcID, true));
+                }
+                frpcs = frpcs.Replace(FrpcList.FrpcID.ToString() + ",", "");
+                await Task.Delay(50);
+            }
         }
 
         private async Task OnlineService(JObject jsonObject, bool downloadTermDll)
@@ -396,86 +413,71 @@ namespace MSL
                 _ = HttpService.GetContentAsync("https://msl-api.oss-cn-hangzhou.aliyuncs.com/");
                 ServerLink = "mslmc.cn/v3/";
                 //Logger.LogInfo("连接到api：" + "https://api." + _link);
-                if (!(((int)JObject.Parse((await HttpService.GetContentAsync("https://api." + ServerLink, headers => { headers.Add("DeviceID", DeviceID); }, 1)).ToString())["code"]) == 200))
+                if (((int)JObject.Parse((await HttpService.GetContentAsync("https://api." + ServerLink, headers => { headers.Add("DeviceID", DeviceID); }, 1)).ToString())["code"]) == 200)
                 {
-                    Growl.Info(LanguageManager.Instance["MainWindow_GrowlMsg_MslServerDown"]);
-                    return;
-                }
-            }
-            catch
-            {
-                Growl.Info(LanguageManager.Instance["MainWindow_GrowlMsg_MSLServerDown"]);
-                return;
-                //Logger.LogError("在匹配在线服务器时出现错误，已连接至备用服务器");
-            }
-            //更新
-            try
-            {
-                //Logger.LogInfo("检查更新……");
-                JObject _httpReturn = await HttpService.GetApiContentAsync("query/update");
-                string _version = _httpReturn["data"]["latestVersion"].ToString();
-                Version newVersion = new Version(_httpReturn["data"]["latestVersion"].ToString());
-                Version version = new Version(System.Reflection.Assembly.GetExecutingAssembly().GetName().Version.ToString());
+                    // 检查更新
+                    await CheckUpdate(jsonObject);
 
-                if (newVersion > version)
-                {
-                    //Logger.LogInfo("检测到新版本！");
-                    var updatelog = _httpReturn["data"]["log"].ToString();
-                    if (jsonObject["autoUpdateApp"] == null)
+                    // 下载必要DLL
+                    if (downloadTermDll)
                     {
-                        jsonObject.Add("autoUpdateApp", "False");
-                        string convertString = Convert.ToString(jsonObject);
-                        File.WriteAllText(@"MSL\config.json", convertString, Encoding.UTF8);
+                        var result = await MagicShow.ShowDownloader(this, "https://file.mslmc.cn/Microsoft.Terminal.Control.dll", "MSL", "Microsoft.Terminal.Control.dll", "下载必要文件……");
+                        if (result)
+                        {
+                            try
+                            {
+                                LoadLibEx();
+                            }
+                            catch (Exception ex)
+                            {
+                                File.Delete("MSL\\Microsoft.Terminal.Control.dll");
+                                MagicShow.ShowMsg(this, $"必要DLL“Microsoft.Terminal.Control.dll”加载失败！可能是文件不完整，已将其删除，请重启软件以确保其被重新下载并加载。（{ex.Message}）\n如果不重启软件，高级终端（ConPty）功能将失效！\n若您多次重启软件后，此问题依旧未被解决，请联系作者进行反馈！", "错误");
+                            }
+                        }
                     }
-                    else if (jsonObject["autoUpdateApp"].ToString() == "True")
+
+                    // 判断是否开了自动更新软件，如果开了自动更新软件，说明之前的自动开服和自动开Frpc功能并未执行，这里开始执行
+                    if (jsonObject["autoUpdateApp"] != null || jsonObject["autoUpdateApp"].ToString() == "True")
                     {
-                        //Logger.LogInfo("自动更新功能已打开，更新新版本……");
-                        UpdateApp(_version);
+                        try
+                        {
+                            // 检测是否开启对应功能
+                            if (jsonObject["autoOpenServer"] != null && jsonObject["autoOpenServer"].ToString() != "False")
+                            {
+                                await AutoRunServer(jsonObject);
+                            }
+                        }
+                        catch (Exception ex)
+                        {
+                            MagicShow.ShowMsgDialog(LanguageManager.Instance["MainWindow_GrowlMsg_AutoLaunchServerErr"] + ex.Message, LanguageManager.Instance["Error"]);
+                        }
+                        try
+                        {
+                            // 检测是否开启对应功能
+                            if (jsonObject["autoOpenFrpc"] != null && jsonObject["autoOpenFrpc"].ToString() != "False")
+                            {
+                                await AutoRunFrpc(jsonObject);
+                            }
+                        }
+                        catch (Exception ex)
+                        {
+                            MagicShow.ShowMsgDialog(LanguageManager.Instance["MainWindow_GrowlMsg_AutoLaunchFrpcErr"] + ex.Message, LanguageManager.Instance["Error"]);
+                        }
                     }
-                    if (await MagicShow.ShowMsgDialogAsync(this, string.Format(LanguageManager.Instance["MainWindow_GrowlMsg_UpdateInfo"] + "\n" + updatelog, _version), LanguageManager.Instance["MainWindow_GrowlMsg_Update"], true))
-                    {
-                        //Logger.LogInfo("更新新版本……");
-                        UpdateApp(_version);
-                    }
-                    else
-                    {
-                        //Logger.LogInfo("用户拒绝更新！");
-                        Growl.Error(LanguageManager.Instance["MainWindow_GrowlMsg_RefuseUpdate"]);
-                    }
-                }
-                else if (newVersion < version)
-                {
-                    MagicFlowMsg.ShowMessage(LanguageManager.Instance["MainWindow_GrowlMsg_BetaVersion"], 4, panel: this);
-                    //Growl.Info(LanguageManager.Instance["MainWindow_GrowlMsg_BetaVersion"]);
+                    return;
                 }
                 else
                 {
-                    MagicFlowMsg.ShowMessage(LanguageManager.Instance["MainWindow_GrowlMsg_LatestVersion"], 1, panel: this);
-                    //Growl.Success();
+                    MagicFlowMsg.ShowMessage(LanguageManager.Instance["MainWindow_GrowlMsg_MSLServerDown"], 2);
                 }
             }
-            catch (Exception ex)
+            catch(Exception ex)
             {
-                //Logger.LogError("检测更新失败！");
-                Growl.Error(LanguageManager.Instance["MainWindow_GrowlMsg_CheckUpdateErr"] + $"\n{ex.Message}");
-            }
-            if (downloadTermDll)
-            {
-                var result = await MagicShow.ShowDownloader(this, "https://file.mslmc.cn/Microsoft.Terminal.Control.dll", "MSL", "Microsoft.Terminal.Control.dll", "下载必要文件……");
-                if (result)
-                {
-                    try
-                    {
-                        LoadLibEx();
-                    }
-                    catch (Exception ex)
-                    {
-                        File.Delete("MSL\\Microsoft.Terminal.Control.dll");
-                        MagicShow.ShowMsg(this, $"必要DLL“Microsoft.Terminal.Control.dll”加载失败！可能是文件不完整，已将其删除，请重启软件以确保其被重新下载并加载。（{ex.Message}）\n如果不重启软件，高级终端（ConPty）功能将失效！\n若您多次重启软件后，此问题依旧未被解决，请联系作者进行反馈！", "错误");
-                    }
-                }
+                Growl.Error(ex.Message);
             }
         }
+
+        
 
         [DllImport("kernel32", SetLastError = true, CharSet = CharSet.Unicode)]
         public static extern IntPtr LoadLibraryEx(string lpFileName, IntPtr hReservedNull, uint dwFlags);
@@ -507,7 +509,71 @@ namespace MSL
             }
         }
 
-        private async void UpdateApp(string latestVersion)
+        private async Task CheckUpdate(JObject jsonObject)
+        {
+            //更新
+            try
+            {
+                //Logger.LogInfo("检查更新……");
+                JObject _httpReturn = await HttpService.GetApiContentAsync("query/update");
+                string _version = _httpReturn["data"]["latestVersion"].ToString();
+                Version newVersion = new Version(_httpReturn["data"]["latestVersion"].ToString());
+                Version version = new Version(System.Reflection.Assembly.GetExecutingAssembly().GetName().Version.ToString());
+
+                if (newVersion > version)
+                {
+                    //Logger.LogInfo("检测到新版本！");
+                    var updatelog = _httpReturn["data"]["log"].ToString();
+                    if (jsonObject["autoUpdateApp"] == null)
+                    {
+                        jsonObject.Add("autoUpdateApp", "False");
+                        string convertString = Convert.ToString(jsonObject);
+                        File.WriteAllText(@"MSL\config.json", convertString, Encoding.UTF8);
+                    }
+                    else if (jsonObject["autoUpdateApp"].ToString() == "True")
+                    {
+                        //Logger.LogInfo("自动更新功能已打开，更新新版本……");
+                        await UpdateApp(_version);
+                    }
+                    else
+                    {
+                        if (await MagicShow.ShowMsgDialogAsync(this, string.Format(LanguageManager.Instance["MainWindow_GrowlMsg_UpdateInfo"] + "\n" + updatelog, _version), LanguageManager.Instance["MainWindow_GrowlMsg_Update"], true))
+                        {
+                            //Logger.LogInfo("更新新版本……");
+                            await UpdateApp(_version);
+                        }
+                        else
+                        {
+                            //Logger.LogInfo("用户拒绝更新！");
+                            Growl.Error(LanguageManager.Instance["MainWindow_GrowlMsg_RefuseUpdate"]);
+                            /*
+                            IsOldVersion = true;
+                            OldVersionTip();
+                            */
+                        }
+                    }
+                }
+                else
+                {
+                    if (newVersion < version)
+                    {
+                        MagicFlowMsg.ShowMessage(LanguageManager.Instance["MainWindow_GrowlMsg_BetaVersion"], 4, panel: this);
+                    }
+                    else
+                    {
+                        MagicFlowMsg.ShowMessage(LanguageManager.Instance["MainWindow_GrowlMsg_LatestVersion"], 1, panel: this);
+                    }
+
+                }
+            }
+            catch (Exception ex)
+            {
+                //Logger.LogError("检测更新失败！");
+                Growl.Error(LanguageManager.Instance["MainWindow_GrowlMsg_CheckUpdateErr"] + $"\n{ex.Message}");
+            }
+        }
+
+        private async Task UpdateApp(string latestVersion)
         {
             try
             {
@@ -542,14 +608,53 @@ namespace MSL
                 }
                 else
                 {
-                    MessageBox.Show(LanguageManager.Instance["MainWindow_GrowlMsg_UpdateFailed"], LanguageManager.Instance["Error"], MessageBoxButton.OK, MessageBoxImage.Error);
+                    /*
+                    IsOldVersion = true;
+                    OldVersionTip();
+                    */
+                    MagicShow.ShowMsgDialog(this, LanguageManager.Instance["MainWindow_GrowlMsg_UpdateFailed"], LanguageManager.Instance["Error"]);
                 }
             }
             catch (Exception ex)
             {
-                MessageBox.Show("出现错误，更新失败！\n" + ex.Message, "Error", MessageBoxButton.OK, MessageBoxImage.Error);
+                /*
+                IsOldVersion = true;
+                OldVersionTip();
+                */
+                MagicShow.ShowMsgDialog(this, "出现错误，更新失败！\n" + ex.Message, LanguageManager.Instance["Error"]);
             }
         }
+
+        /*
+        private void OldVersionTip()
+        {
+            var poptip = new Poptip
+            {
+                Content = "由于用户拒绝更新或检测更新失败，此版本可能并非最新版本",
+                PlacementType = PlacementType.Right,
+                HorizontalOffset = -345
+            };
+            var button = new Button
+            {
+                Name = "LowVersionTip",
+                Margin = new Thickness(10, 0, 0, 0),
+                BorderThickness = new Thickness(0),
+                Background = Brushes.White,
+                Foreground = Brushes.Red
+            };
+            BorderElement.SetCornerRadius(button, new CornerRadius(12));
+            IconElement.SetGeometry(button, Application.Current.FindResource("WarningGeometry") as Geometry);
+            IconElement.SetHeight(button, 16d);
+
+            AdornerElement.SetInstance(button, poptip);
+
+            NonClientAreaContent = new StackPanel()
+            {
+                Orientation = Orientation.Horizontal,
+                Children = { button }
+            };
+        }
+        */
 
         private void Window_Closing(object sender, System.ComponentModel.CancelEventArgs e)
         {

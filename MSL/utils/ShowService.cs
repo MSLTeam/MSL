@@ -20,35 +20,6 @@ namespace MSL.utils
         /// <param name="_window">对话框父窗体</param>
         /// <param name="text">对话框内容</param>
         /// <param name="title">对话框标题</param>
-        public static void ShowMsgDialog(Window _window, string text, string title, UIElement uIElement = null)
-        {
-            MagicDialog MagicDialog = new MagicDialog();
-            MagicDialog.ShowMsgDialog(_window, text, title, uIElement);
-        }
-
-        /// <summary>
-        /// 显示MSG对话框（异步执行，可以等待）
-        /// </summary>
-        /// <param name="_window">对话框父窗体</param>
-        /// <param name="text">对话框内容</param>
-        /// <param name="title">对话框标题</param>
-        /// <param name="showPrimaryBtn">是否显示确认按钮</param>
-        /// <param name="closeBtnContext">关闭按钮文字内容</param>
-        /// <param name="primaryBtnContext">确认按钮文字内容</param>
-        /// <returns>返回值：true；false</returns>
-        public static async Task<bool> ShowMsgDialogAsync(Window _window, string text, string title, bool showPrimaryBtn = false, string closeBtnContext = "否", string primaryBtnContext = "是", UIElement uIElement = null)
-        {
-            MagicDialog MagicDialog = new MagicDialog();
-            bool _ret = await MagicDialog.ShowMsgDialog(_window, text, title, showPrimaryBtn, closeBtnContext, primaryBtnContext, uIElement);
-            return _ret;
-        }
-
-        /// <summary>
-        /// 显示MSG对话框（异步执行，不可等待）
-        /// </summary>
-        /// <param name="_window">对话框父窗体</param>
-        /// <param name="text">对话框内容</param>
-        /// <param name="title">对话框标题</param>
         public static void ShowMsgDialog(string text, string title, UIElement uIElement = null, UIElement _window = null)
         {
             MagicDialog MagicDialog = new MagicDialog();
@@ -69,6 +40,35 @@ namespace MSL.utils
         {
             MagicDialog MagicDialog = new MagicDialog();
             bool _ret = await MagicDialog.ShowMsgDialog(Functions.GetWindow(_window), text, title, showPrimaryBtn, closeBtnContext, primaryBtnContext, uIElement);
+            return _ret;
+        }
+
+        /// <summary>
+        /// 显示MSG对话框（异步执行，不可等待）
+        /// </summary>
+        /// <param name="_window">对话框父窗体</param>
+        /// <param name="text">对话框内容</param>
+        /// <param name="title">对话框标题</param>
+        public static void ShowMsgDialog(Window _window, string text, string title, UIElement uIElement = null)
+        {
+            MagicDialog MagicDialog = new MagicDialog();
+            MagicDialog.ShowMsgDialog(_window, text, title, uIElement);
+        }
+
+        /// <summary>
+        /// 显示MSG对话框（异步执行，可以等待）
+        /// </summary>
+        /// <param name="_window">对话框父窗体</param>
+        /// <param name="text">对话框内容</param>
+        /// <param name="title">对话框标题</param>
+        /// <param name="showPrimaryBtn">是否显示确认按钮</param>
+        /// <param name="closeBtnContext">关闭按钮文字内容</param>
+        /// <param name="primaryBtnContext">确认按钮文字内容</param>
+        /// <returns>返回值：true；false</returns>
+        public static async Task<bool> ShowMsgDialogAsync(Window _window, string text, string title, bool showPrimaryBtn = false, string closeBtnContext = "否", string primaryBtnContext = "是", UIElement uIElement = null)
+        {
+            MagicDialog MagicDialog = new MagicDialog();
+            bool _ret = await MagicDialog.ShowMsgDialog(_window, text, title, showPrimaryBtn, closeBtnContext, primaryBtnContext, uIElement);
             return _ret;
         }
 

@@ -91,6 +91,7 @@ namespace MSL
 
         private async void Window_Loaded(object sender, RoutedEventArgs e)
         {
+            // OldVersionTip();
             ChangeSkinStyle();
             TabCtrl.SelectedIndex = -1;
             LoadingCircle loadingCircle = new LoadingCircle();
@@ -390,6 +391,7 @@ namespace MSL
             catch
             { }
         }
+
         private void ChangeTitleStyle(bool isOpen)
         {
             if (isOpen)
@@ -409,6 +411,40 @@ namespace MSL
                 OtherButtonHoverForeground = Brushes.White;
             }
         }
+
+        /*
+        private void OldVersionTip()
+        {
+            if (MainWindow.IsOldVersion)
+            {
+                var poptip = new Poptip
+                {
+                    Content = "由于用户拒绝更新或检测更新失败，此版本可能并非最新版本",
+                    PlacementType = PlacementType.Right,
+                    HorizontalOffset = -345
+                };
+                var button = new Button
+                {
+                    Name = "LowVersionTip",
+                    Margin = new Thickness(10, 0, 0, 0),
+                    BorderThickness = new Thickness(0),
+                    Background = Brushes.White,
+                    Foreground = Brushes.Red
+                };
+                BorderElement.SetCornerRadius(button, new CornerRadius(12));
+                IconElement.SetGeometry(button, Application.Current.FindResource("WarningGeometry") as Geometry);
+                IconElement.SetHeight(button, 16d);
+
+                AdornerElement.SetInstance(button, poptip);
+
+                NonClientAreaContent = new StackPanel()
+                {
+                    Orientation = Orientation.Horizontal,
+                    Children = { button }
+                };
+            }
+        }
+        */
         #endregion
 
         private async void SideMenuContextOpen_Click(object sender, RoutedEventArgs e)
