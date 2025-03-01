@@ -84,10 +84,13 @@ namespace MSL.pages.frpProviders
             var keyPair = keyGen.GenerateKeyPair();
 
             // 获取公钥和私钥（Base64格式）
-            var publicKeyBytes = ((X25519PublicKeyParameters)keyPair.Public).GetEncoded();
-            var privateKeyBytes = ((X25519PrivateKeyParameters)keyPair.Private).GetEncoded();
+            var publicKeyBytes = keyPair.Public.GetEncoded();
+            var privateKeyBytes = keyPair.Private.GetEncoded();
             string publicKeyBase64 = Convert.ToBase64String(publicKeyBytes);
+            publicKeyBase64 = publicKeyBase64.Trim().Replace('+', '-').Replace('/', '_');
             string privateKeyBase64 = Convert.ToBase64String(privateKeyBytes);
+
+            // Console.WriteLine($"公钥: {publicKeyBase64}");
 
             var postData = new { public_key = publicKeyBase64 };
             UserLogin.IsEnabled = false;
@@ -100,7 +103,12 @@ namespace MSL.pages.frpProviders
 
             if (response.HttpResponseCode != System.Net.HttpStatusCode.OK)
             {
-                MagicShow.ShowMsgDialog(response.HttpResponseContent.ToString() + "\n请重试！", "错误");
+                if(string.IsNullOrEmpty(response.HttpResponseContent.ToString()))
+                {
+                    MagicShow.ShowMsgDialog("请求失败！请重试！" + (string.IsNullOrEmpty((string)response.HttpResponseException) ? string.Empty : $"\n{response.HttpResponseException}"), "错误");
+                    return;
+                }
+                MagicShow.ShowMsgDialog(JObject.Parse(response.HttpResponseContent.ToString())["msg"] + "\n请重试！", "错误");
                 return;
             }
 

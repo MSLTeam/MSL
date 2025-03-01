@@ -16,10 +16,12 @@ namespace MSL.utils
     {
         public HttpStatusCode HttpResponseCode { get; set; }
         public object HttpResponseContent { get; set; }
+        public object HttpResponseException { get; set; }
         public HttpResponse()
         {
             HttpResponseCode = 0;
             HttpResponseContent = string.Empty;
+            HttpResponseException = null;
         }
     }
 
@@ -167,14 +169,12 @@ namespace MSL.utils
             {
                 HttpResponseMessage response = await httpClient.GetAsync(url);
                 httpResponse.HttpResponseCode = response.StatusCode;
-                httpResponse.HttpResponseContent = response.IsSuccessStatusCode
-                    ? await response.Content.ReadAsStringAsync()
-                    : response.ReasonPhrase;
+                httpResponse.HttpResponseContent = await response.Content.ReadAsStringAsync();
             }
             catch (Exception ex)
             {
                 httpResponse.HttpResponseCode = 0;
-                httpResponse.HttpResponseContent = ex.Message;
+                httpResponse.HttpResponseException = ex.Message;
             }
             httpClient.Dispose();
             return httpResponse;
@@ -315,14 +315,12 @@ namespace MSL.utils
             {
                 HttpResponseMessage response = await httpClient.PostAsync(url, content);
                 httpResponse.HttpResponseCode = response.StatusCode;
-                httpResponse.HttpResponseContent = response.IsSuccessStatusCode
-                    ? await response.Content.ReadAsStringAsync()
-                    : response.ReasonPhrase;
+                httpResponse.HttpResponseContent = await response.Content.ReadAsStringAsync();
             }
             catch (Exception ex)
             {
                 httpResponse.HttpResponseCode = 0;
-                httpResponse.HttpResponseContent = ex.Message;
+                httpResponse.HttpResponseException = ex.Message;
             }
             httpClient.Dispose();
             return httpResponse;
