@@ -124,7 +124,7 @@
                             <hc:Card>
                                 <StackPanel Margin="3" HorizontalAlignment="Left">
                                     <Label Content="节点信息" BorderThickness="0" FontSize="16" FontWeight="Bold" HorizontalAlignment="Left"/>
-                                    <TextBlock x:Name="NodeTips" LineHeight="20" Foreground="{DynamicResource PrimaryTextBrush}" Text="选择一个节点才知道呀~" FontSize="14" HorizontalAlignment="Left" Margin="10,0,0,0"/>
+                                    <TextBlock x:Name="NodeTips" TextWrapping="Wrap" Foreground="{DynamicResource PrimaryTextBrush}" Text="选择一个节点才知道呀~" FontSize="14" HorizontalAlignment="Left" Margin="10,0,0,5"/>
                                 </StackPanel>
                             </hc:Card>
                             <hc:Card Margin="0,3,0,0">

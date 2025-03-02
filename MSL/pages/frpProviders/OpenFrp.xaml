@@ -5,9 +5,11 @@
       xmlns:d="http://schemas.microsoft.com/expression/blend/2008" 
       xmlns:hc="https://handyorg.github.io/handycontrol"
       xmlns:local="clr-namespace:MSL.pages.frpProviders"
+      xmlns:controls="clr-namespace:MSL.controls"
       mc:Ignorable="d" 
       d:DesignHeight="400" d:DesignWidth="750"
       Title="OpenFrp" Loaded="Page_Loaded">
+    
     <Grid>
         <TabControl x:Name="MainCtrl" Margin="10,5,10,10" Style="{StaticResource TabControlCapsuleSolidInLine}" Background="Transparent" BorderThickness="0" SelectionChanged="MainCtrl_SelectionChanged">
             <TabItem Header="我的隧道">
@@ -43,7 +45,7 @@
                                 <Button x:Name="signBtn" Content="进入官网" Margin="0,0,0,5" Command="hc:ControlCommands.OpenLink" CommandParameter="https://www.openfrp.net/"/>
                                 <Button x:Name="logoutBtn" Content="登出" Style="{StaticResource ButtonDanger}" HorizontalAlignment="Stretch" Click="LogoutBtn_Click"/>
                             </StackPanel>
-                            
+
                         </Grid>
                     </Grid>
                     <Grid Grid.Row="1" Margin="0,10,0,0">
@@ -61,61 +63,160 @@
             <TabItem Header="创建隧道">
                 <Grid x:Name="CreateGrid">
                     <Grid.ColumnDefinitions>
-                        <ColumnDefinition Width="auto"/>
-                        <ColumnDefinition Width="*"/>
+                        <ColumnDefinition Width="5*"/>
+                        <ColumnDefinition Width="4*"/>
                     </Grid.ColumnDefinitions>
-                    <Grid Grid.Column="0" Margin="0,0,10,0">
-                        <Grid.RowDefinitions>
-                            <RowDefinition Height="auto"/>
-                            <RowDefinition Height="*"/>
-                        </Grid.RowDefinitions>
-                        <Border Style="{StaticResource BorderTipPrimary}" Margin="3">
-                            <TextBlock LineHeight="20" Foreground="{DynamicResource PrimaryTextBrush}" Text="从下面选择一个你喜欢的节点" FontSize="14" HorizontalAlignment="Left"/>
-                        </Border>
-                        <ListBox x:Name="NodeList" Grid.Row="1" MinWidth="300" SelectionMode="Single" hc:Empty.ShowEmpty="true"/>
-                    </Grid>
-                    <Grid Grid.Column="1">
-                        <Grid.RowDefinitions>
-                            <RowDefinition Height="*"/>
-                            <RowDefinition Height="auto"/>
-                        </Grid.RowDefinitions>
-                        <StackPanel Grid.Row="0">
-                            <hc:Card Margin="0,3,0,0">
-                                <StackPanel Margin="3">
-                                    <Label Content="填写隧道参数" BorderThickness="0" FontSize="16" FontWeight="Bold" HorizontalAlignment="Left"/>
-                                    <hc:UniformSpacingPanel Orientation="Vertical" Spacing="10" Margin="10,0,10,10">
-                                        <StackPanel>
-                                            <Label Content="本地端口(Java版默认25565,基岩版默认19132)：" HorizontalAlignment="Left" Background="Transparent" BorderThickness="0" Padding="0" FontSize="14"/>
-                                            <TextBox x:Name="portBox" Text="25565"/>
+                    <ListBox Grid.Column="0" Margin="0,0,10,0" x:Name="NodeList" SelectionMode="Single" SelectionChanged="NodeList_SelectionChanged">
+                        <ListBox.ItemsPanel>
+                            <ItemsPanelTemplate>
+                                <WrapPanel Orientation="Horizontal" IsItemsHost="True"/>
+                            </ItemsPanelTemplate>
+                        </ListBox.ItemsPanel>
+                        <ListBox.ItemContainerStyle>
+                            <Style TargetType="ListBoxItem">
+                                <Setter Property="Template">
+                                    <Setter.Value>
+                                        <ControlTemplate TargetType="ListBoxItem">
+                                            <Border x:Name="Bd" CornerRadius="7" BorderBrush="{DynamicResource BorderBrush}" BorderThickness="1" Padding="10">
+                                                <ContentPresenter />
+                                            </Border>
+                                            <ControlTemplate.Triggers>
+                                                <Trigger Property="IsSelected" Value="True">
+                                                    <Setter TargetName="Bd" Property="BorderBrush" Value="{DynamicResource DarkPrimaryBrush}"/>
+                                                </Trigger>
+                                                <Trigger Property="IsMouseOver" Value="True">
+                                                    <Setter TargetName="Bd" Property="Background" Value="{DynamicResource SideMenuBrush}"/>
+                                                </Trigger>
+                                            </ControlTemplate.Triggers>
+                                        </ControlTemplate>
+                                    </Setter.Value>
+                                </Setter>
+                                <Setter Property="Margin" Value="5"/>
+                            </Style>
+                        </ListBox.ItemContainerStyle>
+
+                        <ListBox.ItemTemplate>
+                            <DataTemplate>
+                                <Grid Width="160" Background="Transparent">
+                                    <Grid.RowDefinitions>
+                                        <RowDefinition Height="Auto"/>
+                                        <RowDefinition Height="*"/>
+                                    </Grid.RowDefinitions>
+                                    <Label Content="{Binding Name}" Style="{StaticResource BorderTitle}"/>
+                                    <hc:UniformSpacingPanel Grid.Row="1" Orientation="Vertical" Spacing="5">
+                                        <!--
+                                        <StackPanel Orientation="Horizontal">
+                                            <Label Content="{Binding Status, Converter={StaticResource StatusConverter}}">
+                                                <Label.Style>
+                                                    <Style TargetType="Label" BasedOn="{StaticResource {x:Type Label}}">
+                                                        <Setter Property="Foreground" Value="White"/>
+                                                        <Setter Property="Background" Value="{DynamicResource DarkDangerBrush}"/>
+                                                        <Style.Triggers>
+                                                            <DataTrigger Binding="{Binding Status}" Value="200">
+                                                                <Setter Property="Background" Value="{DynamicResource DarkSuccessBrush}"/>
+                                                            </DataTrigger>
+                                                        </Style.Triggers>
+                                                    </Style>
+                                                </Label.Style>
+                                            </Label>
+                                        </StackPanel>
+                                        -->
+                                        <WrapPanel Orientation="Horizontal">
+                                            <ItemsControl ItemsSource="{Binding Tags}">
+                                                <ItemsControl.ItemsPanel>
+                                                    <ItemsPanelTemplate>
+                                                        <WrapPanel Orientation="Horizontal"/>
+                                                    </ItemsPanelTemplate>
+                                                </ItemsControl.ItemsPanel>
+                                                <ItemsControl.ItemTemplate>
+                                                    <DataTemplate>
+                                                        <Label Margin="0,0,5,5" Content="{Binding Text}">
+                                                            <Label.Style>
+                                                                <Style TargetType="Label" BasedOn="{StaticResource {x:Type Label}}">
+                                                                    <Setter Property="Background" Value="{DynamicResource DarkPrimaryBrush}"/>
+                                                                    <Setter Property="Foreground" Value="White"/>
+                                                                    <Style.Triggers>
+                                                                        <MultiDataTrigger>
+                                                                            <MultiDataTrigger.Conditions>
+                                                                                <Condition Binding="{Binding IsStatusTag}" Value="True"/>
+                                                                                <Condition Binding="{Binding StatusCode}" Value="200"/>
+                                                                            </MultiDataTrigger.Conditions>
+                                                                            <Setter Property="Background" Value="{DynamicResource DarkSuccessBrush}"/>
+                                                                        </MultiDataTrigger>
+                                                                        <MultiDataTrigger>
+                                                                            <MultiDataTrigger.Conditions>
+                                                                                <Condition Binding="{Binding IsStatusTag}" Value="True"/>
+                                                                                <Condition Binding="{Binding StatusCode}" Value="500"/>
+                                                                            </MultiDataTrigger.Conditions>
+                                                                            <Setter Property="Background" Value="{DynamicResource DarkDangerBrush}"/>
+                                                                        </MultiDataTrigger>
+                                                                        <DataTrigger Binding="{Binding IsStatusTag}" Value="False">
+                                                                            <Setter Property="Background" Value="{DynamicResource DarkPrimaryBrush}"/>
+                                                                        </DataTrigger>
+                                                                    </Style.Triggers>
+                                                                </Style>
+                                                            </Label.Style>
+                                                        </Label>
+                                                    </DataTemplate>
+                                                </ItemsControl.ItemTemplate>
+                                            </ItemsControl>
+                                        </WrapPanel>
+                                        <StackPanel Orientation="Horizontal">
+                                            <TextBlock Text="ID：" Style="{StaticResource MagicText14}"/>
+                                            <TextBlock Text="{Binding ID}" Style="{StaticResource MagicText14}"/>
+                                        </StackPanel>
+                                        <StackPanel Orientation="Horizontal">
+                                            <TextBlock Text="带宽：" Style="{StaticResource MagicText14}"/>
+                                            <TextBlock Text="{Binding Band}" Style="{StaticResource MagicText14}"/>
+                                            <TextBlock Text="M" Style="{StaticResource MagicText14}"/>
                                         </StackPanel>
                                         <Grid>
                                             <Grid.ColumnDefinitions>
                                                 <ColumnDefinition Width="Auto"/>
                                                 <ColumnDefinition/>
-                                                <ColumnDefinition Width="Auto"/>
                                             </Grid.ColumnDefinitions>
-                                            <Label Grid.Column="0" Content="远程端口：" Background="Transparent" BorderThickness="0" Padding="0" FontSize="14"/>
-                                            <TextBox Grid.Column="1" x:Name="remotePortBox" HorizontalAlignment="Stretch" Text="25565"/>
-                                            <Button Grid.Column="2" x:Name="randomRemotePort" Content="随机" VerticalAlignment="Stretch" Width="75" Click="RandomRemotePortBtn_Click"/>
+                                            <TextBlock Text="备注：" Style="{StaticResource MagicText14}"/>
+                                            <TextBlock Grid.Column="1" Text="{Binding Remark}" Style="{StaticResource MagicText14}" TextWrapping="Wrap"/>
                                         </Grid>
-                                        <StackPanel Orientation="Horizontal">
-                                            <Label Content="传输协议：" Background="Transparent" BorderThickness="0" Padding="0" FontSize="14" />
-                                            <ComboBox x:Name="frpcType" SelectionChanged="FrpcType_SelectionChanged">
-                                                <ComboBoxItem IsSelected="True" Content="TCP（Java版）"/>
-                                                <ComboBoxItem Content="UDP（基岩版）"/>
-                                            </ComboBox>
-                                        </StackPanel>
-                                        <CheckBox x:Name="enableCompression" Content="启用数据压缩"/>
                                     </hc:UniformSpacingPanel>
+                                </Grid>
+                            </DataTemplate>
+                        </ListBox.ItemTemplate>
+                    </ListBox>
+                    <Grid Grid.Column="1">
+                        <Grid.RowDefinitions>
+                            <RowDefinition Height="*"/>
+                            <RowDefinition Height="auto"/>
+                        </Grid.RowDefinitions>
+                        <controls:MagicCard Title="填写隧道参数" Grid.Row="0" Margin="0" VerticalAlignment="Top">
+                            <hc:UniformSpacingPanel Orientation="Vertical" Spacing="10">
+                                <StackPanel>
+                                    <Label Content="本地端口（默认Java版25565,基岩版19132）：" HorizontalAlignment="Left" Background="Transparent" BorderThickness="0" Padding="0" FontSize="14"/>
+                                    <TextBox x:Name="portBox" Text="25565"/>
                                 </StackPanel>
-                            </hc:Card>
-                        </StackPanel>
+                                <Grid>
+                                    <Grid.ColumnDefinitions>
+                                        <ColumnDefinition Width="Auto"/>
+                                        <ColumnDefinition/>
+                                        <ColumnDefinition Width="Auto"/>
+                                    </Grid.ColumnDefinitions>
+                                    <Label Grid.Column="0" Content="远程端口：" Background="Transparent" BorderThickness="0" Padding="0" FontSize="14"/>
+                                    <TextBox Grid.Column="1" x:Name="remotePortBox" HorizontalAlignment="Stretch" Text="25565"/>
+                                    <Button Grid.Column="2" x:Name="randomRemotePort" Content="随机" VerticalAlignment="Stretch" Width="75" Click="RandomRemotePortBtn_Click"/>
+                                </Grid>
+                                <StackPanel Orientation="Horizontal">
+                                    <Label Content="传输协议：" Background="Transparent" BorderThickness="0" Padding="0" FontSize="14" />
+                                    <ComboBox x:Name="frpcType" MinWidth="100"/>
+                                </StackPanel>
+                                <CheckBox x:Name="enableCompression" Content="启用数据压缩"/>
+                            </hc:UniformSpacingPanel>
+                        </controls:MagicCard>
                         <Button Grid.Row="1" Content="确定创建" HorizontalAlignment="Right" Style="{DynamicResource ButtonPrimary}" MinHeight="42" MinWidth="120" FontSize="16" x:Name="addProxieBtn" Click="AddProxieBtn_Click"/>
                     </Grid>
                 </Grid>
             </TabItem>
         </TabControl>
-        
+
         <Grid x:Name="LoginGrid" Visibility="Collapsed">
             <StackPanel HorizontalAlignment="Center" VerticalAlignment="Center" >
                 <TextBlock Text="使用 OpenFrp 服务之前，请先登录您的 OpenFrp 账户" HorizontalAlignment="Center"  VerticalAlignment="Center"  FontSize="16" Foreground="{DynamicResource PrimaryTextBrush}" Margin="0,0,0,20"/>

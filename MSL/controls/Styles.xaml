@@ -52,6 +52,20 @@
         <Setter Property="FontSize" Value="16"/>
     </Style>
 
+    <Style x:Key="MagicText" TargetType="TextBlock" BasedOn="{StaticResource {x:Type TextBlock}}">
+        <Setter Property="Foreground" Value="{DynamicResource PrimaryTextBrush}"/>
+    </Style>
+
+    <Style x:Key="MagicText14" TargetType="TextBlock" BasedOn="{StaticResource {x:Type TextBlock}}">
+        <Setter Property="Foreground" Value="{DynamicResource PrimaryTextBrush}"/>
+        <Setter Property="FontSize" Value="14"/>
+    </Style>
+
+    <Style x:Key="MagicText16" TargetType="TextBlock" BasedOn="{StaticResource {x:Type TextBlock}}">
+        <Setter Property="Foreground" Value="{DynamicResource PrimaryTextBrush}"/>
+        <Setter Property="FontSize" Value="16"/>
+    </Style>
+
     <!-- MagicGrowlPanel 用处不多不大，暂时弃用
     <Style TargetType="local:MagicGrowlPanel">
         <Setter Property="Template">

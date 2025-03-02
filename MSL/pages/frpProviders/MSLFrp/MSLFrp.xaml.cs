@@ -1,9 +1,12 @@
 ﻿using MSL.utils;
 using Newtonsoft.Json.Linq;
 using System;
+using System.Globalization;
 using System.Threading.Tasks;
 using System.Windows;
 using System.Windows.Controls;
+using System.Windows.Data;
+using Windows.Data.Xml.Dom;
 
 namespace MSL.pages.frpProviders.MSLFrp
 {
@@ -249,12 +252,13 @@ namespace MSL.pages.frpProviders.MSLFrp
 
         }
 
+        /*
         private void NodeList_SelectionChanged(object sender, SelectionChangedEventArgs e)
         {
             var listBox = NodeList;
             if (listBox.SelectedItem is MSLFrpApi.NodeInfo selectedNode)
             {
-                NodeTips.Content = (string.IsNullOrEmpty(selectedNode.Remark) ? "节点没有备注" : selectedNode.Remark) +
+                NodeTips.Text = (string.IsNullOrEmpty(selectedNode.Remark) ? "节点没有备注" : selectedNode.Remark) +
                     "\n宽带：" + selectedNode.Band + "\tUDP：" + (selectedNode.UDP == 1 ? "支持" : "不支持");
                 switch (selectedNode.Status)
                 {
@@ -267,6 +271,14 @@ namespace MSL.pages.frpProviders.MSLFrp
                         NodeStatus.Content = "离线";
                         break;
                 }
+                Create_RemotePort.Text = Functions.GenerateRandomNumber(selectedNode.MinPort, selectedNode.MaxPort).ToString();
+            }
+        }
+        */
+        private void NodeList_SelectionChanged(object sender, SelectionChangedEventArgs e)
+        {
+            if (NodeList.SelectedItem is MSLFrpApi.NodeInfo selectedNode)
+            {
                 Create_RemotePort.Text = Functions.GenerateRandomNumber(selectedNode.MinPort, selectedNode.MaxPort).ToString();
             }
         }
@@ -317,6 +329,40 @@ namespace MSL.pages.frpProviders.MSLFrp
             MSLFrpApi.UserToken = string.Empty;
             Config.Remove("MSLUserAccessToken");
             FrpProfile = new MSLFrpProfile(close: ChangeTab);
+        }
+    }
+
+    internal class MSLStatusConverter : IValueConverter
+    {
+        public object Convert(object value, Type targetType, object parameter, CultureInfo culture)
+        {
+            return (int)value switch
+            {
+                1 => "在线",
+                _ => "离线"
+            };
+        }
+
+        public object ConvertBack(object value, Type targetType, object parameter, CultureInfo culture)
+        {
+            throw new NotImplementedException();
+        }
+    }
+
+    internal class MSLUDPConverter : IValueConverter
+    {
+        public object Convert(object value, Type targetType, object parameter, CultureInfo culture)
+        {
+            return (int)value switch
+            {
+                1 => "UDP：支持",
+                _ => "UDP：不支持"
+            };
+        }
+
+        public object ConvertBack(object value, Type targetType, object parameter, CultureInfo culture)
+        {
+            throw new NotImplementedException();
         }
     }
 }

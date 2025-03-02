@@ -2,6 +2,7 @@
 using Newtonsoft.Json.Linq;
 using System;
 using System.Collections.Generic;
+using System.Collections.ObjectModel;
 using System.Linq;
 using System.Net;
 using System.Net.Http.Headers;
@@ -446,7 +447,26 @@ namespace MSL.utils
             }
         }
 
-        public static async Task<(Dictionary<string, string>, JArray)> GetNodeList()
+        internal class NodeInfo
+        {
+            public int ID { get; set; }
+            public string Name { get; set; }
+            public ObservableCollection<TagItem> Tags { get; set; }
+            public string Host { get; set; }
+            public (int,int) AllowPorts { get; set; }
+            public string Remark { get; set; }
+            public JObject Protocol { get; set; }
+            public string Band { get; set; }
+        }
+
+        internal class TagItem
+        {
+            public string Text { get; set; }
+            public bool IsStatusTag { get; set; }
+            public int StatusCode { get; set; }
+        }
+
+        public static async Task<(bool Flag, List<NodeInfo>)> GetNodeList()
         {
             try
             {
@@ -456,11 +476,43 @@ namespace MSL.utils
                 }, headerUAMode: 1);
                 if (res.HttpResponseCode == HttpStatusCode.OK && (bool)JObject.Parse(res.HttpResponseContent.ToString())["flag"] == true)
                 {
-                    Dictionary<string, string> Nodes = new Dictionary<string, string>();
                     JObject jo = (JObject)JsonConvert.DeserializeObject(res.HttpResponseContent.ToString());
                     var jArray = JArray.Parse(jo["data"]["list"].ToString());
+                    List<NodeInfo> nodeInfos = new List<NodeInfo>();
                     foreach (var node in jArray)
                     {
+                        nodeInfos.Add(new NodeInfo
+                        {
+                            ID = node["id"].Value<int>(),
+                            Name = node["name"].Value<string>(),
+                            Host = node["hostname"].Value<string>(),
+                            AllowPorts = string.IsNullOrEmpty(node["allowPort"].ToString()) ? (10000, 99999) : 
+                                (int.Parse(node["allowPort"].Value<string>().Trim('(', ')', ' ').Split(',')[0]),
+                                int.Parse(node["allowPort"].Value<string>().Trim('(', ')', ' ').Split(',')[1])),
+                            Remark = node["description"].Value<string>(),
+                            Protocol = (JObject)node["protocolSupport"],
+                            Band = node["bandwidth"].Value<string>(),
+                            Tags = [.. new[]
+                            { new TagItem
+                                {
+                                    Text = node["status"].Value<int>() == 200 ? "在线" : "离线",
+                                    IsStatusTag = true,
+                                    StatusCode = node["status"].Value<int>()
+                                }
+                            }.Concat(
+                                node["group"].ToString().Split([';'],
+                                StringSplitOptions.RemoveEmptyEntries).Select(
+                                    s => s.Trim()).Where(s => s != "admin" && s != "dev").Select(
+                                    s => new TagItem
+                                    {
+                                        Text = s,
+                                        IsStatusTag = false,
+                                        StatusCode = node["status"].Value<int>()
+                                    })
+                                )
+                            ]
+                        });
+                        /*
                         if (node["port"].ToString() != "您无权查询此节点的地址" && Convert.ToInt16(node["status"]) == 200 && !Convert.ToBoolean(node["fullyLoaded"]))
                         {
                             string[] targetGroup = node["group"].ToString().Split(';');
@@ -476,14 +528,15 @@ namespace MSL.utils
                             }
                             Nodes.Add(nodename, node["id"].ToString());
                         }
+                        */
                     }
-                    return (Nodes, jArray);
+                    return (true, nodeInfos);
                 }
-                return (null, null);
+                return (false, null);
             }
             catch
             {
-                return (null, null);
+                return (false, null);
             }
         }
 

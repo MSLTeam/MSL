@@ -21,8 +21,8 @@ namespace MSL.pages.frpProviders
     {
         private string token;
         private Dictionary<string, string> UserTunnelList;
-        private JArray ApiNodeJArray;
-        private Dictionary<string, string> ApiNodeList;
+        // private JArray ApiNodeJArray;
+        // private Dictionary<string, string> ApiNodeList;
 
         public OpenFrp()
         {
@@ -317,19 +317,41 @@ namespace MSL.pages.frpProviders
 
         private async Task GetNodeList()
         {
-            NodeList.Items.Clear();
-            (Dictionary<string, string>, JArray) process = await OpenFrpApi.GetNodeList();
-            if (process == (null, null))
+            var (Flag,NodeInfos) = await OpenFrpApi.GetNodeList();
+            if (!Flag)
             {
                 MagicShow.ShowMsgDialog("获取节点列表失败！", "ERR");
                 return;
             }
-            ApiNodeList = process.Item1;
-            ApiNodeJArray = process.Item2;
-            foreach (var node in ApiNodeList)
+            NodeList.ItemsSource = NodeInfos;
+            RandomPort(false);
+        }
+
+        private void NodeList_SelectionChanged(object sender, SelectionChangedEventArgs e)
+        {
+            if (NodeList.SelectedIndex == -1)
             {
-                NodeList.Items.Add(node.Key);
+                return;
             }
+            var SelectItem= NodeList.SelectedItem as OpenFrpApi.NodeInfo;
+            List<string> ProtocolList = new List<string>();
+            foreach (var protocol in SelectItem.Protocol)
+            {
+                if ((bool)protocol.Value)
+                {
+                    ProtocolList.Add(protocol.Key);
+                }
+            }
+            frpcType.ItemsSource = ProtocolList;
+            frpcType.SelectedIndex = 0;
+            /*
+            NodeTips.Text = $"节点ID：{SelectItem.ID}\n" +
+                $"节点名称：{SelectItem.Name}\n" +
+                $"节点状态：{SelectItem.Status}\n" +
+                $"节点标签：{SelectItem.Tags}\n" +
+                $"节点备注：{SelectItem.Remark}\n" +
+                $"节点带宽：{SelectItem.Band}\n";
+            */
         }
 
         private async void Button_Click(object sender, RoutedEventArgs e)
@@ -347,18 +369,6 @@ namespace MSL.pages.frpProviders
             Window.GetWindow(this).Close();
         }
 
-        private void FrpcType_SelectionChanged(object sender, SelectionChangedEventArgs e)
-        {
-            if (frpcType.SelectedIndex == 0)
-            {
-                portBox.Text = "25565";
-            }
-            if (frpcType.SelectedIndex == 1)
-            {
-                portBox.Text = "19132";
-            }
-        }
-
         private async void AddProxieBtn_Click(object sender, RoutedEventArgs e)
         {
             try
@@ -374,16 +384,16 @@ namespace MSL.pages.frpProviders
                 bool zip;
                 if ((bool)enableCompression.IsChecked) zip = true;
                 else zip = false;
-                string selected_node = NodeList.SelectedItem.ToString();
+                OpenFrpApi.NodeInfo selected_node = NodeList.SelectedItem as OpenFrpApi.NodeInfo;
                 int selected_node_id;
-                if (selected_node != null) selected_node_id = Convert.ToInt16(ApiNodeList[selected_node]);
+                if (selected_node != null) selected_node_id = selected_node.ID;
                 else
                 {
                     addProxieBtn.IsEnabled = true;
                     MagicShow.ShowMsgDialog("请先选择一个节点", "错误");
                     return;
                 }
-                string proxy_name = await MagicShow.ShowInput(Window.GetWindow(this), "隧道名称(不支持中文)");
+                string proxy_name = await MagicShow.ShowInput(Window.GetWindow(this), "给隧道取个名称吧（不支持中文）");
                 if (proxy_name != null)
                 {
                     addProxieBtn.IsEnabled = false;
@@ -447,53 +457,22 @@ namespace MSL.pages.frpProviders
 
         private void RandomRemotePortBtn_Click(object sender, RoutedEventArgs e)
         {
-            RandRemotePort(true);
+            RandomPort();
         }
 
-        void RandRemotePort(bool tips)
+        private void RandomPort(bool tip=true)
         {
-            if (tips)
+            if (NodeList.SelectedIndex == -1)
             {
-                if (NodeList.SelectedIndex == -1)
-                {
+                if(tip)
                     MagicShow.ShowMsgDialog("请先选择一个节点", "错误");
-                    return;
-                }
-                (int, int) remote_port_limit = (10000, 99999);
-                string selected_node = NodeList.SelectedItem.ToString();
-                int selected_node_id;
-                if (selected_node != null) selected_node_id = Convert.ToInt16(ApiNodeList[selected_node]);
-                else
-                {
-                    MagicShow.ShowMsgDialog(Window.GetWindow(this), "请先选择一个节点", "错误");
-                    return;
-                }
-                foreach (var node in ApiNodeJArray)
-                {
-                    if (Convert.ToInt32(node["id"]) == selected_node_id)
-                    {
-                        try
-                        {
-                            var s = node["allowPort"].ToString().Trim('(', ')', ' ');
-                            remote_port_limit = ValueTuple.Create(Array.ConvertAll(s.Split(','), int.Parse)[0], Array.ConvertAll(s.Split(','), int.Parse)[1]);
-                        }
-                        catch { remote_port_limit = (10000, 99999); }
-                        break;
-                    }
-                }
-                Random random = new Random();
-                string remote_port;
-                remote_port = random.Next(remote_port_limit.Item1, remote_port_limit.Item2).ToString();
-                remotePortBox.Text = remote_port;
+                return;
             }
-            else
-            {
-                (int, int) remote_port_limit = (10000, 99999);
-                Random random = new Random();
-                string remote_port;
-                remote_port = random.Next(remote_port_limit.Item1, remote_port_limit.Item2).ToString();
-                remotePortBox.Text = remote_port;
-            }
+            OpenFrpApi.NodeInfo selected_node = NodeList.SelectedItem as OpenFrpApi.NodeInfo;
+            Random random = new Random();
+            string remote_port;
+            remote_port = random.Next(selected_node.AllowPorts.Item1, selected_node.AllowPorts.Item2).ToString();
+            remotePortBox.Text = remote_port;
         }
 
         private void LogoutBtn_Click(object sender, RoutedEventArgs e)
