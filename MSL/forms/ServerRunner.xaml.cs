@@ -97,11 +97,12 @@ namespace MSL
             LoadingCircle loadingCircle = new LoadingCircle();
             MainGrid.Children.Add(loadingCircle);
             MainGrid.RegisterName("loadingBar", loadingCircle);
-            await Task.Delay(100);
-            LoadingInfoEvent();
+            await Task.Delay(50);
+            if (!await LoadingInfoEvent())
+                return;
             GetFastCmd();
             LoadedInfoEvent();
-            await Task.Delay(100);
+            await Task.Delay(50);
             MainGrid.Children.Remove(loadingCircle);
             MainGrid.UnregisterName("loadingBar");
             TabCtrl.SelectedIndex = FirstStartTab;
@@ -182,7 +183,7 @@ namespace MSL
             GC.Collect(); // collect finalized objects
         }
 
-        private void LoadingInfoEvent()
+        private async Task<bool> LoadingInfoEvent()
         {
             if (File.Exists(@"MSL\config.json"))
             {
@@ -228,6 +229,21 @@ namespace MSL
             //Get Server-Information
             JObject jsonObject = JObject.Parse(File.ReadAllText(@"MSL\ServerList.json", Encoding.UTF8));
             JObject _json = (JObject)jsonObject[RserverID.ToString()];
+            try
+            {
+                if (_json["name"] == null || _json["java"] == null || _json["base"] == null || _json["core"] == null || _json["memory"] == null || _json["args"] == null)
+                {
+                    await MagicShow.ShowMsgDialogAsync("加载服务器信息时出现错误！", "错误");
+                    Close();
+                    return false;
+                }
+            }
+            catch
+            {
+                await MagicShow.ShowMsgDialogAsync("加载服务器信息时出现错误！", "错误");
+                Close();
+                return false;
+            }
             Rservername = _json["name"].ToString();
             Rserverjava = _json["java"].ToString();
             Rserverbase = _json["base"].ToString();
@@ -349,6 +365,7 @@ namespace MSL
                 jsonObject[RserverID.ToString()].Replace(_json);
                 File.WriteAllText(@"MSL\ServerList.json", Convert.ToString(jsonObject), Encoding.UTF8);
             }
+            return true;
         }//窗体加载后，运行此方法，主要为改变UI、检测服务器是否完整
 
         private void LoadedInfoEvent()

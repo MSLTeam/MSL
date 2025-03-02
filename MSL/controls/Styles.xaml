@@ -331,6 +331,35 @@
         </Setter>
     </Style>
 
+    <Style x:Key="MagicListBoxItemStyle" TargetType="ListBoxItem">
+        <Setter Property="Template">
+            <Setter.Value>
+                <ControlTemplate TargetType="ListBoxItem">
+                    <Border x:Name="Bd" 
+                            CornerRadius="7" 
+                            BorderBrush="{DynamicResource BorderBrush}" 
+                            BorderThickness="1" 
+                            Padding="10">
+                        <ContentPresenter />
+                    </Border>
+                    <ControlTemplate.Triggers>
+                        <Trigger Property="IsSelected" Value="True">
+                            <Setter TargetName="Bd" 
+                                    Property="BorderBrush" 
+                                    Value="{DynamicResource DarkPrimaryBrush}"/>
+                        </Trigger>
+                        <Trigger Property="IsMouseOver" Value="True">
+                            <Setter TargetName="Bd" 
+                                    Property="Background" 
+                                    Value="{DynamicResource SideMenuBrush}"/>
+                        </Trigger>
+                    </ControlTemplate.Triggers>
+                </ControlTemplate>
+            </Setter.Value>
+        </Setter>
+        <Setter Property="Margin" Value="5"/>
+    </Style>
+
     <Style TargetType="Page" x:Key="AnimationPage">
         <Setter Property="RenderTransform">
             <Setter.Value>

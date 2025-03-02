@@ -335,7 +335,7 @@ namespace MSL.pages
             Button btn = sender as Button;
             if (btn != null)
             {
-                ListViewItem item = FindAncestor<ListViewItem>(btn);
+                ListBoxItem item = FindAncestor<ListBoxItem>(btn);
                 if (item != null)
                 {
                     item.IsSelected = true;
@@ -348,7 +348,7 @@ namespace MSL.pages
             Button btn = sender as Button;
             if (btn != null)
             {
-                ListViewItem item = FindAncestor<ListViewItem>(btn);
+                ListBoxItem item = FindAncestor<ListBoxItem>(btn);
                 if (item != null)
                 {
                     item.IsSelected = true;
@@ -361,7 +361,7 @@ namespace MSL.pages
             Button btn = sender as Button;
             if (btn != null)
             {
-                ListViewItem item = FindAncestor<ListViewItem>(btn);
+                ListBoxItem item = FindAncestor<ListBoxItem>(btn);
                 if (item != null)
                 {
                     item.IsSelected = true;

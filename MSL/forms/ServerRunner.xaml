@@ -226,7 +226,7 @@
                                     </StackPanel>
                                     <ListView x:Name="pluginslist" hc:Empty.ShowEmpty="true" BorderThickness="0" Margin="0,35,0,0" Background="{DynamicResource BackgroundBrush}" FontSize="14">
                                         <ListView.ContextMenu>
-                                            <ContextMenu FontSize="14">
+                                            <ContextMenu>
                                                 <MenuItem Click="reFresh_Click" Header="刷新"/>
                                                 <MenuItem x:Name="addPlugin" Click="addPlugin_Click" Header="添加插件"/>
                                                 <MenuItem x:Name="disPlugin" Click="disPlugin_Click" Header="禁用/启用所选插件"/>
@@ -276,7 +276,7 @@
                                     </StackPanel>
                                     <ListView x:Name="modslist" hc:Empty.ShowEmpty="true" BorderThickness="0" Margin="0,35,0,0" Background="{DynamicResource BackgroundBrush}" FontSize="14">
                                         <ListView.ContextMenu>
-                                            <ContextMenu FontSize="14">
+                                            <ContextMenu>
                                                 <MenuItem Click="reFresh_Click" Header="刷新"/>
                                                 <MenuItem x:Name="addMod" Click="addMod_Click" Header="添加模组"/>
                                                 <MenuItem x:Name="disMod" Click="disMod_Click" Header="禁用/启用所选模组"/>

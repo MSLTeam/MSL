@@ -66,36 +66,8 @@
                         <ColumnDefinition Width="5*"/>
                         <ColumnDefinition Width="4*"/>
                     </Grid.ColumnDefinitions>
-                    <ListBox Grid.Column="0" Margin="0,0,10,0" x:Name="NodeList" SelectionMode="Single" SelectionChanged="NodeList_SelectionChanged">
-                        <ListBox.ItemsPanel>
-                            <ItemsPanelTemplate>
-                                <WrapPanel Orientation="Horizontal" IsItemsHost="True"/>
-                            </ItemsPanelTemplate>
-                        </ListBox.ItemsPanel>
-                        <ListBox.ItemContainerStyle>
-                            <Style TargetType="ListBoxItem">
-                                <Setter Property="Template">
-                                    <Setter.Value>
-                                        <ControlTemplate TargetType="ListBoxItem">
-                                            <Border x:Name="Bd" CornerRadius="7" BorderBrush="{DynamicResource BorderBrush}" BorderThickness="1" Padding="10">
-                                                <ContentPresenter />
-                                            </Border>
-                                            <ControlTemplate.Triggers>
-                                                <Trigger Property="IsSelected" Value="True">
-                                                    <Setter TargetName="Bd" Property="BorderBrush" Value="{DynamicResource DarkPrimaryBrush}"/>
-                                                </Trigger>
-                                                <Trigger Property="IsMouseOver" Value="True">
-                                                    <Setter TargetName="Bd" Property="Background" Value="{DynamicResource SideMenuBrush}"/>
-                                                </Trigger>
-                                            </ControlTemplate.Triggers>
-                                        </ControlTemplate>
-                                    </Setter.Value>
-                                </Setter>
-                                <Setter Property="Margin" Value="5"/>
-                            </Style>
-                        </ListBox.ItemContainerStyle>
-
-                        <ListBox.ItemTemplate>
+                    <controls:MagicListBox Grid.Column="0" Margin="0,0,10,0" x:Name="NodeList" SelectionMode="Single" SelectionChanged="NodeList_SelectionChanged">
+                        <controls:MagicListBox.ItemTemplate>
                             <DataTemplate>
                                 <Grid Width="160" Background="Transparent">
                                     <Grid.RowDefinitions>
@@ -104,23 +76,6 @@
                                     </Grid.RowDefinitions>
                                     <Label Content="{Binding Name}" Style="{StaticResource BorderTitle}"/>
                                     <hc:UniformSpacingPanel Grid.Row="1" Orientation="Vertical" Spacing="5">
-                                        <!--
-                                        <StackPanel Orientation="Horizontal">
-                                            <Label Content="{Binding Status, Converter={StaticResource StatusConverter}}">
-                                                <Label.Style>
-                                                    <Style TargetType="Label" BasedOn="{StaticResource {x:Type Label}}">
-                                                        <Setter Property="Foreground" Value="White"/>
-                                                        <Setter Property="Background" Value="{DynamicResource DarkDangerBrush}"/>
-                                                        <Style.Triggers>
-                                                            <DataTrigger Binding="{Binding Status}" Value="200">
-                                                                <Setter Property="Background" Value="{DynamicResource DarkSuccessBrush}"/>
-                                                            </DataTrigger>
-                                                        </Style.Triggers>
-                                                    </Style>
-                                                </Label.Style>
-                                            </Label>
-                                        </StackPanel>
-                                        -->
                                         <WrapPanel Orientation="Horizontal">
                                             <ItemsControl ItemsSource="{Binding Tags}">
                                                 <ItemsControl.ItemsPanel>
@@ -181,8 +136,8 @@
                                     </hc:UniformSpacingPanel>
                                 </Grid>
                             </DataTemplate>
-                        </ListBox.ItemTemplate>
-                    </ListBox>
+                        </controls:MagicListBox.ItemTemplate>
+                    </controls:MagicListBox>
                     <Grid Grid.Column="1">
                         <Grid.RowDefinitions>
                             <RowDefinition Height="*"/>

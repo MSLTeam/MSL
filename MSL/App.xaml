@@ -4,6 +4,7 @@
              xmlns:hc="https://handyorg.github.io/handycontrol"
              xmlns:langs="clr-namespace:MSL.langs"
              xmlns:local="clr-namespace:MSL"
+             xmlns:controls="clr-namespace:MSL.controls"
              StartupUri="MainWindow.xaml">
     <Application.Resources>
         <ResourceDictionary>
@@ -51,6 +52,18 @@
                         <Setter Property="Content" Value="{Binding [Disabled],Source={x:Static langs:LanguageManager.Instance}}" />
                     </Trigger>
                 </Style.Triggers>
+            </Style>
+            <!-- 这个是自定义ListBox样式（放到Style.xaml后设计器会报错，强迫症很难受，只能放这里咯） -->
+            <Style TargetType="{x:Type controls:MagicListBox}" BasedOn="{hc:StaticResource ListBoxBaseStyle}">
+                <Setter Property="ItemsPanel">
+                    <Setter.Value>
+                        <ItemsPanelTemplate>
+                            <WrapPanel Orientation="Horizontal" IsItemsHost="True"/>
+                        </ItemsPanelTemplate>
+                    </Setter.Value>
+                </Setter>
+                <Setter Property="ItemContainerStyle" 
+            Value="{StaticResource MagicListBoxItemStyle}"/>
             </Style>
         </ResourceDictionary>
     </Application.Resources>

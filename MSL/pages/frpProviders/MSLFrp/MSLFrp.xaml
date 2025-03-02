@@ -94,36 +94,8 @@
                         <ColumnDefinition Width="5*"/>
                         <ColumnDefinition Width="4*"/>
                     </Grid.ColumnDefinitions>
-                    <ListBox Grid.Column="0" x:Name="NodeList" SelectionMode="Single" SelectionChanged="NodeList_SelectionChanged">
-                        <ListBox.ItemsPanel>
-                            <ItemsPanelTemplate>
-                                <WrapPanel Orientation="Horizontal" IsItemsHost="True"/>
-                            </ItemsPanelTemplate>
-                        </ListBox.ItemsPanel>
-                        <ListBox.ItemContainerStyle>
-                            <Style TargetType="ListBoxItem">
-                                <Setter Property="Template">
-                                    <Setter.Value>
-                                        <ControlTemplate TargetType="ListBoxItem">
-                                            <Border x:Name="Bd" CornerRadius="7" BorderBrush="{DynamicResource BorderBrush}" BorderThickness="1" Padding="10">
-                                                <ContentPresenter />
-                                            </Border>
-                                            <ControlTemplate.Triggers>
-                                                <Trigger Property="IsSelected" Value="True">
-                                                    <Setter TargetName="Bd" Property="BorderBrush" Value="{DynamicResource DarkPrimaryBrush}"/>
-                                                </Trigger>
-                                                <Trigger Property="IsMouseOver" Value="True">
-                                                    <Setter TargetName="Bd" Property="Background" Value="{DynamicResource SideMenuBrush}"/>
-                                                </Trigger>
-                                            </ControlTemplate.Triggers>
-                                        </ControlTemplate>
-                                    </Setter.Value>
-                                </Setter>
-                                <Setter Property="Margin" Value="5"/>
-                            </Style>
-                        </ListBox.ItemContainerStyle>
-
-                        <ListBox.ItemTemplate>
+                    <controls:MagicListBox Grid.Column="0" x:Name="NodeList" SelectionMode="Single" SelectionChanged="NodeList_SelectionChanged">
+                        <controls:MagicListBox.ItemTemplate>
                             <DataTemplate>
                                 <Grid Width="160" Background="Transparent">
                                     <Grid.RowDefinitions>
@@ -131,8 +103,8 @@
                                         <RowDefinition Height="*"/>
                                     </Grid.RowDefinitions>
                                     <Label Style="{StaticResource BorderTitle}">
-                                        <TextBlock>
-                                            <Run Text="#"/><Run Text="{Binding ID}"/>
+                                        <TextBlock><Run Text="#"/>
+                                            <Run Text="{Binding ID}"/>
                                             <Run Text="{Binding Name}"/>
                                         </TextBlock>
                                     </Label>
@@ -173,8 +145,9 @@
                                     </hc:UniformSpacingPanel>
                                 </Grid>
                             </DataTemplate>
-                        </ListBox.ItemTemplate>
-                    </ListBox>
+                        </controls:MagicListBox.ItemTemplate>
+                    </controls:MagicListBox>
+                    
                     <!--
                         <ListBox x:Name="NodeList" Grid.Row="1" MinWidth="300" SelectionMode="Single" hc:Empty.ShowEmpty="true" SelectionChanged="NodeList_SelectionChanged">
                             <ListBox.ItemTemplate>
