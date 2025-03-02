@@ -6,7 +6,6 @@ using System.Threading.Tasks;
 using System.Windows;
 using System.Windows.Controls;
 using System.Windows.Data;
-using Windows.Data.Xml.Dom;
 
 namespace MSL.pages.frpProviders.MSLFrp
 {
@@ -208,7 +207,7 @@ namespace MSL.pages.frpProviders.MSLFrp
                     return;
                 }
                 //输出配置文件
-                if (Config.WriteFrpcConfig(0, $"MSLFrp(NEW) - {selectedTunnel.Name}", Content) == true)
+                if (Config.WriteFrpcConfig(0, $"MSLFrp - {selectedTunnel.Name}", Content) == true)
                 {
                     await MagicShow.ShowMsgDialogAsync(Window.GetWindow(this), "映射配置成功，请您点击“启动内网映射”以启动映射！", "信息");
                     Window.GetWindow(this).Close();
@@ -289,17 +288,27 @@ namespace MSL.pages.frpProviders.MSLFrp
             if (listBox.SelectedItem is MSLFrpApi.NodeInfo selectedNode)
             {
                 Create_OKBtn.IsEnabled = false;
-                var (Code, Msg) = await MSLFrpApi.CreateTunnel(selectedNode.ID, Create_Name.Text, Create_Protocol.Text, "Create By MSL Client", Create_LocalIP.Text, int.Parse(Create_LocalPort.Text), int.Parse(Create_RemotePort.Text));
-                Create_OKBtn.IsEnabled = true;
-                if (Code == 200)
+                try
                 {
-                    await MagicShow.ShowMsgDialogAsync(Window.GetWindow(this), $"{Msg}\n隧道名称：{Create_Name.Text}\n远程端口： {Create_RemotePort.Text}", "成功");
-                    //显示main页面
-                    MainCtrl.SelectedIndex = 0;
+                    var (Code, Msg) = await MSLFrpApi.CreateTunnel(selectedNode.ID, Create_Name.Text, Create_Protocol.Text, "Create By MSL Client", Create_LocalIP.Text, int.Parse(Create_LocalPort.Text), int.Parse(Create_RemotePort.Text));
+                    if (Code == 200)
+                    {
+                        await MagicShow.ShowMsgDialogAsync(Window.GetWindow(this), $"{Msg}\n隧道名称：{Create_Name.Text}\n远程端口： {Create_RemotePort.Text}", "成功");
+                        //显示main页面
+                        MainCtrl.SelectedIndex = 0;
+                    }
+                    else
+                    {
+                        await MagicShow.ShowMsgDialogAsync(Window.GetWindow(this), "创建失败！请尝试更换隧道名称/节点！\n" + Msg, "错误");
+                    }
                 }
-                else
+                catch
                 {
-                    await MagicShow.ShowMsgDialogAsync(Window.GetWindow(this), "创建失败！请尝试更换隧道名称/节点！\n" + Msg, "错误");
+                    await MagicShow.ShowMsgDialogAsync(Window.GetWindow(this), "创建失败！请检查输入是否正确！", "错误");
+                }
+                finally
+                {
+                    Create_OKBtn.IsEnabled = true;
                 }
             }
             else
