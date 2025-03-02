@@ -202,7 +202,7 @@
                                         <ColumnDefinition Width="auto"/>
                                     </Grid.ColumnDefinitions>
                                     <Label Style="{DynamicResource MagicLabel}" Content="远程端口：" VerticalAlignment="Center"/>
-                                    <TextBox Grid.Column="1" Text="MyTunnel" x:Name="Create_RemotePort"/>
+                                    <TextBox Grid.Column="1" Text="25565" x:Name="Create_RemotePort"/>
                                     <Button Grid.Column="2" x:Name="GenerateRandomPort" Margin="5,0,0,0" Content="随机生成" Click="GenerateRandomPort_Click"/>
                                 </Grid>
                                 <Grid>
