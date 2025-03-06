@@ -437,8 +437,9 @@ namespace MSL
                     }
 
                     // 判断是否开了自动更新软件，如果开了自动更新软件，说明之前的自动开服和自动开Frpc功能并未执行，这里开始执行
-                    if (jsonObject["autoUpdateApp"] != null || jsonObject["autoUpdateApp"].ToString() == "True")
+                    if (jsonObject["autoUpdateApp"] != null)
                     {
+                        if (jsonObject["autoUpdateApp"].ToString() != "True") return;
                         try
                         {
                             // 检测是否开启对应功能
@@ -471,13 +472,11 @@ namespace MSL
                     MagicFlowMsg.ShowMessage(LanguageManager.Instance["MainWindow_GrowlMsg_MSLServerDown"], 2);
                 }
             }
-            catch(Exception ex)
+            catch (Exception ex)
             {
                 Growl.Error(ex.Message);
             }
         }
-
-        
 
         [DllImport("kernel32", SetLastError = true, CharSet = CharSet.Unicode)]
         public static extern IntPtr LoadLibraryEx(string lpFileName, IntPtr hReservedNull, uint dwFlags);
