@@ -161,11 +161,11 @@
                                 <Border Grid.Row="1" Style="{StaticResource BorderTipPrimary}">
                                     <StackPanel>
                                         <TextBlock Text="帮助：如何选择Java？" FontSize="16" Foreground="{DynamicResource PrimaryTextBrush}" FontWeight="Bold" HorizontalAlignment="Center" Margin="0,0,0,5"/>
-                                        <TextBlock Text="1.8之前：Java7-Java8" />
-                                        <TextBlock Text="1.8-1.12.2：Java8-Java11" />
-                                        <TextBlock Text="1.13-1.16.5：Java11-Java17" />
-                                        <TextBlock Text="1.17-1.20.4：Java17及以上" />
+                                        <TextBlock Text="1.16.5以及更低版本：Java8" />
+                                        <TextBlock Text="1.17/1.17.1：Java16" />
+                                        <TextBlock Text="1.18-1.20.4：Java17及以上" />
                                         <TextBlock Text="1.20.5-最新版：Java21及以上" />
+                                        <TextBlock Text="注：如果部分服务端有特殊要求请以其要求为准" />
                                     </StackPanel>
                                 </Border>
                             </Grid>
