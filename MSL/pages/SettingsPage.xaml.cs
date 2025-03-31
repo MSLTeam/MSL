@@ -523,37 +523,66 @@ namespace MSL.pages
             }
         }
 
+        private bool isWesternEgg;
         private async void WesternEgg_Click(object sender, RoutedEventArgs e)
         {
-
-            bool dialog = await MagicShow.ShowMsgDialogAsync(Window.GetWindow(this), "点击此按钮后软件出现任何问题作者概不负责，你确定要继续吗？\n（光敏性癫痫警告！若您患有光敏性癫痫，请不要点击确定！）", "警告", true);
+            if (isWesternEgg)
+            {
+                Process.Start("https://ys.mihoyo.com/");
+                return;
+            }
+            bool dialog = await MagicShow.ShowMsgDialogAsync("点击此按钮后软件出现任何问题作者概不负责，你确定要继续吗？\n（光敏性癫痫警告！若您患有光敏性癫痫，请不要点击确定！）", "警告", true);
             if (dialog)
             {
-                // 定义一个颜色数组
-                Color[] colors = new Color[] { Colors.DeepSkyBlue, Colors.Pink, Colors.LightGoldenrodYellow, Colors.SpringGreen, Colors.DeepSkyBlue, Colors.Pink, Colors.HotPink, Colors.DeepSkyBlue, };
+                isWesternEgg = true;
 
-                // 创建一个颜色关键帧动画
+                Random random = new Random();
                 ColorAnimationUsingKeyFrames colorAnimation = new ColorAnimationUsingKeyFrames
                 {
-                    Duration = TimeSpan.FromSeconds(15.0), // 总动画时间
-                    RepeatBehavior = RepeatBehavior.Forever // 无限循环
+                    Duration = TimeSpan.FromSeconds(20.0),
+                    RepeatBehavior = RepeatBehavior.Forever
                 };
 
-                // 为每个颜色添加关键帧
-                for (int i = 0; i < colors.Length; i++)
+                int frameCount = 7;
+                for (int i = 0; i < frameCount; i++)
                 {
-                    // 每个颜色持续时间为总时间除以颜色数量
-                    LinearColorKeyFrame keyFrame = new LinearColorKeyFrame(colors[i], KeyTime.FromTimeSpan(TimeSpan.FromSeconds(i * (15.0 / colors.Length))));
+                    // 生成随机颜色，但避免过于刺眼的颜色
+                    Color randomColor = Color.FromRgb(
+                        (byte)random.Next(20, 240),  // 避免极端值
+                        (byte)random.Next(20, 240),
+                        (byte)random.Next(20, 240)
+                    );
+
+                    // 使用缓动关键帧
+                    EasingColorKeyFrame keyFrame = new EasingColorKeyFrame(
+                        randomColor,
+                        KeyTime.FromTimeSpan(TimeSpan.FromSeconds(i * (20.0 / frameCount))),
+                        new PowerEase { Power = 2, EasingMode = EasingMode.EaseInOut }
+                    );
+
                     colorAnimation.KeyFrames.Add(keyFrame);
                 }
 
-                // 应用动画到背景色和AccentColor
-                SolidColorBrush brush = new SolidColorBrush(colors[0]);
+                // 平滑循环动画
+                if (colorAnimation.KeyFrames.Count > 0)
+                {
+                    Color firstColor = ((ColorKeyFrame)colorAnimation.KeyFrames[0]).Value;
+                    EasingColorKeyFrame lastKeyFrame = new EasingColorKeyFrame(
+                        firstColor,
+                        KeyTime.FromTimeSpan(TimeSpan.FromSeconds(20.0)),
+                        new PowerEase { Power = 2, EasingMode = EasingMode.EaseInOut }
+                    );
+                    colorAnimation.KeyFrames.Add(lastKeyFrame);
+                }
 
+                SolidColorBrush brush = new SolidColorBrush();
+                WeakReference<SolidColorBrush> weakBrush = new WeakReference<SolidColorBrush>(brush);
+
+                // 开始动画并应用
                 brush.BeginAnimation(SolidColorBrush.ColorProperty, colorAnimation);
-                //window.Background = brush;
                 Application.Current.Resources["BackgroundBrush"] = brush;
-                //ThemeManager.Current.AccentColor = brush;
+
+                // 处理背景图片
                 if (File.Exists("MSL\\Background.png"))
                 {
                     File.Copy("MSL\\Background.png", "MSL\\Background_.png", true);
@@ -698,7 +727,7 @@ namespace MSL.pages
                             MagicShow.ShowMsgDialog(Window.GetWindow(this), "您的服务器/内网映射/点对点联机正在运行中，若此时更新，会造成后台残留，请将前者关闭后再进行更新！", "警告");
                             return;
                         }
-                        string downloadUrl = (await HttpService.GetApiContentAsync("download/update?type=normal"))["data"]["url"].ToString(); ;
+                        string downloadUrl = (await HttpService.GetApiContentAsync("download/update"))["data"].ToString(); ;
                         await MagicShow.ShowDownloader(Window.GetWindow(this), downloadUrl, AppDomain.CurrentDomain.BaseDirectory, "MSL" + _version + ".exe", "下载新版本中……");
                         if (File.Exists("MSL" + _version + ".exe"))
                         {
