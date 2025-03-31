@@ -23,10 +23,10 @@
                 <Button Content="下载资源" x:Name="DlModBtn" Margin="0,0,10,0" hc:IconElement.Geometry="{StaticResource DownloadGeometry}" Click="DlModBtn_Click"/>
                 <Button Content="下载服务端" x:Name="DlServerCoreBtn" hc:IconElement.Geometry="{StaticResource DownloadGeometry}" Click="DlServerCoreBtn_Click"/>
             </StackPanel>
-            <controls:MagicListBox Grid.Row="1" x:Name="serverList" hc:Empty.ShowEmpty="true" MouseDoubleClick="serverList_MouseDoubleClick" SelectionMode="Single" SelectionChanged="serverList_SelectionChanged" Background="Transparent">
+            <controls:MagicListBox Grid.Row="1" x:Name="serverList" hc:Empty.ShowEmpty="true" hc:BorderElement.CornerRadius="10" BorderThickness="0" MouseDoubleClick="serverList_MouseDoubleClick" SelectionMode="Single" SelectionChanged="serverList_SelectionChanged" Background="{DynamicResource BackgroundBrush}">
                 <controls:MagicListBox.ItemTemplate>
                     <DataTemplate>
-                        <Grid Width="auto" Background="Transparent">
+                        <Grid Width="auto">
                             <Grid.RowDefinitions>
                                 <RowDefinition Height="Auto"/>
                                 <RowDefinition Height="*"/>
