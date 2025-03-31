@@ -376,7 +376,7 @@ namespace MSL.controls
                         JArray sides = (JArray)processor["sides"]; //获取sides数组
                         if (sides == null || sides.Values<string>().Contains("server"))
                         {
-                            buildarg = @"-cp """;
+                            buildarg = @"-Djavax.net.ssl.trustStoreType=Windows-ROOT -cp """;
                             //处理classpath
                             buildarg += LibPath + "/" + NameToPath((string)processor["jar"]) + ";";
                             JArray classpath = (JArray)processor["classpath"];
