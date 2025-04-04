@@ -3,9 +3,11 @@ using Newtonsoft.Json.Linq;
 using System;
 using System.IO;
 using System.Text;
+using System.Text.RegularExpressions;
 using System.Threading.Tasks;
 using System.Windows;
 using System.Windows.Controls;
+using System.Windows.Documents;
 using System.Windows.Media.Imaging;
 using MessageBox = System.Windows.MessageBox;
 
@@ -153,38 +155,19 @@ namespace MSL.pages
                     noticeLabText = "获取公告失败！可能有以下原因：\n1.网络连接异常\n2.未安装.Net Framework 4.7.2运行库\n3.软件Bug，请联系作者进行解决\n错误信息：" + ex.Message;
                 }
             }
-
-            /*
-            if (noticeLabText == "")
-            {
-                noticeLab.Visibility = Visibility.Collapsed;
-                noticeLab.Text = "";
-                string _ServerLink = MainWindow.ServerLink;
-                if (_ServerLink.Contains("/"))
-                {
-                    _ServerLink = _ServerLink.Substring(0, _ServerLink.IndexOf("/"));
-                }
-                noticeImage.Source = new BitmapImage(new Uri("https://file." + _ServerLink + "/notice.png"));
-            }
-            else
-            {
-                noticeLab.Visibility = Visibility.Visible;
-                noticeImage.Source = null;
-                noticeLab.Text = noticeLabText;
-            }
-            */
             noticeLab.Text = noticeLabText;
         }
 
         private void LoadRecommendations(JArray recommendations)
         {
             recommendBorder.Visibility = Visibility.Visible;
+
             for (int x = 0; x < 100; x++)
             {
-                StackPanel pannel = RecommendGrid.FindName("RecPannel" + x.ToString()) as StackPanel;
-                if (pannel != null)
+                StackPanel panel = RecommendGrid.FindName("RecPannel" + x.ToString()) as StackPanel;
+                if (panel != null)
                 {
-                    RecommendGrid.Children.Remove(pannel);
+                    RecommendGrid.Children.Remove(panel);
                     RecommendGrid.UnregisterName("RecPannel" + x.ToString());
                 }
                 else
@@ -196,35 +179,99 @@ namespace MSL.pages
             int i = 0;
             foreach (var recommendation in recommendations)
             {
-                StackPanel stackPanel = new StackPanel();
-                stackPanel.Orientation = Orientation.Horizontal;
-                Image image = new Image();
-                image.Width = 48;
-                image.Height = 48;
-                if (recommendation.ToString().StartsWith("*"))
+                StackPanel recommendationPanel = new StackPanel();
+                recommendationPanel.Orientation = Orientation.Horizontal;
+
+                StackPanel recommendationTextPanel = new StackPanel();
+                recommendationTextPanel.Orientation = Orientation.Vertical;
+
+                string content = recommendation.ToString();
+                string[] lines = content.Split(new[] { "\r\n", "\n" }, StringSplitOptions.RemoveEmptyEntries);
+
+                foreach (string line in lines)
                 {
-                    image.Source = new BitmapImage(new Uri("pack://application:,,,/icon.ico"));
-                }
-                else
-                {
-                    string _ServerLink = MainWindow.ServerLink;
-                    if (_ServerLink.Contains("/"))
+                    string trimmedLine = line.Trim();
+
+                    // 处理图片标签
+                    if (trimmedLine.StartsWith("<img") && trimmedLine.EndsWith("/>"))
                     {
-                        _ServerLink = _ServerLink.Substring(0, _ServerLink.IndexOf("/"));
+                        Image image = new Image();
+                        image.Width = 48;
+                        image.Height = 48;
+                        
+                        
+                        var match = Regex.Match(trimmedLine, "url=\"(.*?)\"");
+                        if (match.Success)
+                        {
+                            string imgUrl = match.Groups[1].Value;
+                            if (!string.IsNullOrEmpty(imgUrl))
+                            {
+                                // 加载图标
+                                image.Source = new BitmapImage(new Uri(imgUrl));
+                            }
+                            else
+                            {
+                                // 如果URL为空，使用默认图标
+                                image.Source = new BitmapImage(new Uri("pack://application:,,,/icon.ico"));
+                            }
+                        }
+                        else
+                        {
+                            // 没有图片标签，使用默认图标
+                            image.Source = new BitmapImage(new Uri("pack://application:,,,/icon.ico"));
+                        }
+                        recommendationPanel.Children.Add(image);
+                        continue;
                     }
-                    image.Source = new BitmapImage(new Uri("https://file." + _ServerLink + "/recommendImg/" + i.ToString() + ".png"));
+
+                    TextBlock textBlock = new TextBlock();
+                    textBlock.TextWrapping = TextWrapping.Wrap;
+                    textBlock.Margin = new Thickness(5, 2, 0, 2);
+                    textBlock.VerticalAlignment = VerticalAlignment.Center;
+                    textBlock.SetResourceReference(TextBlock.ForegroundProperty, "PrimaryTextBrush");
+
+                    ProcessLineContent(line, textBlock);
+                    recommendationTextPanel.Children.Add(textBlock);
                 }
-                stackPanel.Children.Add(image);
-                TextBlock textBlock = new TextBlock();
-                textBlock.Text = recommendation.ToString();
-                textBlock.SetResourceReference(ForegroundProperty, "PrimaryTextBrush");
-                textBlock.Margin = new Thickness(5, 0, 0, 0);
-                textBlock.TextWrapping = TextWrapping.Wrap;
-                textBlock.VerticalAlignment = VerticalAlignment.Center;
-                stackPanel.Children.Add(textBlock);
-                RecommendGrid.Children.Add(stackPanel);
-                RecommendGrid.RegisterName("RecPannel" + i.ToString(), textBlock);
-                i++;
+
+                recommendationPanel.Children.Add(recommendationTextPanel);
+                RecommendGrid.Children.Add(recommendationPanel);
+                RecommendGrid.RegisterName("RecPannel" + i.ToString(), recommendationPanel);
+            }
+        }
+
+        private void ProcessLineContent(string line, TextBlock textBlock)
+        {
+            var hyperlinkRegex = new Regex(@"<hyperlink url=""(.*?)"">(.*?)<\/hyperlink>");
+            int lastIndex = 0;
+
+            foreach (Match match in hyperlinkRegex.Matches(line))
+            {
+                // 添加前面的普通文本
+                if (match.Index > lastIndex)
+                {
+                    textBlock.Inlines.Add(new Run
+                    {
+                        Text = line.Substring(lastIndex, match.Index - lastIndex)
+                    });
+                }
+
+                // 添加超链接
+                var hyperlink = new Hyperlink();
+                hyperlink.Inlines.Add(new Run { Text = match.Groups[2].Value });
+                hyperlink.Command = HandyControl.Interactivity.ControlCommands.OpenLink;
+                hyperlink.CommandParameter = match.Groups[1].Value;
+                textBlock.Inlines.Add(hyperlink);
+                lastIndex = match.Index + match.Length;
+            }
+
+            // 添加剩余文本
+            if (lastIndex < line.Length)
+            {
+                textBlock.Inlines.Add(new Run
+                {
+                    Text = line.Substring(lastIndex)
+                });
             }
         }
 
