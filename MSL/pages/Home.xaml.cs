@@ -4,12 +4,12 @@ using System;
 using System.IO;
 using System.Text;
 using System.Text.RegularExpressions;
+using System.Threading;
 using System.Threading.Tasks;
 using System.Windows;
 using System.Windows.Controls;
 using System.Windows.Documents;
 using System.Windows.Media.Imaging;
-using MessageBox = System.Windows.MessageBox;
 
 namespace MSL.pages
 {
@@ -26,80 +26,90 @@ namespace MSL.pages
             InitializeComponent();
         }
 
-        private bool isInit = true;
+        private bool isInit = false;
+        private CancellationTokenSource _loadingCancellationTokenSource;
+
         private async void Page_Loaded(object sender, RoutedEventArgs e)
         {
-            GetServerConfig();
-            if (isInit)
+            _loadingCancellationTokenSource?.Cancel();
+            _loadingCancellationTokenSource = new CancellationTokenSource();
+            var cancellationToken = _loadingCancellationTokenSource.Token;
+
+            try
             {
-                for (int i = 0; i < 10; i++)
+                // 加载快速启动按钮服务器信息
+                GetServerConfig();
+
+                if (!isInit)
                 {
-                    if (MainWindow.ServerLink != null)
+                    // 等待服务器连接
+                    bool connected = await WaitForServerConnection(10, cancellationToken);
+                    if (connected && !cancellationToken.IsCancellationRequested)
                     {
-                        break;
+                        await GetNotice(true);
+                        isInit = true;
                     }
-                    await Task.Delay(1000);
                 }
-                await GetNotice(true);
-                isInit = false;
-            }
-            else
-            {
-                if (MainWindow.ServerLink != null)
+                else if (MainWindow.ServerLink != null && !cancellationToken.IsCancellationRequested)
                 {
                     await GetNotice();
                 }
             }
+            catch (OperationCanceledException)
+            {
+                return;
+            }
+            catch (Exception ex)
+            {
+                MagicFlowMsg.ShowMessage(ex.Message, 2);
+            }
+        }
+
+        private async Task<bool> WaitForServerConnection(int timeoutSeconds, CancellationToken cancellationToken)
+        {
+            for (int i = 0; i < timeoutSeconds && !cancellationToken.IsCancellationRequested; i++)
+            {
+                if (MainWindow.ServerLink != null)
+                {
+                    return true;
+                }
+                await Task.Delay(1000, cancellationToken);
+            }
+            return MainWindow.ServerLink != null;
         }
 
         private async Task GetNotice(bool firstLoad = false)
         {
-            //公告
-            string noticeLabText = noticeLab.Text;
-            if (firstLoad)
-            {
-                noticeLabText = "";
-            }
-            string noticeversion1;
             try
             {
-                string noticeversion = (await HttpService.GetApiContentAsync("query/notice?query=id"))["data"]["noticeID"].ToString();
-                JObject jsonObject = JObject.Parse(File.ReadAllText(@"MSL\config.json", Encoding.UTF8));
-                if (jsonObject["notice"] == null)
-                {
-                    string jsonString = File.ReadAllText(@"MSL\config.json", Encoding.UTF8);
-                    JObject jobject = JObject.Parse(jsonString);
-                    jobject.Add("notice", "0");
-                    string convertString = Convert.ToString(jobject);
-                    File.WriteAllText(@"MSL\config.json", convertString, Encoding.UTF8);
-                    noticeversion1 = "0";
-                }
-                else
-                {
-                    noticeversion1 = jsonObject["notice"].ToString();
-                }
-                if (noticeversion1 != noticeversion)
-                {
-                    var notice = (await HttpService.GetApiContentAsync("query/notice"))["data"]["notice"].ToString();
-                    var recommendations = (await HttpService.GetApiContentAsync("query/notice?query=tips"))["data"]["tips"];
+                string noticeLabText = firstLoad ? string.Empty : noticeLab.Text;
 
+                // 获取公告版本
+                string currentNoticeVersion = await GetCurrentNoticeVersion();
+                string savedNoticeVersion = await GetSavedNoticeVersion();
+
+                // 如果公告版本不同或首次加载且公告为空，则获取新公告
+                if (currentNoticeVersion != savedNoticeVersion || (firstLoad && string.IsNullOrEmpty(noticeLabText)))
+                {
+                    var noticeTask = HttpService.GetApiContentAsync("query/notice");
+                    var tipsTask = HttpService.GetApiContentAsync("query/notice?query=tips");
+
+                    // 并行获取公告和recommendations
+                    await Task.WhenAll(noticeTask, tipsTask);
+
+                    var noticeResponse = await noticeTask;
+                    var tipsResponse = await tipsTask;
+
+                    // 处理公告内容
+                    string notice = noticeResponse["data"]["notice"]?.ToString();
                     if (!string.IsNullOrEmpty(notice))
                     {
                         noticeLabText = notice;
-                        //Console.WriteLine("Notice Loaded");
-                        if (noticeLabText != "")
+
+                        // 在加载完成后显示通知对话框
+                        if (!string.IsNullOrEmpty(noticeLabText) && currentNoticeVersion != savedNoticeVersion)
                         {
-                            _ = Task.Run(async () =>
-                            {
-                                while (!MainWindow.LoadingCompleted)
-                                {
-                                    await Task.Delay(1000);
-                                }
-                                Dispatcher.Invoke(() =>
-                                {
-                                    MagicShow.ShowMsgDialog(Window.GetWindow(this), noticeLabText, "公告");
-                                });
-                            });
+                            await ShowNoticeDialogWhenLoaded(noticeLabText);
                         }
                     }
                     else
@@ -107,137 +117,205 @@ namespace MSL.pages
                         noticeLabText = "获取公告失败！请检查网络连接是否正常或联系作者进行解决！";
                     }
 
+                    // 处理recommendations
+                    var recommendations = tipsResponse["data"]["tips"];
                     if (recommendations != null)
                     {
-                        LoadRecommendations((JArray)recommendations);
+                        await Dispatcher.InvokeAsync(() => LoadRecommendations((JArray)recommendations));
                     }
 
-                    try
-                    {
-                        string jsonString = File.ReadAllText(@"MSL\config.json", Encoding.UTF8);
-                        JObject jobject = JObject.Parse(jsonString);
-                        jobject["notice"] = noticeversion.ToString();
-                        string convertString = Convert.ToString(jobject);
-                        File.WriteAllText(@"MSL\config.json", convertString, Encoding.UTF8);
-                    }
-                    catch (Exception a)
-                    {
-                        MessageBox.Show(a.Message);
-                    }
+                    // 保存新公告版本
+                    await SaveNoticeVersion(currentNoticeVersion);
                 }
-                else if (noticeLabText == "")
-                {
-                    Visibility noticevisible = Visibility.Visible;
-                    noticevisible = noticeLab.Visibility;
-                    if (noticevisible == Visibility.Visible)
-                    {
-                        var notice = (await HttpService.GetApiContentAsync("query/notice"))["data"]["notice"].ToString();
-                        if (!string.IsNullOrEmpty(notice))
-                        {
-                            noticeLabText = notice;
-                        }
-                        else
-                        {
-                            noticeLabText = "获取公告失败！请检查网络连接是否正常或联系作者进行解决！";
-                        }
-                        var recommendations = (await HttpService.GetApiContentAsync("query/notice?query=tips"))["data"]["tips"];
-                        if (recommendations != null)
-                        {
-                            LoadRecommendations((JArray)recommendations);
-                        }
-                    }
-                }
+
+                noticeLab.Text = noticeLabText;
             }
             catch (Exception ex)
             {
-                if (noticeLabText == "")
-                {
-                    noticeLabText = "获取公告失败！可能有以下原因：\n1.网络连接异常\n2.未安装.Net Framework 4.7.2运行库\n3.软件Bug，请联系作者进行解决\n错误信息：" + ex.Message;
-                }
+                // 处理异常
+                string errorMessage = string.IsNullOrEmpty(noticeLab.Text)
+                    ? $"获取公告失败！可能有以下原因：\n1.网络连接异常\n2.未安装.Net Framework 4.7.2运行库\n3.软件Bug，请联系作者进行解决\n错误信息：{ex.Message}"
+                    : noticeLab.Text;
+                noticeLab.Text = errorMessage;
             }
-            noticeLab.Text = noticeLabText;
+        }
+
+        private async Task<string> GetCurrentNoticeVersion()
+        {
+            try
+            {
+                var response = await HttpService.GetApiContentAsync("query/notice?query=id");
+                return response["data"]["noticeID"]?.ToString() ?? "0";
+            }
+            catch
+            {
+                return "0";
+            }
+        }
+
+        private async Task<string> GetSavedNoticeVersion()
+        {
+            return await Task.Run(() =>
+            {
+                try
+                {
+                    string configPath = @"MSL\config.json";
+                    if (!File.Exists(configPath))
+                    {
+                        return "0";
+                    }
+
+                    JObject jsonObject = JObject.Parse(File.ReadAllText(configPath, Encoding.UTF8));
+                    if (jsonObject["notice"] == null)
+                    {
+                        jsonObject.Add("notice", "0");
+                        File.WriteAllText(configPath, jsonObject.ToString(), Encoding.UTF8);
+                        return "0";
+                    }
+
+                    return jsonObject["notice"].ToString();
+                }
+                catch
+                {
+                    return "0";
+                }
+            });
+        }
+
+        private async Task SaveNoticeVersion(string version)
+        {
+            await Task.Run(() =>
+            {
+                try
+                {
+                    string configPath = @"MSL\config.json";
+                    JObject jsonObject = File.Exists(configPath)
+                        ? JObject.Parse(File.ReadAllText(configPath, Encoding.UTF8))
+                        : new JObject();
+
+                    jsonObject["notice"] = version;
+                    File.WriteAllText(configPath, jsonObject.ToString(), Encoding.UTF8);
+                }
+                catch (Exception ex)
+                {
+                    MagicFlowMsg.ShowMessage($"保存公告版本时出错: {ex.Message}", 2);
+                }
+            });
+        }
+
+        private async Task ShowNoticeDialogWhenLoaded(string noticeText)
+        {
+            await Task.Run(async () =>
+            {
+                while (!MainWindow.LoadingCompleted)
+                {
+                    await Task.Delay(500);
+                }
+
+                await Dispatcher.InvokeAsync(() =>
+                {
+                    MagicShow.ShowMsgDialog(Window.GetWindow(this), noticeText, "公告");
+                });
+            });
         }
 
         private void LoadRecommendations(JArray recommendations)
         {
             recommendBorder.Visibility = Visibility.Visible;
 
-            for (int x = 0; x < 100; x++)
+            // 清除
+            ClearRecommendations();
+
+            // 添加
+            int i = 0;
+            foreach (var recommendation in recommendations)
             {
-                StackPanel panel = RecommendGrid.FindName("RecPannel" + x.ToString()) as StackPanel;
+                var recommendationPanel = CreateRecommendationPanel(recommendation.ToString());
+                RecommendGrid.Children.Add(recommendationPanel);
+                RecommendGrid.RegisterName($"RecPannel{i}", recommendationPanel);
+                i++;
+            }
+        }
+
+        private void ClearRecommendations()
+        {
+            for (int i = 0; i < 100; i++)
+            {
+                StackPanel panel = RecommendGrid.FindName($"RecPannel{i}") as StackPanel;
                 if (panel != null)
                 {
                     RecommendGrid.Children.Remove(panel);
-                    RecommendGrid.UnregisterName("RecPannel" + x.ToString());
+                    RecommendGrid.UnregisterName($"RecPannel{i}");
                 }
                 else
                 {
                     break;
                 }
             }
+        }
 
-            int i = 0;
-            foreach (var recommendation in recommendations)
+        private StackPanel CreateRecommendationPanel(string content)
+        {
+            StackPanel recommendationPanel = new StackPanel { Orientation = Orientation.Horizontal };
+            StackPanel recommendationTextPanel = new StackPanel { Orientation = Orientation.Vertical };
+
+            string[] lines = content.Split(new[] { "\r\n", "\n" }, StringSplitOptions.RemoveEmptyEntries);
+
+            foreach (string line in lines)
             {
-                StackPanel recommendationPanel = new StackPanel();
-                recommendationPanel.Orientation = Orientation.Horizontal;
+                string trimmedLine = line.Trim();
 
-                StackPanel recommendationTextPanel = new StackPanel();
-                recommendationTextPanel.Orientation = Orientation.Vertical;
-
-                string content = recommendation.ToString();
-                string[] lines = content.Split(new[] { "\r\n", "\n" }, StringSplitOptions.RemoveEmptyEntries);
-
-                foreach (string line in lines)
+                // 处理图片
+                if (trimmedLine.StartsWith("<img") && trimmedLine.EndsWith("/>"))
                 {
-                    string trimmedLine = line.Trim();
-
-                    // 处理图片标签
-                    if (trimmedLine.StartsWith("<img") && trimmedLine.EndsWith("/>"))
-                    {
-                        Image image = new Image();
-                        image.Width = 48;
-                        image.Height = 48;
-                        
-                        
-                        var match = Regex.Match(trimmedLine, "url=\"(.*?)\"");
-                        if (match.Success)
-                        {
-                            string imgUrl = match.Groups[1].Value;
-                            if (!string.IsNullOrEmpty(imgUrl))
-                            {
-                                // 加载图标
-                                image.Source = new BitmapImage(new Uri(imgUrl));
-                            }
-                            else
-                            {
-                                // 如果URL为空，使用默认图标
-                                image.Source = new BitmapImage(new Uri("pack://application:,,,/icon.ico"));
-                            }
-                        }
-                        else
-                        {
-                            // 没有图片标签，使用默认图标
-                            image.Source = new BitmapImage(new Uri("pack://application:,,,/icon.ico"));
-                        }
-                        recommendationPanel.Children.Add(image);
-                        continue;
-                    }
-
-                    TextBlock textBlock = new TextBlock();
-                    textBlock.TextWrapping = TextWrapping.Wrap;
-                    textBlock.Margin = new Thickness(5, 2, 0, 2);
-                    textBlock.VerticalAlignment = VerticalAlignment.Center;
-                    textBlock.SetResourceReference(TextBlock.ForegroundProperty, "PrimaryTextBrush");
-
-                    ProcessLineContent(line, textBlock);
-                    recommendationTextPanel.Children.Add(textBlock);
+                    Image image = CreateImageFromImgTag(trimmedLine);
+                    recommendationPanel.Children.Add(image);
+                    continue;
                 }
 
-                recommendationPanel.Children.Add(recommendationTextPanel);
-                RecommendGrid.Children.Add(recommendationPanel);
-                RecommendGrid.RegisterName("RecPannel" + i.ToString(), recommendationPanel);
+                // 处理文本
+                TextBlock textBlock = CreateTextBlock(line);
+                recommendationTextPanel.Children.Add(textBlock);
             }
+
+            recommendationPanel.Children.Add(recommendationTextPanel);
+            return recommendationPanel;
+        }
+
+        private Image CreateImageFromImgTag(string imgTag)
+        {
+            Image image = new Image
+            {
+                Width = 48,
+                Height = 48
+            };
+
+            var match = Regex.Match(imgTag, "url=\"(.*?)\"");
+            if (match.Success && !string.IsNullOrEmpty(match.Groups[1].Value))
+            {
+                image.Source = new BitmapImage(new Uri(match.Groups[1].Value));
+            }
+            else
+            {
+                // 使用默认图标
+                image.Source = new BitmapImage(new Uri("pack://application:,,,/icon.ico"));
+            }
+
+            return image;
+        }
+
+        private TextBlock CreateTextBlock(string line)
+        {
+            TextBlock textBlock = new TextBlock
+            {
+                TextWrapping = TextWrapping.Wrap,
+                Margin = new Thickness(5, 2, 0, 1),
+                VerticalAlignment = VerticalAlignment.Center
+            };
+            textBlock.SetResourceReference(TextBlock.ForegroundProperty, "PrimaryTextBrush");
+
+            ProcessLineContent(line, textBlock);
+            return textBlock;
         }
 
         private void ProcessLineContent(string line, TextBlock textBlock)
@@ -279,23 +357,30 @@ namespace MSL.pages
         {
             try
             {
-                int i = 0;
-                JObject _jsonObject = JObject.Parse(File.ReadAllText(@"MSL\config.json", Encoding.UTF8));
-                if (_jsonObject["selectedServer"] != null)
+                object configJson = Config.Read("selectedServer");
+                int selectedIndex = -1;
+
+                if (configJson != null && int.TryParse(configJson.ToString(), out int index))
                 {
-                    int _i = int.Parse(_jsonObject["selectedServer"].ToString());
-                    if (_i != -1)
-                    {
-                        i = _i;
-                    }
+                    selectedIndex = index != -1 ? index : -1;
                 }
+
+                // 加载服务器列表
                 startServerDropdown.Items.Clear();
-                JObject jsonObject = JObject.Parse(File.ReadAllText(@"MSL\ServerList.json", Encoding.UTF8));
-                foreach (var item in jsonObject)
+                try
                 {
-                    startServerDropdown.Items.Add(item.Value["name"]);
+                    JObject serverListJson = JObject.Parse(File.ReadAllText(@"MSL\ServerList.json", Encoding.UTF8));
+                    foreach (var item in serverListJson)
+                    {
+                        startServerDropdown.Items.Add(item.Value["name"]);
+                    }
+
+                    startServerDropdown.SelectedIndex = selectedIndex;
                 }
-                startServerDropdown.SelectedIndex = i;
+                catch
+                {
+                    startServerDropdown.SelectedIndex = -1;
+                }
             }
             catch
             {
@@ -309,7 +394,8 @@ namespace MSL.pages
                 }
             }
         }
-        private void startServer_Click(object sender, RoutedEventArgs e)
+
+        private void StartServer_Click(object sender, RoutedEventArgs e)
         {
             if (startServer.IsDropDownOpen)
             {
@@ -336,7 +422,7 @@ namespace MSL.pages
             }
         }
 
-        private void startServerDropdown_SelectionChanged(object sender, SelectionChangedEventArgs e)
+        private void StartServerDropdown_SelectionChanged(object sender, SelectionChangedEventArgs e)
         {
             selectedItemTextBlock.Text = startServerDropdown.SelectedItem?.ToString();
             JObject _jsonObject = JObject.Parse(File.ReadAllText(@"MSL\config.json", Encoding.UTF8));
