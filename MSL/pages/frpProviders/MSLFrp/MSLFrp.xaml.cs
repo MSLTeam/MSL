@@ -251,34 +251,21 @@ namespace MSL.pages.frpProviders.MSLFrp
 
         }
 
-        /*
-        private void NodeList_SelectionChanged(object sender, SelectionChangedEventArgs e)
-        {
-            var listBox = NodeList;
-            if (listBox.SelectedItem is MSLFrpApi.NodeInfo selectedNode)
-            {
-                NodeTips.Text = (string.IsNullOrEmpty(selectedNode.Remark) ? "节点没有备注" : selectedNode.Remark) +
-                    "\n宽带：" + selectedNode.Band + "\tUDP：" + (selectedNode.UDP == 1 ? "支持" : "不支持");
-                switch (selectedNode.Status)
-                {
-                    case 1:
-                        NodeStatus.Style = (Style)FindResource("LabelSuccess");
-                        NodeStatus.Content = "在线";
-                        break;
-                    default:
-                        NodeStatus.Style = (Style)FindResource("LabelDanger");
-                        NodeStatus.Content = "离线";
-                        break;
-                }
-                Create_RemotePort.Text = Functions.GenerateRandomNumber(selectedNode.MinPort, selectedNode.MaxPort).ToString();
-            }
-        }
-        */
         private void NodeList_SelectionChanged(object sender, SelectionChangedEventArgs e)
         {
             if (NodeList.SelectedItem is MSLFrpApi.NodeInfo selectedNode)
             {
                 Create_RemotePort.Text = Functions.GenerateRandomNumber(selectedNode.MinPort, selectedNode.MaxPort).ToString();
+                if(selectedNode.KCP == 1)
+                {
+                    KCPProtocol.IsEnabled = true;
+                    KCPProtocol.IsChecked = true;
+                }
+                else
+                {
+                    KCPProtocol.IsEnabled = false;
+                    KCPProtocol.IsChecked = false;
+                }
             }
         }
 
@@ -290,7 +277,10 @@ namespace MSL.pages.frpProviders.MSLFrp
                 Create_OKBtn.IsEnabled = false;
                 try
                 {
-                    var (Code, Msg) = await MSLFrpApi.CreateTunnel(selectedNode.ID, Create_Name.Text, Create_Protocol.Text, "Create By MSL Client", Create_LocalIP.Text, int.Parse(Create_LocalPort.Text), int.Parse(Create_RemotePort.Text));
+                    bool kcpProtocol = false;
+                    if (KCPProtocol.IsChecked == true)
+                        kcpProtocol = true;
+                    var (Code, Msg) = await MSLFrpApi.CreateTunnel(selectedNode.ID, Create_Name.Text, Create_Protocol.Text, "Create By MSL Client", Create_LocalIP.Text, int.Parse(Create_LocalPort.Text), int.Parse(Create_RemotePort.Text), kcpProtocol);
                     if (Code == 200)
                     {
                         await MagicShow.ShowMsgDialogAsync(Window.GetWindow(this), $"{Msg}\n隧道名称：{Create_Name.Text}\n远程端口： {Create_RemotePort.Text}", "成功");
@@ -366,6 +356,40 @@ namespace MSL.pages.frpProviders.MSLFrp
             {
                 1 => "UDP：支持",
                 _ => "UDP：不支持"
+            };
+        }
+
+        public object ConvertBack(object value, Type targetType, object parameter, CultureInfo culture)
+        {
+            throw new NotImplementedException();
+        }
+    }
+
+    internal class MSLKCPConverter : IValueConverter
+    {
+        public object Convert(object value, Type targetType, object parameter, CultureInfo culture)
+        {
+            if ((int)value == 1)
+            {
+                return "KCP加速：支持";
+            }
+            return string.Empty;
+        }
+
+        public object ConvertBack(object value, Type targetType, object parameter, CultureInfo culture)
+        {
+            throw new NotImplementedException();
+        }
+    }
+
+    internal class MSLKCPVisibleConverter : IValueConverter
+    {
+        public object Convert(object value, Type targetType, object parameter, CultureInfo culture)
+        {
+            return (int)value switch
+            {
+                1 => Visibility.Visible,
+                _ => Visibility.Collapsed
             };
         }
 
