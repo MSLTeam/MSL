@@ -184,7 +184,7 @@
                     <Button x:Name="userPasswordLogin" Content="使用账户密码登录" Margin="10,0,10,0" Click="userPasswordLogin_Click"/>
                     <Button x:Name="userRegister" Content="注册/进入用户中心" Command="hc:ControlCommands.OpenLink" CommandParameter="https://www.mefrp.com/auth/login" />
                 </StackPanel>
-                <CheckBox Content="保存登录状态（风险自负哦~）" HorizontalAlignment="Center" Margin="0,10,0,0" x:Name="SaveToken"/>
+                <CheckBox Content="保存登录状态（风险自负哦~）" HorizontalAlignment="Center" Margin="0,10,0,0" IsChecked="True" x:Name="SaveToken"/>
                 <TextBlock Text="如果您不知道什么是访问密钥，请前往MeFrp用户中心寻找" HorizontalAlignment="Center"  VerticalAlignment="Center"  FontSize="13" Foreground="{DynamicResource PrimaryTextBrush}" Margin="0,10,0,0"/>
             </StackPanel>
         </Grid>
