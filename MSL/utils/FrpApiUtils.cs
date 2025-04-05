@@ -291,6 +291,7 @@ namespace MSL.utils
             public int Vip { get; set; }
             public string VipName { get; set; }
             public int UDP { get; set; }
+            public int KCP { get; set; }
             public int Status { get; set; }
             public string Band { get; set; }
         }
@@ -328,6 +329,7 @@ namespace MSL.utils
                         Vip = vip,
                         VipName = (vip == 0 ? "普通节点" : vip == 1 ? "高级节点" : "超级节点"),
                         UDP = (int)nodeData["udp_support"],
+                        KCP = (int)nodeData["kcp_support"],
                         Status = (int)nodeData["status"],
                         Band = (string)nodeData["bandwidth"]
                     });
@@ -338,7 +340,7 @@ namespace MSL.utils
             return ((int)res.HttpResponseCode, null, $"({(int)res.HttpResponseCode}){res.HttpResponseContent}");
         }
 
-        public static async Task<(int Code, string Msg)> CreateTunnel(int nodeID, string tunnelName, string tunnelType, string tunnelRemark, string localIP, int localPort, int remotePort)
+        public static async Task<(int Code, string Msg)> CreateTunnel(int nodeID, string tunnelName, string tunnelType, string tunnelRemark, string localIP, int localPort, int remotePort, bool useKcp)
         {
             //请求头 token
             var headersAction = new Action<HttpRequestHeaders>(headers =>
@@ -356,6 +358,7 @@ namespace MSL.utils
                 ["local_ip"] = localIP,
                 ["local_port"] = localPort,
                 ["remote_port"] = remotePort,
+                ["use_kcp"] = useKcp,
             };
             HttpResponse res = await HttpService.PostAsync(ApiUrl + "/frp/addTunnel", 0, body, headersAction);
             if (res.HttpResponseCode == HttpStatusCode.OK)

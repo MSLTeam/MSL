@@ -12,6 +12,8 @@
     <Page.Resources>
         <local:MSLStatusConverter x:Key="StatusConverter"/>
         <local:MSLUDPConverter x:Key="UDPConverter"/>
+        <local:MSLKCPConverter x:Key="KCPConverter"/>
+        <local:MSLKCPVisibleConverter x:Key="KCPVisibleConverter"/>
     </Page.Resources>
     <Grid>
         <TabControl x:Name="MainCtrl" Margin="10,5,10,10" Style="{StaticResource TabControlCapsuleSolidInLine}" Background="Transparent" BorderThickness="0" SelectionChanged="MainCtrl_SelectionChanged">
@@ -94,7 +96,7 @@
                         <ColumnDefinition Width="5*"/>
                         <ColumnDefinition Width="4*"/>
                     </Grid.ColumnDefinitions>
-                    <controls:MagicListBox Grid.Column="0" x:Name="NodeList" SelectionMode="Single" SelectionChanged="NodeList_SelectionChanged">
+                    <controls:MagicListBox Grid.Column="0" Margin="0,0,10,0" x:Name="NodeList" SelectionMode="Single" SelectionChanged="NodeList_SelectionChanged">
                         <controls:MagicListBox.ItemTemplate>
                             <DataTemplate>
                                 <Grid Width="160" Background="Transparent">
@@ -109,7 +111,7 @@
                                         </TextBlock>
                                     </Label>
                                     <hc:UniformSpacingPanel Grid.Row="1" Orientation="Vertical" Spacing="5">
-                                        <hc:UniformSpacingPanel Spacing="5" Orientation="Horizontal">
+                                        <hc:UniformSpacingPanel Spacing="5" Orientation="Horizontal" ChildWrapping="Wrap">
                                             <Label Content="{Binding Status, Converter={StaticResource StatusConverter}}">
                                                 <Label.Style>
                                                     <Style TargetType="Label" BasedOn="{StaticResource {x:Type Label}}">
@@ -124,6 +126,7 @@
                                                 </Label.Style>
                                             </Label>
                                             <Label Content="{Binding UDP, Converter={StaticResource UDPConverter}}" Foreground="White" Background="{DynamicResource DarkPrimaryBrush}"/>
+                                            <Label Content="{Binding KCP, Converter={StaticResource KCPConverter}}" Visibility="{Binding KCP, Converter={StaticResource KCPVisibleConverter}}" Foreground="White" Background="{DynamicResource DarkPrimaryBrush}"/>
                                         </hc:UniformSpacingPanel>
                                         <StackPanel Orientation="Horizontal">
                                             <TextBlock Text="类型：" Style="{StaticResource MagicText14}"/>
@@ -164,7 +167,7 @@
                             </ListBox.ItemTemplate>
                         </ListBox>
                         -->
-                    <Grid Grid.Column="1" Margin="10,0,0,0">
+                    <Grid Grid.Column="1">
                         <Grid.RowDefinitions>
                             <RowDefinition Height="*"/>
                             <RowDefinition Height="auto"/>
@@ -215,6 +218,14 @@
                                         <ComboBoxItem Content="tcp"/>
                                         <ComboBoxItem Content="udp"/>
                                     </hc:ComboBox>
+                                </Grid>
+                                <Grid>
+                                    <Grid.ColumnDefinitions>
+                                        <ColumnDefinition Width="auto"/>
+                                        <ColumnDefinition Width="auto"/>
+                                    </Grid.ColumnDefinitions>
+                                    <Label Style="{DynamicResource MagicLabel}" Content="加速协议：" VerticalAlignment="Center"/>
+                                    <ToggleButton Grid.Column="1" IsChecked="True" Style="{StaticResource ToggleButtonSwitch}" x:Name="KCPProtocol" Content="KCP加速协议"/>
                                 </Grid>
                             </hc:UniformSpacingPanel>
                         </controls:MagicCard>

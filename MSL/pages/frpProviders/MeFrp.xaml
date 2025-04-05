@@ -88,7 +88,7 @@
                             <ColumnDefinition Width="auto"/>
                         </Grid.ColumnDefinitions>
                         <Border Grid.Column="0" Margin="0,10,0,0" VerticalAlignment="Stretch" Style="{StaticResource BorderTipPrimary}">
-                            <TextBlock x:Name="Notice" Text="本服务由ME Frp提供&#xA;MSL仅提供接入，其服务内容均与MSL无关" VerticalAlignment="Center" Foreground="{DynamicResource PrimaryTextBrush}" FontSize="16"/>
+                            <TextBlock x:Name="Notice" Text="本服务由ME Frp提供，MSL仅进行接入，其服务内容均与MSL无关。" VerticalAlignment="Center" Foreground="{DynamicResource PrimaryTextBrush}" FontSize="16"/>
                         </Border>
                         <Button Grid.Column="1" Margin="10,10,0,0" Content="确定" MinWidth="100" HorizontalAlignment="Stretch" VerticalAlignment="Stretch" Style="{StaticResource ButtonPrimary}" FontSize="16" x:Name="OKBtn" Click="OKBtn_Click" />
                     </Grid>

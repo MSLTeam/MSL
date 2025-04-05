@@ -35,9 +35,12 @@
                         <ComboBoxItem Content="下载整合包" FontSize="14"/>
                         <ComboBoxItem Content="选择本地整合包" FontSize="14"/>
                     </ComboBox>
-
-                    <TextBlock Grid.Row="1" Text="⭐快速模式：开服器会根据您想要开的服务器类型自动下载需要的核心和Java &#13;#提示：若需要开基岩版官方服务器，请使用自定义模式并参照MSL官网教程！" FontSize="16" VerticalAlignment="Center" TextWrapping="Wrap" Margin="320,0,50,0"/>
-                    <TextBlock Grid.Row="2" Text="⭐自定义模式：您将手动进行Java版本选择，服务端核心选择等操作，可操作性高，可以更改服务器运行内存和启动参数" FontSize="16" VerticalAlignment="Center" TextWrapping="Wrap" Margin="320,0,50,0"/>
+                    <TextBlock Grid.Row="1"  FontSize="16" VerticalAlignment="Center" TextWrapping="Wrap" Margin="320,0,50,0">
+                        <Run Text="⭐快速模式：开服器会根据您想要开的服务器类型自动下载需要的核心和Java。&#xA;►提示：若需要开基岩版官方服务器（BDS），请使用自定义模式并参照" FontSize="16" Foreground="{DynamicResource PrimaryTextBrush}"/>
+                        <Hyperlink Command="hc:ControlCommands.OpenLink"  CommandParameter="https://www.mslmc.cn/docs/launch_bds.html">MSL官网教程</Hyperlink>
+                        <Run Text="！"/>
+                    </TextBlock>
+                    <TextBlock Grid.Row="2" Text="⭐自定义模式：您将手动进行Java版本选择，服务端核心选择等操作，可操作性高，可以更改服务器运行内存和启动参数。" FontSize="16" VerticalAlignment="Center" TextWrapping="Wrap" Margin="320,0,50,0"/>
                     <TextBlock Grid.Row="3" Text="⭐导入整合包模式：想要在线下载一个服务器整合包来进行导入？或是自己备有一个整合包文件？那就使用此模式吧！" FontSize="16" VerticalAlignment="Center" TextWrapping="Wrap" Margin="320,0,50,0"/>
                     <Image Grid.Row="4" Source="/icon.ico" VerticalAlignment="Bottom" HorizontalAlignment="Right" Width="50"/>
                 </Grid>

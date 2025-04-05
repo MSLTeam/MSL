@@ -151,8 +151,8 @@ namespace MSL.pages.frpProviders.MSLFrp
             {
                 Image qrCodeImageBox = new()
                 {
-                    Width = 144,
-                    Height = 144
+                    Width = 172,
+                    Height = 172
                 };
                 QRCodeGenerator qrGenerator = new QRCodeGenerator();
                 QRCodeData qrCodeData = qrGenerator.CreateQrCode(Data["url"].ToString(), QRCodeGenerator.ECCLevel.Q);
@@ -265,8 +265,8 @@ namespace MSL.pages.frpProviders.MSLFrp
             {
                 Image qrCodeImageBox = new()
                 {
-                    Width = 128,
-                    Height = 128
+                    Width = 172,
+                    Height = 172
                 };
                 QRCodeGenerator qrGenerator = new QRCodeGenerator();
                 QRCodeData qrCodeData = qrGenerator.CreateQrCode(Data["payUrl"].ToString(), QRCodeGenerator.ECCLevel.Q);

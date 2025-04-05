@@ -29,9 +29,9 @@
                 </controls:MagicCard>
             </StackPanel>
         </controls:MagicScrollViewer>
-        <hc:SplitButton Grid.Row="1" x:Name="startServer" Style="{StaticResource SplitButtonPrimary}" Margin="10" VerticalAlignment="Bottom" Height="60" Width="250" Click="startServer_Click" HorizontalAlignment="Right">
+        <hc:SplitButton Grid.Row="1" x:Name="startServer" Style="{StaticResource SplitButtonPrimary}" Margin="10" VerticalAlignment="Bottom" Height="60" Width="250" Click="StartServer_Click" HorizontalAlignment="Right">
             <hc:SplitButton.DropDownContent>
-                <ListBox x:Name="startServerDropdown" BorderThickness="0" SelectionChanged="startServerDropdown_SelectionChanged"/>
+                <ListBox x:Name="startServerDropdown" BorderThickness="0" SelectionChanged="StartServerDropdown_SelectionChanged"/>
             </hc:SplitButton.DropDownContent>
             <StackPanel>
                 <TextBlock Text="{Binding [Page_Home_LaunchServer],Source={x:Static langs:LanguageManager.Instance}}" FontSize="18" HorizontalAlignment="Center" Foreground="White" />

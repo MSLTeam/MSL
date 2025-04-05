@@ -54,7 +54,7 @@
                             <ColumnDefinition Width="Auto"/>
                         </Grid.ColumnDefinitions>
                         <Border Grid.Column="0" Style="{StaticResource BorderTipPrimary}">
-                            <TextBlock Text="本服务由OpenFrp提供&#xA;MSL仅提供接入，其服务内容均与MSL无关" Foreground="{DynamicResource PrimaryTextBrush}" FontSize="16"/>
+                            <TextBlock Text="本服务由OpenFrp提供，MSL仅进行接入，其服务内容均与MSL无关。&#xA;OpenFrp官方提供对其自身节点问题的支持，不负责MSL软件的支持。" Foreground="{DynamicResource PrimaryTextBrush}" FontSize="16"/>
                         </Border>
                         <Button Grid.Column="1" Margin="10,0,0,0" MinWidth="100" x:Name="doneBtn" Content="确定" Style="{StaticResource ButtonPrimary}" HorizontalAlignment="Stretch" VerticalAlignment="Stretch" Click="Button_Click" FontSize="16"/>
                     </Grid>
