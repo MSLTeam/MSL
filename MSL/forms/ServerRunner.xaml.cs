@@ -373,7 +373,8 @@ namespace MSL
         private void LoadedInfoEvent()
         {
             systemInfoBtn.IsChecked = MainWindow.getServerInfo;
-            playerInfoBtn.IsChecked = MainWindow.getPlayerInfo;
+            recordPlayInfo = MainWindow.getPlayerInfo;
+            playerInfoBtn.IsChecked = recordPlayInfo;
             LoadSettings();
             if (systemInfoBtn.IsChecked == true)
             {
@@ -805,10 +806,12 @@ namespace MSL
         {
             if (playerInfoBtn.IsChecked == true)
             {
+                recordPlayInfo = true;
                 Growl.Success("已开启");
             }
             else
             {
+                recordPlayInfo = false;
                 Growl.Success("已关闭");
             }
         }
@@ -1549,6 +1552,7 @@ namespace MSL
 
             tempLog = msg;
             ProcessOutput(msg);
+
             /*
             if (tempLogs != null)
             {
@@ -1656,12 +1660,13 @@ namespace MSL
             }
         }
 
+        private bool recordPlayInfo = false;
         private void LogHandleInfo(string msg)
         {
             if ((msg.Contains("Done") && msg.Contains("For help")) || (msg.Contains("加载完成") && msg.Contains("如需帮助") || (msg.Contains("Server started."))))
             {
                 getServerInfoLine = 101;
-                Dispatcher.Invoke(() =>
+                Dispatcher.InvokeAsync(() =>
                 {
                     PrintLog("已成功开启服务器！你可以输入stop来关闭服务器！\r\n服务器本地IP通常为:127.0.0.1，想要远程进入服务器，需要开通公网IP或使用内网映射，详情查看开服器的内网映射界面。\r\n若控制台输出乱码日志，请去更多功能界面修改“输出编码”。", Brushes.Green);
                     Growl.Success(string.Format("服务器 {0} 已成功开启！", Rservername));
@@ -1675,14 +1680,15 @@ namespace MSL
             }
             else if (msg.Contains("Stopping server"))
             {
-                Dispatcher.Invoke(() =>
+                Dispatcher.InvokeAsync(() =>
                 {
                     PrintLog("正在关闭服务器！", Brushes.Green);
                 });
+
             }
 
             //玩家进服是否记录
-            if (playerInfoBtn.IsChecked == true)
+            if (recordPlayInfo == true)
             {
                 GetPlayerInfoSys(msg);
             }
@@ -1777,7 +1783,7 @@ namespace MSL
                 string playerName = ExtractPlayerName(msg);
                 if (playerName != null)
                 {
-                    Dispatcher.Invoke(() =>
+                    Dispatcher.InvokeAsync(() =>
                     {
                         if (!serverPlayerList.Items.Contains(playerName))
                         {
@@ -1846,7 +1852,7 @@ namespace MSL
         {
             try
             {
-                Dispatcher.Invoke(() =>
+                Dispatcher.InvokeAsync(() =>
                 {
                     foreach (string x in serverPlayerList.Items)
                     {

@@ -1,5 +1,4 @@
-﻿using Microsoft.Extensions.Logging.Abstractions;
-using System;
+﻿using System;
 using System.Collections.Concurrent;
 using System.Collections.Generic;
 using System.Text;
@@ -271,9 +270,6 @@ namespace MSL.utils
             else
             {
                 // 多条相同类型的日志，合并处理
-                var firstLog = group[0];
-                var (level, _) = ParseLogMessage(firstLog);
-
                 // 构建合并后的日志文本
                 var sb = new StringBuilder();
                 foreach (var msg in group)
