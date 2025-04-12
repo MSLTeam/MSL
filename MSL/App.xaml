@@ -29,7 +29,7 @@
                                 <ResourceDictionary Source="images/Svgs_DarkMode.xaml"/>
                             </ResourceDictionary.MergedDictionaries>
                             <SolidColorBrush x:Key="BorderBackground" Color="#232323" Opacity="0.7" />
-                            <SolidColorBrush x:Key="SideMenuBrush" Color="Black" Opacity="0.7" />
+                            <SolidColorBrush x:Key="SideMenuBrush" Color="#1D1E1F" Opacity="0.7" />
                             <SolidColorBrush x:Key="SideMenuItemBrush" Opacity="0" />
                         </ResourceDictionary>
                     </hc:ThemeResources.ThemeDictionaries>

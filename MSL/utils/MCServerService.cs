@@ -1,6 +1,10 @@
-﻿using System;
+﻿using Microsoft.Extensions.Logging.Abstractions;
+using System;
+using System.Collections.Concurrent;
 using System.Collections.Generic;
+using System.Text;
 using System.Windows.Media;
+using System.Windows.Threading;
 
 namespace MSL.utils
 {
@@ -68,6 +72,7 @@ namespace MSL.utils
     internal class MCSLogHandler
     {
         private readonly Action<string, SolidColorBrush> _logAction;
+        private readonly Action<List<string>> _logBatch;
         private readonly Action<string> _infoHandler;
         private readonly Action<string> _warnHandler;
         private readonly Action _encodingIssueHandler;
@@ -90,18 +95,27 @@ namespace MSL.utils
         };
 
         public MCSLogHandler(
+        Action<List<string>> logBatch,
         Action<string, SolidColorBrush> logAction,
         Action<string> infoHandler = null,
         Action<string> warnHandler = null,
         Action encodingIssueHandler = null)
         {
+            _logBatch = logBatch;
             _logAction = logAction;
             _infoHandler = infoHandler;
             _warnHandler = warnHandler;
             _encodingIssueHandler = encodingIssueHandler;
+
+            // 初始化日志处理定时器
+            _logProcessTimer = new DispatcherTimer
+            {
+                Interval = TimeSpan.FromMilliseconds(PROCESS_INTERVAL_MS)
+            };
+            _logProcessTimer.Tick += ProcessLogBuffer;
         }
 
-        public void ProcessLogMessage(string message)
+        private void ProcessLogMessage(string message)
         {
             var (level, content) = ParseLogMessage(message);
 
@@ -171,6 +185,120 @@ namespace MSL.utils
             {
                 PrintLog(content, LogInfo[level].Color);
             }
+        }
+
+        // 日志缓冲区相关
+        public readonly ConcurrentQueue<string> _logBuffer = new ConcurrentQueue<string>();
+        public readonly DispatcherTimer _logProcessTimer;
+        private const int MAX_BATCH_SIZE = 100; // 每次处理的最大日志数量
+        private const int PROCESS_INTERVAL_MS = 150; // 日志处理间隔(毫秒)
+
+        // 批量处理日志缓冲区
+        private void ProcessLogBuffer(object sender, EventArgs e)
+        {
+            // 如果没有日志，不处理
+            if (_logBuffer.IsEmpty)
+            {
+                return;
+            }
+
+            // 创建批处理列表
+            var batch = new List<string>();
+
+            // 从队列中取出日志，最多取MAX_BATCH_SIZE条
+            for (int i = 0; i < MAX_BATCH_SIZE && !_logBuffer.IsEmpty; i++)
+            {
+                if (_logBuffer.TryDequeue(out string entry))
+                {
+                    batch.Add(entry);
+                }
+            }
+
+            // 如果取出了日志，则处理它们
+            if (batch.Count > 0)
+            {
+                ProcessLogBatch(batch);
+            }
+        }
+
+        private void ProcessLogBatch(List<string> batch)
+        {
+            _logBatch?.Invoke(batch);
+        }
+
+        // 将相似日志分组
+        public List<List<string>> GroupSimilarLogs(List<string> logs)
+        {
+            var result = new List<List<string>>();
+            var currentGroup = new List<string>();
+            int? currentLogType = null;
+
+            foreach (var entry in logs)
+            {
+                var (level, _) = ParseLogMessage(entry);
+
+                // 如果这是一个新的日志类型，或者组太大了，开始一个新组
+                if (currentLogType != level || currentGroup.Count >= 20)
+                {
+                    if (currentGroup.Count > 0)
+                    {
+                        result.Add(currentGroup);
+                        currentGroup = new List<string>();
+                    }
+                    currentLogType = level;
+                }
+
+                currentGroup.Add(entry);
+            }
+
+            // 添加最后一组
+            if (currentGroup.Count > 0)
+            {
+                result.Add(currentGroup);
+            }
+
+            return result;
+        }
+
+        // 处理一组相同类型的日志
+        public void ProcessLogGroup(List<string> group)
+        {
+            if (group.Count == 1)
+            {
+                // 单条日志直接处理
+                ProcessLogMessage(group[0]);
+            }
+            else
+            {
+                // 多条相同类型的日志，合并处理
+                var firstLog = group[0];
+                var (level, _) = ParseLogMessage(firstLog);
+
+                // 构建合并后的日志文本
+                var sb = new StringBuilder();
+                foreach (var msg in group)
+                {
+                    sb.AppendLine(msg);
+                }
+
+                // 一次性输出
+                string combinedMessage = sb.ToString().TrimEnd();
+                ProcessLogMessage(combinedMessage);
+            }
+        }
+
+        // 应用程序退出时的清理工作
+        public void CleanupResources()
+        {
+            // 停止定时器
+            if (_logProcessTimer != null && _logProcessTimer.IsEnabled)
+            {
+                _logProcessTimer.Stop();
+                _logProcessTimer.IsEnabled = false;
+            }
+
+            // 处理剩余的日志
+            ProcessLogBuffer(null, null);
         }
 
         private void HandleEncodingIssue()
