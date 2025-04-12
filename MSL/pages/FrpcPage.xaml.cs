@@ -454,6 +454,11 @@ namespace MSL.pages
                     {
                         try
                         {
+                            if (Config.Read("MeFrpToken").ToString() == "")
+                            {
+                                Growl.Error("获取MeFrp下载地址失败！\n请重新在添加隧道页面登录MEFrp并选择保存登录状态");
+                                return;
+                            }
                             HttpResponse res = await HttpService.GetAsync("https://api.mefrp.com/api/auth/products", headers =>
                             {
                                 headers.Add("Authorization", $"Bearer {Config.Read("MeFrpToken")}");
