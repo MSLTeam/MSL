@@ -20,10 +20,10 @@ namespace MSL.utils
         /// <param name="_window">对话框父窗体</param>
         /// <param name="text">对话框内容</param>
         /// <param name="title">对话框标题</param>
-        public static void ShowMsgDialog(string text, string title, UIElement uIElement = null, UIElement _window = null)
+        public static void ShowMsgDialog(string text, string title, UIElement uIElement = null, UIElement _window = null, bool isDangerPrimaryBtn = false)
         {
             MagicDialog MagicDialog = new MagicDialog();
-            MagicDialog.ShowMsgDialog(Functions.GetWindow(_window), text, title, uIElement);
+            MagicDialog.ShowMsgDialog(Functions.GetWindow(_window), text, title, uIElement,isDangerPrimaryBtn);
         }
 
         /// <summary>
@@ -36,10 +36,10 @@ namespace MSL.utils
         /// <param name="closeBtnContext">关闭按钮文字内容</param>
         /// <param name="primaryBtnContext">确认按钮文字内容</param>
         /// <returns>返回值：true；false</returns>
-        public static async Task<bool> ShowMsgDialogAsync(string text, string title, bool showPrimaryBtn = false, string closeBtnContext = "否", string primaryBtnContext = "是", UIElement uIElement = null, UIElement _window = null)
+        public static async Task<bool> ShowMsgDialogAsync(string text, string title, bool showPrimaryBtn = false, string closeBtnContext = "CANCEL", string primaryBtnContext = "CONFIRM", UIElement uIElement = null, UIElement _window = null,bool isDangerPrimaryBtn=false)
         {
             MagicDialog MagicDialog = new MagicDialog();
-            bool _ret = await MagicDialog.ShowMsgDialog(Functions.GetWindow(_window), text, title, showPrimaryBtn, closeBtnContext, primaryBtnContext, uIElement);
+            bool _ret = await MagicDialog.ShowMsgDialog(Functions.GetWindow(_window), text, title, showPrimaryBtn, closeBtnContext, primaryBtnContext, uIElement,isDangerPrimaryBtn);
             return _ret;
         }
 
@@ -49,10 +49,10 @@ namespace MSL.utils
         /// <param name="_window">对话框父窗体</param>
         /// <param name="text">对话框内容</param>
         /// <param name="title">对话框标题</param>
-        public static void ShowMsgDialog(Window _window, string text, string title, UIElement uIElement = null)
+        public static void ShowMsgDialog(Window _window, string text, string title, UIElement uIElement = null, bool isDangerPrimaryBtn = false)
         {
             MagicDialog MagicDialog = new MagicDialog();
-            MagicDialog.ShowMsgDialog(_window, text, title, uIElement);
+            MagicDialog.ShowMsgDialog(_window, text, title, uIElement,isDangerPrimaryBtn);
         }
 
         /// <summary>
@@ -65,10 +65,10 @@ namespace MSL.utils
         /// <param name="closeBtnContext">关闭按钮文字内容</param>
         /// <param name="primaryBtnContext">确认按钮文字内容</param>
         /// <returns>返回值：true；false</returns>
-        public static async Task<bool> ShowMsgDialogAsync(Window _window, string text, string title, bool showPrimaryBtn = false, string closeBtnContext = "否", string primaryBtnContext = "是", UIElement uIElement = null)
+        public static async Task<bool> ShowMsgDialogAsync(Window _window, string text, string title, bool showPrimaryBtn = false, string closeBtnContext = "CANCEL", string primaryBtnContext = "CONFIRM", UIElement uIElement = null, bool isDangerPrimaryBtn = false)
         {
             MagicDialog MagicDialog = new MagicDialog();
-            bool _ret = await MagicDialog.ShowMsgDialog(_window, text, title, showPrimaryBtn, closeBtnContext, primaryBtnContext, uIElement);
+            bool _ret = await MagicDialog.ShowMsgDialog(_window, text, title, showPrimaryBtn, closeBtnContext, primaryBtnContext, uIElement,isDangerPrimaryBtn);
             return _ret;
         }
 
@@ -82,7 +82,7 @@ namespace MSL.utils
         /// <param name="closeText">关闭按钮文字</param>
         /// <param name="primaryText">确认按钮文字</param>
         /// <returns>返回值：0代表点击取消按钮；1代表点击确认按钮；2代表窗体被关闭</returns>
-        public static int ShowMsg(Window window, string dialogText, string dialogTitle, bool primaryBtnVisible = false, string closeText = "否", string primaryText = "是")
+        public static int ShowMsg(Window window, string dialogText, string dialogTitle, bool primaryBtnVisible = false, string closeText = "CANCEL", string primaryText = "CONFIRM")
         {
             try
             {
@@ -201,20 +201,20 @@ namespace MSL.utils
 
 
         private TaskCompletionSource<bool> _tcs;
-        public void ShowMsgDialog(Window _window, string text, string title, UIElement uIElement)
+        public void ShowMsgDialog(Window _window, string text, string title, UIElement uIElement, bool isDangerPrimaryBtn)
         {
             window = _window;
-            MessageDialog msgDialog = new MessageDialog(text, title, false, "", "", uIElement);
+            MessageDialog msgDialog = new MessageDialog(text, title, false, "", "", uIElement, isDangerPrimaryBtn);
             msgDialog.CloseDialog += CloseMsgDialog;
             window?.Focus();
             dialog = Dialog.Show(msgDialog);
             _tcs = new TaskCompletionSource<bool>();
         }
 
-        public async Task<bool> ShowMsgDialog(Window _window, string text, string title, bool showPrimaryBtn, string closeBtnContext, string primaryBtnContext, UIElement uIElement)
+        public async Task<bool> ShowMsgDialog(Window _window, string text, string title, bool showPrimaryBtn, string closeBtnContext, string primaryBtnContext, UIElement uIElement, bool isDangerPrimaryBtn)
         {
             window = _window;
-            MessageDialog msgDialog = new MessageDialog(text, title, showPrimaryBtn, closeBtnContext, primaryBtnContext, uIElement);
+            MessageDialog msgDialog = new MessageDialog(text, title, showPrimaryBtn, closeBtnContext, primaryBtnContext, uIElement, isDangerPrimaryBtn);
             msgDialog.CloseDialog += CloseMsgDialog;
             window?.Focus();
             dialog = Dialog.Show(msgDialog);

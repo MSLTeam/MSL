@@ -40,7 +40,7 @@ namespace MSL.utils
         /// </summary>
         private static string GetOSLink()
         {
-            return MainWindow.ServerLink;
+            return ConfigStore.ServerLink;
         }
 
         /// <summary>
@@ -55,7 +55,7 @@ namespace MSL.utils
             string url = GetOALink();
             if (customUrl == "")
             {
-                if (MainWindow.ServerLink == null)
+                if (ConfigStore.ServerLink == null)
                 {
                     return string.Empty;
                 }
@@ -67,7 +67,7 @@ namespace MSL.utils
             WebClient webClient = new WebClient();
             if (headerMode == 0)
             {
-                if (MainWindow.ServerLink != null)
+                if (ConfigStore.ServerLink != null)
                 {
                     string ServerLink = GetOSLink();
                     if (ServerLink?.Contains("/") == true)
@@ -76,13 +76,13 @@ namespace MSL.utils
                     }
                     if (url.Contains(ServerLink))
                     {
-                        webClient.Headers.Add("User-Agent", "MSLTeam-MSL/" + MainWindow.MSLVersion);
+                        webClient.Headers.Add("User-Agent", "MSLTeam-MSL/" + ConfigStore.MSLVersion);
                     }
                 }
             }
             else if (headerMode == 2)
             {
-                webClient.Headers.Add("User-Agent", "MSLTeam-MSL/" + MainWindow.MSLVersion);
+                webClient.Headers.Add("User-Agent", "MSLTeam-MSL/" + ConfigStore.MSLVersion);
             }
             else if (headerMode == 3)
             {
@@ -123,7 +123,7 @@ namespace MSL.utils
             string url = GetOALink();
             return await GetAsync(url + path, headers =>
             {
-                headers.Add("DeviceID", MainWindow.DeviceID);
+                headers.Add("DeviceID", ConfigStore.DeviceID);
             }, 1);
         }
 
@@ -154,7 +154,7 @@ namespace MSL.utils
             configureHeaders?.Invoke(httpClient.DefaultRequestHeaders);
             if (headerUAMode == 1)
             {
-                httpClient.DefaultRequestHeaders.UserAgent.TryParseAdd($"MSLTeam-MSL/{MainWindow.MSLVersion}");
+                httpClient.DefaultRequestHeaders.UserAgent.TryParseAdd($"MSLTeam-MSL/{ConfigStore.MSLVersion}");
             }
             else if (headerUAMode == 2)
             {
@@ -194,7 +194,7 @@ namespace MSL.utils
             string url = GetOALink();
             if (customUrl == "")
             {
-                if (MainWindow.ServerLink == null)
+                if (ConfigStore.ServerLink == null)
                 {
                     return string.Empty;
                 }
@@ -300,7 +300,7 @@ namespace MSL.utils
             configureHeaders?.Invoke(httpClient.DefaultRequestHeaders);
             if (headerUAMode == 1)
             {
-                httpClient.DefaultRequestHeaders.UserAgent.TryParseAdd($"MSLTeam-MSL/{MainWindow.MSLVersion}");
+                httpClient.DefaultRequestHeaders.UserAgent.TryParseAdd($"MSLTeam-MSL/{ConfigStore.MSLVersion}");
             }
             else if (headerUAMode == 2)
             {

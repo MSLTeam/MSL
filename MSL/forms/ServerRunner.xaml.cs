@@ -372,8 +372,8 @@ namespace MSL
 
         private void LoadedInfoEvent()
         {
-            systemInfoBtn.IsChecked = MainWindow.getServerInfo;
-            recordPlayInfo = MainWindow.getPlayerInfo;
+            systemInfoBtn.IsChecked = ConfigStore.GetServerInfo;
+            recordPlayInfo = ConfigStore.GetPlayerInfo;
             playerInfoBtn.IsChecked = recordPlayInfo;
             LoadSettings();
             if (systemInfoBtn.IsChecked == true)
@@ -1205,7 +1205,7 @@ namespace MSL
                 localServerIPLab.Content = "获取中";
                 Growl.Info("开服中，请稍等……");
                 outlog.Document.Blocks.Clear();
-                PrintLog("正在开启服务器，请稍等...", Brushes.Green);
+                PrintLog("正在开启服务器，请稍等...", ConfigStore.LogColor.INFO);
                 if (conptyWindow == null)
                 {
                     MCSLogHandler._logProcessTimer.IsEnabled = true;
@@ -1668,7 +1668,7 @@ namespace MSL
                 getServerInfoLine = 101;
                 Dispatcher.InvokeAsync(() =>
                 {
-                    PrintLog("已成功开启服务器！你可以输入stop来关闭服务器！\r\n服务器本地IP通常为:127.0.0.1，想要远程进入服务器，需要开通公网IP或使用内网映射，详情查看开服器的内网映射界面。\r\n若控制台输出乱码日志，请去更多功能界面修改“输出编码”。", Brushes.Green);
+                    PrintLog("已成功开启服务器！你可以输入stop来关闭服务器！\r\n服务器本地IP通常为:127.0.0.1，想要远程进入服务器，需要开通公网IP或使用内网映射，详情查看开服器的内网映射界面。\r\n若控制台输出乱码日志，请去更多功能界面修改“输出编码”。", ConfigStore.LogColor.INFO);
                     Growl.Success(string.Format("服务器 {0} 已成功开启！", Rservername));
                     serverStateLab.Content = "已开服";
                     if (conptyWindow != null)
@@ -1682,7 +1682,7 @@ namespace MSL
             {
                 Dispatcher.InvokeAsync(() =>
                 {
-                    PrintLog("正在关闭服务器！", Brushes.Green);
+                    PrintLog("正在关闭服务器！", ConfigStore.LogColor.INFO);
                 });
 
             }
@@ -1896,6 +1896,7 @@ namespace MSL
             (@"Error loading plugin '([^']+)'", "*无法加载插件！\n\t插件名称：{0}\n"),
             (@"Error occurred while enabling (\S+) ", "*在启用 {0} 时发生了错误\n"),
             (@"Encountered an unexpected exception", "*服务器出现意外崩溃，可能是由于模组冲突，请检查您的模组列表（如果使用的是整合包，请使用整合包制作方提供的Server专用包开服）\n"),
+            (@"net.minecraft.client.Main", "*您使用的似乎是客户端核心，无法开服，请使用正确的服务端核心再试！\n"),
         };
 
         private void ProblemSystemShow(string msg)
@@ -3090,7 +3091,7 @@ namespace MSL
 
                 for (int i = 0; i <= 10; i++)
                 {
-                    if (MainWindow.ServerLink == null)
+                    if (ConfigStore.ServerLink == null)
                     {
                         Thread.Sleep(1000);
                     }

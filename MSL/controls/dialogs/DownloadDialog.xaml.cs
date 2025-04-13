@@ -1,5 +1,6 @@
 ﻿using Downloader;
 using MSL.langs;
+using MSL.utils;
 using System;
 using System.ComponentModel;
 using System.IO;
@@ -179,7 +180,7 @@ namespace MSL
         {
             if (headerMode == 1)
             {
-                return "MSLTeam-MSL/" + MainWindow.MSLVersion + " (Downloader)";
+                return "MSLTeam-MSL/" + ConfigStore.MSLVersion + " (Downloader)";
             }
             else if (headerMode == 2)
             {

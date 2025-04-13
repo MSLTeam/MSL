@@ -50,7 +50,7 @@ namespace MSL.pages
                         isInit = true;
                     }
                 }
-                else if (MainWindow.ServerLink != null && !cancellationToken.IsCancellationRequested)
+                else if (ConfigStore.ServerLink != null && !cancellationToken.IsCancellationRequested)
                 {
                     await GetNotice();
                 }
@@ -69,13 +69,13 @@ namespace MSL.pages
         {
             for (int i = 0; i < timeoutSeconds && !cancellationToken.IsCancellationRequested; i++)
             {
-                if (MainWindow.ServerLink != null)
+                if (ConfigStore.ServerLink != null)
                 {
                     return true;
                 }
                 await Task.Delay(1000, cancellationToken);
             }
-            return MainWindow.ServerLink != null;
+            return ConfigStore.ServerLink != null;
         }
 
         private async Task GetNotice(bool firstLoad = false)

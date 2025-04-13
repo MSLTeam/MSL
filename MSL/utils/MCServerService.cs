@@ -84,13 +84,13 @@ namespace MSL.utils
 
         public Dictionary<int, LogConfig> LogInfo = new()
         {
-            { 1, new LogConfig { Prefix = "信息", Color = Brushes.Green } }, // 以“[”开头并含有INFO字样的日志
-            { 2, new LogConfig { Prefix = "警告", Color = Brushes.Orange } }, // 以“[”开头并含有WARN字样的日志
-            { 3, new LogConfig { Prefix = "错误", Color = Brushes.Red } }, // 以“[”开头并含有ERROR字样的日志
-            { 11, new LogConfig { Prefix = string.Empty, Color = Brushes.Green } }, // 不以“[”开头但含有INFO字样的日志
-            { 12, new LogConfig { Prefix = string.Empty, Color = Brushes.Orange } }, // 不以“[”开头但含有WARN字样的日志
-            { 13, new LogConfig { Prefix = string.Empty, Color = Brushes.Red } }, // 不以“[”开头但含有ERROR字样的日志
-            { 0, new LogConfig { Prefix = string.Empty, Color = Brushes.Green } } // 啥也不含的日志
+            { 1, new LogConfig { Prefix = "信息", Color = ConfigStore.LogColor.INFO } }, // 以“[”开头并含有INFO字样的日志
+            { 2, new LogConfig { Prefix = "警告", Color = ConfigStore.LogColor.WARN } }, // 以“[”开头并含有WARN字样的日志
+            { 3, new LogConfig { Prefix = "错误", Color = ConfigStore.LogColor.ERROR } }, // 以“[”开头并含有ERROR字样的日志
+            { 11, new LogConfig { Prefix = string.Empty, Color = ConfigStore.LogColor.INFO } }, // 不以“[”开头但含有INFO字样的日志
+            { 12, new LogConfig { Prefix = string.Empty, Color = ConfigStore.LogColor.WARN } }, // 不以“[”开头但含有WARN字样的日志
+            { 13, new LogConfig { Prefix = string.Empty, Color = ConfigStore.LogColor.ERROR } }, // 不以“[”开头但含有ERROR字样的日志
+            { 0, new LogConfig { Prefix = string.Empty, Color = ConfigStore.LogColor.INFO } } // 啥也不含的日志
         };
 
         public MCSLogHandler(
@@ -125,7 +125,7 @@ namespace MSL.utils
 
             PrintFormattedLog(level, content);
 
-            if (message.Contains("�"))
+            if (message.Contains("�") || message.Contains("□"))
                 HandleEncodingIssue();
         }
 

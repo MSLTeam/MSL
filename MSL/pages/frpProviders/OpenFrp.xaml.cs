@@ -204,7 +204,7 @@ namespace MSL.pages.frpProviders
         private async Task<(string PubKey, JObject PollData)> GetPublicKey(string requestUuid)
         {
             HttpClient httpClient = new HttpClient();
-            httpClient.DefaultRequestHeaders.UserAgent.TryParseAdd($"MSLTeam-MSL/{MainWindow.MSLVersion}");
+            httpClient.DefaultRequestHeaders.UserAgent.TryParseAdd($"MSLTeam-MSL/{ConfigStore.MSLVersion}");
             HttpResponse httpResponse = new HttpResponse();
             JObject pollData = null;
             string serverPublicKeyBase64 = null;
