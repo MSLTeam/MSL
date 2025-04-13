@@ -170,6 +170,8 @@ namespace MSL
                     conptyWindow = null;
                 }
             }
+            MCSLogHandler.Dispose();
+            MCSLogHandler = null;
             getSystemInfo = false;
             ShieldLog = null;
             DownjavaName = null;
@@ -281,6 +283,20 @@ namespace MSL
                 shieldLogBtn.IsChecked = true;
                 LogShield_Add.IsEnabled = false;
                 LogShield_Del.IsEnabled = false;
+            }
+            if (_json["highLightLogKeys"] != null)
+            {
+                var items = _json["highLightLogKeys"];
+                List<string> tempList = new List<string>();
+                foreach (var item in items)
+                {
+                    tempList.Add(item.ToString());
+                    HighLightLogList.Items.Add(item.ToString());
+                }
+                MCSLogHandler.HighLightLog = [.. tempList];
+                highLightLogBtn.IsChecked = true;
+                LogHighLight_Add.IsEnabled = false;
+                LogHighLight_Del.IsEnabled = false;
             }
             if (_json["shieldStackOut"] != null && _json["shieldStackOut"].ToString() == "False")
             {
@@ -4009,6 +4025,63 @@ namespace MSL
             if (ShieldLogList.SelectedIndex != -1)
             {
                 ShieldLogList.Items.Remove(ShieldLogList.SelectedItem);
+            }
+        }
+
+        private void highLightLogBtn_Click(object sender, RoutedEventArgs e)
+        {
+            JObject jsonObject = JObject.Parse(File.ReadAllText(@"MSL\ServerList.json", Encoding.UTF8));
+            JObject _json = (JObject)jsonObject[RserverID.ToString()];
+            if (highLightLogBtn.IsChecked == true)
+            {
+                if (HighLightLogList.Items.Count > 0)
+                {
+                    List<string> tempList = new List<string>();
+
+                    JArray jArray = new JArray();
+                    foreach (var item in HighLightLogList.Items)
+                    {
+                        tempList.Add(item.ToString());
+                        jArray.Add(item.ToString());
+                    }
+
+                    MCSLogHandler.HighLightLog = [.. tempList];
+                    _json["highLightLogKeys"] = jArray;
+
+                    LogHighLight_Add.IsEnabled = false;
+                    LogHighLight_Del.IsEnabled = false;
+                }
+                else
+                {
+                    MagicFlowMsg.ShowMessage("请先进行添加！", 2);
+                    highLightLogBtn.IsChecked = false;
+                }
+            }
+            else
+            {
+                MCSLogHandler.HighLightLog = null;
+                _json.Remove("highLightLogKeys");
+                LogHighLight_Add.IsEnabled = true;
+                LogHighLight_Del.IsEnabled = true;
+            }
+            jsonObject[RserverID.ToString()] = _json;
+            File.WriteAllText("MSL\\ServerList.json", Convert.ToString(jsonObject), Encoding.UTF8);
+        }
+
+        private async void LogHighLight_Add_Click(object sender, RoutedEventArgs e)
+        {
+            string text = await MagicShow.ShowInput(this, "输入你想高亮日志的关键字");
+            if ((!string.IsNullOrEmpty(text)) && (!HighLightLogList.Items.Contains(text)))
+            {
+                HighLightLogList.Items.Add(text);
+            }
+        }
+
+        private void LogHighLight_Del_Click(object sender, RoutedEventArgs e)
+        {
+            if (HighLightLogList.SelectedIndex != -1)
+            {
+                HighLightLogList.Items.Remove(HighLightLogList.SelectedItem);
             }
         }
 

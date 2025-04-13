@@ -662,6 +662,9 @@ namespace MSL.pages
                 case 2:
                     picker.SelectedBrush = ConfigStore.LogColor.ERROR;
                     break;
+                case 3:
+                    picker.SelectedBrush = ConfigStore.LogColor.HIGHLIGHT;
+                    break;
             }
             var window = new PopupWindow
             {
@@ -686,12 +689,16 @@ namespace MSL.pages
                 case 2:
                     ConfigStore.LogColor.ERROR = picker.SelectedBrush;
                     break;
+                case 3:
+                    ConfigStore.LogColor.HIGHLIGHT = picker.SelectedBrush;
+                    break;
             }
             var config = new
             {
                 ConfigStore.LogColor.INFO,
                 ConfigStore.LogColor.WARN,
-                ConfigStore.LogColor.ERROR
+                ConfigStore.LogColor.ERROR,
+                ConfigStore.LogColor.HIGHLIGHT
             };
             string json = JsonConvert.SerializeObject(config, Formatting.Indented);
             Config.Write("LogColor", JObject.Parse(json));
@@ -704,6 +711,7 @@ namespace MSL.pages
             ConfigStore.LogColor.INFO = Brushes.Green;
             ConfigStore.LogColor.WARN = Brushes.Orange;
             ConfigStore.LogColor.ERROR = Brushes.Red;
+            ConfigStore.LogColor.HIGHLIGHT = Brushes.Blue;
             MagicFlowMsg.ShowMessage("已恢复默认日志颜色！重新打开服务器运行窗口以使其生效！", 1);
         }
 

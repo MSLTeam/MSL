@@ -569,7 +569,9 @@
                                     <Grid Grid.Column="1">
                                         <Grid.ColumnDefinitions>
                                             <ColumnDefinition Width="Auto"/>
-                                            <ColumnDefinition Width="100"/>
+                                            <ColumnDefinition Width="75"/>
+                                            <ColumnDefinition Width="Auto"/>
+                                            <ColumnDefinition Width="35"/>
                                             <ColumnDefinition Width="Auto"/>
                                             <ColumnDefinition/>
                                         </Grid.ColumnDefinitions>
@@ -602,8 +604,7 @@
                                                 <RowDefinition Height="Auto"/>
                                             </Grid.RowDefinitions>
                                             <StackPanel Grid.Row="0" Orientation="Horizontal" HorizontalAlignment="Left" VerticalAlignment="Top">
-                                                <Label Content="屏蔽关键字日志：" Style="{StaticResource MagicLabel14}"/>
-                                                <ToggleButton x:Name="shieldLogBtn" Style="{StaticResource ToggleButtonSwitch.Content}" Click="shieldLogBtn_Click"/>
+                                                <ToggleButton x:Name="shieldLogBtn" Content="屏蔽关键字日志" Style="{StaticResource ToggleButtonSwitch.Content}" Click="shieldLogBtn_Click"/>
                                             </StackPanel>
                                             <ListBox x:Name="ShieldLogList" Grid.Row="1" Margin="0,5,0,5" MaxHeight="120"/>
                                             <Grid Grid.Row="2">
@@ -612,8 +613,28 @@
                                                     <ColumnDefinition Width="5"/>
                                                     <ColumnDefinition/>
                                                 </Grid.ColumnDefinitions>
-                                                <Button x:Name="LogShield_Add" Content="添加屏蔽词" Grid.Column="0" HorizontalAlignment="Stretch" Click="LogShield_Add_Click"/>
-                                                <Button x:Name="LogShield_Del" Content="移除屏蔽词" Grid.Column="2" HorizontalAlignment="Stretch" Click="LogShield_Del_Click"/>
+                                                <Button x:Name="LogShield_Add" Content="添加" Grid.Column="0" HorizontalAlignment="Stretch" Click="LogShield_Add_Click"/>
+                                                <Button x:Name="LogShield_Del" Content="移除" Grid.Column="2" HorizontalAlignment="Stretch" Click="LogShield_Del_Click"/>
+                                            </Grid>
+                                        </Grid>
+                                        <Grid Grid.Column="4">
+                                            <Grid.RowDefinitions>
+                                                <RowDefinition Height="Auto"/>
+                                                <RowDefinition/>
+                                                <RowDefinition Height="Auto"/>
+                                            </Grid.RowDefinitions>
+                                            <StackPanel Grid.Row="0" Orientation="Horizontal" HorizontalAlignment="Left" VerticalAlignment="Top">
+                                                <ToggleButton x:Name="highLightLogBtn" Content="高亮关键字日志" Style="{StaticResource ToggleButtonSwitch.Content}" Click="highLightLogBtn_Click"/>
+                                            </StackPanel>
+                                            <ListBox x:Name="HighLightLogList" Grid.Row="1" Margin="0,5,0,5" MaxHeight="120"/>
+                                            <Grid Grid.Row="2">
+                                                <Grid.ColumnDefinitions>
+                                                    <ColumnDefinition/>
+                                                    <ColumnDefinition Width="5"/>
+                                                    <ColumnDefinition/>
+                                                </Grid.ColumnDefinitions>
+                                                <Button x:Name="LogHighLight_Add" Content="添加" Grid.Column="0" HorizontalAlignment="Stretch" Click="LogHighLight_Add_Click"/>
+                                                <Button x:Name="LogHighLight_Del" Content="移除" Grid.Column="2" HorizontalAlignment="Stretch" Click="LogHighLight_Del_Click"/>
                                             </Grid>
                                         </Grid>
                                     </Grid>

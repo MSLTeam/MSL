@@ -164,6 +164,7 @@
                         <ComboBoxItem Content="INFO" IsSelected="True"/>
                         <ComboBoxItem Content="WARN"/>
                         <ComboBoxItem Content="ERROR"/>
+                        <ComboBoxItem Content="HIGHLIGHT"/>
                     </ComboBox>
                     <Button x:Name="ChangeLogForeColor" Content="点击选色" Click="ChangeLogForeColor_Click"/>
                     <Button x:Name="RestoreLogForeColor" Content="重置" Click="RestoreLogForeColor_Click"/>

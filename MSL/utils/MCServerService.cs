@@ -1,7 +1,7 @@
 ﻿using System;
 using System.Collections.Concurrent;
 using System.Collections.Generic;
-using System.Text;
+using System.Linq;
 using System.Windows.Media;
 using System.Windows.Threading;
 
@@ -68,13 +68,20 @@ namespace MSL.utils
 
     }
 
-    internal class MCSLogHandler
+    internal class MCSLogHandler : IDisposable
     {
+        public void Dispose()
+        {
+            CleanupResources();
+            HighLightLog = null;
+        }
+
         private readonly Action<string, SolidColorBrush> _logAction;
         private readonly Action<List<string>> _logBatch;
         private readonly Action<string> _infoHandler;
         private readonly Action<string> _warnHandler;
         private readonly Action _encodingIssueHandler;
+        public string[] HighLightLog;
 
         public class LogConfig
         {
@@ -266,20 +273,60 @@ namespace MSL.utils
             {
                 // 单条日志直接处理
                 ProcessLogMessage(group[0]);
+                return;
             }
-            else
-            {
-                // 多条相同类型的日志，合并处理
-                // 构建合并后的日志文本
-                var sb = new StringBuilder();
-                foreach (var msg in group)
-                {
-                    sb.AppendLine(msg);
-                }
 
-                // 一次性输出
-                string combinedMessage = sb.ToString().TrimEnd();
+            // 检查是否有需要高亮的日志
+            bool hasHighlight = HighLightLog != null && HighLightLog.Any() &&
+                               group.Any(msg => HighLightLog.Any(s => msg.Contains(s)));
+
+            if (!hasHighlight)
+            {
+                // 没有高亮日志，直接合并输出
+                string combinedMessage = string.Join(Environment.NewLine, group);
                 ProcessLogMessage(combinedMessage);
+                return;
+            }
+
+            // 有高亮日志，分段处理
+            var beforeHighlight = new List<string>();
+            var highlightLogs = new List<string>();
+            var afterHighlight = new List<string>();
+            bool foundHighlight = false;
+
+            foreach (var msg in group)
+            {
+                bool isHighlight = HighLightLog.Any(s => msg.Contains(s));
+
+                if (!foundHighlight && !isHighlight)
+                {
+                    beforeHighlight.Add(msg);
+                }
+                else if (isHighlight)
+                {
+                    highlightLogs.Add(msg);
+                    foundHighlight = true;
+                }
+                else
+                {
+                    afterHighlight.Add(msg);
+                }
+            }
+
+            // 输出三部分内容
+            if (beforeHighlight.Count > 0)
+            {
+                ProcessLogMessage(string.Join(Environment.NewLine, beforeHighlight));
+            }
+
+            foreach (var highlight in highlightLogs)
+            {
+                PrintLog(highlight, ConfigStore.LogColor.HIGHLIGHT);
+            }
+
+            if (afterHighlight.Count > 0)
+            {
+                ProcessLogMessage(string.Join(Environment.NewLine, afterHighlight));
             }
         }
 

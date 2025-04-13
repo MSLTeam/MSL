@@ -307,6 +307,9 @@ namespace MSL
 
                     if (logColorConf["ERROR"] != null)
                         ConfigStore.LogColor.ERROR = (SolidColorBrush)brushConverter.ConvertFromString(logColorConf["ERROR"].ToString());
+
+                    if (logColorConf["HIGHLIGHT"] != null)
+                        ConfigStore.LogColor.HIGHLIGHT = (SolidColorBrush)brushConverter.ConvertFromString(logColorConf["HIGHLIGHT"].ToString());
                 }
                 //Logger.LogInfo("读取自动化功能配置成功（自动打开显示占用、记录玩家功能）！");
             }

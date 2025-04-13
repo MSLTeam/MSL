@@ -24,6 +24,7 @@ namespace MSL.utils
             public static SolidColorBrush INFO { get; set; } = Brushes.Green;
             public static SolidColorBrush WARN { get; set; } = Brushes.Orange;
             public static SolidColorBrush ERROR { get; set; } = Brushes.Red;
+            public static SolidColorBrush HIGHLIGHT { get; set; } = Brushes.Blue;
         }
     }
 
