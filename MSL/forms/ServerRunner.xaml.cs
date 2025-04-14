@@ -623,7 +623,7 @@ namespace MSL
             bool dialogRet = await MagicShow.ShowMsgDialogAsync(this, "分析报告将在服务器关闭后生成！若使用后还是无法解决问题，请尝试进Q群询问（附带日志或日志链接，日志链接可以点击分享日志按钮生成）：\n一群：1145888872  二群：234477679", "警告", true, "取消");
             if (dialogRet)
             {
-                solveProblemSystem = true;
+                MCSLogHandler.ServerService.ProblemSolveSystem = true;
                 LaunchServer();
             }
         }
@@ -1298,7 +1298,7 @@ namespace MSL
             }
         }
 
-        private bool solveProblemSystem;
+        // private bool solveProblemSystem;
         private void OutputDataReceived(object sender, DataReceivedEventArgs e)
         {
             if (e.Data != null)
@@ -1865,9 +1865,9 @@ namespace MSL
             Dispatcher.InvokeAsync(async () =>
             {
                 ChangeControlsState(false);
-                if (solveProblemSystem)
+                if (MCSLogHandler.ServerService.ProblemSolveSystem)
                 {
-                    solveProblemSystem = false;
+                    MCSLogHandler.ServerService.ProblemSolveSystem = false;
                     if (string.IsNullOrEmpty(MCSLogHandler.ServerService.ProblemFound))
                     {
                         MagicShow.ShowMsgDialog(this, "服务器已关闭！开服器未检测到相关问题，您可将服务器日志发送给他人以寻求帮助！\n日志发送方式：\n1.直接截图控制台内容\n2.服务器目录\\logs\\latest.log\n3.前往“更多功能”界面上传至Internet", "崩溃分析系统");
@@ -1885,7 +1885,7 @@ namespace MSL
                     if (dialogRet)
                     {
                         TabCtrl.SelectedIndex = 1;
-                        solveProblemSystem = true;
+                        MCSLogHandler.ServerService.ProblemSolveSystem = true;
                         LaunchServer();
                     }
                 }
@@ -1908,9 +1908,9 @@ namespace MSL
                 conptyWindow.ConptyConsole.ConPTYTerm.TermExited -= OnTermExited;
                 conptyWindow.ConptyConsole.ConPTYTerm.OnOutputReceived -= ProcessOutputEvent;
                 conptyWindow.ControlServer.Content = "开服";
-                if (solveProblemSystem)
+                if (MCSLogHandler.ServerService.ProblemSolveSystem)
                 {
-                    solveProblemSystem = false;
+                    MCSLogHandler.ServerService.ProblemSolveSystem = false;
                     string[] strings = (conptyWindow.ConptyConsole.ConPTYTerm.GetConsoleText()).Split('\n');
                     foreach (var log in strings)
                     {
@@ -1947,7 +1947,7 @@ namespace MSL
                     bool dialogRet = await MagicShow.ShowMsgDialogAsync(this, "服务器疑似异常关闭，是您人为关闭的吗？\n您可使用MSL的崩溃分析系统进行检测，也可将服务器日志发送给他人以寻求帮助，但请不要截图此弹窗！！！\n日志发送方式：\n1.直接截图控制台内容\n2.服务器目录\\logs\\latest.log\n3.前往“更多功能”界面上传至Internet\n\n点击确定开始进行崩溃分析", "提示", true);
                     if (dialogRet)
                     {
-                        solveProblemSystem = true;
+                        MCSLogHandler.ServerService.ProblemSolveSystem = true;
                         LaunchServer();
                     }
                     else

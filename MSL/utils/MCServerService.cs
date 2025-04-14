@@ -18,13 +18,13 @@ namespace MSL.utils
 
         private readonly List<(string pattern, string message)> errorPatterns = new()
         {
-            (@"UnsupportedClassVersionError.*\(class file version (\d+)", "*不支持的Class版本：您的Java版本可能太低！\n\t请使用Java{0}或以上版本！\n"),
-            (@"Unsupported Java detected.*Only up to (\S+)", "*不匹配的Java版本：\n\t请使用{0}！\n"),
-            (@"requires running the server with (\S+)", "*不匹配的Java版本：\n\t请使用{0}！\n"),
+            (@"UnsupportedClassVersionError.*\(class file version (\d+)", "*不支持的Class版本：您的Java版本可能太低！\n 请使用Java{0}或以上版本！\n"),
+            (@"Unsupported Java detected.*Only up to (\S+)", "*不匹配的Java版本：\n 请使用{0}！\n"),
+            (@"requires running the server with (\S+)", "*不匹配的Java版本：\n 请使用{0}！\n"),
             (@"Invalid or corrupt jarfile", "*服务端核心不完整，请重新下载！\n"),
             (@"OutOfMemoryError", "*服务器内存分配过低或过高！\n"),
-            (@"Invalid maximum heap size.*", "*服务器最大内存分配有误！\n\t{0}\n"),
-            (@"Unrecognized VM option '([^']+)'", "*服务器JVM参数有误！请前往设置界面进行查看！\n\t错误的参数为：{0}\n"),
+            (@"Invalid maximum heap size.*", "*服务器最大内存分配有误！\n {0}\n"),
+            (@"Unrecognized VM option '([^']+)'", "*服务器JVM参数有误！请前往设置界面进行查看！\n 错误的参数为：{0}\n"),
             (@"There is insufficient memory for the Java Runtime Environment to continue", "*JVM内存分配不足，请尝试增加系统的虚拟内存（不是内存条！具体方法请自行上网查找）！\n"),
             (@"进程无法访问", "*文件被占用，您的服务器可能多开，可尝试重启电脑解决！\n"),
             (@"FAILED TO BIND TO PORT", "*端口被占用，您的服务器可能多开，可尝试重启电脑解决！\n"),
@@ -36,8 +36,9 @@ namespace MSL.utils
             (@"Failed to download vanilla jar", "*下载原版核心文件失败，您可尝试使用代理或更换服务端为Spigot端！\n"),
             (@"Exception in thread ""main""", "*服务端核心Main方法报错，可能是Java版本不正确或服务端（及库文件）不完整，请尝试更换Java版本或重新下载安装服务端核心！\n"),
             (@"@libraries.net|找不到或无法加载主类", "*Java版本过低，请勿使用Java8及以下版本的Java！\n"),
-            (@"Could not load '([^']+)' plugin", "*无法加载插件！\n\t插件名称：{0}\n"),
-            (@"Error loading plugin '([^']+)'", "*无法加载插件！\n\t插件名称：{0}\n"),
+            (@"Could not load '([^']+)' in folder '([^']+)'", "*无法加载{1}！\n 名称：{0}\n"),
+            (@"Could not load '([^']+)' plugin", "*无法加载插件！\n 插件名称：{0}\n"),
+            (@"Error loading plugin '([^']+)'", "*无法加载插件！\n 插件名称：{0}\n"),
             (@"Error occurred while enabling (\S+) ", "*在启用 {0} 时发生了错误\n"),
             (@"Encountered an unexpected exception", "*服务器出现意外崩溃，可能是由于模组冲突，请检查您的模组列表（如果使用的是整合包，请使用整合包制作方提供的Server专用包开服）\n"),
             (@"net.minecraft.client.Main", "*您使用的似乎是客户端核心，无法开服，请使用正确的服务端核心再试！\n"),
@@ -54,6 +55,7 @@ namespace MSL.utils
                     for (int i = 1; i < match.Groups.Count; i++)
                     {
                         resolvedMessage = resolvedMessage.Replace($"{{{i - 1}}}", match.Groups[i].Value);
+                        // Console.WriteLine(resolvedMessage);
                     }
 
                     if (!string.IsNullOrEmpty(resolvedMessage) && (string.IsNullOrEmpty(ProblemFound) || !ProblemFound.Contains(resolvedMessage)))
@@ -307,7 +309,6 @@ namespace MSL.utils
                 if (ServerService.ProblemSolveSystem)
                 {
                     ServerService.ProblemSystemHandle(msg);
-                    continue;
                 }
 
                 // 过滤不需要显示的日志
