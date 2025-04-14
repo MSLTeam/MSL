@@ -1564,6 +1564,9 @@ namespace MSL
                 foreach (string s in strings)
                 {
                     LogHandleInfo(s);
+
+                    if (MCSLogHandler.ServerService.ProblemSolveSystem)
+                        MCSLogHandler.ServerService.ProblemSystemHandle(s);
                     /*
                     Run run = new Run(s)
                     {
@@ -1576,6 +1579,8 @@ namespace MSL
             else
             {
                 LogHandleInfo(msg);
+                if (MCSLogHandler.ServerService.ProblemSolveSystem)
+                    MCSLogHandler.ServerService.ProblemSystemHandle(msg);
                 /*
                 Run run = new Run(msg)
                 {
@@ -1933,8 +1938,8 @@ namespace MSL
                         await MagicShow.ShowMsgDialogAsync(this, MCSLogHandler.ServerService.ProblemFound + "\nPS:软件检测不一定准确，若您无法解决，可将服务器日志发送给他人以寻求帮助，但请不要截图此弹窗！！！\n日志发送方式：\n1.直接截图控制台内容\n2.服务器目录\\logs\\latest.log\n3.前往“更多功能”界面上传至Internet", "服务器分析报告");
                         MCSLogHandler.ServerService.Dispose();
                     }
-                    if(isCVisible)
-                        conptyWindow.Visibility = Visibility.Visible;
+                    if (isCVisible)
+                        ShowConptyWindow();
                 }
                 else if (getServerInfoLine <= 100)
                 {
@@ -1953,7 +1958,7 @@ namespace MSL
                     else
                     {
                         if (isCVisible)
-                            conptyWindow.Visibility = Visibility.Visible;
+                            ShowConptyWindow();
                     }
                 }
                 else if (autoStartserver.IsChecked == true)

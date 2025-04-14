@@ -38,6 +38,8 @@ namespace MSL.utils
             (@"@libraries.net|找不到或无法加载主类", "*Java版本过低，请勿使用Java8及以下版本的Java！\n"),
             (@"Could not load '([^']+)' in folder '([^']+)'", "*无法加载{1}！\n 名称：{0}\n"),
             (@"Could not load '([^']+)' plugin", "*无法加载插件！\n 插件名称：{0}\n"),
+            (@"Failed to open plugin jar ([^']+).jar", "*无法加载插件！\n 插件名称：{0}.jar\n"),
+            ("Failed to open plugin jar ([^']+)\n", "*无法加载插件！\n 插件名称：{0}\n"),
             (@"Error loading plugin '([^']+)'", "*无法加载插件！\n 插件名称：{0}\n"),
             (@"Error occurred while enabling (\S+) ", "*在启用 {0} 时发生了错误\n"),
             (@"Encountered an unexpected exception", "*服务器出现意外崩溃，可能是由于模组冲突，请检查您的模组列表（如果使用的是整合包，请使用整合包制作方提供的Server专用包开服）\n"),
