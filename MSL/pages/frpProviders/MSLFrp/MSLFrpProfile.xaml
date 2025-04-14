@@ -77,6 +77,7 @@
                         </ComboBox>
                         <Button Grid.Column="2" x:Name="PayOrder" Click="PayOrder_Click" MinWidth="100" Content="购买"/>
                     </Grid>
+                    <Button Content="付款遇到问题?" x:Name="AskBtn" MinWidth="100" Click="AskBtn_Click"/>
                 </hc:UniformSpacingPanel>
             </controls:MagicCard>
             <controls:MagicCard Grid.Row="2" Title="积分兑换">

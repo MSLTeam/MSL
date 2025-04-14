@@ -7,6 +7,7 @@ using System.Collections.Generic;
 using System.Threading.Tasks;
 using System.Windows;
 using System.Windows.Controls;
+using System.Windows.Interop;
 using System.Windows.Media;
 using System.Windows.Media.Imaging;
 
@@ -299,6 +300,11 @@ namespace MSL.pages.frpProviders.MSLFrp
         private void Close()
         {
             _close();
+        }
+
+        private void AskBtn_Click(object sender, RoutedEventArgs e)
+        {
+            MagicShow.ShowMsgDialog("若您遇到了付款的问题，请加Q群1145888872联系管理。\n请勿直接在订单发起投诉，这样只会加长处理周期和麻烦。\n感谢您的配合~", "付款问题");
         }
     }
 }
