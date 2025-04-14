@@ -370,7 +370,7 @@ namespace MSL.pages.frpProviders.MSLFrp
         {
             if ((int)value == 1)
             {
-                return "KCP加速：支持";
+                return "KCP：支持";
             }
             return string.Empty;
         }
