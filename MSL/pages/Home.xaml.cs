@@ -2,6 +2,7 @@
 using Newtonsoft.Json.Linq;
 using System;
 using System.IO;
+using System.Net.Http;
 using System.Text;
 using System.Text.RegularExpressions;
 using System.Threading;
@@ -69,83 +70,110 @@ namespace MSL.pages
         {
             for (int i = 0; i < timeoutSeconds && !cancellationToken.IsCancellationRequested; i++)
             {
-                if (ConfigStore.ServerLink != null)
+                if (MainWindow.LoadingCompleted)
                 {
                     return true;
                 }
                 await Task.Delay(1000, cancellationToken);
             }
-            return ConfigStore.ServerLink != null;
+            return false;
         }
 
         private async Task GetNotice(bool firstLoad = false)
         {
+            string noticeLabText = firstLoad ? string.Empty : noticeLab.Text;
+
+            // 获取公告版本
+            string currentNoticeVersion = string.Empty;
             try
             {
-                string noticeLabText = firstLoad ? string.Empty : noticeLab.Text;
-
-                // 获取公告版本
-                string currentNoticeVersion = await GetCurrentNoticeVersion();
-                string savedNoticeVersion = await GetSavedNoticeVersion();
-
-                // 如果公告版本不同或首次加载且公告为空，则获取新公告
-                if (currentNoticeVersion != savedNoticeVersion || (firstLoad && string.IsNullOrEmpty(noticeLabText)))
-                {
-                    var noticeTask = HttpService.GetApiContentAsync("query/notice");
-                    var tipsTask = HttpService.GetApiContentAsync("query/notice?query=tips");
-
-                    // 并行获取公告和recommendations
-                    await Task.WhenAll(noticeTask, tipsTask);
-
-                    var noticeResponse = await noticeTask;
-                    var tipsResponse = await tipsTask;
-
-                    // 处理公告内容
-                    string notice = noticeResponse["data"]["notice"]?.ToString();
-                    if (!string.IsNullOrEmpty(notice))
-                    {
-                        noticeLabText = notice;
-
-                        // 在加载完成后显示通知对话框
-                        if (!string.IsNullOrEmpty(noticeLabText) && currentNoticeVersion != savedNoticeVersion)
-                        {
-                            await ShowNoticeDialogWhenLoaded(noticeLabText);
-                        }
-                    }
-                    else
-                    {
-                        noticeLabText = "获取公告失败！请检查网络连接是否正常或联系作者进行解决！";
-                    }
-
-                    // 处理recommendations
-                    var recommendations = tipsResponse["data"]["tips"];
-                    if (recommendations != null)
-                    {
-                        await Dispatcher.InvokeAsync(() => LoadRecommendations((JArray)recommendations));
-                    }
-
-                    // 保存新公告版本
-                    await SaveNoticeVersion(currentNoticeVersion);
-                }
-
-                noticeLab.Text = noticeLabText;
+                currentNoticeVersion = await GetCurrentNoticeVersion();
+            }
+            catch (HttpRequestException ex)
+            {
+                noticeLab.Text = $"获取公告失败！\n可能是您的网络连接异常，或软件与软件服务器出现问题。若您检查自己的网络并无问题，请及时将此问题反馈！\n错误信息：[HTTP Exception]({ex.InnerException.Message}){ex.Message}";
+                return;
+            }
+            catch (FileNotFoundException ex)
+            {
+                noticeLab.Text = $"获取公告失败！\n请检查您是否安装了.NET Framework 4.7.2运行库！\n错误信息：{ex.Message}";
+                return;
             }
             catch (Exception ex)
             {
-                // 处理异常
-                string errorMessage = string.IsNullOrEmpty(noticeLab.Text)
-                    ? $"获取公告失败！可能有以下原因：\n1.网络连接异常\n2.未安装.Net Framework 4.7.2运行库\n3.软件Bug，请联系作者进行解决\n错误信息：{ex.Message}"
-                    : noticeLab.Text;
-                noticeLab.Text = errorMessage;
+                noticeLab.Text = $"获取公告失败！可能有以下原因：\n1.网络连接异常\n2.未安装.Net Framework 4.7.2运行库\n3.软件Bug，请联系作者进行解决\n错误信息：{ex.Message}";
+                return;
             }
+            string savedNoticeVersion = GetSavedNoticeVersion();
+
+            // 如果公告版本不同或首次加载且公告为空，则获取新公告
+            if (currentNoticeVersion != savedNoticeVersion || string.IsNullOrEmpty(noticeLabText))
+            {
+                var noticeTask = HttpService.GetApiContentAsync("query/notice");
+                var tipsTask = HttpService.GetApiContentAsync("query/notice?query=tips");
+
+                // 并行获取公告和recommendations
+                await Task.WhenAll(noticeTask, tipsTask);
+
+                var noticeResponse = await noticeTask;
+                var tipsResponse = await tipsTask;
+
+                // 处理公告内容
+                string notice = noticeResponse["data"]["notice"]?.ToString();
+                if (!string.IsNullOrEmpty(notice))
+                {
+                    noticeLabText = notice;
+
+                    // 在加载完成后显示通知对话框
+                    if (!string.IsNullOrEmpty(noticeLabText) && currentNoticeVersion != savedNoticeVersion)
+                    {
+                        await ShowNoticeDialogWhenLoaded(noticeLabText);
+                    }
+                }
+                else
+                {
+                    noticeLabText = "获取公告失败！请检查网络连接是否正常或联系作者进行解决！";
+                }
+
+                // 处理recommendations
+                var recommendations = tipsResponse["data"]["tips"];
+                if (recommendations != null)
+                {
+                    await Dispatcher.InvokeAsync(() => LoadRecommendations((JArray)recommendations));
+                }
+
+                // 保存新公告版本
+                SaveNoticeVersion(currentNoticeVersion);
+            }
+
+            noticeLab.Text = noticeLabText;
         }
 
         private async Task<string> GetCurrentNoticeVersion()
         {
+            var response = await HttpService.GetApiContentAsync("query/notice?query=id");
+            return response["data"]["noticeID"]?.ToString() ?? "0";
+        }
+
+        private string GetSavedNoticeVersion()
+        {
             try
             {
-                var response = await HttpService.GetApiContentAsync("query/notice?query=id");
-                return response["data"]["noticeID"]?.ToString() ?? "0";
+                string configPath = @"MSL\config.json";
+                if (!File.Exists(configPath))
+                {
+                    return "0";
+                }
+
+                JObject jsonObject = JObject.Parse(File.ReadAllText(configPath, Encoding.UTF8));
+                if (jsonObject["notice"] == null)
+                {
+                    jsonObject.Add("notice", "0");
+                    File.WriteAllText(configPath, jsonObject.ToString(), Encoding.UTF8);
+                    return "0";
+                }
+
+                return jsonObject["notice"].ToString();
             }
             catch
             {
@@ -153,54 +181,22 @@ namespace MSL.pages
             }
         }
 
-        private async Task<string> GetSavedNoticeVersion()
+        private void SaveNoticeVersion(string version)
         {
-            return await Task.Run(() =>
+            try
             {
-                try
-                {
-                    string configPath = @"MSL\config.json";
-                    if (!File.Exists(configPath))
-                    {
-                        return "0";
-                    }
+                string configPath = @"MSL\config.json";
+                JObject jsonObject = File.Exists(configPath)
+                    ? JObject.Parse(File.ReadAllText(configPath, Encoding.UTF8))
+                    : new JObject();
 
-                    JObject jsonObject = JObject.Parse(File.ReadAllText(configPath, Encoding.UTF8));
-                    if (jsonObject["notice"] == null)
-                    {
-                        jsonObject.Add("notice", "0");
-                        File.WriteAllText(configPath, jsonObject.ToString(), Encoding.UTF8);
-                        return "0";
-                    }
-
-                    return jsonObject["notice"].ToString();
-                }
-                catch
-                {
-                    return "0";
-                }
-            });
-        }
-
-        private async Task SaveNoticeVersion(string version)
-        {
-            await Task.Run(() =>
+                jsonObject["notice"] = version;
+                File.WriteAllText(configPath, jsonObject.ToString(), Encoding.UTF8);
+            }
+            catch (Exception ex)
             {
-                try
-                {
-                    string configPath = @"MSL\config.json";
-                    JObject jsonObject = File.Exists(configPath)
-                        ? JObject.Parse(File.ReadAllText(configPath, Encoding.UTF8))
-                        : new JObject();
-
-                    jsonObject["notice"] = version;
-                    File.WriteAllText(configPath, jsonObject.ToString(), Encoding.UTF8);
-                }
-                catch (Exception ex)
-                {
-                    MagicFlowMsg.ShowMessage($"保存公告版本时出错: {ex.Message}", 2);
-                }
-            });
+                MagicFlowMsg.ShowMessage($"保存公告版本时出错: {ex.Message}", 2);
+            }
         }
 
         private async Task ShowNoticeDialogWhenLoaded(string noticeText)

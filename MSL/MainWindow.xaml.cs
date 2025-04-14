@@ -3,12 +3,14 @@ using HandyControl.Themes;
 using MSL.langs;
 using MSL.pages;
 using MSL.utils;
+using Newtonsoft.Json;
 using Newtonsoft.Json.Linq;
 using System;
 using System.Collections.Generic;
 using System.Diagnostics;
 using System.IO;
 using System.Net;
+using System.Net.Http;
 using System.Runtime.InteropServices;
 using System.Security.Cryptography;
 using System.Text;
@@ -420,68 +422,85 @@ namespace MSL
         {
             ServicePointManager.SecurityProtocol = SecurityProtocolType.Tls12;
             //get serverlink
+            // _ = HttpService.GetContentAsync("https://msl-api.oss-cn-hangzhou.aliyuncs.com/");
+            // ConfigStore.ServerLink = "mslmc.cn/v3/";
+            //Logger.LogInfo("连接到api：" + "https://api." + _link);
             try
             {
-                _ = HttpService.GetContentAsync("https://msl-api.oss-cn-hangzhou.aliyuncs.com/");
-                ConfigStore.ServerLink = "mslmc.cn/v3/";
-                //Logger.LogInfo("连接到api：" + "https://api." + _link);
-                if (((int)JObject.Parse((await HttpService.GetContentAsync("https://api." + ConfigStore.ServerLink, headers => { headers.Add("DeviceID", ConfigStore.DeviceID); }, 1)).ToString())["code"]) == 200)
-                {
-                    // 检查更新
-                    await CheckUpdate(jsonObject);
-
-                    // 下载必要DLL
-                    if (downloadTermDll)
-                    {
-                        var result = await MagicShow.ShowDownloader(this, "https://file.mslmc.cn/Microsoft.Terminal.Control.dll", "MSL", "Microsoft.Terminal.Control.dll", "下载必要文件……");
-                        if (result)
-                        {
-                            try
-                            {
-                                LoadLibEx();
-                            }
-                            catch (Exception ex)
-                            {
-                                File.Delete("MSL\\Microsoft.Terminal.Control.dll");
-                                MagicShow.ShowMsg(this, $"必要DLL“Microsoft.Terminal.Control.dll”加载失败！可能是文件不完整，已将其删除，请重启软件以确保其被重新下载并加载。（{ex.Message}）\n如果不重启软件，高级终端（ConPty）功能将失效！\n若您多次重启软件后，此问题依旧未被解决，请联系作者进行反馈！", "错误");
-                            }
-                        }
-                    }
-
-                    // 判断是否开了自动更新软件，如果开了自动更新软件，说明之前的自动开服和自动开Frpc功能并未执行，这里开始执行
-                    if (jsonObject["autoUpdateApp"] != null)
-                    {
-                        if (jsonObject["autoUpdateApp"].ToString() != "True") return;
-                        try
-                        {
-                            // 检测是否开启对应功能
-                            if (jsonObject["autoOpenServer"] != null && jsonObject["autoOpenServer"].ToString() != "False")
-                            {
-                                await AutoRunServer(jsonObject);
-                            }
-                        }
-                        catch (Exception ex)
-                        {
-                            MagicShow.ShowMsgDialog(LanguageManager.Instance["MainWindow_GrowlMsg_AutoLaunchServerErr"] + ex.Message, LanguageManager.Instance["Error"]);
-                        }
-                        try
-                        {
-                            // 检测是否开启对应功能
-                            if (jsonObject["autoOpenFrpc"] != null && jsonObject["autoOpenFrpc"].ToString() != "False")
-                            {
-                                await AutoRunFrpc(jsonObject);
-                            }
-                        }
-                        catch (Exception ex)
-                        {
-                            MagicShow.ShowMsgDialog(LanguageManager.Instance["MainWindow_GrowlMsg_AutoLaunchFrpcErr"] + ex.Message, LanguageManager.Instance["Error"]);
-                        }
-                    }
-                    return;
-                }
-                else
+                var request = await HttpService.GetApiContentAsync("");
+                if (request == null || (int)request["code"] != 200)
                 {
                     MagicFlowMsg.ShowMessage(LanguageManager.Instance["MainWindow_GrowlMsg_MSLServerDown"], 2);
+                    return;
+                }
+            }
+            catch (JsonException ex)
+            {
+                MagicFlowMsg.ShowMessage(LanguageManager.Instance["MainWindow_GrowlMsg_MSLServerDown"] + $"\n[JSON Exception]({ex.InnerException.Message}){ex.Message}", 2);
+                return;
+            }
+            catch (HttpRequestException ex)
+            {
+                MagicFlowMsg.ShowMessage(LanguageManager.Instance["MainWindow_GrowlMsg_MSLServerDown"] + $"\n[HTTP Exception]({ex.InnerException.Message}){ex.Message}", 2);
+                return;
+            }
+            catch
+            {
+                MagicFlowMsg.ShowMessage(LanguageManager.Instance["MainWindow_GrowlMsg_MSLServerDown"], 2);
+                return;
+            }
+
+            try
+            {
+                // 检查更新
+                await CheckUpdate(jsonObject);
+
+                // 下载必要DLL
+                if (downloadTermDll)
+                {
+                    var result = await MagicShow.ShowDownloader(this, "https://file.mslmc.cn/Microsoft.Terminal.Control.dll", "MSL", "Microsoft.Terminal.Control.dll", "下载必要文件……");
+                    if (result)
+                    {
+                        try
+                        {
+                            LoadLibEx();
+                        }
+                        catch (Exception ex)
+                        {
+                            File.Delete("MSL\\Microsoft.Terminal.Control.dll");
+                            MagicShow.ShowMsg(this, $"必要DLL“Microsoft.Terminal.Control.dll”加载失败！可能是文件不完整，已将其删除，请重启软件以确保其被重新下载并加载。（{ex.Message}）\n如果不重启软件，高级终端（ConPty）功能将失效！\n若您多次重启软件后，此问题依旧未被解决，请联系作者进行反馈！", "错误");
+                        }
+                    }
+                }
+
+                // 判断是否开了自动更新软件，如果开了自动更新软件，说明之前的自动开服和自动开Frpc功能并未执行，这里开始执行
+                if (jsonObject["autoUpdateApp"] != null)
+                {
+                    if (jsonObject["autoUpdateApp"].ToString() != "True") return;
+                    try
+                    {
+                        // 检测是否开启对应功能
+                        if (jsonObject["autoOpenServer"] != null && jsonObject["autoOpenServer"].ToString() != "False")
+                        {
+                            await AutoRunServer(jsonObject);
+                        }
+                    }
+                    catch (Exception ex)
+                    {
+                        MagicShow.ShowMsgDialog(LanguageManager.Instance["MainWindow_GrowlMsg_AutoLaunchServerErr"] + ex.Message, LanguageManager.Instance["Error"]);
+                    }
+                    try
+                    {
+                        // 检测是否开启对应功能
+                        if (jsonObject["autoOpenFrpc"] != null && jsonObject["autoOpenFrpc"].ToString() != "False")
+                        {
+                            await AutoRunFrpc(jsonObject);
+                        }
+                    }
+                    catch (Exception ex)
+                    {
+                        MagicShow.ShowMsgDialog(LanguageManager.Instance["MainWindow_GrowlMsg_AutoLaunchFrpcErr"] + ex.Message, LanguageManager.Instance["Error"]);
+                    }
                 }
             }
             catch (Exception ex)

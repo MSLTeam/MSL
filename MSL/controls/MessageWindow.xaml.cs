@@ -24,13 +24,23 @@ namespace MSL.controls
             }
             else
             {
-                if (closeText == "否")
+                switch (closeText)
                 {
-                    closeText = LanguageManager.Instance["No"];
+                    case "NO":
+                        closeText = LanguageManager.Instance["No"];
+                        break;
+                    case "CANCEL":
+                        closeText = LanguageManager.Instance["Cancel"];
+                        break;
                 }
-                if (primaryText == "是")
+                switch (primaryText)
                 {
-                    primaryText = LanguageManager.Instance["Yes"];
+                    case "YES":
+                        primaryText = LanguageManager.Instance["Yes"];
+                        break;
+                    case "CONFIRM":
+                        primaryText = LanguageManager.Instance["Confirm"];
+                        break;
                 }
                 closeBtn.Content = closeText;
                 primaryBtn.Content = primaryText;

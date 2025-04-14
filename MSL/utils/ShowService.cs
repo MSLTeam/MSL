@@ -284,41 +284,48 @@ namespace MSL.utils
         /// <param name="message">要显示的消息文本</param>
         /// <param name="type">消息类型，默认为0（primary），1为sucess，2为danger，3为LabelWarning，4为Info</param>
         /// <param name="seconds">显示时长，单位：秒（默认 3 秒）</param>
-        public static void ShowMessage(string message, int type = 0, int seconds = 3, UIElement panel = null)
+        public static void ShowMessage(string message, int type = 0, int seconds = 3, UIElement panel = null, UIElement _growlPanel = null)
         {
-            panel ??= WindowHelper.GetActiveWindow();
-            if (panel is Page page)
+            if (_growlPanel == null)
             {
-                panel = Window.GetWindow(page);
-            }
-            if (panel is Window window)
-            {
-                panel = window.Content as UIElement;
-            }
-            if (panel is Panel targetPanel)
-            {
-                if (targetPanel.FindName("GrowlPanel") != null)
+                panel ??= WindowHelper.GetActiveWindow();
+                if (panel is Page page)
                 {
-                    growlPanel = targetPanel.FindName("GrowlPanel") as StackPanel;
+                    panel = Window.GetWindow(page);
                 }
-                else
+                if (panel is Window window)
                 {
-                    growlPanel = null;
-                    if (messageStackPanel == null)
+                    panel = window.Content as UIElement;
+                }
+                if (panel is Panel targetPanel)
+                {
+                    if (targetPanel.FindName("GrowlPanel") != null)
                     {
-                        CreatMsgContainer(targetPanel);
+                        growlPanel = targetPanel.FindName("GrowlPanel") as StackPanel;
                     }
                     else
                     {
-                        if (!targetPanel.Children.Contains(messageStackPanel))
+                        growlPanel = null;
+                        if (messageStackPanel == null)
                         {
-                            messageStackPanel.Visibility = Visibility.Collapsed;
-                            targetContainer.Children.Remove(messageStackPanel);
-                            messageStackPanel = null;
                             CreatMsgContainer(targetPanel);
+                        }
+                        else
+                        {
+                            if (!targetPanel.Children.Contains(messageStackPanel))
+                            {
+                                messageStackPanel.Visibility = Visibility.Collapsed;
+                                targetContainer.Children.Remove(messageStackPanel);
+                                messageStackPanel = null;
+                                CreatMsgContainer(targetPanel);
+                            }
                         }
                     }
                 }
+            }
+            else
+            {
+                growlPanel = _growlPanel as StackPanel;
             }
 
             //targetContainer = panel;

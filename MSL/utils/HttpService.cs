@@ -103,13 +103,20 @@ namespace MSL.utils
         public static async Task<JObject> GetApiContentAsync(string path)
         {
             HttpResponse _response = await GetApiAsync(path);
-            try
+            if (_response.HttpResponseCode == HttpStatusCode.OK)
             {
-                return JObject.Parse(_response.HttpResponseContent.ToString());
+                try
+                {
+                    return JObject.Parse(_response.HttpResponseContent.ToString());
+                }
+                catch
+                {
+                    throw new JsonException($"{_response.HttpResponseContent}", new Exception(_response.HttpResponseCode.ToString()));
+                }
             }
-            catch
+            else
             {
-                throw new Exception($"({_response.HttpResponseCode}){_response.HttpResponseContent}");
+                throw new HttpRequestException($"{_response.HttpResponseContent}", new Exception(_response.HttpResponseCode.ToString()));
             }
         }
 
@@ -137,7 +144,10 @@ namespace MSL.utils
         public static async Task<object> GetContentAsync(string url, Action<HttpRequestHeaders> configureHeaders = null, int headerUAMode = 0, string headerUA = null)
         {
             HttpResponse _response = await GetAsync(url, configureHeaders, headerUAMode, headerUA);
-            return _response.HttpResponseContent;
+            if(_response.HttpResponseCode == HttpStatusCode.OK)
+                return _response.HttpResponseContent;
+            else
+                throw new HttpRequestException($"{_response.HttpResponseContent}", new Exception(_response.HttpResponseCode.ToString()));
         }
 
         /// <summary>

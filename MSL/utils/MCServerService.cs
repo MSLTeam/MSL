@@ -2,70 +2,106 @@
 using System.Collections.Concurrent;
 using System.Collections.Generic;
 using System.Linq;
+using System.Text;
+using System.Text.RegularExpressions;
 using System.Windows.Media;
 using System.Windows.Threading;
 
 namespace MSL.utils
 {
-    internal class MCServerService
+    internal class MCServerService : IDisposable
     {
-        //专为解决屎山而创建的新文件！
-        //以后可能会用上！！！
+        public bool ProblemSolveSystem = false;
+        public string ProblemFound;
 
-        // creeper?
-        //⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⡀⠤⠚⠉⢉⡑⠤⢀⡀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀
-        //⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⣀⠤⠊⠉⠠⣄⡀⠈⠓⢤⣀⠤⠈⠑⠢⣄⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀
-        //⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⣠⠤⠒⣉⠀⠀⠐⠀⠀⠀⠉⠐⠦⣉⠈⠁⠒⠤⣀⠀⠉⠐⠢⢄⡀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀
-        //⠀⠀⠀⠀⠀⠀⠀⠀⠀⣀⣤⠒⠙⠢⣄⣀⠀⠉⠢⣄⣠⠔⠂⠀⣀⠤⠚⠁⠀⠀⠀⠀⠑⠢⣄⡠⠔⠊⠒⣤⣀⠀⠀⠀⠀⠀⠀⠀⠀⠀
-        //⠀⠀⠀⠀⠀⣀⠤⠲⢍⡀⠀⠈⠐⠧⣀⣀⠤⠒⢍⡀⠀⠈⠑⠫⣀⠀⠀⠀⠀⠀⣀⠥⠒⠯⣁⣀⠤⠒⠁⠀⢀⡨⠔⠤⣀⠀⠀⠀⠀⠀
-        //⠀⠀⠀⠀⢸⠙⠲⢤⣀⠈⠑⢢⡤⠔⠊⠑⣢⠤⠔⠊⠑⣢⠤⣔⠊⠁⣀⠤⠐⠉⠀⢀⡠⠐⠊⠑⠢⠤⣔⠊⠑⢢⡤⠔⠚⡇⠀⠀⠀⠀
-        //⠀⠀⠀⠀⢸⣄⡀⢈⠈⢱⠺⢥⣀⠀⠀⠫⢄⢀⠤⠒⠉⠀⠀⡠⠝⠫⢄⡀⡀⠔⠊⠁⠀⠀⠀⠀⠀⢀⣠⠽⡏⠁⠀⢀⡰⡇⠀⠀⠀⠀
-        //⠀⠀⠀⠀⢸⠀⠈⡏⠒⢼⠀⠀⠈⠉⠒⣖⡉⠀⢀⡠⠔⠊⠁⠀⠀⢖⡉⠀⢉⡲⠀⠀⠀⢀⣠⠔⠊⠁⠀⣠⡇⠀⠋⠁⠀⡇⠀⠀⠀⠀
-        //⠀⠀⠀⠀⢸⠐⠢⢇⡀⠀⠀⠀⠰⢄⡀⠇⠈⢳⠋⢄⣠⠔⠒⠂⢄⡀⠈⠛⠉⢀⡀⠄⢺⠉⠀⢀⡀⡔⠊⠁⡇⢀⡀⠀⠀⡇⠀⠀⠀⠀
-        //⠀⠀⠀⠀⢸⠀⠀⢸⣿⣶⢤⣀⠀⠀⠈⡗⠤⣼⠀⠀⠈⠑⢲⣎⠁⠀⣀⠴⠊⢹⠀⢀⣸⠀⠀⠁⠀⢀⣀⡤⠗⠉⡇⠀⠀⡇⠀⠀⠀⠀
-        //⠀⠀⠀⠀⢸⠀⠀⢸⣿⣿⡀⠈⡏⠐⠲⡇⠀⣀⠀⠀⠠⣀⢸⠀⠉⠉⠀⠀⣀⢼⠊⠁⢸⢠⡠⠔⠀⢸⠁⢀⣦⠔⠃⠀⠀⡇⠀⠀⠀⠀
-        //⠀⠀⠀⠀⢸⠒⠤⣼⣿⣿⣿⣶⣧⣀⠀⡇⠀⢳⣤⣀⠀⠀⡏⠑⢢⡄⠀⢽⠀⢸⣀⠠⠾⠁⠀⠀⣀⠴⠒⠉⠀⠀⣀⡠⠴⡇⠀⠀⠀⠀
-        //⠀⠀⠀⠀⢸⢀⠀⠈⠉⢻⠿⣿⡇⠀⠉⠃⠀⢸⣿⣿⡏⠲⡇⠀⠀⡇⣀⡼⠚⠉⠃⠀⣠⠤⢲⠉⠀⠀⢀⡠⠔⠊⠁⠀⣀⡇⠀⠀⠀⠀
-        //⠀⠀⠀⠀⢸⠀⠉⢲⢄⣸⠀⠈⢹⣦⣄⡀⠀⢸⣿⣿⣧⣀⡇⠀⠀⡇⠁⡇⠀⠀⠖⠊⠁⠀⢸⠀⠀⠘⠁⠀⠀⠀⡔⠈⠁⡇⠀⠀⠀⠀
-        //⠀⠀⠀⠀⢸⠲⢄⣠⠀⢸⠓⠦⣼⣿⣿⣿⣷⡿⢿⣿⣿⣿⡗⠢⢄⡧⠚⡇⠀⠀⠀⠀⠀⠀⢸⠀⠀⠀⠀⠀⠀⠀⣀⠀⠀⡇⠀⠀⠀⠀
-        //⠀⠀⠀⠀⢸⠀⠀⠈⠉⢺⣏⠀⢸⣿⣿⣿⣿⡷⠀⠈⡟⠻⡇⠀⠀⡇⢀⡇⠀⠈⠃⠀⢀⠀⢸⠀⠀⠀⠀⢀⡔⠋⠁⠀⢀⡇⠀⠀⠀⠀
-        //⠀⠀⠀⠀⢸⠉⠒⠴⢄⣸⣿⣿⣿⣿⣿⣿⣿⣿⣶⣤⣧⣀⡇⠀⠀⡗⠉⡇⠀⠀⡦⠒⡇⠀⢸⣀⠤⠆⠀⢸⡇⠀⢤⠖⠫⡇⠀⠀⠀⠀
-        //⠀⠀⠀⠀⠸⢄⡀⠀⠀⢸⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⠅⠈⡟⠢⢄⡇⠔⡇⠀⠀⡇⣠⢧⠖⢹⠀⢀⡆⠀⢸⡇⠀⢸⣀⡼⠇⠀⠀⠀⠀
-        //⠀⠀⠀⠀⠀⠀⠈⠉⠒⢼⣿⣿⡏⠈⠙⠿⣿⣿⣿⣿⡄⠠⣇⠀⠀⡇⠀⡇⠀⠈⠃⠀⢸⣠⢼⠋⠁⠁⠀⢰⡧⠖⠋⠁⠀⠀⠀⠀⠀⠀
-        //⠀⠀⠀⠀⠀⠀⠀⠀⠀⢸⡊⠙⡷⢄⡀⠀⠀⢹⣿⣿⣇⠀⠀⠉⠢⡗⠋⡇⠀⢀⠄⠀⠉⠀⢸⣀⡠⠖⠊⠑⡇⠀⠀⠀⠀⠀⠀⠀⠀⠀
-        //⠀⠀⠀⠀⠀⠀⠀⠀⠀⢸⡇⠀⡏⠓⢮⣗⡢⣼⣿⣿⡏⠙⡆⠤⣀⣇⠀⣓⠊⠈⠀⢀⡴⠀⢸⠁⠀⣀⡠⠀⡇⠀⠀⠀⠀⠀⠀⠀⠀⠀
-        //⠀⠀⠀⠀⠀⠀⠀⠀⠀⢸⠉⠑⢧⣀⠀⡇⠀⠙⠦⣍⣦⣄⡇⠀⠀⡇⠀⣏⠤⠚⠆⠁⡇⢀⣸⠖⠈⠁⠀⢠⡇⠀⠀⠀⠀⠀⠀⠀⠀⠀
-        //⠀⠀⠀⠀⠀⠀⠀⠀⠀⢸⠀⠀⢠⡄⠉⡖⠤⡀⠀⠀⡏⠑⠏⠓⢤⠗⠊⢱⠦⣤⡤⠔⠻⠉⢸⠀⣀⠴⠖⢻⡇⠀⠀⠀⠀⠀⠀⠀⠀⠀
-        //⠀⠀⠀⠀⠀⠀⠀⠀⠀⢸⠀⠀⠈⠓⠦⡇⠀⠁⠀⠀⠣⢀⠀⠀⠈⡗⠤⣸⡀⢸⠀⠀⠀⠀⠈⠉⠀⡀⠀⣼⡇⠀⠀⠀⠀⠀⠀⠀⠀⠀
-        //⠀⠀⠀⠀⠀⠀⠀⠀⠀⢸⠀⠀⢠⣀⠀⡇⠀⠰⢤⣀⠀⠀⠁⠀⠀⠇⠀⡇⠈⠙⠄⠀⠀⠀⢀⠔⠚⠏⠀⢨⡇⠀⠀⠀⠀⠀⠀⠀⠀⠀
-        //⠀⠀⠀⠀⠀⠀⠀⠀⠀⢸⢄⡀⡀⠀⠉⡗⢤⣀⠀⢨⠑⠢⠄⠀⠀⠀⠈⢳⢄⣀⡄⠀⠀⠀⢸⠀⢀⣤⣴⣿⡇⠀⠀⠀⠀⠀⠀⠀⠀⠀
-        //⠀⠀⠀⠀⠀⠀⠀⠀⠀⢸⠀⠀⠑⠦⣄⡇⠀⠈⠉⠒⡄⠀⠀⠀⠀⠀⠠⣸⠀⢸⠀⠀⢀⣠⢾⣿⣿⣿⣿⡿⡇⠀⠀⠀⠀⠀⠀⠀⠀⠀
-        //⠀⠀⠀⠀⠀⠀⠀⠀⠀⢸⠒⠠⣤⣀⠀⠉⠒⠄⠀⠀⡇⠀⠀⠀⠀⠀⠀⢈⠙⠺⣴⠚⢹⡀⣸⠿⠛⠋⠁⠘⡇⠀⠀⠀⠀⠀⠀⠀⠀⠀
-        //⠀⠀⠀⠀⠀⠀⠀⠀⠀⢸⣀⠀⡃⠈⠑⠢⢄⣄⠀⠀⠑⠢⣄⡀⠀⠀⠀⡼⢄⣀⡇⠀⠞⠋⠁⠀⢀⡄⠀⠀⡇⠀⠀⠀⠀⠀⠀⠀⠀⠀
-        //⠀⠀⠀⠀⠀⠀⠀⠀⠀⢸⡆⠉⠳⠤⣀⠀⠀⠈⠁⠀⠀⠀⢸⠉⢹⠢⢄⡇⠀⠈⡇⠀⠀⠀⢠⠊⠁⠀⠀⣀⡇⠀⠀⠀⠀⠀⠀⠀⠀⠀
-        //⠀⠀⠀⠀⠀⠀⠀⠀⠀⢸⠓⠤⡄⠀⢈⡗⠢⡄⠀⠀⡀⠀⠘⠦⢼⡀⠈⡇⠀⠀⡇⠀⠀⠀⢸⣀⠠⠖⠋⠁⡇⠀⠀⠀⠀⠀⠀⠀⠀⠀
-        //⠀⠀⠀⠀⠀⠀⠀⠀⠀⢸⡀⠀⠀⠀⠀⢇⡀⠀⠀⠀⠑⠠⠀⠀⠀⡏⠒⢧⣀⠀⡇⢀⡶⠚⢹⠁⠀⣀⣠⣴⡇⠀⠀⠀⠀⠀⠀⠀⠀⠀
-        //⠀⠀⠀⠀⠀⠀⠀⠀⠀⢸⠉⠑⠲⠤⣀⠀⠉⡇⠀⠀⠀⠀⠀⠀⢠⠣⣀⢸⠈⠉⠉⠀⡇⢀⣸⣶⣾⡏⠀⣸⡧⢄⡀⠀⠀⠀⠀⠀⠀⠀
-        //⠀⠀⠀⠀⠀⠀⠀⠀⠀⢸⠦⢄⡀⠀⠀⠙⠢⢇⡀⠀⠀⠀⢰⢄⣸⠀⠀⢹⠀⠀⣠⣴⡟⠁⢸⣿⠿⠟⠋⠀⣗⠊⠉⠑⠢⢄⡀⠀⠀⠀
-        //⠀⠀⠀⠀⠀⠀⠀⠀⠀⢸⠆⠀⠁⠀⠀⣇⡀⠀⠈⠳⠲⢄⣸⠀⢸⠐⠢⣼⣀⠀⣿⣿⡧⠖⠉⠀⠀⢀⣠⢴⣧⠝⠒⠤⣀⠀⠈⠑⠢⢄
-        //⠀⠀⠀⠀⠀⢀⡠⠤⢖⡉⢀⡠⠴⢄⡀⡇⠈⢳⡤⣀⠀⠀⢸⠑⠺⢄⠀⢸⠈⠙⡏⠁⡇⠀⠀⠀⠀⠈⠀⢰⢋⡲⠤⢔⡁⠀⣀⠤⠒⠋
-        //⠀⠀⣀⡤⠚⠻⢄⣀⡠⠜⠣⢄⡀⠀⠈⠑⠤⣼⡇⢸⠉⠲⠼⠀⠀⠀⠉⠊⠀⠀⣧⠔⠃⠀⠀⠀⢀⡴⠚⠉⠃⠀⢀⣤⢾⡏⠁⠀⠀⠠
-        //⢾⡉⠀⢈⠵⠊⠉⠀⢈⡱⢮⡉⠀⣉⠖⠀⠀⠀⢉⡽⠂⠀⠀⠀⠀⠀⠀⣀⡀⠀⠀⠀⣤⠀⢀⠈⠀⢀⣠⠼⡖⠋⢹⠀⣸⡧⠒⣽⠀⠀
-        //⠀⠈⠙⠣⢤⣀⠀⠀⠁⣀⠤⠚⠉⠒⣠⣤⠒⠉⠓⣠⣤⠒⠉⠒⠤⢇⠀⡇⠉⠲⠖⠉⠀⢀⣸⡤⠒⠋⠀⠀⣇⡠⣼⠋⠀⠀⢀⣿⠀⠀
-        //⠀⠀⠀⠀⠀⠈⠑⡶⢍⡀⢀⠤⠒⠮⣁⣈⠵⠒⠮⣁⢈⠵⠢⢄⡀⠀⠉⠓⠤⣀⣄⣠⡞⠉⢹⠀⠤⣄⠀⠀⡟⠀⣟⡠⢔⡞⠁⠁⠀⠀
-        //⠀⠀⠀⠀⢰⠀⠀⡇⠀⢸⠷⠢⢤⡔⠊⠀⠀⠀⠔⠊⠁⣢⠤⣐⠉⠀⢀⡠⠔⢺⠁⠈⠱⠢⣼⠀⠀⠈⠑⠲⠗⠉⢁⠀⢀⡧⠀⢹⠀⠀
-        //⠀⠀⡟⠢⢼⢀⠀⡇⠀⢸⠀⠀⠀⠈⠑⡦⢀⣀⠠⠔⠊⠀⢀⣠⢽⠞⠉⠀⢀⣸⣶⣤⣄⠀⢸⠀⠀⠀⠀⠀⠀⠀⢸⠒⠉⠀⠀⠘⠀⠈
-        //⠀⠠⣇⠀⠀⠁⠙⠧⣀⢸⠀⠀⠀⠀⠀⡇⠀⠋⠑⠦⡴⠚⢹⠁⢸⡠⠔⣿⠉⠀⣿⣿⣿⣿⣶⣤⣀⠀⠀⠀⠀⠀⢸⠀⠀⠀⠀⠀⠀⠀
-        //⣀⠀⠈⠉⢲⠀⠀⠀⠀⢹⠓⠢⣄⡀⠀⡁⠀⠀⠀⠀⡇⣠⡜⠊⢹⠀⠀⣿⠀⠀⣿⣿⣿⣿⣿⣿⣿⣿⣶⣤⠀⠀⢼⠀⢀⣀⠀⠀⠀⠀
-        //⣿⣷⣶⣄⣸⠀⠀⠀⠀⠘⣄⠀⠀⠈⠑⡆⢀⡆⠀⠀⡏⠀⣇⣠⠼⡖⠋⢻⠀⠀⠻⢿⣿⣿⣿⣿⣿⣿⣿⣿⡇⣀⣸⠒⠉⡇⠀⢀⡀⠐
-        //⣿⣿⣿⣿⣿⣿⣦⣄⡀⠀⠀⠈⠳⢤⣀⡇⠀⠈⠒⠤⠷⠊⢁⠀⢀⣇⠔⢻⠀⠀⠀⠀⠈⠙⠻⢿⣿⣿⣿⣿⣿⣿⡿⢀⣠⠗⠊⠁⠀⠀
-        //⣿⣿⣿⣿⣿⣿⣿⣿⣿⣷⣦⣄⡀⠀⠈⡇⠀⠀⠀⠀⠀⠀⢸⠔⠋⠀⠀⢸⠤⠚⠀⠀⠀⠀⠀⠀⠈⠙⠻⢿⡿⠟⠛⠉⠀⠀⠀⠀⠀⠀
-        //⠈⠙⠿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣷⣦⣅⡀⠀⠀⠀⠀⠀⢸⠀⠀⠀⠀⡏⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀
-        //⠀⠀⠀⠀⠉⠛⠿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣷⣦⣄⡀⠀⢼⠀⠀⠀⠀⠃⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀
-        //⠀⠀⠀⠀⠀⠀⠀⠀⠉⠛⠿⣿⣿⣿⣿⣿⣿⣿⣿⣿⡇⢀⣼⠔⠊⡇⠀⣀⣀⠼⠂⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀
-        //⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠉⠛⠿⣿⣿⣿⣿⣿⣶⣿⡇⠀⣠⠧⠚⠉⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀
-        //⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠉⠛⠿⣿⣿⠿⠓⠉⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀
+        public MCServerService() { }
 
+        private readonly List<(string pattern, string message)> errorPatterns = new()
+        {
+            (@"UnsupportedClassVersionError.*\(class file version (\d+)", "*不支持的Class版本：您的Java版本可能太低！\n\t请使用Java{0}或以上版本！\n"),
+            (@"Unsupported Java detected.*Only up to (\S+)", "*不匹配的Java版本：\n\t请使用{0}！\n"),
+            (@"requires running the server with (\S+)", "*不匹配的Java版本：\n\t请使用{0}！\n"),
+            (@"Invalid or corrupt jarfile", "*服务端核心不完整，请重新下载！\n"),
+            (@"OutOfMemoryError", "*服务器内存分配过低或过高！\n"),
+            (@"Invalid maximum heap size.*", "*服务器最大内存分配有误！\n\t{0}\n"),
+            (@"Unrecognized VM option '([^']+)'", "*服务器JVM参数有误！请前往设置界面进行查看！\n\t错误的参数为：{0}\n"),
+            (@"There is insufficient memory for the Java Runtime Environment to continue", "*JVM内存分配不足，请尝试增加系统的虚拟内存（不是内存条！具体方法请自行上网查找）！\n"),
+            (@"进程无法访问", "*文件被占用，您的服务器可能多开，可尝试重启电脑解决！\n"),
+            (@"FAILED TO BIND TO PORT", "*端口被占用，您的服务器可能多开，可尝试重启电脑解决！\n"),
+            (@"Unable to access jarfile", "*无法访问JAR文件！您的服务端可能已损坏或路径中含有中文或其他特殊字符，请及时修改！\n"),
+            (@"加载 Java 代理时出错", "*无法访问JAR文件！您的服务端可能已损坏或路径中含有中文或其他特殊字符，请及时修改！\n"),
+            (@"ArrayIndexOutOfBoundsException", "*开启服务器时发生数组越界错误，请尝试更换服务端再试！\n"),
+            (@"ClassCastException", "*开启服务器时发生类转换异常，请检查Java版本是否匹配，或者让开服器为您下载Java环境（设置界面更改）！\n"),
+            (@"could not open.*jvm.cfg", "*Java异常，请检查Java环境是否正常，或者让开服器为您下载Java环境（设置界面更改）！\n"),
+            (@"Failed to download vanilla jar", "*下载原版核心文件失败，您可尝试使用代理或更换服务端为Spigot端！\n"),
+            (@"Exception in thread ""main""", "*服务端核心Main方法报错，可能是Java版本不正确或服务端（及库文件）不完整，请尝试更换Java版本或重新下载安装服务端核心！\n"),
+            (@"@libraries.net|找不到或无法加载主类", "*Java版本过低，请勿使用Java8及以下版本的Java！\n"),
+            (@"Could not load '([^']+)' plugin", "*无法加载插件！\n\t插件名称：{0}\n"),
+            (@"Error loading plugin '([^']+)'", "*无法加载插件！\n\t插件名称：{0}\n"),
+            (@"Error occurred while enabling (\S+) ", "*在启用 {0} 时发生了错误\n"),
+            (@"Encountered an unexpected exception", "*服务器出现意外崩溃，可能是由于模组冲突，请检查您的模组列表（如果使用的是整合包，请使用整合包制作方提供的Server专用包开服）\n"),
+            (@"net.minecraft.client.Main", "*您使用的似乎是客户端核心，无法开服，请使用正确的服务端核心再试！\n"),
+        };
+
+        public void ProblemSystemHandle(string msg)
+        {
+            foreach (var (pattern, message) in errorPatterns)
+            {
+                var match = Regex.Match(msg, pattern);
+                if (match.Success)
+                {
+                    var resolvedMessage = message;
+                    for (int i = 1; i < match.Groups.Count; i++)
+                    {
+                        resolvedMessage = resolvedMessage.Replace($"{{{i - 1}}}", match.Groups[i].Value);
+                    }
+
+                    if (!string.IsNullOrEmpty(resolvedMessage) && (string.IsNullOrEmpty(ProblemFound) || !ProblemFound.Contains(resolvedMessage)))
+                    {
+                        ProblemFound += resolvedMessage;
+                    }
+
+                }
+            }
+
+            if (msg.Contains("Mod") && msg.Contains("requires"))
+            {
+                string resolvedMessage = HandleModRequirement(msg);
+                if (!string.IsNullOrEmpty(resolvedMessage) && (string.IsNullOrEmpty(ProblemFound) || !ProblemFound.Contains(resolvedMessage)))
+                {
+                    ProblemFound += resolvedMessage;
+                }
+            }
+        }
+
+        private string HandleModRequirement(string msg)
+        {
+            string modNamePattern = @"Mod (\w+) requires";
+            string preModPattern = @"requires (\w+ \d+\.\d+\.\d+)";
+
+            Match modNameMatch = Regex.Match(msg, modNamePattern);
+            Match preModMatch = Regex.Match(msg, preModPattern);
+
+            if (modNameMatch.Success && preModMatch.Success)
+            {
+                string modName = modNameMatch.Groups[1].Value;
+                string preMod = preModMatch.Groups[1].Value;
+                string resolvedMessage = $"*{modName} 模组出现问题！该模组需要 {preMod}！\n";
+
+                if (msg.Contains("or above"))
+                {
+                    resolvedMessage = $"*{modName} 模组出现问题！该模组需要 {preMod} 或以上版本！\n";
+                }
+
+                return resolvedMessage;
+            }
+            return string.Empty;
+        }
+
+        public void Dispose()
+        {
+            ProblemFound = null;
+        }
     }
 
     internal class MCSLogHandler : IDisposable
@@ -73,15 +109,22 @@ namespace MSL.utils
         public void Dispose()
         {
             CleanupResources();
+            ServerService.Dispose();
+            ShieldLog = null;
             HighLightLog = null;
         }
 
         private readonly Action<string, SolidColorBrush> _logAction;
-        private readonly Action<List<string>> _logBatch;
         private readonly Action<string> _infoHandler;
         private readonly Action<string> _warnHandler;
         private readonly Action _encodingIssueHandler;
+        public bool IsShieldStackOut = true;
+        public bool IsShowOutLog = true;
+        public bool IsFormatLogPrefix = true;
+        public bool IsMSLFormatedLog = true;
+        public string[] ShieldLog;
         public string[] HighLightLog;
+        public MCServerService ServerService { get; private set; } = new MCServerService();
 
         public class LogConfig
         {
@@ -97,17 +140,16 @@ namespace MSL.utils
             { 11, new LogConfig { Prefix = string.Empty, Color = ConfigStore.LogColor.INFO } }, // 不以“[”开头但含有INFO字样的日志
             { 12, new LogConfig { Prefix = string.Empty, Color = ConfigStore.LogColor.WARN } }, // 不以“[”开头但含有WARN字样的日志
             { 13, new LogConfig { Prefix = string.Empty, Color = ConfigStore.LogColor.ERROR } }, // 不以“[”开头但含有ERROR字样的日志
-            { 0, new LogConfig { Prefix = string.Empty, Color = ConfigStore.LogColor.INFO } } // 啥也不含的日志
+            { 0, new LogConfig { Prefix = string.Empty, Color = ConfigStore.LogColor.INFO } }, // 啥也不含的日志
+            { 100, new LogConfig { Prefix = string.Empty, Color = ConfigStore.LogColor.HIGHLIGHT } } // 高亮日志
         };
 
         public MCSLogHandler(
-        Action<List<string>> logBatch,
         Action<string, SolidColorBrush> logAction,
         Action<string> infoHandler = null,
         Action<string> warnHandler = null,
         Action encodingIssueHandler = null)
         {
-            _logBatch = logBatch;
             _logAction = logAction;
             _infoHandler = infoHandler;
             _warnHandler = warnHandler;
@@ -121,16 +163,37 @@ namespace MSL.utils
             _logProcessTimer.Tick += ProcessLogBuffer;
         }
 
-        private void ProcessLogMessage(string message)
+        public void ProcessLogMessage(string message, int? _level = null, bool noPrefix = false, bool noFormatPrefix = false)
         {
-            var (level, content) = ParseLogMessage(message);
+            int level;
+            string content;
+            if (_level != null)
+                (level, content) = (_level.Value, message);
+            else
+                (level, content) = ParseLogMessage(message);
 
             if (level == 1 || level - 10 == 1)
                 LogHandleInfo(message);
-            else if ((level == 2 || level - 10 == 2) && !content.Contains("Advanced terminal features"))
+            else if (level == 2 || level - 10 == 2)
                 LogHandleWarn(message);
 
-            PrintFormattedLog(level, content);
+            if (noFormatPrefix)
+                PrintFormattedLog(level, message, true);
+            else
+                PrintFormattedLog(level, content, noPrefix);
+
+            if (message.Contains("�") || message.Contains("□"))
+                HandleEncodingIssue();
+        }
+
+        public void ProcessGroupLogMessage(string message, int level)
+        {
+            if (level == 1 || level - 10 == 1)
+                LogHandleInfo(message);
+            else if ((level == 2 || level - 10 == 2))
+                LogHandleWarn(message);
+
+            PrintFormattedLog(level, message, true);
 
             if (message.Contains("�") || message.Contains("□"))
                 HandleEncodingIssue();
@@ -172,7 +235,7 @@ namespace MSL.utils
             _ => 0
         };
 
-        private void PrintFormattedLog(int level, string content)
+        private void PrintFormattedLog(int level, string content, bool noPrefix)
         {
             if (level != 0)
             {
@@ -184,7 +247,10 @@ namespace MSL.utils
                 }
                 else
                 {
-                    PrintLog($"[{DateTime.Now:T} {LogInfo[level].Prefix}]{content}", LogInfo[level].Color);
+                    if (noPrefix)
+                        PrintLog(content, LogInfo[level].Color);
+                    else
+                        PrintLog($"[{DateTime.Now:T} {LogInfo[level].Prefix}]{content}", LogInfo[level].Color);
                 }
             }
             else
@@ -227,9 +293,78 @@ namespace MSL.utils
             }
         }
 
+        // 批量处理日志
         private void ProcessLogBatch(List<string> batch)
         {
-            _logBatch?.Invoke(batch);
+            // 按日志类型分组处理
+            var filteredLogs = new Dictionary<int, (bool, List<string>)>();
+
+            int i = 0;
+            filteredLogs[i] = (false, []);
+            foreach (var msg in batch)
+            {
+                // 崩溃分析系统
+                if (ServerService.ProblemSolveSystem)
+                {
+                    ServerService.ProblemSystemHandle(msg);
+                    continue;
+                }
+
+                // 过滤不需要显示的日志
+                if ((msg.Contains("\tat ") && IsShieldStackOut) ||
+                    (ShieldLog != null && ShieldLog.Any(s => msg.Contains(s))) ||
+                    !IsShowOutLog || msg.Contains("Advanced terminal features"))
+                {
+                    continue;
+                }
+
+                if (HighLightLog != null && HighLightLog.Any() &&
+                    HighLightLog.Any(s => msg.Contains(s)))
+                {
+                    i++;
+                    filteredLogs[i] = (true, [msg]);
+                    i++;
+                    filteredLogs[i] = (false, []);
+                    continue;
+                }
+
+                filteredLogs[i].Item2.Add(msg);
+            }
+
+            // 批量展示日志
+            if (filteredLogs.Count > 0)
+            {
+                // 如果启用了MCS日志处理
+                if (IsMSLFormatedLog)
+                {
+                    foreach (var everyFilter in filteredLogs)
+                    {
+                        if (everyFilter.Value.Item1 == true)
+                            ProcessLogMessage(everyFilter.Value.Item2.First(), 100);
+                        else
+                        {
+                            // 分组处理相同类型的日志
+                            var logGroups = GroupSimilarLogs(everyFilter.Value.Item2);
+                            foreach (var group in logGroups)
+                            {
+                                // 对于每组日志，一次性添加到UI
+                                ProcessLogGroup(group);
+                            }
+                        }
+                    }
+                }
+                else
+                {
+                    // 标准处理模式
+                    foreach (var msg in filteredLogs)
+                    {
+                        foreach (var emsg in msg.Value.Item2)
+                        {
+                            PrintLog(emsg, (SolidColorBrush)HandyControl.Themes.ThemeResources.Current.AccentColor);
+                        }
+                    }
+                }
+            }
         }
 
         // 将相似日志分组
@@ -272,62 +407,40 @@ namespace MSL.utils
             if (group.Count == 1)
             {
                 // 单条日志直接处理
-                ProcessLogMessage(group[0]);
+                if (IsFormatLogPrefix)
+                    ProcessLogMessage(group[0]);
+                else
+                    ProcessLogMessage(group[0], noFormatPrefix: true);
                 return;
             }
 
-            // 检查是否有需要高亮的日志
-            bool hasHighlight = HighLightLog != null && HighLightLog.Any() &&
-                               group.Any(msg => HighLightLog.Any(s => msg.Contains(s)));
-
-            if (!hasHighlight)
-            {
-                // 没有高亮日志，直接合并输出
-                string combinedMessage = string.Join(Environment.NewLine, group);
-                ProcessLogMessage(combinedMessage);
-                return;
-            }
-
-            // 有高亮日志，分段处理
-            var beforeHighlight = new List<string>();
-            var highlightLogs = new List<string>();
-            var afterHighlight = new List<string>();
-            bool foundHighlight = false;
-
+            // 多条相同类型的日志，合并处理
+            // 构建合并后的日志文本
+            int level = -1;
+            var sb = new StringBuilder();
             foreach (var msg in group)
             {
-                bool isHighlight = HighLightLog.Any(s => msg.Contains(s));
-
-                if (!foundHighlight && !isHighlight)
+                if (level == -1)
                 {
-                    beforeHighlight.Add(msg);
+                    string _msg = string.Empty;
+                    (level, _msg) = ParseLogMessage(msg);
+                    if (IsFormatLogPrefix && msg.StartsWith("["))
+                        sb.AppendLine($"[{DateTime.Now:T} {LogInfo[level].Prefix}]" + _msg);
+                    else
+                        sb.AppendLine(msg);
+                    continue;
                 }
-                else if (isHighlight)
+                if (IsFormatLogPrefix && msg.StartsWith("["))
                 {
-                    highlightLogs.Add(msg);
-                    foundHighlight = true;
+                    sb.AppendLine($"[{DateTime.Now:T} {LogInfo[level].Prefix}]" + ParseLogMessage(msg).Content);
                 }
                 else
-                {
-                    afterHighlight.Add(msg);
-                }
+                    sb.AppendLine(msg);
             }
 
-            // 输出三部分内容
-            if (beforeHighlight.Count > 0)
-            {
-                ProcessLogMessage(string.Join(Environment.NewLine, beforeHighlight));
-            }
-
-            foreach (var highlight in highlightLogs)
-            {
-                PrintLog(highlight, ConfigStore.LogColor.HIGHLIGHT);
-            }
-
-            if (afterHighlight.Count > 0)
-            {
-                ProcessLogMessage(string.Join(Environment.NewLine, afterHighlight));
-            }
+            // 一次性输出
+            string combinedMessage = sb.ToString().TrimEnd();
+            ProcessGroupLogMessage(combinedMessage, level);
         }
 
         // 应用程序退出时的清理工作
