@@ -207,7 +207,7 @@ namespace MSL.pages.frpProviders.MSLFrp
                     return;
                 }
                 //输出配置文件
-                if (Config.WriteFrpcConfig(0, $"MSLFrp - {selectedTunnel.Name}", Content) == true)
+                if (Config.WriteFrpcConfig(0, $"MSLFrp - {selectedTunnel.Name} | {selectedTunnel.Node}", Content) == true)
                 {
                     await MagicShow.ShowMsgDialogAsync(Window.GetWindow(this), "映射配置成功，请您点击“启动内网映射”以启动映射！", "信息");
                     Window.GetWindow(this).Close();
@@ -370,7 +370,7 @@ namespace MSL.pages.frpProviders.MSLFrp
         {
             if ((int)value == 1)
             {
-                return "KCP加速：支持";
+                return "KCP：支持";
             }
             return string.Empty;
         }
