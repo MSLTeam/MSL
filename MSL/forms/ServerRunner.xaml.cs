@@ -47,7 +47,7 @@ namespace MSL
         private short getServerInfoLine = 0;
         private readonly short FirstStartTab;
         // private string DownjavaName;
-        private readonly DispatcherTimer _resizeDebounceTimer;
+        private DispatcherTimer _resizeDebounceTimer;
         private MCSLogHandler MCSLogHandler { get; set; }
         private int RserverID { get; }
         private string Rservername { get; set; }
@@ -174,6 +174,9 @@ namespace MSL
                 //}
             }
             */
+            _resizeDebounceTimer.Stop();
+            _resizeDebounceTimer.Tick -= OnResizeDebounceTimerTick;
+            _resizeDebounceTimer = null;
             MCSLogHandler.Dispose();
             MCSLogHandler = null;
             getSystemInfo = false;
@@ -1942,19 +1945,13 @@ namespace MSL
 
         private async void Conpty_Help_Click(object sender, RoutedEventArgs e)
         {
-            bool isCVisible = false;
-            if (ConPTYGrid.Visibility == Visibility.Visible)
-            {
-                isCVisible = true;
-                ConPTYGrid.Visibility = Visibility.Collapsed;
-            }
+            ConPTYGrid.Visibility = Visibility.Hidden;
             await MagicShow.ShowMsgDialogAsync(this, "终端操作：\n复制：使用鼠标选中需要复制的内容，接着点击右键，即可进行复制操作。" +
                 "\n粘贴：在终端没有选择任何内容的情况下，直接点击鼠标右键，即可进行粘贴操作。" +
                 "\n取消选择：直接点击鼠标右键。" +
                 "\n\n终端特殊功能：\n在输入指令时，按一下Tab键可进行一键补全（或指令提示）操作。" +
                 "\n使用上下方向键可以回溯历史指令，左右方向键可以移动当前光标。", "操作提示");
-            if (isCVisible)
-                ConPTYGrid.Visibility = Visibility.Visible;
+            ConPTYGrid.Visibility = Visibility.Visible;
         }
 
         private void OnTermExited(object sender, EventArgs e)
@@ -1975,12 +1972,7 @@ namespace MSL
                         MCSLogHandler.ServerService.ProblemSystemHandle(log);
                     }
 
-                    bool isCVisible = false;
-                    if (ConPTYGrid.Visibility == Visibility.Visible)
-                    {
-                        isCVisible = true;
-                        ConPTYGrid.Visibility = Visibility.Collapsed;
-                    }
+                    ConPTYGrid.Visibility = Visibility.Hidden;
                     if (string.IsNullOrEmpty(MCSLogHandler.ServerService.ProblemFound))
                     {
                         await MagicShow.ShowMsgDialogAsync(this, "服务器已关闭！开服器未检测到相关问题，您可将服务器日志发送给他人以寻求帮助！若并未输出任何日志，请尝试关闭伪终端再试（更多功能界面）！\n日志发送方式：\n1.直接截图控制台内容\n2.服务器目录\\logs\\latest.log\n3.前往“更多功能”界面上传至Internet", "崩溃分析系统");
@@ -1991,20 +1983,13 @@ namespace MSL
                         await MagicShow.ShowMsgDialogAsync(this, MCSLogHandler.ServerService.ProblemFound + "\nPS:软件检测不一定准确，若您无法解决，可将服务器日志发送给他人以寻求帮助，但请不要截图此弹窗！！！\n日志发送方式：\n1.直接截图控制台内容\n2.服务器目录\\logs\\latest.log\n3.前往“更多功能”界面上传至Internet", "服务器分析报告");
                         MCSLogHandler.ServerService.Dispose();
                     }
-                    if (isCVisible)
-                        ConPTYGrid.Visibility = Visibility.Visible;
+                    ConPTYGrid.Visibility = Visibility.Visible;
                 }
                 else if (getServerInfoLine <= 100)
                 {
-                    bool isCVisible = false;
-                    if (ConPTYGrid.Visibility == Visibility.Visible)
-                    {
-                        isCVisible = true;
-                        ConPTYGrid.Visibility = Visibility.Collapsed;
-                    }
+                    ConPTYGrid.Visibility = Visibility.Hidden;
                     bool dialogRet = await MagicShow.ShowMsgDialogAsync(this, "服务器疑似异常关闭，是您人为关闭的吗？\n您可使用MSL的崩溃分析系统进行检测，也可将服务器日志发送给他人以寻求帮助，但请不要截图此弹窗！！！\n日志发送方式：\n1.直接截图控制台内容\n2.服务器目录\\logs\\latest.log\n3.前往“更多功能”界面上传至Internet\n\n点击确定开始进行崩溃分析", "提示", true);
-                    if (isCVisible)
-                        ConPTYGrid.Visibility = Visibility.Visible;
+                    ConPTYGrid.Visibility = Visibility.Visible;
                     if (dialogRet)
                     {
                         MCSLogHandler.ServerService.ProblemSolveSystem = true;
