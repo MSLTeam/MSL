@@ -158,6 +158,17 @@
                     <Button x:Name="delBackImg" Margin="0,0,10,0" Content="{Binding [Page_SettingsPage_SS_BI_DelBackImg],Source={x:Static lang:LanguageManager.Instance}}" VerticalAlignment="Center" Click="delBackImg_Click"/>
                     <Button x:Name="WesternEgg" Content="{Binding [Page_SettingsPage_SS_WesternEgg],Source={x:Static lang:LanguageManager.Instance}}" Style="{StaticResource ButtonDanger}" HorizontalAlignment="Left" VerticalAlignment="Center" Click="WesternEgg_Click" MinWidth="100"/>
                 </StackPanel>
+                <hc:UniformSpacingPanel Orientation="Horizontal" Spacing="5" Margin="0,0,0,5">
+                    <Label Content="终端日志颜色（不适用于ConPTY终端）：" Margin="0,0,10,0"/>
+                    <ComboBox x:Name="LogForeTypeCombo">
+                        <ComboBoxItem Content="INFO" IsSelected="True"/>
+                        <ComboBoxItem Content="WARN"/>
+                        <ComboBoxItem Content="ERROR"/>
+                        <ComboBoxItem Content="HIGHLIGHT"/>
+                    </ComboBox>
+                    <Button x:Name="ChangeLogForeColor" Content="点击选色" Click="ChangeLogForeColor_Click"/>
+                    <Button x:Name="RestoreLogForeColor" Content="重置" Click="RestoreLogForeColor_Click"/>
+                </hc:UniformSpacingPanel>
             </StackPanel>
         </controls:MagicCard>
         <controls:MagicCard Title="{Binding [Page_SettingsPage_Card_DeviceInfo],Source={x:Static lang:LanguageManager.Instance}}" Margin="0,0,0,20">

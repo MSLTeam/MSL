@@ -1,8 +1,10 @@
 ﻿using HandyControl.Controls;
 using HandyControl.Themes;
+using HandyControl.Tools;
 using Microsoft.Win32;
 using MSL.langs;
 using MSL.utils;
+using Newtonsoft.Json;
 using Newtonsoft.Json.Linq;
 using System;
 using System.Collections.Generic;
@@ -198,7 +200,7 @@ namespace MSL.pages
 
         private async void setdefault_Click(object sender, RoutedEventArgs e)
         {
-            bool dialogRet = await MagicShow.ShowMsgDialogAsync(Window.GetWindow(this), "恢复默认设置会清除MSL文件夹内的所有文件，请您谨慎选择！", "警告", true);
+            bool dialogRet = await MagicShow.ShowMsgDialogAsync("恢复默认设置会清除MSL文件夹内的所有文件，请您谨慎选择！", "警告", true, isDangerPrimaryBtn: true);
             if (dialogRet)
             {
                 try
@@ -385,7 +387,7 @@ namespace MSL.pages
                 File.WriteAllText(@"MSL\config.json", convertString, Encoding.UTF8);
                 //Growl.Success("开启成功！");
                 MagicFlowMsg.ShowMessage("开启成功！", 1);
-                MainWindow.getPlayerInfo = true;
+                ConfigStore.GetPlayerInfo = true;
             }
             else
             {
@@ -396,7 +398,7 @@ namespace MSL.pages
                 File.WriteAllText(@"MSL\config.json", convertString, Encoding.UTF8);
                 //Growl.Success("关闭成功！");
                 MagicFlowMsg.ShowMessage("关闭成功！", 1);
-                MainWindow.getPlayerInfo = false;
+                ConfigStore.GetPlayerInfo = false;
             }
         }
 
@@ -411,7 +413,7 @@ namespace MSL.pages
                 File.WriteAllText(@"MSL\config.json", convertString, Encoding.UTF8);
                 //Growl.Success("开启成功！");
                 MagicFlowMsg.ShowMessage("开启成功！", 1);
-                MainWindow.getServerInfo = true;
+                ConfigStore.GetServerInfo = true;
             }
             else
             {
@@ -422,7 +424,7 @@ namespace MSL.pages
                 File.WriteAllText(@"MSL\config.json", convertString, Encoding.UTF8);
                 //Growl.Success("关闭成功！");
                 MagicFlowMsg.ShowMessage("关闭成功！", 1);
-                MainWindow.getServerInfo = false;
+                ConfigStore.GetServerInfo = false;
             }
         }
 
@@ -531,7 +533,7 @@ namespace MSL.pages
                 Process.Start("https://ys.mihoyo.com/");
                 return;
             }
-            bool dialog = await MagicShow.ShowMsgDialogAsync("点击此按钮后软件出现任何问题作者概不负责，你确定要继续吗？\n（光敏性癫痫警告！若您患有光敏性癫痫，请不要点击确定！）", "警告", true);
+            bool dialog = await MagicShow.ShowMsgDialogAsync("点击此按钮后软件出现任何问题作者概不负责，你确定要继续吗？\n（光敏性癫痫警告！若您患有光敏性癫痫，请不要点击确定！）", "警告", true, isDangerPrimaryBtn: true);
             if (dialog)
             {
                 isWesternEgg = true;
@@ -644,6 +646,73 @@ namespace MSL.pages
             {
                 MagicShow.ShowMsgDialog(Window.GetWindow(this), "清除背景图片失败！请重试！\n错误代码：" + ex.Message, "错误");
             }
+        }
+
+        private void ChangeLogForeColor_Click(object sender, RoutedEventArgs e)
+        {
+            var picker = SingleOpenHelper.CreateControl<ColorPicker>();
+            switch (LogForeTypeCombo.SelectedIndex)
+            {
+                case 0:
+                    picker.SelectedBrush = ConfigStore.LogColor.INFO;
+                    break;
+                case 1:
+                    picker.SelectedBrush = ConfigStore.LogColor.WARN;
+                    break;
+                case 2:
+                    picker.SelectedBrush = ConfigStore.LogColor.ERROR;
+                    break;
+                case 3:
+                    picker.SelectedBrush = ConfigStore.LogColor.HIGHLIGHT;
+                    break;
+            }
+            var window = new PopupWindow
+            {
+                PopupElement = picker
+            };
+            bool isConfirmed = false;
+            picker.Confirmed += delegate { isConfirmed = true; window.Close(); };
+            picker.Canceled += delegate { window.Close(); };
+            window.ShowDialog(ChangeLogForeColor, false);
+            if (!isConfirmed)
+            {
+                return;
+            }
+            switch (LogForeTypeCombo.SelectedIndex)
+            {
+                case 0:
+                    ConfigStore.LogColor.INFO = picker.SelectedBrush;
+                    break;
+                case 1:
+                    ConfigStore.LogColor.WARN = picker.SelectedBrush;
+                    break;
+                case 2:
+                    ConfigStore.LogColor.ERROR = picker.SelectedBrush;
+                    break;
+                case 3:
+                    ConfigStore.LogColor.HIGHLIGHT = picker.SelectedBrush;
+                    break;
+            }
+            var config = new
+            {
+                ConfigStore.LogColor.INFO,
+                ConfigStore.LogColor.WARN,
+                ConfigStore.LogColor.ERROR,
+                ConfigStore.LogColor.HIGHLIGHT
+            };
+            string json = JsonConvert.SerializeObject(config, Formatting.Indented);
+            Config.Write("LogColor", JObject.Parse(json));
+            MagicFlowMsg.ShowMessage("保存日志颜色成功！重新打开服务器运行窗口以使其生效！", 1);
+        }
+
+        private void RestoreLogForeColor_Click(object sender, RoutedEventArgs e)
+        {
+            Config.Remove("LogColor");
+            ConfigStore.LogColor.INFO = Brushes.Green;
+            ConfigStore.LogColor.WARN = Brushes.Orange;
+            ConfigStore.LogColor.ERROR = Brushes.Red;
+            ConfigStore.LogColor.HIGHLIGHT = Brushes.Blue;
+            MagicFlowMsg.ShowMessage("已恢复默认日志颜色！重新打开服务器运行窗口以使其生效！", 1);
         }
 
         private void autoRunApp_Click(object sender, RoutedEventArgs e)

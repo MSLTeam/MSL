@@ -38,6 +38,11 @@ namespace MSL.pages
             if (File.Exists("MSL\\frp\\P2Pfrpc"))
             {
                 string a = File.ReadAllText("MSL\\frp\\P2Pfrpc");
+                if(string.IsNullOrEmpty(a))
+                {
+                    masterExp.IsExpanded = true;
+                    return;
+                }
                 if (a.IndexOf("role = visitor") + 1 != 0)
                 {
                     visiterExp.IsExpanded = true;
@@ -50,7 +55,10 @@ namespace MSL.pages
             else
             {
                 //MagicShow.ShowMsgDialog(Window.GetWindow(this),"注意：此功能目前不稳定，无法穿透所有类型的NAT，若联机失败，请尝试开服务器并使用内网映射联机！\r\n该功能可能需要正版账户，若无法联机，请从网络上寻找解决方法或尝试开服务器并使用内网映射联机！", "警告");
-                MagicShow.ShowMsgDialog(Window.GetWindow(this), LanguageManager.Instance["Page_OnlinePage_Announce"], LanguageManager.Instance["Warning"]);
+                if (await MagicShow.ShowMsgDialogAsync(LanguageManager.Instance["Page_OnlinePage_Announce"], LanguageManager.Instance["Warning"], true, "确定", "不再提示"))
+                {
+                    File.WriteAllText("MSL\\frp\\P2Pfrpc", string.Empty);
+                }
                 masterExp.IsExpanded = true;
             }
             await GetFrpcInfo();

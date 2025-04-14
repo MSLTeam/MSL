@@ -59,7 +59,6 @@ namespace MSL
         private string Rserverbase { get; set; }
         private short Rservermode { get; set; }
 
-
         /// <summary>
         /// 服务器运行窗口
         /// </summary>
@@ -82,6 +81,7 @@ namespace MSL
         private void InitializeLogHandler()
         {
             MCSLogHandler = new MCSLogHandler(
+                logBatch: ProcessLogBatch,
                 logAction: PrintLog,
                 infoHandler: LogHandleInfo,
                 warnHandler: LogHandleWarn,
@@ -145,6 +145,7 @@ namespace MSL
 
         private void DisposeRes()
         {
+            MCSLogHandler.CleanupResources();
             outlog.Document.Blocks.Clear();
             if (ServerList.ServerWindowList.ContainsKey(RserverID))
             {
@@ -169,6 +170,8 @@ namespace MSL
                     conptyWindow = null;
                 }
             }
+            MCSLogHandler.Dispose();
+            MCSLogHandler = null;
             getSystemInfo = false;
             ShieldLog = null;
             DownjavaName = null;
@@ -281,6 +284,20 @@ namespace MSL
                 LogShield_Add.IsEnabled = false;
                 LogShield_Del.IsEnabled = false;
             }
+            if (_json["highLightLogKeys"] != null)
+            {
+                var items = _json["highLightLogKeys"];
+                List<string> tempList = new List<string>();
+                foreach (var item in items)
+                {
+                    tempList.Add(item.ToString());
+                    HighLightLogList.Items.Add(item.ToString());
+                }
+                MCSLogHandler.HighLightLog = [.. tempList];
+                highLightLogBtn.IsChecked = true;
+                LogHighLight_Add.IsEnabled = false;
+                LogHighLight_Del.IsEnabled = false;
+            }
             if (_json["shieldStackOut"] != null && _json["shieldStackOut"].ToString() == "False")
             {
                 shieldStackOut.IsChecked = false;
@@ -355,6 +372,7 @@ namespace MSL
             {
                 Tradition_LogFunGrid.Visibility = Visibility.Collapsed;
                 Tradition_LogFunDivider.Visibility = Visibility.Collapsed;
+                Tradition_CMDCard.Visibility = Visibility.Collapsed;
                 useConpty.IsChecked = true;
             }
 
@@ -370,8 +388,9 @@ namespace MSL
 
         private void LoadedInfoEvent()
         {
-            systemInfoBtn.IsChecked = MainWindow.getServerInfo;
-            playerInfoBtn.IsChecked = MainWindow.getPlayerInfo;
+            systemInfoBtn.IsChecked = ConfigStore.GetServerInfo;
+            recordPlayInfo = ConfigStore.GetPlayerInfo;
+            playerInfoBtn.IsChecked = recordPlayInfo;
             LoadSettings();
             if (systemInfoBtn.IsChecked == true)
             {
@@ -503,6 +522,7 @@ namespace MSL
             }
         }
 
+        private bool firstTimeOpenTerminal = true;
         private async void TabCtrl_SelectionChanged(object sender, SelectionChangedEventArgs e)
         {
             if (!this.IsLoaded)
@@ -533,6 +553,21 @@ namespace MSL
                         ConptyPopUp.IsOpen = true;
                         Growl.SetGrowlParent(GrowlPanel, false);
                         Growl.SetGrowlParent(ConptyGrowlPanel, true);
+                    }
+                    else
+                    {
+                        if (firstTimeOpenTerminal)
+                        {
+                            firstTimeOpenTerminal = false;
+                            _ = Task.Run(async () =>
+                            {
+                                await Task.Delay(500);
+                                Dispatcher.Invoke(() =>
+                                {
+                                    outlog.ScrollToEnd();
+                                });
+                            });
+                        }
                     }
                     break;
                 case 2:
@@ -593,6 +628,18 @@ namespace MSL
             Growl.Info("正在为您打开服务器目录……");
             Process.Start(Rserverbase);
         }
+
+        private void copyPlayer_Click(object sender, RoutedEventArgs e)
+        {
+            if (serverPlayerList.SelectedValue == null)
+            {
+                MagicFlowMsg.ShowMessage("请先选择一个玩家！", 2);
+                return;
+            }
+            MagicFlowMsg.ShowMessage("复制成功！");
+            Clipboard.SetText(serverPlayerList.SelectedValue.ToString());
+        }
+
         private async void kickPlayer_Click(object sender, RoutedEventArgs e)
         {
             bool dialogRet = await MagicShow.ShowMsgDialogAsync(this, "确定要踢出这个玩家吗？", "警告", true, "取消");
@@ -754,14 +801,14 @@ namespace MSL
             availableMemoryInfoLab.Content = $"系统空闲内存: {(ramAvailable / allMemory):P}";
         }
 
+        private string tempLog;
         private void UpdateLogPreview()
         {
-            if (outlog.Document.Blocks.LastBlock != null && previewOutlog.LineCount < 25)
+            if(previewOutlog.LineCount < 25)
             {
-                TextRange textRange = new TextRange(outlog.Document.Blocks.LastBlock.ContentStart, outlog.Document.Blocks.LastBlock.ContentEnd);
-                if (!previewOutlog.Text.Contains(textRange.Text))
+                if (!string.IsNullOrEmpty(tempLog) && !previewOutlog.Text.Contains(tempLog))
                 {
-                    previewOutlog.Text += textRange.Text + "\n";
+                    previewOutlog.Text += tempLog + "\n";
                     previewOutlog.ScrollToEnd();
                 }
             }
@@ -775,10 +822,12 @@ namespace MSL
         {
             if (playerInfoBtn.IsChecked == true)
             {
+                recordPlayInfo = true;
                 Growl.Success("已开启");
             }
             else
             {
+                recordPlayInfo = false;
                 Growl.Success("已关闭");
             }
         }
@@ -1172,9 +1221,11 @@ namespace MSL
                 localServerIPLab.Content = "获取中";
                 Growl.Info("开服中，请稍等……");
                 outlog.Document.Blocks.Clear();
-                PrintLog("正在开启服务器，请稍等...", Brushes.Green);
+                PrintLog("正在开启服务器，请稍等...", ConfigStore.LogColor.INFO);
                 if (conptyWindow == null)
                 {
+                    MCSLogHandler._logProcessTimer.IsEnabled = true;
+                    MCSLogHandler._logProcessTimer.Start();
                     cmdtext.IsEnabled = true;
                     cmdtext.Text = "";
                     fastCMD.IsEnabled = true;
@@ -1208,6 +1259,7 @@ namespace MSL
                     cmdtext.IsEnabled = false;
                     fastCMD.IsEnabled = false;
                     cmdtext.Text = "服务器已关闭";
+                    MCSLogHandler.CleanupResources();
                     try
                     {
                         ServerProcess.CancelOutputRead();
@@ -1229,25 +1281,81 @@ namespace MSL
             if (e.Data != null)
             {
                 string msg = e.Data;
+                tempLog = msg;
+
+                // 将日志添加到缓冲区，不要直接处理（否则UI线程压力很大，可能会使软件崩溃）
+                MCSLogHandler._logBuffer.Enqueue(msg);
+
+                // 如果定时器没有运行，确保启动它
                 Dispatcher.Invoke(() =>
                 {
+                    if (!MCSLogHandler._logProcessTimer.IsEnabled)
+                    {
+                        MCSLogHandler._logProcessTimer.Start();
+                    }
+                });
+            }
+        }
+
+        // 批量处理日志
+        private void ProcessLogBatch(List<string> batch)
+        {
+            Dispatcher.Invoke(() =>
+            {
+                // 检查是否需要清理日志
+                if (outlog.Document.Blocks.Count >= 1000 && autoClearOutlog.IsChecked == true)
+                {
+                    outlog.Document.Blocks.Clear();
+                }
+
+                // 按日志类型分组处理
+                var filteredLogs = new List<string>();
+
+                foreach (var msg in batch)
+                {
+                    // 崩溃分析系统
                     if (solveProblemSystem)
+                    {
                         ProblemSystemShow(msg);
-                    if (outlog.Document.Blocks.Count >= 1000 && autoClearOutlog.IsChecked == true)
-                        outlog.Document.Blocks.Clear();
-                    if ((msg.Contains("\tat ") && shieldStackOut.IsChecked == true) || (ShieldLog != null && ShieldLog.Any(s => msg.Contains(s))) || showOutlog.IsChecked == false)
-                        return;
+                        continue;
+                    }
+
+                    // 过滤不需要显示的日志
+                    if ((msg.Contains("\tat ") && shieldStackOut.IsChecked == true) ||
+                        (ShieldLog != null && ShieldLog.Any(s => msg.Contains(s))) ||
+                        showOutlog.IsChecked == false)
+                    {
+                        continue;
+                    }
+
+                    // 添加到过滤后的日志列表
+                    filteredLogs.Add(msg);
+                }
+
+                // 批量展示日志
+                if (filteredLogs.Count > 0)
+                {
+                    // 如果启用了MCS日志处理
                     if (mslTips != false)
                     {
-                        MCSLogHandler.ProcessLogMessage(msg);
+                        // 分组处理相同类型的日志
+                        var logGroups = MCSLogHandler.GroupSimilarLogs(filteredLogs);
+                        foreach (var group in logGroups)
+                        {
+                            // 对于每组日志，一次性添加到UI
+                            MCSLogHandler.ProcessLogGroup(group);
+                        }
                     }
                     else
                     {
-                        PrintLog(msg, HandyControl.Themes.ThemeResources.Current.AccentColor);
+                        // 标准处理模式
+                        foreach (var msg in filteredLogs)
+                        {
+                            PrintLog(msg, HandyControl.Themes.ThemeResources.Current.AccentColor);
+                        }
                     }
-                });
-                msg = null;
-            }
+                }
+            });
         }
 
         #region 日志显示功能、彩色日志
@@ -1449,7 +1557,7 @@ namespace MSL
         #endregion
 
         private bool ConptyCanOutLog = true;
-        private string tempLogs;
+        //private string tempLogs;
         private void ProcessOutputEvent(string msg)
         {
             if (!ConptyCanOutLog)
@@ -1458,21 +1566,24 @@ namespace MSL
                 return;
             }
 
+            tempLog = msg;
+            ProcessOutput(msg);
+
+            /*
             if (tempLogs != null)
             {
                 Dispatcher.Invoke(() =>
                 {
-                    if (conptyWindow.ConptyConsole.ConPTYTerm.ConsoleOutputLog.Length >= 50000 && autoClearOutlog.IsChecked == true)
-                        conptyWindow.ConptyConsole.ConPTYTerm.ClearUITerminal();
                     ProcessOutput(tempLogs);
                 });
             }
             tempLogs = msg;
+            */
         }
 
         private void ProcessOutput(string msg)
         {
-            Paragraph p = new Paragraph();
+            //Paragraph p = new Paragraph();
             if (msg.Contains("\n"))
             {
                 if (msg.Contains("\r"))
@@ -1483,24 +1594,28 @@ namespace MSL
                 foreach (string s in strings)
                 {
                     LogHandleInfo(s);
+                    /*
                     Run run = new Run(s)
                     {
                         Foreground = Brushes.Black
                     };
                     p.Inlines.Add(run);
+                    */
                 }
             }
             else
             {
                 LogHandleInfo(msg);
+                /*
                 Run run = new Run(msg)
                 {
                     Foreground = Brushes.Black
                 };
                 p.Inlines.Add(run);
+                */
             }
-            outlog.Document.Blocks.Clear();
-            outlog.Document.Blocks.Add(p);
+            //outlog.Document.Blocks.Clear();
+            //outlog.Document.Blocks.Add(p);
         }
 
         private bool outlogEncodingAsk = true;
@@ -1561,27 +1676,35 @@ namespace MSL
             }
         }
 
+        private bool recordPlayInfo = false;
         private void LogHandleInfo(string msg)
         {
             if ((msg.Contains("Done") && msg.Contains("For help")) || (msg.Contains("加载完成") && msg.Contains("如需帮助") || (msg.Contains("Server started."))))
             {
                 getServerInfoLine = 101;
-                PrintLog("已成功开启服务器！你可以输入stop来关闭服务器！\r\n服务器本地IP通常为:127.0.0.1，想要远程进入服务器，需要开通公网IP或使用内网映射，详情查看开服器的内网映射界面。\r\n若控制台输出乱码日志，请去更多功能界面修改“输出编码”。", Brushes.Green);
-                Growl.Success(string.Format("服务器 {0} 已成功开启！", Rservername));
-                serverStateLab.Content = "已开服";
-                if (conptyWindow != null)
+                Dispatcher.InvokeAsync(() =>
                 {
-                    conptyWindow.ServerStatus.Text = "已开服";
-                }
-                GetServerInfoSys();
+                    PrintLog("已成功开启服务器！你可以输入stop来关闭服务器！\r\n服务器本地IP通常为:127.0.0.1，想要远程进入服务器，需要开通公网IP或使用内网映射，详情查看开服器的内网映射界面。\r\n若控制台输出乱码日志，请去更多功能界面修改“输出编码”。", ConfigStore.LogColor.INFO);
+                    Growl.Success(string.Format("服务器 {0} 已成功开启！", Rservername));
+                    serverStateLab.Content = "已开服";
+                    if (conptyWindow != null)
+                    {
+                        conptyWindow.ServerStatus.Text = "已开服";
+                    }
+                    GetServerInfoSys();
+                });
             }
             else if (msg.Contains("Stopping server"))
             {
-                PrintLog("正在关闭服务器！", Brushes.Green);
+                Dispatcher.InvokeAsync(() =>
+                {
+                    PrintLog("正在关闭服务器！", ConfigStore.LogColor.INFO);
+                });
+
             }
 
             //玩家进服是否记录
-            if (playerInfoBtn.IsChecked == true)
+            if (recordPlayInfo == true)
             {
                 GetPlayerInfoSys(msg);
             }
@@ -1676,10 +1799,13 @@ namespace MSL
                 string playerName = ExtractPlayerName(msg);
                 if (playerName != null)
                 {
-                    if (!serverPlayerList.Items.Contains(playerName))
+                    Dispatcher.InvokeAsync(() =>
                     {
-                        serverPlayerList.Items.Add(playerName);
-                    }
+                        if (!serverPlayerList.Items.Contains(playerName))
+                        {
+                            serverPlayerList.Items.Add(playerName);
+                        }
+                    });
                 }
                 else
                 {
@@ -1742,14 +1868,17 @@ namespace MSL
         {
             try
             {
-                foreach (string x in serverPlayerList.Items)
+                Dispatcher.InvokeAsync(() =>
                 {
-                    if (x.StartsWith(playerName + "[/"))
+                    foreach (string x in serverPlayerList.Items)
                     {
-                        serverPlayerList.Items.Remove(x);
-                        break;
+                        if (x.StartsWith(playerName + "[/"))
+                        {
+                            serverPlayerList.Items.Remove(x);
+                            break;
+                        }
                     }
-                }
+                });
             }
             catch
             {
@@ -1783,6 +1912,7 @@ namespace MSL
             (@"Error loading plugin '([^']+)'", "*无法加载插件！\n\t插件名称：{0}\n"),
             (@"Error occurred while enabling (\S+) ", "*在启用 {0} 时发生了错误\n"),
             (@"Encountered an unexpected exception", "*服务器出现意外崩溃，可能是由于模组冲突，请检查您的模组列表（如果使用的是整合包，请使用整合包制作方提供的Server专用包开服）\n"),
+            (@"net.minecraft.client.Main", "*您使用的似乎是客户端核心，无法开服，请使用正确的服务端核心再试！\n"),
         };
 
         private void ProblemSystemShow(string msg)
@@ -1899,27 +2029,44 @@ namespace MSL
                     {
                         ProblemSystemShow(log);
                     }
-                    conptyWindow.Visibility = Visibility.Collapsed;
 
+                    bool isCVisible = false;
+                    if (conptyWindow.Visibility == Visibility.Visible)
+                    {
+                        isCVisible = true;
+                        conptyWindow.Visibility = Visibility.Collapsed;
+                    }
                     if (string.IsNullOrEmpty(foundProblems))
                     {
-                        MagicShow.ShowMsgDialog(this, "服务器已关闭！开服器未检测到相关问题，您可将服务器日志发送给他人以寻求帮助！\n日志发送方式：\n1.直接截图控制台内容\n2.服务器目录\\logs\\latest.log\n3.前往“更多功能”界面上传至Internet", "崩溃分析系统");
+                        await MagicShow.ShowMsgDialogAsync(this, "服务器已关闭！开服器未检测到相关问题，您可将服务器日志发送给他人以寻求帮助！若并未输出任何日志，请尝试关闭伪终端再试（更多功能界面）！\n日志发送方式：\n1.直接截图控制台内容\n2.服务器目录\\logs\\latest.log\n3.前往“更多功能”界面上传至Internet", "崩溃分析系统");
                     }
                     else
                     {
                         Growl.Info("服务器已关闭！即将为您展示分析报告！");
-                        MagicShow.ShowMsgDialog(this, foundProblems + "\nPS:软件检测不一定准确，若您无法解决，可将服务器日志发送给他人以寻求帮助，但请不要截图此弹窗！！！\n日志发送方式：\n1.直接截图控制台内容\n2.服务器目录\\logs\\latest.log\n3.前往“更多功能”界面上传至Internet", "服务器分析报告");
+                        await MagicShow.ShowMsgDialogAsync(this, foundProblems + "\nPS:软件检测不一定准确，若您无法解决，可将服务器日志发送给他人以寻求帮助，但请不要截图此弹窗！！！\n日志发送方式：\n1.直接截图控制台内容\n2.服务器目录\\logs\\latest.log\n3.前往“更多功能”界面上传至Internet", "服务器分析报告");
                         foundProblems = null;
                     }
+                    if(isCVisible)
+                        conptyWindow.Visibility = Visibility.Visible;
                 }
                 else if (getServerInfoLine <= 100)
                 {
-                    conptyWindow.Visibility = Visibility.Collapsed;
+                    bool isCVisible = false;
+                    if (conptyWindow.Visibility == Visibility.Visible)
+                    {
+                        isCVisible = true;
+                        conptyWindow.Visibility = Visibility.Collapsed;
+                    }
                     bool dialogRet = await MagicShow.ShowMsgDialogAsync(this, "服务器疑似异常关闭，是您人为关闭的吗？\n您可使用MSL的崩溃分析系统进行检测，也可将服务器日志发送给他人以寻求帮助，但请不要截图此弹窗！！！\n日志发送方式：\n1.直接截图控制台内容\n2.服务器目录\\logs\\latest.log\n3.前往“更多功能”界面上传至Internet\n\n点击确定开始进行崩溃分析", "提示", true);
                     if (dialogRet)
                     {
                         solveProblemSystem = true;
                         LaunchServer();
+                    }
+                    else
+                    {
+                        if (isCVisible)
+                            conptyWindow.Visibility = Visibility.Visible;
                     }
                 }
                 else if (autoStartserver.IsChecked == true)
@@ -2960,7 +3107,7 @@ namespace MSL
 
                 for (int i = 0; i <= 10; i++)
                 {
-                    if (MainWindow.ServerLink == null)
+                    if (ConfigStore.ServerLink == null)
                     {
                         Thread.Sleep(1000);
                     }
@@ -3719,6 +3866,7 @@ namespace MSL
             {
                 Tradition_LogFunGrid.Visibility = Visibility.Visible;
                 Tradition_LogFunDivider.Visibility = Visibility.Visible;
+                Tradition_CMDCard.Visibility = Visibility.Visible;
                 _json["useConpty"] = "False";
                 try
                 {
@@ -3743,6 +3891,7 @@ namespace MSL
             {
                 Tradition_LogFunGrid.Visibility = Visibility.Collapsed;
                 Tradition_LogFunDivider.Visibility = Visibility.Collapsed;
+                Tradition_CMDCard.Visibility = Visibility.Collapsed;
                 _json["useConpty"] = "True";
             }
             jsonObject[RserverID.ToString()] = _json;
@@ -3879,6 +4028,63 @@ namespace MSL
             }
         }
 
+        private void highLightLogBtn_Click(object sender, RoutedEventArgs e)
+        {
+            JObject jsonObject = JObject.Parse(File.ReadAllText(@"MSL\ServerList.json", Encoding.UTF8));
+            JObject _json = (JObject)jsonObject[RserverID.ToString()];
+            if (highLightLogBtn.IsChecked == true)
+            {
+                if (HighLightLogList.Items.Count > 0)
+                {
+                    List<string> tempList = new List<string>();
+
+                    JArray jArray = new JArray();
+                    foreach (var item in HighLightLogList.Items)
+                    {
+                        tempList.Add(item.ToString());
+                        jArray.Add(item.ToString());
+                    }
+
+                    MCSLogHandler.HighLightLog = [.. tempList];
+                    _json["highLightLogKeys"] = jArray;
+
+                    LogHighLight_Add.IsEnabled = false;
+                    LogHighLight_Del.IsEnabled = false;
+                }
+                else
+                {
+                    MagicFlowMsg.ShowMessage("请先进行添加！", 2);
+                    highLightLogBtn.IsChecked = false;
+                }
+            }
+            else
+            {
+                MCSLogHandler.HighLightLog = null;
+                _json.Remove("highLightLogKeys");
+                LogHighLight_Add.IsEnabled = true;
+                LogHighLight_Del.IsEnabled = true;
+            }
+            jsonObject[RserverID.ToString()] = _json;
+            File.WriteAllText("MSL\\ServerList.json", Convert.ToString(jsonObject), Encoding.UTF8);
+        }
+
+        private async void LogHighLight_Add_Click(object sender, RoutedEventArgs e)
+        {
+            string text = await MagicShow.ShowInput(this, "输入你想高亮日志的关键字");
+            if ((!string.IsNullOrEmpty(text)) && (!HighLightLogList.Items.Contains(text)))
+            {
+                HighLightLogList.Items.Add(text);
+            }
+        }
+
+        private void LogHighLight_Del_Click(object sender, RoutedEventArgs e)
+        {
+            if (HighLightLogList.SelectedIndex != -1)
+            {
+                HighLightLogList.Items.Remove(HighLightLogList.SelectedItem);
+            }
+        }
+
         private void shieldStackOut_Click(object sender, RoutedEventArgs e)
         {
             JObject jsonObject = JObject.Parse(File.ReadAllText(@"MSL\ServerList.json", Encoding.UTF8));
@@ -3901,7 +4107,7 @@ namespace MSL
             JObject _json = (JObject)jsonObject[RserverID.ToString()];
             if (autoClearOutlog.IsChecked == false)
             {
-                bool msgreturn = await MagicShow.ShowMsgDialogAsync(this, "关闭此功能后，服务器输出界面超过一定数量的日志后将不再清屏（传统终端为1000行，PTY为50000字），这样可能会造成性能损失，您确定要继续吗？", "警告", true, "取消");
+                bool msgreturn = await MagicShow.ShowMsgDialogAsync(this, "关闭此功能后，服务器输出界面超过一定数量的日志后将不再清屏，这样可能会造成性能损失，您确定要继续吗？", "警告", true, "取消");
                 if (msgreturn)
                 {
                     _json["autoClearOutlog"] = "False";

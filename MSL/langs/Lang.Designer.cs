@@ -115,6 +115,15 @@ namespace MSL.langs {
         }
         
         /// <summary>
+        ///   查找类似 确定 的本地化字符串。
+        /// </summary>
+        public static string Confirm {
+            get {
+                return ResourceManager.GetString("Confirm", resourceCulture);
+            }
+        }
+        
+        /// <summary>
         ///   查找类似 已禁用 的本地化字符串。
         /// </summary>
         public static string Disabled {

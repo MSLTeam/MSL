@@ -200,7 +200,7 @@ namespace MSL.pages
                 MagicShow.ShowMsgDialog(Window.GetWindow(this), "请在关闭服务器并关掉服务器窗口后再进行删除！", "警告");
                 return;
             }
-            bool dialogRet = await MagicShow.ShowMsgDialogAsync(Window.GetWindow(this), "您确定要删除该服务器吗？", "提示", true, "取消");
+            bool dialogRet = await MagicShow.ShowMsgDialogAsync("您确定要删除该服务器吗？", "提示", true, "取消", isDangerPrimaryBtn: true);
             if (!dialogRet)
             {
                 return;
@@ -208,7 +208,7 @@ namespace MSL.pages
             //SL_ServerInfo _server = serverList.SelectedItem as SL_ServerInfo;
             try
             {
-                bool _dialogRet = await MagicShow.ShowMsgDialogAsync(Window.GetWindow(this), "是否删除该服务器的目录？（服务器目录中的所有文件都会被移至回收站）", "提示", true, "取消");
+                bool _dialogRet = await MagicShow.ShowMsgDialogAsync("是否删除该服务器的目录？（服务器目录中的所有文件都会被移至回收站）", "提示", true, "取消", isDangerPrimaryBtn: true);
                 if (_dialogRet)
                 {
                     JObject jsonObject = JObject.Parse(File.ReadAllText(@"MSL\ServerList.json", Encoding.UTF8));

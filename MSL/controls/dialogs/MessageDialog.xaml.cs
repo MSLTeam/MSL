@@ -14,7 +14,7 @@ namespace MSL.controls
         public event DeleControl CloseDialog;
         public bool _dialogReturn;
 
-        public MessageDialog(string dialogText, string dialogTitle, bool showPrimaryBtn, string closeBtnContext, string primaryBtnContext, UIElement uIElement = null)
+        public MessageDialog(string dialogText, string dialogTitle, bool showPrimaryBtn, string closeBtnContext, string primaryBtnContext, UIElement uIElement = null, bool isDangerPrimaryBtn = false)
         {
             InitializeComponent();
             Margin = new Thickness(50);
@@ -26,16 +26,30 @@ namespace MSL.controls
             }
             else
             {
-                if (closeBtnContext == "否")
+                switch (closeBtnContext)
                 {
-                    closeBtnContext = LanguageManager.Instance["No"];
+                    case "NO":
+                        closeBtnContext = LanguageManager.Instance["No"];
+                        break;
+                    case "CANCEL":
+                        closeBtnContext = LanguageManager.Instance["Cancel"];
+                        break;
                 }
-                if (primaryBtnContext == "是")
+                switch (primaryBtnContext)
                 {
-                    primaryBtnContext = LanguageManager.Instance["Yes"];
+                    case "YES":
+                        primaryBtnContext = LanguageManager.Instance["Yes"];
+                        break;
+                    case "CONFIRM":
+                        primaryBtnContext = LanguageManager.Instance["Confirm"];
+                        break;
                 }
                 CloseBtn.Content = closeBtnContext;
                 PrimaryBtn.Content = primaryBtnContext;
+                if (isDangerPrimaryBtn)
+                {
+                    PrimaryBtn.Style = (Style)FindResource("ButtonDanger");
+                }
             }
             if (uIElement != null)
             {

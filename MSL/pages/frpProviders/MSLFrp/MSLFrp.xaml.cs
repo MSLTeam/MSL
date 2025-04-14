@@ -256,10 +256,9 @@ namespace MSL.pages.frpProviders.MSLFrp
             if (NodeList.SelectedItem is MSLFrpApi.NodeInfo selectedNode)
             {
                 Create_RemotePort.Text = Functions.GenerateRandomNumber(selectedNode.MinPort, selectedNode.MaxPort).ToString();
-                if(selectedNode.KCP == 1)
+                if (selectedNode.KCP == 1)
                 {
                     KCPProtocol.IsEnabled = true;
-                    KCPProtocol.IsChecked = true;
                 }
                 else
                 {

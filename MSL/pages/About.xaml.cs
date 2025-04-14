@@ -1,4 +1,5 @@
 ﻿using MSL.langs;
+using MSL.utils;
 using System.Windows.Controls;
 
 namespace MSL.pages
@@ -15,7 +16,7 @@ namespace MSL.pages
 
         private void Page_Loaded(object sender, System.Windows.RoutedEventArgs e)
         {
-            AbortSoftwareCard.Title = string.Format(LanguageManager.Instance["Page_About_AboutMSL"], MainWindow.MSLVersion.ToString());
+            AbortSoftwareCard.Title = string.Format(LanguageManager.Instance["Page_About_AboutMSL"], ConfigStore.MSLVersion.ToString());
         }
     }
 }

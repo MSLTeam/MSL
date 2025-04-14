@@ -37,15 +37,9 @@ namespace MSL
             new CreateServer()
         };
         public static event DeleControl AutoOpenServer;
-        public static bool getServerInfo = false;
-        public static bool getPlayerInfo = false;
+        
         public static bool LoadingCompleted = false;
-        public static string ServerLink { get; set; }
-        public static Version MSLVersion { get; set; }
-        // public static bool IsOldVersion { get; set; } 旧版本会加一个叹号提示（现在暂没使用此功能），后续可能会用上此字段
-        public static string DeviceID { get; set; }
-
-
+        
         public MainWindow()
         {
             InitializeComponent();
@@ -63,22 +57,22 @@ namespace MSL
             Topmost = true;
             Focus();
             Topmost = false;
-            MSLVersion = System.Reflection.Assembly.GetExecutingAssembly().GetName().Version;
+            ConfigStore.MSLVersion = System.Reflection.Assembly.GetExecutingAssembly().GetName().Version;
             try
             {
                 JObject jsonObject = JObject.Parse(File.ReadAllText(@"MSL\config.json", Encoding.UTF8));
-                DeviceID = Functions.GetDeviceID();
-                if (jsonObject["eula"] == null || jsonObject["eula"].ToString() != DeviceID.Substring(0, 5))
+                ConfigStore.DeviceID = Functions.GetDeviceID();
+                if (jsonObject["eula"] == null || jsonObject["eula"].ToString() != ConfigStore.DeviceID.Substring(0, 5))
                 {
                     if (await EulaEvent())
                     {
                         if (jsonObject["eula"] == null)
                         {
-                            jsonObject.Add("eula", DeviceID.Substring(0, 5));
+                            jsonObject.Add("eula", ConfigStore.DeviceID.Substring(0, 5));
                         }
                         else
                         {
-                            jsonObject["eula"] = DeviceID.Substring(0, 5);
+                            jsonObject["eula"] = ConfigStore.DeviceID.Substring(0, 5);
                         }
                         string convertString = Convert.ToString(jsonObject);
                         File.WriteAllText(@"MSL\config.json", convertString, Encoding.UTF8);
@@ -280,11 +274,11 @@ namespace MSL
                     jobject.Add("autoGetServerInfo", true);
                     string convertString = Convert.ToString(jobject);
                     File.WriteAllText(@"MSL\config.json", convertString, Encoding.UTF8);
-                    getServerInfo = true;
+                    ConfigStore.GetServerInfo = true;
                 }
                 else if ((bool)jsonObject["autoGetServerInfo"] == true)
                 {
-                    getServerInfo = true;
+                    ConfigStore.GetServerInfo = true;
                 }
                 if (jsonObject["autoGetPlayerInfo"] == null)
                 {
@@ -293,11 +287,29 @@ namespace MSL
                     jobject.Add("autoGetPlayerInfo", true);
                     string convertString = Convert.ToString(jobject);
                     File.WriteAllText(@"MSL\config.json", convertString, Encoding.UTF8);
-                    getPlayerInfo = true;
+                    ConfigStore.GetPlayerInfo = true;
                 }
                 else if ((bool)jsonObject["autoGetPlayerInfo"] == true)
                 {
-                    getPlayerInfo = true;
+                    ConfigStore.GetPlayerInfo = true;
+                }
+
+                var logColorConf = (JObject)Config.Read("LogColor");
+                if (logColorConf != null)
+                {
+                    var brushConverter = new BrushConverter();
+
+                    if (logColorConf["INFO"] != null)
+                        ConfigStore.LogColor.INFO = (SolidColorBrush)brushConverter.ConvertFromString(logColorConf["INFO"].ToString());
+
+                    if (logColorConf["WARN"] != null)
+                        ConfigStore.LogColor.WARN = (SolidColorBrush)brushConverter.ConvertFromString(logColorConf["WARN"].ToString());
+
+                    if (logColorConf["ERROR"] != null)
+                        ConfigStore.LogColor.ERROR = (SolidColorBrush)brushConverter.ConvertFromString(logColorConf["ERROR"].ToString());
+
+                    if (logColorConf["HIGHLIGHT"] != null)
+                        ConfigStore.LogColor.HIGHLIGHT = (SolidColorBrush)brushConverter.ConvertFromString(logColorConf["HIGHLIGHT"].ToString());
                 }
                 //Logger.LogInfo("读取自动化功能配置成功（自动打开显示占用、记录玩家功能）！");
             }
@@ -411,9 +423,9 @@ namespace MSL
             try
             {
                 _ = HttpService.GetContentAsync("https://msl-api.oss-cn-hangzhou.aliyuncs.com/");
-                ServerLink = "mslmc.cn/v3/";
+                ConfigStore.ServerLink = "mslmc.cn/v3/";
                 //Logger.LogInfo("连接到api：" + "https://api." + _link);
-                if (((int)JObject.Parse((await HttpService.GetContentAsync("https://api." + ServerLink, headers => { headers.Add("DeviceID", DeviceID); }, 1)).ToString())["code"]) == 200)
+                if (((int)JObject.Parse((await HttpService.GetContentAsync("https://api." + ConfigStore.ServerLink, headers => { headers.Add("DeviceID", ConfigStore.DeviceID); }, 1)).ToString())["code"]) == 200)
                 {
                     // 检查更新
                     await CheckUpdate(jsonObject);

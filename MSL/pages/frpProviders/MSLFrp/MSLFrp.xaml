@@ -224,8 +224,8 @@
                                         <ColumnDefinition Width="auto"/>
                                         <ColumnDefinition Width="auto"/>
                                     </Grid.ColumnDefinitions>
-                                    <Label Style="{DynamicResource MagicLabel}" Content="加速协议：" VerticalAlignment="Center"/>
-                                    <ToggleButton Grid.Column="1" IsChecked="True" Style="{StaticResource ToggleButtonSwitch}" x:Name="KCPProtocol" Content="KCP加速协议"/>
+                                    <Label Style="{DynamicResource MagicLabel}" Content="传输协议：" VerticalAlignment="Center"/>
+                                    <ToggleButton Grid.Column="1" Style="{StaticResource ToggleButtonSwitch}" x:Name="KCPProtocol" Content="使用KCP协议"/>
                                 </Grid>
                             </hc:UniformSpacingPanel>
                         </controls:MagicCard>

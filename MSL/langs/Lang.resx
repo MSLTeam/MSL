@@ -129,6 +129,9 @@
   <data name="Collapse" xml:space="preserve">
     <value>收起</value>
   </data>
+  <data name="Confirm" xml:space="preserve">
+    <value>确定</value>
+  </data>
   <data name="Disabled" xml:space="preserve">
     <value>已禁用</value>
   </data>
