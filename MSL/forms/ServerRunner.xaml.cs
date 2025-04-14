@@ -1595,6 +1595,9 @@ namespace MSL
                 foreach (string s in strings)
                 {
                     LogHandleInfo(s);
+                    if(MCSLogHandler.ServerService.ProblemSolveSystem)
+                        MCSLogHandler.ServerService.ProblemSystemHandle(s);
+
                     /*
                     Run run = new Run(s)
                     {
@@ -1607,6 +1610,8 @@ namespace MSL
             else
             {
                 LogHandleInfo(msg);
+                if (MCSLogHandler.ServerService.ProblemSolveSystem)
+                    MCSLogHandler.ServerService.ProblemSystemHandle(msg);
                 /*
                 Run run = new Run(msg)
                 {
@@ -1998,15 +2003,12 @@ namespace MSL
                         ConPTYGrid.Visibility = Visibility.Collapsed;
                     }
                     bool dialogRet = await MagicShow.ShowMsgDialogAsync(this, "服务器疑似异常关闭，是您人为关闭的吗？\n您可使用MSL的崩溃分析系统进行检测，也可将服务器日志发送给他人以寻求帮助，但请不要截图此弹窗！！！\n日志发送方式：\n1.直接截图控制台内容\n2.服务器目录\\logs\\latest.log\n3.前往“更多功能”界面上传至Internet\n\n点击确定开始进行崩溃分析", "提示", true);
+                    if (isCVisible)
+                        ConPTYGrid.Visibility = Visibility.Visible;
                     if (dialogRet)
                     {
                         MCSLogHandler.ServerService.ProblemSolveSystem = true;
                         LaunchServer();
-                    }
-                    else
-                    {
-                        if (isCVisible)
-                            ConPTYGrid.Visibility = Visibility.Visible;
                     }
                 }
                 else if (autoStartserver.IsChecked == true)
