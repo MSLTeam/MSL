@@ -113,9 +113,6 @@
     <Compile Include="controls\BitmapConverter.cs" />
     <Compile Include="controls\MagicControls.cs" />
     <Compile Include="controls\StringConcatConverter.cs" />
-    <Compile Include="forms\ConptyWindow.xaml.cs">
-      <DependentUpon>ConptyWindow.xaml</DependentUpon>
-    </Compile>
     <Compile Include="langs\LanguageManager.cs" />
     <Compile Include="pages\FrpcList.xaml.cs">
       <DependentUpon>FrpcList.xaml</DependentUpon>
@@ -236,10 +233,6 @@
       <Generator>MSBuild:Compile</Generator>
     </Page>
     <Page Include="controls\dialogs\TextDialog.xaml">
-      <SubType>Designer</SubType>
-      <Generator>MSBuild:Compile</Generator>
-    </Page>
-    <Page Include="forms\ConptyWindow.xaml">
       <SubType>Designer</SubType>
       <Generator>MSBuild:Compile</Generator>
     </Page>

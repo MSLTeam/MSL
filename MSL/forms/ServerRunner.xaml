@@ -4,6 +4,7 @@
         xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
         xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
         xmlns:hc="https://handyorg.github.io/handycontrol"
+        xmlns:term="clr-namespace:ConPtyTermEmulatorLib;assembly=ConPtyTermEmulatorLib"
         xmlns:controls="clr-namespace:MSL.controls"
         xmlns:langs="clr-namespace:MSL.langs"
         xmlns:local="clr-namespace:MSL"
@@ -15,10 +16,8 @@
         NonClientAreaBackground="{DynamicResource DarkPrimaryBrush}"
         NonClientAreaHeight="40" NonClientAreaFontsize="14" NonClientAreaIconWidth="20" NonClientAreaIconHeight="20"
         CloseButtonForeground="White" OtherButtonForeground="White" OtherButtonHoverForeground="White"
-        Icon="../icon.ico"
-        Loaded="Window_Loaded" Closing="Window_Closing" Activated="Window_Activated" Deactivated="Window_Deactivated"
-        LocationChanged="Window_LocationChanged" SizeChanged="Window_SizeChanged"
-        WindowStartupLocation="CenterScreen" IsVisibleChanged="Window_IsVisibleChanged">
+        Icon="../icon.ico" Loaded="Window_Loaded" Closing="Window_Closing" Activated="Window_Activated" Deactivated="Window_Deactivated"
+        WindowStartupLocation="CenterScreen" IsVisibleChanged="Window_IsVisibleChanged" LocationChanged="Window_LocationChanged" SizeChanged="Window_SizeChanged">
     <Grid x:Name="MainGrid">
         <TabControl x:Name="TabCtrl" SelectionChanged="TabCtrl_SelectionChanged" Style="{StaticResource TabControlSideMenu}">
             <TabControl.Resources>
@@ -162,50 +161,70 @@
                 <TabItem.Header>
                     <controls:TabControlHeader Icon="{DynamicResource terminal_2DrawingImage}" Text="控制台"/>
                 </TabItem.Header>
-                <Grid x:Name="CmdGrid" Style="{StaticResource GridAnimation}">
-                    <RichTextBox x:Name="outlog" IsUndoEnabled="False" UndoLimit="0" Background="{DynamicResource BorderBackground}" IsReadOnly="True" Block.LineHeight="1" Margin="10,10,10,47" ContextMenu="{StaticResource UIContextMenu}" VerticalScrollBarVisibility="Visible">
-                        <FlowDocument>
-                            <Paragraph>
-                                <Run Text="在此显示输出......"/>
-                            </Paragraph>
-                        </FlowDocument>
-                    </RichTextBox>
-
-                    <Grid VerticalAlignment="Bottom">
-                        <Grid.ColumnDefinitions>
-                            <ColumnDefinition Width="Auto"/>
-                            <ColumnDefinition Width="*"/>
-                            <ColumnDefinition Width="Auto"/>
-                            <ColumnDefinition Width="Auto"/>
-                            <ColumnDefinition Width="Auto"/>
-                            <ColumnDefinition Width="Auto"/>
-                        </Grid.ColumnDefinitions>
-
-                        <ComboBox Grid.Column="0" x:Name="fastCMD" HorizontalAlignment="Left" Margin="10,0,5,10" SelectedIndex="0" IsEnabled="False" Width="100" Height="32">
-                            <ComboBoxItem Content="/（指令）" FontFamily="Microsoft YaHei UI"/>
-                            <ComboBoxItem Content="/op（给管理员）" FontFamily="Microsoft YaHei UI"/>
-                            <ComboBoxItem Content="/deop（去除管理员）" FontFamily="Microsoft YaHei UI"/>
-                            <ComboBoxItem Content="/ban（封禁玩家）" FontFamily="Microsoft YaHei UI"/>
-                            <ComboBoxItem Content="/say（全服说话）" FontFamily="Microsoft YaHei UI"/>
-                            <ComboBoxItem Content="/pardon（解除封禁）" FontFamily="Microsoft YaHei UI"/>
-                        </ComboBox>
-                        <TextBox x:Name="cmdtext" Grid.Column="1" Margin="0,0,5,10" Text="服务器已关闭" KeyDown="cmdtext_KeyDown" IsEnabled="False"/>
-                        <Button x:Name="sendcmd" Grid.Column="2" Content="发送" Style="{StaticResource ButtonPrimary}" Width="60" Height="32" Margin="0,0,5,10" Click="sendcmd_Click" IsEnabled="False"/>
-                        <ToggleButton x:Name="controlServer" Grid.Column="3" Margin="0,0,10,10" MinWidth="60" Height="32" Click="controlServer_Click" MouseDoubleClick="controlServer_MouseDoubleClick">
-                            <ToggleButton.Style>
-                                <Style TargetType="ToggleButton" BasedOn="{StaticResource ToggleButton.NoCheckedBorder}">
-
-                                    <Style.Triggers>
-                                        <Trigger Property="IsChecked" Value="True">
-                                            <Setter Property="Content" Value="{Binding [Form_ServerRunner_Stop], Source={x:Static langs:LanguageManager.Instance}}" />
-                                        </Trigger>
-                                        <Trigger Property="IsChecked" Value="False">
-                                            <Setter Property="Content" Value="{Binding [Form_ServerRunner_Launch], Source={x:Static langs:LanguageManager.Instance}}" />
-                                        </Trigger>
-                                    </Style.Triggers>
+                <Grid>
+                    <Grid x:Name="ConPTYGrid" Visibility="Collapsed">
+                        <term:BasicTerminalControl x:Name="ConptyConsole" Margin="0,0,0,40" LogConPTYOutput="True" Win32InputMode="True" InputCapture="TabKey,DirectionKeys" >
+                            <term:BasicTerminalControl.Resources>
+                                <Style TargetType="ScrollBar" BasedOn="{StaticResource ScrollBarBaseStyle}">
                                 </Style>
-                            </ToggleButton.Style>
-                        </ToggleButton>
+                            </term:BasicTerminalControl.Resources>
+                        </term:BasicTerminalControl>
+                        <StackPanel Orientation="Horizontal" HorizontalAlignment="Left" VerticalAlignment="Bottom"  >
+                            <Button x:Name="Conpty_Help" Content="帮助" Margin="5" Click="Conpty_Help_Click"/>
+                            <TextBlock Text="提示：输入指令请不要加“/”" FontSize="14" Foreground="{DynamicResource PrimaryTextBrush}" VerticalAlignment="Center" Margin="5"/>
+                        </StackPanel>
+                        <StackPanel Orientation="Horizontal" HorizontalAlignment="Right" VerticalAlignment="Bottom"  >
+                            <TextBlock Text="服务器状态：" FontSize="14" Foreground="{DynamicResource PrimaryTextBrush}" VerticalAlignment="Center" Margin="5,5,0,5"/>
+                            <TextBlock x:Name="Conpty_ServerStatus"  Text="已关服" FontSize="14" Foreground="{DynamicResource DarkPrimaryBrush}" VerticalAlignment="Center" Margin="0,5,5,5"/>
+                            <Button x:Name="Conpty_ClearLog" Content="清屏" Margin="5" Click="Conpty_ClearLog_Click"/>
+                            <Button x:Name="Conpty_ControlServer" Content="开服" Margin="5" Click="ConptyWindowControlServer" MouseDoubleClick="KillConptyServer"/>
+                        </StackPanel>
+                    </Grid>
+                    <Grid x:Name="CmdGrid" Style="{StaticResource GridAnimation}">
+                        <RichTextBox x:Name="outlog" IsUndoEnabled="False" UndoLimit="0" Background="{DynamicResource BorderBackground}" IsReadOnly="True" Block.LineHeight="1" Margin="10,10,10,47" ContextMenu="{StaticResource UIContextMenu}" VerticalScrollBarVisibility="Visible">
+                            <FlowDocument>
+                                <Paragraph>
+                                    <Run Text="在此显示输出......"/>
+                                </Paragraph>
+                            </FlowDocument>
+                        </RichTextBox>
+
+                        <Grid VerticalAlignment="Bottom">
+                            <Grid.ColumnDefinitions>
+                                <ColumnDefinition Width="Auto"/>
+                                <ColumnDefinition Width="*"/>
+                                <ColumnDefinition Width="Auto"/>
+                                <ColumnDefinition Width="Auto"/>
+                                <ColumnDefinition Width="Auto"/>
+                                <ColumnDefinition Width="Auto"/>
+                            </Grid.ColumnDefinitions>
+
+                            <ComboBox Grid.Column="0" x:Name="fastCMD" HorizontalAlignment="Left" Margin="10,0,5,10" SelectedIndex="0" IsEnabled="False" Width="100" Height="32">
+                                <ComboBoxItem Content="/（指令）" FontFamily="Microsoft YaHei UI"/>
+                                <ComboBoxItem Content="/op（给管理员）" FontFamily="Microsoft YaHei UI"/>
+                                <ComboBoxItem Content="/deop（去除管理员）" FontFamily="Microsoft YaHei UI"/>
+                                <ComboBoxItem Content="/ban（封禁玩家）" FontFamily="Microsoft YaHei UI"/>
+                                <ComboBoxItem Content="/say（全服说话）" FontFamily="Microsoft YaHei UI"/>
+                                <ComboBoxItem Content="/pardon（解除封禁）" FontFamily="Microsoft YaHei UI"/>
+                            </ComboBox>
+                            <TextBox x:Name="cmdtext" Grid.Column="1" Margin="0,0,5,10" Text="服务器已关闭" KeyDown="cmdtext_KeyDown" IsEnabled="False"/>
+                            <Button x:Name="sendcmd" Grid.Column="2" Content="发送" Style="{StaticResource ButtonPrimary}" Width="60" Height="32" Margin="0,0,5,10" Click="sendcmd_Click" IsEnabled="False"/>
+                            <ToggleButton x:Name="controlServer" Grid.Column="3" Margin="0,0,10,10" MinWidth="60" Height="32" Click="controlServer_Click" MouseDoubleClick="controlServer_MouseDoubleClick">
+                                <ToggleButton.Style>
+                                    <Style TargetType="ToggleButton" BasedOn="{StaticResource ToggleButton.NoCheckedBorder}">
+
+                                        <Style.Triggers>
+                                            <Trigger Property="IsChecked" Value="True">
+                                                <Setter Property="Content" Value="{Binding [Form_ServerRunner_Stop], Source={x:Static langs:LanguageManager.Instance}}" />
+                                            </Trigger>
+                                            <Trigger Property="IsChecked" Value="False">
+                                                <Setter Property="Content" Value="{Binding [Form_ServerRunner_Launch], Source={x:Static langs:LanguageManager.Instance}}" />
+                                            </Trigger>
+                                        </Style.Triggers>
+                                    </Style>
+                                </ToggleButton.Style>
+                            </ToggleButton>
+                        </Grid>
                     </Grid>
                 </Grid>
             </TabItem>
