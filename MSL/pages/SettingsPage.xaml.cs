@@ -13,6 +13,7 @@ using System.Globalization;
 using System.IO;
 using System.Linq;
 using System.Text;
+using System.Threading.Tasks;
 using System.Windows;
 using System.Windows.Media;
 using System.Windows.Media.Animation;
@@ -525,19 +526,89 @@ namespace MSL.pages
             }
         }
 
-        private bool isWesternEgg;
-        private async void WesternEgg_Click(object sender, RoutedEventArgs e)
+        private int isWesternEgg = 0;
+
+        private async Task GuessNumGame()
         {
-            if (isWesternEgg)
+            Random random = new Random();
+            int num = random.Next(1, 501);
+            string inputContent = await MagicShow.ShowInput(Window.GetWindow(this), "我生成了一个不小于1、不大于500的整数，你能猜对它吗？\n请输入数字（1-500）");
+            if(string.IsNullOrEmpty(inputContent))
             {
-                Process.Start("https://ys.mihoyo.com/");
+                MagicFlowMsg.ShowMessage("爱猜不猜，哼！");
                 return;
             }
-            bool dialog = await MagicShow.ShowMsgDialogAsync("点击此按钮后软件出现任何问题作者概不负责，你确定要继续吗？\n（光敏性癫痫警告！若您患有光敏性癫痫，请不要点击确定！）", "警告", true, isDangerPrimaryBtn: true);
+            if(!int.TryParse(inputContent,out int inputnum))
+            {
+                MagicFlowMsg.ShowMessage("为什么要胡乱输入！不玩了！", 2);
+                return;
+            }
+            while (inputnum != num)
+            {
+                string tips = string.Empty;
+                if (inputnum > num)
+                {
+                    tips = "你猜的数字大了！";
+                    MagicFlowMsg.ShowMessage(tips, 0);
+                }
+                else if (inputnum < num)
+                {
+                    tips = "你猜的数字小了！";
+                    MagicFlowMsg.ShowMessage(tips, 0);
+                }
+                string _inputContent = await MagicShow.ShowInput(Window.GetWindow(this), tips + "再猜一次吧！\n请输入数字（1-500）");
+                if (string.IsNullOrEmpty(_inputContent))
+                {
+                    MagicFlowMsg.ShowMessage("爱猜不猜，哼！");
+                    return;
+                }
+                if (!int.TryParse(_inputContent, out inputnum))
+                {
+                    MagicFlowMsg.ShowMessage("为什么要胡乱输入！不玩了！", 2);
+                    return;
+                }
+                continue;
+            }
+            MagicFlowMsg.ShowMessage("你真厉害！居然猜对了！", 1);
+            if (await MagicShow.ShowMsgDialogAsync("猜对了：" + num + "！\n你真厉害！", "恭喜你！", true, "不，我不知道", "我知道了"))
+            {
+                Window.GetWindow(this).Title = ":)";
+            }
+            else
+            {
+                Window.GetWindow(this).Title = ":(";
+            }
+            return;
+        }
+
+        private async void WesternEgg_Click(object sender, RoutedEventArgs e)
+        {
+            if (isWesternEgg != 0)
+            {
+                switch (isWesternEgg)
+                {
+                    case 1:
+                        MagicFlowMsg.ShowMessage("你都已经点过了，别再点了！",0);
+                        break;
+                    case 2:
+                        MagicFlowMsg.ShowMessage("你还真是执着呢！", 3);
+                        break;
+                    case 3:
+                        MagicFlowMsg.ShowMessage("你真是个执着的家伙！", 2);
+                        break;
+                    case 4:
+                        MagicFlowMsg.ShowMessage("好吧，那来玩一个小游戏吧！", 1);
+                        await GuessNumGame();
+                        break;
+                }
+                if(isWesternEgg< 4)
+                    isWesternEgg++;
+                return;
+            }
+            bool dialog = await MagicShow.ShowMsgDialogAsync("点击此按钮后软件出现任何问题作者概不负责，你确定要继续吗？\n（光敏性癫痫警告！若您患有光敏性癫痫，请不要点击确定！）", "警告", true, isDangerPrimaryBtn: true, closeBtnContext: "我不确定QWQ");
+            isWesternEgg = 1;
             if (dialog)
             {
-                isWesternEgg = true;
-
                 Random random = new Random();
                 ColorAnimationUsingKeyFrames colorAnimation = new ColorAnimationUsingKeyFrames
                 {

@@ -122,6 +122,11 @@ namespace MSL.utils
         private readonly Action<string> _infoHandler;
         private readonly Action<string> _warnHandler;
         private readonly Action _encodingIssueHandler;
+
+        // 日志缓冲区相关
+        public readonly ConcurrentQueue<string> _logBuffer = new ConcurrentQueue<string>();
+        public readonly DispatcherTimer _logProcessTimer = new DispatcherTimer();
+
         public bool IsShieldStackOut = true;
         public bool IsShowOutLog = true;
         public bool IsFormatLogPrefix = true;
@@ -160,10 +165,7 @@ namespace MSL.utils
             _encodingIssueHandler = encodingIssueHandler;
 
             // 初始化日志处理定时器
-            _logProcessTimer = new DispatcherTimer
-            {
-                Interval = TimeSpan.FromMilliseconds(PROCESS_INTERVAL_MS)
-            };
+            _logProcessTimer.Interval = TimeSpan.FromMilliseconds(150);
             _logProcessTimer.Tick += ProcessLogBuffer;
         }
 
@@ -263,12 +265,6 @@ namespace MSL.utils
             }
         }
 
-        // 日志缓冲区相关
-        public readonly ConcurrentQueue<string> _logBuffer = new ConcurrentQueue<string>();
-        public readonly DispatcherTimer _logProcessTimer;
-        private const int MAX_BATCH_SIZE = 100; // 每次处理的最大日志数量
-        private const int PROCESS_INTERVAL_MS = 150; // 日志处理间隔(毫秒)
-
         // 批量处理日志缓冲区
         private void ProcessLogBuffer(object sender, EventArgs e)
         {
@@ -281,8 +277,8 @@ namespace MSL.utils
             // 创建批处理列表
             var batch = new List<string>();
 
-            // 从队列中取出日志，最多取MAX_BATCH_SIZE条
-            for (int i = 0; i < MAX_BATCH_SIZE && !_logBuffer.IsEmpty; i++)
+            // 从队列中取出日志，最多取100条
+            for (int i = 0; i < 100 && !_logBuffer.IsEmpty; i++)
             {
                 if (_logBuffer.TryDequeue(out string entry))
                 {
@@ -453,7 +449,6 @@ namespace MSL.utils
             if (_logProcessTimer != null && _logProcessTimer.IsEnabled)
             {
                 _logProcessTimer.Stop();
-                _logProcessTimer.IsEnabled = false;
             }
 
             // 处理剩余的日志

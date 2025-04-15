@@ -42,13 +42,12 @@ namespace MSL
     {
         public static event DeleControl SaveConfigEvent;
         public static event DeleControl ServerStateChange;
-        private readonly Process ServerProcess = new Process();
-        private ConptyWindow conptyWindow = null;
-        private short getServerInfoLine = 0;
+        private short GetServerInfoLine = 0;
         private readonly short FirstStartTab;
-        // private string DownjavaName;
-        
-        private MCSLogHandler MCSLogHandler {  get; set; }
+        private MCSLogHandler MCSLogHandler { get; set; }
+        private Process ServerProcess { get; } = new Process();
+        private ConptyWindow ConPTYWindow { get; set; }
+        private DispatcherTimer ConPTYResizeTimer { get; set; }= new DispatcherTimer();
         private int RserverID { get; }
         private string Rservername { get; set; }
         private string Rserverjava { get; set; }
@@ -72,6 +71,9 @@ namespace MSL
             ServerProcess.OutputDataReceived += new DataReceivedEventHandler(OutputDataReceived);
             ServerProcess.ErrorDataReceived += new DataReceivedEventHandler(OutputDataReceived);
             ServerProcess.Exited += new EventHandler(ServerExitEvent);
+
+            ConPTYResizeTimer.Interval = TimeSpan.FromMilliseconds(200);
+            ConPTYResizeTimer.Tick += new EventHandler(ConPTYResizeTimer_Tick);
             SettingsPage.ChangeSkinStyle += ChangeSkinStyle;
             RserverID = serverID;
             FirstStartTab = controlTab;
@@ -120,12 +122,12 @@ namespace MSL
                     int dialog = MagicShow.ShowMsg(this, "检测到您没有关闭服务器，是否隐藏此窗口？\n如要重新显示此窗口，请在服务器列表内双击该服务器（或点击开启服务器按钮）", "警告", true, "取消");
                     if (dialog == 1)
                     {
-                        if (conptyWindow != null)
+                        if (ConPTYWindow != null)
                         {
                             ConptyPopUp.IsOpen = false;
                             Growl.SetGrowlParent(ConptyGrowlPanel, false);
                             Growl.SetGrowlParent(GrowlPanel, true);
-                            conptyWindow.Visibility = Visibility.Collapsed;
+                            ConPTYWindow.Visibility = Visibility.Collapsed;
                         }
                         Visibility = Visibility.Collapsed;
                     }
@@ -154,24 +156,23 @@ namespace MSL
             ServerProcess.Exited -= ServerExitEvent;
             SettingsPage.ChangeSkinStyle -= ChangeSkinStyle;
             ServerProcess.Dispose();
-            if (conptyWindow != null)
+            if (ConPTYWindow != null)
             {
                 try
                 {
-                    conptyWindow.Closing -= ConptyWindowClosing;
-                    conptyWindow.ControlServer.Click -= ConptyWindowControlServer;
-                    conptyWindow.ControlServer.MouseDoubleClick -= KillConptyServer;
-                    conptyWindow.Close();
+                    ConPTYWindow.Closing -= ConptyWindowClosing;
+                    ConPTYWindow.ControlServer.Click -= ConptyWindowControlServer;
+                    ConPTYWindow.ControlServer.MouseDoubleClick -= KillConptyServer;
+                    ConPTYWindow.Close();
                 }
                 finally
                 {
-                    conptyWindow = null;
+                    ConPTYWindow = null;
                 }
             }
             MCSLogHandler.Dispose();
             MCSLogHandler = null;
             getSystemInfo = false;
-            // DownjavaName = null;
             Rservername = null;
             Rserverjava = null;
             Rserverserver = null;
@@ -519,7 +520,7 @@ namespace MSL
                 }
                 catch { }
             }
-            if (TabCtrl.SelectedIndex == 1 && conptyWindow != null)
+            if (TabCtrl.SelectedIndex == 1 && ConPTYWindow != null)
             {
                 await Task.Delay(50);
                 ShowConptyWindow();
@@ -537,9 +538,9 @@ namespace MSL
             {
                 return;
             }
-            if (conptyWindow != null && conptyWindow.Visibility == Visibility.Visible && TabCtrl.SelectedIndex != 1)
+            if (ConPTYWindow != null && ConPTYWindow.Visibility == Visibility.Visible && TabCtrl.SelectedIndex != 1)
             {
-                conptyWindow.Visibility = Visibility.Collapsed;
+                ConPTYWindow.Visibility = Visibility.Collapsed;
                 ConptyPopUp.IsOpen = false;
                 Growl.SetGrowlParent(ConptyGrowlPanel, false);
                 // 下面三行别动，就是这么写的，要不然会出问题
@@ -550,7 +551,7 @@ namespace MSL
             switch (TabCtrl.SelectedIndex)
             {
                 case 1:
-                    if (conptyWindow != null)
+                    if (ConPTYWindow != null)
                     {
                         await Task.Delay(50);
                         ShowConptyWindow();
@@ -587,9 +588,9 @@ namespace MSL
 
         private bool CheckServerRunning()
         {
-            if (conptyWindow != null)
+            if (ConPTYWindow != null)
             {
-                if (conptyWindow.ConptyConsole.ConPTYTerm.TermProcIsRunning)
+                if (ConPTYWindow.ConptyConsole.ConPTYTerm.TermProcIsRunning)
                 {
                     return true;
                 }
@@ -651,9 +652,9 @@ namespace MSL
             {
                 try
                 {
-                    if (conptyWindow != null)
+                    if (ConPTYWindow != null)
                     {
-                        conptyWindow.ConptyConsole.ConPTYTerm.WriteToTerm(("kick " + serverPlayerList.SelectedItem.ToString().Substring(0, serverPlayerList.SelectedItem.ToString().IndexOf("[")) + "\r\n").AsSpan());
+                        ConPTYWindow.ConptyConsole.ConPTYTerm.WriteToTerm(("kick " + serverPlayerList.SelectedItem.ToString().Substring(0, serverPlayerList.SelectedItem.ToString().IndexOf("[")) + "\r\n").AsSpan());
                         return;
                     }
                     ServerProcess.StandardInput.WriteLine("kick " + serverPlayerList.SelectedItem.ToString().Substring(0, serverPlayerList.SelectedItem.ToString().IndexOf("[")));
@@ -672,9 +673,9 @@ namespace MSL
             {
                 try
                 {
-                    if (conptyWindow != null)
+                    if (ConPTYWindow != null)
                     {
-                        conptyWindow.ConptyConsole.ConPTYTerm.WriteToTerm(("ban " + serverPlayerList.SelectedItem.ToString().Substring(0, serverPlayerList.SelectedItem.ToString().IndexOf("[")) + "\r\n").AsSpan());
+                        ConPTYWindow.ConptyConsole.ConPTYTerm.WriteToTerm(("ban " + serverPlayerList.SelectedItem.ToString().Substring(0, serverPlayerList.SelectedItem.ToString().IndexOf("[")) + "\r\n").AsSpan());
                         return;
                     }
                     ServerProcess.StandardInput.WriteLine("ban " + serverPlayerList.SelectedItem.ToString().Substring(0, serverPlayerList.SelectedItem.ToString().IndexOf("[")));
@@ -948,19 +949,24 @@ namespace MSL
             if (this.WindowState == WindowState.Maximized)
             {
                 await Task.Delay(250);
-                conptyWindow.Width = this.ActualWidth - Tab_Home.ActualWidth - 17;
-                conptyWindow.Height = this.ActualHeight - this.NonClientAreaHeight - 15;
+                ConPTYWindow.Width = this.ActualWidth - Tab_Home.ActualWidth - 17;
+                ConPTYWindow.Height = this.ActualHeight - this.NonClientAreaHeight - 15;
                 return;
             }
-            conptyWindow.Width = this.ActualWidth - Tab_Home.ActualWidth - 10;
-            conptyWindow.Height = this.ActualHeight - this.NonClientAreaHeight - 15;
+            ConPTYWindow.Width = this.ActualWidth - Tab_Home.ActualWidth - 10;
+            ConPTYWindow.Height = this.ActualHeight - this.NonClientAreaHeight - 15;
         }
 
         // 更新子窗口位置
         private void UpdateChildWindowPosition()
         {
-            //conptyWindow.ConptyConsole.ConPTYTerm.CanOutLog = false;
+            //ConPTYWindow.ConptyConsole.ConPTYTerm.CanOutLog = false;
             ConptyCanOutLog = false;
+            if (ConPTYResizeTimer.IsEnabled)
+            {
+                ConPTYResizeTimer.Stop();
+            }
+            ConPTYResizeTimer.Start();
             if (this.WindowState == WindowState.Maximized)
             {
                 // 获取屏幕工作区的宽度和高度
@@ -968,13 +974,13 @@ namespace MSL
                 double screenHeight = SystemParameters.WorkArea.Height;
 
                 // 计算子窗口居中后的 Left 和 Top 值
-                conptyWindow.Left = (screenWidth - conptyWindow.Width) / 2 + (Tab_Home.ActualWidth / 2);
-                conptyWindow.Top = (screenHeight - conptyWindow.Height) / 2 + (this.NonClientAreaHeight / 2);
+                ConPTYWindow.Left = (screenWidth - ConPTYWindow.Width) / 2 + (Tab_Home.ActualWidth / 2);
+                ConPTYWindow.Top = (screenHeight - ConPTYWindow.Height) / 2 + (this.NonClientAreaHeight / 2);
             }
             else if (this.WindowState == WindowState.Normal)
             {
-                conptyWindow.Left = this.Left + (this.Width - conptyWindow.Width) / 2 + (Tab_Home.ActualWidth / 2);
-                conptyWindow.Top = this.Top + (this.Height - conptyWindow.Height) / 2 + (this.NonClientAreaHeight / 2);
+                ConPTYWindow.Left = this.Left + (this.Width - ConPTYWindow.Width) / 2 + (Tab_Home.ActualWidth / 2);
+                ConPTYWindow.Top = this.Top + (this.Height - ConPTYWindow.Height) / 2 + (this.NonClientAreaHeight / 2);
             }
             else
             {
@@ -982,6 +988,12 @@ namespace MSL
             }
             ConptyPopUp.HorizontalOffset += 1;
             ConptyPopUp.HorizontalOffset -= 1;
+        }
+
+        private void ConPTYResizeTimer_Tick(object sender, EventArgs e)
+        {
+            ConptyCanOutLog = true;
+            ConPTYResizeTimer.Stop();
         }
 
         private void ConptyWindowClosing(object sender, System.ComponentModel.CancelEventArgs e)
@@ -992,37 +1004,37 @@ namespace MSL
 
         private void ConptyWindowControlServer(object sender, RoutedEventArgs e)
         {
-            if (conptyWindow.ControlServer.Content.ToString() == "关服")
+            if (ConPTYWindow.ControlServer.Content.ToString() == "关服")
             {
-                if (conptyWindow.ConptyConsole.ConPTYTerm.TermProcIsRunning)
+                if (ConPTYWindow.ConptyConsole.ConPTYTerm.TermProcIsRunning)
                 {
-                    conptyWindow.ConptyConsole.ConPTYTerm.WriteToTerm("stop\r\n".AsSpan());
+                    ConPTYWindow.ConptyConsole.ConPTYTerm.WriteToTerm("stop\r\n".AsSpan());
                     MagicFlowMsg.ShowMessage("关服中，请稍等……\n双击关服按钮可强制关服（不推荐）", _growlPanel: GetActiveGrowlPanel());
                 }
                 else
                 {
-                    conptyWindow.ControlServer.Content = "开服";
+                    ConPTYWindow.ControlServer.Content = "开服";
                     ChangeControlsState(false);
                 }
-                getServerInfoLine = 101;
+                GetServerInfoLine = 101;
             }
             else
             {
-                if (getServerInfoLine == 102)
+                if (GetServerInfoLine == 102)
                 {
-                    getServerInfoLine = 101;
+                    GetServerInfoLine = 101;
                     return;
                 }
                 LaunchServer();
-                conptyWindow.ControlServer.Content = "关服";
+                ConPTYWindow.ControlServer.Content = "关服";
             }
         }
 
         private UIElement GetActiveGrowlPanel()
         {
-            if (conptyWindow != null)
+            if (ConPTYWindow != null)
             {
-                if (conptyWindow.Visibility == Visibility.Visible)
+                if (ConPTYWindow.Visibility == Visibility.Visible)
                 {
                     return ConptyGrowlPanel;
                 }
@@ -1036,14 +1048,14 @@ namespace MSL
 
         private async void KillConptyServer(object sender, RoutedEventArgs e)
         {
-            if (conptyWindow.ControlServer.Content.ToString() == "关服")
+            if (ConPTYWindow.ControlServer.Content.ToString() == "关服")
             {
                 try
                 {
-                    getServerInfoLine = 102;
-                    conptyWindow.ConptyConsole.ConPTYTerm.Process.Process.Kill();
+                    GetServerInfoLine = 102;
+                    ConPTYWindow.ConptyConsole.ConPTYTerm.Process.Process.Kill();
                     await Task.Delay(500);
-                    getServerInfoLine = 101;
+                    GetServerInfoLine = 101;
                 }
                 catch { return; }
             }
@@ -1051,13 +1063,13 @@ namespace MSL
 
         private void ShowConptyWindow()
         {
-            if (conptyWindow != null)
+            if (ConPTYWindow != null)
             {
                 _ = UpdateChildWindowSize();
                 UpdateChildWindowPosition();
-                conptyWindow.Show();
-                conptyWindow.Visibility = Visibility.Visible;
-                conptyWindow.ConptyConsole.Focus();
+                ConPTYWindow.Show();
+                ConPTYWindow.Visibility = Visibility.Visible;
+                ConPTYWindow.ConptyConsole.Focus();
             }
         }
 
@@ -1065,38 +1077,38 @@ namespace MSL
         {
             if (useConpty.IsChecked == true)
             {
-                if (conptyWindow == null)
+                if (ConPTYWindow == null)
                 {
                     try
                     {
                         TabCtrl.SelectedIndex = 1;
-                        conptyWindow = new ConptyWindow();
-                        conptyWindow.Closing += ConptyWindowClosing;
-                        conptyWindow.ControlServer.Click += ConptyWindowControlServer;
-                        conptyWindow.ControlServer.MouseDoubleClick += KillConptyServer;
-                        conptyWindow.Activated += Window_Activated;
-                        conptyWindow.Deactivated += Window_Deactivated;
-                        conptyWindow.serverbase = Rserverbase;
+                        ConPTYWindow = new ConptyWindow();
+                        ConPTYWindow.Closing += ConptyWindowClosing;
+                        ConPTYWindow.ControlServer.Click += ConptyWindowControlServer;
+                        ConPTYWindow.ControlServer.MouseDoubleClick += KillConptyServer;
+                        ConPTYWindow.Activated += Window_Activated;
+                        ConPTYWindow.Deactivated += Window_Deactivated;
+                        ConPTYWindow.serverbase = Rserverbase;
                         if (Rservermode == 0)
                         {
-                            conptyWindow.java = Rserverjava;
-                            conptyWindow.launcharg = StartFileArg;
+                            ConPTYWindow.java = Rserverjava;
+                            ConPTYWindow.launcharg = StartFileArg;
                         }
                         else
                         {
-                            conptyWindow.java = "cmd.exe";
-                            conptyWindow.launcharg = "/c " + StartFileArg;
+                            ConPTYWindow.java = "cmd.exe";
+                            ConPTYWindow.launcharg = "/c " + StartFileArg;
                         }
-                        conptyWindow.Owner = this;
-                        conptyWindow.Width = this.ActualWidth - Tab_Home.ActualWidth - 10;
-                        conptyWindow.Height = this.ActualHeight - this.NonClientAreaHeight - 15;
-                        conptyWindow.Show();
+                        ConPTYWindow.Owner = this;
+                        ConPTYWindow.Width = this.ActualWidth - Tab_Home.ActualWidth - 10;
+                        ConPTYWindow.Height = this.ActualHeight - this.NonClientAreaHeight - 15;
+                        ConPTYWindow.Show();
                         UpdateChildWindowPosition();
-                        conptyWindow.Focus();
-                        conptyWindow.ConptyConsole.Focus();
-                        conptyWindow.StartServer();
-                        conptyWindow.ConptyConsole.ConPTYTerm.TermExited += OnTermExited;
-                        conptyWindow.ConptyConsole.ConPTYTerm.OnOutputReceived += ProcessOutputEvent;
+                        ConPTYWindow.Focus();
+                        ConPTYWindow.ConptyConsole.Focus();
+                        ConPTYWindow.StartServer();
+                        ConPTYWindow.ConptyConsole.ConPTYTerm.TermExited += OnTermExited;
+                        ConPTYWindow.ConptyConsole.ConPTYTerm.OnOutputReceived += ProcessOutputEvent;
                         ChangeControlsState();
                     }
                     catch
@@ -1106,14 +1118,14 @@ namespace MSL
                         {
                             try
                             {
-                                conptyWindow.Closing -= ConptyWindowClosing;
-                                conptyWindow.ControlServer.Click -= ConptyWindowControlServer;
-                                conptyWindow.ControlServer.MouseDoubleClick -= KillConptyServer;
-                                conptyWindow.Close();
+                                ConPTYWindow.Closing -= ConptyWindowClosing;
+                                ConPTYWindow.ControlServer.Click -= ConptyWindowControlServer;
+                                ConPTYWindow.ControlServer.MouseDoubleClick -= KillConptyServer;
+                                ConPTYWindow.Close();
                             }
                             finally
                             {
-                                conptyWindow = null;
+                                ConPTYWindow = null;
                             }
                         }
                         catch (Exception ex)
@@ -1125,9 +1137,9 @@ namespace MSL
                 }
                 else
                 {
-                    conptyWindow.serverbase = Rserverbase;
-                    conptyWindow.java = Rserverjava;
-                    conptyWindow.launcharg = StartFileArg;
+                    ConPTYWindow.serverbase = Rserverbase;
+                    ConPTYWindow.java = Rserverjava;
+                    ConPTYWindow.launcharg = StartFileArg;
                     if (TabCtrl.SelectedIndex != 1)
                     {
                         TabCtrl.SelectedIndex = 1;
@@ -1136,9 +1148,9 @@ namespace MSL
                     {
                         ShowConptyWindow();
                     }
-                    conptyWindow.StartServer2();
-                    conptyWindow.ConptyConsole.ConPTYTerm.TermExited += OnTermExited;
-                    conptyWindow.ConptyConsole.ConPTYTerm.OnOutputReceived += ProcessOutputEvent;
+                    ConPTYWindow.StartServer2();
+                    ConPTYWindow.ConptyConsole.ConPTYTerm.TermExited += OnTermExited;
+                    ConPTYWindow.ConptyConsole.ConPTYTerm.OnOutputReceived += ProcessOutputEvent;
                     ChangeControlsState();
                 }
             }
@@ -1229,7 +1241,7 @@ namespace MSL
                     ServerList.RunningServers.Add(RserverID);
                 }
                 ServerStateChange();
-                getServerInfoLine = 0;
+                GetServerInfoLine = 0;
                 serverPlayerList.Items.Clear();
                 serverStateLab.Content = "运行中";
                 serverStateLab.Foreground = Brushes.Red;
@@ -1245,7 +1257,7 @@ namespace MSL
                 MagicFlowMsg.ShowMessage("开服中，请稍等……", _growlPanel: GetActiveGrowlPanel());
                 outlog.Document.Blocks.Clear();
                 PrintLog("正在开启服务器，请稍等...", ConfigStore.LogColor.INFO);
-                if (conptyWindow == null)
+                if (ConPTYWindow == null)
                 {
                     MCSLogHandler._logProcessTimer.IsEnabled = true;
                     MCSLogHandler._logProcessTimer.Start();
@@ -1256,7 +1268,7 @@ namespace MSL
                 }
                 else
                 {
-                    conptyWindow.ServerStatus.Text = "运行中";
+                    ConPTYWindow.ServerStatus.Text = "运行中";
                 }
 
             }
@@ -1276,7 +1288,7 @@ namespace MSL
                 controlServer.IsChecked = false;
                 controlServer1.IsChecked = false;
                 MagicFlowMsg.ShowMessage("服务器已关闭！", _growlPanel: GetActiveGrowlPanel());
-                if (conptyWindow == null)
+                if (ConPTYWindow == null)
                 {
                     sendcmd.IsEnabled = false;
                     cmdtext.IsEnabled = false;
@@ -1293,7 +1305,7 @@ namespace MSL
                 }
                 else
                 {
-                    conptyWindow.ServerStatus.Text = "已关服";
+                    ConPTYWindow.ServerStatus.Text = "已关服";
                 }
             }
         }
@@ -1531,10 +1543,7 @@ namespace MSL
         private void ProcessOutputEvent(string msg)
         {
             if (!ConptyCanOutLog)
-            {
-                ConptyCanOutLog = true;
                 return;
-            }
 
             tempLog = msg;
             ProcessOutput(msg);
@@ -1626,7 +1635,7 @@ namespace MSL
                             });
                             Task.Run(async () =>
                             {
-                                getServerInfoLine = 102;
+                                GetServerInfoLine = 102;
                                 Dispatcher.Invoke(() =>
                                 {
                                     autoStartserver.IsChecked = true;
@@ -1656,15 +1665,15 @@ namespace MSL
         {
             if ((msg.Contains("Done") && msg.Contains("For help")) || (msg.Contains("加载完成") && msg.Contains("如需帮助") || (msg.Contains("Server started."))))
             {
-                getServerInfoLine = 101;
+                GetServerInfoLine = 101;
                 Dispatcher.InvokeAsync(() =>
                 {
                     PrintLog("已成功开启服务器！你可以输入stop来关闭服务器！\r\n服务器本地IP通常为:127.0.0.1，想要远程进入服务器，需要开通公网IP或使用内网映射，详情查看开服器的内网映射界面。\r\n若控制台输出乱码日志，请去更多功能界面修改“输出编码”。", ConfigStore.LogColor.INFO);
                     MagicFlowMsg.ShowMessage(string.Format("服务器 {0} 已成功开启！", Rservername), 1, _growlPanel: GetActiveGrowlPanel());
                     serverStateLab.Content = "已开服";
-                    if (conptyWindow != null)
+                    if (ConPTYWindow != null)
                     {
-                        conptyWindow.ServerStatus.Text = "已开服";
+                        ConPTYWindow.ServerStatus.Text = "已开服";
                     }
                     GetServerInfoSys();
                 });
@@ -1884,7 +1893,7 @@ namespace MSL
                         MCSLogHandler.ServerService.Dispose();
                     }
                 }
-                else if (ServerProcess.ExitCode != 0 && getServerInfoLine <= 100)
+                else if (ServerProcess.ExitCode != 0 && GetServerInfoLine <= 100)
                 {
                     bool dialogRet = await MagicShow.ShowMsgDialogAsync(this, "服务器疑似异常关闭，是您人为关闭的吗？\n您可使用MSL的崩溃分析系统进行检测，也可将服务器日志发送给他人以寻求帮助！\nPS:请不要截图此弹窗！！！\n日志发送方式：\n1.直接截图控制台内容；2.服务器目录\\logs\\latest.log；3.前往“更多功能”界面上传至Internet\n\n点击确定开始进行崩溃分析", "提示", true);
                     if (dialogRet)
@@ -1908,25 +1917,25 @@ namespace MSL
         {
             Dispatcher.InvokeAsync(async () =>
             {
-                conptyWindow.ConptyConsole.ConPTYTerm.WriteToUITerminal("服务器已关闭！".AsSpan());
+                ConPTYWindow.ConptyConsole.ConPTYTerm.WriteToUITerminal("服务器已关闭！".AsSpan());
                 ChangeControlsState(false);
-                conptyWindow.ConptyConsole.ConPTYTerm.TermExited -= OnTermExited;
-                conptyWindow.ConptyConsole.ConPTYTerm.OnOutputReceived -= ProcessOutputEvent;
-                conptyWindow.ControlServer.Content = "开服";
+                ConPTYWindow.ConptyConsole.ConPTYTerm.TermExited -= OnTermExited;
+                ConPTYWindow.ConptyConsole.ConPTYTerm.OnOutputReceived -= ProcessOutputEvent;
+                ConPTYWindow.ControlServer.Content = "开服";
                 if (MCSLogHandler.ServerService.ProblemSolveSystem)
                 {
                     MCSLogHandler.ServerService.ProblemSolveSystem = false;
-                    string[] strings = (conptyWindow.ConptyConsole.ConPTYTerm.GetConsoleText()).Split('\n');
+                    string[] strings = (ConPTYWindow.ConptyConsole.ConPTYTerm.GetConsoleText()).Split('\n');
                     foreach (var log in strings)
                     {
                         MCSLogHandler.ServerService.ProblemSystemHandle(log);
                     }
 
                     bool isCVisible = false;
-                    if (conptyWindow.Visibility == Visibility.Visible)
+                    if (ConPTYWindow.Visibility == Visibility.Visible)
                     {
                         isCVisible = true;
-                        conptyWindow.Visibility = Visibility.Collapsed;
+                        ConPTYWindow.Visibility = Visibility.Collapsed;
                     }
                     if (string.IsNullOrEmpty(MCSLogHandler.ServerService.ProblemFound))
                     {
@@ -1941,13 +1950,13 @@ namespace MSL
                     if (isCVisible)
                         ShowConptyWindow();
                 }
-                else if (getServerInfoLine <= 100)
+                else if (GetServerInfoLine <= 100)
                 {
                     bool isCVisible = false;
-                    if (conptyWindow.Visibility == Visibility.Visible)
+                    if (ConPTYWindow.Visibility == Visibility.Visible)
                     {
                         isCVisible = true;
-                        conptyWindow.Visibility = Visibility.Collapsed;
+                        ConPTYWindow.Visibility = Visibility.Collapsed;
                     }
                     bool dialogRet = await MagicShow.ShowMsgDialogAsync(this, "服务器疑似异常关闭，是您人为关闭的吗？\n您可使用MSL的崩溃分析系统进行检测，也可将服务器日志发送给他人以寻求帮助，但请不要截图此弹窗！！！\n日志发送方式：\n1.直接截图控制台内容\n2.服务器目录\\logs\\latest.log\n3.前往“更多功能”界面上传至Internet\n\n点击确定开始进行崩溃分析", "提示", true);
                     if (dialogRet)
@@ -2097,9 +2106,9 @@ namespace MSL
             {
                 controlServer.IsChecked = false;
                 controlServer1.IsChecked = false;
-                if (getServerInfoLine == 102)
+                if (GetServerInfoLine == 102)
                 {
-                    getServerInfoLine = 101;
+                    GetServerInfoLine = 101;
                     return;
                 }
                 LaunchServer();
@@ -2108,9 +2117,9 @@ namespace MSL
             {
                 controlServer.IsChecked = true;
                 controlServer1.IsChecked = true;
-                if (conptyWindow != null)
+                if (ConPTYWindow != null)
                 {
-                    conptyWindow.ConptyConsole.ConPTYTerm.WriteToTerm("stop\r\n".AsSpan());
+                    ConPTYWindow.ConptyConsole.ConPTYTerm.WriteToTerm("stop\r\n".AsSpan());
                     if (TabCtrl.SelectedIndex != 1)
                     {
                         TabCtrl.SelectedIndex = 1;
@@ -2126,7 +2135,7 @@ namespace MSL
                     ServerProcess.StandardInput.WriteLine("stop");
                 }
 
-                getServerInfoLine = 101;
+                GetServerInfoLine = 101;
             }
         }
 
@@ -2137,12 +2146,12 @@ namespace MSL
                 var _sender = sender as ToggleButton;
                 if (_sender.IsChecked == true)
                 {
-                    getServerInfoLine = 102;
-                    if (conptyWindow != null)
+                    GetServerInfoLine = 102;
+                    if (ConPTYWindow != null)
                     {
                         try
                         {
-                            conptyWindow.ConptyConsole.ConPTYTerm.Process.Process.Kill();
+                            ConPTYWindow.ConptyConsole.ConPTYTerm.Process.Process.Kill();
                         }
                         catch { }
                     }
@@ -2154,7 +2163,7 @@ namespace MSL
             }
             catch { }
             await Task.Delay(500);
-            getServerInfoLine = 101;
+            GetServerInfoLine = 101;
         }
 
         #endregion
@@ -3562,8 +3571,6 @@ namespace MSL
         {
             GetIPV6.IsEnabled = false;
             Growl.Info("获取中，请稍后……");
-            //string ipv6 = "";
-            //HttpListener listener = null;
             try
             {
                 HttpResponse response = await HttpService.GetAsync("https://6.ipw.cn");
@@ -3578,76 +3585,13 @@ namespace MSL
                 {
                     throw new Exception(response?.HttpResponseContent.ToString());
                 }
-                /*
-                //监听到21102端口
-                listener = new HttpListener();
-                listener.Prefixes.Add($"http://*:{21102}/");
-                listener.Start();
-
-                //异步，用于监听get请求
-                Task.Run(async () =>
-                {
-                    while (listener.IsListening)
-                    {
-                        HttpListenerContext context = await listener.GetContextAsync();
-                        HttpListenerRequest request = context.Request;
-                        HttpListenerResponse response = context.Response;
-
-                        if (request.HttpMethod == "GET")
-                        {
-                            string responseString = "200";
-                            byte[] buffer = System.Text.Encoding.UTF8.GetBytes(responseString);
-                            response.ContentLength64 = buffer.Length;
-                            System.IO.Stream output = response.OutputStream;
-                            await output.WriteAsync(buffer, 0, buffer.Length);
-                            output.Close();
-                        }
-                    }
-                });
-
-                //发送get，测试是否通
-                string result = HttpService.Get("", $"https://ipv6test.52nahida.site/?addr=[{ipv6}]&port=21102", 3);
-
-                //结果返回
-                var jsonResult = JObject.Parse(result);
-                int em = jsonResult.Value<int>("em");
-                string emsg = jsonResult.Value<string>("msg");
-                if (em == 200)
-                {
-                    MagicShow.ShowMsgDialog(this, $"您的IPV6公网地址是：{ipv6}\n已经帮您复制到剪贴板啦！\n注意：IPV6地址格式是：[IP]:端口\n若无法使用IPV6连接，请检查：\n-连接方是否有IPV6地址", "成功获取IPV6公网地址并测试连通性！");
-                }
-                else
-                {
-                    MagicShow.ShowMsgDialog(this, $"您的IPV6公网地址是：{ipv6}\n但是您的IPV6地址目前不能被访问！\n请检查：\n-您是否放行防火墙（包含电脑，路由器防火墙）\n-路由器是否使用桥接模式（若使用NAT，IPV6地址将不是公网）\n错误信息：{emsg}", "成功获取IPV6公网地址但测试连通性失败！");
-                }
-                */
-
             }
             catch (Exception ex)
             {
                 MagicShow.ShowMsgDialog(this, "出现错误，您当前的网络可能没有IPV6支持\n您可上网搜索IPV6开启教程或联系运营商以获取帮助\n错误信息：" + ex.Message, "获取IPV6地址失败！");
-                /*
-                if (ipv6 == "")
-                {
-                    MagicShow.ShowMsgDialog(this, "您当前的网络没有IPV6支持\n建议上网搜索如何开启IPV6\n或者联系运营商获取帮助~", "获取IPV6地址失败！");
-                }
-                else
-                {
-                    MagicShow.ShowMsgDialog(this, $"获取到了IPv6地址:{ipv6}，但是公网连接测试失败\n请检查：\n-您是否放行防火墙（包含电脑，路由器防火墙）\n-路由器是否使用桥接模式（若使用NAT，IPV6地址将不是公网）\n错误信息：{ex.Message}", "测试连接失败！");
-                }
-                MessageBox.Show(ex.ToString());
-                */
             }
             finally
             {
-                /*
-                //// 测试完成后关闭监听
-                if (listener != null)
-                {
-                    listener.Stop();
-                    listener.Close();
-                }
-                */
                 GetIPV6.IsEnabled = true;
             }
         }
@@ -3762,18 +3706,18 @@ namespace MSL
                 _json["useConpty"] = "False";
                 try
                 {
-                    if (conptyWindow != null)
+                    if (ConPTYWindow != null)
                     {
                         try
                         {
-                            conptyWindow.Closing -= ConptyWindowClosing;
-                            conptyWindow.ControlServer.Click -= ConptyWindowControlServer;
-                            conptyWindow.ControlServer.MouseDoubleClick -= KillConptyServer;
-                            conptyWindow.Close();
+                            ConPTYWindow.Closing -= ConptyWindowClosing;
+                            ConPTYWindow.ControlServer.Click -= ConptyWindowControlServer;
+                            ConPTYWindow.ControlServer.MouseDoubleClick -= KillConptyServer;
+                            ConPTYWindow.Close();
                         }
                         finally
                         {
-                            conptyWindow = null;
+                            ConPTYWindow = null;
                         }
                     }
                 }
@@ -4091,10 +4035,10 @@ namespace MSL
             string[] strings = new string[2];
             if (useConpty.IsChecked == true)
             {
-                if (conptyWindow != null)
+                if (ConPTYWindow != null)
                 {
                     strings[0] = "B";
-                    strings[1] = conptyWindow.ConptyConsole.ConPTYTerm.GetConsoleText();
+                    strings[1] = ConPTYWindow.ConptyConsole.ConPTYTerm.GetConsoleText();
 
                 }
             }
@@ -4480,9 +4424,9 @@ namespace MSL
                         {
                             if (CheckServerRunning())
                             {
-                                if (conptyWindow != null)
+                                if (ConPTYWindow != null)
                                 {
-                                    conptyWindow.ConptyConsole.ConPTYTerm.WriteToTerm((cmd + "\r\n").AsSpan());
+                                    ConPTYWindow.ConptyConsole.ConPTYTerm.WriteToTerm((cmd + "\r\n").AsSpan());
                                 }
                                 else
                                 {
@@ -4600,7 +4544,7 @@ namespace MSL
         #region window event
         private void Window_Activated(object sender, EventArgs e)
         {
-            if (conptyWindow != null && conptyWindow.Visibility == Visibility.Visible)
+            if (ConPTYWindow != null && ConPTYWindow.Visibility == Visibility.Visible)
             {
                 ConptyPopUp.IsOpen = true;
                 Growl.SetGrowlParent(ConptyGrowlPanel, true);
@@ -4611,7 +4555,7 @@ namespace MSL
 
         private void Window_Deactivated(object sender, EventArgs e)
         {
-            if (conptyWindow != null && conptyWindow.Visibility == Visibility.Visible)
+            if (ConPTYWindow != null && ConPTYWindow.Visibility == Visibility.Visible)
             {
                 ConptyPopUp.IsOpen = false;
                 Growl.SetGrowlParent(ConptyGrowlPanel, false);
@@ -4624,7 +4568,7 @@ namespace MSL
         {
             if (this.Visibility == Visibility.Visible)
             {
-                if (conptyWindow != null && TabCtrl.SelectedIndex == 1)
+                if (ConPTYWindow != null && TabCtrl.SelectedIndex == 1)
                 {
                     ShowConptyWindow();
                     ConptyPopUp.IsOpen = true;
@@ -4636,7 +4580,7 @@ namespace MSL
 
         private void Window_LocationChanged(object sender, EventArgs e)
         {
-            if (conptyWindow != null && conptyWindow.Visibility == Visibility.Visible)
+            if (ConPTYWindow != null && ConPTYWindow.Visibility == Visibility.Visible)
             {
                 UpdateChildWindowPosition();
             }
@@ -4644,7 +4588,7 @@ namespace MSL
 
         private async void Window_SizeChanged(object sender, SizeChangedEventArgs e)
         {
-            if (conptyWindow != null && conptyWindow.Visibility == Visibility.Visible)
+            if (ConPTYWindow != null && ConPTYWindow.Visibility == Visibility.Visible)
             {
                 await UpdateChildWindowSize();
                 UpdateChildWindowPosition();

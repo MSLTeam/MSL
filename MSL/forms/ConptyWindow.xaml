@@ -21,7 +21,7 @@
         </StackPanel>
         <StackPanel Orientation="Horizontal" HorizontalAlignment="Right" VerticalAlignment="Bottom"  >
             <TextBlock Text="服务器状态：" FontSize="14" Foreground="{DynamicResource PrimaryTextBrush}" VerticalAlignment="Center" Margin="5,5,0,5"/>
-            <TextBlock x:Name="ServerStatus"  Text="已关服" FontSize="14" Foreground="{DynamicResource DarkPrimaryBrush}" VerticalAlignment="Center" Margin="0,5,5,5"/>
+            <TextBlock x:Name="ServerStatus" Text="已关服" FontSize="14" Foreground="{DynamicResource DarkPrimaryBrush}" VerticalAlignment="Center" Margin="0,5,5,5"/>
             <Button x:Name="ClearLog" Content="清屏" Margin="5" Click="ClearLog_Click"/>
             <Button x:Name="ControlServer" Content="开服" Margin="5"/>
         </StackPanel>

@@ -654,7 +654,7 @@
                                 </Grid>
                             </hc:UniformSpacingPanel>
                         </controls:MagicCard>
-                        <controls:MagicCard Title="快捷指令栏" x:Name="Tradition_CMDCard" Grid.Row="1" Margin="0,0,0,20">
+                        <controls:MagicCard Title="快捷指令栏" x:Name="Tradition_CMDCard" Margin="0,0,0,20">
                             <Grid>
                                 <Grid.ColumnDefinitions>
                                     <ColumnDefinition Width="*"/>
