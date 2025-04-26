@@ -19,7 +19,7 @@ namespace MSL.utils
         public object HttpResponseException { get; set; }
         public HttpResponse()
         {
-            HttpResponseCode = 0;
+            HttpResponseCode = default;
             HttpResponseContent = string.Empty;
             HttpResponseException = null;
         }
@@ -103,6 +103,8 @@ namespace MSL.utils
         public static async Task<JObject> GetApiContentAsync(string path)
         {
             HttpResponse _response = await GetApiAsync(path);
+            if (_response.HttpResponseCode == default && _response.HttpResponseException != null)
+                throw _response.HttpResponseException as Exception;
             if (_response.HttpResponseCode == HttpStatusCode.OK)
             {
                 try
@@ -183,8 +185,7 @@ namespace MSL.utils
             }
             catch (Exception ex)
             {
-                httpResponse.HttpResponseCode = 0;
-                httpResponse.HttpResponseException = ex.Message;
+                httpResponse.HttpResponseException = ex;
             }
             httpClient.Dispose();
             return httpResponse;

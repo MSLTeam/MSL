@@ -114,6 +114,7 @@ namespace MSL
             }
             catch (Exception ex)
             {
+                // 是的，就是EEEOR（确信QWQ）
                 await MagicShow.ShowMsgDialogAsync(this, ex.Message, "EEEOR");
             }
         }
@@ -420,13 +421,13 @@ namespace MSL
 
         private async Task OnlineService(JObject jsonObject, bool downloadTermDll)
         {
-            ServicePointManager.SecurityProtocol = SecurityProtocolType.Tls12;
             //get serverlink
             // _ = HttpService.GetContentAsync("https://msl-api.oss-cn-hangzhou.aliyuncs.com/");
             // ConfigStore.ServerLink = "mslmc.cn/v3/";
             //Logger.LogInfo("连接到api：" + "https://api." + _link);
             try
             {
+                ServicePointManager.SecurityProtocol = SecurityProtocolType.Tls12;
                 var request = await HttpService.GetApiContentAsync("");
                 if (request == null || (int)request["code"] != 200)
                 {
