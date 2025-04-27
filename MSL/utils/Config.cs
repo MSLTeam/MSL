@@ -11,7 +11,7 @@ namespace MSL.utils
 {
     public class ConfigStore
     {
-        public static string ServerLink { get; } = "mslmc.cn/v3/";
+        public static string ApiLink { get; set; } = "https://api.mslmc.cn/v3";
         public static Version MSLVersion { get; set; }
 
         // public static bool IsOldVersion { get; set; } 旧版本会加一个叹号提示（现在暂没使用此功能），后续可能会用上此字段

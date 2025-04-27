@@ -807,7 +807,7 @@ namespace MSL.langs {
         }
         
         /// <summary>
-        ///   查找类似 内网映射 - 隧道列表（双击进入详情页） 的本地化字符串。
+        ///   查找类似 隧道列表（双击进入详情页） 的本地化字符串。
         /// </summary>
         public static string Page_FrpcPage_Title {
             get {
@@ -1169,7 +1169,7 @@ namespace MSL.langs {
         }
         
         /// <summary>
-        ///   查找类似 服务器列表（双击可快捷启动服务器） 的本地化字符串。
+        ///   查找类似 服务器列表 的本地化字符串。
         /// </summary>
         public static string Page_ServerList_Title {
             get {

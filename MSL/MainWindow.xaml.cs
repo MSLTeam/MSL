@@ -419,11 +419,11 @@ namespace MSL
             }
         }
 
-        private async Task OnlineService(JObject jsonObject, bool downloadTermDll)
+        private async Task OnlineService(JObject jsonObject, bool downloadTermDll,bool isBackupUrl=false)
         {
             //get serverlink
             // _ = HttpService.GetContentAsync("https://msl-api.oss-cn-hangzhou.aliyuncs.com/");
-            // ConfigStore.ServerLink = "mslmc.cn/v3/";
+            // ConfigStore.ApiLink = "mslmc.cn/v3/";
             //Logger.LogInfo("连接到api：" + "https://api." + _link);
             try
             {
@@ -432,6 +432,12 @@ namespace MSL
                 if (request == null || (int)request["code"] != 200)
                 {
                     MagicFlowMsg.ShowMessage(LanguageManager.Instance["MainWindow_GrowlMsg_MSLServerDown"], 2);
+                    if (!isBackupUrl)
+                    {
+                        MagicFlowMsg.ShowMessage("软件将使用备用URL...");
+                        ConfigStore.ApiLink = "https://user.mslmc.net/mslapiv3-backup";
+                        await OnlineService(jsonObject, downloadTermDll, true);
+                    }
                     return;
                 }
             }
@@ -443,6 +449,12 @@ namespace MSL
             catch (HttpRequestException ex)
             {
                 MagicFlowMsg.ShowMessage(LanguageManager.Instance["MainWindow_GrowlMsg_MSLServerDown"] + $"\n[HTTP Exception]({ex.InnerException.Message}){ex.Message}", 2);
+                if (!isBackupUrl)
+                {
+                    MagicFlowMsg.ShowMessage("软件将使用备用URL...");
+                    ConfigStore.ApiLink = "https://user.mslmc.net/mslapiv3-backup";
+                    await OnlineService(jsonObject, downloadTermDll, true);
+                }
                 return;
             }
             catch

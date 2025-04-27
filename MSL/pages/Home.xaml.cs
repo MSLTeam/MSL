@@ -51,7 +51,7 @@ namespace MSL.pages
                         isInit = true;
                     }
                 }
-                else if (ConfigStore.ServerLink != null && !cancellationToken.IsCancellationRequested)
+                else if (ConfigStore.ApiLink != null && !cancellationToken.IsCancellationRequested)
                 {
                     await GetNotice();
                 }

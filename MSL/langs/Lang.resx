@@ -372,7 +372,7 @@ BMCLAPI —— Vanilla服务端、Forge服务端（及其库文件）国内镜�
     <value>端口：</value>
   </data>
   <data name="Page_FrpcPage_Title" xml:space="preserve">
-    <value>内网映射 - 隧道列表（双击进入详情页）</value>
+    <value>隧道列表（双击进入详情页）</value>
   </data>
   <data name="Page_Home_CreateServer" xml:space="preserve">
     <value>创建一个新的服务器</value>
@@ -494,7 +494,7 @@ BMCLAPI —— Vanilla服务端、Forge服务端（及其库文件）国内镜�
     <value>服务器状态</value>
   </data>
   <data name="Page_ServerList_Title" xml:space="preserve">
-    <value>服务器列表（双击可快捷启动服务器）</value>
+    <value>服务器列表</value>
   </data>
   <data name="Page_ServerList_UseCMDLaunch" xml:space="preserve">
     <value>使用命令行开服</value>

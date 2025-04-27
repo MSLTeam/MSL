@@ -41,13 +41,13 @@
                                     <Label.Style>
                                         <Style TargetType="Label" BasedOn="{StaticResource {x:Type Label}}">
                                             <Setter Property="Foreground" Value="White"/>
-                                            <Setter Property="Background" Value="{DynamicResource DarkDangerBrush}"/>
+                                            <Setter Property="Background" Value="{DynamicResource DarkSuccessBrush}"/>
                                             <Style.Triggers>
                                                 <DataTrigger Binding="{Binding ServerState}" Value="运行中">
-                                                    <Setter Property="Background" Value="{DynamicResource DarkSuccessBrush}"/>
+                                                    <Setter Property="Background" Value="{DynamicResource DarkDangerBrush}"/>
                                                 </DataTrigger>
                                                 <DataTrigger Binding="{Binding ServerState}" Value="已开服">
-                                                    <Setter Property="Background" Value="{DynamicResource DarkSuccessBrush}"/>
+                                                    <Setter Property="Background" Value="{DynamicResource DarkDangerBrush}"/>
                                                 </DataTrigger>
                                             </Style.Triggers>
                                         </Style>

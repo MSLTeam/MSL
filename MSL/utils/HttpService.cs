@@ -28,22 +28,6 @@ namespace MSL.utils
     internal class HttpService
     {
         /// <summary>
-        /// Get Official Api Link
-        /// </summary>
-        private static string GetOALink()
-        {
-            return "https://api." + GetOSLink();
-        }
-
-        /// <summary>
-        /// Get Official Service Link
-        /// </summary>
-        private static string GetOSLink()
-        {
-            return ConfigStore.ServerLink;
-        }
-
-        /// <summary>
         /// WebGet
         /// </summary>
         /// <param name="path">位置（默认为软件在线链接的位置）</param>
@@ -52,10 +36,10 @@ namespace MSL.utils
         /// <returns>页内容</returns>
         public static string Get(string path, string customUrl = "", int headerMode = 0)
         {
-            string url = GetOALink();
+            string url = ConfigStore.ApiLink;
             if (customUrl == "")
             {
-                if (ConfigStore.ServerLink == null)
+                if (ConfigStore.ApiLink == null)
                 {
                     return string.Empty;
                 }
@@ -67,9 +51,9 @@ namespace MSL.utils
             WebClient webClient = new WebClient();
             if (headerMode == 0)
             {
-                if (ConfigStore.ServerLink != null)
+                if (ConfigStore.ApiLink != null)
                 {
-                    string ServerLink = GetOSLink();
+                    string ServerLink = ConfigStore.ApiLink;
                     if (ServerLink?.Contains("/") == true)
                     {
                         ServerLink = ServerLink.Substring(0, ServerLink.IndexOf("/"));
@@ -98,7 +82,7 @@ namespace MSL.utils
         /// <summary>
         /// 异步HttpGet页内容（MSL Api）
         /// </summary>
-        /// <param name="path">位置（MSLApi位置）</param>
+        /// <param name="path">位置（MSLApi位置），如"/notice"</param>
         /// <returns></returns>
         public static async Task<JObject> GetApiContentAsync(string path)
         {
@@ -125,11 +109,13 @@ namespace MSL.utils
         /// <summary>
         /// 异步HttpGet（MSL Api）
         /// </summary>
-        /// <param name="path">位置（MSLApi位置）</param>
+        /// <param name="path">位置（MSLApi位置），如"/notice"，如不以“/”开头，此函数内会自动在路径前添加“/”</param>
         /// <returns>strings[0]=0出现错误，此时strings[1]=错误信息；strings[0]=1请求成功，此时strings[1]=页内容，strings[2]=sha256（若开启getSha256）</returns>
         public static async Task<HttpResponse> GetApiAsync(string path)
         {
-            string url = GetOALink();
+            string url = ConfigStore.ApiLink;
+            if (!path.StartsWith("/"))
+                path = "/" + path;
             return await GetAsync(url + path, headers =>
             {
                 headers.Add("DeviceID", ConfigStore.DeviceID);
@@ -202,10 +188,10 @@ namespace MSL.utils
         /// <returns>post后，返回的内容</returns>
         public static string Post(string path, int contentType = 0, string parameterData = "", string customUrl = "", WebHeaderCollection header = null)
         {
-            string url = GetOALink();
+            string url = ConfigStore.ApiLink;
             if (customUrl == "")
             {
-                if (ConfigStore.ServerLink == null)
+                if (ConfigStore.ApiLink == null)
                 {
                     return string.Empty;
                 }

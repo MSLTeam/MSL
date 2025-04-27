@@ -3008,7 +3008,7 @@ namespace MSL
 
                 for (int i = 0; i <= 10; i++)
                 {
-                    if (ConfigStore.ServerLink == null)
+                    if (ConfigStore.ApiLink == null)
                     {
                         Thread.Sleep(1000);
                     }
