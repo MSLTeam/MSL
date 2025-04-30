@@ -1,0 +1,50 @@
+﻿<UserControl x:Class="MSL.pages.frpProviders.MSLFrp.MSLFrpLogin"
+             xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+             xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+             xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006" 
+             xmlns:d="http://schemas.microsoft.com/expression/blend/2008" 
+             xmlns:local="clr-namespace:MSL.pages.frpProviders.MSLFrp"
+             xmlns:hc="https://handyorg.github.io/handycontrol"
+             xmlns:controls="clr-namespace:MSL.controls"
+             mc:Ignorable="d" 
+             d:DesignHeight="450" d:DesignWidth="800">
+    <Grid>
+        <Grid x:Name="LoginGrid" Visibility="Visible">
+            <controls:MagicCard Margin="10">
+                <hc:UniformSpacingPanel Spacing="20" Orientation="Vertical" HorizontalAlignment="Center" VerticalAlignment="Center" ItemHorizontalAlignment="Center" >
+                    <TextBlock Text="登录账户" Style="{StaticResource MagicText16}" FontWeight="Bold"/>
+                    <hc:UniformSpacingPanel Orientation="Vertical" Spacing="10">
+                        <StackPanel Orientation="Horizontal" HorizontalAlignment="Center">
+                            <TextBlock Text="邮箱：" Style="{StaticResource MagicText14}" VerticalAlignment="Center"/>
+                            <TextBox x:Name="UserAccount" Width="200" Margin="5,0,0,0"/>
+                        </StackPanel>
+                        <StackPanel Orientation="Horizontal" HorizontalAlignment="Center">
+                            <TextBlock Text="密码：" Style="{StaticResource MagicText14}" VerticalAlignment="Center"/>
+                            <hc:PasswordBox x:Name="UserPassword" Width="200" Margin="5,0,0,0" ShowEyeButton="True" />
+                        </StackPanel>
+                    </hc:UniformSpacingPanel>
+                    <StackPanel Orientation="Horizontal" HorizontalAlignment="Center">
+                        <Button x:Name="UserLogin" Content="登录" Width="100" Style="{StaticResource ButtonPrimary}"  Margin="0,0,5,0" Click="UserLogin_Click"/>
+                        <Button x:Name="userRegister" Content="注册/用户中心" Width="100" Margin="5,0,0,0" Command="hc:ControlCommands.OpenLink" CommandParameter="https://user.mslmc.cn"/>
+                    </StackPanel>
+                    <CheckBox Content="保存登录状态（风险自负哦~）" HorizontalAlignment="Center" x:Name="SaveToken"/>
+                </hc:UniformSpacingPanel>
+            </controls:MagicCard>
+        </Grid>
+        <Grid x:Name="Auth2FAGrid" Visibility="Collapsed">
+            <controls:MagicCard Margin="10">
+                <hc:UniformSpacingPanel Spacing="20" Orientation="Vertical" HorizontalAlignment="Center" VerticalAlignment="Center" ItemHorizontalAlignment="Center" >
+                    <TextBlock Text="2FA验证" Style="{StaticResource MagicText16}" FontWeight="Bold"/>
+                    <StackPanel Orientation="Horizontal" HorizontalAlignment="Center">
+                        <TextBlock Text="输入验证码：" Style="{StaticResource MagicText14}" VerticalAlignment="Center"/>
+                        <TextBox x:Name="Auth2FACode" Width="200" Margin="5,0,0,0"/>
+                    </StackPanel>
+                    <StackPanel Orientation="Horizontal" HorizontalAlignment="Center">
+                        <Button x:Name="User2FAReturn" Content="返回" Width="100" Margin="0,0,5,0" Click="User2FAReturn_Click"/>
+                        <Button x:Name="User2FALogin" Content="确定" Width="100" Style="{StaticResource ButtonPrimary}"  Margin="5,0,0,0" Click="User2FALogin_Click"/>
+                    </StackPanel>
+                </hc:UniformSpacingPanel>
+            </controls:MagicCard>
+        </Grid>
+    </Grid>
+</UserControl>

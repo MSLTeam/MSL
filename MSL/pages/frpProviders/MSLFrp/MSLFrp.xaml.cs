@@ -14,15 +14,11 @@ namespace MSL.pages.frpProviders.MSLFrp
     /// </summary>
     public partial class MSLFrp : Page
     {
-        private MSLFrpProfile FrpProfile;
-        private readonly Action ChangeTab;
+        private MSLFrpProfile FrpProfile=new MSLFrpProfile();
+
         public MSLFrp()
         {
             InitializeComponent();
-            ChangeTab = () =>
-            {
-                MainCtrl.SelectedIndex = 0;
-            };
         }
 
         private bool isInit = false;
@@ -32,34 +28,44 @@ namespace MSL.pages.frpProviders.MSLFrp
                 return;
 
             isInit = true;
-            FrpProfile = new MSLFrpProfile(close: ChangeTab);
-            // 显示登录页面
-            LoginGrid.Visibility = Visibility.Visible;
-            MainCtrl.Visibility = Visibility.Collapsed;
 
             // 获取Token并尝试登录
             var token = string.IsNullOrEmpty(MSLFrpApi.UserToken)
                 ? Config.Read("MSLUserAccessToken")?.ToString()
                 : MSLFrpApi.UserToken;
 
-            if (string.IsNullOrEmpty(token))
+            if (!string.IsNullOrEmpty(token))
             {
-                return;  // 如果没有Token，直接返回
+                // 登录并获取用户信息
+                var loginSuccess = await AttemptLogin(token);
+                if (!loginSuccess)
+                {
+                    ShowLoginControl();
+                    return;  // 登录失败，返回
+                }
+
+                // 获取隧道列表
+                await GetTunnelList();
+                return;
             }
 
-            // 登录并获取用户信息
-            var loginSuccess = await AttemptLogin(token);
-            if (!loginSuccess)
+            ShowLoginControl();
+        }
+
+        private void ShowLoginControl()
+        {
+            // 显示登录页面
+            MSLFrpLogin loginControl = new MSLFrpLogin();
+            loginControl.LoginSuccess += async delegate(string UserInfo)
             {
-                return;  // 登录失败，返回
-            }
-
-            // 显示main页面
-            LoginGrid.Visibility = Visibility.Collapsed;
-            MainCtrl.Visibility = Visibility.Visible;
-
-            // 获取隧道列表
-            await GetTunnelList();
+                LoginControl.Visibility = Visibility.Collapsed;
+                MainCtrl.Visibility = Visibility.Visible;
+                UpdateUserInfo(JObject.Parse(UserInfo));
+                await GetTunnelList();
+            };
+            LoginControl.Content = loginControl;
+            LoginControl.Visibility = Visibility.Visible;
+            MainCtrl.Visibility = Visibility.Collapsed;
         }
 
         // 封装登录操作
@@ -68,7 +74,7 @@ namespace MSL.pages.frpProviders.MSLFrp
             MagicDialog magicDialog = new MagicDialog();
             magicDialog.ShowTextDialog(Window.GetWindow(this), "登录中……");
 
-            var (Code, Msg) = await MSLFrpApi.UserLogin(token);
+            var (Code, Msg,UserInfo) = await MSLFrpApi.UserLogin(token);
 
             magicDialog.CloseTextDialog();
 
@@ -79,7 +85,7 @@ namespace MSL.pages.frpProviders.MSLFrp
             }
 
             // 解析用户信息并更新UI
-            JObject JsonUserInfo = JObject.Parse(Msg);
+            JObject JsonUserInfo = JObject.Parse(UserInfo);
             UpdateUserInfo(JsonUserInfo);
 
             return true;
@@ -151,35 +157,7 @@ namespace MSL.pages.frpProviders.MSLFrp
             }
         }
 
-        private async void userTokenLogin_Click(object sender, RoutedEventArgs e)
-        {
-            string email = await MagicShow.ShowInput(Window.GetWindow(this), "请输入MSL账户的邮箱", "", false);
-            if (email != null)
-            {
-                string password = await MagicShow.ShowInput(Window.GetWindow(this), "请输入MSL账户的密码", "", true);
-                if (password != null)
-                {
-                    bool save = (bool)SaveToken.IsChecked;
-                    MagicDialog MagicDialog = new MagicDialog();
-                    MagicDialog.ShowTextDialog(Window.GetWindow(this), "登录中……");
-                    var (Code, Msg) = await MSLFrpApi.UserLogin(string.Empty, email, password, save);
-                    MagicDialog.CloseTextDialog();
-                    if (Code != 200)
-                    {
-                        MagicShow.ShowMsgDialog(Window.GetWindow(this), "登陆失败！\n" + Msg, "错误");
-                        return;
-                    }
-                    LoginGrid.Visibility = Visibility.Collapsed; ;
-                    MainCtrl.Visibility = Visibility.Visible;
-                    // 解析用户信息并更新UI
-                    JObject JsonUserInfo = JObject.Parse(Msg);
-                    UpdateUserInfo(JsonUserInfo);
-                    await GetTunnelList();
-                }
-            }
-        }
-
-
+        
 
         //显示隧道信息
         private void FrpList_SelectionChanged(object sender, SelectionChangedEventArgs e)
@@ -322,11 +300,10 @@ namespace MSL.pages.frpProviders.MSLFrp
         private void ExitBtn_Click(object sender, RoutedEventArgs e)
         {
             //显示登录页面
-            LoginGrid.Visibility = Visibility.Visible;
-            MainCtrl.Visibility = Visibility.Collapsed;
+            ShowLoginControl();
             MSLFrpApi.UserToken = string.Empty;
             Config.Remove("MSLUserAccessToken");
-            FrpProfile = new MSLFrpProfile(close: ChangeTab);
+            FrpProfile = new MSLFrpProfile();
         }
     }
 

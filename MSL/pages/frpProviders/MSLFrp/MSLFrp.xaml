@@ -16,6 +16,7 @@
         <local:MSLKCPVisibleConverter x:Key="KCPVisibleConverter"/>
     </Page.Resources>
     <Grid>
+        <ContentControl x:Name="LoginControl" Visibility="Collapsed"/>
         <TabControl x:Name="MainCtrl" Margin="10,5,10,10" Style="{StaticResource TabControlCapsuleSolidInLine}" Background="Transparent" BorderThickness="0" SelectionChanged="MainCtrl_SelectionChanged">
             <TabItem Header="我的隧道">
                 <Grid x:Name="MainGrid">
@@ -150,23 +151,6 @@
                             </DataTemplate>
                         </controls:MagicListBox.ItemTemplate>
                     </controls:MagicListBox>
-                    
-                    <!--
-                        <ListBox x:Name="NodeList" Grid.Row="1" MinWidth="300" SelectionMode="Single" hc:Empty.ShowEmpty="true" SelectionChanged="NodeList_SelectionChanged">
-                            <ListBox.ItemTemplate>
-                                <DataTemplate>
-                                    <TextBlock>
-                                        <TextBlock.Inlines>
-                                            <Run Text="[" />
-                                            <Run Text="{Binding VipName}" />
-                                            <Run Text="] " />
-                                            <Run Text="{Binding Name}" />
-                                        </TextBlock.Inlines>
-                                    </TextBlock>
-                                </DataTemplate>
-                            </ListBox.ItemTemplate>
-                        </ListBox>
-                        -->
                     <Grid Grid.Column="1">
                         <Grid.RowDefinitions>
                             <RowDefinition Height="*"/>
@@ -239,16 +223,5 @@
                 <Frame x:Name="UserCenterFrame" BorderThickness="0"/>
             </TabItem>
         </TabControl>
-        <Grid x:Name="LoginGrid" Visibility="Collapsed">
-            <StackPanel HorizontalAlignment="Center" VerticalAlignment="Center" >
-                <TextBlock Text="使用 MSL Frp 服务之前，请先登录您的 MSL 用户中心 账户" HorizontalAlignment="Center"  VerticalAlignment="Center"  FontSize="16" Foreground="{DynamicResource PrimaryTextBrush}" Margin="0,0,0,20"/>
-                <StackPanel Orientation="Horizontal" HorizontalAlignment="Center">
-                    <Button x:Name="userTokenLogin" Content="使用账号密码登录" Style="{StaticResource ButtonPrimary}"  Margin="0,0,5,0" Click="userTokenLogin_Click"/>
-                    <Button x:Name="userRegister" Content="注册/进入用户中心" Margin="5,0,0,0" Command="hc:ControlCommands.OpenLink" CommandParameter="https://user.mslmc.cn"/>
-                </StackPanel>
-                <CheckBox Content="保存登录状态（风险自负哦~）" HorizontalAlignment="Center" Margin="0,10,0,0" x:Name="SaveToken"/>
-                <TextBlock Text="仅支持账号密码登录哦~" HorizontalAlignment="Center"  VerticalAlignment="Center"  FontSize="13" Foreground="{DynamicResource PrimaryTextBrush}" Margin="0,10,0,0"/>
-            </StackPanel>
-        </Grid>
     </Grid>
 </Page>

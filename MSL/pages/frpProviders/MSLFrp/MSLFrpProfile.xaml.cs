@@ -7,7 +7,6 @@ using System.Collections.Generic;
 using System.Threading.Tasks;
 using System.Windows;
 using System.Windows.Controls;
-using System.Windows.Interop;
 using System.Windows.Media;
 using System.Windows.Media.Imaging;
 
@@ -18,11 +17,9 @@ namespace MSL.pages.frpProviders.MSLFrp
     /// </summary>
     public partial class MSLFrpProfile : Page
     {
-        private readonly Action _close;
-        public MSLFrpProfile(Action close)
+        public MSLFrpProfile()
         {
             InitializeComponent();
-            _close = close;
         }
 
         bool isInit = false;
@@ -31,46 +28,22 @@ namespace MSL.pages.frpProviders.MSLFrp
             if (isInit)
                 return;
             isInit = true;
-            if (string.IsNullOrEmpty(MSLFrpApi.UserToken))
+
+            // 获取Token并尝试登录
+            var token = string.IsNullOrEmpty(MSLFrpApi.UserToken)
+                ? Config.Read("MSLUserAccessToken")?.ToString()
+                : MSLFrpApi.UserToken;
+
+            if (string.IsNullOrEmpty(token))
             {
-                var token = Config.Read("MSLUserAccessToken")?.ToString() ?? "";
-                if (string.IsNullOrEmpty(token))
-                {
-                    string email = await MagicShow.ShowInput(Window.GetWindow(this), "请输入MSL账户的邮箱", "", false);
-                    if (email == null)
-                    {
-                        Close();
-                        return;
-                    }
-
-                    string password = await MagicShow.ShowInput(Window.GetWindow(this), "请输入MSL账户的密码", "", true);
-                    if (password == null)
-                    {
-                        Close();
-                        return;
-                    }
-
-                    bool save = await MagicShow.ShowMsgDialogAsync(Window.GetWindow(this), "是否保存登陆状态？保存后在软件重启后无需再重新登录。\n若此电脑并非您的私人电脑，MSL不建议您保存，否则风险自负！", "提示", true);
-                    if (await PerformLogin(string.Empty, email, password, save) == false)
-                    {
-                        Close();
-                        return;
-                    }
-                }
-                else
-                {
-                    if (await PerformLogin(token) == false)
-                    {
-                        Close();
-                        return;
-                    }
-                }
+                ShowLoginControl();
+                return;
             }
             else
             {
-                if (await PerformLogin(MSLFrpApi.UserToken) == false)
+                if (await PerformLogin(token) == false)
                 {
-                    Close();
+                    ShowLoginControl();
                     return;
                 }
             }
@@ -81,14 +54,29 @@ namespace MSL.pages.frpProviders.MSLFrp
             magicDialog.CloseTextDialog();
         }
 
-        private async Task<bool> PerformLogin(string token = "", string email = "", string password = "", bool save = false)
+        private void ShowLoginControl()
+        {
+            // 显示登录页面
+            MSLFrpLogin loginControl = new MSLFrpLogin();
+            loginControl.LoginSuccess += async delegate (string UserInfo)
+            {
+                if (await PerformLogin(MSLFrpApi.UserToken) == true)
+                {
+                    LoginControl.Visibility = Visibility.Collapsed;
+                    MainGrid.Visibility = Visibility.Visible;
+                }
+            };
+            LoginControl.Content = loginControl;
+            LoginControl.Visibility = Visibility.Visible;
+            MainGrid.Visibility = Visibility.Collapsed;
+        }
+
+        private async Task<bool> PerformLogin(string token)
         {
             MagicDialog magicDialog = new MagicDialog();
             magicDialog.ShowTextDialog(Window.GetWindow(this), "登录中……");
 
-            (int Code, string Msg) = string.IsNullOrEmpty(token)
-                ? await MSLFrpApi.UserLogin(string.Empty, email, password, save)
-                : await MSLFrpApi.UserLogin(token);
+            (int Code, string Msg,_) = await MSLFrpApi.UserLogin(token);
 
             magicDialog.CloseTextDialog();
 
@@ -107,7 +95,7 @@ namespace MSL.pages.frpProviders.MSLFrp
             if (Code != 200)
             {
                 await MagicShow.ShowMsgDialogAsync(Window.GetWindow(this), Msg, "ERR");
-                Close();
+                ShowLoginControl();
                 return;
             }
             JObject userData = JObject.Parse(Data.ToString());
@@ -295,11 +283,6 @@ namespace MSL.pages.frpProviders.MSLFrp
                 MagicShow.ShowMsgDialog(Window.GetWindow(this), Msg, "错误");
             }
             PayOrder.IsEnabled = true;
-        }
-
-        private void Close()
-        {
-            _close();
         }
 
         private void AskBtn_Click(object sender, RoutedEventArgs e)

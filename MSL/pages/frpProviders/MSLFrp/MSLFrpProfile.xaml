@@ -11,80 +11,83 @@
       Title="MSLFrpProfile" Loaded="Page_Loaded">
 
     <Grid>
-        <Grid.ColumnDefinitions>
-            <ColumnDefinition/>
-            <ColumnDefinition Width="10"/>
-            <ColumnDefinition/>
-        </Grid.ColumnDefinitions>
-        <controls:MagicCard Grid.Column="0" Title="我的信息">
-            <Grid>
-                <Grid.RowDefinitions>
-                    <RowDefinition Height="100"/>
-                    <RowDefinition/>
-                </Grid.RowDefinitions>
-                <Grid Grid.Row="0" Margin="0,0,0,5">
-                    <Grid.ColumnDefinitions>
-                        <ColumnDefinition Width="3*"/>
-                        <ColumnDefinition Width="6*"/>
-                    </Grid.ColumnDefinitions>
-                    <Image x:Name="HeadImage" Grid.Column="0" Width="100" HorizontalAlignment="Right"/>
-                    <hc:UniformSpacingPanel VerticalAlignment="Center" Orientation="Vertical" Grid.Column="1">
-                        <Label x:Name="Name_Label" Style="{StaticResource MagicLabel16}"/>
-                        <Label x:Name="Uid_Label" Style="{StaticResource MagicLabel14}"/>
-                        <Label x:Name="Email_Label" Style="{StaticResource MagicLabel14}"/>
+        <ContentControl x:Name="LoginControl" Visibility="Collapsed"/>
+        <Grid x:Name="MainGrid">
+            <Grid.ColumnDefinitions>
+                <ColumnDefinition/>
+                <ColumnDefinition Width="10"/>
+                <ColumnDefinition/>
+            </Grid.ColumnDefinitions>
+            <controls:MagicCard Grid.Column="0" Title="我的信息">
+                <Grid>
+                    <Grid.RowDefinitions>
+                        <RowDefinition Height="100"/>
+                        <RowDefinition/>
+                    </Grid.RowDefinitions>
+                    <Grid Grid.Row="0" Margin="0,0,0,5">
+                        <Grid.ColumnDefinitions>
+                            <ColumnDefinition Width="3*"/>
+                            <ColumnDefinition Width="6*"/>
+                        </Grid.ColumnDefinitions>
+                        <Image x:Name="HeadImage" Grid.Column="0" Width="100" HorizontalAlignment="Right"/>
+                        <hc:UniformSpacingPanel VerticalAlignment="Center" Orientation="Vertical" Grid.Column="1">
+                            <Label x:Name="Name_Label" Style="{StaticResource MagicLabel16}"/>
+                            <Label x:Name="Uid_Label" Style="{StaticResource MagicLabel14}"/>
+                            <Label x:Name="Email_Label" Style="{StaticResource MagicLabel14}"/>
+                        </hc:UniformSpacingPanel>
+                    </Grid>
+                    <hc:UniformSpacingPanel Orientation="Vertical" Spacing="3" Grid.Row="1" VerticalAlignment="Center">
+                        <Label x:Name="QQ_Label" Style="{StaticResource MagicLabel14}"/>
+                        <Label x:Name="Score_Label" Style="{StaticResource MagicLabel14}"/>
+                        <Label x:Name="RegTime_Label" Style="{StaticResource MagicLabel14}"/>
+                        <Label x:Name="LastLogin_Label" Style="{StaticResource MagicLabel14}"/>
+                        <Label x:Name="Perm_Label" Style="{StaticResource MagicLabel14}"/>
+                        <StackPanel Orientation="Horizontal">
+                            <Label x:Name="RealnameVerify_Label" Style="{StaticResource MagicLabel14}"/>
+                            <Button x:Name="RealnameVerify_Button" Click="RealnameVerify_Button_Click" Visibility="Collapsed" Content="点我实名"/>
+                        </StackPanel>
+
                     </hc:UniformSpacingPanel>
                 </Grid>
-                <hc:UniformSpacingPanel Orientation="Vertical" Spacing="3" Grid.Row="1" VerticalAlignment="Center">
-                    <Label x:Name="QQ_Label" Style="{StaticResource MagicLabel14}"/>
-                    <Label x:Name="Score_Label" Style="{StaticResource MagicLabel14}"/>
-                    <Label x:Name="RegTime_Label" Style="{StaticResource MagicLabel14}"/>
-                    <Label x:Name="LastLogin_Label" Style="{StaticResource MagicLabel14}"/>
-                    <Label x:Name="Perm_Label" Style="{StaticResource MagicLabel14}"/>
-                    <StackPanel Orientation="Horizontal">
-                        <Label x:Name="RealnameVerify_Label" Style="{StaticResource MagicLabel14}"/>
-                        <Button x:Name="RealnameVerify_Button" Click="RealnameVerify_Button_Click" Visibility="Collapsed" Content="点我实名"/>
-                    </StackPanel>
-                    
-                </hc:UniformSpacingPanel>
+            </controls:MagicCard>
+            <Grid Grid.Column="2">
+                <Grid.RowDefinitions>
+                    <RowDefinition Height="auto"/>
+                    <RowDefinition Height="5"/>
+                    <RowDefinition/>
+                </Grid.RowDefinitions>
+                <controls:MagicCard Grid.Row="0" Title="积分购买">
+                    <hc:UniformSpacingPanel Orientation="Vertical" Spacing="5">
+                        <Grid>
+                            <Grid.ColumnDefinitions>
+                                <ColumnDefinition Width="Auto"/>
+                                <ColumnDefinition/>
+                            </Grid.ColumnDefinitions>
+                            <Label Grid.Column="0" Style="{StaticResource MagicLabel14}" Content="输入金额（￥1=100积分）："/>
+                            <TextBox x:Name="AmountText" Grid.Column="1"/>
+                        </Grid>
+                        <Grid>
+                            <Grid.ColumnDefinitions>
+                                <ColumnDefinition Width="Auto"/>
+                                <ColumnDefinition/>
+                                <ColumnDefinition Width="Auto"/>
+                            </Grid.ColumnDefinitions>
+                            <Label Grid.Column="0" Style="{StaticResource MagicLabel14}" Content="选择付款方式："/>
+                            <ComboBox Grid.Column="1" SelectedIndex="0" x:Name="PayMethod">
+                                <ComboBoxItem Content="支付宝"/>
+                                <ComboBoxItem Content="微信"/>
+                            </ComboBox>
+                            <Button Grid.Column="2" x:Name="PayOrder" Click="PayOrder_Click" MinWidth="100" Content="购买"/>
+                        </Grid>
+                        <Button Content="付款遇到问题?" x:Name="AskBtn" MinWidth="100" Click="AskBtn_Click"/>
+                    </hc:UniformSpacingPanel>
+                </controls:MagicCard>
+                <controls:MagicCard Grid.Row="2" Title="积分兑换">
+                    <hc:ScrollViewer IsInertiaEnabled="True">
+                        <hc:UniformSpacingPanel x:Name="GoodsList" Orientation="Vertical" Spacing="10"/>
+                    </hc:ScrollViewer>
+                </controls:MagicCard>
             </Grid>
-        </controls:MagicCard>
-        <Grid Grid.Column="2">
-            <Grid.RowDefinitions>
-                <RowDefinition Height="auto"/>
-                <RowDefinition Height="5"/>
-                <RowDefinition/>
-            </Grid.RowDefinitions>
-            <controls:MagicCard Grid.Row="0" Title="积分购买">
-                <hc:UniformSpacingPanel Orientation="Vertical" Spacing="5">
-                    <Grid>
-                        <Grid.ColumnDefinitions>
-                            <ColumnDefinition Width="Auto"/>
-                            <ColumnDefinition/>
-                        </Grid.ColumnDefinitions>
-                        <Label Grid.Column="0" Style="{StaticResource MagicLabel14}" Content="输入金额（￥1=100积分）："/>
-                        <TextBox x:Name="AmountText" Grid.Column="1"/>
-                    </Grid>
-                    <Grid>
-                        <Grid.ColumnDefinitions>
-                            <ColumnDefinition Width="Auto"/>
-                            <ColumnDefinition/>
-                            <ColumnDefinition Width="Auto"/>
-                        </Grid.ColumnDefinitions>
-                        <Label Grid.Column="0" Style="{StaticResource MagicLabel14}" Content="选择付款方式："/>
-                        <ComboBox Grid.Column="1" SelectedIndex="0" x:Name="PayMethod">
-                            <ComboBoxItem Content="支付宝"/>
-                            <ComboBoxItem Content="微信"/>
-                        </ComboBox>
-                        <Button Grid.Column="2" x:Name="PayOrder" Click="PayOrder_Click" MinWidth="100" Content="购买"/>
-                    </Grid>
-                    <Button Content="付款遇到问题?" x:Name="AskBtn" MinWidth="100" Click="AskBtn_Click"/>
-                </hc:UniformSpacingPanel>
-            </controls:MagicCard>
-            <controls:MagicCard Grid.Row="2" Title="积分兑换">
-                <hc:ScrollViewer IsInertiaEnabled="True">
-                    <hc:UniformSpacingPanel x:Name="GoodsList" Orientation="Vertical" Spacing="10"/>
-                </hc:ScrollViewer>
-            </controls:MagicCard>
         </Grid>
     </Grid>
 </Page>

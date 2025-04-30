@@ -115,11 +115,7 @@ namespace MSL.pages
                 ShowMinButton = false,
                 WindowStartupLocation = WindowStartupLocation.CenterOwner
             };
-            Action closeWindow = () =>
-            {
-                window.Close();
-            };
-            MSLFrpProfile frpProfile = new MSLFrpProfile(close: closeWindow);
+            MSLFrpProfile frpProfile = new MSLFrpProfile();
             frpProfile.Margin = new Thickness(10);
             window.Owner = Window.GetWindow(this);
             window.Content = frpProfile;

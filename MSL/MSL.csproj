@@ -126,6 +126,9 @@
     <Compile Include="pages\frpProviders\MSLFrp\MSLFrp.xaml.cs">
       <DependentUpon>MSLFrp.xaml</DependentUpon>
     </Compile>
+    <Compile Include="pages\frpProviders\MSLFrp\MSLFrpLogin.xaml.cs">
+      <DependentUpon>MSLFrpLogin.xaml</DependentUpon>
+    </Compile>
     <Compile Include="pages\frpProviders\MSLFrp\MSLFrpProfile.xaml.cs">
       <DependentUpon>MSLFrpProfile.xaml</DependentUpon>
     </Compile>
@@ -303,6 +306,10 @@
       <Generator>MSBuild:Compile</Generator>
     </Page>
     <Page Include="pages\frpProviders\MSLFrp\MSLFrp.xaml">
+      <SubType>Designer</SubType>
+      <Generator>MSBuild:Compile</Generator>
+    </Page>
+    <Page Include="pages\frpProviders\MSLFrp\MSLFrpLogin.xaml">
       <SubType>Designer</SubType>
       <Generator>MSBuild:Compile</Generator>
     </Page>

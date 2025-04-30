@@ -54,36 +54,49 @@ namespace MSL.utils
             return ((int)res.HttpResponseCode, null, $"({(int)res.HttpResponseCode}){res.HttpResponseContent}");
         }
 
-        public static async Task<(int Code, string Msg)> UserLogin(string token, string email = "", string password = "", bool saveToken = false)
+        public static async Task<(int Code, string Msg, string UserInfo)> UserLogin(string token, string email = "", string password = "", string auth2fa = "", bool saveToken = false)
         {
             if (string.IsNullOrEmpty(token))
             {
                 // 发送邮箱和密码，请求登录，获取MSL-User-Token
                 try
                 {
-                    var body = new JObject
+                    JObject body;
+                    if (string.IsNullOrEmpty(auth2fa))
                     {
-                        ["email"] = email,
-                        ["password"] = password
-                    };
+                        body = new JObject
+                        {
+                            ["email"] = email,
+                            ["password"] = password
+                        };
+                    }
+                    else
+                    {
+                        body = new JObject
+                        {
+                            ["email"] = email,
+                            ["password"] = password,
+                            ["twoFactorAuthKey"] = auth2fa
+                        };
+                    }
                     HttpResponse res = await HttpService.PostAsync(ApiUrl + "/user/login", 0, body);
                     if (res.HttpResponseCode == HttpStatusCode.OK)
                     {
                         JObject JsonUserInfo = JObject.Parse((string)res.HttpResponseContent);
                         if (JsonUserInfo["code"].Value<int>() != 200)
                         {
-                            return ((int)JsonUserInfo["code"], JsonUserInfo["msg"].ToString());
+                            return ((int)JsonUserInfo["code"], JsonUserInfo["msg"].ToString(), string.Empty);
                         }
                         token = JsonUserInfo["data"]["token"].ToString();
                     }
                     else
                     {
-                        return ((int)res.HttpResponseCode, res.HttpResponseContent.ToString());
+                        return ((int)res.HttpResponseCode, res.HttpResponseContent.ToString(), string.Empty);
                     }
                 }
                 catch (Exception ex)
                 {
-                    return (0, ex.Message);
+                    return (0, ex.Message, string.Empty);
                 }
             }
 
@@ -101,7 +114,7 @@ namespace MSL.utils
                     {
                         if (Config.Read("MSLUserAccessToken") != null)
                             Config.Remove("MSLUserAccessToken");
-                        return ((int)loginRes["code"], loginRes["msg"].ToString());
+                        return ((int)loginRes["code"], loginRes["msg"].ToString(), string.Empty);
                     }
                     UserToken = token;
                     if (saveToken)
@@ -111,18 +124,18 @@ namespace MSL.utils
 
                     // 用户登陆成功后，发送POST请求续期Token
                     _ = await HttpService.PostAsync(ApiUrl + "/user/renewToken", 3, configureHeaders: headersAction, headerUAMode: 1);
-                    return (200, (string)res.HttpResponseContent);
+                    return (200, string.Empty, (string)res.HttpResponseContent);
                 }
                 else
                 {
                     if (Config.Read("MSLUserAccessToken") != null)
                         Config.Remove("MSLUserAccessToken");
-                    return ((int)res.HttpResponseCode, res.HttpResponseContent.ToString());
+                    return ((int)res.HttpResponseCode, res.HttpResponseContent.ToString(), string.Empty);
                 }
             }
             catch (Exception ex)
             {
-                return (0, ex.Message);
+                return (0, ex.Message, string.Empty);
             }
         }
 
