@@ -56,11 +56,11 @@ namespace MSL.pages.frpProviders.MSLFrp
         {
             // 显示登录页面
             MSLFrpLogin loginControl = new MSLFrpLogin();
-            loginControl.LoginSuccess += async delegate(string UserInfo)
+            loginControl.LoginSuccess += async delegate(JObject UserInfo)
             {
                 LoginControl.Visibility = Visibility.Collapsed;
                 MainCtrl.Visibility = Visibility.Visible;
-                UpdateUserInfo(JObject.Parse(UserInfo));
+                UpdateUserInfo(UserInfo);
                 await GetTunnelList();
             };
             LoginControl.Content = loginControl;
@@ -85,9 +85,8 @@ namespace MSL.pages.frpProviders.MSLFrp
             }
 
             // 解析用户信息并更新UI
-            JObject JsonUserInfo = JObject.Parse(UserInfo);
-            UpdateUserInfo(JsonUserInfo);
-
+            UpdateUserInfo(UserInfo);
+            MagicFlowMsg.ShowMessage("登录成功！", 1);
             return true;
         }
 

@@ -16,16 +16,24 @@ namespace MSL.utils
         private static string ApiUrl { get; } = "https://user.mslmc.net/api";
         public static string UserToken { get; set; }
 
-        public static async Task<(int Code, JToken Data, string Msg)> ApiGet(string route)
+        public static async Task<(int Code, JToken Data, string Msg)> ApiGet(string route, bool noAuth = false)
         {
-            HttpResponse nodeRes = await HttpService.GetAsync(ApiUrl + route, headers =>
+            HttpResponse res;
+            if (noAuth)
             {
-                headers.Authorization = new AuthenticationHeaderValue("Bearer", UserToken);
-            }, 1);
+                res = await HttpService.GetAsync(ApiUrl + route, headerUAMode: 1);
+            }
+            else
+            {
+                res = await HttpService.GetAsync(ApiUrl + route, headers =>
+                {
+                    headers.Authorization = new AuthenticationHeaderValue("Bearer", UserToken);
+                }, 1);
+            }
 
-            if (nodeRes.HttpResponseCode == HttpStatusCode.OK)
+            if (res.HttpResponseCode == HttpStatusCode.OK)
             {
-                JObject jobj = JObject.Parse((string)nodeRes.HttpResponseContent);
+                JObject jobj = JObject.Parse((string)res.HttpResponseContent);
                 if (jobj["code"].Value<int>() != 200)
                 {
                     return ((int)jobj["code"], null, jobj["msg"].ToString());
@@ -34,18 +42,26 @@ namespace MSL.utils
             }
             else
             {
-                return ((int)nodeRes.HttpResponseCode, null, $"({(int)nodeRes.HttpResponseCode}){nodeRes.HttpResponseContent}");
+                return ((int)res.HttpResponseCode, null, $"({(int)res.HttpResponseCode}){res.HttpResponseContent}");
             }
         }
 
-        public static async Task<(int Code, JToken Data, string Msg)> ApiPost(string route, int contentType, object parameterData)
+        public static async Task<(int Code, JToken Data, string Msg)> ApiPost(string route, int contentType, object parameterData,bool noAuth=false)
         {
-            var headersAction = new Action<HttpRequestHeaders>(headers =>
+            HttpResponse res;
+            if (noAuth)
             {
-                headers.Add("Authorization", $"Bearer {UserToken}");
-            });
+                res = await HttpService.PostAsync(ApiUrl + route, contentType, parameterData);
+            }
+            else
+            {
+                var headersAction = new Action<HttpRequestHeaders>(headers =>
+                {
+                    headers.Add("Authorization", $"Bearer {UserToken}");
+                });
 
-            HttpResponse res = await HttpService.PostAsync(ApiUrl + route, contentType, parameterData, headersAction);
+                res = await HttpService.PostAsync(ApiUrl + route, contentType, parameterData, headersAction);
+            }
             if (res.HttpResponseCode == HttpStatusCode.OK)
             {
                 var json = JObject.Parse((string)res.HttpResponseContent);
@@ -54,7 +70,7 @@ namespace MSL.utils
             return ((int)res.HttpResponseCode, null, $"({(int)res.HttpResponseCode}){res.HttpResponseContent}");
         }
 
-        public static async Task<(int Code, string Msg, string UserInfo)> UserLogin(string token, string email = "", string password = "", string auth2fa = "", bool saveToken = false)
+        public static async Task<(int Code, string Msg, JObject ContentInfo)> UserLogin(string token, string email = "", string password = "", string auth2fa = "", bool saveToken = false)
         {
             if (string.IsNullOrEmpty(token))
             {
@@ -82,21 +98,21 @@ namespace MSL.utils
                     HttpResponse res = await HttpService.PostAsync(ApiUrl + "/user/login", 0, body);
                     if (res.HttpResponseCode == HttpStatusCode.OK)
                     {
-                        JObject JsonUserInfo = JObject.Parse((string)res.HttpResponseContent);
-                        if (JsonUserInfo["code"].Value<int>() != 200)
+                        JObject LoginResponse = JObject.Parse((string)res.HttpResponseContent);
+                        if (LoginResponse["code"].Value<int>() != 200)
                         {
-                            return ((int)JsonUserInfo["code"], JsonUserInfo["msg"].ToString(), string.Empty);
+                            return ((int)LoginResponse["code"], LoginResponse["msg"].ToString(), LoginResponse);
                         }
-                        token = JsonUserInfo["data"]["token"].ToString();
+                        token = LoginResponse["data"]["token"].ToString();
                     }
                     else
                     {
-                        return ((int)res.HttpResponseCode, res.HttpResponseContent.ToString(), string.Empty);
+                        return ((int)res.HttpResponseCode, res.HttpResponseContent.ToString(), null);
                     }
                 }
                 catch (Exception ex)
                 {
-                    return (0, ex.Message, string.Empty);
+                    return (0, ex.Message, null);
                 }
             }
 
@@ -114,7 +130,7 @@ namespace MSL.utils
                     {
                         if (Config.Read("MSLUserAccessToken") != null)
                             Config.Remove("MSLUserAccessToken");
-                        return ((int)loginRes["code"], loginRes["msg"].ToString(), string.Empty);
+                        return ((int)loginRes["code"], loginRes["msg"].ToString(), null);
                     }
                     UserToken = token;
                     if (saveToken)
@@ -124,18 +140,18 @@ namespace MSL.utils
 
                     // 用户登陆成功后，发送POST请求续期Token
                     _ = await HttpService.PostAsync(ApiUrl + "/user/renewToken", 3, configureHeaders: headersAction, headerUAMode: 1);
-                    return (200, string.Empty, (string)res.HttpResponseContent);
+                    return (200, string.Empty, JObject.Parse(res.HttpResponseContent.ToString()));
                 }
                 else
                 {
                     if (Config.Read("MSLUserAccessToken") != null)
                         Config.Remove("MSLUserAccessToken");
-                    return ((int)res.HttpResponseCode, res.HttpResponseContent.ToString(), string.Empty);
+                    return ((int)res.HttpResponseCode, res.HttpResponseContent.ToString(), null);
                 }
             }
             catch (Exception ex)
             {
-                return (0, ex.Message, string.Empty);
+                return (0, ex.Message, null);
             }
         }
 

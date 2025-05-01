@@ -16,11 +16,11 @@
                     <hc:UniformSpacingPanel Orientation="Vertical" Spacing="10">
                         <StackPanel Orientation="Horizontal" HorizontalAlignment="Center">
                             <TextBlock Text="邮箱：" Style="{StaticResource MagicText14}" VerticalAlignment="Center"/>
-                            <TextBox x:Name="UserAccount" Width="200" Margin="5,0,0,0"/>
+                            <TextBox x:Name="UserAccount" Width="200" Margin="5,0,0,0" PreviewKeyUp="UserAccount_PreviewKeyUp"/>
                         </StackPanel>
                         <StackPanel Orientation="Horizontal" HorizontalAlignment="Center">
                             <TextBlock Text="密码：" Style="{StaticResource MagicText14}" VerticalAlignment="Center"/>
-                            <hc:PasswordBox x:Name="UserPassword" Width="200" Margin="5,0,0,0" ShowEyeButton="True" />
+                            <hc:PasswordBox x:Name="UserPassword" Width="200" Margin="5,0,0,0" ShowEyeButton="True" PreviewKeyUp="UserPassword_PreviewKeyUp"/>
                         </StackPanel>
                     </hc:UniformSpacingPanel>
                     <StackPanel Orientation="Horizontal" HorizontalAlignment="Center">
@@ -34,10 +34,12 @@
         <Grid x:Name="Auth2FAGrid" Visibility="Collapsed">
             <controls:MagicCard Margin="10">
                 <hc:UniformSpacingPanel Spacing="20" Orientation="Vertical" HorizontalAlignment="Center" VerticalAlignment="Center" ItemHorizontalAlignment="Center" >
-                    <TextBlock Text="2FA验证" Style="{StaticResource MagicText16}" FontWeight="Bold"/>
+                    <TextBlock Text="双重验证（2FA）" Style="{StaticResource MagicText16}" FontWeight="Bold"/>
+                    <TextBlock x:Name="Auth2FARemark" Text="我们向您的邮箱发送了一个验证码，请输入验证码以完成登录。" Style="{StaticResource MagicText16}"/>
                     <StackPanel Orientation="Horizontal" HorizontalAlignment="Center">
-                        <TextBlock Text="输入验证码：" Style="{StaticResource MagicText14}" VerticalAlignment="Center"/>
-                        <TextBox x:Name="Auth2FACode" Width="200" Margin="5,0,0,0"/>
+                        <TextBlock Text="验证码：" Style="{StaticResource MagicText14}" VerticalAlignment="Center"/>
+                        <TextBox x:Name="Auth2FACode" Width="200" Margin="5,0,0,0" PreviewKeyUp="Auth2FACode_PreviewKeyUp"/>
+                        <Button x:Name="Auth2FAResend" Content="重新发送" MinWidth="100" Margin="5,0,0,0" Click="Auth2FAResend_Click"/>
                     </StackPanel>
                     <StackPanel Orientation="Horizontal" HorizontalAlignment="Center">
                         <Button x:Name="User2FAReturn" Content="返回" Width="100" Margin="0,0,5,0" Click="User2FAReturn_Click"/>

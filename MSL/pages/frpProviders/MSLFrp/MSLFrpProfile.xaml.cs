@@ -58,12 +58,17 @@ namespace MSL.pages.frpProviders.MSLFrp
         {
             // 显示登录页面
             MSLFrpLogin loginControl = new MSLFrpLogin();
-            loginControl.LoginSuccess += async delegate (string UserInfo)
+            loginControl.LoginSuccess += async delegate
             {
                 if (await PerformLogin(MSLFrpApi.UserToken) == true)
                 {
                     LoginControl.Visibility = Visibility.Collapsed;
                     MainGrid.Visibility = Visibility.Visible;
+                    MagicDialog magicDialog = new MagicDialog();
+                    magicDialog.ShowTextDialog(Window.GetWindow(this), "加载信息……");
+                    await GetUserInfo();
+                    await GetGoods();
+                    magicDialog.CloseTextDialog();
                 }
             };
             LoginControl.Content = loginControl;
