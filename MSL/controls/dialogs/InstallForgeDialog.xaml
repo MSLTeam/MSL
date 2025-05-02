@@ -4,7 +4,9 @@
         xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
         xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
         xmlns:hc="https://handyorg.github.io/handycontrol"
-        xmlns:local="clr-namespace:MSL.controls" Height="300" Width="600"
+        xmlns:local="clr-namespace:MSL.controls"
+        xmlns:dialog="clr-namespace:MSL.controls.dialogs"
+        Height="400" Width="750"
         mc:Ignorable="d" Template="{StaticResource UserControlTemplate}" Loaded="UserControl_Loaded" >
     <Border CornerRadius="10" Background="{DynamicResource SecondaryRegionBrush}" BorderBrush="{DynamicResource BorderBrush}" BorderThickness="1">
         <Grid>
@@ -28,7 +30,16 @@
                 <ComboBoxItem Content="并发数：7"/>
                 <ComboBoxItem Content="并发数：8"/>
             </ComboBox>
-            <TextBox x:Name="log" Grid.Row="1" Margin="10,0,10,0" Padding="7" TextWrapping="Wrap" IsReadOnly="True" VerticalScrollBarVisibility="Auto" VerticalContentAlignment="Top"/>
+            <Grid Grid.Row="1">
+                <Grid.ColumnDefinitions>
+                    <ColumnDefinition Width="2*"/>
+                    <ColumnDefinition Width="3*"/>
+                </Grid.ColumnDefinitions>
+                <TextBox Grid.Column="0" x:Name="log" Margin="10,0,10,0" Padding="7" TextWrapping="Wrap" IsReadOnly="True" VerticalScrollBarVisibility="Auto" VerticalContentAlignment="Top"/>
+                <dialog:DownloadDisplayControl Grid.Column="1" x:Name="DownloadDisplay" />
+            </Grid>
+            
+            
             <StackPanel Grid.Row="2" Orientation="Horizontal" >
                 <TextBlock Foreground="{DynamicResource PrimaryTextBrush}" Margin="10" VerticalAlignment="Center" TextWrapping="Wrap" Text="当前状态：" FontSize="16"/>
                 <TextBlock x:Name="status" Foreground="{DynamicResource PrimaryTextBrush}" VerticalAlignment="Center" TextWrapping="Wrap" Text="等待安装开始……" FontSize="16"/>

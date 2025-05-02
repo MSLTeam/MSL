@@ -4075,11 +4075,10 @@ namespace MSL
         private async Task UploadLogs(string logs, bool canUseOtherPlan = false)
         {
             string customUrl = "https://api.mclo.gs/1/log";
-            int contentType = 2;
             //请求内容
             string parameterData = "content=" + logs;
 
-            var response = await HttpService.PostAsync(customUrl, contentType, parameterData);
+            var response = await HttpService.PostAsync(customUrl, HttpService.PostContentType.FormUrlEncoded, parameterData);
             if (response.HttpResponseCode == HttpStatusCode.OK)
             {
                 try

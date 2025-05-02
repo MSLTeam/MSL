@@ -113,7 +113,7 @@ namespace MSL.pages.frpProviders.MSLFrp
         {
             Auth2FAResend.IsEnabled = false;
             string userAccount = UserAccount.Text;
-            var (Code, _, Msg) = await MSLFrpApi.ApiPost("/user/getVerifyCode", 2, new Dictionary<string, string> {
+            var (Code, _, Msg) = await MSLFrpApi.ApiPost("/user/getVerifyCode", HttpService.PostContentType.FormUrlEncoded, new Dictionary<string, string> {
                 { "email", userAccount },
                 { "action", "verify-2fa" }
             }, true);

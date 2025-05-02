@@ -46,7 +46,7 @@ namespace MSL.utils
             }
         }
 
-        public static async Task<(int Code, JToken Data, string Msg)> ApiPost(string route, int contentType, object parameterData,bool noAuth=false)
+        public static async Task<(int Code, JToken Data, string Msg)> ApiPost(string route, HttpService.PostContentType contentType, object parameterData,bool noAuth=false)
         {
             HttpResponse res;
             if (noAuth)
@@ -139,7 +139,7 @@ namespace MSL.utils
                     }
 
                     // 用户登陆成功后，发送POST请求续期Token
-                    _ = await HttpService.PostAsync(ApiUrl + "/user/renewToken", 3, configureHeaders: headersAction, headerUAMode: 1);
+                    _ = await HttpService.PostAsync(ApiUrl + "/user/renewToken", HttpService.PostContentType.None, configureHeaders: headersAction, headerUAMode: 1);
                     return (200, string.Empty, JObject.Parse(res.HttpResponseContent.ToString()));
                 }
                 else

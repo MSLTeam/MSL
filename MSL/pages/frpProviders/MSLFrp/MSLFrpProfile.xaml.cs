@@ -140,7 +140,7 @@ namespace MSL.pages.frpProviders.MSLFrp
                 { "cert_type", "IDENTITY_CARD" },
                 { "verify_type", "alipay" }
             };
-            var (Code, Data, Msg) = await MSLFrpApi.ApiPost("/user/submitRealNameVerify", 2, parameterData);
+            var (Code, Data, Msg) = await MSLFrpApi.ApiPost("/user/submitRealNameVerify", HttpService.PostContentType.FormUrlEncoded, parameterData);
             if (Code == 200)
             {
                 Image qrCodeImageBox = new()
@@ -230,7 +230,7 @@ namespace MSL.pages.frpProviders.MSLFrp
         private async Task BuyGood(int id)
         {
             var parameterData = new Dictionary<string, string> { { "good", id.ToString() } };
-            var (Code, _, Msg) = await MSLFrpApi.ApiPost("/shop/buy", 2, parameterData);
+            var (Code, _, Msg) = await MSLFrpApi.ApiPost("/shop/buy", HttpService.PostContentType.FormUrlEncoded, parameterData);
             if (Code == 200)
             {
                 MagicShow.ShowMsgDialog(Window.GetWindow(this), Msg, "提示");
@@ -254,7 +254,7 @@ namespace MSL.pages.frpProviders.MSLFrp
                 { "price", AmountText.Text },
                 { "pay", payMethod }
             };
-            var (Code, Data, Msg) = await MSLFrpApi.ApiPost("/shop/pay", 2, parameterData);
+            var (Code, Data, Msg) = await MSLFrpApi.ApiPost("/shop/pay", HttpService.PostContentType.FormUrlEncoded, parameterData);
             if (Code == 200)
             {
                 Image qrCodeImageBox = new()

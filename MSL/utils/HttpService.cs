@@ -177,6 +177,14 @@ namespace MSL.utils
             return httpResponse;
         }
 
+        public enum PostContentType
+        {
+            Json,
+            Text,
+            FormUrlEncoded,
+            None
+        }
+
         /// <summary>
         /// WebPost
         /// </summary>
@@ -186,7 +194,7 @@ namespace MSL.utils
         /// <param name="customUrl">自定义url，更改后上面的位置将使用此设置的url</param>
         /// <param name="header">Header</param>
         /// <returns>post后，返回的内容</returns>
-        public static string Post(string path, int contentType = 0, string parameterData = "", string customUrl = "", WebHeaderCollection header = null)
+        public static string Post(string path, PostContentType contentType = PostContentType.Json, string parameterData = "", string customUrl = "", WebHeaderCollection header = null)
         {
             string url = ConfigStore.ApiLink;
             if (customUrl == "")
@@ -210,22 +218,24 @@ namespace MSL.utils
             myRequest.MaximumAutomaticRedirections = 1;
             myRequest.AllowAutoRedirect = true;
 
-            if (contentType == 0)
+            switch(contentType)
             {
-                myRequest.Accept = "application/json";
-                myRequest.ContentType = "application/json; charset=UTF-8";
-            }
-            else if (contentType == 1)
-            {
-                myRequest.Accept = "text/plain";
-                myRequest.ContentType = "text/plain; charset=UTF-8";
-
-            }
-            else if (contentType == 2)
-            {
-
-                myRequest.Accept = "application/x-www-form-urlencoded";
-                myRequest.ContentType = "application/x-www-form-urlencoded; charset=UTF-8";
+                case PostContentType.Json:
+                    myRequest.Accept = "application/json";
+                    myRequest.ContentType = "application/json; charset=UTF-8";
+                    break;
+                case PostContentType.Text:
+                    myRequest.Accept = "text/plain";
+                    myRequest.ContentType = "text/plain; charset=UTF-8";
+                    break;
+                case PostContentType.FormUrlEncoded:
+                    myRequest.Accept = "application/x-www-form-urlencoded";
+                    myRequest.ContentType = "application/x-www-form-urlencoded; charset=UTF-8";
+                    break;
+                case PostContentType.None:
+                    myRequest.Accept = "text/plain";
+                    myRequest.ContentType = "text/plain; charset=UTF-8";
+                    break;
             }
 
             if (header != null)
@@ -256,22 +266,22 @@ namespace MSL.utils
         /// <param name="parameterData">Post参数</param>
         /// <param name="configureHeaders">Headers</param>
         /// <returns>HttpResponse</returns>
-        public static async Task<HttpResponse> PostAsync(string url, int contentType = 0, object parameterData = null, Action<HttpRequestHeaders> configureHeaders = null, int headerUAMode = 1, string headerUA = null)
+        public static async Task<HttpResponse> PostAsync(string url, PostContentType contentType = PostContentType.Json, object parameterData = null, Action<HttpRequestHeaders> configureHeaders = null, int headerUAMode = 1, string headerUA = null)
         {
             HttpClient httpClient = new HttpClient();
             HttpResponse httpResponse = new HttpResponse();
             HttpContent content;
             switch (contentType)
             {
-                case 0:
+                case PostContentType.Json:
                     httpClient.DefaultRequestHeaders.Accept.Add(new MediaTypeWithQualityHeaderValue("application/json"));
                     content = new StringContent(JsonConvert.SerializeObject(parameterData), Encoding.UTF8, "application/json");
                     break;
-                case 1:
+                case PostContentType.Text:
                     httpClient.DefaultRequestHeaders.Accept.Add(new MediaTypeWithQualityHeaderValue("text/plain"));
                     content = new StringContent(parameterData as string, Encoding.UTF8, "text/plain");
                     break;
-                case 2:
+                case PostContentType.FormUrlEncoded:
                     httpClient.DefaultRequestHeaders.Accept.Add(new MediaTypeWithQualityHeaderValue("application/x-www-form-urlencoded"));
                     if (parameterData is IDictionary<string, string> data)
                     {
@@ -285,7 +295,7 @@ namespace MSL.utils
                         content = new FormUrlEncodedContent(keyValuePairs);
                     }
                     break;
-                case 3:
+                case PostContentType.None:
                     content = null;
                     break;
                 default:

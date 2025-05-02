@@ -116,7 +116,7 @@ namespace MSL.pages.frpProviders
         {
             try
             {
-                string response = (await HttpService.PostAsync($"{ChmlFrpApiUrl}/api/login.php", 2, $"username={user}&password={pwd}")).HttpResponseContent.ToString();
+                string response = (await HttpService.PostAsync($"{ChmlFrpApiUrl}/api/login.php", HttpService.PostContentType.FormUrlEncoded, $"username={user}&password={pwd}")).HttpResponseContent.ToString();
                 var jsonResponse = JsonConvert.DeserializeObject<Dictionary<string, object>>(response);
                 if (jsonResponse.ContainsKey("code"))
                 {

@@ -6,9 +6,6 @@ using System.Collections.Generic;
 using System.Diagnostics;
 using System.IO;
 using System.Linq;
-using System.Net;
-using System.Net.Http;
-using System.Security.Cryptography;
 using System.Text;
 using System.Threading;
 using System.Threading.Tasks;
@@ -150,6 +147,9 @@ namespace MSL.controls
                     versionType = 5;
                 }
 
+                // 获取下载管理器单例
+                var downloadManager = DownloadManager.Instance;
+
                 //第二步，下载原版核心
                 Status_change("正在下载原版服务端核心···");
                 Log_in("正在下载原版服务端核心···");
@@ -180,22 +180,29 @@ namespace MSL.controls
                     vanillaUrl = vanillaUrl.Replace("bmclapi2.bangbang93.com", "piston-data.mojang.com");
                 }
 
-                bool _return = false;
-                await Dispatcher.Invoke(async () => //下载
+                // 创建下载组
+                string vanillaGroup = downloadManager.CreateDownloadGroup("ForgeInstall_LibFiles", 1);
+
+                downloadManager.AddDownloadItem(
+                    vanillaGroup,
+                    vanillaUrl,
+                    Path.GetDirectoryName(serverJarPath),
+                    Path.GetFileName(serverJarPath)
+                );
+                downloadManager.StartDownloadGroup(vanillaGroup);
+                DownloadDisplay.AddDownloadGroup(vanillaGroup); // 添加下载组到UI显示
+                if (await downloadManager.WaitForGroupCompletionAsync(vanillaGroup))
                 {
-                    bool dwnDialog = await MagicShow.ShowDownloader(Window.GetWindow(this), vanillaUrl, Path.GetDirectoryName(serverJarPath), Path.GetFileName(serverJarPath), "下载原版核心中···");
-                    if (!dwnDialog)
-                    {
-                        //下载失败，跑路了！
-                        Log_in("原版核心下载失败！安装失败！");
-                        _return = true;
-                    }
-                });
-                if (_return)
+                    Log_in("原版核心下载成功！");
+                }
+                else
                 {
+                    //下载失败，跑路了！
+                    Log_in("原版核心下载失败！安装失败！");
                     await Task.Delay(1000);
                     return;
                 }
+
                 Log_in("下载原版服务端核心成功！");
                 Log_in("正在解压原版LIB！");
 
@@ -241,24 +248,39 @@ namespace MSL.controls
                 //下载运行库
                 Status_change("正在下载Forge运行Lib，请稍候……");
                 Log_in("正在下载Forge运行Lib···");
-                List<Task> downloadTasks = new List<Task>();
+
+                // 创建下载组
+                string groupId = downloadManager.CreateDownloadGroup("ForgeInstall_LibFiles", semaphore); // 4个并发下载
+
+                //List<Task> downloadTasks = new List<Task>();
                 if (versionType != 5) //分为高版本和低版本
                 {
                     //这里是1.12+版本的处理逻辑
                     var versionlJobj = GetJsonObj(TempPath + "/version.json");
                     JArray libraries2 = (JArray)installJobj["libraries"];//获取lib数组 这是install那个json
                     JArray libraries = (JArray)versionlJobj["libraries"];//获取lib数组
-                                                                         //int libALLCount = libraries.Count + libraries2.Count;//总数
-                                                                         //int libCount = 0;//用于计数
+                    //int libALLCount = libraries.Count + libraries2.Count;//总数
+                    //int libCount = 0;//用于计数
 
                     foreach (JObject lib in libraries.Cast<JObject>())//遍历数组，进行文件下载
                     {
                         //libCount++;
                         string _dlurl = ReplaceStr(lib["downloads"]["artifact"]["url"].ToString());
-                        string _savepath = LibPath + "/" + lib["downloads"]["artifact"]["path"].ToString();
+                        if (string.IsNullOrEmpty(_dlurl))
+                            continue;
+                        //string _savepath = LibPath + "/" + lib["downloads"]["artifact"]["path"].ToString();
                         string _sha1 = lib["downloads"]["artifact"]["sha1"].ToString();
                         Log_in("[LIB]下载：" + lib["downloads"]["artifact"]["path"].ToString());
-                        downloadTasks.Add(DownloadFile(_dlurl, _savepath, _sha1));
+                        //downloadTasks.Add(DownloadFile(_dlurl, _savepath, _sha1));
+
+                        // 添加下载项
+                        downloadManager.AddDownloadItem(
+                            groupId,
+                            _dlurl,
+                            LibPath,
+                            lib["downloads"]["artifact"]["path"].ToString()
+                        );
+
                         //bool dlStatus = await DownloadFile(_dlurl, _savepath, _sha1);
                         //Status_change("正在下载Forge运行Lib···(" + libCount + "/" + libALLCount + ")");
 
@@ -268,9 +290,21 @@ namespace MSL.controls
                     {
                         //libCount++;
                         string _dlurl = ReplaceStr(lib["downloads"]["artifact"]["url"].ToString());
-                        string _savepath = LibPath + "/" + lib["downloads"]["artifact"]["path"].ToString();
+                        if (string.IsNullOrEmpty(_dlurl))
+                            continue;
+                        //string _savepath = LibPath + "/" + lib["downloads"]["artifact"]["path"].ToString();
                         string _sha1 = lib["downloads"]["artifact"]["sha1"].ToString();
                         Log_in("[LIB]下载：" + lib["downloads"]["artifact"]["path"].ToString());
+
+                        // 添加下载项
+                        downloadManager.AddDownloadItem(
+                            groupId,
+                            _dlurl,
+                            LibPath,
+                            lib["downloads"]["artifact"]["path"].ToString()
+                        );
+
+                        /*
                         if (_dlurl.Contains("mcp_config") || _dlurl.Contains(".zip")) //mcp那个zip会用js redirect，所以只能用downloader，真神奇！
                         {
                             await Dispatcher.Invoke(async () => //下载
@@ -289,6 +323,7 @@ namespace MSL.controls
                         {
                             downloadTasks.Add(DownloadFile(_dlurl, _savepath, _sha1));
                         }
+                        */
                     }
                 }
                 else
@@ -309,9 +344,20 @@ namespace MSL.controls
                         {
                             _dlurl = ReplaceStr(SafeGetValue(lib, "url") + NameToPath(SafeGetValue(lib, "name")));
                         }
-
-                        string _savepath = LibPath + "/" + NameToPath(SafeGetValue(lib, "name"));
+                        if (string.IsNullOrEmpty(_dlurl))
+                            continue;
+                        //string _savepath = LibPath + "/" + NameToPath(SafeGetValue(lib, "name"));
                         Log_in("[LIB]下载：" + NameToPath(SafeGetValue(lib, "name")));
+
+                        // 添加下载项
+                        downloadManager.AddDownloadItem(
+                            groupId,
+                            _dlurl,
+                            LibPath,
+                            NameToPath(SafeGetValue(lib, "name"))
+                        );
+
+                        /*
                         if (_dlurl.Contains("mcp_config") || _dlurl.Contains(".zip")) //mcp那个zip会用js redirect，所以只能用downloader，真神奇！
                         {
                             await Dispatcher.Invoke(async () => //下载
@@ -330,9 +376,19 @@ namespace MSL.controls
                         {
                             downloadTasks.Add(DownloadFile(_dlurl, _savepath));
                         }
+                        */
                     }
                 }
-                await Task.WhenAll(downloadTasks);
+
+                // 更新UI显示
+                DownloadDisplay.AddDownloadGroup(groupId);
+
+                // 开始下载
+                downloadManager.StartDownloadGroup(groupId);
+
+                await downloadManager.WaitForGroupCompletionAsync(groupId);
+
+                //await Task.WhenAll(downloadTasks);
                 Log_in("下载Forge运行Lib成功！");
                 await Task.Delay(1000);
                 Status_change("正在处理编译ForgeJava参数···");
@@ -745,39 +801,12 @@ namespace MSL.controls
 
         private void MultiThreadCount_SelectionChanged(object sender, System.Windows.Controls.SelectionChangedEventArgs e)
         {
-            switch (MultiThreadCount.SelectedIndex)
-            {
-                case 0:
-                    semaphore = new SemaphoreSlim(1);
-                    break;
-                case 1:
-                    semaphore = new SemaphoreSlim(2);
-                    break;
-                case 2:
-                    semaphore = new SemaphoreSlim(3);
-                    break;
-                case 3:
-                    semaphore = new SemaphoreSlim(4);
-                    break;
-                case 4:
-                    semaphore = new SemaphoreSlim(5);
-                    break;
-                case 5:
-                    semaphore = new SemaphoreSlim(6);
-                    break;
-                case 6:
-                    semaphore = new SemaphoreSlim(7);
-                    break;
-                case 7:
-                    semaphore = new SemaphoreSlim(8);
-                    break;
-                default:
-                    semaphore = new SemaphoreSlim(1);
-                    break;
-            }
+            semaphore = MultiThreadCount.SelectedIndex + 1;
         }
 
-        private SemaphoreSlim semaphore = new SemaphoreSlim(4); // 设置最大并发任务数量为4
+        private int semaphore = 4; // 设置最大并发任务数量为4
+
+        /*
         private async Task DownloadFile(string url, string targetPath, string expectedSha1 = "")
         {
             if (string.IsNullOrEmpty(url))
@@ -794,7 +823,7 @@ namespace MSL.controls
                 semaphore.Release(); // 释放信号量
             }
         }
-
+        
         //下面是有关下载的东东（由于小文件调用原有下载窗口特别慢，就不用了qaq）
         private async Task DownloadFileAsync(string url, string targetPath, string expectedSha1 = "")
         {
@@ -880,6 +909,7 @@ namespace MSL.controls
             //重试爆表了
             //return false;
         }
+        */
 
         //MC版本号判断函数，前>后：1 ，后>前：-1，相等：0
         private int CompareMinecraftVersions(string version1, string version2)
@@ -972,6 +1002,9 @@ namespace MSL.controls
 
         private void CancelButton_Click(object sender, RoutedEventArgs e)
         {
+            var downloadManager = DownloadManager.Instance;
+            downloadManager.CancelGroup("ForgeInstall_VanillaServer");
+            downloadManager.CancelGroup("ForgeInstall_LibFiles");
             //关闭线程
             //thread.Abort();
             cancellationTokenSource.Cancel();
