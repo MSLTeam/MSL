@@ -61,7 +61,7 @@
                         <ColumnDefinition Width="Auto"/>
                     </Grid.ColumnDefinitions>
                     <Label Grid.Column="0" Content="{Binding [Page_SettingsPage_CF_DownloadThread],Source={x:Static lang:LanguageManager.Instance}}"/>
-                    <TextBox Grid.Column="1" Name="downthreadCount" Text="8" FontSize="14"/>
+                    <TextBox Grid.Column="1" Name="downthreadCount" Text="4" FontSize="14"/>
                     <Button Grid.Column="2" Name="mulitDownthread" Content="{Binding [_Done],Source={x:Static lang:LanguageManager.Instance}}" MinWidth="60" Click="mulitDownthread_Click" />
                 </Grid>
                 <Grid Margin="0,0,0,5">

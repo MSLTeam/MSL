@@ -74,7 +74,8 @@ namespace MSL.utils
         /// <param name="headerMode">下载请求头模式: 0=无, 1=MSL, 2=浏览器</param>
         /// <returns>下载项ID</returns>
         public string AddDownloadItem(string groupId, string url, string downloadPath, string filename,
-                                      string expectedSha256 = "", string itemId = null, int headerMode = 1)
+                                      string expectedSha256 = "", string itemId = null, bool enableParalle = true,
+                                      int headerMode = 1,int retryCount=1)
         {
             if (!_downloadGroups.ContainsKey(groupId))
                 throw new ArgumentException($"Download group '{groupId}' does not exist");
@@ -92,9 +93,11 @@ namespace MSL.utils
                 DownloadPath = downloadPath,
                 Filename = filename,
                 ExpectedSha256 = expectedSha256,
+                EnableParalle = enableParalle,
                 HeaderMode = headerMode,
                 Status = DownloadStatus.Pending,
-                Progress = new DownloadProgressInfo()
+                Progress = new DownloadProgressInfo(),
+                RetryCount = retryCount
             };
 
             _downloadItems[itemId] = item;
@@ -343,9 +346,8 @@ namespace MSL.utils
                 // 创建下载配置
                 var downloadOpt = new DownloadConfiguration
                 {
-                    ChunkCount = DefaultThreadsPerDownload,
-                    ParallelDownload = true,
-                    Timeout = 5000
+                    ParallelDownload = item.EnableParalle,
+                    ChunkCount = ConfigStore.DownloadChunkCount
                 };
 
                 // 设置用户代理
@@ -377,7 +379,7 @@ namespace MSL.utils
                 success = false;
                 error = ex;
 
-                // 如果使用多线程下载失败，尝试使用单线程下载
+                // 如果Downloader下载失败，尝试使用备用下载
                 if (item.Status != DownloadStatus.Cancelled && item.Status != DownloadStatus.Cancelling)
                 {
                     try
@@ -389,6 +391,21 @@ namespace MSL.utils
                         error = fallbackEx;
                     }
                 }
+
+                if (!success) // 备用下载依旧不成功
+                {
+                    if (item.RetryCount > 0) // 重试次数
+                    {
+                        // 进行重试
+                        item.Status = DownloadStatus.Retrying;
+                        item.RetryCount--;
+                        await Task.Delay(1000);
+                        await DownloadItemAsync(item.ItemId);
+                        return;
+                    }
+                    item.Status = DownloadStatus.Failed;
+                }
+                item.Status = DownloadStatus.Completed;
             }
             finally
             {
@@ -541,19 +558,15 @@ namespace MSL.utils
                 {
                     if (!VerifyFileSHA256(Path.Combine(item.DownloadPath, item.Filename), item.ExpectedSha256))
                     {
-                        item.Status = DownloadStatus.Failed;
                         item.ErrorMessage = "SHA256 verification failed";
                         try { File.Delete(Path.Combine(item.DownloadPath, item.Filename)); } catch { }
                         return false;
                     }
                 }
-
-                item.Status = DownloadStatus.Completed;
                 return true;
             }
             catch (Exception ex)
             {
-                item.Status = DownloadStatus.Failed;
                 item.ErrorMessage = ex.Message;
                 return false;
             }
@@ -610,7 +623,8 @@ namespace MSL.utils
         Cancelling,
         Cancelled,
         Completed,
-        Failed
+        Failed,
+        Retrying
     }
 
     /// <summary>
@@ -636,10 +650,12 @@ namespace MSL.utils
         public string DownloadPath { get; set; }
         public string Filename { get; set; }
         public string ExpectedSha256 { get; set; }
+        public bool EnableParalle { get; set; }
         public int HeaderMode { get; set; }
         public DownloadStatus Status { get; set; }
         public string ErrorMessage { get; set; }
         public DownloadProgressInfo Progress { get; set; }
+        public int RetryCount { get; set; }
     }
 
     /// <summary>

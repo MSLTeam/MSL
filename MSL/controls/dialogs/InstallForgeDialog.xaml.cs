@@ -115,6 +115,16 @@ namespace MSL.controls
                 //在这里检测一下版本，用以区分安装流程
                 if (SafeGetValue(installJobj, "minecraft") != "")
                 {
+                    if (!ForgePath.Contains("neoforge")) // NeoForge照常安装
+                    {
+                        if (CompareMinecraftVersions(installJobj["minecraft"].ToString(), "1.21") != -1)
+                        {
+                            //1.21-Latest
+                            // **Forge真恶心，天天闲着蛋疼改你的库文件依赖存储格式，1.21以上干脆不支持了，直接用命令行安装吧，爱咋咋地。
+                            Log_in("\nMSL目前不支持自动安装此版本，请点击右下角“用命令行安装”进行手动安装，若安装失败，请尝试使用代理！");
+                            return;
+                        }
+                    }
                     if (CompareMinecraftVersions(installJobj["minecraft"].ToString(), "1.20.3") != -1)
                     {
                         //1.20.3-Latest
@@ -187,7 +197,8 @@ namespace MSL.controls
                     vanillaGroup,
                     vanillaUrl,
                     Path.GetDirectoryName(serverJarPath),
-                    Path.GetFileName(serverJarPath)
+                    Path.GetFileName(serverJarPath),
+                    enableParalle: false
                 );
                 downloadManager.StartDownloadGroup(vanillaGroup);
                 DownloadDisplay.AddDownloadGroup(vanillaGroup); // 添加下载组到UI显示
@@ -278,7 +289,8 @@ namespace MSL.controls
                             groupId,
                             _dlurl,
                             LibPath,
-                            lib["downloads"]["artifact"]["path"].ToString()
+                            lib["downloads"]["artifact"]["path"].ToString(),
+                            enableParalle: false
                         );
 
                         //bool dlStatus = await DownloadFile(_dlurl, _savepath, _sha1);
@@ -301,7 +313,8 @@ namespace MSL.controls
                             groupId,
                             _dlurl,
                             LibPath,
-                            lib["downloads"]["artifact"]["path"].ToString()
+                            lib["downloads"]["artifact"]["path"].ToString(),
+                            enableParalle: false
                         );
 
                         /*
@@ -354,7 +367,8 @@ namespace MSL.controls
                             groupId,
                             _dlurl,
                             LibPath,
-                            NameToPath(SafeGetValue(lib, "name"))
+                            NameToPath(SafeGetValue(lib, "name")),
+                            enableParalle: false
                         );
 
                         /*
@@ -386,7 +400,11 @@ namespace MSL.controls
                 // 开始下载
                 downloadManager.StartDownloadGroup(groupId);
 
-                await downloadManager.WaitForGroupCompletionAsync(groupId);
+                if(!await downloadManager.WaitForGroupCompletionAsync(groupId))
+                {
+                    Log_in("下载失败，请重试！");
+                    return;
+                }
 
                 //await Task.WhenAll(downloadTasks);
                 Log_in("下载Forge运行Lib成功！");

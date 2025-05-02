@@ -19,6 +19,8 @@ namespace MSL.utils
         public static bool GetServerInfo { get; set; } = false;
         public static bool GetPlayerInfo { get; set; } = false;
 
+        public static int DownloadChunkCount { get; set; } = 4;
+
         public class LogColor
         {
             public static SolidColorBrush INFO { get; set; } = Brushes.Green;

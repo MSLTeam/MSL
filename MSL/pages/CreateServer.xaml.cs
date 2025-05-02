@@ -1,5 +1,6 @@
 ﻿using HandyControl.Controls;
 using ICSharpCode.SharpZipLib.Zip;
+using Microsoft.VisualBasic;
 using MSL.controls;
 using MSL.utils;
 using Newtonsoft.Json;
@@ -748,7 +749,7 @@ namespace MSL.pages
         {
             if (usedownloadserver.IsChecked == true) // 下载服务端核心
             {
-                DownloadServer downloadServer = new DownloadServer(serverbase, serverjava)
+                DownloadServer downloadServer = new DownloadServer(serverbase, DownloadServer.Mode.CreateServer, serverjava)
                 {
                     Owner = Window.GetWindow(Window.GetWindow(this))
                 };
@@ -1210,36 +1211,47 @@ namespace MSL.pages
         {
             FastModeReturnBtn.IsEnabled = false;
             FastModeInstallBtn.IsEnabled = false;
-            FastInstallProcess.Text = "当前进度:下载Java……";
-            int dwnJava = 0;
-            dwnJava = await DownloadJava(FinallyJavaCombo.SelectedItem.ToString(), (await HttpService.GetApiContentAsync("download/java/" + FinallyJavaCombo.SelectedItem.ToString()))["data"]["url"].ToString());
-            if (dwnJava == 1)
+            try
             {
-                FastInstallProcess.Text = "当前进度:解压Java……";
-                MagicDialog MagicDialog = new MagicDialog();
-                MagicDialog.ShowTextDialog(Window.GetWindow(this), "解压Java中……");
-                bool unzipJava = await UnzipJava();
-                MagicDialog.CloseTextDialog();
-                if (unzipJava)
+                FastInstallProcess.Text = "当前进度:下载Java……";
+                int dwnJava = 0;
+                dwnJava = await DownloadJava(FinallyJavaCombo.SelectedItem.ToString(), (await HttpService.GetApiContentAsync("download/java/" + FinallyJavaCombo.SelectedItem.ToString()))["data"]["url"].ToString());
+                if (dwnJava == 1)
+                {
+                    FastInstallProcess.Text = "当前进度:解压Java……";
+                    MagicDialog MagicDialog = new MagicDialog();
+                    MagicDialog.ShowTextDialog(Window.GetWindow(this), "解压Java中……");
+                    bool unzipJava = await UnzipJava();
+                    MagicDialog.CloseTextDialog();
+                    if (unzipJava)
+                    {
+                        FastInstallProcess.Text = "当前进度:下载服务端……";
+                        await FastModeInstallCore();
+                    }
+                    else
+                    {
+                        FastModeReturnBtn.IsEnabled = true;
+                        FastModeInstallBtn.IsEnabled = true;
+                        return;
+                    }
+                }
+                else if (dwnJava == 2)
                 {
                     FastInstallProcess.Text = "当前进度:下载服务端……";
                     await FastModeInstallCore();
                 }
                 else
                 {
+                    MagicShow.ShowMsgDialog(Window.GetWindow(this), "下载取消！", "提示");
+                    FastInstallProcess.Text = "取消安装！";
                     FastModeReturnBtn.IsEnabled = true;
                     FastModeInstallBtn.IsEnabled = true;
                     return;
                 }
             }
-            else if (dwnJava == 2)
+            catch(Exception ex)
             {
-                FastInstallProcess.Text = "当前进度:下载服务端……";
-                await FastModeInstallCore();
-            }
-            else
-            {
-                MagicShow.ShowMsgDialog(Window.GetWindow(this), "下载取消！", "提示");
+                MagicShow.ShowMsgDialog(Window.GetWindow(this), "出现错误，请重试！\n"+ex.Message, "错误");
                 FastInstallProcess.Text = "取消安装！";
                 FastModeReturnBtn.IsEnabled = true;
                 FastModeInstallBtn.IsEnabled = true;
@@ -1251,17 +1263,22 @@ namespace MSL.pages
         {
             string finallyServerCore = FinallyCoreCombo.SelectedItem.ToString();
             string serverCoreType = finallyServerCore.Substring(0, finallyServerCore.LastIndexOf("-"));
+            string serverCoreVersion = finallyServerCore.Substring(finallyServerCore.LastIndexOf("-") + 1);
             string filename = finallyServerCore + ".jar";
-            JObject dlContext = await HttpService.GetApiContentAsync("download/server/" + serverCoreType + "/" +
-                finallyServerCore.Substring(finallyServerCore.LastIndexOf("-") + 1));//获取链接
+            JObject dlContext = await HttpService.GetApiContentAsync("download/server/" + serverCoreType + "/" + serverCoreVersion);//获取链接
             string dlUrl = dlContext["data"]["url"].ToString();
             string sha256Exp = dlContext["data"]["sha256"]?.ToString() ?? string.Empty;
+
+            bool _enableParalle = true;
+            if (serverCoreType == "vanilla")
+                _enableParalle = false;
+
             if (serverCoreType == "forge" || serverCoreType == "spongeforge" || serverCoreType == "neoforge")
             {
-                int dwnDialog = await MagicShow.ShowDownloaderWithIntReturn(Window.GetWindow(this), dlUrl, serverbase, filename, "下载服务端中……", sha256Exp, true); //从这里请求服务端下载
+                int dwnDialog = await MagicShow.ShowDownloaderWithIntReturn(Window.GetWindow(this), dlUrl, serverbase, filename, "下载服务端中……", sha256Exp, true, false); //从这里请求服务端下载
                 if (dwnDialog == 2)
                 {
-                    MagicShow.ShowMsgDialog(Window.GetWindow(this), "下载取消！（或服务端文件不存在）", "提示");
+                    MagicShow.ShowMsgDialog(Window.GetWindow(this), "下载取消！", "提示");
                     FastInstallProcess.Text = "取消安装！";
                     FastModeReturnBtn.IsEnabled = true;
                     FastModeInstallBtn.IsEnabled = true;
@@ -1270,7 +1287,7 @@ namespace MSL.pages
             }
             else
             {
-                bool dwnDialog = await MagicShow.ShowDownloader(Window.GetWindow(this), dlUrl, serverbase, filename, "下载服务端中……", sha256Exp); //从这里请求服务端下载
+                bool dwnDialog = await MagicShow.ShowDownloader(Window.GetWindow(this), dlUrl, serverbase, filename, "下载服务端中……", sha256Exp, enableParalle: _enableParalle); //从这里请求服务端下载
                 if (!dwnDialog || !File.Exists(serverbase + "\\" + filename))
                 {
                     MagicShow.ShowMsgDialog(Window.GetWindow(this), "下载取消！（或服务端文件不存在）", "提示");
@@ -1281,179 +1298,207 @@ namespace MSL.pages
                 }
             }
 
-            if (serverCoreType == "spongeforge")
+            string installReturn;
+            switch (serverCoreType)
             {
-                string forgeName = finallyServerCore.Replace("spongeforge", "forge");
-                string _filename = forgeName + ".jar";
-                JObject _dlContext = await HttpService.GetApiContentAsync("download/server/" + forgeName.Replace("-", "/"));
-                string _dlUrl = _dlContext["data"]["url"].ToString();
-                string _sha256Exp = _dlContext["data"]["sha256"]?.ToString() ?? string.Empty;
-                int _dwnDialog = await MagicShow.ShowDownloaderWithIntReturn(Window.GetWindow(this), _dlUrl, serverbase, _filename, "下载服务端中……", _sha256Exp, true);
+                case "spongeforge":
+                    string forgeName = finallyServerCore.Replace("spongeforge", "forge");
+                    string _filename = forgeName + ".jar";
+                    JObject _dlContext = await HttpService.GetApiContentAsync("download/server/" + forgeName.Replace("-", "/"));
+                    string _dlUrl = _dlContext["data"]["url"].ToString();
+                    string _sha256Exp = _dlContext["data"]["sha256"]?.ToString() ?? string.Empty;
+                    int _dwnDialog = await MagicShow.ShowDownloaderWithIntReturn(Window.GetWindow(this), _dlUrl, serverbase, _filename, "下载服务端中……", _sha256Exp, true);
 
-                if (_dwnDialog == 2)
-                {
-                    MagicShow.ShowMsgDialog(Window.GetWindow(this), "下载取消！", "提示");
-                    FastInstallProcess.Text = "取消安装！";
-                    FastModeReturnBtn.IsEnabled = true;
-                    FastModeInstallBtn.IsEnabled = true;
-                    return;
-                }
-
-                // Check if file exists and download succeeded
-                if (!File.Exists(serverbase + "\\" + _filename))
-                {
-                    // Extract version info and create backup URL
-                    var query = new Uri(_dlUrl).Query;
-                    var queryDictionary = System.Web.HttpUtility.ParseQueryString(query);
-                    string mcVersion = queryDictionary["mcversion"];
-                    string forgeVersion = queryDictionary["version"];
-                    string[] components = mcVersion.Split('.');
-                    string _mcMajorVersion = mcVersion;
-                    if (components.Length >= 3 && int.TryParse(components[2], out int _))
+                    if (_dwnDialog == 2)
                     {
-                        _mcMajorVersion = $"{components[0]}.{components[1]}"; // remove the last component
-                    }
-                    if (new Version(_mcMajorVersion) < new Version("1.10"))
-                    {
-                        forgeVersion += "-" + mcVersion;
-                    }
-                    string backupUrl = $"https://maven.minecraftforge.net/net/minecraftforge/forge/{mcVersion}-{forgeVersion}/{forgeName}-{forgeVersion}-installer.jar";
-
-                    // Attempt to download from backup URL
-                    bool backupDownloadSuccess = await MagicShow.ShowDownloader(Window.GetWindow(this), backupUrl, serverbase, _filename, "备用链接下载中……", _sha256Exp);
-                    if (!backupDownloadSuccess || !File.Exists(serverbase + "\\" + _filename))
-                    {
-                        MagicShow.ShowMsgDialog(Window.GetWindow(this), "下载取消！（或服务端文件不存在）", "错误");
+                        MagicShow.ShowMsgDialog(Window.GetWindow(this), "下载取消！", "提示");
                         FastInstallProcess.Text = "取消安装！";
                         FastModeReturnBtn.IsEnabled = true;
                         FastModeInstallBtn.IsEnabled = true;
                         return;
                     }
-                }
-                //sponge应当作为模组加载，所以要再下载一个forge才是服务端
-                try
-                {
-                    //移动到mods文件夹
-                    Directory.CreateDirectory(serverbase + "\\mods\\");
-                    if (File.Exists(serverbase + "\\mods\\" + filename))
-                    {
-                        File.Delete(serverbase + "\\mods\\" + filename);
-                    }
-                    File.Move(serverbase + "\\" + filename, serverbase + "\\mods\\" + filename);
-                }
-                catch (Exception e)
-                {
-                    MagicShow.ShowMsgDialog(Window.GetWindow(this), "Sponge核心移动失败！\n请重试！" + e.Message, "错误");
-                    return;
-                }
-                string installReturn = await InstallForge(_filename);
-                if (installReturn == null)
-                {
-                    MagicShow.ShowMsgDialog(Window.GetWindow(this), "安装失败！", "错误");
-                    FastModeReturnBtn.IsEnabled = true;
-                    FastModeInstallBtn.IsEnabled = true;
-                    return;
-                }
 
-                servercore = installReturn;
-            }
-            else if (finallyServerCore.Contains("banner"))
-            {
-                //banner应当作为模组加载，所以要再下载一个fabric才是服务端
-                try
-                {
-                    //移动到mods文件夹
-                    Directory.CreateDirectory(serverbase + "\\mods\\");
-                    if (File.Exists(serverbase + "\\mods\\" + filename))
+                    // Check if file exists and download succeeded
+                    if (!File.Exists(serverbase + "\\" + _filename))
                     {
-                        File.Delete(serverbase + "\\mods\\" + filename);
-                    }
-                    File.Move(serverbase + "\\" + filename, serverbase + "\\mods\\" + filename);
-                }
-                catch (Exception e)
-                {
-                    MagicShow.ShowMsgDialog(Window.GetWindow(this), "Banner端移动失败！\n请重试！" + e.Message, "错误");
-                    return;
-                }
+                        // Extract version info and create backup URL
+                        var query = new Uri(_dlUrl).Query;
+                        var queryDictionary = System.Web.HttpUtility.ParseQueryString(query);
+                        string mcVersion = queryDictionary["mcversion"];
+                        string forgeVersion = queryDictionary["version"];
+                        string[] components = mcVersion.Split('.');
+                        string _mcMajorVersion = mcVersion;
+                        if (components.Length >= 3 && int.TryParse(components[2], out int _))
+                        {
+                            _mcMajorVersion = $"{components[0]}.{components[1]}"; // remove the last component
+                        }
+                        if (new Version(_mcMajorVersion) < new Version("1.10"))
+                        {
+                            forgeVersion += "-" + mcVersion;
+                        }
+                        string backupUrl = $"https://maven.minecraftforge.net/net/minecraftforge/forge/{mcVersion}-{forgeVersion}/{forgeName}-{forgeVersion}-installer.jar";
 
-                //下载一个fabric端
-                //获取版本号
-                string bannerVersion = filename.Replace("banner-", "").Replace(".jar", "");
-                bool dwnFabric = await MagicShow.ShowDownloader(Window.GetWindow(this), (await HttpService.GetApiContentAsync("download/server/fabric/" + bannerVersion))["data"]["url"].ToString(), serverbase, $"fabric-{bannerVersion}.jar", "下载Fabric端中···");
-                if (!dwnFabric || !File.Exists(serverbase + "\\" + $"fabric-{bannerVersion}.jar"))
-                {
-                    MagicShow.ShowMsgDialog(Window.GetWindow(this), "Fabric端下载取消（或服务端文件不存在）！", "错误");
-                    return;
-                }
-
-                servercore = $"fabric-{bannerVersion}.jar";
-            }
-            else if (serverCoreType == "neoforge")
-            {
-                if (!File.Exists(serverbase + "\\" + filename))
-                {
-                    MagicShow.ShowMsgDialog(Window.GetWindow(this), "下载失败！（或服务端文件不存在）", "提示");
-                    FastInstallProcess.Text = "取消安装！";
-                    FastModeReturnBtn.IsEnabled = true;
-                    FastModeInstallBtn.IsEnabled = true;
-                    return;
-                }
-                string installReturn = await InstallForge(filename);
-                if (installReturn == null)
-                {
-                    MagicShow.ShowMsgDialog(Window.GetWindow(this), "安装失败！", "错误");
-                    FastModeReturnBtn.IsEnabled = true;
-                    FastModeInstallBtn.IsEnabled = true;
-                    return;
-                }
-                servercore = installReturn;
-            }
-            else if (serverCoreType == "forge")
-            {
-                // Check if file exists and download succeeded
-                if (!File.Exists(serverbase + "\\" + filename))
-                {
-                    // Extract version info and create backup URL
-                    var query = new Uri(dlUrl).Query;
-                    var queryDictionary = System.Web.HttpUtility.ParseQueryString(query);
-                    string mcVersion = queryDictionary["mcversion"];
-                    string forgeVersion = queryDictionary["version"];
-                    string[] components = mcVersion.Split('.');
-                    string _mcMajorVersion = mcVersion;
-                    if (components.Length >= 3 && int.TryParse(components[2], out int _))
-                    {
-                        _mcMajorVersion = $"{components[0]}.{components[1]}"; // remove the last component
+                        // Attempt to download from backup URL
+                        bool backupDownloadSuccess = await MagicShow.ShowDownloader(Window.GetWindow(this), backupUrl, serverbase, _filename, "备用链接下载中……", _sha256Exp);
+                        if (!backupDownloadSuccess || !File.Exists(serverbase + "\\" + _filename))
+                        {
+                            MagicShow.ShowMsgDialog(Window.GetWindow(this), "下载取消！（或服务端文件不存在）", "错误");
+                            FastInstallProcess.Text = "取消安装！";
+                            FastModeReturnBtn.IsEnabled = true;
+                            FastModeInstallBtn.IsEnabled = true;
+                            return;
+                        }
                     }
-                    if (new Version(_mcMajorVersion) < new Version("1.10"))
+                    //sponge应当作为模组加载，所以要再下载一个forge才是服务端
+                    try
                     {
-                        forgeVersion += "-" + mcVersion;
+                        //移动到mods文件夹
+                        Directory.CreateDirectory(serverbase + "\\mods\\");
+                        if (File.Exists(serverbase + "\\mods\\" + filename))
+                        {
+                            File.Delete(serverbase + "\\mods\\" + filename);
+                        }
+                        File.Move(serverbase + "\\" + filename, serverbase + "\\mods\\" + filename);
                     }
-                    string backupUrl = $"https://maven.minecraftforge.net/net/minecraftforge/forge/{mcVersion}-{forgeVersion}/{finallyServerCore}-{forgeVersion}-installer.jar";
-
-                    // Attempt to download from backup URL
-                    bool backupDownloadSuccess = await MagicShow.ShowDownloader(Window.GetWindow(this), backupUrl, serverbase, filename, "备用链接下载中……", sha256Exp);
-                    if (!backupDownloadSuccess || !File.Exists(serverbase + "\\" + filename))
+                    catch (Exception e)
                     {
-                        MagicShow.ShowMsgDialog(Window.GetWindow(this), "下载取消！（或服务端文件不存在）", "错误");
+                        MagicShow.ShowMsgDialog(Window.GetWindow(this), "Sponge核心移动失败！\n请重试！" + e.Message, "错误");
+                        return;
+                    }
+                    installReturn = await InstallForge(_filename);
+                    if (installReturn == null)
+                    {
+                        MagicShow.ShowMsgDialog(Window.GetWindow(this), "安装失败！", "错误");
+                        FastModeReturnBtn.IsEnabled = true;
+                        FastModeInstallBtn.IsEnabled = true;
+                        return;
+                    }
+
+                    servercore = installReturn;
+                    break;
+                case "banner":
+                    //banner应当作为模组加载，所以要再下载一个fabric才是服务端
+                    try
+                    {
+                        //移动到mods文件夹
+                        Directory.CreateDirectory(serverbase + "\\mods\\");
+                        if (File.Exists(serverbase + "\\mods\\" + filename))
+                        {
+                            File.Delete(serverbase + "\\mods\\" + filename);
+                        }
+                        File.Move(serverbase + "\\" + filename, serverbase + "\\mods\\" + filename);
+                    }
+                    catch (Exception e)
+                    {
+                        MagicShow.ShowMsgDialog(Window.GetWindow(this), "Banner端移动失败！\n请重试！" + e.Message, "错误");
+                        return;
+                    }
+
+                    //下载一个fabric端
+                    //获取版本号
+                    string bannerVersion = filename.Replace("banner-", "").Replace(".jar", "");
+                    bool dwnFabric = await MagicShow.ShowDownloader(Window.GetWindow(this), (await HttpService.GetApiContentAsync("download/server/fabric/" + bannerVersion))["data"]["url"].ToString(), serverbase, $"fabric-{bannerVersion}.jar", "下载Fabric端中···");
+                    if (!dwnFabric || !File.Exists(serverbase + "\\" + $"fabric-{bannerVersion}.jar"))
+                    {
+                        MagicShow.ShowMsgDialog(Window.GetWindow(this), "Fabric端下载取消（或服务端文件不存在）！", "错误");
+                        return;
+                    }
+
+                    //下载Vanilla端
+                    if (!await DownloadVanilla(serverbase + "\\.fabric\\server", serverCoreVersion + "-server.jar", serverCoreVersion))
+                    {
+                        FastInstallProcess.Text = "请重试！";
+                        FastModeReturnBtn.IsEnabled = true;
+                        FastModeInstallBtn.IsEnabled = true;
+                        return;
+                    }
+                    servercore = $"fabric-{bannerVersion}.jar";
+                    break;
+                case "neoforge":
+                    if (!File.Exists(serverbase + "\\" + filename))
+                    {
+                        MagicShow.ShowMsgDialog(Window.GetWindow(this), "下载失败！（或服务端文件不存在）", "提示");
                         FastInstallProcess.Text = "取消安装！";
                         FastModeReturnBtn.IsEnabled = true;
                         FastModeInstallBtn.IsEnabled = true;
                         return;
                     }
-                }
-                string installReturn = await InstallForge(filename);
-                if (installReturn == null)
-                {
-                    MagicShow.ShowMsgDialog(Window.GetWindow(this), "安装失败！", "错误");
-                    FastModeReturnBtn.IsEnabled = true;
-                    FastModeInstallBtn.IsEnabled = true;
-                    return;
-                }
-                servercore = installReturn;
-            }
-            else
-            {
-                servercore = filename;
+                    installReturn = await InstallForge(filename);
+                    if (installReturn == null)
+                    {
+                        MagicShow.ShowMsgDialog(Window.GetWindow(this), "安装失败！", "错误");
+                        FastModeReturnBtn.IsEnabled = true;
+                        FastModeInstallBtn.IsEnabled = true;
+                        return;
+                    }
+                    servercore = installReturn;
+                    break;
+                case "forge":
+                    // Check if file exists and download succeeded
+                    if (!File.Exists(serverbase + "\\" + filename))
+                    {
+                        // Extract version info and create backup URL
+                        var query = new Uri(dlUrl).Query;
+                        var queryDictionary = System.Web.HttpUtility.ParseQueryString(query);
+                        string mcVersion = queryDictionary["mcversion"];
+                        string forgeVersion = queryDictionary["version"];
+                        string[] components = mcVersion.Split('.');
+                        string _mcMajorVersion = mcVersion;
+                        if (components.Length >= 3 && int.TryParse(components[2], out int _))
+                        {
+                            _mcMajorVersion = $"{components[0]}.{components[1]}"; // remove the last component
+                        }
+                        if (new Version(_mcMajorVersion) < new Version("1.10"))
+                        {
+                            forgeVersion += "-" + mcVersion;
+                        }
+                        string backupUrl = $"https://maven.minecraftforge.net/net/minecraftforge/forge/{mcVersion}-{forgeVersion}/{finallyServerCore}-{forgeVersion}-installer.jar";
+
+                        // Attempt to download from backup URL
+                        bool backupDownloadSuccess = await MagicShow.ShowDownloader(Window.GetWindow(this), backupUrl, serverbase, filename, "备用链接下载中……", sha256Exp);
+                        if (!backupDownloadSuccess || !File.Exists(serverbase + "\\" + filename))
+                        {
+                            MagicShow.ShowMsgDialog(Window.GetWindow(this), "下载取消！（或服务端文件不存在）", "错误");
+                            FastInstallProcess.Text = "取消安装！";
+                            FastModeReturnBtn.IsEnabled = true;
+                            FastModeInstallBtn.IsEnabled = true;
+                            return;
+                        }
+                    }
+                    installReturn = await InstallForge(filename);
+                    if (installReturn == null)
+                    {
+                        MagicShow.ShowMsgDialog(Window.GetWindow(this), "安装失败！", "错误");
+                        FastModeReturnBtn.IsEnabled = true;
+                        FastModeInstallBtn.IsEnabled = true;
+                        return;
+                    }
+                    servercore = installReturn;
+                    break;
+                case "fabric":
+                    //下载Vanilla端
+                    if (!await DownloadVanilla(serverbase + "\\.fabric\\server", serverCoreVersion + "-server.jar", serverCoreVersion))
+                    {
+                        FastInstallProcess.Text = "请重试！";
+                        FastModeReturnBtn.IsEnabled = true;
+                        FastModeInstallBtn.IsEnabled = true;
+                        return;
+                    }
+                    servercore = filename;
+                    break;
+                case "paper":
+                    if (!await DownloadVanilla(serverbase + "\\cache", "mojang_" + serverCoreVersion + ".jar", serverCoreVersion))
+                    {
+                        FastInstallProcess.Text = "请重试！";
+                        FastModeReturnBtn.IsEnabled = true;
+                        FastModeInstallBtn.IsEnabled = true;
+                        return;
+                    }
+                    servercore = filename;
+                    break;
+                default:
+                    servercore = filename;
+                    break;
             }
             FastModeReturnBtn.IsEnabled = true;
             FastModeInstallBtn.IsEnabled = true;
@@ -1461,6 +1506,24 @@ namespace MSL.pages
             SelectTerminalGrid.Visibility = Visibility.Visible;
             InstallGrid.Visibility = Visibility.Collapsed;
             returnMode = 3;
+        }
+
+        private async Task<bool> DownloadVanilla(string path, string filename, string version)
+        {
+            JObject downContext = await HttpService.GetApiContentAsync("download/server/vanilla/" + version);
+            string downUrl = downContext["data"]["url"].ToString();
+
+            string sha256Exp = downContext["data"]["sha256"]?.ToString() ?? string.Empty;
+
+            int dwnDialog = await MagicShow.ShowDownloaderWithIntReturn(Window.GetWindow(this), downUrl, path, filename, "下载依赖中（香草端）……", sha256Exp, true, false);
+            if (dwnDialog == 2)
+            {
+                if (!await MagicShow.ShowMsgDialogAsync("Vanilla端下载失败！此依赖在服务器运行时依旧会进行下载，在此处您要暂时跳过吗？", "错误", true))
+                    return false;
+                else
+                    return true;
+            }
+            return true;
         }
 
         private async Task<string> InstallForge(string filename)

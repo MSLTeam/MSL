@@ -395,7 +395,7 @@ namespace MSL.pages
         private async void DlServerCoreBtn_Click(object sender, RoutedEventArgs e)
         {
             await MagicShow.ShowMsgDialogAsync(Window.GetWindow(this), "这是单独的服务端下载界面\n下载的服务端均在MSL\\Downloads文件夹内", "提示");
-            DownloadServer downloadServer = new DownloadServer("MSL\\Downloads", "", false)
+            DownloadServer downloadServer = new DownloadServer("MSL\\Downloads", DownloadServer.Mode.FreeDownload)
             {
                 Owner = Window.GetWindow(Window.GetWindow(this))
             };

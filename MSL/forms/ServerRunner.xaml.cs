@@ -3379,7 +3379,7 @@ namespace MSL
             {
                 jVMcmd.Clear();
             }
-            DownloadServer downloadServer = new DownloadServer(Rserverbase, Rserverjava)
+            DownloadServer downloadServer = new DownloadServer(Rserverbase, DownloadServer.Mode.ChangeServerSettings, Rserverjava)
             {
                 Owner = this
             };

@@ -186,7 +186,7 @@ namespace MSL.pages
 
         private void mulitDownthread_Click(object sender, RoutedEventArgs e)
         {
-            DownloadDialog.downloadthread = int.Parse(downthreadCount.Text);
+            ConfigStore.DownloadChunkCount = int.Parse(downthreadCount.Text);
         }
 
         private async void AddDownloadTask_Click(object sender, RoutedEventArgs e)

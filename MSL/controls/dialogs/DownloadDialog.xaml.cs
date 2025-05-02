@@ -24,7 +24,7 @@ namespace MSL
     {
         public event DeleControl CloseDialog;
         public int _dialogReturn = 0; // 0未开始下载（或下载中），1下载完成，2下载取消，3下载失败
-        public static int downloadthread = 8;
+        private readonly bool enableParalle = true; // 是否启用多线程下载
         private readonly string downloadPath;
         private readonly string filename;
         private readonly string downloadurl;
@@ -34,7 +34,7 @@ namespace MSL
         private DownloadService downloader;
         private DispatcherTimer updateUITimer;
 
-        public DownloadDialog(string _downloadurl, string _downloadPath, string _filename, string downloadinfo, string sha256 = "", bool _closeDirectly = false, int header = 1)
+        public DownloadDialog(string _downloadurl, string _downloadPath, string _filename, string downloadinfo, string sha256 = "", bool _closeDirectly = false, bool _enableParalle = true, int header = 1)
         {
             InitializeComponent();
             Directory.CreateDirectory(_downloadPath);
@@ -45,16 +45,44 @@ namespace MSL
             closeDirectly = _closeDirectly;
             headerMode = header;
             taskinfo.Text = downloadinfo;
+            enableParalle = _enableParalle;
             Task.Run(Downloader);
         }
 
         private void Downloader()
         {
+            if (File.Exists(Path.Combine(downloadPath, filename)))
+            {
+                if (!string.IsNullOrEmpty(expectedSha256))
+                {
+                    if (VerifyFileSHA256(Path.Combine(downloadPath, filename), expectedSha256))
+                    {
+                        _dialogReturn = 1;
+                        Task.Run(async () =>
+                        {
+                            Dispatcher.Invoke(() =>
+                            {
+                                infolabel.Text = "文件已存在，下载完成";
+                                StatusLab.Text = "下载完成";
+                            });
+                            await Task.Delay(1000);
+                            Dispatcher.Invoke(() =>
+                            {
+                                Close();
+                            });
+                        });
+                        return;
+                    }
+                }
+            }
+
             var downloadOpt = new DownloadConfiguration();
             downloadOpt.RequestConfiguration.UserAgent = DownloadUA();
-            downloadOpt.Timeout = 5000;
-            downloadOpt.ChunkCount = downloadthread; // file parts to download, default value is 1
-            downloadOpt.ParallelDownload = true; // download parts of file as parallel or not. Default value is false
+            if (enableParalle)
+            {
+                downloadOpt.ParallelDownload = true; // download parts of file as parallel or not. Default value is false
+                downloadOpt.ChunkCount = ConfigStore.DownloadChunkCount; // file parts to download, default value is 1
+            }
             downloader = new DownloadService(downloadOpt);
             // Provide `FileName` and `TotalBytesToReceive` at the start of each downloads
             downloader.DownloadStarted += OnDownloadStarted;
@@ -74,6 +102,16 @@ namespace MSL
             // cancelled or download completed successfully.
             downloader.DownloadFileCompleted += OnDownloadFileCompleted;
             downloader.DownloadFileTaskAsync(downloadurl, downloadPath + "\\" + filename);
+
+            Task.Run(async () =>
+            {
+                await Task.Delay(5000);
+                Dispatcher.Invoke(() =>
+                {
+                    if (StatusLab.Text.Contains("加载中"))
+                        StatusLab.Text = "加载中（若长时间无响应，请取消重试或使用代理）";
+                });
+            });
         }
 
         private void OnDownloadStarted(object sender, DownloadStartedEventArgs e)
@@ -125,6 +163,7 @@ namespace MSL
                 {
                     Dispatcher.Invoke(() =>
                     {
+                        StatusLab.Text = "下载中……";
                         pbar.Value = 0;
                         Thread thread = new Thread(DownloadFile);
                         thread.Start();
@@ -341,7 +380,7 @@ namespace MSL
             }
             else
             {
-                downloader.CancelAsync();
+                downloader?.CancelAsync();
                 _dialogReturn = 2;
                 Task.Run(async () =>
                 {
@@ -365,7 +404,7 @@ namespace MSL
             }
             else
             {
-                downloader.CancelAsync();
+                downloader?.CancelAsync();
                 _dialogReturn = 2;
                 Close();
             }
@@ -408,9 +447,12 @@ namespace MSL
                 storyboard.Completed += (s, a) =>
                 {
                     Visibility = Visibility.Collapsed;
-                    downloader.DownloadStarted -= OnDownloadStarted;
-                    downloader.DownloadProgressChanged -= OnDownloadProgressChanged;
-                    downloader.DownloadFileCompleted -= OnDownloadFileCompleted;
+                    if (downloader != null)
+                    {
+                        downloader.DownloadStarted -= OnDownloadStarted;
+                        downloader.DownloadProgressChanged -= OnDownloadProgressChanged;
+                        downloader.DownloadFileCompleted -= OnDownloadFileCompleted;
+                    }
                     CloseDialog();
                 };
 

@@ -23,7 +23,7 @@ namespace MSL.utils
         public static void ShowMsgDialog(string text, string title, UIElement uIElement = null, UIElement _window = null, bool isDangerPrimaryBtn = false)
         {
             MagicDialog MagicDialog = new MagicDialog();
-            MagicDialog.ShowMsgDialog(Functions.GetWindow(_window), text, title, uIElement,isDangerPrimaryBtn);
+            MagicDialog.ShowMsgDialog(Functions.GetWindow(_window), text, title, uIElement, isDangerPrimaryBtn);
         }
 
         /// <summary>
@@ -36,10 +36,10 @@ namespace MSL.utils
         /// <param name="closeBtnContext">关闭按钮文字内容</param>
         /// <param name="primaryBtnContext">确认按钮文字内容</param>
         /// <returns>返回值：true；false</returns>
-        public static async Task<bool> ShowMsgDialogAsync(string text, string title, bool showPrimaryBtn = false, string closeBtnContext = "CANCEL", string primaryBtnContext = "CONFIRM", UIElement uIElement = null, UIElement _window = null,bool isDangerPrimaryBtn=false)
+        public static async Task<bool> ShowMsgDialogAsync(string text, string title, bool showPrimaryBtn = false, string closeBtnContext = "CANCEL", string primaryBtnContext = "CONFIRM", UIElement uIElement = null, UIElement _window = null, bool isDangerPrimaryBtn = false)
         {
             MagicDialog MagicDialog = new MagicDialog();
-            bool _ret = await MagicDialog.ShowMsgDialog(Functions.GetWindow(_window), text, title, showPrimaryBtn, closeBtnContext, primaryBtnContext, uIElement,isDangerPrimaryBtn);
+            bool _ret = await MagicDialog.ShowMsgDialog(Functions.GetWindow(_window), text, title, showPrimaryBtn, closeBtnContext, primaryBtnContext, uIElement, isDangerPrimaryBtn);
             return _ret;
         }
 
@@ -52,7 +52,7 @@ namespace MSL.utils
         public static void ShowMsgDialog(Window _window, string text, string title, UIElement uIElement = null, bool isDangerPrimaryBtn = false)
         {
             MagicDialog MagicDialog = new MagicDialog();
-            MagicDialog.ShowMsgDialog(_window, text, title, uIElement,isDangerPrimaryBtn);
+            MagicDialog.ShowMsgDialog(_window, text, title, uIElement, isDangerPrimaryBtn);
         }
 
         /// <summary>
@@ -68,7 +68,7 @@ namespace MSL.utils
         public static async Task<bool> ShowMsgDialogAsync(Window _window, string text, string title, bool showPrimaryBtn = false, string closeBtnContext = "CANCEL", string primaryBtnContext = "CONFIRM", UIElement uIElement = null, bool isDangerPrimaryBtn = false)
         {
             MagicDialog MagicDialog = new MagicDialog();
-            bool _ret = await MagicDialog.ShowMsgDialog(_window, text, title, showPrimaryBtn, closeBtnContext, primaryBtnContext, uIElement,isDangerPrimaryBtn);
+            bool _ret = await MagicDialog.ShowMsgDialog(_window, text, title, showPrimaryBtn, closeBtnContext, primaryBtnContext, uIElement, isDangerPrimaryBtn);
             return _ret;
         }
 
@@ -138,10 +138,10 @@ namespace MSL.utils
         /// <param name="closeDirectly">下载失败后是否直接关闭下载对话框</param>
         /// <param name="headerMode">UA标识：0等于自动检测（MSL Downloader或无Header），1等于无Header，2等于MSL Downloader，3等于伪装浏览器Header</param>
         /// <returns>true下载成功；false下载取消/失败</returns>
-        public static async Task<bool> ShowDownloader(Window _window, string downloadurl, string downloadPath, string filename, string downloadinfo, string sha256 = "", bool closeDirectly = false, int headerMode = 1)
+        public static async Task<bool> ShowDownloader(Window _window, string downloadurl, string downloadPath, string filename, string downloadinfo, string sha256 = "", bool closeDirectly = false, bool enableParalle = true, int headerMode = 1)
         {
             MagicDialog MagicDialog = new MagicDialog();
-            int _ret = await MagicDialog.ShowDownloadDialog(_window, downloadurl, downloadPath, filename, downloadinfo, sha256, closeDirectly, headerMode);
+            int _ret = await MagicDialog.ShowDownloadDialog(_window, downloadurl, downloadPath, filename, downloadinfo, sha256, closeDirectly, enableParalle, headerMode);
             if (_ret == 1)
             {
                 return true;
@@ -161,10 +161,10 @@ namespace MSL.utils
         /// <param name="closeDirectly">下载失败后是否直接关闭下载对话框</param>
         /// <param name="headerMode">UA标识：0等于自动检测（MSL Downloader或无Header），1等于无Header，2等于MSL Downloader，3等于伪装浏览器Header</param>
         /// <returns>0未开始下载（或下载中），1下载完成，2下载取消，3下载失败</returns>
-        public static async Task<int> ShowDownloaderWithIntReturn(Window _window, string downloadurl, string downloadPath, string filename, string downloadinfo, string sha256 = "", bool closeDirectly = false, int headerMode = 1)
+        public static async Task<int> ShowDownloaderWithIntReturn(Window _window, string downloadurl, string downloadPath, string filename, string downloadinfo, string sha256 = "", bool closeDirectly = false, bool enableParalle = true, int headerMode = 1)
         {
             MagicDialog MagicDialog = new MagicDialog();
-            int _ret = await MagicDialog.ShowDownloadDialog(_window, downloadurl, downloadPath, filename, downloadinfo, sha256, closeDirectly, headerMode);
+            int _ret = await MagicDialog.ShowDownloadDialog(_window, downloadurl, downloadPath, filename, downloadinfo, sha256, closeDirectly, enableParalle, headerMode);
             return _ret;
         }
 
@@ -223,10 +223,10 @@ namespace MSL.utils
             return msgDialog._dialogReturn;
         }
 
-        public async Task<int> ShowDownloadDialog(Window _window, string downloadurl, string downloadPath, string filename, string downloadinfo, string sha256 = "", bool closeDirectly = false, int headerMode = 1)
+        public async Task<int> ShowDownloadDialog(Window _window, string downloadurl, string downloadPath, string filename, string downloadinfo, string sha256 = "", bool closeDirectly = false, bool enableParalle = true, int headerMode = 1)
         {
             window = _window;
-            DownloadDialog dwnDialog = new DownloadDialog(downloadurl, downloadPath, filename, downloadinfo, sha256, closeDirectly, headerMode);
+            DownloadDialog dwnDialog = new DownloadDialog(downloadurl, downloadPath, filename, downloadinfo, sha256, closeDirectly, enableParalle, headerMode);
             dwnDialog.CloseDialog += CloseMsgDialog;
             window?.Focus();
             dialog = Dialog.Show(dwnDialog);

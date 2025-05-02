@@ -392,6 +392,8 @@ namespace MSL.controls.dialogs
                         return "已完成";
                     case DownloadStatus.Failed:
                         return $"失败: {ErrorMessage}";
+                    case DownloadStatus.Retrying:
+                        return $"失败，将重试: {ErrorMessage}";
                     default:
                         return status.ToString();
                 }

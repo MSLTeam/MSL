@@ -52,12 +52,12 @@
                                      Height="15" Maximum="100"/>
 
                             <!-- 下载信息和状态 -->
-                            <StackPanel Grid.Row="3" Grid.Column="0" Orientation="Horizontal" Margin="0,5,0,0">
+                            <WrapPanel Grid.Row="3" Grid.Column="0" Orientation="Horizontal" Margin="0,5,0,0">
                                 <TextBlock Text="{Binding ProgressText}" Margin="0,0,15,0"/>
                                 <TextBlock Text="{Binding SpeedText}" Margin="0,0,15,0"/>
                                 <TextBlock Text="{Binding RemainingText}" Margin="0,0,15,0"/>
                                 <TextBlock Text="{Binding StatusText}" FontWeight="SemiBold" TextWrapping="Wrap"/>
-                            </StackPanel>
+                            </WrapPanel>
 
                             <!-- 操作按钮 -->
                             <StackPanel Grid.Row="3" Grid.Column="1" Orientation="Horizontal" Margin="0,5,0,0">
