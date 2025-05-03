@@ -563,7 +563,7 @@ BMCLAPI —— Vanilla服务端、Forge服务端（及其库文件）国内镜�
     <value>软件文档</value>
   </data>
   <data name="Page_SettingsPage_CF_DownloadThread" xml:space="preserve">
-    <value>下载线程（默认为8，建议不超过16）：</value>
+    <value>下载线程（默认为4，建议不超过16）：</value>
   </data>
   <data name="Page_SettingsPage_CF_Language" xml:space="preserve">
     <value>语言（Language）：</value>

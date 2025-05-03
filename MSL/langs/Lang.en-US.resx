@@ -563,7 +563,7 @@ Do you want to create a new server?</value>
     <value>Software documentation</value>
   </data>
   <data name="Page_SettingsPage_CF_DownloadThread" xml:space="preserve">
-    <value>Download threads (default is 8, recommended not to exceed 16):</value>
+    <value>Download threads (default is 4, recommended not to exceed 16):</value>
   </data>
   <data name="Page_SettingsPage_CF_Language" xml:space="preserve">
     <value>Language:</value>

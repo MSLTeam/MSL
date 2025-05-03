@@ -1376,7 +1376,7 @@ namespace MSL.langs {
         }
         
         /// <summary>
-        ///   查找类似 下载线程（默认为8，建议不超过16）： 的本地化字符串。
+        ///   查找类似 下载线程（默认为4，建议不超过16）： 的本地化字符串。
         /// </summary>
         public static string Page_SettingsPage_CF_DownloadThread {
             get {
