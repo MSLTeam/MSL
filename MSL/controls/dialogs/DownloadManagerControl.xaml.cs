@@ -82,7 +82,7 @@ namespace MSL.controls.dialogs
             var item = _downloadItems.FirstOrDefault(i => i.ItemId == itemId);
             if (item != null)
             {
-                Application.Current.Dispatcher.Invoke(() =>
+                Dispatcher.Invoke(() =>
                 {
                     _downloadItems.Remove(item);
                 });
@@ -94,7 +94,7 @@ namespace MSL.controls.dialogs
         // 清除所有下载项
         public void ClearAllItems()
         {
-            Application.Current.Dispatcher.Invoke(() =>
+            Dispatcher.Invoke(() =>
             {
                 _downloadItems.Clear();
             });
@@ -176,11 +176,23 @@ namespace MSL.controls.dialogs
             }
         }
 
-        private void CancelButton_Click(object sender, RoutedEventArgs e)
+        private void CancelRemoveButton_Click(object sender, RoutedEventArgs e)
         {
             if (sender is Button button && button.Tag is string itemId)
             {
-                _downloadManager.CancelDownloadItem(itemId);
+                var item = _downloadManager.GetDownloadItem(itemId);
+                if (item != null)
+                {
+                    if (item.Status == DownloadStatus.InProgress || item.Status == DownloadStatus.Paused)
+                    {
+                        _downloadManager.CancelDownloadItem(itemId);
+                        UpdateDownloadItemUI(item);
+                    }
+                    else if (item.Status == DownloadStatus.Cancelled || item.Status == DownloadStatus.Completed || item.Status == DownloadStatus.Failed)
+                    {
+                        RemoveDownloadItem(itemId);
+                    }
+                }
             }
         }
 
@@ -215,8 +227,30 @@ namespace MSL.controls.dialogs
 
             foreach (var groupId in groups)
             {
-                _downloadManager.CancelGroup(groupId);
+                _downloadManager.CancelDownloadGroup(groupId);
             }
+        }
+
+        private void RemoveCompletedButton_Click(object sender, RoutedEventArgs e)
+        {
+            var items = _downloadManager.GetAllItems()
+                .Where(i => (i.Status == DownloadStatus.Cancelled || i.Status == DownloadStatus.Completed))
+                .Select(i => i.ItemId)
+                .ToList();
+
+            foreach (var itemId in items)
+            {
+                var item = _downloadItems.FirstOrDefault(i => i.ItemId == itemId);
+                if (item != null)
+                {
+                    Dispatcher.Invoke(() =>
+                    {
+                        _downloadItems.Remove(item);
+                    });
+                }
+
+            }
+            UpdateSummaryInfo();
         }
 
         #endregion
@@ -227,7 +261,7 @@ namespace MSL.controls.dialogs
         {
             if (item == null) return;
 
-            Application.Current.Dispatcher.Invoke(() =>
+            Dispatcher.Invoke(() =>
             {
                 var viewModel = _downloadItems.FirstOrDefault(vm => vm.ItemId == item.ItemId);
 
@@ -244,24 +278,13 @@ namespace MSL.controls.dialogs
 
         private void UpdateSummaryInfo()
         {
-            Application.Current.Dispatcher.Invoke(() =>
+            Dispatcher.Invoke(() =>
             {
                 int activeDownloads = _downloadItems.Count(item =>
                     item.Status == DownloadStatus.InProgress ||
                     item.Status == DownloadStatus.Pending);
 
                 ActiveDownloadsTextBlock.Text = activeDownloads.ToString();
-
-                // 计算总体进度
-                if (_downloadItems.Count > 0)
-                {
-                    double totalProgress = _downloadItems.Average(item => item.Progress.ProgressPercentage);
-                    TotalProgressTextBlock.Text = $"{totalProgress:F1}%";
-                }
-                else
-                {
-                    TotalProgressTextBlock.Text = "0%";
-                }
             });
         }
 
@@ -281,6 +304,7 @@ namespace MSL.controls.dialogs
             private string _remainingText;
             private string _statusText;
             private string _pauseResumeButtonText;
+            private string _cancelRemoveButtonText;
 
             public string ItemId
             {
@@ -336,6 +360,10 @@ namespace MSL.controls.dialogs
                     // 更新按钮文本
                     PauseResumeButtonText = (_status == DownloadStatus.InProgress) ? "暂停" :
                                            (_status == DownloadStatus.Paused) ? "继续" : "---";
+
+                    // 更新按钮文本
+                    CancelRemoveButtonText = (_status == DownloadStatus.Cancelled || _status == DownloadStatus.Completed || _status == DownloadStatus.Failed) ? "移除" :
+                                           (_status == DownloadStatus.InProgress || _status == DownloadStatus.Paused) ? "取消" : "---";
                 }
             }
 
@@ -398,6 +426,16 @@ namespace MSL.controls.dialogs
                 {
                     _pauseResumeButtonText = value;
                     OnPropertyChanged(nameof(PauseResumeButtonText));
+                }
+            }
+
+            public string CancelRemoveButtonText
+            {
+                get => _cancelRemoveButtonText;
+                set
+                {
+                    _cancelRemoveButtonText = value;
+                    OnPropertyChanged(nameof(CancelRemoveButtonText));
                 }
             }
 

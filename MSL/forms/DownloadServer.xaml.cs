@@ -1,4 +1,5 @@
-﻿using Microsoft.VisualBasic;
+﻿using HandyControl.Controls;
+using MSL.controls.dialogs;
 using MSL.langs;
 using MSL.utils;
 using Newtonsoft.Json;
@@ -28,10 +29,13 @@ namespace MSL.pages
             FreeDownload,
         }
         public string FileName { get; set; }
-        private readonly string SavingPath;
+        private string SavingPath;
 
         private readonly Mode DownloadMode;
-        private readonly string JavaPath; // The Java Path for install Forge-ServerCore
+        private string JavaPath; // The Java Path for install Forge-ServerCore
+
+        private Dialog downloadManagerDialog;
+        private DownloadManagerDialog downloadManager;
 
         public DownloadServer(string savingPath, Mode downloadMode, string javaPath = "")
         {
@@ -39,11 +43,53 @@ namespace MSL.pages
             SavingPath = savingPath;
             DownloadMode = downloadMode;
             JavaPath = javaPath;
+
+            if (DownloadMode == Mode.FreeDownload)
+            {
+                downloadManagerDialog = new Dialog();
+                downloadManager = new DownloadManagerDialog()
+                {
+                    Margin= new Thickness(20),
+                };
+                downloadManager.ManagerControl.AutoRemoveCompletedItems = false;
+            }
         }
 
         private async void Page_Loaded(object sender, RoutedEventArgs e)
         {
+            if (DownloadMode != Mode.FreeDownload)
+            {
+                OpenDownloadManager.Visibility = Visibility.Collapsed;
+            }
             await GetServer();
+        }
+
+        private void Window_Closing(object sender, System.ComponentModel.CancelEventArgs e)
+        {
+            if (DownloadMode == Mode.FreeDownload)
+            {
+                Dispose();
+            }
+        }
+
+        public void Dispose()
+        {
+            if (downloadManagerDialog != null)
+            {
+                downloadManager.ManagerControl.ClearAllItems();
+                downloadManagerDialog.Close();
+                downloadManagerDialog = null;
+                downloadManager = null;
+            }
+            serverCoreList.ItemsSource = null;
+            coreVersionList.ItemsSource = null;
+            versionBuildList.ItemsSource = null;
+            SavingPath = null;
+            JavaPath = null;
+            FileName = null;
+            GC.Collect(); // find finalizable objects
+            GC.WaitForPendingFinalizers(); // wait until finalizers executed
+            GC.Collect(); // collect finalized objects
         }
 
         private async void DownloadBtn_Click(object sender, RoutedEventArgs e)
@@ -116,6 +162,36 @@ namespace MSL.pages
             return downUrl;
         }
 
+        private async Task<bool> DownloadFun(string downUrl, string path, string filename, string sha256 = "", bool _enableParellel = true, string remark = "")
+        {
+            if (DownloadMode == Mode.FreeDownload)
+            {
+                var dwnManager = DownloadManager.Instance;
+                string groupid = dwnManager.CreateDownloadGroup(isTempGroup: true);
+                dwnManager.AddDownloadItem(groupid, downUrl, path, filename, sha256, enableParallel: _enableParellel);
+                dwnManager.StartDownloadGroup(groupid);
+                downloadManager.ManagerControl.AddDownloadGroup(groupid, true);
+                return true;
+            }
+            else
+            {
+                int ret = await MagicShow.ShowDownloaderWithIntReturn(this, downUrl, path, filename, remark, sha256, true, _enableParellel);
+                switch (ret)
+                {
+                    case 1:
+                        return true;
+                    case 2:
+                        MagicShow.ShowMsgDialog(this, "下载取消！", "错误");
+                        return false;
+                    case 3:
+                        MagicShow.ShowMsgDialog(this, "下载失败！", "错误");
+                        return false;
+                    default:
+                        return false;
+                }
+            }
+        }
+
         private async Task DownloadServerFunc()
         {
             if (serverCoreList.SelectedIndex == -1 || coreVersionList.SelectedIndex == -1 || versionBuildList.SelectedIndex == -1)
@@ -142,10 +218,14 @@ namespace MSL.pages
             if (downServer == "vanilla" || downServer == "forge" || downServer == "neoforge")
                 _enableParalle = false;
 
-            int dwnDialog = await MagicShow.ShowDownloaderWithIntReturn(this, downUrl, SavingPath, filename, "下载服务端中……", sha256Exp, true, _enableParalle);
-            if (dwnDialog == 2)
+            if(!await DownloadFun(downUrl, SavingPath, filename, sha256Exp, _enableParalle, "下载服务端中……"))
             {
-                MagicShow.ShowMsgDialog(this, "下载取消！", "错误");
+                return;
+            }
+
+            if (DownloadMode == Mode.FreeDownload)
+            {
+                MagicFlowMsg.ShowMessage("已将任务添加至下载列表中！");
                 return;
             }
             if (!File.Exists(SavingPath + "\\" + filename))
@@ -153,14 +233,9 @@ namespace MSL.pages
                 MagicShow.ShowMsgDialog(this, "下载失败！（或服务端文件不存在）", "提示");
                 return;
             }
-            if (DownloadMode == Mode.FreeDownload)
-            {
-                MagicShow.ShowMsgDialog(this, "下载完成！服务端核心放置在“MSL\\Downloads”文件夹中！", "提示");
-                return;
-            }
-
+            
             await FinalStep(downServer, downVersion, filename); // 下载完成后的处理步骤
-        }
+        }        
 
         private async Task FinalStep(string downServer, string downVersion, string filename)
         {
@@ -174,11 +249,9 @@ namespace MSL.pages
                     string _dlUrl = _dlContext["data"]["url"].ToString();
                     _dlUrl = MriiorCheck(_dlUrl);
                     string _sha256Exp = _dlContext["data"]["sha256"]?.ToString() ?? string.Empty;
-                    int _dwnDialog = await MagicShow.ShowDownloaderWithIntReturn(this, _dlUrl, SavingPath, _filename, "下载依赖服务端中……", _sha256Exp, true);
 
-                    if (_dwnDialog == 2)
+                    if(!await DownloadFun(_dlUrl, SavingPath, _filename, _sha256Exp, true, "下载依赖服务端中……"))
                     {
-                        MagicShow.ShowMsgDialog(this, "下载取消！", "提示");
                         return;
                     }
 
@@ -247,10 +320,9 @@ namespace MSL.pages
 
                     //下载一个fabric端
                     //获取版本号
-                    bool dwnFabric = await MagicShow.ShowDownloader(GetWindow(this), (await HttpService.GetApiContentAsync("download/server/fabric/" + downVersion))["data"]["url"].ToString(), SavingPath, $"fabric-{downVersion}.jar", "下载Fabric端中···");
-                    if (!dwnFabric || !File.Exists(SavingPath + "\\" + $"fabric-{downVersion}.jar"))
+                    if (!await DownloadFun((await HttpService.GetApiContentAsync("download/server/fabric/" + downVersion))["data"]["url"].ToString(),
+                        SavingPath, $"fabric-{downVersion}.jar", remark: "下载Fabric端中···"))
                     {
-                        MagicShow.ShowMsgDialog(this, "Fabric端下载取消（或服务端文件不存在）！", "错误");
                         return;
                     }
 
@@ -273,7 +345,7 @@ namespace MSL.pages
                     break;
                 case "paper":
                     //下载Vanilla端
-                    if(!await DownloadVanilla(SavingPath + "\\cache", "mojang_" + downVersion + ".jar", downVersion))
+                    if (!await DownloadVanilla(SavingPath + "\\cache", "mojang_" + downVersion + ".jar", downVersion))
                     {
                         MagicShow.ShowMsgDialog(this, "您取消了跳过，请重新下载。", "错误");
                         return;
@@ -295,13 +367,9 @@ namespace MSL.pages
             downUrl = MriiorCheck(downUrl);
             string sha256Exp = downContext["data"]["sha256"]?.ToString() ?? string.Empty;
 
-            int dwnDialog = await MagicShow.ShowDownloaderWithIntReturn(this, downUrl, path, filename, "下载依赖中（香草端）……", sha256Exp, true, false);
-            if (dwnDialog == 2)
+            if(!await DownloadFun(downUrl, path, filename, sha256Exp, true, "下载依赖中（香草端）……"))
             {
-                if (!await MagicShow.ShowMsgDialogAsync("Vanilla端下载失败！此依赖在服务器运行时依旧会进行下载，在此处您要暂时跳过吗？", "错误", true))
-                    return false;
-                else
-                    return true;
+                return false;
             }
             return true;
         }
@@ -456,6 +524,12 @@ namespace MSL.pages
         private void openChooseServerDocs_Click(object sender, RoutedEventArgs e)
         {
             Process.Start("https://www.mslmc.cn/docs/other/choose-server-tips.html");
+        }
+
+        private void OpenDownloadManager_Click(object sender, RoutedEventArgs e)
+        {
+            downloadManagerDialog = Dialog.Show(downloadManager);
+            downloadManager.fatherDialog = downloadManagerDialog;
         }
     }
 }

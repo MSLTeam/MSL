@@ -3397,6 +3397,7 @@ namespace MSL
                     Growl.Success("服务端下载完毕！已自动选择该服务端核心，请记得保存哦~");
                 }
             }
+            downloadServer.Dispose();
         }
 
         private void autoSetMemory_Click(object sender, RoutedEventArgs e)

@@ -773,6 +773,7 @@ namespace MSL.pages
                         returnMode = 6;
                     }
                 }
+                downloadServer.Dispose();
             }
             else if (useServerself.IsChecked == true) // 自定义服务端核心文件
             {

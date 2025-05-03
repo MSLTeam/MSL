@@ -191,14 +191,14 @@ namespace MSL.controls
                 }
 
                 // 创建下载组
-                string vanillaGroup = downloadManager.CreateDownloadGroup("ForgeInstall_LibFiles", 1);
+                string vanillaGroup = downloadManager.CreateDownloadGroup("ForgeInstall_LibFiles", maxConcurrentDownloads: 1);
 
                 downloadManager.AddDownloadItem(
                     vanillaGroup,
                     vanillaUrl,
                     Path.GetDirectoryName(serverJarPath),
                     Path.GetFileName(serverJarPath),
-                    enableParalle: false
+                    enableParallel: false
                 );
                 downloadManager.StartDownloadGroup(vanillaGroup);
                 DownloadDisplay.AddDownloadGroup(vanillaGroup); // 添加下载组到UI显示
@@ -261,7 +261,7 @@ namespace MSL.controls
                 Log_in("正在下载Forge运行Lib···");
 
                 // 创建下载组
-                string groupId = downloadManager.CreateDownloadGroup("ForgeInstall_LibFiles", semaphore); // 4个并发下载
+                string groupId = downloadManager.CreateDownloadGroup("ForgeInstall_LibFiles", maxConcurrentDownloads: semaphore); // 4个并发下载
 
                 //List<Task> downloadTasks = new List<Task>();
                 if (versionType != 5) //分为高版本和低版本
@@ -290,7 +290,7 @@ namespace MSL.controls
                             _dlurl,
                             LibPath,
                             lib["downloads"]["artifact"]["path"].ToString(),
-                            enableParalle: false
+                            enableParallel: false
                         );
 
                         //bool dlStatus = await DownloadFile(_dlurl, _savepath, _sha1);
@@ -314,7 +314,7 @@ namespace MSL.controls
                             _dlurl,
                             LibPath,
                             lib["downloads"]["artifact"]["path"].ToString(),
-                            enableParalle: false
+                            enableParallel: false
                         );
 
                         /*
@@ -368,7 +368,7 @@ namespace MSL.controls
                             _dlurl,
                             LibPath,
                             NameToPath(SafeGetValue(lib, "name")),
-                            enableParalle: false
+                            enableParallel: false
                         );
 
                         /*
@@ -400,7 +400,7 @@ namespace MSL.controls
                 // 开始下载
                 downloadManager.StartDownloadGroup(groupId);
 
-                if(!await downloadManager.WaitForGroupCompletionAsync(groupId))
+                if (!await downloadManager.WaitForGroupCompletionAsync(groupId))
                 {
                     Log_in("下载失败，请重试！");
                     return;
@@ -1021,8 +1021,11 @@ namespace MSL.controls
         private void CancelButton_Click(object sender, RoutedEventArgs e)
         {
             var downloadManager = DownloadManager.Instance;
-            downloadManager.CancelGroup("ForgeInstall_VanillaServer");
-            downloadManager.CancelGroup("ForgeInstall_LibFiles");
+            downloadManager.CancelDownloadGroup("ForgeInstall_VanillaServer");
+            downloadManager.CancelDownloadGroup("ForgeInstall_LibFiles");
+            downloadManager.RemoveDownloadGroup("ForgeInstall_VanillaServer");
+            downloadManager.RemoveDownloadGroup("ForgeInstall_LibFiles");
+
             //关闭线程
             //thread.Abort();
             cancellationTokenSource.Cancel();

@@ -8,23 +8,16 @@
              mc:Ignorable="d" 
              d:DesignHeight="450" d:DesignWidth="800">
 
-    <control:MagicCard Margin="10">
+    <control:MagicCard Margin="10" Title="下载管理器">
         <Grid>
             <Grid.RowDefinitions>
-                <RowDefinition Height="Auto"/>
                 <RowDefinition Height="*"/>
                 <RowDefinition Height="Auto"/>
             </Grid.RowDefinitions>
 
-            <!-- 标题区域 -->
-            <Border Grid.Row="0" Padding="10">
-                <TextBlock Text="下载管理器" FontSize="16" FontWeight="Bold"/>
-            </Border>
-
             <!-- 下载项列表 -->
-            <ListView x:Name="DownloadItemsListView" Grid.Row="1" Margin="5" 
-              ScrollViewer.HorizontalScrollBarVisibility="Disabled"
-              SelectionMode="Single">
+            <ListView x:Name="DownloadItemsListView" MinHeight="100"
+              ScrollViewer.HorizontalScrollBarVisibility="Disabled" SelectionMode="Single">
                 <ListView.ItemTemplate>
                     <DataTemplate>
                         <Grid>
@@ -41,10 +34,11 @@
 
                             <!-- 文件名和URL -->
                             <TextBlock Grid.Row="0" Grid.Column="0" Text="{Binding Filename}" 
-                                   FontWeight="Bold" Margin="0,0,0,5"/>
+                                   TextTrimming="CharacterEllipsis" FontWeight="DemiBold"
+                                   Style="{StaticResource MagicText14}" Margin="0,0,0,5"/>
                             <TextBlock Grid.Row="1" Grid.Column="0" Text="{Binding Url}" 
-                                   TextTrimming="CharacterEllipsis" Foreground="Gray" 
-                                   FontSize="12" Margin="0,0,0,5"/>
+                                   TextTrimming="CharacterEllipsis" Opacity="0.7"
+                                   Style="{StaticResource MagicText}" Margin="0,0,0,5"/>
 
                             <!-- 进度条 -->
                             <ProgressBar Grid.Row="2" Grid.Column="0" Grid.ColumnSpan="2" Margin="0,5"
@@ -53,20 +47,21 @@
 
                             <!-- 下载信息和状态 -->
                             <WrapPanel Grid.Row="3" Grid.Column="0" Orientation="Horizontal" Margin="0,5,0,0">
-                                <TextBlock Text="{Binding ProgressText}" Margin="0,0,15,0"/>
-                                <TextBlock Text="{Binding SpeedText}" Margin="0,0,15,0"/>
-                                <TextBlock Text="{Binding RemainingText}" Margin="0,0,15,0"/>
-                                <TextBlock Text="{Binding StatusText}" FontWeight="SemiBold" TextWrapping="Wrap"/>
+                                <TextBlock Style="{StaticResource MagicText14}" Margin="0,0,15,0">
+                                    <Run Text="速度："/><Run Text="{Binding SpeedText}"/>
+                                    <Run Text=" 剩余时间："/><Run Text="{Binding RemainingText}"/>
+                                </TextBlock>
+                                <TextBlock Text="{Binding StatusText}" Style="{StaticResource MagicText14}" TextWrapping="Wrap"/>
                             </WrapPanel>
 
                             <!-- 操作按钮 -->
-                            <StackPanel Grid.Row="3" Grid.Column="1" Orientation="Horizontal" Margin="0,5,0,0">
+                            <StackPanel Grid.Row="3" Grid.Column="1" Orientation="Horizontal" Margin="5,5,0,0">
                                 <Button x:Name="PauseResumeButton" Content="{Binding PauseResumeButtonText}" 
                                     Width="60" Margin="0,0,5,0" Tag="{Binding ItemId}"
                                     Click="PauseResumeButton_Click"/>
-                                <Button x:Name="CancelButton" Content="取消" 
-                                    Width="50" Tag="{Binding ItemId}"
-                                    Click="CancelButton_Click"/>
+                                <Button x:Name="CancelRemoveButton" Content="{Binding CancelRemoveButtonText}" 
+                                    Width="50" Margin="0,0,5,0" Tag="{Binding ItemId}"
+                                    Click="CancelRemoveButton_Click"/>
                             </StackPanel>
                         </Grid>
                     </DataTemplate>
@@ -80,23 +75,22 @@
             </ListView>
 
             <!-- 底部控制区 -->
-            <Grid Grid.Row="2">
+            <Grid Grid.Row="1" Margin="0,10,0,0">
                 <Grid.ColumnDefinitions>
                     <ColumnDefinition Width="*"/>
                     <ColumnDefinition Width="Auto"/>
                 </Grid.ColumnDefinitions>
 
                 <StackPanel Grid.Column="0" Orientation="Horizontal">
-                    <TextBlock Text="活动下载: " VerticalAlignment="Center"/>
-                    <TextBlock x:Name="ActiveDownloadsTextBlock" Text="0" VerticalAlignment="Center" FontWeight="Bold"/>
-                    <TextBlock Text=" | 总进度: " VerticalAlignment="Center" Margin="10,0,0,0"/>
-                    <TextBlock x:Name="TotalProgressTextBlock" Text="0%" VerticalAlignment="Center" FontWeight="Bold"/>
+                    <TextBlock Text="正在下载: " VerticalAlignment="Center"/>
+                    <TextBlock x:Name="ActiveDownloadsTextBlock" Text="0" VerticalAlignment="Center"/>
                 </StackPanel>
 
                 <StackPanel Grid.Column="1" Orientation="Horizontal">
-                    <Button x:Name="PauseAllButton" Content="全部暂停" Width="80" Margin="0,0,5,0" Click="PauseAllButton_Click"/>
+                    <Button x:Name="PauseAllButton" Content="全部暂停" Width="80" Margin="15,0,5,0" Click="PauseAllButton_Click"/>
                     <Button x:Name="ResumeAllButton" Content="全部继续" Width="80" Margin="0,0,5,0" Click="ResumeAllButton_Click"/>
-                    <Button x:Name="CancelAllButton" Content="全部取消" Width="80" Click="CancelAllButton_Click"/>
+                    <Button x:Name="CancelAllButton" Content="全部取消" Width="80" Margin="0,0,5,0" Click="CancelAllButton_Click"/>
+                    <Button x:Name="RemoveCompletedButton" Content="移除已完成/已取消" Width="150" Click="RemoveCompletedButton_Click"/>
                 </StackPanel>
             </Grid>
         </Grid>

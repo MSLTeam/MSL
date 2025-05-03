@@ -8,6 +8,7 @@ using System.Net;
 using System.Security.Cryptography;
 using System.Threading;
 using System.Threading.Tasks;
+using System.Windows.Threading;
 
 namespace MSL.utils
 {
@@ -36,7 +37,7 @@ namespace MSL.utils
         #endregion
 
         #region 公共属性
-        public static int DefaultConcurrentDownloads { get; set; } = 3;
+        public static int DefaultConcurrentDownloads { get; set; } = 4;
         public static int DefaultThreadsPerDownload { get; set; } = 8;
         #endregion
 
@@ -47,16 +48,17 @@ namespace MSL.utils
         /// <param name="groupId">组ID，如果为null则自动生成</param>
         /// <param name="maxConcurrentDownloads">该组最大并发下载数，默认为3</param>
         /// <returns>下载组ID</returns>
-        public string CreateDownloadGroup(string groupId = null, int maxConcurrentDownloads = default)
+        public string CreateDownloadGroup(string groupId = null,bool isTempGroup=false, int maxConcurrentDownloads = default)
         {
-            if(maxConcurrentDownloads <= 0)
+            if (maxConcurrentDownloads == default)
                 maxConcurrentDownloads = DefaultConcurrentDownloads;
             groupId = groupId ?? Guid.NewGuid().ToString();
             var group = new DownloadGroup
             {
                 GroupId = groupId,
                 MaxConcurrentDownloads = maxConcurrentDownloads,
-                Status = DownloadGroupStatus.Ready
+                Status = DownloadGroupStatus.Ready,
+                IsTempGroup = isTempGroup
             };
             _downloadGroups[groupId] = group;
             return groupId;
@@ -71,11 +73,13 @@ namespace MSL.utils
         /// <param name="filename">文件名</param>
         /// <param name="expectedSha256">预期SHA256（可选）</param>
         /// <param name="itemId">项ID，如果为null则自动生成</param>
+        /// <param name="enableParallel">是否启用并行下载</param>
         /// <param name="headerMode">下载请求头模式: 0=无, 1=MSL, 2=浏览器</param>
+        /// <param name="retryCount">下载失败重试次数</param>
         /// <returns>下载项ID</returns>
         public string AddDownloadItem(string groupId, string url, string downloadPath, string filename,
-                                      string expectedSha256 = "", string itemId = null, bool enableParalle = true,
-                                      int headerMode = 1,int retryCount=1)
+                                      string expectedSha256 = "", string itemId = null, bool enableParallel = true,
+                                      DownloadUAMode uaMode = DownloadUAMode.MSL, int retryCount = 1)
         {
             if (!_downloadGroups.ContainsKey(groupId))
                 throw new ArgumentException($"Download group '{groupId}' does not exist");
@@ -93,8 +97,8 @@ namespace MSL.utils
                 DownloadPath = downloadPath,
                 Filename = filename,
                 ExpectedSha256 = expectedSha256,
-                EnableParalle = enableParalle,
-                HeaderMode = headerMode,
+                EnableParallel = enableParallel,
+                UAMode = uaMode,
                 Status = DownloadStatus.Pending,
                 Progress = new DownloadProgressInfo(),
                 RetryCount = retryCount
@@ -131,15 +135,17 @@ namespace MSL.utils
         {
             if (!_downloadGroups.TryGetValue(groupId, out var group))
                 throw new ArgumentException($"Download group '{groupId}' does not exist");
-
-            return group.CompletionTask.Task;
+            var task = group.CompletionTask.Task;
+            if (group.IsTempGroup)
+                RemoveDownloadGroup(groupId);
+            return task;
         }
 
         /// <summary>
         /// 取消指定组的所有下载
         /// </summary>
         /// <param name="groupId">组ID</param>
-        public void CancelGroup(string groupId)
+        public void CancelDownloadGroup(string groupId)
         {
             if (!_downloadGroups.TryGetValue(groupId, out var group))
                 return;
@@ -232,6 +238,15 @@ namespace MSL.utils
         }
 
         /// <summary>
+        /// 获取所有下载项信息
+        /// </summary>
+        /// <returns>下载项列表</returns>
+        public IEnumerable<DownloadItem> GetAllItems()
+        {
+            return _downloadItems.Values.ToList();
+        }
+
+        /// <summary>
         /// 获取指定下载项信息
         /// </summary>
         /// <param name="itemId">下载项ID</param>
@@ -245,7 +260,7 @@ namespace MSL.utils
         /// 清理指定组及其下载项
         /// </summary>
         /// <param name="groupId">组ID</param>
-        public void RemoveGroup(string groupId)
+        public void RemoveDownloadGroup(string groupId)
         {
             if (!_downloadGroups.TryGetValue(groupId, out var group))
                 return;
@@ -253,7 +268,7 @@ namespace MSL.utils
             // 如果组还在下载中，先取消所有下载
             if (group.Status == DownloadGroupStatus.InProgress)
             {
-                CancelGroup(groupId);
+                CancelDownloadGroup(groupId);
             }
 
             // 移除所有下载项
@@ -304,6 +319,18 @@ namespace MSL.utils
             // 等待所有下载完成
             await Task.WhenAll(downloadTasks);
 
+            // 完成组下载，更新状态
+            CompleteDownloadGroup(groupId);
+        }
+
+        /// <summary>
+        /// 完成下载组并更新状态
+        /// </summary>
+        private void CompleteDownloadGroup(string groupId)
+        {
+            if (!_downloadGroups.TryGetValue(groupId, out var group))
+                return;
+
             // 检查组内所有下载是否成功
             var allSuccess = true;
             foreach (var itemId in group.Items)
@@ -325,16 +352,28 @@ namespace MSL.utils
 
             // 更新组状态
             group.Status = allSuccess ? DownloadGroupStatus.Completed : DownloadGroupStatus.CompletedWithErrors;
-            group.CompletionTask.SetResult(allSuccess);
+            group.CompletionTask.TrySetResult(allSuccess);
 
             // 触发组完成事件
             DownloadGroupCompleted?.Invoke(groupId, allSuccess);
         }
 
+        /// <summary>
+        /// 下载单个项目的主要方法
+        /// </summary>
         private async Task DownloadItemAsync(string itemId)
         {
             if (!_downloadItems.TryGetValue(itemId, out var item))
                 return;
+
+            if (File.Exists(Path.Combine(item.DownloadPath, item.Filename)) &&
+                !string.IsNullOrEmpty(item.ExpectedSha256) && VerifyFileSHA256(Path.Combine(item.DownloadPath, item.Filename), item.ExpectedSha256))
+            {
+                // SHA256匹配，标记为完成
+                item.Status = DownloadStatus.Completed;
+                CompleteDownloadItem(item, true, null);
+                return;
+            }
 
             // 标记为进行中
             item.Status = DownloadStatus.InProgress;
@@ -346,12 +385,12 @@ namespace MSL.utils
                 // 创建下载配置
                 var downloadOpt = new DownloadConfiguration
                 {
-                    ParallelDownload = item.EnableParalle,
+                    ParallelDownload = item.EnableParallel,
                     ChunkCount = ConfigStore.DownloadChunkCount
                 };
 
-                // 设置用户代理
-                downloadOpt.RequestConfiguration.UserAgent = GetUserAgent(item.HeaderMode);
+                // 设置UA
+                downloadOpt.RequestConfiguration.UserAgent = GetUserAgent(item.UAMode);
 
                 // 创建下载服务
                 var downloader = new DownloadService(downloadOpt);
@@ -379,8 +418,8 @@ namespace MSL.utils
                 success = false;
                 error = ex;
 
-                // 如果Downloader下载失败，尝试使用备用下载
-                if (item.Status != DownloadStatus.Cancelled && item.Status != DownloadStatus.Cancelling)
+                // 如果非取消状态，尝试备用下载
+                if (!IsCancellingOrCancelled(item.Status))
                 {
                     try
                     {
@@ -391,33 +430,97 @@ namespace MSL.utils
                         error = fallbackEx;
                     }
                 }
-
-                if (!success) // 备用下载依旧不成功
-                {
-                    if (item.RetryCount > 0) // 重试次数
-                    {
-                        // 进行重试
-                        item.Status = DownloadStatus.Retrying;
-                        item.RetryCount--;
-                        await Task.Delay(1000);
-                        await DownloadItemAsync(item.ItemId);
-                        return;
-                    }
-                    item.Status = DownloadStatus.Failed;
-                }
-                item.Status = DownloadStatus.Completed;
             }
             finally
             {
-                // 触发项完成事件
-                DownloadItemCompleted?.Invoke(item.GroupId, itemId, success, error);
-
-                // 清理资源
-                if (_downloaders.TryRemove(itemId, out var downloader))
+                // 完成下载，更新最终状态和触发事件
+                CompleteDownloadItem(item, success, error);
+                // 处理下载结果和重试逻辑
+                if (!success && !IsCancellingOrCancelled(item.Status) && item.RetryCount > 0)
                 {
-                    downloader.Dispose();
+                    await RetryDownloadAsync(item);
                 }
             }
+        }
+
+        /// <summary>
+        /// 完成下载项并更新状态
+        /// </summary>
+        private void CompleteDownloadItem(DownloadItem item, bool success, Exception error)
+        {
+            // 更新状态
+            if (IsCancellingOrCancelled(item.Status))
+            {
+                item.Status = DownloadStatus.Cancelled;
+            }
+            else
+            {
+                item.Status = success ? DownloadStatus.Completed : DownloadStatus.Failed;
+                if (!success && error != null)
+                {
+                    item.ErrorMessage = error.Message;
+                }
+            }
+
+            // 触发项完成事件
+            DownloadItemCompleted?.Invoke(item.GroupId, item.ItemId, success, error);
+
+            // 清理资源
+            CleanupDownloader(item.ItemId);
+        }
+
+        /// <summary>
+        /// 重试下载
+        /// </summary>
+        private async Task RetryDownloadAsync(DownloadItem item)
+        {
+            item.Status = DownloadStatus.Retrying;
+            item.RetryCount--;
+
+            await Task.Delay(1500);
+
+            // 清理可能的不完整文件
+            TryDeleteFile(Path.Combine(item.DownloadPath, item.Filename));
+
+            // 延迟后重试
+            await Task.Delay(1500);
+
+            await DownloadItemAsync(item.ItemId);
+        }
+
+        /// <summary>
+        /// 清理下载器资源
+        /// </summary>
+        private void CleanupDownloader(string itemId)
+        {
+            if (_downloaders.TryRemove(itemId, out var downloader))
+            {
+                downloader.Dispose();
+            }
+        }
+
+        /// <summary>
+        /// 检查状态是否为取消中或已取消
+        /// </summary>
+        private bool IsCancellingOrCancelled(DownloadStatus status)
+        {
+            return status == DownloadStatus.Cancelling || status == DownloadStatus.Cancelled;
+        }
+
+        /// <summary>
+        /// 尝试删除文件，忽略异常
+        /// </summary>
+        private bool TryDeleteFile(string filePath)
+        {
+            try
+            {
+                if (File.Exists(filePath))
+                {
+                    File.Delete(filePath);
+                }
+                return true;
+            }
+            catch { return false; }
         }
 
         private void OnDownloadStarted(string itemId, DownloadStartedEventArgs e)
@@ -444,6 +547,9 @@ namespace MSL.utils
             DownloadItemProgressChanged?.Invoke(item.GroupId, itemId, item.Progress);
         }
 
+        /// <summary>
+        /// 处理下载完成事件
+        /// </summary>
         private void OnDownloadFileCompleted(string itemId, System.ComponentModel.AsyncCompletedEventArgs e, TaskCompletionSource<bool> completionSource)
         {
             if (!_downloadItems.TryGetValue(itemId, out var item))
@@ -452,59 +558,60 @@ namespace MSL.utils
                 return;
             }
 
-            bool success = false;
+            string filePath = Path.Combine(item.DownloadPath, item.Filename);
 
+            // 1. 检查是否取消
             if (e.Cancelled)
             {
                 item.Status = DownloadStatus.Cancelled;
-                try
-                {
-                    File.Delete(Path.Combine(item.DownloadPath, item.Filename));
-                }
-                catch { }
+                TryDeleteFile(filePath);
+                completionSource.SetResult(false);
+                return;
             }
-            else if (e.Error != null || !File.Exists(Path.Combine(item.DownloadPath, item.Filename)))
+
+            // 2. 检查是否有错误
+            if (e.Error != null)
             {
-                item.Status = DownloadStatus.Failed;
-                item.ErrorMessage = e.Error?.Message ?? "File not found after download";
+                item.ErrorMessage = e.Error.Message;
+                completionSource.SetResult(false);
+                return;
             }
-            else
+
+            // 3. 检查文件是否存在
+            if (!File.Exists(filePath))
             {
-                // 如果需要校验SHA256
-                if (!string.IsNullOrEmpty(item.ExpectedSha256))
+                item.ErrorMessage = "File not found after download";
+                completionSource.SetResult(false);
+                return;
+            }
+
+            // 4. 验证SHA256（如果需要）
+            if (!string.IsNullOrEmpty(item.ExpectedSha256))
+            {
+                if (!VerifyFileSHA256(filePath, item.ExpectedSha256))
                 {
-                    if (!VerifyFileSHA256(Path.Combine(item.DownloadPath, item.Filename), item.ExpectedSha256))
-                    {
-                        item.Status = DownloadStatus.Failed;
-                        item.ErrorMessage = "SHA256 verification failed";
-                        try
-                        {
-                            File.Delete(Path.Combine(item.DownloadPath, item.Filename));
-                        }
-                        catch { }
-                    }
-                    else
-                    {
-                        item.Status = DownloadStatus.Completed;
-                        success = true;
-                    }
-                }
-                else
-                {
-                    item.Status = DownloadStatus.Completed;
-                    success = true;
+                    item.ErrorMessage = "SHA256 verification failed";
+                    TryDeleteFile(filePath);
+                    completionSource.SetResult(false);
+                    return;
                 }
             }
 
-            completionSource.SetResult(success);
+            // 文件下载成功
+            completionSource.SetResult(true);
         }
 
+        /// <summary>
+        /// 备用下载方法
+        /// </summary>
         private async Task<bool> FallbackDownloadAsync(DownloadItem item)
         {
+            string filePath = Path.Combine(item.DownloadPath, item.Filename);
+
             try
             {
                 HttpWebRequest request = (HttpWebRequest)WebRequest.Create(item.Url);
-                request.UserAgent = GetUserAgent(item.HeaderMode);
+                request.UserAgent = GetUserAgent(item.UAMode);
 
                 using (HttpWebResponse response = (HttpWebResponse)await request.GetResponseAsync())
                 {
@@ -512,7 +619,7 @@ namespace MSL.utils
                     item.Progress.TotalBytes = totalBytes;
 
                     using (Stream responseStream = response.GetResponseStream())
-                    using (FileStream fileStream = new FileStream(Path.Combine(item.DownloadPath, item.Filename), FileMode.Create))
+                    using (FileStream fileStream = new FileStream(filePath, FileMode.Create))
                     {
                         byte[] buffer = new byte[8192];
                         int bytesRead;
@@ -522,10 +629,10 @@ namespace MSL.utils
 
                         while ((bytesRead = await responseStream.ReadAsync(buffer, 0, buffer.Length)) > 0)
                         {
-                            if (item.Status == DownloadStatus.Cancelling || item.Status == DownloadStatus.Cancelled)
+                            if (IsCancellingOrCancelled(item.Status))
                             {
                                 fileStream.Close();
-                                try { File.Delete(Path.Combine(item.DownloadPath, item.Filename)); } catch { }
+                                TryDeleteFile(filePath);
                                 return false;
                             }
 
@@ -536,16 +643,7 @@ namespace MSL.utils
                             TimeSpan elapsed = DateTime.Now - lastProgressUpdate;
                             if (elapsed.TotalMilliseconds > 500)
                             {
-                                double bytesPerSecond = (totalDownloadedByte - lastBytesReceived) / elapsed.TotalSeconds;
-
-                                // 更新进度信息
-                                item.Progress.ReceivedBytes = totalDownloadedByte;
-                                item.Progress.ProgressPercentage = totalBytes > 0 ? (double)totalDownloadedByte * 100 / totalBytes : 0;
-                                item.Progress.BytesPerSecond = bytesPerSecond;
-
-                                // 触发进度变更事件
-                                DownloadItemProgressChanged?.Invoke(item.GroupId, item.ItemId, item.Progress);
-
+                                UpdateFallbackProgress(item, totalDownloadedByte, lastBytesReceived, elapsed, totalBytes);
                                 lastProgressUpdate = DateTime.Now;
                                 lastBytesReceived = totalDownloadedByte;
                             }
@@ -554,46 +652,72 @@ namespace MSL.utils
                 }
 
                 // 验证文件完整性（如果需要）
-                if (!string.IsNullOrEmpty(item.ExpectedSha256))
+                if (!string.IsNullOrEmpty(item.ExpectedSha256) && !VerifyFileSHA256(filePath, item.ExpectedSha256))
                 {
-                    if (!VerifyFileSHA256(Path.Combine(item.DownloadPath, item.Filename), item.ExpectedSha256))
-                    {
-                        item.ErrorMessage = "SHA256 verification failed";
-                        try { File.Delete(Path.Combine(item.DownloadPath, item.Filename)); } catch { }
-                        return false;
-                    }
+                    item.ErrorMessage = "SHA256 verification failed";
+                    TryDeleteFile(filePath);
+                    return false;
                 }
+
                 return true;
             }
             catch (Exception ex)
             {
                 item.ErrorMessage = ex.Message;
+                TryDeleteFile(filePath);
                 return false;
             }
         }
 
-        private string GetUserAgent(int headerMode)
+        /// <summary>
+        /// 更新备用下载的进度信息
+        /// </summary>
+        private void UpdateFallbackProgress(DownloadItem item, long totalDownloadedByte, long lastBytesReceived,
+                                             TimeSpan elapsed, long totalBytes)
         {
-            switch (headerMode)
-            {
-                case 1:
-                    return "MSLTeam-MSL/" + ConfigStore.MSLVersion + " (Downloader)";
-                case 2:
-                    return "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/126.0.0.0 Safari/537.36";
-                default:
-                    return null;
-            }
+            double bytesPerSecond = (totalDownloadedByte - lastBytesReceived) / elapsed.TotalSeconds;
+
+            // 更新进度信息
+            item.Progress.ReceivedBytes = totalDownloadedByte;
+            item.Progress.ProgressPercentage = totalBytes > 0 ? (double)totalDownloadedByte * 100 / totalBytes : 0;
+            item.Progress.BytesPerSecond = bytesPerSecond;
+
+            // 触发进度变更事件
+            DownloadItemProgressChanged?.Invoke(item.GroupId, item.ItemId, item.Progress);
         }
 
+        /// <summary>
+        /// 获取UA字符串
+        /// </summary>
+        private string GetUserAgent(DownloadUAMode uaMode)
+        {
+            return uaMode switch
+            {
+                DownloadUAMode.MSL => "MSLTeam-MSL/" + ConfigStore.MSLVersion + " (Downloader)",
+                DownloadUAMode.Browser => "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/126.0.0.0 Safari/537.36",
+                _ => null,
+            };
+        }
+
+        /// <summary>
+        /// 验证文件SHA256哈希值
+        /// </summary>
         private bool VerifyFileSHA256(string filePath, string expectedHash)
         {
-            using (FileStream stream = File.OpenRead(filePath))
+            try
             {
-                SHA256Managed sha = new SHA256Managed();
-                byte[] hash = sha.ComputeHash(stream);
-                string calculatedHash = BitConverter.ToString(hash).Replace("-", string.Empty);
+                using (FileStream stream = File.OpenRead(filePath))
+                {
+                    SHA256Managed sha = new SHA256Managed();
+                    byte[] hash = sha.ComputeHash(stream);
+                    string calculatedHash = BitConverter.ToString(hash).Replace("-", string.Empty);
 
-                return string.Equals(calculatedHash, expectedHash, StringComparison.OrdinalIgnoreCase);
+                    return string.Equals(calculatedHash, expectedHash, StringComparison.OrdinalIgnoreCase);
+                }
+            }
+            catch
+            {
+                return false;
             }
         }
         #endregion
@@ -628,6 +752,16 @@ namespace MSL.utils
     }
 
     /// <summary>
+    /// UAMode枚举
+    /// </summary>
+    public enum DownloadUAMode
+    {
+        None = 0,
+        MSL = 1,
+        Browser = 2
+    }
+
+    /// <summary>
     /// 下载组信息类
     /// </summary>
     public class DownloadGroup
@@ -637,6 +771,7 @@ namespace MSL.utils
         public int MaxConcurrentDownloads { get; set; }
         public List<string> Items { get; set; } = new List<string>();
         public TaskCompletionSource<bool> CompletionTask { get; set; } = new TaskCompletionSource<bool>();
+        public bool IsTempGroup { get; set; }
     }
 
     /// <summary>
@@ -650,8 +785,8 @@ namespace MSL.utils
         public string DownloadPath { get; set; }
         public string Filename { get; set; }
         public string ExpectedSha256 { get; set; }
-        public bool EnableParalle { get; set; }
-        public int HeaderMode { get; set; }
+        public bool EnableParallel { get; set; }
+        public DownloadUAMode UAMode { get; set; }
         public DownloadStatus Status { get; set; }
         public string ErrorMessage { get; set; }
         public DownloadProgressInfo Progress { get; set; }

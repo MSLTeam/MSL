@@ -117,6 +117,9 @@
     <Compile Include="controls\dialogs\DownloadManagerControl.xaml.cs">
       <DependentUpon>DownloadManagerControl.xaml</DependentUpon>
     </Compile>
+    <Compile Include="controls\dialogs\DownloadManagerDialog.xaml.cs">
+      <DependentUpon>DownloadManagerDialog.xaml</DependentUpon>
+    </Compile>
     <Compile Include="controls\MagicControls.cs" />
     <Compile Include="controls\StringConcatConverter.cs" />
     <Compile Include="forms\ConptyWindow.xaml.cs">
@@ -230,6 +233,10 @@
       <SubType>Designer</SubType>
     </Page>
     <Page Include="controls\dialogs\DownloadManagerControl.xaml">
+      <SubType>Designer</SubType>
+      <Generator>MSBuild:Compile</Generator>
+    </Page>
+    <Page Include="controls\dialogs\DownloadManagerDialog.xaml">
       <SubType>Designer</SubType>
       <Generator>MSBuild:Compile</Generator>
     </Page>

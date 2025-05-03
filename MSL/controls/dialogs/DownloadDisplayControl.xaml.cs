@@ -183,17 +183,6 @@ namespace MSL.controls.dialogs
                     item.Status == DownloadStatus.Pending);
 
                 ActiveDownloadsTextBlock.Text = activeDownloads.ToString();
-
-                // 计算总体进度
-                if (_downloadItems.Count > 0)
-                {
-                    double totalProgress = _downloadItems.Average(item => item.Progress.ProgressPercentage);
-                    TotalProgressTextBlock.Text = $"{totalProgress:F1}%";
-                }
-                else
-                {
-                    TotalProgressTextBlock.Text = "0%";
-                }
             });
         }
 
