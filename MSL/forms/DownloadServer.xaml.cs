@@ -300,6 +300,7 @@ namespace MSL.pages
 
                     FileName = installReturn;
                     break;
+                    /*
                 case "banner":
                     //banner应当作为模组加载，所以要再下载一个fabric才是服务端
                     try
@@ -333,7 +334,7 @@ namespace MSL.pages
                         return;
                     }
                     FileName = $"fabric-{downVersion}.jar";
-                    break;
+                    break; */
                 case "fabric":
                     //下载Vanilla端
                     if (!await DownloadVanilla(SavingPath + "\\.fabric\\server", downVersion + "-server.jar", downVersion))

@@ -1377,6 +1377,7 @@ namespace MSL.pages
 
                     servercore = installReturn;
                     break;
+                    /*
                 case "banner":
                     //banner应当作为模组加载，所以要再下载一个fabric才是服务端
                     try
@@ -1414,7 +1415,7 @@ namespace MSL.pages
                         return;
                     }
                     servercore = $"fabric-{bannerVersion}.jar";
-                    break;
+                    break; */
                 case "neoforge":
                     if (!File.Exists(serverbase + "\\" + filename))
                     {
