@@ -246,7 +246,9 @@ namespace MSL
                 }
                 if (File.Exists("MSL\\Background.png"))
                 {
-                    Background = new ImageBrush(SettingsPage.GetImage("MSL\\Background.png"));
+                    ImageBrush imageBrush = new ImageBrush(SettingsPage.GetImage("MSL\\Background.png"));
+                    imageBrush.Stretch = Stretch.UniformToFill;
+                    Background = imageBrush;
                     frame.BorderThickness = new Thickness(0);
                 }
                 //Logger.LogInfo("加载背景图片成功！");
@@ -821,8 +823,10 @@ namespace MSL
                 }
                 if (File.Exists("MSL\\Background.png"))//check background and set it
                 {
+                    ImageBrush imageBrush = new ImageBrush(SettingsPage.GetImage("MSL\\Background.png"));
+                    imageBrush.Stretch = Stretch.UniformToFill;
+                    Background = imageBrush;
                     frame.BorderThickness = new Thickness(0);
-                    Background = new ImageBrush(SettingsPage.GetImage("MSL\\Background.png"));
                 }
                 else
                 {

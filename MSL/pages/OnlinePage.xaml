@@ -20,7 +20,7 @@
                 </Grid.RowDefinitions>
                 <StackPanel Grid.Row="0">
                     <Expander x:Name="masterExp" Margin="10,0,10,0" Expanded="masterExp_Expanded" Header="{Binding [Page_OnlinePage_Header_Create], Source={x:Static langs:LanguageManager.Instance}}" >
-                        <WrapPanel Background="{DynamicResource BackgroundBrush}">
+                        <WrapPanel>
                             <StackPanel Orientation="Horizontal" Margin="10">
                                 <Label Content="{Binding [Page_OnlinePage_Create_RoomNo.], Source={x:Static langs:LanguageManager.Instance}}" Height="30" FontSize="14" Background="{x:Null}" BorderBrush="{x:Null}"/>
                                 <TextBox x:Name="masterQQ" Height="30"  TextWrapping="Wrap" Text="" Width="180"/>
@@ -50,7 +50,7 @@
                         </WrapPanel>
                     </Expander>
                     <Expander x:Name="visiterExp" Margin="10,10,10,0" Expanded="visiterExp_Expanded" Header="{Binding [Page_OnlinePage_Header_Join], Source={x:Static langs:LanguageManager.Instance}}">
-                        <WrapPanel Background="{DynamicResource BackgroundBrush}">
+                        <WrapPanel>
                             <StackPanel Orientation="Horizontal" Margin="10">
                                 <Label Content="{Binding [Page_OnlinePage_Join_RoomNo.], Source={x:Static langs:LanguageManager.Instance}}" Height="30" FontSize="14" Background="{x:Null}" BorderBrush="{x:Null}"/>
                                 <TextBox x:Name="visiterQQ" Height="30" TextWrapping="Wrap" Text="" Width="180"/>
@@ -80,7 +80,7 @@
                         </WrapPanel>
                     </Expander>
                 </StackPanel>
-                <TextBox x:Name="frpcOutlog" Grid.Row="1" Margin="10,10,10,10" TextWrapping="Wrap" Text="Logs" IsReadOnly="True" HorizontalScrollBarVisibility="Visible" VerticalScrollBarVisibility="Auto" VerticalContentAlignment="Top" Padding="10"/>
+                <TextBox x:Name="frpcOutlog" Grid.Row="1" Margin="10,10,10,10" TextWrapping="Wrap" Text="Logs" IsReadOnly="True" HorizontalScrollBarVisibility="Visible" VerticalScrollBarVisibility="Auto" VerticalContentAlignment="Top" Padding="10" Background="{x:Null}"/>
             </Grid>
         </Grid>
     </Border>
