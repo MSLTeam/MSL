@@ -115,6 +115,7 @@ namespace MSL.controls
                 //在这里检测一下版本，用以区分安装流程
                 if (SafeGetValue(installJobj, "minecraft") != "")
                 {
+                    /* 2025.5.28 经过测试1.21.5可以正常安装qwq
                     if (!ForgePath.Contains("neoforge")) // NeoForge照常安装
                     {
                         if (CompareMinecraftVersions(installJobj["minecraft"].ToString(), "1.21") != -1)
@@ -124,7 +125,7 @@ namespace MSL.controls
                             Log_in("\nMSL目前不支持自动安装此版本，请点击右下角“用命令行安装”进行手动安装，若安装失败，请尝试使用代理！");
                             return;
                         }
-                    }
+                    } */
                     if (CompareMinecraftVersions(installJobj["minecraft"].ToString(), "1.20.3") != -1)
                     {
                         //1.20.3-Latest
@@ -187,7 +188,7 @@ namespace MSL.controls
                 //是否使用镜像源
                 if (!useMirrorUrl)
                 {
-                    vanillaUrl = vanillaUrl.Replace("bmclapi2.bangbang93.com", "piston-data.mojang.com");
+                    vanillaUrl = vanillaUrl.Replace("file.mslmc.cn/mirrors/vanilla/", "piston-data.mojang.com/v1/objects/");
                 }
 
                 // 创建下载组
@@ -679,12 +680,12 @@ namespace MSL.controls
             if (useMirrorUrl)
             {
                 //改成镜像源的部分
-                str = str.Replace("https://maven.neoforged.net/releases/net/neoforged/forge", "https://bmclapi2.bangbang93.com/maven/net/neoforged/forge");
-                str = str.Replace("https://maven.neoforged.net/releases/net/neoforged/neoforge", "https://bmclapi2.bangbang93.com/maven/net/neoforged/neoforge");
-                str = str.Replace("https://maven.minecraftforge.net", "https://bmclapi2.bangbang93.com/maven");
-                str = str.Replace("https://files.minecraftforge.net/maven", "https://bmclapi2.bangbang93.com/maven");
-                str = str.Replace("https://libraries.minecraft.net", "https://bmclapi2.bangbang93.com/maven");
-                str = str.Replace("https://maven.neoforged.net/releases", "https://bmclapi2.bangbang93.com/maven");
+                str = str.Replace("https://maven.neoforged.net/releases/net/neoforged/forge", "https://mojmirror.hypertention.cn/maven/net/neoforged/forge");
+                str = str.Replace("https://maven.neoforged.net/releases/net/neoforged/neoforge", "https://mojmirror.hypertention.cn/maven/net/neoforged/neoforge");
+                str = str.Replace("https://maven.minecraftforge.net", "https://mojmirror.hypertention.cn/maven");
+                str = str.Replace("https://files.minecraftforge.net/maven", "https://mojmirror.hypertention.cn/maven");
+                str = str.Replace("https://libraries.minecraft.net", "https://mojmirror.hypertention.cn/maven");
+                str = str.Replace("https://maven.neoforged.net/releases", "https://mojmirror.hypertention.cn/maven");
             }
             //构建时候的变量
             str = str.Replace("{INSTALLER}", ForgePath);

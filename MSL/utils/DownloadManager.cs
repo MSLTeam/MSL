@@ -386,7 +386,7 @@ namespace MSL.utils
                 var downloadOpt = new DownloadConfiguration
                 {
                     ParallelDownload = item.EnableParallel,
-                    ChunkCount = ConfigStore.DownloadChunkCount
+                    ChunkCount = ConfigStore.DownloadChunkCount,
                 };
 
                 // 设置UA
