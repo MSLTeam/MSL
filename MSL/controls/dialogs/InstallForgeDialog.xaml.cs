@@ -169,20 +169,26 @@ namespace MSL.controls
                 if (versionType <= 3)
                 {
                     serverJarPath = ReplaceStr(installJobj["serverJarPath"].ToString());
-                    vanillaUrl = (await HttpService.GetApiContentAsync("download/server/vanilla/" + installJobj["minecraft"].ToString()))["data"]["url"].ToString();
+                    vanillaUrl = (await HttpService.GetApiContentAsync("download/server/vanilla/" + installJobj["minecraft"].ToString()))["data"]?["url"]?.ToString() ?? null;
                     McVersion = installJobj["minecraft"].ToString();
                 }
                 else if (versionType == 5)
                 {
                     serverJarPath = InstallPath + "/minecraft_server." + installJobj["install"]["minecraft"].ToString() + ".jar";
-                    vanillaUrl = (await HttpService.GetApiContentAsync("download/server/vanilla/" + installJobj["install"]["minecraft"].ToString()))["data"]["url"].ToString();
+                    vanillaUrl = (await HttpService.GetApiContentAsync("download/server/vanilla/" + installJobj["install"]["minecraft"].ToString()))["data"]?["url"]?.ToString() ?? null;
                     McVersion = installJobj["install"]["minecraft"].ToString();
                 }
                 else
                 {
                     serverJarPath = InstallPath + "/minecraft_server." + installJobj["minecraft"].ToString() + ".jar";
-                    vanillaUrl = (await HttpService.GetApiContentAsync("download/server/vanilla/" + installJobj["minecraft"].ToString()))["data"]["url"].ToString();
+                    vanillaUrl = (await HttpService.GetApiContentAsync("download/server/vanilla/" + installJobj["minecraft"].ToString()))["data"]?["url"]?.ToString() ?? null;
                     McVersion = installJobj["minecraft"].ToString();
+                }
+
+                // 判断是否成功获取原版服务端url
+                if (vanillaUrl == null) {
+                    Log_in("获取原版服务端核心下载地址失败！");
+                    return;
                 }
 
                 //是否使用镜像源
