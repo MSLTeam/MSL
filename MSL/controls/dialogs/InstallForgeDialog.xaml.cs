@@ -29,7 +29,7 @@ namespace MSL.controls
         private readonly string LibPath;
         private readonly string JavaPath;
         private StreamWriter logWriter;
-        private int versionType; //由于Forge安装器的json有4种格式（太6了），在此进行规定：①1.20.3-Latest ②？-1.20.2
+        private int versionType; //由于Forge安装器的json有4种格式（太6了），在此进行规定：①1.20.3-Latest ②？-1.20.2 懒得规定了-qwq
         private bool useMirrorUrl = true;
 
         public InstallForgeDialog(string installPath, string forgeFileName, string javaPath)
@@ -45,9 +45,10 @@ namespace MSL.controls
         private readonly CancellationTokenSource cancellationTokenSource = new CancellationTokenSource();
         private async void UserControl_Loaded(object sender, RoutedEventArgs e)
         {
+            InstallDialogTitle.Text = $"{(ForgePath.Contains("neoforge") ? "NeoForge" : "Forge")}安装器";
             File.Create(InstallPath + "/msl-installForge.log").Close();
             logWriter = File.AppendText(InstallPath + "/msl-installForge.log");
-            Log_in("准备安装Forge···");
+            Log_in($"准备安装{(ForgePath.Contains("neoforge")?"NeoForge":"Forge")}···");
             Log_in("5秒后开始安装···");
             await Task.Delay(5000);
             Mirror.IsEnabled = false;
