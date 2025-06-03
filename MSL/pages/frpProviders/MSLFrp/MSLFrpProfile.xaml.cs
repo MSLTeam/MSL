@@ -4,6 +4,7 @@ using Newtonsoft.Json.Linq;
 using QRCoder;
 using System;
 using System.Collections.Generic;
+using System.Diagnostics;
 using System.Threading.Tasks;
 using System.Windows;
 using System.Windows.Controls;
@@ -111,7 +112,7 @@ namespace MSL.pages.frpProviders.MSLFrp
             Score_Label.Content = "积分：" + userData["score"].ToString();
             RegTime_Label.Content = "注册时间：" + Functions.ConvertUnixTimeSeconds((long)userData["regTime"]);
             LastLogin_Label.Content = "最后登录：" + Functions.ConvertUnixTimeSeconds((long)userData["lastLoginTime"]);
-            Perm_Label.Content = "权限组：" + userData["permission"].ToString();
+            Perm_Label.Content = "权限组：" + (userData["permission"].ToString() == "1" ? "超级管理员" : "普通用户");
             RealnameVerify_Label.Content = "实名认证：" + ((bool)userData["realName"] == true ? "已通过" : "未通过");
             if ((bool)userData["realName"])
             {
@@ -126,13 +127,22 @@ namespace MSL.pages.frpProviders.MSLFrp
 
         private async void RealnameVerify_Button_Click(object sender, RoutedEventArgs e)
         {
-            if (await MagicShow.ShowMsgDialogAsync("目前软件仅支持使用中国大陆二代身份证+支付宝方式进行实名，若您不符合上述条件，请前往官网进行实名！\n您确定要继续吗？", "提示", true) == false)
+            if (await MagicShow.ShowMsgDialogAsync("请选择实名方式: \n#MSL用户中心网页实名: 支持微信、支付宝实名(其中支付宝支持港澳台居民实名);\n#MSL内实名: 仅支持中国大陆居民身份证支付宝实名 (二维码较小，有扫不到的可能);\n实名费用: 会员免费支付宝实名，支付宝实名150积分，微信实名200积分。", "提示", true,"MSL内实名","前往MSL用户中心实名"))
             {
+                Process.Start("https://user.mslmc.net/user/profile");
                 return;
             }
             RealnameVerify_Button.IsEnabled = false;
             string certID = await MagicShow.ShowInput(Window.GetWindow(this), "请输入您的身份证号码", "");
+            if(certID == null)
+            {
+                return;
+            }
             string certName = await MagicShow.ShowInput(Window.GetWindow(this), "请输入您的真实姓名", "");
+            if (certName == null)
+            {
+                return;
+            }
 
             var parameterData = new Dictionary<string, string> {
                 { "cert_id", certID },
