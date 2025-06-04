@@ -18,6 +18,7 @@ using System.Windows;
 using System.Windows.Media;
 using System.Windows.Media.Animation;
 using System.Windows.Media.Imaging;
+using Windows.UI.Core;
 using MessageBox = System.Windows.MessageBox;
 using Window = System.Windows.Window;
 
@@ -58,6 +59,10 @@ namespace MSL.pages
                 if (jsonObject["autoUpdateApp"] != null && (bool)jsonObject["autoUpdateApp"] == true)
                 {
                     autoUpdateApp.IsChecked = true;
+                }
+                if (jsonObject["closeWindowDialog"] != null && (bool)jsonObject["closeWindowDialog"] == false)
+                {
+                    CloseWindowDialog.IsChecked = false;
                 }
                 if (jsonObject["autoOpenServer"] != null && jsonObject["autoOpenServer"].ToString() != "False")
                 {
@@ -988,6 +993,18 @@ namespace MSL.pages
             jobject["lang"] = lang;
             string convertString = Convert.ToString(jobject);
             File.WriteAllText("MSL\\config.json", convertString, Encoding.UTF8);
+        }
+
+        private void CloseWindowDialog_Click(object sender, EventArgs e)
+        {
+            if (CloseWindowDialog.IsChecked == true)
+            {
+                Config.Write("closeWindowDialog", true);
+            }
+            else
+            {
+                Config.Write("closeWindowDialog", false);
+            }
         }
 
         private async void MSLTips_Click(object sender, RoutedEventArgs e)

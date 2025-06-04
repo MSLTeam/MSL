@@ -119,7 +119,17 @@ namespace MSL
                 if (CheckServerRunning())
                 {
                     e.Cancel = true;
-                    int dialog = MagicShow.ShowMsg(this, "检测到您没有关闭服务器，是否隐藏此窗口？\n如要重新显示此窗口，请在服务器列表内双击该服务器（或点击开启服务器按钮）", "警告", true, "取消");
+                    int dialog = 0;
+                    Console.WriteLine(Config.Read("closeWindowDialog"));
+                    if (Config.Read("closeWindowDialog")?.ToString() == "False")
+                    {
+                        dialog = 1; // 不显示提示，直接关闭窗口
+                    }
+                    else
+                    {
+                        dialog = MagicShow.ShowMsg(this, "检测到您没有关闭服务器，是否隐藏此窗口？\n如要重新显示此窗口，请在服务器列表内双击该服务器（或点击开启服务器按钮）", "警告", true, "取消");
+                    }
+
                     if (dialog == 1)
                     {
                         if (ConPTYWindow != null)

@@ -54,6 +54,10 @@
                     <Label Grid.Column="0" Content="{Binding [Page_SettingsPage_CF_BF_MSLTips],Source={x:Static lang:LanguageManager.Instance}}" Margin="0,0,10,0"/>
                     <ToggleButton Name="MSLTips" IsChecked="True" Style="{StaticResource ToggleButtonSwitch.Content}" HorizontalAlignment="Left" VerticalAlignment="Center" Click="MSLTips_Click"/>
                 </StackPanel>
+                <StackPanel Margin="0,0,0,15" Orientation="Horizontal">
+                    <Label Grid.Column="0" Content="关闭服务器运行窗口的弹窗提示: " Margin="0,0,10,0"/>
+                    <ToggleButton Name="CloseWindowDialog" IsChecked="True" Style="{StaticResource ToggleButtonSwitch.Content}" HorizontalAlignment="Left" VerticalAlignment="Center" Click="CloseWindowDialog_Click"/>
+                </StackPanel>
                 <Grid Margin="0,0,0,15">
                     <Grid.ColumnDefinitions>
                         <ColumnDefinition Width="Auto"/>
