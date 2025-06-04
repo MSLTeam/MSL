@@ -167,24 +167,33 @@ namespace MSL.controls
                 Log_in("正在下载原版服务端核心···");
                 string serverJarPath;
                 string vanillaUrl;
-                if (versionType <= 3)
+                try
                 {
-                    serverJarPath = ReplaceStr(installJobj["serverJarPath"].ToString());
-                    vanillaUrl = (await HttpService.GetApiContentAsync("download/server/vanilla/" + installJobj["minecraft"].ToString()))["data"]?["url"]?.ToString() ?? null;
-                    McVersion = installJobj["minecraft"].ToString();
+                    if (versionType <= 3)
+                    {
+                        serverJarPath = ReplaceStr(installJobj["serverJarPath"].ToString());
+                        vanillaUrl = (await HttpService.GetApiContentAsync("download/server/vanilla/" + installJobj["minecraft"].ToString()))["data"]?["url"]?.ToString() ?? null;
+                        McVersion = installJobj["minecraft"].ToString();
+                    }
+                    else if (versionType == 5)
+                    {
+                        serverJarPath = InstallPath + "/minecraft_server." + installJobj["install"]["minecraft"].ToString() + ".jar";
+                        vanillaUrl = (await HttpService.GetApiContentAsync("download/server/vanilla/" + installJobj["install"]["minecraft"].ToString()))["data"]?["url"]?.ToString() ?? null;
+                        McVersion = installJobj["install"]["minecraft"].ToString();
+                    }
+                    else
+                    {
+                        serverJarPath = InstallPath + "/minecraft_server." + installJobj["minecraft"].ToString() + ".jar";
+                        vanillaUrl = (await HttpService.GetApiContentAsync("download/server/vanilla/" + installJobj["minecraft"].ToString()))["data"]?["url"]?.ToString() ?? null;
+                        McVersion = installJobj["minecraft"].ToString();
+                    }
                 }
-                else if (versionType == 5)
-                {
-                    serverJarPath = InstallPath + "/minecraft_server." + installJobj["install"]["minecraft"].ToString() + ".jar";
-                    vanillaUrl = (await HttpService.GetApiContentAsync("download/server/vanilla/" + installJobj["install"]["minecraft"].ToString()))["data"]?["url"]?.ToString() ?? null;
-                    McVersion = installJobj["install"]["minecraft"].ToString();
+                catch (Exception e) {
+                    Log_in("获取原版服务端核心下载地址失败！" + e.Message);
+                    Log_in("请点击右下方命令行安装以继续安装流程！");
+                    return;
                 }
-                else
-                {
-                    serverJarPath = InstallPath + "/minecraft_server." + installJobj["minecraft"].ToString() + ".jar";
-                    vanillaUrl = (await HttpService.GetApiContentAsync("download/server/vanilla/" + installJobj["minecraft"].ToString()))["data"]?["url"]?.ToString() ?? null;
-                    McVersion = installJobj["minecraft"].ToString();
-                }
+
 
                 // 判断是否成功获取原版服务端url
                 if (vanillaUrl == null) {

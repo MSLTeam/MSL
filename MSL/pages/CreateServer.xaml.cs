@@ -1512,20 +1512,31 @@ namespace MSL.pages
 
         private async Task<bool> DownloadVanilla(string path, string filename, string version)
         {
-            JObject downContext = await HttpService.GetApiContentAsync("download/server/vanilla/" + version);
-            string downUrl = downContext["data"]["url"].ToString();
-
-            string sha256Exp = downContext["data"]["sha256"]?.ToString() ?? string.Empty;
-
-            int dwnDialog = await MagicShow.ShowDownloaderWithIntReturn(Window.GetWindow(this), downUrl, path, filename, "下载依赖中（香草端）……", sha256Exp, true, false);
-            if (dwnDialog == 2)
+            try
             {
-                if (!await MagicShow.ShowMsgDialogAsync("Vanilla端下载失败！此依赖在服务器运行时依旧会进行下载，在此处您要暂时跳过吗？", "错误", true))
+                JObject downContext = await HttpService.GetApiContentAsync("download/server/vanilla/" + version);
+                string downUrl = downContext["data"]["url"].ToString();
+
+                string sha256Exp = downContext["data"]["sha256"]?.ToString() ?? string.Empty;
+
+                int dwnDialog = await MagicShow.ShowDownloaderWithIntReturn(Window.GetWindow(this), downUrl, path, filename, "下载依赖中（香草端）……", sha256Exp, true, false);
+                if (dwnDialog == 2)
+                {
+                    if (!await MagicShow.ShowMsgDialogAsync("Vanilla端下载失败！此依赖在服务器运行时依旧会进行下载，在此处您要暂时跳过吗？", "错误", true))
+                        return false;
+                    else
+                        return true;
+                }
+                return true;
+            }
+            catch (Exception ex)
+            {
+                if (!await MagicShow.ShowMsgDialogAsync("Vanilla端下载失败！此依赖在服务器运行时依旧会进行下载，在此处您要暂时跳过吗？\n错误: "+ex.Message, "错误", true))
                     return false;
                 else
                     return true;
             }
-            return true;
+
         }
 
         private async Task<string> InstallForge(string filename)
