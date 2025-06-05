@@ -162,7 +162,7 @@ namespace MSL.utils
             {
                 httpClient.DefaultRequestHeaders.UserAgent.TryParseAdd(headerUA);
             }
-
+            LogHelper.WriteLog($"HTTP GET: {url}", LogLevel.INFO);
             try
             {
                 HttpResponseMessage response = await httpClient.GetAsync(url);
@@ -172,6 +172,7 @@ namespace MSL.utils
             catch (Exception ex)
             {
                 httpResponse.HttpResponseException = ex;
+                LogHelper.WriteLog($"HTTP GET异常: ", LogLevel.ERROR);
             }
             httpClient.Dispose();
             return httpResponse;

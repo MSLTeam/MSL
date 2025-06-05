@@ -1,4 +1,5 @@
 ﻿using MSL.langs;
+using MSL.utils;
 using Newtonsoft.Json.Linq;
 using System;
 using System.Globalization;
@@ -80,26 +81,22 @@ namespace MSL
             }
             try
             {
-                /*
-                if (jsonObject["debugMode"] != null && (bool)jsonObject["debugMode"] == true)
-                {
-                    Logger.CanWriteLog = true;
-                    Logger.Clear();
-                    Logger.LogWarning("DEBUGMODE ON");
-                }
-                */
+                // 初始化日志系统
+                LogHelper.Init();
+                LogHelper.WriteLog("MSL正在启动...", LogLevel.INFO);
+                
                 if (jsonObject["lang"] == null)
                 {
                     jsonObject.Add("lang", "zh-CN");
                     string convertString = Convert.ToString(jsonObject);
                     File.WriteAllText(@"MSL\config.json", convertString, Encoding.UTF8);
-                    //Logger.LogInfo("Language: " + "ZH-CN");
+                    LogHelper.WriteLog("Language: " + "ZH-CN");
                 }
                 else
                 {
                     if (jsonObject["lang"].ToString() != "zh-CN")
                         LanguageManager.Instance.ChangeLanguage(new CultureInfo(jsonObject["lang"].ToString()));
-                    //Logger.LogInfo("Language: " + jsonObject["lang"].ToString().ToUpper());
+                    LogHelper.WriteLog("Language: " + jsonObject["lang"].ToString().ToUpper());
                 }
             }
             finally
@@ -159,7 +156,7 @@ namespace MSL
 
         protected override void OnExit(ExitEventArgs e)
         {
-            //Logger.LogInfo("Exiting Application.");
+            LogHelper.WriteLog("Exiting Application.");
             //Logger.Dispose();
             _mutex?.ReleaseMutex();
             base.OnExit(e);

@@ -163,6 +163,7 @@
     <Compile Include="controls\MessageWindow.xaml.cs">
       <DependentUpon>MessageWindow.xaml</DependentUpon>
     </Compile>
+    <Compile Include="utils\LogHelper.cs" />
     <Compile Include="utils\MCServerService.cs" />
     <Compile Include="utils\ShowService.cs" />
     <Compile Include="controls\dialogs\TextDialog.xaml.cs">
