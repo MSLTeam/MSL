@@ -135,13 +135,13 @@ namespace MSL
                     jsonObject.Add("lang", "zh-CN");
                     string convertString = Convert.ToString(jsonObject);
                     File.WriteAllText(@"MSL\config.json", convertString, Encoding.UTF8);
-                    LogHelper.WriteLog("Language: " + "ZH-CN");
+                    LogHelper.WriteLog("语言: " + "ZH-CN");
                 }
                 else
                 {
                     if (jsonObject["lang"].ToString() != "zh-CN")
                         LanguageManager.Instance.ChangeLanguage(new CultureInfo(jsonObject["lang"].ToString()));
-                    LogHelper.WriteLog("Language: " + jsonObject["lang"].ToString().ToUpper());
+                    LogHelper.WriteLog("语言: " + jsonObject["lang"].ToString().ToUpper());
                 }
             }
             finally
@@ -201,7 +201,7 @@ namespace MSL
 
         protected override void OnExit(ExitEventArgs e)
         {
-            LogHelper.WriteLog("Exiting Application.");
+            LogHelper.WriteLog("程序正在退出...");
             //Logger.Dispose();
             _mutex?.ReleaseMutex();
             base.OnExit(e);

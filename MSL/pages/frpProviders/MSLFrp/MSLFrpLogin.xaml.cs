@@ -7,6 +7,10 @@ using System.Windows;
 using System.Windows.Controls;
 using System.Windows.Input;
 
+// HACK: 假设 LogHelper 和 LogLevel 在此命名空间或上层可见
+// 如果不可见，您可能需要添加 using 声明
+// using YourNamespace.Containing.LogHelper; 
+
 namespace MSL.pages.frpProviders.MSLFrp
 {
     /// <summary>
@@ -18,6 +22,7 @@ namespace MSL.pages.frpProviders.MSLFrp
         public MSLFrpLogin()
         {
             InitializeComponent();
+            LogHelper.WriteLog("MSLFrp 登录控件初始化完成。");
         }
 
         private async void UserLogin_Click(object sender, RoutedEventArgs e)
@@ -26,16 +31,20 @@ namespace MSL.pages.frpProviders.MSLFrp
             string userPassword = UserPassword.Password;
             if (string.IsNullOrEmpty(userAccount) || string.IsNullOrEmpty(userPassword))
             {
+                LogHelper.WriteLog("登录尝试中止：账号或密码为空。", LogLevel.WARN);
                 MagicFlowMsg.ShowMessage("请输入账号和密码！", 2);
                 return;
             }
+            LogHelper.WriteLog($"用户 '{userAccount}' 正在尝试登录...");
             var (Success, Msg, ContentInfo, Require2FA) = await UserLoginEvent(userAccount, userPassword);
             if (!Success)
             {
                 if (Require2FA)
                 {
-                    if(ContentInfo == null)
+                    LogHelper.WriteLog($"用户 '{userAccount}' 需要进行2FA验证。");
+                    if (ContentInfo == null)
                     {
+                        LogHelper.WriteLog("2FA流程中止：ContentInfo为空，可能为API异常。", LogLevel.ERROR);
                         MagicFlowMsg.ShowMessage("未知错误，请稍后再试！", 2);
                         return;
                     }
@@ -55,12 +64,14 @@ namespace MSL.pages.frpProviders.MSLFrp
                     }
                     return;
                 }
+                LogHelper.WriteLog($"用户 '{userAccount}' 登录失败。错误信息: {Msg}", LogLevel.ERROR);
                 MagicShow.ShowMsgDialog(Msg, "错误");
                 return;
             }
-            
+
             // LoginGrid.Visibility = Visibility.Collapsed;
             // MainCtrl.Visibility = Visibility.Visible;
+            LogHelper.WriteLog($"用户 '{userAccount}' 登录成功。");
             UserAccount.Text = string.Empty;
             UserPassword.Password = string.Empty;
             LoginSuccess.Invoke(ContentInfo);
@@ -71,6 +82,7 @@ namespace MSL.pages.frpProviders.MSLFrp
 
         private void User2FAReturn_Click(object sender, RoutedEventArgs e)
         {
+            LogHelper.WriteLog("用户从2FA验证界面返回登录界面。");
             LoginGrid.Visibility = Visibility.Visible;
             Auth2FAGrid.Visibility = Visibility.Collapsed;
             Auth2FACode.Text = string.Empty;
@@ -83,18 +95,22 @@ namespace MSL.pages.frpProviders.MSLFrp
             string userAuth2FA = Auth2FACode.Text;
             if (string.IsNullOrEmpty(userAuth2FA))
             {
+                LogHelper.WriteLog("2FA登录尝试中止：验证码为空。", LogLevel.WARN);
                 MagicFlowMsg.ShowMessage("请输入验证代码！", 2);
                 return;
             }
+            LogHelper.WriteLog($"用户 '{userAccount}' 正在提交2FA验证码...");
             var (Success, Msg, ContentInfo, Require2FA) = await UserLoginEvent(userAccount, userPassword, userAuth2FA);
             if (!Success)
             {
+                LogHelper.WriteLog($"用户 '{userAccount}' 2FA登录失败。错误信息: {Msg}", LogLevel.ERROR);
                 MagicShow.ShowMsgDialog(Msg, "错误");
                 return;
             }
 
             // Auth2FAGrid.Visibility = Visibility.Collapsed;
             // MainCtrl.Visibility = Visibility.Visible;
+            LogHelper.WriteLog($"用户 '{userAccount}' 2FA登录成功。");
             UserAccount.Text = string.Empty;
             UserPassword.Password = string.Empty;
             Auth2FACode.Text = string.Empty;
@@ -113,16 +129,19 @@ namespace MSL.pages.frpProviders.MSLFrp
         {
             Auth2FAResend.IsEnabled = false;
             string userAccount = UserAccount.Text;
+            LogHelper.WriteLog($"为用户 '{userAccount}' 请求重新发送2FA验证码。");
             var (Code, _, Msg) = await MSLFrpApi.ApiPost("/user/getVerifyCode", HttpService.PostContentType.FormUrlEncoded, new Dictionary<string, string> {
                 { "email", userAccount },
                 { "action", "verify-2fa" }
             }, true);
             if (Code != 200)
             {
+                LogHelper.WriteLog($"请求重发2FA验证码失败。API返回代码: {Code}, 消息: {Msg}", LogLevel.ERROR);
                 Auth2FAResend.IsEnabled = true;
                 MagicShow.ShowMsgDialog(Msg, "错误");
                 return;
             }
+            LogHelper.WriteLog("已成功请求发送2FA验证码。");
             MagicFlowMsg.ShowMessage("验证码已发送，请注意查收！", 1, panel: Auth2FAGrid);
             Auth2FACode.Focus();
             for (int i = 60; i > 0; i--)
@@ -136,12 +155,13 @@ namespace MSL.pages.frpProviders.MSLFrp
 
         private async Task<(bool Success, string Msg, JObject ContentInfo, bool Require2FA)> UserLoginEvent(string userAccount, string userPassword, string auth2FA = "")
         {
-
+            LogHelper.WriteLog($"执行登录API调用。账号: {userAccount}, 是否提供2FA码: {!string.IsNullOrEmpty(auth2FA)}");
             bool save = (bool)SaveToken.IsChecked;
             MagicDialog MagicDialog = new MagicDialog();
             MagicDialog.ShowTextDialog(Window.GetWindow(this), "登录中……");
             var (Code, Msg, ContentInfo) = await MSLFrpApi.UserLogin(string.Empty, userAccount, userPassword, auth2FA, save);
             MagicDialog.CloseTextDialog();
+            LogHelper.WriteLog($"登录API调用完成。返回代码: {Code}, 消息: {Msg}");
 
             if (Code == 428)
             {
@@ -166,7 +186,7 @@ namespace MSL.pages.frpProviders.MSLFrp
 
         private void UserPassword_PreviewKeyUp(object sender, KeyEventArgs e)
         {
-            if(e.Key == Key.Enter)
+            if (e.Key == Key.Enter)
             {
                 UserLogin_Click(null, null);
             }
@@ -174,7 +194,7 @@ namespace MSL.pages.frpProviders.MSLFrp
 
         private void Auth2FACode_PreviewKeyUp(object sender, KeyEventArgs e)
         {
-            if(e.Key == Key.Enter)
+            if (e.Key == Key.Enter)
             {
                 User2FALogin_Click(null, null);
             }
