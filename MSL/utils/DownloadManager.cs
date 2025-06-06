@@ -83,6 +83,7 @@ namespace MSL.utils
         {
             if (!_downloadGroups.ContainsKey(groupId))
                 throw new ArgumentException($"Download group '{groupId}' does not exist");
+            LogHelper.WriteLog($"添加下载项: {url} 到组 {groupId}，下载位置 {downloadPath}，期待的sha256 {expectedSha256}。", LogLevel.INFO);
 
             itemId = itemId ?? Guid.NewGuid().ToString();
 

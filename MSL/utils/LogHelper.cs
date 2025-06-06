@@ -26,7 +26,11 @@ namespace MSL.utils
         // 核心：私有静态只读对象，专门用于锁定，确保线程安全
         private static readonly object _lock = new object();
         private static string _logDirectory = string.Empty;
-        private const int MaxLogFiles = 5; // 最多保留的日志文件数量
+
+        // 【新增】用于存储本次程序运行所使用的日志文件的完整路径
+        private static string _currentLogFilePath = string.Empty;
+
+        private const int MaxLogFiles = 5; // 最多保留的历史日志文件数量
 
         /// <summary>
         /// 初始化日志工具。请在应用程序启动时调用此方法。
@@ -44,8 +48,15 @@ namespace MSL.utils
                 Directory.CreateDirectory(_logDirectory);
             }
 
-            // 在初始化时执行一次日志清理
+            // 【修改点】在创建新文件之前，先执行一次日志清理，清理的是之前运行产生的旧日志
             CleanupLogs();
+
+            // 【核心修改】为本次程序启动创建一个唯一的日志文件名
+            // 格式包含年月日时分秒毫秒，确保每次启动都是新文件，且文件名能自然排序
+            string fileName = $"MSL_{DateTime.Now:yyyyMMdd_HHmmss_fff}.log";
+
+            // 【修改点】将本次运行的日志文件完整路径保存到静态变量中
+            _currentLogFilePath = Path.Combine(_logDirectory, fileName);
         }
 
         /// <summary>
@@ -55,41 +66,34 @@ namespace MSL.utils
         /// <param name="level">日志级别（默认为INFO）</param>
         public static void WriteLog(string content, LogLevel level = LogLevel.INFO)
         {
-            // 检查是否已初始化
-            if (string.IsNullOrEmpty(_logDirectory))
+            // 检查 _currentLogFilePath 是否已在 Init() 中被赋值
+            if (string.IsNullOrEmpty(_currentLogFilePath))
             {
                 // 抛出异常比直接在控制台输出错误更好，因为它能更早地暴露配置问题。
                 throw new InvalidOperationException("日志帮助类尚未初始化，请先调用 LogHelper.Init() 方法。");
             }
 
-            // 使用 lock 确保线程安全。这是至关重要的，见下面的详细解释。
+            // 使用 lock 确保线程安全。
             lock (_lock)
             {
                 try
                 {
-                    // 构造文件名：MSL_20231027.log
-                    string fileName = $"MSL_{DateTime.Now:yyyyMMdd}.log";
-                    // 构造完整文件路径
-                    string filePath = Path.Combine(_logDirectory, fileName);
+                    // 不再动态计算文件名，直接使用初始化时生成的路径
+                    // string fileName = $"MSL_{DateTime.Now:yyyyMMdd}.log"; // <- 旧代码
+                    // string filePath = Path.Combine(_logDirectory, fileName); // <- 旧代码
 
                     // 构造日志条目，格式：[时间戳] [级别] 内容
-                    // 使用 Environment.NewLine 确保跨平台的换行符正确性
                     string logEntry = $"{DateTime.Now:yyyy-MM-dd HH:mm:ss.fff} [{level}] {content}";
 
-                    // 【修改点】使用 StreamWriter 来写入文件
-                    // 'using' 语句确保 StreamWriter 在使用完毕后被正确关闭和释放资源，即使发生异常。
-                    // 第二个参数 'true' 表示以追加模式打开文件。
-                    // 第三个参数指定编码，以支持中文等字符。
-                    using (StreamWriter writer = new StreamWriter(filePath, true, Encoding.UTF8))
+                    // 使用 'using' 语句和 StreamWriter 将日志条目追加到当前日志文件中
+                    using (StreamWriter writer = new StreamWriter(_currentLogFilePath, true, Encoding.UTF8))
                     {
-                        // 使用 WriteLine 方法会自动在末尾添加换行符
                         writer.WriteLine(logEntry);
                     }
                 }
                 catch (Exception ex)
                 {
                     // 如果写入日志时发生异常，可以考虑在此处处理
-                    // 例如，写入到控制台或系统的事件查看器
                     Console.WriteLine($"写入日志失败: {ex.Message}");
                 }
             }
@@ -106,6 +110,7 @@ namespace MSL.utils
                 try
                 {
                     // 获取日志目录中所有符合命名规则的日志文件
+                    // 新的文件名 "MSL_yyyyMMdd_HHmmss_fff.log" 仍然匹配 "MSL_*.log" 模式
                     var logFiles = Directory.GetFiles(_logDirectory, "MSL_*.log");
 
                     // 如果文件数量未超过限制，则无需清理
@@ -114,13 +119,11 @@ namespace MSL.utils
                         return;
                     }
 
-                    // 【优化点】按文件名排序比按创建时间更可靠
-                    // 因为文件名（MSL_20231027.log）直接反映了日志的日期。
-                    // 文件创建时间可能会因为复制、移动等操作而改变。
+                    // 【无需修改】按文件名排序非常可靠，因为 "yyyyMMdd_HHmmss_fff" 格式保证了文件名越新，字符串越大。
                     var filesToDelete = logFiles
                         .Select(f => new FileInfo(f))
-                        .OrderBy(fi => fi.Name) // 按文件名升序排序，最早的日期在前
-                        .Take(logFiles.Length - MaxLogFiles) // 计算出要删除的文件数量
+                        .OrderBy(fi => fi.Name) // 按文件名升序排序，最早的文件在前
+                        .Take(logFiles.Length - MaxLogFiles) // 计算出要删除的旧文件
                         .ToList();
 
                     // 删除这些旧文件
@@ -132,7 +135,7 @@ namespace MSL.utils
                         }
                         catch (Exception ex)
                         {
-                            // 如果删除单个文件失败，记录错误并继续，不影响其他文件删除
+                            // 如果删除单个文件失败，记录错误并继续
                             Console.WriteLine($"删除旧日志文件 {fileInfo.Name} 失败: {ex.Message}");
                         }
                     }

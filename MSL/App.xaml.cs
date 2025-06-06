@@ -1,4 +1,5 @@
-﻿using MSL.langs;
+﻿using HandyControl.Tools;
+using MSL.langs;
 using MSL.utils;
 using Newtonsoft.Json.Linq;
 using System;
@@ -18,18 +19,62 @@ namespace MSL
     {
         public App()
         {
-            // 崩溃处理事件
-            DispatcherUnhandledException += (s, e) =>
-            {
-                e.Handled = true; // 设置为已处理，阻止应用程序崩溃
-                //Logger.LogError("An error has occurred:" + e.Exception.ToString());
+            // 1. 订阅 UI 线程的未处理异常事件
+            this.DispatcherUnhandledException += App_DispatcherUnhandledException;
 
-                var msg = MessageBox.Show("程序在运行的时候发生了异常，异常信息：\n" + e.Exception.Message + "\n请检查您是否安装了.NET Framework 4.7.2，若软件闪退，请联系作者进行反馈！\n\n点击“是”以查看详细异常追踪。", "错误", MessageBoxButton.YesNo, MessageBoxImage.Error);
-                if (msg == MessageBoxResult.Yes)
-                {
-                    MessageBox.Show(e.Exception.ToString());
-                }
-            };
+            // 2. 订阅非 UI 线程的未处理异常事件
+            AppDomain.CurrentDomain.UnhandledException += AppDomain_UnhandledException;
+        }
+
+        private void App_DispatcherUnhandledException(object sender, System.Windows.Threading.DispatcherUnhandledExceptionEventArgs e)
+        {
+            // 这个事件可以阻止程序崩溃
+            e.Handled = true; // 关键！表示异常已经被处理，阻止程序默认的崩溃行为
+
+            // 检查 e.Exception 是否为 null
+            var exception = e.Exception;
+            string errorMessage = exception?.Message ?? "发生了一个未知错误。";
+            string fullTrace = exception?.ToString() ?? "没有可用的堆栈跟踪信息。";
+            LogHelper.WriteLog($"捕获到UI线程异常: {fullTrace}", LogLevel.FATAL);
+            var msg = MessageBox.Show(
+                $"程序在运行的时候发生了异常（UI线程），异常信息：\n{errorMessage}\n" +
+                "请检查您是否安装了.NET Framework 4.7.2，若软件闪退，请联系作者进行反馈！\n\n" +
+                "点击“是”以查看详细异常追踪。",
+                "UI线程错误", MessageBoxButton.YesNo, MessageBoxImage.Error);
+
+            if (msg == MessageBoxResult.Yes)
+            {
+                MessageBox.Show(fullTrace, "详细异常信息");
+            }
+        }
+
+        private void AppDomain_UnhandledException(object sender, UnhandledExceptionEventArgs e)
+        {
+            // 这个事件无法阻止程序崩溃！
+            // e.IsTerminating 在 .NET Framework 中通常为 true，表示程序即将终止
+            // 它的主要作用是在程序崩溃前记录致命错误日志
+
+            // 获取异常对象
+            var exception = e.ExceptionObject as Exception;
+            string errorMessage = exception?.Message ?? "发生了一个无法恢复的未知错误。";
+            string fullTrace = exception?.ToString() ?? "没有可用的堆栈跟踪信息。";
+
+            // 在这里，你不能安全地显示MessageBox，因为程序可能处于不稳定状态。
+            // 最好的做法是记录日志到文件。
+            try
+            {
+                // 尝试记录日志
+                LogHelper.WriteLog($"捕获到致命的非UI线程异常，程序即将退出: {fullTrace}", LogLevel.FATAL);
+
+                // 你可以尝试弹出一个简单的消息框，但它可能不会显示，或显示后程序立刻关闭
+                MessageBox.Show(
+                    $"程序遇到了一个致命错误（非UI线程），即将关闭。\n错误信息已记录到日志文件中。\n\n错误详情: {errorMessage}",
+                    "致命错误", MessageBoxButton.OK, MessageBoxImage.Error);
+            }
+            catch (Exception ex)
+            {
+                // 连记录日志都失败了，那就没办法了
+            }
         }
 
         //以创建Mutex的方式防止同目录多开，避免奇奇怪怪的文件占用错误
