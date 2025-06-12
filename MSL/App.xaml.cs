@@ -26,55 +26,83 @@ namespace MSL
             AppDomain.CurrentDomain.UnhandledException += AppDomain_UnhandledException;
         }
 
-        private void App_DispatcherUnhandledException(object sender, System.Windows.Threading.DispatcherUnhandledExceptionEventArgs e)
+        // --- UI 线程异常处理 ---
+        private async void App_DispatcherUnhandledException(object sender, System.Windows.Threading.DispatcherUnhandledExceptionEventArgs e)
         {
-            // 这个事件可以阻止程序崩溃
-            e.Handled = true; // 关键！表示异常已经被处理，阻止程序默认的崩溃行为
+            // 阻止程序崩溃
+            e.Handled = true;
 
-            // 检查 e.Exception 是否为 null
             var exception = e.Exception;
-            string errorMessage = exception?.Message ?? "发生了一个未知错误。";
             string fullTrace = exception?.ToString() ?? "没有可用的堆栈跟踪信息。";
+
+            // 记录本地日志
             LogHelper.WriteLog($"捕获到UI线程异常: {fullTrace}", LogLevel.FATAL);
-            var msg = MessageBox.Show(
-                $"程序在运行的时候发生了异常（UI线程），异常信息：\n{errorMessage}\n" +
-                "请检查您是否安装了.NET Framework 4.7.2，若软件闪退，请联系作者进行反馈！\n\n" +
-                "点击“是”以查看详细异常追踪。",
-                "UI线程错误", MessageBoxButton.YesNo, MessageBoxImage.Error);
 
-            if (msg == MessageBoxResult.Yes)
-            {
-                MessageBox.Show(fullTrace, "详细异常信息");
-            }
-        }
+            // 准备提示信息
+            var messageBuilder = new StringBuilder();
+            messageBuilder.AppendLine($"程序在运行的时候发生了异常（UI线程）。");
+            messageBuilder.AppendLine("\n我们正在尝试自动上传错误报告...");
 
-        private void AppDomain_UnhandledException(object sender, UnhandledExceptionEventArgs e)
-        {
-            // 这个事件无法阻止程序崩溃！
-            // e.IsTerminating 在 .NET Framework 中通常为 true，表示程序即将终止
-            // 它的主要作用是在程序崩溃前记录致命错误日志
-
-            // 获取异常对象
-            var exception = e.ExceptionObject as Exception;
-            string errorMessage = exception?.Message ?? "发生了一个无法恢复的未知错误。";
-            string fullTrace = exception?.ToString() ?? "没有可用的堆栈跟踪信息。";
-
-            // 在这里，你不能安全地显示MessageBox，因为程序可能处于不稳定状态。
-            // 最好的做法是记录日志到文件。
+            // 异步上传日志并处理结果
             try
             {
-                // 尝试记录日志
-                LogHelper.WriteLog($"捕获到致命的非UI线程异常，程序即将退出: {fullTrace}", LogLevel.FATAL);
+                int logId = await HttpService.UploadCrashLogAsync(fullTrace);
 
-                // 你可以尝试弹出一个简单的消息框，但它可能不会显示，或显示后程序立刻关闭
-                MessageBox.Show(
-                    $"程序遇到了一个致命错误（非UI线程），即将关闭。\n错误信息已记录到日志文件中。\n\n错误详情: {errorMessage}",
-                    "致命错误", MessageBoxButton.OK, MessageBoxImage.Error);
+                // 上传成功
+                string successMessage = $"报告上传成功！您的错误报告ID为: {logId}\n在联系技术支持时请提供此ID。";
+                LogHelper.WriteLog(successMessage, LogLevel.INFO);
+                messageBuilder.AppendLine($"\n{successMessage}");
             }
-            catch (Exception ex)
+            catch (Exception uploadEx)
             {
-                // 连记录日志都失败了，那就没办法了
+                // 上传失败
+                string failureMessage = $"错误报告上传失败: {uploadEx.Message}";
+                LogHelper.WriteLog(failureMessage, LogLevel.ERROR);
+                messageBuilder.AppendLine($"\n{failureMessage}");
+                messageBuilder.AppendLine("\n错误详情已记录在本地日志中。");
             }
+
+            // 向用户显示所有信息
+            MessageBox.Show(messageBuilder.ToString(), "应用程序错误", MessageBoxButton.OK, MessageBoxImage.Error);
+        }
+
+
+        // --- 非 UI 线程异常处理 ---
+        private void AppDomain_UnhandledException(object sender, UnhandledExceptionEventArgs e)
+        {
+            // 程序即将终止，操作必须快速且可靠 无法阻止崩溃
+
+            var exception = e.ExceptionObject as Exception;
+            string fullTrace = exception?.ToString() ?? "没有可用的堆栈跟踪信息。";
+
+            // 写入本地日志
+            LogHelper.WriteLog($"捕获到致命的非UI线程异常，程序即将退出: {fullTrace}", LogLevel.FATAL);
+
+            // 同步上传日志
+            try
+            {
+                // 使用同步方法，因为它会阻塞直到完成（或失败）
+                int logId = HttpService.UploadCrashLog(fullTrace);
+
+                // 如果上传成功，追加一条记录到日志文件
+                LogHelper.WriteLog($"致命异常报告上传成功。Log ID: {logId}", LogLevel.INFO);
+                MessageBox.Show(
+    "程序遇到了一个无法恢复的致命错误，即将关闭。\n" +
+    "我们已经记录并上传错误报告。\n\n" +
+    "错误日志ID：" + logId + "\n\n" + "请将此信息提供给开发者以便更快地解决问题。",
+    "致命错误", MessageBoxButton.OK, MessageBoxImage.Error);
+            }
+            catch (Exception uploadEx)
+            {
+                // 如果上传失败，也记录下来
+                LogHelper.WriteLog($"致命异常报告上传失败: {uploadEx.Message}", LogLevel.ERROR);
+                MessageBox.Show(
+    "程序遇到了一个无法恢复的致命错误，即将关闭。\n" +
+    "我们已尝试记录并上传错误报告，但是失败了。\n" + uploadEx.Message + "\n\n" +
+    "请查看本地日志文件获取详细信息。",
+    "致命错误", MessageBoxButton.OK, MessageBoxImage.Error);
+            }
+
         }
 
         //以创建Mutex的方式防止同目录多开，避免奇奇怪怪的文件占用错误

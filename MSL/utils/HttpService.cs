@@ -333,5 +333,99 @@ namespace MSL.utils
             httpClient.Dispose();
             return httpResponse;
         }
+
+        #region --- 新增的日志上传函数 ---
+
+        // 用于反序列化API响应的辅助类
+        private class LogUploadApiResponse
+        {
+            public int code { get; set; }
+            public string message { get; set; }
+            public LogUploadData data { get; set; }
+        }
+
+        private class LogUploadData
+        {
+            public int log_id { get; set; }
+        }
+
+        /// <summary>
+        /// 上传软件崩溃日志
+        /// </summary>
+        /// <param name="logContent">异常日志的详细内容</param>
+        /// <returns>成功时返回服务器分配的 log_id</returns>
+        /// <exception cref="Exception">当网络请求失败、服务器返回非200状态码或API业务逻辑错误时抛出</exception>
+        public static async Task<int> UploadCrashLogAsync(string logContent)
+        {
+            string apiUrl = ConfigStore.ApiLink + "/log/upload";
+
+            // 获取设备信息
+            string deviceInfo = $"操作系统: {Environment.OSVersion.VersionString}; " +
+                                $"CLR版本: {Environment.Version}";
+
+            var postData = new Dictionary<string, string>
+        {
+            { "log", logContent },
+            { "deviceInfo", deviceInfo }
+        };
+
+            HttpResponse response = await PostAsync(
+                url: apiUrl,
+                contentType: PostContentType.FormUrlEncoded,
+                parameterData: postData,
+                configureHeaders: headers =>
+                {
+                    headers.Add("DeviceID", ConfigStore.DeviceID);
+                }
+            );
+
+            if (response.HttpResponseCode != HttpStatusCode.OK || !string.IsNullOrEmpty(response.HttpResponseException?.ToString()))
+            {
+                throw new Exception($"日志上传请求失败。状态码: {response.HttpResponseCode}。内部错误: {response.HttpResponseException ?? "无"}");
+            }
+
+            try
+            {
+                var apiResponse = JsonConvert.DeserializeObject<LogUploadApiResponse>(response.HttpResponseContent?.ToString());
+
+                if (apiResponse != null && apiResponse.code == 200 && apiResponse.data != null)
+                {
+                    // 成功，返回 log_id
+                    return apiResponse.data.log_id;
+                }
+                else
+                {
+                    string errorMessage = apiResponse?.message ?? "未知的API错误";
+                    int errorCode = apiResponse?.code ?? -1;
+                    throw new Exception($"API返回错误。代码: {errorCode}, 消息: '{errorMessage}'");
+                }
+            }
+            catch (JsonException jsonEx)
+            {
+                throw new Exception($"无法解析服务器响应: {jsonEx.Message}。原始响应内容: {response.HttpResponseContent}", jsonEx);
+            }
+        }
+
+        /// <summary>
+        /// 同步上传软件崩溃日志。此方法会阻塞当前线程直到完成。
+        /// 主要用于 AppDomain.UnhandledException 等无法使用 await 的场景。
+        /// </summary>
+        /// <param name="logContent">异常日志的详细内容</param>
+        /// <returns>成功时返回服务器分配的 log_id</returns>
+        /// <exception cref="Exception">当上传失败时抛出</exception>
+        public static int UploadCrashLog(string logContent)
+        {
+            try
+            {
+                // 调用异步方法并阻塞等待结果
+                // GetAwaiter().GetResult() 在非 async 方法中调用 async 方法
+                return UploadCrashLogAsync(logContent).GetAwaiter().GetResult();
+            }
+            catch (Exception ex)
+            {
+                throw new Exception("同步日志上传失败。", ex);
+            }
+        }
+        #endregion
     }
 }
