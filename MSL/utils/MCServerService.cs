@@ -277,8 +277,8 @@ namespace MSL.utils
             // 创建批处理列表
             var batch = new List<string>();
 
-            // 从队列中取出日志，最多取100条
-            for (int i = 0; i < 100 && !_logBuffer.IsEmpty; i++)
+            // 从队列中取出日志，最多取300条
+            for (int i = 0; i < 300 && !_logBuffer.IsEmpty; i++)
             {
                 if (_logBuffer.TryDequeue(out string entry))
                 {

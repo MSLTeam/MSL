@@ -1336,10 +1336,11 @@ namespace MSL
                 Dispatcher.InvokeAsync(() =>
                 {
                     // 检查是否需要清理日志
+                    /*
                     if (outlog.Document.Blocks.Count >= 1000 && autoClearOutlog.IsChecked == true)
                     {
                         outlog.Document.Blocks.Clear();
-                    }
+                    } */
                     // 如果定时器没有运行，确保启动它
                     if (!MCSLogHandler._logProcessTimer.IsEnabled)
                     {
@@ -1349,50 +1350,38 @@ namespace MSL
             }
         }
 
-        
+
 
         #region 日志显示功能、彩色日志
 
+        private int _logEntryCount = 0;
+
         private void PrintLog(string msg, Brush color)
         {
-            MCSLogHandler.LogInfo[0].Color = (SolidColorBrush)color;
-            Paragraph p = new Paragraph();
+            var runs = new List<Run>();
+            char delimiter = msg.Contains('&') ? '&' : (msg.Contains('§') ? '§' : '\0');
+
             try
             {
-                if (msg.Contains("&"))
+                if (delimiter != '\0')
                 {
-                    string[] splitMsg = msg.Split('&');
-                    foreach (var everyMsg in splitMsg)
+                    int lastIndex = 0;
+                    int firstDelimiterIndex = msg.IndexOf(delimiter);
+                    if (firstDelimiterIndex > 0) { runs.Add(new Run(msg.Substring(0, firstDelimiterIndex)) { Foreground = color }); }
+                    else if (firstDelimiterIndex == -1) { runs.Add(new Run(msg) { Foreground = color }); goto UpdateUI; }
+                    while ((lastIndex = msg.IndexOf(delimiter, lastIndex)) != -1)
                     {
-                        if (everyMsg == string.Empty)
+                        int nextDelimiterIndex = msg.IndexOf(delimiter, lastIndex + 1);
+                        if (nextDelimiterIndex == -1) nextDelimiterIndex = msg.Length;
+                        string segment = msg.Substring(lastIndex + 1, nextDelimiterIndex - (lastIndex + 1));
+                        if (segment.Length > 0)
                         {
-                            continue;
+                            string colorCode = segment.Substring(0, 1);
+                            string text = segment.Substring(1);
+                            runs.Add(new Run(text) { Foreground = GetBrushFromMinecraftColorCode(colorCode[0]) });
                         }
-                        string colorCode = everyMsg.Substring(0, 1);
-                        string text = everyMsg.Substring(1);
-                        Run run = new Run(text)
-                        {
-                            Foreground = GetBrushFromMinecraftColorCode(colorCode[0])
-                        };
-                        p.Inlines.Add(run);
-                    }
-                }
-                else if (msg.Contains("§"))
-                {
-                    string[] splitMsg = msg.Split('§');
-                    foreach (var everyMsg in splitMsg)
-                    {
-                        if (everyMsg == string.Empty)
-                        {
-                            continue;
-                        }
-                        string colorCode = everyMsg.Substring(0, 1);
-                        string text = everyMsg.Substring(1);
-                        Run run = new Run(text)
-                        {
-                            Foreground = GetBrushFromMinecraftColorCode(colorCode[0])
-                        };
-                        p.Inlines.Add(run);
+                        lastIndex = nextDelimiterIndex;
+                        if (lastIndex == msg.Length) break;
                     }
                 }
                 else if (msg.Contains("\x1B"))
@@ -1400,90 +1389,84 @@ namespace MSL
                     string[] splitMsg = msg.Split(new[] { '\x1B' }, StringSplitOptions.RemoveEmptyEntries);
                     foreach (var everyMsg in splitMsg)
                     {
-                        if (everyMsg == string.Empty)
-                        {
-                            continue;
-                        }
-
-                        // 提取ANSI码和文本内容
                         int mIndex = everyMsg.IndexOf('m');
-                        if (mIndex == -1)
-                        {
-                            continue;
-                        }
-
-                        string[] codes = everyMsg.Substring(0, mIndex).Split(';');
+                        if (mIndex == -1 || mIndex + 1 >= everyMsg.Length) continue;
+                        string codesPart = everyMsg.Substring(0, mIndex).TrimStart('[');
                         string text = everyMsg.Substring(mIndex + 1);
-
-                        // 默认的文字装饰
+                        if (string.IsNullOrEmpty(text)) continue;
+                        string[] codes = codesPart.Split(';');
                         bool isBold = false;
                         bool isUnderline = false;
-
-                        Brush foreground = Brushes.Green; // 默认颜色
-
-                        foreach (var code in codes)
+                        Brush foreground = Brushes.Green;
+                        foreach (var codeStr in codes)
                         {
-                            switch (code)
+                            switch (codeStr)
                             {
-                                case "0": // 重置
-                                    isBold = false;
-                                    isUnderline = false;
-                                    foreground = Brushes.Green;
-                                    break;
-                                case "1": // 加粗
-                                    isBold = true;
-                                    break;
-                                case "4": // 下划线
-                                    isUnderline = true;
-                                    break;
-                                default:
-                                    if (colorDictAnsi.ContainsKey(code))
-                                    {
-                                        foreground = colorDictAnsi[code];
-                                    }
-                                    break;
+                                case "0": isBold = false; isUnderline = false; foreground = Brushes.Green; break;
+                                case "1": isBold = true; break;
+                                case "4": isUnderline = true; break;
+                                default: if (colorDictAnsi.ContainsKey(codeStr)) { foreground = colorDictAnsi[codeStr]; } break;
                             }
                         }
-
-                        Run run = new Run(text)
-                        {
-                            Foreground = foreground,
-                            FontWeight = isBold ? FontWeights.Bold : FontWeights.Normal,
-                            TextDecorations = isUnderline ? TextDecorations.Underline : null
-                        };
-
-                        p.Inlines.Add(run);
+                        runs.Add(new Run(text) { Foreground = foreground, FontWeight = isBold ? FontWeights.Bold : FontWeights.Normal, TextDecorations = isUnderline ? TextDecorations.Underline : null });
                     }
+                }
+                else { runs.Add(new Run(msg) { Foreground = color }); }
+            }
+            catch { runs.Clear(); runs.Add(new Run(msg) { Foreground = color }); }
+        
+        // 更新日志到UI
+        UpdateUI:
+            if (runs.Count == 0) return;
+
+            Dispatcher.Invoke(() =>
+            {
+                // 自动清屏
+                if (autoClearOutlog.IsChecked == true && _logEntryCount >= 1000)
+                {
+                    outlog.Document.Blocks.Clear();
+                    _logEntryCount = 0; 
+                }
+
+                bool shouldScrollToEnd = outlog.VerticalOffset + outlog.ViewportHeight >= outlog.ExtentHeight;
+
+                // 尝试获取最后一个段落
+                Paragraph targetParagraph = outlog.Document.Blocks.LastBlock as Paragraph;
+
+                // 如果文档是空的，或者最后一个不是段落，则新建一个
+                if (targetParagraph == null)
+                {
+                    targetParagraph = new Paragraph();
+                    targetParagraph.Margin = new Thickness(0);
+                    outlog.Document.Blocks.Add(targetParagraph);
                 }
                 else
                 {
-                    Run run = new Run(msg)
+                    // 如果段落中已经有内容 (说明这不是第一条日志),
+                    // 就在添加新内容之前，先插入一个换行符！
+                    if (targetParagraph.Inlines.Count > 0)
                     {
-                        Foreground = color
-                    };
-                    p.Inlines.Add(run);
-                }
-            }
-            catch
-            {
-                Run run = new Run(msg)
-                {
-                    Foreground = color
-                };
-                p.Inlines.Add(run);
-            }
-            finally
-            {
-                tempLog = msg;
-                Dispatcher.Invoke(() =>
-                {
-                    outlog.Document.Blocks.Add(p);
-                    if (outlog.VerticalOffset + outlog.ViewportHeight >= outlog.ExtentHeight)
-                    {
-                        outlog.ScrollToEnd();
+                        targetParagraph.Inlines.Add(new LineBreak());
                     }
-                });
-            }
+                }
+
+                // 将预先创建好的所有 Run 追加到段落中
+                foreach (var run in runs)
+                {
+                    targetParagraph.Inlines.Add(run);
+                    // log计数
+                    _logEntryCount++;
+                }
+                
+
+
+                if (shouldScrollToEnd)
+                {
+                    outlog.ScrollToEnd();
+                }
+            });
+
+            MCSLogHandler.LogInfo[0].Color = (SolidColorBrush)color;
         }
 
         private Dictionary<char, SolidColorBrush> colorDict;
