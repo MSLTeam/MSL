@@ -40,7 +40,10 @@ namespace MSL
 
             // 准备提示信息
             var messageBuilder = new StringBuilder();
-            messageBuilder.AppendLine($"程序在运行的时候发生了异常（UI线程）。");
+            messageBuilder.AppendLine($"程序在运行的时候发生了异常。");
+            messageBuilder.AppendLine(exception.Message?? "未知错误");
+
+            /*
             messageBuilder.AppendLine("\n我们正在尝试自动上传错误报告...");
 
             // 异步上传日志并处理结果
@@ -49,7 +52,7 @@ namespace MSL
                 int logId = await HttpService.UploadCrashLogAsync(fullTrace);
 
                 // 上传成功
-                string successMessage = $"报告上传成功！您的错误报告ID为: {logId}\n在联系技术支持时请提供此ID。";
+                string successMessage = $"报告上传成功！您的错误报告ID为: {logId}\n在联系开发者时请提供此ID。";
                 LogHelper.WriteLog(successMessage, LogLevel.INFO);
                 messageBuilder.AppendLine($"\n{successMessage}");
             }
@@ -60,7 +63,7 @@ namespace MSL
                 LogHelper.WriteLog(failureMessage, LogLevel.ERROR);
                 messageBuilder.AppendLine($"\n{failureMessage}");
                 messageBuilder.AppendLine("\n错误详情已记录在本地日志中。");
-            }
+            } */
 
             // 向用户显示所有信息
             MessageBox.Show(messageBuilder.ToString(), "应用程序错误", MessageBoxButton.OK, MessageBoxImage.Error);
@@ -78,6 +81,7 @@ namespace MSL
             // 写入本地日志
             LogHelper.WriteLog($"捕获到致命的非UI线程异常，程序即将退出: {fullTrace}", LogLevel.FATAL);
 
+            /*
             // 同步上传日志
             try
             {
@@ -101,7 +105,12 @@ namespace MSL
     "我们已尝试记录并上传错误报告，但是失败了。\n" + uploadEx.Message + "\n\n" +
     "请查看本地日志文件获取详细信息。",
     "致命错误", MessageBoxButton.OK, MessageBoxImage.Error);
-            }
+            } */
+
+            MessageBox.Show(
+    "程序遇到了一个无法恢复的致命错误，即将关闭。" + (exception.Message ?? "未知错误" )+ "\n\n" +
+    "请查看本地日志文件获取详细信息。",
+    "致命错误", MessageBoxButton.OK, MessageBoxImage.Error);
 
         }
 
