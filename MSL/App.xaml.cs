@@ -42,7 +42,8 @@ namespace MSL
             var messageBuilder = new StringBuilder();
             messageBuilder.AppendLine($"程序在运行的时候发生了异常。");
             messageBuilder.AppendLine(exception.Message?? "未知错误");
-
+            messageBuilder.AppendLine($"请检查是否安装了.NET Framework 4.7.2运行库。");
+            messageBuilder.AppendLine($"若确定运行环境正常，请将错误提交给开发者处理哦！");
             /*
             messageBuilder.AppendLine("\n我们正在尝试自动上传错误报告...");
 
@@ -109,7 +110,7 @@ namespace MSL
 
             MessageBox.Show(
     "程序遇到了一个无法恢复的致命错误，即将关闭。" + (exception.Message ?? "未知错误" )+ "\n\n" +
-    "请查看本地日志文件获取详细信息。",
+    "请查看本地日志文件获取详细信息。建议提交给开发者哦！",
     "致命错误", MessageBoxButton.OK, MessageBoxImage.Error);
 
         }
