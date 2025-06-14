@@ -105,7 +105,7 @@ namespace MSL.pages.frpProviders.MSLFrp
                 ? int.Parse((string)JsonUserInfo["data"]["user_group"])
                 : 0;
 
-            string userGroup = userLevel == 0 ? "普通用户" : userLevel == 1 ? "高级用户" : userLevel == 2 ? "超级用户" : "管理员";
+            string userGroup = userLevel == 0 ? "普通用户" : (string)JsonUserInfo["data"]["user_group_name"];
             string outDate = userLevel == 0 ? string.Empty : "\n到期时间：{0}";
 
             UserInfo.Content = $"用户名：{JsonUserInfo["data"]["name"]}\n" +
