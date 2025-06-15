@@ -274,8 +274,8 @@ namespace MSL.controls
                 }
 
                 //下载运行库
-                Status_change("正在下载Forge运行Lib，请稍候……");
-                Log_in("正在下载Forge运行Lib···");
+                Status_change("正在下载运行Lib，请稍候……");
+                Log_in("正在下载运行Lib···");
 
                 // 创建下载组
                 string groupId = downloadManager.CreateDownloadGroup("ForgeInstall_LibFiles", maxConcurrentDownloads: semaphore); // 4个并发下载
@@ -287,8 +287,11 @@ namespace MSL.controls
                     var versionlJobj = GetJsonObj(TempPath + "/version.json");
                     JArray libraries2 = (JArray)installJobj["libraries"];//获取lib数组 这是install那个json
                     JArray libraries = (JArray)versionlJobj["libraries"];//获取lib数组
-                    //int libALLCount = libraries.Count + libraries2.Count;//总数
-                    //int libCount = 0;//用于计数
+                                                                         //int libALLCount = libraries.Count + libraries2.Count;//总数
+                                                                         //int libCount = 0;//用于计数
+
+                    // 比较器存储 用于查重
+                    var addedDownloadPaths = new HashSet<string>();
 
                     foreach (JObject lib in libraries.Cast<JObject>())//遍历数组，进行文件下载
                     {
@@ -296,7 +299,12 @@ namespace MSL.controls
                         string _dlurl = ReplaceStr(lib["downloads"]["artifact"]["url"].ToString());
                         if (string.IsNullOrEmpty(_dlurl))
                             continue;
-                        //string _savepath = LibPath + "/" + lib["downloads"]["artifact"]["path"].ToString();
+
+                        // 把文件路径扔进去查重
+                        if (!addedDownloadPaths.Add(lib["downloads"]["artifact"]["path"].ToString()))
+                            continue;
+
+                        //string _savepath = LibPath + "/" + filePath;
                         string _sha1 = lib["downloads"]["artifact"]["sha1"].ToString();
                         Log_in("[LIB]下载：" + lib["downloads"]["artifact"]["path"].ToString());
                         //downloadTasks.Add(DownloadFile(_dlurl, _savepath, _sha1));
@@ -321,7 +329,12 @@ namespace MSL.controls
                         string _dlurl = ReplaceStr(lib["downloads"]["artifact"]["url"].ToString());
                         if (string.IsNullOrEmpty(_dlurl))
                             continue;
-                        //string _savepath = LibPath + "/" + lib["downloads"]["artifact"]["path"].ToString();
+
+                        // 查重
+                        if (!addedDownloadPaths.Add(lib["downloads"]["artifact"]["path"].ToString()))
+                            continue;
+
+                        //string _savepath = LibPath + "/" + filePath;
                         string _sha1 = lib["downloads"]["artifact"]["sha1"].ToString();
                         Log_in("[LIB]下载：" + lib["downloads"]["artifact"]["path"].ToString());
 
@@ -420,14 +433,15 @@ namespace MSL.controls
                 if (!await downloadManager.WaitForGroupCompletionAsync(groupId))
                 {
                     Log_in("下载失败，请重试！");
+                    Log_in("或者点击右下角的使用命令行安装哦~");
                     return;
                 }
 
                 //await Task.WhenAll(downloadTasks);
-                Log_in("下载Forge运行Lib成功！");
+                Log_in("下载运行Lib成功！");
                 await Task.Delay(1000);
-                Status_change("正在处理编译ForgeJava参数···");
-                Log_in("正在处理编译ForgeJava参数");
+                Status_change("正在处理编译参数···");
+                Log_in("正在处理编译参数");
                 //string batData = "";
 
                 if (versionType == 1 && ForgePath.Contains("neoforge") == false) //只有①需要复制这玩意
@@ -488,7 +502,7 @@ namespace MSL.controls
                                 else if (buildarg.Contains("AutoRenamingTool"))
                                 {
                                     //大于等于1.21的版本
-                                    if (SafeGetValue(installJobj, "minecraft") != "" && CompareMinecraftVersions(installJobj["minecraft"].ToString(), "1.21") >= 0)
+                                    if (SafeGetValue(installJobj, "minecraft") != "" && CompareMinecraftVersions(installJobj["minecraft"].ToString(), "1.20.6") >= 0)
                                     {
                                         buildarg += "net.neoforged.art.Main ";
                                     }
@@ -554,12 +568,12 @@ namespace MSL.controls
                             Log_in("启动参数：" + buildarg);
                         }
                     }
-                    Status_change("正在编译Forge，请耐心等待……");
+                    Status_change("正在编译，请耐心等待……");
                     Dispatcher.Invoke(() =>
                     {
                         CancelButton.IsEnabled = false;
                     });
-                    Log_in("正在编译Forge……\n");
+                    Log_in("正在编译……\n");
                     foreach (string cmdLine in cmdLines)
                     {
                         Process process = new Process();
