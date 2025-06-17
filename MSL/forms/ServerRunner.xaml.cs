@@ -1150,8 +1150,16 @@ namespace MSL
                 else
                 {
                     ConPTYWindow.serverbase = Rserverbase;
-                    ConPTYWindow.java = Rserverjava;
-                    ConPTYWindow.launcharg = StartFileArg;
+                    if (Rservermode == 0)
+                    {
+                        ConPTYWindow.java = Rserverjava;
+                        ConPTYWindow.launcharg = StartFileArg;
+                    }
+                    else
+                    {
+                        ConPTYWindow.java = "cmd.exe";
+                        ConPTYWindow.launcharg = "/c " + StartFileArg;
+                    }
                     if (TabCtrl.SelectedIndex != 1)
                     {
                         TabCtrl.SelectedIndex = 1;
