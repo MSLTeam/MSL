@@ -19,11 +19,11 @@ namespace MSL
     {
         public App()
         {
-            //// 1. 订阅 UI 线程的未处理异常事件
-            //this.DispatcherUnhandledException += App_DispatcherUnhandledException;
+            // 1. 订阅 UI 线程的未处理异常事件
+            this.DispatcherUnhandledException += App_DispatcherUnhandledException;
 
-            //// 2. 订阅非 UI 线程的未处理异常事件
-            //AppDomain.CurrentDomain.UnhandledException += AppDomain_UnhandledException;
+            // 2. 订阅非 UI 线程的未处理异常事件
+            AppDomain.CurrentDomain.UnhandledException += AppDomain_UnhandledException;
         }
 
         // --- UI 线程异常处理 ---
