@@ -1,4 +1,4 @@
-﻿<Page x:Class="MSL.pages.frpProviders.MeFrp"
+﻿<Page x:Class="MSL.pages.frpProviders.MEFrp"
       xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
       xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
       xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006" 
@@ -7,7 +7,7 @@
       mc:Ignorable="d" Loaded="Page_Loaded"
       xmlns:hc="https://handyorg.github.io/handycontrol"
       d:DesignHeight="450" d:DesignWidth="800"
-      Title="MeFrp">
+      Title="MEFrp">
 
     <Grid>
         <TabControl x:Name="MainCtrl" Margin="10,5,10,10" Style="{StaticResource TabControlCapsuleSolidInLine}" Background="Transparent" BorderThickness="0" SelectionChanged="MainCtrl_SelectionChanged">
@@ -57,7 +57,7 @@
                                         </Grid.ColumnDefinitions>
                                         <StackPanel Margin="3" Grid.Column="0" HorizontalAlignment="Left">
                                             <Label Content="用户信息" BorderThickness="0" FontSize="16" FontWeight="Bold" HorizontalAlignment="Left"/>
-                                            <TextBlock x:Name="UserInfo" LineHeight="20" Foreground="{DynamicResource PrimaryTextBrush}" Text="Loadings······" FontSize="14" HorizontalAlignment="Left" Margin="10,0,0,0"/>
+                                            <TextBlock x:Name="UserInfo" LineHeight="20" Foreground="{DynamicResource PrimaryTextBrush}" Text="Loading······" FontSize="14" HorizontalAlignment="Left" Margin="10,0,0,0"/>
                                         </StackPanel>
                                         <StackPanel Grid.Column="1" Margin="0,5,8,5" >
                                             <Button Content="打开官网" x:Name="OpenWeb" Margin="0,0,0,3" Style="{DynamicResource ButtonPrimary}" HorizontalAlignment="Stretch"  Command="hc:ControlCommands.OpenLink" CommandParameter="https://www.mefrp.com/dashboard/"/>
@@ -185,7 +185,7 @@
                     <Button x:Name="userRegister" Content="注册/进入用户中心" Command="hc:ControlCommands.OpenLink" CommandParameter="https://www.mefrp.com/auth/login" />
                 </StackPanel>
                 <CheckBox Content="保存登录状态（风险自负哦~）" HorizontalAlignment="Center" Margin="0,10,0,0" IsChecked="True" x:Name="SaveToken"/>
-                <TextBlock Text="如果您不知道什么是访问密钥，请前往MeFrp用户中心寻找" HorizontalAlignment="Center"  VerticalAlignment="Center"  FontSize="13" Foreground="{DynamicResource PrimaryTextBrush}" Margin="0,10,0,0"/>
+                <TextBlock Text="如果您不知道什么是访问密钥，请前往 ME Frp 用户中心寻找" HorizontalAlignment="Center"  VerticalAlignment="Center"  FontSize="13" Foreground="{DynamicResource PrimaryTextBrush}" Margin="0,10,0,0"/>
             </StackPanel>
         </Grid>
     </Grid>
