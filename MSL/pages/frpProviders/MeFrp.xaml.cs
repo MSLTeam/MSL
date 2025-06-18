@@ -3,8 +3,10 @@ using Newtonsoft.Json.Linq;
 using System;
 using System.Collections.Generic;
 using System.Collections.ObjectModel;
+using System.Diagnostics;
 using System.Net;
 using System.Net.Http.Headers;
+using System.Text;
 using System.Threading.Tasks;
 using System.Windows;
 using System.Windows.Controls;
@@ -12,14 +14,14 @@ using System.Windows.Controls;
 namespace MSL.pages.frpProviders
 {
     /// <summary>
-    /// MeFrp.xaml 的交互逻辑
+    /// MEFrp.xaml 的交互逻辑
     /// </summary>
-    public partial class MeFrp : Page
+    public partial class MEFrp : Page
     {
         private string ApiUrl { get; } = "https://api.mefrp.com/api";
         private string UserToken { get; set; }
 
-        public MeFrp()
+        public MEFrp()
         {
             InitializeComponent();
         }
@@ -30,14 +32,14 @@ namespace MSL.pages.frpProviders
             if (!isInit)
             {
                 isInit = true;
-                LogHelper.WriteLog("MeFrp页面已加载，检查本地Token。");
+                LogHelper.WriteLog("ME Frp页面已加载，检查本地Token。");
                 //显示登录页面
                 LoginGrid.Visibility = Visibility.Visible;
                 MainCtrl.Visibility = Visibility.Collapsed;
-                var token = Config.Read("MeFrpToken")?.ToString() ?? "";
+                var token = Config.Read("MEFrpToken")?.ToString() ?? "";
                 if (token != "")
                 {
-                    LogHelper.WriteLog("检测到本地MeFrp Token，尝试自动登录。");
+                    LogHelper.WriteLog("检测到本地ME Frp Token，尝试自动登录。");
                     MagicDialog MagicDialog = new MagicDialog();
                     MagicDialog.ShowTextDialog(Window.GetWindow(this), "登录中……");
                     await VerifyUserToken(token, false); //移除空格，防止笨蛋
@@ -72,10 +74,10 @@ namespace MSL.pages.frpProviders
 
         private async void UserTokenLogin_Click(object sender, RoutedEventArgs e)
         {
-            string token = await MagicShow.ShowInput(Window.GetWindow(this), "请输入MeFrp账户Token", "", true);
+            string token = await MagicShow.ShowInput(Window.GetWindow(this), "请输入ME Frp账户Token", "", true);
             if (token != null)
             {
-                LogHelper.WriteLog("用户尝试使用Token登录MeFrp。");
+                LogHelper.WriteLog("用户尝试使用Token登录ME Frp。");
                 bool save = (bool)SaveToken.IsChecked;
                 MagicDialog MagicDialog = new MagicDialog();
                 MagicDialog.ShowTextDialog(Window.GetWindow(this), "登录中……");
@@ -86,32 +88,50 @@ namespace MSL.pages.frpProviders
 
         private async void userPasswordLogin_Click(object sender, RoutedEventArgs e)
         {
-            string user = await MagicShow.ShowInput(Window.GetWindow(this), "请输入MeFrp账户的邮箱", "");
+            string user = await MagicShow.ShowInput(Window.GetWindow(this), "请输入ME Frp账户", "");
             if (user != null)
             {
-                string password = await MagicShow.ShowInput(Window.GetWindow(this), "请输入MeFrp账户的密码", "", true);
+                string password = await MagicShow.ShowInput(Window.GetWindow(this), "请输入ME Frp账户的密码", "", true);
                 if (password != null)
                 {
-                    LogHelper.WriteLog($"用户尝试使用邮箱 '{user}' 登录MeFrp。");
-                    bool save = (bool)SaveToken.IsChecked;
-                    MagicDialog MagicDialog = new MagicDialog();
-                    MagicDialog.ShowTextDialog(Window.GetWindow(this), "登录中……");
-                    await GetUserToken(user.Trim(), password.Trim(), save); //移除空格，防止笨蛋
-                    MagicDialog.CloseTextDialog();
+                    Process.Start("https://frp.mcserverx.com/3rdparty/captcha?client=MSL");
+                    string captchaCallback = await MagicShow.ShowInput(Window.GetWindow(this), "请在完成打开网页的人机验证后，获取验证码并填写到此处", "", true);
+                    if (captchaCallback != null)
+                    {
+                        LogHelper.WriteLog($"用户尝试使用 '{user}' 登录ME Frp。");
+                        bool save = (bool)SaveToken.IsChecked;
+                        MagicDialog MagicDialog = new MagicDialog();
+                        MagicDialog.ShowTextDialog(Window.GetWindow(this), "登录中……");
+                        await GetUserToken(user.Trim(), password.Trim(), captchaCallback.Trim(), save); //移除空格，防止笨蛋
+                        MagicDialog.CloseTextDialog();
+                    }
                 }
-
             }
         }
 
-        private async Task GetUserToken(string user, string password, bool save)
+        private string[] ParseCaptchaArguments(string encString)
+        {
+            // base64 decode first  
+            byte[] bytes = Convert.FromBase64String(encString);
+            string decodedString = Encoding.UTF8.GetString(bytes);
+            // split by ||  
+            string[] args = decodedString.Split(["||"], StringSplitOptions.RemoveEmptyEntries);
+            return args;
+        }
+
+        private async Task GetUserToken(string user, string password, string captchaCallback, bool save)
         {
             try
             {
-                LogHelper.WriteLog($"正在为用户 '{user}' 获取MeFrp Token...");
+                LogHelper.WriteLog($"正在为用户 '{user}' 获取ME Frp Token...");
+                //解析验证码参数
+                string[] captchaArgs = ParseCaptchaArguments(captchaCallback);
                 HttpResponse res = await HttpService.PostAsync(ApiUrl + "/public/login", 0, new JObject
                 {
                     ["username"] = user,
-                    ["password"] = password
+                    ["password"] = password,
+                    ["vaptchaToken"] = captchaArgs[0],
+                    ["vaptchaServer"] = captchaArgs[1],
                 });
                 if (res.HttpResponseCode == HttpStatusCode.OK)
                 {
@@ -122,19 +142,19 @@ namespace MSL.pages.frpProviders
                     }
                     else
                     {
-                        LogHelper.WriteLog($"MeFrp登录失败，API返回错误: {jres["message"]}", LogLevel.WARN);
+                        LogHelper.WriteLog($"ME Frp登录失败，API返回错误: {jres["message"]}", LogLevel.WARN);
                         await MagicShow.ShowMsgDialogAsync(Window.GetWindow(this), "登陆失败！" + jres["message"], "错误");
                     }
                 }
                 else
                 {
-                    LogHelper.WriteLog($"获取MeFrp Token失败，HTTP状态码: {res.HttpResponseCode}", LogLevel.ERROR);
+                    LogHelper.WriteLog($"获取ME Frp Token失败，HTTP状态码: {res.HttpResponseCode}", LogLevel.ERROR);
                     await MagicShow.ShowMsgDialogAsync(Window.GetWindow(this), "登陆失败！请检查账号密码！", "错误");
                 }
             }
             catch (Exception ex)
             {
-                LogHelper.WriteLog($"获取MeFrp Token时发生异常: {ex.ToString()}", LogLevel.ERROR);
+                LogHelper.WriteLog($"获取ME Frp Token时发生异常: {ex.ToString()}", LogLevel.ERROR);
                 await MagicShow.ShowMsgDialogAsync(Window.GetWindow(this), "登陆失败！" + ex.Message, "错误");
             }
         }
@@ -143,7 +163,7 @@ namespace MSL.pages.frpProviders
         {
             try
             {
-                LogHelper.WriteLog("正在验证MeFrp用户Token...");
+                LogHelper.WriteLog("正在验证ME Frp用户Token...");
                 HttpResponse res = await HttpService.GetAsync(ApiUrl + "/auth/user/info", headers =>
                 {
                     headers.Add("Authorization", $"Bearer {token}");
@@ -153,40 +173,46 @@ namespace MSL.pages.frpProviders
                     UserToken = token;
                     if (save)
                     {
-                        Config.Write("MeFrpToken", token);
+                        Config.Write("MEFrpToken", token);
                     }
 
                     //显示main页面
                     LoginGrid.Visibility = Visibility.Collapsed; ;
                     MainCtrl.Visibility = Visibility.Visible;
                     JObject JsonUserInfo = JObject.Parse((string)res.HttpResponseContent);
-                    LogHelper.WriteLog($"MeFrp用户 '{JsonUserInfo["data"]["username"]}' Token验证成功，已登录。");
+                    LogHelper.WriteLog($"ME Frp用户 '{JsonUserInfo["data"]["username"]}' Token验证成功，已登录。");
                     if (JsonUserInfo["data"]["todaySigned"].Value<bool>() == true)
                     {
                         SignBtn.IsEnabled = false;
+                        SignBtn.Content = "已签到";
+                    }
+                    else
+                    {
+                        SignBtn.IsEnabled = true;
+                        SignBtn.Content = "签到";
                     }
                     if (JsonUserInfo["data"]["friendlyGroup"].Value<string>() != "未实名")
                     {
                         RealNameTips.Visibility = Visibility.Collapsed;
                     }
-                    UserInfo.Text = $"用户名: {JsonUserInfo["data"]["username"]}\n用户类型: {JsonUserInfo["data"]["friendlyGroup"]}\n限速: {int.Parse(JsonUserInfo["data"]["outBound"]?.ToString() ?? "") / 128} Mbps\n隧道数: {JsonUserInfo["data"]["usedProxies"]} / {JsonUserInfo["data"]["maxProxies"]}\n剩余流量: {int.Parse(JsonUserInfo["data"]["traffic"]?.ToString() ?? "") / 1024} GB";
+                    UserInfo.Text = $"用户名: {JsonUserInfo["data"]["username"]}\n用户类型: {JsonUserInfo["data"]["friendlyGroup"]}\n限速: {int.Parse(JsonUserInfo["data"]["outBound"]?.ToString() ?? "") / 128} Mbps\n隧道数: {JsonUserInfo["data"]["usedProxies"]} / {JsonUserInfo["data"]["maxProxies"]}\n剩余流量: {long.Parse(JsonUserInfo["data"]["traffic"]?.ToString() ?? "") / 1024} GB";
                     //UserLevel = (string)JsonUserInfo["data"]["group"];
                     //获取隧道
                     await GetTunnelList();
                 }
                 else
                 {
-                    LogHelper.WriteLog($"MeFrp Token验证失败，可能是Token已失效。HTTP状态码: {res.HttpResponseCode}", LogLevel.WARN);
-                    if (Config.Read("MeFrpToken") != null)
-                        Config.Remove("MeFrpToken");
+                    LogHelper.WriteLog($"ME Frp Token验证失败，可能是Token已失效。HTTP状态码: {res.HttpResponseCode}", LogLevel.WARN);
+                    if (Config.Read("MEFrpToken") != null)
+                        Config.Remove("MEFrpToken");
                     await MagicShow.ShowMsgDialogAsync(Window.GetWindow(this), "登陆失败！", "错误");
                 }
             }
             catch (Exception ex)
             {
-                LogHelper.WriteLog($"验证MeFrp Token时发生异常: {ex.ToString()}", LogLevel.ERROR);
-                if (Config.Read("MeFrpToken") != null)
-                    Config.Remove("MeFrpToken");
+                LogHelper.WriteLog($"验证ME Frp Token时发生异常: {ex.ToString()}", LogLevel.ERROR);
+                if (Config.Read("MEFrpToken") != null)
+                    Config.Remove("MEFrpToken");
                 await MagicShow.ShowMsgDialogAsync(Window.GetWindow(this), "登陆失败！" + ex.Message, "错误");
             }
         }
@@ -208,7 +234,7 @@ namespace MSL.pages.frpProviders
         {
             try
             {
-                LogHelper.WriteLog("正在获取MeFrp隧道列表...");
+                LogHelper.WriteLog("正在获取ME Frp隧道列表...");
                 // 获取节点ID到名称的映射
                 Dictionary<int, string> nodeDict = new Dictionary<int, string>();
                 try
@@ -230,13 +256,13 @@ namespace MSL.pages.frpProviders
                     }
                     else
                     {
-                        LogHelper.WriteLog($"获取MeFrp节点名称映射失败，HTTP状态码: {nodeRes.HttpResponseCode}", LogLevel.WARN);
+                        LogHelper.WriteLog($"获取ME Frp节点名称映射失败，HTTP状态码: {nodeRes.HttpResponseCode}", LogLevel.WARN);
                         await MagicShow.ShowMsgDialogAsync(Window.GetWindow(this), "获取节点列表失败，将显示节点ID。", "警告");
                     }
                 }
                 catch (Exception nodeEx)
                 {
-                    LogHelper.WriteLog($"获取MeFrp节点名称映射时发生警告: {nodeEx.ToString()}", LogLevel.WARN);
+                    LogHelper.WriteLog($"获取ME Frp节点名称映射时发生警告: {nodeEx.ToString()}", LogLevel.WARN);
                     await MagicShow.ShowMsgDialogAsync(Window.GetWindow(this), "获取节点列表出错: " + nodeEx.Message, "警告");
                 }
 
@@ -269,17 +295,17 @@ namespace MSL.pages.frpProviders
                             Online = item["isOnline"].Value<bool>(),
                         });
                     }
-                    LogHelper.WriteLog($"成功获取到 {JsonTunnels.Count} 个MeFrp隧道。");
+                    LogHelper.WriteLog($"成功获取到 {JsonTunnels.Count} 个ME Frp隧道。");
                 }
                 else
                 {
-                    LogHelper.WriteLog($"获取MeFrp隧道列表失败，HTTP状态码: {res.HttpResponseCode}", LogLevel.ERROR);
+                    LogHelper.WriteLog($"获取ME Frp隧道列表失败，HTTP状态码: {res.HttpResponseCode}", LogLevel.ERROR);
                     await MagicShow.ShowMsgDialogAsync(Window.GetWindow(this), "获取隧道列表失败！HTTP状态码: " + res.HttpResponseCode, "错误");
                 }
             }
             catch (Exception ex)
             {
-                LogHelper.WriteLog($"获取MeFrp隧道列表时发生错误: {ex.ToString()}", LogLevel.ERROR);
+                LogHelper.WriteLog($"获取ME Frp隧道列表时发生错误: {ex.ToString()}", LogLevel.ERROR);
                 await MagicShow.ShowMsgDialogAsync(Window.GetWindow(this), "获取隧道列表失败: " + ex.Message, "错误");
             }
         }
@@ -336,7 +362,7 @@ namespace MSL.pages.frpProviders
         {
             try
             {
-                LogHelper.WriteLog($"正在请求删除MeFrp隧道，ID: {id}。");
+                LogHelper.WriteLog($"正在请求删除ME Frp隧道，ID: {id}。");
                 //请求头 token
                 var headersAction = new Action<HttpRequestHeaders>(headers =>
                 {
@@ -377,12 +403,12 @@ namespace MSL.pages.frpProviders
 
         private void ExitBtn_Click(object sender, RoutedEventArgs e)
         {
-            LogHelper.WriteLog("用户登出MeFrp账户，清除本地Token。");
+            LogHelper.WriteLog("用户登出ME Frp账户，清除本地Token。");
             //显示登录页面
             LoginGrid.Visibility = Visibility.Visible;
             MainCtrl.Visibility = Visibility.Collapsed;
             UserToken = null;
-            Config.Remove("MeFrpToken");
+            Config.Remove("MEFrpToken");
         }
 
         //下面是创建隧道相关
@@ -403,7 +429,7 @@ namespace MSL.pages.frpProviders
         {
             try
             {
-                LogHelper.WriteLog("正在获取MeFrp节点列表(用于创建隧道)。");
+                LogHelper.WriteLog("正在获取ME Frp节点列表(用于创建隧道)。");
                 HttpResponse res = await HttpService.GetAsync(ApiUrl + "/auth/node/list", headers =>
                 {
                     headers.Add("Authorization", $"Bearer {UserToken}");
@@ -427,16 +453,16 @@ namespace MSL.pages.frpProviders
                             Description = (string)nodeData["description"],
                         });
                     }
-                    LogHelper.WriteLog($"成功获取到 {nodes.Count} 个MeFrp节点。");
+                    LogHelper.WriteLog($"成功获取到 {nodes.Count} 个ME Frp节点。");
                 }
                 else
                 {
-                    LogHelper.WriteLog($"获取MeFrp节点列表失败，HTTP状态码: {res.HttpResponseCode}", LogLevel.ERROR);
+                    LogHelper.WriteLog($"获取ME Frp节点列表失败，HTTP状态码: {res.HttpResponseCode}", LogLevel.ERROR);
                 }
             }
             catch (Exception ex)
             {
-                LogHelper.WriteLog($"获取MeFrp节点列表时发生异常: {ex.ToString()}", LogLevel.ERROR);
+                LogHelper.WriteLog($"获取ME Frp节点列表时发生异常: {ex.ToString()}", LogLevel.ERROR);
             }
         }
 
@@ -512,29 +538,125 @@ namespace MSL.pages.frpProviders
                 (sender as Button).IsEnabled = true;
             }
         }
-
         private async void SignBtn_Click(object sender, RoutedEventArgs e)
         {
             try
             {
-                LogHelper.WriteLog("用户正在尝试进行MeFrp每日签到。");
-                HttpResponse res = await HttpService.GetAsync(ApiUrl + "/auth/user/sign", headers =>
+                LogHelper.WriteLog("用户正在尝试进行ME Frp每日签到。");
+                Button btnSign = sender as Button;
+                btnSign.IsEnabled = false;
+
+                // 获取签到前的用户信息（包括流量数据）
+                double beforeTraffic = await GetUserTraffic();
+
+                // 开始签到请求
+                Process.Start("https://frp.mcserverx.com/3rdparty/sign?client=MSL&&token=" + UserToken);
+
+                // 开始轮询逻辑
+                int pollCount = 0;
+                const int maxPollCount = 15; // 最多轮询15次
+                const int pollInterval = 6000; // 每次轮询间隔6秒
+                bool signSuccess = false;
+
+                while (pollCount < maxPollCount && !signSuccess)
                 {
-                    headers.Add("Authorization", $"Bearer {UserToken}");
-                });
-                if (res.HttpResponseCode == HttpStatusCode.OK)
+                    try
+                    {
+                        HttpResponse pollRes = await HttpService.GetAsync(ApiUrl + "/auth/user/sign", headers =>
+                        {
+                            headers.Add("Authorization", $"Bearer {UserToken}");
+                        });
+
+                        if (pollRes.HttpResponseCode == HttpStatusCode.OK)
+                        {
+                            JObject jsonres = JObject.Parse((string)pollRes.HttpResponseContent);
+                            string message = jsonres["message"]?.ToString() ?? string.Empty;
+
+                            if (message.Contains("今日已签到"))
+                            {
+                                LogHelper.WriteLog($"ME Frp轮询检测到签到成功，今日已签到。");
+                                signSuccess = true;
+                                break;
+                            }
+                        }
+                    }
+                    catch (Exception ex)
+                    {
+                        LogHelper.WriteLog($"ME Frp签到轮询第{pollCount + 1}次失败，发生异常: {ex.Message}", LogLevel.WARN);
+                    }
+
+                    pollCount++;
+                    if (!signSuccess && pollCount < maxPollCount)
+                    {
+                        await Task.Delay(pollInterval);
+                    }
+                }
+
+                if (signSuccess)
                 {
-                    JObject jsonres = JObject.Parse((string)res.HttpResponseContent);
-                    LogHelper.WriteLog($"MeFrp每日签到成功，获得流量: {jsonres["data"]["extraTraffic"]} G。");
-                    await MagicShow.ShowMsgDialogAsync(Window.GetWindow(this), $"签到成功！\n获得流量: {jsonres["data"]["extraTraffic"]} G", "签到成功");
-                    SignBtn.IsEnabled = false;
                     await VerifyUserToken(UserToken, false);
+                    double afterTraffic = await GetUserTraffic();
+                    double extraTraffic = afterTraffic - beforeTraffic;
+                    if (extraTraffic > 0)
+                    {
+                        LogHelper.WriteLog($"ME Frp 每日签到成功，获得流量: {extraTraffic:F2} GB。");
+                        await MagicShow.ShowMsgDialogAsync(Window.GetWindow(this), $"签到成功！\n获得流量: {extraTraffic:F2} GB", "签到成功");
+                    }
+                    else
+                    {
+                        LogHelper.WriteLog($"ME Frp 每日签到成功。");
+                        await MagicShow.ShowMsgDialogAsync(Window.GetWindow(this), "签到成功！", "签到成功");
+                    }
+                }
+                else if (pollCount >= maxPollCount)
+                {
+                    LogHelper.WriteLog($"ME Frp 签到轮询达到最大次数({maxPollCount}次)，签到可能失败", LogLevel.WARN);
+                    await MagicShow.ShowMsgDialogAsync(Window.GetWindow(this), "签到操作可能未成功完成，请稍后在网页端查看签到状态。", "提示");
                 }
             }
             catch (Exception ex)
             {
-                LogHelper.WriteLog($"MeFrp签到失败，发生异常: {ex.ToString()}", LogLevel.ERROR);
+                LogHelper.WriteLog($"ME Frp 签到失败，发生异常: {ex.ToString()}", LogLevel.ERROR);
                 await MagicShow.ShowMsgDialogAsync(Window.GetWindow(this), "签到失败！", "错误");
+            }
+            finally
+            {
+                (sender as Button).IsEnabled = true;
+            }
+        }
+
+        /// <summary>
+        /// 获取用户当前可用流量（GB）
+        /// </summary>
+        /// <returns>用户流量（GB）</returns>
+        private async Task<double> GetUserTraffic()
+        {
+            try
+            {
+                // 请求用户信息
+                HttpResponse res = await HttpService.GetAsync(ApiUrl + "/auth/user/info", headers =>
+                {
+                    headers.Add("Authorization", $"Bearer {UserToken}");
+                });
+
+                if (res.HttpResponseCode == HttpStatusCode.OK)
+                {
+                    JObject jsonUserInfo = JObject.Parse((string)res.HttpResponseContent);
+
+                    // 获取流量信息（KB），转换为GB
+                    if (jsonUserInfo["data"] != null && jsonUserInfo["data"]["traffic"] != null)
+                    {
+                        int trafficKB = int.Parse(jsonUserInfo["data"]["traffic"]?.ToString() ?? "0");
+                        return trafficKB / 1024.0; // KB 转 GB
+                    }
+                }
+
+                return 0;
+            }
+            catch (Exception ex)
+            {
+                LogHelper.WriteLog($"获取ME Frp用户流量信息时发生异常: {ex.Message}", LogLevel.ERROR);
+                return 0;
             }
         }
     }

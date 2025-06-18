@@ -101,7 +101,7 @@ namespace MSL.pages
                 }
                 else if (FrpcServer == 4) // 否则，为4时，则为me节点
                 {
-                    frplab1.Text = "MeFrp节点";
+                    frplab1.Text = "ME Frp节点";
                 }
             }
             catch (Exception ex)
@@ -392,7 +392,7 @@ namespace MSL.pages
                         if (!File.Exists($"MSL\\frp\\{frpcExeName}"))
                         {
                             LogHelper.WriteLog($"文件 MSL\\frp\\{frpcExeName} 不存在，准备下载。");
-                            downloadUrl = "MeFrp";
+                            downloadUrl = "MEFrp";
                         }
                         downloadFileName = "frpc_mefrp.zip";
                         break;
@@ -492,39 +492,39 @@ namespace MSL.pages
                             }
                         }
                     }
-                    else if (downloadUrl == "MeFrp")
+                    else if (downloadUrl == "MEFrp")
                     {
-                        LogHelper.WriteLog("正在获取 MeFrp 下载地址。");
+                        LogHelper.WriteLog("正在获取 ME Frp 下载地址。");
                         try
                         {
-                            if (Config.Read("MeFrpToken").ToString() == "")
+                            if (Config.Read("MEFrpToken").ToString() == "")
                             {
-                                LogHelper.WriteLog("MeFrp Token 为空，下载失败。", LogLevel.ERROR);
-                                Growl.Error("获取MeFrp下载地址失败！\n请重新在添加隧道页面登录MEFrp并选择保存登录状态");
+                                LogHelper.WriteLog("ME Frp Token 为空，下载失败。", LogLevel.ERROR);
+                                Growl.Error("获取ME Frp下载地址失败！\n请重新在添加隧道页面登录MEFrp并选择保存登录状态");
                                 return;
                             }
                             HttpResponse res = await HttpService.GetAsync("https://api.mefrp.com/api/auth/products", headers =>
                             {
-                                headers.Add("Authorization", $"Bearer {Config.Read("MeFrpToken")}");
+                                headers.Add("Authorization", $"Bearer {Config.Read("MEFrpToken")}");
                             });
                             JObject apiData = JObject.Parse((string)res.HttpResponseContent);
                             if ((int)apiData["code"] != 200)
                             {
-                                LogHelper.WriteLog($"获取 MeFrp 产品列表失败，API返回码: {(int)apiData["code"]}", LogLevel.ERROR);
-                                Growl.Error("获取MeFrp下载地址失败！");
+                                LogHelper.WriteLog($"获取 ME Frp 产品列表失败，API返回码: {(int)apiData["code"]}", LogLevel.ERROR);
+                                Growl.Error("获取ME Frp下载地址失败！");
                                 return;
                             }
 
                             string version = osver == "6" ? apiData["data"][1]["version"].ToString() : apiData["data"][0]["version"].ToString();
-                            LogHelper.WriteLog($"获取到 MeFrp 版本: {version}");
+                            LogHelper.WriteLog($"获取到 ME Frp 版本: {version}");
 
                             string alistUrl = $"https://drive.mcsl.com.cn/api/fs/list?path=%2FME-Frp%2FLocal%2FMEFrpc%2F{version}";
                             JObject apiData_alist = JObject.Parse((await HttpService.GetContentAsync(alistUrl)).ToString());
 
                             if ((int)apiData_alist["code"] != 200)
                             {
-                                LogHelper.WriteLog($"获取 MeFrp 文件列表失败，API返回码: {(int)apiData_alist["code"]}", LogLevel.ERROR);
-                                Growl.Error("获取MeFrp下载地址失败！");
+                                LogHelper.WriteLog($"获取 ME Frp 文件列表失败，API返回码: {(int)apiData_alist["code"]}", LogLevel.ERROR);
+                                Growl.Error("获取ME Frp下载地址失败！");
                                 return;
                             }
                             var targetFile = ((JArray)apiData_alist["data"]["content"])
@@ -532,18 +532,18 @@ namespace MSL.pages
 
                             if (targetFile == null)
                             {
-                                LogHelper.WriteLog("在MeFrp文件列表中未找到 windows_amd64 版本文件。", LogLevel.ERROR);
+                                LogHelper.WriteLog("在ME Frp文件列表中未找到 windows_amd64 版本文件。", LogLevel.ERROR);
                                 Growl.Error("未找到Windows AMD64版本文件");
                                 return;
                             }
                             string fileName = $"https://drive.mcsl.com.cn/d/ME-Frp/Local/MEFrpc/{version}/{targetFile["name"].ToString()}";
-                            LogHelper.WriteLog($"找到 MeFrp 下载链接: {fileName}");
+                            LogHelper.WriteLog($"找到 ME Frp 下载链接: {fileName}");
                             await MagicShow.ShowDownloader(Window.GetWindow(this), fileName, "MSL\\frp", downloadFileName, LanguageManager.Instance["Download_Frpc_Info"]);
                         }
                         catch (Exception ex)
                         {
-                            LogHelper.WriteLog($"MeFrp 下载过程中发生异常: {ex.ToString()}", LogLevel.ERROR);
-                            Growl.Error("MeFrp下载失败！" + ex.Message);
+                            LogHelper.WriteLog($"ME Frp 下载过程中发生异常: {ex.ToString()}", LogLevel.ERROR);
+                            Growl.Error("ME Frp下载失败！" + ex.Message);
                             return;
                         }
 
@@ -556,7 +556,7 @@ namespace MSL.pages
                     }
 
                     //只有官方版本+sakura不需要
-                    if (downloadUrl == "OpenFrp" || downloadUrl == "ChmlFrp" || downloadUrl == "MeFrp")
+                    if (downloadUrl == "OpenFrp" || downloadUrl == "ChmlFrp" || downloadUrl == "MEFrp")
                     {
                         LogHelper.WriteLog($"正在解压文件: MSL\\frp\\{downloadFileName}。");
                         //很寻常的解压
