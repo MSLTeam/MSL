@@ -39,9 +39,9 @@ namespace MSL
             new CreateServer()
         };
         public static event DeleControl AutoOpenServer;
-        
+
         public static bool LoadingCompleted = false;
-        
+
         public MainWindow()
         {
             InitializeComponent();
@@ -93,14 +93,14 @@ namespace MSL
                         try
                         {
                             LoadLibEx();
-                            LogHelper.WriteLog("加载仿真终端依赖库成功！");
+                            LogHelper.Write.Info("加载仿真终端依赖库成功！");
                         }
-                        catch(Exception ex)
+                        catch (Exception ex)
                         {
                             File.Delete("MSL\\Microsoft.Terminal.Control.dll");
                             downloadTermDll = true;
-                            LogHelper.WriteLog("仿真终端依赖库文件加载失败！", LogLevel.ERROR);
-                            LogHelper.WriteLog(ex.ToString(), LogLevel.ERROR);
+                            LogHelper.Write.Error("仿真终端依赖库文件加载失败！");
+                            LogHelper.Write.Error(ex.ToString());
                         }
                     }
                     else
@@ -108,11 +108,11 @@ namespace MSL
                         downloadTermDll = true;
                     }
                 }
-                LogHelper.WriteLog("正在载入配置...");
+                LogHelper.Write.Info("正在载入配置...");
                 await LoadConfigEvent(jsonObject);
-                LogHelper.WriteLog("正在异步载入联网功能...");
+                LogHelper.Write.Info("正在异步载入联网功能...");
                 await OnlineService(jsonObject, downloadTermDll);
-                LogHelper.WriteLog("启动事件完成！");
+                LogHelper.Write.Info("启动事件完成！");
                 LoadingCompleted = true;
             }
             catch (Exception ex)
@@ -134,12 +134,12 @@ namespace MSL
             bool dialog = await MagicShow.ShowMsgDialogAsync(this, LanguageManager.Instance["MainWindow_GrowlMsg_Eula"], LanguageManager.Instance["Tip"], true, LanguageManager.Instance["No"], LanguageManager.Instance["Yes"], shield);
             if (dialog)
             {
-                LogHelper.WriteLog("用户同意了使用协议。");
+                LogHelper.Write.Info("用户同意了使用协议。");
                 return true;
             }
             else
             {
-                LogHelper.WriteLog("用户拒绝了使用协议，即将退出。");
+                LogHelper.Write.Info("用户拒绝了使用协议，即将退出。");
                 return false;
             }
         }
@@ -167,7 +167,7 @@ namespace MSL
                         });
                     });
                 }
-                LogHelper.WriteLog("读取托盘图标配置成功！");
+                LogHelper.Write.Info("读取托盘图标配置成功！");
                 if (jsonObject["sidemenuExpanded"] == null)
                 {
                     string jsonString = File.ReadAllText(@"MSL\config.json", Encoding.UTF8);
@@ -185,7 +185,7 @@ namespace MSL
                 {
                     SideMenu.Width = 50;
                 }
-                LogHelper.WriteLog("读取侧栏配置成功！");
+                LogHelper.Write.Info("读取侧栏配置成功！");
                 if (jsonObject["skin"] == null)
                 {
                     string jsonString = File.ReadAllText(@"MSL\config.json", Encoding.UTF8);
@@ -228,7 +228,7 @@ namespace MSL
                             break;
                     }
                 }
-                LogHelper.WriteLog("读取皮肤配置成功！");
+                LogHelper.Write.Info("读取皮肤配置成功！");
                 if (jsonObject["darkTheme"] == null)
                 {
                     string jsonString = File.ReadAllText(@"MSL\config.json", Encoding.UTF8);
@@ -241,7 +241,7 @@ namespace MSL
                 {
                     ThemeManager.Current.ApplicationTheme = ApplicationTheme.Dark;
                 }
-                LogHelper.WriteLog("读取暗色模式配置成功！");
+                LogHelper.Write.Info("读取暗色模式配置成功！");
                 if (File.Exists("MSL\\Background_.png"))
                 {
                     File.Copy("MSL\\Background_.png", "MSL\\Background.png", true);
@@ -254,7 +254,7 @@ namespace MSL
                     Background = imageBrush;
                     frame.BorderThickness = new Thickness(0);
                 }
-                LogHelper.WriteLog("加载背景图片成功！");
+                LogHelper.Write.Info("加载背景图片成功！");
                 if (jsonObject["semitransparentTitle"] == null)
                 {
                     string jsonString = File.ReadAllText(@"MSL\config.json", Encoding.UTF8);
@@ -274,7 +274,7 @@ namespace MSL
                         ChangeTitleStyle(false);
                     }
                 }
-                LogHelper.WriteLog("读取标题栏样式成功！");
+                LogHelper.Write.Info("读取标题栏样式成功！");
                 if (jsonObject["autoGetServerInfo"] == null)
                 {
                     string jsonString = File.ReadAllText(@"MSL\config.json", Encoding.UTF8);
@@ -319,7 +319,7 @@ namespace MSL
                     if (logColorConf["HIGHLIGHT"] != null)
                         ConfigStore.LogColor.HIGHLIGHT = (SolidColorBrush)brushConverter.ConvertFromString(logColorConf["HIGHLIGHT"].ToString());
                 }
-                LogHelper.WriteLog("读取自动化功能配置成功（自动打开显示占用、记录玩家功能）！");
+                LogHelper.Write.Info("读取自动化功能配置成功（自动打开显示占用、记录玩家功能）！");
             }
             catch (Exception ex)
             {
@@ -346,7 +346,7 @@ namespace MSL
                         await AutoRunServer(jsonObject);
                     }
                 }
-                LogHelper.WriteLog("读取自动开启（服务器）配置成功！");
+                LogHelper.Write.Info("读取自动开启（服务器）配置成功！");
             }
             catch (Exception ex)
             {
@@ -372,7 +372,7 @@ namespace MSL
                         await AutoRunFrpc(jsonObject);
                     }
                 }
-                LogHelper.WriteLog("读取自动开启（内网映射）配置成功！");
+                LogHelper.Write.Info("读取自动开启（内网映射）配置成功！");
             }
             catch (Exception ex)
             {
@@ -380,9 +380,9 @@ namespace MSL
                 MagicShow.ShowMsgDialog(this, LanguageManager.Instance["MainWindow_GrowlMsg_AutoLaunchFrpcErr"] + ex.Message, LanguageManager.Instance["Error"]);
             }
 
-            LogHelper.WriteLog("所有配置载入完毕！调整UI界面...");
+            LogHelper.Write.Info("所有配置载入完毕！调整UI界面...");
             SideMenu.SelectedIndex = 0;
-            LogHelper.WriteLog("配置加载完毕！");
+            LogHelper.Write.Info("配置加载完毕！");
         }
 
         private async Task AutoRunServer(JObject json)
@@ -424,12 +424,12 @@ namespace MSL
             }
         }
 
-        private async Task OnlineService(JObject jsonObject, bool downloadTermDll,bool isBackupUrl=false)
+        private async Task OnlineService(JObject jsonObject, bool downloadTermDll, bool isBackupUrl = false)
         {
             //get serverlink
             // _ = HttpService.GetContentAsync("https://msl-api.oss-cn-hangzhou.aliyuncs.com/");
             // ConfigStore.ApiLink = "mslmc.cn/v3/";
-            LogHelper.WriteLog("正在连接到MSL-API-V3服务...");
+            LogHelper.Write.Info("正在连接到MSL-API-V3服务...");
             try
             {
                 ServicePointManager.SecurityProtocol = SecurityProtocolType.Tls12;
@@ -440,7 +440,7 @@ namespace MSL
                     if (!isBackupUrl)
                     {
                         MagicFlowMsg.ShowMessage("软件将使用备用URL...");
-                        LogHelper.WriteLog("正在尝试使用备用API地址...",LogLevel.WARN);
+                        LogHelper.Write.Warn("正在尝试使用备用API地址...");
                         ConfigStore.ApiLink = "https://user.mslmc.net/mslapiv3-backup";
                         await OnlineService(jsonObject, downloadTermDll, true);
                     }
@@ -450,8 +450,8 @@ namespace MSL
             catch (JsonException ex)
             {
                 MagicFlowMsg.ShowMessage(LanguageManager.Instance["MainWindow_GrowlMsg_MSLServerDown"] + $"\n[JSON Exception]({ex.InnerException.Message}){ex.Message}", 2);
-                LogHelper.WriteLog("无法连接到MSL服务器...",LogLevel.ERROR);
-                LogHelper.WriteLog(ex.ToString(), LogLevel.ERROR);
+                LogHelper.Write.Error("无法连接到MSL服务器...");
+                LogHelper.Write.Error(ex.ToString());
                 return;
             }
             catch (HttpRequestException ex)
@@ -460,8 +460,8 @@ namespace MSL
                 if (!isBackupUrl)
                 {
                     MagicFlowMsg.ShowMessage("软件将使用备用URL...");
-                    LogHelper.WriteLog("正在尝试使用备用API地址...", LogLevel.WARN);
-                    LogHelper.WriteLog(ex.ToString(), LogLevel.ERROR);
+                    LogHelper.Write.Warn("正在尝试使用备用API地址...");
+                    LogHelper.Write.Error(ex.ToString());
                     ConfigStore.ApiLink = "https://user.mslmc.net/mslapiv3-backup";
                     await OnlineService(jsonObject, downloadTermDll, true);
                 }
@@ -481,20 +481,20 @@ namespace MSL
                 // 下载必要DLL
                 if (downloadTermDll)
                 {
-                    LogHelper.WriteLog("正在下载伪终端运行库文件...");
+                    LogHelper.Write.Info("正在下载伪终端运行库文件...");
                     var result = await MagicShow.ShowDownloader(this, "https://file.mslmc.cn/Microsoft.Terminal.Control.dll", "MSL", "Microsoft.Terminal.Control.dll", "下载必要文件……");
                     if (result)
                     {
                         try
                         {
                             LoadLibEx();
-                            LogHelper.WriteLog("加载仿真终端依赖库成功！");
+                            LogHelper.Write.Info("加载仿真终端依赖库成功！");
                         }
                         catch (Exception ex)
                         {
                             File.Delete("MSL\\Microsoft.Terminal.Control.dll");
-                            LogHelper.WriteLog("仿真终端依赖库文件加载失败！", LogLevel.ERROR);
-                            LogHelper.WriteLog(ex.ToString(), LogLevel.ERROR);
+                            LogHelper.Write.Error("仿真终端依赖库文件加载失败！");
+                            LogHelper.Write.Error(ex.ToString());
                             MagicShow.ShowMsg(this, $"必要DLL“Microsoft.Terminal.Control.dll”加载失败！可能是文件不完整，已将其删除，请重启软件以确保其被重新下载并加载。（{ex.Message}）\n如果不重启软件，高级终端（ConPty）功能将失效！\n若您多次重启软件后，此问题依旧未被解决，请联系作者进行反馈！", "错误");
                         }
                     }
@@ -510,13 +510,13 @@ namespace MSL
                         if (jsonObject["autoOpenServer"] != null && jsonObject["autoOpenServer"].ToString() != "False")
                         {
                             await AutoRunServer(jsonObject);
-                            LogHelper.WriteLog("正在自启动服务器端...");
+                            LogHelper.Write.Info("正在自启动服务器端...");
                         }
                     }
                     catch (Exception ex)
                     {
-                        LogHelper.WriteLog("自启动服务端失败！",LogLevel.ERROR);
-                        LogHelper.WriteLog(ex.ToString(), LogLevel.ERROR);
+                        LogHelper.Write.Error("自启动服务端失败！");
+                        LogHelper.Write.Error(ex.ToString());
                         MagicShow.ShowMsgDialog(LanguageManager.Instance["MainWindow_GrowlMsg_AutoLaunchServerErr"] + ex.Message, LanguageManager.Instance["Error"]);
                     }
                     try
@@ -525,21 +525,21 @@ namespace MSL
                         if (jsonObject["autoOpenFrpc"] != null && jsonObject["autoOpenFrpc"].ToString() != "False")
                         {
                             await AutoRunFrpc(jsonObject);
-                            LogHelper.WriteLog("正在自启动Frpc服务...");
+                            LogHelper.Write.Info("正在自启动Frpc服务...");
                         }
                     }
                     catch (Exception ex)
                     {
-                        LogHelper.WriteLog("自启动Frpc失败！",LogLevel.ERROR);
-                        LogHelper.WriteLog(ex.ToString(),LogLevel.ERROR);
+                        LogHelper.Write.Error("自启动Frpc失败！");
+                        LogHelper.Write.Error(ex.ToString());
                         MagicShow.ShowMsgDialog(LanguageManager.Instance["MainWindow_GrowlMsg_AutoLaunchFrpcErr"] + ex.Message, LanguageManager.Instance["Error"]);
                     }
                 }
             }
             catch (Exception ex)
             {
-                LogHelper.WriteLog("自启动服务出现错误！", LogLevel.ERROR);
-                LogHelper.WriteLog(ex.ToString(), LogLevel.ERROR);
+                LogHelper.Write.Error("自启动服务出现错误！");
+                LogHelper.Write.Error(ex.ToString());
                 Growl.Error(ex.Message);
             }
         }
@@ -579,15 +579,15 @@ namespace MSL
             //更新
             try
             {
-                LogHelper.WriteLog("正在检查更新...");
+                LogHelper.Write.Info("正在检查更新...");
                 JObject _httpReturn = await HttpService.GetApiContentAsync("query/update");
                 string _version = _httpReturn["data"]["latestVersion"].ToString();
                 Version newVersion = new Version(_httpReturn["data"]["latestVersion"].ToString());
                 Version version = new Version(System.Reflection.Assembly.GetExecutingAssembly().GetName().Version.ToString());
-                LogHelper.WriteLog($"当前MSL版本 {version}，最新版本 {newVersion} 。");
+                LogHelper.Write.Info($"当前MSL版本 {version}，最新版本 {newVersion}");
                 if (newVersion > version)
                 {
-                    LogHelper.WriteLog("检测到新版本！");
+                    LogHelper.Write.Info("检测到新版本！");
                     var updatelog = _httpReturn["data"]["log"].ToString();
                     if (jsonObject["autoUpdateApp"] == null)
                     {
@@ -597,19 +597,19 @@ namespace MSL
                     }
                     else if (jsonObject["autoUpdateApp"].ToString() == "True")
                     {
-                        LogHelper.WriteLog("自动更新功能已打开，更新新版本...");
+                        LogHelper.Write.Info("自动更新功能已打开，更新版本...");
                         await UpdateApp(_version);
                     }
                     else
                     {
                         if (await MagicShow.ShowMsgDialogAsync(this, string.Format(LanguageManager.Instance["MainWindow_GrowlMsg_UpdateInfo"] + "\n" + updatelog, _version), LanguageManager.Instance["MainWindow_GrowlMsg_Update"], true))
                         {
-                            LogHelper.WriteLog("更新新版本...");
+                            LogHelper.Write.Info("更新版本中...");
                             await UpdateApp(_version);
                         }
                         else
                         {
-                            LogHelper.WriteLog("用户拒绝更新！");
+                            LogHelper.Write.Info("用户拒绝更新！");
                             Growl.Error(LanguageManager.Instance["MainWindow_GrowlMsg_RefuseUpdate"]);
                             /*
                             IsOldVersion = true;
@@ -633,8 +633,8 @@ namespace MSL
             }
             catch (Exception ex)
             {
-                LogHelper.WriteLog("检查更新失败！",LogLevel.ERROR);
-                LogHelper.WriteLog(ex.ToString(), LogLevel.ERROR);
+                LogHelper.Write.Error("检查更新失败！");
+                LogHelper.Write.Error(ex.ToString());
                 Growl.Error(LanguageManager.Instance["MainWindow_GrowlMsg_CheckUpdateErr"] + $"\n{ex.Message}");
             }
         }
@@ -649,7 +649,7 @@ namespace MSL
                     return;
                 }
                 string downloadUrl = (await HttpService.GetApiContentAsync("download/update"))["data"].ToString();
-                LogHelper.WriteLog($"获取到MSL {latestVersion} 的下载地址: {downloadUrl} 。");
+                LogHelper.Write.Info($"获取到MSL {latestVersion} 的下载地址: {downloadUrl} 。");
                 await MagicShow.ShowDownloader(this, downloadUrl, AppDomain.CurrentDomain.BaseDirectory, "MSL" + latestVersion + ".exe", "下载新版本中……");
                 if (File.Exists("MSL" + latestVersion + ".exe"))
                 {
@@ -688,8 +688,8 @@ namespace MSL
                 IsOldVersion = true;
                 OldVersionTip();
                 */
-                LogHelper.WriteLog("更新失败！", LogLevel.ERROR);
-                LogHelper.WriteLog(ex.ToString(), LogLevel.ERROR);
+                LogHelper.Write.Error("更新失败！");
+                LogHelper.Write.Error(ex.ToString());
                 MagicShow.ShowMsgDialog(this, "出现错误，更新失败！\n" + ex.Message, LanguageManager.Instance["Error"]);
             }
         }
@@ -727,13 +727,13 @@ namespace MSL
 
         private void Window_Closing(object sender, System.ComponentModel.CancelEventArgs e)
         {
-            LogHelper.WriteLog("MSL，关闭！");
+            LogHelper.Write.Info("MSL，关闭！");
             if (MainNotifyIcon.Visibility == Visibility.Visible)
             {
                 //Logger.LogWarning("托盘图标已打开，取消关闭事件！");
                 e.Cancel = true;
                 this.Visibility = Visibility.Hidden;
-                LogHelper.WriteLog("窗口已隐藏！");
+                LogHelper.Write.Info("窗口已隐藏！");
             }
             else if (ProcessRunningCheck())
             {
@@ -741,7 +741,7 @@ namespace MSL
                 if (dialog != 1)
                 {
                     e.Cancel = true;
-                    LogHelper.WriteLog("MSL关闭事件被终止。",LogLevel.WARN);
+                    LogHelper.Write.Warn("MSL关闭事件被终止。");
                 }
             }
         }
@@ -770,7 +770,7 @@ namespace MSL
             {
                 if (CheckServerRunning() || CheckFrpcRunning() || OnlinePage.FrpcProcess.HasExited == false)
                 {
-                    LogHelper.WriteLog("服务器、内网映射或联机功能正在运行中！", LogLevel.WARN); 
+                    LogHelper.Write.Warn("服务器、内网映射或联机功能正在运行中！");
                     return true;
                 }
                 else

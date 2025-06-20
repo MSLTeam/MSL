@@ -1,5 +1,4 @@
-﻿using HandyControl.Tools;
-using MSL.langs;
+﻿using MSL.langs;
 using MSL.utils;
 using Newtonsoft.Json.Linq;
 using System;
@@ -27,7 +26,7 @@ namespace MSL
         }
 
         // --- UI 线程异常处理 ---
-        private async void App_DispatcherUnhandledException(object sender, System.Windows.Threading.DispatcherUnhandledExceptionEventArgs e)
+        private void App_DispatcherUnhandledException(object sender, System.Windows.Threading.DispatcherUnhandledExceptionEventArgs e)
         {
             // 阻止程序崩溃
             e.Handled = true;
@@ -36,7 +35,7 @@ namespace MSL
             string fullTrace = exception?.ToString() ?? "没有可用的堆栈跟踪信息。";
 
             // 记录本地日志
-            LogHelper.WriteLog($"捕获到UI线程异常: {fullTrace}", LogLevel.FATAL);
+            LogHelper.Write.Fatal($"捕获到UI线程异常: {fullTrace}");
 
             // 准备提示信息
             var messageBuilder = new StringBuilder();
@@ -80,7 +79,7 @@ namespace MSL
             string fullTrace = exception?.ToString() ?? "没有可用的堆栈跟踪信息。";
 
             // 写入本地日志
-            LogHelper.WriteLog($"捕获到致命的非UI线程异常，程序即将退出: {fullTrace}", LogLevel.FATAL);
+            LogHelper.Write.Fatal($"捕获到致命的非UI线程异常，程序即将退出: {fullTrace}");
 
             /*
             // 同步上传日志
@@ -92,27 +91,26 @@ namespace MSL
                 // 如果上传成功，追加一条记录到日志文件
                 LogHelper.WriteLog($"致命异常报告上传成功。Log ID: {logId}", LogLevel.INFO);
                 MessageBox.Show(
-    "程序遇到了一个无法恢复的致命错误，即将关闭。\n" +
-    "我们已经记录并上传错误报告。\n\n" +
-    "错误日志ID：" + logId + "\n\n" + "请将此信息提供给开发者以便更快地解决问题。",
-    "致命错误", MessageBoxButton.OK, MessageBoxImage.Error);
+                    "程序遇到了一个无法恢复的致命错误，即将关闭。\n" +
+                    "我们已经记录并上传错误报告。\n\n" +
+                    "错误日志ID：" + logId + "\n\n" + "请将此信息提供给开发者以便更快地解决问题。",
+                    "致命错误", MessageBoxButton.OK, MessageBoxImage.Error);
             }
             catch (Exception uploadEx)
             {
                 // 如果上传失败，也记录下来
                 LogHelper.WriteLog($"致命异常报告上传失败: {uploadEx.Message}", LogLevel.ERROR);
                 MessageBox.Show(
-    "程序遇到了一个无法恢复的致命错误，即将关闭。\n" +
-    "我们已尝试记录并上传错误报告，但是失败了。\n" + uploadEx.Message + "\n\n" +
-    "请查看本地日志文件获取详细信息。",
-    "致命错误", MessageBoxButton.OK, MessageBoxImage.Error);
+                    "程序遇到了一个无法恢复的致命错误，即将关闭。\n" +
+                    "我们已尝试记录并上传错误报告，但是失败了。\n" + uploadEx.Message + "\n\n" +
+                    "请查看本地日志文件获取详细信息。",
+                    "致命错误", MessageBoxButton.OK, MessageBoxImage.Error);
             } */
 
             MessageBox.Show(
-    "程序遇到了一个无法恢复的致命错误，即将关闭。" + (exception.Message ?? "未知错误" )+ "\n\n" +
-    "请查看本地日志文件获取详细信息。建议提交给开发者哦！",
-    "致命错误", MessageBoxButton.OK, MessageBoxImage.Error);
-
+                "程序遇到了一个无法恢复的致命错误，即将关闭。" + (exception.Message ?? "未知错误" )+ "\n\n" +
+                "请查看本地日志文件获取详细信息。建议提交给开发者哦！",
+                "致命错误", MessageBoxButton.OK, MessageBoxImage.Error);
         }
 
         //以创建Mutex的方式防止同目录多开，避免奇奇怪怪的文件占用错误
@@ -166,20 +164,20 @@ namespace MSL
             {
                 // 初始化日志系统
                 LogHelper.Init();
-                LogHelper.WriteLog("MSL正在启动...", LogLevel.INFO);
+                LogHelper.Write.Info("MSL，启动！");
                 
                 if (jsonObject["lang"] == null)
                 {
                     jsonObject.Add("lang", "zh-CN");
                     string convertString = Convert.ToString(jsonObject);
                     File.WriteAllText(@"MSL\config.json", convertString, Encoding.UTF8);
-                    LogHelper.WriteLog("语言: " + "ZH-CN");
+                    LogHelper.Write.Info("语言: " + "ZH-CN");
                 }
                 else
                 {
                     if (jsonObject["lang"].ToString() != "zh-CN")
                         LanguageManager.Instance.ChangeLanguage(new CultureInfo(jsonObject["lang"].ToString()));
-                    LogHelper.WriteLog("语言: " + jsonObject["lang"].ToString().ToUpper());
+                    LogHelper.Write.Info("语言: " + jsonObject["lang"].ToString().ToUpper());
                 }
             }
             finally
@@ -239,7 +237,7 @@ namespace MSL
 
         protected override void OnExit(ExitEventArgs e)
         {
-            LogHelper.WriteLog("程序正在退出...");
+            LogHelper.Write.Info("程序正在退出...");
             //Logger.Dispose();
             _mutex?.ReleaseMutex();
             base.OnExit(e);

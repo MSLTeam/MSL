@@ -38,24 +38,24 @@ namespace MSL.pages
 
             try
             {
-                LogHelper.WriteLog("主页(Home)开始加载...");
+                LogHelper.Write.Info("主页(Home)开始加载...");
                 // 加载快速启动按钮服务器信息
                 GetServerConfig();
 
                 if (!isInit)
                 {
-                    LogHelper.WriteLog("首次加载，等待服务器连接...");
+                    LogHelper.Write.Info("首次加载，等待服务器连接...");
                     // 等待服务器连接
                     bool connected = await WaitForServerConnection(10, cancellationToken);
                     if (connected && !cancellationToken.IsCancellationRequested)
                     {
-                        LogHelper.WriteLog("服务器连接成功，开始获取公告。");
+                        LogHelper.Write.Info("服务器连接成功，开始获取公告。");
                         await GetNotice(true);
                         isInit = true;
                     }
                     else if (!cancellationToken.IsCancellationRequested)
                     {
-                        LogHelper.WriteLog("等待服务器连接超时。", LogLevel.WARN);
+                        LogHelper.Write.Warn("等待服务器连接超时。");
                     }
                 }
                 else if (ConfigStore.ApiLink != null && !cancellationToken.IsCancellationRequested)
@@ -65,12 +65,12 @@ namespace MSL.pages
             }
             catch (OperationCanceledException)
             {
-                LogHelper.WriteLog("主页加载操作被取消。", LogLevel.WARN);
+                LogHelper.Write.Warn("主页加载操作被取消。");
                 return;
             }
             catch (Exception ex)
             {
-                LogHelper.WriteLog($"主页加载时发生未处理的异常: {ex.ToString()}", LogLevel.ERROR);
+                LogHelper.Write.Error($"主页加载时发生未处理的异常: {ex.ToString()}");
                 MagicFlowMsg.ShowMessage(ex.Message, 2);
             }
         }
@@ -96,24 +96,24 @@ namespace MSL.pages
             string currentNoticeVersion = string.Empty;
             try
             {
-                LogHelper.WriteLog("开始从API获取当前公告版本号...");
+                LogHelper.Write.Info("开始从API获取当前公告版本号...");
                 currentNoticeVersion = await GetCurrentNoticeVersion();
             }
             catch (HttpRequestException ex)
             {
-                LogHelper.WriteLog($"获取公告失败，HTTP请求异常: {ex.ToString()}", LogLevel.ERROR);
+                LogHelper.Write.Error($"获取公告失败，HTTP请求异常: {ex.ToString()}");
                 noticeLab.Text = $"获取公告失败！\n可能是您的网络连接异常，或软件与软件服务器出现问题。若您检查自己的网络并无问题，请及时将此问题反馈！\n错误信息：[HTTP Exception]({ex.InnerException.Message}){ex.Message}";
                 return;
             }
             catch (FileNotFoundException ex)
             {
-                LogHelper.WriteLog($"获取公告失败，文件未找到(可能缺少.NET Framework): {ex.ToString()}", LogLevel.ERROR);
+                LogHelper.Write.Error($"获取公告失败，文件未找到(可能缺少.NET Framework): {ex.ToString()}");
                 noticeLab.Text = $"获取公告失败！\n请检查您是否安装了.NET Framework 4.7.2运行库！\n错误信息：{ex.Message}";
                 return;
             }
             catch (Exception ex)
             {
-                LogHelper.WriteLog($"获取公告失败，发生未知错误: {ex.ToString()}", LogLevel.ERROR);
+                LogHelper.Write.Error($"获取公告失败，发生未知错误: {ex.ToString()}");
                 noticeLab.Text = $"获取公告失败！可能有以下原因：\n1.网络连接异常\n2.未安装.Net Framework 4.7.2运行库\n3.软件Bug，请联系作者进行解决\n错误信息：{ex.Message}";
                 return;
             }
@@ -122,7 +122,7 @@ namespace MSL.pages
             // 如果公告版本不同或首次加载且公告为空，则获取新公告
             if (currentNoticeVersion != savedNoticeVersion || string.IsNullOrEmpty(noticeLabText))
             {
-                LogHelper.WriteLog($"公告版本不同或首次加载，将从API获取新公告。在线版本: {currentNoticeVersion}, 本地版本: {savedNoticeVersion}");
+                LogHelper.Write.Info($"公告版本不同或首次加载，将从API获取新公告。在线版本: {currentNoticeVersion}, 本地版本: {savedNoticeVersion}");
                 var noticeTask = HttpService.GetApiContentAsync("query/notice");
                 var tipsTask = HttpService.GetApiContentAsync("query/notice?query=tips");
 
@@ -146,7 +146,7 @@ namespace MSL.pages
                 }
                 else
                 {
-                    LogHelper.WriteLog("从API获取的公告内容为空。", LogLevel.WARN);
+                    LogHelper.Write.Warn("从API获取的公告内容为空。");
                     noticeLabText = "获取公告失败！请检查网络连接是否正常或联系作者进行解决！";
                 }
 
@@ -162,7 +162,7 @@ namespace MSL.pages
             }
             else
             {
-                LogHelper.WriteLog("公告版本一致，无需获取新公告。");
+                LogHelper.Write.Info("公告版本一致，无需获取新公告。");
             }
 
             noticeLab.Text = noticeLabText;
@@ -196,7 +196,7 @@ namespace MSL.pages
             }
             catch (Exception ex)
             {
-                LogHelper.WriteLog($"读取本地配置文件 'MSL/config.json' 中的公告版本失败: {ex.ToString()}", LogLevel.WARN);
+                LogHelper.Write.Error($"读取本地配置文件 'MSL/config.json' 中的公告版本失败: {ex.ToString()}");
                 return "0";
             }
         }
@@ -205,7 +205,7 @@ namespace MSL.pages
         {
             try
             {
-                LogHelper.WriteLog($"准备保存新公告版本 '{version}' 到配置文件...");
+                LogHelper.Write.Info($"准备保存新公告版本 '{version}' 到配置文件...");
                 string configPath = @"MSL\config.json";
                 JObject jsonObject = File.Exists(configPath)
                     ? JObject.Parse(File.ReadAllText(configPath, Encoding.UTF8))
@@ -213,11 +213,11 @@ namespace MSL.pages
 
                 jsonObject["notice"] = version;
                 File.WriteAllText(configPath, jsonObject.ToString(), Encoding.UTF8);
-                LogHelper.WriteLog("成功保存新公告版本。");
+                LogHelper.Write.Info("成功保存新公告版本。");
             }
             catch (Exception ex)
             {
-                LogHelper.WriteLog($"保存新公告版本 '{version}' 到配置文件失败: {ex.ToString()}", LogLevel.ERROR);
+                LogHelper.Write.Error($"保存新公告版本 '{version}' 到配置文件失败: {ex.ToString()}");
                 MagicFlowMsg.ShowMessage($"保存公告版本时出错: {ex.Message}", 2);
             }
         }
@@ -233,7 +233,7 @@ namespace MSL.pages
 
                 await Dispatcher.InvokeAsync(() =>
                 {
-                    LogHelper.WriteLog("主窗口加载完成，开始显示公告弹窗。");
+                    LogHelper.Write.Info("主窗口加载完成，开始显示公告弹窗。");
                     MagicShow.ShowMsgDialog(Window.GetWindow(this), noticeText, "公告");
                 });
             });
@@ -241,7 +241,7 @@ namespace MSL.pages
 
         private void LoadRecommendations(JArray recommendations)
         {
-            LogHelper.WriteLog("开始加载'猜你想看'内容...");
+            LogHelper.Write.Info("开始加载'主页推荐'内容...");
             recommendBorder.Visibility = Visibility.Visible;
 
             // 清除
@@ -256,7 +256,7 @@ namespace MSL.pages
                 RecommendGrid.RegisterName($"RecPannel{i}", recommendationPanel);
                 i++;
             }
-            LogHelper.WriteLog($"'猜你想看'内容加载完成，共 {i} 条。");
+            LogHelper.Write.Info($"'主页推荐'内容加载完成，共 {i} 条。");
         }
 
         private void ClearRecommendations()
@@ -377,7 +377,7 @@ namespace MSL.pages
 
         private void GetServerConfig()
         {
-            LogHelper.WriteLog("开始加载快速启动栏的服务器配置...");
+            LogHelper.Write.Info("开始加载快速启动栏的服务器配置...");
             try
             {
                 object configJson = Config.Read("selectedServer");
@@ -399,17 +399,17 @@ namespace MSL.pages
                     }
 
                     startServerDropdown.SelectedIndex = selectedIndex;
-                    LogHelper.WriteLog("成功加载服务器列表，并设置已选中的服务器。");
+                    LogHelper.Write.Info("成功加载服务器列表，并设置已选中的服务器。");
                 }
                 catch (Exception ex)
                 {
-                    LogHelper.WriteLog($"加载服务器列表文件 'MSL/ServerList.json' 失败: {ex.ToString()}", LogLevel.WARN);
+                    LogHelper.Write.Warn($"加载服务器列表文件 'MSL/ServerList.json' 失败: {ex.Message} ，已将startServerDropdown选择项设置为 -1");
                     startServerDropdown.SelectedIndex = -1;
                 }
             }
             catch (Exception ex)
             {
-                LogHelper.WriteLog($"从 'MSL/config.json' 读取已选择的服务器配置失败: {ex.ToString()}", LogLevel.WARN);
+                LogHelper.Write.Warn($"从 'MSL/config.json' 读取已选择的服务器配置失败: {ex.Message} ，已将startServerDropdown选择项设置为 -1");
                 startServerDropdown.SelectedIndex = -1;
             }
             finally
@@ -429,7 +429,7 @@ namespace MSL.pages
             }
             if (startServerDropdown.SelectedIndex == -1)
             {
-                LogHelper.WriteLog("快速启动: 未选择服务器，触发'创建新服务器'事件。");
+                LogHelper.Write.Info("快速启动: 未选择服务器，触发'创建新服务器'事件。");
                 CreateServerEvent();
             }
             else
@@ -445,7 +445,7 @@ namespace MSL.pages
                     }
                     i++;
                 }
-                LogHelper.WriteLog($"快速启动: 已选择服务器 (ID: {ServerList.ServerID})，触发'自动打开服务器'事件。");
+                LogHelper.Write.Info($"快速启动: 已选择服务器 (ID: {ServerList.ServerID})，触发'自动打开服务器'事件。");
                 AutoOpenServer();
             }
         }
@@ -453,7 +453,7 @@ namespace MSL.pages
         private void StartServerDropdown_SelectionChanged(object sender, SelectionChangedEventArgs e)
         {
             if (startServerDropdown.SelectedItem == null) return;
-            LogHelper.WriteLog($"用户更改了快速启动栏服务器选择: {startServerDropdown.SelectedItem?.ToString()} (索引: {startServerDropdown.SelectedIndex})");
+            LogHelper.Write.Info($"用户更改了快速启动栏服务器选择: {startServerDropdown.SelectedItem?.ToString()} (索引: {startServerDropdown.SelectedIndex})");
             selectedItemTextBlock.Text = startServerDropdown.SelectedItem?.ToString();
             try
             {
@@ -472,11 +472,11 @@ namespace MSL.pages
                     _jsonObject["selectedServer"].Replace(startServerDropdown.SelectedIndex.ToString());
                 }
                 File.WriteAllText(configPath, Convert.ToString(_jsonObject), Encoding.UTF8);
-                LogHelper.WriteLog("已成功将选择的服务器索引保存到配置文件。");
+                LogHelper.Write.Info("已成功将选择的服务器索引保存到配置文件。");
             }
             catch (Exception ex)
             {
-                LogHelper.WriteLog($"保存选择的服务器索引到 'MSL/config.json' 失败: {ex.ToString()}", LogLevel.ERROR);
+                LogHelper.Write.Error($"保存选择的服务器索引到 'MSL/config.json' 失败: {ex.Message}");
             }
 
             startServer.IsDropDownOpen = false;

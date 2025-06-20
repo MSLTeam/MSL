@@ -15,23 +15,6 @@ using System.Windows.Threading;
 using MessageBox = System.Windows.MessageBox;
 using Window = System.Windows.Window;
 
-// 假设 LogHelper 和 LogLevel 在此命名空间或已通过 using 引入
-// public enum LogLevel
-// {
-//     INFO,  // 普通信息
-//     WARN,  // 警告
-//     ERROR, // 错误
-//     FATAL  // 致命错误
-// }
-// public static class LogHelper
-// {
-//     public static void WriteLog(string message, LogLevel level = LogLevel.INFO)
-//     {
-//         // 日志实现...
-//     }
-// }
-
-
 namespace MSL.pages
 {
     /// <summary>
@@ -48,41 +31,41 @@ namespace MSL.pages
         {
             InitializeComponent();
             FrpcProcess.OutputDataReceived += new DataReceivedEventHandler(OutputDataReceived);
-            LogHelper.WriteLog("联机页面初始化完成。");
+            LogHelper.Write.Info("联机页面初始化完成。");
         }
 
         private async void Page_Loaded(object sender, RoutedEventArgs e)
         {
-            LogHelper.WriteLog("联机页面已加载，开始检查本地P2P配置。");
+            LogHelper.Write.Info("联机页面已加载，开始检查本地P2P配置。");
             if (File.Exists("MSL\\frp\\P2Pfrpc"))
             {
                 string a = File.ReadAllText("MSL\\frp\\P2Pfrpc");
                 if (string.IsNullOrEmpty(a))
                 {
-                    LogHelper.WriteLog("P2P配置文件存在但为空，将展开房主设置。");
+                    LogHelper.Write.Info("P2P配置文件存在但为空，将展开房主设置。");
                     masterExp.IsExpanded = true;
                     return;
                 }
                 if (a.IndexOf("role = visitor") + 1 != 0)
                 {
-                    LogHelper.WriteLog("检测到P2P配置文件为访客(visitor)角色。");
+                    LogHelper.Write.Info("检测到P2P配置文件为访客(visitor)角色。");
                     visiterExp.IsExpanded = true;
                 }
                 else
                 {
-                    LogHelper.WriteLog("检测到P2P配置文件为房主(master)角色。");
+                    LogHelper.Write.Info("检测到P2P配置文件为房主(master)角色。");
                     masterExp.IsExpanded = true;
                 }
             }
             else
             {
                 //MagicShow.ShowMsgDialog(Window.GetWindow(this),"注意：此功能目前不稳定，无法穿透所有类型的NAT，若联机失败，请尝试开服务器并使用内网映射联机！\r\n该功能可能需要正版账户，若无法联机，请从网络上寻找解决方法或尝试开服务器并使用内网映射联机！", "警告");
-                LogHelper.WriteLog("未找到P2P配置文件，判定为首次使用，弹出提示。");
+                LogHelper.Write.Info("未找到P2P配置文件，判定为首次使用，弹出提示。");
                 if (await MagicShow.ShowMsgDialogAsync(LanguageManager.Instance["Page_OnlinePage_Announce"], LanguageManager.Instance["Warning"], true, "确定", "不再提示"))
                 {
                     Directory.CreateDirectory("MSL\\frp");
                     File.WriteAllText("MSL\\frp\\P2Pfrpc", string.Empty);
-                    LogHelper.WriteLog("用户确认提示，已创建空的P2P配置文件。");
+                    LogHelper.Write.Info("用户确认提示，已创建空的P2P配置文件。");
                 }
                 masterExp.IsExpanded = true;
             }
@@ -93,7 +76,7 @@ namespace MSL.pages
         {
             try
             {
-                LogHelper.WriteLog("开始从API获取FRP服务器信息。");
+                LogHelper.Write.Info("开始从API获取FRP服务器信息。");
                 string mslFrpInfo = (await HttpService.GetApiContentAsync("query/frp/MSLFrps"))["data"].ToString();
                 JObject valuePairs = (JObject)JsonConvert.DeserializeObject(mslFrpInfo);
                 foreach (var valuePair in valuePairs)
@@ -110,19 +93,19 @@ namespace MSL.pages
 
                         ipAddress = serverAddress;
                         ipPort = serverPort;
-                        LogHelper.WriteLog($"成功解析到FRP服务器地址: {ipAddress}:{ipPort}");
+                        LogHelper.Write.Info($"成功解析到FRP服务器地址: {ipAddress}:{ipPort}");
                         break;
                     }
                     break;
                 }
                 await Task.Run(() =>
                 {
-                    LogHelper.WriteLog($"正在 Ping 服务器: {ipAddress}");
+                    LogHelper.Write.Info($"正在 Ping 服务器: {ipAddress}");
                     Ping pingSender = new Ping();
                     PingReply reply = pingSender.Send(ipAddress, 2000);
                     if (reply.Status == IPStatus.Success)
                     {
-                        LogHelper.WriteLog($"Ping 服务器 {ipAddress} 成功，延迟: {reply.RoundtripTime}ms。");
+                        LogHelper.Write.Info($"Ping 服务器 {ipAddress} 成功，延迟: {reply.RoundtripTime}ms。");
                         Dispatcher.Invoke(() =>
                         {
                             //服务器活着，太好了！
@@ -131,7 +114,7 @@ namespace MSL.pages
                     }
                     else
                     {
-                        LogHelper.WriteLog($"Ping 服务器 {ipAddress} 失败，状态: {reply.Status}。", LogLevel.WARN);
+                        LogHelper.Write.Error($"Ping 服务器 {ipAddress} 失败，状态: {reply.Status}。");
                         Dispatcher.Invoke(() =>
                         {
                             //跑路了.jpg
@@ -142,7 +125,7 @@ namespace MSL.pages
             }
             catch (Exception ex)
             {
-                LogHelper.WriteLog($"获取FRP服务器信息时发生错误: {ex.ToString()}", LogLevel.ERROR);
+                LogHelper.Write.Error($"获取FRP服务器信息时发生错误: {ex.ToString()}");
                 serverState.Text = LanguageManager.Instance["Page_OnlinePage_ServerStatusDown"];
             }
         }
@@ -190,11 +173,11 @@ namespace MSL.pages
         {
             if (createRoom.IsChecked == true)
             {
-                LogHelper.WriteLog("用户点击“创建房间”，准备作为房主启动。");
+                LogHelper.Write.Info("用户点击“创建房间”，准备作为房主启动。");
                 string a = "[common]\r\nserver_port = " + ipPort + "\r\nserver_addr = " + ipAddress + "\r\n\r\n[" + masterQQ.Text + "]\r\ntype = xtcp\r\nlocal_ip = 127.0.0.1\r\nlocal_port = " + masterPort.Text + "\r\nsk = " + masterKey.Text + "\r\n";
                 Directory.CreateDirectory("MSL\\frp");
                 File.WriteAllText("MSL\\frp\\P2Pfrpc", a);
-                LogHelper.WriteLog("已生成并写入房主P2P配置文件。");
+                LogHelper.Write.Info("已生成并写入房主P2P配置文件。");
                 isMaster = true;
                 visiterExp.IsEnabled = false;
                 await StartFrpc();
@@ -203,7 +186,7 @@ namespace MSL.pages
             {
                 if (!FrpcProcess.HasExited)
                 {
-                    LogHelper.WriteLog("用户取消“创建房间”，准备终止frpc进程。", LogLevel.WARN);
+                    LogHelper.Write.Warn("用户取消“创建房间”，准备终止frpc进程。");
                     createRoom.IsChecked = true;
                     FrpcProcess.Kill();
                 }
@@ -214,11 +197,11 @@ namespace MSL.pages
         {
             if (joinRoom.IsChecked == true)
             {
-                LogHelper.WriteLog("用户点击“加入房间”，准备作为访客启动。");
+                LogHelper.Write.Info("用户点击“加入房间”，准备作为访客启动。");
                 string a = "[common]\r\nserver_port = " + ipPort + "\r\nserver_addr = " + ipAddress + "\r\n\r\n[p2p_ssh_visitor]\r\ntype = xtcp\r\nrole = visitor\r\nbind_addr = 127.0.0.1\r\nbind_port = " + visiterPort.Text + "\r\nserver_name = " + visiterQQ.Text + "\r\nsk = " + visiterKey.Text + "\r\n";
                 Directory.CreateDirectory("MSL\\frp");
                 File.WriteAllText("MSL\\frp\\P2Pfrpc", a);
-                LogHelper.WriteLog("已生成并写入访客P2P配置文件。");
+                LogHelper.Write.Info("已生成并写入访客P2P配置文件。");
                 isMaster = false;
                 masterExp.IsEnabled = false;
                 await StartFrpc();
@@ -227,7 +210,7 @@ namespace MSL.pages
             {
                 if (!FrpcProcess.HasExited)
                 {
-                    LogHelper.WriteLog("用户取消“加入房间”，准备终止frpc进程。", LogLevel.WARN);
+                    LogHelper.Write.Warn("用户取消“加入房间”，准备终止frpc进程。");
                     joinRoom.IsChecked = true;
                     FrpcProcess.Kill();
                 }
@@ -244,7 +227,7 @@ namespace MSL.pages
                     Directory.CreateDirectory("MSL\\frp");
                     if (!File.Exists("MSL\\frp\\frpc.exe"))
                     {
-                        LogHelper.WriteLog("frpc.exe 文件不存在，开始下载。", LogLevel.WARN);
+                        LogHelper.Write.Warn("frpc.exe 文件不存在，开始下载。");
                         string _dnfrpc, os = "10";
                         if (Environment.OSVersion.Version.Major == 6 && Environment.OSVersion.Version.Minor == 1)
                         {
@@ -252,14 +235,14 @@ namespace MSL.pages
                         }
 
                         _dnfrpc = (await HttpService.GetApiContentAsync("/download/frpc/MSLFrp/amd64?os=" + os))["data"]["url"].ToString();
-                        LogHelper.WriteLog($"获取到frpc下载地址: {_dnfrpc}");
+                        LogHelper.Write.Info($"获取到frpc下载地址: {_dnfrpc}");
                         await MagicShow.ShowDownloader(Window.GetWindow(this), _dnfrpc, "MSL\\frp", "frpc.exe", LanguageManager.Instance["Download_Frpc_Info"]);
-                        LogHelper.WriteLog("frpc.exe 下载完成。");
+                        LogHelper.Write.Info("frpc.exe 下载完成。");
                     }
                 }
                 catch (Exception ex)
                 {
-                    LogHelper.WriteLog($"下载 frpc.exe 过程中发生错误: {ex.ToString()}", LogLevel.ERROR);
+                    LogHelper.Write.Error($"下载 frpc.exe 过程中发生错误: {ex.ToString()}");
                     return;
                 }
                 frpcOutlog.Text = string.Empty;
@@ -270,13 +253,13 @@ namespace MSL.pages
                 FrpcProcess.StartInfo.UseShellExecute = false;
                 FrpcProcess.StartInfo.RedirectStandardInput = true;
                 FrpcProcess.StartInfo.RedirectStandardOutput = true;
-                LogHelper.WriteLog($"准备启动frpc进程，参数: {FrpcProcess.StartInfo.Arguments}");
+                LogHelper.Write.Info($"准备启动frpc进程，参数: {FrpcProcess.StartInfo.Arguments}");
                 FrpcProcess.Start();
                 FrpcProcess.BeginOutputReadLine();
-                LogHelper.WriteLog($"frpc进程已启动，进程ID: {FrpcProcess.Id}");
+                LogHelper.Write.Info($"frpc进程已启动，进程ID: {FrpcProcess.Id}");
                 await Task.Run(FrpcProcess.WaitForExit);
                 FrpcProcess.CancelOutputRead();
-                LogHelper.WriteLog($"frpc进程(ID: {FrpcProcess.Id})已退出。");
+                LogHelper.Write.Info($"frpc进程(ID: {FrpcProcess.Id})已退出。");
                 if (isMaster)
                 {
                     createRoom.IsChecked = false;
@@ -290,7 +273,7 @@ namespace MSL.pages
             }
             catch (Exception e)
             {
-                LogHelper.WriteLog($"启动或运行frpc进程时发生致命错误: {e.ToString()}", LogLevel.FATAL);
+                LogHelper.Write.Fatal($"启动或运行frpc进程时发生致命错误: {e.ToString()}");
                 MessageBox.Show(LanguageManager.Instance["Page_OnlinePage_ErrMsg1"] + e.Message, LanguageManager.Instance["Error"], MessageBoxButton.OK, MessageBoxImage.Error);
             }
         }
@@ -334,7 +317,7 @@ namespace MSL.pages
             {
                 if (msg.IndexOf("failed") + 1 != 0)
                 {
-                    LogHelper.WriteLog($"[FRPC] 登录服务器失败: {msg}", LogLevel.ERROR);
+                    LogHelper.Write.Warn($"[FRPC] 登录服务器失败: {msg}");
                     Growl.Error(LanguageManager.Instance["Page_OnlinePage_Err"]);
                     if (!FrpcProcess.HasExited)
                     {
@@ -343,7 +326,7 @@ namespace MSL.pages
                 }
                 if (msg.IndexOf("success") + 1 != 0)
                 {
-                    LogHelper.WriteLog($"[FRPC] 登录服务器成功: {msg}");
+                    LogHelper.Write.Info($"[FRPC] 登录服务器成功: {msg}");
                     frpcOutlog.Text = frpcOutlog.Text + LanguageManager.Instance["Page_OnlinePage_LoginSuc"] + "\n";
                 }
             }
@@ -351,13 +334,13 @@ namespace MSL.pages
             {
                 if (msg.IndexOf("success") + 1 != 0)
                 {
-                    LogHelper.WriteLog($"[FRPC] 代理启动成功: {msg}");
+                    LogHelper.Write.Info($"[FRPC] 代理启动成功: {msg}");
                     frpcOutlog.Text = frpcOutlog.Text + LanguageManager.Instance["Page_OnlinePage_Suc"] + "\n";
                     Growl.Success(LanguageManager.Instance["Page_OnlinePage_Suc"]);
                 }
                 if (msg.IndexOf("error") + 1 != 0)
                 {
-                    LogHelper.WriteLog($"[FRPC] 代理启动失败: {msg}", LogLevel.ERROR);
+                    LogHelper.Write.Warn($"[FRPC] 代理启动失败: {msg}");
                     frpcOutlog.Text = frpcOutlog.Text + LanguageManager.Instance["Page_OnlinePage_Err"] + "\n";
                     Growl.Error(LanguageManager.Instance["Page_OnlinePage_Err"]);
                     FrpcProcess.Kill();
