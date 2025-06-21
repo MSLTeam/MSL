@@ -327,13 +327,52 @@ namespace MSL.utils
             }
             catch (Exception ex)
             {
-                httpResponse.HttpResponseCode = 0;
-                httpResponse.HttpResponseException = ex.Message;
+                httpResponse.HttpResponseException = ex;
             }
             httpClient.Dispose();
             return httpResponse;
         }
 
+        public static async Task<string> GetRemoteFileNameAsync(string url)
+        {
+            HttpClient _httpClient = new HttpClient();
+            try
+            {
+                // 仅获取头部信息（使用HEAD方法）
+                using var response = await _httpClient.SendAsync(
+                    new HttpRequestMessage(HttpMethod.Head, url),
+                    HttpCompletionOption.ResponseHeadersRead
+                );
+
+                // 尝试从Content-Disposition头获取文件名
+                if (response.Content.Headers.ContentDisposition != null)
+                {
+                    string filename = response.Content.Headers.ContentDisposition.FileName;
+                    if (!string.IsNullOrWhiteSpace(filename))
+                    {
+                        // 清理引号和特殊字符
+                        return filename.Trim('\"', '\'');
+                    }
+                }
+
+                // 从URL路径提取文件名
+                string urlName = Path.GetFileName(new Uri(url).AbsolutePath);
+                if (!string.IsNullOrEmpty(urlName))
+                    return urlName;
+
+                // 生成随机文件名（带扩展名）
+                string ext = response.Content.Headers.ContentType?.MediaType.Split('/').Last() ?? "dat";
+                return $"{Guid.NewGuid():N}.{ext}";
+            }
+            catch
+            {
+                // 异常时使用URL末段或随机名
+                return Path.GetFileName(url) ?? $"{Guid.NewGuid():N}.tmp";
+            }
+        }
+
+
+        /*
         #region --- 新增的日志上传函数 ---
 
         // 用于反序列化API响应的辅助类
@@ -427,5 +466,6 @@ namespace MSL.utils
             }
         }
         #endregion
+        */
     }
 }

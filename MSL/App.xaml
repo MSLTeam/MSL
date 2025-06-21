@@ -20,6 +20,7 @@
                                 <ResourceDictionary Source="images/Svgs.xaml"/>
                             </ResourceDictionary.MergedDictionaries>
                             <SolidColorBrush x:Key="BorderBackground" Color="White" Opacity="0.7" />
+                            <SolidColorBrush x:Key="ContentRegionBrush" Color="#FFF7FAFC" Opacity="0.7" />
                             <SolidColorBrush x:Key="SideMenuBrush" Color="#FFEEF4F9" Opacity="0.7" />
                             <SolidColorBrush x:Key="SideMenuItemBrush" Opacity="0" />
                         </ResourceDictionary>
@@ -29,6 +30,7 @@
                                 <ResourceDictionary Source="images/Svgs_DarkMode.xaml"/>
                             </ResourceDictionary.MergedDictionaries>
                             <SolidColorBrush x:Key="BorderBackground" Color="#232323" Opacity="0.7" />
+                            <SolidColorBrush x:Key="ContentRegionBrush" Color="#141414" Opacity="0.7" />
                             <SolidColorBrush x:Key="SideMenuBrush" Color="#1D1E1F" Opacity="0.7" />
                             <SolidColorBrush x:Key="SideMenuItemBrush" Opacity="0" />
                         </ResourceDictionary>
@@ -62,8 +64,18 @@
                         </ItemsPanelTemplate>
                     </Setter.Value>
                 </Setter>
-                <Setter Property="ItemContainerStyle" 
-            Value="{StaticResource MagicListBoxItemStyle}"/>
+                <Setter Property="ItemContainerStyle" Value="{StaticResource MagicListBoxItemStyle}"/>
+            </Style>
+            <!-- 这个是自定义ListBox1样式（上面那个是Warp容器，这个是Stack容器）（放到Style.xaml后设计器会报错，强迫症很难受，只能放这里咯） -->
+            <Style TargetType="{x:Type controls:MagicListBox1}" BasedOn="{hc:StaticResource ListBoxBaseStyle}">
+                <Setter Property="ItemsPanel">
+                    <Setter.Value>
+                        <ItemsPanelTemplate>
+                            <StackPanel Orientation="Vertical" IsItemsHost="True"/>
+                        </ItemsPanelTemplate>
+                    </Setter.Value>
+                </Setter>
+                <Setter Property="ItemContainerStyle" Value="{StaticResource MagicListBoxItemStyle}"/>
             </Style>
         </ResourceDictionary>
     </Application.Resources>

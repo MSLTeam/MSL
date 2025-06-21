@@ -568,6 +568,9 @@ Do you want to create a new server?</value>
   <data name="Page_SettingsPage_CF_Language" xml:space="preserve">
     <value>Language:</value>
   </data>
+  <data name="Page_SettingsPage_CF_OpenTaskManager" xml:space="preserve">
+    <value>Open Task-Manager</value>
+  </data>
   <data name="Page_SettingsPage_DI_CopyDID" xml:space="preserve">
     <value>Copy device ID</value>
   </data>

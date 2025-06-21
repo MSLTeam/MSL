@@ -338,7 +338,7 @@
                     <Border x:Name="Bd" 
                             CornerRadius="7" 
                             BorderBrush="{DynamicResource BorderBrush}" 
-                            Background="Transparent"
+                            Background="{DynamicResource RegionBrush}"
                             BorderThickness="1" 
                             Padding="10">
                         <ContentPresenter />

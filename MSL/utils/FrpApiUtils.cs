@@ -413,7 +413,7 @@ namespace MSL.utils
     #region OpenFrp Api
     internal class OpenFrpApi
     {
-        private static string ApiUrl { get; } = "https://of-dev-api.bfsea.xyz";
+        private static string ApiUrl { get; } = "https://api.openfrp.net";
         public static string AuthId { get; set; }
 
         public static async Task<(int Code, string Msg)> Login(string authToken = null, bool save = false)
@@ -436,10 +436,19 @@ namespace MSL.utils
                     }
                     return (200, (string)res.HttpResponseContent);
                 }
+                else if (res.HttpResponseException != null)
+                {
+                    AuthId = string.Empty;
+                    Exception exception = res.HttpResponseException as Exception;
+                    if (exception.InnerException != null)
+                        return (0, exception.InnerException.Message);
+                    else
+                        return (0, exception.Message);
+                }
                 else
                 {
                     AuthId = string.Empty;
-                    return (0, res.HttpResponseCode == HttpStatusCode.OK ? JObject.Parse(res.HttpResponseContent.ToString())["msg"].ToString() : string.Empty);
+                    return (0, JObject.Parse(res.HttpResponseContent.ToString())["msg"].ToString());
                 }
             }
             catch (Exception ex)

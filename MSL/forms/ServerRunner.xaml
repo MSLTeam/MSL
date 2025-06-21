@@ -225,7 +225,7 @@
                                         <Button x:Name="DownloadPluginBtn" Content="下载插件" Width="80" FontSize="14" Click="DownloadPluginBtn_Click" Margin="5,0,0,0"/>
                                         <Button Content="帮助" Click="mpHelp_Click" Width="80" FontSize="14" Margin="5,0,0,0"/>
                                     </StackPanel>
-                                    <ListView x:Name="pluginslist" hc:Empty.ShowEmpty="true" BorderThickness="0" Margin="0,35,0,0" Background="{DynamicResource BackgroundBrush}" FontSize="14">
+                                    <ListView x:Name="pluginslist" hc:Empty.ShowEmpty="true" BorderThickness="0" Margin="0,35,0,0" Background="{DynamicResource ContentRegionBrush}" FontSize="14">
                                         <ListView.ContextMenu>
                                             <ContextMenu>
                                                 <MenuItem Click="reFresh_Click" Header="刷新"/>
@@ -275,7 +275,7 @@
                                         <Button x:Name="DownloadModBtn" Content="下载模组" Click="DownloadModBtn_Click" Width="80" FontSize="14" Margin="5,0,0,0"/>
                                         <Button Content="帮助" Click="mpHelp_Click" Width="60" FontSize="14" Margin="5,0,0,0"/>
                                     </StackPanel>
-                                    <ListView x:Name="modslist" hc:Empty.ShowEmpty="true" BorderThickness="0" Margin="0,35,0,0" Background="{DynamicResource BackgroundBrush}" FontSize="14">
+                                    <ListView x:Name="modslist" hc:Empty.ShowEmpty="true" BorderThickness="0" Margin="0,35,0,0" Background="{DynamicResource ContentRegionBrush}" FontSize="14">
                                         <ListView.ContextMenu>
                                             <ContextMenu>
                                                 <MenuItem Click="reFresh_Click" Header="刷新"/>

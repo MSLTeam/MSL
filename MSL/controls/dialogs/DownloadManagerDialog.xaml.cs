@@ -21,6 +21,11 @@ namespace MSL.controls.dialogs
     /// </summary>
     public partial class DownloadManagerDialog : UserControl
     {
+        #region 单例模式
+        private static readonly Lazy<DownloadManagerDialog> _instance = new Lazy<DownloadManagerDialog>(() => new DownloadManagerDialog());
+        public static DownloadManagerDialog Instance => _instance.Value;
+        #endregion
+
         public Dialog fatherDialog = null;
         public DownloadManagerDialog()
         {

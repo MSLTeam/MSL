@@ -36,7 +36,7 @@
                     <ColumnDefinition Width="3*"/>
                 </Grid.ColumnDefinitions>
                 <TextBox Grid.Column="0" x:Name="log" Margin="10,0,10,0" Padding="7" TextWrapping="Wrap" IsReadOnly="True" VerticalScrollBarVisibility="Auto" VerticalContentAlignment="Top"/>
-                <dialog:DownloadDisplayControl Grid.Column="1" x:Name="DownloadDisplay" />
+                <dialog:DownloadDisplayControl Grid.Column="1" x:Name="DownloadDisplay" Margin="0,0,10,0" />
             </Grid>
             
             

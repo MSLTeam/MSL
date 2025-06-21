@@ -432,9 +432,21 @@ namespace MSL
                 }
                 if (File.Exists("MSL\\Background.png"))//check background and set it
                 {
-                    ImageBrush imageBrush = new ImageBrush(SettingsPage.GetImage("MSL\\Background.png"));
-                    imageBrush.Stretch = Stretch.UniformToFill;
-                    Background = imageBrush;
+                    Task.Run(async () =>
+                    {
+                        int i = 0;
+                        while (MainWindow.BackImageBrush == null)
+                        {
+                            if (i == 5)
+                                break;
+                            i++;
+                            await Task.Delay(1000);
+                        }
+                        Dispatcher.Invoke(() =>
+                        {
+                            Background = MainWindow.BackImageBrush;
+                        });
+                    });
                 }
                 else
                 {

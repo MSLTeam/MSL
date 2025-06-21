@@ -568,6 +568,9 @@ BMCLAPI —— Forge服务端（及其库文件）国内镜像源
   <data name="Page_SettingsPage_CF_Language" xml:space="preserve">
     <value>语言（Language）：</value>
   </data>
+  <data name="Page_SettingsPage_CF_OpenTaskManager" xml:space="preserve">
+    <value>打开任务列表</value>
+  </data>
   <data name="Page_SettingsPage_DI_CopyDID" xml:space="preserve">
     <value>复制设备ID</value>
   </data>

@@ -73,10 +73,12 @@
                         <ColumnDefinition Width="Auto"/>
                         <ColumnDefinition/>
                         <ColumnDefinition Width="Auto"/>
+                        <ColumnDefinition Width="Auto"/>
                     </Grid.ColumnDefinitions>
                     <Label Grid.Column="0" Content="{Binding [Page_SettingsPage_CF_AddDownloadTask],Source={x:Static lang:LanguageManager.Instance}}"/>
                     <TextBox Grid.Column="1" Name="DownloadUrl" Text="" FontSize="14"/>
                     <Button Grid.Column="2" Name="AddDownloadTask" Content="{Binding [_Done],Source={x:Static lang:LanguageManager.Instance}}" MinWidth="60" Click="AddDownloadTask_Click" />
+                    <Button Grid.Column="3" Name="OpenDownloadManager" Content="{Binding [Page_SettingsPage_CF_OpenTaskManager],Source={x:Static lang:LanguageManager.Instance}}" MinWidth="60" Click="OpenDownloadManager_Click" />
                 </Grid>
             </StackPanel>
         </controls:MagicCard>

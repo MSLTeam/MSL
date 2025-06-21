@@ -47,10 +47,8 @@ namespace MSL.pages
             if (DownloadMode == Mode.FreeDownload)
             {
                 downloadManagerDialog = new Dialog();
-                downloadManager = new DownloadManagerDialog()
-                {
-                    Margin= new Thickness(20),
-                };
+                downloadManager = DownloadManagerDialog.Instance;
+                downloadManager.Margin = new Thickness(20);
                 downloadManager.ManagerControl.AutoRemoveCompletedItems = false;
             }
         }
@@ -76,7 +74,6 @@ namespace MSL.pages
         {
             if (downloadManagerDialog != null)
             {
-                downloadManager.ManagerControl.ClearAllItems();
                 downloadManagerDialog.Close();
                 downloadManagerDialog = null;
                 downloadManager = null;

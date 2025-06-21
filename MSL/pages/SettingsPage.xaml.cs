@@ -2,6 +2,7 @@
 using HandyControl.Themes;
 using HandyControl.Tools;
 using Microsoft.Win32;
+using MSL.controls.dialogs;
 using MSL.langs;
 using MSL.utils;
 using Newtonsoft.Json;
@@ -17,8 +18,6 @@ using System.Threading.Tasks;
 using System.Windows;
 using System.Windows.Media;
 using System.Windows.Media.Animation;
-using System.Windows.Media.Imaging;
-using Windows.UI.Core;
 using MessageBox = System.Windows.MessageBox;
 using Window = System.Windows.Window;
 
@@ -32,9 +31,18 @@ namespace MSL.pages
         public static event DeleControl C_NotifyIcon;
         public static event DeleControl ChangeSkinStyle;
         private string _autoStartList = "";
+
+        private Dialog downloadManagerDialog;
+        private DownloadManagerDialog downloadManager;
+
         public SettingsPage()
         {
             InitializeComponent();
+
+            downloadManagerDialog = new Dialog();
+            downloadManager = DownloadManagerDialog.Instance;
+            downloadManager.Margin = new Thickness(20);
+            downloadManager.ManagerControl.AutoRemoveCompletedItems = false;
         }
 
         private void Page_Loaded(object sender, RoutedEventArgs e)
@@ -196,12 +204,37 @@ namespace MSL.pages
 
         private async void AddDownloadTask_Click(object sender, RoutedEventArgs e)
         {
+            if (string.IsNullOrWhiteSpace(downthreadCount.Text))
+            {
+                MagicShow.ShowMsgDialog("请输入地址后再进行下载！", "提示");
+                return;
+            }
+            string url = DownloadUrl.Text;
+            string filename = await HttpService.GetRemoteFileNameAsync(url); // 获取远程文件名
+            if (!await MagicShow.ShowMsgDialogAsync("URL: " + url + "\n文件名称: " + filename + "\n\n点击确定以下载", "信息", true))
+            {
+                return;
+            }
+            var dwnManager = DownloadManager.Instance;
+            string groupid = dwnManager.CreateDownloadGroup(isTempGroup: true);
+            dwnManager.AddDownloadItem(groupid, url, Path.Combine("MSL","Downloads"), filename);
+            dwnManager.StartDownloadGroup(groupid);
+            downloadManager.ManagerControl.AddDownloadGroup(groupid, true);
+            MagicFlowMsg.ShowMessage("已将其添加至任务列表中！");
+            /*
             SaveFileDialog saveFileDialog = new SaveFileDialog();
             if (saveFileDialog.ShowDialog() == true)
             {
                 await MagicShow.ShowMsgDialogAsync(Window.GetWindow(this), "保存目录:" + Path.GetDirectoryName(saveFileDialog.FileName) + "\n文件名:" + Path.GetFileName(saveFileDialog.FileName), "信息");
                 await MagicShow.ShowDownloader(Window.GetWindow(this), DownloadUrl.Text, Path.GetDirectoryName(saveFileDialog.FileName), Path.GetFileName(saveFileDialog.FileName), "下载中");
             }
+            */
+        }
+
+        private void OpenDownloadManager_Click(object sender, RoutedEventArgs e)
+        {
+            downloadManagerDialog = Dialog.Show(downloadManager);
+            downloadManager.fatherDialog = downloadManagerDialog;
         }
 
         private async void setdefault_Click(object sender, RoutedEventArgs e)
@@ -494,6 +527,7 @@ namespace MSL.pages
                 File.WriteAllText("MSL\\config.json", convertString, Encoding.UTF8);
                 //Growl.Success("开启成功！");
                 MagicFlowMsg.ShowMessage("开启成功！", 1);
+                LogHelper.Write.Info("[Settings] 已切换至暗色模式！");
                 ThemeManager.Current.ApplicationTheme = ApplicationTheme.Dark;
             }
             else
@@ -504,6 +538,7 @@ namespace MSL.pages
                 File.WriteAllText("MSL\\config.json", convertString, Encoding.UTF8);
                 //Growl.Success("关闭成功！");
                 MagicFlowMsg.ShowMessage("关闭成功！", 1);
+                LogHelper.Write.Info("[Settings] 暗色模式已关闭！");
                 ThemeManager.Current.ApplicationTheme = ApplicationTheme.Light;
             }
         }
@@ -517,6 +552,7 @@ namespace MSL.pages
                 File.WriteAllText("MSL\\config.json", convertString, Encoding.UTF8);
                 //Growl.Success("开启成功！");
                 MagicFlowMsg.ShowMessage("开启成功！", 1);
+                LogHelper.Write.Info("[Settings] 半透明标题栏功能已打开！");
                 ChangeSkinStyle();
             }
             else
@@ -527,6 +563,7 @@ namespace MSL.pages
                 File.WriteAllText("MSL\\config.json", convertString, Encoding.UTF8);
                 //Growl.Success("关闭成功！");
                 MagicFlowMsg.ShowMessage("关闭成功！", 1);
+                LogHelper.Write.Info("[Settings] 半透明标题栏功能已关闭！");
                 ChangeSkinStyle();
             }
         }
@@ -684,6 +721,7 @@ namespace MSL.pages
                 {
                     if (openfile.FileName != "MSL\\Background.png")
                     {
+                        LogHelper.Write.Info("正在更换背景图片……");
                         File.Copy(openfile.FileName, "MSL\\Background.png", true);
                         ChangeSkinStyle();
                     }
@@ -694,27 +732,12 @@ namespace MSL.pages
                 }
             }
         }
-        public static BitmapImage GetImage(string imagePath)
-        {
-            BitmapImage bitmap = new BitmapImage();
-            if (File.Exists(imagePath))
-            {
-                bitmap.BeginInit();
-                bitmap.CacheOption = BitmapCacheOption.OnLoad;
-                using (Stream ms = new MemoryStream(File.ReadAllBytes(imagePath)))
-                {
-                    bitmap.StreamSource = ms;
-                    bitmap.EndInit();
-                    bitmap.Freeze();
-                }
-            }
-            return bitmap;
-        }
 
         private void delBackImg_Click(object sender, RoutedEventArgs e)
         {
             try
             {
+                LogHelper.Write.Info("清除背景图片，恢复默认背景颜色……");
                 File.Delete("MSL\\Background.png");
                 ChangeSkinStyle();
             }

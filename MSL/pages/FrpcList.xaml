@@ -21,7 +21,7 @@
                 <Button x:Name="MyInfo" Content="我的MSL Frp信息" Click="MyInfo_Click"/>
             </StackPanel>
             <Border Grid.Row="1" CornerRadius="10" BorderThickness="0" Padding="3">
-                <ListBox x:Name="FrpcListBox" Background="Transparent" Padding="3" BorderThickness="0" hc:Empty.ShowEmpty="true" MouseDoubleClick="FrpcListBox_MouseDoubleClick" KeyUp="FrpcListBox_KeyUp">
+                <ListBox x:Name="FrpcListBox" Background="{DynamicResource ContentRegionBrush}" Padding="3" BorderThickness="0" hc:Empty.ShowEmpty="true" MouseDoubleClick="FrpcListBox_MouseDoubleClick" KeyUp="FrpcListBox_KeyUp">
                     <ListBox.ItemTemplate>
                         <DataTemplate>
                             <StackPanel Orientation="Horizontal">

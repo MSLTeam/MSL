@@ -17,7 +17,7 @@ namespace MSL.utils
         // 【新增】用于存储本次程序运行所使用的日志文件的完整路径
         private static string _currentLogFilePath = string.Empty;
 
-        private const int MaxLogFiles = 5; // 最多保留的历史日志文件数量
+        private const int MaxLogFiles = 5; // 最多保留的历史日志文件数量 实际日志数量是历史+最新=6个
 
         /// <summary>
         /// 初始化日志工具。请在应用程序启动时调用此方法。

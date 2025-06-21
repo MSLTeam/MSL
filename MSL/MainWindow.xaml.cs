@@ -18,6 +18,7 @@ using System.Threading.Tasks;
 using System.Windows;
 using System.Windows.Controls;
 using System.Windows.Media;
+using System.Windows.Media.Imaging;
 using System.Windows.Threading;
 
 namespace MSL
@@ -247,14 +248,7 @@ namespace MSL
                     File.Copy("MSL\\Background_.png", "MSL\\Background.png", true);
                     File.Delete("MSL\\Background_.png");
                 }
-                if (File.Exists("MSL\\Background.png"))
-                {
-                    ImageBrush imageBrush = new ImageBrush(SettingsPage.GetImage("MSL\\Background.png"));
-                    imageBrush.Stretch = Stretch.UniformToFill;
-                    Background = imageBrush;
-                    frame.BorderThickness = new Thickness(0);
-                }
-                LogHelper.Write.Info("加载背景图片成功！");
+                LogHelper.Write.Warn("检测到软件彩蛋更名的背景图文件“Background_.png”，已将其重命名为“Background.png”！");
                 if (jsonObject["semitransparentTitle"] == null)
                 {
                     string jsonString = File.ReadAllText(@"MSL\config.json", Encoding.UTF8);
@@ -263,18 +257,9 @@ namespace MSL
                     string convertString = Convert.ToString(jobject);
                     File.WriteAllText(@"MSL\config.json", convertString, Encoding.UTF8);
                 }
-                else
-                {
-                    if ((bool)jsonObject["semitransparentTitle"] == true)
-                    {
-                        ChangeTitleStyle(true);
-                    }
-                    else
-                    {
-                        ChangeTitleStyle(false);
-                    }
-                }
+                ChangeSkinStyle();
                 LogHelper.Write.Info("读取标题栏样式成功！");
+                LogHelper.Write.Info("加载背景图片成功！");
                 if (jsonObject["autoGetServerInfo"] == null)
                 {
                     string jsonString = File.ReadAllText(@"MSL\config.json", Encoding.UTF8);
@@ -832,6 +817,7 @@ namespace MSL
             frame.Content = page;
         }
 
+        public static ImageBrush BackImageBrush;
         private void ChangeSkinStyle()
         {
             try
@@ -847,20 +833,59 @@ namespace MSL
                 }
                 if (File.Exists("MSL\\Background.png"))//check background and set it
                 {
-                    ImageBrush imageBrush = new ImageBrush(SettingsPage.GetImage("MSL\\Background.png"));
-                    imageBrush.Stretch = Stretch.UniformToFill;
-                    Background = imageBrush;
+                    if (BackImageBrush != null)
+                    {
+                        LogHelper.Write.Info("已将缓存的背景图数据进行释放！");
+                        BackImageBrush = null;
+                        GC.Collect();
+                    }
+                    LogHelper.Write.Info("初始化背景图片……");
+                    BackImageBrush = new ImageBrush(GetImage("MSL\\Background.png"));
+                    BackImageBrush.Stretch = Stretch.UniformToFill;
+                    LogHelper.Write.Info("应用背景图片……");
+                    Background = BackImageBrush;
                     frame.BorderThickness = new Thickness(0);
+                    LogHelper.Write.Info("背景图片应用成功！");
                 }
                 else
                 {
-                    SetResourceReference(BackgroundProperty, "BackgroundBrush");
-                    frame.BorderThickness = new Thickness(1, 0, 0, 0);
+                    if (BackImageBrush != null)
+                    {
+                        LogHelper.Write.Info("移除窗体背景图……");
+                        SetResourceReference(BackgroundProperty, "BackgroundBrush");
+                        frame.BorderThickness = new Thickness(1, 0, 0, 0);
+                        LogHelper.Write.Info("已将窗体背景设置为默认背景颜色！");
+                        // 释放掉缓存的背景图数据，防止多次更换背景图导致内存溢出
+                        Task.Run(async () =>
+                        {
+                            await Task.Delay(400);
+                            LogHelper.Write.Info("已将缓存的背景图数据进行释放！");
+                            BackImageBrush = null;
+                            await Task.Delay(100);
+                            GC.Collect();
+                        });
+                    }
                 }
-                //RunFormChangeTitle();
             }
             catch
             { }
+        }
+
+        private BitmapImage GetImage(string imagePath)
+        {
+            BitmapImage bitmap = new BitmapImage();
+            if (File.Exists(imagePath))
+            {
+                bitmap.BeginInit();
+                bitmap.CacheOption = BitmapCacheOption.OnLoad;
+                using (Stream ms = new MemoryStream(File.ReadAllBytes(imagePath)))
+                {
+                    bitmap.StreamSource = ms;
+                    bitmap.EndInit();
+                    bitmap.Freeze();
+                }
+            }
+            return bitmap;
         }
 
         private void ChangeTitleStyle(bool isOpen)
