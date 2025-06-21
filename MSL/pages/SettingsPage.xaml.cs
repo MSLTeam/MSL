@@ -204,14 +204,14 @@ namespace MSL.pages
 
         private async void AddDownloadTask_Click(object sender, RoutedEventArgs e)
         {
-            if (string.IsNullOrWhiteSpace(downthreadCount.Text))
+            string url = DownloadUrl.Text;
+            if (string.IsNullOrWhiteSpace(url))
             {
                 MagicShow.ShowMsgDialog("请输入地址后再进行下载！", "提示");
                 return;
             }
-            string url = DownloadUrl.Text;
             string filename = await HttpService.GetRemoteFileNameAsync(url); // 获取远程文件名
-            if (!await MagicShow.ShowMsgDialogAsync("URL: " + url + "\n文件名称: " + filename + "\n\n点击确定以下载", "信息", true))
+            if (!await MagicShow.ShowMsgDialogAsync("URL: " + url + "\n文件名称: " + filename + "\n文件将保存至 MSL\\Downloads 文件夹内！\n\n点击确定以下载", "信息", true))
             {
                 return;
             }
