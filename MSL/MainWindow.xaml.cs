@@ -247,8 +247,8 @@ namespace MSL
                 {
                     File.Copy("MSL\\Background_.png", "MSL\\Background.png", true);
                     File.Delete("MSL\\Background_.png");
+                    LogHelper.Write.Warn("检测到软件彩蛋更名的背景图文件“Background_.png”，已将其重命名为“Background.png”！");
                 }
-                LogHelper.Write.Warn("检测到软件彩蛋更名的背景图文件“Background_.png”，已将其重命名为“Background.png”！");
                 if (jsonObject["semitransparentTitle"] == null)
                 {
                     string jsonString = File.ReadAllText(@"MSL\config.json", Encoding.UTF8);
