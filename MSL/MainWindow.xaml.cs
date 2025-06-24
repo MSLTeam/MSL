@@ -86,6 +86,14 @@ namespace MSL
                     }
                 }
 
+                LogHelper.Write.Info(
+                    "系统信息：\n"+
+                    $"\tCPU: {Functions.GetCpuName()}\n"+
+                    $"\tMEM: {Functions.GetPhysicalMemoryGB()}GB\n"+
+                    $"\tOSVersion: {Functions.OSVersion}\n"+
+                    $"\tOSArchitecture: {Functions.OSArchitecture}\n"+
+                    $"\tOSDescription: {Functions.OSDescription}");
+
                 bool downloadTermDll = false;
                 if (!(Environment.OSVersion.Version.Major == 6 && Environment.OSVersion.Version.Minor == 1))
                 {
@@ -365,9 +373,8 @@ namespace MSL
                 MagicShow.ShowMsgDialog(this, LanguageManager.Instance["MainWindow_GrowlMsg_AutoLaunchFrpcErr"] + ex.Message, LanguageManager.Instance["Error"]);
             }
 
-            LogHelper.Write.Info("所有配置载入完毕！调整UI界面...");
+            LogHelper.Write.Info("所有配置载入完毕！开始载入主页...");
             SideMenu.SelectedIndex = 0;
-            LogHelper.Write.Info("配置加载完毕！");
         }
 
         private async Task AutoRunServer(JObject json)

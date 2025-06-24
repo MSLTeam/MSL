@@ -56,6 +56,7 @@ namespace MSL.pages
                     else if (!cancellationToken.IsCancellationRequested)
                     {
                         LogHelper.Write.Warn("等待服务器连接超时。");
+                        noticeLab.Text = "等待服务器连接超时。";
                     }
                 }
                 else if (ConfigStore.ApiLink != null && !cancellationToken.IsCancellationRequested)
@@ -399,17 +400,17 @@ namespace MSL.pages
                     }
 
                     startServerDropdown.SelectedIndex = selectedIndex;
-                    LogHelper.Write.Info("成功加载服务器列表，并设置已选中的服务器。");
+                    LogHelper.Write.Info("成功获取服务器列表信息，并将服务器名称添加进下拉列表框中。");
                 }
                 catch (Exception ex)
                 {
-                    LogHelper.Write.Warn($"加载服务器列表文件 'MSL/ServerList.json' 失败: {ex.Message} ，已将startServerDropdown选择项设置为 -1");
+                    LogHelper.Write.Warn($"加载服务器列表文件 'MSL/ServerList.json' 失败: {ex.Message} 已将startServerDropdown选择项设置为 -1");
                     startServerDropdown.SelectedIndex = -1;
                 }
             }
             catch (Exception ex)
             {
-                LogHelper.Write.Warn($"从 'MSL/config.json' 读取已选择的服务器配置失败: {ex.Message} ，已将startServerDropdown选择项设置为 -1");
+                LogHelper.Write.Warn($"从 'MSL/config.json' 读取已选择的服务器配置失败: {ex.Message} 已将startServerDropdown选择项设置为 -1");
                 startServerDropdown.SelectedIndex = -1;
             }
             finally
@@ -417,6 +418,10 @@ namespace MSL.pages
                 if (startServerDropdown.SelectedIndex == -1)
                 {
                     selectedItemTextBlock.Text = "创建一个新的服务器";
+                }
+                else
+                {
+                    selectedItemTextBlock.Text = startServerDropdown.SelectedItem?.ToString();
                 }
             }
         }
@@ -452,7 +457,7 @@ namespace MSL.pages
 
         private void StartServerDropdown_SelectionChanged(object sender, SelectionChangedEventArgs e)
         {
-            if (startServerDropdown.SelectedItem == null) return;
+            if (startServerDropdown.SelectedItem == null || !isInit) return;
             LogHelper.Write.Info($"用户更改了快速启动栏服务器选择: {startServerDropdown.SelectedItem?.ToString()} (索引: {startServerDropdown.SelectedIndex})");
             selectedItemTextBlock.Text = startServerDropdown.SelectedItem?.ToString();
             try

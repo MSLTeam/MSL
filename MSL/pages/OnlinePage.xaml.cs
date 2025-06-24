@@ -31,7 +31,6 @@ namespace MSL.pages
         {
             InitializeComponent();
             FrpcProcess.OutputDataReceived += new DataReceivedEventHandler(OutputDataReceived);
-            LogHelper.Write.Info("联机页面初始化完成。");
         }
 
         private async void Page_Loaded(object sender, RoutedEventArgs e)
