@@ -86,13 +86,16 @@ namespace MSL
                     }
                 }
 
-                LogHelper.Write.Info(
-                    "系统信息：\n"+
-                    $"\tCPU: {Functions.GetCpuName()}\n"+
-                    $"\tMEM: {Functions.GetPhysicalMemoryGB()}GB\n"+
-                    $"\tOSVersion: {Functions.OSVersion}\n"+
-                    $"\tOSArchitecture: {Functions.OSArchitecture}\n"+
+                _ = Task.Run(() =>
+                {
+                    LogHelper.Write.Info(
+                    "系统信息：\n" +
+                    $"\tCPU: {Functions.GetCpuName()}\n" +
+                    $"\tMEM: {Functions.GetPhysicalMemoryGB()}GB\n" +
+                    $"\tOSVersion: {Functions.OSVersion}\n" +
+                    $"\tOSArchitecture: {Functions.OSArchitecture}\n" +
                     $"\tOSDescription: {Functions.OSDescription}");
+                });
 
                 bool downloadTermDll = false;
                 if (!(Environment.OSVersion.Version.Major == 6 && Environment.OSVersion.Version.Minor == 1))
@@ -117,10 +120,10 @@ namespace MSL
                         downloadTermDll = true;
                     }
                 }
-                LogHelper.Write.Info("正在载入配置...");
-                await LoadConfigEvent(jsonObject);
+                LogHelper.Write.Info("正在异步载入配置...");
+                _ = LoadConfigEvent(jsonObject);
                 LogHelper.Write.Info("正在异步载入联网功能...");
-                await OnlineService(jsonObject, downloadTermDll);
+                _ = OnlineService(jsonObject, downloadTermDll);
                 LogHelper.Write.Info("启动事件完成！");
                 LoadingCompleted = true;
             }
@@ -387,11 +390,11 @@ namespace MSL
             }
             while (servers != "")
             {
+                await Task.Delay(50);
                 int aserver = servers.IndexOf(",");
                 ServerList.ServerID = int.Parse(servers.Substring(0, aserver));
                 AutoOpenServer();
                 servers = servers.Replace(ServerList.ServerID.ToString() + ",", "");
-                await Task.Delay(50);
             }
         }
 
@@ -405,6 +408,7 @@ namespace MSL
             }
             while (frpcs != "")
             {
+                await Task.Delay(50);
                 int afrpc = frpcs.IndexOf(",");
                 FrpcList.FrpcID = int.Parse(frpcs.Substring(0, afrpc));
                 if (!FrpcList.FrpcPageList.ContainsKey(FrpcList.FrpcID))
@@ -412,7 +416,6 @@ namespace MSL
                     FrpcList.FrpcPageList.Add(FrpcList.FrpcID, new FrpcPage(FrpcList.FrpcID, true));
                 }
                 frpcs = frpcs.Replace(FrpcList.FrpcID.ToString() + ",", "");
-                await Task.Delay(50);
             }
         }
 
