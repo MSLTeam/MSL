@@ -51,6 +51,8 @@ namespace MSL
 
         private void Downloader()
         {
+            LogHelper.Write.Info($"开始下载：{filename} ，下载地址：{downloadurl} ，保存路径：{downloadPath} ，启用多线程下载：{enableParalle} ，Header模式：{headerMode}。");
+
             if (File.Exists(Path.Combine(downloadPath, filename)))
             {
                 if (!string.IsNullOrEmpty(expectedSha256))

@@ -432,9 +432,21 @@ namespace MSL
                 }
                 if (File.Exists("MSL\\Background.png"))//check background and set it
                 {
-                    ImageBrush imageBrush = new ImageBrush(SettingsPage.GetImage("MSL\\Background.png"));
-                    imageBrush.Stretch = Stretch.UniformToFill;
-                    Background = imageBrush;
+                    Task.Run(async () =>
+                    {
+                        int i = 0;
+                        while (MainWindow.BackImageBrush == null)
+                        {
+                            if (i == 5)
+                                break;
+                            i++;
+                            await Task.Delay(1000);
+                        }
+                        Dispatcher.Invoke(() =>
+                        {
+                            Background = MainWindow.BackImageBrush;
+                        });
+                    });
                 }
                 else
                 {
@@ -761,12 +773,12 @@ namespace MSL
                     cpuCounter = new PerformanceCounter("Processor", "% Processor Time", "_Total");
                 }
                 var ramCounter = new PerformanceCounter("Memory", "Available MBytes");
-                var phisicalMemory = GetPhisicalMemory();
+                var phisicalMemory = Functions.GetPhysicalMemoryGB();
                 while (getSystemInfo)
                 {
                     float cpuUsage = cpuCounter.NextValue();
                     float ramAvailable = ramCounter.NextValue() / 1024;
-                    double allMemory = phisicalMemory / 1024.0 / 1024.0 / 1024.0;
+                    double allMemory = phisicalMemory;
 
                     Dispatcher.Invoke(() =>
                     {
@@ -790,22 +802,6 @@ namespace MSL
                 });
                 getSystemInfo = false;
             }
-        }
-
-        private static long GetPhisicalMemory()
-        {
-            long amemory = 0;
-            //获得物理内存 
-            ManagementClass mc = new ManagementClass("Win32_ComputerSystem");
-            ManagementObjectCollection moc = mc.GetInstances();
-            foreach (ManagementObject mo in moc.Cast<ManagementObject>())
-            {
-                if (mo["TotalPhysicalMemory"] != null)
-                {
-                    amemory = long.Parse(mo["TotalPhysicalMemory"].ToString());
-                }
-            }
-            return amemory;
         }
 
         private void UpdateMemoryInfo(float ramAvailable, double allMemory)
@@ -2902,7 +2898,7 @@ namespace MSL
                 }
                 nAme.Text = Rservername;
                 server.Text = Rserverserver;
-                memorySlider.Maximum = GetPhisicalMemory() / 1024.0 / 1024.0;
+                memorySlider.Maximum = Functions.GetPhysicalMemoryMB();
                 bAse.Text = Rserverbase;
                 jVMcmd.Text = RserverJVMcmd;
                 jAva.Text = Rserverjava;

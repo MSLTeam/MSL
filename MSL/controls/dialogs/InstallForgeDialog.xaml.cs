@@ -45,19 +45,20 @@ namespace MSL.controls
         private readonly CancellationTokenSource cancellationTokenSource = new CancellationTokenSource();
         private async void UserControl_Loaded(object sender, RoutedEventArgs e)
         {
+            LogHelper.Write.Info("开始加载Forge安装模块，路径：" + InstallPath + " ，安装器：" + ForgePath + " ，Java路径：" + JavaPath);
             InstallDialogTitle.Text = $"{(ForgePath.Contains("neoforge") ? "NeoForge" : "Forge")}安装器";
             File.Create(InstallPath + "/msl-installForge.log").Close();
             logWriter = File.AppendText(InstallPath + "/msl-installForge.log");
-            Log_in($"准备安装{(ForgePath.Contains("neoforge")?"NeoForge":"Forge")}···");
+            Log_in($"准备安装{(ForgePath.Contains("neoforge") ? "NeoForge" : "Forge")}···");
             Log_in("5秒后开始安装···");
             await Task.Delay(5000);
             Mirror.IsEnabled = false;
             MultiThreadCount.IsEnabled = false;
-            await Task.Run(Install);
+            await Install();
         }
 
         //安装forge的主方法
-        private async void Install()
+        private async Task Install()
         {
             try
             {
@@ -188,7 +189,8 @@ namespace MSL.controls
                         McVersion = installJobj["minecraft"].ToString();
                     }
                 }
-                catch (Exception e) {
+                catch (Exception e)
+                {
                     Log_in("获取原版服务端核心下载地址失败！" + e.Message);
                     Log_in("请点击右下方命令行安装以继续安装流程！");
                     return;
@@ -196,7 +198,8 @@ namespace MSL.controls
 
 
                 // 判断是否成功获取原版服务端url
-                if (vanillaUrl == null) {
+                if (vanillaUrl == null)
+                {
                     Log_in("获取原版服务端核心下载地址失败！");
                     return;
                 }
@@ -569,11 +572,9 @@ namespace MSL.controls
                         }
                     }
                     Status_change("正在编译，请耐心等待……");
-                    Dispatcher.Invoke(() =>
-                    {
-                        CancelButton.IsEnabled = false;
-                    });
-                    Log_in("正在编译……\n");
+                    ChangePlanButton.IsEnabled = false;
+                    CancelButton.IsEnabled = false;
+                    Log_in("正在编译，请耐心等待……\n");
                     foreach (string cmdLine in cmdLines)
                     {
                         Process process = new Process();
@@ -597,23 +598,17 @@ namespace MSL.controls
                         process.Start();
                         process.BeginOutputReadLine();
                         process.BeginErrorReadLine();
-                        process.WaitForExit();
+                        await Task.Run(process.WaitForExit);
                         process.CancelOutputRead();
                     }
                 }
-                //输出日志
-                /*
-                Dispatcher.Invoke(() =>
-                {
-                    File.WriteAllText(InstallPath + "/msl-installForge.log", log.Text);
-                });
-                */
 
                 Log_in("安装结束！");
                 Status_change("结束！本对话框将自动关闭！");
                 try
                 {
                     //File.Delete(InstallPath + "/install.bat");
+                    log.Clear();
                     logWriter.Flush();
                     logWriter.Close();
                     logWriter.Dispose();
@@ -623,15 +618,22 @@ namespace MSL.controls
                 {
                     Console.WriteLine(ex.Message);
                 }
-                Thread.Sleep(1500);
+                LogHelper.Write.Info("Forge安装完毕！");
+                await Task.Delay(1500);
                 DialogReturn = 1;
-                Dispatcher.Invoke(() =>
-                {
-                    log.Clear();
-                    CloseDialog();
-                });
+                CloseDialog();
             }
-            catch (OperationCanceledException) { return; }
+            catch (OperationCanceledException)
+            {
+                LogHelper.Write.Warn("Forge安装被取消!");
+                return;
+            }
+            catch (Exception ex)
+            {
+                LogHelper.Write.Error("Forge安装失败！" + ex.Message);
+                CloseDialog();
+                return;
+            }
         }
 
         private string logTemp = "";
@@ -643,7 +645,8 @@ namespace MSL.controls
                 if (counter == 100)
                 {
                     counter = 0;
-                    Log_in(logTemp);
+                    // 编译过程不予显示，直接写到日志文件中
+                    logWriter.WriteLineAsync(logTemp);
                     logTemp = "";
                 }
                 logTemp += e.Data + "\n";
@@ -654,15 +657,12 @@ namespace MSL.controls
         private void Log_in(string logStr)
         {
             cancellationTokenSource.Token.ThrowIfCancellationRequested();
-            Dispatcher.Invoke(() =>
+            if (log.LineCount > 150)
             {
-                if (log.LineCount > 150)
-                {
-                    log.Clear();
-                }
-                log.Text += logStr + "\n";
-                log.ScrollToEnd();
-            });
+                log.Clear();
+            }
+            log.Text += logStr + "\n";
+            log.ScrollToEnd();
             try
             {
                 // 写入日志文件
@@ -676,10 +676,7 @@ namespace MSL.controls
 
         private void Status_change(string textStr)
         {
-            Dispatcher.Invoke(() =>
-            {
-                status.Text = textStr;
-            });
+            status.Text = textStr;
         }
 
         //获取json对象
@@ -855,111 +852,6 @@ namespace MSL.controls
 
         private int semaphore = 4; // 设置最大并发任务数量为4
 
-        /*
-        private async Task DownloadFile(string url, string targetPath, string expectedSha1 = "")
-        {
-            if (string.IsNullOrEmpty(url))
-            {
-                return;
-            }
-            await semaphore.WaitAsync(); // 获取信号量
-            try
-            {
-                await DownloadFileAsync(url, targetPath, expectedSha1);
-            }
-            finally
-            {
-                semaphore.Release(); // 释放信号量
-            }
-        }
-        
-        //下面是有关下载的东东（由于小文件调用原有下载窗口特别慢，就不用了qaq）
-        private async Task DownloadFileAsync(string url, string targetPath, string expectedSha1 = "")
-        {
-            const int MaxRetryCount = 3; //这是最大重试次数
-            //Log_in("开始下载：" + url);
-            for (int i = 0; i < MaxRetryCount; i++)
-            {
-                try
-                {
-                    //检查下文件夹在不在
-                    string directory = Path.GetDirectoryName(targetPath);
-                    if (!Directory.Exists(directory))
-                    {
-                        Directory.CreateDirectory(directory);
-                    }
-
-                    //下载
-                    using (HttpClient client = new HttpClient())
-                    {
-                        client.DefaultRequestHeaders.UserAgent.TryParseAdd("Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/126.0.0.0 Safari/537.36");
-                        client.Timeout = TimeSpan.FromMilliseconds(10000);
-                        HttpResponseMessage responseMessage = await client.GetAsync(url);
-                        if (responseMessage.StatusCode == HttpStatusCode.OK)
-                        {
-                            using (var fs = File.Create(targetPath))
-                            {
-                                var streatFormService = await responseMessage.Content.ReadAsStreamAsync();
-                                streatFormService.CopyTo(fs);
-                            }
-                        }
-                        else if (url.Contains("net/minecraftforge/forge") && url.Contains("forge") && (url.Contains("shim") || url.Contains("universal")))
-                        {
-                            return;
-                        }
-                        else
-                        {
-                            //处理下载失败
-                            Log_in($"下载 {url} 失败！错误的状态码" + responseMessage.StatusCode + " 将重试……");
-                            Thread.Sleep(1000);
-                            continue;
-                        }
-                    }
-
-                    if (expectedSha1 != "")
-                    {
-                        //校验SHA1
-                        using FileStream fs = new FileStream(targetPath, FileMode.Open);
-                        using BufferedStream bs = new BufferedStream(fs);
-                        using SHA1Managed sha1 = new SHA1Managed();
-                        byte[] hash = sha1.ComputeHash(bs);
-                        string formatted = BitConverter.ToString(hash).Replace("-", "").ToLowerInvariant();
-
-                        if (formatted == expectedSha1)
-                        {
-                            Log_in($"下载 {url} 成功！");
-                            return;
-                            //return true;
-                        }
-                        else
-                        {
-                            //校验Sha1失败
-                            Log_in($"下载 {url} 失败！校验Sha1失败！ 将重试……");
-                            Thread.Sleep(1000);
-                            continue;
-                        }
-                    }
-                    else
-                    {
-                        Log_in($"下载 {url} 成功！");
-                        return;
-                        //return true;
-                    }
-                }
-                catch (Exception err)
-                {
-                    //处理下载失败
-                    Log_in($"下载 {url} 失败！" + err.Message + " 将重试……");
-                    Thread.Sleep(1000);
-                    continue;
-                }
-            }
-            Log_in($"下载 {url} 失败！");
-            //重试爆表了
-            //return false;
-        }
-        */
-
         //MC版本号判断函数，前>后：1 ，后>前：-1，相等：0
         private int CompareMinecraftVersions(string version1, string version2)
         {
@@ -1032,48 +924,46 @@ namespace MSL.controls
 
         private void ChangePlanButton_Click(object sender, RoutedEventArgs e)
         {
-            cancellationTokenSource.Cancel();
-            try
-            {
-                //File.Delete(InstallPath + "/install.bat");
-                logWriter.Flush();
-                logWriter.Close();
-                logWriter.Dispose();
-                Directory.Delete(TempPath, true);
-            }
-            catch (Exception ex)
-            {
-                Console.WriteLine(ex.Message);
-            }
+            CancelInstall();
             DialogReturn = 3;
             CloseDialog();
         }
 
         private void CancelButton_Click(object sender, RoutedEventArgs e)
         {
-            var downloadManager = DownloadManager.Instance;
-            downloadManager.CancelDownloadGroup("ForgeInstall_VanillaServer");
-            downloadManager.CancelDownloadGroup("ForgeInstall_LibFiles");
-            downloadManager.RemoveDownloadGroup("ForgeInstall_VanillaServer");
-            downloadManager.RemoveDownloadGroup("ForgeInstall_LibFiles");
+            CancelInstall();
+            DialogReturn = 2;
+            CloseDialog();
+        }
 
+        private void CancelInstall()
+        {
+            LogHelper.Write.Warn("用户取消了Forge安装操作。");
             //关闭线程
             //thread.Abort();
             cancellationTokenSource.Cancel();
             try
             {
                 //File.Delete(InstallPath + "/install.bat");
+                log.Clear();
                 logWriter.Flush();
                 logWriter.Close();
                 logWriter.Dispose();
-                Directory.Delete(TempPath, true);
+                var downloadManager = DownloadManager.Instance;
+                downloadManager.CancelDownloadGroup("ForgeInstall_VanillaServer");
+                downloadManager.CancelDownloadGroup("ForgeInstall_LibFiles");
+                downloadManager.RemoveDownloadGroup("ForgeInstall_VanillaServer");
+                downloadManager.RemoveDownloadGroup("ForgeInstall_LibFiles");
+                if (Directory.Exists(TempPath))
+                    Directory.Delete(TempPath, true);
+                if (Directory.Exists(LibPath))
+                    Directory.Delete(LibPath, true);
             }
             catch (Exception ex)
             {
                 Console.WriteLine(ex.Message);
+                LogHelper.Write.Error("取消Forge安装操作时出现问题：" + ex.Message);
             }
-            DialogReturn = 2;
-            CloseDialog();
         }
     }
 }

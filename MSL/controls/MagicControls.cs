@@ -76,6 +76,14 @@ namespace MSL.controls
         }
     }
 
+    public class MagicListBox1 : ListBox
+    {
+        static MagicListBox1()
+        {
+            DefaultStyleKeyProperty.OverrideMetadata(typeof(MagicListBox1), new FrameworkPropertyMetadata(typeof(MagicListBox1)));
+        }
+    }
+
     /* MagicGrowlPanel 用处不多不大，暂时弃用
     public class MagicGrowlPanel : Control
     {

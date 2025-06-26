@@ -41,7 +41,7 @@ namespace MSL.pages.frpProviders
                 var token = Config.Read("ChmlToken")?.ToString() ?? "";
                 if (token != "")
                 {
-                    LogHelper.WriteLog("检测到已保存的 ChmlFrp Token，尝试自动登录。");
+                    LogHelper.Write.Info("检测到已保存的 ChmlFrp Token，尝试自动登录。");
                     MagicDialog MagicDialog = new MagicDialog();
                     MagicDialog.ShowTextDialog(Window.GetWindow(this), "登录中……");
                     await VerifyUserToken(token, false);
@@ -83,7 +83,7 @@ namespace MSL.pages.frpProviders
             token = await MagicShow.ShowInput(Window.GetWindow(this), "请输入Chml账户Token", "", true);
             if (token != null)
             {
-                LogHelper.WriteLog("用户选择使用 Token 方式登录 ChmlFrp。");
+                LogHelper.Write.Info("用户选择使用 Token 方式登录 ChmlFrp。");
                 bool save = (bool)SaveToken.IsChecked;
                 MagicDialog MagicDialog = new MagicDialog();
                 MagicDialog.ShowTextDialog(Window.GetWindow(this), "登录中……");
@@ -106,7 +106,7 @@ namespace MSL.pages.frpProviders
             {
                 return;
             }
-            LogHelper.WriteLog("用户选择使用账号密码方式登录 ChmlFrp。");
+            LogHelper.Write.Info("用户选择使用账号密码方式登录 ChmlFrp。");
             bool save = (bool)SaveToken.IsChecked;
             MagicDialog MagicDialog = new MagicDialog();
             MagicDialog.ShowTextDialog(Window.GetWindow(this), "登录中……");
@@ -119,7 +119,7 @@ namespace MSL.pages.frpProviders
         {
             try
             {
-                LogHelper.WriteLog($"开始使用账号密码获取 ChmlFrp 用户 Token。用户: {user}");
+                LogHelper.Write.Info($"开始使用账号密码获取 ChmlFrp 用户 Token。用户: {user}");
                 string response = (await HttpService.PostAsync($"{ChmlFrpApiUrl}/api/login.php", HttpService.PostContentType.FormUrlEncoded, $"username={user}&password={pwd}")).HttpResponseContent.ToString();
                 var jsonResponse = JsonConvert.DeserializeObject<Dictionary<string, object>>(response);
                 if (jsonResponse.ContainsKey("code"))
@@ -131,7 +131,7 @@ namespace MSL.pages.frpProviders
                         if (save == true) //保存？写到配置
                         {
                             Config.Write("ChmlToken", token);
-                            LogHelper.WriteLog("用户登录成功，并已保存 Token。");
+                            LogHelper.Write.Info("用户登录成功，并已保存 Token。");
                         }
                         ChmlToken = token;
                         MainCtrl.Visibility = Visibility.Visible;
@@ -141,7 +141,7 @@ namespace MSL.pages.frpProviders
                     }
                     else
                     {
-                        LogHelper.WriteLog($"ChmlFrp 登录失败: {jsonResponse["message"]}", LogLevel.WARN);
+                        LogHelper.Write.Warn($"ChmlFrp 登录失败: {jsonResponse["message"]}");
                         MagicShow.ShowMsgDialog(Window.GetWindow(this), "登陆失败！" + jsonResponse["message"].ToString(), LanguageManager.Instance["Error"]);
                     }
                 }
@@ -149,14 +149,14 @@ namespace MSL.pages.frpProviders
                 {
                     if (jsonResponse.ContainsKey("error"))
                     {
-                        LogHelper.WriteLog($"ChmlFrp 登录失败: {jsonResponse["error"]}", LogLevel.WARN);
+                        LogHelper.Write.Warn($"ChmlFrp 登录失败: {jsonResponse["error"]}");
                         MagicShow.ShowMsgDialog(Window.GetWindow(this), "登陆失败！\n" + jsonResponse["error"].ToString(), LanguageManager.Instance["Error"]);
                     }
                 }
             }
             catch (Exception e)
             {
-                LogHelper.WriteLog($"获取用户 Token 时发生异常: {e.ToString()}", LogLevel.ERROR);
+                LogHelper.Write.Error($"获取用户 Token 时发生异常: {e.ToString()}");
                 MagicShow.ShowMsgDialog(Window.GetWindow(this), "登陆失败！\n" + e.Message, LanguageManager.Instance["Error"]);
             }
             if (Config.Read("ChmlToken") != null)
@@ -168,7 +168,7 @@ namespace MSL.pages.frpProviders
         {
             try
             {
-                LogHelper.WriteLog("开始验证 ChmlFrp 用户 Token。");
+                LogHelper.Write.Info("开始验证 ChmlFrp 用户 Token。");
                 string response = (await HttpService.GetAsync($"{ChmlFrpApiUrl}/api/userinfo.php?usertoken={userToken}")).HttpResponseContent.ToString();
                 var jsonResponse = JsonConvert.DeserializeObject<Dictionary<string, object>>(response);
                 if (jsonResponse.ContainsKey("userid"))
@@ -177,11 +177,11 @@ namespace MSL.pages.frpProviders
                     if (save == true) //保存？写到配置
                     {
                         Config.Write("ChmlToken", userToken);
-                        LogHelper.WriteLog("用户 Token 验证成功，并已保存 Token。");
+                        LogHelper.Write.Info("用户 Token 验证成功，并已保存 Token。");
                     }
                     else
                     {
-                        LogHelper.WriteLog($"Token 验证成功，用户ID: {ChmlID}。");
+                        LogHelper.Write.Info($"Token 验证成功，用户ID: {ChmlID}。");
                     }
                     ChmlToken = userToken;
                     MainCtrl.Visibility = Visibility.Visible;
@@ -194,14 +194,14 @@ namespace MSL.pages.frpProviders
                 {
                     if (jsonResponse.ContainsKey("error"))
                     {
-                        LogHelper.WriteLog($"ChmlFrp Token 验证失败: {jsonResponse["error"]}", LogLevel.WARN);
+                        LogHelper.Write.Warn($"ChmlFrp Token 验证失败: {jsonResponse["error"]}");
                         MagicShow.ShowMsgDialog(Window.GetWindow(this), "Token登陆失败！\n可以尝试账号密码登录！\n" + jsonResponse["error"].ToString(), LanguageManager.Instance["Error"]);
                     }
                 }
             }
             catch (Exception e)
             {
-                LogHelper.WriteLog($"验证用户 Token 时发生异常: {e.ToString()}", LogLevel.ERROR);
+                LogHelper.Write.Error($"验证用户 Token 时发生异常: {e.ToString()}");
                 MagicShow.ShowMsgDialog(Window.GetWindow(this), "Token登陆失败！\n可以尝试账号密码登录！\n" + e.Message, LanguageManager.Instance["Error"]);
             }
             if (Config.Read("ChmlToken") != null)
@@ -228,7 +228,7 @@ namespace MSL.pages.frpProviders
         {
             try
             {
-                LogHelper.WriteLog("开始获取 ChmlFrp 隧道列表及用户信息。");
+                LogHelper.Write.Info("开始获取 ChmlFrp 隧道列表及用户信息。");
                 //获取userinfo
                 var jsonUserInfo = JsonConvert.DeserializeObject<Dictionary<string, object>>
                     ((await HttpService.GetAsync($"{ChmlFrpApiUrl}/api/userinfo.php?usertoken={ChmlToken}")).HttpResponseContent.ToString());
@@ -237,7 +237,7 @@ namespace MSL.pages.frpProviders
                 $"邮箱：{jsonUserInfo["email"]}\n" +
                 $"会员类型：{jsonUserInfo["usergroup"]}\n" +
                 $"隧道数：{jsonUserInfo["tunnelstate"]}/{jsonUserInfo["tunnel"]}";
-                LogHelper.WriteLog($"成功获取用户信息: {jsonUserInfo["username"]}");
+                LogHelper.Write.Info($"成功获取用户信息: {jsonUserInfo["username"]}");
 
                 //获取隧道
                 ObservableCollection<TunnelInfo> tunnels = new ObservableCollection<TunnelInfo>();
@@ -264,23 +264,23 @@ namespace MSL.pages.frpProviders
                             Encryption = $"{item["encryption"]}"
                         });
                     }
-                    LogHelper.WriteLog($"成功获取并加载了 {tunnels.Count} 条隧道。");
+                    LogHelper.Write.Info($"成功获取并加载了 {tunnels.Count} 条隧道。");
                 }
                 catch (JsonSerializationException)
                 {
                     // 此处可能是因为没有隧道，API返回了非JSON数组的错误信息，属于正常情况
-                    LogHelper.WriteLog("未能解析隧道列表，可能是因为该账户下没有隧道。", LogLevel.WARN);
+                    LogHelper.Write.Warn("未能解析隧道列表，可能是因为该账户下没有隧道。");
                     return;
                 }
                 catch (Exception ex)
                 {
-                    LogHelper.WriteLog($"解析隧道列表时发生未知异常: {ex.ToString()}", LogLevel.ERROR);
+                    LogHelper.Write.Error($"解析隧道列表时发生未知异常: {ex.ToString()}");
                     MagicShow.ShowMsgDialog(ex.Message, "错误");
                 }
             }
             catch (Exception e)
             {
-                LogHelper.WriteLog($"获取 ChmlFrp 列表时发生严重错误: {e.ToString()}", LogLevel.ERROR);
+                LogHelper.Write.Error($"获取 ChmlFrp 列表时发生严重错误: {e.ToString()}");
                 MagicShow.ShowMsgDialog(Window.GetWindow(this), e.Message, "出错了！");
             }
         }
@@ -306,7 +306,7 @@ namespace MSL.pages.frpProviders
             {
                 try
                 {
-                    LogHelper.WriteLog($"准备为隧道 {selectedTunnel.Name} ({selectedTunnel.ID}) 生成 frpc 配置文件。");
+                    LogHelper.Write.Info($"准备为隧道 {selectedTunnel.Name} ({selectedTunnel.ID}) 生成 frpc 配置文件。");
                     (sender as Button).IsEnabled = false;
                     //获取frps端口
                     JArray frps = JArray.Parse((await HttpService.GetAsync(ChmlFrpApiUrl + "/api/unode.php")).HttpResponseContent.ToString());
@@ -353,20 +353,20 @@ namespace MSL.pages.frpProviders
                         $"use_compression = {selectedTunnel.Compression}\r\n \r\n";
                     //输出配置
                     Config.WriteFrpcConfig(2, $"ChmlFrp - {selectedTunnel.Name}({selectedTunnel.Node})", FrpcConfig, "");
-                    LogHelper.WriteLog("frpc 配置文件生成并写入成功。");
+                    LogHelper.Write.Info("frpc 配置文件生成并写入成功。");
                     await MagicShow.ShowMsgDialogAsync(Window.GetWindow(this), "映射配置成功，请您点击“启动内网映射”以启动映射！", "信息");
                     Window.GetWindow(this).Close();
                 }
                 catch (Exception ex)
                 {
                     (sender as Button).IsEnabled = true;
-                    LogHelper.WriteLog($"写入 frpc 配置文件失败: {ex.ToString()}", LogLevel.ERROR);
+                    LogHelper.Write.Error($"写入 frpc 配置文件失败: {ex.ToString()}");
                     await MagicShow.ShowMsgDialogAsync(Window.GetWindow(this), "写入Frpc配置失败！\n" + ex.Message, "出错");
                 }
             }
             else
             {
-                LogHelper.WriteLog("用户尝试生成配置文件，但未选择任何隧道。", LogLevel.WARN);
+                LogHelper.Write.Warn("用户尝试生成配置文件，但未选择任何隧道。");
                 await MagicShow.ShowMsgDialogAsync(Window.GetWindow(this), "请您选择一个隧道再按确定哦~", "隧道呢？");
             }
         }
@@ -383,34 +383,34 @@ namespace MSL.pages.frpProviders
                     var listBox = FrpList;
                     if (listBox.SelectedItem is TunnelInfo selectedTunnel)
                     {
-                        LogHelper.WriteLog($"用户请求删除隧道 ID: {selectedTunnel.ID}, 名称: {selectedTunnel.Name}。");
+                        LogHelper.Write.Info($"用户请求删除隧道 ID: {selectedTunnel.ID}, 名称: {selectedTunnel.Name}。");
                         string res = (await HttpService.GetAsync($"{ChmlFrpApiUrl}/api/deletetl.php?token={ChmlToken}&nodeid={selectedTunnel.ID}&userid={ChmlID}")).HttpResponseContent.ToString();
                         //处理结果
                         var PostResponse = JsonConvert.DeserializeObject<Dictionary<string, object>>(res);
                         if (PostResponse["code"].ToString() == "200")
                         {
                             //好了
-                            LogHelper.WriteLog($"隧道 ID: {selectedTunnel.ID} 删除成功。");
+                            LogHelper.Write.Info($"隧道 ID: {selectedTunnel.ID} 删除成功。");
                             MagicShow.ShowMsgDialog(Window.GetWindow(this), "隧道删除成功！", "删除");
                             _ = GetFrpList();//刷新下列表
                         }
                         else
                         {
                             //创建失败的处理
-                            LogHelper.WriteLog($"隧道删除失败，API返回信息: {PostResponse["error"]}", LogLevel.WARN);
+                            LogHelper.Write.Warn($"隧道删除失败，API返回信息: {PostResponse["error"]}");
                             MagicShow.ShowMsgDialog(Window.GetWindow(this), $"隧道删除失败！\n{PostResponse["error"]}", "失败！");
 
                         }
                     }
                     else
                     {
-                        LogHelper.WriteLog("用户尝试删除隧道，但未选择任何隧道。", LogLevel.WARN);
+                        LogHelper.Write.Warn("用户尝试删除隧道，但未选择任何隧道。");
                         MagicShow.ShowMsgDialog(Window.GetWindow(this), $"请选择一个隧道再操作！", "失败！");
                     }
                 }
                 catch (Exception ex)
                 {
-                    LogHelper.WriteLog($"删除隧道时发生异常: {ex.ToString()}", LogLevel.ERROR);
+                    LogHelper.Write.Error($"删除隧道时发生异常: {ex.ToString()}");
                     MagicShow.ShowMsgDialog(Window.GetWindow(this), ex.Message, "失败！");
                 }
             }
@@ -430,12 +430,12 @@ namespace MSL.pages.frpProviders
         {
             ObservableCollection<NodeInfo> nodes = new ObservableCollection<NodeInfo>();
             NodeList.ItemsSource = nodes;
-            LogHelper.WriteLog("开始获取 ChmlFrp 节点列表。");
+            LogHelper.Write.Info("开始获取 ChmlFrp 节点列表。");
             //从api获取节点列表
             var _response = await HttpService.GetAsync($"{ChmlFrpApiUrl}/api/unode.php");
             if (_response.HttpResponseCode != System.Net.HttpStatusCode.OK)
             {
-                LogHelper.WriteLog($"获取节点列表 API 请求失败，状态码: {_response.HttpResponseCode}, 内容: {_response.HttpResponseContent}", LogLevel.ERROR);
+                LogHelper.Write.Error($"获取节点列表 API 请求失败，状态码: {_response.HttpResponseCode}, 内容: {_response.HttpResponseContent}");
                 MagicShow.ShowMsgDialog(Window.GetWindow(this), "隧道创建失败！\n" + _response.HttpResponseContent, "创建失败！");
                 return;
             }
@@ -468,11 +468,11 @@ namespace MSL.pages.frpProviders
                         });
                     }
                 }
-                LogHelper.WriteLog($"成功获取并加载了 {nodes.Count} 个节点。");
+                LogHelper.Write.Info($"成功获取并加载了 {nodes.Count} 个节点。");
             }
             catch (JsonSerializationException ex)
             {
-                LogHelper.WriteLog($"解析节点列表时发生 JSON 反序列化错误: {ex.ToString()}", LogLevel.ERROR);
+                LogHelper.Write.Error($"解析节点列表时发生 JSON 反序列化错误: {ex.ToString()}");
                 MagicShow.ShowMsgDialog(Window.GetWindow(this), "无法加载节点信息！", "错误");
             }
         }
@@ -516,12 +516,12 @@ namespace MSL.pages.frpProviders
                 string proc = Create_Protocol.Text;
                 string lport = Create_LocalPort.Text;
                 string rport = Create_RemotePort.Text;
-                LogHelper.WriteLog($"用户请求在节点 {selectedNode.Name} 上创建新隧道: {name}");
+                LogHelper.Write.Info($"用户请求在节点 {selectedNode.Name} 上创建新隧道: {name}");
                 await PostCreate(lip, name, selectedNode.Name, proc, lport, rport, enc, comp);
             }
             else
             {
-                LogHelper.WriteLog("用户尝试创建隧道，但未选择任何节点。", LogLevel.WARN);
+                LogHelper.Write.Warn("用户尝试创建隧道，但未选择任何节点。");
                 MagicShow.ShowMsgDialog(Window.GetWindow(this), "您似乎没有选择节点！", "错误");
             }
             (sender as Button).IsEnabled = true;
@@ -545,11 +545,11 @@ namespace MSL.pages.frpProviders
                 ["compression"] = compression
             };
 
-            LogHelper.WriteLog($"向 API 发送创建隧道请求。名称: {name}, 节点: {node}, 类型: {type}");
+            LogHelper.Write.Info($"向 API 发送创建隧道请求。名称: {name}, 节点: {node}, 类型: {type}");
             var _response = await HttpService.PostAsync($"{ChmlFrpApiUrl}/api/tunnel.php", 0, body);
             if (_response.HttpResponseCode != System.Net.HttpStatusCode.OK)
             {
-                LogHelper.WriteLog($"创建隧道 API 请求失败，状态码: {_response.HttpResponseCode}, 内容: {_response.HttpResponseContent}", LogLevel.ERROR);
+                LogHelper.Write.Error($"创建隧道 API 请求失败，状态码: {_response.HttpResponseCode}, 内容: {_response.HttpResponseContent}");
                 MagicShow.ShowMsgDialog(Window.GetWindow(this), "隧道创建失败！\n" + _response.HttpResponseContent, "创建失败！");
                 return;
             }
@@ -559,21 +559,21 @@ namespace MSL.pages.frpProviders
             if (PostResponse["code"].ToString() == "200")
             {
                 //好了
-                LogHelper.WriteLog($"隧道 {name} 创建成功。");
+                LogHelper.Write.Info($"隧道 {name} 创建成功。");
                 MagicShow.ShowMsgDialog(Window.GetWindow(this), "隧道创建成功！\n即将返回主页···", "创建成功！");
                 MainCtrl.SelectedIndex = 0;
             }
             else
             {
                 //创建失败的处理
-                LogHelper.WriteLog($"隧道创建失败，API返回信息: {PostResponse["error"]}", LogLevel.WARN);
+                LogHelper.Write.Warn($"隧道创建失败，API返回信息: {PostResponse["error"]}");
                 MagicShow.ShowMsgDialog(Window.GetWindow(this), $"隧道创建失败！\n{PostResponse["error"]}", "创建失败！");
             }
         }
 
         private async void RefreshBtn_Click(object sender, RoutedEventArgs e)
         {
-            LogHelper.WriteLog("用户点击刷新隧道列表。");
+            LogHelper.Write.Info("用户点击刷新隧道列表。");
             (sender as Button).IsEnabled = false;
             await GetFrpList();
             (sender as Button).IsEnabled = true;
@@ -581,7 +581,7 @@ namespace MSL.pages.frpProviders
 
         private void ExitBtn_Click(object sender, RoutedEventArgs e)
         {
-            LogHelper.WriteLog("用户退出 ChmlFrp 登录，返回登录页并清除已保存的 Token。");
+            LogHelper.Write.Info("用户退出 ChmlFrp 登录，返回登录页并清除已保存的 Token。");
             MainCtrl.Visibility = Visibility.Collapsed;
             LoginGrid.Visibility = Visibility.Visible;
             //清理保存的token

@@ -5,10 +5,11 @@
              xmlns:d="http://schemas.microsoft.com/expression/blend/2008" 
              xmlns:local="clr-namespace:MSL.controls.dialogs"
              xmlns:control="clr-namespace:MSL.controls"
+             xmlns:hc="https://handyorg.github.io/handycontrol"
              mc:Ignorable="d" 
              d:DesignHeight="450" d:DesignWidth="800">
 
-    <control:MagicCard Margin="10" Title="下载管理器">
+    <control:MagicCard Title="下载管理器" BorderThickness="0">
         <Grid>
             <Grid.RowDefinitions>
                 <RowDefinition Height="*"/>
@@ -16,9 +17,9 @@
             </Grid.RowDefinitions>
 
             <!-- 下载项列表 -->
-            <ListView x:Name="DownloadItemsListView" MinHeight="100"
-              ScrollViewer.HorizontalScrollBarVisibility="Disabled" SelectionMode="Single">
-                <ListView.ItemTemplate>
+            <control:MagicListBox1 x:Name="DownloadItemsListView" hc:Empty.ShowEmpty="True" MinHeight="100"
+              ScrollViewer.HorizontalScrollBarVisibility="Disabled" SelectionMode="Single" HorizontalContentAlignment="Stretch">
+                <control:MagicListBox1.ItemTemplate>
                     <DataTemplate>
                         <Grid>
                             <Grid.RowDefinitions>
@@ -65,14 +66,8 @@
                             </StackPanel>
                         </Grid>
                     </DataTemplate>
-                </ListView.ItemTemplate>
-                <ListView.ItemContainerStyle>
-                    <Style TargetType="ListViewItem">
-                        <Setter Property="HorizontalContentAlignment" Value="Stretch"/>
-                        <Setter Property="Padding" Value="0"/>
-                    </Style>
-                </ListView.ItemContainerStyle>
-            </ListView>
+                </control:MagicListBox1.ItemTemplate>
+            </control:MagicListBox1>
 
             <!-- 底部控制区 -->
             <Grid Grid.Row="1" Margin="0,10,0,0">

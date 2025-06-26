@@ -19,7 +19,7 @@ namespace MSL.pages.frpProviders.MSLFrp
         public MSLFrp()
         {
             InitializeComponent();
-            LogHelper.WriteLog("MSLFrp 页面已初始化。");
+            LogHelper.Write.Info("MSLFrp 页面已初始化。");
         }
 
         private bool isInit = false;
@@ -28,7 +28,7 @@ namespace MSL.pages.frpProviders.MSLFrp
             if (isInit)
                 return;
 
-            LogHelper.WriteLog("MSLFrp 页面已加载，开始初始化流程。");
+            LogHelper.Write.Info("MSLFrp 页面已加载，开始初始化流程。");
             isInit = true;
 
             // 获取Token并尝试登录
@@ -38,12 +38,12 @@ namespace MSL.pages.frpProviders.MSLFrp
 
             if (!string.IsNullOrEmpty(token))
             {
-                LogHelper.WriteLog("检测到用户 Token，尝试自动登录。");
+                LogHelper.Write.Info("检测到用户 Token，尝试自动登录。");
                 // 登录并获取用户信息
                 var loginSuccess = await AttemptLogin(token);
                 if (!loginSuccess)
                 {
-                    LogHelper.WriteLog("自动登录失败，显示手动登录界面。", LogLevel.WARN);
+                    LogHelper.Write.Warn("自动登录失败，显示手动登录界面。");
                     ShowLoginControl();
                     return;  // 登录失败，返回
                 }
@@ -53,7 +53,7 @@ namespace MSL.pages.frpProviders.MSLFrp
                 return;
             }
 
-            LogHelper.WriteLog("未找到用户 Token，显示手动登录界面。");
+            LogHelper.Write.Info("未找到用户 Token，显示手动登录界面。");
             ShowLoginControl();
         }
 
@@ -63,7 +63,7 @@ namespace MSL.pages.frpProviders.MSLFrp
             MSLFrpLogin loginControl = new MSLFrpLogin();
             loginControl.LoginSuccess += async delegate (JObject UserInfo)
             {
-                LogHelper.WriteLog("用户手动登录成功。");
+                LogHelper.Write.Info("用户手动登录成功。");
                 LoginControl.Visibility = Visibility.Collapsed;
                 MainCtrl.Visibility = Visibility.Visible;
                 UpdateUserInfo(UserInfo);
@@ -79,20 +79,20 @@ namespace MSL.pages.frpProviders.MSLFrp
         {
             MagicDialog magicDialog = new MagicDialog();
             magicDialog.ShowTextDialog(Window.GetWindow(this), "登录中……");
-            LogHelper.WriteLog("正在通过 Token 登录 MSLFrp...");
+            LogHelper.Write.Info("正在通过 Token 登录 MSLFrp...");
             var (Code, Msg, UserInfo) = await MSLFrpApi.UserLogin(token);
 
             magicDialog.CloseTextDialog();
 
             if (Code != 200)
             {
-                LogHelper.WriteLog($"MSLFrp API 登录失败。返回码: {Code}, 消息: {Msg}", LogLevel.ERROR);
+                LogHelper.Write.Error($"MSLFrp API 登录失败。返回码: {Code}, 消息: {Msg}");
                 MagicShow.ShowMsgDialog(Window.GetWindow(this), "登陆失败！\n" + Msg, "错误");
                 return false;
             }
 
             // 解析用户信息并更新UI
-            LogHelper.WriteLog($"MSLFrp API 登录成功。用户名: {UserInfo["data"]["name"]}");
+            LogHelper.Write.Info($"MSLFrp API 登录成功。用户名: {UserInfo["data"]["name"]}");
             UpdateUserInfo(UserInfo);
             MagicFlowMsg.ShowMessage("登录成功！", 1);
             return true;
@@ -117,31 +117,31 @@ namespace MSL.pages.frpProviders.MSLFrp
 
         private async Task GetTunnelList()
         {
-            LogHelper.WriteLog("正在获取隧道列表...");
+            LogHelper.Write.Info("正在获取隧道列表...");
             //获取隧道
             var (Code, TunnelList, Msg) = await MSLFrpApi.GetTunnelList();
             if (Code != 200)
             {
-                LogHelper.WriteLog($"获取隧道列表失败。返回码: {Code}, 消息: {Msg}", LogLevel.ERROR);
+                LogHelper.Write.Error($"获取隧道列表失败。返回码: {Code}, 消息: {Msg}");
                 MagicShow.ShowMsgDialog(Window.GetWindow(this), "获取失败！\n" + Msg, "错误");
                 return;
             }
-            LogHelper.WriteLog($"隧道列表获取成功，共 {TunnelList.Count} 条隧道。");
+            LogHelper.Write.Info($"隧道列表获取成功，共 {TunnelList.Count} 条隧道。");
             FrpList.ItemsSource = TunnelList;
         }
 
         private async Task GetNodeList()
         {
-            LogHelper.WriteLog("正在获取节点列表...");
+            LogHelper.Write.Info("正在获取节点列表...");
             //获取隧道
             var (Code, _NodeList, Msg) = await MSLFrpApi.GetNodeList();
             if (Code != 200)
             {
-                LogHelper.WriteLog($"获取节点列表失败。返回码: {Code}, 消息: {Msg}", LogLevel.ERROR);
+                LogHelper.Write.Error($"获取节点列表失败。返回码: {Code}, 消息: {Msg}");
                 MagicShow.ShowMsgDialog(Window.GetWindow(this), "获取失败！\n" + Msg, "错误");
                 return;
             }
-            LogHelper.WriteLog($"节点列表获取成功，共 {_NodeList.Count} 个节点。");
+            LogHelper.Write.Info($"节点列表获取成功，共 {_NodeList.Count} 个节点。");
             NodeList.ItemsSource = _NodeList;
         }
 
@@ -158,16 +158,16 @@ namespace MSL.pages.frpProviders.MSLFrp
             switch (MainCtrl.SelectedIndex)
             {
                 case 0:
-                    LogHelper.WriteLog("切换到隧道列表标签页。");
+                    LogHelper.Write.Info("切换到隧道列表标签页。");
                     await GetTunnelList();
                     break;
                 case 1:
-                    LogHelper.WriteLog("切换到创建隧道标签页。");
+                    LogHelper.Write.Info("切换到创建隧道标签页。");
                     await GetNodeList();
                     Create_Name.Text = Functions.RandomString("MSL_", 6);
                     break;
                 case 2:
-                    LogHelper.WriteLog("切换到用户中心标签页。");
+                    LogHelper.Write.Info("切换到用户中心标签页。");
                     UserCenterFrame.Content = FrpProfile;
                     break;
             }
@@ -192,32 +192,32 @@ namespace MSL.pages.frpProviders.MSLFrp
             var listBox = FrpList;
             if (listBox.SelectedItem is MSLFrpApi.TunnelInfo selectedTunnel)
             {
-                LogHelper.WriteLog($"用户请求为隧道 ID: {selectedTunnel.ID} 生成配置文件。");
+                LogHelper.Write.Info($"用户请求为隧道 ID: {selectedTunnel.ID} 生成配置文件。");
                 OKBtn.IsEnabled = false;
                 var (Code, Content) = await Task.Run(() => MSLFrpApi.GetTunnelConfig(selectedTunnel.ID));
                 OKBtn.IsEnabled = true;
                 if (Code != 200)
                 {
-                    LogHelper.WriteLog($"获取隧道配置失败。ID: {selectedTunnel.ID}, 错误信息: {Content}", LogLevel.ERROR);
+                    LogHelper.Write.Error($"获取隧道配置失败。ID: {selectedTunnel.ID}, 错误信息: {Content}");
                     MagicShow.ShowMsgDialog(Window.GetWindow(this), "出现错误！" + Content, "错误");
                     return;
                 }
                 //输出配置文件
                 if (Config.WriteFrpcConfig(0, $"MSLFrp - {selectedTunnel.Name} | {selectedTunnel.Node}", Content) == true)
                 {
-                    LogHelper.WriteLog($"隧道 ID: {selectedTunnel.ID} 的配置文件写入成功。");
+                    LogHelper.Write.Info($"隧道 ID: {selectedTunnel.ID} 的配置文件写入成功。");
                     await MagicShow.ShowMsgDialogAsync(Window.GetWindow(this), "映射配置成功，请您点击“启动内网映射”以启动映射！", "信息");
                     Window.GetWindow(this).Close();
                 }
                 else
                 {
-                    LogHelper.WriteLog($"隧道 ID: {selectedTunnel.ID} 的配置文件写入失败。", LogLevel.ERROR);
+                    LogHelper.Write.Error($"隧道 ID: {selectedTunnel.ID} 的配置文件写入失败。");
                     await MagicShow.ShowMsgDialogAsync(Window.GetWindow(this), "配置输出失败！", "错误");
                 }
             }
             else
             {
-                LogHelper.WriteLog("用户未选择任何隧道就点击了“确定”按钮。", LogLevel.WARN);
+                LogHelper.Write.Warn("用户未选择任何隧道就点击了“确定”按钮。");
                 await MagicShow.ShowMsgDialogAsync(Window.GetWindow(this), "您似乎没有选择任何隧道！", "错误");
             }
         }
@@ -232,23 +232,23 @@ namespace MSL.pages.frpProviders.MSLFrp
             var listBox = FrpList;
             if (listBox.SelectedItem is MSLFrpApi.TunnelInfo selectedTunnel)
             {
-                LogHelper.WriteLog($"用户请求删除隧道。ID: {selectedTunnel.ID}, 名称: {selectedTunnel.Name}");
+                LogHelper.Write.Info($"用户请求删除隧道。ID: {selectedTunnel.ID}, 名称: {selectedTunnel.Name}");
                 Del_Tunnel.IsEnabled = false;
                 var (Code, Msg) = await MSLFrpApi.DelTunnel(selectedTunnel.ID);
                 Del_Tunnel.IsEnabled = true;
                 await GetTunnelList();
                 if (Code != 200)
                 {
-                    LogHelper.WriteLog($"删除隧道失败。ID: {selectedTunnel.ID}, 错误信息: {Msg}", LogLevel.ERROR);
+                    LogHelper.Write.Error($"删除隧道失败。ID: {selectedTunnel.ID}, 错误信息: {Msg}");
                     MagicShow.ShowMsgDialog(Window.GetWindow(this), Msg, "错误");
                     return;
                 }
-                LogHelper.WriteLog($"删除隧道成功。ID: {selectedTunnel.ID}, 消息: {Msg}");
+                LogHelper.Write.Info($"删除隧道成功。ID: {selectedTunnel.ID}, 消息: {Msg}");
                 MagicShow.ShowMsgDialog(Window.GetWindow(this), Msg, "提示");
             }
             else
             {
-                LogHelper.WriteLog("用户未选择任何隧道就点击了“删除”按钮。", LogLevel.WARN);
+                LogHelper.Write.Warn("用户未选择任何隧道就点击了“删除”按钮。");
                 await MagicShow.ShowMsgDialogAsync(Window.GetWindow(this), "您似乎没有选择任何隧道！", "错误");
             }
 
@@ -282,24 +282,24 @@ namespace MSL.pages.frpProviders.MSLFrp
                     bool kcpProtocol = false;
                     if (KCPProtocol.IsChecked == true)
                         kcpProtocol = true;
-                    LogHelper.WriteLog($"用户请求创建新隧道。节点ID: {selectedNode.ID}, 隧道名称: {Create_Name.Text}");
+                    LogHelper.Write.Info($"用户请求创建新隧道。节点ID: {selectedNode.ID}, 隧道名称: {Create_Name.Text}");
                     var (Code, Msg) = await MSLFrpApi.CreateTunnel(selectedNode.ID, Create_Name.Text, Create_Protocol.Text, "Create By MSL Client", Create_LocalIP.Text, int.Parse(Create_LocalPort.Text), int.Parse(Create_RemotePort.Text), kcpProtocol);
                     if (Code == 200)
                     {
-                        LogHelper.WriteLog($"创建隧道成功。名称: {Create_Name.Text}, 节点ID: {selectedNode.ID}, 消息: {Msg}");
+                        LogHelper.Write.Info($"创建隧道成功。名称: {Create_Name.Text}, 节点ID: {selectedNode.ID}, 消息: {Msg}");
                         await MagicShow.ShowMsgDialogAsync(Window.GetWindow(this), $"{Msg}\n隧道名称：{Create_Name.Text}\n远程端口： {Create_RemotePort.Text}", "成功");
                         //显示main页面
                         MainCtrl.SelectedIndex = 0;
                     }
                     else
                     {
-                        LogHelper.WriteLog($"创建隧道失败。返回码: {Code}, 消息: {Msg}", LogLevel.ERROR);
+                        LogHelper.Write.Error($"创建隧道失败。返回码: {Code}, 消息: {Msg}");
                         await MagicShow.ShowMsgDialogAsync(Window.GetWindow(this), "创建失败！请尝试更换隧道名称/节点！\n" + Msg, "错误");
                     }
                 }
                 catch (Exception ex)
                 {
-                    LogHelper.WriteLog($"创建隧道时发生未知异常: {ex.ToString()}", LogLevel.ERROR);
+                    LogHelper.Write.Error($"创建隧道时发生未知异常: {ex.Message}");
                     await MagicShow.ShowMsgDialogAsync(Window.GetWindow(this), "创建失败！请检查输入是否正确！", "错误");
                 }
                 finally
@@ -309,7 +309,7 @@ namespace MSL.pages.frpProviders.MSLFrp
             }
             else
             {
-                LogHelper.WriteLog("用户未选择任何节点就点击了“创建”按钮。", LogLevel.WARN);
+                LogHelper.Write.Warn("用户未选择任何节点就点击了“创建”按钮。");
                 await MagicShow.ShowMsgDialogAsync(Window.GetWindow(this), "您似乎没有选择任何节点！", "错误");
             }
         }
@@ -329,7 +329,7 @@ namespace MSL.pages.frpProviders.MSLFrp
 
         private void ExitBtn_Click(object sender, RoutedEventArgs e)
         {
-            LogHelper.WriteLog("用户点击“退出登录”。");
+            LogHelper.Write.Info("用户点击“退出登录”。");
             //显示登录页面
             ShowLoginControl();
             MSLFrpApi.UserToken = string.Empty;

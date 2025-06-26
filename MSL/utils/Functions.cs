@@ -4,6 +4,7 @@ using System;
 using System.Collections.Generic;
 using System.Diagnostics;
 using System.IO;
+using System.Management;
 using System.Text;
 using System.Text.RegularExpressions;
 using System.Windows;
@@ -202,6 +203,78 @@ namespace MSL.utils
             return _random.Next(start, end + 1);
         }
 
+        #region 电脑信息获取
+
+        /// <summary>
+        /// CPU名称信息
+        /// </summary>
+        /// <returns></returns>
+        public static string GetCpuName()
+        {
+            var CPUName = "";
+            var management = new ManagementObjectSearcher("Select * from Win32_Processor");
+            foreach (var baseObject in management.Get())
+            {
+                var managementObject = (ManagementObject)baseObject;
+                CPUName = managementObject["Name"].ToString();
+            }
+            return CPUName;
+        }
+
+
+        /// <summary>
+        /// 物理内存的容量
+        /// </summary>
+        /// <returns>物理内存，返回值类型为float，单位MB</returns>
+        public static float GetPhysicalMemoryMB()
+        {
+            float memoryCount = 0;
+            var mc = new ManagementClass("Win32_ComputerSystem");
+            var moc = mc.GetInstances();
+            foreach (var o in moc)
+            {
+                var mo = (ManagementObject)o;
+                string str = mo["TotalPhysicalMemory"].ToString();//单位为 B
+                float a = long.Parse(str);
+                memoryCount = a / 1024 / 1024;//单位换成MB
+            }
+            return memoryCount;
+        }
+
+        /// <summary>
+        /// 物理内存的容量
+        /// </summary>
+        /// <returns>物理内存，返回值类型为float，单位GB</returns>
+        public static float GetPhysicalMemoryGB()
+        {
+            float memoryCount = 0;
+            var mc = new ManagementClass("Win32_ComputerSystem");
+            var moc = mc.GetInstances();
+            foreach (var o in moc)
+            {
+                var mo = (ManagementObject)o;
+                string str = mo["TotalPhysicalMemory"].ToString();//单位为 B
+                float a = long.Parse(str);
+                memoryCount = a / 1024 / 1024 / 1024;//单位换成GB
+            }
+            return memoryCount;
+        }
+
+        /// <summary>
+        /// 操作系统版本
+        /// </summary>
+        public static string OSVersion { get; } = Environment.OSVersion.Version.ToString();
+
+        /// <summary>
+        /// 操作系统描述
+        /// </summary>
+        public static string OSDescription { get; } = System.Runtime.InteropServices.RuntimeInformation.OSDescription;
+
+        /// <summary>
+        /// 操作系统架构（<see cref="Architecture">）
+        /// </summary>
+        public static string OSArchitecture { get; } = System.Runtime.InteropServices.RuntimeInformation.OSArchitecture.ToString();
+        #endregion
 
         #region Install Forge
         public static bool CheckForgeInstaller(string _filename)

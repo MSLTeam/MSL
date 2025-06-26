@@ -1394,6 +1394,15 @@ namespace MSL.langs {
         }
         
         /// <summary>
+        ///   查找类似 打开任务列表 的本地化字符串。
+        /// </summary>
+        public static string Page_SettingsPage_CF_OpenTaskManager {
+            get {
+                return ResourceManager.GetString("Page_SettingsPage_CF_OpenTaskManager", resourceCulture);
+            }
+        }
+        
+        /// <summary>
         ///   查找类似 复制设备ID 的本地化字符串。
         /// </summary>
         public static string Page_SettingsPage_DI_CopyDID {

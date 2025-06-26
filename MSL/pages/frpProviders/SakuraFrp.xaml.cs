@@ -30,14 +30,14 @@ namespace MSL.pages.frpProviders
             if (!isInit)
             {
                 isInit = true;
-                LogHelper.WriteLog("SakuraFrp页面已加载。");
+                LogHelper.Write.Info("SakuraFrp页面已加载。");
                 //显示登录页面
                 LoginGrid.Visibility = Visibility.Visible;
                 MainCtrl.Visibility = Visibility.Collapsed;
                 var token = Config.Read("SakuraFrpToken")?.ToString() ?? "";
                 if (token != "")
                 {
-                    LogHelper.WriteLog("检测到已保存的SakuraFrp Token，尝试自动登录。");
+                    LogHelper.Write.Info("检测到已保存的SakuraFrp Token，尝试自动登录。");
                     MagicDialog MagicDialog = new MagicDialog();
                     MagicDialog.ShowTextDialog(Window.GetWindow(this), "登录中……");
                     await VerifyUserToken(token, false); //移除空格，防止笨蛋
@@ -56,7 +56,7 @@ namespace MSL.pages.frpProviders
             {
                 return;
             }
-            LogHelper.WriteLog($"SakuraFrp页面切换到Tab索引: {MainCtrl.SelectedIndex}");
+            LogHelper.Write.Info($"SakuraFrp页面切换到Tab索引: {MainCtrl.SelectedIndex}");
             switch (MainCtrl.SelectedIndex)
             {
                 case 0:
@@ -74,7 +74,7 @@ namespace MSL.pages.frpProviders
             string token = await MagicShow.ShowInput(Window.GetWindow(this), "请输入Sakura账户Token", "", true);
             if (token != null)
             {
-                LogHelper.WriteLog("用户点击手动输入Token进行登录。");
+                LogHelper.Write.Info("用户点击手动输入Token进行登录。");
                 bool save = (bool)SaveToken.IsChecked;
                 MagicDialog MagicDialog = new MagicDialog();
                 MagicDialog.ShowTextDialog(Window.GetWindow(this), "登录中……");
@@ -85,7 +85,7 @@ namespace MSL.pages.frpProviders
 
         private async Task VerifyUserToken(string token, bool save)
         {
-            LogHelper.WriteLog("开始验证SakuraFrp用户Token。");
+            LogHelper.Write.Info("开始验证SakuraFrp用户Token。");
             try
             {
                 HttpResponse res = await HttpService.GetAsync(ApiUrl + "/user/info?token=" + token);
@@ -95,7 +95,7 @@ namespace MSL.pages.frpProviders
                     if (save)
                     {
                         Config.Write("SakuraFrpToken", token);
-                        LogHelper.WriteLog("用户选择保存Token，已写入配置。");
+                        LogHelper.Write.Info("用户选择保存Token，已写入配置。");
                     }
 
                     //显示main页面
@@ -104,13 +104,13 @@ namespace MSL.pages.frpProviders
                     JObject JsonUserInfo = JObject.Parse((string)res.HttpResponseContent);
                     UserInfo.Text = $"用户名: {JsonUserInfo["name"]}\n用户类型: {JsonUserInfo["group"]["name"]}\n限速: {JsonUserInfo["speed"]}";
                     UserLevel = int.Parse((string)JsonUserInfo["group"]["level"]);
-                    LogHelper.WriteLog($"SakuraFrp用户Token验证成功。用户名: {JsonUserInfo["name"]}");
+                    LogHelper.Write.Info($"SakuraFrp用户Token验证成功。用户名: {JsonUserInfo["name"]}");
                     //获取隧道
                     await GetTunnelList();
                 }
                 else
                 {
-                    LogHelper.WriteLog($"SakuraFrp Token验证失败，HTTP状态码: {res.HttpResponseCode}", LogLevel.WARN);
+                    LogHelper.Write.Error($"SakuraFrp Token验证失败，HTTP状态码: {res.HttpResponseCode}");
                     if (Config.Read("SakuraFrpToken") != null)
                         Config.Remove("SakuraFrpToken");
                     await MagicShow.ShowMsgDialogAsync(Window.GetWindow(this), "登陆失败！", "错误");
@@ -118,7 +118,7 @@ namespace MSL.pages.frpProviders
             }
             catch (Exception ex)
             {
-                LogHelper.WriteLog($"SakuraFrp Token验证过程中发生异常: {ex.ToString()}", LogLevel.ERROR);
+                LogHelper.Write.Error($"SakuraFrp Token验证过程中发生异常: {ex.ToString()}");
                 if (Config.Read("SakuraFrpToken") != null)
                     Config.Remove("SakuraFrpToken");
                 await MagicShow.ShowMsgDialogAsync(Window.GetWindow(this), "登陆失败！" + ex.Message, "错误");
@@ -139,7 +139,7 @@ namespace MSL.pages.frpProviders
 
         private async Task GetTunnelList()
         {
-            LogHelper.WriteLog("开始获取SakuraFrp隧道列表。");
+            LogHelper.Write.Info("开始获取SakuraFrp隧道列表。");
             try
             {
                 //绑定对象
@@ -162,16 +162,16 @@ namespace MSL.pages.frpProviders
                             Online = (bool)item["online"], //在线吗亲
                         });
                     }
-                    LogHelper.WriteLog($"成功获取到 {tunnels.Count} 个隧道。");
+                    LogHelper.Write.Info($"成功获取到 {tunnels.Count} 个隧道。");
                 }
                 else
                 {
-                    LogHelper.WriteLog($"获取隧道列表API请求失败，HTTP状态码: {res.HttpResponseCode}", LogLevel.WARN);
+                    LogHelper.Write.Error($"获取隧道列表API请求失败，HTTP状态码: {res.HttpResponseCode}");
                 }
             }
             catch (Exception ex)
             {
-                LogHelper.WriteLog($"获取SakuraFrp隧道列表时发生异常: {ex.ToString()}", LogLevel.ERROR);
+                LogHelper.Write.Error($"获取SakuraFrp隧道列表时发生异常: {ex.ToString()}");
                 await MagicShow.ShowMsgDialogAsync(Window.GetWindow(this), "获取隧道列表失败！" + ex.Message, "错误");
             }
         }
@@ -223,30 +223,30 @@ namespace MSL.pages.frpProviders
             var listBox = FrpList;
             if (listBox.SelectedItem is TunnelInfo selectedTunnel)
             {
-                LogHelper.WriteLog($"尝试为隧道 '{selectedTunnel.Name}' (ID: {selectedTunnel.ID}) 生成配置文件。");
+                LogHelper.Write.Info($"尝试为隧道 '{selectedTunnel.Name}' (ID: {selectedTunnel.ID}) 生成配置文件。");
                 //输出配置文件
                 if (Config.WriteFrpcConfig(3, $"SakuraFrp - {selectedTunnel.Name}", $"-f {UserToken}:{selectedTunnel.ID}", "") == true)
                 {
-                    LogHelper.WriteLog("SakuraFrp配置文件写入成功。");
+                    LogHelper.Write.Info("SakuraFrp配置文件写入成功。");
                     await MagicShow.ShowMsgDialogAsync(Window.GetWindow(this), "映射配置成功，请您点击“启动内网映射”以启动映射！", "信息");
                     Window.GetWindow(this).Close();
                 }
                 else
                 {
-                    LogHelper.WriteLog("SakuraFrp配置文件写入失败。", LogLevel.ERROR);
+                    LogHelper.Write.Error("SakuraFrp配置文件写入失败。");
                     await MagicShow.ShowMsgDialogAsync(Window.GetWindow(this), "配置输出失败！", "错误");
                 }
             }
             else
             {
-                LogHelper.WriteLog("用户尝试生成配置文件但未选择任何隧道。", LogLevel.WARN);
+                LogHelper.Write.Warn("用户尝试生成配置文件但未选择任何隧道。");
                 await MagicShow.ShowMsgDialogAsync(Window.GetWindow(this), "您似乎没有选择任何隧道！", "错误");
             }
         }
 
         private async void RefreshBtn_Click(object sender, RoutedEventArgs e)
         {
-            LogHelper.WriteLog("用户点击刷新隧道列表。");
+            LogHelper.Write.Info("用户点击刷新隧道列表。");
             (sender as Button).IsEnabled = false;
             await GetTunnelList();
             (sender as Button).IsEnabled = true;
@@ -255,7 +255,7 @@ namespace MSL.pages.frpProviders
         //获取某个隧道的配置文件
         private async Task DelTunnel(string token, int id)
         {
-            LogHelper.WriteLog($"尝试删除SakuraFrp隧道，ID: {id}");
+            LogHelper.Write.Info($"尝试删除SakuraFrp隧道，ID: {id}");
             try
             {
                 //请求头 token
@@ -271,12 +271,12 @@ namespace MSL.pages.frpProviders
                 };
                 HttpResponse res = await HttpService.PostAsync(ApiUrl + "/tunnel/delete", 0, body, headersAction);
                 //MessageBox.Show((string)res.HttpResponseContent);
-                LogHelper.WriteLog($"隧道删除请求完成，ID: {id}，响应内容: {(string)res.HttpResponseContent}");
+                LogHelper.Write.Info($"隧道删除请求完成，ID: {id}，响应内容: {(string)res.HttpResponseContent}");
                 await GetTunnelList();
             }
             catch (Exception ex)
             {
-                LogHelper.WriteLog($"删除SakuraFrp隧道 (ID: {id}) 时发生异常: {ex.ToString()}", LogLevel.ERROR);
+                LogHelper.Write.Error($"删除SakuraFrp隧道 (ID: {id}) 时发生异常: {ex.ToString()}");
                 await MagicShow.ShowMsgDialogAsync(Window.GetWindow(this), "删除失败！" + ex.Message, "错误");
             }
         }
@@ -291,7 +291,7 @@ namespace MSL.pages.frpProviders
             }
             else
             {
-                LogHelper.WriteLog("用户尝试删除隧道但未选择任何隧道。", LogLevel.WARN);
+                LogHelper.Write.Warn("用户尝试删除隧道但未选择任何隧道。");
                 await MagicShow.ShowMsgDialogAsync(Window.GetWindow(this), "您似乎没有选择任何隧道！", "错误");
             }
             (sender as Button).IsEnabled = true;
@@ -299,7 +299,7 @@ namespace MSL.pages.frpProviders
 
         private void ExitBtn_Click(object sender, RoutedEventArgs e)
         {
-            LogHelper.WriteLog("用户退出SakuraFrp登录。");
+            LogHelper.Write.Info("用户退出SakuraFrp登录。");
             //显示登录页面
             LoginGrid.Visibility = Visibility.Visible;
             MainCtrl.Visibility = Visibility.Collapsed;
@@ -323,7 +323,7 @@ namespace MSL.pages.frpProviders
 
         private async Task GetNodeList()
         {
-            LogHelper.WriteLog("开始获取SakuraFrp节点列表。");
+            LogHelper.Write.Info("开始获取SakuraFrp节点列表。");
             try
             {
                 HttpResponse res = await HttpService.GetAsync(ApiUrl + "/nodes?token=" + UserToken);
@@ -353,16 +353,16 @@ namespace MSL.pages.frpProviders
                             });
                         }
                     }
-                    LogHelper.WriteLog($"成功获取到 {nodes.Count} 个可用节点。");
+                    LogHelper.Write.Info($"成功获取到 {nodes.Count} 个可用节点。");
                 }
                 else
                 {
-                    LogHelper.WriteLog($"获取节点列表API请求失败，HTTP状态码: {res.HttpResponseCode}", LogLevel.WARN);
+                    LogHelper.Write.Error($"获取节点列表API请求失败，HTTP状态码: {res.HttpResponseCode}");
                 }
             }
             catch (Exception ex)
             {
-                LogHelper.WriteLog($"获取SakuraFrp节点列表时发生异常: {ex.ToString()}", LogLevel.ERROR);
+                LogHelper.Write.Error($"获取SakuraFrp节点列表时发生异常: {ex.ToString()}");
             }
 
         }
@@ -381,7 +381,7 @@ namespace MSL.pages.frpProviders
             var listBox = NodeList;
             if (listBox.SelectedItem is NodeInfo selectedNode)
             {
-                LogHelper.WriteLog($"尝试创建新的SakuraFrp隧道。名称: {Create_Name.Text}, 节点ID: {selectedNode.ID}, 协议: {Create_Protocol.Text}");
+                LogHelper.Write.Info($"尝试创建新的SakuraFrp隧道。名称: {Create_Name.Text}, 节点ID: {selectedNode.ID}, 协议: {Create_Protocol.Text}");
                 try
                 {
                     //请求头 token
@@ -408,26 +408,26 @@ namespace MSL.pages.frpProviders
                     if (res.HttpResponseCode == HttpStatusCode.Created)
                     {
                         JObject jsonres = JObject.Parse((string)res.HttpResponseContent);
-                        LogHelper.WriteLog($"成功创建隧道: {jsonres["name"]} (ID: {jsonres["id"]})");
+                        LogHelper.Write.Info($"成功创建隧道: {jsonres["name"]} (ID: {jsonres["id"]})");
                         await MagicShow.ShowMsgDialogAsync(Window.GetWindow(this), $"{jsonres["name"]}隧道创建成功！\nID: {jsonres["id"]} 远程端口: {jsonres["remote"]}", "成功");
                         MainCtrl.SelectedIndex = 0;
                     }
                     else
                     {
-                        LogHelper.WriteLog($"创建隧道失败，API返回码: {res.HttpResponseCode}。返回内容: {(string)res.HttpResponseContent}", LogLevel.WARN);
+                        LogHelper.Write.Error($"创建隧道失败，API返回码: {res.HttpResponseCode}。返回内容: {(string)res.HttpResponseContent}");
                         await MagicShow.ShowMsgDialogAsync(Window.GetWindow(this), "创建失败！请尝试更换隧道名称/节点！", "错误");
                     }
                 }
                 catch (Exception ex)
                 {
-                    LogHelper.WriteLog($"创建隧道时发生异常: {ex.ToString()}", LogLevel.ERROR);
+                    LogHelper.Write.Error($"创建隧道时发生异常: {ex.ToString()}");
                     (sender as Button).IsEnabled = true;
                     await MagicShow.ShowMsgDialogAsync(Window.GetWindow(this), $"创建失败！发生异常: {ex.Message}", "错误");
                 }
             }
             else
             {
-                LogHelper.WriteLog("用户尝试创建隧道但未选择任何节点。", LogLevel.WARN);
+                LogHelper.Write.Warn("用户尝试创建隧道但未选择任何节点。");
                 await MagicShow.ShowMsgDialogAsync(Window.GetWindow(this), "您似乎没有选择任何节点！", "错误");
             }
         }

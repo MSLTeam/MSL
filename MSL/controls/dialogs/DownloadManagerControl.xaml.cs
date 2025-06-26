@@ -452,6 +452,8 @@ namespace MSL.controls.dialogs
                 Filename = item.Filename;
                 Status = item.Status;
                 ErrorMessage = item.ErrorMessage;
+                if (Status == DownloadStatus.Completed)
+                    item.Progress.ProgressPercentage = 100;
                 Progress = item.Progress;
             }
 

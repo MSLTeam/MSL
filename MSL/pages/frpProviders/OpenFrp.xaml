@@ -173,16 +173,18 @@
         </TabControl>
 
         <Grid x:Name="LoginGrid" Visibility="Collapsed">
-            <StackPanel HorizontalAlignment="Center" VerticalAlignment="Center" >
-                <TextBlock Text="使用 OpenFrp 服务之前，请先登录您的 OpenFrp 账户" HorizontalAlignment="Center"  VerticalAlignment="Center"  FontSize="16" Foreground="{DynamicResource PrimaryTextBrush}" Margin="0,0,0,20"/>
-                <StackPanel Orientation="Horizontal" HorizontalAlignment="Center">
-                    <Button x:Name="UserLogin" Content="使用网页授权登录"  Style="{StaticResource ButtonPrimary}" Click="UserLogin_Click"/>
-                    <Button x:Name="userTokenLogin" Content="手动输入Authorization登录"  Margin="10,0,10,0" Click="UserTokenLogin_Click"/>
-                    <Button x:Name="userRegister" Content="进入官网" Command="hc:ControlCommands.OpenLink" CommandParameter="https://www.openfrp.net/"/>
+            <controls:MagicCard Margin="10">
+                <StackPanel HorizontalAlignment="Center" VerticalAlignment="Center" >
+                    <TextBlock Text="登录 OpenFrp 账户" HorizontalAlignment="Center" VerticalAlignment="Center" FontWeight="Bold" FontSize="16" Foreground="{DynamicResource PrimaryTextBrush}" Margin="0,0,0,20"/>
+                    <StackPanel Orientation="Horizontal" HorizontalAlignment="Center">
+                        <Button x:Name="UserLogin" Content="使用网页授权登录"  Style="{StaticResource ButtonPrimary}" Click="UserLogin_Click"/>
+                        <Button x:Name="userTokenLogin" Content="手动输入Authorization登录"  Margin="10,0,10,0" Click="UserTokenLogin_Click"/>
+                        <Button x:Name="userRegister" Content="进入官网" Command="hc:ControlCommands.OpenLink" CommandParameter="https://www.openfrp.net/"/>
+                    </StackPanel>
+                    <CheckBox Content="保存登录状态（风险自负哦~）" HorizontalAlignment="Center" Margin="0,10,0,0" x:Name="SaveToken"/>
+                    <TextBlock Text="如果您不知道什么是Authorization，请使用授权方式登录" HorizontalAlignment="Center"  VerticalAlignment="Center"  FontSize="13" Foreground="{DynamicResource PrimaryTextBrush}" Margin="0,10,0,0"/>
                 </StackPanel>
-                <CheckBox Content="保存登录状态（风险自负哦~）" HorizontalAlignment="Center" Margin="0,10,0,0" x:Name="SaveToken"/>
-                <TextBlock Text="如果您不知道什么是Authorization，请使用授权方式登录" HorizontalAlignment="Center"  VerticalAlignment="Center"  FontSize="13" Foreground="{DynamicResource PrimaryTextBrush}" Margin="0,10,0,0"/>
-            </StackPanel>
+            </controls:MagicCard>
         </Grid>
     </Grid>
 </Page>

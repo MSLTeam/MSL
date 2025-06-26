@@ -1,4 +1,5 @@
 ﻿using Downloader;
+using HandyControl.Tools.Extension;
 using System;
 using System.Collections.Concurrent;
 using System.Collections.Generic;
@@ -8,7 +9,6 @@ using System.Net;
 using System.Security.Cryptography;
 using System.Threading;
 using System.Threading.Tasks;
-using System.Windows.Threading;
 
 namespace MSL.utils
 {
@@ -83,7 +83,7 @@ namespace MSL.utils
         {
             if (!_downloadGroups.ContainsKey(groupId))
                 throw new ArgumentException($"Download group '{groupId}' does not exist");
-            LogHelper.WriteLog($"添加下载项: {url} 到组 {groupId}，下载位置 {downloadPath}，期待的sha256 {expectedSha256}。", LogLevel.INFO);
+            LogHelper.Write.Info($"添加下载项: {url} 到组 {groupId}，下载位置 {downloadPath}" + (expectedSha256 == "" ? "。" : $"，期待的sha256 {expectedSha256}。"));
 
             itemId = itemId ?? Guid.NewGuid().ToString();
 
