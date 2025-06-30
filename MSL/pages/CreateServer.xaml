@@ -40,7 +40,7 @@
                     <TextBlock Grid.Row="3" Text="⭐导入整合包模式：想要在线下载一个服务器整合包来进行导入？或是自己备有一个整合包文件？那就使用此模式吧！" FontSize="16" VerticalAlignment="Center" TextWrapping="Wrap" Margin="320,0,50,0"/>
                     <TextBlock Grid.Row="4"  FontSize="16" VerticalAlignment="Center" TextWrapping="Wrap" Margin="10,0,50,0">
                         <Run Text="►提示：若需要开基岩版官方服务器（BDS），请使用自定义模式并参照" FontSize="16" Foreground="{DynamicResource PrimaryTextBrush}"/>
-                        <Hyperlink Command="hc:ControlCommands.OpenLink"  CommandParameter="https://www.mslmc.cn/docs/launch_bds.html">MSL官网教程</Hyperlink>
+                        <Hyperlink Command="hc:ControlCommands.OpenLink"  CommandParameter="https://www.mslmc.cn/docs/launch-bds.html">MSL官网教程</Hyperlink>
                         <Run Text="！"/>
                     </TextBlock>
                     <Image Grid.Row="4" Source="/icon.ico" VerticalAlignment="Bottom" HorizontalAlignment="Right" Width="50"/>
