@@ -94,7 +94,7 @@ namespace MSL.pages.frpProviders
                 string password = await MagicShow.ShowInput(Window.GetWindow(this), "请输入ME Frp账户的密码", "", true);
                 if (password != null)
                 {
-                    Process.Start("https://frp.mcserverx.com/3rdparty/captcha?client=MSL");
+                    Process.Start("https://www.mefrp.com/3rdparty/captcha?client=MSL");
                     string captchaCallback = await MagicShow.ShowInput(Window.GetWindow(this), "请在完成打开网页的人机验证后，获取验证码并填写到此处", "", true);
                     if (captchaCallback != null)
                     {
@@ -550,7 +550,7 @@ namespace MSL.pages.frpProviders
                 double beforeTraffic = await GetUserTraffic();
 
                 // 开始签到请求
-                Process.Start("https://frp.mcserverx.com/3rdparty/sign?client=MSL&&token=" + UserToken);
+                Process.Start("https://www.mefrp.com/3rdparty/sign?client=MSL&&token=" + UserToken);
 
                 // 开始轮询逻辑
                 int pollCount = 0;
