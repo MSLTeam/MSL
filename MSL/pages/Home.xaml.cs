@@ -398,8 +398,14 @@ namespace MSL.pages
                     {
                         startServerDropdown.Items.Add(item.Value["name"]);
                     }
-
-                    startServerDropdown.SelectedIndex = selectedIndex;
+                    if (selectedIndex == -1 && startServerDropdown.Items.Count > 0)
+                    {
+                        startServerDropdown.SelectedIndex = 0;
+                    }
+                    else
+                    {
+                        startServerDropdown.SelectedIndex = selectedIndex;
+                    }
                     LogHelper.Write.Info("成功获取服务器列表信息，并将服务器名称添加进下拉列表框中。");
                 }
                 catch (Exception ex)

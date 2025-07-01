@@ -127,10 +127,17 @@ namespace MSL
                 LogHelper.Write.Info("启动事件完成！");
                 LoadingCompleted = true;
             }
+            catch (FileNotFoundException ex)
+            {
+                LogHelper.Write.Error($"执行主窗体初始化任务时出错： {ex.ToString()}");
+                MagicShow.ShowMsgDialog($"软件加载时出现错误！\n请检查您是否安装了.NET Framework 4.7.2运行库，若安装后依旧出错，请联系作者！\n错误信息：{ex.Message}", "错误");
+                return;
+            }
             catch (Exception ex)
             {
-                // 是的，就是EEEOR（确信QWQ）
-                await MagicShow.ShowMsgDialogAsync(this, ex.Message, "EEEOR");
+                LogHelper.Write.Error($"执行主窗体初始化任务时出错： {ex.ToString()}");
+                MagicShow.ShowMsgDialog($"软件加载时出现错误！若无法正常使用，请联系作者进行解决。\n错误信息：{ex.Message}", "错误");
+                return;
             }
         }
 
@@ -151,7 +158,7 @@ namespace MSL
             }
             else
             {
-                LogHelper.Write.Info("用户拒绝了使用协议，即将退出。");
+                LogHelper.Write.Info("用户拒绝了使用协议，退出软件……");
                 return false;
             }
         }
