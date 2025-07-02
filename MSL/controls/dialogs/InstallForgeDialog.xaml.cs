@@ -211,7 +211,7 @@ namespace MSL.controls
                 }
 
                 // 创建下载组
-                string vanillaGroup = downloadManager.CreateDownloadGroup("ForgeInstall_LibFiles", maxConcurrentDownloads: 1);
+                string vanillaGroup = downloadManager.CreateDownloadGroup("ForgeInstall_VanillaCore", maxConcurrentDownloads: 1);
 
                 downloadManager.AddDownloadItem(
                     vanillaGroup,
@@ -645,8 +645,11 @@ namespace MSL.controls
                 if (counter == 100)
                 {
                     counter = 0;
-                    // 编译过程不予显示，直接写到日志文件中
-                    logWriter.WriteLineAsync(logTemp);
+                    Dispatcher.Invoke(() =>
+                    {
+                        // 编译过程不予显示，直接写到日志文件中
+                        logWriter.WriteLineAsync(logTemp);
+                    });
                     logTemp = "";
                 }
                 logTemp += e.Data + "\n";
@@ -950,10 +953,11 @@ namespace MSL.controls
                 logWriter.Close();
                 logWriter.Dispose();
                 var downloadManager = DownloadManager.Instance;
-                downloadManager.CancelDownloadGroup("ForgeInstall_VanillaServer");
+                downloadManager.CancelDownloadGroup("ForgeInstall_VanillaCore");
                 downloadManager.CancelDownloadGroup("ForgeInstall_LibFiles");
-                downloadManager.RemoveDownloadGroup("ForgeInstall_VanillaServer");
+                downloadManager.RemoveDownloadGroup("ForgeInstall_VanillaCore");
                 downloadManager.RemoveDownloadGroup("ForgeInstall_LibFiles");
+                DownloadDisplay.ClearAllItems();
                 if (Directory.Exists(TempPath))
                     Directory.Delete(TempPath, true);
                 if (Directory.Exists(LibPath))
