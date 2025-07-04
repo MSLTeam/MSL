@@ -448,6 +448,10 @@ namespace MSL
                     }
                     return;
                 }
+                else
+                {
+                    LogHelper.Write.Info($"设备用户信息：设备用户UID：{(string)request["data"]["userInfo"]["uid"]} 注册时间：{(string)request["data"]["userInfo"]["regTime"]} 设备ID：{(string)request["data"]["userInfo"]["deviceID"]}");
+                }
             }
             catch (JsonException ex)
             {
