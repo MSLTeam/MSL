@@ -710,12 +710,18 @@ namespace MSL.controls
             if (useMirrorUrl)
             {
                 //改成镜像源的部分
+                /*
                 str = str.Replace("https://maven.neoforged.net/releases/net/neoforged/forge", "https://mojmirror.hypertention.cn/maven/net/neoforged/forge");
                 str = str.Replace("https://maven.neoforged.net/releases/net/neoforged/neoforge", "https://mojmirror.hypertention.cn/maven/net/neoforged/neoforge");
                 str = str.Replace("https://maven.minecraftforge.net", "https://mojmirror.hypertention.cn/maven");
                 str = str.Replace("https://files.minecraftforge.net/maven", "https://mojmirror.hypertention.cn/maven");
                 str = str.Replace("https://libraries.minecraft.net", "https://mojmirror.hypertention.cn/maven");
                 str = str.Replace("https://maven.neoforged.net/releases", "https://mojmirror.hypertention.cn/maven");
+                */
+                str = str.Replace("https://maven.neoforged.net", "https://neoforge.mirrors.mslmc.cn");
+                str = str.Replace("https://maven.minecraftforge.net", "https://forge-maven.mirrors.mslmc.cn");
+                str = str.Replace("https://files.minecraftforge.net", "https://forge-files.mirrors.mslmc.cn");
+                str = str.Replace("https://libraries.minecraft.net", "https://mclibs.mirrors.mslmc.cn");
             }
             //构建时候的变量
             str = str.Replace("{INSTALLER}", ForgePath);
