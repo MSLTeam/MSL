@@ -17,7 +17,7 @@
             </Grid.RowDefinitions>
             <TextBlock Grid.Row="0" Foreground="{DynamicResource PrimaryTextBrush}" HorizontalAlignment="Center" VerticalAlignment="Center" TextWrapping="Wrap" Text="NeoForge安装器" FontSize="20" x:Name="InstallDialogTitle"/>
             <ComboBox x:Name="Mirror" Grid.Row="0" HorizontalAlignment="Left" Margin="10" SelectionChanged="Mirror_SelectionChanged">
-                <ComboBoxItem Content="下载源：BMCL" IsSelected="True"/>
+                <ComboBoxItem Content="下载源：MSL镜像源" IsSelected="True"/>
                 <ComboBoxItem Content="下载源：官方"/>
             </ComboBox>
             <ComboBox x:Name="MultiThreadCount" Grid.Row="0" HorizontalAlignment="Right" Margin="10" SelectionChanged="MultiThreadCount_SelectionChanged">
