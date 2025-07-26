@@ -331,17 +331,31 @@ namespace MSL.pages.frpProviders
             {
                 LogHelper.Write.Info($"用户选择隧道 '{selectedTunnel.Name}' (ID: {selectedTunnel.ID})，正在生成Frpc配置文件。");
                 //输出配置文件
-                if (Config.WriteFrpcConfig(4, $"MEFrp - {selectedTunnel.Name}", $"-t {UserToken} -p {selectedTunnel.ID}", "") == true)
+                HttpResponse res = await HttpService.GetAsync(ApiUrl + "/auth/user/frpToken", headers =>
                 {
-                    LogHelper.Write.Info("Frpc配置文件写入成功。");
-                    await MagicShow.ShowMsgDialogAsync(Window.GetWindow(this), "映射配置成功，请您点击“启动内网映射”以启动映射！", "信息");
-                    Window.GetWindow(this).Close();
+                    headers.Add("Authorization", $"Bearer {UserToken}");
+                });
+                if (res.HttpResponseCode == System.Net.HttpStatusCode.OK)
+                {
+                    JObject tokenJson = JObject.Parse((string)res.HttpResponseContent);
+                    if (Config.WriteFrpcConfig(4, $"MEFrp - {selectedTunnel.Name}", $"-t {tokenJson["data"]["token"]} -p {selectedTunnel.ID}", "") == true)
+                    {
+                        LogHelper.Write.Info("Frpc配置文件写入成功。");
+                        await MagicShow.ShowMsgDialogAsync(Window.GetWindow(this), "映射配置成功，请您点击“启动内网映射”以启动映射！", "信息");
+                        Window.GetWindow(this).Close();
+                    }
+                    else
+                    {
+                        LogHelper.Write.Error("Frpc配置文件写入失败。");
+                        await MagicShow.ShowMsgDialogAsync(Window.GetWindow(this), "配置输出失败！", "错误");
+                    }
                 }
                 else
                 {
-                    LogHelper.Write.Error("Frpc配置文件写入失败。");
+                    LogHelper.Write.Error("Frpc配置文件写入失败。\n获取FrpToken失败！");
                     await MagicShow.ShowMsgDialogAsync(Window.GetWindow(this), "配置输出失败！", "错误");
                 }
+
             }
             else
             {
