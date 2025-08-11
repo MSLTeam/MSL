@@ -130,8 +130,7 @@ namespace MSL.pages.frpProviders.MSLFrp
             RealnameVerify_Label.Content = "实名认证：" + ((bool)userData["realName"] == true ? "已通过" : "未通过");
             if ((bool)userData["realName"])
             {
-                //RealnameVerify_Button.Visibility = Visibility.Collapsed;
-                RealnameVerify_Button.Visibility = Visibility.Visible;
+                RealnameVerify_Button.Visibility = Visibility.Collapsed;
             }
             else
             {
