@@ -130,7 +130,8 @@ namespace MSL.pages.frpProviders.MSLFrp
             RealnameVerify_Label.Content = "实名认证：" + ((bool)userData["realName"] == true ? "已通过" : "未通过");
             if ((bool)userData["realName"])
             {
-                RealnameVerify_Button.Visibility = Visibility.Collapsed;
+                //RealnameVerify_Button.Visibility = Visibility.Collapsed;
+                RealnameVerify_Button.Visibility = Visibility.Visible;
             }
             else
             {
@@ -142,7 +143,7 @@ namespace MSL.pages.frpProviders.MSLFrp
         private async void RealnameVerify_Button_Click(object sender, RoutedEventArgs e)
         {
             LogHelper.Write.Info("用户点击实名认证按钮。");
-            if (await MagicShow.ShowMsgDialogAsync("请选择实名方式: \n#MSL用户中心网页实名: 支持微信、支付宝实名(其中支付宝支持港澳台居民实名);\n#MSL内实名: 仅支持中国大陆居民身份证支付宝实名 (二维码较小，有扫不到的可能);\n实名费用: 会员免费支付宝实名，支付宝实名150积分，微信实名200积分。", "提示", true, "MSL内实名", "前往MSL用户中心实名"))
+            if (await MagicShow.ShowMsgDialogAsync("请选择实名方式: \n#MSL用户中心网页实名: 支持微信、支付宝实名(其中支付宝支持港澳台居民实名);\n#MSL内实名: 仅支持中国大陆居民身份证支付宝实名 (二维码较小，有扫不到的可能);\n实名费用: 会员免费支付宝实名，支付宝实名150积分，微信实名200积分。\n*特别提醒：由于用户自身填写错误的实名信息，积分一旦扣除将无法退还！", "提示", true, "MSL内实名(仅支持支付宝)", "MSL用户中心实名(支付宝/微信)"))
             {
                 LogHelper.Write.Info("用户选择前往MSL用户中心网页进行实名。");
                 Process.Start("https://user.mslmc.net/user/profile");
@@ -169,6 +170,11 @@ namespace MSL.pages.frpProviders.MSLFrp
                 { "cert_type", "IDENTITY_CARD" },
                 { "verify_type", "alipay" }
             };
+            if (!await MagicShow.ShowMsgDialogAsync($"请确认如下实名信息是否正确:\n姓名:{certName}\n身份证号码:{certID}\n确认无误后，请点击确认按钮进入支付宝扫码人脸识别流程\n*注意:非会员一旦确认提交信息，将会立即扣除150积分(若因用户自身填写错误的信息导致认证失败，实名小号积分不予退换。)，若需要取消上一次的实名订单，请加群联系管理员。(Q群" +
+                $"信息在软件首页)", "实名信息确认", true, "取消","我已确认信息无误"))
+            {
+                return;
+            }
             LogHelper.Write.Info("开始提交实名认证信息...");
             var (Code, Data, Msg) = await MSLFrpApi.ApiPost("/user/submitRealNameVerify", HttpService.PostContentType.FormUrlEncoded, parameterData);
             if (Code == 200)
