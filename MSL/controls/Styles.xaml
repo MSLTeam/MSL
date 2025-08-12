@@ -2,6 +2,7 @@
                     xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
                     xmlns:local="clr-namespace:MSL.controls"
                     xmlns:hc="https://handyorg.github.io/handycontrol"
+                    xmlns:iconPacks="http://metro.mahapps.com/winfx/xaml/iconpacks"
                     xmlns:langs="clr-namespace:MSL.langs">
     
     <Style x:Key="MagicBorder" TargetType="Border">
@@ -206,7 +207,7 @@
             <Setter.Value>
                 <DataTemplate>
                     <StackPanel Orientation="Horizontal">
-                        <Image Source="{Binding Icon}" Width="22" Height="22" HorizontalAlignment="Left"/>
+                        <iconPacks:PackIconMaterial Kind="{Binding IconKind}" Foreground="{DynamicResource PrimaryTextBrush}" Margin="3"/>
                         <TextBlock Text="{Binding Text}" Foreground="{DynamicResource PrimaryTextBrush}" Margin="10,0,5,0" VerticalAlignment="Center" HorizontalAlignment="Left" FontSize="14"/>
                     </StackPanel>
                 </DataTemplate>
@@ -231,7 +232,7 @@
             </Setter.Value>
         </Setter>
     </Style>
-    
+
     <Style x:Key="TabControlSideMenu" TargetType="{x:Type TabControl}">
         <Setter Property="TabStripPlacement" Value="Left"/>
         <Setter Property="Template">

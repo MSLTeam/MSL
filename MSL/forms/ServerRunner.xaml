@@ -4,6 +4,7 @@
         xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
         xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
         xmlns:hc="https://handyorg.github.io/handycontrol"
+        xmlns:iconPacks="http://metro.mahapps.com/winfx/xaml/iconpacks"
         xmlns:controls="clr-namespace:MSL.controls"
         xmlns:langs="clr-namespace:MSL.langs"
         xmlns:local="clr-namespace:MSL"
@@ -37,7 +38,7 @@
             </TabControl.Resources>
             <TabItem x:Name="Tab_Home" Width="50" Style="{StaticResource TabItemSideMenu}">
                 <TabItem.Header>
-                    <controls:TabControlHeader Icon="{DynamicResource homeDrawingImage}" Text="仪表盘"/>
+                    <controls:TabControlHeader Text="仪表盘" IconKind="HomeOutline"/>
                 </TabItem.Header>
                 <Grid Style="{StaticResource GridAnimation}">
                     <Grid.RowDefinitions>
@@ -160,7 +161,7 @@
             </TabItem>
             <TabItem x:Name="Tab_Console" Width="50" Style="{StaticResource TabItemSideMenu}">
                 <TabItem.Header>
-                    <controls:TabControlHeader Icon="{DynamicResource terminal_2DrawingImage}" Text="控制台"/>
+                    <controls:TabControlHeader IconKind="Console" Text="控制台"/>
                 </TabItem.Header>
                 <Grid x:Name="CmdGrid" Style="{StaticResource GridAnimation}">
                     <RichTextBox x:Name="outlog" IsUndoEnabled="False" UndoLimit="0" Background="{DynamicResource BorderBackground}" IsReadOnly="True" Block.LineHeight="1" Margin="10,10,10,47" ContextMenu="{StaticResource UIContextMenu}" VerticalScrollBarVisibility="Visible">
@@ -211,7 +212,7 @@
             </TabItem>
             <TabItem x:Name="Tab_Plugins" Width="50" Style="{StaticResource TabItemSideMenu}">
                 <TabItem.Header>
-                    <controls:TabControlHeader Icon="{DynamicResource filesDrawingImage}" Text="插件/模组"/>
+                    <controls:TabControlHeader IconKind="FolderFileOutline" Text="插件/模组"/>
                 </TabItem.Header>
                 <Grid Style="{StaticResource GridAnimation}">
                     <TabControl x:Name="pluginsAndModsTab" Margin="10,5,10,10" Style="{StaticResource TabControlCapsuleInLine}" Visibility="Hidden" Background="Transparent" BorderThickness="0">
@@ -326,7 +327,7 @@
             </TabItem>
             <TabItem x:Name="Tab_Settings" Width="50" Style="{StaticResource TabItemSideMenu}">
                 <TabItem.Header>
-                    <controls:TabControlHeader Icon="{DynamicResource adjustments_horizontalDrawingImage}" Text="服务器设置"/>
+                    <controls:TabControlHeader IconKind="Tune" Text="服务器设置"/>
                 </TabItem.Header>
                 <Grid Style="{StaticResource GridAnimation}">
                     <controls:MagicScrollViewer>
@@ -514,7 +515,7 @@
             </TabItem>
             <TabItem x:Name="Tab_MoreFunctions" Width="50" Style="{StaticResource TabItemSideMenu}">
                 <TabItem.Header>
-                    <controls:TabControlHeader Icon="{DynamicResource category_plusDrawingImage}" Text="更多功能"/>
+                    <controls:TabControlHeader IconKind="ViewGridOutline" Text="更多功能"/>
                 </TabItem.Header>
                 <Grid Style="{StaticResource GridAnimation}">
                     <controls:MagicScrollViewer>
@@ -675,7 +676,7 @@
             </TabItem>
             <TabItem x:Name="Tab_Timer" Width="50" Style="{StaticResource TabItemSideMenu}">
                 <TabItem.Header>
-                    <controls:TabControlHeader Icon="{DynamicResource alarmDrawingImage}" Text="定时任务"/>
+                    <controls:TabControlHeader IconKind="TimerOutline" Text="定时任务"/>
                 </TabItem.Header>
                 <Grid Style="{StaticResource GridAnimation}">
                     <Grid>

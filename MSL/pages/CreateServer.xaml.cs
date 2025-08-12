@@ -1128,7 +1128,7 @@ namespace MSL.pages
                 Version targetVersion1 = new Version("1.7");
                 Version targetVersion2 = new Version("1.12");
                 Version targetVersion3 = new Version("1.16");
-                Version targetVersion4 = new Version("1.19");
+                Version targetVersion4 = new Version("1.20.4");
 
                 if (_version <= targetVersion1)
                 {
@@ -1150,13 +1150,13 @@ namespace MSL.pages
                 }
                 else if (_version <= targetVersion4)
                 {
-                    //1.16< _version <=1.19
+                    //1.16< _version <=1.20.4
                     FinallyJavaDescrip.Text = "根据您的选择，最适合您服务器的Java版本为：Java17及以上";
                     javaVersion = "Java17";
                 }
                 else
                 {
-                    //1.19< _version
+                    //1.20.4< _version
                     FinallyJavaDescrip.Text = "根据您的选择，最适合您服务器的Java版本为：Java21及以上";
                     javaVersion = "Java21";
                 }

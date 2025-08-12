@@ -141,12 +141,17 @@
                         <hc:Shield Subject="..." Status="{Binding [OpenWebsite], Source={x:Static langs:LanguageManager.Instance}}" Margin="0,-45,20,0" Command="hc:ControlCommands.OpenLink" CommandParameter="https://github.com/p3root/Chaos.NaCl" HorizontalAlignment="Right" VerticalAlignment="Top"/>
                     </StackPanel>
                     <StackPanel Margin="0,10,0,0">
-                        <TextBlock Text="23.Tabler Icons" Margin="20,0,0,5" FontSize="16" VerticalAlignment="Top" HorizontalAlignment="Left" FontWeight="Bold" Foreground="{DynamicResource PrimaryTextBrush}"/>
-                        <TextBlock Text="Copyright (c) 2020-2024 Paweł Kuna.&#xA;Licensed under the MIT License." Margin="20,0,0,5" VerticalAlignment="Top" HorizontalAlignment="Left" Foreground="{DynamicResource PrimaryTextBrush}"/>
-                        <hc:Shield Subject="..." Status="{Binding [OpenWebsite], Source={x:Static langs:LanguageManager.Instance}}" Margin="0,-45,20,0" Command="hc:ControlCommands.OpenLink" CommandParameter="https://github.com/tabler/tabler-icons" HorizontalAlignment="Right" VerticalAlignment="Top"/>
+                        <TextBlock Text="23.Material Design Icons" Margin="20,0,0,5" FontSize="16" VerticalAlignment="Top" HorizontalAlignment="Left" FontWeight="Bold" Foreground="{DynamicResource PrimaryTextBrush}"/>
+                        <TextBlock Text="By Google.&#xA;Licensed under the Apache License." Margin="20,0,0,5" VerticalAlignment="Top" HorizontalAlignment="Left" Foreground="{DynamicResource PrimaryTextBrush}"/>
+                        <hc:Shield Subject="..." Status="{Binding [OpenWebsite], Source={x:Static langs:LanguageManager.Instance}}" Margin="0,-45,20,0" Command="hc:ControlCommands.OpenLink" CommandParameter="https://pictogrammers.com/library/mdi/" HorizontalAlignment="Right" VerticalAlignment="Top"/>
                     </StackPanel>
                     <StackPanel Margin="0,10,0,0">
-                        <TextBlock Text="24.MCSL Java Scanner" Margin="20,0,0,5" FontSize="16" VerticalAlignment="Top" HorizontalAlignment="Left" FontWeight="Bold" Foreground="{DynamicResource PrimaryTextBrush}"/>
+                        <TextBlock Text="24.MahApps.Metro.IconPacks" Margin="20,0,0,5" FontSize="16" VerticalAlignment="Top" HorizontalAlignment="Left" FontWeight="Bold" Foreground="{DynamicResource PrimaryTextBrush}"/>
+                        <TextBlock Text="Copyright (c) MahApps, Jan Karger.&#xA;Licensed under the MIT License." Margin="20,0,0,5" VerticalAlignment="Top" HorizontalAlignment="Left" Foreground="{DynamicResource PrimaryTextBrush}"/>
+                        <hc:Shield Subject="..." Status="{Binding [OpenWebsite], Source={x:Static langs:LanguageManager.Instance}}" Margin="0,-45,20,0" Command="hc:ControlCommands.OpenLink" CommandParameter="https://github.com/MahApps/MahApps.Metro.IconPacks" HorizontalAlignment="Right" VerticalAlignment="Top"/>
+                    </StackPanel>
+                    <StackPanel Margin="0,10,0,0">
+                        <TextBlock Text="25.MCSL Java Scanner" Margin="20,0,0,5" FontSize="16" VerticalAlignment="Top" HorizontalAlignment="Left" FontWeight="Bold" Foreground="{DynamicResource PrimaryTextBrush}"/>
                         <TextBlock Text="Copyright (c) 2022-2024 MCSLTeam.&#xA;Original Author: LxHTT &amp; AresConnor &amp; Tigercrl" Margin="20,0,0,5" VerticalAlignment="Top" HorizontalAlignment="Left" Foreground="{DynamicResource PrimaryTextBrush}"/>
                         <hc:Shield Subject="..." Status="{Binding [OpenWebsite], Source={x:Static langs:LanguageManager.Instance}}" Margin="0,-45,20,0" Command="hc:ControlCommands.OpenLink" CommandParameter="https://mcsl.com.cn/" HorizontalAlignment="Right" VerticalAlignment="Top"/>
                     </StackPanel>

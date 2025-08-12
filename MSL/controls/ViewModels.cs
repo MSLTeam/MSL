@@ -1,6 +1,4 @@
 ﻿using System.ComponentModel;
-using System.Windows;
-using System.Windows.Controls;
 using System.Windows.Media;
 
 namespace MSL.controls
@@ -95,39 +93,5 @@ namespace MSL.controls
             MCVersion = mcversion;
             IsVisible = isvisivle;
         }
-    }
-
-    internal class ListBoxSideMenu : Control
-    {
-        public ImageSource Icon { get; set; }
-        public static readonly DependencyProperty TextProperty =
-        DependencyProperty.Register(
-            "Text",
-            typeof(string),
-            typeof(ListBoxSideMenu),
-            new PropertyMetadata(default(string)));
-
-        public string Text
-        {
-            get { return (string)GetValue(TextProperty); }
-            set { SetValue(TextProperty, value); }
-        }
-    }
-
-    internal class TabControlHeader : Control
-    {
-        public static readonly DependencyProperty IconProperty =
-        DependencyProperty.Register(
-            "Icon", typeof(ImageSource),
-            typeof(TabControlHeader),
-            new PropertyMetadata(default(ImageSource)));
-
-        public ImageSource Icon
-        {
-            get { return (ImageSource)GetValue(IconProperty); }
-            set { SetValue(IconProperty, value); }
-        }
-
-        public string Text { get; set; }
     }
 }

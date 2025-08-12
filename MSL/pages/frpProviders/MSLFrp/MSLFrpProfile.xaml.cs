@@ -130,8 +130,7 @@ namespace MSL.pages.frpProviders.MSLFrp
             RealnameVerify_Label.Content = "实名认证：" + ((bool)userData["realName"] == true ? "已通过" : "未通过");
             if ((bool)userData["realName"])
             {
-                //RealnameVerify_Button.Visibility = Visibility.Collapsed;
-                RealnameVerify_Button.Visibility = Visibility.Visible;
+                RealnameVerify_Button.Visibility = Visibility.Collapsed;
             }
             else
             {
@@ -150,7 +149,6 @@ namespace MSL.pages.frpProviders.MSLFrp
                 return;
             }
             LogHelper.Write.Info("用户选择在MSL客户端内进行实名。");
-            RealnameVerify_Button.IsEnabled = false;
             string certID = await MagicShow.ShowInput(Window.GetWindow(this), "请输入您的身份证号码", "");
             if (certID == null)
             {
@@ -176,6 +174,7 @@ namespace MSL.pages.frpProviders.MSLFrp
                 return;
             }
             LogHelper.Write.Info("开始提交实名认证信息...");
+            RealnameVerify_Button.IsEnabled = false;
             var (Code, Data, Msg) = await MSLFrpApi.ApiPost("/user/submitRealNameVerify", HttpService.PostContentType.FormUrlEncoded, parameterData);
             if (Code == 200)
             {
