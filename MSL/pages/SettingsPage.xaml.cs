@@ -94,12 +94,14 @@ namespace MSL.pages
                 if (jsonObject["darkTheme"] != null && jsonObject["darkTheme"].ToString() == "True")
                 {
                     autoSetTheme.IsChecked = false;
+                    ChangeSkinColor.IsEnabled = true;
                     darkTheme.IsChecked = true;
                     darkTheme.IsEnabled = true;
                 }
                 else if (jsonObject["darkTheme"] != null && jsonObject["darkTheme"].ToString() == "False")
                 {
                     autoSetTheme.IsChecked = false;
+                    ChangeSkinColor.IsEnabled = true;
                     darkTheme.IsEnabled = true;
                 }
                 if (jsonObject["lang"] != null)
@@ -116,7 +118,7 @@ namespace MSL.pages
                     }
                     ChangeLanguage.SelectedIndex = langCombo;
                 }
-
+                /*
                 if (jsonObject["skin"] != null)
                 {
                     if ((int)jsonObject["skin"] == 0)
@@ -166,6 +168,8 @@ namespace MSL.pages
                         }
                     }
                 }
+                */
+
                 if (jsonObject["semitransparentTitle"] != null && (bool)jsonObject["semitransparentTitle"] == true)
                 {
                     semitransparentTitle.IsChecked = true;
@@ -362,6 +366,7 @@ namespace MSL.pages
             }
         }
 
+        /*
         private void ChangeSkin(object sender, RoutedEventArgs e)
         {
             if (BlueSkinBtn.IsChecked == true)
@@ -414,6 +419,7 @@ namespace MSL.pages
                 File.WriteAllText("MSL\\config.json", convertString, Encoding.UTF8);
             }
         }
+        */
 
         private void autoGetPlayerInfo_Click(object sender, RoutedEventArgs e)
         {
@@ -471,50 +477,51 @@ namespace MSL.pages
         {
             if (autoSetTheme.IsChecked == true)
             {
-                //ThemeManager.Current.AccentColor = Brushes.DeepPink;
-                JObject jobject = JObject.Parse(File.ReadAllText("MSL\\config.json", Encoding.UTF8));
-                jobject["darkTheme"] = "Auto";
-                jobject["skin"] = 0;
-                string convertString = Convert.ToString(jobject);
-                File.WriteAllText("MSL\\config.json", convertString, Encoding.UTF8);
-
+                Config.Write("darkTheme", "Auto");
+                Config.Remove("SkinColor");
                 //Growl.Success("开启成功！");
                 MagicFlowMsg.ShowMessage("开启成功！", 1);
                 ThemeManager.Current.UsingSystemTheme = true;
-                BlueSkinBtn.IsChecked = false;
                 darkTheme.IsChecked = false;
-
-                BlueSkinBtn.IsEnabled = false;
-                RedSkinBtn.IsEnabled = false;
-                GreenSkinBtn.IsEnabled = false;
-                OrangeSkinBtn.IsEnabled = false;
-                PurpleSkinBtn.IsEnabled = false;
-                PinkSkinBtn.IsEnabled = false;
                 darkTheme.IsEnabled = false;
+                ChangeSkinColor.IsEnabled = false;
             }
             else
             {
-                //ThemeManager.Current.AccentColor = Brushes.DeepPink;
-                JObject jobject = JObject.Parse(File.ReadAllText("MSL\\config.json", Encoding.UTF8));
-                jobject["darkTheme"] = "False";
-                jobject["skin"] = 1;
-                string convertString = Convert.ToString(jobject);
-                File.WriteAllText("MSL\\config.json", convertString, Encoding.UTF8);
+                Config.Write("darkTheme", "False");
+                Config.Write("SkinColor", "#0078D4");
 
                 //Growl.Success("关闭成功！");
                 MagicFlowMsg.ShowMessage("关闭成功！", 1);
                 ThemeManager.Current.UsingSystemTheme = false;
                 ThemeManager.Current.ApplicationTheme = ApplicationTheme.Light;
-                BlueSkinBtn.IsChecked = true;
-
-                BlueSkinBtn.IsEnabled = true;
-                RedSkinBtn.IsEnabled = true;
-                GreenSkinBtn.IsEnabled = true;
-                OrangeSkinBtn.IsEnabled = true;
-                PurpleSkinBtn.IsEnabled = true;
-                PinkSkinBtn.IsEnabled = true;
                 darkTheme.IsEnabled = true;
+                
+                ChangeSkinColor.IsEnabled = true;
             }
+        }
+
+        private void ChangeSkinColor_Click(object sender, RoutedEventArgs e)
+        {
+            var picker = SingleOpenHelper.CreateControl<ColorPicker>();
+            var tempColor = (SolidColorBrush)ThemeManager.Current.AccentColor;
+            picker.SelectedBrush = (SolidColorBrush)ThemeManager.Current.AccentColor;
+            var window = new PopupWindow
+            {
+                PopupElement = picker
+            };
+            picker.SelectedColorChanged += delegate
+            {
+                ThemeManager.Current.AccentColor = picker.SelectedBrush;
+            };
+            picker.Confirmed += delegate
+            {
+                window.Close();
+                Config.Write("SkinColor", picker.SelectedBrush.ToString());
+                MagicFlowMsg.ShowMessage("保存颜色成功！", 1);
+            };
+            picker.Canceled += delegate { window.Close(); ThemeManager.Current.AccentColor = tempColor; };
+            window.Show(ChangeLogForeColor, false);
         }
 
         private void darkTheme_Click(object sender, RoutedEventArgs e)

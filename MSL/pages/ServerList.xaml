@@ -4,6 +4,7 @@
       xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006" 
       xmlns:d="http://schemas.microsoft.com/expression/blend/2008" 
       xmlns:hc="https://handyorg.github.io/handycontrol"
+      xmlns:iconPacks="http://metro.mahapps.com/winfx/xaml/iconpacks"
       xmlns:controls="clr-namespace:MSL.controls"
       xmlns:langs="clr-namespace:MSL.langs"
       xmlns:local="clr-namespace:MSL.pages"
@@ -75,13 +76,41 @@
                 </controls:MagicListBox.ItemTemplate>
                 <controls:MagicListBox.ContextMenu>
                     <ContextMenu>
-                        <MenuItem Click="refreshList_Click" Header="{Binding [Page_ServerList_Refresh], Source={x:Static langs:LanguageManager.Instance}}"/>
-                        <MenuItem x:Name="startServerBtn" Click="startServer_Click" Header="{Binding [Page_ServerList_LaunchServer], Source={x:Static langs:LanguageManager.Instance}}" IsEnabled="False"/>
-                        <MenuItem x:Name="startWithCmd" Click="startWithCmd_Click" Header="{Binding [Page_ServerList_UseCMDLaunch], Source={x:Static langs:LanguageManager.Instance}}" IsEnabled="False"/>
-                        <MenuItem x:Name="setServer" Click="setServer_Click" Header="{Binding [Page_ServerList_Setting], Source={x:Static langs:LanguageManager.Instance}}" IsEnabled="False"/>
-                        <MenuItem x:Name="setModorPlugin" Click="setModorPlugin_Click" Header="{Binding [Page_ServerList_ManageModsOrPlugins], Source={x:Static langs:LanguageManager.Instance}}" IsEnabled="False"/>
-                        <MenuItem x:Name="openServerDir" Click="openServerDir_Click" Header="{Binding [Page_ServerList_OpenDir], Source={x:Static langs:LanguageManager.Instance}}" IsEnabled="False"/>
-                        <MenuItem x:Name="delServer" Click="delServer_Click" Header="{Binding [Page_ServerList_Delete], Source={x:Static langs:LanguageManager.Instance}}" IsEnabled="False"/>
+                        <MenuItem Click="refreshList_Click" Header="{Binding [Page_ServerList_Refresh], Source={x:Static langs:LanguageManager.Instance}}">
+                            <MenuItem.Icon>
+                                <iconPacks:PackIconMaterial Kind="Refresh"/>
+                            </MenuItem.Icon>
+                        </MenuItem>
+                        <MenuItem x:Name="startServerBtn" Click="startServer_Click" Header="{Binding [Page_ServerList_LaunchServer], Source={x:Static langs:LanguageManager.Instance}}" IsEnabled="False">
+                            <MenuItem.Icon>
+                                <iconPacks:PackIconMaterial Kind="Launch"/>
+                            </MenuItem.Icon>
+                        </MenuItem>
+                        <MenuItem x:Name="startWithCmd" Click="startWithCmd_Click" Header="{Binding [Page_ServerList_UseCMDLaunch], Source={x:Static langs:LanguageManager.Instance}}" IsEnabled="False">
+                            <MenuItem.Icon>
+                                <iconPacks:PackIconMaterial Kind="Console"/>
+                            </MenuItem.Icon>
+                        </MenuItem>
+                        <MenuItem x:Name="setServer" Click="setServer_Click" Header="{Binding [Page_ServerList_Setting], Source={x:Static langs:LanguageManager.Instance}}" IsEnabled="False">
+                            <MenuItem.Icon>
+                                <iconPacks:PackIconMaterial Kind="Tune"/>
+                            </MenuItem.Icon>
+                        </MenuItem>
+                        <MenuItem x:Name="setModorPlugin" Click="setModorPlugin_Click" Header="{Binding [Page_ServerList_ManageModsOrPlugins], Source={x:Static langs:LanguageManager.Instance}}" IsEnabled="False">
+                            <MenuItem.Icon>
+                                <iconPacks:PackIconMaterial Kind="FolderFileOutline"/>
+                            </MenuItem.Icon>
+                        </MenuItem>
+                        <MenuItem x:Name="openServerDir" Click="openServerDir_Click" Header="{Binding [Page_ServerList_OpenDir], Source={x:Static langs:LanguageManager.Instance}}" IsEnabled="False">
+                            <MenuItem.Icon>
+                                <iconPacks:PackIconMaterial Kind="FolderOutline"/>
+                            </MenuItem.Icon>
+                        </MenuItem>
+                        <MenuItem x:Name="delServer" Click="delServer_Click" Header="{Binding [Page_ServerList_Delete], Source={x:Static langs:LanguageManager.Instance}}" IsEnabled="False">
+                            <MenuItem.Icon>
+                                <iconPacks:PackIconMaterial Kind="DeleteOutline"/>
+                            </MenuItem.Icon>
+                        </MenuItem>
                     </ContextMenu>
                 </controls:MagicListBox.ContextMenu>
             </controls:MagicListBox>

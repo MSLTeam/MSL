@@ -1,5 +1,7 @@
-﻿using System.Windows;
+﻿using MahApps.Metro.IconPacks;
+using System.Windows;
 using System.Windows.Controls;
+using System.Windows.Media;
 
 
 namespace MSL.controls
@@ -81,6 +83,56 @@ namespace MSL.controls
         static MagicListBox1()
         {
             DefaultStyleKeyProperty.OverrideMetadata(typeof(MagicListBox1), new FrameworkPropertyMetadata(typeof(MagicListBox1)));
+        }
+    }
+
+    public class ListBoxSideMenu : Control
+    {
+        public ImageSource Icon { get; set; }
+        public static readonly DependencyProperty TextProperty =
+        DependencyProperty.Register(
+            "Text",
+            typeof(string),
+            typeof(ListBoxSideMenu),
+            new PropertyMetadata(default(string)));
+
+        public string Text
+        {
+            get { return (string)GetValue(TextProperty); }
+            set { SetValue(TextProperty, value); }
+        }
+    }
+
+    public class TabControlHeader : Control
+    {
+        static TabControlHeader()
+        {
+            DefaultStyleKeyProperty.OverrideMetadata(typeof(TabControlHeader),
+                new FrameworkPropertyMetadata(typeof(TabControlHeader)));
+        }
+
+        public static readonly DependencyProperty IconKindProperty =
+        DependencyProperty.Register(
+            "IconKind", typeof(PackIconMaterialKind),
+            typeof(TabControlHeader),
+            new PropertyMetadata(PackIconMaterialKind.Home));
+
+        public static readonly DependencyProperty TextProperty =
+            DependencyProperty.Register(
+                "Text", typeof(string),
+                typeof(TabControlHeader),
+                new PropertyMetadata(default(string)));
+
+        public PackIconMaterialKind IconKind
+        {
+            get { return (PackIconMaterialKind)GetValue(IconKindProperty); }
+            set { SetValue(IconKindProperty, value); }
+        }
+
+        public string Text
+        {
+            get { return (string)GetValue(TextProperty); }
+            set { SetValue(TextProperty, value); }
         }
     }
 

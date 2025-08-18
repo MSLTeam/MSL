@@ -205,6 +205,8 @@ namespace MSL
                     SideMenu.Width = 50;
                 }
                 LogHelper.Write.Info("读取侧栏配置成功！");
+
+                /*
                 if (jsonObject["skin"] == null)
                 {
                     string jsonString = File.ReadAllText(@"MSL\config.json", Encoding.UTF8);
@@ -247,7 +249,32 @@ namespace MSL
                             break;
                     }
                 }
+                */
+                BrushConverter brushConverter = new BrushConverter();
+                if (jsonObject["SkinColor"] == null)
+                {
+                    string jsonString = File.ReadAllText(@"MSL\config.json", Encoding.UTF8);
+                    JObject jobject = JObject.Parse(jsonString);
+                    jobject.Add("SkinColor", "#0078D4");
+                    string convertString = Convert.ToString(jobject);
+                    File.WriteAllText(@"MSL\config.json", convertString, Encoding.UTF8);
+                    
+                    ThemeManager.Current.AccentColor = (Brush)brushConverter.ConvertFromString("#0078D4");
+                }
+                else
+                {
+                    try
+                    {
+                        ThemeManager.Current.AccentColor = (Brush)brushConverter.ConvertFromString(jsonObject["SkinColor"].Value<string>());
+                    }
+                    catch
+                    {
+                        LogHelper.Write.Error("读取皮肤颜色配置失败，使用默认颜色 #0078D4");
+                        ThemeManager.Current.AccentColor = (Brush)brushConverter.ConvertFromString("#0078D4");
+                    }
+                }
                 LogHelper.Write.Info("读取皮肤配置成功！");
+
                 if (jsonObject["darkTheme"] == null)
                 {
                     string jsonString = File.ReadAllText(@"MSL\config.json", Encoding.UTF8);
@@ -308,8 +335,6 @@ namespace MSL
                 var logColorConf = (JObject)Config.Read("LogColor");
                 if (logColorConf != null)
                 {
-                    var brushConverter = new BrushConverter();
-
                     if (logColorConf["INFO"] != null)
                         ConfigStore.LogColor.INFO = (SolidColorBrush)brushConverter.ConvertFromString(logColorConf["INFO"].ToString());
 

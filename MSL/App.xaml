@@ -16,9 +16,6 @@
                 <hc:ThemeResources>
                     <hc:ThemeResources.ThemeDictionaries>
                         <ResourceDictionary x:Key="Light" hc:ThemeDictionary.Key="Light">
-                            <ResourceDictionary.MergedDictionaries>
-                                <ResourceDictionary Source="images/Svgs.xaml"/>
-                            </ResourceDictionary.MergedDictionaries>
                             <SolidColorBrush x:Key="BorderBackground" Color="White" Opacity="0.7" />
                             <SolidColorBrush x:Key="ContentRegionBrush" Color="#FFF7FAFC" Opacity="0.7" />
                             <SolidColorBrush x:Key="SideMenuBrush" Color="#FFEEF4F9" Opacity="0.7" />
@@ -26,9 +23,6 @@
                         </ResourceDictionary>
 
                         <ResourceDictionary x:Key="Dark" hc:ThemeDictionary.Key="Dark">
-                            <ResourceDictionary.MergedDictionaries>
-                                <ResourceDictionary Source="images/Svgs_DarkMode.xaml"/>
-                            </ResourceDictionary.MergedDictionaries>
                             <SolidColorBrush x:Key="BorderBackground" Color="#232323" Opacity="0.7" />
                             <SolidColorBrush x:Key="ContentRegionBrush" Color="#141414" Opacity="0.7" />
                             <SolidColorBrush x:Key="SideMenuBrush" Color="#1D1E1F" Opacity="0.7" />
