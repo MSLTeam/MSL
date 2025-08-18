@@ -76,27 +76,10 @@ namespace MSL.pages
             try
             {
                 LogHelper.Write.Info("开始从API获取FRP服务器信息。");
-                string mslFrpInfo = (await HttpService.GetApiContentAsync("query/frp/MSLFrps"))["data"].ToString();
-                JObject valuePairs = (JObject)JsonConvert.DeserializeObject(mslFrpInfo);
-                foreach (var valuePair in valuePairs)
-                {
-                    string serverInfo = valuePair.Key;
-                    JObject serverDetails = (JObject)valuePair.Value;
-                    foreach (var value in serverDetails)
-                    {
-                        string serverName = value.Key;
-                        string serverAddress = value.Value["server_addr"].ToString();
-                        string serverPort = value.Value["server_port"].ToString();
-                        string minPort = value.Value["min_open_port"].ToString();
-                        string maxPort = value.Value["max_open_port"].ToString();
-
-                        ipAddress = serverAddress;
-                        ipPort = serverPort;
-                        LogHelper.Write.Info($"成功解析到FRP服务器地址: {ipAddress}:{ipPort}");
-                        break;
-                    }
-                    break;
-                }
+                JObject p2p_res = await HttpService.GetApiContentAsync("query/p2p_server");
+                ipAddress = p2p_res["data"]["ip"].ToString();
+                ipPort = p2p_res["data"]["port"].ToString();
+                LogHelper.Write.Info($"成功解析到FRP服务器地址: {ipAddress}:{ipPort}");
                 await Task.Run(() =>
                 {
                     LogHelper.Write.Info($"正在 Ping 服务器: {ipAddress}");
