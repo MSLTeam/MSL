@@ -29,6 +29,7 @@ using System.Windows.Input;
 using System.Windows.Media;
 using System.Windows.Media.Imaging;
 using System.Windows.Threading;
+using static System.Windows.Forms.VisualStyles.VisualStyleElement.Tab;
 using MessageBox = System.Windows.MessageBox;
 using Path = System.IO.Path;
 using Window = System.Windows.Window;
@@ -54,6 +55,7 @@ namespace MSL
         private string Rserverserver { get; set; }
         private string RserverJVM { get; set; }
         private string RserverJVMcmd { get; set; }
+        private string RserverYggAddr { get; set; }
         private string Rserverbase { get; set; }
         private short Rservermode { get; set; }
 
@@ -270,6 +272,15 @@ namespace MSL
                 Rservermode = 0;
             }
 
+            if (_json.ContainsKey("ygg_api")) // 1为自定义模式
+            {
+                RserverYggAddr = _json["ygg_api"].ToString();
+            }
+            else
+            {
+                RserverYggAddr = "";
+            }
+
             if (_json["autostartServer"] != null && _json["autostartServer"].ToString() == "True")
             {
                 autoStartserver.IsChecked = true;
@@ -332,6 +343,10 @@ namespace MSL
             if (_json["fileforceUTF8"] != null && _json["fileforceUTF8"].ToString() == "True")
             {
                 fileforceUTF8encoding.IsChecked = true;
+            }
+            if (_json["ygg_api"] != null)
+            {
+                YggdrasilAddr.Text = _json["ygg_api"].ToString();
             }
             this.Title = Rservername;//set title to server name
 
@@ -864,6 +879,7 @@ namespace MSL
 
         private async void LaunchServer()
         {
+            LogHelper.Write.Info("尝试启动服务器："+ Rservername);
             try
             {
                 if (await MCEulaEvent() != true)
@@ -871,19 +887,32 @@ namespace MSL
                 string fileforceUTF8Jvm = "";
                 if (Rservermode == 0)
                 {
+                    string ygg_api_jvm = "",full_cmd;
+                    // 处理外置登录
+                    if (!string.IsNullOrEmpty(RserverYggAddr))
+                    {
+                        ygg_api_jvm = $"-javaagent:authlib-injector.jar={RserverYggAddr} ";
+                        if(!await DownloadAuthlib())
+                        {
+                            return; // 下载authlib失败，退出
+                        }
+                    }
+
                     if (fileforceUTF8encoding.IsChecked == true && !RserverJVMcmd.Contains("-Dfile.encoding=UTF-8"))
                     {
                         fileforceUTF8Jvm = "-Dfile.encoding=UTF-8 ";
                     }
-
+                    
                     if (Rserverserver.StartsWith("@libraries/"))
                     {
-                        StartServer(RserverJVM + " " + fileforceUTF8Jvm + RserverJVMcmd + " " + Rserverserver + " nogui");
+                        full_cmd = RserverJVM + " " + fileforceUTF8Jvm + ygg_api_jvm + RserverJVMcmd + " " + Rserverserver + " nogui";
                     }
                     else
                     {
-                        StartServer(RserverJVM + " " + fileforceUTF8Jvm + RserverJVMcmd + " -jar \"" + Rserverserver + "\" nogui");
+                        full_cmd = RserverJVM + " " + fileforceUTF8Jvm + RserverJVMcmd + " -jar \"" + Rserverserver + "\" nogui";
                     }
+                    StartServer(full_cmd);
+                    LogHelper.Write.Info("启动参数：" + full_cmd);
                     //GC.Collect();
                 }
                 else
@@ -898,6 +927,38 @@ namespace MSL
                 cmdtext.IsEnabled = false;
                 fastCMD.IsEnabled = false;
             }
+        }
+
+        private async Task<bool> DownloadAuthlib()
+        {
+            HttpResponse res = await HttpService.GetAsync("https://bmclapi2.bangbang93.com/mirrors/authlib-injector/artifact/latest.json");
+            if (res.HttpResponseCode == HttpStatusCode.OK)
+            {
+                JObject authlib_jobj = JObject.Parse((string)res.HttpResponseContent);
+                if (!File.Exists(Path.Combine(Rserverbase, "authlib-injector.jar")) || !Functions.VerifyFileSHA256(Path.Combine(Rserverbase, "authlib-injector.jar"), authlib_jobj["checksums"]["sha256"].ToString()))
+                {
+                    //下载或更新authlib-injector.jar
+                    bool download_suc = await MagicShow.ShowDownloader(Window.GetWindow(this), authlib_jobj["download_url"].ToString(), Rserverbase, "authlib-injector.jar", "正在更新外置登录库文件...", authlib_jobj["checksums"]["sha256"].ToString());
+                    if (!download_suc)
+                    {
+                        Growl.Error("下载外置登录库文件失败，请检查网络连接或稍后重试！");
+                        return false;
+                    }
+                }
+            }
+            else
+            {
+                if (File.Exists(Path.Combine(Rserverbase, "authlib-injector.jar")))
+                {
+                    LogHelper.Write.Warn("无法获取最新的authlib-injector.jar信息，使用本地文件。" + res.HttpResponseContent);
+                }
+                else
+                {
+                    Growl.Error("无法获取最新的authlib-injector.jar信息，且本地没有authlib-injector.jar文件，请检查网络连接或稍后重试！");
+                    return false;
+                }
+            }
+            return true;
         }
 
         private async Task<bool> MCEulaEvent()
@@ -1724,12 +1785,26 @@ namespace MSL
                 string onlineMode = om2.Substring(0, om2.IndexOf("\n"));
                 if (onlineMode == "true")
                 {
-                    PrintLog("检测到您没有关闭正版验证，如果客户端为离线登录的话，请点击“更多功能”里“关闭正版验证”按钮以关闭正版验证。否则离线账户将无法进入服务器！", Brushes.OrangeRed);
+                    if (string.IsNullOrEmpty(RserverYggAddr))
+                    {
+                        PrintLog("检测到您没有关闭正版验证，如果客户端为离线登录的话，请点击“更多功能”里“关闭正版验证”按钮以关闭正版验证。否则离线账户将无法进入服务器！", Brushes.OrangeRed);
+                    }
+                    else
+                    {
+                        PrintLog("检测到您正在使用第三方外置登录验证，请确保客户端均采用第三方外置登录进入游戏，否则将无法进入服务器哦！", Brushes.OrangeRed);
+                    }
                     onlineModeLab.Content = "已开启";
                 }
                 else if (onlineMode == "false")
                 {
-                    PrintLog("检测到您关闭了正版验证，若没有采取相关措施来保护服务器（如添加登录插件等），服务器会有被入侵的风险，请务必注意！", Brushes.OrangeRed);
+                    if (string.IsNullOrEmpty(RserverYggAddr))
+                    {
+                        PrintLog("检测到您关闭了正版验证，若没有采取相关措施来保护服务器（如添加登录插件等），服务器会有被入侵的风险，请务必注意！", Brushes.OrangeRed);
+                    }
+                    else
+                    {
+                        PrintLog("检测到您配置了外置登录且关闭了正版验证，这样做是无效的！！！请您打开正版验证！！！", Brushes.Red);
+                    }
                     onlineModeLab.Content = "已关闭";
                 }
                 string[] strings1 = config.Split('\n');
@@ -2883,6 +2958,8 @@ namespace MSL
                     DivJavaSet.Visibility = Visibility.Collapsed;
                     DivJvmSet.Visibility = Visibility.Collapsed;
                     DivRemSet.Visibility = Visibility.Collapsed;
+                    DivYggdrasilSet.Visibility = Visibility.Collapsed;
+                    GridYggdrasilSet.Visibility = Visibility.Collapsed;
                     TextArgsTips.Text = "提示：您正在使用自定义参数模式哦~";
                 }
                 else
@@ -3233,6 +3310,19 @@ namespace MSL
                 Rserverbase = bAse.Text;
                 RserverJVMcmd = jVMcmd.Text;
 
+                //粗略检测外置登录地址的合法性
+                if(YggdrasilAddr.Text.Length > 0 && !YggdrasilAddr.Text.Contains("http://") && !YggdrasilAddr.Text.Contains("https://"))
+                {
+                    MagicShow.ShowMsgDialog(this, "外置登录地址不合法！请检查地址是否正确！", "错误");
+                    doneBtn1.IsEnabled = true;
+                    refreahConfig.IsEnabled = true;
+                    return;
+                }
+                else
+                {
+                    RserverYggAddr = YggdrasilAddr.Text;
+                }
+
                 JObject jsonObject = JObject.Parse(File.ReadAllText(@"MSL\ServerList.json", Encoding.UTF8));
                 JObject _json = (JObject)jsonObject[RserverID.ToString()];
                 _json["name"].Replace(Rservername);
@@ -3241,6 +3331,7 @@ namespace MSL
                 _json["core"].Replace(Rserverserver);
                 _json["memory"].Replace(RserverJVM);
                 _json["args"].Replace(RserverJVMcmd);
+                _json["ygg_api"] = RserverYggAddr;
                 jsonObject[RserverID.ToString()].Replace(_json);
                 File.WriteAllText(@"MSL\ServerList.json", Convert.ToString(jsonObject), Encoding.UTF8);
                 LoadSettings();
@@ -3528,20 +3619,30 @@ namespace MSL
             }
         }
 
-        private void getLaunchercode_Click(object sender, RoutedEventArgs e)
+        private async void getLaunchercode_Click(object sender, RoutedEventArgs e)
         {
             try
             {
                 string content;
                 if (Rservermode == 0)
                 {
+                    string ygg_api_jvm="";
+                    // 处理外置登录
+                    if (!string.IsNullOrEmpty(RserverYggAddr))
+                    {
+                        ygg_api_jvm = $"-javaagent:authlib-injector.jar={RserverYggAddr} ";
+                        if (!await DownloadAuthlib())
+                        {
+                            return; // 下载authlib失败，退出
+                        }
+                    }
                     if (Rserverserver.StartsWith("@libraries/"))
                     {
-                        content = "@ECHO OFF\r\n\"" + Rserverjava + "\" " + RserverJVM + " " + RserverJVMcmd + " " + Rserverserver + " nogui" + "\r\npause";
+                        content = "@ECHO OFF\r\n\"" + Rserverjava + "\" " + ygg_api_jvm + RserverJVM + " " + RserverJVMcmd + " " + Rserverserver + " nogui" + "\r\npause";
                     }
                     else
                     {
-                        content = "@ECHO OFF\r\n\"" + Rserverjava + "\" " + RserverJVM + " " + RserverJVMcmd + " -jar \"" + Rserverserver + "\" nogui" + "\r\npause";
+                        content = "@ECHO OFF\r\n\"" + Rserverjava + "\" " + ygg_api_jvm + RserverJVM + " " + RserverJVMcmd + " -jar \"" + Rserverserver + "\" nogui" + "\r\npause";
                     }
                 }
                 else
@@ -4594,5 +4695,17 @@ namespace MSL
             }
         }
         #endregion
+
+        // 快捷设置ygg api
+        private void YggLittleskin_Click(object sender, RoutedEventArgs e)
+        {
+            YggdrasilAddr.Text = "https://littleskin.cn/api/yggdrasil";
+            //Growl.Success("已设置Yggdrasil服务为Littleskin\n请点击保存并重启服务器以使设置生效！", "提示");
+        }
+
+        private void YggDocs_Click(object sender, RoutedEventArgs e)
+        {
+            Process.Start("https://www.mslmc.cn/docs/yggdrasil.html");
+        }
     }
 }

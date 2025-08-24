@@ -283,14 +283,26 @@ namespace MSL.pages
                 Process process = new Process();
                 process.StartInfo.WorkingDirectory = _json["base"].ToString();
                 process.StartInfo.FileName = "cmd.exe";
-                string arguments;
+                string arguments,yggapi_cmd = "";
+                //检测外置登录（如果文件不存在就算了）
+                if (!string.IsNullOrEmpty(_json["ygg_api"]?.ToString() ?? ""))
+                {
+                    if (File.Exists(Path.Combine(_json["base"].ToString(), "authlib-injector.jar")))
+                    {
+                        yggapi_cmd = $"-javaagent:authlib-injector.jar={_json["ygg_api"]?.ToString()} ";
+                    }
+                    else
+                    {
+                        Growl.Warning("您配置了外置登录但是外置登录库并未下载\n如需正常使用外置登录+命令行开服，请先在MSL内正常开服一次！");
+                    }  
+                }
                 if (_json["core"].ToString().StartsWith("@libraries/"))
                 {
-                    arguments = "/K " + "@ \"" + _json["java"] + "\" " + _json["memory"] + " " + _json["args"] + " " + _json["core"] + " nogui&pause&exit";
+                    arguments = "/K " + "@ \"" + _json["java"] + "\" " + _json["memory"] + " " + yggapi_cmd + _json["args"] + " " + _json["core"] + " nogui&pause&exit";
                 }
                 else
                 {
-                    arguments = "/K " + "@ \"" + _json["java"] + "\" " + _json["memory"] + " " + _json["args"] + " -jar \"" + _json["core"] + "\" nogui&pause&exit";
+                    arguments = "/K " + "@ \"" + _json["java"] + "\" " + _json["memory"] + " " + yggapi_cmd + _json["args"] + " -jar \"" + _json["core"] + "\" nogui&pause&exit";
                 }
                 process.StartInfo.Arguments = arguments;
                 process.Start();

@@ -5,6 +5,7 @@ using System.Collections.Generic;
 using System.Diagnostics;
 using System.IO;
 using System.Management;
+using System.Security.Cryptography;
 using System.Text;
 using System.Text.RegularExpressions;
 using System.Windows;
@@ -178,6 +179,19 @@ namespace MSL.utils
         {
             var epoch = new DateTime(1970, 1, 1, 0, 0, 0, DateTimeKind.Utc);
             return (long)(DateTime.UtcNow - epoch).TotalSeconds;
+        }
+
+        // 用于校验sha256的函数
+        public static bool VerifyFileSHA256(string filePath, string expectedHash)
+        {
+            using (FileStream stream = File.OpenRead(filePath)) //文件流
+            {
+                SHA256Managed sha = new SHA256Managed();
+                byte[] hash = sha.ComputeHash(stream);
+                string calculatedHash = BitConverter.ToString(hash).Replace("-", string.Empty);
+
+                return string.Equals(calculatedHash, expectedHash, StringComparison.OrdinalIgnoreCase);
+            }
         }
 
         private static readonly Random _random = new Random();
