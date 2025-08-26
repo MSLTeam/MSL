@@ -232,14 +232,30 @@
                             </Border>
                             <Border Style="{StaticResource MagicBorder}">
                                 <StackPanel>
-                                    <Label Content="启动参数" Style="{StaticResource BorderTitle}"/>
+                                    <Label Content="启动参数(可选)" Style="{StaticResource BorderTitle}"/>
                                     <StackPanel Orientation="Horizontal" Margin="10">
                                         <CheckBox x:Name="usebasicfastJvm" Content="基本优化参数（Java11及以上勿选）" Margin="10,0,0,0" VerticalAlignment="Top" Click="usebasicfastJvm_Click"/>
                                         <CheckBox x:Name="usefastJvm" Content="高级优化参数（需分配内存为4G）" Margin="20,0,188,0" VerticalAlignment="Top" Click="usefastJvm_Click"/>
                                     </StackPanel>
                                     <TextBox x:Name="txb7" Margin="20,0,0,0" TextWrapping="Wrap" AcceptsReturn="True" AutoWordSelection="True" VerticalAlignment="Top"/>
+                                   
                                     <Border Margin="15,5,0,0" Style="{StaticResource BorderTipDanger}" >
                                         <TextBlock Text="非必要勿选择或填写此栏内容，如出现无法开服的情况请删除启动参数" HorizontalAlignment="Left"  VerticalAlignment="Top" FontSize="14" />
+                                    </Border>
+                                </StackPanel>
+                            </Border>
+                            <Border Style="{StaticResource MagicBorder}">
+                                <StackPanel>
+                                    <Label Content="配置外置登录(可选)" Style="{StaticResource BorderTitle}"/>
+                                    <Label  Content="请填入外置登录验证服务器地址(Yggdrasil API):" Margin="10,0,0,0" HorizontalAlignment="Left"  VerticalAlignment="Top" FontSize="14" Background="{x:Null}" BorderBrush="{x:Null}" />
+                                    <TextBox x:Name="txb_ygg_api" Margin="20,0,0,0" TextWrapping="Wrap" AcceptsReturn="True" AutoWordSelection="True" VerticalAlignment="Top"/>
+                                    <StackPanel Margin="20,5,0,0" Orientation="Horizontal">
+                                        <Button Content="设置为MSL统一身份认证" x:Name="YggMSL" Margin="0,0,5,0" Visibility="Collapsed"/>
+                                        <Button Content="设置为Littleskin" x:Name="YggLittleskin" Margin="0,0,5,0" Click="YggLittleskin_Click"/>
+                                        <Button Content="外置登录设置教程" x:Name="YggDocs" Margin="0,0,5,0" Click="YggDocs_Click"/>
+                                    </StackPanel>
+                                    <Border Margin="15,5,0,0" Style="{StaticResource BorderTipInfo}" >
+                                        <TextBlock Text="填写登录服务器地址后MSL将在开服时为您自动接入外置登录验证，您不需要额外操作。&#13;如果您不知道这是什么，请您留空。" HorizontalAlignment="Left"  VerticalAlignment="Top" FontSize="14" />
                                     </Border>
                                 </StackPanel>
                             </Border>

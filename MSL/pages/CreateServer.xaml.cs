@@ -7,6 +7,7 @@ using Newtonsoft.Json;
 using Newtonsoft.Json.Linq;
 using System;
 using System.Collections.Generic;
+using System.Diagnostics;
 using System.IO;
 using System.Linq;
 using System.Text;
@@ -1686,6 +1687,10 @@ namespace MSL.pages
                 {
                     _json.Add("useConpty", "True");
                 }
+                if (!string.IsNullOrEmpty(txb_ygg_api.Text.Trim()))
+                {
+                    _json.Add("ygg_api", txb_ygg_api.Text.Trim());
+                }
                 JObject jsonObject = JObject.Parse(File.ReadAllText(@"MSL\ServerList.json", Encoding.UTF8));
                 List<string> keys = jsonObject.Properties().Select(p => p.Name).ToList();
                 var _keys = keys.Select(x => Convert.ToInt32(x));
@@ -1760,6 +1765,17 @@ namespace MSL.pages
             GC.Collect(); // find finalizable objects
             GC.WaitForPendingFinalizers(); // wait until finalizers executed
             GC.Collect(); // collect finalized objects
+        }
+
+        // 快捷设置ygg api
+        private void YggLittleskin_Click(object sender, RoutedEventArgs e)
+        {
+            txb_ygg_api.Text = "https://littleskin.cn/api/yggdrasil";
+        }
+
+        private void YggDocs_Click(object sender, RoutedEventArgs e)
+        {
+            Process.Start("https://www.mslmc.cn/docs/yggdrasil.html");
         }
     }
 }
