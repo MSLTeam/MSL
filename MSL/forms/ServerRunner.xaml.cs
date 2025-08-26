@@ -896,6 +896,7 @@ namespace MSL
                         {
                             return; // 下载authlib失败，退出
                         }
+                        LogHelper.Write.Info("成功启用外置登录库，地址：" + RserverYggAddr);
                     }
 
                     if (fileforceUTF8encoding.IsChecked == true && !RserverJVMcmd.Contains("-Dfile.encoding=UTF-8"))
@@ -909,7 +910,7 @@ namespace MSL
                     }
                     else
                     {
-                        full_cmd = RserverJVM + " " + fileforceUTF8Jvm + RserverJVMcmd + " -jar \"" + Rserverserver + "\" nogui";
+                        full_cmd = RserverJVM + " " + fileforceUTF8Jvm + ygg_api_jvm + RserverJVMcmd + " -jar \"" + Rserverserver + "\" nogui";
                     }
                     StartServer(full_cmd);
                     LogHelper.Write.Info("启动参数：" + full_cmd);
