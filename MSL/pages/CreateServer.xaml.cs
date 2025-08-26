@@ -1499,6 +1499,16 @@ namespace MSL.pages
                     }
                     servercore = filename;
                     break;
+                case "leaf":
+                    if (!await DownloadVanilla(serverbase + "\\cache", "mojang_" + serverCoreVersion + ".jar", serverCoreVersion))
+                    {
+                        FastInstallProcess.Text = "请重试！";
+                        FastModeReturnBtn.IsEnabled = true;
+                        FastModeInstallBtn.IsEnabled = true;
+                        return;
+                    }
+                    servercore = filename;
+                    break;
                 default:
                     servercore = filename;
                     break;
@@ -1520,7 +1530,7 @@ namespace MSL.pages
 
                 string sha256Exp = downContext["data"]["sha256"]?.ToString() ?? string.Empty;
 
-                int dwnDialog = await MagicShow.ShowDownloaderWithIntReturn(Window.GetWindow(this), downUrl, path, filename, "下载依赖中（香草端）……", sha256Exp, true, false);
+                int dwnDialog = await MagicShow.ShowDownloaderWithIntReturn(Window.GetWindow(this), downUrl, path, filename, "下载依赖中（原版服务端）……", sha256Exp, true, false);
                 if (dwnDialog == 2)
                 {
                     if (!await MagicShow.ShowMsgDialogAsync("Vanilla端下载失败！此依赖在服务器运行时依旧会进行下载，在此处您要暂时跳过吗？", "错误", true))

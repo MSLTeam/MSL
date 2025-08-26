@@ -350,6 +350,15 @@ namespace MSL.pages
                     }
                     FileName = filename;
                     break;
+                case "leaf":
+                    //下载Vanilla端
+                    if (!await DownloadVanilla(SavingPath + "\\cache", "mojang_" + downVersion + ".jar", downVersion))
+                    {
+                        MagicShow.ShowMsgDialog(this, "您取消了跳过，请重新下载。", "错误");
+                        return;
+                    }
+                    FileName = filename;
+                    break;
                 default:
                     FileName = filename;
                     break;
@@ -367,7 +376,7 @@ namespace MSL.pages
                 downUrl = MriiorCheck(downUrl);
                 string sha256Exp = downContext["data"]["sha256"]?.ToString() ?? string.Empty;
 
-                if (!await DownloadFun(downUrl, path, filename, sha256Exp, true, "下载依赖中（香草端）……"))
+                if (!await DownloadFun(downUrl, path, filename, sha256Exp, true, "下载依赖中（原版服务端）……"))
                 {
                     if (!await MagicShow.ShowMsgDialogAsync("Vanilla端下载失败！此依赖在服务器运行时依旧会进行下载，在此处您要暂时跳过吗？" , "错误", true))
                         return false;
