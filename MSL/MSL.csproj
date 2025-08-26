@@ -509,5 +509,14 @@
   <ItemGroup>
     <Service Include="{508349B6-6B84-4DF5-91F0-309BEEBAD82D}" />
   </ItemGroup>
+  <ItemGroup>
+    <Resource Include="images\neoforged.png" />
+  </ItemGroup>
+  <ItemGroup>
+    <Resource Include="images\150px-Allium.png" />
+  </ItemGroup>
+  <ItemGroup>
+    <Resource Include="images\150px-MinecartWithCommandBlock.png" />
+  </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
 </Project>

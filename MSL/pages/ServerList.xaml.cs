@@ -82,9 +82,17 @@ namespace MSL.pages
                     {
                         list.Add(new SL_ServerInfo(int.Parse(item.Key), item.Value["name"].ToString(), item.Value["base"].ToString() + "\\server-icon.png", status, brushes));
                     }
-                    else if (item.Value["core"].ToString().IndexOf("forge") + 1 != 0 || item.Value["core"].ToString() == "")
+                    else if (item.Value["core"].ToString().IndexOf("neoforge") + 1 != 0)
+                    {
+                        list.Add(new SL_ServerInfo(int.Parse(item.Key), item.Value["name"].ToString(), "pack://application:,,,/images/neoforged.png", status, brushes));
+                    }
+                    else if (item.Value["core"].ToString().IndexOf("forge") + 1 != 0)
                     {
                         list.Add(new SL_ServerInfo(int.Parse(item.Key), item.Value["name"].ToString(), "pack://application:,,,/images/150px-Anvil.png", status, brushes));
+                    }
+                    else if (item.Value["core"].ToString() == "")
+                    {
+                        list.Add(new SL_ServerInfo(int.Parse(item.Key), item.Value["name"].ToString(), "pack://application:,,,/images/150px-MinecartWithCommandBlock.png", status, brushes));
                     }
                     else
                     {
