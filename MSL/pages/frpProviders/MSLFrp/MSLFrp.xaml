@@ -157,7 +157,8 @@
                             <RowDefinition Height="auto"/>
                         </Grid.RowDefinitions>
                         <controls:MagicCard Title="填写隧道参数" VerticalAlignment="Top">
-                            <hc:UniformSpacingPanel Orientation="Vertical" Spacing="10">
+                            <ScrollViewer>
+                            <hc:UniformSpacingPanel Orientation="Vertical" Spacing="10" Margin="0,0,12,0">
                                 <Grid>
                                     <Grid.ColumnDefinitions>
                                         <ColumnDefinition Width="auto"/>
@@ -165,6 +166,14 @@
                                     </Grid.ColumnDefinitions>
                                     <Label Style="{DynamicResource MagicLabel}" Content="隧道名称（英文）：" VerticalAlignment="Center"/>
                                     <TextBox Grid.Column="1" Text="MyTunnel" x:Name="Create_Name"/>
+                                </Grid>
+                                <Grid>
+                                    <Grid.ColumnDefinitions>
+                                        <ColumnDefinition Width="auto"/>
+                                        <ColumnDefinition Width="*"/>
+                                    </Grid.ColumnDefinitions>
+                                    <Label Style="{DynamicResource MagicLabel}" Content="备注（允许中文）：" VerticalAlignment="Center"/>
+                                    <TextBox Grid.Column="1" Text="Create By MSL Client" x:Name="Create_Remarks"/>
                                 </Grid>
                                 <Grid>
                                     <Grid.ColumnDefinitions>
@@ -212,6 +221,7 @@
                                     <ToggleButton Grid.Column="1" Style="{StaticResource ToggleButtonSwitch}" x:Name="KCPProtocol" Content="使用KCP协议"/>
                                 </Grid>
                             </hc:UniformSpacingPanel>
+                            </ScrollViewer>
                         </controls:MagicCard>
                         <StackPanel Grid.Row="1" HorizontalAlignment="Right" VerticalAlignment="Bottom">
                             <Button Content="确定创建" Style="{DynamicResource ButtonPrimary}" MinWidth="100" MinHeight="45" FontSize="14" x:Name="Create_OKBtn" Click="Create_OKBtn_Click"/>

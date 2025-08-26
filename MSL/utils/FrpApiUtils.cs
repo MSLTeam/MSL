@@ -172,6 +172,7 @@ namespace MSL.utils
             public string RPort { get; set; }
             // Tunnel Status
             public bool Online { get; set; }
+            public string Remarks { get; set; }
         }
 
         public static async Task<(int Code, List<TunnelInfo> Tunnels, string Msg)> GetTunnelList()
@@ -238,6 +239,7 @@ namespace MSL.utils
                             LPort = $"{item["local_port"]}",
                             RPort = $"{item["remote_port"]}",
                             Online = (bool)item["status"],
+                            Remarks= $"{item["remarks"]}"
                         });
                     }
                     return (200, tunnels, string.Empty);
@@ -383,7 +385,7 @@ namespace MSL.utils
                 ["id"] = nodeID,
                 ["name"] = tunnelName,
                 ["type"] = tunnelType,
-                ["remarks"] = tunnelRemark,
+                ["remarks"] = string.IsNullOrEmpty(tunnelRemark)?"Create By MSL Client" : tunnelRemark,
                 ["local_ip"] = localIP,
                 ["local_port"] = localPort,
                 ["remote_port"] = remotePort,
