@@ -96,7 +96,7 @@ namespace MSL.pages
                     }
                     else
                     {
-                        list.Add(new SL_ServerInfo(int.Parse(item.Key), item.Value["name"].ToString(), "pack://application:,,,/images/150px-Impulse_Command_Block.png", status, brushes));
+                        list.Add(new SL_ServerInfo(int.Parse(item.Key), item.Value["name"].ToString(), "pack://application:,,,/images/150px-Allium.png", status, brushes));
                     }
                 }
                 Dispatcher.Invoke(() =>
