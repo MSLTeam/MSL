@@ -932,14 +932,14 @@ namespace MSL
 
         private async Task<bool> DownloadAuthlib()
         {
-            HttpResponse res = await HttpService.GetAsync("https://bmclapi2.bangbang93.com/mirrors/authlib-injector/artifact/latest.json");
+            HttpResponse res = await HttpService.GetAsync("https://authlib-injector.mirrors.mslmc.cn/artifact/latest.json");
             if (res.HttpResponseCode == HttpStatusCode.OK)
             {
                 JObject authlib_jobj = JObject.Parse((string)res.HttpResponseContent);
                 if (!File.Exists(Path.Combine(Rserverbase, "authlib-injector.jar")) || !Functions.VerifyFileSHA256(Path.Combine(Rserverbase, "authlib-injector.jar"), authlib_jobj["checksums"]["sha256"].ToString()))
                 {
                     //下载或更新authlib-injector.jar
-                    bool download_suc = await MagicShow.ShowDownloader(Window.GetWindow(this), authlib_jobj["download_url"].ToString(), Rserverbase, "authlib-injector.jar", "正在更新外置登录库文件...", authlib_jobj["checksums"]["sha256"].ToString());
+                    bool download_suc = await MagicShow.ShowDownloader(Window.GetWindow(this), authlib_jobj["download_url"].ToString().Replace("authlib-injector.yushi.moe", "authlib-injector.mirrors.mslmc.cn"), Rserverbase, "authlib-injector.jar", "正在更新外置登录库文件...", authlib_jobj["checksums"]["sha256"].ToString());
                     if (!download_suc)
                     {
                         Growl.Error("下载外置登录库文件失败，请检查网络连接或稍后重试！");
