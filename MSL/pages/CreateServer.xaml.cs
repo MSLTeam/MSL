@@ -1490,15 +1490,9 @@ namespace MSL.pages
                     servercore = filename;
                     break;
                 case "paper":
-                    if (!await DownloadVanilla(serverbase + "\\cache", "mojang_" + serverCoreVersion + ".jar", serverCoreVersion))
-                    {
-                        FastInstallProcess.Text = "请重试！";
-                        FastModeReturnBtn.IsEnabled = true;
-                        FastModeInstallBtn.IsEnabled = true;
-                        return;
-                    }
-                    servercore = filename;
-                    break;
+                case "leaves":
+                case "folia":
+                case "purpur":
                 case "leaf":
                     if (!await DownloadVanilla(serverbase + "\\cache", "mojang_" + serverCoreVersion + ".jar", serverCoreVersion))
                     {

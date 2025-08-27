@@ -342,14 +342,9 @@ namespace MSL.pages
                     FileName = filename;
                     break;
                 case "paper":
-                    //下载Vanilla端
-                    if (!await DownloadVanilla(SavingPath + "\\cache", "mojang_" + downVersion + ".jar", downVersion))
-                    {
-                        MagicShow.ShowMsgDialog(this, "您取消了跳过，请重新下载。", "错误");
-                        return;
-                    }
-                    FileName = filename;
-                    break;
+                case "leaves":
+                case "folia":
+                case "purpur":
                 case "leaf":
                     //下载Vanilla端
                     if (!await DownloadVanilla(SavingPath + "\\cache", "mojang_" + downVersion + ".jar", downVersion))
