@@ -303,9 +303,9 @@
 本软件接入的第三方服务，其相关权利归第三方所有
 
 开服器的正常运行离不开下面的下载源/站点，特此感谢：
-CurseForge —— 模组、模组整合包下载源API
-Modrinth —— 模组、插件、整合包下载源API
-BMCLAPI —— Forge服务端（及其库文件）国内镜像源
+CurseForge/Modrinth —— 模组、模组整合包下载源API
+BMCLAPI —— Forge服务端安装文件国内镜像源
+MSLAPI —— MSL自有服务端&amp;运行库镜像源
 以及其他服务端官方和第三方下载源……
 
 同时感谢所有使用MSL的用户，以及给MSL提出过改进建议和Bug的用户

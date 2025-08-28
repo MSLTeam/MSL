@@ -298,18 +298,17 @@ Update log:</value>
     <value>About Software({0})</value>
   </data>
   <data name="Page_About_MainContent" xml:space="preserve">
-    <value>Minecraft Server Launcher (MSL) Copyright © 2021-2025 By MSLTeam
-This software is not affiliated with Microsoft or Mojang Studios (Mojang AB).
-This software is open source, and any actions performed by users are not related to the developers.
-The rights to third-party services integrated with this software belong to the respective third parties.
-
-Special thanks to the following download sources/sites crucial for the proper functioning of the server:
-CurseForge — Mod and modpack download source API
-BMCLAPI — Forge server download source
-And other official and third-party server download sources...
-
-Also, thanks to all MSL users and those who have provided suggestions and reported bugs.
-Thank you for your support and trust!</value>
+    <value>Minecraft Server Launcher(MSL) Copyright © 2021-2025 By MSLTeam
+This software has no affiliation with Microsoft or Mojang Studio (Mojang AB)
+This software is open-source, and any actions taken by users using this software are unrelated to the developer
+The third-party services integrated into this software are owned by the respective third parties
+The normal operation of the server relies heavily on the following download sources/sites. Special thanks to them:
+CurseForge/Modrinth - API for downloading mods and modpacks
+BMCLAPI - Domestic mirror source for Forge server installation files
+MSLAPI - MSL's proprietary server &amp; runtime image source
+And other official server and third-party download sources
+Thank you to all users who have used MSL, as well as those who have provided suggestions for improvement and reported bugs to MSL
+Thank you all for your support and trust!</value>
   </data>
   <data name="Page_About_OpenSource" xml:space="preserve">
     <value>OpenSource(Github)</value>
