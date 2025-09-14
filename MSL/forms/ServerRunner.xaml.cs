@@ -4531,7 +4531,16 @@ namespace MSL
                                 }
                                 else
                                 {
-                                    ServerProcess.StandardInput.WriteLine(cmd);
+                                    if (inputCmdEncoding.Content.ToString() == "UTF8")
+                                    {
+                                            SendCmdUTF8(cmd);
+
+                                    }
+                                    else
+                                    {
+                                        SendCmdANSL(cmd);
+                                    }
+                                       // ServerProcess.StandardInput.WriteLine(cmd);
                                 }
                                 if (tasksList.SelectedIndex != -1 && int.Parse(tasksList.SelectedItem.ToString()) == id)
                                 {
