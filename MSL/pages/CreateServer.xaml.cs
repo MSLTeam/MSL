@@ -1781,5 +1781,10 @@ namespace MSL.pages
         {
             Process.Start("https://www.mslmc.cn/docs/yggdrasil.html");
         }
+
+        private void YggMSL_Click(object sender, RoutedEventArgs e)
+        {
+            txb_ygg_api.Text = "https://skin.mslmc.net/api/yggdrasil";
+        }
     }
 }

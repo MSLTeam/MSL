@@ -250,7 +250,7 @@
                                     <Label  Content="请填入外置登录验证服务器地址(Yggdrasil API):" Margin="10,0,0,0" HorizontalAlignment="Left"  VerticalAlignment="Top" FontSize="14" Background="{x:Null}" BorderBrush="{x:Null}" />
                                     <TextBox x:Name="txb_ygg_api" Margin="20,0,0,0" TextWrapping="Wrap" AcceptsReturn="True" AutoWordSelection="True" VerticalAlignment="Top"/>
                                     <StackPanel Margin="20,5,0,0" Orientation="Horizontal">
-                                        <Button Content="设置为MSL统一身份认证" x:Name="YggMSL" Margin="0,0,5,0" Visibility="Collapsed"/>
+                                        <Button Content="设置为MSL统一身份认证(MSL Skin)" x:Name="YggMSL" Margin="0,0,5,0" Click="YggMSL_Click"/>
                                         <Button Content="设置为Littleskin" x:Name="YggLittleskin" Margin="0,0,5,0" Click="YggLittleskin_Click"/>
                                         <Button Content="外置登录设置教程" x:Name="YggDocs" Margin="0,0,5,0" Click="YggDocs_Click"/>
                                     </StackPanel>

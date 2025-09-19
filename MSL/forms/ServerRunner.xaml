@@ -387,7 +387,7 @@
                                             <Label x:Name="LabelYggdrasilText" Content="外置登录验证地址配置(Yggdrasil API 认证服务器)：" Style="{StaticResource MagicLabel14}"/>
                                             <TextBox x:Name="YggdrasilAddr" AutoWordSelection="True" VerticalAlignment="Top" AcceptsReturn="True" TextWrapping="Wrap"/>
                                             <StackPanel Margin="0,5" Orientation="Horizontal">
-                                                <Button Content="设置为MSL统一身份认证" x:Name="YggMSL" Margin="0,0,5,0" Visibility="Collapsed"/>
+                                                <Button Content="设置为MSL统一身份认证(MSL Skin)" x:Name="YggMSL" Margin="0,0,5,0" Click="YggMSL_Click" />
                                                 <Button Content="设置为Littleskin" x:Name="YggLittleskin" Margin="0,0,5,0" Click="YggLittleskin_Click"/>
                                                 <Button Content="外置登录设置教程" x:Name="YggDocs" Margin="0,0,5,0" Click="YggDocs_Click"/>
                                             </StackPanel>

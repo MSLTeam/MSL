@@ -4717,5 +4717,10 @@ namespace MSL
         {
             Process.Start("https://www.mslmc.cn/docs/yggdrasil.html");
         }
+
+        private void YggMSL_Click(object sender, RoutedEventArgs e)
+        {
+            YggdrasilAddr.Text = "https://skin.mslmc.net/api/yggdrasil";
+        }
     }
 }
