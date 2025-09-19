@@ -120,7 +120,7 @@ namespace MSL.pages.frpProviders.MSLFrp
             LogHelper.Write.Info("获取用户信息成功，正在更新UI。");
             JObject userData = JObject.Parse(Data.ToString());
             Name_Label.Content = "用户名：" + userData["username"].ToString();
-            Uid_Label.Content = "UID：" + ((int)userData["uid"] + 10000).ToString();
+            Uid_Label.Content = "UID：" + ((int)userData["uid"]).ToString();
             Email_Label.Content = "电子邮箱：\n" + userData["email"].ToString();
             QQ_Label.Content = "QQ：" + userData["qq"].ToString();
             Score_Label.Content = "积分：" + userData["score"].ToString();
