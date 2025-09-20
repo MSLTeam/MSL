@@ -488,7 +488,7 @@ namespace MSL
             ModInfoLoadingProcess.Content = "加载中";
             VerFilterCombo.Items.Add("全部");
             VerFilterCombo.SelectedIndex = 0;
-            foreach (var gameVersion in modInfo.GameVersions)
+            foreach (var gameVersion in modInfo.GameVersions.Reverse())
             {
                 VerFilterCombo.Items.Add(gameVersion);
             }
