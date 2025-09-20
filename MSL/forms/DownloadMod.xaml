@@ -53,16 +53,22 @@
                 <StackPanel Orientation="Horizontal">
                     <Label Content="下载源：" FontSize="14" BorderBrush="{x:Null}" Background="{x:Null}" Padding="10,0,10,0"/>
                     <ComboBox x:Name="LoadSourceBox" SelectionChanged="LoadSourceBox_SelectionChanged">
-                        <ComboBoxItem x:Name="LSB_CurseForge" Content="CurseForge" IsSelected="True"/>
-                        <ComboBoxItem Content="Modrinth"/>
+                        <ComboBoxItem x:Name="LSB_CurseForge" Content="CurseForge" />
+                        <ComboBoxItem Content="Modrinth" IsSelected="True"/>
                     </ComboBox>
                 </StackPanel>
                 <StackPanel Orientation="Horizontal">
-                    <Label Content="模式：" FontSize="14" BorderBrush="{x:Null}" Background="{x:Null}" Padding="10,0,10,0"/>
+                    <Label Content="资源分类：" FontSize="14" BorderBrush="{x:Null}" Background="{x:Null}" Padding="10,0,10,0"/>
                     <ComboBox x:Name="LoadTypeBox" SelectionChanged="LoadTypeBox_SelectionChanged">
                         <ComboBoxItem Content="模组" IsSelected="True"/>
                         <ComboBoxItem Content="整合包"/>
                         <ComboBoxItem x:Name="LTB_Plugins" Content="插件"/>
+                    </ComboBox>
+                </StackPanel>
+                <StackPanel Orientation="Horizontal" x:Name="SelMCVerCard">
+                    <Label Content="MC版本：" FontSize="14" BorderBrush="{x:Null}" Background="{x:Null}" Padding="10,0,10,0"/>
+                    <ComboBox x:Name="MinecraftVersionTypeBox" >
+                        <ComboBoxItem Content="全部" IsSelected="True"/>
                     </ComboBox>
                 </StackPanel>
             </StackPanel>

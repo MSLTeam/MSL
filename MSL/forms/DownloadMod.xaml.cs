@@ -25,13 +25,13 @@ namespace MSL
     {
         public string FileName { get; set; }
         private int LoadType = 0;  //0: mods , 1: modpacks  , 2: plugins
-        private int LoadSource = 0;  //0: Curseforge , 1: Modrinth 
+        private int LoadSource = 1;  //0: Curseforge , 1: Modrinth 
         private readonly bool CloseImmediately;
         private readonly string SavingPath;
         private ApiClient CurseForgeApiClient;
         private ModrinthClient ModrinthApiClient;
 
-        public DownloadMod(string savingPath, int loadSource = 0, int loadType = 0, bool canChangeLoadType = true, bool canChangeSource = true, bool closeImmediately = false)
+        public DownloadMod(string savingPath, int loadSource = 1, int loadType = 0, bool canChangeLoadType = true, bool canChangeSource = true, bool closeImmediately = false)
         {
             InitializeComponent();
             SavingPath = savingPath;
@@ -67,6 +67,7 @@ namespace MSL
         {
             try
             {
+                SelMCVerCard.IsEnabled = false;
                 if (CurseForgeApiClient == null)
                 {
                     string token = string.Empty;
@@ -114,6 +115,7 @@ namespace MSL
         {
             try
             {
+                SelMCVerCard.IsEnabled = true;
                 if (ModrinthApiClient == null)
                 {
                     // Note: All properties are optional, and will be ignored if they are null or empty
@@ -138,26 +140,27 @@ namespace MSL
                 ModList.ItemsSource = null;
                 List<DM_ModsInfo> list = new List<DM_ModsInfo>();
                 SearchResponse mods = null;
-                if (LoadType == 0)
+                var facets = new FacetCollection();
+                // 筛选类型
+                switch (LoadType)
                 {
-                    mods = await ModrinthApiClient.Project.SearchAsync("");
+                    case 0:
+                        facets.Add(Facet.ProjectType(Modrinth.Models.Enums.Project.ProjectType.Mod));
+                        break;
+                    case 1:
+                        facets.Add(Facet.ProjectType(Modrinth.Models.Enums.Project.ProjectType.Modpack));
+                        break;
+                    default:
+                        facets.Add(Facet.ProjectType(Modrinth.Models.Enums.Project.ProjectType.Plugin));
+                        break;
                 }
-                else if (LoadType == 1)
+                // 版本筛选
+                if(MinecraftVersionTypeBox.SelectedIndex!=-1 && MinecraftVersionTypeBox.SelectedIndex != 0)
                 {
-                    var facets = new FacetCollection()
-                    {
-                        Facet.ProjectType(Modrinth.Models.Enums.Project.ProjectType.Modpack),
-                    };
-                    mods = await ModrinthApiClient.Project.SearchAsync("", facets: facets);
+                    facets.Add(Facet.Version(MinecraftVersionTypeBox.SelectedValue.ToString()));
                 }
-                else
-                {
-                    var facets = new FacetCollection()
-                    {
-                        Facet.ProjectType(Modrinth.Models.Enums.Project.ProjectType.Plugin)
-                    };
-                    mods = await ModrinthApiClient.Project.SearchAsync("", facets: facets);
-                }
+                // 执行搜索
+                mods = await ModrinthApiClient.Project.SearchAsync("", facets: facets);
                 foreach (var mod in mods?.Hits)
                 {
                     list.Add(new DM_ModsInfo(mod.ProjectId, mod.IconUrl, mod.Title, mod.Url));
@@ -220,26 +223,27 @@ namespace MSL
                 ModList.ItemsSource = null;
                 List<DM_ModsInfo> list = new List<DM_ModsInfo>();
                 SearchResponse mods = null;
-                if (LoadType == 0)
+                var facets = new FacetCollection();
+                // 筛选类型
+                switch (LoadType)
                 {
-                    mods = await ModrinthApiClient.Project.SearchAsync(name, offset: offset);
+                    case 0:
+                        facets.Add(Facet.ProjectType(Modrinth.Models.Enums.Project.ProjectType.Mod));
+                        break;
+                    case 1:
+                        facets.Add(Facet.ProjectType(Modrinth.Models.Enums.Project.ProjectType.Modpack));
+                        break;
+                    default:
+                        facets.Add(Facet.ProjectType(Modrinth.Models.Enums.Project.ProjectType.Plugin));
+                        break;
                 }
-                else if (LoadType == 1)
+                // 版本筛选
+                if (MinecraftVersionTypeBox.SelectedIndex != -1 && MinecraftVersionTypeBox.SelectedIndex != 0)
                 {
-                    var facets = new FacetCollection()
-                    {
-                        Facet.ProjectType(Modrinth.Models.Enums.Project.ProjectType.Modpack)
-                    };
-                    mods = await ModrinthApiClient.Project.SearchAsync(name, facets: facets, offset: offset);
+                    facets.Add(Facet.Version(MinecraftVersionTypeBox.SelectedValue.ToString()));
                 }
-                else
-                {
-                    var facets = new FacetCollection()
-                    {
-                        Facet.ProjectType(Modrinth.Models.Enums.Project.ProjectType.Plugin)
-                    };
-                    mods = await ModrinthApiClient.Project.SearchAsync(name, facets: facets, offset: offset);
-                }
+                // 执行搜索
+                mods = await ModrinthApiClient.Project.SearchAsync(name, facets: facets);
                 foreach (var mod in mods?.Hits)
                 {
                     list.Add(new DM_ModsInfo(mod.ProjectId, mod.IconUrl, mod.Title, mod.Url));
@@ -726,10 +730,34 @@ namespace MSL
             {
                 await LoadEvent_Modrinth();
             }
+            await LoadMCVersion();
             //lCircle.IsRunning = false;
             //lCircle.Visibility = Visibility.Collapsed;
             lb01.Visibility = Visibility.Collapsed;
             ModListGrid.IsEnabled = true;
+        }
+
+        private async Task LoadMCVersion()
+        {
+            try
+            {
+                LogHelper.Write.Info("[下载资源页]正在从原版服务端获取 MC 版本列表");
+                MinecraftVersionTypeBox.Items.Clear();
+                var mcVersions = await HttpService.GetApiContentAsync("query/available_versions/vanilla");
+                MinecraftVersionTypeBox.Items.Add("全部");
+                foreach (var mcVersion in mcVersions["data"]["versionList"])
+                {
+                    MinecraftVersionTypeBox.Items.Add(mcVersion.ToString());
+                }
+                MinecraftVersionTypeBox.SelectedIndex = 0;
+            }
+            catch (Exception ex) {
+                MinecraftVersionTypeBox.Items.Clear();
+                MinecraftVersionTypeBox.Items.Add("全部");
+                MinecraftVersionTypeBox.SelectedIndex = 0;
+                LogHelper.Write.Error("[下载资源页]获取 MC 版本列表失败" + ex.ToString());
+            }
+
         }
 
         private async void LoadSourceBox_SelectionChanged(object sender, System.Windows.Controls.SelectionChangedEventArgs e)
