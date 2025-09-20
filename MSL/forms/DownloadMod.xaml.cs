@@ -146,7 +146,7 @@ namespace MSL
                 {
                     var facets = new FacetCollection()
                     {
-                        Facet.ProjectType(Modrinth.Models.Enums.Project.ProjectType.Modpack)
+                        Facet.ProjectType(Modrinth.Models.Enums.Project.ProjectType.Modpack),
                     };
                     mods = await ModrinthApiClient.Project.SearchAsync("", facets: facets);
                 }
@@ -213,7 +213,7 @@ namespace MSL
             }
         }
 
-        private async Task Search_Modrinth(string name, ulong offset = 0)
+        private async Task Search_Modrinth(string name, int offset = 0)
         {
             try
             {
@@ -291,14 +291,14 @@ namespace MSL
         {
             try
             {
-                ulong nowPage;
+                int nowPage;
                 if (NowPageLabel.Content.ToString() == "精选")
                 {
                     nowPage = 0;
                 }
                 else
                 {
-                    nowPage = ulong.Parse(NowPageLabel.Content.ToString());
+                    nowPage = int.Parse(NowPageLabel.Content.ToString());
                 }
                 if (nowPage <= 1)
                 {
@@ -332,14 +332,14 @@ namespace MSL
         {
             try
             {
-                ulong nowPage;
+                int nowPage;
                 if (NowPageLabel.Content.ToString() == "精选")
                 {
                     nowPage = 0;
                 }
                 else
                 {
-                    nowPage = ulong.Parse(NowPageLabel.Content.ToString());
+                    nowPage = int.Parse(NowPageLabel.Content.ToString());
                 }
                 ModListGrid.IsEnabled = false;
                 //lCircle.IsRunning = true;
