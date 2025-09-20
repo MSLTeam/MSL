@@ -71,6 +71,15 @@
                         <ComboBoxItem Content="全部" IsSelected="True"/>
                     </ComboBox>
                 </StackPanel>
+                <StackPanel Orientation="Horizontal" x:Name="SelMCLoaderCard">
+                    <Label Content="加载器：" FontSize="14" BorderBrush="{x:Null}" Background="{x:Null}" Padding="10,0,10,0"/>
+                    <ComboBox x:Name="MinecraftLoaderTypeBox" >
+                        <ComboBoxItem Content="全部" IsSelected="True"/>
+                        <ComboBoxItem Content="NeoForge"/>
+                        <ComboBoxItem Content="Fabric" />
+                        <ComboBoxItem Content="Forge" />
+                    </ComboBox>
+                </StackPanel>
             </StackPanel>
             <ListView Grid.Row="2" x:Name="ModList" FontSize="14" MouseDoubleClick="ModList_MouseDoubleClick" Background="{DynamicResource BorderBackground}" Margin="10">
                 <ListView.View>

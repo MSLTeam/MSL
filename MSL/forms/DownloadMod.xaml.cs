@@ -68,6 +68,7 @@ namespace MSL
             try
             {
                 SelMCVerCard.IsEnabled = false;
+                SelMCLoaderCard.IsEnabled = false;
                 if (CurseForgeApiClient == null)
                 {
                     string token = string.Empty;
@@ -116,6 +117,7 @@ namespace MSL
             try
             {
                 SelMCVerCard.IsEnabled = true;
+                SelMCLoaderCard.IsEnabled = true;
                 if (ModrinthApiClient == null)
                 {
                     // Note: All properties are optional, and will be ignored if they are null or empty
@@ -157,7 +159,12 @@ namespace MSL
                 // 版本筛选
                 if(MinecraftVersionTypeBox.SelectedIndex!=-1 && MinecraftVersionTypeBox.SelectedIndex != 0)
                 {
-                    facets.Add(Facet.Version(MinecraftVersionTypeBox.SelectedValue.ToString()));
+                    facets.Add(Facet.Version(MinecraftVersionTypeBox.Text));
+                }
+                // 加载器筛选
+                if((LoadType == 1 || LoadType == 0) && MinecraftLoaderTypeBox.SelectedIndex != 0 && MinecraftLoaderTypeBox.SelectedIndex != -1)
+                {
+                    facets.Add(Facet.Category(MinecraftLoaderTypeBox.Text));
                 }
                 // 执行搜索
                 mods = await ModrinthApiClient.Project.SearchAsync("", facets: facets);
@@ -240,7 +247,12 @@ namespace MSL
                 // 版本筛选
                 if (MinecraftVersionTypeBox.SelectedIndex != -1 && MinecraftVersionTypeBox.SelectedIndex != 0)
                 {
-                    facets.Add(Facet.Version(MinecraftVersionTypeBox.SelectedValue.ToString()));
+                    facets.Add(Facet.Version(MinecraftVersionTypeBox.Text));
+                }
+                // 加载器筛选
+                if ((LoadType == 1 || LoadType == 0) && MinecraftLoaderTypeBox.SelectedIndex != 0 && MinecraftLoaderTypeBox.SelectedIndex != -1)
+                {
+                    facets.Add(Facet.Category(MinecraftLoaderTypeBox.Text));
                 }
                 // 执行搜索
                 mods = await ModrinthApiClient.Project.SearchAsync(name, facets: facets);
