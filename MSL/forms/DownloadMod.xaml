@@ -63,6 +63,7 @@
                         <ComboBoxItem Content="模组" IsSelected="True"/>
                         <ComboBoxItem Content="整合包"/>
                         <ComboBoxItem x:Name="LTB_Plugins" Content="插件"/>
+                        <ComboBoxItem x:Name="LTB_DataPacks" Content="数据包"/>
                     </ComboBox>
                 </StackPanel>
                 <StackPanel Orientation="Horizontal" x:Name="SelMCVerCard">

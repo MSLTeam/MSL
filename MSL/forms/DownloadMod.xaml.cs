@@ -24,7 +24,7 @@ namespace MSL
     public partial class DownloadMod : HandyControl.Controls.Window
     {
         public string FileName { get; set; }
-        private int LoadType = 0;  //0: mods , 1: modpacks  , 2: plugins
+        private int LoadType = 0;  //0: mods , 1: modpacks  , 2: plugins ,3: datapacks
         private int LoadSource = 1;  //0: Curseforge , 1: Modrinth 
         private readonly bool CloseImmediately;
         private readonly string SavingPath;
@@ -42,8 +42,9 @@ namespace MSL
             if (LoadSource == 0)
             {
                 LTB_Plugins.Visibility = Visibility.Collapsed;
+                LTB_DataPacks.Visibility = Visibility.Collapsed;
             }
-            if (LoadType == 2)
+            if (LoadType == 2 || LoadType == 3)
             {
                 LSB_CurseForge.Visibility = Visibility.Collapsed;
             }
@@ -152,6 +153,9 @@ namespace MSL
                     case 1:
                         facets.Add(Facet.ProjectType(Modrinth.Models.Enums.Project.ProjectType.Modpack));
                         break;
+                    case 3:
+                        facets.Add(Facet.ProjectType(Modrinth.Models.Enums.Project.ProjectType.Datapack));
+                        break;
                     default:
                         facets.Add(Facet.ProjectType(Modrinth.Models.Enums.Project.ProjectType.Plugin));
                         break;
@@ -239,6 +243,9 @@ namespace MSL
                         break;
                     case 1:
                         facets.Add(Facet.ProjectType(Modrinth.Models.Enums.Project.ProjectType.Modpack));
+                        break;
+                    case 3:
+                        facets.Add(Facet.ProjectType(Modrinth.Models.Enums.Project.ProjectType.Datapack));
                         break;
                     default:
                         facets.Add(Facet.ProjectType(Modrinth.Models.Enums.Project.ProjectType.Plugin));
@@ -782,10 +789,12 @@ namespace MSL
             if (LoadSource == 0)
             {
                 LTB_Plugins.Visibility = Visibility.Collapsed;
+                LTB_DataPacks.Visibility = Visibility.Collapsed;
             }
             else
             {
                 LTB_Plugins.Visibility = Visibility.Visible;
+                LTB_DataPacks.Visibility = Visibility.Visible;
             }
             await LoadEvent();
         }
@@ -797,7 +806,7 @@ namespace MSL
                 return;
             }
             LoadType = LoadTypeBox.SelectedIndex;
-            if (LoadType == 2)
+            if (LoadType == 2 || LoadType == 3)
             {
                 LSB_CurseForge.Visibility = Visibility.Collapsed;
             }
