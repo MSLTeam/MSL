@@ -828,11 +828,13 @@ namespace MSL
             }
         }
 
+        /*
         private void GotoOnlinePage()
         {
             SideMenu.SelectedIndex = 3;
             frame.Content = Pages[SideMenu.SelectedIndex];
         }
+        */
 
         private void GotoCreatePage()
         {
