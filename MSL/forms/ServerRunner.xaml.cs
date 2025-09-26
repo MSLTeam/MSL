@@ -4746,6 +4746,7 @@ namespace MSL
                 SendCmdToServer("save-all");
                 SendCmdToServer("tellraw @a [{\"text\":\"[\",\"color\":\"yellow\"},{\"text\":\"MSL\",\"color\":\"green\"},{\"text\":\"]\",\"color\":\"yellow\"},{\"text\":\"正在进行服务器存档备份，请勿关闭服务器哦，否则可能造成回档！备份期间不会影响正常游戏~\",\"color\":\"aqua\"}]");
                 Growl.Info("开始执行备份···");
+                PrintLog("[MSL备份]开始执行备份···", Brushes.Blue);
                 await Task.Delay(5000);
             }
             try
@@ -4756,6 +4757,7 @@ namespace MSL
                     worldPath = "world";
                 }
 
+                // 兼容插件端的分离的存档文件夹
                 string fullWorldPath = Path.Combine(Rserverbase, worldPath);
                 string fullNetherPath = Path.Combine(Rserverbase, worldPath + "_nether");
                 string fullEndPath = Path.Combine(Rserverbase, worldPath + "_the_end");
@@ -4780,6 +4782,8 @@ namespace MSL
                 if (foldersToCompress.Count == 0)
                 {
                     Growl.Error("未找到任何世界存档文件夹（包括主世界、下界、末地），备份失败！");
+                    PrintLog("[MSL备份]未找到任何世界存档文件夹（包括主世界、下界、末地），备份失败！", Brushes.Red);
+                    LogHelper.Write.Error("未找到任何世界存档文件夹（包括主世界、下界、末地），备份失败！");
                     if (CheckServerRunning())
                     {
                         SendCmdToServer("save-on");
@@ -4797,7 +4801,47 @@ namespace MSL
                     Directory.CreateDirectory(backupDir);
                 }
 
+                // 限制最大备份数量
+                const int maxBackups = 10;
+
+                try
+                {
+                    var backupFiles = Directory.GetFiles(backupDir, "msl-backup_*.zip")
+                                               .Select(path => new FileInfo(path))
+                                               .OrderBy(fi => fi.Name) // 按文件名排序，文件名早的=时间旧的
+                                               .ToList();
+
+                    if (backupFiles.Count >= maxBackups)
+                    {
+                        int filesToDeleteCount = backupFiles.Count - maxBackups + 1;
+                        var filesToDelete = backupFiles.Take(filesToDeleteCount).ToList();
+
+                        // 遍历删除最旧的文件
+                        foreach (var fileToDelete in filesToDelete)
+                        {
+                            try
+                            {
+                                fileToDelete.Delete();
+                                PrintLog($"[MSL备份]已删除旧备份：{fileToDelete.Name}",Brushes.Blue);
+                            }
+                            catch (Exception ex)
+                            {
+                                // 如果删除失败，仅发出警告，不中断整个备份过程
+                                PrintLog($"[MSL备份]删除旧备份 {fileToDelete.Name} 失败：{ex.Message}", Brushes.OrangeRed);
+                                LogHelper.Write.Warn($"删除旧备份 {fileToDelete.Name} 失败：{ex.ToString()}");
+                            }
+                        }
+                    }
+                }
+                catch (Exception ex)
+                {
+                    PrintLog("[MSL备份]目录检查或旧备份清理失败：" + ex.Message, Brushes.OrangeRed);
+                    LogHelper.Write.Error("检查并清理旧备份时发生错误：" + ex.ToString());
+                }
+
                 // 压缩，启动！
+                PrintLog("[MSL备份]正在压缩存档文件，请稍等···", Brushes.Blue);
+                LogHelper.Write.Info("正在压缩存档文件，请稍等···");
                 using (ZipOutputStream zipStream = new ZipOutputStream(File.Create(backupPath)))
                 {
                     zipStream.SetLevel(5); // 设置压缩等级
@@ -4809,8 +4853,6 @@ namespace MSL
                         await CompressFolder(Rserverbase, folderPath, zipStream);
                     }
                 }
-
-
 
                 // 重新开启服务器自动保存
                 if (CheckServerRunning())
@@ -4840,17 +4882,22 @@ namespace MSL
                     }
                     catch (Exception ex)
                     {
-                        Growl.Warning("无法获取备份文件信息：" + ex.Message);
+                        PrintLog("[MSL备份]无法获取备份文件信息：" + ex.Message, Brushes.OrangeRed);
+                        LogHelper.Write.Warn("无法获取备份文件信息：" + ex.ToString());
                         SendCmdToServer("save-on");
                         SendCmdToServer("tellraw @a [{\"text\":\"[\",\"color\":\"yellow\"},{\"text\":\"MSL\",\"color\":\"green\"},{\"text\":\"]\",\"color\":\"yellow\"},{\"text\":\"服务器存档备份完成！\",\"color\":\"aqua\"}]");
                     }
                 }
 
                 Growl.Success($"存档备份成功！已保存至：{backupPath}");
+                PrintLog($"[MSL备份]存档备份成功！已保存至：{backupPath}", Brushes.Blue);
+                LogHelper.Write.Info($"存档备份成功！已保存至：{backupPath}");
             }
             catch (Exception ex)
             {
                 Growl.Error("备份失败！" + ex.Message);
+                PrintLog("[MSL备份]备份失败！" + ex.Message, Brushes.Red);
+                LogHelper.Write.Error("备份失败！" + ex.ToString());
                 if (CheckServerRunning())
                 {
                     SendCmdToServer("save-on");
@@ -4860,6 +4907,7 @@ namespace MSL
             }
             finally
             {
+                // 最后这里再执行一次 不知道有啥意义 留着吧 qwq
                 if (CheckServerRunning())
                 {
                     SendCmdToServer("save-on");
