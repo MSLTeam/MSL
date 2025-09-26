@@ -1145,6 +1145,7 @@ namespace MSL
 
         private void StartServer(string StartFileArg)
         {
+            BackupBtn.IsEnabled = false; //服务器完成启动前禁止备份
             if (useConpty.IsChecked == true)
             {
                 if (ConPTYWindow == null)
@@ -1365,6 +1366,7 @@ namespace MSL
                 //controlServer_Copy.Content = "开服";
                 controlServer.IsChecked = false;
                 controlServer1.IsChecked = false;
+                BackupBtn.IsEnabled = true;
                 MagicFlowMsg.ShowMessage("服务器已关闭！", _growlPanel: GetActiveGrowlPanel());
                 if (ConPTYWindow == null)
                 {
@@ -1737,6 +1739,7 @@ namespace MSL
                         ConPTYWindow.ServerStatus.Text = "已开服";
                     }
                     GetServerInfoSys();
+                    BackupBtn.IsEnabled = true;
                 });
             }
             else if (msg.Contains("Stopping server"))
@@ -3662,6 +3665,25 @@ namespace MSL
                 MessageBox.Show(ex.Message, "Error", MessageBoxButton.OK, MessageBoxImage.Error);
             }
         }
+
+
+
+        // 快捷设置ygg api
+        private void YggLittleskin_Click(object sender, RoutedEventArgs e)
+        {
+            YggdrasilAddr.Text = "https://littleskin.cn/api/yggdrasil";
+            //Growl.Success("已设置Yggdrasil服务为Littleskin\n请点击保存并重启服务器以使设置生效！", "提示");
+        }
+
+        private void YggDocs_Click(object sender, RoutedEventArgs e)
+        {
+            Process.Start("https://www.mslmc.cn/docs/yggdrasil.html");
+        }
+
+        private void YggMSL_Click(object sender, RoutedEventArgs e)
+        {
+            YggdrasilAddr.Text = "https://skin.mslmc.net/api/yggdrasil";
+        }
         #endregion
 
         #region 更多功能
@@ -4706,21 +4728,203 @@ namespace MSL
         }
         #endregion
 
-        // 快捷设置ygg api
-        private void YggLittleskin_Click(object sender, RoutedEventArgs e)
+        #region 备份相关
+        private async void BackupBtn_Click(object sender, RoutedEventArgs e)
         {
-            YggdrasilAddr.Text = "https://littleskin.cn/api/yggdrasil";
-            //Growl.Success("已设置Yggdrasil服务为Littleskin\n请点击保存并重启服务器以使设置生效！", "提示");
+            BackupBtn.IsEnabled = false;
+            await BackupWorld();
+            BackupBtn.IsEnabled = true;
         }
 
-        private void YggDocs_Click(object sender, RoutedEventArgs e)
+        private async Task BackupWorld()
         {
-            Process.Start("https://www.mslmc.cn/docs/yggdrasil.html");
+            // 发送指令
+            if (CheckServerRunning())
+            {
+                SendCmdToServer("save-off");
+                await Task.Delay(1000);
+                SendCmdToServer("save-all");
+                SendCmdToServer("tellraw @a [{\"text\":\"[\",\"color\":\"yellow\"},{\"text\":\"MSL\",\"color\":\"green\"},{\"text\":\"]\",\"color\":\"yellow\"},{\"text\":\"正在进行服务器存档备份，请勿关闭服务器哦，否则可能造成回档！备份期间不会影响正常游戏~\",\"color\":\"aqua\"}]");
+                Growl.Info("开始执行备份···");
+                await Task.Delay(5000);
+            }
+            try
+            {
+                string worldPath = ServerBaseConfig()[8]; // 获取世界存档路径
+                if (string.IsNullOrEmpty(worldPath))
+                {
+                    worldPath = "world";
+                }
+
+                string fullWorldPath = Path.Combine(Rserverbase, worldPath);
+                string fullNetherPath = Path.Combine(Rserverbase, worldPath + "_nether");
+                string fullEndPath = Path.Combine(Rserverbase, worldPath + "_the_end");
+
+                // 备份列表
+                var foldersToCompress = new List<string>();
+
+                if (Directory.Exists(fullWorldPath))
+                {
+                    foldersToCompress.Add(fullWorldPath);
+                }
+                if (Directory.Exists(fullNetherPath))
+                {
+                    foldersToCompress.Add(fullNetherPath);
+                }
+                if (Directory.Exists(fullEndPath))
+                {
+                    foldersToCompress.Add(fullEndPath);
+                }
+
+                // 检查是否至少有一个世界文件夹存在
+                if (foldersToCompress.Count == 0)
+                {
+                    Growl.Error("未找到任何世界存档文件夹（包括主世界、下界、末地），备份失败！");
+                    if (CheckServerRunning())
+                    {
+                        SendCmdToServer("save-on");
+                        SendCmdToServer("tellraw @a [{\"text\":\"[\",\"color\":\"yellow\"},{\"text\":\"MSL\",\"color\":\"green\"},{\"text\":\"]\",\"color\":\"yellow\"},{\"text\":\"备份失败！未找到任何世界存档文件夹！\",\"color\":\"red\"}]");
+                    }
+                    return;
+                }
+
+                // 相关目录文件
+                string backupDir = Path.Combine(Rserverbase, "msl-backups");
+                string backupPath = Path.Combine(backupDir, $"msl-backup_{DateTime.Now.ToString("yyyyMMdd_HHmmss")}.zip");
+
+                if (!Directory.Exists(backupDir))
+                {
+                    Directory.CreateDirectory(backupDir);
+                }
+
+                // 压缩，启动！
+                using (ZipOutputStream zipStream = new ZipOutputStream(File.Create(backupPath)))
+                {
+                    zipStream.SetLevel(5); // 设置压缩等级
+
+                    // 遍历所有需要备份的文件夹，并将它们逐一添加到压缩包
+                    foreach (var folderPath in foldersToCompress)
+                    {
+                        // 压缩
+                        await CompressFolder(Rserverbase, folderPath, zipStream);
+                    }
+                }
+
+
+
+                // 重新开启服务器自动保存
+                if (CheckServerRunning())
+                {
+                    try
+                    {
+                        FileInfo backupFileInfo = new FileInfo(backupPath);
+                        string fileName = backupFileInfo.Name;
+                        long fileSizeInBytes = backupFileInfo.Length;
+                        string formattedSize;
+                        if (fileSizeInBytes > 1024 * 1024 * 1024) { formattedSize = $"{fileSizeInBytes / (1024.0 * 1024.0 * 1024.0):F2} GB"; }
+                        else if (fileSizeInBytes > 1024 * 1024) { formattedSize = $"{fileSizeInBytes / (1024.0 * 1024.0):F2} MB"; }
+                        else if (fileSizeInBytes > 1024) { formattedSize = $"{fileSizeInBytes / 1024.0:F2} KB"; }
+                        else { formattedSize = $"{fileSizeInBytes} Bytes"; }
+                        string tellrawMessage = $"tellraw @a [";
+                        tellrawMessage += "{\"text\":\"[\",\"color\":\"yellow\"},";
+                        tellrawMessage += "{\"text\":\"MSL\",\"color\":\"green\"},";
+                        tellrawMessage += "{\"text\":\"]\",\"color\":\"yellow\"},";
+                        tellrawMessage += "{\"text\":\" 服务器存档备份完成！\\n\",\"color\":\"aqua\"},";
+                        tellrawMessage += $"{{\"text\":\"文件名: \",\"color\":\"gray\"}},";
+                        tellrawMessage += $"{{\"text\":\"{fileName}\",\"color\":\"white\"}},";
+                        tellrawMessage += $"{{\"text\":\"\\n大小: \",\"color\":\"gray\"}},";
+                        tellrawMessage += $"{{\"text\":\"{formattedSize}\",\"color\":\"white\"}}";
+                        tellrawMessage += "]";
+                        SendCmdToServer("save-on");
+                        SendCmdToServer(tellrawMessage);
+                    }
+                    catch (Exception ex)
+                    {
+                        Growl.Warning("无法获取备份文件信息：" + ex.Message);
+                        SendCmdToServer("save-on");
+                        SendCmdToServer("tellraw @a [{\"text\":\"[\",\"color\":\"yellow\"},{\"text\":\"MSL\",\"color\":\"green\"},{\"text\":\"]\",\"color\":\"yellow\"},{\"text\":\"服务器存档备份完成！\",\"color\":\"aqua\"}]");
+                    }
+                }
+
+                Growl.Success($"存档备份成功！已保存至：{backupPath}");
+            }
+            catch (Exception ex)
+            {
+                Growl.Error("备份失败！" + ex.Message);
+                if (CheckServerRunning())
+                {
+                    SendCmdToServer("save-on");
+                    SendCmdToServer("tellraw @a [{\"text\":\"[\",\"color\":\"yellow\"},{\"text\":\"MSL\",\"color\":\"green\"},{\"text\":\"]\",\"color\":\"yellow\"},{\"text\":\"备份过程中发生错误，备份失败！\",\"color\":\"red\"}]");
+                }
+                return;
+            }
+            finally
+            {
+                if (CheckServerRunning())
+                {
+                    SendCmdToServer("save-on");
+                }
+            }
         }
 
-        private void YggMSL_Click(object sender, RoutedEventArgs e)
+        private void SendCmdToServer(string cmd)
         {
-            YggdrasilAddr.Text = "https://skin.mslmc.net/api/yggdrasil";
+            if (CheckServerRunning())
+            {
+                if (ConPTYWindow != null)
+                {
+                    ConPTYWindow.ConptyConsole.ConPTYTerm.WriteToTerm((cmd + "\r\n").AsSpan());
+                }
+                else
+                {
+                    if (inputCmdEncoding.Content.ToString() == "UTF8")
+                    {
+                        SendCmdUTF8(cmd);
+                    }
+                    else
+                    {
+                        SendCmdANSL(cmd);
+                    }
+                }
+            }
         }
+
+
+        private async Task CompressFolder(string rootPath, string currentPath, ZipOutputStream zipStream)
+        {
+            string[] files = Directory.GetFiles(currentPath);
+            foreach (string file in files)
+            {
+                // 排除 session.lock
+                if (Path.GetFileName(file).Equals("session.lock", StringComparison.OrdinalIgnoreCase))
+                {
+                    continue;
+                }
+
+                string entryName = file.Substring(rootPath.Length + 1);
+                ZipEntry entry = new ZipEntry(entryName);
+                entry.DateTime = DateTime.Now;
+                zipStream.PutNextEntry(entry);
+
+                try
+                {
+                    using (FileStream fs = new FileStream(file, FileMode.Open, FileAccess.Read, FileShare.ReadWrite))
+                    {
+                        await fs.CopyToAsync(zipStream);
+                    }
+                }
+                catch (IOException ex)
+                {
+                    throw new IOException($"无法以共享只读模式打开文件 '{entryName}'。服务器施加了排他锁。错误: {ex.Message}", ex);
+                }
+            }
+
+            string[] folders = Directory.GetDirectories(currentPath);
+            foreach (string folder in folders)
+            {
+                await CompressFolder(rootPath, folder, zipStream);
+            }
+        }
+        #endregion
     }
 }

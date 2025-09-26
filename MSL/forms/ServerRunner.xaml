@@ -192,7 +192,7 @@
                         </ComboBox>
                         <TextBox x:Name="cmdtext" Grid.Column="1" Margin="0,0,5,10" Text="服务器已关闭" KeyDown="cmdtext_KeyDown" IsEnabled="False"/>
                         <Button x:Name="sendcmd" Grid.Column="2" Content="发送" Style="{StaticResource ButtonPrimary}" Width="60" Height="32" Margin="0,0,5,10" Click="sendcmd_Click" IsEnabled="False"/>
-                        <ToggleButton x:Name="controlServer" Grid.Column="3" Margin="0,0,10,10" MinWidth="60" Height="32" Click="controlServer_Click" MouseDoubleClick="controlServer_MouseDoubleClick">
+                        <ToggleButton x:Name="controlServer" Grid.Column="3" Margin="0,0,5,10" MinWidth="60" Height="32" Click="controlServer_Click" MouseDoubleClick="controlServer_MouseDoubleClick">
                             <ToggleButton.Style>
                                 <Style TargetType="ToggleButton" BasedOn="{StaticResource ToggleButton.NoCheckedBorder}">
 
@@ -207,6 +207,7 @@
                                 </Style>
                             </ToggleButton.Style>
                         </ToggleButton>
+                        <Button x:Name="BackupBtn" Grid.Column="4" Content="备份"  Width="60" Height="32" Margin="0,0,5,10" Click="BackupBtn_Click"/>
                     </Grid>
                 </Grid>
             </TabItem>
