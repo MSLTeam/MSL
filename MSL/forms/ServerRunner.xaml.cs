@@ -930,6 +930,28 @@ namespace MSL
             }
         }
 
+        private void SendCmdToServer(string cmd)
+        {
+            if (CheckServerRunning())
+            {
+                if (ConPTYWindow != null)
+                {
+                    ConPTYWindow.ConptyConsole.ConPTYTerm.WriteToTerm((cmd + "\r\n").AsSpan());
+                }
+                else
+                {
+                    if (inputCmdEncoding.Content.ToString() == "UTF8")
+                    {
+                        SendCmdUTF8(cmd);
+                    }
+                    else
+                    {
+                        SendCmdANSL(cmd);
+                    }
+                }
+            }
+        }
+
         private async Task<bool> DownloadAuthlib()
         {
             HttpResponse res = await HttpService.GetAsync("https://authlib-injector.mirrors.mslmc.cn/artifact/latest.json");
@@ -4547,22 +4569,19 @@ namespace MSL
                         {
                             if (CheckServerRunning())
                             {
-                                if (ConPTYWindow != null)
+                                switch (cmd) // 处理一些内置的特殊任务
                                 {
-                                    ConPTYWindow.ConptyConsole.ConPTYTerm.WriteToTerm((cmd + "\r\n").AsSpan());
-                                }
-                                else
-                                {
-                                    if (inputCmdEncoding.Content.ToString() == "UTF8")
-                                    {
-                                            SendCmdUTF8(cmd);
-
-                                    }
-                                    else
-                                    {
-                                        SendCmdANSL(cmd);
-                                    }
-                                       // ServerProcess.StandardInput.WriteLine(cmd);
+                                    case ".backup":
+                                        if (BackupBtn.IsEnabled == true)
+                                        {
+                                            BackupBtn.RaiseEvent(new RoutedEventArgs(Button.ClickEvent));
+                                            PrintLog("[MSL备份]定时备份任务开始执行~", Brushes.Blue);
+                                        }
+                                        break;
+                                    default:
+                                        SendCmdToServer(cmd);
+                                        PrintLog("[MSL定时任务]执行指令：" + cmd, Brushes.Blue);
+                                        break;
                                 }
                                 if (tasksList.SelectedIndex != -1 && int.Parse(tasksList.SelectedItem.ToString()) == id)
                                 {
@@ -4802,7 +4821,7 @@ namespace MSL
                 }
 
                 // 限制最大备份数量
-                const int maxBackups = 10;
+                const int maxBackups = 20;
 
                 try
                 {
@@ -4915,27 +4934,7 @@ namespace MSL
             }
         }
 
-        private void SendCmdToServer(string cmd)
-        {
-            if (CheckServerRunning())
-            {
-                if (ConPTYWindow != null)
-                {
-                    ConPTYWindow.ConptyConsole.ConPTYTerm.WriteToTerm((cmd + "\r\n").AsSpan());
-                }
-                else
-                {
-                    if (inputCmdEncoding.Content.ToString() == "UTF8")
-                    {
-                        SendCmdUTF8(cmd);
-                    }
-                    else
-                    {
-                        SendCmdANSL(cmd);
-                    }
-                }
-            }
-        }
+        
 
 
         private async Task CompressFolder(string rootPath, string currentPath, ZipOutputStream zipStream)
