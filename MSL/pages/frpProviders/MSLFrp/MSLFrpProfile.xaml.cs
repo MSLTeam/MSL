@@ -169,7 +169,7 @@ namespace MSL.pages.frpProviders.MSLFrp
                 { "verify_type", "alipay" }
             };
             if (!await MagicShow.ShowMsgDialogAsync($"请确认如下实名信息是否正确:\n姓名:{certName}\n身份证号码:{certID}\n确认无误后，请点击确认按钮进入支付宝扫码人脸识别流程\n*注意:非会员一旦确认提交信息，将会立即扣除150积分(若因用户自身填写错误的信息导致认证失败，实名小号积分不予退换。)，若需要取消上一次的实名订单，请加群联系管理员。(Q群" +
-                $"信息在软件首页)", "实名信息确认", true, "取消","我已确认信息无误"))
+                $"信息在软件首页)", "实名信息确认", true, "取消", "我已确认信息无误"))
             {
                 return;
             }
@@ -234,29 +234,119 @@ namespace MSL.pages.frpProviders.MSLFrp
                 return;
             }
             LogHelper.Write.Info("获取商品列表成功，正在渲染商品列表...");
-            JArray userData = JArray.Parse(Data.ToString());
-            foreach (var item in userData)
-            {
-                Grid grid = new Grid
-                {
-                    VerticalAlignment = VerticalAlignment.Center,
-                };
+            GoodsList.Children.Clear();
 
+            JArray goodsData = JArray.Parse(Data.ToString());
+            foreach (var item in goodsData)
+            {
+                var id = item.Value<int>("id");
+                var name = item.Value<string>("name");
+                var description = item.Value<string>("description");
+                var price = item.Value<decimal>("price");
+                var originPrice = item.Value<decimal>("originPrice");
+
+                Grid grid = new Grid { VerticalAlignment = VerticalAlignment.Center };
                 grid.ColumnDefinitions.Add(new ColumnDefinition { Width = new GridLength(1, GridUnitType.Star) });
                 grid.ColumnDefinitions.Add(new ColumnDefinition { Width = GridLength.Auto });
 
-                TextBlock textBlock = new TextBlock
+                // 存放所有文字信息的垂直面板
+                var textPanel = new StackPanel
                 {
-                    Foreground = (Brush)FindResource("PrimaryTextBrush"),
-                    Text = $"#{item["id"]} {item["name"]}\n{item["price"]}积分\n{item["description"]}",
+                    VerticalAlignment = VerticalAlignment.Center,
+                    Margin = new Thickness(0, 0, 10, 0) // 与购买按钮留出间距
                 };
-                Grid.SetColumn(textBlock, 0);
-                grid.Children.Add(textBlock);
 
+                // 商品名称
+                var nameBlock = new TextBlock
+                {
+                    Text = $"#{id} {name}",
+                    Foreground = (Brush)FindResource("PrimaryTextBrush"),
+                    FontWeight = FontWeights.Bold,
+                    FontSize = 14
+                };
+                textPanel.Children.Add(nameBlock);
+
+                bool hasDiscount = originPrice.HasValue && originPrice.Value > price;
+
+                if (hasDiscount)
+                {
+                    // 有折扣时的显示
+                    var pricePanel = new StackPanel { Orientation = Orientation.Horizontal };
+
+                    // 现价
+                    var salePriceBlock = new TextBlock
+                    {
+                        Text = $"{price}积分 ",
+                        Foreground = new SolidColorBrush(Colors.OrangeRed), // 折扣价用醒目颜色
+                        FontWeight = FontWeights.Bold,
+                        VerticalAlignment = VerticalAlignment.Center,
+                        FontSize = 13
+                    };
+                    pricePanel.Children.Add(salePriceBlock);
+
+                    // 原价
+                    var originPriceBlock = new TextBlock
+                    {
+                        Text = $"{originPrice.Value}积分",
+                        Foreground = (Brush)FindResource("SecondaryTextBrush"), // 灰色
+                        TextDecorations = TextDecorations.Strikethrough,
+                        VerticalAlignment = VerticalAlignment.Center,
+                        Margin = new Thickness(5, 0, 0, 0),
+                        FontSize = 12
+                    };
+                    pricePanel.Children.Add(originPriceBlock);
+
+                    // 折扣百分比标签
+                    var discountPercentage = Math.Round(((originPrice.Value - price) / originPrice.Value) * 100);
+                    var discountBadge = new Border
+                    {
+                        Background = new SolidColorBrush(Colors.Red),
+                        CornerRadius = new CornerRadius(3),
+                        Margin = new Thickness(10, 0, 0, 0),
+                        Padding = new Thickness(4, 1, 4, 1),
+                        Child = new TextBlock
+                        {
+                            Text = $"{discountPercentage}% OFF",
+                            Foreground = new SolidColorBrush(Colors.White),
+                            FontSize = 10,
+                            FontWeight = FontWeights.Bold,
+                        }
+                    };
+                    pricePanel.Children.Add(discountBadge);
+
+                    textPanel.Children.Add(pricePanel);
+                }
+                else
+                {
+                    // 无折扣
+                    var priceBlock = new TextBlock
+                    {
+                        Text = $"{price}积分",
+                        Foreground = (Brush)FindResource("PrimaryTextBrush"),
+                        FontSize = 13
+                    };
+                    textPanel.Children.Add(priceBlock);
+                }
+
+                // 描述
+                var descriptionBlock = new TextBlock
+                {
+                    Text = description,
+                    Foreground = (Brush)FindResource("SecondaryTextBrush"),
+                    TextWrapping = TextWrapping.Wrap,
+                    Margin = new Thickness(0, 5, 0, 0)
+                };
+                textPanel.Children.Add(descriptionBlock);
+
+                // 文字面板添加到Grid第一列
+                Grid.SetColumn(textPanel, 0);
+                grid.Children.Add(textPanel);
+
+                // 购买按钮
                 var buyButton = new Button
                 {
-                    Tag = (int)item["id"],
-                    Content = "购买",
+                    Tag = id,
+                    Content = "兑换",
                     Width = 80,
                 };
                 buyButton.Click += async (sender, e) =>
@@ -271,6 +361,7 @@ namespace MSL.pages.frpProviders.MSLFrp
 
                 GoodsList.Children.Add(grid);
             }
+
             LogHelper.Write.Info("商品列表渲染完成。");
         }
 
@@ -352,7 +443,7 @@ namespace MSL.pages.frpProviders.MSLFrp
 
         private void AskBtn_Click(object sender, RoutedEventArgs e)
         {
-            MagicShow.ShowMsgDialog("若您遇到了付款的问题，请加Q群1145888872联系管理。\n请勿直接在订单发起投诉，这样只会加长处理周期和麻烦。\n感谢您的配合~", "付款问题");
+            MagicShow.ShowMsgDialog("若您遇到了付款的问题，请加Q群1023417539联系管理。\n请勿直接在订单发起投诉，这样只会加长处理周期和麻烦。\n感谢您的配合~", "付款问题");
         }
     }
 }
