@@ -243,7 +243,7 @@ namespace MSL.pages.frpProviders.MSLFrp
                 var name = item.Value<string>("name");
                 var description = item.Value<string>("description");
                 var price = item.Value<decimal>("price");
-                var originPrice = item.Value<decimal>("originPrice");
+                var originPrice = item.Value<decimal?>("originPrice");
 
                 Grid grid = new Grid { VerticalAlignment = VerticalAlignment.Center };
                 grid.ColumnDefinitions.Add(new ColumnDefinition { Width = new GridLength(1, GridUnitType.Star) });
