@@ -277,7 +277,7 @@ namespace MSL.pages.frpProviders.MSLFrp
                     var salePriceBlock = new TextBlock
                     {
                         Text = $"{price}积分 ",
-                        Foreground = new SolidColorBrush(Colors.OrangeRed), // 折扣价用醒目颜色
+                        Foreground = new SolidColorBrush(Colors.OrangeRed), // 折扣价颜色
                         FontWeight = FontWeights.Bold,
                         VerticalAlignment = VerticalAlignment.Center,
                         FontSize = 13
@@ -300,7 +300,7 @@ namespace MSL.pages.frpProviders.MSLFrp
                     var discountPercentage = Math.Round(((originPrice.Value - price) / originPrice.Value) * 100);
                     var discountBadge = new Border
                     {
-                        Background = new SolidColorBrush(Colors.Red),
+                        Background = new SolidColorBrush(Colors.DeepPink),
                         CornerRadius = new CornerRadius(3),
                         Margin = new Thickness(10, 0, 0, 0),
                         Padding = new Thickness(4, 1, 4, 1),
