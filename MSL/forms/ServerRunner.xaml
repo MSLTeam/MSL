@@ -226,6 +226,7 @@
                                         <Button x:Name="reFresh_Copy" Content="刷新" Style="{StaticResource ButtonPrimary}" Click="reFresh_Click" Width="70" FontSize="14" Margin="5,0,0,0"/>
                                         <Button x:Name="DownloadPluginBtn" Content="下载插件" Width="80" FontSize="14" Click="DownloadPluginBtn_Click" Margin="5,0,0,0"/>
                                         <Button Content="帮助" Click="mpHelp_Click" Width="80" FontSize="14" Margin="5,0,0,0"/>
+                                        <Button Content="打开文件夹" Click="openpluginsDir_Click"  FontSize="14" Margin="5,0,0,0"/>
                                     </StackPanel>
                                     <ListView x:Name="pluginslist" hc:Empty.ShowEmpty="true" BorderThickness="0" Margin="0,35,0,0" Background="{DynamicResource ContentRegionBrush}" FontSize="14">
                                         <ListView.ContextMenu>
@@ -276,6 +277,7 @@
                                         <Button x:Name="addModsTip" Content="添加模组必看" Style="{StaticResource ButtonPrimary}" FontSize="14" Margin="5,0,0,0" Width="110" Click="addModsTip_Click"/>
                                         <Button x:Name="DownloadModBtn" Content="下载模组" Click="DownloadModBtn_Click" Width="80" FontSize="14" Margin="5,0,0,0"/>
                                         <Button Content="帮助" Click="mpHelp_Click" Width="60" FontSize="14" Margin="5,0,0,0"/>
+                                        <Button Content="打开文件夹" Click="openmodsDir_Click"  FontSize="14" Margin="5,0,0,0"/>
                                     </StackPanel>
                                     <ListView x:Name="modslist" hc:Empty.ShowEmpty="true" BorderThickness="0" Margin="0,35,0,0" Background="{DynamicResource ContentRegionBrush}" FontSize="14">
                                         <ListView.ContextMenu>
@@ -416,6 +418,7 @@
                                                     <ComboBoxItem Content="(服务端外)MSL/server-backups"/>
                                                     <ComboBoxItem Content="自定义"/>
                                                 </ComboBox>
+                                                <Button Content="打开备份文件夹" x:Name="BtnOpenBackupFolder" Margin="3,0,0,0" Click="BtnOpenBackupFolder_Click"/>
                                             </StackPanel>
                                             <Grid Margin="0,3,0,0" x:Name="GridSelBackupPath">
                                                 <Grid.ColumnDefinitions>

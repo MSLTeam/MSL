@@ -5107,6 +5107,50 @@ namespace MSL
                 TextBackupPath.Text = dialog.SelectedPath;
             }
         }
+        private void BtnOpenBackupFolder_Click(object sender, RoutedEventArgs e)
+        {
+            string backupDir;
+            switch (ComboBackupPath.SelectedIndex)
+            {
+                case 0:
+                    backupDir = Path.Combine(Rserverbase, "msl-backups");
+                    break;
+                case 1:
+                    backupDir = Path.Combine(@"MSL", "server-backups", $"{Rservername}_{RserverID}");
+                    break;
+                case 2:
+                    if (!String.IsNullOrEmpty(TextBackupPath.Text))
+                    {
+                        backupDir = TextBackupPath.Text;
+                    }
+                    else
+                    {
+                        Growl.Error("自定义备份路径为空！");
+                        return;
+                    }
+                    break;
+                default:
+                    backupDir = Path.Combine(Rserverbase, "msl-backups");
+                    break;
+            }
+            try
+            {
+                if (!Directory.Exists(backupDir))
+                {
+                    Directory.CreateDirectory(backupDir);
+                }
+                Process.Start(new ProcessStartInfo
+                {
+                    FileName = backupDir,
+                    UseShellExecute = true,
+                    Verb = "open"
+                });
+            }
+            catch (Exception ex)
+            {
+                Growl.Error("打开备份文件夹失败！" + ex.Message);
+            }
+        }
 
         #endregion
 
