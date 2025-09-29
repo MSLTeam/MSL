@@ -4849,8 +4849,8 @@ namespace MSL
                 }
                 else
                 {
-                    //PrintLog($"[MSL备份]将在 5 秒后开始执行压缩备份···", Brushes.Blue);
-                    await Task.Delay(5000);
+                    //PrintLog($"[MSL备份]将在 10 秒后开始执行压缩备份···", Brushes.Blue);
+                    await Task.Delay(10000);
                 }
                 string worldPath = ServerBaseConfig()[8]; // 获取世界存档路径
                 if (string.IsNullOrEmpty(worldPath))
@@ -4941,7 +4941,7 @@ namespace MSL
                                                .OrderBy(fi => fi.Name) // 按文件名排序，文件名早的=时间旧的
                                                .ToList();
 
-                    if (backupFiles.Count >= maxBackups)
+                    if (maxBackups >= 1 && backupFiles.Count >= maxBackups)
                     {
                         int filesToDeleteCount = backupFiles.Count - maxBackups + 1;
                         var filesToDelete = backupFiles.Take(filesToDeleteCount).ToList();
