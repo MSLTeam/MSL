@@ -398,6 +398,40 @@
                                         </StackPanel>
                                     </Grid>
                                     <hc:Divider Margin="0,10,0,10"/>
+                                    <Label Content="备份设置" Style="{StaticResource BorderTitle}"/>
+                                    <Grid x:Name="GridBackupSet">
+                                        <StackPanel Margin="0,0,0,0">
+                                            <StackPanel  Orientation="Horizontal">
+                                            <Label Content="最大备份数量 (填0为不限制)：" Style="{StaticResource MagicLabel14}"/>
+                                                <TextBox x:Name="TextBackupMaxLimitCount" Text="20" InputMethod.IsInputMethodEnabled="False" PreviewTextInput="NumberValidationTextBox" Width="50" Margin="2,0,0,0" />
+                                            </StackPanel>
+                                            <StackPanel  Orientation="Horizontal" Margin="0,3,0,0">
+                                                <Label Content="备份保存等待 (秒) - 不知道就保持默认即可：" Style="{StaticResource MagicLabel14}"/>
+                                                <TextBox x:Name="TextBackupDelay" Text="10" InputMethod.IsInputMethodEnabled="False" PreviewTextInput="NumberValidationTextBox" Width="50" Margin="2,0,0,0" />
+                                            </StackPanel>
+                                            <StackPanel  Orientation="Horizontal" Margin="0,3,0,0">
+                                                <Label Content="备份位置：" Style="{StaticResource MagicLabel14}"/>
+                                                <ComboBox x:Name="ComboBackupPath" SelectionChanged="ComboBackupPath_SelectionChanged">
+                                                    <ComboBoxItem Content="(服务端内)服务器目录/msl-backups" />
+                                                    <ComboBoxItem Content="(服务端外)MSL/server-backups"/>
+                                                    <ComboBoxItem Content="自定义"/>
+                                                </ComboBox>
+                                            </StackPanel>
+                                            <Grid Margin="0,3,0,0" x:Name="GridSelBackupPath">
+                                                <Grid.ColumnDefinitions>
+                                                    <ColumnDefinition Width="Auto"/>
+                                                    <ColumnDefinition Width="*"/>
+                                                    <ColumnDefinition Width="Auto"/>
+                                                </Grid.ColumnDefinitions>
+                                                <Label Content="自定义备份路径：" Style="{StaticResource MagicLabel14}"/>
+                                                <TextBox x:Name="TextBackupPath" Grid.Column="1" MaxLines="1"  Margin="2,0,6,0" VerticalAlignment="Top"/>
+                                                <Button x:Name="BtnSelBackupPath" Content="浏览" Grid.Column="2" VerticalAlignment="Top" HorizontalAlignment="Right" Click="BtnSelBackupPath_Click" /> 
+                                            </Grid>
+                                            <Border Margin="0,5" Style="{StaticResource BorderTipPrimary}">
+                                                <TextBlock Text="若需要启用自动备份，请在定时任务添加指令为'.backup'的任务即可！" TextWrapping="Wrap" Foreground="{DynamicResource DarkPrimaryBrush}" FontSize="14" HorizontalAlignment="Left" VerticalAlignment="Top"/>
+                                            </Border>
+                                        </StackPanel>
+                                    </Grid>
                                     <Grid>
                                         <Button x:Name="refreahConfig" Content="刷新" Style="{StaticResource ButtonPrimary}" Width="120" Height="35" FontSize="14" Click="refreahConfig_Click" HorizontalAlignment="Center" Margin="0,0,350,0"/>
                                         <Button x:Name="doneBtn1" Content="保存/应用" Style="{StaticResource ButtonPrimary}" Width="120" Click="doneBtn1_Click" Height="35" FontSize="14" HorizontalAlignment="Center" />

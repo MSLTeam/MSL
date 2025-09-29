@@ -434,6 +434,9 @@
     <PackageReference Include="Newtonsoft.Json">
       <Version>13.0.3</Version>
     </PackageReference>
+    <PackageReference Include="Ookii.Dialogs.Wpf">
+      <Version>5.0.1</Version>
+    </PackageReference>
     <PackageReference Include="QRCoder">
       <Version>1.6.0</Version>
     </PackageReference>

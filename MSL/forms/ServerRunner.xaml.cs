@@ -9,6 +9,7 @@ using MSL.pages;
 using MSL.utils;
 using Newtonsoft.Json;
 using Newtonsoft.Json.Linq;
+using Ookii.Dialogs.Wpf;
 using System;
 using System.Collections.Generic;
 using System.Diagnostics;
@@ -347,6 +348,41 @@ namespace MSL
             if (_json["ygg_api"] != null)
             {
                 YggdrasilAddr.Text = _json["ygg_api"].ToString();
+            }
+            if (_json["backup_mode"] != null)
+            {
+                try
+                {
+                    if(int.Parse(_json["backup_mode"].ToString()) >= 0 && int.Parse(_json["backup_mode"].ToString()) <= 2)
+                    {
+                        ComboBackupPath.SelectedIndex = int.Parse(_json["backup_mode"].ToString());
+                    }
+                    else
+                    {
+                        ComboBackupPath.SelectedIndex = 0;
+                    }
+                    
+                }
+                catch (Exception)
+                {
+                    ComboBackupPath.SelectedIndex = 0;
+                }
+            }
+            else
+            {
+                ComboBackupPath.SelectedIndex = 0;
+            }
+            if (_json["backup_max_limit"] != null)
+            {
+                TextBackupMaxLimitCount.Text = _json["backup_max_limit"].ToString();
+            }
+            if (_json["backup_custom_path"] != null)
+            {
+                TextBackupPath.Text = _json["backup_custom_path"].ToString();
+            }
+            if (_json["backup_save_delay"] != null)
+            {
+                TextBackupDelay.Text = _json["backup_save_delay"].ToString();
             }
             this.Title = Rservername;//set title to server name
 
@@ -3349,6 +3385,34 @@ namespace MSL
                     RserverYggAddr = YggdrasilAddr.Text;
                 }
 
+                // 检查备份相关设置参数的合法性
+                try
+                {
+                    if(int.Parse(TextBackupMaxLimitCount.Text) < 0)
+                    {
+                        throw new Exception("最大备份数量必须大于等于0！");
+                    }
+                    if(int.Parse(TextBackupDelay.Text) <5 )
+                    {
+                        throw new Exception("备份保存延时必须大于等于5秒！");
+                    }
+                    if( ComboBackupPath.SelectedIndex == 2)
+                    {
+                        if(String.IsNullOrEmpty(TextBackupPath.Text) || TextBackupPath.Text.IndexOfAny(Path.GetInvalidPathChars()) >= 0)
+                        {
+                            throw new Exception("自定义备份路径不合法！");
+                        }
+                        Path.GetFullPath(TextBackupPath.Text); // 这个东西能检测路径合法不 不合法会抛出异常~
+                    }
+                }
+                catch(Exception ex)
+                {
+                    MagicShow.ShowMsgDialog(this, "备份设置参数有误，请检查！\n" + ex.Message, "错误");
+                    doneBtn1.IsEnabled = true;
+                    refreahConfig.IsEnabled = true;
+                    return;
+                }
+
                 JObject jsonObject = JObject.Parse(File.ReadAllText(@"MSL\ServerList.json", Encoding.UTF8));
                 JObject _json = (JObject)jsonObject[RserverID.ToString()];
                 _json["name"].Replace(Rservername);
@@ -3358,6 +3422,10 @@ namespace MSL
                 _json["memory"].Replace(RserverJVM);
                 _json["args"].Replace(RserverJVMcmd);
                 _json["ygg_api"] = RserverYggAddr;
+                _json["backup_mode"] = ComboBackupPath.SelectedIndex;
+                _json["backup_max_limit"] = int.Parse(TextBackupMaxLimitCount.Text);
+                _json["backup_custom_path"] = TextBackupPath.Text;
+                _json["backup_save_delay"] = int.Parse(TextBackupDelay.Text);
                 jsonObject[RserverID.ToString()].Replace(_json);
                 File.WriteAllText(@"MSL\ServerList.json", Convert.ToString(jsonObject), Encoding.UTF8);
                 LoadSettings();
@@ -4766,10 +4834,24 @@ namespace MSL
                 SendCmdToServer("tellraw @a [{\"text\":\"[\",\"color\":\"yellow\"},{\"text\":\"MSL\",\"color\":\"green\"},{\"text\":\"]\",\"color\":\"yellow\"},{\"text\":\"正在进行服务器存档备份，请勿关闭服务器哦，否则可能造成回档！备份期间不会影响正常游戏~\",\"color\":\"aqua\"}]");
                 Growl.Info("开始执行备份···");
                 PrintLog("[MSL备份]开始执行备份···", Brushes.Blue);
-                await Task.Delay(5000);
             }
             try
             {
+                // 读取配置
+                JObject jsonObject = JObject.Parse(File.ReadAllText(@"MSL\ServerList.json", Encoding.UTF8));
+                JObject _json = (JObject)jsonObject[RserverID.ToString()];
+
+                //若服务器是开启状态 执行等待
+                if (_json["backup_save_delay"] != null && int.Parse(_json["backup_save_delay"].ToString()) >=5 && CheckServerRunning())
+                {
+                    //PrintLog($"[MSL备份]将在 {int.Parse(_json["backup_save_delay"].ToString())} 秒后开始执行压缩备份···", Brushes.Blue);
+                    await Task.Delay(int.Parse(_json["backup_save_delay"].ToString())*1000);
+                }
+                else
+                {
+                    //PrintLog($"[MSL备份]将在 5 秒后开始执行压缩备份···", Brushes.Blue);
+                    await Task.Delay(5000);
+                }
                 string worldPath = ServerBaseConfig()[8]; // 获取世界存档路径
                 if (string.IsNullOrEmpty(worldPath))
                 {
@@ -4812,7 +4894,26 @@ namespace MSL
                 }
 
                 // 相关目录文件
-                string backupDir = Path.Combine(Rserverbase, "msl-backups");
+                string backupDir = Path.Combine(Rserverbase, "msl-backups"); //默认备份在服务端里
+                if (_json["backup_mode"] != null)
+                {
+                    if (int.Parse(_json["backup_mode"].ToString()) == 1 )
+                    {
+                        backupDir = Path.Combine(@"MSL", "server-backups",$"{Rservername}_{RserverID}");
+                    }
+                    if (int.Parse(_json["backup_mode"].ToString()) == 2)
+                    {
+                        if (_json["backup_custom_path"] != null && !String.IsNullOrEmpty(_json["backup_custom_path"].ToString()))
+                        {
+                                backupDir = _json["backup_custom_path"].ToString();
+
+                        }
+                        else
+                        {
+                            PrintLog("[MSL备份]自定义备份路径为空，已使用默认路径！", Brushes.OrangeRed);
+                        }
+                    }
+                }
                 string backupPath = Path.Combine(backupDir, $"msl-backup_{DateTime.Now.ToString("yyyyMMdd_HHmmss")}.zip");
 
                 if (!Directory.Exists(backupDir))
@@ -4821,9 +4922,19 @@ namespace MSL
                 }
 
                 // 限制最大备份数量
-                const int maxBackups = 20;
-
-                try
+                int maxBackups = 20;
+                if (_json["backup_max_limit"] != null)
+                { 
+                    if (int.Parse(_json["backup_max_limit"].ToString()) >= 0)
+                    {
+                        maxBackups = int.Parse(_json["backup_max_limit"].ToString());
+                    }
+                    else
+                    {
+                        PrintLog("[MSL备份]最大备份数量配置错误，已使用默认值20！", Brushes.OrangeRed);
+                    }
+                }
+                    try
                 {
                     var backupFiles = Directory.GetFiles(backupDir, "msl-backup_*.zip")
                                                .Select(path => new FileInfo(path))
@@ -4972,6 +5083,33 @@ namespace MSL
                 await CompressFolder(rootPath, folder, zipStream);
             }
         }
+
+        private void ComboBackupPath_SelectionChanged(object sender, SelectionChangedEventArgs e)
+        {
+            if(ComboBackupPath.SelectedIndex == 2)
+            {
+                GridSelBackupPath.Visibility = Visibility.Visible;
+            }
+            else
+            {
+                GridSelBackupPath.Visibility = Visibility.Collapsed;
+            }
+        }
+
+        private void BtnSelBackupPath_Click(object sender, RoutedEventArgs e)
+        {
+            var dialog = new VistaFolderBrowserDialog();
+            dialog.Description = "请选择一个文件夹用于存放备份文件";
+            dialog.UseDescriptionForTitle = true;
+
+            if (dialog.ShowDialog(this).GetValueOrDefault())
+            {
+                TextBackupPath.Text = dialog.SelectedPath;
+            }
+        }
+
         #endregion
+
+
     }
 }
