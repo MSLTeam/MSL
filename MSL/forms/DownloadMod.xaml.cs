@@ -489,7 +489,7 @@ namespace MSL
 
         }
 
-        private async Task ModInfo_Modrinth(DM_ModsInfo info)
+        private async Task ModInfo_Modrinth(DM_ModsInfo info,string MCVersion = "0")
         {
             var modInfo = await ModrinthApiClient.Project.GetAsync(info.ID);
             ModInfoLoadingProcess.Content = "加载中";
@@ -498,6 +498,10 @@ namespace MSL
             foreach (var gameVersion in modInfo.GameVersions.Reverse())
             {
                 VerFilterCombo.Items.Add(gameVersion);
+                if(MCVersion != "0" && gameVersion == MCVersion)
+                {
+                    VerFilterCombo.SelectedItem = gameVersion;
+                }
             }
             //var loadedCount = 0;
             var modInfo1 = await ModrinthApiClient.Version.GetProjectVersionListAsync(info.ID);
@@ -673,7 +677,7 @@ namespace MSL
                     VerFilterPannel.Visibility = Visibility.Visible;
                     MVL_Platform.Width = 100;
                     MVL_Dependency.Width = 0;
-                    await ModInfo_Modrinth(info);
+                    await ModInfo_Modrinth(info, MinecraftVersionTypeBox.SelectedIndex == 0 ? "0" : MinecraftVersionTypeBox.Text);
                 }
                 ModInfoLoadingProcess.Visibility = Visibility.Collapsed;
             }
@@ -685,6 +689,8 @@ namespace MSL
             {
                 backBtn.IsEnabled = true;
                 VerFilterCombo.IsEnabled = true;
+                // 触发一次版本筛选
+                VerFilter_SelectionChanged(null, null);
             }
         }
 
