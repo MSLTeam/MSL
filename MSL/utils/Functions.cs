@@ -10,6 +10,7 @@ using System.Text;
 using System.Text.RegularExpressions;
 using System.Windows;
 using System.Windows.Controls;
+using System.Windows.Media;
 
 namespace MSL.utils
 {
@@ -26,6 +27,18 @@ namespace MSL.utils
                 window = Window.GetWindow(page);
             }
             return window as Window;
+        }
+
+        public static T FindAncestor<T>(DependencyObject current) where T : DependencyObject
+        {
+            current = VisualTreeHelper.GetParent(current);
+
+            while (current != null && !(current is T))
+            {
+                current = VisualTreeHelper.GetParent(current);
+            }
+
+            return current as T;
         }
 
         public static Tuple<int, int, int, int> VersionCompare(string version)

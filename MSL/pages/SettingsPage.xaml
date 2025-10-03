@@ -55,7 +55,7 @@
                     <ToggleButton Name="MSLTips" IsChecked="True" Style="{StaticResource ToggleButtonSwitch.Content}" HorizontalAlignment="Left" VerticalAlignment="Center" Click="MSLTips_Click"/>
                 </StackPanel>
                 <StackPanel Margin="0,0,0,15" Orientation="Horizontal">
-                    <Label Grid.Column="0" Content="关闭服务器运行窗口的弹窗提示: " Margin="0,0,10,0"/>
+                    <Label Grid.Column="0" Content="服务器运行窗口关闭时的运行提示: " Margin="0,0,10,0"/>
                     <ToggleButton Name="CloseWindowDialog" IsChecked="True" Style="{StaticResource ToggleButtonSwitch.Content}" HorizontalAlignment="Left" VerticalAlignment="Center" Click="CloseWindowDialog_Click"/>
                 </StackPanel>
                 <Grid Margin="0,0,0,15">

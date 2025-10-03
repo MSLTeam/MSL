@@ -118,57 +118,6 @@ namespace MSL.pages
                     }
                     ChangeLanguage.SelectedIndex = langCombo;
                 }
-                /*
-                if (jsonObject["skin"] != null)
-                {
-                    if ((int)jsonObject["skin"] == 0)
-                    {
-                        autoSetTheme.IsChecked = true;
-                        BlueSkinBtn.IsEnabled = false;
-                        RedSkinBtn.IsEnabled = false;
-                        GreenSkinBtn.IsEnabled = false;
-                        OrangeSkinBtn.IsEnabled = false;
-                        PurpleSkinBtn.IsEnabled = false;
-                        PinkSkinBtn.IsEnabled = false;
-                    }
-                    else
-                    {
-                        BlueSkinBtn.IsEnabled = true;
-                        RedSkinBtn.IsEnabled = true;
-                        GreenSkinBtn.IsEnabled = true;
-                        OrangeSkinBtn.IsEnabled = true;
-                        PurpleSkinBtn.IsEnabled = true;
-                        PinkSkinBtn.IsEnabled = true;
-                        switch ((int)jsonObject["skin"])
-                        {
-                            case 1:
-                                autoSetTheme.IsChecked = false;
-                                BlueSkinBtn.IsChecked = true;
-                                break;
-                            case 2:
-                                autoSetTheme.IsChecked = false;
-                                RedSkinBtn.IsChecked = true;
-                                break;
-                            case 3:
-                                autoSetTheme.IsChecked = false;
-                                GreenSkinBtn.IsChecked = true;
-                                break;
-                            case 4:
-                                autoSetTheme.IsChecked = false;
-                                OrangeSkinBtn.IsChecked = true;
-                                break;
-                            case 5:
-                                autoSetTheme.IsChecked = false;
-                                PurpleSkinBtn.IsChecked = true;
-                                break;
-                            case 6:
-                                autoSetTheme.IsChecked = false;
-                                PinkSkinBtn.IsChecked = true;
-                                break;
-                        }
-                    }
-                }
-                */
 
                 if (jsonObject["semitransparentTitle"] != null && (bool)jsonObject["semitransparentTitle"] == true)
                 {

@@ -1,0 +1,92 @@
+﻿<UserControl x:Class="MSL.controls.ctrls_serverrunner.ServerProperties"
+             xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+             xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+             xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006" 
+             xmlns:d="http://schemas.microsoft.com/expression/blend/2008" 
+             xmlns:hc="https://handyorg.github.io/handycontrol"
+             xmlns:local="clr-namespace:MSL.controls"
+             mc:Ignorable="d" 
+             d:DesignHeight="450" d:DesignWidth="800">
+    <local:MagicCard Margin="0,0,0,20">
+        <hc:UniformSpacingPanel Orientation="Vertical" Spacing="10">
+            <StackPanel Orientation="Horizontal">
+                <TextBlock x:Name="changeServerPropertiesLab" VerticalAlignment="Center" FontSize="18" FontWeight="Bold" Foreground="{DynamicResource PrimaryTextBrush}" Text="服务器配置"/>
+                <Button x:Name="refreahServerConfig" Margin="10,0,0,0" Content="刷新" Width="80" Click="refreahServerConfig_Click"/>
+            </StackPanel>
+            <Grid>
+                <Grid.Resources>
+                    <Style TargetType="TextBlock">
+                        <Setter Property="Foreground" Value="{DynamicResource PrimaryTextBrush}"/>
+                    </Style>
+                </Grid.Resources>
+                <Rectangle RadiusX="10" RadiusY="10" Stroke="{DynamicResource BorderBrush}" Fill="{DynamicResource BorderBackground}" Height="115"/>
+                <Grid>
+                    <Grid.ColumnDefinitions>
+                        <ColumnDefinition/>
+                        <ColumnDefinition/>
+                    </Grid.ColumnDefinitions>
+                    <TextBlock Grid.Column="0" Text="游戏模式说明（请根据配置文件的格式进行选择）" HorizontalAlignment="Center" VerticalAlignment="Top" Margin="0,10,0,0"/>
+                    <TextBlock Grid.Column="1" Text="游戏难度说明（请根据配置文件的格式进行选择）" HorizontalAlignment="Center" VerticalAlignment="Top" Margin="0,10,0,0"/>
+                </Grid>
+                <Rectangle Height="1" Stroke="{DynamicResource BorderBrush}" Margin="0,30,0,0" VerticalAlignment="Top"/>
+                <Grid>
+                    <Grid.ColumnDefinitions>
+                        <ColumnDefinition/>
+                        <ColumnDefinition/>
+                        <ColumnDefinition/>
+                        <ColumnDefinition/>
+                        <ColumnDefinition/>
+                        <ColumnDefinition/>
+                        <ColumnDefinition/>
+                        <ColumnDefinition/>
+                    </Grid.ColumnDefinitions>
+                    <Rectangle Grid.Column="3" Stroke="{DynamicResource BorderBrush}" Width="1" RenderTransformOrigin="0.5,0.5" HorizontalAlignment="Right"/>
+                    <TextBlock Grid.Column="0" TextWrapping="Wrap" Text="生存" Margin="0,40,0,0" HorizontalAlignment="Center" VerticalAlignment="Top"/>
+                    <TextBlock Grid.Column="1" TextWrapping="Wrap" Text="创造" Margin="0,40,0,0" HorizontalAlignment="Center" VerticalAlignment="Top"/>
+                    <TextBlock Grid.Column="2" TextWrapping="Wrap" Text="冒险" Margin="0,40,0,0" HorizontalAlignment="Center" VerticalAlignment="Top"/>
+                    <TextBlock Grid.Column="3" TextWrapping="Wrap" Text="旁观" Margin="0,40,0,0" HorizontalAlignment="Center" VerticalAlignment="Top"/>
+                    <TextBlock Grid.Column="4" TextWrapping="Wrap" Text="和平" Margin="0,40,0,0" HorizontalAlignment="Center" VerticalAlignment="Top"/>
+                    <TextBlock Grid.Column="5" TextWrapping="Wrap" Text="简单" Margin="0,40,0,0" HorizontalAlignment="Center" VerticalAlignment="Top"/>
+                    <TextBlock Grid.Column="6" TextWrapping="Wrap" Text="普通" Margin="0,40,0,0" HorizontalAlignment="Center" VerticalAlignment="Top"/>
+                    <TextBlock Grid.Column="7" TextWrapping="Wrap" Text="困难" Margin="0,40,0,0" HorizontalAlignment="Center" VerticalAlignment="Top"/>
+                    <TextBlock Grid.Column="0" TextWrapping="Wrap" Text="Survival" Margin="0,65,0,0" HorizontalAlignment="Center" VerticalAlignment="Top"/>
+                    <TextBlock Grid.Column="1" TextWrapping="Wrap" Text="Creative" Margin="0,65,0,0" HorizontalAlignment="Center" VerticalAlignment="Top"/>
+                    <TextBlock Grid.Column="2" TextWrapping="Wrap" Text="Adventure" Margin="0,65,0,0" HorizontalAlignment="Center" VerticalAlignment="Top"/>
+                    <TextBlock Grid.Column="3" TextWrapping="Wrap" Text="Spectator" Margin="0,65,0,0" HorizontalAlignment="Center" VerticalAlignment="Top"/>
+                    <TextBlock Grid.Column="4" TextWrapping="Wrap" Text="Peaceful" Margin="0,65,0,0" HorizontalAlignment="Center" VerticalAlignment="Top"/>
+                    <TextBlock Grid.Column="5" TextWrapping="Wrap" Text="Easy" Margin="0,65,0,0" HorizontalAlignment="Center" VerticalAlignment="Top"/>
+                    <TextBlock Grid.Column="6" TextWrapping="Wrap" Text="Normal" Margin="0,65,0,0" HorizontalAlignment="Center" VerticalAlignment="Top"/>
+                    <TextBlock Grid.Column="7" TextWrapping="Wrap" Text="Hard" Margin="0,65,0,0" HorizontalAlignment="Center" VerticalAlignment="Top"/>
+                    <TextBlock Grid.Column="0" Margin="0,90,0,0" TextWrapping="Wrap" Text="0" HorizontalAlignment="Center" VerticalAlignment="Top"/>
+                    <TextBlock Grid.Column="1" Margin="0,90,0,0" TextWrapping="Wrap" Text="1" HorizontalAlignment="Center" VerticalAlignment="Top"/>
+                    <TextBlock Grid.Column="2" Margin="0,90,0,0" TextWrapping="Wrap" Text="2" HorizontalAlignment="Center" VerticalAlignment="Top"/>
+                    <TextBlock Grid.Column="3" Margin="0,90,0,0" TextWrapping="Wrap" Text="3" HorizontalAlignment="Center" VerticalAlignment="Top"/>
+                    <TextBlock Grid.Column="4" Margin="0,90,0,0" TextWrapping="Wrap" Text="0" HorizontalAlignment="Center" VerticalAlignment="Top"/>
+                    <TextBlock Grid.Column="5" Margin="0,90,0,0" TextWrapping="Wrap" Text="1" HorizontalAlignment="Center" VerticalAlignment="Top"/>
+                    <TextBlock Grid.Column="6" Margin="0,90,0,0" TextWrapping="Wrap" Text="2" HorizontalAlignment="Center" VerticalAlignment="Top"/>
+                    <TextBlock Grid.Column="7" Margin="0,90,0,0" TextWrapping="Wrap" Text="3" HorizontalAlignment="Center" VerticalAlignment="Top"/>
+                </Grid>
+            </Grid>
+            <Grid x:Name="ChangeServerProperties">
+                <Grid.Resources>
+                    <Style TargetType="TextBlock">
+                        <Setter Property="Foreground" Value="{DynamicResource PrimaryTextBrush}"/>
+                    </Style>
+                    <Style TargetType="Label" BasedOn="{StaticResource MagicLabel14}"/>
+                </Grid.Resources>
+            </Grid>
+            <Grid>
+                <Grid.ColumnDefinitions>
+                    <ColumnDefinition/>
+                    <ColumnDefinition/>
+                    <ColumnDefinition/>
+                    <ColumnDefinition/>
+                </Grid.ColumnDefinitions>
+                <Button x:Name="saveServerConfig" Grid.Column="0" Style="{StaticResource ButtonPrimary}" Content="保存" Height="35" Click="saveServerConfig_Click" FontSize="14" HorizontalAlignment="Stretch" Margin="10,0,10,0"/>
+                <Button x:Name="changeServerIcon" Grid.Column="1" Content="修改服务器图标" Height="35" FontSize="14" Click="changeServerIcon_Click" VerticalAlignment="Top" HorizontalAlignment="Stretch" Margin="10,0,10,0"/>
+                <Button x:Name="changeWorldMap" Grid.Column="2" Content="更换主世界地图" Click="changeWorldMap_Click" Height="35" FontSize="14" VerticalAlignment="Top" HorizontalAlignment="Stretch" Margin="10,0,10,0"/>
+                <Button x:Name="setServerconfig" Grid.Column="3" Content="修改更多配置" Height="35" FontSize="14" Click="setServerconfig_Click" VerticalAlignment="Top" HorizontalAlignment="Stretch" Margin="10,0,10,0"/>
+            </Grid>
+        </hc:UniformSpacingPanel>
+    </local:MagicCard>
+</UserControl>

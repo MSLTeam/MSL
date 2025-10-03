@@ -107,6 +107,12 @@
       <SubType>Designer</SubType>
     </ApplicationDefinition>
     <Compile Include="controls\BitmapConverter.cs" />
+    <Compile Include="controls\ctrls_serverrunner\NoMods.xaml.cs">
+      <DependentUpon>NoMods.xaml</DependentUpon>
+    </Compile>
+    <Compile Include="controls\ctrls_serverrunner\ServerProperties.xaml.cs">
+      <DependentUpon>ServerProperties.xaml</DependentUpon>
+    </Compile>
     <Compile Include="controls\dialogs\DownloadDisplayControl.xaml.cs">
       <DependentUpon>DownloadDisplayControl.xaml</DependentUpon>
     </Compile>
@@ -117,6 +123,9 @@
       <DependentUpon>DownloadManagerDialog.xaml</DependentUpon>
     </Compile>
     <Compile Include="controls\MagicControls.cs" />
+    <Compile Include="controls\ctrls_serverrunner\NoPlugins.xaml.cs">
+      <DependentUpon>NoPlugins.xaml</DependentUpon>
+    </Compile>
     <Compile Include="controls\StringConcatConverter.cs" />
     <Compile Include="forms\ConptyWindow.xaml.cs">
       <DependentUpon>ConptyWindow.xaml</DependentUpon>
@@ -225,6 +234,14 @@
       <SubType>Designer</SubType>
       <Generator>MSBuild:Compile</Generator>
     </Page>
+    <Page Include="controls\ctrls_serverrunner\NoMods.xaml">
+      <SubType>Designer</SubType>
+      <Generator>MSBuild:Compile</Generator>
+    </Page>
+    <Page Include="controls\ctrls_serverrunner\ServerProperties.xaml">
+      <SubType>Designer</SubType>
+      <Generator>MSBuild:Compile</Generator>
+    </Page>
     <Page Include="controls\dialogs\DownloadDisplayControl.xaml">
       <Generator>MSBuild:Compile</Generator>
       <SubType>Designer</SubType>
@@ -252,6 +269,10 @@
     <Page Include="controls\MessageWindow.xaml">
       <Generator>MSBuild:Compile</Generator>
       <SubType>Designer</SubType>
+    </Page>
+    <Page Include="controls\ctrls_serverrunner\NoPlugins.xaml">
+      <SubType>Designer</SubType>
+      <Generator>MSBuild:Compile</Generator>
     </Page>
     <Page Include="controls\Styles.xaml">
       <SubType>Designer</SubType>

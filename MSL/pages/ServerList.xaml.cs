@@ -166,34 +166,6 @@ namespace MSL.pages
             }
         }
 
-        /*
-        private ServerRunner CheckServerRunStatus(int tabCtrl = 0)
-        {
-            if (runningServers.ContainsKey(serverIDs[serverList.SelectedIndex]))
-            {
-                serverID = serverIDs[serverList.SelectedIndex];
-                OpenServerForm();
-                return null;
-            }
-            else
-            {
-                ServerRunner runner = new ServerRunner(serverIDs[serverList.SelectedIndex], tabCtrl);
-                return runner;
-            }
-        }
-        
-
-        private void StartServerEvent()
-        {
-            try
-            {
-                var runner = CheckServerRunStatus();
-                runner?.Show();
-            }
-            catch (Exception ex) { MessageBox.Show("出现错误，请检查您是否选择了服务器！\n" + ex.Message); }
-        }
-        */
-
         private void setServer_Click(object sender, RoutedEventArgs e)
         {
             OpenServerWindowEvent(3);
@@ -410,7 +382,7 @@ namespace MSL.pages
             Button btn = sender as Button;
             if (btn != null)
             {
-                ListBoxItem item = FindAncestor<ListBoxItem>(btn);
+                ListBoxItem item = Functions.FindAncestor<ListBoxItem>(btn);
                 if (item != null)
                 {
                     item.IsSelected = true;
@@ -423,7 +395,7 @@ namespace MSL.pages
             Button btn = sender as Button;
             if (btn != null)
             {
-                ListBoxItem item = FindAncestor<ListBoxItem>(btn);
+                ListBoxItem item = Functions.FindAncestor<ListBoxItem>(btn);
                 if (item != null)
                 {
                     item.IsSelected = true;
@@ -436,24 +408,13 @@ namespace MSL.pages
             Button btn = sender as Button;
             if (btn != null)
             {
-                ListBoxItem item = FindAncestor<ListBoxItem>(btn);
+                ListBoxItem item = Functions.FindAncestor<ListBoxItem>(btn);
                 if (item != null)
                 {
                     item.IsSelected = true;
                 }
             }
             DelServerEvent();
-        }
-        public static T FindAncestor<T>(System.Windows.DependencyObject current) where T : System.Windows.DependencyObject
-        {
-            current = VisualTreeHelper.GetParent(current);
-
-            while (current != null && !(current is T))
-            {
-                current = VisualTreeHelper.GetParent(current);
-            }
-
-            return current as T;
         }
 
         //单独的下载按钮

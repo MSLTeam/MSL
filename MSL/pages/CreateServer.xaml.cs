@@ -1,6 +1,5 @@
 ﻿using HandyControl.Controls;
 using ICSharpCode.SharpZipLib.Zip;
-using Microsoft.VisualBasic;
 using MSL.controls;
 using MSL.utils;
 using Newtonsoft.Json;
@@ -355,9 +354,7 @@ namespace MSL.pages
         {
             if (!File.Exists(@"MSL\" + fileName + @"\bin\java.exe"))
             {
-                await MagicShow.ShowMsgDialogAsync(Window.GetWindow(this), "下载Java即代表您接受Java的服务条款：\nhttps://www.oracle.com/downloads/licenses/javase-license1.html", "信息");
                 DownjavaName = fileName;
-
                 bool downDialog = await MagicShow.ShowDownloader(Window.GetWindow(this), downUrl, "MSL", "Java.zip", "下载" + fileName + "中……");
                 if (downDialog)
                 {
@@ -528,14 +525,6 @@ namespace MSL.pages
                 {
                     Console.WriteLine("Write Local-Java-List Failed(To Configuration)");
                 }
-
-                /*
-                foreach (JavaScanner.JavaInfo info in strings)
-                {
-                    selectCheckedJavaComb.Items.Add(info.Version + ":" + info.Path);
-                }
-                */
-                //selectCheckedJavaComb.ItemsSource = strings.ToList();
             }
             if (selectCheckedJavaComb.Items.Count > 0)
             {
@@ -841,12 +830,6 @@ namespace MSL.pages
             {
                 launchmode = 1; // 1是自定义命令模式
                 serverargs = textCustomCmd.Text; //存放完整的args
-                //不懂 直接copy了
-                /*
-                sJVM.IsSelected = true;
-                sJVM.IsEnabled = true;
-                sserver.IsEnabled = false;
-                */
                 // 若为自定义命令模式，就跳过设置开服内存和JVM参数的阶段
                 servermemory = "";
                 SelectTerminalGrid.Visibility = Visibility.Visible;

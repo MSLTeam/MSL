@@ -1,8 +1,10 @@
 ﻿using HandyControl.Controls;
 using HandyControl.Data;
+using HandyControl.Tools.Command;
 using ICSharpCode.SharpZipLib.Zip;
 using Microsoft.Win32;
 using MSL.controls;
+using MSL.controls.ctrls_serverrunner;
 using MSL.forms;
 using MSL.langs;
 using MSL.pages;
@@ -16,7 +18,6 @@ using System.Diagnostics;
 using System.Globalization;
 using System.IO;
 using System.Linq;
-using System.Management;
 using System.Net;
 using System.Text;
 using System.Text.RegularExpressions;
@@ -30,7 +31,6 @@ using System.Windows.Input;
 using System.Windows.Media;
 using System.Windows.Media.Imaging;
 using System.Windows.Threading;
-using static System.Windows.Forms.VisualStyles.VisualStyleElement.Tab;
 using MessageBox = System.Windows.MessageBox;
 using Path = System.IO.Path;
 using Window = System.Windows.Window;
@@ -50,6 +50,7 @@ namespace MSL
         private Process ServerProcess { get; } = new Process();
         private ConptyWindow ConPTYWindow { get; set; }
         private DispatcherTimer ConPTYResizeTimer { get; set; }= new DispatcherTimer();
+        private ServerProperties ServerProperties { get; set; }
         private int RserverID { get; }
         private string Rservername { get; set; }
         private string Rserverjava { get; set; }
@@ -185,6 +186,7 @@ namespace MSL
             }
             MCSLogHandler.Dispose();
             MCSLogHandler = null;
+            ServerProperties.Dispose();
             getSystemInfo = false;
             Rservername = null;
             Rserverjava = null;
@@ -457,6 +459,8 @@ namespace MSL
             systemInfoBtn.IsChecked = ConfigStore.GetServerInfo;
             recordPlayInfo = ConfigStore.GetPlayerInfo;
             playerInfoBtn.IsChecked = recordPlayInfo;
+            ServerProperties = new ServerProperties(this, Rserverbase);
+            SettingsGrid.Items.Add(ServerProperties);
             LoadSettings();
             if (systemInfoBtn.IsChecked == true)
             {
@@ -654,14 +658,14 @@ namespace MSL
                     ReFreshPluginsAndMods();
                     break;
                 case 3:
-                    GetServerConfig();
+                    ServerProperties.RefreshServerConfig();
                     break;
                 default:
                     break;
             }
         }
 
-        private bool CheckServerRunning()
+        public bool CheckServerRunning()
         {
             if (ConPTYWindow != null)
             {
@@ -1203,7 +1207,6 @@ namespace MSL
 
         private void StartServer(string StartFileArg)
         {
-            BackupBtn.IsEnabled = false; //服务器完成启动前禁止备份
             if (useConpty.IsChecked == true)
             {
                 if (ConPTYWindow == null)
@@ -1383,10 +1386,9 @@ namespace MSL
                 serverStateLab.Content = "运行中";
                 serverStateLab.Foreground = Brushes.Red;
                 solveProblemBtn.IsEnabled = false;
-                //controlServer.Content = "关服";
-                //controlServer_Copy.Content = "关服";
                 controlServer.IsChecked = true;
                 controlServer1.IsChecked = true;
+                BackupBtn.IsEnabled = false; //服务器完成启动前禁止备份
                 gameDifficultyLab.Content = "获取中";
                 gameTypeLab.Content = "获取中";
                 serverIPLab.Content = "获取中";
@@ -1420,11 +1422,9 @@ namespace MSL
                 serverStateLab.Content = "已关闭";
                 serverStateLab.Foreground = Brushes.Green;
                 solveProblemBtn.IsEnabled = true;
-                //controlServer.Content = "开服";
-                //controlServer_Copy.Content = "开服";
                 controlServer.IsChecked = false;
                 controlServer1.IsChecked = false;
-                BackupBtn.IsEnabled = true;
+                BackupBtn.IsEnabled = true; // 服务器关闭后允许备份
                 MagicFlowMsg.ShowMessage("服务器已关闭！", _growlPanel: GetActiveGrowlPanel());
                 if (ConPTYWindow == null)
                 {
@@ -2304,328 +2304,16 @@ namespace MSL
 
         #endregion
 
-        #region 服务器功能调整
-
-        /////////这里是服务器功能调整
-
-        private void refreahServerConfig_Click(object sender, RoutedEventArgs e)
-        {
-            GetServerConfig();
-            Growl.Success("刷新成功！");
-        }
-
-        private void GetServerConfig()
-        {
-            try
-            {
-                string[] strings = ServerBaseConfig();
-                onlineModeText.Text = strings[0];
-                gameModeText.Text = strings[1];
-                gameDifficultyText.Text = strings[2];
-                gamePlayerText.Text = strings[3];
-                gamePortText.Text = strings[4];
-                commandBlockText.Text = strings[5];
-                viewDistanceText.Text = strings[6];
-                gamePvpText.Text = strings[7];
-                gameWorldText.Text = strings[8];
-                changeServerPropertiesLab.Text = "更改服务器配置信息";
-                changeServerProperties.Visibility = Visibility.Visible;
-                changeServerProperties_Add.Visibility = Visibility.Visible;
-                changeServerProperties_Add_Add.Visibility = Visibility.Visible;
-            }
-            catch { changeServerPropertiesLab.Text = "找不到配置文件，无法更改相关设置（请尝试开启一次服务器）"; changeServerProperties.Visibility = Visibility.Collapsed; changeServerProperties_Add.Visibility = Visibility.Collapsed; changeServerProperties_Add_Add.Visibility = Visibility.Collapsed; }
-        }
-
-        private string[] ServerBaseConfig()
-        {
-            string[] strings = new string[9];
-            Encoding encoding = Functions.GetTextFileEncodingType(Rserverbase + @"\server.properties");
-            string config = File.ReadAllText(Rserverbase + @"\server.properties", encoding);
-            if (config.Contains("\r")) // 去除win系统专用换行符
-            {
-                config = config.Replace("\r", string.Empty);
-            }
-            int om1 = config.IndexOf("online-mode=") + 12;
-            string om2 = config.Substring(om1);
-            strings[0] = om2.Substring(0, om2.IndexOf("\n"));
-            string[] strings1 = config.Split('\n');
-            foreach (string s in strings1)
-            {
-                if (s.StartsWith("gamemode="))
-                {
-                    strings[1] = s.Substring(9);
-                    break;
-                }
-            }
-            int dc1 = config.IndexOf("difficulty=") + 11;
-            string dc2 = config.Substring(dc1);
-            strings[2] = dc2.Substring(0, dc2.IndexOf("\n"));
-            int mp1 = config.IndexOf("max-players=") + 12;
-            string mp2 = config.Substring(mp1);
-            strings[3] = mp2.Substring(0, mp2.IndexOf("\n"));
-            int sp1 = config.IndexOf("server-port=") + 12;
-            string sp2 = config.Substring(sp1);
-            strings[4] = sp2.Substring(0, sp2.IndexOf("\n"));
-            int ec1 = config.IndexOf("enable-command-block=") + 21;
-            string ec2 = config.Substring(ec1);
-            strings[5] = ec2.Substring(0, ec2.IndexOf("\n"));
-            int vd1 = config.IndexOf("view-distance=") + 14;
-            string vd2 = config.Substring(vd1);
-            strings[6] = vd2.Substring(0, vd2.IndexOf("\n"));
-            int pp1 = config.IndexOf("pvp=") + 4;
-            string pp2 = config.Substring(pp1);
-            strings[7] = pp2.Substring(0, pp2.IndexOf("\n"));
-            int gw1 = config.IndexOf("level-name=") + 11;
-            string gw2 = config.Substring(gw1);
-            strings[8] = gw2.Substring(0, gw2.IndexOf("\n"));
-            return strings;
-        }
-
-        private void saveServerConfig_Click(object sender, RoutedEventArgs e)
-        {
-            try
-            {
-                if (CheckServerRunning())
-                {
-                    MagicShow.ShowMsgDialog(this, "您没有关闭服务器，无法调整服务器功能！", "错误");
-                    return;
-                }
-            }
-            catch
-            { }
-            try
-            {
-                string[] strings = ServerBaseConfig();
-                Encoding encoding = Functions.GetTextFileEncodingType(Rserverbase + @"\server.properties");
-                string config = File.ReadAllText(Rserverbase + @"\server.properties", encoding);
-                config = config.Replace("online-mode=" + strings[0], "online-mode=" + onlineModeText.Text);
-                config = config.Replace("gamemode=" + strings[1], "gamemode=" + gameModeText.Text);
-                config = config.Replace("difficulty=" + strings[2], "difficulty=" + gameDifficultyText.Text);
-                config = config.Replace("max-players=" + strings[3], "max-players=" + gamePlayerText.Text);
-                config = config.Replace("server-port=" + strings[4], "server-port=" + gamePortText.Text);
-                config = config.Replace("enable-command-block=" + strings[5], "enable-command-block=" + commandBlockText.Text);
-                config = config.Replace("view-distance=" + strings[6], "view-distance=" + viewDistanceText.Text);
-                config = config.Replace("pvp=" + strings[7], "pvp=" + gamePvpText.Text);
-                config = config.Replace("level-name=" + strings[8], "level-name=" + gameWorldText.Text);
-                try
-                {
-                    if (encoding == Encoding.UTF8)
-                    {
-                        File.WriteAllText(Rserverbase + @"\server.properties", config, new UTF8Encoding(false));
-                    }
-                    else if (encoding == Encoding.Default)
-                    {
-                        File.WriteAllText(Rserverbase + @"\server.properties", config, Encoding.Default);
-                    }
-                    MagicShow.ShowMsgDialog(this, "保存成功！", "信息");
-                }
-                catch (Exception ex)
-                {
-                    MagicShow.ShowMsgDialog(this, "保存失败！请检查服务器是否关闭！\n错误代码：" + ex.Message, "错误");
-                }
-                finally
-                {
-                    config = string.Empty;
-                    GetServerConfig();
-                }
-            }
-            catch { }
-        }
-
-        private async void changeServerIcon_Click(object sender, RoutedEventArgs e)
-        {
-            try
-            {
-                if (CheckServerRunning())
-                {
-                    MagicShow.ShowMsgDialog(this, "您没有关闭服务器，无法更换图标！", "错误");
-                    return;
-                }
-            }
-            catch
-            { }
-            if (File.Exists(Rserverbase + "\\server-icon.png"))
-            {
-                bool dialogret = await MagicShow.ShowMsgDialogAsync(this, "检测到服务器已设置有图标，是否删除该图标？", "警告", true, "取消");
-                if (dialogret)
-                {
-                    try
-                    {
-                        File.Delete(Rserverbase + "\\server-icon.png");
-                    }
-                    catch (Exception ex)
-                    {
-                        MagicShow.ShowMsgDialog(this, "图标删除失败！请检查服务器是否关闭！\n错误代码：" + ex.Message, "错误");
-                        return;
-                    }
-                    bool _dialogret = await MagicShow.ShowMsgDialogAsync(this, "原图标已删除，是否继续操作？", "提示", true, "取消");
-                    if (!_dialogret)
-                    {
-                        return;
-                    }
-                }
-                else
-                {
-                    return;
-                }
-            }
-            await MagicShow.ShowMsgDialogAsync(this, "请先准备一张64*64像素的图片（格式为png），准备完成后点击确定以继续", "如何操作？");
-            OpenFileDialog openfile = new OpenFileDialog
-            {
-                InitialDirectory = AppDomain.CurrentDomain.BaseDirectory,
-                Title = "请选择文件",
-                Filter = "PNG图像|*.png"
-            };
-            var res = openfile.ShowDialog();
-            if (res == true)
-            {
-                try
-                {
-                    File.Copy(openfile.FileName, Rserverbase + "\\server-icon.png", true);
-                    MagicShow.ShowMsgDialog(this, "图标更换完成！", "信息");
-                }
-                catch (Exception ex)
-                {
-                    MagicShow.ShowMsgDialog(this, "图标更换失败！请检查服务器是否关闭！\n错误代码：" + ex.Message, "错误");
-                }
-            }
-        }
-
-        private async void changeWorldMap_Click(object sender, RoutedEventArgs e)
-        {
-            try
-            {
-                if (CheckServerRunning())
-                {
-                    MagicShow.ShowMsgDialog(this, "您没有关闭服务器，无法更换地图！", "错误");
-                    return;
-                }
-            }
-            catch
-            { }
-            string levelName = "world";
-            if (!string.IsNullOrEmpty(gameWorldText.Text))
-            {
-                levelName = gameWorldText.Text;
-            }
-            if (Directory.Exists(Rserverbase + @"\" + levelName))
-            {
-                if (await MagicShow.ShowMsgDialogAsync(this, "点击确定后，MSL将删除原先主世界地图（删除后，地图将从电脑上彻底消失，如有必要请提前备份！）\n点击取消以中止操作", "警告", true, "取消"))
-                {
-                    MagicDialog dialog = new MagicDialog();
-                    dialog.ShowTextDialog(this, "删除中，请稍候");
-                    await Task.Run(() =>
-                    {
-                        DirectoryInfo di = new DirectoryInfo(Rserverbase + @"\" + levelName);
-                        di.Delete(true);
-                    });
-                    dialog.CloseTextDialog();
-                }
-                else
-                {
-                    return;
-                }
-                if (Directory.Exists(Rserverbase + @"\" + levelName + "_nether"))
-                {
-                    if (await MagicShow.ShowMsgDialogAsync(this, "MSL同时检测到了下界地图，是否一并删除？\n删除后，地图将从电脑上彻底消失！", "警告", true, "取消"))
-                    {
-                        MagicDialog dialog = new MagicDialog();
-                        dialog.ShowTextDialog(this, "删除中，请稍候");
-                        await Task.Run(() =>
-                        {
-                            DirectoryInfo di = new DirectoryInfo(Rserverbase + @"\" + levelName + "_nether");
-                            di.Delete(true);
-                        });
-                        dialog.CloseTextDialog();
-                    }
-                }
-                if (Directory.Exists(Rserverbase + @"\" + levelName + "_the_end"))
-                {
-                    if (await MagicShow.ShowMsgDialogAsync(this, "MSL同时检测到了末地地图，是否一并删除？\n删除后，地图将从电脑上彻底消失！", "警告", true, "取消"))
-                    {
-                        MagicDialog dialog = new MagicDialog();
-                        dialog.ShowTextDialog(this, "删除中，请稍候");
-                        await Task.Run(() =>
-                        {
-                            DirectoryInfo di = new DirectoryInfo(Rserverbase + @"\" + levelName + "_the_end");
-                            di.Delete(true);
-                        });
-                        dialog.CloseTextDialog();
-                    }
-                }
-                if (await MagicShow.ShowMsgDialogAsync(this, "相关地图已经成功删除！是否选择新存档进行导入？（如果不导入而直接开服，服务器将会重新创建一个新世界）", "提示", true, "取消"))
-                {
-                    System.Windows.Forms.FolderBrowserDialog dialog = new System.Windows.Forms.FolderBrowserDialog
-                    {
-                        Description = "请选择地图文件夹(或解压后的文件夹)"
-                    };
-                    if (dialog.ShowDialog() == System.Windows.Forms.DialogResult.OK)
-                    {
-                        try
-                        {
-                            MagicDialog _dialog = new MagicDialog();
-                            _dialog.ShowTextDialog(this, "导入中，请稍候");
-                            await Task.Run(() =>
-                            {
-                                Functions.MoveFolder(dialog.SelectedPath, Rserverbase + @"\" + levelName, false);
-                            });
-                            _dialog.CloseTextDialog();
-                            MagicShow.ShowMsgDialog(this, "导入世界成功！源存档目录您可手动进行删除！", "信息");
-                        }
-                        catch (Exception ex)
-                        {
-                            MagicShow.ShowMsgDialog(this, "导入世界失败！\n错误代码：" + ex.Message, "错误");
-                        }
-                    }
-                }
-            }
-            else
-            {
-                System.Windows.Forms.FolderBrowserDialog dialog = new System.Windows.Forms.FolderBrowserDialog
-                {
-                    Description = "请选择地图文件夹(或解压后的文件夹)"
-                };
-                if (dialog.ShowDialog() == System.Windows.Forms.DialogResult.OK)
-                {
-                    try
-                    {
-                        MagicDialog _dialog = new MagicDialog();
-                        _dialog.ShowTextDialog(this, "导入中，请稍候");
-                        await Task.Run(() =>
-                        {
-                            Functions.MoveFolder(dialog.SelectedPath, Rserverbase + @"\" + levelName, false);
-                        });
-                        _dialog.CloseTextDialog();
-                        MagicShow.ShowMsgDialog(this, "导入世界成功！源存档目录您可手动进行删除！", "信息");
-                    }
-                    catch (Exception ex)
-                    {
-                        MagicShow.ShowMsgDialog(this, "导入世界失败！\n错误代码：" + ex.Message, "错误");
-                    }
-                }
-            }
-        }
-
-        private void setServerconfig_Click(object sender, RoutedEventArgs e)
-        {
-            Window window = new SetServerconfig(Rserverbase)
-            {
-                Owner = this
-            };
-            window.ShowDialog();
-            GetServerConfig();
-        }
-        #endregion
-
         #region 插件mod管理
 
         ///////////这里是插件mod管理
 
         void ReFreshPluginsAndMods()
         {
-            bool hideList = true;
+            // 检测plugins文件夹是否存在
             if (Directory.Exists(Rserverbase + @"\plugins"))
             {
+                pluginsTabItem.Content = ManagePluginsCard;
                 List<SR_PluginInfo> list = new List<SR_PluginInfo>();
                 DirectoryInfo directoryInfo = new DirectoryInfo(Rserverbase + @"\plugins");
                 FileInfo[] file = directoryInfo.GetFiles("*.*");
@@ -2641,15 +2329,18 @@ namespace MSL
                     }
                 }
                 pluginslist.ItemsSource = list;
-                pluginsTabItem.IsEnabled = true;
-                hideList = false;
             }
             else
             {
-                pluginsTabItem.IsEnabled = false;
+                NoPlugins tips = new NoPlugins();
+                tips.RefreshCommand = new RelayCommand(o => ReFreshPluginsAndMods());
+                pluginsTabItem.Content = tips;
             }
+
+            // 检测mods文件夹是否存在
             if (Directory.Exists(Rserverbase + @"\mods"))
             {
+                modsTabItem.Content = ManageModsCard;
                 List<SR_ModInfo> list = new List<SR_ModInfo>();
                 DirectoryInfo directoryInfo1 = new DirectoryInfo(Rserverbase + @"\mods");
                 FileInfo[] file1 = directoryInfo1.GetFiles("*.*");
@@ -2665,33 +2356,32 @@ namespace MSL
                     }
                 }
                 modslist.ItemsSource = list;
-                modsTabItem.IsEnabled = true;
-                hideList = false;
-                if (pluginsTabItem.IsEnabled == false)
-                {
-                    pluginsAndModsTab.SelectedIndex = 1;
-                }
             }
             else
             {
-                modsTabItem.IsEnabled = false;
-                pluginsAndModsTab.SelectedIndex = 0;
-            }
-            if (hideList)
-            {
-                NoPluginModTip.Visibility = Visibility.Visible;
-                pluginsAndModsTab.Visibility = Visibility.Collapsed;
-            }
-            else if (NoPluginModTip.Visibility == Visibility.Visible)
-            {
-                NoPluginModTip.Visibility = Visibility.Collapsed;
-                pluginsAndModsTab.Visibility = Visibility.Visible;
+                NoMods tips = new NoMods();
+                tips.RefreshCommand = new RelayCommand(o => ReFreshPluginsAndMods());
+                modsTabItem.Content = tips;
             }
         }
 
-        private void mpHelp_Click(object sender, RoutedEventArgs e)
+        private void MenuButton_Click(object sender, RoutedEventArgs e)
         {
-            MagicShow.ShowMsgDialog(this, "若标签栏为灰色且无法点击，说明此服务端不支持相应的（插件或模组）功能，或相关（插件或模组）文件夹未创建。请更换服务端核心并重启服务器再试。", "提示");
+            Button button = sender as Button;
+            if (button != null)
+            {
+                ListViewItem item = Functions.FindAncestor<ListViewItem>(button);
+                if (item != null)
+                {
+                    item.IsSelected = true;
+                }
+            }
+            if (button != null && button.ContextMenu != null)
+            {
+                button.ContextMenu.PlacementTarget = button;
+                button.ContextMenu.Placement = PlacementMode.Bottom;
+                button.ContextMenu.IsOpen = true;
+            }
         }
 
         private async void addModsTip_Click(object sender, RoutedEventArgs e)
@@ -2718,6 +2408,7 @@ namespace MSL
             p.StartInfo.Arguments = Rserverbase + @"\mods";
             p.Start();
         }
+
         private void reFresh_Click(object sender, RoutedEventArgs e)
         {
             ReFreshPluginsAndMods();
@@ -2786,19 +2477,13 @@ namespace MSL
                     MagicShow.ShowMsgDialog(this, "服务器在运行中，无法进行操作！请关闭服务器后再试！", "警告");
                     return;
                 }
-            }
-            catch { }
-            try
-            {
-                Button btn = sender as Button;
-                if (btn != null)
+
+                if (pluginslist.SelectedIndex==-1)
                 {
-                    ListViewItem item = ServerList.FindAncestor<ListViewItem>(btn);
-                    if (item != null)
-                    {
-                        item.IsSelected = true;
-                    }
+                    MagicFlowMsg.ShowMessage("请先选择一个插件！",3);
+                    return;
                 }
+
                 SR_PluginInfo SR_PluginInfo = pluginslist.SelectedItem as SR_PluginInfo;
                 if (SR_PluginInfo.PluginName.ToString().IndexOf("[已禁用]") == -1)
                 {
@@ -2815,6 +2500,7 @@ namespace MSL
             }
             catch { return; }
         }
+
         private void delPlugin_Click(object sender, RoutedEventArgs e)
         {
             try
@@ -2824,18 +2510,11 @@ namespace MSL
                     MagicShow.ShowMsgDialog(this, "服务器在运行中，无法进行操作！请关闭服务器后再试！", "警告");
                     return;
                 }
-            }
-            catch { }
-            try
-            {
-                Button btn = sender as Button;
-                if (btn != null)
+
+                if (pluginslist.SelectedIndex == -1)
                 {
-                    ListViewItem item = ServerList.FindAncestor<ListViewItem>(btn);
-                    if (item != null)
-                    {
-                        item.IsSelected = true;
-                    }
+                    MagicFlowMsg.ShowMessage("请先选择一个插件！", 3);
+                    return;
                 }
 
                 SR_PluginInfo SR_PluginInfo = pluginslist.SelectedItem as SR_PluginInfo;
@@ -2851,6 +2530,7 @@ namespace MSL
             }
             catch { return; }
         }
+
         private void disMod_Click(object sender, RoutedEventArgs e)
         {
             try
@@ -2860,19 +2540,13 @@ namespace MSL
                     MagicShow.ShowMsgDialog(this, "服务器在运行中，无法进行操作！请关闭服务器后再试！", "警告");
                     return;
                 }
-            }
-            catch { }
-            try
-            {
-                Button btn = sender as Button;
-                if (btn != null)
+
+                if (modslist.SelectedIndex == -1)
                 {
-                    ListViewItem item = ServerList.FindAncestor<ListViewItem>(btn);
-                    if (item != null)
-                    {
-                        item.IsSelected = true;
-                    }
+                    MagicFlowMsg.ShowMessage("请先选择一个模组！", 3);
+                    return;
                 }
+
                 SR_ModInfo SR_ModInfo = modslist.SelectedItem as SR_ModInfo;
                 if (SR_ModInfo.ModName.ToString().IndexOf("[已禁用]") == -1)
                 {
@@ -2898,19 +2572,13 @@ namespace MSL
                     MagicShow.ShowMsgDialog(this, "服务器在运行中，无法进行操作！请关闭服务器后再试！", "警告");
                     return;
                 }
-            }
-            catch { }
-            try
-            {
-                Button btn = sender as Button;
-                if (btn != null)
+
+                if (modslist.SelectedIndex == -1)
                 {
-                    ListViewItem item = ServerList.FindAncestor<ListViewItem>(btn);
-                    if (item != null)
-                    {
-                        item.IsSelected = true;
-                    }
+                    MagicFlowMsg.ShowMessage("请先选择一个模组！", 3);
+                    return;
                 }
+
                 SR_ModInfo SR_ModInfo = modslist.SelectedItem as SR_ModInfo;
                 if (SR_ModInfo.ModName.ToString().Contains("[已禁用]"))
                 {
@@ -3451,8 +3119,6 @@ namespace MSL
             }
             else
             {
-                await MagicShow.ShowMsgDialogAsync(this, "下载Java即代表您接受Java的服务条款：\nhttps://www.oracle.com/downloads/licenses/javase-license1.html", "信息", false);
-                // DownjavaName = fileName;
                 bool downDialog = await MagicShow.ShowDownloader(this, downUrl, "MSL", "Java.zip", "下载" + fileName + "中……");
                 if (downDialog)
                 {
@@ -3693,14 +3359,6 @@ namespace MSL
                 {
                     Console.WriteLine("Write Local-Java-List Failed(From Configuration)");
                 }
-
-                /*
-                foreach (JavaScanner.JavaInfo info in strings)
-                {
-                    selectCheckedJavaComb.Items.Add(info.Version + ":" + info.Path);
-                }
-                */
-                //selectCheckedJavaComb.ItemsSource = strings;
             }
             if (selectCheckedJavaComb.Items.Count > 0)
             {
@@ -3755,8 +3413,6 @@ namespace MSL
                 MessageBox.Show(ex.Message, "Error", MessageBoxButton.OK, MessageBoxImage.Error);
             }
         }
-
-
 
         // 快捷设置ygg api
         private void YggLittleskin_Click(object sender, RoutedEventArgs e)
@@ -4524,11 +4180,11 @@ namespace MSL
                 int selectedID = int.Parse(tasksList.SelectedItem.ToString());
                 if (taskFlag[selectedID] == true)
                 {
-                    startTimercmd.Content = "停止定时任务";
+                    startTimercmd.IsChecked = true;
                 }
                 else
                 {
-                    startTimercmd.Content = "启动定时任务";
+                    startTimercmd.IsChecked = false;
                 }
                 timerCmdout.Text = "无";
                 timercmdTime.Text = taskTimers[selectedID].Key.ToString();
@@ -4599,8 +4255,14 @@ namespace MSL
         {
             try
             {
+                if (tasksList.SelectedIndex == -1)
+                {
+                    timerCmdout.Text = "执行失败，请先选择一个任务！";
+                    startTimercmd.IsChecked = false;
+                    return;
+                }
                 int selectedID = int.Parse(tasksList.SelectedItem.ToString());
-                if (startTimercmd.Content.ToString() == "启动定时任务")
+                if (startTimercmd.IsChecked == true)
                 {
                     taskFlag[selectedID] = true;
                     int time = taskTimers[selectedID].Key;
@@ -4611,17 +4273,16 @@ namespace MSL
                             break;
                     }
                     Task.Run(() => TimedTasks(selectedID, time, taskCmds[selectedID]));
-                    startTimercmd.Content = "停止定时任务";
                 }
                 else
                 {
                     taskFlag[selectedID] = false;
-                    startTimercmd.Content = "启动定时任务";
                 }
             }
             catch (Exception a)
             {
                 timerCmdout.Text = "执行失败，" + a.Message;
+                startTimercmd.IsChecked = false;
             }
         }
 
@@ -4852,7 +4513,7 @@ namespace MSL
                     //PrintLog($"[MSL备份]将在 10 秒后开始执行压缩备份···", Brushes.Blue);
                     await Task.Delay(10000);
                 }
-                string worldPath = ServerBaseConfig()[8]; // 获取世界存档路径
+                string worldPath = ServerProperties.GetConfigValue("level-name"); // 获取世界存档路径
                 if (string.IsNullOrEmpty(worldPath))
                 {
                     worldPath = "world";
@@ -5045,9 +4706,6 @@ namespace MSL
             }
         }
 
-        
-
-
         private async Task CompressFolder(string rootPath, string currentPath, ZipOutputStream zipStream)
         {
             string[] files = Directory.GetFiles(currentPath);
@@ -5153,7 +4811,5 @@ namespace MSL
         }
 
         #endregion
-
-
     }
 }

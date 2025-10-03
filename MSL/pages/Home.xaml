@@ -10,17 +10,10 @@
       mc:Ignorable="d" d:DesignHeight="460" d:DesignWidth="750" Style="{StaticResource AnimationPage}"
       Title="Home" Loaded="Page_Loaded">
     <Grid>
-        <Grid.RowDefinitions>
-            <RowDefinition Height="*"/>
-            <RowDefinition Height="Auto"/>
-        </Grid.RowDefinitions>
-        <controls:MagicScrollViewer Grid.Row="0">
-            <StackPanel>
+        <controls:MagicScrollViewer>
+            <StackPanel Margin="0,0,0,80">
                 <controls:MagicCard x:Name="noticeBorder" Title="{Binding [Page_Home_Notice], Source={x:Static langs:LanguageManager.Instance}}" VerticalAlignment="Top" Margin="0,10,0,0">
                     <Grid>
-                        <!--
-                        <Image x:Name="noticeImage"/>
-                        -->
                         <TextBox x:Name="noticeLab" Text="{Binding [Loading],Source={x:Static langs:LanguageManager.Instance},Mode=OneWay}" TextBlock.LineHeight="24" IsReadOnly="True" VerticalScrollBarVisibility="Auto" TextWrapping="Wrap" BorderThickness="0" Background="{x:Null}" FontSize="14"/>
                     </Grid>
                 </controls:MagicCard>
@@ -29,7 +22,7 @@
                 </controls:MagicCard>
             </StackPanel>
         </controls:MagicScrollViewer>
-        <hc:SplitButton Grid.Row="1" x:Name="startServer" Style="{StaticResource SplitButtonPrimary}" Margin="10" VerticalAlignment="Bottom" Height="60" Width="250" Click="StartServer_Click" HorizontalAlignment="Right">
+        <hc:SplitButton x:Name="startServer" Style="{StaticResource SplitButtonPrimary}" Margin="10" VerticalAlignment="Bottom" Height="60" Width="250" Click="StartServer_Click" HorizontalAlignment="Right">
             <hc:SplitButton.DropDownContent>
                 <ListBox x:Name="startServerDropdown" BorderThickness="0" SelectionChanged="StartServerDropdown_SelectionChanged"/>
             </hc:SplitButton.DropDownContent>
