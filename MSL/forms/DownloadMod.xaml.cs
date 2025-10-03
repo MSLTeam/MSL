@@ -262,7 +262,7 @@ namespace MSL
                     facets.Add(Facet.Category(MinecraftLoaderTypeBox.Text));
                 }
                 // 执行搜索
-                mods = await ModrinthApiClient.Project.SearchAsync(name, facets: facets);
+                mods = await ModrinthApiClient.Project.SearchAsync(name, facets: facets,offset:offset);
                 foreach (var mod in mods?.Hits)
                 {
                     list.Add(new DM_ModsInfo(mod.ProjectId, mod.IconUrl, mod.Title, mod.Url));
