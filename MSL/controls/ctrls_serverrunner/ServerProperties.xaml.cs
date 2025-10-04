@@ -217,10 +217,13 @@ namespace MSL.controls.ctrls_serverrunner
                     { "difficulty", "注：游戏难度，不同版本改法不一致，具体可参照上面的表格" },
                     { "max-players", "注：最大玩家数，在此输入数字来改变服务器最大人数" },
                     { "server-port", "注：服务器端口，非必要无需更改" },
+                    { "server-ip", "注：绑定服务器ip，如果你不知道这是什么，请不要随意在这里填写东西！这里并不能自定义您的服务器地址！" },
                     { "enable-command-block", "注：启用命令方块，若开启(true)，服务器可使用命令方块，关闭请输入false" },
                     { "view-distance", "注：视距，和游戏内的渲染距离意思相近，设置过大会影响服务器性能" },
                     { "pvp", "注：PVP模式，若开启（true），玩家间可互相伤害，关闭请输入false" },
-                    { "level-name", "注：世界名称，默认为world，非必要无需更改" }
+                    { "level-name", "注：世界名称，默认为world，非必要无需更改" },
+                    { "motd", "注：服务器MOTD，服务器列表中显示的服务器简介" },
+                    { "allow-flight", "注：允许飞行（若使用喷气背包/鞘翅飞行时被踢出服务器，请将这里设置为true）" },
                 };
 
                 int rowIndex = 0;
