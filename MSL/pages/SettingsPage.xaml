@@ -153,7 +153,8 @@
                 </WrapPanel>
                 
                 <StackPanel Orientation="Horizontal" Margin="0,0,0,5">
-                    <Label Content="{Binding [Page_SettingsPage_SS_BackgroundImg],Source={x:Static lang:LanguageManager.Instance}}" Margin="0,0,10,0"/>
+                    <Label Content="{Binding [Page_SettingsPage_SS_Background],Source={x:Static lang:LanguageManager.Instance}}" Margin="0,0,10,0"/>
+                    <ToggleButton x:Name="UseMicaEffect" Content="使用云母效果" Margin="0,0,10,0" Style="{StaticResource ToggleButtonSwitch}" Click="UseMicaEffect_Click"/>
                     <Button x:Name="changeBackImg" Margin="0,0,10,0" Content="{Binding [Page_SettingsPage_SS_BI_ChangeBackImg],Source={x:Static lang:LanguageManager.Instance}}" VerticalAlignment="Center" Click="changeBackImg_Click"/>
                     <Button x:Name="delBackImg" Margin="0,0,10,0" Content="{Binding [Page_SettingsPage_SS_BI_DelBackImg],Source={x:Static lang:LanguageManager.Instance}}" VerticalAlignment="Center" Click="delBackImg_Click"/>
                     <Button x:Name="WesternEgg" Content="{Binding [Page_SettingsPage_SS_WesternEgg],Source={x:Static lang:LanguageManager.Instance}}" Style="{StaticResource ButtonDanger}" HorizontalAlignment="Left" VerticalAlignment="Center" Click="WesternEgg_Click" MinWidth="100"/>

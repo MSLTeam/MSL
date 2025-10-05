@@ -24,7 +24,7 @@
                 <ColumnDefinition Width="Auto"/>
                 <ColumnDefinition Width="*"/>
             </Grid.ColumnDefinitions>
-            <StackPanel Background="{DynamicResource SideMenuBrush}">
+            <StackPanel x:Name="SideMenuPanel" Background="{DynamicResource SideMenuBrush}">
                 <Button x:Name="SideMenuContextOpen" HorizontalAlignment="Stretch" VerticalAlignment="Top" Height="42" BorderThickness="0" Background="Transparent" Click="SideMenuContextOpen_Click">
                     <Path Stroke="{DynamicResource PrimaryTextBrush}">
                         <Path.Data>

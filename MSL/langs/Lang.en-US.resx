@@ -582,8 +582,8 @@ Do you want to create a new server?</value>
   <data name="Page_SettingsPage_DI_Tips2" xml:space="preserve">
     <value>The device ID is unique to each device (it only changes when reinstalling the system or switching users).</value>
   </data>
-  <data name="Page_SettingsPage_SS_BackgroundImg" xml:space="preserve">
-    <value>Background image:</value>
+  <data name="Page_SettingsPage_SS_Background" xml:space="preserve">
+    <value>Background:</value>
   </data>
   <data name="Page_SettingsPage_SS_BI_ChangeBackImg" xml:space="preserve">
     <value>Change background image</value>

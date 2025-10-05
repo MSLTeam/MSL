@@ -1,5 +1,6 @@
 ﻿using HandyControl.Controls;
 using HandyControl.Data;
+using HandyControl.Tools;
 using HandyControl.Tools.Command;
 using ICSharpCode.SharpZipLib.Zip;
 using Microsoft.Win32;
@@ -477,41 +478,55 @@ namespace MSL
             try
             {
                 JObject jsonObject = JObject.Parse(File.ReadAllText(@"MSL\config.json", Encoding.UTF8));
-                if ((bool)jsonObject["semitransparentTitle"] == true)
+
+                if (jsonObject["MicaEffect"].Value<bool>() == true)
                 {
                     ChangeTitleStyle(true);
+                    this.SystemBackdropType = BackdropType.Auto;
+                    this.SystemBackdropType = BackdropType.Mica;
+                    this.Background = Brushes.Transparent;
                 }
                 else
                 {
-                    ChangeTitleStyle(false);
-                }
-                if (File.Exists("MSL\\Background.png"))//check background and set it
-                {
-                    Task.Run(async () =>
+                    this.SystemBackdropType = BackdropType.Auto;
+                    this.SetResourceReference(BackgroundProperty, "BackgroundBrush");
+                    if ((bool)jsonObject["semitransparentTitle"] == true)
                     {
-                        int i = 0;
-                        while (MainWindow.BackImageBrush == null)
+                        ChangeTitleStyle(true);
+                    }
+                    else
+                    {
+                        ChangeTitleStyle(false);
+                    }
+
+                    if (File.Exists("MSL\\Background.png"))//check background and set it
+                    {
+                        Task.Run(async () =>
                         {
-                            if (i == 5)
-                                break;
-                            i++;
-                            await Task.Delay(1000);
-                        }
-                        Dispatcher.Invoke(() =>
-                        {
-                            Background = MainWindow.BackImageBrush;
+                            int i = 0;
+                            while (MainWindow.BackImageBrush == null)
+                            {
+                                if (i == 5)
+                                    break;
+                                i++;
+                                await Task.Delay(1000);
+                            }
+                            Dispatcher.Invoke(() =>
+                            {
+                                Background = MainWindow.BackImageBrush;
+                            });
                         });
-                    });
-                }
-                else
-                {
-                    SetResourceReference(BackgroundProperty, "BackgroundBrush");
+                    }
+                    else
+                    {
+                        SetResourceReference(BackgroundProperty, "BackgroundBrush");
+                    }
                 }
             }
             catch
             { }
         }
-
+        
         private void ChangeTitleStyle(bool isOpen)
         {
             if (isOpen)

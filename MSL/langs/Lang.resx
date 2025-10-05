@@ -583,8 +583,8 @@ MSLAPI —— MSL自有服务端&amp;运行库镜像源
   <data name="Page_SettingsPage_DI_Tips2" xml:space="preserve">
     <value>每台设备的设备ID是唯一的（仅当重装系统/切换用户会变化）</value>
   </data>
-  <data name="Page_SettingsPage_SS_BackgroundImg" xml:space="preserve">
-    <value>背景图片：</value>
+  <data name="Page_SettingsPage_SS_Background" xml:space="preserve">
+    <value>背景：</value>
   </data>
   <data name="Page_SettingsPage_SS_BI_ChangeBackImg" xml:space="preserve">
     <value>更改背景图片</value>

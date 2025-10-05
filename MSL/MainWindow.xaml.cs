@@ -1,5 +1,6 @@
 ﻿using HandyControl.Controls;
 using HandyControl.Themes;
+using HandyControl.Tools;
 using MSL.langs;
 using MSL.pages;
 using MSL.utils;
@@ -57,9 +58,6 @@ namespace MSL
 
         private async void Window_Loaded(object sender, RoutedEventArgs e)
         {
-            Topmost = true;
-            Focus();
-            Topmost = false;
             ConfigStore.MSLVersion = System.Reflection.Assembly.GetExecutingAssembly().GetName().Version;
             try
             {
@@ -871,52 +869,82 @@ namespace MSL
             try
             {
                 JObject jsonObject = JObject.Parse(File.ReadAllText(@"MSL\config.json", Encoding.UTF8));
-                if ((bool)jsonObject["semitransparentTitle"] == true)
+
+                if (jsonObject["MicaEffect"].Value<bool>() == true)
                 {
-                    ChangeTitleStyle(true);
-                }
-                else
-                {
-                    ChangeTitleStyle(false);
-                }
-                if (File.Exists("MSL\\Background.png"))//check background and set it
-                {
-                    if (BackImageBrush != null)
+                    if (File.Exists("MSL\\Background.png"))
                     {
-                        LogHelper.Write.Info("已将缓存的背景图数据进行释放！");
-                        BackImageBrush = null;
-                        GC.Collect();
+                        DisposeBackImage();
                     }
-                    LogHelper.Write.Info("初始化背景图片……");
-                    BackImageBrush = new ImageBrush(GetImage("MSL\\Background.png"));
-                    BackImageBrush.Stretch = Stretch.UniformToFill;
-                    LogHelper.Write.Info("应用背景图片……");
-                    Background = BackImageBrush;
-                    frame.BorderThickness = new Thickness(0);
-                    LogHelper.Write.Info("背景图片应用成功！");
+                    ChangeTitleStyle(true);
+                    ThemeManager.Current.UsingSystemTheme = true;
+                    this.SystemBackdropType = BackdropType.Auto;
+                    this.SystemBackdropType = BackdropType.Mica;
+                    SideMenuPanel.Background = Brushes.Transparent;
+                    
                 }
                 else
                 {
-                    if (BackImageBrush != null)
+                    this.SystemBackdropType = BackdropType.Auto;
+                    this.SetResourceReference(BackgroundProperty, "BackgroundBrush");
+                    SideMenuPanel.SetResourceReference(Panel.BackgroundProperty, "SideMenuBrush");
+                    if (jsonObject["darkTheme"].ToString() != "Auto")
                     {
-                        LogHelper.Write.Info("移除窗体背景图……");
-                        SetResourceReference(BackgroundProperty, "BackgroundBrush");
-                        frame.BorderThickness = new Thickness(1, 0, 0, 0);
-                        LogHelper.Write.Info("已将窗体背景设置为默认背景颜色！");
-                        // 释放掉缓存的背景图数据，防止多次更换背景图导致内存溢出
-                        Task.Run(async () =>
+                        ThemeManager.Current.UsingSystemTheme = false;
+                    }
+                    if ((bool)jsonObject["semitransparentTitle"] == true)
+                    {
+                        ChangeTitleStyle(true);
+                    }
+                    else
+                    {
+                        ChangeTitleStyle(false);
+                    }
+
+                    if (File.Exists("MSL\\Background.png"))//check background and set it
+                    {
+                        if (BackImageBrush != null)
                         {
-                            await Task.Delay(400);
                             LogHelper.Write.Info("已将缓存的背景图数据进行释放！");
                             BackImageBrush = null;
-                            await Task.Delay(100);
                             GC.Collect();
-                        });
+                        }
+                        LogHelper.Write.Info("初始化背景图片……");
+                        BackImageBrush = new ImageBrush(GetImage("MSL\\Background.png"));
+                        BackImageBrush.Stretch = Stretch.UniformToFill;
+                        LogHelper.Write.Info("应用背景图片……");
+                        Background = BackImageBrush;
+                        frame.BorderThickness = new Thickness(0);
+                        LogHelper.Write.Info("背景图片应用成功！");
+                    }
+                    else
+                    {
+                        DisposeBackImage();
                     }
                 }
             }
             catch
             { }
+        }
+
+        private void DisposeBackImage()
+        {
+            if (BackImageBrush != null)
+            {
+                LogHelper.Write.Info("移除窗体背景图……");
+                SetResourceReference(BackgroundProperty, "BackgroundBrush");
+                frame.BorderThickness = new Thickness(1, 0, 0, 0);
+                LogHelper.Write.Info("已将窗体背景设置为默认背景颜色！");
+                // 释放掉缓存的背景图数据，防止多次更换背景图导致内存溢出
+                Task.Run(async () =>
+                {
+                    await Task.Delay(400);
+                    LogHelper.Write.Info("已将缓存的背景图数据进行释放！");
+                    BackImageBrush = null;
+                    await Task.Delay(100);
+                    GC.Collect();
+                });
+            }
         }
 
         private BitmapImage GetImage(string imagePath)

@@ -4,6 +4,7 @@ using System.Collections.Concurrent;
 using System.Collections.Generic;
 using System.IO;
 using System.Text;
+using System.Threading;
 using System.Threading.Tasks;
 using System.Windows.Media;
 
@@ -46,31 +47,77 @@ namespace MSL.utils
         // 写入配置
         public static void Write(string key, JToken value)
         {
-            //感谢newbing写的队列
             _queue.Enqueue(new KeyValuePair<string, JToken>(key, value));
-
             if (_writeTask.IsCompleted)
             {
                 _writeTask = Task.Run(() =>
                 {
                     while (_queue.TryDequeue(out var kv))
                     {
-                        JObject jobject = JObject.Parse(File.ReadAllText(_configPath, Encoding.UTF8));
-                        jobject[kv.Key] = kv.Value;
-                        string convertString = Convert.ToString(jobject);
-                        File.WriteAllText(_configPath, convertString, Encoding.UTF8);
+                        RetryWriteConfig(kv.Key, kv.Value);
                     }
                 });
+            }
+        }
+
+        private static void RetryWriteConfig(string key, JToken value, int maxRetries = 5)
+        {
+            for (int i = 0; i < maxRetries; i++)
+            {
+                try
+                {
+                    JObject jobject = JObject.Parse(File.ReadAllText(_configPath, Encoding.UTF8));
+                    jobject[key] = value;
+                    string convertString = Convert.ToString(jobject);
+                    File.WriteAllText(_configPath, convertString, Encoding.UTF8);
+                    return; // 成功后直接返回
+                }
+                catch (IOException ex) when (i < maxRetries - 1)
+                {
+                    Console.WriteLine($"配置写入失败 [{key}]: {ex.Message}");
+                    // 使用指数退避策略
+                    Thread.Sleep(100 * (i + 1));
+                }
+                catch (IOException ex)
+                {
+                    // 最后一次失败，记录错误
+                    Console.WriteLine($"配置写入失败 [{key}]，已重试{maxRetries}次: {ex.Message}");
+                    throw; // 或者选择不抛出异常
+                }
             }
         }
 
         // 删除配置
         public static void Remove(string key)
         {
-            JObject jobject = JObject.Parse(File.ReadAllText(_configPath, Encoding.UTF8));
-            jobject.Remove(key);
-            string convertString = Convert.ToString(jobject);
-            File.WriteAllText(_configPath, convertString, Encoding.UTF8);
+            RetryRemoveConfig(key);
+        }
+
+        private static void RetryRemoveConfig(string key, int maxRetries = 5)
+        {
+            for (int i = 0; i < maxRetries; i++)
+            {
+                try
+                {
+                    JObject jobject = JObject.Parse(File.ReadAllText(_configPath, Encoding.UTF8));
+                    jobject.Remove(key);
+                    string convertString = Convert.ToString(jobject);
+                    File.WriteAllText(_configPath, convertString, Encoding.UTF8);
+                    return; // 成功后直接返回
+                }
+                catch (IOException ex) when (i < maxRetries - 1)
+                {
+                    Console.WriteLine($"配置删除失败 [{key}]: {ex.Message}");
+                    // 使用指数退避策略
+                    Thread.Sleep(100 * (i + 1));
+                }
+                catch (IOException ex)
+                {
+                    // 最后一次失败，记录错误
+                    Console.WriteLine($"配置删除失败 [{key}]，已重试{maxRetries}次: {ex.Message}");
+                    throw; // 或者选择不抛出异常
+                }
+            }
         }
 
         /// <summary>

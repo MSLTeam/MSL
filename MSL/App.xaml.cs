@@ -43,27 +43,6 @@ namespace MSL
             messageBuilder.AppendLine(exception.Message?? "未知错误");
             messageBuilder.AppendLine($"请检查是否安装了.NET Framework 4.7.2运行库。");
             messageBuilder.AppendLine($"若确定运行环境正常，请将错误提交给开发者处理哦！");
-            /*
-            messageBuilder.AppendLine("\n我们正在尝试自动上传错误报告...");
-
-            // 异步上传日志并处理结果
-            try
-            {
-                int logId = await HttpService.UploadCrashLogAsync(fullTrace);
-
-                // 上传成功
-                string successMessage = $"报告上传成功！您的错误报告ID为: {logId}\n在联系开发者时请提供此ID。";
-                LogHelper.WriteLog(successMessage, LogLevel.INFO);
-                messageBuilder.AppendLine($"\n{successMessage}");
-            }
-            catch (Exception uploadEx)
-            {
-                // 上传失败
-                string failureMessage = $"错误报告上传失败: {uploadEx.Message}";
-                LogHelper.WriteLog(failureMessage, LogLevel.ERROR);
-                messageBuilder.AppendLine($"\n{failureMessage}");
-                messageBuilder.AppendLine("\n错误详情已记录在本地日志中。");
-            } */
 
             // 向用户显示所有信息
             MessageBox.Show(messageBuilder.ToString(), "应用程序错误", MessageBoxButton.OK, MessageBoxImage.Error);
@@ -73,39 +52,11 @@ namespace MSL
         // --- 非 UI 线程异常处理 ---
         private void AppDomain_UnhandledException(object sender, UnhandledExceptionEventArgs e)
         {
-            // 程序即将终止，操作必须快速且可靠 无法阻止崩溃
-
             var exception = e.ExceptionObject as Exception;
             string fullTrace = exception?.ToString() ?? "没有可用的堆栈跟踪信息。";
 
             // 写入本地日志
             LogHelper.Write.Fatal($"捕获到致命的非UI线程异常，程序即将退出: {fullTrace}");
-
-            /*
-            // 同步上传日志
-            try
-            {
-                // 使用同步方法，因为它会阻塞直到完成（或失败）
-                int logId = HttpService.UploadCrashLog(fullTrace);
-
-                // 如果上传成功，追加一条记录到日志文件
-                LogHelper.WriteLog($"致命异常报告上传成功。Log ID: {logId}", LogLevel.INFO);
-                MessageBox.Show(
-                    "程序遇到了一个无法恢复的致命错误，即将关闭。\n" +
-                    "我们已经记录并上传错误报告。\n\n" +
-                    "错误日志ID：" + logId + "\n\n" + "请将此信息提供给开发者以便更快地解决问题。",
-                    "致命错误", MessageBoxButton.OK, MessageBoxImage.Error);
-            }
-            catch (Exception uploadEx)
-            {
-                // 如果上传失败，也记录下来
-                LogHelper.WriteLog($"致命异常报告上传失败: {uploadEx.Message}", LogLevel.ERROR);
-                MessageBox.Show(
-                    "程序遇到了一个无法恢复的致命错误，即将关闭。\n" +
-                    "我们已尝试记录并上传错误报告，但是失败了。\n" + uploadEx.Message + "\n\n" +
-                    "请查看本地日志文件获取详细信息。",
-                    "致命错误", MessageBoxButton.OK, MessageBoxImage.Error);
-            } */
 
             MessageBox.Show(
                 "程序遇到了一个无法恢复的致命错误，即将关闭。" + (exception.Message ?? "未知错误" )+ "\n\n" +
@@ -238,81 +189,8 @@ namespace MSL
         protected override void OnExit(ExitEventArgs e)
         {
             LogHelper.Write.Info("程序正在退出...");
-            //Logger.Dispose();
             _mutex?.ReleaseMutex();
             base.OnExit(e);
         }
     }
-
-    /*
-    public class Logger
-    {
-        public static bool CanWriteLog = false;
-        private static StreamWriter writer;
-        private static readonly object lockObj = new object();
-
-        static Logger()
-        {
-            // 初始化 StreamWriter，开启追加模式
-            writer = new StreamWriter("MSL\\log.txt", true)
-            {
-                AutoFlush = true // 自动刷新，保证每次写入都立即保存到文件
-            };
-        }
-
-        // 清除日志文件
-        public static void Clear()
-        {
-            lock (lockObj)
-            {
-                if (File.Exists("MSL\\log.txt"))
-                {
-                    writer.Close();  // 先关闭流再清空文件
-                    File.WriteAllText("MSL\\log.txt", string.Empty); // 清空文件
-                    writer = new StreamWriter("MSL\\log.txt", true) { AutoFlush = true }; // 重新打开流
-                }
-            }
-        }
-
-        // 日志记录方法
-        public static void LogInfo(string message)
-        {
-            if (CanWriteLog)
-                LogMessage("INFO", message);
-        }
-
-        public static void LogWarning(string message)
-        {
-            if (CanWriteLog)
-                LogMessage("WARNING", message);
-        }
-
-        public static void LogError(string message)
-        {
-            if (CanWriteLog)
-                LogMessage("ERROR", message);
-        }
-
-        // 核心日志写入方法
-        private static void LogMessage(string level, string message)
-        {
-            string logEntry = $"{DateTime.Now} [{level}] {message}";
-            Console.WriteLine(logEntry);
-
-            lock (lockObj) // 保证线程安全
-            {
-                writer.WriteLine(logEntry); // 直接写入日志文件
-            }
-        }
-
-        // 释放资源
-        public static void Dispose()
-        {
-            lock (lockObj)
-            {
-                writer?.Dispose(); // 确保程序结束时关闭文件流
-            }
-        }
-    }
-    */
 }

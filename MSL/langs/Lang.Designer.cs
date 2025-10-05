@@ -1439,11 +1439,11 @@ namespace MSL.langs {
         }
         
         /// <summary>
-        ///   查找类似 背景图片： 的本地化字符串。
+        ///   查找类似 背景： 的本地化字符串。
         /// </summary>
-        public static string Page_SettingsPage_SS_BackgroundImg {
+        public static string Page_SettingsPage_SS_Background {
             get {
-                return ResourceManager.GetString("Page_SettingsPage_SS_BackgroundImg", resourceCulture);
+                return ResourceManager.GetString("Page_SettingsPage_SS_Background", resourceCulture);
             }
         }
         

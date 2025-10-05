@@ -123,6 +123,18 @@ namespace MSL.pages
                 {
                     semitransparentTitle.IsChecked = true;
                 }
+
+                if (jsonObject["MicaEffect"] != null && (bool)jsonObject["MicaEffect"] == true)
+                {
+                    UseMicaEffect.IsChecked = true;
+                    semitransparentTitle.IsEnabled = false;
+                    autoSetTheme.IsEnabled = false;
+                    darkTheme.IsEnabled = false;
+                    changeBackImg.Visibility = Visibility.Collapsed;
+                    delBackImg.Visibility = Visibility.Collapsed;
+                    WesternEgg.Visibility = Visibility.Collapsed;
+                }
+
                 ServersList.Items.Clear();
                 AutoStartServers.Items.Clear();
                 try
@@ -170,7 +182,7 @@ namespace MSL.pages
             }
             var dwnManager = DownloadManager.Instance;
             string groupid = dwnManager.CreateDownloadGroup(isTempGroup: true);
-            dwnManager.AddDownloadItem(groupid, url, Path.Combine("MSL","Downloads"), filename);
+            dwnManager.AddDownloadItem(groupid, url, Path.Combine("MSL", "Downloads"), filename);
             dwnManager.StartDownloadGroup(groupid);
             downloadManager.ManagerControl.AddDownloadGroup(groupid, true);
             MagicFlowMsg.ShowMessage("已将其添加至任务列表中！");
@@ -445,7 +457,7 @@ namespace MSL.pages
                 ThemeManager.Current.UsingSystemTheme = false;
                 ThemeManager.Current.ApplicationTheme = ApplicationTheme.Light;
                 darkTheme.IsEnabled = true;
-                
+
                 ChangeSkinColor.IsEnabled = true;
             }
         }
@@ -531,12 +543,12 @@ namespace MSL.pages
             Random random = new Random();
             int num = random.Next(1, 501);
             string inputContent = await MagicShow.ShowInput(Window.GetWindow(this), "我生成了一个不小于1、不大于500的整数，你能猜对它吗？\n请输入数字（1-500）");
-            if(string.IsNullOrEmpty(inputContent))
+            if (string.IsNullOrEmpty(inputContent))
             {
                 MagicFlowMsg.ShowMessage("爱猜不猜，哼！");
                 return;
             }
-            if(!int.TryParse(inputContent,out int inputnum))
+            if (!int.TryParse(inputContent, out int inputnum))
             {
                 MagicFlowMsg.ShowMessage("为什么要胡乱输入！不玩了！", 2);
                 return;
@@ -586,7 +598,7 @@ namespace MSL.pages
                 switch (isWesternEgg)
                 {
                     case 1:
-                        MagicFlowMsg.ShowMessage("你都已经点过了，别再点了！",0);
+                        MagicFlowMsg.ShowMessage("你都已经点过了，别再点了！", 0);
                         break;
                     case 2:
                         MagicFlowMsg.ShowMessage("你还真是执着呢！", 3);
@@ -599,7 +611,7 @@ namespace MSL.pages
                         await GuessNumGame();
                         break;
                 }
-                if(isWesternEgg< 4)
+                if (isWesternEgg < 4)
                     isWesternEgg++;
                 return;
             }
@@ -661,6 +673,36 @@ namespace MSL.pages
                     ChangeSkinStyle();
                 }
             }
+        }
+
+        private async void UseMicaEffect_Click(object sender, RoutedEventArgs e)
+        {
+            if (UseMicaEffect.IsChecked == true)
+            {
+                Config.Write("MicaEffect", true);
+                Config.Write("darkTheme", "Auto");
+                semitransparentTitle.IsEnabled = false;
+                autoSetTheme.IsEnabled = false;
+                changeBackImg.Visibility = Visibility.Collapsed;
+                delBackImg.Visibility = Visibility.Collapsed;
+                WesternEgg.Visibility = Visibility.Collapsed;
+                MagicFlowMsg.ShowMessage("已开启Mica效果！", 1);
+            }
+            else
+            {
+                Config.Write("MicaEffect", false);
+                semitransparentTitle.IsEnabled = true;
+                autoSetTheme.IsEnabled = true;
+                changeBackImg.Visibility = Visibility.Visible;
+                delBackImg.Visibility = Visibility.Visible;
+                WesternEgg.Visibility = Visibility.Visible;
+                MagicFlowMsg.ShowMessage("已关闭Mica效果！", 1);
+            }
+            autoSetTheme.IsChecked = true;
+            darkTheme.IsChecked = false;
+            darkTheme.IsEnabled = false;
+            await Task.Delay(500);
+            ChangeSkinStyle();
         }
 
         private void changeBackImg_Click(object sender, RoutedEventArgs e)
