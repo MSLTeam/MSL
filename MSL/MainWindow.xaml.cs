@@ -58,6 +58,9 @@ namespace MSL
 
         private async void Window_Loaded(object sender, RoutedEventArgs e)
         {
+            Topmost = true;
+            Focus();
+            Topmost = false;
             ConfigStore.MSLVersion = System.Reflection.Assembly.GetExecutingAssembly().GetName().Version;
             try
             {
