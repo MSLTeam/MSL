@@ -9,7 +9,7 @@
              mc:Ignorable="d" 
              d:DesignHeight="450" d:DesignWidth="800">
 
-    <control:MagicCard BorderThickness="0">
+    <control:MagicCard Title="下载项" BorderThickness="0">
         <Grid>
             <Grid.RowDefinitions>
                 <RowDefinition Height="*"/>

@@ -645,10 +645,9 @@ namespace MSL.controls
                 if (counter == 100)
                 {
                     counter = 0;
-                    Dispatcher.Invoke(() =>
+                    Dispatcher.InvokeAsync(() =>
                     {
-                        // 编译过程不予显示，直接写到日志文件中
-                        logWriter.WriteLineAsync(logTemp);
+                        Log_in(logTemp);
                     });
                     logTemp = "";
                 }

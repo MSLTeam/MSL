@@ -257,6 +257,8 @@ namespace MSL.utils
             _tcs = new TaskCompletionSource<bool>();
             await _tcs.Task;
             string[] strings = [_dialog.DialogReturn.ToString(), _dialog.McVersion];
+            _dialog.DownloadDisplay.Dispose();
+            _dialog = null;
             return strings;
         }
 

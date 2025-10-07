@@ -433,7 +433,7 @@
                                                             <DataTemplate>
                                                                 <hc:UniformSpacingPanel Orientation="Horizontal" Spacing="5">
                                                                     <iconPacks:PackIconMaterial Kind="FileDocument"/>
-                                                                    <TextBlock Width="Auto" Text="{Binding PluginName}" FontSize="12"/>
+                                                                    <TextBlock Width="Auto" Text="{Binding ModName}" FontSize="12"/>
                                                                 </hc:UniformSpacingPanel>
                                                             </DataTemplate>
                                                         </GridViewColumn.CellTemplate>

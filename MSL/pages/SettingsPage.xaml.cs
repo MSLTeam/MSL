@@ -129,6 +129,7 @@ namespace MSL.pages
                     UseMicaEffect.IsChecked = true;
                     semitransparentTitle.IsEnabled = false;
                     autoSetTheme.IsEnabled = false;
+                    ChangeSkinColor.IsEnabled = false;
                     darkTheme.IsEnabled = false;
                     changeBackImg.Visibility = Visibility.Collapsed;
                     delBackImg.Visibility = Visibility.Collapsed;
@@ -326,61 +327,6 @@ namespace MSL.pages
                 AutoOpenFrpcList.IsEnabled = true;
             }
         }
-
-        /*
-        private void ChangeSkin(object sender, RoutedEventArgs e)
-        {
-            if (BlueSkinBtn.IsChecked == true)
-            {
-                BrushConverter brushConverter = new BrushConverter();
-                ThemeManager.Current.AccentColor = (Brush)brushConverter.ConvertFromString("#0078D4");
-                JObject jobject = JObject.Parse(File.ReadAllText("MSL\\config.json", Encoding.UTF8));
-                jobject["skin"] = 1;
-                string convertString = Convert.ToString(jobject);
-                File.WriteAllText("MSL\\config.json", convertString, Encoding.UTF8);
-            }
-            else if (RedSkinBtn.IsChecked == true)
-            {
-                ThemeManager.Current.AccentColor = Brushes.Red;
-                JObject jobject = JObject.Parse(File.ReadAllText("MSL\\config.json", Encoding.UTF8));
-                jobject["skin"] = 2;
-                string convertString = Convert.ToString(jobject);
-                File.WriteAllText("MSL\\config.json", convertString, Encoding.UTF8);
-            }
-            else if (GreenSkinBtn.IsChecked == true)
-            {
-                ThemeManager.Current.AccentColor = Brushes.Green;
-                JObject jobject = JObject.Parse(File.ReadAllText("MSL\\config.json", Encoding.UTF8));
-                jobject["skin"] = 3;
-                string convertString = Convert.ToString(jobject);
-                File.WriteAllText("MSL\\config.json", convertString, Encoding.UTF8);
-            }
-            else if (OrangeSkinBtn.IsChecked == true)
-            {
-                ThemeManager.Current.AccentColor = Brushes.Orange;
-                JObject jobject = JObject.Parse(File.ReadAllText("MSL\\config.json", Encoding.UTF8));
-                jobject["skin"] = 4;
-                string convertString = Convert.ToString(jobject);
-                File.WriteAllText("MSL\\config.json", convertString, Encoding.UTF8);
-            }
-            else if (PurpleSkinBtn.IsChecked == true)
-            {
-                ThemeManager.Current.AccentColor = Brushes.Purple;
-                JObject jobject = JObject.Parse(File.ReadAllText("MSL\\config.json", Encoding.UTF8));
-                jobject["skin"] = 5;
-                string convertString = Convert.ToString(jobject);
-                File.WriteAllText("MSL\\config.json", convertString, Encoding.UTF8);
-            }
-            else if (PinkSkinBtn.IsChecked == true)
-            {
-                ThemeManager.Current.AccentColor = Brushes.DeepPink;
-                JObject jobject = JObject.Parse(File.ReadAllText("MSL\\config.json", Encoding.UTF8));
-                jobject["skin"] = 6;
-                string convertString = Convert.ToString(jobject);
-                File.WriteAllText("MSL\\config.json", convertString, Encoding.UTF8);
-            }
-        }
-        */
 
         private void autoGetPlayerInfo_Click(object sender, RoutedEventArgs e)
         {
@@ -683,6 +629,7 @@ namespace MSL.pages
                 Config.Write("darkTheme", "Auto");
                 semitransparentTitle.IsEnabled = false;
                 autoSetTheme.IsEnabled = false;
+                ChangeSkinColor.IsEnabled = false;
                 changeBackImg.Visibility = Visibility.Collapsed;
                 delBackImg.Visibility = Visibility.Collapsed;
                 WesternEgg.Visibility = Visibility.Collapsed;
@@ -693,6 +640,7 @@ namespace MSL.pages
                 Config.Write("MicaEffect", false);
                 semitransparentTitle.IsEnabled = true;
                 autoSetTheme.IsEnabled = true;
+                ChangeSkinColor.IsEnabled = true;
                 changeBackImg.Visibility = Visibility.Visible;
                 delBackImg.Visibility = Visibility.Visible;
                 WesternEgg.Visibility = Visibility.Visible;

@@ -44,6 +44,17 @@ namespace MSL.controls.dialogs
             // _uiUpdateTimer.Start();
         }
 
+        private void Dispose()
+        {
+            // 注销事件处理
+            // _downloadManager.DownloadItemProgressChanged -= DownloadManager_DownloadItemProgressChanged;
+            _downloadManager.DownloadItemCompleted -= DownloadManager_DownloadItemCompleted;
+            _downloadManager.DownloadGroupCompleted -= DownloadManager_DownloadGroupCompleted;
+            // 停止并清理定时器
+            _uiUpdateTimer.Stop();
+            _uiUpdateTimer.Tick -= UiUpdateTimer_Tick;
+        }
+
         // 添加新的下载组和项到UI
         public void AddDownloadGroup(string groupId, bool updateExisting = false)
         {
