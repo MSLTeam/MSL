@@ -495,7 +495,7 @@ namespace MSL.controls
                             buildarg += @""" ";//结束cp处理
 
                             //添加主类（为什么不能从json获取呢：？）（要解包才能获取，懒得了qaq）
-                            if (ForgePath.Contains("neoforge"))
+                            if (ForgePath.Contains("neoforge") && (SafeGetValue(installJobj, "minecraft") != "" && CompareMinecraftVersions(installJobj["minecraft"].ToString(), "1.20.4") >= 0))
                             {
                                 //neoforge
                                 if (buildarg.Contains("binarypatcher"))
@@ -577,6 +577,7 @@ namespace MSL.controls
                     Log_in("正在编译，请耐心等待……\n");
                     foreach (string cmdLine in cmdLines)
                     {
+                        Log_in($"执行任务: {cmdLine}\n");
                         Process process = new Process();
                         process.StartInfo.WorkingDirectory = InstallPath;
                         if (JavaPath == "Java")
