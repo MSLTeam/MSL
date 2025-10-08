@@ -488,6 +488,18 @@ namespace MSL.controls
                             //处理classpath
                             buildarg += LibPath + "/" + NameToPath((string)processor["jar"]) + ";";
                             JArray classpath = (JArray)processor["classpath"];
+                            string entryjar = LibPath + "/" + NameToPath((string)processor["jar"]); // 获取入口文件路径
+                            Log_in("捕获到执行的入口文件：" + entryjar);
+                            string mainclass = GetJarMainClass(entryjar);
+                            if (mainclass != null)
+                            {
+                                Log_in("捕获到入口文件的主类：" + mainclass);
+                            }
+                            else
+                            {
+                                Log_in("未能捕获到入口文件的主类，请重试或者改用命令行安装！");
+                                return;
+                            }
                             foreach (string path in classpath.Values<string>())
                             {
                                 buildarg += LibPath + "/" + NameToPath(path) + ";";
@@ -495,6 +507,9 @@ namespace MSL.controls
                             buildarg += @""" ";//结束cp处理
 
                             //添加主类（为什么不能从json获取呢：？）（要解包才能获取，懒得了qaq）
+                            // 没想到吧 现在可以解包获取了！！！
+                            buildarg += $"{mainclass} ";
+                            /*
                             if (ForgePath.Contains("neoforge") && (SafeGetValue(installJobj, "minecraft") != "" && CompareMinecraftVersions(installJobj["minecraft"].ToString(), "1.20.4") >= 0))
                             {
                                 //neoforge
@@ -551,7 +566,7 @@ namespace MSL.controls
                                 {
                                     buildarg += "net.minecraftforge.binarypatcher.ConsoleTool ";
                                 }
-                            }
+                            } */
 
                             //处理args
                             JArray args = (JArray)processor["args"];
@@ -839,6 +854,64 @@ namespace MSL.controls
             {
                 return null;
             }
+        }
+
+        /// <summary>
+        /// 使用 SharpZipLib 获取 JAR 文件主类
+        /// </summary>
+        /// <param name="jarFilePath">JAR 文件完整路径</param>
+        /// <returns>如果找到主类，则返回主类名；否则返回 null。</returns>
+        public static string? GetJarMainClass(string jarFilePath)
+        {
+            if (!File.Exists(jarFilePath))
+            {
+                return null;
+                // throw new FileNotFoundException("指定的 JAR 文件不存在。", jarFilePath);
+            }
+
+            ZipFile? jarFile = null;
+            try
+            {
+                jarFile = new ZipFile(jarFilePath);
+
+                // 查找 MANIFEST.MF 文件
+                ZipEntry manifestEntry = jarFile.GetEntry("META-INF/MANIFEST.MF");
+
+                if (manifestEntry == null)
+                {
+                    return null;
+                }
+                using (Stream stream = jarFile.GetInputStream(manifestEntry))
+                using (StreamReader reader = new StreamReader(stream))
+                {
+                    string? line;
+                    while ((line = reader.ReadLine()) != null)
+                    {
+                        // 读取主类
+                        if (line.StartsWith("Main-Class:", StringComparison.OrdinalIgnoreCase))
+                        {
+                            return line.Substring("Main-Class:".Length).Trim();
+                        }
+                    }
+                }
+            }
+            catch (Exception ex)
+            {
+                LogHelper.Write.Error("读取 JAR 文件失败: " + ex.ToString());
+                return null;
+            }
+            finally
+            {
+                // 释放文件句柄
+                if (jarFile != null)
+                {
+                    jarFile.IsStreamOwner = true;
+                    jarFile.Close();
+                }
+            }
+
+            // 遍历完成仍未找到
+            return null;
         }
 
         private void Mirror_SelectionChanged(object sender, System.Windows.Controls.SelectionChangedEventArgs e)
