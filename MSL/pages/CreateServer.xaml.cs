@@ -1762,7 +1762,7 @@ namespace MSL.pages
 
         private void YggDocs_Click(object sender, RoutedEventArgs e)
         {
-            Process.Start("https://www.mslmc.cn/docs/yggdrasil.html");
+            Process.Start("https://www.mslmc.cn/docs/advanced/yggdrasil/");
         }
 
         private void YggMSL_Click(object sender, RoutedEventArgs e)

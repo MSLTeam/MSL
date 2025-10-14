@@ -17,7 +17,7 @@
             <StackPanel Grid.Row="0" Orientation="Horizontal" Margin="10,10,10,0" VerticalAlignment="Top">
                 <Button x:Name="CancelBtn" hc:IconElement.Geometry="{StaticResource LeftGeometry}" Content="返回服务器列表" Click="CancelBtn_Click"/>
                 <Label Content="将通过几个步骤为您创建服务器……" Margin="5,0,0,0" Foreground="{DynamicResource DarkPrimaryBrush}" FontSize="14"/>
-                <Button Name="WikiButton" Margin="5" Content="文档/教程" FontSize="14" Foreground="{DynamicResource DarkPrimaryBrush}" Command="hc:ControlCommands.OpenLink" CommandParameter="https://www.mslmc.cn/docs/"/>
+                <Button Name="WikiButton" Margin="5" Content="文档/教程" FontSize="14" Foreground="{DynamicResource DarkPrimaryBrush}" Command="hc:ControlCommands.OpenLink" CommandParameter="https://www.mslmc.cn/docs/mc-server/start/"/>
             </StackPanel>
             <Border Grid.Row="1" Style="{StaticResource MagicBorder}" Margin="10" VerticalAlignment="Stretch">
                 <Grid>
@@ -41,7 +41,7 @@
                     <TextBlock Grid.Row="3" Text="⭐导入整合包模式：想要在线下载一个服务器整合包来进行导入？或是自己备有一个整合包文件？那就使用此模式吧！" FontSize="16" VerticalAlignment="Center" TextWrapping="Wrap" Margin="320,0,50,0"/>
                     <TextBlock Grid.Row="4"  FontSize="16" VerticalAlignment="Center" TextWrapping="Wrap" Margin="10,0,50,0">
                         <Run Text="►提示：若需要开基岩版官方服务器（BDS），请使用自定义模式并参照" FontSize="16" Foreground="{DynamicResource PrimaryTextBrush}"/>
-                        <Hyperlink Command="hc:ControlCommands.OpenLink" CommandParameter="https://www.mslmc.cn/docs/launch-bds.html">BDS开服教程</Hyperlink>
+                        <Hyperlink Command="hc:ControlCommands.OpenLink" CommandParameter="https://www.mslmc.cn/docs/mc-server/launch-bds/">BDS开服教程</Hyperlink>
                         <Run Text="！"/>
                     </TextBlock>
                     <Image Grid.Row="4" Source="/icon.ico" VerticalAlignment="Bottom" HorizontalAlignment="Right" Width="50"/>

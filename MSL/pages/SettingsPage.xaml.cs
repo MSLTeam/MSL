@@ -1030,7 +1030,7 @@ namespace MSL.pages
 
         private void WikiButton_Click(object sender, RoutedEventArgs e)
         {
-            Process.Start("https://www.mslmc.cn/docs/");
+            Process.Start("https://www.mslmc.cn/docs/mc-server/start/");
         }
 
         private void CopyDCID_Click(object sender, RoutedEventArgs e)

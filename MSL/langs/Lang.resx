@@ -223,7 +223,7 @@
 错误代码：</value>
   </data>
   <data name="MainWindow_GrowlMsg_Eula" xml:space="preserve">
-    <value>使用本软件，即代表您已阅读并接受本软件的使用协议：https://www.mslmc.cn/eula.html</value>
+    <value>使用本软件，即代表您已阅读并接受本软件的使用协议：https://www.mslmc.cn/eula/</value>
   </data>
   <data name="MainWindow_GrowlMsg_InitErr" xml:space="preserve">
     <value>MSL在初始化加载过程中出现问题，请尝试用管理员身份运行MSL……

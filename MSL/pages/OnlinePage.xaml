@@ -11,7 +11,7 @@
     <Border Style="{StaticResource MagicBorder}" VerticalAlignment="Stretch" Margin="10">
         <Grid>
             <Label Style="{StaticResource BorderTitle}" Content="{Binding [Page_OnlinePage_Title], Source={x:Static langs:LanguageManager.Instance}}"/>
-            <hc:Shield Subject="{Binding [Page_OnlinePage_UseTip], Source={x:Static langs:LanguageManager.Instance}}" Status="{Binding [OpenWebsite], Source={x:Static langs:LanguageManager.Instance}}" Margin="10" Command="hc:ControlCommands.OpenLink" CommandParameter="https://www.mslmc.cn/docs/p2p.html" HorizontalAlignment="Right" VerticalAlignment="Top" Height="25"/>
+            <hc:Shield Subject="{Binding [Page_OnlinePage_UseTip], Source={x:Static langs:LanguageManager.Instance}}" Status="{Binding [OpenWebsite], Source={x:Static langs:LanguageManager.Instance}}" Margin="10" Command="hc:ControlCommands.OpenLink" CommandParameter="https://www.mslmc.cn/docs/proxy/p2p/" HorizontalAlignment="Right" VerticalAlignment="Top" Height="25"/>
             <TextBlock x:Name="serverState" Text="{Binding [Page_OnlinePage_ServerStatusChecking], Source={x:Static langs:LanguageManager.Instance}}" Foreground="{DynamicResource DarkPrimaryBrush}" Margin="10,35,0,0" VerticalAlignment="Top" HorizontalAlignment="Left" FontSize="16"/>
             <Grid Margin="0,65,0,0">
                 <Grid.RowDefinitions>

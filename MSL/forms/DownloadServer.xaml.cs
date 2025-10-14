@@ -538,7 +538,7 @@ namespace MSL.pages
 
         private void openChooseServerDocs_Click(object sender, RoutedEventArgs e)
         {
-            Process.Start("https://www.mslmc.cn/docs/choose-server-tips.html");
+            Process.Start("https://www.mslmc.cn/docs/mc-server/choose-server-tips/");
         }
 
         private void OpenDownloadManager_Click(object sender, RoutedEventArgs e)
