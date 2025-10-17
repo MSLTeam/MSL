@@ -30,7 +30,7 @@ namespace MSL.controls
         private readonly string JavaPath;
         private StreamWriter logWriter;
         private int versionType; //由于Forge安装器的json有4种格式（太6了），在此进行规定：①1.20.3-Latest ②？-1.20.2 懒得规定了-qwq
-        private bool useMirrorUrl = true;
+        private int useMirrorUrl = 0;
 
         public InstallForgeDialog(string installPath, string forgeFileName, string javaPath)
         {
@@ -204,8 +204,8 @@ namespace MSL.controls
                     return;
                 }
 
-                //是否使用镜像源
-                if (!useMirrorUrl)
+                //是否使用镜像源 不用镜像就替换回原版
+                if (useMirrorUrl == 2)
                 {
                     vanillaUrl = vanillaUrl.Replace("file.mslmc.cn/mirrors/vanilla/", "piston-data.mojang.com/v1/objects/");
                 }
@@ -722,7 +722,7 @@ namespace MSL.controls
             }
             str = str.Replace("{MINECRAFT_VERSION}", mcv);
             //是否使用镜像源
-            if (useMirrorUrl)
+            if (useMirrorUrl == 0)
             {
                 //改成镜像源的部分
                 /*
@@ -737,6 +737,15 @@ namespace MSL.controls
                 str = str.Replace("https://maven.minecraftforge.net", "https://forge-maven.mirrors.mslmc.cn");
                 str = str.Replace("https://files.minecraftforge.net", "https://forge-files.mirrors.mslmc.cn");
                 str = str.Replace("https://libraries.minecraft.net", "https://mclibs.mirrors.mslmc.cn");
+            }
+            // 备用镜像源
+            if (useMirrorUrl == 1)
+            {
+                //改成镜像源的部分
+                str = str.Replace("https://maven.neoforged.net", "https://neoforge.mc-mirrors.aino.cyou");
+                str = str.Replace("https://maven.minecraftforge.net", "https://forge-maven.mc-mirrors.aino.cyou");
+                str = str.Replace("https://files.minecraftforge.net", "https://forge-files.mc-mirrors.aino.cyou");
+                str = str.Replace("https://libraries.minecraft.net", "https://mclibs.mc-mirrors.aino.cyou");
             }
             //构建时候的变量
             str = str.Replace("{INSTALLER}", ForgePath);
@@ -919,11 +928,13 @@ namespace MSL.controls
             switch (Mirror.SelectedIndex)
             {
                 case 0:
-                    useMirrorUrl = true; break;
+                    useMirrorUrl = 0; break;
                 case 1:
-                    useMirrorUrl = false; break;
+                    useMirrorUrl = 1; break;
+                case 2:
+                    useMirrorUrl = 2; break;
                 default:
-                    useMirrorUrl = true; break;
+                    useMirrorUrl = 0; break;
             }
         }
 
