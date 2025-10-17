@@ -767,7 +767,7 @@ namespace MSL.controls
                 str = str.Replace("https://files.minecraftforge.net", "https://forge-files.mirrors.mslmc.cn");
                 str = str.Replace("https://libraries.minecraft.net", "https://mclibs.mirrors.mslmc.cn");
                 str = str.Replace("https://piston-meta.mojang.com", "https://mc-meta.mirrors.mslmc.cn");
-                str = str.Replace("https://piston-data.mojang.com", "https://mc-data.mirrors.mslmc.cn");
+                str = str.Replace("piston-data.mojang.com/v1/objects/", "file.mslmc.cn/mirrors/vanilla/");
             }
             // 备用镜像源
             if (useMirrorUrl == 1)
@@ -778,7 +778,7 @@ namespace MSL.controls
                 str = str.Replace("https://files.minecraftforge.net", "https://forge-files.mc-mirrors.aino.cyou");
                 str = str.Replace("https://libraries.minecraft.net", "https://mclibs.mc-mirrors.aino.cyou");
                 str = str.Replace("https://piston-meta.mojang.com", "https://mcmeta.mc-mirrors.aino.cyou");
-                str = str.Replace("https://piston-data.mojang.com", "https://mcdata.mc-mirrors.aino.cyou");
+                str = str.Replace("piston-data.mojang.com/v1/objects/", "file.mslmc.cn/mirrors/vanilla/");
             }
             //构建时候的变量
             str = str.Replace("{INSTALLER}", ForgePath);
