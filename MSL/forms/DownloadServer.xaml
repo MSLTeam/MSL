@@ -27,7 +27,7 @@
                     <Button x:Name="DownloadBtn" Content="下载" Style="{StaticResource ButtonPrimary}" Height="36" Width="100" FontSize="14" Click="DownloadBtn_Click"/>
                     <Button x:Name="OpenDownloadManager" Content="打开下载列表" Width="150" Height="36" Background="#33000000" FontSize="14" Click="OpenDownloadManager_Click"/>
                     <Button x:Name="openChooseServerDocs" Content="教程文档" Width="100" Height="36" Background="#33000000" FontSize="14" Click="openChooseServerDocs_Click"/>
-                    <CheckBox x:Name="UseMirrorUrl" Content="Vanilla和Forge使用镜像源（BMCL）" IsChecked="True"/>
+                    <CheckBox x:Name="UseMirrorUrl" Content="Vanilla和Forge使用镜像源" IsChecked="True"/>
                 </hc:UniformSpacingPanel>
                 <TextBox Grid.Row="1" x:Name="server_d" Margin="10,0,10,0" TextWrapping="Wrap" Text="服务端描述" Focusable="False" IsReadOnly="True" Background="{DynamicResource RegionBrush}" FontSize="14"/>
             </Grid>

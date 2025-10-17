@@ -6,6 +6,8 @@ using System.Collections.Generic;
 using System.Diagnostics;
 using System.IO;
 using System.Linq;
+using System.Net;
+using System.Runtime.InteropServices;
 using System.Text;
 using System.Threading;
 using System.Threading.Tasks;
@@ -473,6 +475,9 @@ namespace MSL.controls
                     CopyJarFiles(TempPath, InstallPath, 2);
                 }
 
+           
+
+
                 List<string> cmdLines = [];
                 //接下来开始编译咯~
                 if (versionType != 5) //低版本不编译
@@ -509,64 +514,6 @@ namespace MSL.controls
                             //添加主类（为什么不能从json获取呢：？）（要解包才能获取，懒得了qaq）
                             // 没想到吧 现在可以解包获取了！！！
                             buildarg += $"{mainclass} ";
-                            /*
-                            if (ForgePath.Contains("neoforge") && (SafeGetValue(installJobj, "minecraft") != "" && CompareMinecraftVersions(installJobj["minecraft"].ToString(), "1.20.4") >= 0))
-                            {
-                                //neoforge
-                                if (buildarg.Contains("binarypatcher"))
-                                {
-                                    buildarg += "net.neoforged.binarypatcher.ConsoleTool ";
-                                }
-                                else if (buildarg.Contains("AutoRenamingTool"))
-                                {
-                                    //大于等于1.21的版本
-                                    if (SafeGetValue(installJobj, "minecraft") != "" && CompareMinecraftVersions(installJobj["minecraft"].ToString(), "1.20.6") >= 0)
-                                    {
-                                        buildarg += "net.neoforged.art.Main ";
-                                    }
-                                    else
-                                    {
-                                        buildarg += "net.minecraftforge.fart.Main ";
-                                    }
-
-                                }
-                                else if (buildarg.Contains("jarsplitter"))
-                                {
-                                    buildarg += "net.neoforged.jarsplitter.ConsoleTool ";
-                                }
-                                else
-                                {
-                                    buildarg += "net.neoforged.installertools.ConsoleTool ";
-                                }
-                            }
-                            else
-                            {
-                                //被嫌弃的forge
-                                if (buildarg.Contains("installertools"))
-                                {
-                                    buildarg += "net.minecraftforge.installertools.ConsoleTool ";
-                                }
-                                else if (buildarg.Contains("ForgeAutoRenamingTool"))
-                                {
-                                    buildarg += "net.minecraftforge.fart.Main ";
-                                }
-                                else if (buildarg.Contains("jarsplitter"))
-                                {
-                                    buildarg += "net.minecraftforge.jarsplitter.ConsoleTool ";
-                                }
-                                else if (buildarg.Contains("vignette"))
-                                {
-                                    buildarg += "org.cadixdev.vignette.VignetteMain ";
-                                }
-                                else if (buildarg.Contains("SpecialSource"))
-                                {
-                                    buildarg += "net.md_5.specialsource.SpecialSource ";
-                                }
-                                else
-                                {
-                                    buildarg += "net.minecraftforge.binarypatcher.ConsoleTool ";
-                                }
-                            } */
 
                             //处理args
                             JArray args = (JArray)processor["args"];
@@ -582,10 +529,92 @@ namespace MSL.controls
                                 }
 
                             }
-                            cmdLines.Add(buildarg);
-                            Log_in("启动参数：" + buildarg);
+                            if (!buildarg.Contains("DOWNLOAD_MOJMAPS"))
+                            {
+                                cmdLines.Add(buildarg);
+                                Log_in("启动参数：" + buildarg);
+                            }
+                            else
+                            {
+                                Log_in("DOWNLOAD_MOJMAPS 任务跳过！");
+                            }
+                            
                         }
                     }
+
+                    // 自动DOWNLOAD_MOJMAPS
+                    Status_change("正在下载MC映射表，请耐心等待……");
+                    string mappings_file_path = ReplaceStr("{MOJMAPS}".Replace("/","\\"));
+                    try
+                    {
+                        HttpResponse res_metadata = await HttpService.GetAsync(ReplaceStr("https://piston-meta.mojang.com/mc/game/version_manifest_v2.json"));
+                        if (res_metadata.HttpResponseCode == HttpStatusCode.OK)
+                        {
+                            // 查找对应版本的元信息文件URL
+                            JObject metadata_jobj = JObject.Parse((string)res_metadata.HttpResponseContent);
+                            var foundVersion = metadata_jobj["versions"]?
+                                .FirstOrDefault(v => v["id"]?.ToString() == McVersion);
+                            string versionUrl = foundVersion?["url"]?.ToString();
+                            if (string.IsNullOrEmpty(versionUrl))
+                            {
+                                Log_in($"错误：未能在版本清单中找到版本号为 '{McVersion}' 的详细信息。请检查版本号是否正确。");
+                                return;
+                            }
+                            else
+                            {
+                                Log_in($"成功找到版本 {McVersion} 的元信息文件URL: {versionUrl}");
+                            }
+                            // 替换下镜像源
+                            versionUrl = ReplaceStr(versionUrl);
+                            HttpResponse res_version_metadata = await HttpService.GetAsync(versionUrl);
+                            if (res_version_metadata.HttpResponseCode == HttpStatusCode.OK)
+                            {
+                                JObject version_metadata_jobj = JObject.Parse((string)res_version_metadata.HttpResponseContent);
+                                string mappingsUrl = version_metadata_jobj["downloads"]?["server_mappings"]?["url"]?.ToString();
+                                if (string.IsNullOrEmpty(mappingsUrl))
+                                {
+                                    throw new Exception("错误：未能在版本元信息中找到映射表的下载URL。请检查该版本是否包含映射表。");
+                                }
+                                // 下载到指定位置
+                                string mappingsGroup = downloadManager.CreateDownloadGroup("ForgeInstall_MappingsTxt", maxConcurrentDownloads: 1);
+
+                                downloadManager.AddDownloadItem(
+                                    mappingsGroup,
+                                    ReplaceStr(mappingsUrl),
+                                    Path.GetDirectoryName(mappings_file_path),
+                                    Path.GetFileName(mappings_file_path),
+                                    enableParallel: false
+                                );
+                                downloadManager.StartDownloadGroup(mappingsGroup);
+                                DownloadDisplay.AddDownloadGroup(mappingsGroup); // 添加下载组到UI显示
+                                if (await downloadManager.WaitForGroupCompletionAsync(mappingsGroup))
+                                {
+                                    Log_in("映射表文件下载成功！");
+                                }
+                                else
+                                {
+                                    throw new Exception("下载映射表失败！");
+                                }
+                            }
+                            else
+                            {
+                                Log_in("无法获取MC元信息，请重试，或改用命令行安装。");
+                                return;
+                            }
+                        }
+                        else
+                        {
+                            Log_in("无法获取MC元信息，请重试，或改用命令行安装。");
+                            return;
+                        }
+                    }
+                    catch (Exception ex)
+                    {
+                        Log_in("自动下载MOJMAPS失败！" + ex.Message);
+                        Log_in("无法获取MC元信息，请重试，或改用命令行安装。");
+                        return;
+                    }
+
                     Status_change("正在编译，请耐心等待……");
                     ChangePlanButton.IsEnabled = false;
                     CancelButton.IsEnabled = false;
@@ -737,6 +766,8 @@ namespace MSL.controls
                 str = str.Replace("https://maven.minecraftforge.net", "https://forge-maven.mirrors.mslmc.cn");
                 str = str.Replace("https://files.minecraftforge.net", "https://forge-files.mirrors.mslmc.cn");
                 str = str.Replace("https://libraries.minecraft.net", "https://mclibs.mirrors.mslmc.cn");
+                str = str.Replace("https://piston-meta.mojang.com", "https://mc-meta.mirrors.mslmc.cn");
+                str = str.Replace("https://piston-data.mojang.com", "https://mc-data.mirrors.mslmc.cn");
             }
             // 备用镜像源
             if (useMirrorUrl == 1)
@@ -746,6 +777,8 @@ namespace MSL.controls
                 str = str.Replace("https://maven.minecraftforge.net", "https://forge-maven.mc-mirrors.aino.cyou");
                 str = str.Replace("https://files.minecraftforge.net", "https://forge-files.mc-mirrors.aino.cyou");
                 str = str.Replace("https://libraries.minecraft.net", "https://mclibs.mc-mirrors.aino.cyou");
+                str = str.Replace("https://piston-meta.mojang.com", "https://mcmeta.mc-mirrors.aino.cyou");
+                str = str.Replace("https://piston-data.mojang.com", "https://mcdata.mc-mirrors.aino.cyou");
             }
             //构建时候的变量
             str = str.Replace("{INSTALLER}", ForgePath);

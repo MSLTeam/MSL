@@ -135,7 +135,7 @@ namespace MSL.pages
         {
             if (UseMirrorUrl.IsChecked == false)
             {
-                downUrl = downUrl.Replace("bmclapi2.bangbang93.com", "piston-data.mojang.com");
+                downUrl = downUrl.Replace("file.mslmc.cn/mirrors/vanilla/", "piston-data.mojang.com/v1/objects/");
                 if (serverCoreList.SelectedItem.ToString() == "forge")
                 {
                     // Extract version info and create backup URL
