@@ -903,7 +903,7 @@ namespace MSL.controls
         /// </summary>
         /// <param name="jarFilePath">JAR 文件完整路径</param>
         /// <returns>如果找到主类，则返回主类名；否则返回 null。</returns>
-        public static string? GetJarMainClass(string jarFilePath)
+        public static string GetJarMainClass(string jarFilePath)
         {
             if (!File.Exists(jarFilePath))
             {
@@ -911,7 +911,7 @@ namespace MSL.controls
                 // throw new FileNotFoundException("指定的 JAR 文件不存在。", jarFilePath);
             }
 
-            ZipFile? jarFile = null;
+            ZipFile jarFile = null;
             try
             {
                 jarFile = new ZipFile(jarFilePath);
@@ -926,7 +926,7 @@ namespace MSL.controls
                 using (Stream stream = jarFile.GetInputStream(manifestEntry))
                 using (StreamReader reader = new StreamReader(stream))
                 {
-                    string? line;
+                    string line;
                     while ((line = reader.ReadLine()) != null)
                     {
                         // 读取主类
