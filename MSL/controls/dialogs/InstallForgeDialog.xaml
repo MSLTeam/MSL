@@ -40,7 +40,6 @@
                 <dialog:DownloadDisplayControl Grid.Column="1" x:Name="DownloadDisplay" Margin="0,0,10,0" />
             </Grid>
             
-            
             <StackPanel Grid.Row="2" Orientation="Horizontal" >
                 <TextBlock Foreground="{DynamicResource PrimaryTextBrush}" Margin="10" VerticalAlignment="Center" TextWrapping="Wrap" Text="当前状态：" FontSize="16"/>
                 <TextBlock x:Name="status" Foreground="{DynamicResource PrimaryTextBrush}" VerticalAlignment="Center" TextWrapping="Wrap" Text="等待安装开始……" FontSize="16"/>
@@ -49,7 +48,6 @@
                 <Button x:Name="ChangePlanButton" Content="改用命令行安装" Click="ChangePlanButton_Click" Margin="10,10,0,10"/>
                 <Button x:Name="CancelButton" Style="{StaticResource ButtonPrimary}" Content="取消" Click="CancelButton_Click" Margin="10"/>
             </StackPanel>
-            
         </Grid>
     </Border>
 </UserControl>

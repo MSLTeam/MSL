@@ -101,8 +101,8 @@
                                         <Label x:Name="memoryInfoLab" Content="内存占用" Height="60" Margin="0,80,0,0" VerticalAlignment="Top" HorizontalAlignment="Stretch"/>
                                         <Label x:Name="usedMemoryLab" Content="系统已用内存" Height="30" Margin="0,150,0,0" VerticalAlignment="Top" HorizontalAlignment="Stretch"/>
                                         <ProgressBar x:Name="memoryInfoBar" Style="{StaticResource ProgressBarFlat}" Height="25" Margin="0,190,0,0" VerticalAlignment="Top"/>
-                                        <Label x:Name="availableMemoryInfoLab" Content="系统空闲内存" Height="30" Margin="0,225,0,0" HorizontalAlignment="Stretch" VerticalAlignment="Top"/>
-                                        <ProgressBar x:Name="availableMemoryInfoBar" Style="{StaticResource ProgressBarFlat}" Height="25" Margin="0,265,0,0" VerticalAlignment="Top"/>
+                                        <Label x:Name="processMemoryInfoLab" Content="系统空闲内存" Height="30" Margin="0,225,0,0" HorizontalAlignment="Stretch" VerticalAlignment="Top"/>
+                                        <ProgressBar x:Name="processMemoryInfoBar" Style="{StaticResource ProgressBarFlat}" Height="25" Margin="0,265,0,0" VerticalAlignment="Top"/>
                                     </Grid>
                                 </StackPanel>
                             </hc:ScrollViewer>

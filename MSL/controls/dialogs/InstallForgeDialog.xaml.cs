@@ -7,7 +7,6 @@ using System.Diagnostics;
 using System.IO;
 using System.Linq;
 using System.Net;
-using System.Runtime.InteropServices;
 using System.Text;
 using System.Threading;
 using System.Threading.Tasks;
@@ -119,17 +118,6 @@ namespace MSL.controls
                 //在这里检测一下版本，用以区分安装流程
                 if (SafeGetValue(installJobj, "minecraft") != "")
                 {
-                    /* 2025.5.28 经过测试1.21.5可以正常安装qwq
-                    if (!ForgePath.Contains("neoforge")) // NeoForge照常安装
-                    {
-                        if (CompareMinecraftVersions(installJobj["minecraft"].ToString(), "1.21") != -1)
-                        {
-                            //1.21-Latest
-                            // **Forge真恶心，天天闲着蛋疼改你的库文件依赖存储格式，1.21以上干脆不支持了，直接用命令行安装吧，爱咋咋地。
-                            Log_in("\nMSL目前不支持自动安装此版本，请点击右下角“用命令行安装”进行手动安装，若安装失败，请尝试使用代理！");
-                            return;
-                        }
-                    } */
                     if (CompareMinecraftVersions(installJobj["minecraft"].ToString(), "1.20.3") != -1)
                     {
                         //1.20.3-Latest
@@ -150,7 +138,7 @@ namespace MSL.controls
                         //1.12-1.16.5
                         versionType = 4;
                     }
-                    else// if(CompareMinecraftVersions(installJobj["minecraft"].ToString(), "1.7") >= 0 && CompareMinecraftVersions(installJobj["minecraft"].ToString(), "1.12") < 0)
+                    else //if(CompareMinecraftVersions(installJobj["minecraft"].ToString(), "1.7") >= 0 && CompareMinecraftVersions(installJobj["minecraft"].ToString(), "1.12") < 0)
                     {
                         //剩下版本应该都是1.11.2以下了 json格式大变（
                         versionType = 5;
@@ -166,8 +154,8 @@ namespace MSL.controls
                 var downloadManager = DownloadManager.Instance;
 
                 //第二步，下载原版核心
-                Status_change("正在下载原版服务端核心···");
-                Log_in("正在下载原版服务端核心···");
+                Status_change("下载原版服务端核心");
+                Log_in("正在下载原版服务端核心...");
                 string serverJarPath;
                 string vanillaUrl;
                 try
@@ -285,15 +273,12 @@ namespace MSL.controls
                 // 创建下载组
                 string groupId = downloadManager.CreateDownloadGroup("ForgeInstall_LibFiles", maxConcurrentDownloads: semaphore); // 4个并发下载
 
-                //List<Task> downloadTasks = new List<Task>();
                 if (versionType != 5) //分为高版本和低版本
                 {
                     //这里是1.12+版本的处理逻辑
                     var versionlJobj = GetJsonObj(TempPath + "/version.json");
-                    JArray libraries2 = (JArray)installJobj["libraries"];//获取lib数组 这是install那个json
-                    JArray libraries = (JArray)versionlJobj["libraries"];//获取lib数组
-                                                                         //int libALLCount = libraries.Count + libraries2.Count;//总数
-                                                                         //int libCount = 0;//用于计数
+                    JArray libraries2 = (JArray)installJobj["libraries"]; //获取lib数组 这是install那个json
+                    JArray libraries = (JArray)versionlJobj["libraries"]; //获取lib数组
 
                     // 比较器存储 用于查重
                     var addedDownloadPaths = new HashSet<string>();
@@ -309,10 +294,8 @@ namespace MSL.controls
                         if (!addedDownloadPaths.Add(lib["downloads"]["artifact"]["path"].ToString()))
                             continue;
 
-                        //string _savepath = LibPath + "/" + filePath;
                         string _sha1 = lib["downloads"]["artifact"]["sha1"].ToString();
                         Log_in("[LIB]下载：" + lib["downloads"]["artifact"]["path"].ToString());
-                        //downloadTasks.Add(DownloadFile(_dlurl, _savepath, _sha1));
 
                         // 添加下载项
                         downloadManager.AddDownloadItem(
@@ -322,10 +305,6 @@ namespace MSL.controls
                             lib["downloads"]["artifact"]["path"].ToString(),
                             enableParallel: false
                         );
-
-                        //bool dlStatus = await DownloadFile(_dlurl, _savepath, _sha1);
-                        //Status_change("正在下载Forge运行Lib···(" + libCount + "/" + libALLCount + ")");
-
                     }
                     //2024.02.27 下午11：25 写的时候bmclapi炸了，导致被迫暂停，望周知（
                     foreach (JObject lib in libraries2.Cast<JObject>())//遍历数组，进行文件下载
@@ -339,7 +318,6 @@ namespace MSL.controls
                         if (!addedDownloadPaths.Add(lib["downloads"]["artifact"]["path"].ToString()))
                             continue;
 
-                        //string _savepath = LibPath + "/" + filePath;
                         string _sha1 = lib["downloads"]["artifact"]["sha1"].ToString();
                         Log_in("[LIB]下载：" + lib["downloads"]["artifact"]["path"].ToString());
 
@@ -351,27 +329,6 @@ namespace MSL.controls
                             lib["downloads"]["artifact"]["path"].ToString(),
                             enableParallel: false
                         );
-
-                        /*
-                        if (_dlurl.Contains("mcp_config") || _dlurl.Contains(".zip")) //mcp那个zip会用js redirect，所以只能用downloader，真神奇！
-                        {
-                            await Dispatcher.Invoke(async () => //下载
-                            {
-                                bool dwnDialog = await MagicShow.ShowDownloader(Window.GetWindow(this), _dlurl, Path.GetDirectoryName(_savepath), Path.GetFileName(_savepath), "下载MCP配置文件中···");
-                                if (!dwnDialog)
-                                {
-                                    //下载失败，跑路了！
-                                    Log_in("下载MCP配置文件中···下载失败！安装失败！");
-                                    _return = true;
-                                }
-                            });
-
-                        }
-                        else
-                        {
-                            downloadTasks.Add(DownloadFile(_dlurl, _savepath, _sha1));
-                        }
-                        */
                     }
                 }
                 else
@@ -394,7 +351,6 @@ namespace MSL.controls
                         }
                         if (string.IsNullOrEmpty(_dlurl))
                             continue;
-                        //string _savepath = LibPath + "/" + NameToPath(SafeGetValue(lib, "name"));
                         Log_in("[LIB]下载：" + NameToPath(SafeGetValue(lib, "name")));
 
                         // 添加下载项
@@ -405,27 +361,6 @@ namespace MSL.controls
                             NameToPath(SafeGetValue(lib, "name")),
                             enableParallel: false
                         );
-
-                        /*
-                        if (_dlurl.Contains("mcp_config") || _dlurl.Contains(".zip")) //mcp那个zip会用js redirect，所以只能用downloader，真神奇！
-                        {
-                            await Dispatcher.Invoke(async () => //下载
-                            {
-                                bool dwnDialog = await MagicShow.ShowDownloader(Window.GetWindow(this), _dlurl, Path.GetDirectoryName(_savepath), Path.GetFileName(_savepath), "下载MCP配置文件中···");
-                                if (!dwnDialog)
-                                {
-                                    //下载失败，跑路了！
-                                    Log_in("下载MCP配置文件中···下载失败！安装失败！");
-                                    _return = true;
-                                }
-                            });
-
-                        }
-                        else
-                        {
-                            downloadTasks.Add(DownloadFile(_dlurl, _savepath));
-                        }
-                        */
                     }
                 }
 
@@ -442,12 +377,10 @@ namespace MSL.controls
                     return;
                 }
 
-                //await Task.WhenAll(downloadTasks);
                 Log_in("下载运行Lib成功！");
                 await Task.Delay(1000);
                 Status_change("正在处理编译参数···");
                 Log_in("正在处理编译参数");
-                //string batData = "";
 
                 if (versionType == 1 && ForgePath.Contains("neoforge") == false) //只有①需要复制这玩意
                 {
@@ -474,9 +407,6 @@ namespace MSL.controls
                 {
                     CopyJarFiles(TempPath, InstallPath, 2);
                 }
-
-           
-
 
                 List<string> cmdLines = [];
                 //接下来开始编译咯~
@@ -511,8 +441,8 @@ namespace MSL.controls
                             }
                             buildarg += @""" ";//结束cp处理
 
-                            //添加主类（为什么不能从json获取呢：？）（要解包才能获取，懒得了qaq）
-                            // 没想到吧 现在可以解包获取了！！！
+                            // 添加主类（为什么不能从json获取呢：？）（要解包才能获取，懒得了qaq）
+                            // （划掉上行）没想到吧 现在可以解包获取了！！！
                             buildarg += $"{mainclass} ";
 
                             //处理args
@@ -542,58 +472,66 @@ namespace MSL.controls
                         }
                     }
 
-                    // 自动DOWNLOAD_MOJMAPS
-                    Status_change("正在下载MC映射表，请耐心等待……");
-                    string mappings_file_path = ReplaceStr("{MOJMAPS}".Replace("/","\\"));
-                    try
+                    if (versionType < 4) // 低版本不下载映射表
                     {
-                        HttpResponse res_metadata = await HttpService.GetAsync(ReplaceStr("https://piston-meta.mojang.com/mc/game/version_manifest_v2.json"));
-                        if (res_metadata.HttpResponseCode == HttpStatusCode.OK)
+                        // 自动DOWNLOAD_MOJMAPS
+                        Status_change("正在下载MC映射表，请耐心等待……");
+                        string mappings_file_path = ReplaceStr("{MOJMAPS}".Replace("/", "\\"));
+                        try
                         {
-                            // 查找对应版本的元信息文件URL
-                            JObject metadata_jobj = JObject.Parse((string)res_metadata.HttpResponseContent);
-                            var foundVersion = metadata_jobj["versions"]?
-                                .FirstOrDefault(v => v["id"]?.ToString() == McVersion);
-                            string versionUrl = foundVersion?["url"]?.ToString();
-                            if (string.IsNullOrEmpty(versionUrl))
+                            HttpResponse res_metadata = await HttpService.GetAsync(ReplaceStr("https://piston-meta.mojang.com/mc/game/version_manifest_v2.json"));
+                            if (res_metadata.HttpResponseCode == HttpStatusCode.OK)
                             {
-                                Log_in($"错误：未能在版本清单中找到版本号为 '{McVersion}' 的详细信息。请检查版本号是否正确。");
-                                return;
-                            }
-                            else
-                            {
-                                Log_in($"成功找到版本 {McVersion} 的元信息文件URL: {versionUrl}");
-                            }
-                            // 替换下镜像源
-                            versionUrl = ReplaceStr(versionUrl);
-                            HttpResponse res_version_metadata = await HttpService.GetAsync(versionUrl);
-                            if (res_version_metadata.HttpResponseCode == HttpStatusCode.OK)
-                            {
-                                JObject version_metadata_jobj = JObject.Parse((string)res_version_metadata.HttpResponseContent);
-                                string mappingsUrl = version_metadata_jobj["downloads"]?["server_mappings"]?["url"]?.ToString();
-                                if (string.IsNullOrEmpty(mappingsUrl))
+                                // 查找对应版本的元信息文件URL
+                                JObject metadata_jobj = JObject.Parse((string)res_metadata.HttpResponseContent);
+                                var foundVersion = metadata_jobj["versions"]?
+                                    .FirstOrDefault(v => v["id"]?.ToString() == McVersion);
+                                string versionUrl = foundVersion?["url"]?.ToString();
+                                if (string.IsNullOrEmpty(versionUrl))
                                 {
-                                    throw new Exception("错误：未能在版本元信息中找到映射表的下载URL。请检查该版本是否包含映射表。");
-                                }
-                                // 下载到指定位置
-                                string mappingsGroup = downloadManager.CreateDownloadGroup("ForgeInstall_MappingsTxt", maxConcurrentDownloads: 1);
-
-                                downloadManager.AddDownloadItem(
-                                    mappingsGroup,
-                                    ReplaceStr(mappingsUrl),
-                                    Path.GetDirectoryName(mappings_file_path),
-                                    Path.GetFileName(mappings_file_path),
-                                    enableParallel: false
-                                );
-                                downloadManager.StartDownloadGroup(mappingsGroup);
-                                DownloadDisplay.AddDownloadGroup(mappingsGroup); // 添加下载组到UI显示
-                                if (await downloadManager.WaitForGroupCompletionAsync(mappingsGroup))
-                                {
-                                    Log_in("映射表文件下载成功！");
+                                    Log_in($"错误：未能在版本清单中找到版本号为 '{McVersion}' 的详细信息。请检查版本号是否正确。");
+                                    return;
                                 }
                                 else
                                 {
-                                    throw new Exception("下载映射表失败！");
+                                    Log_in($"成功找到版本 {McVersion} 的元信息文件URL: {versionUrl}");
+                                }
+                                // 替换下镜像源
+                                versionUrl = ReplaceStr(versionUrl);
+                                HttpResponse res_version_metadata = await HttpService.GetAsync(versionUrl);
+                                if (res_version_metadata.HttpResponseCode == HttpStatusCode.OK)
+                                {
+                                    JObject version_metadata_jobj = JObject.Parse((string)res_version_metadata.HttpResponseContent);
+                                    string mappingsUrl = version_metadata_jobj["downloads"]?["server_mappings"]?["url"]?.ToString();
+                                    if (string.IsNullOrEmpty(mappingsUrl))
+                                    {
+                                        throw new Exception("错误：未能在版本元信息中找到映射表的下载URL。请检查该版本是否包含映射表。");
+                                    }
+                                    // 下载到指定位置
+                                    string mappingsGroup = downloadManager.CreateDownloadGroup("ForgeInstall_MappingsTxt", maxConcurrentDownloads: 1);
+
+                                    downloadManager.AddDownloadItem(
+                                        mappingsGroup,
+                                        ReplaceStr(mappingsUrl),
+                                        Path.GetDirectoryName(mappings_file_path),
+                                        Path.GetFileName(mappings_file_path),
+                                        enableParallel: false
+                                    );
+                                    downloadManager.StartDownloadGroup(mappingsGroup);
+                                    DownloadDisplay.AddDownloadGroup(mappingsGroup); // 添加下载组到UI显示
+                                    if (await downloadManager.WaitForGroupCompletionAsync(mappingsGroup))
+                                    {
+                                        Log_in("映射表文件下载成功！");
+                                    }
+                                    else
+                                    {
+                                        throw new Exception("下载映射表失败！");
+                                    }
+                                }
+                                else
+                                {
+                                    Log_in("无法获取MC元信息，请重试，或改用命令行安装。");
+                                    return;
                                 }
                             }
                             else
@@ -602,17 +540,12 @@ namespace MSL.controls
                                 return;
                             }
                         }
-                        else
+                        catch (Exception ex)
                         {
+                            Log_in("自动下载MOJMAPS失败！" + ex.Message);
                             Log_in("无法获取MC元信息，请重试，或改用命令行安装。");
                             return;
                         }
-                    }
-                    catch (Exception ex)
-                    {
-                        Log_in("自动下载MOJMAPS失败！" + ex.Message);
-                        Log_in("无法获取MC元信息，请重试，或改用命令行安装。");
-                        return;
                     }
 
                     Status_change("正在编译，请耐心等待……");
@@ -645,6 +578,9 @@ namespace MSL.controls
                         process.BeginErrorReadLine();
                         await Task.Run(process.WaitForExit);
                         process.CancelOutputRead();
+                        process.CancelErrorRead();
+                        process.ErrorDataReceived -= Process_OutputDataReceived;
+                        process.OutputDataReceived -= Process_OutputDataReceived;
                     }
                 }
 
@@ -652,7 +588,6 @@ namespace MSL.controls
                 Status_change("结束！本对话框将自动关闭！");
                 try
                 {
-                    //File.Delete(InstallPath + "/install.bat");
                     log.Clear();
                     logWriter.Flush();
                     logWriter.Close();
@@ -815,7 +750,7 @@ namespace MSL.controls
                 fastZip.ExtractZip(jarPath, extractPath, null);
                 return true;
             }
-            catch// (Exception ex)
+            catch
             {
                 return false;
             }
@@ -1065,12 +1000,9 @@ namespace MSL.controls
         private void CancelInstall()
         {
             LogHelper.Write.Warn("用户取消了Forge安装操作。");
-            //关闭线程
-            //thread.Abort();
             cancellationTokenSource.Cancel();
             try
             {
-                //File.Delete(InstallPath + "/install.bat");
                 log.Clear();
                 logWriter.Flush();
                 logWriter.Close();

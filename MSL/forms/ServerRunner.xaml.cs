@@ -831,9 +831,12 @@ namespace MSL
         private bool getSystemInfo = false;
         private void GetSystemInfo()
         {
+            PerformanceCounter cpuCounter;
+            PerformanceCounter ramCounter;
+            float phisicalMemory;
+            double processUsedMemory;
             try
             {
-                var cpuCounter = new PerformanceCounter();
                 if (PerformanceCounterCategory.Exists("Processor Information") && PerformanceCounterCategory.CounterExists("% Processor Utility", "Processor Information"))
                 {
                     cpuCounter = new PerformanceCounter("Processor Information", "% Processor Utility", "_Total");
@@ -842,26 +845,8 @@ namespace MSL
                 {
                     cpuCounter = new PerformanceCounter("Processor", "% Processor Time", "_Total");
                 }
-                var ramCounter = new PerformanceCounter("Memory", "Available MBytes");
-                var phisicalMemory = Functions.GetPhysicalMemoryGB();
-                while (getSystemInfo)
-                {
-                    float cpuUsage = cpuCounter.NextValue();
-                    float ramAvailable = ramCounter.NextValue() / 1024;
-                    double allMemory = phisicalMemory;
-
-                    Dispatcher.Invoke(() =>
-                    {
-                        if ((int)cpuUsage <= 100)
-                        {
-                            cpuInfoLab.Content = $"CPU: {cpuUsage:f2}%";
-                            cpuInfoBar.Value = (int)cpuUsage;
-                        }
-                        UpdateMemoryInfo(ramAvailable, allMemory);
-                        UpdateLogPreview();
-                    });
-                    Thread.Sleep(3000);
-                }
+                ramCounter = new PerformanceCounter("Memory", "Available MBytes");
+                phisicalMemory = Functions.GetPhysicalMemoryGB();
             }
             catch
             {
@@ -871,17 +856,74 @@ namespace MSL
                     previewOutlog.Text = "预览功能已关闭，请前往服务器控制台界面查看日志信息！";
                 });
                 getSystemInfo = false;
+                return;
+            }
+            while (getSystemInfo)
+            {
+                try
+                {
+                    float cpuUsage = cpuCounter.NextValue();
+                    float ramAvailable = ramCounter.NextValue() / 1024;
+                    double allMemory = phisicalMemory;
+                    processUsedMemory = GetProcessMem();
+                    Dispatcher.Invoke(() =>
+                    {
+                        if ((int)cpuUsage <= 100)
+                        {
+                            cpuInfoLab.Content = $"CPU: {cpuUsage:f2}%";
+                            cpuInfoBar.Value = (int)cpuUsage;
+                        }
+                        UpdateMemoryInfo(ramAvailable, allMemory, processUsedMemory);
+                        UpdateLogPreview();
+                    });
+                }
+                catch
+                {
+                    getSystemInfo = false;
+                    break;
+                }
+                finally
+                {
+                    Thread.Sleep(3000);
+                }
+            }
+            return;
+        }
+
+        private double GetProcessMem()
+        {
+            try
+            {
+                if (ServerProcess != null && !ServerProcess.HasExited)
+                {
+                    return ServerProcess.PrivateMemorySize64 / (1024.0 * 1024.0 * 1024.0);
+                }
+                else if (ConPTYWindow != null && ConPTYWindow.ConptyConsole.ConPTYTerm.TermProcIsRunning)
+                {
+                    return
+                        ConPTYWindow.ConptyConsole.ConPTYTerm
+                        .Process.Process.PrivateMemorySize64
+                        / (1024.0 * 1024.0 * 1024.0);
+                }
+                else
+                {
+                    return 0;
+                }
+            }
+            catch
+            {
+                return 0;
             }
         }
 
-        private void UpdateMemoryInfo(float ramAvailable, double allMemory)
+        private void UpdateMemoryInfo(float ramAvailable, double allMemory,double processUsedMemory)
         {
             memoryInfoLab.Content = $"总内存: {allMemory:f2}G\n已使用: {allMemory - ramAvailable:f2}G\n可使用: {ramAvailable:f2}G";
             double usedMemoryPercentage = (allMemory - ramAvailable) / allMemory;
             memoryInfoBar.Value = usedMemoryPercentage * 100;
-            availableMemoryInfoBar.Value = (ramAvailable / allMemory) * 100;
+            processMemoryInfoBar.Value = (processUsedMemory / allMemory) * 100;
             usedMemoryLab.Content = $"系统已用内存: {usedMemoryPercentage:P}";
-            availableMemoryInfoLab.Content = $"系统空闲内存: {(ramAvailable / allMemory):P}";
+            processMemoryInfoLab.Content = $"进程已用内存: {processUsedMemory:f2}G 占比: {(processUsedMemory / allMemory):P}";
         }
 
         private string tempLog;
