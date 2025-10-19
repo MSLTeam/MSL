@@ -1169,7 +1169,7 @@ namespace MSL.langs {
         }
         
         /// <summary>
-        ///   查找类似 服务器列表 的本地化字符串。
+        ///   查找类似 实例列表 的本地化字符串。
         /// </summary>
         public static string Page_ServerList_Title {
             get {

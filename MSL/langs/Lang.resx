@@ -494,7 +494,7 @@ MSLAPI —— MSL自有服务端&amp;运行库镜像源
     <value>服务器状态</value>
   </data>
   <data name="Page_ServerList_Title" xml:space="preserve">
-    <value>服务器列表</value>
+    <value>实例列表</value>
   </data>
   <data name="Page_ServerList_UseCMDLaunch" xml:space="preserve">
     <value>使用命令行开服</value>

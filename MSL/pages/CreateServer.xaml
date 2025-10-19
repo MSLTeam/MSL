@@ -15,8 +15,8 @@
                 <RowDefinition/>
             </Grid.RowDefinitions>
             <StackPanel Grid.Row="0" Orientation="Horizontal" Margin="10,10,10,0" VerticalAlignment="Top">
-                <Button x:Name="CancelBtn" hc:IconElement.Geometry="{StaticResource LeftGeometry}" Content="返回服务器列表" Click="CancelBtn_Click"/>
-                <Label Content="将通过几个步骤为您创建服务器……" Margin="5,0,0,0" Foreground="{DynamicResource DarkPrimaryBrush}" FontSize="14"/>
+                <Button x:Name="CancelBtn" hc:IconElement.Geometry="{StaticResource LeftGeometry}" Content="返回实例列表" Click="CancelBtn_Click"/>
+                <Label Content="将通过几个步骤为您创建一个服务器……" Margin="5,0,0,0" Foreground="{DynamicResource DarkPrimaryBrush}" FontSize="14"/>
                 <Button Name="WikiButton" Margin="5" Content="文档/教程" FontSize="14" Foreground="{DynamicResource DarkPrimaryBrush}" Command="hc:ControlCommands.OpenLink" CommandParameter="https://www.mslmc.cn/docs/mc-server/start/"/>
             </StackPanel>
             <Border Grid.Row="1" Style="{StaticResource MagicBorder}" Margin="10" VerticalAlignment="Stretch">
@@ -52,8 +52,8 @@
             <StackPanel>
                 <Border Style="{StaticResource MagicBorder}" Margin="10,10,10,0">
                     <Grid>
-                        <Label Content="服务器名称" Style="{StaticResource BorderTitle}"/>
-                        <Label Content="服务器名称（将在服务器列表中显示该名称）：" HorizontalAlignment="Left" Margin="10,35,0,0" VerticalAlignment="Top" FontSize="16" BorderBrush="{x:Null}" Background="{x:Null}" Height="35"/>
+                        <Label Content="实例名称" Style="{StaticResource BorderTitle}"/>
+                        <Label Content="实例名称（将在实例列表中显示该名称）：" HorizontalAlignment="Left" Margin="10,35,0,0" VerticalAlignment="Top" FontSize="16" BorderBrush="{x:Null}" Background="{x:Null}" Height="35"/>
                         <TextBox x:Name="ServerNameBox" Margin="360,35,10,0" TextWrapping="Wrap" Text="MyServer" HorizontalAlignment="Stretch" VerticalAlignment="Top" Height="35"/>
                     </Grid>
                 </Border>
@@ -120,15 +120,15 @@
                 <StackPanel>
                     <Border Style="{StaticResource MagicBorder}" Margin="10,10,10,0">
                         <Grid>
-                            <Label Content="服务器名称" HorizontalAlignment="Left" Style="{StaticResource BorderTitle}"/>
-                            <TextBlock Text="服务器名称（将在服务器列表中显示该名称）：" Foreground="{DynamicResource PrimaryTextBrush}" Margin="25,35,0,10" FontSize="16" HorizontalAlignment="Left" VerticalAlignment="Top"/>
+                            <Label Content="实例名称" HorizontalAlignment="Left" Style="{StaticResource BorderTitle}"/>
+                            <TextBlock Text="实例名称（将在实例列表中显示该名称）：" Foreground="{DynamicResource PrimaryTextBrush}" Margin="25,35,0,10" FontSize="16" HorizontalAlignment="Left" VerticalAlignment="Top"/>
                             <TextBox x:Name="serverNameBox" Margin="370,30,0,0" TextWrapping="Wrap" Text="MyServer" VerticalAlignment="Top" Height="32"/>
                         </Grid>
                     </Border>
                     <Border Style="{StaticResource MagicBorder}">
                         <Grid>
-                            <Label Content="服务器目录" HorizontalAlignment="Left" Style="{StaticResource BorderTitle}"/>
-                            <TextBlock Text="在此选择服务器目录（用于安放服务器的相关文件）：" Foreground="{DynamicResource PrimaryTextBrush}" Margin="25,40,0,0" FontSize="16" HorizontalAlignment="Left" VerticalAlignment="Top"/>
+                            <Label Content="实例目录" HorizontalAlignment="Left" Style="{StaticResource BorderTitle}"/>
+                            <TextBlock Text="在此选择实例目录（用于安放服务器的相关文件）：" Foreground="{DynamicResource PrimaryTextBrush}" Margin="25,40,0,0" FontSize="16" HorizontalAlignment="Left" VerticalAlignment="Top"/>
                             <TextBox x:Name="txb6" Margin="25,70,60,0" VerticalAlignment="Top" MaxLines="1"/>
                             <Button x:Name="a0003" Content="浏览" Margin="0,70,0,0" VerticalAlignment="Top" Click="a0003_Click" FontWeight="Normal" HorizontalAlignment="Right" Width="60"/>
                             <Border Margin="25,105,0,5" Grid.Row="1" Style="{StaticResource BorderTipPrimary}">

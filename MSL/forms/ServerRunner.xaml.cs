@@ -461,7 +461,7 @@ namespace MSL
             recordPlayInfo = ConfigStore.GetPlayerInfo;
             playerInfoBtn.IsChecked = recordPlayInfo;
             ServerProperties = new ServerProperties(this, Rserverbase);
-            SettingsGrid.Items.Add(ServerProperties);
+            SettingsGrid.Content=ServerProperties;
             LoadSettings();
             if (systemInfoBtn.IsChecked == true)
             {
