@@ -494,7 +494,7 @@ namespace MSL
                     MagicFlowMsg.ShowMessage("软件将使用备用URL...");
                     LogHelper.Write.Warn("正在尝试使用备用API地址...");
                     LogHelper.Write.Error(ex.ToString());
-                    ConfigStore.ApiLink = "https://user.mslmc.net/mslapiv3-backup";
+                    ConfigStore.ApiLink = "https://api.mslmc.net/v3";
                     await OnlineService(jsonObject, downloadTermDll, true);
                 }
                 return;
