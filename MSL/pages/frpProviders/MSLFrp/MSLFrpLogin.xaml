@@ -28,6 +28,8 @@
                         <Button x:Name="userRegister" Content="注册/用户中心" Width="100" Margin="5,0,0,0" Command="hc:ControlCommands.OpenLink" CommandParameter="https://user.mslmc.cn"/>
                     </StackPanel>
                     <CheckBox Content="保存登录状态（风险自负哦~）" HorizontalAlignment="Center" x:Name="SaveToken"/>
+
+                    <Button x:Name="BrowserLoginButton" Content="通过浏览器登录 (推荐)" Width="205" Style="{StaticResource ButtonPrimary}" Margin="0,10,0,0" Click="BrowserLoginButton_Click"/>
                 </hc:UniformSpacingPanel>
             </controls:MagicCard>
         </Grid>
@@ -45,6 +47,18 @@
                         <Button x:Name="User2FAReturn" Content="返回" Width="100" Margin="0,0,5,0" Click="User2FAReturn_Click"/>
                         <Button x:Name="User2FALogin" Content="确定" Width="100" Style="{StaticResource ButtonPrimary}"  Margin="5,0,0,0" Click="User2FALogin_Click"/>
                     </StackPanel>
+                </hc:UniformSpacingPanel>
+            </controls:MagicCard>
+        </Grid>
+
+        <Grid x:Name="BrowserLoginGrid" Visibility="Collapsed">
+            <controls:MagicCard Margin="10">
+                <hc:UniformSpacingPanel Spacing="20" Orientation="Vertical" HorizontalAlignment="Center" VerticalAlignment="Center" ItemHorizontalAlignment="Center" >
+                    <TextBlock Text="浏览器登录" Style="{StaticResource MagicText16}" FontWeight="Bold"/>
+                    <TextBlock Text="已在您的默认浏览器中打开登录页面，请完成登录..." Style="{StaticResource MagicText14}" TextWrapping="Wrap" HorizontalAlignment="Center" TextAlignment="Center"/>
+                    <hc:LoadingCircle Style="{StaticResource LoadingCircleLarge}" Margin="0,10,0,0"/>
+                    <TextBlock Text="登录完成后此窗口将自动继续..." Style="{StaticResource MagicText14}" TextWrapping="Wrap" HorizontalAlignment="Center" TextAlignment="Center"/>
+                    <Button x:Name="CancelBrowserLoginButton" Content="取消" Width="100" Margin="0,10,0,0" Click="CancelBrowserLoginButton_Click"/>
                 </hc:UniformSpacingPanel>
             </controls:MagicCard>
         </Grid>
