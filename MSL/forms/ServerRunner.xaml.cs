@@ -2880,7 +2880,7 @@ namespace MSL
                         break;
                     }
                 }
-                string response = (await HttpService.GetApiContentAsync("query/java"))["data"]["versionList"].ToString();
+                string response = (await HttpService.GetApiContentAsync("query/jdk?os=windows&arch=x64"))["data"].ToString();
                 JArray jArray = JArray.Parse(response);
                 List<string> list = new List<string>();
                 foreach (var j in jArray)
@@ -2956,7 +2956,7 @@ namespace MSL
                         int dwnJava = 0;
                         try
                         {
-                            dwnJava = await DownloadJava(selectJava.SelectedValue.ToString(), (await HttpService.GetApiContentAsync("download/java/" + selectJava.SelectedValue.ToString()))["data"]["url"].ToString());
+                            dwnJava = await DownloadJava(selectJava.SelectedValue.ToString(), (await HttpService.GetApiContentAsync("download/jdk/" + selectJava.SelectedValue.ToString() + "?os=windows&arch=x64"))["data"]["url"].ToString());
                             if (dwnJava == 1)
                             {
                                 MagicDialog dialog = new MagicDialog();

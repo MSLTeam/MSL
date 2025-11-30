@@ -692,7 +692,7 @@ namespace MSL.pages
                 try
                 {
                     int dwnJava = 0;
-                    dwnJava = await DownloadJava(selectJavaComb.SelectedItem.ToString(), (await HttpService.GetApiContentAsync("download/java/" + selectJavaComb.SelectedItem.ToString()))["data"]["url"].ToString());
+                    dwnJava = await DownloadJava(selectJavaComb.SelectedItem.ToString(), (await HttpService.GetApiContentAsync("download/jdk/" + selectJavaComb.SelectedItem.ToString() + "?os=windows&arch=x64"))["data"]["url"].ToString());
                     if (dwnJava == 1)
                     {
                         MagicDialog MagicDialog = new MagicDialog();
@@ -1174,11 +1174,11 @@ namespace MSL.pages
             try
             {
                 string response = string.Empty;
-                response = (await HttpService.GetApiContentAsync("query/java"))["data"]["versionList"].ToString();
+                response = (await HttpService.GetApiContentAsync("query/jdk?os=windows&arch=x64"))["data"].ToString();
                 await Task.Delay(100);
                 JArray jArray = JArray.Parse(response);
                 List<string> strings = new List<string>();
-                foreach (var j in jArray)
+                foreach (var j in jArray.Reverse())
                 {
                     strings.Add(j.ToString());
                 }
@@ -1200,7 +1200,7 @@ namespace MSL.pages
             {
                 FastInstallProcess.Text = "当前进度:下载Java……";
                 int dwnJava = 0;
-                dwnJava = await DownloadJava(FinallyJavaCombo.SelectedItem.ToString(), (await HttpService.GetApiContentAsync("download/java/" + FinallyJavaCombo.SelectedItem.ToString()))["data"]["url"].ToString());
+                dwnJava = await DownloadJava(FinallyJavaCombo.SelectedItem.ToString(), (await HttpService.GetApiContentAsync("download/jdk/" + FinallyJavaCombo.SelectedItem.ToString() + "?os=windows&arch=x64"))["data"]["url"].ToString());
                 if (dwnJava == 1)
                 {
                     FastInstallProcess.Text = "当前进度:解压Java……";
