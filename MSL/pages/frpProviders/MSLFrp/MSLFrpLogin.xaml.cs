@@ -21,6 +21,8 @@ namespace MSL.pages.frpProviders.MSLFrp
         private CancellationTokenSource _pollingCts; // 取消轮询
         private const string AppId = "eixl7BLlidSZ7POjdhZsAGTXKyu"; // AppId
 
+        private string _currentBrowserLoginUrl = string.Empty;
+
 
         public MSLFrpLogin()
         {
@@ -223,6 +225,8 @@ namespace MSL.pages.frpProviders.MSLFrp
 
             if (success)
             {
+                _currentBrowserLoginUrl = url;
+
                 LogHelper.Write.Info($"获取浏览器登录URL成功, SSID: {ssid}。正在打开URL...");
                 try
                 {
@@ -236,13 +240,49 @@ namespace MSL.pages.frpProviders.MSLFrp
                 catch (Exception ex)
                 {
                     LogHelper.Write.Error($"打开浏览器失败: {ex.Message}");
-                    MagicShow.ShowMsgDialog($"无法打开浏览器。请手动访问：\n{url}", "错误");
+                    LoginGrid.Visibility = Visibility.Collapsed;
+                    BrowserLoginGrid.Visibility = Visibility.Visible;
+                    StartPolling(ssid, csrf);
+                    MagicFlowMsg.ShowMessage("自动打开浏览器失败，请手动复制链接", 3);
                 }
             }
             else
             {
                 LogHelper.Write.Error($"初始化浏览器登录失败: {msg}");
                 MagicShow.ShowMsgDialog(msg, "错误");
+            }
+        }
+
+        // 重新打开浏览器页面
+        private void ReopenBrowserButton_Click(object sender, RoutedEventArgs e)
+        {
+            if (!string.IsNullOrEmpty(_currentBrowserLoginUrl))
+            {
+                try
+                {
+                    Process.Start(new ProcessStartInfo(_currentBrowserLoginUrl) { UseShellExecute = true });
+                }
+                catch (Exception ex)
+                {
+                    MagicFlowMsg.ShowMessage($"打开失败: {ex.Message}", 2);
+                }
+            }
+        }
+
+        // 复制链接
+        private void CopyBrowserLinkButton_Click(object sender, RoutedEventArgs e)
+        {
+            if (!string.IsNullOrEmpty(_currentBrowserLoginUrl))
+            {
+                try
+                {
+                    Clipboard.SetText(_currentBrowserLoginUrl);
+                    MagicFlowMsg.ShowMessage("登录链接已复制到剪贴板！",1);
+                }
+                catch (Exception ex)
+                {
+                    MagicFlowMsg.ShowMessage($"复制失败: {ex.Message}", 2);
+                }
             }
         }
 
