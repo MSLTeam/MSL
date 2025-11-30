@@ -355,7 +355,7 @@ namespace MSL.pages
             if (!File.Exists(@"MSL\" + fileName + @"\bin\java.exe"))
             {
                 DownjavaName = fileName;
-                bool downDialog = await MagicShow.ShowDownloader(Window.GetWindow(this), downUrl, "MSL", "Java.zip", "下载" + fileName + "中……");
+                bool downDialog = await MagicShow.ShowDownloader(Window.GetWindow(this), downUrl, "MSL", "Java.zip", "下载 Java" + fileName + " 中……");
                 if (downDialog)
                 {
                     return 1;
