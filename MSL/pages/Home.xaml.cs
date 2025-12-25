@@ -238,12 +238,8 @@ namespace MSL.pages
                     };
 
 
-                    // 2. 调用之前的渲染方法，把内容填入 contentPanel
                     RenderContentToPanel(contentPanel, noticeText);
 
-                    // 3. 调用 MagicShow
-                    // text: 传空字符串 ""，因为我们用 uIElement 代替了纯文本显示
-                    // uIElement: 传入我们的 scrollViewer
                     await MagicShow.ShowMsgDialogAsync(
                         _window: Window.GetWindow(this),
                         text: "",
