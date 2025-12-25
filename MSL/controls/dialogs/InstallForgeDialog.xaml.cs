@@ -8,6 +8,7 @@ using System.IO;
 using System.Linq;
 using System.Net;
 using System.Text;
+using System.Text.RegularExpressions;
 using System.Threading;
 using System.Threading.Tasks;
 using System.Windows;
@@ -163,7 +164,7 @@ namespace MSL.controls
                     if (versionType <= 3)
                     {
                         serverJarPath = ReplaceStr(installJobj["serverJarPath"].ToString());
-                        vanillaUrl = (await HttpService.GetApiContentAsync("download/server/vanilla/" + installJobj["minecraft"].ToString()))["data"]?["url"]?.ToString() ?? null;
+                        vanillaUrl = (await HttpService.GetApiContentAsync($"download/server/vanilla{(installJobj["minecraft"].ToString().Contains("snapshot") ? "-snapshot" : "")}/" + installJobj["minecraft"].ToString()))["data"]?["url"]?.ToString() ?? null;
                         McVersion = installJobj["minecraft"].ToString();
                     }
                     else if (versionType == 5)
@@ -468,11 +469,11 @@ namespace MSL.controls
                             {
                                 Log_in("DOWNLOAD_MOJMAPS 任务跳过！");
                             }
-                            
+
                         }
                     }
 
-                    if (versionType < 4) // 低版本不下载映射表
+                    if (versionType < 4 && CompareMinecraftVersions(McVersion,"1.21.11") < 1) // 低版本不下载映射表
                     {
                         // 自动DOWNLOAD_MOJMAPS
                         Status_change("正在下载MC映射表，请耐心等待……");
@@ -913,21 +914,53 @@ namespace MSL.controls
 
         private int semaphore = 4; // 设置最大并发任务数量为4
 
+
+
         //MC版本号判断函数，前>后：1 ，后>前：-1，相等：0
         private int CompareMinecraftVersions(string version1, string version2)
         {
-            var v1 = version1.Split('.').Select(int.Parse).ToArray();
-            var v2 = version2.Split('.').Select(int.Parse).ToArray();
+            // 预处理：提取版本号中的“核心数字序列”
+            var v1Parts = ExtractVersionNumbers(version1);
+            var v2Parts = ExtractVersionNumbers(version2);
 
-            for (int i = 0; i < Math.Max(v1.Length, v2.Length); i++)
+            int maxLength = Math.Max(v1Parts.Count, v2Parts.Count);
+
+            for (int i = 0; i < maxLength; i++)
             {
-                int part1 = i < v1.Length ? v1[i] : 0;
-                int part2 = i < v2.Length ? v2[i] : 0;
+                int part1 = i < v1Parts.Count ? v1Parts[i] : 0;
+                int part2 = i < v2Parts.Count ? v2Parts[i] : 0;
 
                 if (part1 > part2) return 1;
                 if (part1 < part2) return -1;
             }
+
+            // 核心数字完全一致时的特殊处理
+            bool v1IsSnapshot = version1.Contains("-") || Regex.IsMatch(version1, "[a-zA-Z]");
+            bool v2IsSnapshot = version2.Contains("-") || Regex.IsMatch(version2, "[a-zA-Z]");
+
+            if (!v1IsSnapshot && v2IsSnapshot) return 1;  // 正式版 > 测试版
+            if (v1IsSnapshot && !v2IsSnapshot) return -1; // 测试版 < 正式版
+
             return 0;
+        }
+
+        // 辅助方法：使用正则提取纯数字部分
+        private List<int> ExtractVersionNumbers(string version)
+        {
+            var numbers = new List<int>();
+            // 这个正则会匹配所有连续的数字段
+            // "26.1-snapshot-1" -> 匹配出 [26, 1, 1]
+            // "1.20.3" -> 匹配出 [1, 20, 3]
+            var matches = Regex.Matches(version, @"\d+");
+
+            foreach (Match match in matches)
+            {
+                if (int.TryParse(match.Value, out int num))
+                {
+                    numbers.Add(num);
+                }
+            }
+            return numbers;
         }
 
         //非常安全的获取json key（
