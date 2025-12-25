@@ -56,7 +56,6 @@ namespace MSL.pages
                     else if (!cancellationToken.IsCancellationRequested)
                     {
                         LogHelper.Write.Warn("等待服务器连接超时。");
-                        noticeLab.Text = "等待服务器连接超时。";
                     }
                 }
                 else if (ConfigStore.ApiLink != null && !cancellationToken.IsCancellationRequested)
@@ -91,8 +90,6 @@ namespace MSL.pages
 
         private async Task GetNotice(bool firstLoad = false)
         {
-            string noticeLabText = firstLoad ? string.Empty : noticeLab.Text;
-
             // 获取公告版本
             string currentNoticeVersion = string.Empty;
             try
@@ -100,73 +97,71 @@ namespace MSL.pages
                 LogHelper.Write.Info("开始从API获取当前公告版本号...");
                 currentNoticeVersion = await GetCurrentNoticeVersion();
             }
-            catch (HttpRequestException ex)
-            {
-                LogHelper.Write.Error($"获取公告失败，HTTP请求异常: {ex.ToString()}");
-                noticeLab.Text = $"获取公告失败！\n可能是您的网络连接异常，或软件与软件服务器出现问题。若您检查自己的网络并无问题，请及时将此问题反馈！\n错误信息：[HTTP Exception]({ex.InnerException.Message}){ex.Message}";
-                return;
-            }
-            catch (FileNotFoundException ex)
-            {
-                LogHelper.Write.Error($"获取公告失败，文件未找到(可能缺少.NET Framework): {ex.ToString()}");
-                noticeLab.Text = $"获取公告失败！\n请检查您是否安装了.NET Framework 4.7.2运行库！\n错误信息：{ex.Message}";
-                return;
-            }
             catch (Exception ex)
             {
-                LogHelper.Write.Error($"获取公告失败，发生未知错误: {ex.ToString()}");
-                noticeLab.Text = $"获取公告失败！可能有以下原因：\n1.网络连接异常\n2.未安装.Net Framework 4.7.2运行库\n3.软件Bug，请联系作者进行解决\n错误信息：{ex.Message}";
+                string errorMsg = "";
+                if (ex is HttpRequestException)
+                    errorMsg = $"获取公告失败！\n可能是您的网络连接异常...[HTTP Exception]({ex.InnerException?.Message}){ex.Message}";
+                else if (ex is FileNotFoundException)
+                    errorMsg = $"获取公告失败！\n请检查您是否安装了.NET Framework 4.7.2运行库！\n错误信息：{ex.Message}";
+                else
+                    errorMsg = $"获取公告失败！...错误信息：{ex.Message}";
+
+                LogHelper.Write.Error(errorMsg);
+                RenderContentToPanel(noticeStackPanel, errorMsg);
                 return;
             }
+
             string savedNoticeVersion = GetSavedNoticeVersion();
 
-            // 如果公告版本不同或首次加载且公告为空，则获取新公告
-            if (currentNoticeVersion != savedNoticeVersion || string.IsNullOrEmpty(noticeLabText))
+            // 如果公告版本不同 或 首次加载
+            if (currentNoticeVersion != savedNoticeVersion || firstLoad)
             {
-                LogHelper.Write.Info($"公告版本不同或首次加载，将从API获取新公告。在线版本: {currentNoticeVersion}, 本地版本: {savedNoticeVersion}");
+                LogHelper.Write.Info($"准备获取新公告。在线版本: {currentNoticeVersion}, 本地版本: {savedNoticeVersion}");
+
                 var noticeTask = HttpService.GetApiContentAsync("query/notice");
                 var tipsTask = HttpService.GetApiContentAsync("query/notice?query=tips");
 
-                // 并行获取公告和recommendations
                 await Task.WhenAll(noticeTask, tipsTask);
 
                 var noticeResponse = await noticeTask;
                 var tipsResponse = await tipsTask;
 
-                // 处理公告内容
                 string notice = noticeResponse["data"]["notice"]?.ToString();
+
                 if (!string.IsNullOrEmpty(notice))
                 {
-                    noticeLabText = notice;
+                    RenderContentToPanel(noticeStackPanel, notice);
 
-                    // 在加载完成后显示通知对话框
-                    if (!string.IsNullOrEmpty(noticeLabText) && currentNoticeVersion != savedNoticeVersion)
+                    if (currentNoticeVersion != savedNoticeVersion)
                     {
-                        await ShowNoticeDialogWhenLoaded(noticeLabText);
+                        await ShowNoticeDialogWhenLoaded(notice);
                     }
                 }
                 else
                 {
-                    LogHelper.Write.Warn("从API获取的公告内容为空。");
-                    noticeLabText = "获取公告失败！请检查网络连接是否正常或联系作者进行解决！";
+                    RenderContentToPanel(noticeStackPanel, "获取公告失败...");
                 }
 
-                // 处理recommendations
+                // 处理 recommendations
                 var recommendations = tipsResponse["data"]["tips"];
                 if (recommendations != null)
                 {
                     await Dispatcher.InvokeAsync(() => LoadRecommendations((JArray)recommendations));
                 }
 
-                // 保存新公告版本
                 SaveNoticeVersion(currentNoticeVersion);
             }
             else
             {
                 LogHelper.Write.Info("公告版本一致，无需获取新公告。");
+                if (firstLoad)
+                {
+                    var content = await HttpService.GetApiContentAsync("query/notice");
+                    string noticeText = content["data"]["notice"]?.ToString();
+                    RenderContentToPanel(noticeStackPanel, noticeText);
+                }
             }
-
-            noticeLab.Text = noticeLabText;
         }
 
         private async Task<string> GetCurrentNoticeVersion()
@@ -227,15 +222,34 @@ namespace MSL.pages
         {
             await Task.Run(async () =>
             {
+                // 等待主窗口加载完成
                 while (!MainWindow.LoadingCompleted)
                 {
                     await Task.Delay(500);
                 }
 
-                await Dispatcher.InvokeAsync(() =>
+                await Dispatcher.InvokeAsync(async () =>
                 {
                     LogHelper.Write.Info("主窗口加载完成，开始显示公告弹窗。");
-                    MagicShow.ShowMsgDialog(Window.GetWindow(this), noticeText, "公告");
+
+                    StackPanel contentPanel = new StackPanel
+                    {
+                        Orientation = Orientation.Vertical
+                    };
+
+
+                    // 2. 调用之前的渲染方法，把内容填入 contentPanel
+                    RenderContentToPanel(contentPanel, noticeText);
+
+                    // 3. 调用 MagicShow
+                    // text: 传空字符串 ""，因为我们用 uIElement 代替了纯文本显示
+                    // uIElement: 传入我们的 scrollViewer
+                    await MagicShow.ShowMsgDialogAsync(
+                        _window: Window.GetWindow(this),
+                        text: "",
+                        title: "公告",
+                        uIElement: contentPanel
+                    );
                 });
             });
         }
@@ -325,6 +339,79 @@ namespace MSL.pages
             }
 
             return image;
+        }
+
+        /// <summary>
+        /// 将包含文本和img标签的内容渲染到指定的StackPanel中
+        /// </summary>
+        private void RenderContentToPanel(StackPanel targetPanel, string content)
+        {
+            targetPanel.Children.Clear();
+
+            if (string.IsNullOrEmpty(content)) return;
+
+            // 保留空行
+            string[] lines = content.Split(new[] { "\r\n", "\n" }, StringSplitOptions.None);
+
+            foreach (string line in lines)
+            {
+                string trimmedLine = line.Trim();
+
+                // 处理空行
+                if (string.IsNullOrEmpty(trimmedLine))
+                {
+                    targetPanel.Children.Add(new TextBlock { Height = 20 });
+                    continue;
+                }
+
+                // 处理图片
+                if (trimmedLine.StartsWith("<img") && trimmedLine.EndsWith("/>"))
+                {
+                    Image image = CreateImageFromImgTag(trimmedLine);
+
+
+                    // 获取参数
+                    double? width = GetAttributeValue(trimmedLine, "width");
+                    double? height = GetAttributeValue(trimmedLine, "height");
+                    image.Width = width.HasValue ? width.Value : double.NaN;
+                    image.Height = height.HasValue ? height.Value : double.NaN;
+
+                    // 保持长宽比缩放
+                    image.Stretch = System.Windows.Media.Stretch.Uniform;
+
+                    // 左对齐
+                    image.HorizontalAlignment = HorizontalAlignment.Left;
+
+                    // image.MaxWidth = 700;
+
+                    image.Margin = new Thickness(0, 10, 0, 10);
+
+                    targetPanel.Children.Add(image);
+                }
+                // 处理文本
+                else
+                {
+                    TextBlock textBlock = CreateTextBlock(line);
+                    textBlock.TextWrapping = TextWrapping.Wrap;
+                    textBlock.Margin = new Thickness(0, 2, 0, 2);
+                    textBlock.FontSize = 14;
+                    targetPanel.Children.Add(textBlock);
+                }
+            }
+        }
+
+        /// <summary>
+        /// 从标签字符串中提取属性值
+        /// </summary>
+        private double? GetAttributeValue(string tag, string attributeName)
+        {
+            // 匹配 pattern:  attributeName="123"
+            var match = Regex.Match(tag, $"{attributeName}=\"(\\d+)\"");
+            if (match.Success && double.TryParse(match.Groups[1].Value, out double result))
+            {
+                return result;
+            }
+            return null;
         }
 
         private TextBlock CreateTextBlock(string line)

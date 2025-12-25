@@ -14,7 +14,13 @@
             <StackPanel Margin="0,0,0,80">
                 <controls:MagicCard x:Name="noticeBorder" Title="{Binding [Page_Home_Notice], Source={x:Static langs:LanguageManager.Instance}}" VerticalAlignment="Top" Margin="0,10,0,0">
                     <Grid>
-                        <TextBox x:Name="noticeLab" Text="{Binding [Loading],Source={x:Static langs:LanguageManager.Instance},Mode=OneWay}" TextBlock.LineHeight="24" IsReadOnly="True" VerticalScrollBarVisibility="Auto" TextWrapping="Wrap" BorderThickness="0" Background="{x:Null}" FontSize="14"/>
+                        <StackPanel x:Name="noticeStackPanel" Orientation="Vertical" Margin="5">
+                            <TextBlock Text="{Binding [Loading],Source={x:Static langs:LanguageManager.Instance},Mode=OneWay}" 
+                   TextWrapping="Wrap" 
+                   LineHeight="24" 
+                   FontSize="14"
+                   Foreground="{DynamicResource PrimaryTextBrush}"/>
+                        </StackPanel>
                     </Grid>
                 </controls:MagicCard>
                 <controls:MagicCard x:Name="recommendBorder" Title="{Binding [Page_Home_Recommendations], Source={x:Static langs:LanguageManager.Instance}}" VerticalAlignment="Top" Margin="0,10,0,0" Visibility="Collapsed">
