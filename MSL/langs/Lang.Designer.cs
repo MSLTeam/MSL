@@ -19,7 +19,7 @@ namespace MSL.langs {
     // 类通过类似于 ResGen 或 Visual Studio 的工具自动生成的。
     // 若要添加或移除成员，请编辑 .ResX 文件，然后重新运行 ResGen
     // (以 /str 作为命令选项)，或重新生成 VS 项目。
-    [global::System.CodeDom.Compiler.GeneratedCodeAttribute("System.Resources.Tools.StronglyTypedResourceBuilder", "17.0.0.0")]
+    [global::System.CodeDom.Compiler.GeneratedCodeAttribute("System.Resources.Tools.StronglyTypedResourceBuilder", "18.0.0.0")]
     [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
     [global::System.Runtime.CompilerServices.CompilerGeneratedAttribute()]
     public class Lang {
@@ -606,7 +606,7 @@ namespace MSL.langs {
         }
         
         /// <summary>
-        ///   查找类似 Minecraft Server Launcher(MSL) Copyright © 2021-2025 By MSLTeam
+        ///   查找类似 Minecraft Server Launcher(MSL) Copyright © 2021-2026 By MSLTeam
         ///本软件与Microsoft、Mojang Studio(Mojang AB)无任何隶属关系
         ///本软件为开源软件，用户使用本软件从事的任何行为均与开发者无关
         ///本软件接入的第三方服务，其相关权利归第三方所有
