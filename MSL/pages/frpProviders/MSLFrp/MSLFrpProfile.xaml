@@ -63,7 +63,7 @@
                                 <ColumnDefinition Width="Auto"/>
                                 <ColumnDefinition/>
                             </Grid.ColumnDefinitions>
-                            <Label Grid.Column="0" Style="{StaticResource MagicLabel14}" Content="输入金额（￥1=100积分）："/>
+                            <Label Grid.Column="0" Style="{StaticResource MagicLabel14}" Content="输入金额[￥1=100积分] (单位: 元)："/>
                             <TextBox x:Name="AmountText" Grid.Column="1"/>
                         </Grid>
                         <Grid>

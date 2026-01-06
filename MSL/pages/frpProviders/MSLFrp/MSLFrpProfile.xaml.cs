@@ -259,73 +259,97 @@ namespace MSL.pages.frpProviders.MSLFrp
                 // 商品名称
                 var nameBlock = new TextBlock
                 {
-                    Text = $"#{id} {name}",
+                    Text = $"{name}",
                     Foreground = (Brush)FindResource("PrimaryTextBrush"),
                     FontWeight = FontWeights.Bold,
                     FontSize = 14
                 };
                 textPanel.Children.Add(nameBlock);
 
-                bool hasDiscount = originPrice.HasValue && originPrice.Value > price;
-
-                if (hasDiscount)
+                if (price == 0)
                 {
-                    // 有折扣时的显示
-                    var pricePanel = new StackPanel { Orientation = Orientation.Horizontal };
-
-                    // 现价
-                    var salePriceBlock = new TextBlock
+                    // 免费商品
+                    var freeBadge = new Border
                     {
-                        Text = $"{price}积分 ",
-                        Foreground = new SolidColorBrush(Colors.OrangeRed), // 折扣价颜色
-                        FontWeight = FontWeights.Bold,
-                        VerticalAlignment = VerticalAlignment.Center,
-                        FontSize = 13
-                    };
-                    pricePanel.Children.Add(salePriceBlock);
-
-                    // 原价
-                    var originPriceBlock = new TextBlock
-                    {
-                        Text = $"{originPrice.Value}积分",
-                        Foreground = (Brush)FindResource("SecondaryTextBrush"), // 灰色
-                        TextDecorations = TextDecorations.Strikethrough,
-                        VerticalAlignment = VerticalAlignment.Center,
-                        Margin = new Thickness(5, 0, 0, 0),
-                        FontSize = 12
-                    };
-                    pricePanel.Children.Add(originPriceBlock);
-
-                    // 折扣百分比标签
-                    var discountPercentage = Math.Round(((originPrice.Value - price) / originPrice.Value) * 100);
-                    var discountBadge = new Border
-                    {
-                        Background = new SolidColorBrush(Colors.DeepPink),
+                        Background = new SolidColorBrush(Colors.MediumSeaGreen),
                         CornerRadius = new CornerRadius(3),
-                        Margin = new Thickness(10, 0, 0, 0),
-                        Padding = new Thickness(4, 1, 4, 1),
+                        HorizontalAlignment = HorizontalAlignment.Left, 
+                        Margin = new Thickness(0, 2, 0, 0), 
+                        Padding = new Thickness(6, 2, 6, 2),
                         Child = new TextBlock
                         {
-                            Text = $"{discountPercentage}% OFF",
+                            Text = "✨FREE 免费",
                             Foreground = new SolidColorBrush(Colors.White),
-                            FontSize = 10,
+                            FontSize = 11,
                             FontWeight = FontWeights.Bold,
                         }
                     };
-                    pricePanel.Children.Add(discountBadge);
-
-                    textPanel.Children.Add(pricePanel);
+                    textPanel.Children.Add(freeBadge);
                 }
                 else
                 {
-                    // 无折扣
-                    var priceBlock = new TextBlock
+                    // 折扣判断
+                    bool hasDiscount = originPrice.HasValue && originPrice.Value > price;
+
+                    if (hasDiscount)
                     {
-                        Text = $"{price}积分",
-                        Foreground = (Brush)FindResource("PrimaryTextBrush"),
-                        FontSize = 13
-                    };
-                    textPanel.Children.Add(priceBlock);
+                        // 有折扣时的显示
+                        var pricePanel = new StackPanel { Orientation = Orientation.Horizontal };
+
+                        // 现价
+                        var salePriceBlock = new TextBlock
+                        {
+                            Text = $"{price}积分 ",
+                            Foreground = new SolidColorBrush(Colors.OrangeRed),
+                            FontWeight = FontWeights.Bold,
+                            VerticalAlignment = VerticalAlignment.Center,
+                            FontSize = 13
+                        };
+                        pricePanel.Children.Add(salePriceBlock);
+
+                        // 原价
+                        var originPriceBlock = new TextBlock
+                        {
+                            Text = $"{originPrice.Value}积分",
+                            Foreground = (Brush)FindResource("SecondaryTextBrush"),
+                            TextDecorations = TextDecorations.Strikethrough,
+                            VerticalAlignment = VerticalAlignment.Center,
+                            Margin = new Thickness(5, 0, 0, 0),
+                            FontSize = 12
+                        };
+                        pricePanel.Children.Add(originPriceBlock);
+
+                        // 折扣百分比标签
+                        var discountPercentage = Math.Round(((originPrice.Value - price) / originPrice.Value) * 100);
+                        var discountBadge = new Border
+                        {
+                            Background = new SolidColorBrush(Colors.DeepPink),
+                            CornerRadius = new CornerRadius(3),
+                            Margin = new Thickness(10, 0, 0, 0),
+                            Padding = new Thickness(4, 1, 4, 1),
+                            Child = new TextBlock
+                            {
+                                Text = $"🌟{discountPercentage}% OFF",
+                                Foreground = new SolidColorBrush(Colors.White),
+                                FontSize = 10,
+                                FontWeight = FontWeights.Bold,
+                            }
+                        };
+                        pricePanel.Children.Add(discountBadge);
+
+                        textPanel.Children.Add(pricePanel);
+                    }
+                    else
+                    {
+                        // 无折扣
+                        var priceBlock = new TextBlock
+                        {
+                            Text = $"{price}积分",
+                            Foreground = (Brush)FindResource("PrimaryTextBrush"),
+                            FontSize = 13
+                        };
+                        textPanel.Children.Add(priceBlock);
+                    }
                 }
 
                 // 描述
@@ -349,17 +373,41 @@ namespace MSL.pages.frpProviders.MSLFrp
                     Content = "兑换",
                     Width = 80,
                 };
-                buyButton.Click += async (sender, e) =>
+
+                if (price == 0)
                 {
-                    var button = sender as Button;
-                    button.IsEnabled = false;
-                    await BuyGood((int)button.Tag);
-                    button.IsEnabled = true;
-                };
+                    buyButton.IsEnabled = false;
+                    buyButton.Content = "无需兑换"; 
+                }
+                else
+                {
+                    // 绑定事件
+                    buyButton.Click += async (sender, e) =>
+                    {
+                        var button = sender as Button;
+                        button.IsEnabled = false;
+                        await BuyGood((int)button.Tag);
+                        button.IsEnabled = true;
+                    };
+                }
+
                 Grid.SetColumn(buyButton, 1);
                 grid.Children.Add(buyButton);
 
                 GoodsList.Children.Add(grid);
+
+                // 分割线
+                if (item != goodsData.Last)
+                {
+                    var separator = new Border
+                    {
+                        Height = 1, 
+                        Background = new SolidColorBrush(Color.FromRgb(230, 230, 230)), // 浅灰色
+                        Margin = new Thickness(0, 10, 0, 10), // 上下间距
+                        SnapsToDevicePixels = true // 防止虚边
+                    };
+                    GoodsList.Children.Add(separator);
+                }
             }
 
             LogHelper.Write.Info("商品列表渲染完成。");
