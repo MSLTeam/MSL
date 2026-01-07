@@ -342,12 +342,12 @@ namespace MSL.pages
                         frpcExeName = "frpc.exe"; // frpc客户端主程序
                         arguments = "-c frpc.toml"; // 启动命令
                         downloadFileName = "frpc.exe";
-                        if (File.Exists($"MSL\\frp\\{frpcExeName}") && frpcversion != "0611") //mslfrp的特别更新qwq
+                        if (File.Exists($"MSL\\frp\\{frpcExeName}") && frpcversion != "20260105") //mslfrp的特别更新qwq
                         {
                             LogHelper.Write.Info("检测到 MSLFrp 需要更新。");
                             downloadUrl = (await HttpService.GetApiContentAsync("download/frpc/MSLFrp/amd64?os=" + osver))["data"]["url"].ToString();//丢os版本号
                             await MagicShow.ShowDownloader(Window.GetWindow(this), downloadUrl, "MSL\\frp", downloadFileName, LanguageManager.Instance["Update_Frpc_Info"]);
-                            Config.Write("frpcversion", "0611");
+                            Config.Write("frpcversion", "20260105");
                             downloadUrl = "";
                         }
                         else if (!File.Exists($"MSL\\frp\\{frpcExeName}"))
