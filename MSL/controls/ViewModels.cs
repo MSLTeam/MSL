@@ -1,5 +1,6 @@
 ﻿using System.ComponentModel;
 using System.Windows.Media;
+using Windows.Media.Protection.PlayReady;
 
 namespace MSL.controls
 {
@@ -32,9 +33,11 @@ namespace MSL.controls
     internal class SR_ModInfo
     {
         public string ModName { get; set; }
-        public SR_ModInfo(string modName)
+        public bool IsClient { get; set; }
+        public SR_ModInfo(string modName,bool isClient = false)
         {
             ModName = modName;
+            IsClient = isClient;
         }
     }
 

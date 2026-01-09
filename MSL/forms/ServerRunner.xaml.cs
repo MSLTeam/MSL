@@ -2725,6 +2725,146 @@ namespace MSL
             downloadMod.ShowDialog();
             ReFreshPluginsAndMods();
         }
+
+        // 检测客户端模组
+        private async void detectClientMods_Click(object sender, RoutedEventArgs e)
+        {
+            if (!Directory.Exists(Rserverbase + @"\mods"))
+            {
+                MagicShow.ShowMsgDialog(this, "未找到mods文件夹！", "错误");
+                return;
+            }
+
+            addModBtn.IsEnabled = false;
+
+            // 异步执行检测
+            var resultList = await Task.Run(() =>
+            {
+                List<SR_ModInfo> list = new List<SR_ModInfo>();
+                DirectoryInfo directoryInfo = new DirectoryInfo(Rserverbase + @"\mods");
+                FileInfo[] files = directoryInfo.GetFiles("*.*");
+
+                // 临时存放客户端模组和普通模组
+                List<SR_ModInfo> clientMods = new List<SR_ModInfo>();
+                List<SR_ModInfo> normalMods = new List<SR_ModInfo>();
+                List<SR_ModInfo> disabledMods = new List<SR_ModInfo>();
+
+                foreach (FileInfo f in files)
+                {
+                    if (f.Name.EndsWith(".disabled"))
+                    {
+                        disabledMods.Add(new SR_ModInfo("[已禁用]" + f.Name, false));
+                    }
+                    else if (f.Name.EndsWith(".jar"))
+                    {
+                        // 检测是否为客户端模组
+                        if (IsClientSideMod(f.FullName))
+                        {
+                            clientMods.Add(new SR_ModInfo(f.Name, true));
+                        }
+                        else
+                        {
+                            normalMods.Add(new SR_ModInfo(f.Name, false));
+                        }
+                    }
+                }
+
+                // 合并列表：客户端模组排在最前面
+                list.AddRange(clientMods);
+                list.AddRange(normalMods);
+                list.AddRange(disabledMods);
+
+                return list;
+            });
+
+            // 更新 UI
+            modslist.ItemsSource = resultList;
+            addModBtn.IsEnabled = true;
+
+            // 统计提示
+            int clientCount = resultList.Count(x => x.IsClient);
+            if (clientCount > 0)
+            {
+                MagicShow.ShowMsgDialog(this, $"检测完成！发现 {clientCount} 个仅客户端模组（已标记为橙色）。\n建议不要将这些模组上传到服务器。", "检测结果");
+            }
+            else
+            {
+                MagicFlowMsg.ShowMessage("未检测到明确声明为仅客户端的模组。", 3);
+            }
+        }
+
+        /// <summary>
+        /// 检测 jar 文件是否为仅客户端模组
+        /// </summary>
+        private bool IsClientSideMod(string filePath)
+        {
+            ZipFile zip = null;
+            try
+            {
+                zip = new ZipFile(filePath);
+
+                // --- fabric.mod.json ---
+                ZipEntry fabricEntry = zip.GetEntry("fabric.mod.json");
+                if (fabricEntry != null)
+                {
+                    // 获取输入流
+                    using (Stream stream = zip.GetInputStream(fabricEntry))
+                    using (StreamReader reader = new StreamReader(stream))
+                    {
+                        string jsonContent = reader.ReadToEnd();
+                        try
+                        {
+                            var json = JObject.Parse(jsonContent);
+                            var env = json["environment"]?.ToString();
+
+                            // 检测 environment: "client"
+                            if ("client".Equals(env, StringComparison.OrdinalIgnoreCase))
+                            {
+                                return true;
+                            }
+                        }
+                        catch { /* 不管qwq */ }
+                    }
+                }
+
+                // --- Forge/NeoForge (mods.toml) ---
+                ZipEntry tomlEntry = zip.GetEntry("META-INF/mods.toml");
+                if (tomlEntry == null)
+                {
+                    tomlEntry = zip.GetEntry("META-INF/neoforge.mods.toml");
+                }
+
+                if (tomlEntry != null)
+                {
+                    using (Stream stream = zip.GetInputStream(tomlEntry))
+                    using (StreamReader reader = new StreamReader(stream))
+                    {
+                        string content = reader.ReadToEnd();
+                        // 使用正则匹配 side="CLIENT"
+                        if (Regex.IsMatch(content, @"side\s*=\s*[""']?CLIENT[""']?", RegexOptions.IgnoreCase))
+                        {
+                            return true;
+                        }
+                    }
+                }
+            }
+            catch (Exception)
+            {
+                // 奇怪的错误
+                return false;
+            }
+            finally
+            {
+                // 释放文件锁
+                if (zip != null)
+                {
+                    zip.IsStreamOwner = true;
+                    zip.Close();
+                }
+            }
+
+            return false;
+        }
         #endregion
 
         #region 服务器设置

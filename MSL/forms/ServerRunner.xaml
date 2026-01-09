@@ -433,6 +433,21 @@
                                                             <DataTemplate>
                                                                 <hc:UniformSpacingPanel Orientation="Horizontal" Spacing="5">
                                                                     <iconPacks:PackIconMaterial Kind="FileDocument"/>
+
+                                                                    <Border CornerRadius="4" Background="Orange" Margin="0,0,5,0" Padding="4,1">
+                                                                        <Border.Style>
+                                                                            <Style TargetType="Border">
+                                                                                <Setter Property="Visibility" Value="Collapsed"/>
+                                                                                <Style.Triggers>
+                                                                                    <DataTrigger Binding="{Binding IsClient}" Value="True">
+                                                                                        <Setter Property="Visibility" Value="Visible"/>
+                                                                                    </DataTrigger>
+                                                                                </Style.Triggers>
+                                                                            </Style>
+                                                                        </Border.Style>
+                                                                        <TextBlock Text="客户端" FontSize="10" Foreground="White" VerticalAlignment="Center"/>
+                                                                    </Border>
+
                                                                     <TextBlock Width="Auto" Text="{Binding ModName}" FontSize="12"/>
                                                                 </hc:UniformSpacingPanel>
                                                             </DataTemplate>
@@ -446,6 +461,7 @@
                                                                         hc:Poptip.HorizontalOffset="40"
                                                                         hc:Poptip.Placement="Left"
                                                                         Click="MenuButton_Click"
+                                                                        Visibility="Collapsed"
                                                                         ContextMenu="{StaticResource PluginListContextMenu}">
                                                                     <Button.Content>
                                                                         <iconPacks:PackIconMaterial Kind="DotsHorizontal"/>
@@ -491,6 +507,14 @@
                                                 <hc:UniformSpacingPanel Orientation="Horizontal" Spacing="5">
                                                     <iconPacks:PackIconMaterial Kind="Lightbulb"/>
                                                     <TextBlock Text="添加模组必看"/>
+                                                </hc:UniformSpacingPanel>
+                                            </Button.Content>
+                                        </Button>
+                                        <Button Style="{StaticResource PrimaryButtonStyle}" Click="detectClientMods_Click">
+                                            <Button.Content>
+                                                <hc:UniformSpacingPanel Orientation="Horizontal" Spacing="5">
+                                                    <iconPacks:PackIconMaterial Kind="MagnifyScan"/>
+                                                    <TextBlock Text="检测客户端模组"/>
                                                 </hc:UniformSpacingPanel>
                                             </Button.Content>
                                         </Button>
