@@ -2807,7 +2807,6 @@ namespace MSL
                 ZipEntry fabricEntry = zip.GetEntry("fabric.mod.json");
                 if (fabricEntry != null)
                 {
-                    // 获取输入流
                     using (Stream stream = zip.GetInputStream(fabricEntry))
                     using (StreamReader reader = new StreamReader(stream))
                     {
@@ -2817,7 +2816,6 @@ namespace MSL
                             var json = JObject.Parse(jsonContent);
                             var env = json["environment"]?.ToString();
 
-                            // 检测 environment: "client"
                             if ("client".Equals(env, StringComparison.OrdinalIgnoreCase))
                             {
                                 return true;
@@ -2827,7 +2825,7 @@ namespace MSL
                     }
                 }
 
-                // --- Forge/NeoForge (mods.toml) ---
+                // --- Forge/NeoForge (mods.toml)  ---
                 ZipEntry tomlEntry = zip.GetEntry("META-INF/mods.toml");
                 if (tomlEntry == null)
                 {
@@ -2840,8 +2838,44 @@ namespace MSL
                     using (StreamReader reader = new StreamReader(stream))
                     {
                         string content = reader.ReadToEnd();
-                        // 使用正则匹配 side="CLIENT"
-                        if (Regex.IsMatch(content, @"side\s*=\s*[""']?CLIENT[""']?", RegexOptions.IgnoreCase))
+
+                        // 分块解析
+                        var blocks = Regex.Matches(content, @"(?ms)^\[\[.*?\]\](.*?)(?=^\[\[|\z)");
+
+                        string minecraftSide = null;
+                        string firstFoundSide = null;
+
+                        foreach (Match block in blocks)
+                        {
+                            string blockBody = block.Groups[1].Value;
+
+                            // 在块内匹配 modId 和 side
+                            var modIdMatch = Regex.Match(blockBody, @"^\s*modId\s*=\s*[""'](.*?)[""']", RegexOptions.Multiline | RegexOptions.IgnoreCase);
+                            var sideMatch = Regex.Match(blockBody, @"^\s*side\s*=\s*[""'](.*?)[""']", RegexOptions.Multiline | RegexOptions.IgnoreCase);
+
+                            if (sideMatch.Success)
+                            {
+                                string currentSide = sideMatch.Groups[1].Value;
+
+                                // 记录遇到的第一个 side (fallback)
+                                if (firstFoundSide == null)
+                                {
+                                    firstFoundSide = currentSide;
+                                }
+
+                                // 匹配 modId = minecraft，则将其作为最高优先级并跳出
+                                if (modIdMatch.Success && "minecraft".Equals(modIdMatch.Groups[1].Value, StringComparison.OrdinalIgnoreCase))
+                                {
+                                    minecraftSide = currentSide;
+                                    break;
+                                }
+                            }
+                        }
+
+                        // 优先使用 minecraft 的 side，如果没有，则使用找到的第一个 side
+                        string finalSide = minecraftSide ?? firstFoundSide;
+
+                        if (finalSide != null && "CLIENT".Equals(finalSide, StringComparison.OrdinalIgnoreCase))
                         {
                             return true;
                         }
