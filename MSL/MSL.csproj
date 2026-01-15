@@ -122,6 +122,9 @@
     <Compile Include="controls\dialogs\DownloadManagerDialog.xaml.cs">
       <DependentUpon>DownloadManagerDialog.xaml</DependentUpon>
     </Compile>
+    <Compile Include="controls\dialogs\LogAnalysisDialog.xaml.cs">
+      <DependentUpon>LogAnalysisDialog.xaml</DependentUpon>
+    </Compile>
     <Compile Include="controls\MagicControls.cs" />
     <Compile Include="controls\ctrls_serverrunner\NoPlugins.xaml.cs">
       <DependentUpon>NoPlugins.xaml</DependentUpon>
@@ -259,6 +262,10 @@
       <SubType>Designer</SubType>
     </Page>
     <Page Include="controls\dialogs\InstallForgeDialog.xaml">
+      <SubType>Designer</SubType>
+      <Generator>MSBuild:Compile</Generator>
+    </Page>
+    <Page Include="controls\dialogs\LogAnalysisDialog.xaml">
       <SubType>Designer</SubType>
       <Generator>MSBuild:Compile</Generator>
     </Page>

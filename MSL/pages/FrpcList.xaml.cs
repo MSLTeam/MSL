@@ -106,7 +106,7 @@ namespace MSL.pages
             {
                 NonClientAreaBackground = (Brush)FindResource("BackgroundBrush"),
                 Background = (Brush)FindResource("BackgroundBrush"),
-                Title = "我的MSL-Frp信息",
+                Title = "MSL用户中心 - MSLFrp信息",
                 MinHeight = 450,
                 MinWidth = 750,
                 Height = 450,

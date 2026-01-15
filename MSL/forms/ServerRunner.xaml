@@ -211,7 +211,11 @@
                         </ComboBox>
                         <TextBox x:Name="cmdtext" Grid.Column="1" Margin="0,0,5,10" Text="服务器已关闭" KeyDown="cmdtext_KeyDown" IsEnabled="False"/>
                         <Button x:Name="sendcmd" Grid.Column="2" Content="发送" Style="{StaticResource ButtonPrimary}" Width="60" Height="32" Margin="0,0,5,10" Click="sendcmd_Click" IsEnabled="False"/>
-                        <Button x:Name="BackupBtn" Grid.Column="3" Content="备份"  Width="60" Height="32" Margin="0,0,5,10" Click="BackupBtn_Click"/>
+                        <ComboBox x:Name="MoreOperation" Grid.Column="3" Height="32" Margin="0,0,5,10" SelectionChanged="MoreOperation_SelectionChanged">
+                            <ComboBoxItem Content="更多操作" IsSelected="True"/>
+                            <ComboBoxItem Content="备份"/>
+                            <ComboBoxItem Content="日志分析"/>
+                        </ComboBox>
                         <ToggleButton x:Name="controlServer" Grid.Column="4" Margin="0,0,5,10" MinWidth="60" Height="32" Click="controlServer_Click" MouseDoubleClick="controlServer_MouseDoubleClick">
                             <ToggleButton.Style>
                                 <Style TargetType="ToggleButton" BasedOn="{StaticResource ToggleButton.NoCheckedBorder}">
@@ -811,8 +815,9 @@
                                     <Label Content="其它功能项：" Grid.Column="0" Style="{StaticResource MagicLabel16}"/>
                                     <WrapPanel Grid.Column="1">
                                         <Button x:Name="onlineMode" Content="关闭正版验证" Click="onlineMode_Click" FontSize="14" Margin="0,0,5,5"/>
-                                        <Button x:Name="shareLog" Content="上传服务器控制台日志" FontSize="14" Margin="0,0,5,5" Click="shareLog_Click" MouseDoubleClick="controlServer_MouseDoubleClick"/>
+                                        <Button x:Name="shareLog" Content="上传服务器日志" FontSize="14" Margin="0,0,5,5" Click="shareLog_Click" MouseDoubleClick="controlServer_MouseDoubleClick"/>
                                         <Button x:Name="forgeInstallLogUpload" Content="上传Forge安装日志" FontSize="14" Click="forgeInstallLogUpload_Click" Margin="0,0,5,5"/>
+                                        <Button x:Name="logsAnalyse" Content="AI日志分析功能" FontSize="14" Click="logsAnalyse_Click" Margin="0,0,5,5"/>
                                         <Button x:Name="GetIPV6" Content="查看IPV6公网地址" FontSize="14" Click="GetIPV6_Click" Margin="0,0,5,5"/>
                                     </WrapPanel>
                                 </Grid>

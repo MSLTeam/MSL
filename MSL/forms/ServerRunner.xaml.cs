@@ -2,10 +2,12 @@
 using HandyControl.Data;
 using HandyControl.Tools;
 using HandyControl.Tools.Command;
+using HandyControl.Tools.Extension;
 using ICSharpCode.SharpZipLib.Zip;
 using Microsoft.Win32;
 using MSL.controls;
 using MSL.controls.ctrls_serverrunner;
+using MSL.controls.dialogs;
 using MSL.forms;
 using MSL.langs;
 using MSL.pages;
@@ -50,7 +52,7 @@ namespace MSL
         private MCSLogHandler MCSLogHandler { get; set; }
         private Process ServerProcess { get; } = new Process();
         private ConptyWindow ConPTYWindow { get; set; }
-        private DispatcherTimer ConPTYResizeTimer { get; set; }= new DispatcherTimer();
+        private DispatcherTimer ConPTYResizeTimer { get; set; } = new DispatcherTimer();
         private ServerProperties ServerProperties { get; set; }
         private int RserverID { get; }
         private string Rservername { get; set; }
@@ -356,7 +358,7 @@ namespace MSL
             {
                 try
                 {
-                    if(int.Parse(_json["backup_mode"].ToString()) >= 0 && int.Parse(_json["backup_mode"].ToString()) <= 2)
+                    if (int.Parse(_json["backup_mode"].ToString()) >= 0 && int.Parse(_json["backup_mode"].ToString()) <= 2)
                     {
                         ComboBackupPath.SelectedIndex = int.Parse(_json["backup_mode"].ToString());
                     }
@@ -364,7 +366,7 @@ namespace MSL
                     {
                         ComboBackupPath.SelectedIndex = 0;
                     }
-                    
+
                 }
                 catch (Exception)
                 {
@@ -461,7 +463,7 @@ namespace MSL
             recordPlayInfo = ConfigStore.GetPlayerInfo;
             playerInfoBtn.IsChecked = recordPlayInfo;
             ServerProperties = new ServerProperties(this, Rserverbase);
-            SettingsGrid.Content=ServerProperties;
+            SettingsGrid.Content = ServerProperties;
             LoadSettings();
             if (systemInfoBtn.IsChecked == true)
             {
@@ -526,7 +528,7 @@ namespace MSL
             catch
             { }
         }
-        
+
         private void ChangeTitleStyle(bool isOpen)
         {
             if (isOpen)
@@ -916,7 +918,7 @@ namespace MSL
             }
         }
 
-        private void UpdateMemoryInfo(float ramAvailable, double allMemory,double processUsedMemory)
+        private void UpdateMemoryInfo(float ramAvailable, double allMemory, double processUsedMemory)
         {
             memoryInfoLab.Content = $"总内存: {allMemory:f2}G\n已使用: {allMemory - ramAvailable:f2}G\n可使用: {ramAvailable:f2}G";
             double usedMemoryPercentage = (allMemory - ramAvailable) / allMemory;
@@ -929,7 +931,7 @@ namespace MSL
         private string tempLog;
         private void UpdateLogPreview()
         {
-            if(previewOutlog.LineCount < 25)
+            if (previewOutlog.LineCount < 25)
             {
                 if (!string.IsNullOrEmpty(tempLog) && !previewOutlog.Text.Contains(tempLog))
                 {
@@ -976,7 +978,7 @@ namespace MSL
 
         private async void LaunchServer()
         {
-            LogHelper.Write.Info("尝试启动服务器："+ Rservername);
+            LogHelper.Write.Info("尝试启动服务器：" + Rservername);
             try
             {
                 if (await MCEulaEvent() != true)
@@ -984,12 +986,12 @@ namespace MSL
                 string fileforceUTF8Jvm = "";
                 if (Rservermode == 0)
                 {
-                    string ygg_api_jvm = "",full_cmd;
+                    string ygg_api_jvm = "", full_cmd;
                     // 处理外置登录
                     if (!string.IsNullOrEmpty(RserverYggAddr))
                     {
                         ygg_api_jvm = $"-javaagent:authlib-injector.jar={RserverYggAddr} ";
-                        if(!await DownloadAuthlib())
+                        if (!await DownloadAuthlib())
                         {
                             return; // 下载authlib失败，退出
                         }
@@ -1000,7 +1002,7 @@ namespace MSL
                     {
                         fileforceUTF8Jvm = "-Dfile.encoding=UTF-8 ";
                     }
-                    
+
                     if (Rserverserver.StartsWith("@libraries/"))
                     {
                         full_cmd = RserverJVM + " " + fileforceUTF8Jvm + ygg_api_jvm + RserverJVMcmd + " " + Rserverserver + " nogui";
@@ -1445,7 +1447,7 @@ namespace MSL
                 solveProblemBtn.IsEnabled = false;
                 controlServer.IsChecked = true;
                 controlServer1.IsChecked = true;
-                BackupBtn.IsEnabled = false; //服务器完成启动前禁止备份
+                MoreOperation.IsEnabled = false; //服务器完成启动前禁止备份
                 gameDifficultyLab.Content = "获取中";
                 gameTypeLab.Content = "获取中";
                 serverIPLab.Content = "获取中";
@@ -1481,7 +1483,7 @@ namespace MSL
                 solveProblemBtn.IsEnabled = true;
                 controlServer.IsChecked = false;
                 controlServer1.IsChecked = false;
-                BackupBtn.IsEnabled = true; // 服务器关闭后允许备份
+                MoreOperation.IsEnabled = true; // 服务器关闭后允许备份
                 MagicFlowMsg.ShowMessage("服务器已关闭！", _growlPanel: GetActiveGrowlPanel());
                 if (ConPTYWindow == null)
                 {
@@ -1597,7 +1599,7 @@ namespace MSL
                 else { runs.Add(new Run(msg) { Foreground = color }); }
             }
             catch { runs.Clear(); runs.Add(new Run(msg) { Foreground = color }); }
-        
+
         // 更新日志到UI
         UpdateUI:
             if (runs.Count == 0) return;
@@ -1608,7 +1610,7 @@ namespace MSL
                 if (autoClearOutlog.IsChecked == true && _logEntryCount >= 1000)
                 {
                     outlog.Document.Blocks.Clear();
-                    _logEntryCount = 0; 
+                    _logEntryCount = 0;
                 }
 
                 bool shouldScrollToEnd = outlog.VerticalOffset + outlog.ViewportHeight >= outlog.ExtentHeight;
@@ -1640,7 +1642,7 @@ namespace MSL
                     // log计数
                     _logEntryCount++;
                 }
-                
+
 
 
                 if (shouldScrollToEnd)
@@ -1854,7 +1856,7 @@ namespace MSL
                         ConPTYWindow.ServerStatus.Text = "已开服";
                     }
                     GetServerInfoSys();
-                    BackupBtn.IsEnabled = true;
+                    MoreOperation.IsEnabled = true;
                 });
             }
             else if (msg.Contains("Stopping server"))
@@ -2063,10 +2065,6 @@ namespace MSL
             }
         }
 
-        // private string foundProblems = string.Empty;
-
-        
-
         private void ServerExitEvent(object sender, EventArgs e)//Tradition_ServerExitEvent
         {
             Dispatcher.InvokeAsync(async () =>
@@ -2088,7 +2086,7 @@ namespace MSL
                 }
                 else if (ServerProcess.ExitCode != 0 && GetServerInfoLine <= 100)
                 {
-                    bool dialogRet = await MagicShow.ShowMsgDialogAsync(this, "服务器疑似异常关闭，是您人为关闭的吗？\n您可使用MSL的崩溃分析系统进行检测，也可将服务器日志发送给他人以寻求帮助！\nPS:请不要截图此弹窗！！！\n日志发送方式：\n1.直接截图控制台内容；2.服务器目录\\logs\\latest.log；3.前往“更多功能”界面上传至Internet\n\n点击确定开始进行崩溃分析", "提示", true);
+                    bool dialogRet = await MagicShow.ShowMsgDialogAsync(this, "服务器疑似异常关闭，是您人为关闭的吗？\n您可使用MSL的崩溃分析系统进行检测，也可使用AI日志分析功能或将服务器日志发送给他人以寻求帮助！\n注意:请不要截图此弹窗！！！\nAI日志分析入口：服务器控制台的更多操作栏，或“更多功能”页面里。\n服务器日志在何处：\n1.服务器控制台内容；2.服务器目录\\logs\\latest.log；3.“更多功能”界面将日志上传至Internet。\n\n点击确定开始进行崩溃分析", "提示", true);
                     if (dialogRet)
                     {
                         TabCtrl.SelectedIndex = 1;
@@ -2359,6 +2357,23 @@ namespace MSL
             GetServerInfoLine = 101;
         }
 
+        private async void MoreOperation_SelectionChanged(object sender, SelectionChangedEventArgs e)
+        {
+            switch (MoreOperation.SelectedIndex)
+            {
+                case 1:
+                    MoreOperation.IsEnabled = false;
+                    await BackupWorld();
+                    MoreOperation.IsEnabled = true;
+                    break;
+                case 2:
+                    LogAnalysisDialog logAnalysisDialog = new LogAnalysisDialog(this,Rserverbase,Rserverserver);
+                    Dialog dialog = Dialog.Show(logAnalysisDialog);
+                    logAnalysisDialog.SelfDialog = dialog;
+                    break;
+            }
+            MoreOperation.SelectedIndex = 0;
+        }
         #endregion
 
         #region 插件mod管理
@@ -2535,9 +2550,9 @@ namespace MSL
                     return;
                 }
 
-                if (pluginslist.SelectedIndex==-1)
+                if (pluginslist.SelectedIndex == -1)
                 {
-                    MagicFlowMsg.ShowMessage("请先选择一个插件！",3);
+                    MagicFlowMsg.ShowMessage("请先选择一个插件！", 3);
                     return;
                 }
 
@@ -3272,7 +3287,7 @@ namespace MSL
                 RserverJVMcmd = jVMcmd.Text;
 
                 //粗略检测外置登录地址的合法性
-                if(YggdrasilAddr.Text.Length > 0 && !YggdrasilAddr.Text.Contains("http://") && !YggdrasilAddr.Text.Contains("https://"))
+                if (YggdrasilAddr.Text.Length > 0 && !YggdrasilAddr.Text.Contains("http://") && !YggdrasilAddr.Text.Contains("https://"))
                 {
                     MagicShow.ShowMsgDialog(this, "外置登录地址不合法！请检查地址是否正确！", "错误");
                     doneBtn1.IsEnabled = true;
@@ -3287,24 +3302,24 @@ namespace MSL
                 // 检查备份相关设置参数的合法性
                 try
                 {
-                    if(int.Parse(TextBackupMaxLimitCount.Text) < 0)
+                    if (int.Parse(TextBackupMaxLimitCount.Text) < 0)
                     {
                         throw new Exception("最大备份数量必须大于等于0！");
                     }
-                    if(int.Parse(TextBackupDelay.Text) <5 )
+                    if (int.Parse(TextBackupDelay.Text) < 5)
                     {
                         throw new Exception("备份保存延时必须大于等于5秒！");
                     }
-                    if( ComboBackupPath.SelectedIndex == 2)
+                    if (ComboBackupPath.SelectedIndex == 2)
                     {
-                        if(String.IsNullOrEmpty(TextBackupPath.Text) || TextBackupPath.Text.IndexOfAny(Path.GetInvalidPathChars()) >= 0)
+                        if (String.IsNullOrEmpty(TextBackupPath.Text) || TextBackupPath.Text.IndexOfAny(Path.GetInvalidPathChars()) >= 0)
                         {
                             throw new Exception("自定义备份路径不合法！");
                         }
                         Path.GetFullPath(TextBackupPath.Text); // 这个东西能检测路径合法不 不合法会抛出异常~
                     }
                 }
-                catch(Exception ex)
+                catch (Exception ex)
                 {
                     MagicShow.ShowMsgDialog(this, "备份设置参数有误，请检查！\n" + ex.Message, "错误");
                     doneBtn1.IsEnabled = true;
@@ -3609,7 +3624,7 @@ namespace MSL
                 string content;
                 if (Rservermode == 0)
                 {
-                    string ygg_api_jvm="";
+                    string ygg_api_jvm = "";
                     // 处理外置登录
                     if (!string.IsNullOrEmpty(RserverYggAddr))
                     {
@@ -4084,6 +4099,13 @@ namespace MSL
             File.WriteAllText("MSL\\ServerList.json", Convert.ToString(jsonObject), Encoding.UTF8);
         }
 
+        private void logsAnalyse_Click(object sender, RoutedEventArgs e)
+        {
+            LogAnalysisDialog logAnalysisDialog = new LogAnalysisDialog(this, Rserverbase, Rserverserver);
+            Dialog dialog = Dialog.Show(logAnalysisDialog);
+            logAnalysisDialog.SelfDialog = dialog;
+        }
+
         #region 上传日志到mclo.gs
 
         private async void shareLog_Click(object sender, RoutedEventArgs e)
@@ -4532,9 +4554,9 @@ namespace MSL
                                 switch (cmd) // 处理一些内置的特殊任务
                                 {
                                     case ".backup":
-                                        if (BackupBtn.IsEnabled == true)
+                                        if (MoreOperation.IsEnabled == true)
                                         {
-                                            BackupBtn.RaiseEvent(new RoutedEventArgs(Button.ClickEvent));
+                                            MoreOperation.RaiseEvent(new RoutedEventArgs(Button.ClickEvent));
                                             PrintLog("[MSL备份]定时备份任务开始执行~", Brushes.Blue);
                                         }
                                         break;
@@ -4708,13 +4730,6 @@ namespace MSL
         #endregion
 
         #region 备份相关
-        private async void BackupBtn_Click(object sender, RoutedEventArgs e)
-        {
-            BackupBtn.IsEnabled = false;
-            await BackupWorld();
-            BackupBtn.IsEnabled = true;
-        }
-
         private async Task BackupWorld()
         {
             // 发送指令
@@ -4734,10 +4749,10 @@ namespace MSL
                 JObject _json = (JObject)jsonObject[RserverID.ToString()];
 
                 //若服务器是开启状态 执行等待
-                if (_json["backup_save_delay"] != null && int.Parse(_json["backup_save_delay"].ToString()) >=5 && CheckServerRunning())
+                if (_json["backup_save_delay"] != null && int.Parse(_json["backup_save_delay"].ToString()) >= 5 && CheckServerRunning())
                 {
                     //PrintLog($"[MSL备份]将在 {int.Parse(_json["backup_save_delay"].ToString())} 秒后开始执行压缩备份···", Brushes.Blue);
-                    await Task.Delay(int.Parse(_json["backup_save_delay"].ToString())*1000);
+                    await Task.Delay(int.Parse(_json["backup_save_delay"].ToString()) * 1000);
                 }
                 else
                 {
@@ -4789,15 +4804,15 @@ namespace MSL
                 string backupDir = Path.Combine(Rserverbase, "msl-backups"); //默认备份在服务端里
                 if (_json["backup_mode"] != null)
                 {
-                    if (int.Parse(_json["backup_mode"].ToString()) == 1 )
+                    if (int.Parse(_json["backup_mode"].ToString()) == 1)
                     {
-                        backupDir = Path.Combine(@"MSL", "server-backups",$"{Rservername}_{RserverID}");
+                        backupDir = Path.Combine(@"MSL", "server-backups", $"{Rservername}_{RserverID}");
                     }
                     if (int.Parse(_json["backup_mode"].ToString()) == 2)
                     {
                         if (_json["backup_custom_path"] != null && !String.IsNullOrEmpty(_json["backup_custom_path"].ToString()))
                         {
-                                backupDir = _json["backup_custom_path"].ToString();
+                            backupDir = _json["backup_custom_path"].ToString();
 
                         }
                         else
@@ -4816,7 +4831,7 @@ namespace MSL
                 // 限制最大备份数量
                 int maxBackups = 20;
                 if (_json["backup_max_limit"] != null)
-                { 
+                {
                     if (int.Parse(_json["backup_max_limit"].ToString()) >= 0)
                     {
                         maxBackups = int.Parse(_json["backup_max_limit"].ToString());
@@ -4826,7 +4841,7 @@ namespace MSL
                         PrintLog("[MSL备份]最大备份数量配置错误，已使用默认值20！", Brushes.OrangeRed);
                     }
                 }
-                    try
+                try
                 {
                     var backupFiles = Directory.GetFiles(backupDir, "msl-backup_*.zip")
                                                .Select(path => new FileInfo(path))
@@ -4844,7 +4859,7 @@ namespace MSL
                             try
                             {
                                 fileToDelete.Delete();
-                                PrintLog($"[MSL备份]已删除旧备份：{fileToDelete.Name}",Brushes.Blue);
+                                PrintLog($"[MSL备份]已删除旧备份：{fileToDelete.Name}", Brushes.Blue);
                             }
                             catch (Exception ex)
                             {
@@ -4975,7 +4990,7 @@ namespace MSL
 
         private void ComboBackupPath_SelectionChanged(object sender, SelectionChangedEventArgs e)
         {
-            if(ComboBackupPath.SelectedIndex == 2)
+            if (ComboBackupPath.SelectedIndex == 2)
             {
                 GridSelBackupPath.Visibility = Visibility.Visible;
             }
