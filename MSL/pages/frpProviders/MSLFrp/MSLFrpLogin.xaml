@@ -12,7 +12,7 @@
         <Grid x:Name="LoginGrid" Visibility="Visible">
             <controls:MagicCard Margin="10">
                 <hc:UniformSpacingPanel Spacing="20" Orientation="Vertical" HorizontalAlignment="Center" VerticalAlignment="Center" ItemHorizontalAlignment="Center" >
-                    <TextBlock Text="登录 MSL Frp 账户" Style="{StaticResource MagicText16}" FontWeight="Bold"/>
+                    <TextBlock Text="登录 MSL用户中心 账户" Style="{StaticResource MagicText16}" FontWeight="Bold"/>
                     <hc:UniformSpacingPanel Orientation="Vertical" Spacing="10" Visibility="Collapsed">
                         <StackPanel Orientation="Horizontal" HorizontalAlignment="Center">
                             <TextBlock Text="邮箱：" Style="{StaticResource MagicText14}" VerticalAlignment="Center"/>

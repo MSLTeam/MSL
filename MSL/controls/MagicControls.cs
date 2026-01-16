@@ -52,6 +52,7 @@ namespace MSL.controls
             get { return (string)GetValue(TitleProperty); }
             set { SetValue(TitleProperty, value); }
         }
+
         public static new readonly DependencyProperty PaddingProperty =
             DependencyProperty.Register("Padding", typeof(Thickness), typeof(MagicCard), new PropertyMetadata(new Thickness(10)));
 
@@ -59,6 +60,15 @@ namespace MSL.controls
         {
             get { return (Thickness)GetValue(PaddingProperty); }
             set { SetValue(PaddingProperty, value); }
+        }
+
+        public static new readonly DependencyProperty BackgroundProperty =
+            DependencyProperty.Register("Background", typeof(Brush), typeof(MagicCard), new PropertyMetadata(null));
+
+        public new Brush Background
+        {
+            get { return (Brush)GetValue(BackgroundProperty); }
+            set { SetValue(BackgroundProperty, value); }
         }
     }
 

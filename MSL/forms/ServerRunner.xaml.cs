@@ -2367,9 +2367,7 @@ namespace MSL
                     MoreOperation.IsEnabled = true;
                     break;
                 case 2:
-                    LogAnalysisDialog logAnalysisDialog = new LogAnalysisDialog(this,Rserverbase,Rserverserver);
-                    Dialog dialog = Dialog.Show(logAnalysisDialog);
-                    logAnalysisDialog.SelfDialog = dialog;
+                    OpenAILogAnalyseDialog();
                     break;
             }
             MoreOperation.SelectedIndex = 0;
@@ -4101,8 +4099,15 @@ namespace MSL
 
         private void logsAnalyse_Click(object sender, RoutedEventArgs e)
         {
+            OpenAILogAnalyseDialog();
+        }
+
+        private void OpenAILogAnalyseDialog()
+        {
             LogAnalysisDialog logAnalysisDialog = new LogAnalysisDialog(this, Rserverbase, Rserverserver);
             Dialog dialog = Dialog.Show(logAnalysisDialog);
+            dialog.HorizontalContentAlignment = HorizontalAlignment.Stretch;
+            dialog.VerticalContentAlignment = VerticalAlignment.Stretch;
             logAnalysisDialog.SelfDialog = dialog;
         }
 

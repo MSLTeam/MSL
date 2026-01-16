@@ -1,12 +1,15 @@
 ﻿using HandyControl.Controls;
+using MdXaml;
 using MSL.pages.frpProviders.MSLFrp;
 using MSL.utils;
+using System;
 using System.Collections.Generic;
 using System.IO;
 using System.Linq;
 using System.Threading.Tasks;
 using System.Windows;
 using System.Windows.Controls;
+using System.Windows.Documents;
 using System.Windows.Media;
 using Window = System.Windows.Window;
 
@@ -38,19 +41,17 @@ namespace MSL.controls.dialogs
             isInit = true;
             LogHelper.Write.Info("MSLFrpProfile 页面加载，开始初始化...");
 
-            // 获取Token并尝试登录
-            var token = string.IsNullOrEmpty(MSLFrpApi.UserToken)
-                ? Config.Read("MSLUserAccessToken")?.ToString()
-                : MSLFrpApi.UserToken;
-
-            if (string.IsNullOrEmpty(token))
+            string token = string.Empty;
+            if (string.IsNullOrEmpty(MSLFrpApi.UserToken))
             {
-                LogHelper.Write.Warn("未找到本地或内存中的Token，显示登录页面。");
-                ShowLoginControl();
-                return;
-            }
-            else
-            {
+                LogHelper.Write.Info("内存中未找到Token，尝试从本地配置文件中读取Token。");
+                token = Config.Read("MSLUserAccessToken")?.ToString();
+                if (string.IsNullOrEmpty(token))
+                {
+                    LogHelper.Write.Warn("未找到本地或内存中的Token，显示登录页面。");
+                    ShowLoginControl();
+                    return;
+                }
                 LogHelper.Write.Info("找到Token，尝试使用Token自动登录。");
                 if (await PerformLogin(token) == false)
                 {
@@ -59,10 +60,10 @@ namespace MSL.controls.dialogs
                     return;
                 }
             }
+            LogHelper.Write.Info("内存中已记录用户Token，尝试继续操作……");
+            token = MSLFrpApi.UserToken;
             MagicDialog magicDialog = new MagicDialog();
             magicDialog.ShowTextDialog(Window.GetWindow(this), "加载信息……");
-            LogHelper.Write.Info("登录成功，开始加载用户资料和商品信息。");
-            //await GetUserInfo();
             await GetUserTokens();
             magicDialog.CloseTextDialog();
             LogHelper.Write.Info("用户资料及商品信息加载完成。");
@@ -82,7 +83,6 @@ namespace MSL.controls.dialogs
                     MagicDialog magicDialog = new MagicDialog();
                     magicDialog.ShowTextDialog(Window.GetWindow(this), "加载信息……");
                     LogHelper.Write.Info("登录成功，开始加载用户资料和商品信息。");
-                    //await GetUserInfo();
                     await GetUserTokens();
                     magicDialog.CloseTextDialog();
                     LogHelper.Write.Info("用户资料及商品信息加载完成。");
@@ -120,7 +120,8 @@ namespace MSL.controls.dialogs
             if (Code != 200)
             {
                 LogHelper.Write.Error($"获取MSLFrp用户AIInfo失败, Code: {Code}, Msg: {Msg}");
-                await MagicShow.ShowMsgDialogAsync(Window.GetWindow(this), "获取AIInfo失败！\n" + Msg, "错误");
+                await MagicShow.ShowMsgDialogAsync(Window.GetWindow(this), "获取信息失败！请重新登录！\n" + Msg, "错误");
+                ShowLoginControl();
                 return;
             }
             LogHelper.Write.Info("获取MSLFrp用户AIInfo成功。");
@@ -174,38 +175,59 @@ namespace MSL.controls.dialogs
                 ModsInput.Text = string.Join(", ", mods.GetFiles().Select(f => f.Name));
             }
 
-            // 核心信息
-            MainCard.Title += $" - {Rservercore}";
+            // ServerInfo
+            ServerInfoInput.Text = $"服务器核心: {Rservercore}\n" +
+                $"服务器目录: {Rserverbase}\n" +
+                $"插件数量: {PluginsInput.Text.Split([", "], System.StringSplitOptions.RemoveEmptyEntries).Length}\n" +
+                $"模组数量: {ModsInput.Text.Split([", "], System.StringSplitOptions.RemoveEmptyEntries).Length}\n";
         }
 
         private async void StartAnalyse_Click(object sender, RoutedEventArgs e)
         {
             StartAnalyse.IsEnabled = false;
-            AnalysisOutput.Text = "正在分析中，请稍候...";
-            LogHelper.Write.Info("正在请求MSLFrp用户AI日志分析接口...");
-            (int Code, var Data, string Msg) = await MSLFrpApi.ApiPost("/tools/ai/analysis", HttpService.PostContentType.FormUrlEncoded, new Dictionary<string, string>
+            MagicDialog magicDialog = new MagicDialog();
+            magicDialog.ShowTextDialog(Window.GetWindow(this), "正在分析中，请稍候...");
+            LogHelper.Write.Info("正在请求AI日志分析接口...");
+            string content = string.Empty;
+            try
             {
-                { "core", Rservercore },
-                { "model", "qwen-flash" },
-                { "logs", LogInput.Text },
-                { "mods", ModsInput.Text },
-                { "plugins", PluginsInput.Text },
-                { "usemd", true.ToString() }
-            });
-            StartAnalyse.IsEnabled = true;
-            if (Code != 200)
-            {
-                LogHelper.Write.Error($"请求MSLFrp用户AI日志分析失败, Code: {Code}, Msg: {Msg}");
-                await MagicShow.ShowMsgDialogAsync(Window.GetWindow(this), "AI日志分析失败！\n" + Msg, "错误");
-                return;
+                (int Code, var Data, string Msg) = await MSLFrpApi.ApiPost("/tools/ai/analysis", HttpService.PostContentType.Json, new Dictionary<string, object>
+                {
+                    { "core", Rservercore },
+                    { "model", "qwen-flash" },
+                    { "logs", LogInput.Text },
+                    { "mods", ModsInput.Text },
+                    { "plugins", PluginsInput.Text },
+                    { "usemd", true }
+                });
+                if (Code != 200)
+                {
+                    LogHelper.Write.Error($"请求AI日志分析失败, Code: {Code}, Msg: {Msg}");
+                    await MagicShow.ShowMsgDialogAsync(Window.GetWindow(this), "AI日志分析失败！\n" + Msg, "错误");
+                    return;
+                }
+                LogHelper.Write.Info("请求AI日志分析成功。");
+                if (Data == null)
+                {
+                    return;
+                }
+                content = Data["content"]?.ToString() ?? "";
             }
-            LogHelper.Write.Info("请求MSLFrp用户AI日志分析成功。");
-            if (Data == null)
+            catch (Exception ex)
             {
-                return;
+                LogHelper.Write.Error($"请求AI日志分析出现异常: {ex}");
             }
-            string content = Data["content"]?.ToString() ?? "";
-            AnalysisOutput.Text = content;
+            finally
+            {
+                StartAnalyse.IsEnabled = true;
+                magicDialog.CloseTextDialog();
+            }
+            Markdown engine = new Markdown();
+
+            FlowDocument document = engine.Transform(content);
+            AnalysisOutput.Document = document;
+
+            MainGrid.SelectedIndex = 1;
         }
 
         private void Store_Click(object sender, RoutedEventArgs e)
@@ -232,7 +254,21 @@ namespace MSL.controls.dialogs
 
         private void Close_Click(object sender, RoutedEventArgs e)
         {
+            Dispose();
             SelfDialog.Close();
+            GC.Collect();
+        }
+
+        private void Dispose()
+        {
+            LogInput.Clear();
+            AnalysisOutput.Document.Blocks.Clear();
+            PluginsInput.Clear();
+            ModsInput.Clear();
+            ServerInfoInput.Clear();
+            UserAIInfo.Content = string.Empty;
+            Rserverbase = string.Empty;
+            Rservercore = string.Empty;
         }
     }
 }

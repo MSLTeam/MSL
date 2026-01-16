@@ -10,51 +10,79 @@
              d:DesignHeight="450" d:DesignWidth="800"
              MinHeight="400" MinWidth="600"
              Loaded="UserControl_Loaded">
-    <ctrls:MagicCard x:Name="MainCard" Title="AI日志分析">
+    <ctrls:MagicCard x:Name="MainCard" Background="{DynamicResource BorderFullBackground}">
         <Grid>
-            <ContentControl x:Name="LoginControl" Visibility="Collapsed"/>
-            <Grid x:Name="MainGrid">
-                <Grid.ColumnDefinitions>
-                    <ColumnDefinition Width="2*"/>
-                    <ColumnDefinition Width="10"/>
-                    <ColumnDefinition Width="3*"/>
-                </Grid.ColumnDefinitions>
-                <ctrls:MagicCard Grid.Column="0">
-                    <Grid>
-                        <Grid.RowDefinitions>
-                            <RowDefinition/>
-                            <RowDefinition Height="5"/>
-                            <RowDefinition/>
-                        </Grid.RowDefinitions>
-                        <TextBox x:Name="LogInput" HorizontalContentAlignment="Left" VerticalContentAlignment="Top" VerticalScrollBarVisibility="Auto"/>
-                        <TabControl Grid.Row="2">
-                            <TabItem Header="Plugins">
-                                <TextBox x:Name="PluginsInput" TextWrapping="Wrap" HorizontalContentAlignment="Left" VerticalContentAlignment="Top" VerticalScrollBarVisibility="Auto"/>
-                            </TabItem>
-                            <TabItem Header="Mods">
-                                <TextBox x:Name="ModsInput" TextWrapping="Wrap" HorizontalContentAlignment="Left" VerticalContentAlignment="Top" VerticalScrollBarVisibility="Auto"/>
-                            </TabItem>
-                        </TabControl>
-                    </Grid>
-                </ctrls:MagicCard>
-                <ctrls:MagicCard Grid.Column="2">
-                    <Grid>
-                        <Grid.RowDefinitions>
-                            <RowDefinition/>
-                            <RowDefinition Height="5"/>
-                            <RowDefinition Height="Auto"/>
-                            <RowDefinition Height="5"/>
-                            <RowDefinition Height="Auto"/>
-                        </Grid.RowDefinitions>
-                        <TextBox x:Name="AnalysisOutput" Text="此处是AI分析的输出" TextWrapping="Wrap" HorizontalContentAlignment="Left" VerticalContentAlignment="Top" VerticalScrollBarVisibility="Auto"/>
-                        <Label x:Name="UserAIInfo" Grid.Row="2" VerticalAlignment="Stretch" HorizontalAlignment="Stretch" HorizontalContentAlignment="Left"/>
-                        <hc:UniformSpacingPanel Grid.Row="4" Orientation="Horizontal" VerticalAlignment="Bottom" HorizontalAlignment="Right" Spacing="5">
-                            <Button x:Name="Close" Style="{StaticResource ButtonPrimary}" Content="关闭" Click="Close_Click"/>
-                            <Button x:Name="Store" Style="{StaticResource ButtonPrimary}" Content="商城" Click="Store_Click"/>
-                            <Button x:Name="StartAnalyse" Style="{StaticResource ButtonPrimary}" Content="开始分析" Click="StartAnalyse_Click"/>
-                        </hc:UniformSpacingPanel>
-                    </Grid>
-                </ctrls:MagicCard>
+            <Grid.RowDefinitions>
+                <RowDefinition Height="Auto"/>
+                <RowDefinition Height="5"/>
+                <RowDefinition/>
+            </Grid.RowDefinitions>
+            <Grid x:Name="HeaderPanel" VerticalAlignment="Top">
+                <TextBlock Text="AI日志分析功能" Style="{StaticResource MagicText16}" FontWeight="Bold" VerticalAlignment="Center"/>
+                <Button x:Name="Close" HorizontalAlignment="Right" VerticalAlignment="Top" Style="{StaticResource ButtonPrimary}" Content="关闭" Click="Close_Click"/>
+            </Grid>
+            <Grid Grid.Row="2">
+                <ContentControl x:Name="LoginControl" Visibility="Collapsed"/>
+                <TabControl x:Name="MainGrid" BorderThickness="0">
+                    <TabItem Header="服务器信息输入">
+                        <Grid>
+                            <Grid.ColumnDefinitions>
+                                <ColumnDefinition Width="2*"/>
+                                <ColumnDefinition Width="10"/>
+                                <ColumnDefinition Width="3*"/>
+                            </Grid.ColumnDefinitions>
+                            <Grid Grid.Column="0">
+                                <Grid.RowDefinitions>
+                                    <RowDefinition Height="4*"/>
+                                    <RowDefinition Height="5"/>
+                                    <RowDefinition Height="5*"/>
+                                </Grid.RowDefinitions>
+                                <ctrls:MagicCard Title="用户信息">
+                                    <Label x:Name="UserAIInfo" VerticalAlignment="Stretch" HorizontalAlignment="Stretch" HorizontalContentAlignment="Left"/>
+                                </ctrls:MagicCard>
+                                <ctrls:MagicCard Grid.Row="2" Title="服务器信息">
+                                    <TabControl BorderThickness="0">
+                                        <TabItem Header="ServerInfo">
+                                            <TextBox x:Name="ServerInfoInput" Padding="7" TextWrapping="Wrap" VerticalScrollBarVisibility="Auto"/>
+                                        </TabItem>
+                                        <TabItem Header="Plugins">
+                                            <TextBox x:Name="PluginsInput" Padding="7" TextWrapping="Wrap" HorizontalContentAlignment="Left" VerticalContentAlignment="Top" VerticalScrollBarVisibility="Auto"/>
+                                        </TabItem>
+                                        <TabItem Header="Mods">
+                                            <TextBox x:Name="ModsInput" Padding="7" TextWrapping="Wrap" HorizontalContentAlignment="Left" VerticalContentAlignment="Top" VerticalScrollBarVisibility="Auto"/>
+                                        </TabItem>
+                                    </TabControl>
+                                </ctrls:MagicCard>
+                            </Grid>
+                            <ctrls:MagicCard Grid.Column="2" Title="服务器日志">
+                                <Grid>
+                                    <Grid.RowDefinitions>
+                                        <RowDefinition/>
+                                        <RowDefinition Height="5"/>
+                                        <RowDefinition Height="Auto"/>
+                                        <RowDefinition Height="5"/>
+                                        <RowDefinition Height="Auto"/>
+                                    </Grid.RowDefinitions>
+
+                                    <TextBox x:Name="LogInput" Padding="7" HorizontalContentAlignment="Left" VerticalContentAlignment="Top" VerticalScrollBarVisibility="Auto" HorizontalScrollBarVisibility="Auto"/>
+                                    <hc:UniformSpacingPanel Grid.Row="4" Orientation="Horizontal" VerticalAlignment="Bottom" HorizontalAlignment="Right" Spacing="5">
+                                        <Button x:Name="Store" Style="{StaticResource ButtonPrimary}" Content="商城" Click="Store_Click"/>
+                                        <Button x:Name="StartAnalyse" Style="{StaticResource ButtonPrimary}" Content="开始分析" Click="StartAnalyse_Click"/>
+                                    </hc:UniformSpacingPanel>
+                                </Grid>
+                            </ctrls:MagicCard>
+                        </Grid>
+                    </TabItem>
+                    <TabItem Header="分析结果输出">
+                        <RichTextBox x:Name="AnalysisOutput" IsReadOnly="True" HorizontalContentAlignment="Left" VerticalContentAlignment="Top" VerticalScrollBarVisibility="Auto">
+                            <FlowDocument>
+                                <Paragraph>
+                                    <Run Text="此处显示AI分析结果……"/>
+                                </Paragraph>
+                            </FlowDocument>
+                        </RichTextBox>
+                    </TabItem>
+                </TabControl>
             </Grid>
         </Grid>
     </ctrls:MagicCard>

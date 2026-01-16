@@ -206,51 +206,6 @@ namespace MSL
                     SideMenu.Width = 50;
                 }
                 LogHelper.Write.Info("读取侧栏配置成功！");
-
-                /*
-                if (jsonObject["skin"] == null)
-                {
-                    string jsonString = File.ReadAllText(@"MSL\config.json", Encoding.UTF8);
-                    JObject jobject = JObject.Parse(jsonString);
-                    jobject.Add("skin", 1);
-                    string convertString = Convert.ToString(jobject);
-                    File.WriteAllText(@"MSL\config.json", convertString, Encoding.UTF8);
-                    BrushConverter brushConverter = new BrushConverter();
-                    ThemeManager.Current.AccentColor = (Brush)brushConverter.ConvertFromString("#0078D4");
-                }
-                else
-                {
-                    switch ((int)jsonObject["skin"])
-                    {
-                        case 0:
-                            ThemeManager.Current.UsingSystemTheme = true;
-                            break;
-                        case 1:
-                            BrushConverter brushConverter = new BrushConverter();
-                            ThemeManager.Current.AccentColor = (Brush)brushConverter.ConvertFromString("#0078D4");
-                            break;
-                        case 2:
-                            ThemeManager.Current.AccentColor = Brushes.Red;
-                            break;
-                        case 3:
-                            ThemeManager.Current.AccentColor = Brushes.Green;
-                            break;
-                        case 4:
-                            ThemeManager.Current.AccentColor = Brushes.Orange;
-                            break;
-                        case 5:
-                            ThemeManager.Current.AccentColor = Brushes.Purple;
-                            break;
-                        case 6:
-                            ThemeManager.Current.AccentColor = Brushes.DeepPink;
-                            break;
-                        default:
-                            BrushConverter _brushConverter = new BrushConverter();
-                            ThemeManager.Current.AccentColor = (Brush)_brushConverter.ConvertFromString("#0078D4");
-                            break;
-                    }
-                }
-                */
                 BrushConverter brushConverter = new BrushConverter();
                 if (jsonObject["SkinColor"] == null)
                 {

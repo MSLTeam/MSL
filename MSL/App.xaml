@@ -17,6 +17,7 @@
                     <hc:ThemeResources.ThemeDictionaries>
                         <ResourceDictionary x:Key="Light" hc:ThemeDictionary.Key="Light">
                             <SolidColorBrush x:Key="BorderBackground" Color="White" Opacity="0.7" />
+                            <SolidColorBrush x:Key="BorderFullBackground" Color="White"/>
                             <SolidColorBrush x:Key="ContentRegionBrush" Color="#FFF7FAFC" Opacity="0.7" />
                             <SolidColorBrush x:Key="SideMenuBrush" Color="#FFEEF4F9" Opacity="0.7" />
                             <SolidColorBrush x:Key="SideMenuItemBrush" Opacity="0" />
@@ -24,6 +25,7 @@
 
                         <ResourceDictionary x:Key="Dark" hc:ThemeDictionary.Key="Dark">
                             <SolidColorBrush x:Key="BorderBackground" Color="#232323" Opacity="0.7" />
+                            <SolidColorBrush x:Key="BorderFullBackground" Color="#232323"/>
                             <SolidColorBrush x:Key="ContentRegionBrush" Color="#141414" Opacity="0.7" />
                             <SolidColorBrush x:Key="SideMenuBrush" Color="#1D1E1F" Opacity="0.7" />
                             <SolidColorBrush x:Key="SideMenuItemBrush" Opacity="0" />

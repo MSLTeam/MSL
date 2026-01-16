@@ -4,7 +4,7 @@
                     xmlns:hc="https://handyorg.github.io/handycontrol"
                     xmlns:iconPacks="http://metro.mahapps.com/winfx/xaml/iconpacks"
                     xmlns:langs="clr-namespace:MSL.langs">
-    
+
     <Style x:Key="MagicBorder" TargetType="Border">
         <Setter Property="Margin" Value="10,10,10,0"/>
         <Setter Property="Padding" Value="10"/>
@@ -14,7 +14,7 @@
         <Setter Property="Background" Value="{DynamicResource BorderBackground}"/>
         <Setter Property="BorderThickness" Value="1"/>
     </Style>
-
+    
     <Style x:Key="BorderTitle" TargetType="Label" BasedOn="{StaticResource {x:Type Label}}">
         <Setter Property="FontSize" Value="18"/>
         <Setter Property="HorizontalAlignment" Value="Left"/>
@@ -266,10 +266,11 @@
     </ControlTemplate>
 
     <Style TargetType="{x:Type local:MagicCard}">
+        <Setter Property="Background" Value="{DynamicResource BorderBackground}" />
         <Setter Property="Template">
             <Setter.Value>
                 <ControlTemplate TargetType="{x:Type local:MagicCard}">
-                    <Border Padding="{TemplateBinding Padding}" CornerRadius="7" BorderBrush="{DynamicResource BorderBrush}" Background="{DynamicResource BorderBackground}" BorderThickness="1">
+                    <Border Padding="{TemplateBinding Padding}" CornerRadius="7" BorderBrush="{DynamicResource BorderBrush}" Background="{TemplateBinding Background}" BorderThickness="1">
                         <Grid>
                             <Grid.RowDefinitions>
                                 <RowDefinition Height="Auto"/>

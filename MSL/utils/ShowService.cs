@@ -174,29 +174,31 @@ namespace MSL.utils
     internal class MagicDialog
     {
         private Window window;
-        private Dialog dialog;
-
+        //private Dialog dialog;
+        private string token = Guid.NewGuid().ToString();
 
         public void ShowTextDialog(Window _window, string text)
         {
             window = _window;
-            window?.Focus();
-            dialog = Dialog.Show(new TextDialog(text));
+            // window?.Focus();
+            Dialog.SetToken(window, token);
+            Dialog.Show(new TextDialog(text), token);
         }
 
         public void ShowTextDialog(string text, UIElement _window = null)
         {
             window = Functions.GetWindow(_window);
-            window?.Focus();
-            dialog = Dialog.Show(new TextDialog(text));
+            // window?.Focus();
+            Dialog.SetToken(window, token);
+            Dialog.Show(new TextDialog(text), token);
         }
 
         public void CloseTextDialog()
         {
-            window?.Focus();
-            dialog.Close();
+            // window?.Focus();
+            Dialog.Close(token);
             window = null;
-            dialog = null;
+            // dialog = null;
         }
 
 
@@ -206,8 +208,9 @@ namespace MSL.utils
             window = _window;
             MessageDialog msgDialog = new MessageDialog(text, title, false, "", "", uIElement, isDangerPrimaryBtn);
             msgDialog.CloseDialog += CloseMsgDialog;
-            window?.Focus();
-            dialog = Dialog.Show(msgDialog);
+            // window?.Focus();
+            Dialog.SetToken(window, token);
+            Dialog.Show(msgDialog, token);
             _tcs = new TaskCompletionSource<bool>();
         }
 
@@ -216,8 +219,9 @@ namespace MSL.utils
             window = _window;
             MessageDialog msgDialog = new MessageDialog(text, title, showPrimaryBtn, closeBtnContext, primaryBtnContext, uIElement, isDangerPrimaryBtn);
             msgDialog.CloseDialog += CloseMsgDialog;
-            window?.Focus();
-            dialog = Dialog.Show(msgDialog);
+            // window?.Focus();
+            Dialog.SetToken(window, token);
+            Dialog.Show(msgDialog, token);
             _tcs = new TaskCompletionSource<bool>();
             await _tcs.Task;
             return msgDialog._dialogReturn;
@@ -228,8 +232,9 @@ namespace MSL.utils
             window = _window;
             DownloadDialog dwnDialog = new DownloadDialog(downloadurl, downloadPath, filename, downloadinfo, sha256, closeDirectly, enableParalle, headerMode);
             dwnDialog.CloseDialog += CloseMsgDialog;
-            window?.Focus();
-            dialog = Dialog.Show(dwnDialog);
+            // window?.Focus();
+            Dialog.SetToken(window, token);
+            Dialog.Show(dwnDialog, token);
             _tcs = new TaskCompletionSource<bool>();
             await _tcs.Task;
             return dwnDialog._dialogReturn;
@@ -240,8 +245,9 @@ namespace MSL.utils
             window = _window;
             InputDialog inputDialog = new InputDialog(dialogText, textboxText, passwordMode);
             inputDialog.CloseDialog += CloseMsgDialog;
-            window?.Focus();
-            dialog = Dialog.Show(inputDialog);
+            // window?.Focus();
+            Dialog.SetToken(window, token);
+            Dialog.Show(inputDialog, token);
             _tcs = new TaskCompletionSource<bool>();
             await _tcs.Task;
             return inputDialog._dialogReturn;
@@ -252,8 +258,9 @@ namespace MSL.utils
             window = _window;
             InstallForgeDialog _dialog = new InstallForgeDialog(installPath, forgeFileName, javaPath);
             _dialog.CloseDialog += CloseMsgDialog;
-            window?.Focus();
-            dialog = Dialog.Show(_dialog);
+            // window?.Focus();
+            Dialog.SetToken(window, token);
+            Dialog.Show(_dialog, token);
             _tcs = new TaskCompletionSource<bool>();
             await _tcs.Task;
             string[] strings = [_dialog.DialogReturn.ToString(), _dialog.McVersion];
@@ -265,11 +272,11 @@ namespace MSL.utils
         private void CloseMsgDialog()
         {
             _tcs?.TrySetResult(true);
-            window?.Focus();
-            dialog?.Close();
+            // window?.Focus();
+            Dialog.Close(token);
             _tcs = null;
             window = null;
-            dialog = null;
+            // dialog = null;
         }
     }
 
