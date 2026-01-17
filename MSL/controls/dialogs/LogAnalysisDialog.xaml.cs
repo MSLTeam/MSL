@@ -134,7 +134,7 @@ namespace MSL.controls.dialogs
             int extraTokens = Data["extra_tokens"]?.ToObject<int>() ?? 0;
             long lastUseTime = Data["last_use_time"]?.ToObject<long>() ?? 0;
             int maxPerDay = Data["max_per_day"]?.ToObject<int>() ?? 0;
-            string infoMsg = $"UID: {uid}\n今日使用量: {todayUsage}\n额外Tokens: {extraTokens}\n最后使用时间戳: {lastUseTime}\n最大额度限制：{maxPerDay}";
+            string infoMsg = $"用户UID: {uid}\n今日使用量: {todayUsage}/{maxPerDay}\n额外额度: {extraTokens}\n最后使用时间: {Functions.ConvertUnixTimeSeconds(lastUseTime)}";
             LogHelper.Write.Info(infoMsg);
             UserAIInfo.Content = infoMsg;
 
