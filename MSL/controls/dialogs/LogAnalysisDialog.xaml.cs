@@ -295,7 +295,6 @@ namespace MSL.controls.dialogs
         // 选择模型相关
         public class AiModelInfo
         {
-            public string Id { get; set; }
             public string Name { get; set; }
             public double Rate { get; set; }
             public string DisplayName => $"{Name} [{Rate}x]";
@@ -316,7 +315,6 @@ namespace MSL.controls.dialogs
                     {
                         models.Add(new AiModelInfo
                         {
-                            Id = item["id"]?.ToString(),
                             Name = item["name"]?.ToString(),
                             // 转换倍率，默认为 1.0
                             Rate = item["rate"] != null ? Convert.ToDouble(item["rate"]) : 1.0
