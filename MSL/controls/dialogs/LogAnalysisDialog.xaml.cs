@@ -139,6 +139,7 @@ namespace MSL.controls.dialogs
             UserAIInfo.Content = infoMsg;
 
             GetServerLogInfo();
+            await GetAiModels();
         }
 
         private void GetServerLogInfo()
@@ -183,28 +184,44 @@ namespace MSL.controls.dialogs
 
         private async void StartAnalyse_Click(object sender, RoutedEventArgs e)
         {
+            string selectedModel = null;
+            if (ModelSelector.SelectedItem is AiModelInfo selectedItem)
+            {
+                selectedModel = selectedItem.Name;
+            }
+
+            if (string.IsNullOrEmpty(selectedModel))
+            {
+                await MagicShow.ShowMsgDialogAsync(Window.GetWindow(this), "请先选择一个AI模型！(获取模型ID失败)", "提示");
+                return;
+            }
+
             StartAnalyse.IsEnabled = false;
             MagicDialog magicDialog = new MagicDialog();
             magicDialog.ShowTextDialog(Window.GetWindow(this), "正在分析中，请稍候...");
-            LogHelper.Write.Info("正在请求AI日志分析接口...");
+            LogHelper.Write.Info($"正在请求AI日志分析接口 (模型: {selectedModel})...");
+
             string content = string.Empty;
             try
             {
                 (int Code, var Data, string Msg) = await MSLFrpApi.ApiPost("/tools/ai/analysis", HttpService.PostContentType.Json, new Dictionary<string, object>
-                {
-                    { "core", Rservercore },
-                    { "model", "qwen-flash" },
-                    { "logs", LogInput.Text },
-                    { "mods", ModsInput.Text },
-                    { "plugins", PluginsInput.Text },
-                    { "usemd", true }
-                });
+        {
+            { "core", Rservercore },
+            { "model", selectedModel }, 
+            { "logs", LogInput.Text },
+            { "mods", ModsInput.Text },
+            { "plugins", PluginsInput.Text },
+            { "usemd", true }
+        });
+
                 if (Code != 200)
                 {
                     LogHelper.Write.Error($"请求AI日志分析失败, Code: {Code}, Msg: {Msg}");
+                    magicDialog.CloseTextDialog();
                     await MagicShow.ShowMsgDialogAsync(Window.GetWindow(this), "AI日志分析失败！\n" + Msg, "错误");
                     return;
                 }
+
                 LogHelper.Write.Info("请求AI日志分析成功。");
                 if (Data == null)
                 {
@@ -215,18 +232,23 @@ namespace MSL.controls.dialogs
             catch (Exception ex)
             {
                 LogHelper.Write.Error($"请求AI日志分析出现异常: {ex}");
+                magicDialog.CloseTextDialog();
+                await MagicShow.ShowMsgDialogAsync(Window.GetWindow(this), "分析请求发生异常，请检查日志。", "错误");
             }
             finally
             {
                 StartAnalyse.IsEnabled = true;
                 magicDialog.CloseTextDialog();
+                await GetUserTokens();
             }
-            Markdown engine = new Markdown();
 
-            FlowDocument document = engine.Transform(content);
-            AnalysisOutput.Document = document;
-
-            MainGrid.SelectedIndex = 1;
+            if (!string.IsNullOrEmpty(content))
+            {
+                Markdown engine = new Markdown();
+                FlowDocument document = engine.Transform(content);
+                AnalysisOutput.Document = document;
+                MainGrid.SelectedIndex = 1;
+            }
         }
 
         private void Store_Click(object sender, RoutedEventArgs e)
@@ -268,6 +290,60 @@ namespace MSL.controls.dialogs
             UserAIInfo.Content = string.Empty;
             Rserverbase = string.Empty;
             Rservercore = string.Empty;
+        }
+
+        // 选择模型相关
+        public class AiModelInfo
+        {
+            public string Id { get; set; }
+            public string Name { get; set; }
+            public double Rate { get; set; }
+            public string DisplayName => $"{Name} [{Rate}x]";
+        }
+        private async Task GetAiModels()
+        {
+            LogHelper.Write.Info("正在获取AI模型列表...");
+            try
+            {
+                // 调用接口
+                (int Code, var Data, string Msg) = await MSLFrpApi.ApiGet("/tools/ai/models");
+
+                if (Code == 200 && Data != null)
+                {
+                    List<AiModelInfo> models = new List<AiModelInfo>();
+
+                    foreach (var item in Data)
+                    {
+                        models.Add(new AiModelInfo
+                        {
+                            Id = item["id"]?.ToString(),
+                            Name = item["name"]?.ToString(),
+                            // 转换倍率，默认为 1.0
+                            Rate = item["rate"] != null ? Convert.ToDouble(item["rate"]) : 1.0
+                        });
+                    }
+
+                    // 绑定到下拉框
+                    ModelSelector.ItemsSource = models;
+
+                    // 默认选中第一个
+                    if (models.Count > 0)
+                    {
+                        ModelSelector.SelectedIndex = 0;
+                    }
+
+                    ModelSelector.IsEnabled = true;
+                    LogHelper.Write.Info($"获取AI模型列表成功，共 {models.Count} 个模型。");
+                }
+                else
+                {
+                    LogHelper.Write.Warn($"获取AI模型列表失败: {Msg}");
+                }
+            }
+            catch (Exception ex)
+            {
+                LogHelper.Write.Error($"解析AI模型列表异常: {ex.Message}");
+            }
         }
     }
 }

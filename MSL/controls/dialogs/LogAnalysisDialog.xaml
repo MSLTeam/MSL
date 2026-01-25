@@ -66,6 +66,12 @@
 
                                     <TextBox x:Name="LogInput" Padding="7" HorizontalContentAlignment="Left" VerticalContentAlignment="Top" VerticalScrollBarVisibility="Auto" HorizontalScrollBarVisibility="Auto"/>
                                     <hc:UniformSpacingPanel Grid.Row="4" Orientation="Horizontal" VerticalAlignment="Bottom" HorizontalAlignment="Right" Spacing="5">
+                                        <ComboBox x:Name="ModelSelector" 
+              Width="150" 
+              hc:InfoElement.Placeholder="选择模型"
+              DisplayMemberPath="DisplayName" 
+              SelectedValuePath="Id"
+              IsEnabled="False"/>
                                         <Button x:Name="Store" Style="{StaticResource ButtonPrimary}" Content="商城" Click="Store_Click"/>
                                         <Button x:Name="StartAnalyse" Style="{StaticResource ButtonPrimary}" Content="开始分析" Click="StartAnalyse_Click"/>
                                     </hc:UniformSpacingPanel>
