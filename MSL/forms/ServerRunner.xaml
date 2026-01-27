@@ -287,17 +287,42 @@
                                         <ListView x:Name="pluginslist"
                                                   Grid.Row="2"
                                                   hc:Empty.ShowEmpty="true"
+                                                  SelectionMode="Extended"
                                                   BorderThickness="0"
                                                   FontSize="14"
                                                   Background="{DynamicResource ContentRegionBrush}"
                                                   ContextMenu="{StaticResource PluginListContextMenu}">
                                             <ListView.View>
                                                 <GridView>
+                                                    <GridViewColumn Width="25">
+                                                        <GridViewColumn.CellTemplate>
+                                                            <DataTemplate>
+                                                                <CheckBox IsChecked="{Binding RelativeSource={RelativeSource AncestorType=ListViewItem}, Path=IsSelected, Mode=TwoWay}"
+                          HorizontalAlignment="Center" 
+                          VerticalAlignment="Center"/>
+                                                            </DataTemplate>
+                                                        </GridViewColumn.CellTemplate>
+                                                    </GridViewColumn>
                                                     <GridViewColumn x:Name="pluginlistPluginName" Width="350" Header="插件名称">
                                                         <GridViewColumn.CellTemplate>
                                                             <DataTemplate>
                                                                 <hc:UniformSpacingPanel Orientation="Horizontal" Spacing="5">
                                                                     <iconPacks:PackIconMaterial Kind="FileDocument"/>
+
+                                                                    <Border CornerRadius="4" Background="#FF5252" Margin="0,0,5,0" Padding="4,1">
+                                                                        <Border.Style>
+                                                                            <Style TargetType="Border">
+                                                                                <Setter Property="Visibility" Value="Collapsed"/>
+                                                                                <Style.Triggers>
+                                                                                    <DataTrigger Binding="{Binding IsDisabled}" Value="True">
+                                                                                        <Setter Property="Visibility" Value="Visible"/>
+                                                                                    </DataTrigger>
+                                                                                </Style.Triggers>
+                                                                            </Style>
+                                                                        </Border.Style>
+                                                                        <TextBlock Text="已禁用" FontSize="10" Foreground="White" VerticalAlignment="Center"/>
+                                                                    </Border>
+
                                                                     <TextBlock Width="Auto" Text="{Binding PluginName}" FontSize="12"/>
                                                                 </hc:UniformSpacingPanel>
                                                             </DataTemplate>
@@ -427,16 +452,40 @@
                                                   Grid.Row="2"
                                                   FontSize="14"
                                                   hc:Empty.ShowEmpty="true"
+                                                  SelectionMode="Extended"
                                                   BorderThickness="0"
                                                   Background="{DynamicResource ContentRegionBrush}"
                                                   ContextMenu="{StaticResource PluginListContextMenu}">
                                             <ListView.View>
                                                 <GridView>
+                                                    <GridViewColumn Width="25">
+                                                        <GridViewColumn.CellTemplate>
+                                                            <DataTemplate>
+                                                                <CheckBox IsChecked="{Binding RelativeSource={RelativeSource AncestorType=ListViewItem}, Path=IsSelected, Mode=TwoWay}"
+                          HorizontalAlignment="Center" 
+                          VerticalAlignment="Center"/>
+                                                            </DataTemplate>
+                                                        </GridViewColumn.CellTemplate>
+                                                    </GridViewColumn>
                                                     <GridViewColumn x:Name="modlistModName" Width="350" Header="模组名称">
                                                         <GridViewColumn.CellTemplate>
                                                             <DataTemplate>
                                                                 <hc:UniformSpacingPanel Orientation="Horizontal" Spacing="5">
                                                                     <iconPacks:PackIconMaterial Kind="FileDocument"/>
+
+                                                                    <Border CornerRadius="4" Background="#FF5252" Margin="0,0,5,0" Padding="4,1">
+                                                                        <Border.Style>
+                                                                            <Style TargetType="Border">
+                                                                                <Setter Property="Visibility" Value="Collapsed"/>
+                                                                                <Style.Triggers>
+                                                                                    <DataTrigger Binding="{Binding IsDisabled}" Value="True">
+                                                                                        <Setter Property="Visibility" Value="Visible"/>
+                                                                                    </DataTrigger>
+                                                                                </Style.Triggers>
+                                                                            </Style>
+                                                                        </Border.Style>
+                                                                        <TextBlock Text="已禁用" FontSize="10" Foreground="White" VerticalAlignment="Center"/>
+                                                                    </Border>
 
                                                                     <Border CornerRadius="4" Background="Orange" Margin="0,0,5,0" Padding="4,1">
                                                                         <Border.Style>
@@ -551,7 +600,7 @@
                             </controls:MagicCard>
                         </TabItem>
                     </TabControl>
-                    
+
                 </Grid>
             </TabItem>
             <TabItem x:Name="Tab_Settings" Width="50" Style="{StaticResource TabItemSideMenu}">
@@ -677,7 +726,7 @@
                             <hc:ScrollViewer x:Name="SettingsGrid" IsInertiaEnabled="True"/>
                         </TabItem>
                     </TabControl>
-                    
+
                 </Grid>
             </TabItem>
             <TabItem x:Name="Tab_MoreFunctions" Width="50" Style="{StaticResource TabItemSideMenu}">
