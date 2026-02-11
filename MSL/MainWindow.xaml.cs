@@ -436,14 +436,14 @@ namespace MSL
             }
             catch (JsonException ex)
             {
-                MagicFlowMsg.ShowMessage(LanguageManager.Instance["MainWindow_GrowlMsg_MSLServerDown"] + $"\n[JSON Exception]({ex.InnerException.Message}){ex.Message}", 2);
+                MagicFlowMsg.ShowMessage(LanguageManager.Instance["MainWindow_GrowlMsg_MSLServerDown"] + $"\n[JSON Exception]{ex.Message}", 2);
                 LogHelper.Write.Error("无法连接到MSL服务器...");
                 LogHelper.Write.Error(ex.ToString());
                 return;
             }
             catch (HttpRequestException ex)
             {
-                MagicFlowMsg.ShowMessage(LanguageManager.Instance["MainWindow_GrowlMsg_MSLServerDown"] + $"\n[HTTP Exception]({ex.InnerException.Message}){ex.Message}", 2);
+                MagicFlowMsg.ShowMessage(LanguageManager.Instance["MainWindow_GrowlMsg_MSLServerDown"] + $"\n[HTTP Exception]{ex.InnerException.Message}", 2);
                 if (!isBackupUrl)
                 {
                     MagicFlowMsg.ShowMessage("软件将使用备用URL...");
