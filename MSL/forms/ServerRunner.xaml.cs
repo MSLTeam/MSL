@@ -4979,7 +4979,7 @@ namespace MSL
                 }
                 Dispatcher.Invoke(() =>
                 {
-                    MoreOperation.IsEnabled = false;
+                    MoreOperation.IsEnabled = true;
                 });
             }
         }
