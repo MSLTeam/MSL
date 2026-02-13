@@ -436,7 +436,7 @@ namespace MSL.utils
                 {
                     growlPanel.Children.Remove(msgLabel);
                 }
-                else
+                else if (messageStackPanel != null)
                 {
                     messageStackPanel.Children.Remove(msgLabel);
                     // 如果所有消息都已隐藏，移除 StackPanel
