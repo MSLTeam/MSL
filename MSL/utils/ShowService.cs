@@ -6,6 +6,7 @@ using System.Linq;
 using System.Threading.Tasks;
 using System.Windows;
 using System.Windows.Controls;
+using System.Windows.Media;
 using System.Windows.Media.Animation;
 using System.Windows.Threading;
 using Window = System.Windows.Window;
@@ -286,26 +287,27 @@ namespace MSL.utils
         private static StackPanel growlPanel;
         private static StackPanel messageStackPanel;
 
+        #region ShowMessage（原有逻辑，支持自定义容器）
+
         /// <summary>
         /// 显示消息
         /// </summary>
-        /// <param name="panel">容器</param>
         /// <param name="message">要显示的消息文本</param>
-        /// <param name="type">消息类型，默认为0（primary），1为sucess，2为danger，3为LabelWarning，4为Info</param>
-        /// <param name="seconds">显示时长，单位：秒（默认 3 秒）</param>
-        public static void ShowMessage(string message, int type = 0, int seconds = 3, UIElement panel = null, UIElement _growlPanel = null)
+        /// <param name="type">消息类型：0=Primary，1=Success，2=Danger，3=Warning，4=Info</param>
+        /// <param name="seconds">显示时长（秒，默认 3 秒）</param>
+        /// <param name="panel">容器（为 null 时自动获取当前活动窗口）</param>
+        /// <param name="_growlPanel">自定义 GrowlPanel（StackPanel），优先级高于 panel</param>
+        public static void ShowMessage(string message, int type = 0, int seconds = 3,
+            UIElement panel = null, UIElement _growlPanel = null)
         {
             if (_growlPanel == null)
             {
                 panel ??= WindowHelper.GetActiveWindow();
                 if (panel is Page page)
-                {
                     panel = Window.GetWindow(page);
-                }
                 if (panel is Window window)
-                {
                     panel = window.Content as UIElement;
-                }
+
                 if (panel is Panel targetPanel)
                 {
                     if (targetPanel.FindName("GrowlPanel") != null)
@@ -337,9 +339,6 @@ namespace MSL.utils
                 growlPanel = _growlPanel as StackPanel;
             }
 
-            //targetContainer = panel;
-
-            // 创建 Label 控件来显示消息
             var msgLabel = new Label
             {
                 Margin = new Thickness(10, 10, 10, 0),
@@ -353,39 +352,21 @@ namespace MSL.utils
                 HorizontalAlignment = HorizontalAlignment.Right,
             };
 
-            // 根据消息类型设置样式，可以根据需要为不同类型设置不同的样式
-            switch (type)
+            var styleKey = type switch
             {
-                case 0:
-                    msgLabel.Style = (Style)Application.Current.Resources["LabelPrimary"];
-                    break;
-                case 1:
-                    msgLabel.Style = (Style)Application.Current.Resources["LabelSuccess"];
-                    break;
-                case 2:
-                    msgLabel.Style = (Style)Application.Current.Resources["LabelDanger"];
-                    break;
-                case 3:
-                    msgLabel.Style = (Style)Application.Current.Resources["LabelWarning"];
-                    break;
-                case 4:
-                    msgLabel.Style = (Style)Application.Current.Resources["LabelInfo"];
-                    break;
-                default:
-                    msgLabel.Style = (Style)Application.Current.Resources["LabelPrimary"];
-                    break;
-            }
-            if (growlPanel != null)
-            {
-                growlPanel.Children.Insert(0, msgLabel);
-            }
-            else
-            {
-                messageStackPanel?.Children.Insert(0, msgLabel);
-            }
-            //messageStackPanel.Children.Add(msgLabel);
+                1 => "LabelSuccess",
+                2 => "LabelDanger",
+                3 => "LabelWarning",
+                4 => "LabelInfo",
+                _ => "LabelPrimary"
+            };
+            msgLabel.Style = (Style)Application.Current.Resources[styleKey];
 
-            // 显示消息并启动动画
+            if (growlPanel != null)
+                growlPanel.Children.Insert(0, msgLabel);
+            else
+                messageStackPanel?.Children.Insert(0, msgLabel);
+
             ShowMessageAnimation(msgLabel, seconds);
         }
 
@@ -402,30 +383,17 @@ namespace MSL.utils
             targetContainer = panel;
         }
 
-        /// <summary>
-        /// 启动消息的显示动画
-        /// </summary>
         private static void ShowMessageAnimation(Label msgLabel, int seconds)
         {
-            // 设置为可见，并开始淡入动画
             msgLabel.Visibility = Visibility.Visible;
-            var fadeIn = new DoubleAnimation(0, 1, TimeSpan.FromMilliseconds(300));
-            msgLabel.BeginAnimation(UIElement.OpacityProperty, fadeIn);
+            msgLabel.BeginAnimation(UIElement.OpacityProperty,
+                new DoubleAnimation(0, 1, TimeSpan.FromMilliseconds(300)));
 
-            // 启动定时器，指定秒数后隐藏消息
-            var timer = new DispatcherTimer();
-            timer.Interval = TimeSpan.FromSeconds(seconds);
-            timer.Tick += (sender, e) =>
-            {
-                timer.Stop();
-                HideMessageAnimation(msgLabel);
-            };
+            var timer = new DispatcherTimer { Interval = TimeSpan.FromSeconds(seconds) };
+            timer.Tick += (s, e) => { timer.Stop(); HideMessageAnimation(msgLabel); };
             timer.Start();
         }
 
-        /// <summary>
-        /// 隐藏消息的动画
-        /// </summary>
         private static void HideMessageAnimation(Label msgLabel)
         {
             var fadeOut = new DoubleAnimation(1, 0, TimeSpan.FromMilliseconds(300));
@@ -433,13 +401,10 @@ namespace MSL.utils
             {
                 msgLabel.Visibility = Visibility.Collapsed;
                 if (growlPanel != null)
-                {
                     growlPanel.Children.Remove(msgLabel);
-                }
                 else if (messageStackPanel != null)
                 {
                     messageStackPanel.Children.Remove(msgLabel);
-                    // 如果所有消息都已隐藏，移除 StackPanel
                     if (!messageStackPanel.Children.OfType<Label>().Any())
                     {
                         messageStackPanel.Visibility = Visibility.Collapsed;
@@ -450,5 +415,242 @@ namespace MSL.utils
             };
             msgLabel.BeginAnimation(UIElement.OpacityProperty, fadeOut);
         }
+
+        #endregion
+
+        #region ShowAskMessage（自定义询问框，支持倒计时自动确认）
+
+        /// <summary>
+        /// 显示带倒计时的询问框。
+        /// 倒计时结束后自动以"确认"执行回调；用户可提前点击确认/取消。
+        /// </summary>
+        /// <param name="message">询问消息文本</param>
+        /// <param name="callback">
+        ///     回调：true = 用户确认 或 倒计时自动触发；false = 用户主动取消
+        /// </param>
+        /// <param name="waitSeconds">倒计时秒数（默认 3 秒）</param>
+        /// <param name="confirmText">确认按钮文字（默认"立即重启"）</param>
+        /// <param name="cancelText">取消按钮文字（默认"取消"）</param>
+        /// <param name="container">
+        ///     指定父容器（Panel）。为 null 时自动寻找当前活动窗口的 Content。
+        /// </param>
+        public static void ShowAskMessage(
+            string message,
+            Action<bool> callback,
+            int waitSeconds = 3,
+            string titleText = "你好",
+            string confirmText = "确定",
+            string cancelText = "取消",
+            Panel container = null)
+        {
+            // 找到放置弹框的容器
+            Panel host = container ?? ResolveHostPanel();
+            if (host == null)
+            {
+                // 找不到容器时直接当作确认处理，不阻塞
+                callback?.Invoke(true);
+                return;
+            }
+
+            // 移除同 Tag 的旧询问框
+            const string askTag = "__MagicAskCard__";
+            var old = host.Children.OfType<Border>()
+                          .FirstOrDefault(b => b.Tag?.ToString() == askTag);
+            old?.Dispatcher.Invoke(() => host.Children.Remove(old));
+
+            bool hasResponded = false; // 防止回调被执行两次
+
+            // 外层卡片
+            var card = new MagicCard1
+            {
+                Tag = askTag,
+                Padding = new Thickness(15),
+                Margin = new Thickness(15),
+                MaxWidth = 360,
+                HorizontalAlignment = HorizontalAlignment.Right,
+                VerticalAlignment = VerticalAlignment.Top
+            };
+
+            // 内部布局
+            var root = new StackPanel { Orientation = Orientation.Vertical };
+
+            // 图标 + 标题行
+            var titleRow = new StackPanel
+            {
+                Orientation = Orientation.Horizontal,
+                Margin = new Thickness(0, 0, 0, 8)
+            };
+            titleRow.Children.Add(new TextBlock
+            {
+                Text = "⚠",
+                FontSize = 16,
+                Foreground = (Brush)Application.Current.Resources["WarningBrush"],
+                VerticalAlignment = VerticalAlignment.Center,
+                Margin = new Thickness(0, 0, 6, 0)
+            });
+            titleRow.Children.Add(new TextBlock
+            {
+                Text = titleText,
+                FontSize = 14,
+                Foreground = (Brush)Application.Current.Resources["WarningBrush"],
+                FontWeight = FontWeights.SemiBold,
+                VerticalAlignment = VerticalAlignment.Center
+            });
+            root.Children.Add(titleRow);
+
+            // 消息文本
+            root.Children.Add(new TextBlock
+            {
+                Text = message,
+                TextWrapping = TextWrapping.Wrap,
+                FontSize = 12,
+                Margin = new Thickness(0, 0, 0, 12)
+            });
+
+            var progressBar = new Border
+            {
+                Height = 4,
+                CornerRadius = new CornerRadius(2),
+                Background = (Brush)Application.Current.Resources["WarningBrush"],
+                HorizontalAlignment = HorizontalAlignment.Left,
+                Width = 0
+            };
+            // 用 Grid 叠放
+            var progressGrid = new Grid { Margin = new Thickness(0, 0, 0, 10) };
+            progressGrid.Children.Add(progressBar);
+            root.Children.Add(progressGrid);
+
+            // 倒计时数字标签
+            var countLabel = new TextBlock
+            {
+                Text = $"倒计时： {waitSeconds}s",
+                FontSize = 12,
+                Margin = new Thickness(0, 0, 0, 12)
+            };
+            root.Children.Add(countLabel);
+
+            // 按钮行
+            var btnRow = new UniformSpacingPanel
+            {
+                Orientation = Orientation.Horizontal,
+                Spacing = 8,
+                HorizontalAlignment = HorizontalAlignment.Right
+            };
+
+            var btnCancel = new Button
+            {
+                Content = cancelText
+            };
+
+            var btnConfirm = new Button
+            {
+                Content = confirmText
+            };
+
+            btnRow.Children.Add(btnCancel);
+            btnRow.Children.Add(btnConfirm);
+            root.Children.Add(btnRow);
+
+            card.Content = root;
+
+            // 插入容器
+            host.Children.Insert(0, card);
+
+            // 淡入动画
+            var fadeIn = new DoubleAnimation(0, 1, TimeSpan.FromMilliseconds(250));
+            card.BeginAnimation(UIElement.OpacityProperty, fadeIn);
+
+            DispatcherTimer countTimer = new DispatcherTimer { Interval = TimeSpan.FromSeconds(1) };
+            if (waitSeconds <= 0)
+            {
+                // 没有倒计时需求，直接显示完整进度条
+                progressBar.Width = double.NaN; // 自动填满
+                countLabel.Visibility = Visibility.Collapsed;
+            }
+            else
+            {
+                // ── 7. 进度条宽度动画（需要在布局完成后获取实际宽度）─────
+                card.Loaded += (_, _) =>
+                {
+                    double fullWidth = progressGrid.ActualWidth;
+                    if (fullWidth <= 0) fullWidth = card.ActualWidth - 36;
+
+                    var barAnim = new DoubleAnimation(0, fullWidth, new Duration(TimeSpan.FromSeconds(waitSeconds)));
+                    progressBar.BeginAnimation(FrameworkElement.WidthProperty, barAnim);
+                };
+
+                // 倒计时 Label 更新
+                int remaining = waitSeconds;
+                countTimer.Tick += (s, e) =>
+                {
+                    remaining--;
+                    if (remaining > 0)
+                    {
+                        countLabel.Text = $"倒计时： {remaining}s";
+                    }
+                    else
+                    {
+                        countTimer.Stop();
+                        // 倒计时结束，自动确认
+                        Respond(true);
+                    }
+                };
+                countTimer.Start();
+            }
+
+
+            // 按钮事件
+            btnConfirm.Click += (s, e) => Respond(true);
+            btnCancel.Click += (s, e) => Respond(false);
+
+            // 关闭并回调
+            void Respond(bool confirmed)
+            {
+                if (hasResponded) return;
+                hasResponded = true;
+                countTimer.Stop();
+                DismissCard(host, card, () => callback?.Invoke(confirmed));
+            }
+        }
+
+        /// <summary>淡出并从容器移除卡片，完成后执行 onRemoved</summary>
+        private static void DismissCard(Panel host, MagicCard1 card, Action onRemoved = null)
+        {
+            var fadeOut = new DoubleAnimation(1, 0, TimeSpan.FromMilliseconds(200));
+            fadeOut.Completed += (s, e) =>
+            {
+                host.Children.Remove(card);
+                onRemoved?.Invoke();
+            };
+            card.BeginAnimation(UIElement.OpacityProperty, fadeOut);
+        }
+
+        /// <summary>从当前活动窗口解析出一个 Panel 作为宿主</summary>
+        private static Panel ResolveHostPanel()
+        {
+            var win = WindowHelper.GetActiveWindow() as Window;
+            if (win == null) return null;
+            if (win.Content is Panel p) return p;
+            // 如果 Content 不是 Panel，尝试找第一个 Grid/Canvas/etc.
+            if (win.Content is DependencyObject d)
+            {
+                return FindVisualChild<Panel>(d);
+            }
+            return null;
+        }
+
+        private static T FindVisualChild<T>(DependencyObject parent) where T : DependencyObject
+        {
+            for (int i = 0; i < VisualTreeHelper.GetChildrenCount(parent); i++)
+            {
+                var child = VisualTreeHelper.GetChild(parent, i);
+                if (child is T t) return t;
+                var found = FindVisualChild<T>(child);
+                if (found != null) return found;
+            }
+            return null;
+        }
+
+        #endregion
     }
 }

@@ -413,7 +413,7 @@ namespace MSL.pages
         private void ChangeLogForeColor_Click(object sender, RoutedEventArgs e)
         {
             var picker = SingleOpenHelper.CreateControl<ColorPicker>();
-            picker.SelectedBrush = GetCurrentLogBrush();
+            picker.SelectedBrush = new SolidColorBrush(GetCurrentLogBrush());
 
             var window = new PopupWindow { PopupElement = picker };
             bool confirmed = false;
@@ -423,24 +423,24 @@ namespace MSL.pages
 
             if (!confirmed) return;
 
-            SetCurrentLogBrush(picker.SelectedBrush);
+            SetCurrentLogBrush(picker.SelectedBrush.Color);
             SaveLogColors();
             MagicFlowMsg.ShowMessage("保存日志颜色成功！重新打开服务器运行窗口以使其生效！", 1);
         }
 
         private void RestoreLogForeColor_Click(object sender, RoutedEventArgs e)
         {
-            ConfigStore.LogColor.INFO = Brushes.Green;
-            ConfigStore.LogColor.WARN = Brushes.Orange;
-            ConfigStore.LogColor.ERROR = Brushes.Red;
-            ConfigStore.LogColor.HIGHLIGHT = Brushes.DeepSkyBlue;
+            ConfigStore.LogColor.INFO = Colors.Green;
+            ConfigStore.LogColor.WARN = Colors.Orange;
+            ConfigStore.LogColor.ERROR = Colors.Red;
+            ConfigStore.LogColor.HIGHLIGHT = Colors.DeepSkyBlue;
 
             Cfg.LogColor = new AppConfig.LogColorConfig();  // 重置为默认值
             Cfg.Save();
             MagicFlowMsg.ShowMessage("已恢复默认日志颜色！重新打开服务器运行窗口以使其生效！", 1);
         }
 
-        private SolidColorBrush GetCurrentLogBrush()
+        private Color GetCurrentLogBrush()
         {
             return LogForeTypeCombo.SelectedIndex switch
             {
@@ -452,7 +452,7 @@ namespace MSL.pages
             };
         }
 
-        private void SetCurrentLogBrush(SolidColorBrush brush)
+        private void SetCurrentLogBrush(Color brush)
         {
             switch (LogForeTypeCombo.SelectedIndex)
             {

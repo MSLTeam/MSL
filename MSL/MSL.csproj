@@ -437,6 +437,9 @@
     <None Include="App.config" />
   </ItemGroup>
   <ItemGroup>
+    <PackageReference Include="Avalonia.AvaloniaEdit">
+      <Version>11.4.1</Version>
+    </PackageReference>
     <PackageReference Include="Chaos.NaCl.Standard">
       <Version>1.0.0</Version>
     </PackageReference>

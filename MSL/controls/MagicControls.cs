@@ -72,6 +72,42 @@ namespace MSL.controls
         }
     }
 
+    public class MagicCard1 : ContentControl
+    {
+        static MagicCard1()
+        {
+            DefaultStyleKeyProperty.OverrideMetadata(typeof(MagicCard1), new FrameworkPropertyMetadata(typeof(MagicCard1)));
+        }
+
+        // 定义 Title 依赖属性
+        public static readonly DependencyProperty TitleProperty =
+            DependencyProperty.Register("Title", typeof(string), typeof(MagicCard1), new PropertyMetadata(string.Empty));
+
+        public string Title
+        {
+            get { return (string)GetValue(TitleProperty); }
+            set { SetValue(TitleProperty, value); }
+        }
+
+        public static new readonly DependencyProperty PaddingProperty =
+            DependencyProperty.Register("Padding", typeof(Thickness), typeof(MagicCard1), new PropertyMetadata(new Thickness(10)));
+
+        public new Thickness Padding
+        {
+            get { return (Thickness)GetValue(PaddingProperty); }
+            set { SetValue(PaddingProperty, value); }
+        }
+
+        public static new readonly DependencyProperty BackgroundProperty =
+            DependencyProperty.Register("Background", typeof(Brush), typeof(MagicCard1), new PropertyMetadata(null));
+
+        public new Brush Background
+        {
+            get { return (Brush)GetValue(BackgroundProperty); }
+            set { SetValue(BackgroundProperty, value); }
+        }
+    }
+
     public class MagicScrollViewer : ItemsControl
     {
         static MagicScrollViewer()

@@ -1,8 +1,4 @@
 ﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
 using System.Windows.Media;
 
 namespace MSL.utils
@@ -20,10 +16,10 @@ namespace MSL.utils
 
         public class LogColor
         {
-            public static SolidColorBrush INFO { get; set; } = Brushes.Green;
-            public static SolidColorBrush WARN { get; set; } = Brushes.Orange;
-            public static SolidColorBrush ERROR { get; set; } = Brushes.Red;
-            public static SolidColorBrush HIGHLIGHT { get; set; } = Brushes.DeepSkyBlue;
+            public static Color INFO { get; set; } = Colors.Green;
+            public static Color WARN { get; set; } = Colors.Orange;
+            public static Color ERROR { get; set; } = Colors.Red;
+            public static Color HIGHLIGHT { get; set; } = Colors.DeepSkyBlue;
         }
     }
 }

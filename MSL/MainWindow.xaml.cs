@@ -225,10 +225,10 @@ namespace MSL
 
                 // 日志颜色
                 var lc = cfg.LogColor;
-                try { ConfigStore.LogColor.INFO = (SolidColorBrush)brushConverter.ConvertFromString(lc.INFO); } catch { }
-                try { ConfigStore.LogColor.WARN = (SolidColorBrush)brushConverter.ConvertFromString(lc.WARN); } catch { }
-                try { ConfigStore.LogColor.ERROR = (SolidColorBrush)brushConverter.ConvertFromString(lc.ERROR); } catch { }
-                try { ConfigStore.LogColor.HIGHLIGHT = (SolidColorBrush)brushConverter.ConvertFromString(lc.HIGHLIGHT); } catch { }
+                try { ConfigStore.LogColor.INFO = (Color)brushConverter.ConvertFromString(lc.INFO); } catch { }
+                try { ConfigStore.LogColor.WARN = (Color)brushConverter.ConvertFromString(lc.WARN); } catch { }
+                try { ConfigStore.LogColor.ERROR = (Color)brushConverter.ConvertFromString(lc.ERROR); } catch { }
+                try { ConfigStore.LogColor.HIGHLIGHT = (Color)brushConverter.ConvertFromString(lc.HIGHLIGHT); } catch { }
 
                 LogHelper.Write.Info("读取自动化功能配置成功！");
             }

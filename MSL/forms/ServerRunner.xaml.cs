@@ -51,7 +51,7 @@ namespace MSL
         private short GetServerInfoLine = 0;
         private readonly short FirstStartTab;
         private MCSLogHandler MCSLogHandler { get; set; }
-        private Process ServerProcess { get; } = new Process();
+        private Process ServerProcess { get; set; }
         private ConptyWindow ConPTYWindow { get; set; }
         private DispatcherTimer ConPTYResizeTimer { get; set; } = new DispatcherTimer();
         private ServerProperties ServerProperties { get; set; }
@@ -64,6 +64,45 @@ namespace MSL
         private string RserverYggAddr { get; set; }
         private string Rserverbase { get; set; }
         private short Rservermode { get; set; }
+        public class LogSegment
+        {
+            public string Text { get; set; }
+            public Color Color { get; set; }
+            public bool IsBold { get; set; }
+            public bool IsUnderline { get; set; }
+        }
+
+        public class LogEntry
+        {
+            public int StartOffset { get; set; }  // 在 Document 中的起始位置
+            public List<LogSegment> Segments { get; set; } = new();
+        }
+        private LogColorizer _logColorizer;
+        private int _logEntryCount = 0;
+        private const int MaxLogEntries = 1000;
+
+        public class FastCommandInfo
+        {
+            public string Remark { get; set; }  // 备注 (如: 给管理员)
+            public string Cmd { get; set; }     // 指令 (如: op)
+            public string Alias { get; set; }   // 别名 (如: o)
+
+            // 用于在 ComboBox 和 ListBox 中展示的格式
+            public string DisplayText
+            {
+                get
+                {
+                    if (Cmd == "/") return "/（指令）"; // 根命令兜底
+                    string text = $"/{Cmd.TrimStart('/')}"; // 统一显示前缀
+                    if (!string.IsNullOrEmpty(Remark)) text += $"（{Remark}）";
+                    if (!string.IsNullOrEmpty(Alias)) text += $" [{Alias}]";
+                    return text;
+                }
+            }
+        }
+
+        // 全局指令列表
+        private List<FastCommandInfo> CurrentFastCmds = new List<FastCommandInfo>();
 
         /// <summary>
         /// 服务器运行窗口
@@ -74,17 +113,19 @@ namespace MSL
         {
             InitializeComponent();
             InitializeLogHandler();
-            InitializeColorDict();
-
-            ServerProcess.OutputDataReceived += new DataReceivedEventHandler(OutputDataReceived);
-            ServerProcess.ErrorDataReceived += new DataReceivedEventHandler(OutputDataReceived);
-            ServerProcess.Exited += new EventHandler(ServerExitEvent);
+            InitializeOutlog();
 
             ConPTYResizeTimer.Interval = TimeSpan.FromMilliseconds(200);
             ConPTYResizeTimer.Tick += new EventHandler(ConPTYResizeTimer_Tick);
             SettingsPage.ChangeSkinStyle += ChangeSkinStyle;
             RserverID = serverID;
             FirstStartTab = controlTab;
+        }
+
+        private void InitializeOutlog()
+        {
+            _logColorizer = new LogColorizer();
+            outlog.TextArea.TextView.LineTransformers.Add(_logColorizer);
         }
 
         private void InitializeLogHandler()
@@ -165,16 +206,12 @@ namespace MSL
         private void DisposeRes()
         {
             MCSLogHandler.CleanupResources();
-            outlog.Document.Blocks.Clear();
+            ClearLog();
             if (ServerList.ServerWindowList.ContainsKey(RserverID))
             {
                 ServerList.ServerWindowList.Remove(RserverID);
             }
-            ServerProcess.OutputDataReceived -= OutputDataReceived;
-            ServerProcess.ErrorDataReceived -= OutputDataReceived;
-            ServerProcess.Exited -= ServerExitEvent;
             SettingsPage.ChangeSkinStyle -= ChangeSkinStyle;
-            ServerProcess.Dispose();
             if (ConPTYWindow != null)
             {
                 try
@@ -684,7 +721,7 @@ namespace MSL
             }
             try
             {
-                if (!ServerProcess.HasExited)
+                if (ServerProcess != null && !ServerProcess.HasExited)
                 {
                     Logger.Info("检测服务器运行事件：服务器正在运行");
                     return true;
@@ -886,26 +923,29 @@ namespace MSL
         {
             try
             {
+                Process targetProc = null;
+
+                // 优先检查 ServerProcess
                 if (ServerProcess != null && !ServerProcess.HasExited)
                 {
-                    return ServerProcess.PrivateMemorySize64 / (1024.0 * 1024.0 * 1024.0);
+                    targetProc = ServerProcess;
                 }
-                else if (ConPTYWindow != null && ConPTYWindow.ConptyConsole.ConPTYTerm.TermProcIsRunning)
+                // 其次检查 ConPTYWindow 内部进程
+                else if (ConPTYWindow?.ConptyConsole?.ConPTYTerm?.Process?.Process != null)
                 {
-                    return
-                        ConPTYWindow.ConptyConsole.ConPTYTerm
-                        .Process.Process.PrivateMemorySize64
-                        / (1024.0 * 1024.0 * 1024.0);
+                    var p = ConPTYWindow.ConptyConsole.ConPTYTerm.Process.Process;
+                    if (!p.HasExited) targetProc = p;
                 }
-                else
+
+                if (targetProc != null)
                 {
-                    return 0;
+                    targetProc.Refresh(); // 刷新进程快照
+
+                    return targetProc.WorkingSet64 / (1024.0 * 1024.0 * 1024.0);
                 }
             }
-            catch
-            {
-                return 0;
-            }
+            catch { /* 忽略进程关闭瞬间的访问异常 */ }
+            return 0;
         }
 
         private void UpdateMemoryInfo(float ramAvailable, double allMemory, double processUsedMemory)
@@ -925,7 +965,7 @@ namespace MSL
             {
                 if (!string.IsNullOrEmpty(tempLog) && !previewOutlog.Text.Contains(tempLog))
                 {
-                    previewOutlog.Text += tempLog + "\n";
+                    previewOutlog.Text += "\n" + tempLog;
                     previewOutlog.ScrollToEnd();
                 }
             }
@@ -1354,6 +1394,8 @@ namespace MSL
             try
             {
                 Directory.CreateDirectory(Rserverbase);
+                
+                ServerProcess = new Process();
                 ServerProcess.StartInfo.WorkingDirectory = Rserverbase;
                 if (Rservermode == 0)
                 {
@@ -1371,6 +1413,9 @@ namespace MSL
                 ServerProcess.StartInfo.RedirectStandardOutput = true;
                 ServerProcess.StartInfo.RedirectStandardError = true;
                 ServerProcess.EnableRaisingEvents = true;
+                ServerProcess.OutputDataReceived += new DataReceivedEventHandler(OutputDataReceived);
+                ServerProcess.ErrorDataReceived += new DataReceivedEventHandler(OutputDataReceived);
+                ServerProcess.Exited += new EventHandler(ServerExitEvent);
                 if (outputCmdEncoding.Content.ToString() == "UTF8")
                 {
                     ServerProcess.StartInfo.StandardOutputEncoding = Encoding.UTF8;
@@ -1388,36 +1433,35 @@ namespace MSL
             }
             catch (Exception e)
             {
-                PrintLog("出现错误，正在检查问题...", Brushes.Red);
+                PrintLog("出现错误，正在检查问题...", Colors.Red);
                 if (File.Exists(Rserverjava))
                 {
-                    PrintLog("Java路径正常", Brushes.Green);
+                    PrintLog("Java路径正常", Colors.Green);
                 }
                 else
                 {
-                    PrintLog("Java路径有误", Brushes.Red);
+                    PrintLog("Java路径有误", Colors.Red);
                 }
                 if (Directory.Exists(Rserverbase))
                 {
-                    PrintLog("服务器目录正常", Brushes.Green);
+                    PrintLog("服务器目录正常", Colors.Green);
                 }
                 else
                 {
-                    PrintLog("服务器目录有误", Brushes.Red);
+                    PrintLog("服务器目录有误", Colors.Red);
                 }
                 if (File.Exists(Rserverbase + "\\" + Rserverserver))
                 {
-                    PrintLog("服务端路径正常", Brushes.Green);
+                    PrintLog("服务端路径正常", Colors.Green);
                 }
                 else
                 {
-                    PrintLog("服务端路径有误", Brushes.Red);
+                    PrintLog("服务端路径有误", Colors.Red);
                 }
 
-                PrintLog("错误代码：" + e.Message, Brushes.Red);
+                PrintLog("错误代码：" + e.Message, Colors.Red);
                 MagicShow.ShowMsgDialog(this, "出现错误，开服器已检测完毕，请根据检测信息对服务器设置进行更改！", "错误");
                 TabCtrl.SelectedIndex = 1;
-                //ChangeControlsState(false);
             }
         }
 
@@ -1443,7 +1487,7 @@ namespace MSL
                 serverIPLab.Content = "获取中";
                 localServerIPLab.Content = "获取中";
                 MagicFlowMsg.ShowMessage("开服中，请稍等……", _growlPanel: GetActiveGrowlPanel());
-                outlog.Document.Blocks.Clear();
+                ClearLog();
                 PrintLog("正在开启服务器，请稍等...", ConfigStore.LogColor.INFO);
                 if (ConPTYWindow == null)
                 {
@@ -1482,13 +1526,7 @@ namespace MSL
                     fastCMD.IsEnabled = false;
                     cmdtext.Text = "服务器已关闭";
                     MCSLogHandler.CleanupResources();
-                    try
-                    {
-                        ServerProcess.CancelOutputRead();
-                        ServerProcess.CancelErrorRead();
-                    }
-                    catch
-                    { return; }
+                    
                 }
                 else
                 {
@@ -1497,26 +1535,15 @@ namespace MSL
             }
         }
 
-        // private bool solveProblemSystem;
         private void OutputDataReceived(object sender, DataReceivedEventArgs e)
         {
             if (e.Data != null)
             {
-                //string msg = e.Data;
-                //tempLog = msg;
-
                 // 将日志添加到缓冲区，不要直接处理（否则UI线程压力很大，可能会使软件崩溃）
                 MCSLogHandler._logBuffer.Enqueue(e.Data);
-
+                tempLog = e.Data;
                 Dispatcher.InvokeAsync(() =>
                 {
-                    // 检查是否需要清理日志
-                    /*
-                    if (outlog.Document.Blocks.Count >= 1000 && autoClearOutlog.IsChecked == true)
-                    {
-                        outlog.Document.Blocks.Clear();
-                    } */
-                    // 如果定时器没有运行，确保启动它
                     if (!MCSLogHandler._logProcessTimer.IsEnabled)
                     {
                         MCSLogHandler._logProcessTimer.Start();
@@ -1525,191 +1552,199 @@ namespace MSL
             }
         }
 
-
-
         #region 日志显示功能、彩色日志
 
-        private int _logEntryCount = 0;
-
-        private void PrintLog(string msg, Brush color)
+        private void PrintLog(string msg, Color defaultColor)
         {
-            var runs = new List<Run>();
-            char delimiter = msg.Contains('&') ? '&' : (msg.Contains('§') ? '§' : '\0');
-
-            try
-            {
-                if (delimiter != '\0')
-                {
-                    int lastIndex = 0;
-                    int firstDelimiterIndex = msg.IndexOf(delimiter);
-                    if (firstDelimiterIndex > 0) { runs.Add(new Run(msg.Substring(0, firstDelimiterIndex)) { Foreground = color }); }
-                    else if (firstDelimiterIndex == -1) { runs.Add(new Run(msg) { Foreground = color }); goto UpdateUI; }
-                    while ((lastIndex = msg.IndexOf(delimiter, lastIndex)) != -1)
-                    {
-                        int nextDelimiterIndex = msg.IndexOf(delimiter, lastIndex + 1);
-                        if (nextDelimiterIndex == -1) nextDelimiterIndex = msg.Length;
-                        string segment = msg.Substring(lastIndex + 1, nextDelimiterIndex - (lastIndex + 1));
-                        if (segment.Length > 0)
-                        {
-                            string colorCode = segment.Substring(0, 1);
-                            string text = segment.Substring(1);
-                            runs.Add(new Run(text) { Foreground = GetBrushFromMinecraftColorCode(colorCode[0]) });
-                        }
-                        lastIndex = nextDelimiterIndex;
-                        if (lastIndex == msg.Length) break;
-                    }
-                }
-                else if (msg.Contains("\x1B"))
-                {
-                    string[] splitMsg = msg.Split(new[] { '\x1B' }, StringSplitOptions.RemoveEmptyEntries);
-                    foreach (var everyMsg in splitMsg)
-                    {
-                        int mIndex = everyMsg.IndexOf('m');
-                        if (mIndex == -1 || mIndex + 1 >= everyMsg.Length) continue;
-                        string codesPart = everyMsg.Substring(0, mIndex).TrimStart('[');
-                        string text = everyMsg.Substring(mIndex + 1);
-                        if (string.IsNullOrEmpty(text)) continue;
-                        string[] codes = codesPart.Split(';');
-                        bool isBold = false;
-                        bool isUnderline = false;
-                        Brush foreground = Brushes.Green;
-                        foreach (var codeStr in codes)
-                        {
-                            switch (codeStr)
-                            {
-                                case "0": isBold = false; isUnderline = false; foreground = Brushes.Green; break;
-                                case "1": isBold = true; break;
-                                case "4": isUnderline = true; break;
-                                default: if (colorDictAnsi.ContainsKey(codeStr)) { foreground = colorDictAnsi[codeStr]; } break;
-                            }
-                        }
-                        runs.Add(new Run(text) { Foreground = foreground, FontWeight = isBold ? FontWeights.Bold : FontWeights.Normal, TextDecorations = isUnderline ? TextDecorations.Underline : null });
-                    }
-                }
-                else { runs.Add(new Run(msg) { Foreground = color }); }
-            }
-            catch { runs.Clear(); runs.Add(new Run(msg) { Foreground = color }); }
-
-        // 更新日志到UI
-        UpdateUI:
-            if (runs.Count == 0) return;
+            // 1. 解析出带颜色的片段列表
+            var segments = ParseLogSegments(msg, defaultColor);
+            if (segments.Count == 0) return;
 
             Dispatcher.Invoke(() =>
             {
                 // 自动清屏
-                if (autoClearOutlog.IsChecked == true && _logEntryCount >= 1000)
+                if (autoClearOutlog.IsChecked == true && _logEntryCount >= MaxLogEntries)
                 {
-                    outlog.Document.Blocks.Clear();
-                    _logEntryCount = 0;
+                    ClearLog();
                 }
 
-                bool shouldScrollToEnd = outlog.VerticalOffset + outlog.ViewportHeight >= outlog.ExtentHeight;
+                bool shouldScroll = outlog.VerticalOffset + outlog.ViewportHeight >= outlog.ExtentHeight - 5;
 
-                // 尝试获取最后一个段落
-                Paragraph targetParagraph = outlog.Document.Blocks.LastBlock as Paragraph;
+                // 拼接纯文本
+                string plainText = string.Concat(segments.Select(s => s.Text));
 
-                // 如果文档是空的，或者最后一个不是段落，则新建一个
-                if (targetParagraph == null)
+                // 记录插入位置
+                int insertOffset = outlog.Document.TextLength;
+
+                // 如果文档已有内容，先加换行
+                if (insertOffset > 0)
                 {
-                    targetParagraph = new Paragraph();
-                    targetParagraph.Margin = new Thickness(0);
-                    outlog.Document.Blocks.Add(targetParagraph);
+                    outlog.Document.Insert(insertOffset, "\n");
+                    insertOffset++;
+                }
+
+                // 记录本条日志起始 offset
+                var entry = new LogEntry
+                {
+                    StartOffset = insertOffset,
+                    Segments = segments
+                };
+
+                // 插入纯文本
+                outlog.Document.Insert(insertOffset, plainText);
+
+                // 注册着色信息
+                _logColorizer.AddEntry(entry);
+
+                // 触发重绘
+                outlog.TextArea.TextView.Redraw();
+
+                _logEntryCount++;
+
+                if (shouldScroll)
+                    outlog.ScrollToEnd();
+            });
+        }
+
+        private void ClearLog()
+        {
+            outlog.Clear();
+            _logColorizer.Clear();
+            _logEntryCount = 0;
+        }
+
+        private List<LogSegment> ParseLogSegments(string msg, Color defaultColor)
+        {
+            var segments = new List<LogSegment>();
+
+            try
+            {
+                char delimiter = msg.Contains('&') ? '&' : msg.Contains('§') ? '§' : '\0';
+
+                if (delimiter != '\0')
+                {
+                    // Minecraft & / § 颜色代码
+                    int lastIndex = 0;
+                    int firstDelimiterIndex = msg.IndexOf(delimiter);
+
+                    if (firstDelimiterIndex > 0)
+                        segments.Add(new LogSegment { Text = msg.Substring(0, firstDelimiterIndex), Color = defaultColor });
+                    else if (firstDelimiterIndex == -1)
+                    {
+                        segments.Add(new LogSegment { Text = msg, Color = defaultColor });
+                        return segments;
+                    }
+
+                    while ((lastIndex = msg.IndexOf(delimiter, lastIndex)) != -1)
+                    {
+                        int nextIndex = msg.IndexOf(delimiter, lastIndex + 1);
+                        if (nextIndex == -1) nextIndex = msg.Length;
+
+                        string segment = msg.Substring(lastIndex + 1, nextIndex - lastIndex - 1);
+                        if (segment.Length > 1)
+                        {
+                            char code = segment[0];
+                            string text = segment.Substring(1);
+                            segments.Add(new LogSegment
+                            {
+                                Text = text,
+                                Color = GetColorFromMinecraftCode(code)
+                            });
+                        }
+                        lastIndex = nextIndex;
+                        if (lastIndex >= msg.Length) break;
+                    }
+                }
+                else if (msg.Contains("\x1B"))
+                {
+                    // ANSI 转义码
+                    string[] parts = msg.Split(new[] { '\x1B' }, StringSplitOptions.RemoveEmptyEntries);
+                    foreach (var part in parts)
+                    {
+                        int mIndex = part.IndexOf('m');
+                        if (mIndex == -1 || mIndex + 1 >= part.Length) continue;
+
+                        string codesPart = part.Substring(0, mIndex).TrimStart('[');
+                        string text = part.Substring(mIndex + 1);
+                        if (string.IsNullOrEmpty(text)) continue;
+
+                        bool isBold = false, isUnderline = false;
+                        Color foreground = Colors.Green;
+
+                        foreach (var code in codesPart.Split(';'))
+                        {
+                            switch (code)
+                            {
+                                case "0": isBold = false; isUnderline = false; foreground = Colors.Green; break;
+                                case "1": isBold = true; break;
+                                case "4": isUnderline = true; break;
+                                default:
+                                    if (_ansiColorMap.TryGetValue(code, out var c)) foreground = c;
+                                    break;
+                            }
+                        }
+                        segments.Add(new LogSegment { Text = text, Color = foreground, IsBold = isBold, IsUnderline = isUnderline });
+                    }
                 }
                 else
                 {
-                    // 如果段落中已经有内容 (说明这不是第一条日志),
-                    // 就在添加新内容之前，先插入一个换行符！
-                    if (targetParagraph.Inlines.Count > 0)
-                    {
-                        targetParagraph.Inlines.Add(new LineBreak());
-                    }
+                    segments.Add(new LogSegment { Text = msg, Color = defaultColor });
                 }
-
-                // 将预先创建好的所有 Run 追加到段落中
-                foreach (var run in runs)
-                {
-                    targetParagraph.Inlines.Add(run);
-                    // log计数
-                    _logEntryCount++;
-                }
-
-
-
-                if (shouldScrollToEnd)
-                {
-                    outlog.ScrollToEnd();
-                }
-            });
-
-            MCSLogHandler.LogInfo[0].Color = (SolidColorBrush)color;
-        }
-
-        private Dictionary<char, SolidColorBrush> colorDict;
-        private void InitializeColorDict()
-        {
-            colorDict = new Dictionary<char, SolidColorBrush>
-            {
-                ['r'] = MCSLogHandler.LogInfo[0].Color,
-                ['0'] = Brushes.Black,
-                ['1'] = Brushes.DarkBlue,
-                ['2'] = Brushes.DarkGreen,
-                ['3'] = Brushes.DarkCyan,
-                ['4'] = Brushes.DarkRed,
-                ['5'] = Brushes.DarkMagenta,
-                ['6'] = Brushes.Orange,//gold
-                ['7'] = Brushes.Gray,
-                ['8'] = Brushes.DarkGray,
-                ['9'] = Brushes.Blue,
-                ['a'] = Brushes.Green,
-                ['b'] = Brushes.Cyan,
-                ['c'] = Brushes.Red,
-                ['d'] = Brushes.Magenta,
-                ['e'] = Brushes.Gold,//yellow
-                ['f'] = Brushes.White,
-            };
-        }
-
-        private Brush GetBrushFromMinecraftColorCode(char colorCode)
-        {
-            if (colorDict.ContainsKey(colorCode))
-            {
-                return colorDict[colorCode];
             }
-            return Brushes.Green;
+            catch
+            {
+                segments.Clear();
+                segments.Add(new LogSegment { Text = msg, Color = defaultColor });
+            }
+
+            return segments;
         }
 
-        Dictionary<string, Brush> colorDictAnsi = new Dictionary<string, Brush>
+        private static readonly Dictionary<char, Color> _mcColorMap = new()
         {
-            ["30"] = Brushes.Black,
-            ["31"] = Brushes.Red,
-            ["32"] = Brushes.Green,
-            ["33"] = Brushes.Gold,//yellow
-            ["34"] = Brushes.Blue,
-            ["35"] = Brushes.Magenta,
-            ["36"] = Brushes.Cyan,
-            ["37"] = Brushes.White,
-            ["90"] = Brushes.Gray,
-            ["91"] = Brushes.LightPink,
-            ["92"] = Brushes.LightGreen,
-            ["93"] = Brushes.LightYellow,
-            ["94"] = Brushes.LightBlue,
-            ["95"] = Brushes.LightPink,
-            ["96"] = Brushes.LightCyan,
-            ["97"] = Brushes.White,
+            ['0'] = Colors.Black,
+            ['1'] = Colors.DarkBlue,
+            ['2'] = Colors.DarkGreen,
+            ['3'] = Colors.DarkCyan,
+            ['4'] = Colors.DarkRed,
+            ['5'] = Colors.DarkMagenta,
+            ['6'] = Colors.Orange,
+            ['7'] = Colors.Gray,
+            ['8'] = Colors.DarkGray,
+            ['9'] = Colors.Blue,
+            ['a'] = Colors.Green,
+            ['b'] = Colors.Cyan,
+            ['c'] = Colors.Red,
+            ['d'] = Colors.Magenta,
+            ['e'] = Colors.Gold,
+            ['f'] = Colors.White,
         };
 
-        private Brush GetBrushFromAnsiColorCode(string colorCode)
+        private static readonly Dictionary<string, Color> _ansiColorMap = new()
         {
-            if (colorDictAnsi.ContainsKey(colorCode))
-            {
-                return colorDictAnsi[colorCode];
-            }
-            return Brushes.Green;
-        }
+            ["30"] = Colors.Black,
+            ["31"] = Colors.Red,
+            ["32"] = Colors.Green,
+            ["33"] = Colors.Gold,
+            ["34"] = Colors.Blue,
+            ["35"] = Colors.Magenta,
+            ["36"] = Colors.Cyan,
+            ["37"] = Colors.White,
+            ["90"] = Colors.Gray,
+            ["91"] = Colors.LightPink,
+            ["92"] = Colors.LightGreen,
+            ["93"] = Colors.LightYellow,
+            ["94"] = Colors.LightBlue,
+            ["95"] = Colors.LightPink,
+            ["96"] = Colors.LightCyan,
+            ["97"] = Colors.White,
+        };
+
+        private Color GetColorFromMinecraftCode(char code)
+            => _mcColorMap.TryGetValue(code, out var c) ? c : Colors.Green;
         #endregion
 
         private bool ConptyCanOutLog = true;
-        //private string tempLogs;
         private void ProcessOutputEvent(string msg)
         {
             if (!ConptyCanOutLog)
@@ -1717,22 +1752,10 @@ namespace MSL
 
             tempLog = msg;
             ProcessOutput(msg);
-
-            /*
-            if (tempLogs != null)
-            {
-                Dispatcher.Invoke(() =>
-                {
-                    ProcessOutput(tempLogs);
-                });
-            }
-            tempLogs = msg;
-            */
         }
 
         private void ProcessOutput(string msg)
         {
-            //Paragraph p = new Paragraph();
             if (msg.Contains("\n"))
             {
                 if (msg.Contains("\r"))
@@ -1746,13 +1769,6 @@ namespace MSL
 
                     if (MCSLogHandler.ServerService.ProblemSolveSystem)
                         MCSLogHandler.ServerService.ProblemSystemHandle(s);
-                    /*
-                    Run run = new Run(s)
-                    {
-                        Foreground = Brushes.Black
-                    };
-                    p.Inlines.Add(run);
-                    */
                 }
             }
             else
@@ -1760,24 +1776,15 @@ namespace MSL
                 LogHandleInfo(msg);
                 if (MCSLogHandler.ServerService.ProblemSolveSystem)
                     MCSLogHandler.ServerService.ProblemSystemHandle(msg);
-                /*
-                Run run = new Run(msg)
-                {
-                    Foreground = Brushes.Black
-                };
-                p.Inlines.Add(run);
-                */
             }
-            //outlog.Document.Blocks.Clear();
-            //outlog.Document.Blocks.Add(p);
         }
 
         private bool outlogEncodingAsk = true;
         private void HandleEncodingIssue()
         {
-            Brush brush = MCSLogHandler.LogInfo[0].Color;
-            PrintLog("MSL检测到您的服务器输出了乱码日志，请尝试去“更多功能”界面更改服务器的“输出编码”来解决此问题！", Brushes.Red);
-            MCSLogHandler.LogInfo[0].Color = (SolidColorBrush)brush;
+            Color brush = MCSLogHandler.LogInfo[0].Color;
+            PrintLog("MSL检测到您的服务器输出了乱码日志，请尝试去“更多功能”界面更改服务器的“输出编码”来解决此问题！", Colors.Red);
+            MCSLogHandler.LogInfo[0].Color = brush;
             if (outlogEncodingAsk)
             {
                 outlogEncodingAsk = false;
@@ -1788,7 +1795,8 @@ namespace MSL
                 }
                 Growl.Ask(new GrowlInfo
                 {
-                    Message = "MSL检测到您的服务器输出了乱码日志，是否将服务器输出编码更改为“" + encoding + "”？\n点击确定后将自动更改编码并重启服务器",
+                    Message = "MSL检测到您的服务器输出了乱码日志，是否将服务器输出编码更改为“" + encoding + 
+                    "”？\n点击确定后将自动更改编码并重启服务器（注意：软件会强制关闭服务器进程，若害怕服务器数据丢失，可先手动关服，然后再点击确定按钮）。",
                     ActionBeforeClose = isConfirmed =>
                     {
                         if (isConfirmed)
@@ -1806,20 +1814,17 @@ namespace MSL
                             Task.Run(async () =>
                             {
                                 GetServerInfoLine = 102;
-                                Dispatcher.Invoke(() =>
-                                {
-                                    autoStartserver.IsChecked = true;
-                                });
-                                await Task.Delay(200);
+                                await Task.Delay(100);
                                 try
                                 {
-                                    ServerProcess.Kill();
+                                    if (ServerProcess != null && ServerProcess.HasExited == false)
+                                        ServerProcess.Kill();
                                 }
                                 catch { }
                                 await Task.Delay(200);
                                 Dispatcher.Invoke(() =>
                                 {
-                                    autoStartserver.IsChecked = false;
+                                    RestartServer();
                                 });
                             });
                         }
@@ -1869,15 +1874,15 @@ namespace MSL
         {
             if (msg.Contains("FAILED TO BIND TO PORT"))
             {
-                PrintLog("警告：由于端口占用，服务器已自动关闭！请检查您的服务器是否多开或者有其他软件占用端口！\r\n解决方法：您可尝试通过重启电脑解决！", Brushes.Red);
+                PrintLog("警告：由于端口占用，服务器已自动关闭！请检查您的服务器是否多开或者有其他软件占用端口！\r\n解决方法：您可尝试通过重启电脑解决！", Colors.Red);
             }
             else if (msg.Contains("Unable to access jarfile"))
             {
-                PrintLog("警告：无法访问JAR文件！您的服务端可能已损坏或路径中含有中文或其他特殊字符,请及时修改！", Brushes.Red);
+                PrintLog("警告：无法访问JAR文件！您的服务端可能已损坏或路径中含有中文或其他特殊字符,请及时修改！", Colors.Red);
             }
             else if (msg.Contains("加载 Java 代理时出错"))
             {
-                PrintLog("警告：无法访问JAR文件！您的服务端可能已损坏或路径中含有中文或其他特殊字符,请及时修改！", Brushes.Red);
+                PrintLog("警告：无法访问JAR文件！您的服务端可能已损坏或路径中含有中文或其他特殊字符,请及时修改！", Colors.Red);
             }
         }
 
@@ -1898,11 +1903,11 @@ namespace MSL
                 {
                     if (string.IsNullOrEmpty(RserverYggAddr))
                     {
-                        PrintLog("检测到您没有关闭正版验证，如果客户端为离线登录的话，请点击“更多功能”里“关闭正版验证”按钮以关闭正版验证。否则离线账户将无法进入服务器！", Brushes.OrangeRed);
+                        PrintLog("检测到您没有关闭正版验证，如果客户端为离线登录的话，请点击“更多功能”里“关闭正版验证”按钮以关闭正版验证。否则离线账户将无法进入服务器！", Colors.OrangeRed);
                     }
                     else
                     {
-                        PrintLog("检测到您正在使用第三方外置登录验证，请确保客户端均采用第三方外置登录进入游戏，否则将无法进入服务器哦！", Brushes.OrangeRed);
+                        PrintLog("检测到您正在使用第三方外置登录验证，请确保客户端均采用第三方外置登录进入游戏，否则将无法进入服务器哦！", Colors.OrangeRed);
                     }
                     onlineModeLab.Content = "已开启";
                 }
@@ -1910,11 +1915,11 @@ namespace MSL
                 {
                     if (string.IsNullOrEmpty(RserverYggAddr))
                     {
-                        PrintLog("检测到您关闭了正版验证，若没有采取相关措施来保护服务器（如添加登录插件等），服务器会有被入侵的风险，请务必注意！", Brushes.OrangeRed);
+                        PrintLog("检测到您关闭了正版验证，若没有采取相关措施来保护服务器（如添加登录插件等），服务器会有被入侵的风险，请务必注意！", Colors.OrangeRed);
                     }
                     else
                     {
-                        PrintLog("检测到您配置了外置登录且关闭了正版验证，这样做是无效的！！！请您打开正版验证！！！", Brushes.Red);
+                        PrintLog("检测到您配置了外置登录且关闭了正版验证，这样做是无效的！！！请您打开正版验证！！！", Colors.Red);
                     }
                     onlineModeLab.Content = "已关闭";
                 }
@@ -2057,6 +2062,19 @@ namespace MSL
 
         private void ServerExitEvent(object sender, EventArgs e)//Tradition_ServerExitEvent
         {
+            try
+            {
+                ServerProcess.CancelOutputRead();
+                ServerProcess.CancelErrorRead();
+            }
+            catch
+            { return; }
+            ServerProcess.OutputDataReceived -= OutputDataReceived;
+            ServerProcess.ErrorDataReceived -= OutputDataReceived;
+            ServerProcess.Exited -= ServerExitEvent;
+            int exitCode = ServerProcess.ExitCode;
+            ServerProcess.Dispose();
+            ServerProcess = null;
             Dispatcher.InvokeAsync(async () =>
             {
                 ChangeControlsState(false);
@@ -2074,7 +2092,7 @@ namespace MSL
                         MCSLogHandler.ServerService.Dispose();
                     }
                 }
-                else if (ServerProcess.ExitCode != 0 && GetServerInfoLine <= 100)
+                else if (exitCode != 0 && GetServerInfoLine <= 100)
                 {
                     bool dialogRet = await MagicShow.ShowMsgDialogAsync(this, "服务器疑似异常关闭，是您人为关闭的吗？\n您可使用MSL的崩溃分析系统进行检测，也可使用AI日志分析功能或将服务器日志发送给他人以寻求帮助！\n注意:请不要截图此弹窗！！！\nAI日志分析入口：服务器控制台的更多操作栏，或“更多功能”页面里。\n服务器日志在何处：\n1.服务器控制台内容；2.服务器目录\\logs\\latest.log；3.“更多功能”界面将日志上传至Internet。\n\n点击确定开始进行崩溃分析", "提示", true);
                     if (dialogRet)
@@ -2086,10 +2104,39 @@ namespace MSL
                 }
                 else if (autoStartserver.IsChecked == true)
                 {
+                    Console.WriteLine("服务器已关闭，触发重启事件...");
                     await Task.Delay(200);
-                    LaunchServer();
+                    RestartServer();
                 }
             });
+        }
+
+        private void RestartServer()
+        {
+            MagicFlowMsg.ShowAskMessage(
+                message: "服务器已关闭。倒计时结束后将自动重启，\n您也可以提前点击按钮操作。",
+                callback: confirmed =>
+                {
+                    if (confirmed)
+                    {
+                        if (MCSLogHandler != null && ServerProcess == null)
+                        {
+                            MagicFlowMsg.ShowMessage("服务器正在重启...", type: 1);
+                            LaunchServer();
+                        }
+                    }
+                    else
+                    {
+                        // 用户主动取消
+                        MagicFlowMsg.ShowMessage("已取消本次服务器重启", type: 3);
+                    }
+                },
+                waitSeconds: 5,
+                titleText:"服务器已关闭，将自动重启。",
+                confirmText: "立即重启",
+                cancelText: "取消重启",
+                container: GrowlPanel
+            );
         }
 
         #region ConptyExitEvent
@@ -2164,94 +2211,55 @@ namespace MSL
         {
             try
             {
-                if (inputCmdEncoding.Content.ToString() == "UTF8")
+                string inputText = cmdtext.Text.Trim();
+                if (string.IsNullOrEmpty(inputText)) return;
+
+                string finalCmd = inputText;
+
+                // 解析输入的内容：分离第一个词(可能是别名) 和 剩余参数
+                string[] parts = inputText.Split(new[] { ' ' }, 2, StringSplitOptions.RemoveEmptyEntries);
+
+                if (parts.Length > 0)
                 {
+                    string firstWord = parts[0];
+
                     if (fastCMD.SelectedIndex == 0)
                     {
-                        SendCmdUTF8(cmdtext.Text);
-                    }
-                    else if (fastCMD.SelectedItem.ToString().Contains("/op"))
-                    {
-                        SendCmdUTF8("op " + cmdtext.Text);
-                    }
-                    else if (fastCMD.SelectedItem.ToString().Contains("/deop"))
-                    {
-                        SendCmdUTF8("deop " + cmdtext.Text);
-                    }
-                    else if (fastCMD.SelectedItem.ToString().Contains("/ban"))
-                    {
-                        SendCmdUTF8("ban " + cmdtext.Text);
-                    }
-                    else if (fastCMD.SelectedItem.ToString().Contains("/say"))
-                    {
-                        SendCmdUTF8("say " + cmdtext.Text);
-                    }
-                    else if (fastCMD.SelectedItem.ToString().Contains("/pardon"))
-                    {
-                        SendCmdUTF8("pardon " + cmdtext.Text);
-                    }
-                    else
-                    {
-                        if (fastCMD.Items[fastCMD.SelectedIndex].ToString().StartsWith("/"))
+                        // 检查下拉框是否选择“/”，且输入的第一个词是否含有别名（忽略大小写）
+                        var aliasMatch = CurrentFastCmds.FirstOrDefault(c =>
+                            !string.IsNullOrEmpty(c.Alias) &&
+                            c.Alias.Equals(firstWord, StringComparison.OrdinalIgnoreCase));
+
+                        if (aliasMatch != null)
                         {
-                            SendCmdUTF8(fastCMD.Items[fastCMD.SelectedIndex].ToString().Substring(1) + cmdtext.Text);
-                        }
-                        else
-                        {
-                            SendCmdUTF8(fastCMD.Items[fastCMD.SelectedIndex].ToString() + cmdtext.Text);
+                            string args = parts.Length > 1 ? parts[1] : "";
+                            // 清理“/”
+                            finalCmd = $"{aliasMatch.Cmd.Trim().TrimStart('/')} {args}".Trim();
                         }
                     }
+                    else if (fastCMD.SelectedIndex > 0 && fastCMD.SelectedItem is FastCommandInfo selectedCmd)
+                    {
+                        // 没触发别名，且下拉框选择了某个快捷指令
+                        finalCmd = $"{selectedCmd.Cmd.Trim().TrimStart('/')} {inputText}".Trim();
+                    }
+                }
+
+                // 发送命令
+                if (inputCmdEncoding.Content.ToString() == "UTF8")
+                {
+                    SendCmdUTF8(finalCmd);
                 }
                 else
                 {
-                    if (fastCMD.SelectedIndex == 0)
-                    {
-                        SendCmdANSL(cmdtext.Text);
-                    }
-                    else if (fastCMD.SelectedItem.ToString().Contains("/op"))
-                    {
-                        SendCmdANSL("op " + cmdtext.Text);
-                    }
-                    else if (fastCMD.SelectedItem.ToString().Contains("/deop"))
-                    {
-                        SendCmdANSL("deop " + cmdtext.Text);
-                    }
-                    else if (fastCMD.SelectedItem.ToString().Contains("/ban"))
-                    {
-                        SendCmdANSL("ban " + cmdtext.Text);
-                    }
-                    else if (fastCMD.SelectedItem.ToString().Contains("/say"))
-                    {
-                        SendCmdANSL("say " + cmdtext.Text);
-                    }
-                    else if (fastCMD.SelectedItem.ToString().Contains("/pardon"))
-                    {
-                        SendCmdANSL("pardon " + cmdtext.Text);
-                    }
-                    else
-                    {
-                        if (fastCMD.Items[fastCMD.SelectedIndex].ToString().StartsWith("/"))
-                        {
-                            SendCmdANSL(fastCMD.Items[fastCMD.SelectedIndex].ToString().Substring(1) + cmdtext.Text);
-                        }
-                        else
-                        {
-                            SendCmdANSL(fastCMD.Items[fastCMD.SelectedIndex].ToString() + cmdtext.Text);
-                        }
-                    }
+                    SendCmdANSL(finalCmd);
                 }
             }
             catch
             {
+                // 异常回退
                 fastCMD.SelectedIndex = 0;
-                if (inputCmdEncoding.Content.ToString() == "UTF8")
-                {
-                    SendCmdUTF8(cmdtext.Text);
-                }
-                else
-                {
-                    SendCmdANSL(cmdtext.Text);
-                }
+                if (inputCmdEncoding.Content.ToString() == "UTF8") SendCmdUTF8(cmdtext.Text);
+                else SendCmdANSL(cmdtext.Text);
             }
         }
 
@@ -3773,14 +3781,14 @@ namespace MSL
             File.WriteAllText("MSL\\ServerList.json", Convert.ToString(jsonObject), Encoding.UTF8);
             try
             {
-                if (ServerProcess.HasExited)
+                if (ServerProcess != null && !ServerProcess.HasExited)
                 {
-                    MagicFlowMsg.ShowMessage("编码更改已生效！", 1);
+                    MagicFlowMsg.ShowMessage("编码已更改，重启服务器后生效！", 3);
+                    
                 }
                 else
                 {
-                    MagicFlowMsg.ShowMessage("编码已更改，重启服务器后生效！", 3);
-                    //Growl.Warning("编码已更改，重启服务器后生效！");
+                    MagicFlowMsg.ShowMessage("编码更改已生效！", 1);
                 }
             }
             catch
@@ -4088,7 +4096,9 @@ namespace MSL
             JObject _json = (JObject)jsonObject[RserverID.ToString()];
             if (autoClearOutlog.IsChecked == false)
             {
-                bool msgreturn = await MagicShow.ShowMsgDialogAsync(this, "关闭此功能后，服务器输出界面超过一定数量的日志后将不再清屏，这样可能会造成性能损失，您确定要继续吗？", "警告", true, "取消");
+                bool msgreturn = await MagicShow.ShowMsgDialogAsync(this,
+                    "关闭此功能后，服务器输出界面超过一定数量的日志后将不再清屏，这样可能会造成性能损失，您确定要继续吗？",
+                    "警告", true, "取消");
                 if (msgreturn)
                 {
                     _json["autoClearOutlog"] = "False";
@@ -4182,8 +4192,7 @@ namespace MSL
             else
             {
                 strings[0] = "C";
-                TextRange textRange = new TextRange(outlog.Document.Blocks.FirstBlock.ContentStart, outlog.Document.Blocks.LastBlock.ContentEnd);
-                strings[1] = textRange.Text;
+                strings[1] = outlog.Text;
             }
             return strings;
         }
@@ -4295,44 +4304,69 @@ namespace MSL
 
         private void GetFastCmd()
         {
+            CurrentFastCmds.Clear();
+            // 添加默认根命令
+            CurrentFastCmds.Add(new FastCommandInfo { Cmd = "/", Remark = "指令" });
+
             JObject jsonObject = JObject.Parse(File.ReadAllText(@"MSL\ServerList.json", Encoding.UTF8));
             JObject _json = (JObject)jsonObject[RserverID.ToString()];
-            if (_json["fastcmd"] == null)
+
+            if (_json["fastcmd"] != null && _json["fastcmd"] is JArray fastcmdArray)
             {
-                fastCmdList.Items.Clear();
-                foreach (ComboBoxItem item in fastCMD.Items)
+                foreach (var item in fastcmdArray)
                 {
-                    if (item.Tag != null && item.Tag.ToString() == "Header")
+                    // 兼容先前的纯字符串数组
+                    if (item.Type == JTokenType.String)
                     {
-                        continue;
+                        CurrentFastCmds.Add(new FastCommandInfo { Cmd = item.ToString().TrimStart('/') });
                     }
-                    fastCmdList.Items.Add(item.Content.ToString());
+                    // 新版本的对象数组
+                    else if (item.Type == JTokenType.Object)
+                    {
+                        CurrentFastCmds.Add(item.ToObject<FastCommandInfo>());
+                    }
                 }
             }
             else
             {
-                JArray fastcmdArray = (JArray)_json["fastcmd"];
-                fastCmdList.Items.Clear();
-                fastCMD.Items.Clear();
-                fastCmdList.Items.Add("/（指令）");
-                fastCMD.Items.Add("/（指令）");
-                fastCMD.SelectedIndex = 0;
-                foreach (var item in fastcmdArray)
-                {
-                    fastCMD.Items.Add(item.ToString());
-                    fastCmdList.Items.Add(item.ToString());
-                }
+                CurrentFastCmds.Add(new FastCommandInfo { Cmd = "/op", Remark = "设置管理员" });
+                CurrentFastCmds.Add(new FastCommandInfo { Cmd = "/deop", Remark = "去除管理员" });
+                CurrentFastCmds.Add(new FastCommandInfo { Cmd = "/ban", Remark = "封禁玩家" });
+                CurrentFastCmds.Add(new FastCommandInfo { Cmd = "/pardon", Remark = "解封玩家" });
+                CurrentFastCmds.Add(new FastCommandInfo { Cmd = "/say", Remark = "全服说话" });
             }
+
+            // 绑定到 UI
+            fastCMD.ItemsSource = null;
+            fastCMD.Items.Clear();
+            fastCMD.ItemsSource = CurrentFastCmds;
+            fastCMD.DisplayMemberPath = "DisplayText";
+            fastCMD.SelectedIndex = 0;
+
+            fastCmdList.ItemsSource = null;
+            fastCmdList.Items.Clear();
+            fastCmdList.ItemsSource = CurrentFastCmds;
+            fastCmdList.DisplayMemberPath = "DisplayText";
         }
+
         private void SetFastCmd()
         {
             JObject jsonObject = JObject.Parse(File.ReadAllText(@"MSL\ServerList.json", Encoding.UTF8));
             JObject _json = (JObject)jsonObject[RserverID.ToString()];
-            JArray fastcmdArray = new JArray(fastCmdList.Items.Cast<string>().Skip(1));
-            _json["fastcmd"] = fastcmdArray;
+
+            // 提取除了根命令以外的所有指令，转为匿名对象存入 JSON
+            var saveList = CurrentFastCmds.Skip(1).Select(c => new
+            {
+                Remark = c.Remark,
+                Cmd = c.Cmd,
+                Alias = c.Alias
+            });
+
+            _json["fastcmd"] = JArray.FromObject(saveList);
             jsonObject[RserverID.ToString()] = _json;
-            File.WriteAllText("MSL\\ServerList.json", Convert.ToString(jsonObject), Encoding.UTF8);
-            GetFastCmd();
+            File.WriteAllText(@"MSL\ServerList.json", jsonObject.ToString(), Encoding.UTF8);
+
+            GetFastCmd(); // 保存后刷新UI
         }
 
         private void refrushFastCmd_Click(object sender, RoutedEventArgs e)
@@ -4360,16 +4394,43 @@ namespace MSL
         {
             try
             {
-                string text = await MagicShow.ShowInput(this, "请输入指令（格式为：/指令）\n若要输入的指令不是完整指令，请自行在最后添加空格");
-                if (text != null)
+                var uniformStack = new UniformSpacingPanel { Orientation = Orientation.Vertical, Spacing = 3 };
+                var cmdBox = new System.Windows.Controls.TextBox { Name = "CmdTextBox" };
+                var remarkBox = new System.Windows.Controls.TextBox { Name = "RemarkTextBox" };
+                var aliasBox = new System.Windows.Controls.TextBox { Name = "AliasTextBox" };
+
+                uniformStack.Children.Add(new TextBlock { Text = "指令（如：op，无需 '/' 前缀）：" });
+                uniformStack.Children.Add(cmdBox);
+                uniformStack.Children.Add(new TextBlock { Text = "备注（如：给管理员，非必填）：" });
+                uniformStack.Children.Add(remarkBox);
+                uniformStack.Children.Add(new TextBlock { Text = "别名（如：o，可在控制台快速调用，非必填）：" });
+                uniformStack.Children.Add(aliasBox);
+
+                await MagicShow.ShowMsgDialogAsync("添加快捷指令", "输入", uIElement: uniformStack);
+
+                // 读取三个 TextBox 的值
+                string newCmd = cmdBox.Text.Trim();
+                string newRemark = remarkBox.Text.Trim();
+                string newAlias = aliasBox.Text.Trim();
+
+                if (!string.IsNullOrEmpty(newCmd))
                 {
-                    fastCmdList.Items.Add(text);
+                    CurrentFastCmds.Add(new FastCommandInfo
+                    {
+                        Remark = newRemark,
+                        Cmd = newCmd,
+                        Alias = newAlias
+                    });
                     SetFastCmd();
                 }
+                else
+                {
+                    MagicFlowMsg.ShowMessage("指令不能为空！", 2);
+                }
             }
-            catch
+            catch (Exception ex)
             {
-                MessageBox.Show("Err");
+                MessageBox.Show($"添加失败: {ex.Message}");
             }
         }
 
@@ -4377,12 +4438,12 @@ namespace MSL
         {
             try
             {
-                if (fastCmdList.SelectedIndex == 0)
+                if (fastCmdList.SelectedIndex <= 0)
                 {
-                    MessageBox.Show("无法删除根命令！");
+                    MessageBox.Show("无法删除根命令或未选中任何项！");
                     return;
                 }
-                fastCmdList.Items.Remove(fastCmdList.Items[fastCmdList.SelectedIndex]);
+                CurrentFastCmds.RemoveAt(fastCmdList.SelectedIndex);
                 SetFastCmd();
             }
             catch { return; }
@@ -4571,12 +4632,12 @@ namespace MSL
                                         if (MoreOperation.IsEnabled == true)
                                         {
                                             _ = BackupWorld();
-                                            PrintLog("[MSL备份]定时备份任务开始执行~", Brushes.Blue);
+                                            PrintLog("[MSL备份]定时备份任务开始执行~", Colors.Blue);
                                         }
                                         break;
                                     default:
                                         SendCmdToServer(cmd);
-                                        PrintLog("[MSL定时任务]执行指令：" + cmd, Brushes.Blue);
+                                        PrintLog("[MSL定时任务]执行指令：" + cmd, Colors.Blue);
                                         break;
                                 }
                                 if (tasksList.SelectedIndex != -1 && int.Parse(tasksList.SelectedItem.ToString()) == id)
@@ -4741,6 +4802,29 @@ namespace MSL
                 UpdateChildWindowPosition();
             }
         }
+
+        // 复制
+        private void LogMenu_Copy(object sender, RoutedEventArgs e)
+        {
+            if (!string.IsNullOrEmpty(outlog.SelectedText))
+                Clipboard.SetText(outlog.SelectedText);
+            else if (!string.IsNullOrEmpty(outlog.Document.Text))
+                Clipboard.SetText(outlog.Document.Text);
+        }
+
+        // 全选
+        private void LogMenu_SelectAll(object sender, RoutedEventArgs e)
+        {
+            outlog.SelectAll();
+        }
+
+        // 清屏
+        private void LogMenu_Clear(object sender, RoutedEventArgs e)
+        {
+            outlog.Document.Text = string.Empty;
+            _logColorizer.Clear();
+            _logEntryCount = 0;
+        }
         #endregion
 
         #region 备份相关
@@ -4754,7 +4838,7 @@ namespace MSL
                 SendCmdToServer("save-all");
                 SendCmdToServer("tellraw @a [{\"text\":\"[\",\"color\":\"yellow\"},{\"text\":\"MSL\",\"color\":\"green\"},{\"text\":\"]\",\"color\":\"yellow\"},{\"text\":\"正在进行服务器存档备份，请勿关闭服务器哦，否则可能造成回档！备份期间不会影响正常游戏~\",\"color\":\"aqua\"}]");
                 Growl.Info("开始执行备份···");
-                PrintLog("[MSL备份]开始执行备份···", Brushes.Blue);
+                PrintLog("[MSL备份]开始执行备份···", Colors.Blue);
             }
             try
             {
@@ -4808,7 +4892,7 @@ namespace MSL
                 if (foldersToCompress.Count == 0)
                 {
                     Growl.Error("未找到任何世界存档文件夹（包括主世界、下界、末地），备份失败！");
-                    PrintLog("[MSL备份]未找到任何世界存档文件夹（包括主世界、下界、末地），备份失败！", Brushes.Red);
+                    PrintLog("[MSL备份]未找到任何世界存档文件夹（包括主世界、下界、末地），备份失败！", Colors.Red);
                     LogHelper.Write.Error("未找到任何世界存档文件夹（包括主世界、下界、末地），备份失败！");
                     if (CheckServerRunning())
                     {
@@ -4835,7 +4919,7 @@ namespace MSL
                         }
                         else
                         {
-                            PrintLog("[MSL备份]自定义备份路径为空，已使用默认路径！", Brushes.OrangeRed);
+                            PrintLog("[MSL备份]自定义备份路径为空，已使用默认路径！", Colors.OrangeRed);
                         }
                     }
                 }
@@ -4856,7 +4940,7 @@ namespace MSL
                     }
                     else
                     {
-                        PrintLog("[MSL备份]最大备份数量配置错误，已使用默认值20！", Brushes.OrangeRed);
+                        PrintLog("[MSL备份]最大备份数量配置错误，已使用默认值20！", Colors.OrangeRed);
                     }
                 }
                 try
@@ -4877,12 +4961,12 @@ namespace MSL
                             try
                             {
                                 fileToDelete.Delete();
-                                PrintLog($"[MSL备份]已删除旧备份：{fileToDelete.Name}", Brushes.Blue);
+                                PrintLog($"[MSL备份]已删除旧备份：{fileToDelete.Name}", Colors.Blue);
                             }
                             catch (Exception ex)
                             {
                                 // 如果删除失败，仅发出警告，不中断整个备份过程
-                                PrintLog($"[MSL备份]删除旧备份 {fileToDelete.Name} 失败：{ex.Message}", Brushes.OrangeRed);
+                                PrintLog($"[MSL备份]删除旧备份 {fileToDelete.Name} 失败：{ex.Message}", Colors.OrangeRed);
                                 LogHelper.Write.Warn($"删除旧备份 {fileToDelete.Name} 失败：{ex.ToString()}");
                             }
                         }
@@ -4890,12 +4974,12 @@ namespace MSL
                 }
                 catch (Exception ex)
                 {
-                    PrintLog("[MSL备份]目录检查或旧备份清理失败：" + ex.Message, Brushes.OrangeRed);
+                    PrintLog("[MSL备份]目录检查或旧备份清理失败：" + ex.Message, Colors.OrangeRed);
                     LogHelper.Write.Error("检查并清理旧备份时发生错误：" + ex.ToString());
                 }
 
                 // 压缩，启动！
-                PrintLog("[MSL备份]正在压缩存档文件，请稍等···", Brushes.Blue);
+                PrintLog("[MSL备份]正在压缩存档文件，请稍等···", Colors.Blue);
                 LogHelper.Write.Info("正在压缩存档文件，请稍等···");
                 using (ZipOutputStream zipStream = new ZipOutputStream(File.Create(backupPath)))
                 {
@@ -4937,7 +5021,7 @@ namespace MSL
                     }
                     catch (Exception ex)
                     {
-                        PrintLog("[MSL备份]无法获取备份文件信息：" + ex.Message, Brushes.OrangeRed);
+                        PrintLog("[MSL备份]无法获取备份文件信息：" + ex.Message, Colors.OrangeRed);
                         LogHelper.Write.Warn("无法获取备份文件信息：" + ex.ToString());
                         SendCmdToServer("save-on");
                         SendCmdToServer("tellraw @a [{\"text\":\"[\",\"color\":\"yellow\"},{\"text\":\"MSL\",\"color\":\"green\"},{\"text\":\"]\",\"color\":\"yellow\"},{\"text\":\"服务器存档备份完成！\",\"color\":\"aqua\"}]");
@@ -4945,13 +5029,13 @@ namespace MSL
                 }
 
                 Growl.Success($"存档备份成功！已保存至：{backupPath}");
-                PrintLog($"[MSL备份]存档备份成功！已保存至：{backupPath}", Brushes.Blue);
+                PrintLog($"[MSL备份]存档备份成功！已保存至：{backupPath}", Colors.Blue);
                 LogHelper.Write.Info($"存档备份成功！已保存至：{backupPath}");
             }
             catch (Exception ex)
             {
                 Growl.Error("备份失败！" + ex.Message);
-                PrintLog("[MSL备份]备份失败！" + ex.Message, Brushes.Red);
+                PrintLog("[MSL备份]备份失败！" + ex.Message, Colors.Red);
                 LogHelper.Write.Error("备份失败！" + ex.ToString());
                 if (CheckServerRunning())
                 {

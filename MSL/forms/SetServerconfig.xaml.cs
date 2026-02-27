@@ -1,4 +1,5 @@
-﻿using MSL.utils;
+﻿using ICSharpCode.AvalonEdit.Highlighting;
+using MSL.utils;
 using System;
 using System.IO;
 using System.Text;
@@ -15,6 +16,7 @@ namespace MSL
         private readonly string serverbase;
         private Encoding encoding;
         private string path;
+
         public SetServerconfig(string _serverbase)
         {
             InitializeComponent();
@@ -44,7 +46,7 @@ namespace MSL
                 string[] files = Directory.GetFiles(folderPath);
                 foreach (string file in files)
                 {
-                    if (file.EndsWith(".json") || file.EndsWith(".yml") || file.EndsWith(".properties"))
+                    if (file.EndsWith(".json") || file.EndsWith(".yml") || file.EndsWith(".toml") || file.EndsWith(".properties"))
                     {
                         TreeViewItem fileNode = new TreeViewItem();
                         fileNode.Header = Path.GetFileName(file);
@@ -69,19 +71,51 @@ namespace MSL
             }
         }
 
+        private string GetSelectTreePath(TreeViewItem item)
+        {
+            StringBuilder pathBuilder = new StringBuilder();
+
+            while (item != null && item.Header != null)
+            {
+                // 跳过根节点（FileTreeView）
+                if (item == FileTreeView)
+                {
+                    break;
+                }
+
+                string header = item.Header.ToString();
+                pathBuilder.Insert(0, header);
+                pathBuilder.Insert(0, "\\");
+
+                item = item.Parent as TreeViewItem;
+            }
+
+            if (pathBuilder.Length > 0)
+            {
+                pathBuilder.Remove(0, 1);
+                return pathBuilder.ToString();
+            }
+            return string.Empty;
+        }
+
         private void FileTreeView_Selected(object sender, RoutedEventArgs e)
         {
             if (e.Source is TreeViewItem selectedNode)
             {
                 path = GetSelectTreePath(selectedNode);
-                //MessageBox.Show("选中的路径：" + path);
-                if (path.EndsWith(".json") || path.EndsWith(".yml") || path.EndsWith(".properties"))
+                if (path.EndsWith(".json") || path.EndsWith(".yml") ||
+                    path.EndsWith(".toml") || path.EndsWith(".properties"))
                 {
                     try
                     {
                         encoding = Functions.GetTextFileEncodingType(serverbase + "\\" + path);
                         FileEncoding.Content = encoding.EncodingName;
-                        EditorBox.Text = File.ReadAllText(serverbase + "\\" + path, encoding);
+
+                        string content = File.ReadAllText(serverbase + "\\" + path, encoding);
+                        EditorBox.Text = content;
+
+                        // 根据文件类型设置语法高亮
+                        SetSyntaxHighlighting(path);
                     }
                     catch (FileNotFoundException)
                     {
@@ -96,75 +130,82 @@ namespace MSL
             }
         }
 
-        private string GetSelectTreePath(TreeViewItem item)
+        private void SetSyntaxHighlighting(string filePath)
         {
-            // 初始化一个 StringBuilder 用于拼接路径
-            StringBuilder pathBuilder = new StringBuilder();
-
-            // 从当前选中的 TreeViewItem 开始，逐级向上遍历父节点
-            while (item.Header != null)
+            string ext = Path.GetExtension(filePath).ToLower();
+            string highlightName = ext switch
             {
-                // 获取当前节点的标题（Header）
-                string header = item.Header.ToString();
+                ".json" => "JavaScript",
+                ".yml" => "YAML",
+                ".toml" => null,
+                ".properties" => null,
+                _ => null
+            };
 
-                // 将标题添加到路径中
-                pathBuilder.Insert(0, header);
-
-                // 添加路径分隔符（例如斜杠或反斜杠）
-                pathBuilder.Insert(0, "\\");
-
-                // 获取当前节点的父节点
-                item = item.Parent as TreeViewItem;
-            }
-            if (pathBuilder.Length > 0)
-            {
-                // 移除路径开头的分隔符
-                pathBuilder.Remove(0, 1);
-
-                // 返回拼接好的路径
-                return pathBuilder.ToString();
-            }
-            return string.Empty;
+            EditorBox.SyntaxHighlighting = highlightName != null
+                ? HighlightingManager.Instance.GetDefinition(highlightName)
+                : null;
         }
 
         private void ChangeEncoding_Click(object sender, RoutedEventArgs e)
         {
-            string content = EditorBox.Text;
             if (encoding == Encoding.UTF8)
             {
-                byte[] ansiBytes = Encoding.Convert(Encoding.UTF8, Encoding.Default, Encoding.UTF8.GetBytes(content));
-                string ansiContent = Encoding.Default.GetString(ansiBytes);
                 encoding = Encoding.Default;
-                FileEncoding.Content = encoding.EncodingName;
-                EditorBox.Text = ansiContent;
             }
             else if (encoding == Encoding.Default)
             {
-                byte[] utf8Bytes = Encoding.Convert(Encoding.Default, Encoding.UTF8, Encoding.Default.GetBytes(content));
-                string utf8Content = Encoding.UTF8.GetString(utf8Bytes);
                 encoding = Encoding.UTF8;
-                FileEncoding.Content = encoding.EncodingName;
-                EditorBox.Text = utf8Content;
             }
+            FileEncoding.Content = encoding.EncodingName;
         }
 
         private void SaveChange_Click(object sender, RoutedEventArgs e)
         {
             try
             {
-                if (encoding == Encoding.UTF8)
-                {
-                    File.WriteAllText(serverbase + "\\" + path, EditorBox.Text, new UTF8Encoding(false));
-                }
-                else if (encoding == Encoding.Default)
-                {
-                    File.WriteAllText(serverbase + "\\" + path, EditorBox.Text, Encoding.Default);
-                }
+                var writeEncoding = encoding == Encoding.UTF8
+                    ? new UTF8Encoding(false)
+                    : (Encoding)Encoding.Default;
+
+                File.WriteAllText(serverbase + "\\" + path, EditorBox.Text, writeEncoding);
                 MagicShow.ShowMsgDialog(this, "保存成功！重启服务器生效！", "提示");
             }
             catch (Exception ex)
             {
                 MagicShow.ShowMsgDialog(this, ex.Message, "Err");
+            }
+        }
+
+        // 复制
+        private void AEMenu_Copy(object sender, RoutedEventArgs e)
+        {
+            if (!string.IsNullOrEmpty(EditorBox.SelectedText))
+                Clipboard.SetText(EditorBox.SelectedText);
+            else if (!string.IsNullOrEmpty(EditorBox.Document.Text))
+                Clipboard.SetText(EditorBox.Document.Text);
+        }
+
+        // 全选
+        private void AEMenu_SelectAll(object sender, RoutedEventArgs e)
+        {
+            EditorBox.SelectAll();
+        }
+
+        // 粘贴
+        private void AEMenu_Paste(object sender, RoutedEventArgs e)
+        {
+            if (Clipboard.ContainsText())
+                EditorBox.Document.Insert(EditorBox.CaretOffset, Clipboard.GetText());
+        }
+
+        // 剪切
+        private void AEMenu_Cut(object sender, RoutedEventArgs e)
+        {
+            if (!string.IsNullOrEmpty(EditorBox.SelectedText))
+            {
+                Clipboard.SetText(EditorBox.SelectedText);
+                EditorBox.Document.Remove(EditorBox.SelectionStart, EditorBox.SelectionLength);
             }
         }
     }

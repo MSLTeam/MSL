@@ -1,11 +1,15 @@
-﻿using System;
+﻿using ICSharpCode.AvalonEdit.Document;
+using ICSharpCode.AvalonEdit.Rendering;
+using System;
 using System.Collections.Concurrent;
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 using System.Text.RegularExpressions;
+using System.Windows;
 using System.Windows.Media;
 using System.Windows.Threading;
+using static MSL.ServerRunner;
 
 namespace MSL.utils
 {
@@ -118,7 +122,7 @@ namespace MSL.utils
             HighLightLog = null;
         }
 
-        private readonly Action<string, SolidColorBrush> _logAction;
+        private readonly Action<string, Color> _logAction;
         private readonly Action<string> _infoHandler;
         private readonly Action<string> _warnHandler;
         private readonly Action _encodingIssueHandler;
@@ -138,7 +142,7 @@ namespace MSL.utils
         public class LogConfig
         {
             public string Prefix { get; set; }
-            public SolidColorBrush Color { get; set; }
+            public Color Color { get; set; }
         }
 
         public Dictionary<int, LogConfig> LogInfo = new()
@@ -154,7 +158,7 @@ namespace MSL.utils
         };
 
         public MCSLogHandler(
-        Action<string, SolidColorBrush> logAction,
+        Action<string, Color> logAction,
         Action<string> infoHandler = null,
         Action<string> warnHandler = null,
         Action encodingIssueHandler = null)
@@ -359,7 +363,7 @@ namespace MSL.utils
                     {
                         foreach (var emsg in msg.Value.Item2)
                         {
-                            PrintLog(emsg, (SolidColorBrush)HandyControl.Themes.ThemeResources.Current.AccentColor);
+                            PrintLog(emsg, (HandyControl.Themes.ThemeResources.Current.AccentColor as SolidColorBrush)?.Color ?? Colors.White);
                         }
                     }
                 }
@@ -460,7 +464,7 @@ namespace MSL.utils
             _encodingIssueHandler.Invoke();
         }
 
-        private void PrintLog(string message, SolidColorBrush color)
+        private void PrintLog(string message, Color color)
         {
             _logAction?.Invoke(message, color);
         }
@@ -473,6 +477,63 @@ namespace MSL.utils
         private void LogHandleWarn(string message)
         {
             _warnHandler?.Invoke(message);
+        }
+    }
+
+    public class LogColorizer : DocumentColorizingTransformer
+    {
+        // 存储所有日志条目（offset → segments）
+        private readonly List<LogEntry> _entries = new();
+
+        public void AddEntry(LogEntry entry)
+        {
+            _entries.Add(entry);
+        }
+
+        public void Clear()
+        {
+            _entries.Clear();
+        }
+
+        protected override void ColorizeLine(DocumentLine line)
+        {
+            int lineStart = line.Offset;
+            int lineEnd = line.EndOffset;
+
+            foreach (var entry in _entries)
+            {
+                int segOffset = entry.StartOffset;
+
+                foreach (var seg in entry.Segments)
+                {
+                    int segEnd = segOffset + seg.Text.Length;
+
+                    // 计算与当前行的交叉区域
+                    int overlapStart = Math.Max(lineStart, segOffset);
+                    int overlapEnd = Math.Min(lineEnd, segEnd);
+
+                    if (overlapStart < overlapEnd)
+                    {
+                        var brush = new SolidColorBrush(seg.Color);
+                        brush.Freeze();
+
+                        ChangeLinePart(overlapStart, overlapEnd, element =>
+                        {
+                            element.TextRunProperties.SetForegroundBrush(brush);
+                            if (seg.IsBold)
+                            {
+                                element.TextRunProperties.SetTypeface(
+                                    new Typeface(
+                                        element.TextRunProperties.Typeface.FontFamily,
+                                        FontStyles.Normal,
+                                        FontWeights.Bold,
+                                        FontStretches.Normal));
+                            }
+                        });
+                    }
+                    segOffset = segEnd;
+                }
+            }
         }
     }
 }

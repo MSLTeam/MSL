@@ -4,25 +4,60 @@
         xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
         xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
         xmlns:hc="https://handyorg.github.io/handycontrol"
-        xmlns:controls="clr-namespace:MSL.controls"
+        xmlns:avalon="http://icsharpcode.net/sharpdevelop/avalonedit"
         xmlns:local="clr-namespace:MSL"
         mc:Ignorable="d"
         NonClientAreaBackground="{DynamicResource BackgroundBrush}" ShowMinButton="False"
-        Title="修改配置文件" Height="450" Width="750" MinHeight="450" MinWidth="750" Loaded="Window_Loaded" WindowStartupLocation="CenterOwner" Background="{DynamicResource BackgroundBrush}">
+        Title="修改配置文件" Height="450" Width="750" MinHeight="450" MinWidth="750" 
+        Loaded="Window_Loaded" WindowStartupLocation="CenterOwner" 
+        Background="{DynamicResource BackgroundBrush}">
     <Grid>
         <Grid.ColumnDefinitions>
-            <ColumnDefinition Width="Auto"/>
+            <ColumnDefinition Width="200"/>
             <ColumnDefinition/>
         </Grid.ColumnDefinitions>
-        <TreeView Grid.Column="0" Margin="10">
-            <TreeViewItem x:Name="FileTreeView" IsExpanded="True" Selected="FileTreeView_Selected"/>
-        </TreeView>
-        <Button Grid.Column="0" x:Name="RefreshBtn" Margin="10" Content="刷新" VerticalAlignment="Bottom" HorizontalAlignment="Left" Click="RefreshBtn_Click"/>
-        <TextBox Grid.Column="1" x:Name="EditorBox" TextWrapping="Wrap" AcceptsReturn="True" VerticalContentAlignment="Top" Padding="5" VerticalScrollBarVisibility="Auto" Margin="0,10,10,10"/>
-        <StackPanel Grid.Column="1" Margin="10" Orientation="Horizontal" VerticalAlignment="Bottom" HorizontalAlignment="Right">
-            <Label x:Name="FileEncoding" Content="Encoding"/>
-            <Button x:Name="ChangeEncoding" Content="转换编码" Click="ChangeEncoding_Click"/>
-            <Button x:Name="SaveChange" Content="保存更改" Style="{StaticResource ButtonPrimary}" Click="SaveChange_Click"/>
-        </StackPanel>
+
+        <!-- 左侧文件树 -->
+        <DockPanel Grid.Column="0" Margin="10">
+            <Button DockPanel.Dock="Bottom" x:Name="RefreshBtn" Content="刷新" 
+                    Margin="0,5,0,0" Click="RefreshBtn_Click"/>
+            <TreeView x:Name="FileTreeViewContainer">
+                <TreeViewItem x:Name="FileTreeView" Header="配置文件" IsExpanded="True" 
+                              Selected="FileTreeView_Selected"/>
+            </TreeView>
+        </DockPanel>
+
+        <!-- 右侧编辑器 -->
+        <Grid Grid.Column="1" Margin="0,10,10,10">
+            <Grid.RowDefinitions>
+                <RowDefinition/>
+                <RowDefinition Height="Auto"/>
+            </Grid.RowDefinitions>
+
+            <!-- AvalonEdit 编辑器 -->
+            <avalon:TextEditor 
+                x:Name="EditorBox"
+                Grid.Row="0" ShowLineNumbers="True" FontFamily="Consolas"
+                FontSize="14" Background="{DynamicResource BorderBackground}"
+                BorderBrush="{DynamicResource BorderBrush}" BorderThickness="1">
+                <avalon:TextEditor.ContextMenu>
+                    <ContextMenu>
+                        <MenuItem Header="复制" x:Name="AEMenuCopy" Click="AEMenu_Copy"/>
+                        <MenuItem Header="粘贴" x:Name="AEMenuPaste" Click="AEMenu_Paste"/>
+                        <MenuItem Header="剪切" x:Name="AEMenuCut" Click="AEMenu_Cut"/>
+                        <MenuItem Header="全选" x:Name="AEMenuSelectAll" Click="AEMenu_SelectAll"/>
+                    </ContextMenu>
+                </avalon:TextEditor.ContextMenu>
+            </avalon:TextEditor>
+            <!-- 底部工具栏 -->
+            <StackPanel Grid.Row="1" Orientation="Horizontal" 
+                        Margin="0,5,0,0" HorizontalAlignment="Right">
+                <Label x:Name="FileEncoding" Content="Encoding" VerticalAlignment="Center"/>
+                <Button x:Name="ChangeEncoding" Content="转换编码" 
+                        Margin="5,0" Click="ChangeEncoding_Click"/>
+                <Button x:Name="SaveChange" Content="保存更改" 
+                        Style="{StaticResource ButtonPrimary}" Click="SaveChange_Click"/>
+            </StackPanel>
+        </Grid>
     </Grid>
 </hc:Window>

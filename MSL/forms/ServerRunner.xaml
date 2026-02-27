@@ -4,6 +4,7 @@
         xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
         xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
         xmlns:hc="https://handyorg.github.io/handycontrol"
+        xmlns:avalon="http://icsharpcode.net/sharpdevelop/avalonedit"
         xmlns:iconPacks="http://metro.mahapps.com/winfx/xaml/iconpacks"
         xmlns:controls="clr-namespace:MSL.controls"
         xmlns:langs="clr-namespace:MSL.langs"
@@ -183,14 +184,31 @@
                     <controls:TabControlHeader IconKind="Console" Text="控制台"/>
                 </TabItem.Header>
                 <Grid x:Name="CmdGrid" Style="{StaticResource GridAnimation}">
-                    <RichTextBox x:Name="outlog" IsUndoEnabled="False" UndoLimit="0" Background="{DynamicResource BorderBackground}" IsReadOnly="True" Block.LineHeight="1" Margin="10,10,10,47" ContextMenu="{StaticResource UIContextMenu}" VerticalScrollBarVisibility="Visible">
-                        <FlowDocument>
-                            <Paragraph>
-                                <Run Text="在此显示输出......"/>
-                            </Paragraph>
-                        </FlowDocument>
-                    </RichTextBox>
-
+                    <avalon:TextEditor x:Name="outlog"
+                                       Margin="10,10,10,48" Padding="7" FontFamily="Consolas"
+                                       FontSize="14" IsReadOnly="True" Background="{DynamicResource BorderBackground}"
+                                       BorderBrush="{DynamicResource BorderBrush}" BorderThickness="1" WordWrap="True">
+                        <avalon:TextEditor.ContextMenu>
+                            <ContextMenu>
+                                <MenuItem Header="复制" x:Name="AEMenuCopy" Click="LogMenu_Copy">
+                                    <MenuItem.Icon>
+                                        <iconPacks:PackIconMaterial Kind="ContentCopy"/>
+                                    </MenuItem.Icon>
+                                </MenuItem>
+                                <MenuItem Header="全选" x:Name="AEMenuSelectAll" Click="LogMenu_SelectAll">
+                                    <MenuItem.Icon>
+                                        <iconPacks:PackIconMaterial Kind="SelectAll"/>
+                                    </MenuItem.Icon>
+                                </MenuItem>
+                                <Separator/>
+                                <MenuItem Header="清屏" x:Name="AEMenuClear" Click="LogMenu_Clear">
+                                    <MenuItem.Icon>
+                                        <iconPacks:PackIconMaterial Kind="Broom"/>
+                                    </MenuItem.Icon>
+                                </MenuItem>
+                            </ContextMenu>
+                        </avalon:TextEditor.ContextMenu>
+                    </avalon:TextEditor>
                     <Grid VerticalAlignment="Bottom">
                         <Grid.ColumnDefinitions>
                             <ColumnDefinition Width="Auto"/>
@@ -202,12 +220,7 @@
                         </Grid.ColumnDefinitions>
 
                         <ComboBox Grid.Column="0" x:Name="fastCMD" HorizontalAlignment="Left" Margin="10,0,5,10" SelectedIndex="0" IsEnabled="False" Width="100" Height="32">
-                            <ComboBoxItem Content="/（指令）" FontFamily="Microsoft YaHei UI"/>
-                            <ComboBoxItem Content="/op（给管理员）" FontFamily="Microsoft YaHei UI"/>
-                            <ComboBoxItem Content="/deop（去除管理员）" FontFamily="Microsoft YaHei UI"/>
-                            <ComboBoxItem Content="/ban（封禁玩家）" FontFamily="Microsoft YaHei UI"/>
-                            <ComboBoxItem Content="/say（全服说话）" FontFamily="Microsoft YaHei UI"/>
-                            <ComboBoxItem Content="/pardon（解除封禁）" FontFamily="Microsoft YaHei UI"/>
+                            <ComboBoxItem Content="/（指令）"/>
                         </ComboBox>
                         <TextBox x:Name="cmdtext" Grid.Column="1" Margin="0,0,5,10" Text="服务器已关闭" KeyDown="cmdtext_KeyDown" IsEnabled="False"/>
                         <Button x:Name="sendcmd" Grid.Column="2" Content="发送" Style="{StaticResource ButtonPrimary}" Width="60" Height="32" Margin="0,0,5,10" Click="sendcmd_Click" IsEnabled="False"/>
@@ -294,12 +307,13 @@
                                                   ContextMenu="{StaticResource PluginListContextMenu}">
                                             <ListView.View>
                                                 <GridView>
-                                                    <GridViewColumn Width="25">
+                                                    <GridViewColumn Width="32">
                                                         <GridViewColumn.CellTemplate>
                                                             <DataTemplate>
-                                                                <CheckBox IsChecked="{Binding RelativeSource={RelativeSource AncestorType=ListViewItem}, Path=IsSelected, Mode=TwoWay}"
-                          HorizontalAlignment="Center" 
-                          VerticalAlignment="Center"/>
+                                                                <CheckBox
+                                                                    IsChecked="{Binding RelativeSource={RelativeSource AncestorType=ListViewItem}, Path=IsSelected, Mode=TwoWay}"
+                                                                    HorizontalAlignment="Center" 
+                                                                    VerticalAlignment="Center"/>
                                                             </DataTemplate>
                                                         </GridViewColumn.CellTemplate>
                                                     </GridViewColumn>
@@ -458,12 +472,13 @@
                                                   ContextMenu="{StaticResource PluginListContextMenu}">
                                             <ListView.View>
                                                 <GridView>
-                                                    <GridViewColumn Width="25">
+                                                    <GridViewColumn Width="32">
                                                         <GridViewColumn.CellTemplate>
                                                             <DataTemplate>
-                                                                <CheckBox IsChecked="{Binding RelativeSource={RelativeSource AncestorType=ListViewItem}, Path=IsSelected, Mode=TwoWay}"
-                          HorizontalAlignment="Center" 
-                          VerticalAlignment="Center"/>
+                                                                <CheckBox
+                                                                    IsChecked="{Binding RelativeSource={RelativeSource AncestorType=ListViewItem}, Path=IsSelected, Mode=TwoWay}"
+                                                                    HorizontalAlignment="Center" 
+                                                                    VerticalAlignment="Center"/>
                                                             </DataTemplate>
                                                         </GridViewColumn.CellTemplate>
                                                     </GridViewColumn>
