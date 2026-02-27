@@ -4,7 +4,7 @@ using HandyControl.Tools;
 using MSL.langs;
 using MSL.pages;
 using MSL.utils;
-using Newtonsoft.Json;
+using MSL.utils.Config;
 using Newtonsoft.Json.Linq;
 using System;
 using System.Collections.Generic;
@@ -24,7 +24,6 @@ using System.Windows.Threading;
 
 namespace MSL
 {
-    public delegate void DeleControl();
     /// <summary>
     /// MainWindow.xaml 的交互逻辑
     /// </summary>
@@ -40,8 +39,8 @@ namespace MSL
             new About(),
             new CreateServer()
         };
-        public static event DeleControl AutoOpenServer;
 
+        public static event App.DeleControl AutoOpenServer;
         public static bool LoadingCompleted = false;
 
         public MainWindow()
@@ -61,45 +60,45 @@ namespace MSL
             Topmost = true;
             Focus();
             Topmost = false;
+
             ConfigStore.MSLVersion = System.Reflection.Assembly.GetExecutingAssembly().GetName().Version;
+
             try
             {
-                JObject jsonObject = JObject.Parse(File.ReadAllText(@"MSL\config.json", Encoding.UTF8));
+                // 加载配置
+                var cfg = AppConfig.Current;
                 ConfigStore.DeviceID = Functions.GetDeviceID();
-                if (jsonObject["eula"] == null || jsonObject["eula"].ToString() != ConfigStore.DeviceID.Substring(0, 5))
+
+                // EULA 检查
+                if (cfg.Eula == null || cfg.Eula != ConfigStore.DeviceID.Substring(0, 5))
                 {
                     if (await EulaEvent())
                     {
-                        if (jsonObject["eula"] == null)
-                        {
-                            jsonObject.Add("eula", ConfigStore.DeviceID.Substring(0, 5));
-                        }
-                        else
-                        {
-                            jsonObject["eula"] = ConfigStore.DeviceID.Substring(0, 5);
-                        }
-                        string convertString = Convert.ToString(jsonObject);
-                        File.WriteAllText(@"MSL\config.json", convertString, Encoding.UTF8);
+                        cfg.Eula = ConfigStore.DeviceID.Substring(0, 5);
+                        cfg.Save();
                     }
                     else
                     {
                         Application.Current.Shutdown();
+                        return;
                     }
                 }
 
                 _ = Task.Run(() =>
                 {
                     LogHelper.Write.Info(
-                    "系统信息：\n" +
-                    $"\tCPU: {Functions.GetCpuName()}\n" +
-                    $"\tMEM: {Functions.GetPhysicalMemoryGB()}GB\n" +
-                    $"\tOSVersion: {Functions.OSVersion}\n" +
-                    $"\tOSArchitecture: {Functions.OSArchitecture}\n" +
-                    $"\tOSDescription: {Functions.OSDescription}");
+                        "系统信息：\n" +
+                        $"\tCPU: {Functions.GetCpuName()}\n" +
+                        $"\tMEM: {Functions.GetPhysicalMemoryGB()}GB\n" +
+                        $"\tOSVersion: {Functions.OSVersion}\n" +
+                        $"\tOSArchitecture: {Functions.OSArchitecture}\n" +
+                        $"\tOSDescription: {Functions.OSDescription}");
                 });
 
+                // 终端依赖库检查
                 bool downloadTermDll = false;
-                if (!(Environment.OSVersion.Version.Major == 6 && Environment.OSVersion.Version.Minor == 1))
+                bool isWin7 = Environment.OSVersion.Version.Major == 6 && Environment.OSVersion.Version.Minor == 1;
+                if (!isWin7)
                 {
                     if (File.Exists("MSL\\Microsoft.Terminal.Control.dll"))
                     {
@@ -121,27 +120,31 @@ namespace MSL
                         downloadTermDll = true;
                     }
                 }
+
                 LogHelper.Write.Info("正在异步载入配置...");
-                _ = LoadConfigEvent(jsonObject);
+                _ = LoadConfigEvent(cfg);
                 LogHelper.Write.Info("正在异步载入联网功能...");
-                _ = OnlineService(jsonObject, downloadTermDll);
+                _ = OnlineService(cfg, downloadTermDll);
                 LogHelper.Write.Info("启动事件完成！");
                 LoadingCompleted = true;
             }
             catch (FileNotFoundException ex)
             {
-                LogHelper.Write.Error($"执行主窗体初始化任务时出错： {ex.ToString()}");
-                MagicShow.ShowMsgDialog($"软件加载时出现错误！\n请检查您是否安装了.NET Framework 4.7.2运行库，若安装后依旧出错，请联系作者！\n错误信息：{ex.Message}", "错误");
-                return;
+                LogHelper.Write.Error($"执行主窗体初始化任务时出错： {ex}");
+                MagicShow.ShowMsgDialog(
+                    $"软件加载时出现错误！\n请检查您是否安装了.NET Framework 4.7.2运行库，若安装后依旧出错，请联系作者！\n错误信息：{ex.Message}",
+                    "错误");
             }
             catch (Exception ex)
             {
-                LogHelper.Write.Error($"执行主窗体初始化任务时出错： {ex.ToString()}");
-                MagicShow.ShowMsgDialog($"软件加载时出现错误！若无法正常使用，请联系作者进行解决。\n错误信息：{ex.Message}", "错误");
-                return;
+                LogHelper.Write.Error($"执行主窗体初始化任务时出错： {ex}");
+                MagicShow.ShowMsgDialog(
+                    $"软件加载时出现错误！若无法正常使用，请联系作者进行解决。\n错误信息：{ex.Message}",
+                    "错误");
             }
         }
 
+        // 软件EULA
         private async Task<bool> EulaEvent()
         {
             var shield = new Shield
@@ -151,267 +154,167 @@ namespace MSL
                 Subject = "https://www.mslmc.cn/eula/",
                 Status = LanguageManager.Instance["MainWindow_GrowlMsg_ReadEula"]
             };
-            bool dialog = await MagicShow.ShowMsgDialogAsync(this, LanguageManager.Instance["MainWindow_GrowlMsg_Eula"], LanguageManager.Instance["Tip"], true, LanguageManager.Instance["No"], LanguageManager.Instance["Yes"], shield);
+            bool dialog = await MagicShow.ShowMsgDialogAsync(
+                this,
+                LanguageManager.Instance["MainWindow_GrowlMsg_Eula"],
+                LanguageManager.Instance["Tip"],
+                true,
+                LanguageManager.Instance["No"],
+                LanguageManager.Instance["Yes"],
+                shield);
+
             if (dialog)
             {
                 LogHelper.Write.Info("用户同意了使用协议。");
                 return true;
             }
-            else
-            {
-                LogHelper.Write.Info("用户拒绝了使用协议，退出软件……");
-                return false;
-            }
+            LogHelper.Write.Info("用户拒绝了使用协议，退出软件……");
+            return false;
         }
 
-        private async Task LoadConfigEvent(JObject jsonObject)
+        // 配置加载
+        private async Task LoadConfigEvent(AppConfig cfg)
         {
-            //下面是加载配置部分
             try
             {
-                if (jsonObject["notifyIcon"] == null)
+                // 托盘图标
+                if (cfg.NotifyIcon)
                 {
-                    string jsonString = File.ReadAllText(@"MSL\config.json", Encoding.UTF8);
-                    JObject jobject = JObject.Parse(jsonString);
-                    jobject.Add("notifyIcon", false);
-                    string convertString = Convert.ToString(jobject);
-                    File.WriteAllText(@"MSL\config.json", convertString, Encoding.UTF8);
-                }
-                else if ((bool)jsonObject["notifyIcon"] == true)
-                {
-                    await Task.Run(() =>
-                    {
-                        Dispatcher.Invoke(() =>
-                        {
-                            CtrlNotifyIcon();
-                        });
-                    });
+                    await Task.Run(() => Dispatcher.Invoke(CtrlNotifyIcon));
                 }
                 LogHelper.Write.Info("读取托盘图标配置成功！");
-                if (jsonObject["sidemenuExpanded"] == null)
-                {
-                    string jsonString = File.ReadAllText(@"MSL\config.json", Encoding.UTF8);
-                    JObject jobject = JObject.Parse(jsonString);
-                    jobject.Add("sidemenuExpanded", true);
-                    string convertString = Convert.ToString(jobject);
-                    File.WriteAllText(@"MSL\config.json", convertString, Encoding.UTF8);
-                    SideMenu.Width = double.NaN;
-                }
-                else if ((bool)jsonObject["sidemenuExpanded"] == true)
-                {
-                    SideMenu.Width = double.NaN;
-                }
-                else
-                {
-                    SideMenu.Width = 50;
-                }
+
+                // 侧边栏
+                SideMenu.Width = cfg.SideMenuExpanded ? double.NaN : 50;
                 LogHelper.Write.Info("读取侧栏配置成功！");
-                BrushConverter brushConverter = new BrushConverter();
-                if (jsonObject["SkinColor"] == null)
+
+                // 主题色
+                var brushConverter = new BrushConverter();
+                try
                 {
-                    string jsonString = File.ReadAllText(@"MSL\config.json", Encoding.UTF8);
-                    JObject jobject = JObject.Parse(jsonString);
-                    jobject.Add("SkinColor", "#0078D4");
-                    string convertString = Convert.ToString(jobject);
-                    File.WriteAllText(@"MSL\config.json", convertString, Encoding.UTF8);
-                    
-                    ThemeManager.Current.AccentColor = (Brush)brushConverter.ConvertFromString("#0078D4");
+                    ThemeManager.Current.AccentColor = (Brush)brushConverter.ConvertFromString(cfg.SkinColor);
                 }
-                else
+                catch
                 {
-                    try
-                    {
-                        ThemeManager.Current.AccentColor = (Brush)brushConverter.ConvertFromString(jsonObject["SkinColor"].Value<string>());
-                    }
-                    catch
-                    {
-                        LogHelper.Write.Error("读取皮肤颜色配置失败，使用默认颜色 #0078D4");
-                        ThemeManager.Current.AccentColor = (Brush)brushConverter.ConvertFromString("#0078D4");
-                    }
+                    LogHelper.Write.Error("读取皮肤颜色配置失败，使用默认颜色 #0078D4");
+                    ThemeManager.Current.AccentColor = (Brush)brushConverter.ConvertFromString("#0078D4");
                 }
                 LogHelper.Write.Info("读取皮肤配置成功！");
 
-                if (jsonObject["darkTheme"] == null)
-                {
-                    string jsonString = File.ReadAllText(@"MSL\config.json", Encoding.UTF8);
-                    JObject jobject = JObject.Parse(jsonString);
-                    jobject.Add("darkTheme", "False");
-                    string convertString = Convert.ToString(jobject);
-                    File.WriteAllText(@"MSL\config.json", convertString, Encoding.UTF8);
-                }
-                else if (jsonObject["darkTheme"].ToString() == "True")
+                // 暗色模式
+                if (cfg.DarkTheme == "True")
                 {
                     ThemeManager.Current.ApplicationTheme = ApplicationTheme.Dark;
                 }
                 LogHelper.Write.Info("读取暗色模式配置成功！");
+
+                // 背景图重命名兼容
                 if (File.Exists("MSL\\Background_.png"))
                 {
                     File.Copy("MSL\\Background_.png", "MSL\\Background.png", true);
                     File.Delete("MSL\\Background_.png");
-                    LogHelper.Write.Warn("检测到软件彩蛋更名的背景图文件“Background_.png”，已将其重命名为“Background.png”！");
+                    LogHelper.Write.Warn("检测到彩蛋更名的背景图文件，已重命名！");
                 }
-                if (jsonObject["semitransparentTitle"] == null)
-                {
-                    string jsonString = File.ReadAllText(@"MSL\config.json", Encoding.UTF8);
-                    JObject jobject = JObject.Parse(jsonString);
-                    jobject.Add("semitransparentTitle", false);
-                    string convertString = Convert.ToString(jobject);
-                    File.WriteAllText(@"MSL\config.json", convertString, Encoding.UTF8);
-                }
+
                 ChangeSkinStyle();
                 LogHelper.Write.Info("读取标题栏样式成功！");
-                LogHelper.Write.Info("加载背景图片成功！");
-                if (jsonObject["autoGetServerInfo"] == null)
-                {
-                    string jsonString = File.ReadAllText(@"MSL\config.json", Encoding.UTF8);
-                    JObject jobject = JObject.Parse(jsonString);
-                    jobject.Add("autoGetServerInfo", true);
-                    string convertString = Convert.ToString(jobject);
-                    File.WriteAllText(@"MSL\config.json", convertString, Encoding.UTF8);
-                    ConfigStore.GetServerInfo = true;
-                }
-                else if ((bool)jsonObject["autoGetServerInfo"] == true)
-                {
-                    ConfigStore.GetServerInfo = true;
-                }
-                if (jsonObject["autoGetPlayerInfo"] == null)
-                {
-                    string jsonString = File.ReadAllText(@"MSL\config.json", Encoding.UTF8);
-                    JObject jobject = JObject.Parse(jsonString);
-                    jobject.Add("autoGetPlayerInfo", true);
-                    string convertString = Convert.ToString(jobject);
-                    File.WriteAllText(@"MSL\config.json", convertString, Encoding.UTF8);
-                    ConfigStore.GetPlayerInfo = true;
-                }
-                else if ((bool)jsonObject["autoGetPlayerInfo"] == true)
-                {
-                    ConfigStore.GetPlayerInfo = true;
-                }
 
-                var logColorConf = (JObject)Config.Read("LogColor");
-                if (logColorConf != null)
-                {
-                    if (logColorConf["INFO"] != null)
-                        ConfigStore.LogColor.INFO = (SolidColorBrush)brushConverter.ConvertFromString(logColorConf["INFO"].ToString());
+                // 服务器信息&玩家信息
+                ConfigStore.GetServerInfo = cfg.AutoGetServerInfo;
+                ConfigStore.GetPlayerInfo = cfg.AutoGetPlayerInfo;
 
-                    if (logColorConf["WARN"] != null)
-                        ConfigStore.LogColor.WARN = (SolidColorBrush)brushConverter.ConvertFromString(logColorConf["WARN"].ToString());
+                // 日志颜色
+                var lc = cfg.LogColor;
+                try { ConfigStore.LogColor.INFO = (SolidColorBrush)brushConverter.ConvertFromString(lc.INFO); } catch { }
+                try { ConfigStore.LogColor.WARN = (SolidColorBrush)brushConverter.ConvertFromString(lc.WARN); } catch { }
+                try { ConfigStore.LogColor.ERROR = (SolidColorBrush)brushConverter.ConvertFromString(lc.ERROR); } catch { }
+                try { ConfigStore.LogColor.HIGHLIGHT = (SolidColorBrush)brushConverter.ConvertFromString(lc.HIGHLIGHT); } catch { }
 
-                    if (logColorConf["ERROR"] != null)
-                        ConfigStore.LogColor.ERROR = (SolidColorBrush)brushConverter.ConvertFromString(logColorConf["ERROR"].ToString());
-
-                    if (logColorConf["HIGHLIGHT"] != null)
-                        ConfigStore.LogColor.HIGHLIGHT = (SolidColorBrush)brushConverter.ConvertFromString(logColorConf["HIGHLIGHT"].ToString());
-                }
-                LogHelper.Write.Info("读取自动化功能配置成功（自动打开显示占用、记录玩家功能）！");
+                LogHelper.Write.Info("读取自动化功能配置成功！");
             }
             catch (Exception ex)
             {
                 Growl.Error(LanguageManager.Instance["MainWindow_GrowlMsg_ConfigErr"] + ex.Message);
-                File.WriteAllText(@"MSL\config.json", string.Format("{{{0}}}", "\n"));
             }
 
-            //自动开启服务器
+            // 自动开启服务器
             try
             {
-                if (jsonObject["autoOpenServer"] == null)
+                if (cfg.AutoOpenServer != "False" && !cfg.AutoUpdateApp)
                 {
-                    string jsonString = File.ReadAllText(@"MSL\config.json", Encoding.UTF8);
-                    JObject jobject = JObject.Parse(jsonString);
-                    jobject.Add("autoOpenServer", "False");
-                    string convertString = Convert.ToString(jobject);
-                    File.WriteAllText(@"MSL\config.json", convertString, Encoding.UTF8);
-                }
-                else if (jsonObject["autoOpenServer"].ToString() != "False")
-                {
-                    // 判断是否开了自动更新软件，如果开了自动更新软件，先不执行此操作
-                    if (jsonObject["autoUpdateApp"] == null || jsonObject["autoUpdateApp"].ToString() != "True")
-                    {
-                        await AutoRunServer(jsonObject);
-                    }
+                    await AutoRunServer(cfg);
                 }
                 LogHelper.Write.Info("读取自动开启（服务器）配置成功！");
             }
             catch (Exception ex)
             {
-                //Logger.LogError("读取自动开启（服务器）配置失败！");
-                MagicShow.ShowMsgDialog(this, LanguageManager.Instance["MainWindow_GrowlMsg_AutoLaunchServerErr"] + ex.Message, LanguageManager.Instance["Error"]);
+                MagicShow.ShowMsgDialog(
+                    this,
+                    LanguageManager.Instance["MainWindow_GrowlMsg_AutoLaunchServerErr"] + ex.Message,
+                    LanguageManager.Instance["Error"]);
             }
-            //自动开启Frpc
+
+            // 自动开启 Frpc
             try
             {
-                if (jsonObject["autoOpenFrpc"] == null)
+                if (cfg.AutoOpenFrpc != "False" && !cfg.AutoUpdateApp)
                 {
-                    string jsonString = File.ReadAllText(@"MSL\config.json", Encoding.UTF8);
-                    JObject jobject = JObject.Parse(jsonString);
-                    jobject.Add("autoOpenFrpc", "False");
-                    string convertString = Convert.ToString(jobject);
-                    File.WriteAllText(@"MSL\config.json", convertString, Encoding.UTF8);
-                }
-                else if (jsonObject["autoOpenFrpc"].ToString() != "False")
-                {
-                    // 判断是否开了自动更新软件，如果开了自动更新软件，先不执行此操作
-                    if (jsonObject["autoUpdateApp"] == null || jsonObject["autoUpdateApp"].ToString() != "True")
-                    {
-                        await AutoRunFrpc(jsonObject);
-                    }
+                    await AutoRunFrpc(cfg);
                 }
                 LogHelper.Write.Info("读取自动开启（内网映射）配置成功！");
             }
             catch (Exception ex)
             {
-                //Logger.LogError("读取自动开启（内网映射）配置失败！");
-                MagicShow.ShowMsgDialog(this, LanguageManager.Instance["MainWindow_GrowlMsg_AutoLaunchFrpcErr"] + ex.Message, LanguageManager.Instance["Error"]);
+                MagicShow.ShowMsgDialog(
+                    this,
+                    LanguageManager.Instance["MainWindow_GrowlMsg_AutoLaunchFrpcErr"] + ex.Message,
+                    LanguageManager.Instance["Error"]);
             }
 
             LogHelper.Write.Info("所有配置载入完毕！开始载入主页...");
             SideMenu.SelectedIndex = 0;
         }
 
-        private async Task AutoRunServer(JObject json)
+        #region 自动启动
+        private async Task AutoRunServer(AppConfig cfg)
         {
-            string servers = json["autoOpenServer"].ToString();
+            string servers = cfg.AutoOpenServer;
             MagicFlowMsg.ShowMessage(LanguageManager.Instance["MainWindow_GrowlMsg_AutoLaunchServer"]);
-            if (!servers.Contains(","))
-            {
-                servers += ",";
-            }
+            if (!servers.Contains(",")) servers += ",";
+
             while (servers != "")
             {
                 await Task.Delay(50);
-                int aserver = servers.IndexOf(",");
-                ServerList.ServerID = int.Parse(servers.Substring(0, aserver));
+                int idx = servers.IndexOf(",");
+                ServerList.ServerID = int.Parse(servers.Substring(0, idx));
                 AutoOpenServer();
-                servers = servers.Replace(ServerList.ServerID.ToString() + ",", "");
+                servers = servers.Replace(ServerList.ServerID + ",", "");
             }
         }
 
-        private async Task AutoRunFrpc(JObject json)
+        private async Task AutoRunFrpc(AppConfig cfg)
         {
-            string frpcs = json["autoOpenFrpc"].ToString();
+            string frpcs = cfg.AutoOpenFrpc;
             MagicFlowMsg.ShowMessage(LanguageManager.Instance["MainWindow_GrowlMsg_AutoLaunchFrpc"]);
-            if (!frpcs.Contains(","))
-            {
-                frpcs += ",";
-            }
+            if (!frpcs.Contains(",")) frpcs += ",";
+
             while (frpcs != "")
             {
                 await Task.Delay(50);
-                int afrpc = frpcs.IndexOf(",");
-                FrpcList.FrpcID = int.Parse(frpcs.Substring(0, afrpc));
+                int idx = frpcs.IndexOf(",");
+                FrpcList.FrpcID = int.Parse(frpcs.Substring(0, idx));
                 if (!FrpcList.FrpcPageList.ContainsKey(FrpcList.FrpcID))
                 {
                     FrpcList.FrpcPageList.Add(FrpcList.FrpcID, new FrpcPage(FrpcList.FrpcID, true));
                 }
-                frpcs = frpcs.Replace(FrpcList.FrpcID.ToString() + ",", "");
+                frpcs = frpcs.Replace(FrpcList.FrpcID + ",", "");
             }
         }
+        #endregion
 
-        private async Task OnlineService(JObject jsonObject, bool downloadTermDll, bool isBackupUrl = false)
+        #region 联网服务
+        private async Task OnlineService(AppConfig cfg, bool downloadTermDll, bool isBackupUrl = false)
         {
-            //get serverlink
-            // _ = HttpService.GetContentAsync("https://msl-api.oss-cn-hangzhou.aliyuncs.com/");
-            // ConfigStore.ApiLink = "mslmc.cn/v3/";
             LogHelper.Write.Info("正在连接到MSL-API-V3服务...");
             try
             {
@@ -425,32 +328,31 @@ namespace MSL
                         MagicFlowMsg.ShowMessage("软件将使用备用URL...");
                         LogHelper.Write.Warn("正在尝试使用备用API地址...");
                         ConfigStore.ApiLink = "https://api.mslmc.net/v3";
-                        await OnlineService(jsonObject, downloadTermDll, true);
+                        await OnlineService(cfg, downloadTermDll, true);
                     }
                     return;
                 }
-                else
-                {
-                    LogHelper.Write.Info($"设备用户信息：设备用户UID：{(string)request["data"]["userInfo"]["uid"]} 注册时间：{(string)request["data"]["userInfo"]["regTime"]} 设备ID：{(string)request["data"]["userInfo"]["deviceID"]}");
-                }
+
+                LogHelper.Write.Info(
+                    $"设备用户信息：UID={request["data"]["userInfo"]["uid"]} " +
+                    $"注册时间={request["data"]["userInfo"]["regTime"]} " +
+                    $"设备ID={request["data"]["userInfo"]["deviceID"]}");
             }
-            catch (JsonException ex)
+            catch (Newtonsoft.Json.JsonException ex)
             {
-                MagicFlowMsg.ShowMessage(LanguageManager.Instance["MainWindow_GrowlMsg_MSLServerDown"] + $"\n[JSON Exception]{ex.Message}", 2);
-                LogHelper.Write.Error("无法连接到MSL服务器...");
+                MagicFlowMsg.ShowMessage(LanguageManager.Instance["MainWindow_GrowlMsg_MSLServerDown"] + $"\n[JSON]{ex.Message}", 2);
                 LogHelper.Write.Error(ex.ToString());
                 return;
             }
             catch (HttpRequestException ex)
             {
-                MagicFlowMsg.ShowMessage(LanguageManager.Instance["MainWindow_GrowlMsg_MSLServerDown"] + $"\n[HTTP Exception]{ex.InnerException.Message}", 2);
+                MagicFlowMsg.ShowMessage(LanguageManager.Instance["MainWindow_GrowlMsg_MSLServerDown"] + $"\n[HTTP]{ex.InnerException?.Message}", 2);
                 if (!isBackupUrl)
                 {
                     MagicFlowMsg.ShowMessage("软件将使用备用URL...");
                     LogHelper.Write.Warn("正在尝试使用备用API地址...");
-                    LogHelper.Write.Error(ex.ToString());
                     ConfigStore.ApiLink = "https://api.mslmc.net/v3";
-                    await OnlineService(jsonObject, downloadTermDll, true);
+                    await OnlineService(cfg, downloadTermDll, true);
                 }
                 return;
             }
@@ -462,14 +364,16 @@ namespace MSL
 
             try
             {
-                // 检查更新
-                await CheckUpdate(jsonObject);
+                await CheckUpdate(cfg);
 
-                // 下载必要DLL
                 if (downloadTermDll)
                 {
                     LogHelper.Write.Info("正在下载伪终端运行库文件...");
-                    var result = await MagicShow.ShowDownloader(this, "https://file.mslmc.cn/Microsoft.Terminal.Control.dll", "MSL", "Microsoft.Terminal.Control.dll", "下载必要文件……");
+                    bool result = await MagicShow.ShowDownloader(
+                        this,
+                        "https://file.mslmc.cn/Microsoft.Terminal.Control.dll",
+                        "MSL", "Microsoft.Terminal.Control.dll", "下载必要文件……");
+
                     if (result)
                     {
                         try
@@ -482,145 +386,133 @@ namespace MSL
                             File.Delete("MSL\\Microsoft.Terminal.Control.dll");
                             LogHelper.Write.Error("仿真终端依赖库文件加载失败！");
                             LogHelper.Write.Error(ex.ToString());
-                            MagicShow.ShowMsg(this, $"必要DLL“Microsoft.Terminal.Control.dll”加载失败！可能是文件不完整，已将其删除，请重启软件以确保其被重新下载并加载。（{ex.Message}）\n如果不重启软件，高级终端（ConPty）功能将失效！\n若您多次重启软件后，此问题依旧未被解决，请联系作者进行反馈！", "错误");
+                            MagicShow.ShowMsg(this,
+                                $"必要DLL加载失败！已将其删除，请重启软件。（{ex.Message}）\n如果不重启，高级终端（ConPty）功能将失效！",
+                                "错误");
                         }
                     }
                 }
 
-                // 判断是否开了自动更新软件，如果开了自动更新软件，说明之前的自动开服和自动开Frpc功能并未执行，这里开始执行
-                if (jsonObject["autoUpdateApp"] != null)
+                // 若开启了自动更新，此处补执行之前跳过的自动启动
+                if (cfg.AutoUpdateApp)
                 {
-                    if (jsonObject["autoUpdateApp"].ToString() != "True") return;
                     try
                     {
-                        // 检测是否开启对应功能
-                        if (jsonObject["autoOpenServer"] != null && jsonObject["autoOpenServer"].ToString() != "False")
+                        if (cfg.AutoOpenServer != "False")
                         {
-                            await AutoRunServer(jsonObject);
+                            await AutoRunServer(cfg);
                             LogHelper.Write.Info("正在自启动服务器端...");
                         }
                     }
                     catch (Exception ex)
                     {
-                        LogHelper.Write.Error("自启动服务端失败！");
                         LogHelper.Write.Error(ex.ToString());
-                        MagicShow.ShowMsgDialog(LanguageManager.Instance["MainWindow_GrowlMsg_AutoLaunchServerErr"] + ex.Message, LanguageManager.Instance["Error"]);
+                        MagicShow.ShowMsgDialog(
+                            LanguageManager.Instance["MainWindow_GrowlMsg_AutoLaunchServerErr"] + ex.Message,
+                            LanguageManager.Instance["Error"]);
                     }
+
                     try
                     {
-                        // 检测是否开启对应功能
-                        if (jsonObject["autoOpenFrpc"] != null && jsonObject["autoOpenFrpc"].ToString() != "False")
+                        if (cfg.AutoOpenFrpc != "False")
                         {
-                            await AutoRunFrpc(jsonObject);
+                            await AutoRunFrpc(cfg);
                             LogHelper.Write.Info("正在自启动Frpc服务...");
                         }
                     }
                     catch (Exception ex)
                     {
-                        LogHelper.Write.Error("自启动Frpc失败！");
                         LogHelper.Write.Error(ex.ToString());
-                        MagicShow.ShowMsgDialog(LanguageManager.Instance["MainWindow_GrowlMsg_AutoLaunchFrpcErr"] + ex.Message, LanguageManager.Instance["Error"]);
+                        MagicShow.ShowMsgDialog(
+                            LanguageManager.Instance["MainWindow_GrowlMsg_AutoLaunchFrpcErr"] + ex.Message,
+                            LanguageManager.Instance["Error"]);
                     }
                 }
             }
             catch (Exception ex)
             {
-                LogHelper.Write.Error("自启动服务出现错误！");
                 LogHelper.Write.Error(ex.ToString());
                 Growl.Error(ex.Message);
             }
         }
+        #endregion
 
+        #region 依赖库加载
         [DllImport("kernel32", SetLastError = true, CharSet = CharSet.Unicode)]
         public static extern IntPtr LoadLibraryEx(string lpFileName, IntPtr hReservedNull, uint dwFlags);
+
         private void LoadLibEx()
         {
-            string md5Vaule = "";
-            using (FileStream file = new FileStream("MSL\\Microsoft.Terminal.Control.dll", FileMode.Open))
+            string md5Value;
+            using (var file = new FileStream("MSL\\Microsoft.Terminal.Control.dll", FileMode.Open))
             {
                 MD5 md5 = new MD5CryptoServiceProvider();
-
-                byte[] retVal = md5.ComputeHash(file);
-
-                StringBuilder sb = new StringBuilder();
-                for (int i = 0; i < retVal.Length; i++)
-                {
-                    sb.Append(retVal[i].ToString("x2"));
-                }
-
-                //Console.WriteLine(sb.ToString());
-                md5Vaule = sb.ToString();
+                byte[] hash = md5.ComputeHash(file);
+                var sb = new StringBuilder();
+                foreach (byte b in hash) sb.Append(b.ToString("x2"));
+                md5Value = sb.ToString();
             }
-            if (md5Vaule == "d01fd30d79d02f008d18565a9df8077d")
-            {
+
+            if (md5Value == "d01fd30d79d02f008d18565a9df8077d")
                 LoadLibraryEx("MSL\\Microsoft.Terminal.Control.dll", IntPtr.Zero, 0x00000008);
-            }
             else
-            {
                 throw new Exception("错误的MD5值");
-            }
         }
+        #endregion
 
-        private async Task CheckUpdate(JObject jsonObject)
+        #region 软件更新
+        private async Task CheckUpdate(AppConfig cfg)
         {
-            //更新
             try
             {
                 LogHelper.Write.Info("正在检查更新...");
-                JObject _httpReturn = await HttpService.GetApiContentAsync("query/update");
-                string _version = _httpReturn["data"]["latestVersion"].ToString();
-                Version newVersion = new Version(_httpReturn["data"]["latestVersion"].ToString());
-                Version version = new Version(System.Reflection.Assembly.GetExecutingAssembly().GetName().Version.ToString());
+                JObject httpReturn = await HttpService.GetApiContentAsync("query/update");
+                string latestVersionStr = httpReturn["data"]["latestVersion"].ToString();
+                var newVersion = new Version(latestVersionStr);
+                var version = new Version(System.Reflection.Assembly.GetExecutingAssembly().GetName().Version.ToString());
                 LogHelper.Write.Info($"当前MSL版本 {version}，最新版本 {newVersion}");
+
                 if (newVersion > version)
                 {
                     LogHelper.Write.Info("检测到新版本！");
-                    var updatelog = _httpReturn["data"]["log"].ToString();
-                    if (jsonObject["autoUpdateApp"] == null)
-                    {
-                        jsonObject.Add("autoUpdateApp", "False");
-                        string convertString = Convert.ToString(jsonObject);
-                        File.WriteAllText(@"MSL\config.json", convertString, Encoding.UTF8);
-                    }
-                    else if (jsonObject["autoUpdateApp"].ToString() == "True")
+                    string updateLog = httpReturn["data"]["log"].ToString();
+
+                    if (cfg.AutoUpdateApp)
                     {
                         LogHelper.Write.Info("自动更新功能已打开，更新版本...");
-                        await UpdateApp(_version);
+                        await UpdateApp(latestVersionStr);
                     }
                     else
                     {
-                        if (await MagicShow.ShowMsgDialogAsync(this, string.Format(LanguageManager.Instance["MainWindow_GrowlMsg_UpdateInfo"] + "\n" + updatelog, _version), LanguageManager.Instance["MainWindow_GrowlMsg_Update"], true))
+                        bool confirmed = await MagicShow.ShowMsgDialogAsync(
+                            this,
+                            string.Format(LanguageManager.Instance["MainWindow_GrowlMsg_UpdateInfo"] + "\n" + updateLog, latestVersionStr),
+                            LanguageManager.Instance["MainWindow_GrowlMsg_Update"],
+                            true);
+
+                        if (confirmed)
                         {
                             LogHelper.Write.Info("更新版本中...");
-                            await UpdateApp(_version);
+                            await UpdateApp(latestVersionStr);
                         }
                         else
                         {
                             LogHelper.Write.Info("用户拒绝更新！");
                             Growl.Error(LanguageManager.Instance["MainWindow_GrowlMsg_RefuseUpdate"]);
-                            /*
-                            IsOldVersion = true;
-                            OldVersionTip();
-                            */
                         }
                     }
                 }
+                else if (newVersion < version)
+                {
+                    MagicFlowMsg.ShowMessage(LanguageManager.Instance["MainWindow_GrowlMsg_BetaVersion"], 4, panel: this);
+                }
                 else
                 {
-                    if (newVersion < version)
-                    {
-                        MagicFlowMsg.ShowMessage(LanguageManager.Instance["MainWindow_GrowlMsg_BetaVersion"], 4, panel: this);
-                    }
-                    else
-                    {
-                        MagicFlowMsg.ShowMessage(LanguageManager.Instance["MainWindow_GrowlMsg_LatestVersion"], 1, panel: this);
-                    }
-
+                    MagicFlowMsg.ShowMessage(LanguageManager.Instance["MainWindow_GrowlMsg_LatestVersion"], 1, panel: this);
                 }
             }
             catch (Exception ex)
             {
-                LogHelper.Write.Error("检查更新失败！");
                 LogHelper.Write.Error(ex.ToString());
                 Growl.Error(LanguageManager.Instance["MainWindow_GrowlMsg_CheckUpdateErr"] + $"\n{ex.Message}");
             }
@@ -632,99 +524,66 @@ namespace MSL
             {
                 if (ProcessRunningCheck())
                 {
-                    MagicShow.ShowMsgDialog(this, LanguageManager.Instance["MainWindow_GrowlMsg_UpdateWarning"], LanguageManager.Instance["Warning"]);
+                    MagicShow.ShowMsgDialog(this,
+                        LanguageManager.Instance["MainWindow_GrowlMsg_UpdateWarning"],
+                        LanguageManager.Instance["Warning"]);
                     return;
                 }
+
                 string downloadUrl = (await HttpService.GetApiContentAsync("download/update"))["data"].ToString();
-                LogHelper.Write.Info($"获取到MSL {latestVersion} 的下载地址: {downloadUrl} 。");
-                await MagicShow.ShowDownloader(this, downloadUrl, AppDomain.CurrentDomain.BaseDirectory, "MSL" + latestVersion + ".exe", "下载新版本中……");
-                if (File.Exists("MSL" + latestVersion + ".exe"))
+                LogHelper.Write.Info($"获取到MSL {latestVersion} 的下载地址: {downloadUrl}");
+
+                await MagicShow.ShowDownloader(this, downloadUrl, AppDomain.CurrentDomain.BaseDirectory,
+                    "MSL" + latestVersion + ".exe", "下载新版本中……");
+
+                string newExe = "MSL" + latestVersion + ".exe";
+                if (!File.Exists(newExe))
                 {
-                    string oldExePath = Process.GetCurrentProcess().MainModule.ModuleName;
-                    string newExeDir = AppDomain.CurrentDomain.BaseDirectory;
-
-                    string cmdCommand = "/C choice /C Y /N /D Y /T 1 & Del \"" + oldExePath + "\" & Ren \"" + "MSL" + latestVersion + ".exe" + "\" \"MSL.exe\" & start \"\" \"MSL.exe\"";
-
-                    // 关闭当前运行中的应用程序
-                    Application.Current.Shutdown();
-
-                    // 删除旧版本并启动新版本
-                    Process delProcess = new Process();
-                    delProcess.StartInfo.FileName = "cmd.exe";
-                    delProcess.StartInfo.Arguments = cmdCommand;
-                    Directory.SetCurrentDirectory(newExeDir);
-                    delProcess.StartInfo.WindowStyle = ProcessWindowStyle.Hidden;
-                    delProcess.Start();
-
-                    // 退出当前进程
-                    Process.GetCurrentProcess().Kill();
-                    //Environment.Exit(0);
+                    MagicShow.ShowMsgDialog(this,
+                        LanguageManager.Instance["MainWindow_GrowlMsg_UpdateFailed"],
+                        LanguageManager.Instance["Error"]);
+                    return;
                 }
-                else
-                {
-                    /*
-                    IsOldVersion = true;
-                    OldVersionTip();
-                    */
-                    MagicShow.ShowMsgDialog(this, LanguageManager.Instance["MainWindow_GrowlMsg_UpdateFailed"], LanguageManager.Instance["Error"]);
-                }
+
+                string oldExePath = Process.GetCurrentProcess().MainModule.ModuleName;
+                string newExeDir = AppDomain.CurrentDomain.BaseDirectory;
+                string cmd = $"/C choice /C Y /N /D Y /T 1 & Del \"{oldExePath}\" & Ren \"{newExe}\" \"MSL.exe\" & start \"\" \"MSL.exe\"";
+
+                Application.Current.Shutdown();
+
+                var proc = new Process();
+                proc.StartInfo.FileName = "cmd.exe";
+                proc.StartInfo.Arguments = cmd;
+                Directory.SetCurrentDirectory(newExeDir);
+                proc.StartInfo.WindowStyle = ProcessWindowStyle.Hidden;
+                proc.Start();
+
+                Process.GetCurrentProcess().Kill();
             }
             catch (Exception ex)
             {
-                /*
-                IsOldVersion = true;
-                OldVersionTip();
-                */
-                LogHelper.Write.Error("更新失败！");
                 LogHelper.Write.Error(ex.ToString());
                 MagicShow.ShowMsgDialog(this, "出现错误，更新失败！\n" + ex.Message, LanguageManager.Instance["Error"]);
             }
         }
+        #endregion
 
-        /*
-        private void OldVersionTip()
-        {
-            var poptip = new Poptip
-            {
-                Content = "由于用户拒绝更新或检测更新失败，此版本可能并非最新版本",
-                PlacementType = PlacementType.Right,
-                HorizontalOffset = -345
-            };
-            var button = new Button
-            {
-                Name = "LowVersionTip",
-                Margin = new Thickness(10, 0, 0, 0),
-                BorderThickness = new Thickness(0),
-                Background = Brushes.White,
-                Foreground = Brushes.Red
-            };
-            BorderElement.SetCornerRadius(button, new CornerRadius(12));
-            IconElement.SetGeometry(button, Application.Current.FindResource("WarningGeometry") as Geometry);
-            IconElement.SetHeight(button, 16d);
-
-            AdornerElement.SetInstance(button, poptip);
-
-            NonClientAreaContent = new StackPanel()
-            {
-                Orientation = Orientation.Horizontal,
-                Children = { button }
-            };
-        }
-        */
-
+        #region 事件
         private void Window_Closing(object sender, System.ComponentModel.CancelEventArgs e)
         {
             LogHelper.Write.Info("MSL，关闭！");
             if (MainNotifyIcon.Visibility == Visibility.Visible)
             {
-                //Logger.LogWarning("托盘图标已打开，取消关闭事件！");
                 e.Cancel = true;
-                this.Visibility = Visibility.Hidden;
+                Visibility = Visibility.Hidden;
                 LogHelper.Write.Info("窗口已隐藏！");
             }
             else if (ProcessRunningCheck())
             {
-                int dialog = MagicShow.ShowMsg(this, LanguageManager.Instance["MainWindow_Close_Warning"], LanguageManager.Instance["Warning"], true, LanguageManager.Instance["Cancel"]);
+                int dialog = MagicShow.ShowMsg(this,
+                    LanguageManager.Instance["MainWindow_Close_Warning"],
+                    LanguageManager.Instance["Warning"],
+                    true, LanguageManager.Instance["Cancel"]);
                 if (dialog != 1)
                 {
                     e.Cancel = true;
@@ -733,65 +592,63 @@ namespace MSL
             }
         }
 
-        private static bool CheckServerRunning()
-        {
-            if (ServerList.RunningServers.Count != 0)
-            {
-                return true;
-            }
-            return false;
-        }
+        private void Window_Closed(object sender, EventArgs e) => Application.Current.Shutdown();
 
-        private static bool CheckFrpcRunning()
-        {
-            if (FrpcList.RunningFrpc.Count != 0)
-            {
-                return true;
-            }
-            return false;
-        }
+        private void Window_Activated(object sender, EventArgs e) =>
+            Growl.SetGrowlParent(GrowlPanel, true);
+
+        private void Window_Deactivated(object sender, EventArgs e) =>
+            Growl.SetGrowlParent(GrowlPanel, false);
+        #endregion
+
+        #region 进程检查
+        private static bool CheckServerRunning() => ServerList.RunningServers.Count != 0;
+        private static bool CheckFrpcRunning() => FrpcList.RunningFrpc.Count != 0;
 
         public static bool ProcessRunningCheck()
         {
             try
             {
-                if (CheckServerRunning() || CheckFrpcRunning() || OnlinePage.FrpcProcess.HasExited == false)
+                if (CheckServerRunning() || CheckFrpcRunning() || !OnlinePage.FrpcProcess.HasExited)
                 {
                     LogHelper.Write.Warn("服务器、内网映射或联机功能正在运行中！");
                     return true;
                 }
-                else
-                {
-                    return false;
-                }
-            }
-            catch
-            {
                 return false;
             }
+            catch { return false; }
+        }
+        #endregion
+
+        #region 托盘
+        private void CtrlNotifyIcon()
+        {
+            MainNotifyIcon.Visibility = MainNotifyIcon.Visibility == Visibility.Collapsed
+                ? Visibility.Visible
+                : Visibility.Collapsed;
         }
 
-        private void CtrlNotifyIcon()//C_NotifyIcon
+        private void MainNotifyIcon_Click(object sender, RoutedEventArgs e) =>
+            Visibility = Visibility.Visible;
+
+        private void NotifyClose_Click(object sender, RoutedEventArgs e)
         {
-            if (MainNotifyIcon.Visibility == Visibility.Collapsed)
+            if (ProcessRunningCheck())
             {
-                //MessageBox.Show("111");
-                MainNotifyIcon.Visibility = Visibility.Visible;
+                int dialog = MagicShow.ShowMsg(this,
+                    LanguageManager.Instance["MainWindow_Close_Warning2"],
+                    LanguageManager.Instance["Warning"],
+                    true, LanguageManager.Instance["Cancel"]);
+                if (dialog == 1) Application.Current.Shutdown();
             }
             else
             {
-                MainNotifyIcon.Visibility = Visibility.Collapsed;
+                Application.Current.Shutdown();
             }
         }
+        #endregion
 
-        /*
-        private void GotoOnlinePage()
-        {
-            SideMenu.SelectedIndex = 3;
-            frame.Content = Pages[SideMenu.SelectedIndex];
-        }
-        */
-
+        #region 导航
         private void GotoCreatePage()
         {
             SideMenu.SelectedIndex = 1;
@@ -814,66 +671,75 @@ namespace MSL
         {
             SideMenu.SelectedIndex = 2;
             if (!FrpcList.FrpcPageList.ContainsKey(FrpcList.FrpcID))
-            {
                 FrpcList.FrpcPageList.Add(FrpcList.FrpcID, new FrpcPage(FrpcList.FrpcID));
-            }
             FrpcList.FrpcPageList.TryGetValue(FrpcList.FrpcID, out Page page);
             frame.Content = page;
         }
 
+        private void SideMenu_SelectionChanged(object sender, SelectionChangedEventArgs e)
+        {
+            if (SideMenu.SelectedIndex != -1)
+                frame.Content = Pages[SideMenu.SelectedIndex];
+        }
+
+        private void SideMenuContextOpen_Click(object sender, RoutedEventArgs e)
+        {
+            var cfg = AppConfig.Current;
+            if (SideMenu.Width == 50)
+            {
+                SideMenu.Width = double.NaN;
+                cfg.SideMenuExpanded = true;
+            }
+            else
+            {
+                SideMenu.Width = 50;
+                cfg.SideMenuExpanded = false;
+            }
+            cfg.Save();
+        }
+        #endregion
+
+        #region 皮肤
         public static ImageBrush BackImageBrush;
+
         private void ChangeSkinStyle()
         {
             try
             {
-                JObject jsonObject = JObject.Parse(File.ReadAllText(@"MSL\config.json", Encoding.UTF8));
-
-                if (jsonObject["MicaEffect"].Value<bool>() == true)
+                var cfg = AppConfig.Current;
+                if (cfg.MicaEffect)
                 {
-                    if (File.Exists("MSL\\Background.png"))
-                    {
-                        DisposeBackImage();
-                    }
+                    if (File.Exists("MSL\\Background.png")) DisposeBackImage();
                     ChangeTitleStyle(true);
                     ThemeManager.Current.UsingSystemTheme = true;
-                    this.SystemBackdropType = BackdropType.Auto;
-                    this.SystemBackdropType = BackdropType.Mica;
+                    SystemBackdropType = BackdropType.Auto;
+                    SystemBackdropType = BackdropType.Mica;
                     SideMenuPanel.Background = Brushes.Transparent;
-                    
                 }
                 else
                 {
-                    this.SystemBackdropType = BackdropType.Auto;
-                    this.SetResourceReference(BackgroundProperty, "BackgroundBrush");
+                    SystemBackdropType = BackdropType.Auto;
+                    SetResourceReference(BackgroundProperty, "BackgroundBrush");
                     SideMenuPanel.SetResourceReference(Panel.BackgroundProperty, "SideMenuBrush");
-                    if (jsonObject["darkTheme"].ToString() != "Auto")
-                    {
-                        ThemeManager.Current.UsingSystemTheme = false;
-                    }
-                    if ((bool)jsonObject["semitransparentTitle"] == true)
-                    {
-                        ChangeTitleStyle(true);
-                    }
-                    else
-                    {
-                        ChangeTitleStyle(false);
-                    }
 
-                    if (File.Exists("MSL\\Background.png"))//check background and set it
+                    if (cfg.DarkTheme != "Auto")
+                        ThemeManager.Current.UsingSystemTheme = false;
+
+                    ChangeTitleStyle(cfg.SemitransparentTitle);
+
+                    if (File.Exists("MSL\\Background.png"))
                     {
                         if (BackImageBrush != null)
                         {
-                            LogHelper.Write.Info("已将缓存的背景图数据进行释放！");
                             BackImageBrush = null;
                             GC.Collect();
                         }
-                        LogHelper.Write.Info("初始化背景图片……");
-                        BackImageBrush = new ImageBrush(GetImage("MSL\\Background.png"));
-                        BackImageBrush.Stretch = Stretch.UniformToFill;
-                        LogHelper.Write.Info("应用背景图片……");
+                        BackImageBrush = new ImageBrush(GetImage("MSL\\Background.png"))
+                        {
+                            Stretch = Stretch.UniformToFill
+                        };
                         Background = BackImageBrush;
                         frame.BorderThickness = new Thickness(0);
-                        LogHelper.Write.Info("背景图片应用成功！");
                     }
                     else
                     {
@@ -881,43 +747,34 @@ namespace MSL
                     }
                 }
             }
-            catch
-            { }
+            catch { }
         }
 
         private void DisposeBackImage()
         {
-            if (BackImageBrush != null)
+            if (BackImageBrush == null) return;
+            SetResourceReference(BackgroundProperty, "BackgroundBrush");
+            frame.BorderThickness = new Thickness(1, 0, 0, 0);
+            _ = Task.Run(async () =>
             {
-                LogHelper.Write.Info("移除窗体背景图……");
-                SetResourceReference(BackgroundProperty, "BackgroundBrush");
-                frame.BorderThickness = new Thickness(1, 0, 0, 0);
-                LogHelper.Write.Info("已将窗体背景设置为默认背景颜色！");
-                // 释放掉缓存的背景图数据，防止多次更换背景图导致内存溢出
-                Task.Run(async () =>
-                {
-                    await Task.Delay(400);
-                    LogHelper.Write.Info("已将缓存的背景图数据进行释放！");
-                    BackImageBrush = null;
-                    await Task.Delay(100);
-                    GC.Collect();
-                });
-            }
+                await Task.Delay(400);
+                BackImageBrush = null;
+                await Task.Delay(100);
+                GC.Collect();
+            });
         }
 
         private BitmapImage GetImage(string imagePath)
         {
-            BitmapImage bitmap = new BitmapImage();
-            if (File.Exists(imagePath))
+            var bitmap = new BitmapImage();
+            if (!File.Exists(imagePath)) return bitmap;
+            bitmap.BeginInit();
+            bitmap.CacheOption = BitmapCacheOption.OnLoad;
+            using (var ms = new System.IO.MemoryStream(File.ReadAllBytes(imagePath)))
             {
-                bitmap.BeginInit();
-                bitmap.CacheOption = BitmapCacheOption.OnLoad;
-                using (Stream ms = new MemoryStream(File.ReadAllBytes(imagePath)))
-                {
-                    bitmap.StreamSource = ms;
-                    bitmap.EndInit();
-                    bitmap.Freeze();
-                }
+                bitmap.StreamSource = ms;
+                bitmap.EndInit();
+                bitmap.Freeze();
             }
             return bitmap;
         }
@@ -926,93 +783,21 @@ namespace MSL
         {
             if (isOpen)
             {
-                this.SetResourceReference(NonClientAreaBackgroundProperty, "SideMenuBrush");
-                this.SetResourceReference(NonClientAreaForegroundProperty, "PrimaryTextBrush");
-                this.SetResourceReference(CloseButtonForegroundProperty, "PrimaryTextBrush");
-                this.SetResourceReference(OtherButtonForegroundProperty, "PrimaryTextBrush");
-                this.SetResourceReference(OtherButtonHoverForegroundProperty, "PrimaryTextBrush");
+                SetResourceReference(NonClientAreaBackgroundProperty, "SideMenuBrush");
+                SetResourceReference(NonClientAreaForegroundProperty, "PrimaryTextBrush");
+                SetResourceReference(CloseButtonForegroundProperty, "PrimaryTextBrush");
+                SetResourceReference(OtherButtonForegroundProperty, "PrimaryTextBrush");
+                SetResourceReference(OtherButtonHoverForegroundProperty, "PrimaryTextBrush");
             }
             else
             {
-                this.SetResourceReference(NonClientAreaBackgroundProperty, "PrimaryBrush");
+                SetResourceReference(NonClientAreaBackgroundProperty, "PrimaryBrush");
                 NonClientAreaForeground = Brushes.White;
                 CloseButtonForeground = Brushes.White;
                 OtherButtonForeground = Brushes.White;
                 OtherButtonHoverForeground = Brushes.White;
             }
         }
-
-        private void SideMenuContextOpen_Click(object sender, RoutedEventArgs e)
-        {
-            if (SideMenu.Width == 50)
-            {
-                SideMenu.Width = double.NaN;
-                //frame.Margin = new Thickness(100, 0, 0, 0);
-                string jsonString = File.ReadAllText(@"MSL\config.json", Encoding.UTF8);
-                JObject jobject = JObject.Parse(jsonString);
-                jobject["sidemenuExpanded"] = true;
-                string convertString = Convert.ToString(jobject);
-                File.WriteAllText(@"MSL\config.json", convertString, Encoding.UTF8);
-            }
-            else
-            {
-                SideMenu.Width = 50;
-                //frame.Margin = new Thickness(50, 0, 0, 0);
-                string jsonString = File.ReadAllText(@"MSL\config.json", Encoding.UTF8);
-                JObject jobject = JObject.Parse(jsonString);
-                jobject["sidemenuExpanded"] = false;
-                string convertString = Convert.ToString(jobject);
-                File.WriteAllText(@"MSL\config.json", convertString, Encoding.UTF8);
-            }
-        }
-
-        private void SideMenu_SelectionChanged(object sender, SelectionChangedEventArgs e)
-        {
-            if (SideMenu.SelectedIndex != -1)
-            {
-                frame.Content = Pages[SideMenu.SelectedIndex];
-            }
-        }
-
-        private void MainNotifyIcon_Click(object sender, RoutedEventArgs e)
-        {
-            this.Visibility = Visibility.Visible;
-        }
-
-        private void NotifyClose_Click(object sender, RoutedEventArgs e)
-        {
-            if (ProcessRunningCheck())
-            {
-                int dialog = MagicShow.ShowMsg(this, LanguageManager.Instance["MainWindow_Close_Warning2"], LanguageManager.Instance["Warning"], true, LanguageManager.Instance["Cancel"]);
-                if (dialog == 1)
-                {
-                    Application.Current.Shutdown();
-                    //Process.GetCurrentProcess().Kill();
-                    //Environment.Exit(0);
-                }
-            }
-            else
-            {
-                Application.Current.Shutdown();
-                //Process.GetCurrentProcess().Kill();
-                //Environment.Exit(0);
-            }
-        }
-
-        private void Window_Closed(object sender, EventArgs e)
-        {
-            Application.Current.Shutdown();
-            //Environment.Exit(0);
-        }
-
-        private void Window_Activated(object sender, EventArgs e)
-        {
-            Growl.SetGrowlParent(this.GrowlPanel, true);
-        }
-
-        private void Window_Deactivated(object sender, EventArgs e)
-        {
-            Growl.SetGrowlParent(this.GrowlPanel, false);
-        }
+        #endregion
     }
 }

@@ -11,7 +11,7 @@ namespace MSL.controls
     /// </summary>
     public partial class MessageDialog
     {
-        public event DeleControl CloseDialog;
+        public event App.DeleControl CloseDialog;
         public bool _dialogReturn;
 
         public MessageDialog(string dialogText, string dialogTitle, bool showPrimaryBtn, string closeBtnContext, string primaryBtnContext, UIElement uIElement = null, bool isDangerPrimaryBtn = false)

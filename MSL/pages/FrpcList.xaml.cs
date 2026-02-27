@@ -18,7 +18,7 @@ namespace MSL.pages
     /// </summary>
     public partial class FrpcList : Page
     {
-        public static event DeleControl OpenFrpcPage;
+        public static event App.DeleControl OpenFrpcPage;
         public static int FrpcID;
         public static Dictionary<int, Page> FrpcPageList = new Dictionary<int, Page>();
         public static List<int> RunningFrpc = new List<int>();

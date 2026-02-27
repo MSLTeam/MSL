@@ -26,7 +26,7 @@ namespace MSL.pages
     /// </summary>
     public partial class ServerList : Page
     {
-        public static event DeleControl CreateServerEvent;
+        public static event App.DeleControl CreateServerEvent;
         public static int ServerID;
         public static List<int> RunningServers = new List<int>();
         public static Dictionary<int, Window> ServerWindowList = new Dictionary<int, Window>();

@@ -13,7 +13,7 @@ namespace MSL.controls
     /// </summary>
     public partial class InputDialog
     {
-        public event DeleControl CloseDialog;
+        public event App.DeleControl CloseDialog;
         public string _dialogReturn = null;
         private bool AcceptEmpty;
         public InputDialog(string dialogText, string textboxText, bool passwordMode = false, bool acceptEmpty = false)

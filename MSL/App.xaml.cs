@@ -16,6 +16,8 @@ namespace MSL
     /// </summary>
     public partial class App : Application
     {
+        public delegate void DeleControl();
+
         public App()
         {
             // 1. 订阅 UI 线程的未处理异常事件

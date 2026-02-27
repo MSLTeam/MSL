@@ -22,7 +22,7 @@ namespace MSL
     /// </summary>
     public partial class DownloadDialog
     {
-        public event DeleControl CloseDialog;
+        public event App.DeleControl CloseDialog;
         public int _dialogReturn = 0; // 0未开始下载（或下载中），1下载完成，2下载取消，3下载失败
         private readonly bool enableParalle = true; // 是否启用多线程下载
         private readonly string downloadPath;

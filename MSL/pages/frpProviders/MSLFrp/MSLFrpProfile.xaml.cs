@@ -1,5 +1,6 @@
 ﻿using MSL.controls;
 using MSL.utils;
+using MSL.utils.Config;
 using Newtonsoft.Json.Linq;
 using QRCoder;
 using System;

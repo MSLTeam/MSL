@@ -28,7 +28,7 @@ namespace MSL.pages
     /// </summary>
     public partial class CreateServer : Page
     {
-        public static event DeleControl GotoServerList;
+        public static event App.DeleControl GotoServerList;
         private int returnMode = 0; //1：WelcomeGrid，2：FastModeGrid，3：FastModeInstallGrid，4：CustomModeDir，5：CustomModeJava，6：CustomModeServerCore，7：CustomModeFinally，8Finally：SelectTerminal
         private string DownjavaName;
         private string servername;

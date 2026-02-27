@@ -12,6 +12,7 @@ using MSL.forms;
 using MSL.langs;
 using MSL.pages;
 using MSL.utils;
+using MSL.utils.Config;
 using Newtonsoft.Json;
 using Newtonsoft.Json.Linq;
 using Ookii.Dialogs.Wpf;
@@ -45,8 +46,8 @@ namespace MSL
     /// </summary>
     public partial class ServerRunner : HandyControl.Controls.Window
     {
-        public static event DeleControl SaveConfigEvent;
-        public static event DeleControl ServerStateChange;
+        public static event App.DeleControl SaveConfigEvent;
+        public static event App.DeleControl ServerStateChange;
         private short GetServerInfoLine = 0;
         private readonly short FirstStartTab;
         private MCSLogHandler MCSLogHandler { get; set; }
@@ -127,8 +128,9 @@ namespace MSL
                 {
                     e.Cancel = true;
                     int dialog = 0;
-                    Console.WriteLine(Config.Read("closeWindowDialog"));
-                    if (Config.Read("closeWindowDialog")?.ToString() == "False")
+                    AppConfig config = AppConfig.Current;
+                    Console.WriteLine(config.CloseWindowDialog);
+                    if (config.CloseWindowDialog == false)
                     {
                         dialog = 1; // 不显示提示，直接关闭窗口
                     }
@@ -204,45 +206,28 @@ namespace MSL
 
         private async Task<bool> LoadingInfoEvent()
         {
-            if (File.Exists(@"MSL\config.json"))
+            AppConfig config = AppConfig.Current;
+            if (config.MslTips == false)
             {
-                JObject keys = JObject.Parse(File.ReadAllText(@"MSL\config.json", Encoding.UTF8));
-                if (keys["mslTips"] != null && (bool)keys["mslTips"] == false)
-                {
-                    MCSLogHandler.IsMSLFormatedLog = false;
-                }
-                if (keys["sidemenuExpanded"] == null)
-                {
-                    string jsonString = File.ReadAllText(@"MSL\config.json", Encoding.UTF8);
-                    JObject jobject = JObject.Parse(jsonString);
-                    jobject.Add("sidemenuExpanded", true);
-                    string convertString = Convert.ToString(jobject);
-                    File.WriteAllText(@"MSL\config.json", convertString, Encoding.UTF8);
-                    Tab_Home.Width = double.NaN;
-                    Tab_Console.Width = double.NaN;
-                    Tab_Plugins.Width = double.NaN;
-                    Tab_Settings.Width = double.NaN;
-                    Tab_MoreFunctions.Width = double.NaN;
-                    Tab_Timer.Width = double.NaN;
-                }
-                else if ((bool)keys["sidemenuExpanded"] == true)
-                {
-                    Tab_Home.Width = double.NaN;
-                    Tab_Console.Width = double.NaN;
-                    Tab_Plugins.Width = double.NaN;
-                    Tab_Settings.Width = double.NaN;
-                    Tab_MoreFunctions.Width = double.NaN;
-                    Tab_Timer.Width = double.NaN;
-                }
-                else
-                {
-                    Tab_Home.Width = 50;
-                    Tab_Console.Width = 50;
-                    Tab_Plugins.Width = 50;
-                    Tab_Settings.Width = 50;
-                    Tab_MoreFunctions.Width = 50;
-                    Tab_Timer.Width = 50;
-                }
+                MCSLogHandler.IsMSLFormatedLog = false;
+            }
+            if (config.SideMenuExpanded == true)
+            {
+                Tab_Home.Width = double.NaN;
+                Tab_Console.Width = double.NaN;
+                Tab_Plugins.Width = double.NaN;
+                Tab_Settings.Width = double.NaN;
+                Tab_MoreFunctions.Width = double.NaN;
+                Tab_Timer.Width = double.NaN;
+            }
+            else
+            {
+                Tab_Home.Width = 50;
+                Tab_Console.Width = 50;
+                Tab_Plugins.Width = 50;
+                Tab_Settings.Width = 50;
+                Tab_MoreFunctions.Width = 50;
+                Tab_Timer.Width = 50;
             }
 
             //Get Server-Information
@@ -688,10 +673,12 @@ namespace MSL
             {
                 if (ConPTYWindow.ConptyConsole.ConPTYTerm.TermProcIsRunning)
                 {
+                    Logger.Info("检测服务器运行事件：服务器正在运行 (Conpty)");
                     return true;
                 }
                 else
                 {
+                    Logger.Info("检测服务器运行事件：服务器未运行 (Conpty)");
                     return false;
                 }
             }
@@ -699,13 +686,16 @@ namespace MSL
             {
                 if (!ServerProcess.HasExited)
                 {
+                    Logger.Info("检测服务器运行事件：服务器正在运行");
                     return true;
                 }
             }
             catch
             {
+                Logger.Info("检测服务器运行事件：服务器未运行");
                 return false;
             }
+            Logger.Info("检测服务器运行事件：服务器未运行 (已关闭)");
             return false;
         }
 

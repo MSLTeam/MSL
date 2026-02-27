@@ -1,4 +1,5 @@
 ﻿using MSL.utils;
+using MSL.utils.Config;
 using Newtonsoft.Json.Linq;
 using System;
 using System.IO;
@@ -19,8 +20,8 @@ namespace MSL.pages
     /// </summary>
     public partial class Home : Page
     {
-        public static event DeleControl CreateServerEvent;
-        public static event DeleControl AutoOpenServer;
+        public static event App.DeleControl CreateServerEvent;
+        public static event App.DeleControl AutoOpenServer;
 
         public Home()
         {
@@ -174,25 +175,13 @@ namespace MSL.pages
         {
             try
             {
-                string configPath = @"MSL\config.json";
-                if (!File.Exists(configPath))
-                {
-                    return "0";
-                }
+                AppConfig config = AppConfig.Current;
 
-                JObject jsonObject = JObject.Parse(File.ReadAllText(configPath, Encoding.UTF8));
-                if (jsonObject["notice"] == null)
-                {
-                    jsonObject.Add("notice", "0");
-                    File.WriteAllText(configPath, jsonObject.ToString(), Encoding.UTF8);
-                    return "0";
-                }
-
-                return jsonObject["notice"].ToString();
+                return config.NoticeVer;
             }
             catch (Exception ex)
             {
-                LogHelper.Write.Error($"读取本地配置文件 'MSL/config.json' 中的公告版本失败: {ex.ToString()}");
+                LogHelper.Write.Error($"读取公告版本失败: {ex}");
                 return "0";
             }
         }
@@ -202,13 +191,9 @@ namespace MSL.pages
             try
             {
                 LogHelper.Write.Info($"准备保存新公告版本 '{version}' 到配置文件...");
-                string configPath = @"MSL\config.json";
-                JObject jsonObject = File.Exists(configPath)
-                    ? JObject.Parse(File.ReadAllText(configPath, Encoding.UTF8))
-                    : new JObject();
-
-                jsonObject["notice"] = version;
-                File.WriteAllText(configPath, jsonObject.ToString(), Encoding.UTF8);
+                AppConfig config = AppConfig.Current;
+                config.NoticeVer = version;
+                config.Save();
                 LogHelper.Write.Info("成功保存新公告版本。");
             }
             catch (Exception ex)
@@ -464,7 +449,7 @@ namespace MSL.pages
             LogHelper.Write.Info("开始加载快速启动栏的服务器配置...");
             try
             {
-                object configJson = Config.Read("selectedServer");
+                object configJson = Config.Read("SelectedServer");
                 int selectedIndex = -1;
 
                 if (configJson != null && int.TryParse(configJson.ToString(), out int index))
@@ -551,21 +536,9 @@ namespace MSL.pages
             selectedItemTextBlock.Text = startServerDropdown.SelectedItem?.ToString();
             try
             {
-                // 为了健壮性，这里也应该处理文件不存在的情况
-                string configPath = @"MSL\config.json";
-                JObject _jsonObject = File.Exists(configPath)
-                    ? JObject.Parse(File.ReadAllText(configPath, Encoding.UTF8))
-                    : new JObject();
-
-                if (_jsonObject["selectedServer"] == null)
-                {
-                    _jsonObject.Add("selectedServer", startServerDropdown.SelectedIndex.ToString());
-                }
-                else
-                {
-                    _jsonObject["selectedServer"].Replace(startServerDropdown.SelectedIndex.ToString());
-                }
-                File.WriteAllText(configPath, Convert.ToString(_jsonObject), Encoding.UTF8);
+                AppConfig config = AppConfig.Current;
+                config.SelectedServer = startServerDropdown.SelectedIndex.ToString();
+                config.Save();
                 LogHelper.Write.Info("已成功将选择的服务器索引保存到配置文件。");
             }
             catch (Exception ex)

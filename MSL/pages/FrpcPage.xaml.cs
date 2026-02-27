@@ -2,6 +2,7 @@
 using ICSharpCode.SharpZipLib.Zip;
 using MSL.langs;
 using MSL.utils;
+using MSL.utils.Config;
 using Newtonsoft.Json.Linq;
 using System;
 using System.Collections.Generic;
@@ -26,7 +27,7 @@ namespace MSL.pages
     /// </summary>
     public partial class FrpcPage : Page
     {
-        public static event DeleControl GotoFrpcListPage;
+        public static event App.DeleControl GotoFrpcListPage;
         public readonly Process FrpcProcess = new Process();
         private readonly int FrpID;
         private int FrpcServer;

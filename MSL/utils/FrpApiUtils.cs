@@ -128,14 +128,14 @@ namespace MSL.utils
                     var loginRes = JObject.Parse(res.HttpResponseContent.ToString());
                     if ((int)loginRes["code"] != 200)
                     {
-                        if (Config.Read("MSLUserAccessToken") != null)
-                            Config.Remove("MSLUserAccessToken");
+                        if (Config.Config.Read("MSLUserAccessToken") != null)
+                            Config.Config.Remove("MSLUserAccessToken");
                         return ((int)loginRes["code"], loginRes["msg"].ToString(), null);
                     }
                     UserToken = token;
                     if (saveToken)
                     {
-                        Config.Write("MSLUserAccessToken", token);
+                        Config.Config.Write("MSLUserAccessToken", token);
                     }
 
                     // 用户登陆成功后，发送POST请求续期Token
@@ -144,8 +144,8 @@ namespace MSL.utils
                 }
                 else
                 {
-                    if (Config.Read("MSLUserAccessToken") != null)
-                        Config.Remove("MSLUserAccessToken");
+                    if (Config.Config.Read("MSLUserAccessToken") != null)
+                        Config.Config.Remove("MSLUserAccessToken");
                     return ((int)res.HttpResponseCode, res.HttpResponseContent.ToString(), null);
                 }
             }
@@ -434,7 +434,7 @@ namespace MSL.utils
                 {
                     if (save)
                     {
-                        Config.Write("OpenFrpToken", AuthId);
+                        Config.Config.Write("OpenFrpToken", AuthId);
                     }
                     return (200, (string)res.HttpResponseContent);
                 }

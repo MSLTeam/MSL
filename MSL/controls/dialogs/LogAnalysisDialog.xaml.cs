@@ -2,6 +2,7 @@
 using MdXaml;
 using MSL.pages.frpProviders.MSLFrp;
 using MSL.utils;
+using MSL.utils.Config;
 using System;
 using System.Collections.Generic;
 using System.IO;

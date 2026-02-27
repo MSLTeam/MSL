@@ -22,7 +22,7 @@ namespace MSL.controls
     /// </summary>
     public partial class InstallForgeDialog
     {
-        public event DeleControl CloseDialog;
+        public event App.DeleControl CloseDialog;
         public int DialogReturn { get; set; } = 0;//0为未安装或未安装成功，1为安装成功，2为取消安装，3为切换至命令行安装
         public string McVersion { get; set; }
         private readonly string ForgePath;

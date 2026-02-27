@@ -152,7 +152,10 @@
     <Compile Include="pages\frpProviders\SakuraFrp.xaml.cs">
       <DependentUpon>SakuraFrp.xaml</DependentUpon>
     </Compile>
-    <Compile Include="utils\Config.cs" />
+    <Compile Include="utils\Config\AppConfig.cs" />
+    <Compile Include="utils\Config\Config.cs" />
+    <Compile Include="utils\Config\ConfigStore.cs" />
+    <Compile Include="utils\Config\ConfigWriter.cs" />
     <Compile Include="utils\DownloadManager.cs" />
     <Compile Include="utils\FrpApiUtils.cs" />
     <Compile Include="utils\Functions.cs" />
