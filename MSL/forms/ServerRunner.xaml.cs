@@ -1,4 +1,5 @@
-﻿using HandyControl.Controls;
+﻿using ConPtyTermEmulatorLib;
+using HandyControl.Controls;
 using HandyControl.Data;
 using HandyControl.Tools;
 using HandyControl.Tools.Command;
@@ -8,7 +9,6 @@ using Microsoft.Win32;
 using MSL.controls;
 using MSL.controls.ctrls_serverrunner;
 using MSL.controls.dialogs;
-using MSL.forms;
 using MSL.langs;
 using MSL.pages;
 using MSL.utils;
@@ -30,7 +30,6 @@ using System.Threading.Tasks;
 using System.Windows;
 using System.Windows.Controls;
 using System.Windows.Controls.Primitives;
-using System.Windows.Documents;
 using System.Windows.Input;
 using System.Windows.Media;
 using System.Windows.Media.Imaging;
@@ -52,8 +51,7 @@ namespace MSL
         private readonly short FirstStartTab;
         private MCSLogHandler MCSLogHandler { get; set; }
         private Process ServerProcess { get; set; }
-        private ConptyWindow ConPTYWindow { get; set; }
-        private DispatcherTimer ConPTYResizeTimer { get; set; } = new DispatcherTimer();
+        private MinecraftServerTerm _serverTerm;
         private ServerProperties ServerProperties { get; set; }
         private int RserverID { get; }
         private string Rservername { get; set; }
@@ -115,8 +113,8 @@ namespace MSL
             InitializeLogHandler();
             InitializeOutlog();
 
-            ConPTYResizeTimer.Interval = TimeSpan.FromMilliseconds(200);
-            ConPTYResizeTimer.Tick += new EventHandler(ConPTYResizeTimer_Tick);
+            // ConPTYResizeTimer.Interval = TimeSpan.FromMilliseconds(200);
+            // ConPTYResizeTimer.Tick += new EventHandler(ConPTYResizeTimer_Tick);
             SettingsPage.ChangeSkinStyle += ChangeSkinStyle;
             RserverID = serverID;
             FirstStartTab = controlTab;
@@ -182,13 +180,6 @@ namespace MSL
 
                     if (dialog == 1)
                     {
-                        if (ConPTYWindow != null)
-                        {
-                            ConptyPopUp.IsOpen = false;
-                            Growl.SetGrowlParent(ConptyGrowlPanel, false);
-                            Growl.SetGrowlParent(GrowlPanel, true);
-                            ConPTYWindow.Visibility = Visibility.Collapsed;
-                        }
                         Visibility = Visibility.Collapsed;
                     }
                 }
@@ -212,18 +203,15 @@ namespace MSL
                 ServerList.ServerWindowList.Remove(RserverID);
             }
             SettingsPage.ChangeSkinStyle -= ChangeSkinStyle;
-            if (ConPTYWindow != null)
+            if (_serverTerm != null)
             {
                 try
                 {
-                    ConPTYWindow.Closing -= ConptyWindowClosing;
-                    ConPTYWindow.ControlServer.Click -= ConptyWindowControlServer;
-                    ConPTYWindow.ControlServer.MouseDoubleClick -= KillConptyServer;
-                    ConPTYWindow.Close();
+                    _serverTerm.Dispose();
                 }
                 finally
                 {
-                    ConPTYWindow = null;
+                    _serverTerm = null;
                 }
             }
             MCSLogHandler.Dispose();
@@ -463,9 +451,7 @@ namespace MSL
             }
             if (_json["useConpty"] != null && _json["useConpty"].ToString() == "True")
             {
-                Tradition_LogFunGrid.Visibility = Visibility.Collapsed;
-                Tradition_LogFunDivider.Visibility = Visibility.Collapsed;
-                Tradition_CMDCard.Visibility = Visibility.Collapsed;
+                ServerEncodingSettings.Visibility = Visibility.Collapsed;
                 useConpty.IsChecked = true;
             }
 
@@ -638,11 +624,13 @@ namespace MSL
                 }
                 catch { }
             }
+            /*
             if (TabCtrl.SelectedIndex == 1 && ConPTYWindow != null)
             {
                 await Task.Delay(50);
                 ShowConptyWindow();
             }
+            */
         }
 
         private bool firstTimeOpenTerminal = true;
@@ -656,6 +644,7 @@ namespace MSL
             {
                 return;
             }
+            /*
             if (ConPTYWindow != null && ConPTYWindow.Visibility == Visibility.Visible && TabCtrl.SelectedIndex != 1)
             {
                 ConPTYWindow.Visibility = Visibility.Collapsed;
@@ -666,9 +655,11 @@ namespace MSL
                 Growl.SetGrowlParent(GrowlPanel, false);
                 Growl.SetGrowlParent(GrowlPanel, true);
             }
+            */
             switch (TabCtrl.SelectedIndex)
             {
                 case 1:
+                    /*
                     if (ConPTYWindow != null)
                     {
                         await Task.Delay(50);
@@ -679,19 +670,20 @@ namespace MSL
                     }
                     else
                     {
-                        if (firstTimeOpenTerminal)
+                    */
+                    if (firstTimeOpenTerminal)
+                    {
+                        firstTimeOpenTerminal = false;
+                        _ = Task.Run(async () =>
                         {
-                            firstTimeOpenTerminal = false;
-                            _ = Task.Run(async () =>
+                            await Task.Delay(500);
+                            Dispatcher.Invoke(() =>
                             {
-                                await Task.Delay(500);
-                                Dispatcher.Invoke(() =>
-                                {
-                                    outlog.ScrollToEnd();
-                                });
+                                outlog.ScrollToEnd();
                             });
-                        }
+                        });
                     }
+                    //}
                     break;
                 case 2:
                     ReFreshPluginsAndMods();
@@ -706,9 +698,9 @@ namespace MSL
 
         public bool CheckServerRunning()
         {
-            if (ConPTYWindow != null)
+            if (_serverTerm != null)
             {
-                if (ConPTYWindow.ConptyConsole.ConPTYTerm.TermProcIsRunning)
+                if (_serverTerm.IsRunning)
                 {
                     Logger.Info("检测服务器运行事件：服务器正在运行 (Conpty)");
                     return true;
@@ -775,9 +767,9 @@ namespace MSL
             {
                 try
                 {
-                    if (ConPTYWindow != null)
+                    if (_serverTerm != null)
                     {
-                        ConPTYWindow.ConptyConsole.ConPTYTerm.WriteToTerm(("kick " + serverPlayerList.SelectedItem.ToString().Substring(0, serverPlayerList.SelectedItem.ToString().IndexOf("[")) + "\r\n").AsSpan());
+                        _serverTerm.SendCommand("kick " + serverPlayerList.SelectedItem.ToString().Substring(0, serverPlayerList.SelectedItem.ToString().IndexOf("[")));
                         return;
                     }
                     ServerProcess.StandardInput.WriteLine("kick " + serverPlayerList.SelectedItem.ToString().Substring(0, serverPlayerList.SelectedItem.ToString().IndexOf("[")));
@@ -796,9 +788,9 @@ namespace MSL
             {
                 try
                 {
-                    if (ConPTYWindow != null)
+                    if (_serverTerm != null)
                     {
-                        ConPTYWindow.ConptyConsole.ConPTYTerm.WriteToTerm(("ban " + serverPlayerList.SelectedItem.ToString().Substring(0, serverPlayerList.SelectedItem.ToString().IndexOf("[")) + "\r\n").AsSpan());
+                        _serverTerm.SendCommand("ban " + serverPlayerList.SelectedItem.ToString().Substring(0, serverPlayerList.SelectedItem.ToString().IndexOf("[")));
                         return;
                     }
                     ServerProcess.StandardInput.WriteLine("ban " + serverPlayerList.SelectedItem.ToString().Substring(0, serverPlayerList.SelectedItem.ToString().IndexOf("[")));
@@ -931,9 +923,9 @@ namespace MSL
                     targetProc = ServerProcess;
                 }
                 // 其次检查 ConPTYWindow 内部进程
-                else if (ConPTYWindow?.ConptyConsole?.ConPTYTerm?.Process?.Process != null)
+                else if (_serverTerm != null && _serverTerm.IsRunning)
                 {
-                    var p = ConPTYWindow.ConptyConsole.ConPTYTerm.Process.Process;
+                    var p = _serverTerm._process.Process;
                     if (!p.HasExited) targetProc = p;
                 }
 
@@ -1063,9 +1055,9 @@ namespace MSL
         {
             if (CheckServerRunning())
             {
-                if (ConPTYWindow != null)
+                if (_serverTerm != null)
                 {
-                    ConPTYWindow.ConptyConsole.ConPTYTerm.WriteToTerm((cmd + "\r\n").AsSpan());
+                    _serverTerm.SendCommand(cmd);
                 }
                 else
                 {
@@ -1164,6 +1156,7 @@ namespace MSL
             }
         }
 
+        /*
         // 更新子窗口大小
         private async Task UpdateChildWindowSize()
         {
@@ -1293,11 +1286,13 @@ namespace MSL
                 ConPTYWindow.ConptyConsole.Focus();
             }
         }
-
+        */
+        
         private void StartServer(string StartFileArg)
         {
             if (useConpty.IsChecked == true)
             {
+                /*
                 if (ConPTYWindow == null)
                 {
                     try
@@ -1382,11 +1377,56 @@ namespace MSL
                     ConPTYWindow.ConptyConsole.ConPTYTerm.OnOutputReceived += ProcessOutputEvent;
                     ChangeControlsState();
                 }
+                */
+                Directory.CreateDirectory(Rserverbase);
+                _serverTerm = new MinecraftServerTerm();
+
+                _serverTerm.OnOutput += rawText =>
+                {
+                    // 过滤纯 echo 行
+                    // Minecraft 日志都有 [HH:MM:SS] 或 > 前缀
+                    var lines = SplitLines(rawText);
+                    foreach (var line in lines)
+                    {
+                        var stripped = Term.StripColors(line).Trim();
+                        if (string.IsNullOrEmpty(stripped)) continue;
+
+                        // 跳过纯 echo 行：不含 [ 且不含空格分隔的服务器日志特征
+                        bool isEchoOrCompletion = !stripped.Contains('[')
+                                                   && !stripped.Contains(':')
+                                                   && stripped.All(c => char.IsLetterOrDigit(c)
+                                                                     || c == ' ' || c == '_'
+                                                                     || c == '-' || c == '.');
+
+
+                        if (!isEchoOrCompletion)
+                        {
+                            MCSLogHandler._logBuffer.Enqueue(stripped);
+                            tempLog = stripped;
+                        }
+                    }
+                };
+
+                _serverTerm.OnProcessExited += () =>
+                {
+                    ServerExitEvent(null, null);
+                };
+
+                Task.Run(() => _serverTerm.Start(
+                    javaPath: Rserverjava,
+                    jarArgs: StartFileArg,
+                    workingDir: Rserverbase
+                ));
+                ChangeControlsState();
             }
             else
             {
                 Tradition_StartServer(StartFileArg);
             }
+        }
+        private IEnumerable<string> SplitLines(string text)
+        {
+            return text.Replace("\r\n", "\n").Replace("\r", "\n").Split('\n');
         }
 
         private void Tradition_StartServer(string StartFileArg)
@@ -1486,23 +1526,15 @@ namespace MSL
                 gameTypeLab.Content = "获取中";
                 serverIPLab.Content = "获取中";
                 localServerIPLab.Content = "获取中";
-                MagicFlowMsg.ShowMessage("开服中，请稍等……", _growlPanel: GetActiveGrowlPanel());
+                MagicFlowMsg.ShowMessage("开服中，请稍等……");
                 ClearLog();
                 PrintLog("正在开启服务器，请稍等...", ConfigStore.LogColor.INFO);
-                if (ConPTYWindow == null)
-                {
-                    MCSLogHandler._logProcessTimer.IsEnabled = true;
-                    MCSLogHandler._logProcessTimer.Start();
-                    cmdtext.IsEnabled = true;
-                    cmdtext.Text = "";
-                    fastCMD.IsEnabled = true;
-                    sendcmd.IsEnabled = true;
-                }
-                else
-                {
-                    ConPTYWindow.ServerStatus.Text = "运行中";
-                }
-
+                MCSLogHandler._logProcessTimer.IsEnabled = true;
+                MCSLogHandler._logProcessTimer.Start();
+                cmdtext.IsEnabled = true;
+                cmdtext.Text = "";
+                fastCMD.IsEnabled = true;
+                sendcmd.IsEnabled = true;
             }
             else
             {
@@ -1518,20 +1550,12 @@ namespace MSL
                 controlServer.IsChecked = false;
                 controlServer1.IsChecked = false;
                 MoreOperation.IsEnabled = true; // 服务器关闭后允许备份
-                MagicFlowMsg.ShowMessage("服务器已关闭！", _growlPanel: GetActiveGrowlPanel());
-                if (ConPTYWindow == null)
-                {
-                    sendcmd.IsEnabled = false;
-                    cmdtext.IsEnabled = false;
-                    fastCMD.IsEnabled = false;
-                    cmdtext.Text = "服务器已关闭";
-                    MCSLogHandler.CleanupResources();
-                    
-                }
-                else
-                {
-                    ConPTYWindow.ServerStatus.Text = "已关服";
-                }
+                MagicFlowMsg.ShowMessage("服务器已关闭！");
+                sendcmd.IsEnabled = false;
+                cmdtext.IsEnabled = false;
+                fastCMD.IsEnabled = false;
+                cmdtext.Text = "服务器已关闭";
+                MCSLogHandler.CleanupResources();
             }
         }
 
@@ -1782,6 +1806,7 @@ namespace MSL
         private bool outlogEncodingAsk = true;
         private void HandleEncodingIssue()
         {
+            if (ServerProcess == null && _serverTerm != null) return;
             Color brush = MCSLogHandler.LogInfo[0].Color;
             PrintLog("MSL检测到您的服务器输出了乱码日志，请尝试去“更多功能”界面更改服务器的“输出编码”来解决此问题！", Colors.Red);
             MCSLogHandler.LogInfo[0].Color = brush;
@@ -1844,12 +1869,8 @@ namespace MSL
                 Dispatcher.InvokeAsync(() =>
                 {
                     PrintLog("已成功开启服务器！你可以输入stop来关闭服务器！\r\n服务器本地IP通常为:127.0.0.1，想要远程进入服务器，需要开通公网IP或使用内网映射，详情查看开服器的内网映射界面。\r\n若控制台输出乱码日志，请去更多功能界面修改“输出编码”。", ConfigStore.LogColor.INFO);
-                    MagicFlowMsg.ShowMessage(string.Format("服务器 {0} 已成功开启！", Rservername), 1, _growlPanel: GetActiveGrowlPanel());
+                    MagicFlowMsg.ShowMessage(string.Format("服务器 {0} 已成功开启！", Rservername), 1);
                     serverStateLab.Content = "已开服";
-                    if (ConPTYWindow != null)
-                    {
-                        ConPTYWindow.ServerStatus.Text = "已开服";
-                    }
                     GetServerInfoSys();
                     MoreOperation.IsEnabled = true;
                 });
@@ -2062,19 +2083,30 @@ namespace MSL
 
         private void ServerExitEvent(object sender, EventArgs e)//Tradition_ServerExitEvent
         {
-            try
+            Console.WriteLine("服务器进程已退出，正在执行清理工作...");
+            int exitCode=0;
+            if (ServerProcess != null)
             {
-                ServerProcess.CancelOutputRead();
-                ServerProcess.CancelErrorRead();
+                try
+                {
+                    ServerProcess.CancelOutputRead();
+                    ServerProcess.CancelErrorRead();
+                }
+                catch
+                { return; }
+                ServerProcess.OutputDataReceived -= OutputDataReceived;
+                ServerProcess.ErrorDataReceived -= OutputDataReceived;
+                ServerProcess.Exited -= ServerExitEvent;
+                exitCode = ServerProcess.ExitCode;
+                ServerProcess.Dispose();
+                ServerProcess = null;
             }
-            catch
-            { return; }
-            ServerProcess.OutputDataReceived -= OutputDataReceived;
-            ServerProcess.ErrorDataReceived -= OutputDataReceived;
-            ServerProcess.Exited -= ServerExitEvent;
-            int exitCode = ServerProcess.ExitCode;
-            ServerProcess.Dispose();
-            ServerProcess = null;
+            else if(_serverTerm!= null)
+            {
+                exitCode = _serverTerm.ExitCode;
+                _serverTerm.Dispose();
+                _serverTerm = null;
+            }
             Dispatcher.InvokeAsync(async () =>
             {
                 ChangeControlsState(false);
@@ -2119,7 +2151,7 @@ namespace MSL
                 {
                     if (confirmed)
                     {
-                        if (MCSLogHandler != null && ServerProcess == null)
+                        if (MCSLogHandler != null)
                         {
                             MagicFlowMsg.ShowMessage("服务器正在重启...", type: 1);
                             LaunchServer();
@@ -2139,8 +2171,8 @@ namespace MSL
             );
         }
 
+        /*
         #region ConptyExitEvent
-
         private void OnTermExited(object sender, EventArgs e)
         {
             Dispatcher.InvokeAsync(async () =>
@@ -2206,6 +2238,7 @@ namespace MSL
             });
         }
         #endregion
+        */
 
         private void SendCommand()
         {
@@ -2243,23 +2276,30 @@ namespace MSL
                         finalCmd = $"{selectedCmd.Cmd.Trim().TrimStart('/')} {inputText}".Trim();
                     }
                 }
-
-                // 发送命令
-                if (inputCmdEncoding.Content.ToString() == "UTF8")
+                if (ServerProcess == null && _serverTerm != null)
                 {
-                    SendCmdUTF8(finalCmd);
+                    _serverTerm.SendCommand(finalCmd);
+                    cmdtext.Text = "";
                 }
                 else
                 {
-                    SendCmdANSL(finalCmd);
+                    // 发送命令
+                    if (inputCmdEncoding.Content.ToString() == "UTF8")
+                    {
+                        SendCmdUTF8(finalCmd);
+                    }
+                    else
+                    {
+                        SendCmdANSL(finalCmd);
+                    }
                 }
+
             }
-            catch
+            catch (Exception ex)
             {
                 // 异常回退
                 fastCMD.SelectedIndex = 0;
-                if (inputCmdEncoding.Content.ToString() == "UTF8") SendCmdUTF8(cmdtext.Text);
-                else SendCmdANSL(cmdtext.Text);
+                PrintLog($"发送指令时出错：{ex.Message}", Colors.Red);
             }
         }
 
@@ -2280,12 +2320,113 @@ namespace MSL
             SendCommand();
         }
 
-        private void cmdtext_KeyDown(object sender, KeyEventArgs e)
+        private async void cmdtext_KeyDown(object sender, KeyEventArgs e)
         {
-            if (e.Key == Key.Enter)
+            if (_serverTerm != null && e.Key == Key.Tab)
             {
-                SendCommand();
+                if (completionPopup.IsOpen)
+                {
+                    return;
+                }
+                e.Handled = true; // 阻止焦点跳转
+                await TriggerCompletion();
+                return;
             }
+
+            if (e.Key == Key.Enter) { SendCommand(); }
+        }
+
+        private void cmdtext_PreviewKeyDown(object sender, KeyEventArgs e)
+        {
+            if (completionPopup.IsOpen)
+            {
+                if (e.Key == Key.Up)
+                {
+                    completionList.Focus();
+                    if (completionList.SelectedIndex > 0)
+                        completionList.SelectedIndex--;
+                    return;
+                }
+                if (e.Key == Key.Down)
+                {
+                    completionList.Focus();
+                    if (completionList.SelectedIndex < completionList.Items.Count)
+                        completionList.SelectedIndex++;
+                    return;
+                }
+                if (e.Key == Key.Escape || e.Key == Key.Back)
+                {
+                    CloseCompletion();
+                    e.Handled = true;
+                    return;
+                }
+            }
+        }
+
+        private async Task TriggerCompletion()
+        {
+            if (_serverTerm == null || !_serverTerm.IsRunning) return;
+
+            completionList.Items.Clear();
+            completionList.Items.Add("正在获取补全...");
+            completionPopup.IsOpen = true;
+
+            var candidates = await _serverTerm.RequestCompletionAsync(cmdtext.Text);
+
+            completionList.Items.Clear();
+
+            if (candidates.Count == 0)
+            {
+                CloseCompletion();
+                return;
+            }
+
+            foreach (var c in candidates)
+            {
+                if (!c.StartsWith("(") && !c.EndsWith(")"))
+                    completionList.Items.Add(c);
+            }
+
+            completionList.SelectedIndex = 0;
+        }
+
+        private void CloseCompletion()
+        {
+            completionPopup.IsOpen = false;
+            completionList.Items.Clear();
+            cmdtext.Focus();
+        }
+
+        // 列表键盘操作
+        private void completionList_KeyDown(object sender, KeyEventArgs e)
+        {
+            if (e.Key == Key.Enter || e.Key == Key.Tab)
+            {
+                ApplyCompletion();
+                e.Handled = true;
+            }
+            else if (e.Key == Key.Escape || e.Key == Key.Back)
+            {
+                CloseCompletion();
+                e.Handled = true;
+            }
+        }
+
+        private void completionList_MouseDoubleClick(object sender, MouseButtonEventArgs e)
+            => ApplyCompletion();
+
+        private void ApplyCompletion()
+        {
+            if (completionList.SelectedItem is string selected)
+            {
+                // 替换输入框内容：保留已输入的前缀空格+新词
+                var parts = cmdtext.Text.Split(' ');
+                parts[parts.Length - 1] = selected;
+                cmdtext.Text = string.Join(" ", parts) + " ";
+                cmdtext.CaretIndex = cmdtext.Text.Length;
+            }
+            CloseCompletion();
+            cmdtext.Focus();
         }
 
         private void controlServer_Click(object sender, RoutedEventArgs e)
@@ -2306,21 +2447,13 @@ namespace MSL
             {
                 controlServer.IsChecked = true;
                 controlServer1.IsChecked = true;
-                if (ConPTYWindow != null)
+                if (_serverTerm != null)
                 {
-                    ConPTYWindow.ConptyConsole.ConPTYTerm.WriteToTerm("stop\r\n".AsSpan());
-                    if (TabCtrl.SelectedIndex != 1)
-                    {
-                        TabCtrl.SelectedIndex = 1;
-                    }
-                    else
-                    {
-                        ShowConptyWindow();
-                    }
+                    _serverTerm.Stop();
                 }
                 else
                 {
-                    MagicFlowMsg.ShowMessage("关服中，请耐心等待……\n双击按钮可强制关服（不建议）", _growlPanel: GetActiveGrowlPanel());
+                    MagicFlowMsg.ShowMessage("关服中，请耐心等待……\n双击按钮可强制关服（不建议）");
                     ServerProcess.StandardInput.WriteLine("stop");
                 }
 
@@ -2336,13 +2469,9 @@ namespace MSL
                 if (_sender.IsChecked == true)
                 {
                     GetServerInfoLine = 102;
-                    if (ConPTYWindow != null)
+                    if (_serverTerm != null)
                     {
-                        try
-                        {
-                            ConPTYWindow.ConptyConsole.ConPTYTerm.Process.Process.Kill();
-                        }
-                        catch { }
+                        _serverTerm.Kill();
                     }
                     else
                     {
@@ -3831,24 +3960,19 @@ namespace MSL
             JObject _json = (JObject)jsonObject[RserverID.ToString()];
             if (useConpty.IsChecked == false)
             {
-                Tradition_LogFunGrid.Visibility = Visibility.Visible;
-                Tradition_LogFunDivider.Visibility = Visibility.Visible;
-                Tradition_CMDCard.Visibility = Visibility.Visible;
+                ServerEncodingSettings.Visibility = Visibility.Visible;
                 _json["useConpty"] = "False";
                 try
                 {
-                    if (ConPTYWindow != null)
+                    if (_serverTerm != null)
                     {
                         try
                         {
-                            ConPTYWindow.Closing -= ConptyWindowClosing;
-                            ConPTYWindow.ControlServer.Click -= ConptyWindowControlServer;
-                            ConPTYWindow.ControlServer.MouseDoubleClick -= KillConptyServer;
-                            ConPTYWindow.Close();
+                            _serverTerm.Dispose();
                         }
                         finally
                         {
-                            ConPTYWindow = null;
+                            _serverTerm = null;
                         }
                     }
                 }
@@ -3856,9 +3980,7 @@ namespace MSL
             }
             else
             {
-                Tradition_LogFunGrid.Visibility = Visibility.Collapsed;
-                Tradition_LogFunDivider.Visibility = Visibility.Collapsed;
-                Tradition_CMDCard.Visibility = Visibility.Collapsed;
+                ServerEncodingSettings.Visibility = Visibility.Collapsed;
                 _json["useConpty"] = "True";
             }
             jsonObject[RserverID.ToString()] = _json;
@@ -4180,20 +4302,10 @@ namespace MSL
         private string[] GetLogOtherPlan()
         {
             string[] strings = new string[2];
-            if (useConpty.IsChecked == true)
-            {
-                if (ConPTYWindow != null)
-                {
-                    strings[0] = "B";
-                    strings[1] = ConPTYWindow.ConptyConsole.ConPTYTerm.GetConsoleText();
 
-                }
-            }
-            else
-            {
-                strings[0] = "C";
-                strings[1] = outlog.Text;
-            }
+            strings[0] = "C";
+            strings[1] = outlog.Text;
+
             return strings;
         }
 
@@ -4752,26 +4864,31 @@ namespace MSL
         #region window event
         private void Window_Activated(object sender, EventArgs e)
         {
+            /*
             if (ConPTYWindow != null && ConPTYWindow.Visibility == Visibility.Visible)
             {
                 ConptyPopUp.IsOpen = true;
                 Growl.SetGrowlParent(ConptyGrowlPanel, true);
                 return;
             }
+            */
             Growl.SetGrowlParent(GrowlPanel, true);
         }
 
         private void Window_Deactivated(object sender, EventArgs e)
         {
+            /*
             if (ConPTYWindow != null && ConPTYWindow.Visibility == Visibility.Visible)
             {
                 ConptyPopUp.IsOpen = false;
                 Growl.SetGrowlParent(ConptyGrowlPanel, false);
                 return;
             }
+            */
             Growl.SetGrowlParent(GrowlPanel, false);
         }
 
+        /*
         private void Window_IsVisibleChanged(object sender, DependencyPropertyChangedEventArgs e)
         {
             if (this.Visibility == Visibility.Visible)
@@ -4802,6 +4919,7 @@ namespace MSL
                 UpdateChildWindowPosition();
             }
         }
+        */
 
         // 复制
         private void LogMenu_Copy(object sender, RoutedEventArgs e)

@@ -20,7 +20,7 @@
         <!-- 左侧文件树 -->
         <DockPanel Grid.Column="0" Margin="10">
             <Button DockPanel.Dock="Bottom" x:Name="RefreshBtn" Content="刷新" 
-                    Margin="0,5,0,0" Click="RefreshBtn_Click"/>
+                    HorizontalAlignment="Stretch" Margin="0,5,0,0" Click="RefreshBtn_Click"/>
             <TreeView x:Name="FileTreeViewContainer">
                 <TreeViewItem x:Name="FileTreeView" Header="配置文件" IsExpanded="True" 
                               Selected="FileTreeView_Selected"/>
@@ -53,9 +53,9 @@
             <StackPanel Grid.Row="1" Orientation="Horizontal" 
                         Margin="0,5,0,0" HorizontalAlignment="Right">
                 <Label x:Name="FileEncoding" Content="Encoding" VerticalAlignment="Center"/>
-                <Button x:Name="ChangeEncoding" Content="转换编码" 
+                <Button x:Name="ChangeEncoding" Content="转换编码" IsEnabled="False"
                         Margin="5,0" Click="ChangeEncoding_Click"/>
-                <Button x:Name="SaveChange" Content="保存更改" 
+                <Button x:Name="SaveChange" Content="保存更改" IsEnabled="False"
                         Style="{StaticResource ButtonPrimary}" Click="SaveChange_Click"/>
             </StackPanel>
         </Grid>

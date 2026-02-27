@@ -140,6 +140,7 @@ namespace ConPtyTermEmulatorLib
             get => (int)GetValue(FontSizeWhenSettingThemeProperty);
             set => SetValue(FontSizeWhenSettingThemeProperty, value);
         }
+
         private void InitializeComponent()
         {
             Terminal = new();
@@ -148,10 +149,18 @@ namespace ConPtyTermEmulatorLib
             Terminal.Focusable = true;
             Terminal.AutoResize = true;
             Terminal.Loaded += Terminal_Loaded;
-            var grid = new Grid() { };
+
+            // 禁止 Terminal 自身的焦点导航，让父控件统一拦截
+            KeyboardNavigation.SetTabNavigation(Terminal, KeyboardNavigationMode.None);
+            KeyboardNavigation.SetDirectionalNavigation(Terminal, KeyboardNavigationMode.None);
+
+            var grid = new Grid();
             grid.Children.Add(Terminal);
             this.Content = grid;
             this.GotFocus += (_, _) => Terminal.Focus();
+
+            // 确保自身能捕获所有键盘输入
+            this.PreviewKeyDown += (s, e) => { }; // 注册以激活路由
         }
 
         private void Term_TermReady(object sender, EventArgs e)
@@ -196,6 +205,40 @@ namespace ConPtyTermEmulatorLib
             Terminal.Focus();
             await Task.Delay(1000);
             SetCursor(IsCursorVisible);
+        }
+
+        protected override void OnPreviewKeyDown(KeyEventArgs e)
+        {
+            // 将 Tab、方向键等特殊键直接拦截，防止 WPF 焦点系统消费
+            if (e.Key == Key.Tab ||
+                e.Key == Key.Up || e.Key == Key.Down ||
+                e.Key == Key.Left || e.Key == Key.Right)
+            {
+                e.Handled = true; // 阻止事件冒泡到 TabControl 等父控件
+
+                // 手动将按键转为 VT 序列写入终端
+                string vtSequence = KeyToVT(e);
+                if (vtSequence != null)
+                    ConPTYTerm?.WriteToTerm(vtSequence.AsSpan());
+                return;
+            }
+            base.OnPreviewKeyDown(e);
+        }
+
+        private string KeyToVT(KeyEventArgs e)
+        {
+            bool ctrl = (Keyboard.Modifiers & ModifierKeys.Control) != 0;
+            bool shift = (Keyboard.Modifiers & ModifierKeys.Shift) != 0;
+
+            return e.Key switch
+            {
+                Key.Tab => shift ? "\x1b[Z" : "\t",          // Shift+Tab = \x1b[Z, Tab = \t
+                Key.Up => ctrl ? "\x1b[1;5A" : "\x1b[A",
+                Key.Down => ctrl ? "\x1b[1;5B" : "\x1b[B",
+                Key.Right => ctrl ? "\x1b[1;5C" : "\x1b[C",
+                Key.Left => ctrl ? "\x1b[1;5D" : "\x1b[D",
+                _ => null
+            };
         }
 
         #region Depdendency Properties

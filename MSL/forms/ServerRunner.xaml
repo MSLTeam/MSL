@@ -6,6 +6,7 @@
         xmlns:hc="https://handyorg.github.io/handycontrol"
         xmlns:avalon="http://icsharpcode.net/sharpdevelop/avalonedit"
         xmlns:iconPacks="http://metro.mahapps.com/winfx/xaml/iconpacks"
+        xmlns:term="clr-namespace:ConPtyTermEmulatorLib;assembly=ConPtyTermEmulatorLib"
         xmlns:controls="clr-namespace:MSL.controls"
         xmlns:langs="clr-namespace:MSL.langs"
         xmlns:local="clr-namespace:MSL"
@@ -17,10 +18,8 @@
         NonClientAreaBackground="{DynamicResource DarkPrimaryBrush}"
         NonClientAreaHeight="40" NonClientAreaFontsize="14" NonClientAreaIconWidth="20" NonClientAreaIconHeight="20"
         CloseButtonForeground="White" OtherButtonForeground="White" OtherButtonHoverForeground="White"
-        Icon="../icon.ico"
-        Loaded="Window_Loaded" Closing="Window_Closing" Activated="Window_Activated" Deactivated="Window_Deactivated"
-        LocationChanged="Window_LocationChanged" SizeChanged="Window_SizeChanged"
-        WindowStartupLocation="CenterScreen" IsVisibleChanged="Window_IsVisibleChanged">
+        Icon="../icon.ico" WindowStartupLocation="CenterScreen"
+        Loaded="Window_Loaded" Closing="Window_Closing" Activated="Window_Activated" Deactivated="Window_Deactivated">
     <Grid x:Name="MainGrid">
         <TabControl x:Name="TabCtrl" SelectionChanged="TabCtrl_SelectionChanged" Style="{StaticResource TabControlSideMenu}">
             <TabControl.Resources>
@@ -209,6 +208,14 @@
                             </ContextMenu>
                         </avalon:TextEditor.ContextMenu>
                     </avalon:TextEditor>
+                    <!-- 补全候选弹出层，悬浮在输入框上方 -->
+                    <Popup x:Name="completionPopup" PlacementTarget="{Binding ElementName=cmdtext}" Placement="Top" StaysOpen="False" AllowsTransparency="True">
+                        <Border Background="{DynamicResource BorderBackground}"
+                                BorderBrush="{DynamicResource BorderBrush}" BorderThickness="1" CornerRadius="4" MaxHeight="200">
+                            <ListBox x:Name="completionList" MinWidth="200" MaxWidth="500"
+                                     FontSize="14" KeyDown="completionList_KeyDown" MouseDoubleClick="completionList_MouseDoubleClick"/>
+                        </Border>
+                    </Popup>
                     <Grid VerticalAlignment="Bottom">
                         <Grid.ColumnDefinitions>
                             <ColumnDefinition Width="Auto"/>
@@ -222,7 +229,8 @@
                         <ComboBox Grid.Column="0" x:Name="fastCMD" HorizontalAlignment="Left" Margin="10,0,5,10" SelectedIndex="0" IsEnabled="False" Width="100" Height="32">
                             <ComboBoxItem Content="/（指令）"/>
                         </ComboBox>
-                        <TextBox x:Name="cmdtext" Grid.Column="1" Margin="0,0,5,10" Text="服务器已关闭" KeyDown="cmdtext_KeyDown" IsEnabled="False"/>
+
+                        <TextBox x:Name="cmdtext" Grid.Column="1" Margin="0,0,5,10" Text="服务器已关闭" KeyDown="cmdtext_KeyDown" PreviewKeyDown="cmdtext_PreviewKeyDown" IsEnabled="False"/>
                         <Button x:Name="sendcmd" Grid.Column="2" Content="发送" Style="{StaticResource ButtonPrimary}" Width="60" Height="32" Margin="0,0,5,10" Click="sendcmd_Click" IsEnabled="False"/>
                         <ComboBox x:Name="MoreOperation" Grid.Column="3" Height="32" Margin="0,0,5,10" SelectionChanged="MoreOperation_SelectionChanged">
                             <ComboBoxItem Content="更多操作" IsSelected="True"/>
@@ -245,6 +253,7 @@
                             </ToggleButton.Style>
                         </ToggleButton>
                     </Grid>
+                    
                 </Grid>
             </TabItem>
             <TabItem x:Name="Tab_Plugins" Width="50" Style="{StaticResource TabItemSideMenu}">
@@ -778,7 +787,7 @@
                                     <Label Content="服务器控制：" Grid.Column="0"  Style="{StaticResource MagicLabel16}"/>
                                     <hc:UniformSpacingPanel Spacing="10" Orientation="Vertical"  Grid.Column="1" >
                                         <StackPanel Orientation="Horizontal">
-                                            <Label Content="使用高级终端（ConPty）：" Style="{StaticResource MagicLabel14}"/>
+                                            <Label Content="启用命令补全功能（ConPTY）：" Style="{StaticResource MagicLabel14}"/>
                                             <ToggleButton x:Name="useConpty" Style="{StaticResource ToggleButtonSwitch.Content}" Click="useConpty_Click"/>
                                         </StackPanel>
                                         <StackPanel Orientation="Horizontal">
@@ -815,14 +824,16 @@
                                             <Label Content="格式化的日志头信息：" Style="{StaticResource MagicLabel14}"/>
                                             <ToggleButton x:Name="formatOutHead" IsChecked="True" Style="{StaticResource ToggleButtonSwitch.Content}" Click="formatOutHead_Click"/>
                                         </StackPanel>
-                                        <StackPanel Orientation="Horizontal">
-                                            <Label Content="输入编码：" Style="{StaticResource MagicLabel14}"/>
-                                            <Button x:Name="inputCmdEncoding" Content="UTF8" Click="inputCmdEncoding_Click"/>
-                                        </StackPanel>
-                                        <StackPanel Orientation="Horizontal">
-                                            <Label Content="输出编码：" Style="{StaticResource MagicLabel14}"/>
-                                            <Button x:Name="outputCmdEncoding" Content="UTF8" Click="outputCmdEncoding_Click"/>
-                                        </StackPanel>
+                                        <hc:UniformSpacingPanel x:Name="ServerEncodingSettings" Orientation="Vertical" Spacing="10">
+                                            <StackPanel Orientation="Horizontal">
+                                                <Label Content="输入编码：" Style="{StaticResource MagicLabel14}"/>
+                                                <Button x:Name="inputCmdEncoding" Content="UTF8" Click="inputCmdEncoding_Click"/>
+                                            </StackPanel>
+                                            <StackPanel Orientation="Horizontal">
+                                                <Label Content="输出编码：" Style="{StaticResource MagicLabel14}"/>
+                                                <Button x:Name="outputCmdEncoding" Content="UTF8" Click="outputCmdEncoding_Click"/>
+                                            </StackPanel>
+                                        </hc:UniformSpacingPanel>
                                         <Grid>
                                             <Grid.ColumnDefinitions>
                                                 <ColumnDefinition Width="auto"/>
@@ -870,7 +881,7 @@
                                         </Grid>
                                     </hc:UniformSpacingPanel>
                                 </Grid>
-                                <hc:Divider x:Name="Tradition_LogFunDivider" Margin="0"/>
+                                <hc:Divider Margin="0"/>
                                 <Grid>
                                     <Grid.ColumnDefinitions>
                                         <ColumnDefinition Width="auto"/>
@@ -1037,6 +1048,7 @@
                 </Path.Data>
             </Path>
         </Button>
+        <!--
         <Popup x:Name="ConptyPopUp" IsOpen="False" AllowsTransparency="True" Placement="Relative"
                Width="{Binding ActualWidth, RelativeSource={RelativeSource AncestorType=Window}}"
                Height="{Binding ActualHeight, RelativeSource={RelativeSource AncestorType=Window}}">
@@ -1046,6 +1058,7 @@
                 </ScrollViewer>
             </ScrollViewer>
         </Popup>
+        -->
         <ScrollViewer VerticalScrollBarVisibility="Hidden" HorizontalAlignment="Right" VerticalAlignment="Top">
             <StackPanel Name="GrowlPanel" hc:Growl.GrowlParent="True" VerticalAlignment="Top" Margin="0,0,0,10" />
         </ScrollViewer>

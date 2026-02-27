@@ -12,9 +12,6 @@ using System.Diagnostics;
 using System.IO;
 using System.Net;
 using System.Net.Http;
-using System.Runtime.InteropServices;
-using System.Security.Cryptography;
-using System.Text;
 using System.Threading.Tasks;
 using System.Windows;
 using System.Windows.Controls;
@@ -95,6 +92,7 @@ namespace MSL
                         $"\tOSDescription: {Functions.OSDescription}");
                 });
 
+                /*
                 // 终端依赖库检查
                 bool downloadTermDll = false;
                 bool isWin7 = Environment.OSVersion.Version.Major == 6 && Environment.OSVersion.Version.Minor == 1;
@@ -120,11 +118,12 @@ namespace MSL
                         downloadTermDll = true;
                     }
                 }
+                */
 
                 LogHelper.Write.Info("正在异步载入配置...");
                 _ = LoadConfigEvent(cfg);
                 LogHelper.Write.Info("正在异步载入联网功能...");
-                _ = OnlineService(cfg, downloadTermDll);
+                _ = OnlineService(cfg);
                 LogHelper.Write.Info("启动事件完成！");
                 LoadingCompleted = true;
             }
@@ -313,7 +312,7 @@ namespace MSL
         #endregion
 
         #region 联网服务
-        private async Task OnlineService(AppConfig cfg, bool downloadTermDll, bool isBackupUrl = false)
+        private async Task OnlineService(AppConfig cfg, bool isBackupUrl = false)
         {
             LogHelper.Write.Info("正在连接到MSL-API-V3服务...");
             try
@@ -328,7 +327,7 @@ namespace MSL
                         MagicFlowMsg.ShowMessage("软件将使用备用URL...");
                         LogHelper.Write.Warn("正在尝试使用备用API地址...");
                         ConfigStore.ApiLink = "https://api.mslmc.net/v3";
-                        await OnlineService(cfg, downloadTermDll, true);
+                        await OnlineService(cfg, true);
                     }
                     return;
                 }
@@ -352,7 +351,7 @@ namespace MSL
                     MagicFlowMsg.ShowMessage("软件将使用备用URL...");
                     LogHelper.Write.Warn("正在尝试使用备用API地址...");
                     ConfigStore.ApiLink = "https://api.mslmc.net/v3";
-                    await OnlineService(cfg, downloadTermDll, true);
+                    await OnlineService(cfg, true);
                 }
                 return;
             }
@@ -365,7 +364,7 @@ namespace MSL
             try
             {
                 await CheckUpdate(cfg);
-
+                /*
                 if (downloadTermDll)
                 {
                     LogHelper.Write.Info("正在下载伪终端运行库文件...");
@@ -392,6 +391,7 @@ namespace MSL
                         }
                     }
                 }
+                */
 
                 // 若开启了自动更新，此处补执行之前跳过的自动启动
                 if (cfg.AutoUpdateApp)
@@ -437,6 +437,7 @@ namespace MSL
         }
         #endregion
 
+        /*
         #region 依赖库加载
         [DllImport("kernel32", SetLastError = true, CharSet = CharSet.Unicode)]
         public static extern IntPtr LoadLibraryEx(string lpFileName, IntPtr hReservedNull, uint dwFlags);
@@ -459,6 +460,7 @@ namespace MSL
                 throw new Exception("错误的MD5值");
         }
         #endregion
+        */
 
         #region 软件更新
         private async Task CheckUpdate(AppConfig cfg)

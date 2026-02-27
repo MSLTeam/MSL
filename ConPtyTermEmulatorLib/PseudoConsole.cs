@@ -34,16 +34,25 @@ namespace ConPtyTermEmulatorLib
                 return true;
             }
         }
+
         public static PseudoConsole Create(SafeFileHandle inputReadSide, SafeFileHandle outputWriteSide)
         {
+            var size = new COORD { X = 100, Y = 100 };
+
+            // 优先尝试正常创建
             var createResult = PseudoConsoleApi.CreatePseudoConsole(
-                new COORD { X = 100, Y = 100 },
-                inputReadSide, outputWriteSide,
-               0, out IntPtr hPC);
+                size, inputReadSide, outputWriteSide, 0, out IntPtr hPC);
+
             if (createResult != 0)
             {
-                throw new Win32Exception(createResult, "Could not create pseudo console.");
+                // 如果失败，尝试使用 PSEUDOCONSOLE_INHERIT_CURSOR 标志重试
+                createResult = PseudoConsoleApi.CreatePseudoConsole(
+                    size, inputReadSide, outputWriteSide, 1, out hPC); // flag=1: PSEUDOCONSOLE_INHERIT_CURSOR
+
+                if (createResult != 0)
+                    throw new Win32Exception(createResult, "Could not create pseudo console.");
             }
+
             return new PseudoConsole(new ConPtyClosePseudoConsoleSafeHandle(hPC));
         }
 

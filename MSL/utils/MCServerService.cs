@@ -169,7 +169,7 @@ namespace MSL.utils
             _encodingIssueHandler = encodingIssueHandler;
 
             // 初始化日志处理定时器
-            _logProcessTimer.Interval = TimeSpan.FromMilliseconds(150);
+            _logProcessTimer.Interval = TimeSpan.FromMilliseconds(100);
             _logProcessTimer.Tick += ProcessLogBuffer;
         }
 
@@ -315,8 +315,7 @@ namespace MSL.utils
 
                 // 过滤不需要显示的日志
                 if ((msg.Contains("\tat ") && IsShieldStackOut) ||
-                    (ShieldLog != null && ShieldLog.Any(s => msg.Contains(s))) ||
-                    !IsShowOutLog || msg.Contains("Advanced terminal features"))
+                    (ShieldLog != null && ShieldLog.Any(s => msg.Contains(s))) || !IsShowOutLog)
                 {
                     continue;
                 }

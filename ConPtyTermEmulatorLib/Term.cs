@@ -2,6 +2,7 @@ using Microsoft.Terminal.Wpf;
 using Microsoft.Win32.SafeHandles;
 using System;
 using System.IO;
+using System.Runtime.InteropServices;
 using System.Text;
 using System.Text.RegularExpressions;
 using System.Threading.Tasks;
@@ -50,6 +51,36 @@ namespace ConPtyTermEmulatorLib
         public event EventHandler<TerminalOutputEventArgs> TerminalOutput;//how we send data to the UI terminal
         public bool TermProcIsRunning { get; private set; }
 
+        [DllImport("kernel32.dll")]
+        private static extern bool AllocConsole();
+
+        [DllImport("kernel32.dll")]
+        private static extern bool AttachConsole(int dwProcessId);
+
+        [DllImport("kernel32.dll")]
+        private static extern IntPtr GetConsoleWindow();
+
+        private static bool _consoleAllocated = false;
+        private static void EnsureConsoleContext()
+        {
+            if (_consoleAllocated) return;
+            if (GetConsoleWindow() == IntPtr.Zero)
+            {
+                // 没有控制台：先尝试附加父进程的控制台，失败则新建一个隐藏控制台
+                if (!AttachConsole(-1)) // -1 = ATTACH_PARENT_PROCESS
+                {
+                    AllocConsole();
+                    // 隐藏控制台窗口
+                    var hwnd = GetConsoleWindow();
+                    if (hwnd != IntPtr.Zero)
+                        ShowWindow(hwnd, 0); // SW_HIDE = 0
+                }
+            }
+            _consoleAllocated = true;
+        }
+
+        [DllImport("user32.dll")]
+        private static extern bool ShowWindow(IntPtr hWnd, int nCmdShow);
 
         /// <summary>
         /// Start the pseudoconsole and run the process as shown in 
@@ -60,6 +91,7 @@ namespace ConPtyTermEmulatorLib
         /// <param name="consoleWidth">The width (in characters) to start the pseudoconsole with. Defaults to 30.</param>
         public void Start(string command, string workingDirectory = null, bool logOutput = false)
         {
+            EnsureConsoleContext();
             if (Process != null)
             {
                 if (Process.Process.HasExited != true)
@@ -242,39 +274,39 @@ namespace ConPtyTermEmulatorLib
                 // We have a few ways to handle the buffer with a delimiter but given the size of the buffer and the fairly cheap cost of copying, the ability to let the span be modified before passing it on, we will just copy any parts before the next delimiter to the start of the buffer when reaching the end.
                 using (StreamReader reader = new StreamReader(ConsoleOutStream))
                 {
-                    ReadState state = new() { entireBuffer = new char[READ_BUFFER_SIZE] };
+                ReadState state = new() { entireBuffer = new char[READ_BUFFER_SIZE] };
 
-                    state.curBuffer = state.entireBuffer.Slice(0);
-                    var empty = Span<char>.Empty;
+                state.curBuffer = state.entireBuffer.Slice(0);
+                var empty = Span<char>.Empty;
 
-                    char[] tempBuffer = new char[state.curBuffer.Length];
+                char[] tempBuffer = new char[state.curBuffer.Length];
 
                     while ((state.readChars = reader.Read(tempBuffer, 0, tempBuffer.Length)) != 0)
                     {
                         /*
                         if (!CanOutLog)
-                        {
+                {
                             CanOutLog = true;
                             Thread.Sleep(50);
                             continue;
-                        }
+                }
                         */
-                        tempBuffer.AsSpan(0, state.readChars).CopyTo(state.curBuffer);
+                    tempBuffer.AsSpan(0, state.readChars).CopyTo(state.curBuffer);
 
-                        var sendSpan = HandleRead(ref state);
+                    var sendSpan = HandleRead(ref state);
 
-                        if (sendSpan != empty)
+                    if (sendSpan != empty)
+                    {
+                        InterceptOutputToUITerminal?.Invoke(ref sendSpan);
+                        if (sendSpan.Length > 0)
                         {
-                            InterceptOutputToUITerminal?.Invoke(ref sendSpan);
-                            if (sendSpan.Length > 0)
-                            {
-                                var str = sendSpan.ToString();
-                                WriteToUITerminal(str.AsSpan());
-                                ConsoleOutputLog?.Append(str);
+                            var str = sendSpan.ToString();
+                            WriteToUITerminal(str.AsSpan());
+                            ConsoleOutputLog?.Append(str);
                                 Console.WriteLine(GetLogText(str));
-                                OnOutputReceived?.Invoke(GetLogText(str));
-                            }
+                            OnOutputReceived?.Invoke(GetLogText(str));
                         }
+                    }
                     }
                 }
             }

@@ -102,6 +102,8 @@ namespace MSL
         {
             if (e.Source is TreeViewItem selectedNode)
             {
+                ChangeEncoding.IsEnabled = false;
+                SaveChange.IsEnabled = false;
                 path = GetSelectTreePath(selectedNode);
                 if (path.EndsWith(".json") || path.EndsWith(".yml") ||
                     path.EndsWith(".toml") || path.EndsWith(".properties"))
@@ -113,7 +115,8 @@ namespace MSL
 
                         string content = File.ReadAllText(serverbase + "\\" + path, encoding);
                         EditorBox.Text = content;
-
+                        ChangeEncoding.IsEnabled = true;
+                        SaveChange.IsEnabled = true;
                         // 根据文件类型设置语法高亮
                         SetSyntaxHighlighting(path);
                     }
