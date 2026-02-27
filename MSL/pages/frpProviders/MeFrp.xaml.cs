@@ -236,38 +236,6 @@ namespace MSL.pages.frpProviders
             try
             {
                 LogHelper.Write.Info("正在获取ME Frp隧道列表...");
-                // 获取节点ID到名称的映射
-                Dictionary<int, string> nodeDict = new Dictionary<int, string>();
-                try
-                {
-                    HttpResponse nodeRes = await HttpService.GetAsync(ApiUrl + "/auth/node/nameList", headers =>
-                    {
-                        headers.Add("Authorization", $"Bearer {UserToken}");
-                    });
-                    if (nodeRes.HttpResponseCode == System.Net.HttpStatusCode.OK)
-                    {
-                        JObject nodeJson = JObject.Parse((string)nodeRes.HttpResponseContent);
-                        JArray nodeList = (JArray)nodeJson["data"];
-                        foreach (var node in nodeList)
-                        {
-                            int nodeId = node["nodeId"].Value<int>();
-                            string name = node["name"].ToString();
-                            nodeDict[nodeId] = name;
-                        }
-                    }
-                    else
-                    {
-                        LogHelper.Write.Warn($"获取ME Frp节点名称映射失败，HTTP状态码: {nodeRes.HttpResponseCode}");
-                        await MagicShow.ShowMsgDialogAsync(Window.GetWindow(this), "获取节点列表失败，将显示节点ID。", "警告");
-                    }
-                }
-                catch (Exception nodeEx)
-                {
-                    LogHelper.Write.Warn($"获取ME Frp节点名称映射时发生警告: {nodeEx.ToString()}");
-                    await MagicShow.ShowMsgDialogAsync(Window.GetWindow(this), "获取节点列表出错: " + nodeEx.Message, "警告");
-                }
-
-                // 获取隧道列表
                 ObservableCollection<TunnelInfo> tunnels = new ObservableCollection<TunnelInfo>();
                 FrpList.ItemsSource = tunnels;
 
@@ -275,28 +243,45 @@ namespace MSL.pages.frpProviders
                 {
                     headers.Add("Authorization", $"Bearer {UserToken}");
                 });
+
                 if (res.HttpResponseCode == System.Net.HttpStatusCode.OK)
                 {
-                    JObject keyValuePairs = JObject.Parse((string)res.HttpResponseContent);
-                    JArray JsonTunnels = (JArray)keyValuePairs["data"];
-                    foreach (var item in JsonTunnels)
-                    {
-                        int nodeId = item["nodeId"].Value<int>();
-                        string nodeName = nodeDict.TryGetValue(nodeId, out var name) ? name : nodeId.ToString();
+                    JObject jsonRes = JObject.Parse((string)res.HttpResponseContent);
 
-                        tunnels.Add(new TunnelInfo
+                    // 解析节点字典
+                    Dictionary<int, string> nodeDict = new Dictionary<int, string>();
+                    JArray jsonNodes = (JArray)jsonRes["data"]["nodes"];
+                    if (jsonNodes != null)
+                    {
+                        foreach (var node in jsonNodes)
                         {
-                            Name = item["proxyName"].ToString(),
-                            NodeID = nodeId,
-                            Node = nodeName, // 显示节点名称或ID
-                            ID = item["proxyId"].Value<int>(),
-                            LIP = item["localIp"].ToString(),
-                            LPort = item["localPort"].ToString(),
-                            RPort = item["remotePort"].ToString(),
-                            Online = item["isOnline"].Value<bool>(),
-                        });
+                            nodeDict[node["nodeId"].Value<int>()] = node["name"].ToString();
+                        }
                     }
-                    LogHelper.Write.Info($"成功获取到 {JsonTunnels.Count} 个ME Frp隧道。");
+
+                    // 解析隧道列表
+                    JArray jsonTunnels = (JArray)jsonRes["data"]["proxies"];
+                    if (jsonTunnels != null)
+                    {
+                        foreach (var item in jsonTunnels)
+                        {
+                            int nodeId = item["nodeId"].Value<int>();
+                            string nodeName = nodeDict.TryGetValue(nodeId, out var name) ? name : nodeId.ToString();
+
+                            tunnels.Add(new TunnelInfo
+                            {
+                                Name = item["proxyName"].ToString(),
+                                NodeID = nodeId,
+                                Node = nodeName,
+                                ID = item["proxyId"].Value<int>(),
+                                LIP = item["localIp"].ToString(),
+                                LPort = item["localPort"].ToString(),
+                                RPort = item["remotePort"].ToString(),
+                                Online = item["isOnline"].Value<bool>(),
+                            });
+                        }
+                    }
+                    LogHelper.Write.Info($"成功获取到 {jsonTunnels?.Count ?? 0} 个ME Frp隧道。");
                 }
                 else
                 {
@@ -465,7 +450,7 @@ namespace MSL.pages.frpProviders
                             ID = int.Parse((string)nodeData["nodeId"]),
                             Name = (string)nodeData["name"],
                             Host = (string)nodeData["hostname"],
-                            Description = (string)nodeData["description"],
+                            Description = nodeData["description"]?.ToString() ?? "",
                         });
                     }
                     LogHelper.Write.Info($"成功获取到 {nodes.Count} 个ME Frp节点。");

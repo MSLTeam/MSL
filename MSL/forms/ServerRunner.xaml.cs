@@ -4570,7 +4570,7 @@ namespace MSL
                                     case ".backup":
                                         if (MoreOperation.IsEnabled == true)
                                         {
-                                            MoreOperation.RaiseEvent(new RoutedEventArgs(Button.ClickEvent));
+                                            _ = BackupWorld();
                                             PrintLog("[MSL备份]定时备份任务开始执行~", Brushes.Blue);
                                         }
                                         break;
@@ -4758,6 +4758,10 @@ namespace MSL
             }
             try
             {
+                Dispatcher.Invoke(() =>
+                {
+                    MoreOperation.IsEnabled = false;
+                });
                 // 读取配置
                 JObject jsonObject = JObject.Parse(File.ReadAllText(@"MSL\ServerList.json", Encoding.UTF8));
                 JObject _json = (JObject)jsonObject[RserverID.ToString()];
@@ -4963,6 +4967,10 @@ namespace MSL
                 {
                     SendCmdToServer("save-on");
                 }
+                Dispatcher.Invoke(() =>
+                {
+                    MoreOperation.IsEnabled = true;
+                });
             }
         }
 

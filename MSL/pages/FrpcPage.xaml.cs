@@ -516,11 +516,11 @@ namespace MSL.pages
                                 return;
                             }
 
-                            string version = osver == "6" ? apiData["data"][1]["version"].ToString() : apiData["data"][0]["version"].ToString();
+                            string version = apiData["data"][0]["version"].ToString();
                             LogHelper.Write.Info($"获取到 ME Frp 版本: {version}");
 
-                            string alistUrl = $"https://drive.mcsl.com.cn/api/fs/list?path=%2FME-Frp%2FLocal%2FMEFrpc%2F{version}";
-                            JObject apiData_alist = JObject.Parse((await HttpService.GetContentAsync(alistUrl)).ToString());
+                            string alistUrl = $"https://drive.mcsl.com.cn/api/fs/list?path=%2FME-Frp%2FLanzou%2FMEFrp-Core%2F{version}";
+                            JObject apiData_alist = JObject.Parse((await HttpService.GetContentAsync(alistUrl,null,2)).ToString());
 
                             if ((int)apiData_alist["code"] != 200)
                             {
@@ -537,7 +537,7 @@ namespace MSL.pages
                                 Growl.Error("未找到Windows AMD64版本文件");
                                 return;
                             }
-                            string fileName = $"https://drive.mcsl.com.cn/d/ME-Frp/Local/MEFrpc/{version}/{targetFile["name"].ToString()}";
+                            string fileName = $"https://drive.mcsl.com.cn/d/ME-Frp/Lanzou/MEFrp-Core/{version}/{targetFile["name"].ToString()}";
                             LogHelper.Write.Info($"找到 ME Frp 下载链接: {fileName}");
                             await MagicShow.ShowDownloader(Window.GetWindow(this), fileName, "MSL\\frp", downloadFileName, LanguageManager.Instance["Download_Frpc_Info"]);
                         }
