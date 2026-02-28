@@ -1,4 +1,4 @@
-﻿using HandyControl.Controls;
+using HandyControl.Controls;
 using HandyControl.Themes;
 using HandyControl.Tools;
 using MSL.langs;
@@ -91,34 +91,6 @@ namespace MSL
                         $"\tOSArchitecture: {Functions.OSArchitecture}\n" +
                         $"\tOSDescription: {Functions.OSDescription}");
                 });
-
-                /*
-                // 终端依赖库检查
-                bool downloadTermDll = false;
-                bool isWin7 = Environment.OSVersion.Version.Major == 6 && Environment.OSVersion.Version.Minor == 1;
-                if (!isWin7)
-                {
-                    if (File.Exists("MSL\\Microsoft.Terminal.Control.dll"))
-                    {
-                        try
-                        {
-                            LoadLibEx();
-                            LogHelper.Write.Info("加载仿真终端依赖库成功！");
-                        }
-                        catch (Exception ex)
-                        {
-                            File.Delete("MSL\\Microsoft.Terminal.Control.dll");
-                            downloadTermDll = true;
-                            LogHelper.Write.Error("仿真终端依赖库文件加载失败！");
-                            LogHelper.Write.Error(ex.ToString());
-                        }
-                    }
-                    else
-                    {
-                        downloadTermDll = true;
-                    }
-                }
-                */
 
                 LogHelper.Write.Info("正在异步载入配置...");
                 _ = LoadConfigEvent(cfg);
@@ -364,35 +336,7 @@ namespace MSL
             try
             {
                 await CheckUpdate(cfg);
-                /*
-                if (downloadTermDll)
-                {
-                    LogHelper.Write.Info("正在下载伪终端运行库文件...");
-                    bool result = await MagicShow.ShowDownloader(
-                        this,
-                        "https://file.mslmc.cn/Microsoft.Terminal.Control.dll",
-                        "MSL", "Microsoft.Terminal.Control.dll", "下载必要文件……");
-
-                    if (result)
-                    {
-                        try
-                        {
-                            LoadLibEx();
-                            LogHelper.Write.Info("加载仿真终端依赖库成功！");
-                        }
-                        catch (Exception ex)
-                        {
-                            File.Delete("MSL\\Microsoft.Terminal.Control.dll");
-                            LogHelper.Write.Error("仿真终端依赖库文件加载失败！");
-                            LogHelper.Write.Error(ex.ToString());
-                            MagicShow.ShowMsg(this,
-                                $"必要DLL加载失败！已将其删除，请重启软件。（{ex.Message}）\n如果不重启，高级终端（ConPty）功能将失效！",
-                                "错误");
-                        }
-                    }
-                }
-                */
-
+                
                 // 若开启了自动更新，此处补执行之前跳过的自动启动
                 if (cfg.AutoUpdateApp)
                 {
@@ -436,31 +380,6 @@ namespace MSL
             }
         }
         #endregion
-
-        /*
-        #region 依赖库加载
-        [DllImport("kernel32", SetLastError = true, CharSet = CharSet.Unicode)]
-        public static extern IntPtr LoadLibraryEx(string lpFileName, IntPtr hReservedNull, uint dwFlags);
-
-        private void LoadLibEx()
-        {
-            string md5Value;
-            using (var file = new FileStream("MSL\\Microsoft.Terminal.Control.dll", FileMode.Open))
-            {
-                MD5 md5 = new MD5CryptoServiceProvider();
-                byte[] hash = md5.ComputeHash(file);
-                var sb = new StringBuilder();
-                foreach (byte b in hash) sb.Append(b.ToString("x2"));
-                md5Value = sb.ToString();
-            }
-
-            if (md5Value == "d01fd30d79d02f008d18565a9df8077d")
-                LoadLibraryEx("MSL\\Microsoft.Terminal.Control.dll", IntPtr.Zero, 0x00000008);
-            else
-                throw new Exception("错误的MD5值");
-        }
-        #endregion
-        */
 
         #region 软件更新
         private async Task CheckUpdate(AppConfig cfg)

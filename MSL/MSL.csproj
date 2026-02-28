@@ -150,6 +150,7 @@
     <Compile Include="utils\Config\Config.cs" />
     <Compile Include="utils\Config\ConfigStore.cs" />
     <Compile Include="utils\Config\ConfigWriter.cs" />
+    <Compile Include="utils\Config\ServerConfig.cs" />
     <Compile Include="utils\DownloadManager.cs" />
     <Compile Include="utils\FrpApiUtils.cs" />
     <Compile Include="utils\Functions.cs" />
@@ -169,8 +170,10 @@
       <DependentUpon>MessageWindow.xaml</DependentUpon>
     </Compile>
     <Compile Include="utils\LogHelper.cs" />
+    <Compile Include="utils\MCServerLogHelper.cs" />
     <Compile Include="utils\MCServerService.cs" />
     <Compile Include="utils\MinecraftServerTerm.cs" />
+    <Compile Include="utils\ServerRunnerModel.cs" />
     <Compile Include="utils\ShowService.cs" />
     <Compile Include="controls\dialogs\TextDialog.xaml.cs">
       <DependentUpon>TextDialog.xaml</DependentUpon>
@@ -438,6 +441,9 @@
       <Version>6.0.0</Version>
       <IncludeAssets>runtime;compile;build; native; contentfiles; analyzers; buildtransitive</IncludeAssets>
       <PrivateAssets>all</PrivateAssets>
+    </PackageReference>
+    <PackageReference Include="Cronos">
+      <Version>0.11.1</Version>
     </PackageReference>
     <PackageReference Include="CurseForge.APIClient">
       <Version>4.2.0</Version>

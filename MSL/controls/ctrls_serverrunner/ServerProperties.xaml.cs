@@ -1,4 +1,4 @@
-﻿using HandyControl.Controls;
+using HandyControl.Controls;
 using Microsoft.Win32;
 using MSL.utils;
 using System;
@@ -19,14 +19,16 @@ namespace MSL.controls.ctrls_serverrunner
     /// </summary>
     public partial class ServerProperties : UserControl
     {
-        public ServerProperties(ServerRunner fatherControl, string serverBase)
+        public ServerProperties(ServerRunner fatherControl,MCServerService fatherService, string serverBase)
         {
             InitializeComponent();
             FatherControl = fatherControl;
+            FatherService= fatherService;
             Rserverbase = serverBase;
         }
 
         private readonly ServerRunner FatherControl;
+        private readonly MCServerService FatherService;
         private readonly string Rserverbase;
         private Dictionary<string, TextBox> configTextBoxes = new Dictionary<string, TextBox>();
 
@@ -332,7 +334,7 @@ namespace MSL.controls.ctrls_serverrunner
         {
             try
             {
-                if (FatherControl.CheckServerRunning())
+                if (FatherService.CheckServerRunning())
                 {
                     MagicShow.ShowMsgDialog(FatherControl, "服务器运行时无法调整服务器功能！", "错误");
                     return;
@@ -415,7 +417,7 @@ namespace MSL.controls.ctrls_serverrunner
         {
             try
             {
-                if (FatherControl.CheckServerRunning())
+                if (FatherService.CheckServerRunning())
                 {
                     MagicShow.ShowMsgDialog(FatherControl, "服务器运行时无法更换图标！", "错误");
                     return;
@@ -477,7 +479,7 @@ namespace MSL.controls.ctrls_serverrunner
         {
             try
             {
-                if (FatherControl.CheckServerRunning())
+                if (FatherService.CheckServerRunning())
                 {
                     MagicShow.ShowMsgDialog(FatherControl, "服务器运行时无法更换地图！", "错误");
                     return;

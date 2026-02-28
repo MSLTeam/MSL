@@ -1,4 +1,4 @@
-﻿using Newtonsoft.Json;
+using Newtonsoft.Json;
 using Newtonsoft.Json.Linq;
 using System.Collections.Concurrent;
 using System.IO;
@@ -29,6 +29,20 @@ namespace MSL.utils.Config
                 File.WriteAllText(AppConfig.ConfigPath, json, Encoding.UTF8);
             }
         }
+
+        // 整体序列化写入（ServerConfig.Save 用）
+        private sealed class ServerConfigSaveJob : WriteJob
+        {
+            private readonly ServerConfig _cfg;
+            public ServerConfigSaveJob(ServerConfig cfg) => _cfg = cfg;
+            public override void Execute()
+            {
+                string json = _cfg.ToJObject().ToString(Formatting.Indented);
+                File.WriteAllText(ServerConfig.ConfigPath, json, Encoding.UTF8);
+            }
+        }
+
+        
 
         // 单键写入（Config.Write 用）
         private sealed class KeyValueJob : WriteJob
@@ -106,6 +120,9 @@ namespace MSL.utils.Config
         internal static void EnqueueFullSave(AppConfig cfg) => Enqueue(new FullSaveJob(cfg));
         internal static void EnqueueKeyValue(string path, string key, JToken value) => Enqueue(new KeyValueJob(path, key, value));
         internal static void EnqueueRemoveKey(string path, string key) => Enqueue(new RemoveKeyJob(path, key));
+
+        internal static void EnqueueFullSave(ServerConfig cfg) => Enqueue(new ServerConfigSaveJob(cfg));
+        internal static void ExecuteNow(ServerConfig cfg) => ExecuteWithRetry(new ServerConfigSaveJob(cfg));
 
         /// <summary>同步立即执行（仅初始化场景使用）</summary>
         internal static void ExecuteNow(AppConfig cfg) => ExecuteWithRetry(new FullSaveJob(cfg));

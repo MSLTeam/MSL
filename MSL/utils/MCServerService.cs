@@ -1,25 +1,567 @@
-﻿using ICSharpCode.AvalonEdit.Document;
-using ICSharpCode.AvalonEdit.Rendering;
+using ConPtyTermEmulatorLib;
+using HandyControl.Controls;
+using HandyControl.Tools;
+using ICSharpCode.AvalonEdit.Document;
+using MSL.utils.Config;
 using System;
 using System.Collections.Concurrent;
 using System.Collections.Generic;
+using System.Diagnostics;
+using System.IO;
 using System.Linq;
 using System.Text;
 using System.Text.RegularExpressions;
-using System.Windows;
+using System.Threading.Tasks;
 using System.Windows.Media;
 using System.Windows.Threading;
-using static MSL.ServerRunner;
 
 namespace MSL.utils
 {
-    internal class MCServerService : IDisposable
+    public class MCServerService : IDisposable
     {
+        public int ServerID { get; }
+        public string ServerName { get; set; }
+        public string ServerJava { get; set; }
+        public string ServerCore { get; set; }
+        public string ServerMem { get; set; }
+        public string ServerArgs { get; set; }
+        public string ServerYggAddr { get; set; }
+        public string ServerBase { get; set; }
+        public short ServerMode { get; set; }
+        public Process ServerProcess { get; set; }
+        public MinecraftServerTerm ServerTerm { get; set; }
+        public ServerConfig.ServerInstance InstanceConfig {  get; set; }
+        public MCSLogHandler ServerLogHandler { get; set; }
+        
+        private readonly Action<string,Color> _onPrintLog;
+        private readonly Action<int> _onServerExit;
+        private readonly Action _onServerStarted;
+        private readonly Action<string> _onPlayerListAdd;
+        private readonly Action<string> _onPlayerListRemove;
+        private readonly Action _onChangeEncodingOut;
+
+        public bool recordPlayInfo = false;
+        public bool outlogEncodingAsk = true;
+
+        public string _tempLog;
+
         public bool ProblemSolveSystem = false;
         public string ProblemFound;
 
-        public MCServerService() { }
+        public MCServerService(int serverID,
+            Action<int> onServerExit,
+            Action<string,Color> onPrintLog,
+            Action onServerStarted,
+            Action<string> onPlayerListAdd,
+            Action<string> onPlayerListRemove,
+            Action onChangeEncodingOut)
+        {
+            ServerID = serverID;
+            _onPrintLog = onPrintLog;
+            _onServerExit = onServerExit;
+            _onServerStarted = onServerStarted;
+            _onPlayerListAdd = onPlayerListAdd;
+            _onPlayerListRemove = onPlayerListRemove;
+            _onChangeEncodingOut = onChangeEncodingOut;
 
+            InitConfigAndCheckAvailable();
+            InitializeLogHandler();
+        }
+
+        private void InitConfigAndCheckAvailable()
+        {
+            if (ServerConfig.Current.TryGet(ServerID.ToString(), out var instance))
+            {
+                InstanceConfig = instance;
+                ServerName = instance.Name;
+                ServerJava = instance.Java;
+                ServerCore = instance.Core;
+                ServerMem = instance.Memory;
+                ServerArgs = instance.Args;
+                ServerYggAddr = instance.YggApi;
+                ServerBase = instance.Base;
+                ServerMode = instance.Mode;
+            }
+            bool isChangeConfig = false;
+            if (!Directory.Exists(ServerBase))
+            {
+                string[] pathParts = ServerBase.Split('\\');
+                if (pathParts.Length >= 2 && pathParts[pathParts.Length - 2] == "MSL")
+                {
+                    // 路径的倒数第二个是 MSL
+                    isChangeConfig = true;
+                    string baseDirectory = AppDomain.CurrentDomain.BaseDirectory; // 获取当前应用程序的基目录
+                    ServerBase = Path.Combine(baseDirectory, "MSL", string.Join("\\", pathParts.Skip(pathParts.Length - 1))); // 拼接 MSL 目录下的路径
+                }
+                else
+                {
+                    // 路径的倒数第二个不是 MSL
+                    Growl.Error("您的服务器目录似乎有误，是从别的位置转移到此处吗？请手动前往服务器设置界面进行更改！");
+                }
+            }
+            if (ServerJava != "Java" && ServerJava != "java" && ServerMode == 0)
+            {
+                if (!Path.IsPathRooted(ServerJava))
+                {
+                    ServerJava = AppDomain.CurrentDomain.BaseDirectory + ServerJava;
+                }
+                if (!File.Exists(ServerJava))
+                {
+                    string[] pathParts = ServerJava.Split('\\');
+                    if (pathParts.Length >= 4 && pathParts[pathParts.Length - 4] == "MSL")
+                    {
+                        // 路径的倒数第四个是 MSL
+                        isChangeConfig = true;
+                        string baseDirectory = AppDomain.CurrentDomain.BaseDirectory; // 获取当前应用程序的基目录
+                        ServerJava = Path.Combine(baseDirectory, "MSL", string.Join("\\", pathParts.Skip(pathParts.Length - 3))); // 拼接 MSL 目录下的路径
+                    }
+                    else
+                    {
+                        // 路径的倒数第四个不是 MSL
+                        Growl.Error("您的Java目录似乎有误，是从别的位置转移到此处的吗？请手动前往服务器设置界面进行更改！");
+                    }
+                }
+            }
+
+            if (isChangeConfig)
+                ServerConfig.Current.Save();
+        }
+
+        private void InitializeLogHandler()
+        {
+            ServerLogHandler = new MCSLogHandler(this,
+                logAction: _onPrintLog,
+                infoHandler: LogHandleInfo,
+                warnHandler: LogHandleWarn,
+                encodingIssueHandler: HandleEncodingIssue,
+                solveCrashHandler: ProblemSystemHandle
+            );
+
+            ServerLogHandler.IsMSLFormatedLog = AppConfig.Current.MslTips;
+            ServerLogHandler.IsShowOutLog = InstanceConfig.ShowOutlog;
+            ServerLogHandler.IsFormatLogPrefix = InstanceConfig.FormatLogPrefix;
+            ServerLogHandler.IsShieldStackOut = InstanceConfig.ShieldStackOut;
+            ServerLogHandler.ShieldLog = InstanceConfig.ShieldLogs.ToArray();
+            ServerLogHandler.HighLightLog = [..InstanceConfig.HighLightLogs]; // 好高级，原来还可以这样写QWQ
+        }
+
+        public async Task<bool> LaunchServer()
+        {
+            LogHelper.Write.Info("尝试启动服务器：" + ServerName);
+            string launchArgs;
+            string ygg_api_jvm = string.Empty;
+            string fileforceUTF8Jvm = string.Empty;
+            try
+            {
+                if (ServerMode == 0)  // 代表启动的是一个MC服务器
+                {
+                    if (!string.IsNullOrEmpty(ServerYggAddr))
+                        ygg_api_jvm = $"-javaagent:authlib-injector.jar={ServerYggAddr} ";  // 处理外置登录
+
+                    if (InstanceConfig.FileForceUTF8 == true && !ServerArgs.Contains("-Dfile.encoding=UTF-8"))
+                        fileforceUTF8Jvm = "-Dfile.encoding=UTF-8 ";
+
+                    if (ServerCore.StartsWith("@libraries/"))
+                        // 处理使用了库文件的服务端核心（如Forge、NeoForge等）
+                        launchArgs = ServerMem + " " + fileforceUTF8Jvm + ygg_api_jvm + ServerArgs + " " + ServerCore + " nogui";
+                    else
+                        launchArgs = ServerMem + " " + fileforceUTF8Jvm + ygg_api_jvm + ServerArgs + " -jar \"" + ServerCore + "\" nogui";
+                    LogHelper.Write.Info("启动参数：" + launchArgs);
+                    if (InstanceConfig.UseConpty)
+                        StartServerTerm(launchArgs);
+                    else
+                        StartServer(launchArgs);
+                }
+                else
+                {
+                    LogHelper.Write.Info("启动参数：" + ServerArgs);
+                    StartServer(ServerArgs);
+                }
+                ServerLogHandler._logProcessTimer.IsEnabled = true;
+                ServerLogHandler._logProcessTimer.Start();
+                return true;
+            }
+            catch (Exception a)
+            {
+                LogHelper.Write.Error("启动服务器时发生异常：" + a.Message);
+                return false;
+            }
+        }
+
+        private void StartServerTerm(string StartFileArg)
+        {
+            Directory.CreateDirectory(ServerBase);
+            ServerTerm = new MinecraftServerTerm();
+
+            ServerTerm.OnOutput += rawText =>
+            {
+                // 过滤纯 echo 行
+                // Minecraft 日志都有 [HH:MM:SS] 或 > 前缀
+                var lines = SplitLines(rawText);
+                foreach (var line in lines)
+                {
+                    var stripped = Term.StripColors(line).Trim();
+                    if (string.IsNullOrEmpty(stripped)) continue;
+
+                    // 跳过纯 echo 行：不含 [ 且不含空格分隔的服务器日志特征
+                    bool isEchoOrCompletion = !stripped.Contains('[')
+                                               && !stripped.Contains(':')
+                                               && stripped.All(c => char.IsLetterOrDigit(c)
+                                               || c == ' ' || c == '_'
+                                               || c == '-' || c == '.');
+
+
+                    if (!isEchoOrCompletion)
+                    {
+                        ServerLogHandler._logBuffer.Enqueue(stripped);
+                        _tempLog = stripped;
+                    }
+                }
+            };
+
+            ServerTerm.OnProcessExited += () =>
+            {
+                OnServerExit(null, null);
+            };
+
+            Task.Run(() => ServerTerm.Start(
+                javaPath: ServerJava,
+                jarArgs: StartFileArg,
+                workingDir: ServerBase
+            ));
+        }
+
+        private IEnumerable<string> SplitLines(string text)
+        {
+            return text.Replace("\r\n", "\n").Replace("\r", "\n").Split('\n');
+        }
+
+        private void StartServer(string StartFileArg)
+        {
+            try
+            {
+                Directory.CreateDirectory(ServerBase);
+
+                ServerProcess = new Process();
+                ServerProcess.StartInfo.WorkingDirectory = ServerBase;
+                if (ServerMode == 0)
+                {
+                    ServerProcess.StartInfo.FileName = ServerJava;
+                    ServerProcess.StartInfo.Arguments = StartFileArg;
+                }
+                else
+                {
+                    ServerProcess.StartInfo.FileName = "cmd.exe";
+                    ServerProcess.StartInfo.Arguments = "/c " + StartFileArg;
+                }
+                ServerProcess.StartInfo.CreateNoWindow = true;
+                ServerProcess.StartInfo.UseShellExecute = false;
+                ServerProcess.StartInfo.RedirectStandardInput = true;
+                ServerProcess.StartInfo.RedirectStandardOutput = true;
+                ServerProcess.StartInfo.RedirectStandardError = true;
+                ServerProcess.EnableRaisingEvents = true;
+                ServerProcess.OutputDataReceived += new DataReceivedEventHandler(OutputDataReceived);
+                ServerProcess.ErrorDataReceived += new DataReceivedEventHandler(OutputDataReceived);
+                ServerProcess.Exited += new EventHandler(OnServerExit);
+                if (InstanceConfig.EncodingOut == "UTF8")
+                {
+                    ServerProcess.StartInfo.StandardOutputEncoding = Encoding.UTF8;
+                    ServerProcess.StartInfo.StandardErrorEncoding = Encoding.UTF8;
+                }
+                else
+                {
+                    ServerProcess.StartInfo.StandardOutputEncoding = Encoding.Default;
+                    ServerProcess.StartInfo.StandardErrorEncoding = Encoding.Default;
+                }
+                ServerProcess.Start();
+                ServerProcess.BeginOutputReadLine();
+                ServerProcess.BeginErrorReadLine();
+            }
+            catch (Exception e)
+            {
+                _onPrintLog("错误代码：" + e.Message, Colors.Red);
+            }
+        }
+
+        private void OutputDataReceived(object sender, DataReceivedEventArgs e)
+        {
+            if (e.Data != null)
+            {
+                // 将日志添加到缓冲区，不要直接处理（否则UI线程压力很大，可能会使软件崩溃）
+                ServerLogHandler._logBuffer.Enqueue(e.Data);
+                _tempLog = e.Data;
+            }
+        }
+
+        private void OnServerExit(object sender, EventArgs e)
+        {
+            Console.WriteLine("服务器进程已退出，正在执行清理工作...");
+            int exitCode = 0;
+            try
+            {
+                if (ServerProcess != null)
+                {
+                    ServerProcess.CancelOutputRead();
+                    ServerProcess.CancelErrorRead();
+                    ServerProcess.OutputDataReceived -= OutputDataReceived;
+                    ServerProcess.ErrorDataReceived -= OutputDataReceived;
+                    ServerProcess.Exited -= OnServerExit;
+                    exitCode = ServerProcess.ExitCode;
+                    ServerProcess.Dispose();
+                    ServerProcess = null;
+                }
+                else if (ServerTerm != null)
+                {
+                    exitCode = ServerTerm.ExitCode;
+                    ServerTerm.Dispose();
+                    ServerTerm = null;
+                }
+            }
+            finally
+            {
+                ServerLogHandler.CleanupResources();
+                _onServerExit.Invoke(exitCode);
+            }
+        }
+
+        public bool SendCommand(string command)
+        {
+            try
+            {
+                if (CheckServerRunning())
+                {
+                    if (InstanceConfig.UseConpty == true)
+                    {
+                        ServerTerm.SendCommand(command);
+                        return true;
+                    }
+                    else
+                    {
+                        if (InstanceConfig.EncodingIn == "UTF8")
+                        {
+                            SendCmdUTF8(command);
+                        }
+                        else
+                        {
+                            SendCmdANSL(command);
+                        }
+                        return true;
+                    }
+                }
+                return false;
+            }
+            catch
+            {
+                return false;
+            }
+        }
+
+        private void SendCmdUTF8(string cmd)
+        {
+            byte[] utf8Bytes = Encoding.UTF8.GetBytes(cmd);
+            ServerProcess.StandardInput.BaseStream.Write(utf8Bytes, 0, utf8Bytes.Length);
+            ServerProcess.StandardInput.WriteLine();
+        }
+        private void SendCmdANSL(string cmd)
+        {
+            ServerProcess.StandardInput.WriteLine(cmd);
+        }
+
+        public void StopServer()=> SendCommand("stop");
+        public void KillServer()
+        {
+            try
+            {
+                if (ServerTerm != null)
+                {
+                    ServerTerm.Kill();
+                }
+                else if (ServerProcess != null && !ServerProcess.HasExited)
+                {
+                    ServerProcess.Kill();
+                }
+            }
+            catch
+            {
+                // 可能已经退出了，忽略异常
+            }
+        }
+
+        private void LogHandleInfo(string msg)
+        {
+            if ((msg.Contains("Done") && msg.Contains("For help")) || (msg.Contains("加载完成") && msg.Contains("如需帮助") || (msg.Contains("Server started."))))
+            {
+                _onPrintLog("已成功开启服务器！你可以输入stop来关闭服务器！\r\n服务器本地IP通常为:127.0.0.1，想要远程进入服务器，需要开通公网IP或使用内网映射，详情查看开服器的内网映射界面。\r\n若控制台输出乱码日志，请去更多功能界面修改“输出编码”。", ConfigStore.LogColor.INFO);
+                _onServerStarted.Invoke();
+            }
+            else if (msg.Contains("Stopping server"))
+            {
+                    _onPrintLog("正在关闭服务器！", ConfigStore.LogColor.INFO);
+            }
+
+            // 玩家进服是否记录
+            if (recordPlayInfo == true)
+            {
+                GetPlayerInfoSys(msg);
+            }
+        }
+
+        private void LogHandleWarn(string msg)
+        {
+            if (msg.Contains("FAILED TO BIND TO PORT"))
+            {
+                _onPrintLog("警告：由于端口占用，服务器已自动关闭！请检查您的服务器是否多开或者有其他软件占用端口！\r\n解决方法：您可尝试通过重启电脑解决！", Colors.Red);
+            }
+            else if (msg.Contains("Unable to access jarfile"))
+            {
+                _onPrintLog("警告：无法访问JAR文件！您的服务端可能已损坏或路径中含有中文或其他特殊字符,请及时修改！", Colors.Red);
+            }
+            else if (msg.Contains("加载 Java 代理时出错"))
+            {
+                _onPrintLog("警告：无法访问JAR文件！您的服务端可能已损坏或路径中含有中文或其他特殊字符,请及时修改！", Colors.Red);
+            }
+        }
+
+        private void GetPlayerInfoSys(string msg)
+        {
+            Regex disconnectRegex = new Regex(@"\s*]: (\S+)\s*lost connection:");
+            Regex serverDisconnectRegex = new Regex(@"\s*]: (\S+)\s*与服务器失去连接");
+
+            if (msg.Contains("logged in with entity id"))
+            {
+                string playerName = ExtractPlayerName(msg);
+                if (playerName != null)
+                {
+                    _onPlayerListAdd.Invoke(playerName);
+                }
+                else
+                {
+                    return;
+                }
+            }
+            else if (disconnectRegex.IsMatch(msg))
+            {
+                string playerName = disconnectRegex.Match(msg).Groups[1].Value;
+                _onPlayerListRemove.Invoke(playerName);
+            }
+            else if (serverDisconnectRegex.IsMatch(msg))
+            {
+                string playerName = serverDisconnectRegex.Match(msg).Groups[1].Value;
+                _onPlayerListRemove.Invoke(playerName);
+            }
+            else
+            {
+                return;
+            }
+        }
+
+        /// <summary>
+        /// 从日志消息中提取出用户标识字符串。
+        /// 例如：
+        ///   输入: "[21:58:19 INFO]: Weheal[/127.0.0.1:25565] logged in with entity id 100 at (...)" 
+        ///   输出: "Weheal[/127.0.0.1:25565]"
+        ///   
+        ///   输入: "[22:59:55] [Server thread/INF0]: Weheal[/[0000:0000:0000:0000:0000:0000:0000:0000]:25565] logged in with entity id 100 at(...)" 
+        ///   输出: "Weheal[/[0000:0000:0000:0000:0000:0000:0000:0000]:25565]"
+        /// </summary>
+        private string ExtractPlayerName(string msg)
+        {
+            // 定位登录标志所在位置
+            int endIndex = msg.IndexOf(" logged in with entity id");
+            if (endIndex == -1)
+            {
+                // 找不到，返回null
+                return null;
+            }
+
+            // 定位 "]: " 分隔符，它出现在前面的时间戳和其它信息之后，紧接着用户标识
+            string delimiter = "]: ";
+            int startIndex = msg.LastIndexOf(delimiter, endIndex);
+            if (startIndex == -1)
+            {
+                // 如果没有找到分隔符，也返回 null
+                return null;
+            }
+
+            // 实际的用户标识开始于分隔符之后
+            startIndex += delimiter.Length;
+            // 截取 startIndex 到 endIndex 之间的子字符串
+            return msg.Substring(startIndex, endIndex - startIndex);
+        }
+
+        
+        private void HandleEncodingIssue()
+        {
+            if (ServerProcess == null && ServerTerm != null) return;
+            Color brush = ServerLogHandler.LogInfo[0].Color;
+            _onPrintLog("MSL检测到您的服务器输出了乱码日志，请尝试去“更多功能”界面更改服务器的“输出编码”来解决此问题！", Colors.Red);
+            ServerLogHandler.LogInfo[0].Color = brush;
+            if (outlogEncodingAsk)
+            {
+                outlogEncodingAsk = false;
+                _onChangeEncodingOut.Invoke();
+            }
+        }
+
+        public bool CheckServerRunning()
+        {
+            if (ServerTerm != null)
+            {
+                if (ServerTerm.IsRunning)
+                {
+                    Logger.Info("检测服务器运行事件：服务器正在运行 (Conpty)");
+                    return true;
+                }
+                else
+                {
+                    Logger.Info("检测服务器运行事件：服务器未运行 (Conpty)");
+                    return false;
+                }
+            }
+            try
+            {
+                if (ServerProcess != null && !ServerProcess.HasExited)
+                {
+                    Logger.Info("检测服务器运行事件：服务器正在运行");
+                    return true;
+                }
+            }
+            catch
+            {
+                Logger.Info("检测服务器运行事件：服务器未运行");
+                return false;
+            }
+            Logger.Info("检测服务器运行事件：服务器未运行 (已关闭)");
+            return false;
+        }
+
+        public void Dispose()
+        {
+            ProblemFound = null;
+            // ServerLogHandler.CleanupResources();
+            ServerLogHandler.Dispose();
+            ServerLogHandler = null;
+            if (ServerTerm != null)
+            {
+                try
+                {
+                    ServerTerm.Dispose();
+                }
+                finally
+                {
+                    ServerTerm = null;
+                }
+            }
+            
+            ServerName = null;
+            ServerJava = null;
+            ServerCore = null;
+            ServerMem = null;
+            ServerArgs = null;
+            ServerBase = null;
+        }
+
+        #region 崩溃分析模块
         private readonly List<(string pattern, string message)> errorPatterns = new()
         {
             (@"UnsupportedClassVersionError.*\(class file version (\d+)", "*不支持的Class版本：您的Java版本可能太低！\n 请使用Java{0}或以上版本！\n"),
@@ -52,6 +594,8 @@ namespace MSL.utils
 
         public void ProblemSystemHandle(string msg)
         {
+            if (!ProblemSolveSystem)
+                return;
             foreach (var (pattern, message) in errorPatterns)
             {
                 var match = Regex.Match(msg, pattern);
@@ -105,19 +649,14 @@ namespace MSL.utils
             }
             return string.Empty;
         }
-
-        public void Dispose()
-        {
-            ProblemFound = null;
-        }
+        #endregion
     }
 
-    internal class MCSLogHandler : IDisposable
+    public class MCSLogHandler : IDisposable
     {
         public void Dispose()
         {
             CleanupResources();
-            ServerService.Dispose();
             ShieldLog = null;
             HighLightLog = null;
         }
@@ -126,6 +665,7 @@ namespace MSL.utils
         private readonly Action<string> _infoHandler;
         private readonly Action<string> _warnHandler;
         private readonly Action _encodingIssueHandler;
+        private readonly Action<string> _solveCrashHandler;
 
         // 日志缓冲区相关
         public readonly ConcurrentQueue<string> _logBuffer = new ConcurrentQueue<string>();
@@ -137,8 +677,6 @@ namespace MSL.utils
         public bool IsMSLFormatedLog = true;
         public string[] ShieldLog;
         public string[] HighLightLog;
-        public MCServerService ServerService { get; private set; } = new MCServerService();
-
         public class LogConfig
         {
             public string Prefix { get; set; }
@@ -157,16 +695,18 @@ namespace MSL.utils
             { 100, new LogConfig { Prefix = string.Empty, Color = ConfigStore.LogColor.HIGHLIGHT } } // 高亮日志
         };
 
-        public MCSLogHandler(
+        public MCSLogHandler(MCServerService service,
         Action<string, Color> logAction,
-        Action<string> infoHandler = null,
-        Action<string> warnHandler = null,
-        Action encodingIssueHandler = null)
+        Action<string> infoHandler,
+        Action<string> warnHandler,
+        Action encodingIssueHandler,
+        Action<string> solveCrashHandler)
         {
             _logAction = logAction;
             _infoHandler = infoHandler;
             _warnHandler = warnHandler;
             _encodingIssueHandler = encodingIssueHandler;
+            _solveCrashHandler = solveCrashHandler;
 
             // 初始化日志处理定时器
             _logProcessTimer.Interval = TimeSpan.FromMilliseconds(100);
@@ -308,10 +848,7 @@ namespace MSL.utils
             foreach (var msg in batch)
             {
                 // 崩溃分析系统
-                if (ServerService.ProblemSolveSystem)
-                {
-                    ServerService.ProblemSystemHandle(msg);
-                }
+                _solveCrashHandler.Invoke(msg);
 
                 // 过滤不需要显示的日志
                 if ((msg.Contains("\tat ") && IsShieldStackOut) ||
@@ -476,63 +1013,6 @@ namespace MSL.utils
         private void LogHandleWarn(string message)
         {
             _warnHandler?.Invoke(message);
-        }
-    }
-
-    public class LogColorizer : DocumentColorizingTransformer
-    {
-        // 存储所有日志条目（offset → segments）
-        private readonly List<LogEntry> _entries = new();
-
-        public void AddEntry(LogEntry entry)
-        {
-            _entries.Add(entry);
-        }
-
-        public void Clear()
-        {
-            _entries.Clear();
-        }
-
-        protected override void ColorizeLine(DocumentLine line)
-        {
-            int lineStart = line.Offset;
-            int lineEnd = line.EndOffset;
-
-            foreach (var entry in _entries)
-            {
-                int segOffset = entry.StartOffset;
-
-                foreach (var seg in entry.Segments)
-                {
-                    int segEnd = segOffset + seg.Text.Length;
-
-                    // 计算与当前行的交叉区域
-                    int overlapStart = Math.Max(lineStart, segOffset);
-                    int overlapEnd = Math.Min(lineEnd, segEnd);
-
-                    if (overlapStart < overlapEnd)
-                    {
-                        var brush = new SolidColorBrush(seg.Color);
-                        brush.Freeze();
-
-                        ChangeLinePart(overlapStart, overlapEnd, element =>
-                        {
-                            element.TextRunProperties.SetForegroundBrush(brush);
-                            if (seg.IsBold)
-                            {
-                                element.TextRunProperties.SetTypeface(
-                                    new Typeface(
-                                        element.TextRunProperties.Typeface.FontFamily,
-                                        FontStyles.Normal,
-                                        FontWeights.Bold,
-                                        FontStretches.Normal));
-                            }
-                        });
-                    }
-                    segOffset = segEnd;
-                }
-            }
         }
     }
 }

@@ -1,7 +1,8 @@
-﻿using HandyControl.Controls;
+using HandyControl.Controls;
 using ICSharpCode.SharpZipLib.Zip;
 using MSL.controls;
 using MSL.utils;
+using MSL.utils.Config;
 using Newtonsoft.Json;
 using Newtonsoft.Json.Linq;
 using System;
@@ -831,7 +832,7 @@ namespace MSL.pages
                 launchmode = 1; // 1是自定义命令模式
                 serverargs = textCustomCmd.Text; //存放完整的args
                 // 若为自定义命令模式，就跳过设置开服内存和JVM参数的阶段
-                servermemory = "";
+                servermemory = string.Empty;
                 SelectTerminalGrid.Visibility = Visibility.Visible;
                 tabCtrl.Visibility = Visibility.Collapsed;
                 returnMode = 6;
@@ -852,7 +853,7 @@ namespace MSL.pages
         {
             if (usedefault.IsChecked == true)
             {
-                servermemory = "";
+                servermemory = string.Empty;
             }
             else
             {
@@ -1653,51 +1654,21 @@ namespace MSL.pages
         {
             try
             {
-                if (!File.Exists(@"MSL\ServerList.json"))
+                var newInstance = new ServerConfig.ServerInstance
                 {
-                    File.WriteAllText(@"MSL\ServerList.json", string.Format("{{{0}}}", "\n"));
-                }
-                JObject _json = new JObject
-                    {
-                        { "name", servername },
-                        { "java", serverjava },
-                        { "base", serverbase },
-                        { "core", servercore },
-                        { "memory", servermemory },
-                        { "args", serverargs }
-                    };
-                if (launchmode == 1)
-                {
-                    _json.Add("mode", launchmode);
-                }
+                    Name = servername,
+                    Java = serverjava,
+                    Base = serverbase,
+                    Core = servercore,
+                    Memory = servermemory,
+                    Args = serverargs,
+                    Mode = launchmode,
+                };
                 if (ConptyModeBtn.IsChecked == true)
-                {
-                    _json.Add("useConpty", "True");
-                }
+                    newInstance.UseConpty = true;
                 if (!string.IsNullOrEmpty(txb_ygg_api.Text.Trim()))
-                {
-                    _json.Add("ygg_api", txb_ygg_api.Text.Trim());
-                }
-                JObject jsonObject = JObject.Parse(File.ReadAllText(@"MSL\ServerList.json", Encoding.UTF8));
-                List<string> keys = jsonObject.Properties().Select(p => p.Name).ToList();
-                var _keys = keys.Select(x => Convert.ToInt32(x));
-                int[] ikeys = _keys.ToArray();
-                Array.Sort(ikeys);
-                int i = 0;
-
-                foreach (int key in ikeys)
-                {
-                    if (i == key)
-                    {
-                        i++;
-                    }
-                    else
-                    {
-                        break;
-                    }
-                }
-                jsonObject.Add(i.ToString(), _json);
-                File.WriteAllText(@"MSL\ServerList.json", Convert.ToString(jsonObject), Encoding.UTF8);
+                    newInstance.YggApi = txb_ygg_api.Text.Trim();
+                ServerConfig.Current.Add(newInstance);
                 await MagicShow.ShowMsgDialogAsync(Window.GetWindow(this), "创建完毕，请点击“开启服务器”按钮以开服", "信息");
                 GotoServerList();
                 ReInit();

@@ -1,4 +1,4 @@
-﻿using HandyControl.Controls;
+using HandyControl.Controls;
 using HandyControl.Themes;
 using HandyControl.Tools;
 using Microsoft.Win32;
@@ -6,10 +6,8 @@ using MSL.controls.dialogs;
 using MSL.langs;
 using MSL.utils;
 using MSL.utils.Config;
-using Newtonsoft.Json;
 using Newtonsoft.Json.Linq;
 using System;
-using System.Collections.Generic;
 using System.Diagnostics;
 using System.Globalization;
 using System.IO;
@@ -116,6 +114,11 @@ namespace MSL.pages
                     WesternEgg.Visibility = Visibility.Collapsed;
                 }
 
+                // 日志字体
+                InitFontComboBox();
+                // 日志字号
+                LogFontSizeBox.Text = Cfg.LogFont.Size.ToString();
+
                 // 服务器列表
                 LoadServerList();
             }
@@ -145,6 +148,23 @@ namespace MSL.pages
                 }
             }
             catch { }
+        }
+
+        private void InitFontComboBox()
+        {
+            LogFontCombo.ItemsSource = null;
+            LogFontCombo.Items.Clear();
+            // 获取系统所有字体，按名称排序
+            var fonts = Fonts.SystemFontFamilies
+                             .OrderBy(f => f.Source)
+                             .ToList();
+            LogFontCombo.ItemsSource = fonts;
+
+            var ft = Cfg.LogFont.Family;
+            if (ft == null)
+                return;
+
+            LogFontCombo.SelectedItem = fonts.FirstOrDefault(f => f.Source == Cfg.LogFont.Family);
         }
 
         // 基础功能
@@ -358,7 +378,8 @@ namespace MSL.pages
             {
                 semitransparentTitle.IsEnabled = true;
                 autoSetTheme.IsEnabled = true;
-                ChangeSkinColor.IsEnabled = true;
+                if (autoSetTheme.IsChecked == false)
+                    ChangeSkinColor.IsEnabled = true;
                 changeBackImg.Visibility = Visibility.Visible;
                 delBackImg.Visibility = Visibility.Visible;
                 WesternEgg.Visibility = Visibility.Visible;
@@ -473,6 +494,27 @@ namespace MSL.pages
                 HIGHLIGHT = ConfigStore.LogColor.HIGHLIGHT.ToString(),
             };
             Cfg.Save();
+        }
+
+        // 日志字体
+        private void ApplyLogFontConfig_Click(object sender, RoutedEventArgs e)
+        {
+            if (!string.IsNullOrEmpty(LogFontCombo.Text))
+            {
+                Cfg.LogFont.Family = ((FontFamily)LogFontCombo.SelectedItem).Source;
+            }
+            if (int.TryParse(LogFontSizeBox.Text, out int size) && size > 0)
+            {
+                Cfg.LogFont.Size = size;
+            }
+            else
+            {
+                MagicShow.ShowMsgDialog("请输入有效的字体大小！", "错误");
+                return;
+            }
+            Cfg.Save();
+
+            MagicFlowMsg.ShowMessage("保存日志字体成功！重新打开服务器运行窗口以使其生效！", 1);
         }
 
         // 开机自启

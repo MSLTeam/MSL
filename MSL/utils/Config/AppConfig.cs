@@ -1,4 +1,4 @@
-﻿using Newtonsoft.Json;
+using Newtonsoft.Json;
 using Newtonsoft.Json.Linq;
 using System;
 using System.Collections.Generic;
@@ -55,6 +55,14 @@ namespace MSL.utils.Config
             public string HIGHLIGHT { get; set; } = "#00BFFF";  // DeepSkyBlue
         }
 
+        public LogFontConfig LogFont { get; set; } = new LogFontConfig();
+
+        public class LogFontConfig
+        {
+            public string Family { get; set; } = null;
+            public int Size { get; set; } = 14;
+        }
+
         /// <summary>透传未知字段，防止旧/扩展数据丢失。</summary>
         [JsonExtensionData]
         public IDictionary<string, JToken> AdditionalData { get; set; } = new Dictionary<string, JToken>();
@@ -92,6 +100,7 @@ namespace MSL.utils.Config
         private static void Migrate(JObject raw)
         {
             RenameKey(raw, "sidemenuExpanded", "SideMenuExpanded");
+            RenameKey(raw, "notice", "NoticeVer");
             RenameKey(raw, "notifyIcon", "NotifyIcon");
             RenameKey(raw, "darkTheme", "DarkTheme");
             RenameKey(raw, "semitransparentTitle", "SemitransparentTitle");

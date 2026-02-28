@@ -1,4 +1,4 @@
-﻿using MSL.langs;
+using MSL.langs;
 using MSL.utils;
 using Newtonsoft.Json.Linq;
 using System;
@@ -119,18 +119,18 @@ namespace MSL
                 LogHelper.Init();
                 LogHelper.Write.Info("MSL，启动！");
                 
-                if (jsonObject["lang"] == null)
+                if (jsonObject["Lang"] == null)
                 {
-                    jsonObject.Add("lang", "zh-CN");
+                    jsonObject.Add("Lang", "zh-CN");
                     string convertString = Convert.ToString(jsonObject);
                     File.WriteAllText(@"MSL\config.json", convertString, Encoding.UTF8);
-                    LogHelper.Write.Info("语言: " + "ZH-CN");
+                    LogHelper.Write.Info("语言: " + "zh-CN");
                 }
                 else
                 {
-                    if (jsonObject["lang"].ToString() != "zh-CN")
-                        LanguageManager.Instance.ChangeLanguage(new CultureInfo(jsonObject["lang"].ToString()));
-                    LogHelper.Write.Info("语言: " + jsonObject["lang"].ToString().ToUpper());
+                    if (jsonObject["Lang"].ToString() != "zh-CN")
+                        LanguageManager.Instance.ChangeLanguage(new CultureInfo(jsonObject["Lang"].ToString()));
+                    LogHelper.Write.Info("语言: " + jsonObject["Lang"].ToString().ToUpper());
                 }
             }
             finally

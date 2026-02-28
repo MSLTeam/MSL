@@ -1,4 +1,4 @@
-﻿using System.ComponentModel;
+using System.ComponentModel;
 using System.Windows.Media;
 using Windows.Media.Protection.PlayReady;
 
@@ -18,30 +18,6 @@ namespace MSL.controls
             ServerIcon = serverIcon;
             ServerState = serverState;
             ServerStateFore = serverStateFore;
-        }
-    }
-
-    internal class SR_PluginInfo
-    {
-        public string PluginName { get; set; }
-        public bool IsDisabled { get; set; }
-        public SR_PluginInfo(string pluginName, bool isDisabled = false)
-        {
-            PluginName = pluginName;
-            IsDisabled = isDisabled;
-        }
-    }
-
-    internal class SR_ModInfo
-    {
-        public string ModName { get; set; }
-        public bool IsClient { get; set; }
-        public bool IsDisabled { get; set; }
-        public SR_ModInfo(string modName,bool isClient = false, bool isDisabled = false)
-        {
-            ModName = modName;
-            IsClient = isClient;
-            IsDisabled = isDisabled;
         }
     }
 

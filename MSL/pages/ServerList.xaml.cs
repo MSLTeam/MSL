@@ -1,8 +1,9 @@
-﻿using HandyControl.Controls;
+using HandyControl.Controls;
 using Microsoft.VisualBasic.FileIO;
 using MSL.controls;
 using MSL.langs;
 using MSL.utils;
+using MSL.utils.Config;
 using Newtonsoft.Json.Linq;
 using System;
 using System.Collections.Generic;
@@ -68,8 +69,7 @@ namespace MSL.pages
                 List<object> list = new List<object>();
                 //serverIDs.Clear();
 
-                JObject jsonObject = JObject.Parse(File.ReadAllText(@"MSL\ServerList.json", Encoding.UTF8));
-                foreach (var item in jsonObject)
+                foreach (var item in ServerConfig.Current.All)
                 {
                     string status = "未运行";
                     Brush brushes = Brushes.MediumSeaGreen;
@@ -78,25 +78,25 @@ namespace MSL.pages
                         status = "运行中";
                         brushes = Brushes.Orange;
                     }
-                    if (File.Exists(item.Value["base"].ToString() + "\\server-icon.png"))
+                    if (File.Exists(item.Value.Base.ToString() + "\\server-icon.png"))
                     {
-                        list.Add(new SL_ServerInfo(int.Parse(item.Key), item.Value["name"].ToString(), item.Value["base"].ToString() + "\\server-icon.png", status, brushes));
+                        list.Add(new SL_ServerInfo(int.Parse(item.Key), item.Value.Name.ToString(), item.Value.Base.ToString() + "\\server-icon.png", status, brushes));
                     }
-                    else if (item.Value["core"].ToString().IndexOf("neoforge") + 1 != 0)
+                    else if (item.Value.Core.ToString().IndexOf("neoforge") + 1 != 0)
                     {
-                        list.Add(new SL_ServerInfo(int.Parse(item.Key), item.Value["name"].ToString(), "pack://application:,,,/images/neoforged.png", status, brushes));
+                        list.Add(new SL_ServerInfo(int.Parse(item.Key), item.Value.Name.ToString(), "pack://application:,,,/images/neoforged.png", status, brushes));
                     }
-                    else if (item.Value["core"].ToString().IndexOf("forge") + 1 != 0)
+                    else if (item.Value.Core.ToString().IndexOf("forge") + 1 != 0)
                     {
-                        list.Add(new SL_ServerInfo(int.Parse(item.Key), item.Value["name"].ToString(), "pack://application:,,,/images/150px-Anvil.png", status, brushes));
+                        list.Add(new SL_ServerInfo(int.Parse(item.Key), item.Value.Name.ToString(), "pack://application:,,,/images/150px-Anvil.png", status, brushes));
                     }
-                    else if (item.Value["core"].ToString() == "")
+                    else if (item.Value.Core.ToString() == "")
                     {
-                        list.Add(new SL_ServerInfo(int.Parse(item.Key), item.Value["name"].ToString(), "pack://application:,,,/images/150px-MinecartWithCommandBlock.png", status, brushes));
+                        list.Add(new SL_ServerInfo(int.Parse(item.Key), item.Value.Name.ToString(), "pack://application:,,,/images/150px-MinecartWithCommandBlock.png", status, brushes));
                     }
                     else
                     {
-                        list.Add(new SL_ServerInfo(int.Parse(item.Key), item.Value["name"].ToString(), "pack://application:,,,/images/150px-Allium.png", status, brushes));
+                        list.Add(new SL_ServerInfo(int.Parse(item.Key), item.Value.Name.ToString(), "pack://application:,,,/images/150px-Allium.png", status, brushes));
                     }
                 }
                 Dispatcher.Invoke(() =>

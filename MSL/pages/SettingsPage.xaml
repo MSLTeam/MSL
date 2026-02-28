@@ -1,4 +1,4 @@
-﻿<Page x:Class="MSL.pages.SettingsPage"
+<Page x:Class="MSL.pages.SettingsPage"
       xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
       xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
       xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006" 
@@ -160,7 +160,7 @@
                     <Button x:Name="WesternEgg" Content="{Binding [Page_SettingsPage_SS_WesternEgg],Source={x:Static lang:LanguageManager.Instance}}" Style="{StaticResource ButtonDanger}" HorizontalAlignment="Left" VerticalAlignment="Center" Click="WesternEgg_Click" MinWidth="100"/>
                 </StackPanel>
                 <hc:UniformSpacingPanel Orientation="Horizontal" Spacing="5" Margin="0,0,0,5">
-                    <Label Content="终端日志颜色（不适用于ConPTY终端）：" Margin="0,0,10,0"/>
+                    <Label Content="终端日志颜色：" Margin="0,0,10,0"/>
                     <ComboBox x:Name="LogForeTypeCombo">
                         <ComboBoxItem Content="INFO" IsSelected="True"/>
                         <ComboBoxItem Content="WARN"/>
@@ -169,6 +169,13 @@
                     </ComboBox>
                     <Button x:Name="ChangeLogForeColor" Content="点击选色" Click="ChangeLogForeColor_Click"/>
                     <Button x:Name="RestoreLogForeColor" Content="重置" Click="RestoreLogForeColor_Click"/>
+                </hc:UniformSpacingPanel>
+                <hc:UniformSpacingPanel Orientation="Horizontal" Spacing="5" Margin="0,0,0,5">
+                    <Label Content="终端日志字体：" Margin="0,0,10,0"/>
+                    <ComboBox x:Name="LogFontCombo" hc:InfoElement.Placeholder="系统默认" Style="{StaticResource ComboBoxExtend}"/>
+                    <Label Content="终端日志字号：" Margin="0,0,10,0"/>
+                    <TextBox x:Name="LogFontSizeBox" MinWidth="48"/>
+                    <Button x:Name="ApplyLogFontConfig" Content="应用" Click="ApplyLogFontConfig_Click"/>
                 </hc:UniformSpacingPanel>
             </StackPanel>
         </controls:MagicCard>
