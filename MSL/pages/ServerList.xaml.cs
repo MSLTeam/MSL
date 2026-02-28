@@ -4,12 +4,10 @@ using MSL.controls;
 using MSL.langs;
 using MSL.utils;
 using MSL.utils.Config;
-using Newtonsoft.Json.Linq;
 using System;
 using System.Collections.Generic;
 using System.Diagnostics;
 using System.IO;
-using System.Text;
 using System.Windows;
 using System.Windows.Controls;
 using System.Windows.Input;
@@ -219,9 +217,8 @@ namespace MSL.pages
                 if (_dialogRet)
                 {
                     LogHelper.Write.Info($"用户确认删除服务器ID: {serverID} 的文件目录。");
-                    JObject jsonObject = JObject.Parse(File.ReadAllText(@"MSL\ServerList.json", Encoding.UTF8));
-                    JObject _json = (JObject)jsonObject[serverID.ToString()];
-                    string serverPath = _json["base"].ToString();
+                    ServerConfig.Current.TryGet(serverID.ToString(), out var instance);
+                    string serverPath = instance.Base;
                     FileSystem.DeleteDirectory(serverPath, UIOption.OnlyErrorDialogs, RecycleOption.SendToRecycleBin);
                     LogHelper.Write.Info($"已将服务器ID: {serverID} 的目录 '{serverPath}' 发送到回收站。");
                     //Directory.Delete(_json["base"].ToString(), true);
@@ -235,9 +232,8 @@ namespace MSL.pages
             }
             try
             {
-                JObject jsonObject = JObject.Parse(File.ReadAllText(@"MSL\ServerList.json", Encoding.UTF8));
-                jsonObject.Remove(serverID.ToString());
-                File.WriteAllText(@"MSL\ServerList.json", Convert.ToString(jsonObject), Encoding.UTF8);
+                ServerConfig.Current.Remove(serverID.ToString());
+                ServerConfig.Current.Save();
                 LogHelper.Write.Info($"已成功从 ServerList.json 中移除服务器ID: {serverID} 的配置。");
                 Growl.Success("删除服务器成功！");
                 GetServerConfig();
@@ -258,35 +254,34 @@ namespace MSL.pages
                 SL_ServerInfo SL_ServerInfo = serverList.SelectedItem as SL_ServerInfo;
                 string serverID = SL_ServerInfo.ServerID.ToString();
                 LogHelper.Write.Info($"用户请求使用CMD启动服务器ID: {serverID}。");
-                JObject jsonObject = JObject.Parse(File.ReadAllText(@"MSL\ServerList.json", Encoding.UTF8));
-                JObject _json = (JObject)jsonObject[serverID];
+                ServerConfig.Current.TryGet(serverID, out var instance);
                 Process process = new Process();
-                process.StartInfo.WorkingDirectory = _json["base"].ToString();
+                process.StartInfo.WorkingDirectory = instance.Base;
                 process.StartInfo.FileName = "cmd.exe";
                 string arguments,yggapi_cmd = "";
                 //检测外置登录（如果文件不存在就算了）
-                if (!string.IsNullOrEmpty(_json["ygg_api"]?.ToString() ?? ""))
+                if (!string.IsNullOrEmpty(instance.YggApi?.ToString() ?? ""))
                 {
-                    if (File.Exists(Path.Combine(_json["base"].ToString(), "authlib-injector.jar")))
+                    if (File.Exists(Path.Combine(instance.Base, "authlib-injector.jar")))
                     {
-                        yggapi_cmd = $"-javaagent:authlib-injector.jar={_json["ygg_api"]?.ToString()} ";
+                        yggapi_cmd = $"-javaagent:authlib-injector.jar={instance.YggApi} ";
                     }
                     else
                     {
                         Growl.Warning("您配置了外置登录但是外置登录库并未下载\n如需正常使用外置登录+命令行开服，请先在MSL内正常开服一次！");
                     }  
                 }
-                if (_json["core"].ToString().StartsWith("@libraries/"))
+                if (instance.Core.StartsWith("@libraries/"))
                 {
-                    arguments = "/K " + "@ \"" + _json["java"] + "\" " + _json["memory"] + " " + yggapi_cmd + _json["args"] + " " + _json["core"] + " nogui&pause&exit";
+                    arguments = "/K " + "@ \"" + instance.Java + "\" " + instance.Memory + " " + yggapi_cmd + instance.Args + " " + instance.Core + " nogui&pause&exit";
                 }
                 else
                 {
-                    arguments = "/K " + "@ \"" + _json["java"] + "\" " + _json["memory"] + " " + yggapi_cmd + _json["args"] + " -jar \"" + _json["core"] + "\" nogui&pause&exit";
+                    arguments = "/K " + "@ \"" + instance.Java + "\" " + instance.Memory + " " + yggapi_cmd + instance.Args + " -jar \"" + instance.Core + "\" nogui&pause&exit";
                 }
                 process.StartInfo.Arguments = arguments;
                 process.Start();
-                LogHelper.Write.Info($"已成功为服务器ID: {serverID} 创建CMD进程。工作目录: {_json["base"]}，启动参数: {arguments}");
+                LogHelper.Write.Info($"已成功为服务器ID: {serverID} 创建CMD进程。工作目录: {instance.Base}，启动参数: {arguments}");
             }
             catch (Exception ex)
             {
@@ -302,9 +297,8 @@ namespace MSL.pages
                 SL_ServerInfo SL_ServerInfo = serverList.SelectedItem as SL_ServerInfo;
                 string serverID = SL_ServerInfo.ServerID.ToString();
                 LogHelper.Write.Info($"用户请求打开服务器ID: {serverID} 的文件夹。");
-                JObject jsonObject = JObject.Parse(File.ReadAllText(@"MSL\ServerList.json", Encoding.UTF8));
-                JObject _json = (JObject)jsonObject[serverID];
-                string path = _json["base"].ToString();
+                ServerConfig.Current.TryGet(serverID, out var instance);
+                string path = instance.Base;
                 Growl.Info("正在为您打开服务器文件夹……");
                 Process.Start(path);
                 LogHelper.Write.Info($"已成功打开服务器ID: {serverID} 的文件夹，路径: {path}");

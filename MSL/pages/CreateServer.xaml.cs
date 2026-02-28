@@ -10,7 +10,6 @@ using System.Collections.Generic;
 using System.Diagnostics;
 using System.IO;
 using System.Linq;
-using System.Text;
 using System.Text.RegularExpressions;
 using System.Threading;
 using System.Threading.Tasks;
@@ -506,26 +505,13 @@ namespace MSL.pages
             waitDialog.Close();
             if (strings != null)
             {
+                AppConfig.Current.JavaList.Clear();
                 var javaList = strings.Select(info => $"Java{info.Version}: {info.Path}").ToList();
+                selectCheckedJavaComb.ItemsSource = null;
+                selectCheckedJavaComb.Items.Clear();
                 selectCheckedJavaComb.ItemsSource = javaList;
-                try
-                {
-                    JObject keyValuePairs = new JObject((JObject)JsonConvert.DeserializeObject(File.ReadAllText("MSL\\config.json")));
-                    JArray jArray = new JArray(javaList);
-                    if (keyValuePairs["javaList"] == null)
-                    {
-                        keyValuePairs.Add("javaList", jArray);
-                    }
-                    else
-                    {
-                        keyValuePairs["javaList"] = jArray;
-                    }
-                    File.WriteAllText("MSL\\config.json", Convert.ToString(keyValuePairs), Encoding.UTF8);
-                }
-                catch
-                {
-                    Console.WriteLine("Write Local-Java-List Failed(To Configuration)");
-                }
+                AppConfig.Current.JavaList = javaList;
+                AppConfig.Current.Save();
             }
             if (selectCheckedJavaComb.Items.Count > 0)
             {
@@ -625,13 +611,10 @@ namespace MSL.pages
 
             try
             {
-                JObject keyValuePairs = new JObject((JObject)JsonConvert.DeserializeObject(File.ReadAllText("MSL\\config.json")));
-                if (keyValuePairs["javaList"] != null)
-                {
-                    selectCheckedJavaComb.ItemsSource = null;
-                    selectCheckedJavaComb.ItemsSource = keyValuePairs["javaList"];
-                    selectCheckedJavaComb.SelectedIndex = 0;
-                }
+                selectCheckedJavaComb.ItemsSource = null;
+                selectCheckedJavaComb.Items.Clear();
+                selectCheckedJavaComb.ItemsSource = AppConfig.Current.JavaList;
+                selectCheckedJavaComb.SelectedIndex = 0;
             }
             catch (Exception ex)
             {
@@ -1669,6 +1652,7 @@ namespace MSL.pages
                 if (!string.IsNullOrEmpty(txb_ygg_api.Text.Trim()))
                     newInstance.YggApi = txb_ygg_api.Text.Trim();
                 ServerConfig.Current.Add(newInstance);
+                ServerConfig.Current.Save();
                 await MagicShow.ShowMsgDialogAsync(Window.GetWindow(this), "创建完毕，请点击“开启服务器”按钮以开服", "信息");
                 GotoServerList();
                 ReInit();

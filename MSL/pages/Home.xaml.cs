@@ -461,10 +461,9 @@ namespace MSL.pages
                 startServerDropdown.Items.Clear();
                 try
                 {
-                    JObject serverListJson = JObject.Parse(File.ReadAllText(@"MSL\ServerList.json", Encoding.UTF8));
-                    foreach (var item in serverListJson)
+                    foreach (var item in ServerConfig.Current.All)
                     {
-                        startServerDropdown.Items.Add(item.Value["name"]);
+                        startServerDropdown.Items.Add(item.Value.Name);
                     }
                     if (selectedIndex == -1 && startServerDropdown.Items.Count > 0)
                     {

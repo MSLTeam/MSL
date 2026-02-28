@@ -326,7 +326,7 @@ namespace MSL.pages
                 JObject jobject = JObject.Parse(File.ReadAllText(@"MSL\frp\config.json", Encoding.UTF8));
                 // 默认的玩意
                 int frpcServer = (int)jobject[FrpID.ToString()]["frpcServer"];
-                string frpcversion = Config.Read("frpcversion")?.ToString() ?? "";
+                string frpcversion = Config.Read("FrpcVersion")?.ToString() ?? "";
                 string frpcExeName; // frpc客户端主程序
                 string downloadUrl = ""; // frpc客户端在api的调用位置
                 string arguments; // 启动命令
@@ -348,13 +348,14 @@ namespace MSL.pages
                             LogHelper.Write.Info("检测到 MSLFrp 需要更新。");
                             downloadUrl = (await HttpService.GetApiContentAsync("download/frpc/MSLFrp/amd64?os=" + osver))["data"]["url"].ToString();//丢os版本号
                             await MagicShow.ShowDownloader(Window.GetWindow(this), downloadUrl, "MSL\\frp", downloadFileName, LanguageManager.Instance["Update_Frpc_Info"]);
-                            Config.Write("frpcversion", "20260105");
+                            Config.Write("FrpcVersion", "20260105");
                             downloadUrl = "";
                         }
                         else if (!File.Exists($"MSL\\frp\\{frpcExeName}"))
                         {
                             LogHelper.Write.Info($"文件 MSL\\frp\\{frpcExeName} 不存在，准备下载。");
                             downloadUrl = (await HttpService.GetApiContentAsync("download/frpc/MSLFrp/amd64?os=" + osver))["data"]["url"].ToString();//丢os版本号
+                            Config.Write("FrpcVersion", "20260105");
                         }
                         break;
                     case 1: // openfrp

@@ -137,7 +137,7 @@ namespace MSL.utils
                 solveCrashHandler: ProblemSystemHandle
             );
 
-            ServerLogHandler.IsMSLFormatedLog = AppConfig.Current.MslTips;
+            ServerLogHandler.IsMSLFormatedLog = AppConfig.Current.MSLTips;
             ServerLogHandler.IsShowOutLog = InstanceConfig.ShowOutlog;
             ServerLogHandler.IsFormatLogPrefix = InstanceConfig.FormatLogPrefix;
             ServerLogHandler.IsShieldStackOut = InstanceConfig.ShieldStackOut;

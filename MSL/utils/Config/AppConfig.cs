@@ -18,7 +18,7 @@ namespace MSL.utils.Config
         public string Eula { get; set; } = null;
         public bool NotifyIcon { get; set; } = false;
         public bool SideMenuExpanded { get; set; } = true;
-        public bool MslTips { get; set; } = true;
+        public bool MSLTips { get; set; } = true;
         public bool CloseWindowDialog { get; set; } = true;
         public int DownloadChunkCount { get; set; } = 4;
 
@@ -41,10 +41,12 @@ namespace MSL.utils.Config
         public bool AutoGetPlayerInfo { get; set; } = true;
         public string NoticeVer { get; set; } = string.Empty;
         public string SelectedServer { get; set; } = "0";
+        public string FrpcVersion { get; set; } = "0";
 
         public string Lang { get; set; } = "zh-CN";
 
         public LogColorConfig LogColor { get; set; } = new LogColorConfig();
+        public List<string> JavaList { get; set; } = new List<string>();
 
         /// <summary>日志颜色配置（hex 字符串，便于 JSON 序列化）</summary>
         public class LogColorConfig
@@ -106,12 +108,15 @@ namespace MSL.utils.Config
             RenameKey(raw, "semitransparentTitle", "SemitransparentTitle");
             RenameKey(raw, "eula", "Eula");
             RenameKey(raw, "lang", "Lang");
-            RenameKey(raw, "mslTips", "MslTips");
+            RenameKey(raw, "mslTips", "MSLTips");
+            RenameKey(raw, "MslTips", "MSLTips");
             RenameKey(raw, "closeWindowDialog", "CloseWindowDialog");
             RenameKey(raw, "autoOpenServer", "AutoOpenServer");
             RenameKey(raw, "autoOpenFrpc", "AutoOpenFrpc");
             RenameKey(raw, "autoGetServerInfo", "AutoGetServerInfo");
             RenameKey(raw, "autoGetPlayerInfo", "AutoGetPlayerInfo");
+            RenameKey(raw, "frpcversion", "FrpcVersion");
+            RenameKey(raw, "javaList", "JavaList");
 
             // 旧版用字符串 "True"/"False" 存布尔
             MigrateBoolStr(raw, "autoUpdateApp", "AutoUpdateApp");

@@ -91,47 +91,9 @@ namespace MSL
 
             try
             {
-                Directory.CreateDirectory("MSL");
-                if (!File.Exists(@"MSL\config.json"))
-                {
-                    File.WriteAllText(@"MSL\config.json", string.Format("{{{0}}}", "\n"));
-                }
-            }
-            catch (Exception ex)
-            {
-                MessageBox.Show(LanguageManager.Instance["MainWindow_GrowlMsg_InitErr"] + ex.Message, LanguageManager.Instance["Error"], MessageBoxButton.OK, MessageBoxImage.Error);
-                Environment.Exit(0);
-            }
-            JObject jsonObject;
-            try
-            {
-                jsonObject = JObject.Parse(File.ReadAllText(@"MSL\config.json", Encoding.UTF8));
-            }
-            catch (Exception ex)
-            {
-                MessageBox.Show(LanguageManager.Instance["MainWindow_GrowlMsg_ConfigErr2"] + ex.Message, LanguageManager.Instance["Error"], MessageBoxButton.OK, MessageBoxImage.Error);
-                File.WriteAllText(@"MSL\config.json", string.Format("{{{0}}}", "\n"));
-                jsonObject = JObject.Parse(File.ReadAllText(@"MSL\config.json", Encoding.UTF8));
-            }
-            try
-            {
                 // 初始化日志系统
                 LogHelper.Init();
                 LogHelper.Write.Info("MSL，启动！");
-                
-                if (jsonObject["Lang"] == null)
-                {
-                    jsonObject.Add("Lang", "zh-CN");
-                    string convertString = Convert.ToString(jsonObject);
-                    File.WriteAllText(@"MSL\config.json", convertString, Encoding.UTF8);
-                    LogHelper.Write.Info("语言: " + "zh-CN");
-                }
-                else
-                {
-                    if (jsonObject["Lang"].ToString() != "zh-CN")
-                        LanguageManager.Instance.ChangeLanguage(new CultureInfo(jsonObject["Lang"].ToString()));
-                    LogHelper.Write.Info("语言: " + jsonObject["Lang"].ToString().ToUpper());
-                }
             }
             finally
             {

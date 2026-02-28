@@ -6,7 +6,6 @@ using MSL.controls.dialogs;
 using MSL.langs;
 using MSL.utils;
 using MSL.utils.Config;
-using Newtonsoft.Json.Linq;
 using System;
 using System.Diagnostics;
 using System.Globalization;
@@ -55,7 +54,7 @@ namespace MSL.pages
                 DCID.Content = Functions.GetDeviceID();
 
                 notifyIconbtn.IsChecked = Cfg.NotifyIcon;
-                MSLTips.IsChecked = Cfg.MslTips;
+                MSLTips.IsChecked = Cfg.MSLTips;
                 autoRunApp.IsChecked = Cfg.AutoRunApp;
                 autoUpdateApp.IsChecked = Cfg.AutoUpdateApp;
                 CloseWindowDialog.IsChecked = Cfg.CloseWindowDialog;
@@ -136,11 +135,10 @@ namespace MSL.pages
             try
             {
                 if (!File.Exists(@"MSL\ServerList.json")) return;
-                var json = JObject.Parse(File.ReadAllText(@"MSL\ServerList.json", Encoding.UTF8));
                 var autoStartIds = _autoStartList.Split(new[] { ',' }, StringSplitOptions.RemoveEmptyEntries).ToHashSet();
-                foreach (var item in json)
+                foreach (var item in ServerConfig.Current.All)
                 {
-                    string entry = $"[{item.Key}]{item.Value["name"]}";
+                    string entry = $"[{item.Key}]{item.Value.Name}";
                     if (autoStartIds.Contains(item.Key))
                         AutoStartServers.Items.Add(entry);
                     else
@@ -679,13 +677,13 @@ namespace MSL.pages
                     MSLTips.IsChecked = true;
                     return;
                 }
-                Cfg.MslTips = false;
+                Cfg.MSLTips = false;
                 Cfg.Save();
                 MagicFlowMsg.ShowMessage("关闭成功！重启服务器运行界面以生效！", 1);
             }
             else
             {
-                Cfg.MslTips = true;
+                Cfg.MSLTips = true;
                 Cfg.Save();
                 MagicFlowMsg.ShowMessage("开启成功！重启服务器运行界面以生效！", 1);
             }

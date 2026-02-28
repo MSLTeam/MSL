@@ -513,7 +513,12 @@ namespace MSL
             }
         }
 
-        private void Window_Closed(object sender, EventArgs e) => Application.Current.Shutdown();
+        private void Window_Closed(object sender, EventArgs e)
+        {
+            AppConfig.Current.Save();
+            ServerConfig.Current.Save();
+            Application.Current.Shutdown();
+        }
 
         private void Window_Activated(object sender, EventArgs e) =>
             Growl.SetGrowlParent(GrowlPanel, true);

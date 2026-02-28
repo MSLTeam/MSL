@@ -586,10 +586,7 @@ namespace MSL.pages.frpProviders
             MainCtrl.Visibility = Visibility.Collapsed;
             LoginGrid.Visibility = Visibility.Visible;
             //清理保存的token
-            JObject jobject = JObject.Parse(File.ReadAllText(@"MSL\config.json", Encoding.UTF8));
-            jobject["ChmlToken"] = "";
-            string convertString = Convert.ToString(jobject);
-            File.WriteAllText(@"MSL\config.json", convertString, Encoding.UTF8);
+            Config.Remove("ChmlToken");
         }
     }
 }

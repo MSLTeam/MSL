@@ -171,8 +171,7 @@
                                         <TextBlock Text="1.17/1.17.1：Java16" />
                                         <TextBlock Text="1.18-1.20.4：Java17及以上" />
                                         <TextBlock Text="1.20.5-1.21.11：Java21及以上" />
-                                        <TextBlock Text="26.1 以及更高版本：Java25及以上" />
-                                        <TextBlock Text="注：如果部分服务端有特殊要求，&#xA;请以其要求为准" />
+                                        <TextBlock Text="26.1 及更高：Java25及以上" />
                                     </StackPanel>
                                 </Border>
                             </Grid>
