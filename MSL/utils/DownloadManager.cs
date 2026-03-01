@@ -22,7 +22,7 @@ namespace MSL.utils
 
         #region 事件定义
         public delegate void DownloadItemProgressChangedEventHandler(string groupId, string itemId, DownloadProgressInfo progressInfo);
-        public delegate void DownloadItemCompletedEventHandler(string groupId, string itemId, bool success, Exception error = null);
+        public delegate void DownloadItemCompletedEventHandler(string groupId, string itemId, Exception error = null);
         public delegate void DownloadGroupCompletedEventHandler(string groupId, bool allSuccess);
 
         public event DownloadItemProgressChangedEventHandler DownloadItemProgressChanged;
@@ -48,7 +48,7 @@ namespace MSL.utils
         /// <param name="groupId">组ID，如果为null则自动生成</param>
         /// <param name="maxConcurrentDownloads">该组最大并发下载数，默认为3</param>
         /// <returns>下载组ID</returns>
-        public string CreateDownloadGroup(string groupId = null,bool isTempGroup=false, int maxConcurrentDownloads = default)
+        public string CreateDownloadGroup(string groupId = null, bool isTempGroup = false, int maxConcurrentDownloads = default)
         {
             if (maxConcurrentDownloads == default)
                 maxConcurrentDownloads = DefaultConcurrentDownloads;
@@ -132,13 +132,20 @@ namespace MSL.utils
         /// </summary>
         /// <param name="groupId">组ID</param>
         /// <returns>下载任务</returns>
-        public Task<bool> WaitForGroupCompletionAsync(string groupId)
+        public async Task<bool> WaitForGroupCompletionAsync(string groupId)
         {
             if (!_downloadGroups.TryGetValue(groupId, out var group))
                 throw new ArgumentException($"Download group '{groupId}' does not exist");
-            var task = group.CompletionTask.Task;
+            var task = await group.CompletionTask.Task;
             if (group.IsTempGroup)
-                RemoveDownloadGroup(groupId);
+            {
+                _ = Task.Run(async () =>
+                {
+                    await Task.Delay(5000);  // 延迟5s再删除
+                    RemoveDownloadGroup(groupId);
+                });
+            }
+
             return task;
         }
 
@@ -372,7 +379,7 @@ namespace MSL.utils
             {
                 // SHA256匹配，标记为完成
                 item.Status = DownloadStatus.Completed;
-                CompleteDownloadItem(item, true, null);
+                CompleteDownloadItem(item, null);
                 return;
             }
 
@@ -435,7 +442,7 @@ namespace MSL.utils
             finally
             {
                 // 完成下载，更新最终状态和触发事件
-                CompleteDownloadItem(item, success, error);
+                CompleteDownloadItem(item, error);
                 // 处理下载结果和重试逻辑
                 if (!success && !IsCancellingOrCancelled(item.Status) && item.RetryCount > 0)
                 {
@@ -447,7 +454,7 @@ namespace MSL.utils
         /// <summary>
         /// 完成下载项并更新状态
         /// </summary>
-        private void CompleteDownloadItem(DownloadItem item, bool success, Exception error)
+        private void CompleteDownloadItem(DownloadItem item, Exception error)
         {
             // 更新状态
             if (IsCancellingOrCancelled(item.Status))
@@ -456,15 +463,14 @@ namespace MSL.utils
             }
             else
             {
-                item.Status = success ? DownloadStatus.Completed : DownloadStatus.Failed;
-                if (!success && error != null)
+                if (item.Status != DownloadStatus.Completed && error != null)
                 {
                     item.ErrorMessage = error.Message;
                 }
             }
 
             // 触发项完成事件
-            DownloadItemCompleted?.Invoke(item.GroupId, item.ItemId, success, error);
+            DownloadItemCompleted?.Invoke(item.GroupId, item.ItemId, error);
 
             // 清理资源
             CleanupDownloader(item.ItemId);

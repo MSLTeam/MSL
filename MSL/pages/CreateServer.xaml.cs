@@ -30,7 +30,6 @@ namespace MSL.pages
     {
         public static event App.DeleControl GotoServerList;
         private int returnMode = 0; //1：WelcomeGrid，2：FastModeGrid，3：FastModeInstallGrid，4：CustomModeDir，5：CustomModeJava，6：CustomModeServerCore，7：CustomModeFinally，8Finally：SelectTerminal
-        private string DownjavaName;
         private string servername;
         private string serverjava;
         private string serverbase;
@@ -139,7 +138,7 @@ namespace MSL.pages
                         DirectoryInfo[] dirs = new DirectoryInfo(serverPath).GetDirectories();
                         if (dirs.Length == 1)
                         {
-                            Functions.MoveFolder(dirs[0].FullName, serverPath);
+                            await Functions.MoveFolder(dirs[0].FullName, serverPath);
                         }
                         File.Delete("MSL\\Downloads\\" + dFilename);
                     }
@@ -218,7 +217,7 @@ namespace MSL.pages
                                 DirectoryInfo[] dirs = new DirectoryInfo(serverPath).GetDirectories();
                                 if (dirs.Length == 1)
                                 {
-                                    Functions.MoveFolder(dirs[0].FullName, serverPath);
+                                    await Functions.MoveFolder(dirs[0].FullName, serverPath);
                                 }
                             }
                             catch (Exception ex)
@@ -348,67 +347,6 @@ namespace MSL.pages
                 {
                     Growl.Info("开服器未在整合包中找到核心文件，请您进行下载或手动选择已有核心，核心的版本要和整合包对应的游戏版本一致");
                 }
-            }
-        }
-        private async Task<int> DownloadJava(string fileName, string downUrl)
-        {
-            if (!File.Exists(@"MSL\" + fileName + @"\bin\java.exe"))
-            {
-                DownjavaName = fileName;
-                bool downDialog = await MagicShow.ShowDownloader(Window.GetWindow(this), downUrl, "MSL", "Java.zip", "下载 Java" + fileName + " 中……");
-                if (downDialog)
-                {
-                    return 1;
-                }
-                else
-                {
-                    return 0;
-                }
-            }
-            else
-            {
-                serverjava = AppDomain.CurrentDomain.BaseDirectory + "MSL\\" + fileName + "\\bin\\java.exe";
-                return 2;
-            }
-        }
-        private async Task<bool> UnzipJava()
-        {
-            try
-            {
-                string javaDirName = "";
-                using (ZipFile zip = new ZipFile(@"MSL\Java.zip"))
-                {
-                    foreach (ZipEntry entry in zip)
-                    {
-                        if (entry.IsDirectory == true)
-                        {
-                            int c0 = entry.Name.Length - entry.Name.Replace("/", "").Length;
-                            if (c0 == 1)
-                            {
-                                javaDirName = entry.Name.Replace("/", "");
-                                break;
-                            }
-                        }
-                    }
-                }
-                FastZip fastZip = new FastZip();
-                await Task.Run(() => fastZip.ExtractZip(@"MSL\Java.zip", "MSL", ""));
-                File.Delete(@"MSL\Java.zip");
-                if (@"MSL\" + javaDirName != @"MSL\" + DownjavaName)
-                {
-                    Functions.MoveFolder(@"MSL\" + javaDirName, @"MSL\" + DownjavaName);
-                }
-                while (!File.Exists(@"MSL\" + DownjavaName + @"\bin\java.exe"))
-                {
-                    await Task.Delay(1000);
-                }
-                serverjava = AppDomain.CurrentDomain.BaseDirectory + "MSL\\" + DownjavaName + "\\bin\\java.exe";
-                return true;
-            }
-            catch (Exception ex)
-            {
-                MagicShow.ShowMsgDialog(Window.GetWindow(this), "解压失败，Java压缩包可能已损坏，请重试！错误代码：" + ex.Message + "\n（注：若多次重试均无法解压的话，请自行去网络上下载安装并使用自定义模式来创建服务器）", "错误");
-                return false;
             }
         }
 
@@ -675,30 +613,23 @@ namespace MSL.pages
             {
                 try
                 {
-                    int dwnJava = 0;
-                    dwnJava = await DownloadJava(selectJavaComb.SelectedItem.ToString(), (await HttpService.GetApiContentAsync("download/jdk/" + selectJavaComb.SelectedItem.ToString() + "?os=windows&arch=x64"))["data"]["url"].ToString());
-                    if (dwnJava == 1)
+                    var selectJava = selectJavaComb.SelectedValue.ToString();
+                    var (Status, JavaPath, Msg) = await Functions.DownloadJava(Window.GetWindow(this), selectJava,
+                        (await HttpService.GetApiContentAsync("download/jdk/" + selectJava + "?os=windows&arch=x64"))["data"]["url"].ToString());
+
+                    if (Status == 1 || Status == 2)
                     {
-                        MagicDialog MagicDialog = new MagicDialog();
-                        MagicDialog.ShowTextDialog(Window.GetWindow(this), "解压Java中……");
-                        bool unzipJava = await UnzipJava();
-                        MagicDialog.CloseTextDialog();
-                        if (unzipJava)
-                        {
-                            await CheckServerPackCore();
-                        }
-                        else
-                        {
-                            noNext = true;
-                        }
-                    }
-                    else if (dwnJava == 2)
-                    {
+                        serverjava = JavaPath;
                         await CheckServerPackCore();
+                    }
+                    else if (Status == 3)
+                    {
+                        MagicShow.ShowMsgDialog("下载取消！", "提示");
+                        noNext = true;
                     }
                     else
                     {
-                        MagicShow.ShowMsgDialog(Window.GetWindow(this), "下载取消！", "提示");
+                        MagicShow.ShowMsgDialog("下载失败！\n" + Msg, "错误");
                         noNext = true;
                     }
                 }
@@ -1180,50 +1111,38 @@ namespace MSL.pages
         {
             FastModeReturnBtn.IsEnabled = false;
             FastModeInstallBtn.IsEnabled = false;
+
             try
             {
                 FastInstallProcess.Text = "当前进度:下载Java……";
-                int dwnJava = 0;
-                dwnJava = await DownloadJava(FinallyJavaCombo.SelectedItem.ToString(), (await HttpService.GetApiContentAsync("download/jdk/" + FinallyJavaCombo.SelectedItem.ToString() + "?os=windows&arch=x64"))["data"]["url"].ToString());
-                if (dwnJava == 1)
-                {
-                    FastInstallProcess.Text = "当前进度:解压Java……";
-                    MagicDialog MagicDialog = new MagicDialog();
-                    MagicDialog.ShowTextDialog(Window.GetWindow(this), "解压Java中……");
-                    bool unzipJava = await UnzipJava();
-                    MagicDialog.CloseTextDialog();
-                    if (unzipJava)
-                    {
-                        FastInstallProcess.Text = "当前进度:下载服务端……";
-                        await FastModeInstallCore();
-                    }
-                    else
-                    {
-                        FastModeReturnBtn.IsEnabled = true;
-                        FastModeInstallBtn.IsEnabled = true;
-                        return;
-                    }
-                }
-                else if (dwnJava == 2)
+                var selectJava = FinallyJavaCombo.SelectedValue.ToString();
+
+                var (Status, JavaPath, Msg) = await Functions.DownloadJava(Window.GetWindow(this), selectJava,
+                    (await HttpService.GetApiContentAsync("download/jdk/" + selectJava + "?os=windows&arch=x64"))["data"]["url"].ToString());
+                FastModeReturnBtn.IsEnabled = true;
+                FastModeInstallBtn.IsEnabled = true;
+                if (Status == 1 || Status == 2)
                 {
                     FastInstallProcess.Text = "当前进度:下载服务端……";
                     await FastModeInstallCore();
                 }
+                else if (Status == 3)
+                {
+                    MagicShow.ShowMsgDialog("下载取消！", "提示");
+                    FastInstallProcess.Text = "取消安装！";
+                    return;
+                }
                 else
                 {
-                    MagicShow.ShowMsgDialog(Window.GetWindow(this), "下载取消！", "提示");
+                    MagicShow.ShowMsgDialog("下载失败！\n" + Msg, "错误");
                     FastInstallProcess.Text = "取消安装！";
-                    FastModeReturnBtn.IsEnabled = true;
-                    FastModeInstallBtn.IsEnabled = true;
                     return;
                 }
             }
-            catch(Exception ex)
+            catch
             {
-                MagicShow.ShowMsgDialog(Window.GetWindow(this), "出现错误，请重试！\n"+ex.Message, "错误");
+                Growl.Error("出现错误，请检查网络连接！");
                 FastInstallProcess.Text = "取消安装！";
-                FastModeReturnBtn.IsEnabled = true;
-                FastModeInstallBtn.IsEnabled = true;
                 return;
             }
         }
@@ -1667,7 +1586,6 @@ namespace MSL.pages
         {
             returnMode = 0;
             launchmode = 0;
-            DownjavaName = null;
             servername = null;
             serverjava = null;
             serverbase = null;

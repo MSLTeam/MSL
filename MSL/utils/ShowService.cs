@@ -199,6 +199,7 @@ namespace MSL.utils
             // window?.Focus();
             Dialog.Close(token);
             window = null;
+            token = null;
             // dialog = null;
         }
 
@@ -277,6 +278,7 @@ namespace MSL.utils
             Dialog.Close(token);
             _tcs = null;
             window = null;
+            token = null;
             // dialog = null;
         }
     }

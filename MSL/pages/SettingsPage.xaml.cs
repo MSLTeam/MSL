@@ -11,7 +11,6 @@ using System.Diagnostics;
 using System.Globalization;
 using System.IO;
 using System.Linq;
-using System.Text;
 using System.Threading.Tasks;
 using System.Windows;
 using System.Windows.Media;
@@ -31,19 +30,12 @@ namespace MSL.pages
 
         private string _autoStartList = "";
 
-        private Dialog downloadManagerDialog;
-        private DownloadManagerDialog downloadManager;
-
         // 当前配置单例
         private static AppConfig Cfg => AppConfig.Current;
 
         public SettingsPage()
         {
             InitializeComponent();
-            downloadManagerDialog = new Dialog();
-            downloadManager = DownloadManagerDialog.Instance;
-            downloadManager.Margin = new Thickness(20);
-            downloadManager.ManagerControl.AutoRemoveCompletedItems = false;
         }
 
         // 页面加载
@@ -193,14 +185,17 @@ namespace MSL.pages
             string groupid = dwnManager.CreateDownloadGroup(isTempGroup: true);
             dwnManager.AddDownloadItem(groupid, url, Path.Combine("MSL", "Downloads"), filename);
             dwnManager.StartDownloadGroup(groupid);
-            downloadManager.ManagerControl.AddDownloadGroup(groupid, true);
+            DownloadManagerDialog.Instance.ManagerControl.AddDownloadGroup(groupid, true);
+
             MagicFlowMsg.ShowMessage("已将其添加至任务列表中！");
         }
 
         private void OpenDownloadManager_Click(object sender, RoutedEventArgs e)
         {
-            downloadManagerDialog = Dialog.Show(downloadManager);
-            downloadManager.fatherDialog = downloadManagerDialog;
+            var token = Guid.NewGuid().ToString();
+            Dialog.SetToken(Window.GetWindow(this), token);
+            DownloadManagerDialog.Instance.LoadDialog(token, true);
+            Dialog.Show(DownloadManagerDialog.Instance, token);
         }
 
         private async void setdefault_Click(object sender, RoutedEventArgs e)

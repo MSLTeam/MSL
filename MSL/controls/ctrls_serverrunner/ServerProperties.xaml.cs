@@ -546,10 +546,7 @@ namespace MSL.controls.ctrls_serverrunner
                             {
                                 MagicDialog _dialog = new MagicDialog();
                                 _dialog.ShowTextDialog(FatherControl, "导入中，请稍候");
-                                await Task.Run(() =>
-                                {
-                                    Functions.MoveFolder(dialog.SelectedPath, Rserverbase + @"\" + levelName, false);
-                                });
+                                await Functions.MoveFolder(dialog.SelectedPath, Rserverbase + @"\" + levelName, false);
                                 _dialog.CloseTextDialog();
                                 MagicShow.ShowMsgDialog(FatherControl, "导入世界成功！源存档目录您可手动进行删除！", "信息");
                             }
@@ -572,10 +569,7 @@ namespace MSL.controls.ctrls_serverrunner
                         {
                             MagicDialog _dialog = new MagicDialog();
                             _dialog.ShowTextDialog(FatherControl, "导入中，请稍候");
-                            await Task.Run(() =>
-                            {
-                                Functions.MoveFolder(dialog.SelectedPath, Rserverbase + @"\" + levelName, false);
-                            });
+                            await Functions.MoveFolder(dialog.SelectedPath, Rserverbase + @"\" + levelName, false);
                             _dialog.CloseTextDialog();
                             MagicShow.ShowMsgDialog(FatherControl, "导入世界成功！源存档目录您可手动进行删除！", "信息");
                         }

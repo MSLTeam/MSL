@@ -34,23 +34,12 @@ namespace MSL.pages
         private readonly Mode DownloadMode;
         private string JavaPath; // The Java Path for install Forge-ServerCore
 
-        private Dialog downloadManagerDialog;
-        private DownloadManagerDialog downloadManager;
-
         public DownloadServer(string savingPath, Mode downloadMode, string javaPath = "")
         {
             InitializeComponent();
             SavingPath = savingPath;
             DownloadMode = downloadMode;
             JavaPath = javaPath;
-
-            if (DownloadMode == Mode.FreeDownload)
-            {
-                downloadManagerDialog = new Dialog();
-                downloadManager = DownloadManagerDialog.Instance;
-                downloadManager.Margin = new Thickness(20);
-                downloadManager.ManagerControl.AutoRemoveCompletedItems = false;
-            }
         }
 
         private async void Page_Loaded(object sender, RoutedEventArgs e)
@@ -72,12 +61,6 @@ namespace MSL.pages
 
         public void Dispose()
         {
-            if (downloadManagerDialog != null)
-            {
-                downloadManagerDialog.Close();
-                downloadManagerDialog = null;
-                downloadManager = null;
-            }
             serverCoreList.ItemsSource = null;
             coreVersionList.ItemsSource = null;
             versionBuildList.ItemsSource = null;
@@ -167,7 +150,7 @@ namespace MSL.pages
                 string groupid = dwnManager.CreateDownloadGroup(isTempGroup: true);
                 dwnManager.AddDownloadItem(groupid, downUrl, path, filename, sha256, enableParallel: _enableParellel);
                 dwnManager.StartDownloadGroup(groupid);
-                downloadManager.ManagerControl.AddDownloadGroup(groupid, true);
+                DownloadManagerDialog.Instance.ManagerControl.AddDownloadGroup(groupid, true);
                 return true;
             }
             else
@@ -543,8 +526,10 @@ namespace MSL.pages
 
         private void OpenDownloadManager_Click(object sender, RoutedEventArgs e)
         {
-            downloadManagerDialog = Dialog.Show(downloadManager);
-            downloadManager.fatherDialog = downloadManagerDialog;
+            var token = Guid.NewGuid().ToString();
+            Dialog.SetToken(this, token);
+            DownloadManagerDialog.Instance.LoadDialog(token, true);
+            Dialog.Show(DownloadManagerDialog.Instance, token);
         }
     }
 }

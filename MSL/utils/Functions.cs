@@ -1,5 +1,7 @@
-﻿using HandyControl.Tools;
+﻿using HandyControl.Controls;
+using HandyControl.Tools;
 using ICSharpCode.SharpZipLib.Zip;
+using MSL.controls.dialogs;
 using System;
 using System.Collections.Generic;
 using System.Diagnostics;
@@ -8,9 +10,11 @@ using System.Management;
 using System.Security.Cryptography;
 using System.Text;
 using System.Text.RegularExpressions;
+using System.Threading.Tasks;
 using System.Windows;
 using System.Windows.Controls;
 using System.Windows.Media;
+using Window = System.Windows.Window;
 
 namespace MSL.utils
 {
@@ -76,7 +80,7 @@ namespace MSL.utils
             return Tuple.Create(versionIntParts[0], versionIntParts[1], versionIntParts[2], versionIntParts[3]);
         }
 
-        public static void MoveFolder(string sourcePath, string destPath, bool deleteSource = true)
+        public async static Task MoveFolder(string sourcePath, string destPath, bool deleteSource = true)
         {
             if (Directory.Exists(sourcePath))
             {
@@ -115,10 +119,10 @@ namespace MSL.utils
                 });
                 List<string> folders = new List<string>(Directory.GetDirectories(sourcePath));
 
-                folders.ForEach(c =>
+                folders.ForEach(async c =>
                 {
                     string destDir = Path.Combine(new string[] { destPath, Path.GetFileName(c) });
-                    MoveFolder(c, destDir, deleteSource);
+                    await MoveFolder(c, destDir, deleteSource);
                 });
                 if (deleteSource)
                 {
@@ -128,6 +132,105 @@ namespace MSL.utils
             else
             {
                 throw new DirectoryNotFoundException("源目录不存在！");
+            }
+        }
+
+        /// <summary>
+        /// 下载Java
+        /// </summary>
+        /// <param name="javaVersion"></param>
+        /// <param name="downUrl"></param>
+        /// <returns>status 1：成功，0：失败，2：已存在，3：取消</returns>
+        public static async Task<(int status, string path, string msg)> DownloadJava(Window window, string javaVersion, string downUrl)
+        {
+            if (string.IsNullOrEmpty(javaVersion))
+                return (0, null, "Java版本为空");
+            var javaPath = Path.Combine(AppDomain.CurrentDomain.BaseDirectory, "MSL", "Java", javaVersion, "bin", "java.exe");
+            if (!File.Exists(javaPath))
+            {
+                string filename = await HttpService.GetRemoteFileNameAsync(downUrl);
+                var dwnManager = DownloadManager.Instance;
+                string groupid = dwnManager.CreateDownloadGroup(isTempGroup: true);
+                string id = dwnManager.AddDownloadItem(groupid, downUrl, Path.Combine("MSL", "Downloads"), filename);
+                dwnManager.StartDownloadGroup(groupid);
+                var token = Guid.NewGuid().ToString();
+                Dialog.SetToken(window, token);
+                DownloadManagerDialog.Instance.LoadDialog(token, false);
+                Dialog.Show(DownloadManagerDialog.Instance, token);
+                DownloadManagerDialog.Instance.ManagerControl.AddDownloadGroup(groupid, autoRemove: true);
+                bool downDialog = await dwnManager.WaitForGroupCompletionAsync(groupid);
+                Dialog.Close(token);
+                await Task.Delay(150);
+                var dwnItem = dwnManager.GetDownloadItem(id);
+                if (downDialog)
+                {
+                    if (dwnItem.Status == DownloadStatus.Cancelled)
+                        return (3, null, "下载已取消");
+                    if (dwnItem.Status != DownloadStatus.Completed)
+                        return (0, null, "下载失败，错误信息：" + dwnItem.ErrorMessage);
+
+                    var magicDialog = new MagicDialog();
+                    magicDialog.ShowTextDialog(window, "解压Java中……");
+                    var unzipResult = await UnzipJava(window, filename, javaVersion);
+                    magicDialog.CloseTextDialog();
+
+                    if (unzipResult.Item1)
+                        return (1, unzipResult.Item2, string.Empty);
+                    else
+                        return (0, null, unzipResult.Item2);
+                }
+                else
+                {
+                    return (3, null, null);
+                }
+            }
+            else
+            {
+                return (2, javaPath, string.Empty);
+            }
+        }
+
+        private static async Task<(bool, string)> UnzipJava(Window window, string zipFileName, string version)
+        {
+            string dwnPath = Path.Combine(AppDomain.CurrentDomain.BaseDirectory, "MSL", "Downloads");
+            string dwnFileName = Path.Combine(dwnPath, zipFileName);
+            string javaPath = Path.Combine(AppDomain.CurrentDomain.BaseDirectory, "MSL", "Java");
+            string javaDirName = Path.Combine(javaPath, version);
+            try
+            {
+                string zipJavaDir = string.Empty;
+                using (ZipFile zip = new ZipFile(dwnFileName))
+                {
+                    foreach (ZipEntry entry in zip)
+                    {
+                        if (entry.IsDirectory == true)
+                        {
+                            int c0 = entry.Name.Length - entry.Name.Replace("/", "").Length;
+                            if (c0 == 1)
+                            {
+                                zipJavaDir = entry.Name.Replace("/", "");
+                                break;
+                            }
+                        }
+                    }
+                }
+                FastZip fastZip = new FastZip();
+                await Task.Run(() => fastZip.ExtractZip(dwnFileName, dwnPath, ""));
+                File.Delete(dwnFileName);
+                if (Path.Combine(dwnPath, zipJavaDir) != javaDirName)
+                {
+                    await Functions.MoveFolder(Path.Combine(dwnPath, zipJavaDir), javaDirName);
+                }
+                while (!File.Exists(javaDirName + "\\bin\\java.exe"))
+                {
+                    await Task.Delay(1000);
+                }
+                return (true, javaDirName + "\\bin\\java.exe");
+            }
+            catch (Exception ex)
+            {
+                //MagicShow.ShowMsgDialog(window, "解压失败，Java压缩包可能已损坏，请重试！错误代码：" + ex.Message + "\n（注：若多次重试均无法解压的话，请自行去网络上下载安装并使用自定义模式来创建服务器）", "错误");
+                return (false, ex.Message);
             }
         }
 

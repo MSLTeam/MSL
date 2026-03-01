@@ -116,7 +116,7 @@ namespace MSL
             if (!await LoadingInfoEvent())
                 return;
             GetFastCmd();
-            LoadedInfoEvent();
+            await LoadedInfoEvent();
             await Task.Delay(50);
             MainGrid.Children.Remove(loadingCircle);
             MainGrid.UnregisterName("loadingBar");
@@ -212,7 +212,7 @@ namespace MSL
             return true;
         }//窗体加载后，运行此方法，主要为改变UI等内容
 
-        private void LoadedInfoEvent()
+        private async Task LoadedInfoEvent()
         {
             systemInfoBtn.IsChecked = ConfigStore.GetServerInfo;
             var getPlayerInfo = ConfigStore.GetPlayerInfo;
@@ -220,7 +220,7 @@ namespace MSL
             playerInfoBtn.IsChecked = getPlayerInfo;
             ServerProperties = new ServerProperties(this, ServerService, ServerService.ServerBase);
             SettingsGrid.Content = ServerProperties;
-            LoadSettings();
+            await LoadSettings();
             if (systemInfoBtn.IsChecked == true)
             {
                 getSystemInfo = true;
@@ -1826,7 +1826,7 @@ namespace MSL
 
         //////////////////////这里是服务器设置界面
 
-        private void LoadSettings()
+        private async Task LoadSettings()
         {
             try
             {
@@ -1862,7 +1862,7 @@ namespace MSL
                 jVMcmd.Text = ServerService.ServerArgs;
                 jAva.Text = ServerService.ServerJava;
 
-                Task.Run(LoadJavaInfo);
+                _ = Task.Run(LoadJavaInfo);
 
                 var RserverJVM = ServerService.ServerArgs;
                 if (RserverJVM == "")
@@ -1939,29 +1939,17 @@ namespace MSL
             return "0"; // 如果解析失败，返回0
         }
 
-        private async Task LoadJavaInfo()
+        private async void LoadJavaInfo()
         {
             try
             {
-                try
+                Dispatcher.Invoke(() =>
                 {
-                    Dispatcher.Invoke(() =>
-                    {
-                        selectCheckedJavaComb.ItemsSource = null;
-                        selectCheckedJavaComb.Items.Clear();
-                        selectCheckedJavaComb.ItemsSource = AppConfig.Current.JavaList;
-                        selectCheckedJavaComb.SelectedIndex = 0;
-                        if (jAva.Text == "Java")
-                        {
-                            useJvpath.IsChecked = true;
-                        }
-                    });
-                }
-                catch
-                {
-                    Console.WriteLine("Load Local-Java-List Failed(From Config)");
-                }
-
+                    selectCheckedJavaComb.ItemsSource = null;
+                    selectCheckedJavaComb.Items.Clear();
+                    selectCheckedJavaComb.ItemsSource = AppConfig.Current.JavaList;
+                    selectCheckedJavaComb.SelectedIndex = 0;
+                });
                 for (int i = 0; i <= 10; i++)
                 {
                     if (ConfigStore.ApiLink == null)
@@ -1992,10 +1980,14 @@ namespace MSL
             }
             Dispatcher.Invoke(() =>
             {
-                if (jAva.Text != "Java")
+                if (jAva.Text == "Java")
+                {
+                    useJvpath.IsChecked = true;
+                }
+                else
                 {
                     // 使用正则表达式来提取Java版本
-                    Regex pattern = new Regex(@"(?:MSL\\)?(Java\d+)");
+                    Regex pattern = new Regex(@"MSL\\Java\\(\d+)");
                     Match m = pattern.Match(jAva.Text);
                     string javaVersion = m.Groups[1].Value;
 
@@ -2013,9 +2005,9 @@ namespace MSL
             });
         }
 
-        private void refreahConfig_Click(object sender, RoutedEventArgs e)
+        private async void refreahConfig_Click(object sender, RoutedEventArgs e)
         {
-            LoadSettings();
+            await LoadSettings();
         }
 
         private async void doneBtn1_Click(object sender, RoutedEventArgs e)
@@ -2046,42 +2038,32 @@ namespace MSL
                     if (useDownJv.IsChecked == true)
                     {
                         Growl.Info("获取Java地址……");
-                        int dwnJava = 0;
                         try
                         {
-                            dwnJava = await DownloadJava(selectJava.SelectedValue.ToString(), (await HttpService.GetApiContentAsync("download/jdk/" + selectJava.SelectedValue.ToString() + "?os=windows&arch=x64"))["data"]["url"].ToString());
-                            if (dwnJava == 1)
+                            var selectedJava = selectJava.SelectedValue?.ToString();
+                            var (Status, JavaPath, Msg) = await Functions.DownloadJava(this, selectedJava,
+                                (await HttpService.GetApiContentAsync("download/jdk/" + selectedJava + "?os=windows&arch=x64"))["data"]["url"].ToString());
+                            doneBtn1.IsEnabled = true;
+                            refreahConfig.IsEnabled = true;
+                            if (Status == 1 || Status == 2)
                             {
-                                MagicDialog dialog = new MagicDialog();
-                                dialog.ShowTextDialog(this, "解压中……");
-                                bool unzipJava = await UnzipJava(selectJava.SelectedValue.ToString());
-                                dialog.CloseTextDialog();
-                                if (!unzipJava)
-                                {
-                                    MagicShow.ShowMsgDialog(this, "安装失败，请查看是否有杀毒软件进行拦截！请确保添加信任或关闭杀毒软件后进行重新安装！", "错误");
-                                    doneBtn1.IsEnabled = true;
-                                    refreahConfig.IsEnabled = true;
-                                    return;
-                                }
                                 Growl.Info("Java下载完成！");
+                                jAva.Text = JavaPath;
                             }
-                            else if (dwnJava == 2)
+                            else if (Status == 3)
                             {
-                                Growl.Success("完成！");
+                                MagicShow.ShowMsgDialog("下载取消！", "提示");
+                                return;
                             }
                             else
                             {
-                                MagicShow.ShowMsgDialog(this, "下载取消！", "提示");
-                                doneBtn1.IsEnabled = true;
-                                refreahConfig.IsEnabled = true;
+                                MagicShow.ShowMsgDialog("下载失败！\n" + Msg, "错误");
                                 return;
                             }
                         }
                         catch
                         {
                             Growl.Error("出现错误，请检查网络连接！");
-                            doneBtn1.IsEnabled = true;
-                            refreahConfig.IsEnabled = true;
                             return;
                         }
                     }
@@ -2186,7 +2168,7 @@ namespace MSL
                     bool dialog = await MagicShow.ShowMsgDialogAsync(this, "检测到您更改了服务器目录，是否将当前的服务器目录移动至新的目录？", "警告", true, "取消");
                     if (dialog)
                     {
-                        Functions.MoveFolder(ServerService.ServerBase, bAse.Text);
+                        await Functions.MoveFolder(ServerService.ServerBase, bAse.Text);
                     }
                 }
                 ServerService.ServerBase = bAse.Text;
@@ -2249,7 +2231,7 @@ namespace MSL
                 };
 
                 ServerConfig.Current.Save();
-                LoadSettings();
+                await LoadSettings();
                 SaveConfigEvent();
 
                 MagicShow.ShowMsgDialog(this, "保存完毕！", "信息");
@@ -2262,66 +2244,6 @@ namespace MSL
             }
         }
 
-
-        private async Task<int> DownloadJava(string fileName, string downUrl)
-        {
-            jAva.Text = AppDomain.CurrentDomain.BaseDirectory + "MSL\\" + fileName + "\\bin\\java.exe";
-            if (File.Exists(@"MSL\" + fileName + @"\bin\java.exe"))
-            {
-                return 2;
-            }
-            else
-            {
-                bool downDialog = await MagicShow.ShowDownloader(this, downUrl, "MSL", "Java.zip", "下载" + fileName + "中……");
-                if (downDialog)
-                {
-                    return 1;
-                }
-                else
-                {
-                    return 0;
-                }
-            }
-        }
-
-        private async Task<bool> UnzipJava(string DownjavaName)
-        {
-            try
-            {
-                string javaDirName = "";
-                using (ZipFile zip = new ZipFile(@"MSL\Java.zip"))
-                {
-                    foreach (ZipEntry entry in zip)
-                    {
-                        if (entry.IsDirectory == true)
-                        {
-                            int c0 = entry.Name.Length - entry.Name.Replace("/", "").Length;
-                            if (c0 == 1)
-                            {
-                                javaDirName = entry.Name.Replace("/", "");
-                                break;
-                            }
-                        }
-                    }
-                }
-                FastZip fastZip = new FastZip();
-                await Task.Run(() => fastZip.ExtractZip(@"MSL\Java.zip", "MSL", ""));
-                File.Delete(@"MSL\Java.zip");
-                if (@"MSL\" + javaDirName != @"MSL\" + DownjavaName)
-                {
-                    Functions.MoveFolder(@"MSL\" + javaDirName, @"MSL\" + DownjavaName);
-                }
-                while (!File.Exists(@"MSL\" + DownjavaName + @"\bin\java.exe"))
-                {
-                    await Task.Delay(1000);
-                }
-                return true;
-            }
-            catch
-            {
-                return false;
-            }
-        }
         private void a0_Click(object sender, RoutedEventArgs e)
         {
             System.Windows.Forms.FolderBrowserDialog dialog = new System.Windows.Forms.FolderBrowserDialog();

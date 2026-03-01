@@ -6,10 +6,10 @@
              xmlns:local="clr-namespace:MSL.controls.dialogs"
              mc:Ignorable="d" 
              d:DesignHeight="450" d:DesignWidth="800">
-    <Border CornerRadius="10" Background="{DynamicResource RegionBrush}" BorderBrush="{DynamicResource BorderBrush}" BorderThickness="1">
+    <Border Margin="20" CornerRadius="10" Background="{DynamicResource RegionBrush}" BorderBrush="{DynamicResource BorderBrush}" BorderThickness="1">
         <Grid>
             <local:DownloadManagerControl x:Name="ManagerControl"/>
-            <Button Content="关闭" HorizontalAlignment="Right" VerticalAlignment="Top" Margin="15" Click="Button_Click"/>
+            <Button x:Name="CloseDialogBtn" Content="关闭" HorizontalAlignment="Right" VerticalAlignment="Top" Margin="15" Click="CloseDialogBtn_Click"/>
         </Grid>
     </Border>
 </UserControl>

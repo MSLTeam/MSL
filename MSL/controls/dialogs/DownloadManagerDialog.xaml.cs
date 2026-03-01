@@ -1,18 +1,7 @@
 ﻿using HandyControl.Controls;
 using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
 using System.Windows;
 using System.Windows.Controls;
-using System.Windows.Data;
-using System.Windows.Documents;
-using System.Windows.Input;
-using System.Windows.Media;
-using System.Windows.Media.Imaging;
-using System.Windows.Navigation;
-using System.Windows.Shapes;
 
 namespace MSL.controls.dialogs
 {
@@ -26,15 +15,25 @@ namespace MSL.controls.dialogs
         public static DownloadManagerDialog Instance => _instance.Value;
         #endregion
 
-        public Dialog fatherDialog = null;
+        private string DialogToken { get; set; }
+
         public DownloadManagerDialog()
         {
             InitializeComponent();
         }
 
-        private void Button_Click(object sender, RoutedEventArgs e)
+        private void CloseDialogBtn_Click(object sender, RoutedEventArgs e)
         {
-            fatherDialog.Close();
+            Dialog.Close(DialogToken);
+        }
+
+        public void LoadDialog(string token, bool canClose)
+        {
+            DialogToken = token;
+            if (canClose)
+                CloseDialogBtn.Visibility = Visibility.Visible;
+            else
+                CloseDialogBtn.Visibility = Visibility.Collapsed;
         }
     }
 }

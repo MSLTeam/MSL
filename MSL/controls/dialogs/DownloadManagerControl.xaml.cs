@@ -17,7 +17,7 @@ namespace MSL.controls.dialogs
         private readonly DownloadManager _downloadManager;
         private readonly ObservableCollection<DownloadItemViewModel> _downloadItems;
         private readonly DispatcherTimer _uiUpdateTimer;
-        public bool AutoRemoveCompletedItems { get; set; } = true;
+        public bool AutoRemoveCompletedItems { get; set; } = false;
 
         public DownloadManagerControl()
         {
@@ -44,8 +44,9 @@ namespace MSL.controls.dialogs
             // _uiUpdateTimer.Start();
         }
 
-        private void Dispose()
+        public void Dispose()
         {
+            ClearAllItems();
             // 注销事件处理
             // _downloadManager.DownloadItemProgressChanged -= DownloadManager_DownloadItemProgressChanged;
             _downloadManager.DownloadItemCompleted -= DownloadManager_DownloadItemCompleted;
@@ -56,7 +57,7 @@ namespace MSL.controls.dialogs
         }
 
         // 添加新的下载组和项到UI
-        public void AddDownloadGroup(string groupId, bool updateExisting = false)
+        public void AddDownloadGroup(string groupId, bool updateExisting = false, bool autoRemove = false)
         {
             var items = _downloadManager.GetGroupItems(groupId);
 
@@ -75,11 +76,10 @@ namespace MSL.controls.dialogs
                 }
                 else
                 {
+                    var model = new DownloadItemViewModel(item);
+                    model.AutoRemove = autoRemove;
                     // 添加新项
-                    Application.Current.Dispatcher.Invoke(() =>
-                    {
-                        _downloadItems.Add(new DownloadItemViewModel(item));
-                    });
+                    _downloadItems.Add(model);
                 }
             }
             if (_downloadItems.Count != 0)
@@ -93,7 +93,7 @@ namespace MSL.controls.dialogs
             var item = _downloadItems.FirstOrDefault(i => i.ItemId == itemId);
             if (item != null)
             {
-                Dispatcher.Invoke(() =>
+                Dispatcher.Invoke(() =>  // 这个Dispatcher不能移除！！！防止其他线程调用时出现异常
                 {
                     _downloadItems.Remove(item);
                 });
@@ -105,10 +105,7 @@ namespace MSL.controls.dialogs
         // 清除所有下载项
         public void ClearAllItems()
         {
-            Dispatcher.Invoke(() =>
-            {
-                _downloadItems.Clear();
-            });
+            Dispatcher.Invoke(_downloadItems.Clear);
 
             UpdateSummaryInfo();
         }
@@ -129,12 +126,15 @@ namespace MSL.controls.dialogs
         }
         */
 
-        private void DownloadManager_DownloadItemCompleted(string groupId, string itemId, bool success, Exception error = null)
+        private void DownloadManager_DownloadItemCompleted(string groupId, string itemId, Exception error = null)
         {
             UpdateDownloadItemUI(_downloadManager.GetDownloadItem(itemId));
 
+            var item = _downloadItems.FirstOrDefault(i => i.ItemId == itemId);
             // 完成后自动移除
-            if (success && AutoRemoveCompletedItems)
+            if (item.AutoRemove ||
+                ((item.Status == DownloadStatus.Completed || item.Status == DownloadStatus.Cancelled) &&
+                (AutoRemoveCompletedItems || item.AutoRemove)))
             {
                 RemoveDownloadItem(itemId);
             }
@@ -316,6 +316,7 @@ namespace MSL.controls.dialogs
             private string _statusText;
             private string _pauseResumeButtonText;
             private string _cancelRemoveButtonText;
+            private bool _autoRemove;
 
             public string ItemId
             {
@@ -375,6 +376,16 @@ namespace MSL.controls.dialogs
                     // 更新按钮文本
                     CancelRemoveButtonText = (_status == DownloadStatus.Cancelled || _status == DownloadStatus.Completed || _status == DownloadStatus.Failed) ? "移除" :
                                            (_status == DownloadStatus.InProgress || _status == DownloadStatus.Paused) ? "取消" : "---";
+                }
+            }
+
+            public bool AutoRemove
+            {
+                get => _autoRemove;
+                set
+                {
+                    _autoRemove = value;
+                    OnPropertyChanged(nameof(AutoRemove));
                 }
             }
 
