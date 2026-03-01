@@ -1436,8 +1436,7 @@ namespace MSL
                 {
                     modslist.ItemsSource = FileListManager.LoadItems<SR_ModInfo>(
                         ModsDir,
-                        (name, _) => new SR_ModInfo(name, IsClientSideMod(
-                            Path.Combine(ModsDir, name))));
+                        (name, _) => new SR_ModInfo(name));
                 });
         }
 
@@ -1669,18 +1668,18 @@ namespace MSL
                 {
                     if (f.Name.EndsWith(".disabled"))
                     {
-                        disabledMods.Add(new SR_ModInfo(f.Name.Replace(".disabled", ""), false) { IsDisabled = true });
+                        disabledMods.Add(new SR_ModInfo(f.Name.Replace(".disabled", "")) { IsDisabled = true });
                     }
                     else if (f.Name.EndsWith(".jar"))
                     {
                         // 检测是否为客户端模组
                         if (IsClientSideMod(f.FullName))
                         {
-                            clientMods.Add(new SR_ModInfo(f.Name, true));
+                            clientMods.Add(new SR_ModInfo(f.Name) { IsClient = true });
                         }
                         else
                         {
-                            normalMods.Add(new SR_ModInfo(f.Name, false));
+                            normalMods.Add(new SR_ModInfo(f.Name) { IsClient = false });
                         }
                     }
                 }
@@ -1808,6 +1807,7 @@ namespace MSL
                     }
                 }
             }
+            catch { }
             finally
             {
                 // 释放文件锁

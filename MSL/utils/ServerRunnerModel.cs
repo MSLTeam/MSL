@@ -58,10 +58,9 @@ namespace MSL.utils
         public bool IsClient { get; set; }
         public string ModName => FileName;  // 暂时保留原有属性名
 
-        public SR_ModInfo(string fileName, bool isClient)
+        public SR_ModInfo(string fileName)
         {
             FileName = fileName;
-            IsClient = isClient;
         }
     }
 
