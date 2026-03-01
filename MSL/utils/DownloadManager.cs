@@ -1,4 +1,4 @@
-﻿using Downloader;
+using Downloader;
 using HandyControl.Tools.Extension;
 using System;
 using System.Collections.Concurrent;
@@ -12,7 +12,7 @@ using System.Threading.Tasks;
 
 namespace MSL.utils
 {
-    public class DownloadManager
+    public class DownloadManager:IDisposable
     {
         #region 单例模式
         private static readonly Lazy<DownloadManager> _instance = new Lazy<DownloadManager>(() => new DownloadManager());
@@ -289,6 +289,16 @@ namespace MSL.utils
             // 移除组
             _downloadGroups.TryRemove(groupId, out _);
         }
+
+        public void Dispose()
+        {
+            // 取消所有下载并清理资源
+            foreach (var groupId in _downloadGroups.Keys.ToList())
+            {
+                CancelDownloadGroup(groupId);
+                RemoveDownloadGroup(groupId);
+            }
+        }
         #endregion
 
         #region 私有方法
@@ -345,6 +355,7 @@ namespace MSL.utils
             {
                 if (_downloadItems.TryGetValue(itemId, out var item))
                 {
+                    Console.WriteLine($"下载项 {item.ItemId} 状态: {item.Status}");
                     if (item.Status != DownloadStatus.Completed)
                     {
                         allSuccess = false;
@@ -379,7 +390,7 @@ namespace MSL.utils
             {
                 // SHA256匹配，标记为完成
                 item.Status = DownloadStatus.Completed;
-                CompleteDownloadItem(item, null);
+                CompleteDownloadItem(item, true, null);
                 return;
             }
 
@@ -442,7 +453,7 @@ namespace MSL.utils
             finally
             {
                 // 完成下载，更新最终状态和触发事件
-                CompleteDownloadItem(item, error);
+                CompleteDownloadItem(item, success, error);
                 // 处理下载结果和重试逻辑
                 if (!success && !IsCancellingOrCancelled(item.Status) && item.RetryCount > 0)
                 {
@@ -454,7 +465,7 @@ namespace MSL.utils
         /// <summary>
         /// 完成下载项并更新状态
         /// </summary>
-        private void CompleteDownloadItem(DownloadItem item, Exception error)
+        private void CompleteDownloadItem(DownloadItem item, bool success, Exception error)
         {
             // 更新状态
             if (IsCancellingOrCancelled(item.Status))
@@ -463,7 +474,8 @@ namespace MSL.utils
             }
             else
             {
-                if (item.Status != DownloadStatus.Completed && error != null)
+                item.Status = success ? DownloadStatus.Completed : DownloadStatus.Failed;
+                if (!success && error != null)
                 {
                     item.ErrorMessage = error.Message;
                 }

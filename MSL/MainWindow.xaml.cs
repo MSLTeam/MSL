@@ -515,6 +515,7 @@ namespace MSL
 
         private void Window_Closed(object sender, EventArgs e)
         {
+            DownloadManager.Instance.Dispose();
             AppConfig.Current.Save();
             ServerConfig.Current.Save();
             Application.Current.Shutdown();
@@ -535,7 +536,7 @@ namespace MSL
         {
             try
             {
-                if (CheckServerRunning() || CheckFrpcRunning() || !OnlinePage.FrpcProcess.HasExited)
+                if (CheckServerRunning() || CheckFrpcRunning() || (OnlinePage.FrpcProcess != null && !OnlinePage.FrpcProcess.HasExited))
                 {
                     LogHelper.Write.Warn("服务器、内网映射或联机功能正在运行中！");
                     return true;

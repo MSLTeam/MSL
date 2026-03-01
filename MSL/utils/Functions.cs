@@ -1,4 +1,4 @@
-﻿using HandyControl.Controls;
+using HandyControl.Controls;
 using HandyControl.Tools;
 using ICSharpCode.SharpZipLib.Zip;
 using MSL.controls.dialogs;

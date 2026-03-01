@@ -1,4 +1,4 @@
-﻿using HandyControl.Controls;
+using HandyControl.Controls;
 using MSL.langs;
 using MSL.utils;
 using Newtonsoft.Json;
@@ -7,6 +7,7 @@ using System;
 using System.Diagnostics;
 using System.IO;
 using System.Net.NetworkInformation;
+using System.Text;
 using System.Text.RegularExpressions;
 using System.Threading.Tasks;
 using System.Windows;
@@ -22,7 +23,7 @@ namespace MSL.pages
     /// </summary>
     public partial class OnlinePage : Page
     {
-        public static Process FrpcProcess = new Process();
+        public static Process FrpcProcess;
         private bool isMaster;
         private string ipAddress = "";
         private string ipPort = "";
@@ -30,7 +31,6 @@ namespace MSL.pages
         public OnlinePage()
         {
             InitializeComponent();
-            FrpcProcess.OutputDataReceived += new DataReceivedEventHandler(OutputDataReceived);
         }
 
         private async void Page_Loaded(object sender, RoutedEventArgs e)
@@ -228,6 +228,7 @@ namespace MSL.pages
                     return;
                 }
                 frpcOutlog.Text = string.Empty;
+                FrpcProcess = new();
                 FrpcProcess.StartInfo.WorkingDirectory = "MSL\\frp";
                 FrpcProcess.StartInfo.FileName = "MSL\\frp\\" + "frpc.exe";
                 FrpcProcess.StartInfo.Arguments = "-c P2Pfrpc";
@@ -235,13 +236,18 @@ namespace MSL.pages
                 FrpcProcess.StartInfo.UseShellExecute = false;
                 FrpcProcess.StartInfo.RedirectStandardInput = true;
                 FrpcProcess.StartInfo.RedirectStandardOutput = true;
+                FrpcProcess.StartInfo.StandardOutputEncoding = Encoding.UTF8;
                 LogHelper.Write.Info($"准备启动frpc进程，参数: {FrpcProcess.StartInfo.Arguments}");
                 FrpcProcess.Start();
+                FrpcProcess.OutputDataReceived += new DataReceivedEventHandler(OutputDataReceived);
                 FrpcProcess.BeginOutputReadLine();
                 LogHelper.Write.Info($"frpc进程已启动，进程ID: {FrpcProcess.Id}");
                 await Task.Run(FrpcProcess.WaitForExit);
                 FrpcProcess.CancelOutputRead();
                 LogHelper.Write.Info($"frpc进程(ID: {FrpcProcess.Id})已退出。");
+                FrpcProcess.OutputDataReceived -= OutputDataReceived;
+                FrpcProcess.Dispose();
+                FrpcProcess = null;
                 if (isMaster)
                 {
                     createRoom.IsChecked = false;
