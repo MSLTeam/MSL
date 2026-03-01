@@ -166,7 +166,7 @@
                                 </Style>
                             </ToggleButton.Style>
                         </ToggleButton>
-                        <Button x:Name="solveProblemBtn" Grid.Column="1" hc:IconElement.Geometry="{StaticResource AskGeometry}" hc:IconElement.Height="18" Style="{StaticResource ButtonDanger}" Content="崩溃检测"  Height="60" Click="solveProblemBtn_Click" FontSize="14" VerticalAlignment="Bottom" Margin="0,0,10,10" HorizontalAlignment="Stretch"/>
+                        <Button x:Name="solveProblemBtn" Grid.Column="1" hc:IconElement.Geometry="{StaticResource AskGeometry}" hc:IconElement.Height="18" Style="{StaticResource ButtonDanger}" Content="崩溃检测"  Click="solveProblemBtn_Click" FontSize="14" VerticalAlignment="Stretch" Margin="0,0,10,10" HorizontalAlignment="Stretch"/>
                         <Button x:Name="openServerDir" Grid.Column="2" Height="60" VerticalAlignment="Bottom" HorizontalAlignment="Stretch" Margin="0,0,10,10" FontSize="14" Click="openServerDir_Click">
                             <Button.Content>
                                 <hc:UniformSpacingPanel Orientation="Horizontal" Spacing="5">
@@ -1002,19 +1002,19 @@
                                 <WrapPanel Grid.Row="1" Margin="0,5,0,0" Orientation="Horizontal">
                                     <Label Content="快捷模板：" FontSize="14" VerticalAlignment="Center"
                                            BorderThickness="0" Background="Transparent"/>
-                                    <Button Content="每10秒" FontSize="12" Height="26" Margin="3,2"
+                                    <Button Content="每10秒" Margin="2"
                                             Click="CronTemplate_Click" Tag="*/10 * * * * *"/>
-                                    <Button Content="每分钟" FontSize="12" Height="26" Margin="3,2"
+                                    <Button Content="每分钟" Margin="2"
                                             Click="CronTemplate_Click" Tag="0 * * * * *"/>
-                                    <Button Content="每5分钟" FontSize="12" Height="26" Margin="3,2"
+                                    <Button Content="每5分钟" Margin="2"
                                             Click="CronTemplate_Click" Tag="0 */5 * * * *"/>
-                                    <Button Content="每30分钟" FontSize="12" Height="26" Margin="3,2"
+                                    <Button Content="每30分钟" Margin="2"
                                             Click="CronTemplate_Click" Tag="0 */30 * * * *"/>
-                                    <Button Content="每小时" FontSize="12" Height="26" Margin="3,2"
+                                    <Button Content="每小时" Margin="2"
                                             Click="CronTemplate_Click" Tag="0 0 * * * *"/>
-                                    <Button Content="每天凌晨3点" FontSize="12" Height="26" Margin="3,2"
+                                    <Button Content="每天凌晨3点" Margin="2"
                                             Click="CronTemplate_Click" Tag="0 0 3 * * *"/>
-                                    <Button Content="每周日凌晨3点" FontSize="12" Height="26" Margin="3,2"
+                                    <Button Content="每周日凌晨3点" Margin="2"
                                             Click="CronTemplate_Click" Tag="0 0 3 * * 0"/>
                                 </WrapPanel>
 
