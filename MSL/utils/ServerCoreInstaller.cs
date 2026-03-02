@@ -53,25 +53,32 @@ namespace MSL.utils
         /// <param name="build">构建号（"latest" 或具体构建）</param>
         public async Task<ServerInstallResult> DownloadAndInstallAsync(string serverType, string version, string build = "latest")
         {
-            // 获取主文件下载信息
-            string buildQuery = build.Contains("latest") ? "latest" : build;
-            JObject dlContext = await HttpService.GetApiContentAsync(
-                $"download/server/{serverType}/{version}?build={buildQuery}");
+            try
+            {
+                // 获取主文件下载信息
+                string buildQuery = build.Contains("latest") ? "latest" : build;
+                JObject dlContext = await HttpService.GetApiContentAsync(
+                    $"download/server/{serverType}/{version}?build={buildQuery}");
 
-            string dlUrl = MirrorCheck(dlContext["data"]["url"].ToString(), serverType);
-            string sha256Exp = dlContext["data"]["sha256"]?.ToString() ?? string.Empty;
-            string filename = $"{serverType}-{version}.jar";
+                string dlUrl = MirrorCheck(dlContext["data"]["url"].ToString(), serverType);
+                string sha256Exp = dlContext["data"]["sha256"]?.ToString() ?? string.Empty;
+                string filename = $"{serverType}-{version}.jar";
 
-            bool enableParallel = !IsSequentialDownload(serverType);
+                bool enableParallel = !IsSequentialDownload(serverType);
 
-            // 创建下载组，加入主文件
-            var dwnManager = DownloadManager.Instance;
-            string groupId = dwnManager.CreateDownloadGroup(isTempGroup: true);
-            dwnManager.AddDownloadItem(groupId, dlUrl, _savingPath, filename, sha256Exp,
-                                       enableParallel: enableParallel);
+                // 创建下载组，加入主文件
+                var dwnManager = DownloadManager.Instance;
+                string groupId = dwnManager.CreateDownloadGroup(isTempGroup: true);
+                dwnManager.AddDownloadItem(groupId, dlUrl, _savingPath, filename, sha256Exp,
+                                           enableParallel: enableParallel);
 
-            // 按服务端类型追加额外依赖项并执行安装
-            return await HandleServerTypeAsync(serverType, version, filename, groupId, dwnManager, enableParallel);
+                // 按服务端类型追加额外依赖项并执行安装
+                return await HandleServerTypeAsync(serverType, version, filename, groupId, dwnManager, enableParallel);
+            }
+            catch (Exception ex)
+            {
+                return Fail(ex.Message);
+            }
         }
 
         // ────
@@ -205,9 +212,6 @@ namespace MSL.utils
             bool success = await dwnManager.WaitForGroupCompletionAsync(groupId);
             Dialog.Close(token);
 
-            if (!success)
-                MagicShow.ShowMsgDialog(_owner, "下载失败！", "提示");
-
             return success;
         }
 
@@ -256,7 +260,6 @@ namespace MSL.utils
             }
             catch (Exception e)
             {
-                MagicShow.ShowMsgDialog(_owner, $"Sponge核心移动失败！\n请重试！{e.Message}", "错误");
                 return Fail($"Sponge核心移动失败：{e.Message}");
             }
         }

@@ -13,7 +13,6 @@ using System.Threading.Tasks;
 using System.Windows;
 using System.Windows.Controls;
 using System.Windows.Input;
-using File = System.IO.File;
 
 namespace MSL.pages
 {
@@ -186,7 +185,7 @@ namespace MSL.pages
 
                 if (!result.Success)
                 {
-                    // 错误信息已在 ServerCoreInstaller 内部通过 MagicShow 弹出，此处直接返回
+                    MagicShow.ShowMsgDialog(Functions.GetWindow(this), result.ErrorMessage, "INFO");
                     return;
                 }
 

@@ -1166,6 +1166,7 @@ namespace MSL.pages
 
             if (!result.Success)
             {
+                MagicShow.ShowMsgDialog(Functions.GetWindow(this), result.ErrorMessage, "INFO");
                 FastInstallProcess.Text = "取消安装！";
                 return;
             }
