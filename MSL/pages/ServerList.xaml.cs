@@ -8,6 +8,7 @@ using System;
 using System.Collections.Generic;
 using System.Diagnostics;
 using System.IO;
+using System.Security.AccessControl;
 using System.Windows;
 using System.Windows.Controls;
 using System.Windows.Input;
@@ -435,22 +436,40 @@ namespace MSL.pages
         {
             await MagicShow.ShowMsgDialogAsync(Window.GetWindow(this), "这是单独的模组/插件/整合包下载界面\n下载的文件均在MSL\\Downloads文件夹内", "提示");
             LogHelper.Write.Info("用户点击'下载模组/插件'按钮，打开独立下载窗口。");
-            DownloadMod downloadMod = new DownloadMod("MSL\\Downloads")
+            var tempContent = this.Content;
+            DownloadMod downloadModPage = null;
+            downloadModPage = new DownloadMod((string filename) =>
             {
-                Owner = Window.GetWindow(Window.GetWindow(this))
-            };
-            downloadMod.ShowDialog();
+                this.Content = tempContent;
+                downloadModPage.Dispose();
+                downloadModPage = null;
+            }, "MSL\\Downloads");
+
+            this.Content = downloadModPage;
         }
 
         private async void DlServerCoreBtn_Click(object sender, RoutedEventArgs e)
         {
             await MagicShow.ShowMsgDialogAsync(Window.GetWindow(this), "这是单独的服务端下载界面\n下载的服务端均在MSL\\Downloads文件夹内", "提示");
             LogHelper.Write.Info("用户点击'下载服务端'按钮，打开独立下载窗口。");
+            var tempContent = this.Content;
+            DownloadServer downloadServerPage = null;
+            downloadServerPage = new DownloadServer((string filename) =>
+            {
+                this.Content = tempContent;
+                downloadServerPage.Dispose();
+                downloadServerPage = null;
+            }, "MSL\\Downloads", DownloadServer.Mode.FreeDownload);
+
+            this.Content = downloadServerPage;
+            /*
+            
             DownloadServer downloadServer = new DownloadServer("MSL\\Downloads", DownloadServer.Mode.FreeDownload)
             {
                 WindowStartupLocation = WindowStartupLocation.CenterScreen
             };
             downloadServer.Show();
+            */
         }
     }
 }

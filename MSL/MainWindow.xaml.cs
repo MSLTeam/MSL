@@ -36,7 +36,6 @@ namespace MSL
             new About(),
             new CreateServer()
         };
-
         public static event App.DeleControl AutoOpenServer;
         public static bool LoadingCompleted = false;
 

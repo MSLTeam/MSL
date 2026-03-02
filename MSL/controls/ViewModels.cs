@@ -1,6 +1,5 @@
 using System.ComponentModel;
 using System.Windows.Media;
-using Windows.Media.Protection.PlayReady;
 
 namespace MSL.controls
 {
@@ -45,6 +44,7 @@ namespace MSL.controls
         public string Platform { set; get; }
         public string Dependency { set; get; }
         public string MCVersion { set; get; }
+
         public bool IsVisible
         {
             get => _isVisible;

@@ -92,12 +92,26 @@ namespace MSL.pages
             {
                 ImportPack.SelectedIndex = 0;
                 await MagicShow.ShowMsgDialogAsync(Window.GetWindow(this), "请务必下载文件名含有“server”且为.zip格式的服务端整合包！否则会出现软件无法读取或开服失败的问题！", "下载须知");
-                DownloadMod downloadMod = new DownloadMod("MSL\\Downloads", 0, 1, false, true, true)
+                var tempContent = this.Content;
+                DownloadMod downloadModPage = null;
+                bool isClosed = false;
+                string dFilename = null;
+                downloadModPage = new DownloadMod((string filename) =>
                 {
-                    Owner = Window.GetWindow(Window.GetWindow(this))
-                };
-                downloadMod.ShowDialog();
-                string dFilename = downloadMod.FileName;
+                    isClosed = true;
+                    dFilename = filename;
+                    this.Content = tempContent;
+                    downloadModPage.Dispose();
+                    downloadModPage = null;
+                }, "MSL\\Downloads", 0, 1, false, true, true);
+
+                this.Content = downloadModPage;
+
+                while (!isClosed)
+                {
+                    await Task.Delay(100);
+                }
+
                 if (dFilename == null)
                 {
                     return;
@@ -654,31 +668,32 @@ namespace MSL.pages
         {
             if (usedownloadserver.IsChecked == true) // 下载服务端核心
             {
-                DownloadServer downloadServer = new DownloadServer(serverbase, DownloadServer.Mode.CreateServer, serverjava)
+                var tempContent = this.Content;
+                DownloadServer downloadServerPage = null;
+                downloadServerPage = new DownloadServer((string filename) =>
                 {
-                    Owner = Window.GetWindow(Window.GetWindow(this))
-                };
-                downloadServer.ShowDialog();
-                if (downloadServer.FileName != null)
-                {
-                    if (File.Exists(serverbase + "\\" + downloadServer.FileName))
+                    if (File.Exists(serverbase + "\\" + filename))
                     {
-                        servercore = downloadServer.FileName;
+                        servercore = filename;
                         sJVM.IsSelected = true;
                         sJVM.IsEnabled = true;
                         sserver.IsEnabled = false;
                         returnMode = 6;
                     }
-                    else if (downloadServer.FileName.StartsWith("@libraries/"))
+                    else if (filename.StartsWith("@libraries/"))
                     {
-                        servercore = downloadServer.FileName;
+                        servercore = filename;
                         sJVM.IsSelected = true;
                         sJVM.IsEnabled = true;
                         sserver.IsEnabled = false;
                         returnMode = 6;
                     }
-                }
-                downloadServer.Dispose();
+                    this.Content = tempContent;
+                    downloadServerPage.Dispose();
+                    downloadServerPage = null;
+                }, serverbase, DownloadServer.Mode.CreateServer, serverjava);
+
+                this.Content = downloadServerPage;
             }
             else if (useServerself.IsChecked == true) // 自定义服务端核心文件
             {

@@ -13,6 +13,7 @@ using System.Text;
 using System.Threading;
 using System.Threading.Tasks;
 using System.Windows;
+using System.Windows.Controls;
 using System.Windows.Input;
 using System.Windows.Media.Imaging;
 
@@ -21,19 +22,24 @@ namespace MSL
     /// <summary>
     /// DownloadMods.xaml 的交互逻辑
     /// </summary>
-    public partial class DownloadMod : HandyControl.Controls.Window
+    public partial class DownloadMod : UserControl
     {
-        public string FileName { get; set; }
+        private string FileName { get; set; }
+        public Action<string> _onClose;
         private int LoadType = 0;  //0: mods , 1: modpacks  , 2: plugins ,3: datapacks
         private int LoadSource = 1;  //0: Curseforge , 1: Modrinth 
         private readonly bool CloseImmediately;
         private readonly string SavingPath;
         private ApiClient CurseForgeApiClient;
         private ModrinthClient ModrinthApiClient;
+        private Window FatherWindow;
 
-        public DownloadMod(string savingPath, int loadSource = 1, int loadType = 0, bool canChangeLoadType = true, bool canChangeSource = true, bool closeImmediately = false)
+        public DownloadMod(Action<string> onClose,string savingPath,
+            int loadSource = 1, int loadType = 0,
+            bool canChangeLoadType = true, bool canChangeSource = true, bool closeImmediately = false)
         {
             InitializeComponent();
+            _onClose = onClose;
             SavingPath = savingPath;
             LoadSource = loadSource;
             LoadType = loadType;
@@ -59,9 +65,15 @@ namespace MSL
             CloseImmediately = closeImmediately;
         }
 
+        private bool _isInitiated = false;
         private async void Window_Loaded(object sender, RoutedEventArgs e)
         {
-            await LoadEvent();
+            FatherWindow = Window.GetWindow(this);
+            if (!_isInitiated)
+            {
+                _isInitiated = true;
+                await LoadEvent();
+            }
         }
 
         private async Task LoadEvent_CurseForge()
@@ -110,7 +122,7 @@ namespace MSL
             }
             catch (Exception ex)
             {
-                MagicShow.ShowMsgDialog(this, "获取模组/整合包失败！请重试或尝试连接代理后再试！\n" + ex.Message, "错误");
+                MagicShow.ShowMsgDialog(FatherWindow, "获取模组/整合包失败！请重试或尝试连接代理后再试！\n" + ex.Message, "错误");
             }
         }
 
@@ -186,9 +198,13 @@ namespace MSL
             {
                 return;
             }
+            catch (ObjectDisposedException)
+            {
+                return;
+            }
             catch (Exception ex)
             {
-                MagicShow.ShowMsgDialog(this, "获取模组/整合包失败！请重试或尝试连接代理后再试！\n" + ex.Message, "错误");
+                MagicShow.ShowMsgDialog(FatherWindow, "获取模组/整合包失败！请重试或尝试连接代理后再试！\n" + ex.Message, "错误");
             }
         }
 
@@ -226,7 +242,7 @@ namespace MSL
             }
             catch (Exception ex)
             {
-                MagicShow.ShowMsgDialog(this, "获取模组/整合包失败！请重试或尝试连接代理后再试！\n" + ex.Message, "错误");
+                MagicShow.ShowMsgDialog(FatherWindow, "获取模组/整合包失败！请重试或尝试连接代理后再试！\n" + ex.Message, "错误");
             }
         }
 
@@ -276,7 +292,7 @@ namespace MSL
             }
             catch (Exception ex)
             {
-                MagicShow.ShowMsgDialog(this, "获取模组/整合包失败！请重试或尝试连接代理后再试！\n" + ex.Message, "错误");
+                MagicShow.ShowMsgDialog(FatherWindow, "获取模组/整合包失败！请重试或尝试连接代理后再试！\n" + ex.Message, "错误");
             }
         }
 
@@ -304,7 +320,7 @@ namespace MSL
             }
             catch (Exception ex)
             {
-                MagicShow.ShowMsgDialog(this, "搜索失败！请重试或尝试连接代理后再试！\n" + ex.Message, "错误");
+                MagicShow.ShowMsgDialog(FatherWindow, "搜索失败！请重试或尝试连接代理后再试！\n" + ex.Message, "错误");
             }
         }
 
@@ -351,7 +367,7 @@ namespace MSL
             }
             catch (Exception ex)
             {
-                MagicShow.ShowMsgDialog(this, "加载失败！请重试或尝试连接代理后再试！\n" + ex.Message, "错误");
+                MagicShow.ShowMsgDialog(FatherWindow, "加载失败！请重试或尝试连接代理后再试！\n" + ex.Message, "错误");
             }
         }
 
@@ -388,7 +404,7 @@ namespace MSL
             }
             catch (Exception ex)
             {
-                MagicShow.ShowMsgDialog(this, "加载失败！请重试或尝试连接代理后再试！\n" + ex.Message, "错误");
+                MagicShow.ShowMsgDialog(FatherWindow, "加载失败！请重试或尝试连接代理后再试！\n" + ex.Message, "错误");
             }
         }
 
@@ -401,7 +417,7 @@ namespace MSL
             bool onlyShowServerPack = false;
 
             // 获取用户是否仅展示适用于服务器的整合包文件
-            if (LoadType == 1 && await MagicShow.ShowMsgDialogAsync(this,
+            if (LoadType == 1 && await MagicShow.ShowMsgDialogAsync(FatherWindow,
                 "是否仅展示适用于服务器的整合包文件？\n注意：如果不使用服务器专用包开服，可能会出现无法开服/崩溃的问题！", "询问", true) == true)
             {
                 onlyShowServerPack = true;
@@ -543,72 +559,6 @@ namespace MSL
                     VerFilter_VersList.Add(version.GameVersions);
                 }
             }
-
-            /*
-            using var semaphore = new SemaphoreSlim(50);
-
-            async Task LoadAndAddVersion(string modID)
-            {
-                await semaphore.WaitAsync();
-                try
-                {
-                    var modVersion = await ModrinthApiClient.Version.GetAsync(modID);
-                    var modGameVer = modVersion.GameVersions;
-
-                    // 遍历 modVersion.Files 中的每个文件，创建一个 DM_ModInfo 实例
-                    var modInfos = new List<DM_ModInfo>();  // 创建一个列表保存所有生成的 DM_ModInfo 实例
-
-                    foreach (var file in modVersion.Files)
-                    {
-                        DM_ModInfo modInfo = null;
-
-                        if (LoadType == 1)
-                        {
-                            modInfo = new DM_ModInfo(
-                                modVersion.Name,
-                                file.Url,
-                                file.FileName,
-                                string.Join(",", modVersion.Loaders),
-                                "",
-                                GetMcVersion(modGameVer)
-                            );
-                        }
-                        else
-                        {
-                            modInfo = new DM_ModInfo(
-                                modVersion.Name,
-                                file.Url,
-                                file.FileName,
-                                string.Join(",", modVersion.Loaders),
-                                string.Join(",", (await Task.WhenAll(modVersion.Dependencies.Select(s => ModrinthApiClient.Project.GetAsync(s.ProjectId)))).Select(p => p.Title)),
-                                GetMcVersion(modGameVer)
-                            );
-                        }
-
-                        modInfos.Add(modInfo);  // 将每个文件对应的 modInfo 添加到列表中
-                    }
-
-                    // 使用 Dispatcher 更新 UI，将所有的 modInfo 添加到 ModVerList 中
-                    await Dispatcher.InvokeAsync(() =>
-                    {
-                        foreach (var info in modInfos)
-                        {
-                            ModVerList.Items.Add(info);  // 将每个 modInfo 添加到列表
-                        }
-                        VerFilter_VersList.Add(modGameVer);
-                        loadedCount++;
-                        ModInfoLoadingProcess.Content = $"{loadedCount}/{totalCount}";
-                    });
-                }
-                finally
-                {
-                    semaphore.Release();
-                }
-            }
-
-            var loadTasks = versions.Select(LoadAndAddVersion);
-            await Task.WhenAll(loadTasks);
-            */
         }
 
         public static string GetMcVersion(string[] lists)
@@ -687,7 +637,7 @@ namespace MSL
             }
             catch (Exception ex)
             {
-                await MagicShow.ShowMsgDialogAsync(this, "获取失败！请重试或尝试连接代理后再试！\n" + ex.Message, "错误");
+                await MagicShow.ShowMsgDialogAsync(FatherWindow, "获取失败！请重试或尝试连接代理后再试！\n" + ex.Message, "错误");
             }
             finally
             {
@@ -747,8 +697,6 @@ namespace MSL
 
         private async Task LoadEvent()
         {
-            //lCircle.IsRunning = true;
-            //lCircle.Visibility = Visibility.Visible;
             lb01.Visibility = Visibility.Visible;
             ModListGrid.IsEnabled = false;
             if (LoadSource == 0)
@@ -760,8 +708,6 @@ namespace MSL
                 await LoadEvent_Modrinth();
             }
             await LoadMCVersion();
-            //lCircle.IsRunning = false;
-            //lCircle.Visibility = Visibility.Collapsed;
             lb01.Visibility = Visibility.Collapsed;
             ModListGrid.IsEnabled = true;
         }
@@ -786,7 +732,6 @@ namespace MSL
                 MinecraftVersionTypeBox.SelectedIndex = 0;
                 LogHelper.Write.Error("[下载资源页]获取 MC 版本列表失败" + ex.ToString());
             }
-
         }
 
         private async void LoadSourceBox_SelectionChanged(object sender, System.Windows.Controls.SelectionChangedEventArgs e)
@@ -837,19 +782,24 @@ namespace MSL
             Directory.CreateDirectory(SavingPath);
             FileName = iteminfo.FileName;
             //MessageBox.Show(iteminfo.DownloadUrl);
-            bool dwnRet = await MagicShow.ShowDownloader(this, iteminfo.DownloadUrl, SavingPath, FileName, "下载中……", "", false);
+            bool dwnRet = await MagicShow.ShowDownloader(FatherWindow, iteminfo.DownloadUrl, SavingPath, FileName, "下载中……", "", false);
             if (dwnRet)
             {
                 if (CloseImmediately)
                 {
-                    Close();
+                    _onClose.Invoke(FileName);
                     return;
                 }
-                MagicShow.ShowMsgDialog(this, "下载完成！", "提示");
+                MagicShow.ShowMsgDialog(FatherWindow, "下载完成！", "提示");
             }
         }
 
-        private void Window_Closing(object sender, System.ComponentModel.CancelEventArgs e)
+        private void CloseBtn_Click(object sender, RoutedEventArgs e)
+        {
+            _onClose?.Invoke(null);
+        }
+
+        public void Dispose()
         {
             if (CurseForgeApiClient != null)
             {

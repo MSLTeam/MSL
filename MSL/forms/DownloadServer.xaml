@@ -1,4 +1,4 @@
-﻿<hc:Window x:Class="MSL.pages.DownloadServer"
+﻿<UserControl x:Class="MSL.pages.DownloadServer"
       xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
       xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
       xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006" 
@@ -6,11 +6,9 @@
       xmlns:hc="https://handyorg.github.io/handycontrol"
       xmlns:controls="clr-namespace:MSL.controls"
       xmlns:local="clr-namespace:MSL"
-      mc:Ignorable="d" 
-      MinHeight="450" MinWidth="750" Height="450" Width="750"
-      NonClientAreaBackground="{DynamicResource BackgroundBrush}"
-      Title="下载服务端" Loaded="Page_Loaded" Closing="Window_Closing" Background="{DynamicResource BackgroundBrush}"
-      ResizeMode="CanResize" ShowMinButton="False" WindowStartupLocation="CenterOwner">
+      Template="{StaticResource UserControlTemplate1}" 
+      mc:Ignorable="d" d:Height="450" d:Width="750"
+      Loaded="UserControl_Loaded">
     <Grid x:Name="MainGrid">
         <Grid>
             <Grid.RowDefinitions>
@@ -22,11 +20,12 @@
                     <RowDefinition/>
                     <RowDefinition/>
                 </Grid.RowDefinitions>
-                <hc:UniformSpacingPanel Spacing="10" Margin="10" Grid.Row="0">
-                    <Button x:Name="RefreshBtn" Content="刷新" Click="RefreshBtn_Click" Height="36" Width="100" FontSize="14"/>
-                    <Button x:Name="DownloadBtn" Content="下载" Style="{StaticResource ButtonPrimary}" Height="36" Width="100" FontSize="14" Click="DownloadBtn_Click"/>
-                    <Button x:Name="OpenDownloadManager" Content="打开下载列表" Width="150" Height="36" Background="#33000000" FontSize="14" Click="OpenDownloadManager_Click"/>
-                    <Button x:Name="openChooseServerDocs" Content="教程文档" Width="100" Height="36" Background="#33000000" FontSize="14" Click="openChooseServerDocs_Click"/>
+                <hc:UniformSpacingPanel Spacing="5" Margin="10" Grid.Row="0">
+                    <Button x:Name="CloseBtn" Content="返回" Click="CloseBtn_Click" Height="36" FontSize="14"/>
+                    <Button x:Name="RefreshBtn" Content="刷新" Click="RefreshBtn_Click" Height="36" Width="72" FontSize="14"/>
+                    <Button x:Name="DownloadBtn" Content="下载" Style="{StaticResource ButtonPrimary}" Height="36" Width="72" FontSize="14" Click="DownloadBtn_Click"/>
+                    <Button x:Name="OpenDownloadManager" Content="下载列表" Width="128" Height="36" Background="#33000000" FontSize="14" Click="OpenDownloadManager_Click"/>
+                    <Button x:Name="openChooseServerDocs" Content="教程文档" Width="128" Height="36" Background="#33000000" FontSize="14" Click="openChooseServerDocs_Click"/>
                     <CheckBox x:Name="UseMirrorUrl" Content="Vanilla和Forge使用镜像源" IsChecked="True"/>
                 </hc:UniformSpacingPanel>
                 <TextBox Grid.Row="1" x:Name="server_d" Margin="10,0,10,0" TextWrapping="Wrap" Text="服务端描述" Focusable="False" IsReadOnly="True" Background="{DynamicResource RegionBrush}" FontSize="14"/>
@@ -67,4 +66,4 @@
             </Grid>
         </Grid>
     </Grid>
-</hc:Window>
+</UserControl>

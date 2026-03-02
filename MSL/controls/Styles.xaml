@@ -264,6 +264,18 @@
             </ContentPresenter.Triggers>
         </ContentPresenter>
     </ControlTemplate>
+    <ControlTemplate x:Key="UserControlTemplate1" TargetType="UserControl">
+        <ContentPresenter x:Name="contentPresenter" RenderTransformOrigin="0.5,0.5">
+            <ContentPresenter.RenderTransform>
+                <ScaleTransform/>
+            </ContentPresenter.RenderTransform>
+            <ContentPresenter.Triggers>
+                <EventTrigger RoutedEvent="FrameworkElement.Loaded">
+                    <BeginStoryboard Storyboard="{StaticResource ShowUserControl1}"/>
+                </EventTrigger>
+            </ContentPresenter.Triggers>
+        </ContentPresenter>
+    </ControlTemplate>
 
     <Style TargetType="{x:Type local:MagicCard}">
         <Setter Property="Background" Value="{DynamicResource BorderBackground}" />

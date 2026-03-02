@@ -683,6 +683,8 @@ namespace MSL
         {
             if (previewOutlog.LineCount < 25)
             {
+                if (ServerService == null)
+                    return;
                 if (!string.IsNullOrEmpty(ServerService._tempLog) && !previewOutlog.Text.Contains(ServerService._tempLog))
                 {
                     previewOutlog.Text += "\n" + ServerService._tempLog;
@@ -1636,9 +1638,17 @@ namespace MSL
         /// <summary>打开下载模组/插件的对话框。</summary>
         private void OpenDownloadDialog(string targetDir, int resourceType, int pageIndex)
         {
-            var dlg = new DownloadMod(targetDir, resourceType, pageIndex, false) { Owner = this };
-            dlg.ShowDialog();
-            ReFreshPluginsAndMods();
+            var tempContent = this.Content;
+            DownloadMod downloadModPage = null;
+            downloadModPage = new DownloadMod((string filename) =>
+            {
+                ReFreshPluginsAndMods();
+                this.Content = tempContent;
+                downloadModPage.Dispose();
+                downloadModPage = null;
+            }, targetDir, resourceType, pageIndex, false);
+
+            this.Content = downloadModPage;
         }
 
         // 检测客户端模组
@@ -2306,25 +2316,26 @@ namespace MSL
             {
                 jVMcmd.Clear();
             }
-            DownloadServer downloadServer = new DownloadServer(ServerService.ServerBase, DownloadServer.Mode.ChangeServerSettings, ServerService.ServerJava)
+            var tempContent=this.Content;
+            DownloadServer downloadServerPage = null;
+            downloadServerPage = new DownloadServer((string filename) =>
             {
-                Owner = this
-            };
-            downloadServer.ShowDialog();
-            if (downloadServer.FileName != null)
-            {
-                if (File.Exists(ServerService.ServerBase + @"\" + downloadServer.FileName))
+                if (File.Exists(ServerService.ServerBase + @"\" + filename))
                 {
-                    server.Text = downloadServer.FileName;
+                    server.Text = filename;
                     Growl.Success("服务端下载完毕！已自动选择该服务端核心，请记得保存哦~");
                 }
-                else if (downloadServer.FileName.StartsWith("@libraries/"))
+                else if (filename.StartsWith("@libraries/"))
                 {
-                    server.Text = downloadServer.FileName;
+                    server.Text = filename;
                     Growl.Success("服务端下载完毕！已自动选择该服务端核心，请记得保存哦~");
                 }
-            }
-            downloadServer.Dispose();
+                this.Content = tempContent;
+                downloadServerPage.Dispose();
+                downloadServerPage = null;
+            }, ServerService.ServerBase, DownloadServer.Mode.ChangeServerSettings, ServerService.ServerJava);
+            
+            this.Content = downloadServerPage;
         }
 
         private void autoSetMemory_Click(object sender, RoutedEventArgs e)

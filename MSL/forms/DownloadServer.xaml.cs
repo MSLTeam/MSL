@@ -7,7 +7,6 @@ using Newtonsoft.Json.Linq;
 using System;
 using System.Collections.Generic;
 using System.Diagnostics;
-using System.IO;
 using System.Linq;
 using System.Threading.Tasks;
 using System.Windows;
@@ -19,35 +18,45 @@ namespace MSL.pages
     /// <summary>
     /// DownloadServer.xaml 的交互逻辑
     /// </summary>
-    public partial class DownloadServer : HandyControl.Controls.Window
+    public partial class DownloadServer : UserControl
     {
+        public Action<string> _onClose;
         public enum Mode // 在自由模式下，不会自动安装forge，同时对于一些需要Vanilla或其他依赖的服务端，也不会自动下载依赖
         {
             CreateServer,
             ChangeServerSettings,
             FreeDownload,
         }
-        public string FileName { get; set; }
+        private string FileName { get; set; }
         private string SavingPath;
 
         private readonly Mode DownloadMode;
         private string JavaPath; // The Java Path for install Forge-ServerCore
+        private System.Windows.Window FatherWindow;
 
-        public DownloadServer(string savingPath, Mode downloadMode, string javaPath = "")
+        public DownloadServer(Action<string> onClose, string savingPath, Mode downloadMode, string javaPath = "")
         {
             InitializeComponent();
-            SavingPath = savingPath;
             DownloadMode = downloadMode;
+            SavingPath = savingPath;
+            SavingPath = savingPath;
             JavaPath = javaPath;
+            _onClose = onClose;
         }
 
-        private async void Page_Loaded(object sender, RoutedEventArgs e)
+        private bool _isInit = false;
+        private async void UserControl_Loaded(object sender, RoutedEventArgs e)
         {
+            FatherWindow = System.Windows.Window.GetWindow(this);
             if (DownloadMode != Mode.FreeDownload)
             {
                 OpenDownloadManager.Visibility = Visibility.Collapsed;
             }
-            await GetServer();
+            if(!_isInit)
+            {
+                await GetServer();
+                _isInit = true;
+            }
         }
 
         private void Window_Closing(object sender, System.ComponentModel.CancelEventArgs e)
@@ -75,7 +84,7 @@ namespace MSL.pages
         {
             if (versionBuildList.SelectedIndex == -1)
             {
-                MagicShow.ShowMsgDialog(this, "请先选择一个构建版本！", "警告");
+                MagicShow.ShowMsgDialog(FatherWindow, "请先选择一个构建版本！", "警告");
                 return;
             }
             versionBuildList.IsEnabled = false;
@@ -86,7 +95,7 @@ namespace MSL.pages
             }
             catch (Exception ex)
             {
-                MagicShow.ShowMsgDialog(this, ex.Message, "错误");
+                MagicShow.ShowMsgDialog(FatherWindow, ex.Message, "错误");
             }
             versionBuildList.IsEnabled = true;
             DownloadBtn.IsEnabled = true;
@@ -96,7 +105,7 @@ namespace MSL.pages
         {
             if (versionBuildList.SelectedIndex == -1)
             {
-                MagicShow.ShowMsgDialog(this, "请先选择一个构建版本！", "警告");
+                MagicShow.ShowMsgDialog(FatherWindow, "请先选择一个构建版本！", "警告");
                 return;
             }
             versionBuildList.IsEnabled = false;
@@ -107,7 +116,7 @@ namespace MSL.pages
             }
             catch (Exception ex)
             {
-                MagicShow.ShowMsgDialog(this, ex.Message, "错误");
+                MagicShow.ShowMsgDialog(FatherWindow, ex.Message, "错误");
             }
             versionBuildList.IsEnabled = true;
             DownloadBtn.IsEnabled = true;
@@ -148,7 +157,7 @@ namespace MSL.pages
                 coreVersionList.SelectedIndex == -1 ||
                 versionBuildList.SelectedIndex == -1)
             {
-                MagicShow.ShowMsgDialog(this, "请检查您是否已正确选择 服务端-版本-构建版本 ！", "错误");
+                MagicShow.ShowMsgDialog(FatherWindow, "请检查您是否已正确选择 服务端-版本-构建版本 ！", "错误");
                 return;
             }
 
@@ -180,17 +189,17 @@ namespace MSL.pages
             else
             {
                 // ── 正常安装模式：交由 ServerCoreInstaller 完成下载+安装 ──
-                var installer = new ServerCoreInstaller(this, SavingPath, JavaPath, useMirror: UseMirrorUrl.IsChecked == true);
+                var installer = new ServerCoreInstaller(FatherWindow, SavingPath, JavaPath, useMirror: UseMirrorUrl.IsChecked == true);
                 var result = await installer.DownloadAndInstallAsync(downServer, downVersion, downBuild);
 
                 if (!result.Success)
                 {
-                    MagicShow.ShowMsgDialog(Functions.GetWindow(this), result.ErrorMessage, "INFO");
+                    MagicShow.ShowMsgDialog(FatherWindow, result.ErrorMessage, "INFO");
                     return;
                 }
 
                 FileName = result.FinalFileName;
-                Close();
+                _onClose.Invoke(FileName);
             }
         }
 
@@ -311,9 +320,16 @@ namespace MSL.pages
         private void OpenDownloadManager_Click(object sender, RoutedEventArgs e)
         {
             var token = Guid.NewGuid().ToString();
-            Dialog.SetToken(this, token);
+            Dialog.SetToken(FatherWindow, token);
             DownloadManagerDialog.Instance.LoadDialog(token, true);
             Dialog.Show(DownloadManagerDialog.Instance, token);
         }
+
+        private void CloseBtn_Click(object sender, RoutedEventArgs e)
+        {
+            _onClose.Invoke(string.Empty);
+        }
+
+        
     }
 }

@@ -26,5 +26,14 @@
         <DoubleAnimation Storyboard.TargetProperty="Opacity"
                          From="0" To="1" Duration="0:0:0.2"/>
     </Storyboard>
-
+    <Storyboard x:Key="ShowUserControl1">
+        <!-- 缩放动画 -->
+        <DoubleAnimation Storyboard.TargetProperty="RenderTransform.ScaleX"
+                     From="0.9" To="1" Duration="0:0:0.15"/>
+        <DoubleAnimation Storyboard.TargetProperty="RenderTransform.ScaleY"
+                     From="0.9" To="1" Duration="0:0:0.15"/>
+        <!-- 淡入动画 -->
+        <DoubleAnimation Storyboard.TargetProperty="Opacity"
+                     From="0" To="1" Duration="0:0:0.2"/>
+    </Storyboard>
 </ResourceDictionary>
