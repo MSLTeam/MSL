@@ -62,13 +62,29 @@ namespace MSL.pages
         private async void GetServerConfig()
         {
             LogHelper.Write.Info("开始获取并加载服务器配置列表。");
+            Dispatcher.Invoke(() =>
+            {
+                serverList.ItemsSource = null;
+                serverList.Items.Clear();
+            });
+            if (ServerConfig.Current.Count == 0)
+            {
+                await Dispatcher.InvokeAsync(() =>
+                {
+                    MagicFlowMsg.ShowMessage("您还没有一个服务器呢，点击右下角加号创建一个吧~");
+                });
+                return;
+            }
             try
             {
                 List<object> list = new List<object>();
-                //serverIDs.Clear();
 
                 foreach (var item in ServerConfig.Current.All)
                 {
+                    var serverBase = item.Value.Base ?? string.Empty;
+                    var serverName = item.Value.Name ?? string.Empty;
+                    var serverCore = item.Value.Core ?? string.Empty;
+
                     string status = "未运行";
                     Brush brushes = Brushes.MediumSeaGreen;
                     if (RunningServers.Contains(int.Parse(item.Key)))
@@ -76,25 +92,25 @@ namespace MSL.pages
                         status = "运行中";
                         brushes = Brushes.Orange;
                     }
-                    if (File.Exists(item.Value.Base.ToString() + "\\server-icon.png"))
+                    if (File.Exists(serverBase + "\\server-icon.png"))
                     {
-                        list.Add(new SL_ServerInfo(int.Parse(item.Key), item.Value.Name.ToString(), item.Value.Base.ToString() + "\\server-icon.png", status, brushes));
+                        list.Add(new SL_ServerInfo(int.Parse(item.Key), serverName, serverBase + "\\server-icon.png", status, brushes));
                     }
-                    else if (item.Value.Core.ToString().IndexOf("neoforge") + 1 != 0)
+                    else if (serverCore.IndexOf("neoforge") + 1 != 0)
                     {
-                        list.Add(new SL_ServerInfo(int.Parse(item.Key), item.Value.Name.ToString(), "pack://application:,,,/images/neoforged.png", status, brushes));
+                        list.Add(new SL_ServerInfo(int.Parse(item.Key), serverName, "pack://application:,,,/images/neoforged.png", status, brushes));
                     }
-                    else if (item.Value.Core.ToString().IndexOf("forge") + 1 != 0)
+                    else if (serverCore.IndexOf("forge") + 1 != 0)
                     {
-                        list.Add(new SL_ServerInfo(int.Parse(item.Key), item.Value.Name.ToString(), "pack://application:,,,/images/150px-Anvil.png", status, brushes));
+                        list.Add(new SL_ServerInfo(int.Parse(item.Key), serverName, "pack://application:,,,/images/150px-Anvil.png", status, brushes));
                     }
-                    else if (item.Value.Core.ToString() == "")
+                    else if (string.IsNullOrEmpty(serverCore))
                     {
-                        list.Add(new SL_ServerInfo(int.Parse(item.Key), item.Value.Name.ToString(), "pack://application:,,,/images/150px-MinecartWithCommandBlock.png", status, brushes));
+                        list.Add(new SL_ServerInfo(int.Parse(item.Key), serverName, "pack://application:,,,/images/150px-MinecartWithCommandBlock.png", status, brushes));
                     }
                     else
                     {
-                        list.Add(new SL_ServerInfo(int.Parse(item.Key), item.Value.Name.ToString(), "pack://application:,,,/images/150px-Allium.png", status, brushes));
+                        list.Add(new SL_ServerInfo(int.Parse(item.Key), serverName, "pack://application:,,,/images/150px-Allium.png", status, brushes));
                     }
                 }
                 Dispatcher.Invoke(() =>
@@ -210,7 +226,7 @@ namespace MSL.pages
                 LogHelper.Write.Info($"用户取消了删除服务器ID: {serverID} 的操作。");
                 return;
             }
-            //SL_ServerInfo _server = serverList.SelectedItem as SL_ServerInfo;
+
             try
             {
                 bool _dialogRet = await MagicShow.ShowMsgDialogAsync("是否删除该服务器的目录？（服务器目录中的所有文件都会被移至回收站）", "提示", true, "取消", isDangerPrimaryBtn: true);
@@ -236,13 +252,16 @@ namespace MSL.pages
                 ServerConfig.Current.Save();
                 LogHelper.Write.Info($"已成功从 ServerList.json 中移除服务器ID: {serverID} 的配置。");
                 Growl.Success("删除服务器成功！");
-                GetServerConfig();
             }
             catch (Exception ex)
             {
                 LogHelper.Write.Error($"从 ServerList.json 中删除服务器ID: {serverID} 的配置失败: {ex.ToString()}");
                 Growl.Error("删除服务器失败！");
                 MagicShow.ShowMsgDialog(Window.GetWindow(this), "服务器删除失败！", "警告");
+            }
+            finally
+            {
+                ServerConfig.Current.Save();
                 GetServerConfig();
             }
         }

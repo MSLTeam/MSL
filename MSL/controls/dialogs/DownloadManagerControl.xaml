@@ -17,7 +17,7 @@
             </Grid.RowDefinitions>
 
             <!-- 下载项列表 -->
-            <control:MagicListBox1 x:Name="DownloadItemsListView" hc:Empty.ShowEmpty="True" MinHeight="100"
+            <control:MagicListBox1 x:Name="DownloadItemsListView" hc:Empty.ShowEmpty="True" MinHeight="100"  BorderThickness="0"
               ScrollViewer.HorizontalScrollBarVisibility="Disabled" SelectionMode="Single" HorizontalContentAlignment="Stretch">
                 <control:MagicListBox1.ItemTemplate>
                     <DataTemplate>

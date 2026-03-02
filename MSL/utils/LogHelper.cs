@@ -86,7 +86,7 @@ namespace MSL.utils
                     // 抛出异常比直接在控制台输出错误更好，因为它能更早地暴露配置问题。
                     throw new InvalidOperationException("日志帮助类尚未初始化，请先调用 LogHelper.Init() 方法。");
                 }
-
+                Console.WriteLine(content);
                 // 使用 lock 确保线程安全。
                 lock (_lock)
                 {

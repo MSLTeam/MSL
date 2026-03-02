@@ -196,12 +196,16 @@ namespace MSL
 
                 // 日志颜色
                 var lc = cfg.LogColor;
-                try { ConfigStore.LogColor.INFO = (Color)brushConverter.ConvertFromString(lc.INFO); } catch { }
-                try { ConfigStore.LogColor.WARN = (Color)brushConverter.ConvertFromString(lc.WARN); } catch { }
-                try { ConfigStore.LogColor.ERROR = (Color)brushConverter.ConvertFromString(lc.ERROR); } catch { }
-                try { ConfigStore.LogColor.HIGHLIGHT = (Color)brushConverter.ConvertFromString(lc.HIGHLIGHT); } catch { }
+                try
+                {
+                    ConfigStore.LogColor.INFO = ((SolidColorBrush)brushConverter.ConvertFromString(lc.INFO)).Color;
+                    ConfigStore.LogColor.WARN = ((SolidColorBrush)brushConverter.ConvertFromString(lc.WARN)).Color;
+                    ConfigStore.LogColor.ERROR = ((SolidColorBrush)brushConverter.ConvertFromString(lc.ERROR)).Color;
+                    ConfigStore.LogColor.HIGHLIGHT = ((SolidColorBrush)brushConverter.ConvertFromString(lc.HIGHLIGHT)).Color;
+                }
+                catch { Console.WriteLine("Failed to Convert LogColor"); }
 
-                LogHelper.Write.Info("读取自动化功能配置成功！");
+                LogHelper.Write.Info("读取服务器信息获取/日志颜色配置成功！");
             }
             catch (Exception ex)
             {

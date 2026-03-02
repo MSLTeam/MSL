@@ -1864,7 +1864,7 @@ namespace MSL
 
                 _ = Task.Run(LoadJavaInfo);
 
-                var RserverJVM = ServerService.ServerArgs;
+                var RserverJVM = ServerService.ServerMem;  // 之前的JVM就是重构后的MEM，千万不要再搞混了QWQ
                 if (RserverJVM == "")
                 {
                     memorySlider.IsEnabled = false;

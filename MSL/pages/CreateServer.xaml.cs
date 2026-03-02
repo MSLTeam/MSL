@@ -1598,8 +1598,10 @@ namespace MSL.pages
             txb6.Text = string.Empty;
             usedownloadjv.IsChecked = true;
             selectJavaComb.ItemsSource = null;
+            selectJavaComb.Items.Clear();
             usejvPath.Content = "使用环境变量";
             selectCheckedJavaComb.ItemsSource = null;
+            selectCheckedJavaComb.Items.Clear();
             txjava.Text = string.Empty;
             usedownloadserver.IsChecked = true;
             txb3.Text = string.Empty;

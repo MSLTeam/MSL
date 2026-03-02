@@ -80,6 +80,7 @@ namespace MSL
                     CurseForgeApiClient = new ApiClient(token);
                 }
                 ModList.ItemsSource = null;
+                ModList.Items.Clear();
                 List<DM_ModsInfo> list = new List<DM_ModsInfo>();
                 if (LoadType == 0)
                 {
@@ -141,6 +142,7 @@ namespace MSL
                     ModrinthApiClient = new ModrinthClient(options);
                 }
                 ModList.ItemsSource = null;
+                ModList.Items.Clear();
                 List<DM_ModsInfo> list = new List<DM_ModsInfo>();
                 SearchResponse mods = null;
                 var facets = new FacetCollection();
@@ -204,6 +206,7 @@ namespace MSL
                     CurseForgeApiClient = new ApiClient(token);
                 }
                 ModList.ItemsSource = null;
+                ModList.Items.Clear();
                 List<DM_ModsInfo> list = new List<DM_ModsInfo>();
                 GenericListResponse<Mod> mods = null;
                 if (LoadType == 0)
@@ -232,6 +235,7 @@ namespace MSL
             try
             {
                 ModList.ItemsSource = null;
+                ModList.Items.Clear();
                 List<DM_ModsInfo> list = new List<DM_ModsInfo>();
                 SearchResponse mods = null;
                 var facets = new FacetCollection();
