@@ -125,10 +125,16 @@ namespace MSL.pages
 
         private void AddFrpc_Click(object sender, RoutedEventArgs e)
         {
-            FrpProvider af = new FrpProvider();
-            af.Owner = Window.GetWindow(this);
-            af.ShowDialog();
-            GetFrpcConfig();
+            var tempContent=this.Content;
+            FrpProvider frpProvider = null;
+            frpProvider = new FrpProvider(() =>
+            {
+                this.Content = tempContent;
+                frpProvider.Dispose();
+                frpProvider=null;
+                GetFrpcConfig();
+            });
+            this.Content= frpProvider;
         }
 
         private void DelFrpc_Click(object sender, RoutedEventArgs e)

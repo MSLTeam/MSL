@@ -16,11 +16,12 @@ namespace MSL.pages.frpProviders.MSLFrp
     public partial class MSLFrp : Page
     {
         private MSLFrpProfile FrpProfile = new MSLFrpProfile();
-
-        public MSLFrp()
+        public Action _onReturn;
+        public MSLFrp(Action onReturn)
         {
             InitializeComponent();
             LogHelper.Write.Info("MSLFrp 页面已初始化。");
+            _onReturn = onReturn;
         }
 
         private bool isInit = false;
@@ -208,7 +209,7 @@ namespace MSL.pages.frpProviders.MSLFrp
                 {
                     LogHelper.Write.Info($"隧道 ID: {selectedTunnel.ID} 的配置文件写入成功。");
                     await MagicShow.ShowMsgDialogAsync(Window.GetWindow(this), "映射配置成功，请您点击“启动内网映射”以启动映射！", "信息");
-                    Window.GetWindow(this).Close();
+                    _onReturn.Invoke();
                 }
                 else
                 {

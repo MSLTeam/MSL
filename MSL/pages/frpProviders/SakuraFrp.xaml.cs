@@ -19,10 +19,12 @@ namespace MSL.pages.frpProviders
         private string ApiUrl { get; } = "https://api.natfrp.com/v4";
         private string UserToken { get; set; }
         private int UserLevel = 0;
+        public Action _onReturn;
 
-        public SakuraFrp()
+        public SakuraFrp(Action onReturn)
         {
             InitializeComponent();
+            _onReturn = onReturn;
         }
 
         private bool isInit = false;
@@ -230,7 +232,7 @@ namespace MSL.pages.frpProviders
                 {
                     LogHelper.Write.Info("SakuraFrp配置文件写入成功。");
                     await MagicShow.ShowMsgDialogAsync(Window.GetWindow(this), "映射配置成功，请您点击“启动内网映射”以启动映射！", "信息");
-                    Window.GetWindow(this).Close();
+                    _onReturn.Invoke();
                 }
                 else
                 {

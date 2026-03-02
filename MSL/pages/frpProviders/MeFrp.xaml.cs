@@ -21,10 +21,12 @@ namespace MSL.pages.frpProviders
     {
         private string ApiUrl { get; } = "https://api.mefrp.com/api";
         private string UserToken { get; set; }
+        public Action _onReturn;
 
-        public MEFrp()
+        public MEFrp(Action onReturn)
         {
             InitializeComponent();
+            _onReturn = onReturn;
         }
 
         private bool isInit = false;
@@ -328,7 +330,7 @@ namespace MSL.pages.frpProviders
                     {
                         LogHelper.Write.Info("Frpc配置文件写入成功。");
                         await MagicShow.ShowMsgDialogAsync(Window.GetWindow(this), "映射配置成功，请您点击“启动内网映射”以启动映射！", "信息");
-                        Window.GetWindow(this).Close();
+                        _onReturn.Invoke();
                     }
                     else
                     {

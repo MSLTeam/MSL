@@ -9,19 +9,28 @@ namespace MSL
     /// <summary>
     /// AddFrpc.xaml 的交互逻辑
     /// </summary>
-    public partial class FrpProvider : HandyControl.Controls.Window
+    public partial class FrpProvider : UserControl
     {
-        private readonly List<Page> Pages = new List<Page> { new MSLFrp(), new OpenFrp(), new SakuraFrp(), new ChmlFrp(), new MEFrp(), new Custom() };
-        public FrpProvider()
+        private readonly List<Page> Pages;
+        public Action _onClose;
+        public FrpProvider(Action onClose)
         {
             InitializeComponent();
+            _onClose = onClose;
+            Pages = new List<Page> { new MSLFrp(ReturnFun), new OpenFrp(ReturnFun), new SakuraFrp(ReturnFun), new ChmlFrp(ReturnFun), new MEFrp(ReturnFun), new Custom() };
+            TabCtrl.SelectedIndex = 1;
         }
 
         private void TabControl_SelectionChanged(object sender, SelectionChangedEventArgs e)
         {
             if (TabCtrl.SelectedIndex != -1 && TabCtrl.SelectedIndex != TabCtrl.Items.Count - 1)
             {
-                frame.Content = Pages[TabCtrl.SelectedIndex];
+                if (TabCtrl.SelectedIndex == 0)
+                {
+                    _onClose.Invoke();
+                    return;
+                }
+                frame.Content = Pages[TabCtrl.SelectedIndex - 1];
             }
             else
             {
@@ -29,7 +38,9 @@ namespace MSL
             }
         }
 
-        private void Window_Closing(object sender, System.ComponentModel.CancelEventArgs e)
+        private void ReturnFun() => _onClose.Invoke();
+
+        public void Dispose()
         {
             Pages.Clear();
             GC.Collect(); // find finalizable objects

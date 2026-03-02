@@ -9,7 +9,7 @@
     <Border Margin="20" CornerRadius="10" Background="{DynamicResource RegionBrush}" BorderBrush="{DynamicResource BorderBrush}" BorderThickness="1">
         <Grid>
             <local:DownloadManagerControl x:Name="ManagerControl"/>
-            <Button x:Name="CloseDialogBtn" Content="关闭" HorizontalAlignment="Right" VerticalAlignment="Top" Margin="15" Click="CloseDialogBtn_Click"/>
+            <Button x:Name="CloseDialogBtn" Content="关闭" HorizontalAlignment="Right" VerticalAlignment="Top" Margin="10" Click="CloseDialogBtn_Click"/>
         </Grid>
     </Border>
 </UserControl>

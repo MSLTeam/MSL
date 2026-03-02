@@ -22,12 +22,12 @@ namespace MSL.pages.frpProviders
     {
         private string token;
         private Dictionary<string, string> UserTunnelList;
-        // private JArray ApiNodeJArray;
-        // private Dictionary<string, string> ApiNodeList;
+        public Action _onReturn;
 
-        public OpenFrp()
+        public OpenFrp(Action onReturn)
         {
             InitializeComponent();
+            _onReturn = onReturn;
         }
 
         private bool isInit = false;
@@ -397,7 +397,7 @@ namespace MSL.pages.frpProviders
             Config.WriteFrpcConfig(1, $"OpenFrp节点 - {o}", $"-u {token} -p {id}", "");
             LogHelper.Write.Info($"[OpenFrp] 映射配置写入成功。");
             await MagicShow.ShowMsgDialogAsync(Functions.GetWindow(this), "映射配置成功，请您点击“启动内网映射”以启动映射！", "信息");
-            Window.GetWindow(this).Close();
+            _onReturn.Invoke();
         }
 
         private async void AddProxieBtn_Click(object sender, RoutedEventArgs e)

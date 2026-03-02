@@ -23,10 +23,12 @@ namespace MSL.pages.frpProviders
     {
         private readonly string ChmlFrpApiUrl = "https://cf-v1.uapis.cn";
         private string ChmlToken, ChmlID;
+        public Action _onReturn;
 
-        public ChmlFrp()
+        public ChmlFrp(Action onReturn)
         {
             InitializeComponent();
+            _onReturn = onReturn;
         }
 
         private bool isInit = false;
@@ -356,7 +358,7 @@ namespace MSL.pages.frpProviders
                     Config.WriteFrpcConfig(2, $"ChmlFrp - {selectedTunnel.Name}({selectedTunnel.Node})", FrpcConfig, "");
                     LogHelper.Write.Info("frpc 配置文件生成并写入成功。");
                     await MagicShow.ShowMsgDialogAsync(Window.GetWindow(this), "映射配置成功，请您点击“启动内网映射”以启动映射！", "信息");
-                    Window.GetWindow(this).Close();
+                    _onReturn.Invoke();
                 }
                 catch (Exception ex)
                 {
