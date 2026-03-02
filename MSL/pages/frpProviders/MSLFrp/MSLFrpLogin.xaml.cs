@@ -70,7 +70,7 @@ namespace MSL.pages.frpProviders.MSLFrp
                     return;
                 }
                 LogHelper.Write.Error($"用户 '{userAccount}' 登录失败。错误信息: {Msg}");
-                MagicShow.ShowMsgDialog(Msg, "错误");
+                MagicShow.ShowMsgDialog(Functions.GetWindow(this), Msg, "错误");
                 return;
             }
 
@@ -110,7 +110,7 @@ namespace MSL.pages.frpProviders.MSLFrp
             if (!Success)
             {
                 LogHelper.Write.Error($"用户 '{userAccount}' 2FA登录失败。错误信息: {Msg}");
-                MagicShow.ShowMsgDialog(Msg, "错误");
+                MagicShow.ShowMsgDialog(Functions.GetWindow(this), Msg, "错误");
                 return;
             }
 
@@ -145,7 +145,7 @@ namespace MSL.pages.frpProviders.MSLFrp
             {
                 LogHelper.Write.Error($"请求重发2FA验证码失败。API返回代码: {Code}, 消息: {Msg}");
                 Auth2FAResend.IsEnabled = true;
-                MagicShow.ShowMsgDialog(Msg, "错误");
+                MagicShow.ShowMsgDialog(Functions.GetWindow(this), Msg, "错误");
                 return;
             }
             LogHelper.Write.Info("已成功请求发送2FA验证码。");
@@ -249,7 +249,7 @@ namespace MSL.pages.frpProviders.MSLFrp
             else
             {
                 LogHelper.Write.Error($"初始化浏览器登录失败: {msg}");
-                MagicShow.ShowMsgDialog(msg, "错误");
+                MagicShow.ShowMsgDialog(Functions.GetWindow(this), msg, "错误");
             }
         }
 
@@ -372,7 +372,7 @@ namespace MSL.pages.frpProviders.MSLFrp
                     {
                         // 出现错误
                         LogHelper.Write.Error($"轮询失败。代码: {Code}, 消息: {Msg}");
-                        MagicShow.ShowMsgDialog(Msg ?? "登录已超时或失败，请重试。", "登录失败");
+                        MagicShow.ShowMsgDialog(Functions.GetWindow(this), Msg ?? "登录已超时或失败，请重试。", "登录失败");
                         CancelBrowserLoginButton_Click(null, null); // 自动取消
                         return; // 结束轮询
                     }
@@ -388,7 +388,7 @@ namespace MSL.pages.frpProviders.MSLFrp
             catch (Exception ex)
             {
                 LogHelper.Write.Error($"轮询时发生意外错误: {ex.Message}");
-                MagicShow.ShowMsgDialog($"轮询时发生错误: {ex.Message}", "错误");
+                MagicShow.ShowMsgDialog(Functions.GetWindow(this), $"轮询时发生错误: {ex.Message}", "错误");
                 CancelBrowserLoginButton_Click(null, null); // 自动取消
             }
             finally
@@ -430,7 +430,7 @@ namespace MSL.pages.frpProviders.MSLFrp
             else
             {
                 LogHelper.Write.Error($"使用App Token登录失败。代码: {Code}, 消息: {Msg}");
-                MagicShow.ShowMsgDialog(Msg, "登录失败");
+                MagicShow.ShowMsgDialog(Functions.GetWindow(this), Msg, "登录失败");
                 CancelBrowserLoginButton_Click(null, null); // 失败 返回登录界面
             }
         }

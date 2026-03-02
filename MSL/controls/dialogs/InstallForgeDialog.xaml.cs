@@ -59,7 +59,7 @@ namespace MSL.controls
             await Install();
         }
 
-        //安装forge的主方法
+        //安装forge的主方法CancelButton_Click
         private async Task Install()
         {
             try

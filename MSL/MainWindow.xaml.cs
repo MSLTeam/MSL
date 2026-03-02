@@ -102,14 +102,14 @@ namespace MSL
             catch (FileNotFoundException ex)
             {
                 LogHelper.Write.Error($"执行主窗体初始化任务时出错： {ex}");
-                MagicShow.ShowMsgDialog(
+                MagicShow.ShowMsgDialog(this,
                     $"软件加载时出现错误！\n请检查您是否安装了.NET Framework 4.7.2运行库，若安装后依旧出错，请联系作者！\n错误信息：{ex.Message}",
                     "错误");
             }
             catch (Exception ex)
             {
                 LogHelper.Write.Error($"执行主窗体初始化任务时出错： {ex}");
-                MagicShow.ShowMsgDialog(
+                MagicShow.ShowMsgDialog(this,
                     $"软件加载时出现错误！若无法正常使用，请联系作者进行解决。\n错误信息：{ex.Message}",
                     "错误");
             }
@@ -355,7 +355,7 @@ namespace MSL
                     catch (Exception ex)
                     {
                         LogHelper.Write.Error(ex.ToString());
-                        MagicShow.ShowMsgDialog(
+                        MagicShow.ShowMsgDialog(this,
                             LanguageManager.Instance["MainWindow_GrowlMsg_AutoLaunchServerErr"] + ex.Message,
                             LanguageManager.Instance["Error"]);
                     }
@@ -371,7 +371,7 @@ namespace MSL
                     catch (Exception ex)
                     {
                         LogHelper.Write.Error(ex.ToString());
-                        MagicShow.ShowMsgDialog(
+                        MagicShow.ShowMsgDialog(this,
                             LanguageManager.Instance["MainWindow_GrowlMsg_AutoLaunchFrpcErr"] + ex.Message,
                             LanguageManager.Instance["Error"]);
                     }

@@ -142,212 +142,56 @@ namespace MSL.pages
             return downUrl;
         }
 
+        private static bool IsSequentialDownload(string serverType) => serverType is "vanilla" or "forge" or "neoforge";
         private async Task DownloadServerFunc()
         {
-            if (serverCoreList.SelectedIndex == -1 || coreVersionList.SelectedIndex == -1 || versionBuildList.SelectedIndex == -1)
+            if (serverCoreList.SelectedIndex == -1 ||
+                coreVersionList.SelectedIndex == -1 ||
+                versionBuildList.SelectedIndex == -1)
             {
                 MagicShow.ShowMsgDialog(this, "请检查您是否已正确选择 服务端-版本-构建版本 ！", "错误");
                 return;
             }
+
             string downServer = serverCoreList.SelectedValue.ToString();
             string downVersion = coreVersionList.SelectedValue.ToString();
             string downBuild = versionBuildList.SelectedValue.ToString();
-            if (downBuild.Contains("latest"))
+
+            if (DownloadMode == Mode.FreeDownload)
             {
-                downBuild = "latest";
-            }
-            JObject downContext = await HttpService.GetApiContentAsync("download/server/" + downServer + "/" + downVersion + "?build=" + downBuild);
-            string downUrl = downContext["data"]["url"].ToString();
+                // ── 自由下载模式：只加入下载列表，不等待，不安装 ──
+                // 获取下载信息后直接丢给 DownloadManager，无需走 ServerCoreInstaller
+                string buildQuery = downBuild.Contains("latest") ? "latest" : downBuild;
+                JObject dlContext = await HttpService.GetApiContentAsync(
+                    $"download/server/{downServer}/{downVersion}?build={buildQuery}");
+                string dlUrl = MriiorCheck(dlContext["data"]["url"].ToString());
+                string sha256Exp = dlContext["data"]["sha256"]?.ToString() ?? string.Empty;
+                string filename = $"{downServer}-{downVersion}.jar";
+                bool enableParallel = !IsSequentialDownload(downServer);
 
-            downUrl = MriiorCheck(downUrl);
-            string sha256Exp = downContext["data"]["sha256"]?.ToString() ?? string.Empty;
-            string filename = downServer + "-" + downVersion + ".jar";
+                var dwnManager = DownloadManager.Instance;
+                string groupId = dwnManager.CreateDownloadGroup();
+                dwnManager.AddDownloadItem(groupId, dlUrl, SavingPath, filename, sha256Exp,
+                                           enableParallel: enableParallel);
+                dwnManager.StartDownloadGroup(groupId);
+                DownloadManagerDialog.Instance.ManagerControl.AddDownloadGroup(groupId, true);
 
-
-            bool _enableParalle = true;
-            if (downServer == "vanilla" || downServer == "forge" || downServer == "neoforge")
-                _enableParalle = false;
-
-            await FinalStep(downServer, downVersion, filename, downUrl, sha256Exp, _enableParalle); // 下载处理步骤
-        }        
-
-        private async Task FinalStep(string downServer, string downVersion, string filename,string downUrl,string sha256Exp,bool _enableParalle)
-        {
-            var dwnManager = DownloadManager.Instance;
-            string groupid = dwnManager.CreateDownloadGroup(isTempGroup: true);
-            dwnManager.AddDownloadItem(groupid, downUrl, SavingPath, filename, sha256Exp, enableParallel: _enableParalle);
-            var token = Guid.NewGuid().ToString();
-            Dialog.SetToken(this, token);
-            DownloadManagerDialog.Instance.LoadDialog(token, false);
-            Dialog.Show(DownloadManagerDialog.Instance, token);
-
-            string installReturn;
-            switch (downServer)
-            {
-                case "spongeforge":
-                    string forgeName = downServer.Replace("spongeforge", "forge");
-                    string _filename = forgeName + ".jar";
-                    JObject _dlContext = await HttpService.GetApiContentAsync("download/server/" + forgeName + "/" + downVersion);
-                    string _dlUrl = _dlContext["data"]["url"].ToString();
-                    _dlUrl = MriiorCheck(_dlUrl);
-                    string _sha256Exp = _dlContext["data"]["sha256"]?.ToString() ?? string.Empty;
-                    dwnManager.AddDownloadItem(groupid, _dlUrl, SavingPath, _filename, _sha256Exp, enableParallel: _enableParalle);
-
-                    dwnManager.StartDownloadGroup(groupid);
-                    DownloadManagerDialog.Instance.ManagerControl.AddDownloadGroup(groupid, true, autoRemove: true);
-
-                    if (!await dwnManager.WaitForGroupCompletionAsync(groupid))
-                    {
-                        MagicShow.ShowMsgDialog(this, "下载失败！", "提示");
-                        Dialog.Close(token);
-                        return;
-                    }
-                    Dialog.Close(token);
-                    //sponge应当作为模组加载，所以要再下载一个forge才是服务端
-                    try
-                    {
-                        //移动到mods文件夹
-                        Directory.CreateDirectory(SavingPath + "\\mods\\");
-                        if (File.Exists(SavingPath + "\\mods\\" + filename))
-                        {
-                            File.Delete(SavingPath + "\\mods\\" + filename);
-                        }
-                        File.Move(SavingPath + "\\" + filename, SavingPath + "\\mods\\" + filename);
-                    }
-                    catch (Exception e)
-                    {
-                        MagicShow.ShowMsgDialog(this, "Sponge核心移动失败！\n请重试！" + e.Message, "错误");
-                        return;
-                    }
-                    installReturn = await InstallForge(_filename);
-                    if (installReturn == null)
-                    {
-                        MagicShow.ShowMsgDialog(this, "安装失败！", "错误");
-                        return;
-                    }
-
-                    filename = installReturn;
-                    break;
-                case "neoforge":
-                    dwnManager.StartDownloadGroup(groupid);
-                    DownloadManagerDialog.Instance.ManagerControl.AddDownloadGroup(groupid, true, autoRemove: true);
-                    if (!await dwnManager.WaitForGroupCompletionAsync(groupid))
-                    {
-                        MagicShow.ShowMsgDialog(this, "下载失败！", "提示");
-                        Dialog.Close(token);
-                        return;
-                    }
-                    Dialog.Close(token);
-                    installReturn = await InstallForge(filename);
-                    if (installReturn == null)
-                    {
-                        MagicShow.ShowMsgDialog(this, "安装失败！", "错误");
-                        return;
-                    }
-
-                    filename = installReturn;
-                    break;
-                case "forge":
-                    dwnManager.StartDownloadGroup(groupid);
-                    DownloadManagerDialog.Instance.ManagerControl.AddDownloadGroup(groupid, true, autoRemove: true);
-                    if (!await dwnManager.WaitForGroupCompletionAsync(groupid))
-                    {
-                        MagicShow.ShowMsgDialog(this, "下载失败！", "提示");
-                        Dialog.Close(token);
-                        return;
-                    }
-                    Dialog.Close(token);
-                    installReturn = await InstallForge(filename);
-                    if (installReturn == null)
-                    {
-                        MagicShow.ShowMsgDialog(this, "安装失败！", "错误");
-                        return;
-                    }
-
-                    filename = installReturn;
-                    break;
-                case "fabric":
-                    //下载Vanilla端
-                    await DownloadVanilla(SavingPath + "\\.fabric\\server", downVersion + "-server.jar", downVersion, dwnManager, groupid, _enableParalle);
-
-                    if (!await dwnManager.WaitForGroupCompletionAsync(groupid))
-                    {
-                        MagicShow.ShowMsgDialog(this, "下载失败！", "提示");
-                        Dialog.Close(token);
-                        return;
-                    }
-                    Dialog.Close(token);
-                    break;
-                case "paper":
-                case "leaves":
-                case "folia":
-                case "purpur":
-                case "leaf":
-                    //下载Vanilla端
-                    await DownloadVanilla(SavingPath + "\\cache", "mojang_" + downVersion + ".jar", downVersion,dwnManager,groupid,_enableParalle);
-
-                    if (!await dwnManager.WaitForGroupCompletionAsync(groupid))
-                    {
-                        MagicShow.ShowMsgDialog(this, "下载失败！", "提示");
-                        Dialog.Close(token);
-                        return;
-                    }
-                    Dialog.Close(token);
-                    break;
-                default:
-                    break;
-            }
-            FileName = filename;
-            Close();
-        }
-
-        private async Task DownloadVanilla(string path, string filename, string version, DownloadManager dwnManager, string groupid, bool _enableParalle)
-        {
-            JObject downContext = await HttpService.GetApiContentAsync("download/server/vanilla/" + version);
-            string downUrl = downContext["data"]["url"].ToString();
-
-            downUrl = MriiorCheck(downUrl);
-            string sha256Exp = downContext["data"]["sha256"]?.ToString() ?? string.Empty;
-            dwnManager.AddDownloadItem(groupid, downUrl, SavingPath, filename, sha256Exp, enableParallel: _enableParalle);
-            dwnManager.StartDownloadGroup(groupid);
-            DownloadManagerDialog.Instance.ManagerControl.AddDownloadGroup(groupid, true, autoRemove: true);
-        }
-
-        private async Task<string> InstallForge(string filename)
-        {
-            //调用新版forge安装器
-            string[] installForge = await MagicShow.ShowInstallForge(this, SavingPath, filename, JavaPath);
-            Functions functions = new Functions();
-            if (installForge[0] == "0")
-            {
-                if (await MagicShow.ShowMsgDialogAsync(this, "自动安装失败！是否尝试使用命令行安装方式？", "错误", true))
-                {
-                    return Functions.InstallForge(JavaPath, SavingPath, filename, string.Empty, false);
-                }
-                else
-                {
-                    return null;
-                }
-            }
-            else if (installForge[0] == "1")
-            {
-                string _ret = Functions.InstallForge(JavaPath, SavingPath, filename, installForge[1]);
-                if (_ret == null)
-                {
-                    return Functions.InstallForge(JavaPath, SavingPath, filename, string.Empty, false);
-                }
-                else
-                {
-                    return _ret;
-                }
-            }
-            else if (installForge[0] == "3")
-            {
-                return Functions.InstallForge(JavaPath, SavingPath, filename, string.Empty, false);
+                MagicFlowMsg.ShowMessage("已添加至下载列表~");
             }
             else
             {
-                return null;
+                // ── 正常安装模式：交由 ServerCoreInstaller 完成下载+安装 ──
+                var installer = new ServerCoreInstaller(this, SavingPath, JavaPath, useMirror: UseMirrorUrl.IsChecked == true);
+                var result = await installer.DownloadAndInstallAsync(downServer, downVersion, downBuild);
+
+                if (!result.Success)
+                {
+                    // 错误信息已在 ServerCoreInstaller 内部通过 MagicShow 弹出，此处直接返回
+                    return;
+                }
+
+                FileName = result.FinalFileName;
+                Close();
             }
         }
 

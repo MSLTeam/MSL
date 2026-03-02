@@ -1864,7 +1864,7 @@ namespace MSL
 
                 _ = Task.Run(LoadJavaInfo);
 
-                var RserverJVM = ServerService.ServerMem;  // 之前的JVM就是重构后的MEM，千万不要再搞混了QWQ
+                var RserverJVM = ServerService.ServerMem ?? string.Empty;  // 之前的JVM就是重构后的MEM，千万不要再搞混了QWQ
                 if (RserverJVM == "")
                 {
                     memorySlider.IsEnabled = false;
@@ -2052,17 +2052,19 @@ namespace MSL
                             }
                             else if (Status == 3)
                             {
-                                MagicShow.ShowMsgDialog("下载取消！", "提示");
+                                MagicShow.ShowMsgDialog(this, "下载取消！", "提示");
                                 return;
                             }
                             else
                             {
-                                MagicShow.ShowMsgDialog("下载失败！\n" + Msg, "错误");
+                                MagicShow.ShowMsgDialog(this, "下载失败！\n" + Msg, "错误");
                                 return;
                             }
                         }
                         catch
                         {
+                            doneBtn1.IsEnabled = true;
+                            refreahConfig.IsEnabled = true;
                             Growl.Error("出现错误，请检查网络连接！");
                             return;
                         }
@@ -3111,7 +3113,7 @@ namespace MSL
                 uniformStack.Children.Add(new TextBlock { Text = "别名（如：o，可在控制台快速调用，非必填）：" });
                 uniformStack.Children.Add(aliasBox);
 
-                await MagicShow.ShowMsgDialogAsync("添加快捷指令", "输入", uIElement: uniformStack);
+                await MagicShow.ShowMsgDialogAsync(this, "添加快捷指令", "输入", uIElement: uniformStack);
 
                 // 读取三个 TextBox 的值
                 string newCmd = cmdBox.Text.Trim();

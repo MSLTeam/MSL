@@ -6,6 +6,7 @@ using System;
 using System.Collections.Generic;
 using System.Diagnostics;
 using System.IO;
+using System.Linq;
 using System.Management;
 using System.Security.Cryptography;
 using System.Text;
@@ -80,59 +81,44 @@ namespace MSL.utils
             return Tuple.Create(versionIntParts[0], versionIntParts[1], versionIntParts[2], versionIntParts[3]);
         }
 
-        public async static Task MoveFolder(string sourcePath, string destPath, bool deleteSource = true)
+        public static async Task MoveFolder(string sourcePath, string destPath, bool deleteSource = true)
         {
-            if (Directory.Exists(sourcePath))
-            {
-                // 检查目标路径是否是源路径的子目录
-                if (destPath.StartsWith(sourcePath, StringComparison.OrdinalIgnoreCase))
-                {
-                    throw new InvalidOperationException("目标目录不能是源目录的子目录。");
-                }
-                if (!Directory.Exists(destPath))
-                {
-                    try
-                    {
-                        Directory.CreateDirectory(destPath);
-                    }
-                    catch (Exception ex)
-                    {
-                        throw new Exception("创建目标目录失败：" + ex.Message);
-                    }
-                }
-                List<string> files = new List<string>(Directory.GetFiles(sourcePath));
-                files.ForEach(c =>
-                {
-                    string destFile = Path.Combine(new string[] { destPath, Path.GetFileName(c) });
-                    if (File.Exists(destFile))
-                    {
-                        File.Delete(destFile);
-                    }
-                    if (deleteSource)
-                    {
-                        File.Move(c, destFile);
-                    }
-                    else
-                    {
-                        File.Copy(c, destFile);
-                    }
-                });
-                List<string> folders = new List<string>(Directory.GetDirectories(sourcePath));
+            if (!Directory.Exists(sourcePath))
+                throw new DirectoryNotFoundException("源目录不存在：" + sourcePath);
 
-                folders.ForEach(async c =>
-                {
-                    string destDir = Path.Combine(new string[] { destPath, Path.GetFileName(c) });
-                    await MoveFolder(c, destDir, deleteSource);
-                });
-                if (deleteSource)
-                {
-                    Directory.Delete(sourcePath);
-                }
-            }
-            else
+            // 检查目标路径是否是源路径的子目录
+            string fullSource = Path.GetFullPath(sourcePath).TrimEnd(Path.DirectorySeparatorChar) + Path.DirectorySeparatorChar;
+            string fullDest = Path.GetFullPath(destPath).TrimEnd(Path.DirectorySeparatorChar) + Path.DirectorySeparatorChar;
+            if (fullDest.StartsWith(fullSource, StringComparison.OrdinalIgnoreCase))
+                throw new InvalidOperationException("目标目录不能是源目录的子目录。");
+
+            Directory.CreateDirectory(destPath);
+
+            // 并行移动/复制当前目录下的所有文件
+            var fileTasks = Directory.GetFiles(sourcePath).Select(srcFile => Task.Run(() =>
             {
-                throw new DirectoryNotFoundException("源目录不存在！");
-            }
+                string destFile = Path.Combine(destPath, Path.GetFileName(srcFile));
+                if (File.Exists(destFile))
+                    File.Delete(destFile);
+
+                if (deleteSource)
+                    File.Move(srcFile, destFile);
+                else
+                    File.Copy(srcFile, destFile);
+            }));
+
+            // 并行递归处理所有子目录
+            var dirTasks = Directory.GetDirectories(sourcePath).Select(srcDir =>
+            {
+                string destDir = Path.Combine(destPath, Path.GetFileName(srcDir));
+                return MoveFolder(srcDir, destDir, deleteSource); // 递归，返回 Task
+            });
+
+            // 等待所有文件和子目录都处理完毕
+            await Task.WhenAll(fileTasks.Concat(dirTasks));
+
+            if (deleteSource)
+                Directory.Delete(sourcePath, recursive: false);  // 此时源目录被清空，可以安全删除
         }
 
         /// <summary>
@@ -157,7 +143,7 @@ namespace MSL.utils
                 Dialog.SetToken(window, token);
                 DownloadManagerDialog.Instance.LoadDialog(token, false);
                 Dialog.Show(DownloadManagerDialog.Instance, token);
-                DownloadManagerDialog.Instance.ManagerControl.AddDownloadGroup(groupid, autoRemove: true);
+                DownloadManagerDialog.Instance.ManagerControl.AddDownloadGroup(groupid, true, true, true);
                 bool downDialog = await dwnManager.WaitForGroupCompletionAsync(groupid);
                 Dialog.Close(token);
                 await Task.Delay(150);

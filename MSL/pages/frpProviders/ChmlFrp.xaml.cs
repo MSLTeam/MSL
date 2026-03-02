@@ -276,7 +276,7 @@ namespace MSL.pages.frpProviders
                 catch (Exception ex)
                 {
                     LogHelper.Write.Error($"解析隧道列表时发生未知异常: {ex.ToString()}");
-                    MagicShow.ShowMsgDialog(ex.Message, "错误");
+                    MagicShow.ShowMsgDialog(Functions.GetWindow(this), ex.Message, "错误");
                 }
             }
             catch (Exception e)

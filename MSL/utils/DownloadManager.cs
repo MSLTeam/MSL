@@ -12,7 +12,7 @@ using System.Threading.Tasks;
 
 namespace MSL.utils
 {
-    public class DownloadManager:IDisposable
+    public class DownloadManager : IDisposable
     {
         #region 单例模式
         private static readonly Lazy<DownloadManager> _instance = new Lazy<DownloadManager>(() => new DownloadManager());
@@ -559,7 +559,7 @@ namespace MSL.utils
             // 更新进度信息
             item.Progress.ReceivedBytes = e.ReceivedBytesSize;
             item.Progress.TotalBytes = e.TotalBytesToReceive;
-            item.Progress.ProgressPercentage = e.ProgressPercentage;
+            item.Progress.ProgressPercentage = Math.Round(e.ProgressPercentage, 2);
             item.Progress.BytesPerSecond = e.BytesPerSecondSpeed;
 
             // 触发进度变更事件
@@ -698,7 +698,9 @@ namespace MSL.utils
 
             // 更新进度信息
             item.Progress.ReceivedBytes = totalDownloadedByte;
-            item.Progress.ProgressPercentage = totalBytes > 0 ? (double)totalDownloadedByte * 100 / totalBytes : 0;
+            item.Progress.ProgressPercentage = totalBytes > 0
+                ? Math.Round((double)totalDownloadedByte * 100 / totalBytes, 2)
+                : 0;
             item.Progress.BytesPerSecond = bytesPerSecond;
 
             // 触发进度变更事件

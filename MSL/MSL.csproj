@@ -173,6 +173,7 @@
     <Compile Include="utils\MCServerLogHelper.cs" />
     <Compile Include="utils\MCServerService.cs" />
     <Compile Include="utils\MinecraftServerTerm.cs" />
+    <Compile Include="utils\ServerCoreInstaller.cs" />
     <Compile Include="utils\ServerRunnerModel.cs" />
     <Compile Include="utils\ShowService.cs" />
     <Compile Include="controls\dialogs\TextDialog.xaml.cs">

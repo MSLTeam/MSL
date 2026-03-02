@@ -143,7 +143,12 @@ namespace MSL.pages.frpProviders.MSLFrp
         private async void RealnameVerify_Button_Click(object sender, RoutedEventArgs e)
         {
             LogHelper.Write.Info("用户点击实名认证按钮。");
-            if (await MagicShow.ShowMsgDialogAsync("请选择实名方式: \n#MSL用户中心网页实名: 支持微信、支付宝实名(其中支付宝支持港澳台居民实名);\n#MSL内实名: 仅支持中国大陆居民身份证支付宝实名 (二维码较小，有扫不到的可能);\n实名费用: 会员免费支付宝实名，支付宝实名150积分，微信实名200积分。\n*特别提醒：由于用户自身填写错误的实名信息，积分一旦扣除将无法退还！", "提示", true, "MSL内实名(仅支持支付宝)", "MSL用户中心实名(支付宝/微信)"))
+            if (await MagicShow.ShowMsgDialogAsync(Functions.GetWindow(this), 
+                "请选择实名方式: \n#MSL用户中心网页实名: 支持微信、支付宝实名(其中支付宝支持港澳台居民实名);\n" +
+                "#MSL内实名: 仅支持中国大陆居民身份证支付宝实名 (二维码较小，有扫不到的可能);\n" +
+                "实名费用: 会员免费支付宝实名，支付宝实名150积分，微信实名200积分。\n" +
+                "*特别提醒：由于用户自身填写错误的实名信息，积分一旦扣除将无法退还！", "提示", true,
+                "MSL内实名(仅支持支付宝)", "MSL用户中心实名(支付宝/微信)"))
             {
                 LogHelper.Write.Info("用户选择前往MSL用户中心网页进行实名。");
                 Process.Start("https://user.mslmc.net/user/profile");
@@ -169,8 +174,11 @@ namespace MSL.pages.frpProviders.MSLFrp
                 { "cert_type", "IDENTITY_CARD" },
                 { "verify_type", "alipay" }
             };
-            if (!await MagicShow.ShowMsgDialogAsync($"请确认如下实名信息是否正确:\n姓名:{certName}\n身份证号码:{certID}\n确认无误后，请点击确认按钮进入支付宝扫码人脸识别流程\n*注意:非会员一旦确认提交信息，将会立即扣除150积分(若因用户自身填写错误的信息导致认证失败，实名小号积分不予退换。)，若需要取消上一次的实名订单，请加群联系管理员。(Q群" +
-                $"信息在软件首页)", "实名信息确认", true, "取消", "我已确认信息无误"))
+            if (!await MagicShow.ShowMsgDialogAsync(Functions.GetWindow(this), $"请确认如下实名信息是否正确:\n姓名:{certName}\n" +
+                $"身份证号码:{certID}\n确认无误后，请点击确认按钮进入支付宝扫码人脸识别流程\n" +
+                $"*注意:非会员一旦确认提交信息，将会立即扣除150积分(若因用户自身填写错误的信息导致认证失败，实名小号积分不予退换。)，" +
+                $"若需要取消上一次的实名订单，请加群联系管理员。(Q群信息在软件首页)", 
+                "实名信息确认", true, "取消", "我已确认信息无误"))
             {
                 return;
             }
@@ -192,7 +200,7 @@ namespace MSL.pages.frpProviders.MSLFrp
                 {
                     qrCodeImageBox.Source = BitmapConverter.ConvertToImageSource(qrCodeImage);
                 }
-                if (await MagicShow.ShowMsgDialogAsync(Msg, "实名认证", true, "取消实名", "认证完成", qrCodeImageBox))
+                if (await MagicShow.ShowMsgDialogAsync(Functions.GetWindow(this), Msg, "实名认证", true, "取消实名", "认证完成", qrCodeImageBox))
                 {
                     LogHelper.Write.Info("用户已扫码并点击'认证完成'，开始查询认证结果。");
                     (Code, Data, Msg) = await MSLFrpApi.ApiGet("/user/getRealNameVerifyResult");
@@ -200,14 +208,14 @@ namespace MSL.pages.frpProviders.MSLFrp
                     {
                         LogHelper.Write.Info($"查询实名认证结果成功, Passed: {(bool)Data["passed"]}");
                         if ((bool)Data["passed"])
-                            MagicShow.ShowMsgDialog("实名认证成功！", "成功");
+                            MagicShow.ShowMsgDialog(Functions.GetWindow(this), "实名认证成功！", "成功");
                         else
-                            MagicShow.ShowMsgDialog("实名认证未通过！", "失败");
+                            MagicShow.ShowMsgDialog(Functions.GetWindow(this), "实名认证未通过！", "失败");
                     }
                     else
                     {
                         LogHelper.Write.Error($"查询实名认证结果失败, Code: {Code}, Msg: {Msg}");
-                        MagicShow.ShowMsgDialog(Msg, "错误");
+                        MagicShow.ShowMsgDialog(Functions.GetWindow(this), Msg, "错误");
                     }
                     await GetUserInfo();
                 }
@@ -219,7 +227,7 @@ namespace MSL.pages.frpProviders.MSLFrp
             else
             {
                 LogHelper.Write.Error($"提交实名认证信息失败, Code: {Code}, Msg: {Msg}");
-                MagicShow.ShowMsgDialog(Msg, "错误");
+                MagicShow.ShowMsgDialog(Functions.GetWindow(this), Msg, "错误");
             }
             RealnameVerify_Button.IsEnabled = true;
         }
@@ -461,19 +469,19 @@ namespace MSL.pages.frpProviders.MSLFrp
                 {
                     qrCodeImageBox.Source = BitmapConverter.ConvertToImageSource(qrCodeImage);
                 }
-                if (await MagicShow.ShowMsgDialogAsync("订单号：" + Data["out_trade_no"], "支付", true, "取消支付", "支付完成", qrCodeImageBox))
+                if (await MagicShow.ShowMsgDialogAsync(Functions.GetWindow(this), "订单号：" + Data["out_trade_no"], "支付", true, "取消支付", "支付完成", qrCodeImageBox))
                 {
                     LogHelper.Write.Info($"用户点击'支付完成'，开始查询订单支付结果, 订单号: {Data["out_trade_no"]}");
                     (Code, _, Msg) = await MSLFrpApi.ApiGet("/shop/getPayResult?order=" + Data["out_trade_no"]);
                     if (Code == 200)
                     {
                         LogHelper.Write.Info($"查询支付结果成功, Msg: {Msg}");
-                        MagicShow.ShowMsgDialog(Msg, "成功");
+                        MagicShow.ShowMsgDialog(Functions.GetWindow(this), Msg, "成功");
                     }
                     else
                     {
                         LogHelper.Write.Error($"查询支付结果失败, Code: {Code}, Msg: {Msg}");
-                        MagicShow.ShowMsgDialog(Msg, "错误");
+                        MagicShow.ShowMsgDialog(Functions.GetWindow(this), Msg, "错误");
                     }
                     await GetUserInfo();
                 }
@@ -492,7 +500,7 @@ namespace MSL.pages.frpProviders.MSLFrp
 
         private void AskBtn_Click(object sender, RoutedEventArgs e)
         {
-            MagicShow.ShowMsgDialog("若您遇到了付款的问题，请加Q群1023417539联系管理。\n请勿直接在订单发起投诉，这样只会加长处理周期和麻烦。\n感谢您的配合~", "付款问题");
+            MagicShow.ShowMsgDialog(Functions.GetWindow(this), "若您遇到了付款的问题，请加Q群1023417539联系管理。\n请勿直接在订单发起投诉，这样只会加长处理周期和麻烦。\n感谢您的配合~", "付款问题");
         }
     }
 }

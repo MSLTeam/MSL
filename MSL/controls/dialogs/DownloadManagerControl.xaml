@@ -19,11 +19,27 @@
             <!-- 下载项列表 -->
             <control:MagicListBox1 x:Name="DownloadItemsListView" hc:Empty.ShowEmpty="True" MinHeight="100"  BorderThickness="0"
               ScrollViewer.HorizontalScrollBarVisibility="Disabled" SelectionMode="Single" HorizontalContentAlignment="Stretch">
+                <control:MagicListBox1.ItemContainerStyle>
+                    <Style TargetType="ListBoxItem">
+                        <!-- 隐藏控制 -->
+                        <Setter Property="Visibility" Value="{Binding ItemVisibility}" />
+                        <!-- 禁用选中高亮效果 -->
+                        <Setter Property="Template">
+                            <Setter.Value>
+                                <ControlTemplate TargetType="ListBoxItem">
+                                    <Border BorderThickness="1" CornerRadius="7" Margin="3"
+                                            Padding="7" BorderBrush="{DynamicResource BorderBrush}">
+                                        <ContentPresenter/>
+                                    </Border>
+                                </ControlTemplate>
+                            </Setter.Value>
+                        </Setter>
+                    </Style>
+                </control:MagicListBox1.ItemContainerStyle>
                 <control:MagicListBox1.ItemTemplate>
                     <DataTemplate>
                         <Grid>
                             <Grid.RowDefinitions>
-                                <RowDefinition Height="Auto"/>
                                 <RowDefinition Height="Auto"/>
                                 <RowDefinition Height="Auto"/>
                                 <RowDefinition Height="Auto"/>
@@ -34,34 +50,46 @@
                             </Grid.ColumnDefinitions>
 
                             <!-- 文件名和URL -->
-                            <TextBlock Grid.Row="0" Grid.Column="0" Text="{Binding Filename}" 
-                                   TextTrimming="CharacterEllipsis" FontWeight="DemiBold"
-                                   Style="{StaticResource MagicText14}" Margin="0,0,0,5"/>
-                            <TextBlock Grid.Row="1" Grid.Column="0" Text="{Binding Url}" 
-                                   TextTrimming="CharacterEllipsis" Opacity="0.7"
-                                   Style="{StaticResource MagicText}" Margin="0,0,0,5"/>
+                            <Grid Grid.Row="0" Margin="0,0,0,5">
+                                <Grid.ColumnDefinitions>
+                                    <ColumnDefinition Width="*"/>
+                                    <ColumnDefinition Width="10"/>
+                                    <ColumnDefinition Width="*"/>
+                                </Grid.ColumnDefinitions>
+                                <TextBlock Grid.Column="0" Text="{Binding Filename}" TextTrimming="CharacterEllipsis"
+                                           FontWeight="DemiBold" Style="{StaticResource MagicText14}"/>
+                                <TextBlock Grid.Column="2" Text="{Binding Url}" TextTrimming="CharacterEllipsis"
+                                           Opacity="0.7" Style="{StaticResource MagicText}" VerticalAlignment="Center"/>
+                            </Grid>
+                            
 
                             <!-- 进度条 -->
-                            <ProgressBar Grid.Row="2" Grid.Column="0" Grid.ColumnSpan="2" Margin="0,5"
-                                     Value="{Binding Progress.ProgressPercentage}" 
-                                     Height="15" Maximum="100"/>
+                            <ProgressBar Grid.Row="1" Grid.Column="0" Grid.ColumnSpan="2" Margin="0,5"
+                                     Value="{Binding Progress.ProgressPercentage}" Style="{StaticResource ProgressBarFlat}"
+                                     Height="3"/>
 
                             <!-- 下载信息和状态 -->
-                            <WrapPanel Grid.Row="3" Grid.Column="0" Orientation="Horizontal" Margin="0,5,0,0">
-                                <TextBlock Style="{StaticResource MagicText14}" Margin="0,0,15,0">
-                                    <Run Text="速度："/><Run Text="{Binding SpeedText}"/>
-                                    <Run Text=" 剩余时间："/><Run Text="{Binding RemainingText}"/>
+                            <WrapPanel Grid.Row="2" Grid.Column="0" Orientation="Horizontal" Margin="0,5,0,0">
+                                <TextBlock Style="{StaticResource MagicText}" Margin="0,0,15,0" VerticalAlignment="Center">
+                                    <Run Text="{Binding Progress.ProgressPercentage}"/><Run Text="%"/>
+                                    <Run Text="  "/>
+                                    <Run Text="速度："/>
+                                    <Run Text="{Binding SpeedText}"/>
+                                    <Run Text="  "/>
+                                    <Run Text=" 剩余时间："/>
+                                    <Run Text="{Binding RemainingText}"/>
                                 </TextBlock>
-                                <TextBlock Text="{Binding StatusText}" Style="{StaticResource MagicText14}" TextWrapping="Wrap"/>
+                                <TextBlock Text="{Binding StatusText}" Style="{StaticResource MagicText}"
+                                           VerticalAlignment="Center" TextWrapping="Wrap"/>
                             </WrapPanel>
 
                             <!-- 操作按钮 -->
-                            <StackPanel Grid.Row="3" Grid.Column="1" Orientation="Horizontal" Margin="5,5,0,0">
+                            <StackPanel Grid.Row="2" Grid.Column="1" Orientation="Horizontal">
                                 <Button x:Name="PauseResumeButton" Content="{Binding PauseResumeButtonText}" 
                                     Width="60" Margin="0,0,5,0" Tag="{Binding ItemId}"
                                     Click="PauseResumeButton_Click"/>
                                 <Button x:Name="CancelRemoveButton" Content="{Binding CancelRemoveButtonText}" 
-                                    Width="50" Margin="0,0,5,0" Tag="{Binding ItemId}"
+                                    Width="60" Tag="{Binding ItemId}"
                                     Click="CancelRemoveButton_Click"/>
                             </StackPanel>
                         </Grid>

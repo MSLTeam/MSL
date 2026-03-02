@@ -173,11 +173,11 @@ namespace MSL.pages
             string url = DownloadUrl.Text;
             if (string.IsNullOrWhiteSpace(url))
             {
-                MagicShow.ShowMsgDialog("请输入地址后再进行下载！", "提示");
+                MagicShow.ShowMsgDialog(Functions.GetWindow(this), "请输入地址后再进行下载！", "提示");
                 return;
             }
             string filename = await HttpService.GetRemoteFileNameAsync(url);
-            if (!await MagicShow.ShowMsgDialogAsync(
+            if (!await MagicShow.ShowMsgDialogAsync(Functions.GetWindow(this),
                 $"URL: {url}\n文件名称: {filename}\n文件将保存至 MSL\\Downloads 文件夹内！\n\n点击确定以下载", "信息", true))
                 return;
 
@@ -200,7 +200,7 @@ namespace MSL.pages
 
         private async void setdefault_Click(object sender, RoutedEventArgs e)
         {
-            if (!await MagicShow.ShowMsgDialogAsync(
+            if (!await MagicShow.ShowMsgDialogAsync(Functions.GetWindow(this),
                 "恢复默认设置会清除MSL文件夹内的所有文件，请您谨慎选择！", "警告", true, isDangerPrimaryBtn: true))
                 return;
             try { Directory.Delete(@"MSL", true); } catch { }
@@ -502,7 +502,7 @@ namespace MSL.pages
             }
             else
             {
-                MagicShow.ShowMsgDialog("请输入有效的字体大小！", "错误");
+                MagicShow.ShowMsgDialog(Functions.GetWindow(this), "请输入有效的字体大小！", "错误");
                 return;
             }
             Cfg.Save();
@@ -705,7 +705,7 @@ namespace MSL.pages
             }
 
             MagicFlowMsg.ShowMessage("你真厉害！居然猜对了！", 1);
-            bool knows = await MagicShow.ShowMsgDialogAsync($"猜对了：{num}！\n你真厉害！", "恭喜你！", true, "不，我不知道", "我知道了");
+            bool knows = await MagicShow.ShowMsgDialogAsync(Functions.GetWindow(this), $"猜对了：{num}！\n你真厉害！", "恭喜你！", true, "不，我不知道", "我知道了");
             Window.GetWindow(this).Title = knows ? ":)" : ":(";
         }
 
@@ -721,7 +721,7 @@ namespace MSL.pages
                 return;
             }
 
-            bool go = await MagicShow.ShowMsgDialogAsync(
+            bool go = await MagicShow.ShowMsgDialogAsync(Functions.GetWindow(this),
                 "点击此按钮后软件出现任何问题作者概不负责，你确定要继续吗？\n（光敏性癫痫警告！若您患有光敏性癫痫，请不要点击确定！）",
                 "警告", true, isDangerPrimaryBtn: true, closeBtnContext: "我不确定QWQ");
             _isWesternEgg = 1;

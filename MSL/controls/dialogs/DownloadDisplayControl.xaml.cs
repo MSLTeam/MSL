@@ -2,6 +2,7 @@
 using System;
 using System.Collections.ObjectModel;
 using System.Linq;
+using System.Threading.Tasks;
 using System.Windows;
 using System.Windows.Controls;
 using System.Windows.Threading;
@@ -111,31 +112,19 @@ namespace MSL.controls.dialogs
         }
 
         #region 事件处理方法
-        /*
-        private int uiChangeCounter = 0; // UI更新计数器
-        private void DownloadManager_DownloadItemProgressChanged(string groupId, string itemId, DownloadProgressInfo progressInfo)
-        {
-            // 避免频繁更新UI
-            if (uiChangeCounter > 0)
-            {
-                uiChangeCounter--;
-                return;
-            }
-            UpdateDownloadItemUI(_downloadManager.GetDownloadItem(itemId));
-            uiChangeCounter = 512;
-        }
-        */
 
-        private void DownloadManager_DownloadItemCompleted(string groupId, string itemId, Exception error = null)
+        private async void DownloadManager_DownloadItemCompleted(string groupId, string itemId, Exception error = null)
         {
             UpdateDownloadItemUI(_downloadManager.GetDownloadItem(itemId));
 
             var item = _downloadItems.FirstOrDefault(i => i.ItemId == itemId);
+            if (item == null)
+                return;
             // 完成后自动移除
-            if (item.AutoRemove ||
-                ((item.Status == DownloadStatus.Completed || item.Status == DownloadStatus.Cancelled) &&
-                (AutoRemoveCompletedItems || item.AutoRemove)))
+            if ((item.Status == DownloadStatus.Completed || item.Status == DownloadStatus.Cancelled || item.Status == DownloadStatus.Failed) &&
+                (AutoRemoveCompletedItems || item.AutoRemove))
             {
+                await Task.Delay(3000);
                 RemoveDownloadItem(itemId);
             }
         }

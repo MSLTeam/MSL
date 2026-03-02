@@ -220,7 +220,7 @@ namespace MSL.pages
                 MagicShow.ShowMsgDialog(Window.GetWindow(this), "请在关闭服务器并关掉服务器窗口后再进行删除！", "警告");
                 return;
             }
-            bool dialogRet = await MagicShow.ShowMsgDialogAsync("您确定要删除该服务器吗？", "提示", true, "取消", isDangerPrimaryBtn: true);
+            bool dialogRet = await MagicShow.ShowMsgDialogAsync(Functions.GetWindow(this), "您确定要删除该服务器吗？", "提示", true, "取消", isDangerPrimaryBtn: true);
             if (!dialogRet)
             {
                 LogHelper.Write.Info($"用户取消了删除服务器ID: {serverID} 的操作。");
@@ -229,7 +229,7 @@ namespace MSL.pages
 
             try
             {
-                bool _dialogRet = await MagicShow.ShowMsgDialogAsync("是否删除该服务器的目录？（服务器目录中的所有文件都会被移至回收站）", "提示", true, "取消", isDangerPrimaryBtn: true);
+                bool _dialogRet = await MagicShow.ShowMsgDialogAsync(Functions.GetWindow(this), "是否删除该服务器的目录？（服务器目录中的所有文件都会被移至回收站）", "提示", true, "取消", isDangerPrimaryBtn: true);
                 if (_dialogRet)
                 {
                     LogHelper.Write.Info($"用户确认删除服务器ID: {serverID} 的文件目录。");
