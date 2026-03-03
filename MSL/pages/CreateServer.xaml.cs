@@ -1166,6 +1166,44 @@ namespace MSL.pages
         }
         private async void FastModeInstallBtn_Click(object sender, RoutedEventArgs e)
         {
+            SetInstallButtonsEnabled(false);
+            try
+            {
+                FastInstallProcess.Text = "当前进度:下载Java……";
+                var selectJava = FinallyJavaCombo.SelectedValue.ToString();
+
+                var (Status, JavaPath, Msg) = await Functions.DownloadJava(Window.GetWindow(this), selectJava,
+                    (await HttpService.GetApiContentAsync("download/jdk/" + selectJava + "?os=windows&arch=x64"))["data"]["url"].ToString());
+                SetInstallButtonsEnabled(true);
+                if (Status == 1 || Status == 2)
+                {
+                    serverjava = JavaPath;
+                    FastInstallProcess.Text = "当前进度:下载服务端……";
+                    await FastModeInstallCore();
+                }
+                else if (Status == 3)
+                {
+                    MagicShow.ShowMsgDialog(Window.GetWindow(this),"下载取消！", "提示");
+                    FastInstallProcess.Text = "取消安装！";
+                    return;
+                }
+                else
+                {
+                    MagicShow.ShowMsgDialog(Window.GetWindow(this),"下载失败！\n" + Msg, "错误");
+                    FastInstallProcess.Text = "取消安装！";
+                    return;
+                }
+            }
+            catch
+            {
+                Growl.Error("出现错误，请检查网络连接！");
+                FastInstallProcess.Text = "取消安装！";
+                return;
+            }
+        }
+
+        private async Task FastModeInstallCore()
+        {
             string finallyServerCore = FinallyCoreCombo.SelectedItem.ToString();
             // 格式：{type}-{version}，例如 "paper-1.21.1"
             int lastDash = finallyServerCore.LastIndexOf('-');

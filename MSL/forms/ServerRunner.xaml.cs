@@ -1349,7 +1349,7 @@ namespace MSL
                 else
                 {
                     MagicFlowMsg.ShowMessage("关服中，请耐心等待……\n双击按钮可强制关服（不建议）");
-                    ServerService.ServerProcess.StandardInput.WriteLine("stop");
+                    ServerService.SendCommand("stop");
                 }
 
                 GetServerInfoLine = 101;
