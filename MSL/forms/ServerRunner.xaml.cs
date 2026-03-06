@@ -3176,6 +3176,7 @@ namespace MSL
         private SortedDictionary<int, bool> taskFlag = new SortedDictionary<int, bool>();  // 存储任务ID，以及状态（是否正在运行）
         private Dictionary<int, string> taskCrons = new Dictionary<int, string>();  // Cron 表达式字符串
         private Dictionary<int, string> taskCmds = new Dictionary<int, string>();  // 要执行的服务器指令
+        private Dictionary<int, CancellationTokenSource> taskCtsMap = new Dictionary<int, CancellationTokenSource>(); // 每个任务的取消令牌
         // 默认值
         private const string DefaultCron = "0 */10 * * * *";   // 每10分钟
         private const string DefaultCmd = "say Hello World!";
@@ -3222,6 +3223,12 @@ namespace MSL
             taskFlag.Remove(selectedId);
             taskCrons.Remove(selectedId);
             taskCmds.Remove(selectedId);
+            // 顺带清理 CTS（正常不应存在，但还是清理下为好~）
+            if (taskCtsMap.TryGetValue(selectedId, out var cts))
+            {
+                cts.Dispose();
+                taskCtsMap.Remove(selectedId);
+            }
 
             RefreshTaskList();
 
@@ -3244,6 +3251,12 @@ namespace MSL
             taskFlag.Clear();
             taskCrons.Clear();
             taskCmds.Clear();
+            // 清理所有 CTS
+            foreach (var cts in taskCtsMap.Values)
+            {
+                cts.Dispose();
+            }
+            taskCtsMap.Clear();
 
             RefreshTaskList();
             loadOrSaveTaskConfig.Content = "加载任务配置";
@@ -3325,11 +3338,26 @@ namespace MSL
                         startTimercmd.IsChecked = false;
                         return;
                     }
+                    // 如果已有旧的 CTS，先取消并释放（防止重复启动）
+                    if (taskCtsMap.TryGetValue(id, out var oldCts))
+                    {
+                        oldCts.Cancel();
+                        oldCts.Dispose();
+                    }
+                    var cts = new CancellationTokenSource();
+                    taskCtsMap[id] = cts;
                     taskFlag[id] = true;
-                    Task.Run(() => TimedTasks(id, taskCrons[id], taskCmds[id]));
+                    Task.Run(() => TimedTasks(id, taskCrons[id], taskCmds[id], cts.Token));
                 }
                 else
                 {
+                    // 取消令牌，立即中断 Task.Delay 等待
+                    if (taskCtsMap.TryGetValue(id, out var cts))
+                    {
+                        cts.Cancel();
+                        cts.Dispose();
+                        taskCtsMap.Remove(id);
+                    }
                     taskFlag[id] = false;
                 }
             }
@@ -3341,61 +3369,83 @@ namespace MSL
         }
 
         // 核心任务循环（Cron）
-        private void TimedTasks(int id, string cronExpr, string cmd)
+        private async Task TimedTasks(int id, string cronExpr, string cmd, CancellationToken token)
         {
             var cron = CronExpression.Parse(cronExpr, CronFormat.IncludeSeconds);
-
-            while (taskFlag.TryGetValue(id, out bool running) && running)
+            try
             {
-                DateTimeOffset now = DateTimeOffset.UtcNow;
-                DateTimeOffset? next = cron.GetNextOccurrence(now, TimeZoneInfo.Local);
+                while (!token.IsCancellationRequested)
+                {
+                    DateTimeOffset now = DateTimeOffset.UtcNow;
+                    DateTimeOffset? next = cron.GetNextOccurrence(now, TimeZoneInfo.Local);
 
-                if (next == null) break;
+                    if (next == null) break;
 
-                // 等待到下次触发时间
-                TimeSpan delay = next.Value - DateTimeOffset.UtcNow;
-                if (delay > TimeSpan.Zero)
-                    Thread.Sleep(delay);
+                    // 等待到下次触发时间，token 取消时立即中断
+                    TimeSpan delay = next.Value - DateTimeOffset.UtcNow;
+                    if (delay > TimeSpan.Zero)
+                        await Task.Delay(delay, token);
 
-                // 检查是否在运行
-                if (!taskFlag.TryGetValue(id, out running) || !running) break;
+                    // 二次确认（Delay 结束后再检查一次）
+                    if (token.IsCancellationRequested) break;
 
+                    await Dispatcher.InvokeAsync(() =>
+                    {
+                        OnTimerTaskRun(id, cmd);
+                    });
+                }
+            }
+            catch (TaskCanceledException)
+            {
+                // 正常取消，忽略异常
+            }
+            finally
+            {
+                // 确保无论何种退出方式，taskFlag 都同步为 false
+                taskFlag[id] = false;
                 Dispatcher.Invoke(() =>
                 {
-                    try
-                    {
-                        if (ServerService.CheckServerRunning())
-                        {
-                            switch (cmd)
-                            {
-                                case ".backup":
-                                    if (MoreOperation.IsEnabled)
-                                    {
-                                        _ = BackupWorld();
-                                        PrintLog("[MSL备份] 定时备份任务开始执行~", Colors.Blue);
-                                    }
-                                    break;
-                                default:
-                                    ServerService.SendCommand(cmd);
-                                    PrintLog($"[MSL定时任务] 执行指令：{cmd}", Colors.Blue);
-                                    break;
-                            }
-
-                            if (tasksList.SelectedIndex != -1 && GetSelectedTaskId() == id)
-                                timerCmdout.Text = "执行成功  时间：" + DateTime.Now.ToString("F");
-                        }
-                        else
-                        {
-                            if (tasksList.SelectedIndex != -1 && GetSelectedTaskId() == id)
-                                timerCmdout.Text = "服务器未开启  时间：" + DateTime.Now.ToString("F");
-                        }
-                    }
-                    catch (Exception ex)
-                    {
-                        if (tasksList.SelectedIndex != -1 && GetSelectedTaskId() == id)
-                            timerCmdout.Text = $"执行失败: {ex.Message}  时间：" + DateTime.Now.ToString("F");
-                    }
+                    // 若当前选中的正是此任务，同步按钮状态
+                    if (tasksList.SelectedIndex != -1 && GetSelectedTaskId() == id)
+                        startTimercmd.IsChecked = false;
                 });
+            }
+        }
+
+        private void OnTimerTaskRun(int id, string cmd)
+        {
+            try
+            {
+                if (ServerService.CheckServerRunning())
+                {
+                    switch (cmd)
+                    {
+                        case ".backup":
+                            if (MoreOperation.IsEnabled)
+                            {
+                                _ = BackupWorld();
+                                PrintLog("[MSL备份] 定时备份任务开始执行~", Colors.Blue);
+                            }
+                            break;
+                        default:
+                            ServerService.SendCommand(cmd);
+                            PrintLog($"[MSL定时任务] 执行指令：{cmd}", Colors.Blue);
+                            break;
+                    }
+
+                    if (tasksList.SelectedIndex != -1 && GetSelectedTaskId() == id)
+                        timerCmdout.Text = "执行成功  时间：" + DateTime.Now.ToString("F");
+                }
+                else
+                {
+                    if (tasksList.SelectedIndex != -1 && GetSelectedTaskId() == id)
+                        timerCmdout.Text = "服务器未开启  时间：" + DateTime.Now.ToString("F");
+                }
+            }
+            catch (Exception ex)
+            {
+                if (tasksList.SelectedIndex != -1 && GetSelectedTaskId() == id)
+                    timerCmdout.Text = $"执行失败: {ex.Message}  时间：" + DateTime.Now.ToString("F");
             }
         }
 
@@ -3409,6 +3459,10 @@ namespace MSL
                     taskFlag.Clear();
                     taskCrons.Clear();
                     taskCmds.Clear();
+                    // 清理所有 CTS
+                    foreach (var cts in taskCtsMap.Values)
+                        cts.Dispose();
+                    taskCtsMap.Clear();
 
                     foreach (var item in ServerService.InstanceConfig.TimerTasks)
                     {
