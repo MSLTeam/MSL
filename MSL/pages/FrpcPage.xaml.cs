@@ -49,7 +49,7 @@ namespace MSL.pages
             LogHelper.Write.Info($"FrpcPage (FrpID: {FrpID}) 页面加载开始。");
             try
             {
-                if (File.Exists(@$"MSL\frp\{FrpID}\frpc") || File.Exists(@$"MSL\frp\{FrpID}\frpc.toml"))
+                if (File.Exists(@$"MSL\frp\{FrpID}\frpc") || File.Exists(@$"MSL\frp\{FrpID}\frpc.toml") || File.Exists(@$"MSL\frp\{FrpID}\frpc.ini"))
                 {
                     LogHelper.Write.Info($"Frpc (FrpID: {FrpID}) 配置文件存在，即将获取信息。");
                     startfrpcBtn.IsEnabled = true;
@@ -138,8 +138,16 @@ namespace MSL.pages
             }
             else // others are toml format
             {
-                LogHelper.Write.Info($"正在读取 TOML 格式的 Frp (FrpID: {FrpID}) 配置文件: MSL\\frp\\{FrpID}\\frpc.toml。");
-                configText = File.ReadAllText(@$"MSL\frp\{FrpID}\frpc.toml");
+                if (File.Exists(@$"MSL\frp\{FrpID}\frpc.toml"))
+                {
+                    LogHelper.Write.Info($"正在读取 TOML 格式的 Frp (FrpID: {FrpID}) 配置文件: MSL\\frp\\{FrpID}\\frpc.toml。");
+                    configText = File.ReadAllText(@$"MSL\frp\{FrpID}\frpc.toml");
+                }
+                else
+                {
+                    LogHelper.Write.Info($"正在读取 INI 格式的 Frp (FrpID: {FrpID}) 配置文件: MSL\\frp\\{FrpID}\\frpc.ini。");
+                    configText = File.ReadAllText(@$"MSL\frp\{FrpID}\frpc.ini");
+                }
             }
 
             if (configText.Contains("\r")) // 替换掉\r
@@ -342,6 +350,11 @@ namespace MSL.pages
                     case 0:
                         frpcExeName = "frpc.exe"; // frpc客户端主程序
                         arguments = "-c frpc.toml"; // 启动命令
+                        // ini 兼容
+                        if (File.Exists($"MSL\\frp\\{FrpID}\\frpc.ini"))
+                        {
+                            arguments = "-c frpc.ini"; // 启动命令
+                        }
                         downloadFileName = "frpc.exe";
                         if (File.Exists($"MSL\\frp\\{frpcExeName}") && frpcversion != "20260105") //mslfrp的特别更新qwq
                         {

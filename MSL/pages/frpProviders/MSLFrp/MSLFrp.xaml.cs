@@ -194,9 +194,10 @@ namespace MSL.pages.frpProviders.MSLFrp
             var listBox = FrpList;
             if (listBox.SelectedItem is MSLFrpApi.TunnelInfo selectedTunnel)
             {
-                LogHelper.Write.Info($"用户请求为隧道 ID: {selectedTunnel.ID} 生成配置文件。");
+                string format = (Environment.OSVersion.Version.Major == 6 && Environment.OSVersion.Version.Minor == 1) ? "ini" : "toml";
+                LogHelper.Write.Info($"用户请求为隧道 ID: {selectedTunnel.ID} 生成配置文件。格式: {format}");
                 OKBtn.IsEnabled = false;
-                var (Code, Content) = await Task.Run(() => MSLFrpApi.GetTunnelConfig(selectedTunnel.ID));
+                var (Code, Content) = await Task.Run(() => MSLFrpApi.GetTunnelConfig(selectedTunnel.ID,format));
                 OKBtn.IsEnabled = true;
                 if (Code != 200)
                 {
@@ -205,7 +206,7 @@ namespace MSL.pages.frpProviders.MSLFrp
                     return;
                 }
                 //输出配置文件
-                if (Config.WriteFrpcConfig(0, $"MSLFrp - {selectedTunnel.Name} | {selectedTunnel.Node}", Content) == true)
+                if (Config.WriteFrpcConfig(0, $"MSLFrp - {selectedTunnel.Name} | {selectedTunnel.Node}", Content, $".{format}") == true)
                 {
                     LogHelper.Write.Info($"隧道 ID: {selectedTunnel.ID} 的配置文件写入成功。");
                     await MagicShow.ShowMsgDialogAsync(Window.GetWindow(this), "映射配置成功，请您点击“启动内网映射”以启动映射！", "信息");

@@ -253,7 +253,7 @@ namespace MSL.utils
         }
 
         // 获取某个隧道的配置文件
-        public static async Task<(int Code, string Msg)> GetTunnelConfig(int tunnelID)
+        public static async Task<(int Code, string Msg)> GetTunnelConfig(int tunnelID,string configType = "toml")
         {
             try
             {
@@ -263,7 +263,7 @@ namespace MSL.utils
                     headers.Add("Authorization", $"Bearer {UserToken}");
                 });
 
-                HttpResponse res = await HttpService.GetAsync(ApiUrl + "/frp/getTunnelConfig?id=" + tunnelID, headersAction, 1);
+                HttpResponse res = await HttpService.GetAsync($"{ApiUrl}/frp/getTunnelConfig?id={tunnelID}&format={configType}", headersAction, 1);
                 JObject json = JObject.Parse((string)res.HttpResponseContent);
                 if (json["code"].Value<int>() != 200)
                 {
