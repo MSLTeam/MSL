@@ -1,4 +1,4 @@
-﻿<Page x:Class="MSL.pages.frpProviders.MSLFrp.MSLFrp"
+<Page x:Class="MSL.pages.frpProviders.MSLFrp.MSLFrp"
       xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
       xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
       xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006" 
@@ -100,7 +100,7 @@
                     <controls:MagicListBox Grid.Column="0" Margin="0,0,10,0" x:Name="NodeList" SelectionMode="Single" SelectionChanged="NodeList_SelectionChanged">
                         <controls:MagicListBox.ItemTemplate>
                             <DataTemplate>
-                                <Grid Width="160" Background="Transparent">
+                                <Grid Width="320" Background="Transparent">
                                     <Grid.RowDefinitions>
                                         <RowDefinition Height="Auto"/>
                                         <RowDefinition Height="*"/>
