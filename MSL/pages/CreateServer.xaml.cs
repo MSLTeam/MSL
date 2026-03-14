@@ -1,4 +1,4 @@
-using HandyControl.Controls;
+﻿using HandyControl.Controls;
 using ICSharpCode.SharpZipLib.Zip;
 using MSL.controls;
 using MSL.utils;
@@ -1080,36 +1080,43 @@ namespace MSL.pages
                 Version targetVersion2 = new Version("1.12");
                 Version targetVersion3 = new Version("1.16");
                 Version targetVersion4 = new Version("1.20.4");
+                Version targetVersion5 = new Version("1.21.11");
 
                 if (_version <= targetVersion1)
                 {
                     //_version <=1.7
                     FinallyJavaDescrip.Text = "根据您的选择，最适合您服务器的Java版本为：Java7-Java8";
-                    javaVersion = "Java8";
+                    javaVersion = "8";
                 }
                 else if (_version <= targetVersion2)
                 {
                     //1.7< _version <=1.12
                     FinallyJavaDescrip.Text = "根据您的选择，最适合您服务器的Java版本为：Java8-Java11";
-                    javaVersion = "Java8";
+                    javaVersion = "8";
                 }
                 else if (_version <= targetVersion3)
                 {
                     //1.12< _version <=1.16
                     FinallyJavaDescrip.Text = "根据您的选择，最适合您服务器的Java版本为：Java11-Java17（或更高）";
-                    javaVersion = "Java11";
+                    javaVersion = "11";
                 }
                 else if (_version <= targetVersion4)
                 {
                     //1.16< _version <=1.20.4
                     FinallyJavaDescrip.Text = "根据您的选择，最适合您服务器的Java版本为：Java17及以上";
-                    javaVersion = "Java17";
+                    javaVersion = "17";
+                }
+                else if (_version <= targetVersion5)
+                {
+                    // 不知道喵
+                    FinallyJavaDescrip.Text = "根据您的选择，最适合您服务器的Java版本为：Java21及以上";
+                    javaVersion = "21";
                 }
                 else
                 {
-                    //1.20.4< _version
-                    FinallyJavaDescrip.Text = "根据您的选择，最适合您服务器的Java版本为：Java21及以上";
-                    javaVersion = "Java21";
+                    // 26.1+
+                    FinallyJavaDescrip.Text = "根据您的选择，最适合您服务器的Java版本为：Java25及以上";
+                    javaVersion = "25";
                 }
             }
             else
