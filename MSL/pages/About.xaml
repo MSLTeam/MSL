@@ -11,31 +11,123 @@
       Title="About" Loaded="Page_Loaded">
     <controls:MagicScrollViewer>
         <controls:MagicCard x:Name="AbortSoftwareCard" Title="{Binding [Page_About_AboutMSL], Source={x:Static langs:LanguageManager.Instance}}" Margin="0,10,0,0">
-            <Grid>
-                <Grid HorizontalAlignment="Center" VerticalAlignment="Center">
-                    <Grid.ColumnDefinitions>
-                        <ColumnDefinition Width="Auto"/>
-                        <ColumnDefinition Width="*"/>
-                    </Grid.ColumnDefinitions>
-                    <Image Grid.Column="0" Source="pack://application:,,,/icon.ico" Margin="15" Width="80" Height="80" HorizontalAlignment="Center" VerticalAlignment="Center"/>
-                    <Grid Grid.Column="1">
-                        <Grid.RowDefinitions>
-                            <RowDefinition/>
-                            <RowDefinition/>
-                        </Grid.RowDefinitions>
-                        <TextBlock Grid.Row="0" FontSize="14" TextWrapping="Wrap" Foreground="{DynamicResource PrimaryTextBrush}" Text="{Binding [Page_About_MainContent], Source={x:Static langs:LanguageManager.Instance}}"/>
-                        <hc:Shield Grid.Row="1" Subject="{Binding [Page_About_Website], Source={x:Static langs:LanguageManager.Instance}}" Status="{Binding [OpenWebsite], Source={x:Static langs:LanguageManager.Instance}}" Command="hc:ControlCommands.OpenLink" CommandParameter="https://www.mslmc.cn/" Margin="0,5,0,0" HorizontalAlignment="Left"/>
-                    </Grid>
-                </Grid>
+            <Grid Margin="15">
+                <Grid.ColumnDefinitions>
+                    <ColumnDefinition Width="Auto"/>
+                    <ColumnDefinition Width="*"/>
+                </Grid.ColumnDefinitions>
+
+                <Image Grid.Column="0" Source="pack://application:,,,/icon.ico" Width="80" Height="80" Margin="0,0,20,0" VerticalAlignment="Center"/>
+
+                <StackPanel Grid.Column="1" VerticalAlignment="Center">
+
+                    <TextBlock FontSize="14" 
+                       TextWrapping="Wrap" 
+                       Foreground="{DynamicResource PrimaryTextBrush}" 
+                       Text="{Binding [Page_About_MainContent], Source={x:Static langs:LanguageManager.Instance}}"/>
+
+                    <hc:Shield Subject="{Binding [Page_About_Website], Source={x:Static langs:LanguageManager.Instance}}" 
+                       Status="{Binding [OpenWebsite], Source={x:Static langs:LanguageManager.Instance}}" 
+                       Command="hc:ControlCommands.OpenLink" 
+                       CommandParameter="https://www.mslmc.cn/" 
+                       Margin="0,10,0,0" 
+                       HorizontalAlignment="Left"/>
+
+                </StackPanel>
             </Grid>
         </controls:MagicCard>
-        <controls:MagicCard Title="{Binding [Page_About_OpenSource], Source={x:Static langs:LanguageManager.Instance}}">
+        <controls:MagicCard Title="项目贡献者 (Contributors)">
+            <ItemsControl x:Name="ContributorsItemsControl" Margin="10,15,10,15">
+                <ItemsControl.ItemsPanel>
+                    <ItemsPanelTemplate>
+                        <WrapPanel Orientation="Horizontal" />
+                    </ItemsPanelTemplate>
+                </ItemsControl.ItemsPanel>
+                <ItemsControl.ItemTemplate>
+                    <DataTemplate>
+                        <Grid Width="280" Margin="10,10,20,15">
+                            <Grid.ColumnDefinitions>
+                                <ColumnDefinition Width="Auto"/>
+                                <ColumnDefinition Width="*"/>
+                            </Grid.ColumnDefinitions>
+
+                            <Ellipse Grid.Column="0" Width="48" Height="48" VerticalAlignment="Top" Margin="0,2,0,0">
+                                <Ellipse.Fill>
+                                    <ImageBrush ImageSource="{Binding Avatar, IsAsync=True}" Stretch="UniformToFill"/>
+                                </Ellipse.Fill>
+                            </Ellipse>
+
+                            <StackPanel Grid.Column="1" Margin="15,0,0,0">
+                                <TextBlock Text="{Binding User}" 
+                                           FontSize="15" 
+                                           FontWeight="Bold" 
+                                           Foreground="{DynamicResource PrimaryTextBrush}"/>
+
+                                <TextBlock Text="{Binding Description}" 
+                                           FontSize="12" 
+                                           Margin="0,4,0,0" 
+                                           Foreground="{DynamicResource PrimaryTextBrush}" 
+                                           Opacity="0.75" 
+                                           TextWrapping="Wrap"/>
+                            </StackPanel>
+                        </Grid>
+                    </DataTemplate>
+                </ItemsControl.ItemTemplate>
+            </ItemsControl>
+        </controls:MagicCard>
+        <controls:MagicCard Title="致谢与支持 (Stargazers)">
+            <Grid>
+                <Grid.RowDefinitions>
+                    <RowDefinition Height="Auto"/>
+                    <RowDefinition Height="*"/>
+                    <RowDefinition Height="Auto"/>
+                </Grid.RowDefinitions>
+
+                <StackPanel Grid.Row="0" Margin="15,10,15,10">
+                    <TextBlock Text="感谢以下小伙伴为 MSL 点亮的星星！每一次 Star 都是对开源项目最大的鼓励。" TextWrapping="Wrap" Foreground="{DynamicResource PrimaryTextBrush}" FontSize="14" Margin="0,0,0,8"/>
+                    <StackPanel Orientation="Horizontal">
+                        <TextBlock Text="觉得好用？欢迎去 GitHub 留个脚印：" VerticalAlignment="Center" Foreground="{DynamicResource PrimaryTextBrush}" FontSize="14"/>
+                        <hc:Shield Subject="MSLTeam/MSL" Status="Star 🌟" Command="hc:ControlCommands.OpenLink" CommandParameter="https://github.com/MSLTeam/MSL" Cursor="Hand" Margin="5,0,0,0"/>
+                    </StackPanel>
+                </StackPanel>
+
+                <ItemsControl x:Name="StarsItemsControl" Grid.Row="1" Margin="10,0,10,10">
+                    <ItemsControl.ItemsPanel>
+                        <ItemsPanelTemplate>
+                            <WrapPanel Orientation="Horizontal" HorizontalAlignment="Center" />
+                        </ItemsPanelTemplate>
+                    </ItemsControl.ItemsPanel>
+                    <ItemsControl.ItemTemplate>
+                        <DataTemplate>
+                            <StackPanel Width="64" Margin="4,8,4,8" ToolTip="{Binding User}">
+                                <Ellipse Width="40" Height="40" HorizontalAlignment="Center">
+                                    <Ellipse.Fill>
+                                        <ImageBrush ImageSource="{Binding Avatar, IsAsync=True}" Stretch="UniformToFill"/>
+                                    </Ellipse.Fill>
+                                </Ellipse>
+                                <TextBlock Text="{Binding User}" 
+                                           FontSize="11" 
+                                           Foreground="{DynamicResource PrimaryTextBrush}" 
+                                           TextAlignment="Center" 
+                                           TextTrimming="CharacterEllipsis" 
+                                           Margin="0,4,0,0" 
+                                           HorizontalAlignment="Center" 
+                                           MaxWidth="60"/>
+                            </StackPanel>
+                        </DataTemplate>
+                    </ItemsControl.ItemTemplate>
+                </ItemsControl>
+
+                <Button x:Name="BtnLoadMoreStars" Grid.Row="2" Content="展开更多..." HorizontalAlignment="Center" Margin="0,0,0,15" Click="BtnLoadMoreStars_Click" Visibility="Collapsed"/>
+            </Grid>
+        </controls:MagicCard>
+        <controls:MagicCard Title="项目开源仓库 (Github)">
             <StackPanel>
                 <TextBlock Margin="20,0,20,0" FontSize="14" HorizontalAlignment="Center" VerticalAlignment="Center" TextWrapping="Wrap" Foreground="{DynamicResource PrimaryTextBrush}" Text="MSLTeam/MSL is licensed under the GNU General Public License v3.0&#xA;Permissions of this strong copyleft license are conditioned on making available complete source code of licensed works and modifications, which include larger works using a licensed work, under the same license. Copyright and license notices must be preserved. Contributors provide an express grant of patent rights."/>
                 <hc:Shield Subject="https://github.com/MSLTeam/MSL" Status="{Binding [OpenWebsite], Source={x:Static langs:LanguageManager.Instance}}" Margin="20,5,20,0" Command="hc:ControlCommands.OpenLink" CommandParameter="https://github.com/MSLTeam/MSL" HorizontalAlignment="Left" VerticalAlignment="Top"/>
             </StackPanel>
         </controls:MagicCard>
-        <controls:MagicCard Title="{Binding [Page_About_Package], Source={x:Static langs:LanguageManager.Instance}}">
+        <controls:MagicCard Title="依赖项 (Packages)">
             <Expander >
                 <Expander.Style>
                     <Style TargetType="Expander" BasedOn="{StaticResource ExpanderBaseStyle}">
@@ -163,10 +255,10 @@
                 </StackPanel>
             </Expander>
         </controls:MagicCard>
-        <controls:MagicCard Margin="0,0,0,20" Title="{Binding [Page_About_Sponsor], Source={x:Static langs:LanguageManager.Instance}}">
+        <controls:MagicCard Margin="0,0,0,20" Title="赞助 (Sponsor)">
             <StackPanel>
                 <TextBlock Text="{Binding [Page_About_SponsorText], Source={x:Static langs:LanguageManager.Instance}}" Foreground="{DynamicResource PrimaryTextBrush}" FontSize="16" VerticalAlignment="Center" HorizontalAlignment="Center"/>
-                <hc:Shield Subject="https://afdian.com/a/makabaka123" Status="{Binding [OpenWebsite], Source={x:Static langs:LanguageManager.Instance}}" Margin="0,5,0,0" Command="hc:ControlCommands.OpenLink" CommandParameter="https://afdian.com/a/makabaka123" HorizontalAlignment="Center"/>
+                <hc:Shield Subject="https://afdian.com/a/MSLTeam" Status="{Binding [OpenWebsite], Source={x:Static langs:LanguageManager.Instance}}" Margin="0,5,0,0" Command="hc:ControlCommands.OpenLink" CommandParameter="https://afdian.com/a/makabaka123" HorizontalAlignment="Center"/>
             </StackPanel>
         </controls:MagicCard>
     </controls:MagicScrollViewer>
