@@ -1,4 +1,4 @@
-﻿<Page x:Class="MSL.pages.About"
+<Page x:Class="MSL.pages.About"
       xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
       xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
       xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006" 
@@ -9,6 +9,9 @@
       xmlns:controls="clr-namespace:MSL.controls"
       mc:Ignorable="d" d:DesignHeight="460" d:DesignWidth="750" Style="{StaticResource AnimationPage}"
       Title="About" Loaded="Page_Loaded">
+    <Page.Resources>
+        <controls:NoCacheBitmapConverter x:Key="NoCacheBitmapConverter"/>
+    </Page.Resources>
     <controls:MagicScrollViewer>
         <controls:MagicCard x:Name="AbortSoftwareCard" Title="{Binding [Page_About_AboutMSL], Source={x:Static langs:LanguageManager.Instance}}" Margin="0,10,0,0">
             <Grid Margin="15">
@@ -53,7 +56,7 @@
 
                             <Ellipse Grid.Column="0" Width="48" Height="48" VerticalAlignment="Top" Margin="0,2,0,0">
                                 <Ellipse.Fill>
-                                    <ImageBrush ImageSource="{Binding Avatar, IsAsync=True}" Stretch="UniformToFill"/>
+                                    <ImageBrush ImageSource="{Binding AvatarUrl, Converter={StaticResource NoCacheBitmapConverter}}" Stretch="UniformToFill"/>
                                 </Ellipse.Fill>
                             </Ellipse>
 
@@ -102,7 +105,7 @@
                             <StackPanel Width="64" Margin="4,8,4,8" ToolTip="{Binding User}">
                                 <Ellipse Width="40" Height="40" HorizontalAlignment="Center">
                                     <Ellipse.Fill>
-                                        <ImageBrush ImageSource="{Binding Avatar, IsAsync=True}" Stretch="UniformToFill"/>
+                                        <ImageBrush ImageSource="{Binding AvatarUrl, Converter={StaticResource NoCacheBitmapConverter}}" Stretch="UniformToFill"/>
                                     </Ellipse.Fill>
                                 </Ellipse>
                                 <TextBlock Text="{Binding User}" 
