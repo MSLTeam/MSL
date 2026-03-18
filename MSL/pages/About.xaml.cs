@@ -1,7 +1,9 @@
-﻿using System;
+using System;
 using System.Collections.Generic;
 using System.Collections.ObjectModel;
 using System.Net;
+using System.Windows;
+using System.Windows.Media.Imaging;
 using Newtonsoft.Json.Linq;
 using System.Windows.Controls;
 using MSL.utils;
@@ -14,13 +16,13 @@ namespace MSL.pages
         public class Stargazer
         {
             public string User { get; set; }
-            public string Avatar { get; set; }
+            public string AvatarUrl { get; set; }
         }
 
         public class Contributor
         {
             public string User { get; set; }
-            public string Avatar { get; set; }
+            public string AvatarUrl { get; set; }
             public string Description { get; set; }
         }
 
@@ -32,15 +34,35 @@ namespace MSL.pages
         {
             InitializeComponent();
             StarsItemsControl.ItemsSource = _displayStars;
-
             ContributorsItemsControl.ItemsSource = _contributors;
-            LoadContributorsData();
+            this.Unloaded += About_Unloaded;
         }
 
-        private void Page_Loaded(object sender, System.Windows.RoutedEventArgs e)
+        private void About_Unloaded(object sender, RoutedEventArgs e)
         {
-            AbortSoftwareCard.Title = string.Format(LanguageManager.Instance["Page_About_AboutMSL"], ConfigStore.MSLVersion.ToString());
+            _displayStars.Clear();
+            _allStars.Clear();
+            _contributors.Clear();
 
+            // 清除 WPF 图片缓存
+            BitmapImage dummy = new BitmapImage();
+            dummy.BeginInit();
+            dummy.UriSource = new Uri("https://placeholder.invalid/clear");
+            dummy.CreateOptions = BitmapCreateOptions.IgnoreImageCache;
+            dummy.CacheOption = BitmapCacheOption.None;
+            // 不 EndInit，直接丢弃，只是为了触发缓存清理时机
+
+            GC.Collect();
+            GC.WaitForPendingFinalizers();
+        }
+
+        private void Page_Loaded(object sender, RoutedEventArgs e)
+        {
+            AbortSoftwareCard.Title = string.Format(
+                LanguageManager.Instance["Page_About_AboutMSL"],
+                ConfigStore.MSLVersion.ToString());
+
+            LoadContributorsData();
             LoadStarsDataAsync();
         }
 
@@ -49,24 +71,21 @@ namespace MSL.pages
             _contributors.Add(new Contributor
             {
                 User = "Weheal",
-                Avatar = "https://avatars.githubusercontent.com/u/77955152?v=4",
+                AvatarUrl = "https://avatars.githubusercontent.com/u/77955152?v=4",
                 Description = "🌟MSL开发者/创始人"
             });
-
             _contributors.Add(new Contributor
             {
                 User = "xiaoyu",
-                Avatar = "https://avatars.githubusercontent.com/u/58876608?v=4",
+                AvatarUrl = "https://avatars.githubusercontent.com/u/58876608?v=4",
                 Description = "🌟MSL开发者"
             });
-
             _contributors.Add(new Contributor
             {
                 User = "LxHTT",
-                Avatar = "https://avatars.githubusercontent.com/u/98154001?v=4",
+                AvatarUrl = "https://avatars.githubusercontent.com/u/98154001?v=4",
                 Description = "ME Frp 部分代码 & Java扫描算法"
             });
-
         }
 
         private async void LoadStarsDataAsync()
@@ -87,46 +106,34 @@ namespace MSL.pages
                                 _allStars.Add(new Stargazer
                                 {
                                     User = item["user"].ToString(),
-                                    Avatar = item["avatar"].ToString()
+                                    AvatarUrl = item["avatar"].ToString()
                                 });
                             }
                         }
 
-                        // 默认展示前 50 个
                         int loadCount = Math.Min(50, _allStars.Count);
                         for (int i = 0; i < loadCount; i++)
-                        {
                             _displayStars.Add(_allStars[i]);
-                        }
 
                         if (_allStars.Count > 50)
-                        {
-                            BtnLoadMoreStars.Visibility = System.Windows.Visibility.Visible;
-                        }
+                            BtnLoadMoreStars.Visibility = Visibility.Visible;
                     }
                 }
             }
-            catch (Exception)
-            {
-            }
+            catch (Exception) { }
         }
 
-        private async void BtnLoadMoreStars_Click(object sender, System.Windows.RoutedEventArgs e)
+        private async void BtnLoadMoreStars_Click(object sender, RoutedEventArgs e)
         {
-            BtnLoadMoreStars.Visibility = System.Windows.Visibility.Collapsed;
-
+            BtnLoadMoreStars.Visibility = Visibility.Collapsed;
             int currentCount = _displayStars.Count;
             int totalCount = _allStars.Count;
 
-            // 分批显示
             for (int i = currentCount; i < totalCount; i++)
             {
                 _displayStars.Add(_allStars[i]);
-
                 if (i % 20 == 0)
-                {
                     await System.Threading.Tasks.Task.Delay(1);
-                }
             }
         }
     }

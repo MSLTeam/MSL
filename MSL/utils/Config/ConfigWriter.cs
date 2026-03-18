@@ -26,7 +26,7 @@ namespace MSL.utils.Config
             public override void Execute()
             {
                 string json = JsonConvert.SerializeObject(_cfg, _settings);
-                File.WriteAllText(AppConfig.ConfigPath, json, Encoding.UTF8);
+                AtomicWrite(AppConfig.ConfigPath, json);
             }
         }
 
@@ -38,11 +38,9 @@ namespace MSL.utils.Config
             public override void Execute()
             {
                 string json = _cfg.ToJObject().ToString(Formatting.Indented);
-                File.WriteAllText(ServerConfig.ConfigPath, json, Encoding.UTF8);
+                AtomicWrite(ServerConfig.ConfigPath, json);
             }
         }
-
-        
 
         // 单键写入（Config.Write 用）
         private sealed class KeyValueJob : WriteJob
@@ -55,7 +53,7 @@ namespace MSL.utils.Config
             {
                 JObject obj = JObject.Parse(File.ReadAllText(_path, Encoding.UTF8));
                 obj[_key] = _value;
-                File.WriteAllText(_path, obj.ToString(), Encoding.UTF8);
+                AtomicWrite(_path, obj.ToString());
             }
         }
 
@@ -68,7 +66,7 @@ namespace MSL.utils.Config
             {
                 JObject obj = JObject.Parse(File.ReadAllText(_path, Encoding.UTF8));
                 obj.Remove(_key);
-                File.WriteAllText(_path, obj.ToString(), Encoding.UTF8);
+                AtomicWrite(_path, obj.ToString());
             }
         }
 
@@ -113,6 +111,35 @@ namespace MSL.utils.Config
                 {
                     LogHelper.Write.Error($"[ConfigWriter] 写入失败，已放弃: {ex.Message}");
                 }
+            }
+        }
+
+        /// <summary>
+        /// 原子写入：先写 .tmp，再用 File.Replace 替换目标文件。
+        /// 即使进程在写入过程中意外退出，也只会丢失本次修改，不会产生空文件或损坏文件。
+        /// 原有文件会被保留为 .bak，可用于手动恢复。
+        /// </summary>
+        private static void AtomicWrite(string path, string content)
+        {
+            string dir = Path.GetDirectoryName(path);
+            if (!string.IsNullOrEmpty(dir))
+                Directory.CreateDirectory(dir);
+
+            string tmp = path + ".tmp";
+            string bak = path + ".bak";
+
+            // 写入临时文件
+            File.WriteAllText(tmp, content, Encoding.UTF8);
+
+            if (File.Exists(path))
+            {
+                // 目标文件已存在：原子替换，原文件备份为 .bak
+                File.Replace(tmp, path, bak);
+            }
+            else
+            {
+                // 目标文件不存在（首次创建）：直接移动
+                File.Move(tmp, path);
             }
         }
 

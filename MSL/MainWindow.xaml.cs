@@ -519,8 +519,8 @@ namespace MSL
         private void Window_Closed(object sender, EventArgs e)
         {
             DownloadManager.Instance.Dispose();
-            AppConfig.Current.Save();
-            ServerConfig.Current.Save();
+            AppConfig.Current.SaveImmediate();      // 同步写，阻塞直到完成
+            ServerConfig.Current.SaveImmediate();   // 同步写，阻塞直到完成
             Application.Current.Shutdown();
         }
 
