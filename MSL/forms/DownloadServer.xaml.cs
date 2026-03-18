@@ -210,10 +210,10 @@ namespace MSL.pages
             serverCoreLoadTip.Visibility = Visibility.Visible;
             try
             {
-                HttpResponse httpResponse = await HttpService.GetApiAsync("query/available_server_types");
+                HttpResponse httpResponse = await HttpService.GetApiAsync("mirrors?view=list");
                 if (httpResponse.HttpResponseCode == System.Net.HttpStatusCode.OK)
                 {
-                    string[] serverTypes = JsonConvert.DeserializeObject<string[]>(((JObject)JsonConvert.DeserializeObject(httpResponse.HttpResponseContent.ToString()))["data"]["types"].ToString());
+                    string[] serverTypes = JsonConvert.DeserializeObject<string[]>(((JObject)JsonConvert.DeserializeObject(httpResponse.HttpResponseContent.ToString()))["data"].ToString());
                     serverCoreList.ItemsSource = serverTypes;
                     serverCoreList.SelectedIndex = 0;
                     serverCoreLoadTip.Visibility = Visibility.Collapsed;
@@ -244,11 +244,11 @@ namespace MSL.pages
             {
 
                 string serverName = serverCoreList.SelectedItem.ToString();
-                HttpResponse httpResponse = await HttpService.GetApiAsync("query/available_versions/" + serverName);
+                HttpResponse httpResponse = await HttpService.GetApiAsync("mirrors/" + serverName);
                 if (httpResponse.HttpResponseCode == System.Net.HttpStatusCode.OK)
                 {
-                    string resultData = ((JObject)JsonConvert.DeserializeObject(httpResponse.HttpResponseContent.ToString()))["data"]["versionList"].ToString();
-                    server_d.Text = (await HttpService.GetApiContentAsync("query/servers_description/" + serverName))["data"]["description"].ToString();
+                    string resultData = ((JObject)JsonConvert.DeserializeObject(httpResponse.HttpResponseContent.ToString()))["data"]["versions"].ToString();
+                    server_d.Text = ((JObject)JsonConvert.DeserializeObject(httpResponse.HttpResponseContent.ToString()))["data"]["description"].ToString();
                     JArray serverVersions = JArray.Parse(resultData);
                     List<string> sortedVersions = serverVersions.ToObject<List<string>>().OrderByDescending(v => Functions.VersionCompare(v)).ToList();
                     coreVersionList.ItemsSource = sortedVersions;
@@ -280,10 +280,10 @@ namespace MSL.pages
             try
             {
                 string serverName = serverCoreList.SelectedItem.ToString();
-                HttpResponse httpResponse = await HttpService.GetApiAsync("query/server/" + serverName + "/" + coreVersionList.SelectedItem.ToString());
+                HttpResponse httpResponse = await HttpService.GetApiAsync("mirrors/" + serverName + "/" + coreVersionList.SelectedItem.ToString());
                 if (httpResponse.HttpResponseCode == System.Net.HttpStatusCode.OK)
                 {
-                    string resultData = ((JObject)JsonConvert.DeserializeObject(httpResponse.HttpResponseContent.ToString()))["data"]["builds"].ToString();
+                    string resultData = ((JObject)JsonConvert.DeserializeObject(httpResponse.HttpResponseContent.ToString()))["data"] .ToString();
                     if (resultData.Contains("latest"))
                     {
                         resultData = resultData.Replace("latest", "latest - 最新构建版本");

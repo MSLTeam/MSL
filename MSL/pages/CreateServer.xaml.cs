@@ -900,9 +900,9 @@ namespace MSL.pages
             try
             {
                 //获取分类
-                var responseString = (await HttpService.GetApiContentAsync("query/server_classify"))["data"].ToString();
+                var responseString = (await HttpService.GetApiContentAsync("mirrors"))["data"].ToString();
                 serverCoreTypes = (JObject)JsonConvert.DeserializeObject(responseString);
-                string jsonData = (await HttpService.GetApiContentAsync("query/available_server_types"))["data"]["types"].ToString();
+                string jsonData = (await HttpService.GetApiContentAsync("mirrors?view=list"))["data"].ToString();
                 serverTypes = JsonConvert.DeserializeObject<string[]>(jsonData);
                 ServerCoreCombo.SelectedIndex = 0;
             }
@@ -1014,7 +1014,7 @@ namespace MSL.pages
         {
             try
             {
-                var resultData = (await HttpService.GetApiContentAsync("query/available_versions/" + serverType))["data"]["versionList"].ToString();
+                var resultData = (await HttpService.GetApiContentAsync("mirrors/" + serverType))["data"]["versions"].ToString();
                 tempServerCore.Add(serverType, resultData);
                 return JsonConvert.DeserializeObject<List<string>>(resultData);
             }
@@ -1148,7 +1148,7 @@ namespace MSL.pages
             try
             {
                 string response = string.Empty;
-                response = (await HttpService.GetApiContentAsync("query/jdk?os=windows&arch=x64"))["data"].ToString();
+                response = (await HttpService.GetApiContentAsync("jdk?os=windows&arch=x64"))["data"].ToString();
                 await Task.Delay(100);
                 JArray jArray = JArray.Parse(response);
                 List<string> strings = new List<string>();

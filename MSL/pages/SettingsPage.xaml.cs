@@ -1,4 +1,4 @@
-using HandyControl.Controls;
+﻿using HandyControl.Controls;
 using HandyControl.Themes;
 using HandyControl.Tools;
 using Microsoft.Win32;
@@ -541,7 +541,7 @@ namespace MSL.pages
         {
             try
             {
-                var httpReturn = await HttpService.GetApiContentAsync("query/update");
+                var httpReturn = await HttpService.GetApiContentAsync("software/update");
                 string latestVersionStr = httpReturn["data"]["latestVersion"].ToString();
                 var newVersion = new Version(latestVersionStr);
                 var version = new Version(System.Reflection.Assembly.GetExecutingAssembly().GetName().Version.ToString());

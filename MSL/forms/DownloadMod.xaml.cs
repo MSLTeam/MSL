@@ -85,7 +85,7 @@ namespace MSL
                 if (CurseForgeApiClient == null)
                 {
                     string token = string.Empty;
-                    string _token = (await HttpService.GetApiContentAsync("query/cf_token"))["data"]["cfToken"].ToString();
+                    string _token = (await HttpService.GetApiContentAsync("software/cf_token"))["data"].ToString();
                     byte[] data = Convert.FromBase64String(_token);
                     string decodedString = Encoding.UTF8.GetString(data);
                     token = decodedString;
@@ -215,7 +215,7 @@ namespace MSL
                 if (CurseForgeApiClient == null)
                 {
                     string token = string.Empty;
-                    string _token = (await HttpService.GetApiContentAsync("query/cf_token"))["data"]["cfToken"].ToString();
+                    string _token = (await HttpService.GetApiContentAsync("software/cf_token"))["data"].ToString();
                     byte[] data = Convert.FromBase64String(_token);
                     string decodedString = Encoding.UTF8.GetString(data);
                     token = decodedString;
@@ -718,9 +718,9 @@ namespace MSL
             {
                 LogHelper.Write.Info("[下载资源页]正在从原版服务端获取 MC 版本列表");
                 MinecraftVersionTypeBox.Items.Clear();
-                var mcVersions = await HttpService.GetApiContentAsync("query/available_versions/vanilla");
+                var mcVersions = await HttpService.GetApiContentAsync("mirrors/vanilla");
                 MinecraftVersionTypeBox.Items.Add("全部");
-                foreach (var mcVersion in mcVersions["data"]["versionList"])
+                foreach (var mcVersion in mcVersions["data"]["versions"])
                 {
                     MinecraftVersionTypeBox.Items.Add(mcVersion.ToString());
                 }

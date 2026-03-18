@@ -5,7 +5,7 @@ namespace MSL.utils
 {
     public class ConfigStore
     {
-        public static string ApiLink { get; set; } = "https://api.mslmc.cn/v3";
+        public static string ApiLink { get; set; } = "https://api.mslmc.cn/v4";
         public static Version MSLVersion { get; set; }
         public static string DeviceID { get; set; }
         public static bool GetServerInfo { get; set; } = false;

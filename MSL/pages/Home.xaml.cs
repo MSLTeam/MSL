@@ -120,15 +120,15 @@ namespace MSL.pages
             {
                 LogHelper.Write.Info($"准备获取新公告。在线版本: {currentNoticeVersion}, 本地版本: {savedNoticeVersion}");
 
-                var noticeTask = HttpService.GetApiContentAsync("query/notice");
-                var tipsTask = HttpService.GetApiContentAsync("query/notice?query=tips");
+                var noticeTask = HttpService.GetApiContentAsync("software/notice");
+                var tipsTask = HttpService.GetApiContentAsync("software/notice?query=tips");
 
                 await Task.WhenAll(noticeTask, tipsTask);
 
                 var noticeResponse = await noticeTask;
                 var tipsResponse = await tipsTask;
 
-                string notice = noticeResponse["data"]["notice"]?.ToString();
+                string notice = noticeResponse["data"]?.ToString();
 
                 if (!string.IsNullOrEmpty(notice))
                 {
@@ -145,7 +145,7 @@ namespace MSL.pages
                 }
 
                 // 处理 recommendations
-                var recommendations = tipsResponse["data"]["tips"];
+                var recommendations = tipsResponse["data"];
                 if (recommendations != null)
                 {
                     await Dispatcher.InvokeAsync(() => LoadRecommendations((JArray)recommendations));
@@ -158,8 +158,8 @@ namespace MSL.pages
                 LogHelper.Write.Info("公告版本一致，无需获取新公告。");
                 if (firstLoad)
                 {
-                    var content = await HttpService.GetApiContentAsync("query/notice");
-                    string noticeText = content["data"]["notice"]?.ToString();
+                    var content = await HttpService.GetApiContentAsync("software/notice");
+                    string noticeText = content["data"]?.ToString();
                     RenderContentToPanel(noticeStackPanel, noticeText);
                 }
             }
@@ -167,8 +167,8 @@ namespace MSL.pages
 
         private async Task<string> GetCurrentNoticeVersion()
         {
-            var response = await HttpService.GetApiContentAsync("query/notice?query=id");
-            return response["data"]["noticeID"]?.ToString() ?? "0";
+            var response = await HttpService.GetApiContentAsync("software/notice?query=id");
+            return response["data"]?.ToString() ?? "0";
         }
 
         private string GetSavedNoticeVersion()
