@@ -195,6 +195,8 @@
                             <Button x:Name="a0002" Content="浏览" IsEnabled="False" Margin="0,135,0,0" Width="60" Click="a0002_Click" FontWeight="Normal" HorizontalAlignment="Right" VerticalAlignment="Top"/>
                             <RadioButton x:Name="useCustomCmd" Content="自定义启动指令" Margin="20,175,0,0" VerticalAlignment="Top" Checked="useCustomCmd_Checked" HorizontalAlignment="Left" FontSize="14"/>
                             <TextBox x:Name="textCustomCmd" Margin="20,200,60,0" VerticalAlignment="Top" MaxLines="1" FontSize="14" IsEnabled="False"/>
+                            <RadioButton x:Name="useBedrockServer" Content="使用基岩版官方服务端" Margin="20,240,0,0" VerticalAlignment="Top" Checked="useBedrockServer_Checked" HorizontalAlignment="Left" FontSize="14"/>
+                            <ComboBox x:Name="comboBedrockVersion" Margin="20,265,60,0" VerticalAlignment="Top" FontSize="14" IsEnabled="False"/>
                         </Grid>
                     </Border>
                     <Grid Margin="0,20,0,0">

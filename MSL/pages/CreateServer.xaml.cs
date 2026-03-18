@@ -1,6 +1,7 @@
 ﻿using HandyControl.Controls;
 using ICSharpCode.SharpZipLib.Zip;
 using MSL.controls;
+using MSL.controls.dialogs;
 using MSL.utils;
 using MSL.utils.Config;
 using Newtonsoft.Json;
@@ -391,6 +392,7 @@ namespace MSL.pages
                 txb3.Text = openfile.FileName;
             }
         }
+        // a001呢？
 
         private void a0003_Click(object sender, RoutedEventArgs e)
         {
@@ -514,6 +516,7 @@ namespace MSL.pages
                 txb3.IsEnabled = false;
                 a0002.IsEnabled = false;
                 textCustomCmd.IsEnabled = false;
+                comboBedrockVersion.IsEnabled = false;
             }
         }
         private void useServerself_Checked(object sender, RoutedEventArgs e)
@@ -521,6 +524,7 @@ namespace MSL.pages
             txb3.IsEnabled = true;
             a0002.IsEnabled = true;
             textCustomCmd.IsEnabled = false;
+            comboBedrockVersion.IsEnabled = false;
         }
 
         private void useCustomCmd_Checked(object sender, RoutedEventArgs e)
@@ -528,6 +532,112 @@ namespace MSL.pages
             textCustomCmd.IsEnabled = true;
             txb3.IsEnabled = false;
             a0002.IsEnabled = false;
+            comboBedrockVersion.IsEnabled = false;
+        }
+
+        private async void useBedrockServer_Checked(object sender, RoutedEventArgs e)
+        {
+            textCustomCmd.IsEnabled = false;
+            txb3.IsEnabled = false;
+            a0002.IsEnabled = false;
+            comboBedrockVersion.IsEnabled = true;
+
+            await GetBedrockVersion();
+        }
+
+        private async Task GetBedrockVersion()
+        {
+            comboBedrockVersion.IsEnabled = false;
+            CustomModeServerCoreNext.IsEnabled = false;
+            try
+            {
+                var response = await HttpService.GetApiContentAsync("mirrors/bedrock-server");
+
+                if (response["data"] != null && response["data"]["versions"] != null)
+                {
+                    List<string> versionList = response["data"]["versions"]
+                        .Select(v => v.ToString())
+                        .Where(v => v.Contains("win"))
+                        .ToList();
+
+                    comboBedrockVersion.ItemsSource = versionList;
+                    comboBedrockVersion.SelectedIndex = 0;
+                    comboBedrockVersion.IsEnabled = true;
+                }
+                else
+                {
+                    Growl.Error("获取版本列表失败或数据为空！");
+                }
+            }
+            catch
+            {
+                Growl.Error("出现错误，请检查网络连接！");
+                useCustomCmd.IsChecked = true;
+            }
+            finally
+            {
+                CustomModeServerCoreNext.IsEnabled = true;
+            }
+        }
+
+        private async Task<(bool suc, string msg)> DownloadAndUnzipBedrockServer(string serverPath,string version)
+        {
+            try
+            {
+                var response = await HttpService.GetApiContentAsync("download/server/bedrock-server/" + version);
+                if (response["data"] != null && response["data"]["url"] != null)
+                {
+                    string downUrl = response["data"]["url"].ToString();
+                    string filename = await HttpService.GetRemoteFileNameAsync(downUrl);
+                    var dwnManager = DownloadManager.Instance;
+                    string groupid = dwnManager.CreateDownloadGroup(isTempGroup: true);
+                    string id = dwnManager.AddDownloadItem(groupid, downUrl, Path.Combine("MSL", "Downloads"), filename);
+                    dwnManager.StartDownloadGroup(groupid);
+                    var token = Guid.NewGuid().ToString();
+                    Dialog.SetToken(Functions.GetWindow(this), token);
+                    DownloadManagerDialog.Instance.LoadDialog(token, false);
+                    Dialog.Show(DownloadManagerDialog.Instance, token);
+                    DownloadManagerDialog.Instance.ManagerControl.AddDownloadGroup(groupid, true, true, true);
+                    bool downDialog = await dwnManager.WaitForGroupCompletionAsync(groupid);
+                    Dialog.Close(token);
+                    await Task.Delay(150);
+                    var dwnItem = dwnManager.GetDownloadItem(id);
+                    if (downDialog)
+                    {
+                        if (dwnItem.Status == DownloadStatus.Cancelled)
+                            return (false, "下载已取消");
+                        if (dwnItem.Status != DownloadStatus.Completed)
+                            return (false, "下载失败，错误信息：" + dwnItem.ErrorMessage);
+
+                        // 解压
+                        var magicDialog = new MagicDialog();
+                        magicDialog.ShowTextDialog(Functions.GetWindow(this), "解压基岩版服务端资源中……");
+                        await Task.Run(() => new FastZip().ExtractZip("MSL\\Downloads\\" + filename, serverPath, ""));
+                        DirectoryInfo[] dirs = new DirectoryInfo(serverPath).GetDirectories();
+                        if (dirs.Length == 1)
+                        {
+                            await Functions.MoveFolder(dirs[0].FullName, serverPath);
+                        }
+                        File.Delete("MSL\\Downloads\\" + filename);
+                        magicDialog.CloseTextDialog();
+
+                        return (true, null);
+                    }
+                    else
+                    {
+                        return (false, "下载失败");
+                    }
+                }
+                else
+                {
+                    return (false, "获取基岩版服务端下载地址失败。");
+                }
+
+            }
+            catch (Exception ex)
+            {
+                return (false, "安装基岩版服务端失败：" + ex.Message);
+            }
         }
 
         private async void CustomModeDirNext_Click(object sender, RoutedEventArgs e)
@@ -672,6 +782,11 @@ namespace MSL.pages
                 DownloadServer downloadServerPage = null;
                 downloadServerPage = new DownloadServer((string filename) =>
                 {
+                    if (filename.Contains("bedrock-server"))
+                    {
+                        MagicShow.ShowMsgDialog(Window.GetWindow(this), "如果需要开基岩版官方服务端（BDS）\n请在返回并选择基岩版服务端，而不应该在这里下载基岩版资源文件！", "错误");
+                        return;
+                    }
                     if (File.Exists(serverbase + "\\" + filename))
                     {
                         servercore = filename;
@@ -755,6 +870,22 @@ namespace MSL.pages
                 {
                     MagicShow.ShowMsgDialog(Window.GetWindow(this), ex.Message, "错误");
                 }
+            }
+            else if(useBedrockServer.IsChecked == true) // bds
+            {
+                var installBds = await DownloadAndUnzipBedrockServer(serverbase,comboBedrockVersion.SelectionBoxItem.ToString());
+                if(!installBds.suc)
+                {
+                    MagicShow.ShowMsgDialog(Window.GetWindow(this), installBds.msg, "错误");
+                    return;
+                }
+                launchmode = 1; // 1是自定义命令模式
+                serverargs = "bedrock_server.exe"; //存放完整的args
+                // 若为自定义命令模式，就跳过设置开服内存和JVM参数的阶段
+                servermemory = string.Empty;
+                SelectTerminalGrid.Visibility = Visibility.Visible;
+                tabCtrl.Visibility = Visibility.Collapsed;
+                returnMode = 6;
             }
             else // 自定义指令模式
             {
@@ -980,7 +1111,7 @@ namespace MSL.pages
                     ServerCoreDescrip.Text = "原版服务器：Mojang纯原生服务器，不能添加任何插件或模组，给您原汁原味的体验";
                     break;
                 case 6:
-                    ServerCoreDescrip.Text = "基岩版服务器：专为基岩版提供的服务器，这种服务器在配置等方面和Java版服务器不太一样，同时开服器也不太适配，更改配置文件等相关操作只能您手动操作";
+                    ServerCoreDescrip.Text = "基岩版服务器：专为基岩版提供的服务器，这种服务器在配置等方面和Java版服务器不太一样，同时开服器也不太适配，更改配置文件等相关操作只能您手动操作。（此处仅支持部署Nukkit端，若需要使用官方基岩版服务端BDS，请返回选择自定义模式！）";
                     break;
                 case 7:
                     ServerCoreDescrip.Text = "代理服务器：指Java版群组服务器的转发服务器，这种服务器相当于一个桥梁，将玩家在不同的服务器之间进行传送转发，使用这种服务器您首先需要开启一个普通服务器，因为这种服务器没有游戏内容，如果没有普通服务器进行连接，玩家根本无法进入，且目前开服器并不兼容这种服务器，创建完毕后您需在列表右键该服务器并使用“命令行开服”功能来启动";
@@ -1046,6 +1177,13 @@ namespace MSL.pages
                 {
                     if (version == ServerVersionCombo.SelectedItem.ToString() && !FinallyCoreCombo.Items.Contains(_item.Key + "-" + version))
                     {
+                        string finallyCoreName = _item.Key + "-" + version;
+                        if (finallyCoreName.StartsWith("bedrock-server"))
+                        {
+                            Growl.Error("您选择的基岩版版本为官方服务端（BDS），仅支持使用自定义模式创建！请点击上一步并选择自定义模式哦！");
+                            FastModeNextBtn.IsEnabled = true;
+                            return;
+                        }
                         FinallyCoreCombo.Items.Add(_item.Key + "-" + version);
                     }
                 }
