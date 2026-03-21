@@ -1,4 +1,4 @@
-﻿using HandyControl.Controls;
+using HandyControl.Controls;
 using HandyControl.Tools;
 using MSL.controls;
 using System;
@@ -167,6 +167,8 @@ namespace MSL.utils
 
         public void CloseTextDialog()
         {
+            if (token == null) return;
+
             // window?.Focus();
             Dialog.Close(token);
             window = null;
@@ -244,6 +246,8 @@ namespace MSL.utils
 
         private void CloseMsgDialog()
         {
+            if (token == null) return;
+
             _tcs?.TrySetResult(true);
             // window?.Focus();
             Dialog.Close(token);
