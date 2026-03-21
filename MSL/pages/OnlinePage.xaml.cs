@@ -1,4 +1,4 @@
-using HandyControl.Controls;
+﻿using HandyControl.Controls;
 using MSL.langs;
 using MSL.utils;
 using Newtonsoft.Json;
@@ -76,7 +76,7 @@ namespace MSL.pages
             try
             {
                 LogHelper.Write.Info("开始从API获取FRP服务器信息。");
-                JObject p2p_res = await HttpService.GetApiContentAsync("query/p2p_server");
+                JObject p2p_res = await HttpService.GetApiContentAsync("software/p2p_server");
                 ipAddress = p2p_res["data"]["ip"].ToString();
                 ipPort = p2p_res["data"]["port"].ToString();
                 LogHelper.Write.Info($"成功解析到FRP服务器地址: {ipAddress}:{ipPort}");

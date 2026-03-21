@@ -1,4 +1,4 @@
-using HandyControl.Controls;
+﻿using HandyControl.Controls;
 using HandyControl.Themes;
 using HandyControl.Tools;
 using MSL.langs;
@@ -301,7 +301,7 @@ namespace MSL
                     {
                         MagicFlowMsg.ShowMessage("软件将使用备用URL...");
                         LogHelper.Write.Warn("正在尝试使用备用API地址...");
-                        ConfigStore.ApiLink = "https://api.mslmc.net/v3";
+                        ConfigStore.ApiLink = "https://api.mslmc.net/v4";
                         await OnlineService(cfg, true);
                     }
                     return;
@@ -325,7 +325,7 @@ namespace MSL
                 {
                     MagicFlowMsg.ShowMessage("软件将使用备用URL...");
                     LogHelper.Write.Warn("正在尝试使用备用API地址...");
-                    ConfigStore.ApiLink = "https://api.mslmc.net/v3";
+                    ConfigStore.ApiLink = "https://api.mslmc.net/v4";
                     await OnlineService(cfg, true);
                 }
                 return;
@@ -390,7 +390,7 @@ namespace MSL
             try
             {
                 LogHelper.Write.Info("正在检查更新...");
-                JObject httpReturn = await HttpService.GetApiContentAsync("query/update");
+                JObject httpReturn = await HttpService.GetApiContentAsync("software/update");
                 string latestVersionStr = httpReturn["data"]["latestVersion"].ToString();
                 var newVersion = new Version(latestVersionStr);
                 var version = new Version(System.Reflection.Assembly.GetExecutingAssembly().GetName().Version.ToString());

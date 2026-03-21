@@ -1,4 +1,4 @@
-using Cronos;
+﻿using Cronos;
 using HandyControl.Controls;
 using HandyControl.Data;
 using HandyControl.Tools;
@@ -1971,7 +1971,7 @@ namespace MSL
                         break;
                     }
                 }
-                string response = (await HttpService.GetApiContentAsync("query/jdk?os=windows&arch=x64"))["data"].ToString();
+                string response = (await HttpService.GetApiContentAsync("jdk?os=windows&arch=x64"))["data"].ToString();
                 JArray jArray = JArray.Parse(response);
                 List<string> list = new List<string>();
                 foreach (var j in jArray)
