@@ -698,23 +698,31 @@ namespace MSL.controls
                 str = str.Replace("https://libraries.minecraft.net", "https://mojmirror.hypertention.cn/maven");
                 str = str.Replace("https://maven.neoforged.net/releases", "https://mojmirror.hypertention.cn/maven");
                 */
-                str = str.Replace("https://maven.neoforged.net", "https://neoforge.mirrors.mslmc.cn");
-                str = str.Replace("https://maven.minecraftforge.net", "https://forge-maven.mirrors.mslmc.cn");
-                str = str.Replace("https://files.minecraftforge.net", "https://forge-files.mirrors.mslmc.cn");
-                str = str.Replace("https://libraries.minecraft.net", "https://mclibs.mirrors.mslmc.cn");
-                str = str.Replace("https://piston-meta.mojang.com", "https://mc-meta.mirrors.mslmc.cn");
+                str = str.Replace("https://maven.neoforged.net", "https://v2.mirrors.mslmc.cn/libs/neoforge");
+                str = str.Replace("https://maven.minecraftforge.net", "https://v2.mirrors.mslmc.cn/libs/forge-maven");
+                str = str.Replace("https://files.minecraftforge.net", "https://v2.mirrors.mslmc.cn/libs/forge-files");
+                str = str.Replace("https://libraries.minecraft.net", "https://v2.mirrors.mslmc.cn/libs/mc-libs");
+                str = str.Replace("https://piston-meta.mojang.com", "https://v2.mirrors.mslmc.cn/libs/mc-meta");
                 str = str.Replace("piston-data.mojang.com/v1/objects/", "file.mslmc.cn/mirrors/vanilla/");
             }
             // 备用镜像源
             if (useMirrorUrl == 1)
             {
                 //改成镜像源的部分
+                str = str.Replace("https://maven.neoforged.net", "https://neoforge.mirrors.mslmc.cn");
+                str = str.Replace("https://maven.minecraftforge.net", "https://forge-maven.mirrors.mslmc.cn");
+                str = str.Replace("https://files.minecraftforge.net", "https://forge-files.mirrors.mslmc.cn");
+                str = str.Replace("https://libraries.minecraft.net", "https://mclibs.mirrors.mslmc.cn");
+                str = str.Replace("https://piston-meta.mojang.com", "https://mc-meta.mirrors.mslmc.cn");
+                str = str.Replace("piston-data.mojang.com/v1/objects/", "file.mslmc.cn/mirrors/vanilla/");
+                /* 已弃用
                 str = str.Replace("https://maven.neoforged.net", "https://neoforge.mc-mirrors.aino.cyou");
                 str = str.Replace("https://maven.minecraftforge.net", "https://forge-maven.mc-mirrors.aino.cyou");
                 str = str.Replace("https://files.minecraftforge.net", "https://forge-files.mc-mirrors.aino.cyou");
                 str = str.Replace("https://libraries.minecraft.net", "https://mclibs.mc-mirrors.aino.cyou");
                 str = str.Replace("https://piston-meta.mojang.com", "https://mcmeta.mc-mirrors.aino.cyou");
                 str = str.Replace("piston-data.mojang.com/v1/objects/", "file.mslmc.cn/mirrors/vanilla/");
+                */
             }
             //构建时候的变量
             str = str.Replace("{INSTALLER}", ForgePath);
