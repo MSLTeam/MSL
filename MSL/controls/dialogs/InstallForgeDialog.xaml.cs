@@ -273,6 +273,7 @@ namespace MSL.controls
 
                 // 创建下载组
                 string groupId = downloadManager.CreateDownloadGroup("ForgeInstall_LibFiles", maxConcurrentDownloads: semaphore); // 4个并发下载
+                var fallbackDict = new Dictionary<string, string>(); // 下载内容丢进字典里面 方便回退重试
 
                 if (versionType != 5) //分为高版本和低版本
                 {
@@ -319,6 +320,8 @@ namespace MSL.controls
                         if (!addedDownloadPaths.Add(lib["downloads"]["artifact"]["path"].ToString()))
                             continue;
 
+                        fallbackDict[lib["downloads"]["artifact"]["path"].ToString()] = lib["downloads"]["artifact"]["url"].ToString(); // 路径/原始地址
+
                         string _sha1 = lib["downloads"]["artifact"]["sha1"].ToString();
                         Log_in("[LIB]下载：" + lib["downloads"]["artifact"]["path"].ToString());
 
@@ -341,15 +344,13 @@ namespace MSL.controls
                     foreach (JObject lib in libraries2.Cast<JObject>())//遍历数组，进行文件下载
                     {
                         libCount++;
-                        string _dlurl;
-                        if (SafeGetValue(lib, "url") == "")
-                        {
-                            _dlurl = ReplaceStr("https://maven.minecraftforge.net/" + NameToPath(SafeGetValue(lib, "name")));
-                        }
-                        else
-                        {
-                            _dlurl = ReplaceStr(SafeGetValue(lib, "url") + NameToPath(SafeGetValue(lib, "name")));
-                        }
+                        
+                        string rawUrl = SafeGetValue(lib, "url") == ""
+                            ? "https://maven.minecraftforge.net/" + NameToPath(SafeGetValue(lib, "name"))
+                            : SafeGetValue(lib, "url") + NameToPath(SafeGetValue(lib, "name"));
+
+                        fallbackDict[NameToPath(SafeGetValue(lib, "name"))] = rawUrl; // 原始路径/原始地址
+                        string _dlurl = ReplaceStr(rawUrl);
                         if (string.IsNullOrEmpty(_dlurl))
                             continue;
                         Log_in("[LIB]下载：" + NameToPath(SafeGetValue(lib, "name")));
@@ -371,9 +372,35 @@ namespace MSL.controls
                 // 开始下载
                 downloadManager.StartDownloadGroup(groupId);
 
-                if (!await downloadManager.WaitForGroupCompletionAsync(groupId))
+                await downloadManager.WaitForGroupCompletionAsync(groupId);
+
+                // 下载失败回退源重试
+                int originalMirror = useMirrorUrl;
+                for (int i = 0; i < 2; i++)
                 {
-                    Log_in("下载失败，请重试！");
+                    var missingFiles = fallbackDict.Where(kv => !File.Exists(Path.Combine(LibPath, kv.Key)) || new FileInfo(Path.Combine(LibPath, kv.Key)).Length == 0).ToList();
+                    if (missingFiles.Count == 0) break;
+
+                    useMirrorUrl = (originalMirror + i + 1) % 3;
+                    Log_in($"检测到 {missingFiles.Count} 个文件缺失，正在切换源尝试补漏...");
+
+                    string patchGroup = downloadManager.CreateDownloadGroup("ForgeInstall_Patch_" + i, maxConcurrentDownloads: semaphore);
+                    foreach (var kv in missingFiles)
+                    {
+                        downloadManager.AddDownloadItem(patchGroup, ReplaceStr(kv.Value), LibPath, kv.Key, enableParallel: false);
+                    }
+
+                    DownloadDisplay.AddDownloadGroup(patchGroup);
+                    downloadManager.StartDownloadGroup(patchGroup);
+                    await downloadManager.WaitForGroupCompletionAsync(patchGroup);
+                }
+
+                useMirrorUrl = originalMirror;
+
+                // 检查文件完整
+                if (fallbackDict.Any(kv => !File.Exists(Path.Combine(LibPath, kv.Key)) || new FileInfo(Path.Combine(LibPath, kv.Key)).Length == 0))
+                {
+                    Log_in("部分 Lib 文件所有源均下载失败，请重试！");
                     Log_in("或者点击右下角的使用命令行安装哦~");
                     return;
                 }
