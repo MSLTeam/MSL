@@ -296,6 +296,8 @@ namespace MSL.controls
                         if (!addedDownloadPaths.Add(lib["downloads"]["artifact"]["path"].ToString()))
                             continue;
 
+                        fallbackDict[lib["downloads"]["artifact"]["path"].ToString()] = lib["downloads"]["artifact"]["url"].ToString(); // 路径/原始地址
+
                         string _sha1 = lib["downloads"]["artifact"]["sha1"].ToString();
                         Log_in("[LIB]下载：" + lib["downloads"]["artifact"]["path"].ToString());
 
