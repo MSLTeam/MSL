@@ -9,7 +9,6 @@ using System.Collections.Generic;
 using System.Diagnostics;
 using System.IO;
 using System.Linq;
-using System.Management;
 using System.Text;
 using System.Text.RegularExpressions;
 using System.Threading.Tasks;
@@ -393,23 +392,15 @@ namespace MSL.utils
 
         public static void KillProcessTree(int pid)
         {
-            // 先递归杀所有子进程
-            using (var searcher = new ManagementObjectSearcher(
-                $"SELECT ProcessId FROM Win32_Process WHERE ParentProcessId = {pid}"))
-            {
-                foreach (ManagementObject mo in searcher.Get())
-                {
-                    int childPid = Convert.ToInt32(mo["ProcessId"]);
-                    KillProcessTree(childPid); // 递归
-                }
-            }
-
-            // 再杀自身
             try
             {
-                var p = Process.GetProcessById(pid);
-                if (!p.HasExited)
-                    p.Kill();
+                Process.Start(new ProcessStartInfo
+                {
+                    FileName = "taskkill",
+                    Arguments = $"/PID {pid} /T /F",
+                    CreateNoWindow = true,
+                    UseShellExecute = false
+                })?.WaitForExit();
             }
             catch { }
         }
