@@ -63,6 +63,7 @@ namespace MSL.utils.Config
             public bool ShowOutlog { get; set; } = true;
             public bool FormatLogPrefix { get; set; } = true;
             public bool ShieldStackOut { get; set; } = true;
+            public bool KillProcessTree { get; set; } = false;
             public List<string> ShieldLogs { get; set; } = new();
             public List<string> HighLightLogs { get; set; } = new();
             public List<FastCommandInfo> FastCmds { get; set; } = new();

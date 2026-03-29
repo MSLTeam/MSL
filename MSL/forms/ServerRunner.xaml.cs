@@ -1,4 +1,4 @@
-﻿using Cronos;
+using Cronos;
 using HandyControl.Controls;
 using HandyControl.Data;
 using HandyControl.Tools;
@@ -1349,7 +1349,7 @@ namespace MSL
                 else
                 {
                     MagicFlowMsg.ShowMessage("关服中，请耐心等待……\n双击按钮可强制关服（不建议）");
-                    ServerService.SendCommand("stop");
+                    ServerService.StopServer();
                 }
 
                 GetServerInfoLine = 101;
@@ -2602,6 +2602,12 @@ namespace MSL
             ServerService.InstanceConfig.FileForceUTF8 = fileforceUTF8encoding.IsChecked == true;
             ServerConfig.Current.Save();
             MagicFlowMsg.ShowMessage("设置已更改，重启服务器生效！", 1);
+        }
+
+        private void KillProcessTreeTogBtn_Click(object sender, RoutedEventArgs e)
+        {
+            ServerService.InstanceConfig.KillProcessTree = KillProcessTreeTogBtn.IsChecked == true;
+            ServerConfig.Current.Save();
         }
 
         private void useConpty_Click(object sender, RoutedEventArgs e)

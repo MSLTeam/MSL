@@ -9,6 +9,7 @@ using System.Collections.Generic;
 using System.Diagnostics;
 using System.IO;
 using System.Linq;
+using System.Management;
 using System.Text;
 using System.Text.RegularExpressions;
 using System.Threading.Tasks;
@@ -367,7 +368,7 @@ namespace MSL.utils
             ServerProcess.StandardInput.WriteLine(cmd);
         }
 
-        public void StopServer()=> SendCommand("stop");
+        public void StopServer() => SendCommand("stop");
         public void KillServer()
         {
             try
@@ -378,13 +379,39 @@ namespace MSL.utils
                 }
                 else if (ServerProcess != null && !ServerProcess.HasExited)
                 {
-                    ServerProcess.Kill();
+                    if (InstanceConfig.KillProcessTree == true)
+                        KillProcessTree(ServerProcess.Id);
+                    else
+                        ServerProcess.Kill();
                 }
             }
             catch
             {
                 // 可能已经退出了，忽略异常
             }
+        }
+
+        public static void KillProcessTree(int pid)
+        {
+            // 先递归杀所有子进程
+            using (var searcher = new ManagementObjectSearcher(
+                $"SELECT ProcessId FROM Win32_Process WHERE ParentProcessId = {pid}"))
+            {
+                foreach (ManagementObject mo in searcher.Get())
+                {
+                    int childPid = Convert.ToInt32(mo["ProcessId"]);
+                    KillProcessTree(childPid); // 递归
+                }
+            }
+
+            // 再杀自身
+            try
+            {
+                var p = Process.GetProcessById(pid);
+                if (!p.HasExited)
+                    p.Kill();
+            }
+            catch { }
         }
 
         private void LogHandleInfo(string msg)
