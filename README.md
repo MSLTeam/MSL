@@ -35,9 +35,8 @@ Windows 7 及以上系统
 Github Release：  
 https://github.com/MSLTeam/MSL/releases
 
-### 文档：
-https://www.mslmc.cn/docs  
-https://github.com/MSLTeam/MSL/wiki
+### 文档（官网）：
+https://www.mslmc.cn/
 
 ## Star History
 
