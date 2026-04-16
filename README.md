@@ -43,16 +43,6 @@ https://github.com/MSLTeam/MSL/releases
 https://www.mslmc.cn/docs  
 https://github.com/MSLTeam/MSL/wiki
 
-## 更多信息
-### QQ交流群：
-①：1145888872  
-②：234477679
-
-有什么问题可在QQ群进行询问~
-
-### 支持作者：
-爱发电：https://afdian.com/a/makabaka123 感谢支持！
-
 ## Star History
 
 <a href="https://www.star-history.com/?repos=MSLTeam%2FMSL&type=date&legend=top-left">
