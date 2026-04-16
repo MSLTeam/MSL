@@ -32,10 +32,6 @@ Windows 7 及以上系统
 官网：  
 [点击下载](https://api.mslmc.cn/v3/download/update?direct=true)
   
-蓝奏云：  
-https://wwyo.lanzouy.com/b02vailjc  
-密码:6666
-  
 Github Release：  
 https://github.com/MSLTeam/MSL/releases
 
