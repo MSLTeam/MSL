@@ -52,3 +52,13 @@ https://github.com/MSLTeam/MSL/wiki
 
 ### 支持作者：
 爱发电：https://afdian.com/a/makabaka123 感谢支持！
+
+## Star History
+
+<a href="https://www.star-history.com/?repos=MSLTeam%2FMSL&type=date&legend=top-left">
+ <picture>
+   <source media="(prefers-color-scheme: dark)" srcset="https://api.star-history.com/chart?repos=MSLTeam/MSL&type=date&theme=dark&legend=top-left" />
+   <source media="(prefers-color-scheme: light)" srcset="https://api.star-history.com/chart?repos=MSLTeam/MSL&type=date&legend=top-left" />
+   <img alt="Star History Chart" src="https://api.star-history.com/chart?repos=MSLTeam/MSL&type=date&legend=top-left" />
+ </picture>
+</a>
