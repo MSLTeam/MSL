@@ -339,6 +339,11 @@ namespace MSL.pages.frpProviders.MSLFrp
             Config.Remove("MSLUserAccessToken");
             FrpProfile = new MSLFrpProfile();
         }
+
+        private async void KCPProtocol_Checked(object sender, RoutedEventArgs e)
+        {
+            await MagicShow.ShowMsgDialogAsync(Window.GetWindow(this), "您启用了KCP协议传输，此功能可以优化恶劣网络环境下的延迟，\n但是部分用户启用本功能后会导致隧道无法连接。\n若您后续启动隧道时连接失败，请关闭本功能！", "警告");
+        }
     }
 
     internal class MSLStatusConverter : IValueConverter

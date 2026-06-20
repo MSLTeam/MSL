@@ -1,4 +1,4 @@
-<Page x:Class="MSL.pages.frpProviders.MSLFrp.MSLFrp"
+﻿<Page x:Class="MSL.pages.frpProviders.MSLFrp.MSLFrp"
       xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
       xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
       xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006" 
@@ -217,8 +217,8 @@
                                         <ColumnDefinition Width="auto"/>
                                         <ColumnDefinition Width="auto"/>
                                     </Grid.ColumnDefinitions>
-                                    <Label Style="{DynamicResource MagicLabel}" Content="传输协议：" VerticalAlignment="Center"/>
-                                    <ToggleButton Grid.Column="1" Style="{StaticResource ToggleButtonSwitch}" x:Name="KCPProtocol" Content="使用KCP协议"/>
+                                    <Label Style="{DynamicResource MagicLabel}" Content="启用KCP协议传输：" VerticalAlignment="Center"/>
+                                        <ToggleButton Grid.Column="1" Style="{StaticResource ToggleButtonSwitch}" x:Name="KCPProtocol" Content="" Checked="KCPProtocol_Checked"/>
                                 </Grid>
                             </hc:UniformSpacingPanel>
                             </ScrollViewer>
