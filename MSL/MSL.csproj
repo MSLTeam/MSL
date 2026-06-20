@@ -553,5 +553,8 @@
   <ItemGroup>
     <Resource Include="images\150px-MinecartWithCommandBlock.png" />
   </ItemGroup>
+  <ItemGroup>
+    <Resource Include="images\msl-user-msl-user-logo-512-transparent-BjXu1GPW.png" />
+  </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
 </Project>
