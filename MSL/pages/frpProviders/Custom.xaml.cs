@@ -14,9 +14,12 @@ namespace MSL.pages.frpProviders
     /// </summary>
     public partial class Custom : Page
     {
-        public Custom()
+        private Action _onReturn;
+
+        public Custom(Action onReturn)
         {
             InitializeComponent();
+            _onReturn = onReturn;
         }
 
         private void OKBtn_Click(object sender, RoutedEventArgs e)
@@ -152,7 +155,7 @@ namespace MSL.pages.frpProviders
                 LogHelper.Write.Info("最终配置 config.json 已成功保存。");
                 await MagicShow.ShowMsgDialogAsync(Window.GetWindow(this), "隧道配置成功，请您点击“启动内网映射”以启动映射！", "信息");
                 LogHelper.Write.Info($"隧道 {number} (名称: {sn}) 的配置流程已全部成功完成。");
-                Window.GetWindow(this).Close();
+                _onReturn?.Invoke();
             }
             catch (Exception ex)
             {

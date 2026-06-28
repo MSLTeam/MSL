@@ -17,7 +17,7 @@ namespace MSL
         {
             InitializeComponent();
             _onClose = onClose;
-            Pages = new List<Page> { new MSLFrp(ReturnFun), new OpenFrp(ReturnFun), new SakuraFrp(ReturnFun), new ChmlFrp(ReturnFun), new MEFrp(ReturnFun), new Custom() };
+            Pages = new List<Page> { new MSLFrp(ReturnFun), new OpenFrp(ReturnFun), new SakuraFrp(ReturnFun), new ChmlFrp(ReturnFun), new MEFrp(ReturnFun), new Custom(ReturnFun) };
             TabCtrl.SelectedIndex = 1;
         }
 

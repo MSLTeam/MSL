@@ -112,41 +112,52 @@ namespace MSL.pages
             }
         }
 
+        private string ReadFrpcConfig() => File.Exists("MSL\\frp\\P2Pfrpc") ? File.ReadAllText("MSL\\frp\\P2Pfrpc") : null;
+
         private void masterExp_Expanded(object sender, RoutedEventArgs e)
         {
             visiterExp.IsExpanded = false;
-            if (File.Exists("MSL\\frp\\P2Pfrpc"))
+
+            string content = ReadFrpcConfig();
+            if (content == null) return;
+
+            // 房主模式：不含 role = visitor
+            if (!content.Contains("role = visitor"))
             {
-                string a = File.ReadAllText("MSL\\frp\\P2Pfrpc");
-                if (a.IndexOf("role = visitor") + 1 == 0)
+                // 匹配: [Wyy12337] type=xtcp local_ip=... local_port=25565 sk=12306
+                var match = Regex.Match(content,
+                    @"\[(\w+)\]\s*type\s*=\s*xtcp\s*local_ip\s*=\s*\S+\s*local_port\s*=\s*(\d+)\s*sk\s*=\s*(\S+)",
+                    RegexOptions.Singleline);
+
+                if (match.Success)
                 {
-                    string pattern = @"\[(\w+)\]\s*type\s*=\s*xtcp\s*local_ip\s*=\s*(\S+)\s*local_port\s*=\s*(\d+)\s*sk\s*=\s*(\S+)";
-                    Match match = Regex.Match(a, pattern);
-                    if (match.Success)
-                    {
-                        masterQQ.Text = match.Groups[1].Value;
-                        masterKey.Text = match.Groups[4].Value;
-                        masterPort.Text = match.Groups[3].Value;
-                    }
+                    masterQQ.Text = match.Groups[1].Value;  // 节点名，如 Wyy12337
+                    masterPort.Text = match.Groups[2].Value;  // local_port，如 25565
+                    masterKey.Text = match.Groups[3].Value;  // sk，如 12306
                 }
             }
         }
+
         private void visiterExp_Expanded(object sender, RoutedEventArgs e)
         {
             masterExp.IsExpanded = false;
-            if (File.Exists("MSL\\frp\\P2Pfrpc"))
+
+            string content = ReadFrpcConfig();
+            if (content == null) return;
+
+            // 访客模式：含 role = visitor
+            if (content.Contains("role = visitor"))
             {
-                string a = File.ReadAllText("MSL\\frp\\P2Pfrpc");
-                if (a.IndexOf("role = visitor") + 1 != 0)
+                // 匹配: bind_port=25565 server_name=Wyy12337 sk=12306
+                var match = Regex.Match(content,
+                    @"bind_port\s*=\s*(\d+)\s*server_name\s*=\s*(\S+)\s*sk\s*=\s*(\S+)",
+                    RegexOptions.Singleline);
+
+                if (match.Success)
                 {
-                    string pattern = @"server_name\s*=\s*(\S+)\s*sk\s*=\s*(\S+)\s*bind_port\s*=\s*(\d+)";
-                    Match match = Regex.Match(a, pattern);
-                    if (match.Success)
-                    {
-                        visiterQQ.Text = match.Groups[1].Value;
-                        visiterKey.Text = match.Groups[2].Value;
-                        visiterPort.Text = match.Groups[3].Value;
-                    }
+                    visiterPort.Text = match.Groups[1].Value;  // bind_port，如 25565
+                    visiterQQ.Text = match.Groups[2].Value;  // server_name，如 Wyy12337
+                    visiterKey.Text = match.Groups[3].Value;  // sk，如 12306
                 }
             }
         }
@@ -248,6 +259,14 @@ namespace MSL.pages
                 FrpcProcess.OutputDataReceived -= OutputDataReceived;
                 FrpcProcess.Dispose();
                 FrpcProcess = null;
+            }
+            catch (Exception e)
+            {
+                LogHelper.Write.Fatal($"启动或运行frpc进程时发生致命错误: {e.ToString()}");
+                MessageBox.Show(LanguageManager.Instance["Page_OnlinePage_ErrMsg1"] + e.Message, LanguageManager.Instance["Error"], MessageBoxButton.OK, MessageBoxImage.Error);
+            }
+            finally
+            {
                 if (isMaster)
                 {
                     createRoom.IsChecked = false;
@@ -258,11 +277,6 @@ namespace MSL.pages
                     joinRoom.IsChecked = false;
                     masterExp.IsEnabled = true;
                 }
-            }
-            catch (Exception e)
-            {
-                LogHelper.Write.Fatal($"启动或运行frpc进程时发生致命错误: {e.ToString()}");
-                MessageBox.Show(LanguageManager.Instance["Page_OnlinePage_ErrMsg1"] + e.Message, LanguageManager.Instance["Error"], MessageBoxButton.OK, MessageBoxImage.Error);
             }
         }
 
