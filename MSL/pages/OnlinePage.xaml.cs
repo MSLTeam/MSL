@@ -334,7 +334,14 @@ namespace MSL.pages
                                 while (!tunnelCts.Token.IsCancellationRequested)
                                 {
                                     TcpClient inboundClient = _natterListener.AcceptTcpClient();
-                                    if (activeThreadsCount >= MaxThreads) { inboundClient.Close(); continue; }
+                                    if (activeThreadsCount >= MaxThreads)
+                                    {
+                                        bool showLog = true;
+                                        Dispatcher.Invoke(() => showLog = chkShowConnLog.IsChecked == true);
+                                        if (showLog) AppendNat1Log($"[WARN] 拒绝来自 {inboundClient.Client.RemoteEndPoint} 的连接：已达到最大并发连接数 {MaxThreads}。");
+                                        inboundClient.Close();
+                                        continue;
+                                    }
                                     Task.Run(async () =>
                                     {
                                         Interlocked.Increment(ref activeThreadsCount);
@@ -474,24 +481,86 @@ namespace MSL.pages
 
         private async Task HandleTcpSocketForward(TcpClient inboundClient, int targetPort, CancellationToken token)
         {
+            bool enableProxyV2 = false;
+            bool showConnLog = true;
+            Dispatcher.Invoke(() => {
+                enableProxyV2 = chkProxyProtocol.IsChecked == true;
+                showConnLog = chkShowConnLog.IsChecked == true;
+            });
+
+            string remoteEpStr = inboundClient.Client.RemoteEndPoint?.ToString() ?? "未知客户端";
+
+            if (showConnLog)
+            {
+                AppendNat1Log($"[CONN] 收到来自 [{remoteEpStr}] 的连接请求。");
+            }
+
             using (inboundClient)
             using (TcpClient localBackendClient = new TcpClient())
             {
                 try
                 {
                     var result = localBackendClient.BeginConnect("127.0.0.1", targetPort, null, null);
-                    if (!result.AsyncWaitHandle.WaitOne(TimeSpan.FromSeconds(3))) return;
+                    if (!result.AsyncWaitHandle.WaitOne(TimeSpan.FromSeconds(3)))
+                    {
+                        if (showConnLog) AppendNat1Log($"[CONN] 转发失败：无法连接到本地游戏端口 {targetPort}。");
+                        return;
+                    }
                     localBackendClient.EndConnect(result);
 
                     using (NetworkStream extStream = inboundClient.GetStream())
                     using (NetworkStream localStream = localBackendClient.GetStream())
                     {
+                        // Proxy Protocol v2
+                        if (enableProxyV2 && inboundClient.Client.RemoteEndPoint is IPEndPoint remoteEp && localBackendClient.Client.LocalEndPoint is IPEndPoint localEp)
+                        {
+                            byte[] proxyHeader = BuildProxyProtocolV2Header(remoteEp, localEp);
+                            await localStream.WriteAsync(proxyHeader, 0, proxyHeader.Length, token);
+                            await localStream.FlushAsync(token);
+                        }
+
+                        if (showConnLog) AppendNat1Log($"[CONN] [{remoteEpStr}] 已连上隧道服务。");
+
                         Task extToLocal = CopySocketStreamAsync(extStream, localStream, token);
                         Task localToExt = CopySocketStreamAsync(localStream, extStream, token);
                         await Task.WhenAny(extToLocal, localToExt);
                     }
                 }
-                catch { }
+                catch (Exception ex)
+                {
+                    if (showConnLog) AppendNat1Log($"[CONN] [{remoteEpStr}] 连接异常断开: {ex.Message}");
+                }
+                finally
+                {
+                    if (showConnLog) AppendNat1Log($"[CONN] [{remoteEpStr}] 释放连接。");
+                }
+            }
+        }
+
+
+        // 构造 Proxy Protocol v2 头
+        private byte[] BuildProxyProtocolV2Header(IPEndPoint src, IPEndPoint dst)
+        {
+            using (MemoryStream ms = new MemoryStream())
+            {
+                byte[] magic = { 0x0D, 0x0A, 0x0D, 0x0A, 0x00, 0x0D, 0x0A, 0x51, 0x55, 0x49, 0x54, 0x0A };
+                ms.Write(magic, 0, magic.Length);
+                ms.WriteByte(0x21);
+                bool isIPv4 = src.AddressFamily == AddressFamily.InterNetwork;
+                ms.WriteByte((byte)(isIPv4 ? 0x11 : 0x21));
+                ushort addrLen = (ushort)(isIPv4 ? 12 : 36);
+                ms.WriteByte((byte)(addrLen >> 8));
+                ms.WriteByte((byte)(addrLen & 0xFF));
+
+                // 写入源地址和目的地址
+                byte[] srcIpBytes = src.Address.GetAddressBytes();
+                byte[] dstIpBytes = dst.Address.GetAddressBytes();
+                ms.Write(srcIpBytes, 0, srcIpBytes.Length);
+                ms.Write(dstIpBytes, 0, dstIpBytes.Length);
+                ms.WriteByte((byte)(src.Port >> 8)); ms.WriteByte((byte)(src.Port & 0xFF));
+                ms.WriteByte((byte)(dst.Port >> 8)); ms.WriteByte((byte)(dst.Port & 0xFF));
+
+                return ms.ToArray();
             }
         }
 

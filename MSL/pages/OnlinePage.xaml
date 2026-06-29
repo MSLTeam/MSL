@@ -123,7 +123,8 @@
                                         <Label Content="游戏本地端口" Height="30" FontSize="14" Background="{x:Null}" BorderBrush="{x:Null}" VerticalContentAlignment="Center"/>
                                         <TextBox x:Name="nat1LocalPort" Height="30" Text="25565" Width="120" VerticalContentAlignment="Center"/>
                                     </StackPanel>
-                                    
+                                    <CheckBox x:Name="chkProxyProtocol" Content="启用 Proxy Protocol v2 (透传玩家真实IP)" Margin="10" VerticalAlignment="Center" Foreground="{DynamicResource PrimaryTextBrush}"/>
+                                    <CheckBox x:Name="chkShowConnLog" Content="显示玩家连接日志" IsChecked="True" Margin="10" VerticalAlignment="Center" Foreground="{DynamicResource PrimaryTextBrush}"/>
                                     <ToggleButton x:Name="toggleNat1" Margin="10" Height="30" Click="toggleNat1_Click" MinWidth="130">
                                         <ToggleButton.Style>
                                             <Style TargetType="ToggleButton" BasedOn="{StaticResource ToggleButton.NoCheckedBorder}">
