@@ -68,6 +68,19 @@ namespace MSL.pages
                 }
                 masterExp.IsExpanded = true;
             }
+            // 读取 STUN 隧道相关配置
+            try
+            {
+                var savedPort = MSL.utils.Config.Config.Read("Nat1LocalPort")?.ToString();
+                if (!string.IsNullOrEmpty(savedPort)) nat1LocalPort.Text = savedPort;
+
+                var savedProxy = MSL.utils.Config.Config.Read("Nat1ProxyProtocol")?.ToObject<bool>();
+                if (savedProxy != null) chkProxyProtocol.IsChecked = savedProxy;
+
+                var savedLog = MSL.utils.Config.Config.Read("Nat1ShowConnLog")?.ToObject<bool>();
+                if (savedLog != null) chkShowConnLog.IsChecked = savedLog;
+            }
+            catch { }
             await GetFrpcInfo();
         }
 
@@ -243,6 +256,7 @@ namespace MSL.pages
         {
             if (toggleNat1.IsChecked == true)
             {
+                SaveNat1Config();
                 frpcOutlog.Text = string.Empty;
                 AppendNat1Log("[INFO] STUN 隧道环境初始化...");
                 nat1OuterAddress.Text = "正在启动隧道中...";
@@ -345,8 +359,10 @@ namespace MSL.pages
                                     Task.Run(async () =>
                                     {
                                         Interlocked.Increment(ref activeThreadsCount);
+                                        UpdateConnectionUI(activeThreadsCount);
                                         await HandleTcpSocketForward(inboundClient, localTargetPort, tunnelCts.Token);
                                         Interlocked.Decrement(ref activeThreadsCount);
+                                        UpdateConnectionUI(activeThreadsCount);
                                     }, tunnelCts.Token);
                                 }
                             }
@@ -588,6 +604,7 @@ namespace MSL.pages
                 toggleNat1.IsChecked = false;
                 nat1OuterAddress.Text = failed ? "无法启动，请改用其他 Frp 映射或点对点联机" : "未开启";
                 nat1OuterAddress.Foreground = failed ? System.Windows.Media.Brushes.Red : System.Windows.Media.Brushes.Gray;
+                txtActiveConnections.Text = " 当前连接数: 0 / 128";
             });
             AppendNat1Log(failed ? "[ERROR] STUN 打洞隧道后台服务已被关闭。" : "[INFO] STUN 打洞隧道后台服务已被关闭。");
         }
@@ -599,6 +616,44 @@ namespace MSL.pages
                 frpcOutlog.ScrollToEnd();
             });
         }
+
+        private void SaveNat1Config()
+        {
+            try
+            {
+                MSL.utils.Config.Config.Write("Nat1LocalPort", nat1LocalPort.Text);
+                MSL.utils.Config.Config.Write("Nat1ProxyProtocol", chkProxyProtocol.IsChecked == true);
+                MSL.utils.Config.Config.Write("Nat1ShowConnLog", chkShowConnLog.IsChecked == true);
+            }
+            catch { }
+        }
+
+        private void btnCopyAddress_Click(object sender, RoutedEventArgs e)
+        {
+            if (nat1OuterAddress.Text == "未开启" || nat1OuterAddress.Text == "正在启动隧道中..." || nat1OuterAddress.Text.Contains("无法启动"))
+            {
+                Growl.Warning("当前没有有效的公网直连地址可供复制！");
+                return;
+            }
+            try
+            {
+                Clipboard.SetText(nat1OuterAddress.Text);
+                Growl.Success("公网直连地址已成功复制到剪贴板！");
+            }
+            catch (Exception ex)
+            {
+                Growl.Error($"复制失败: {ex.Message}");
+            }
+        }
+
+        private void UpdateConnectionUI(int currentCount)
+        {
+            Dispatcher.Invoke(() =>
+            {
+                txtActiveConnections.Text = $" 当前连接数: {currentCount} / {MaxThreads}";
+            });
+        }
+
 
         #endregion
     }

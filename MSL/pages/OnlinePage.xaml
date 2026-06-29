@@ -17,8 +17,9 @@
 
             <Grid Margin="0,65,0,0">
                 <Grid.RowDefinitions>
-                    <RowDefinition Height="*"/>
-                    <RowDefinition Height="139"/> </Grid.RowDefinitions>
+                    <RowDefinition Height="auto"/>
+                    <RowDefinition Height="*"/> 
+                </Grid.RowDefinitions>
 
                 <TabControl Style="{StaticResource TabControlCapsule}" Grid.Row="0" Background="Transparent" BorderBrush="Transparent" BorderThickness="0" Margin="0,5,0,0">
                    
@@ -143,6 +144,31 @@
                                     <StackPanel Orientation="Horizontal" Margin="15,10,10,10" VerticalAlignment="Center">
                                         <TextBlock Text="公网直连地址: " FontSize="14" VerticalAlignment="Center" Foreground="{DynamicResource PrimaryTextBrush}"/>
                                         <TextBlock x:Name="nat1OuterAddress" Text="未开启" Foreground="#FF2DB7F5" FontWeight="Bold" FontSize="15" VerticalAlignment="Center" Margin="5,0,0,0"/>
+                                        <Button x:Name="btnCopyAddress" Content="复制" Margin="8,0,0,0" Height="24" Padding="8,0" FontSize="12" Click="btnCopyAddress_Click">
+                                            <Button.Style>
+                                                <Style TargetType="Button" BasedOn="{StaticResource ButtonPrimary}">
+                                                    <Setter Property="Visibility" Value="Collapsed"/>
+                                                    <Style.Triggers>
+                                                        <DataTrigger Binding="{Binding IsChecked, ElementName=toggleNat1}" Value="True">
+                                                            <Setter Property="Visibility" Value="Visible"/>
+                                                        </DataTrigger>
+                                                    </Style.Triggers>
+                                                </Style>
+                                            </Button.Style>
+                                        </Button>
+
+                                        <TextBlock x:Name="txtActiveConnections" Text=" 当前连接数: 0 / 128" FontSize="13" Foreground="{DynamicResource SecondaryTextBrush}" VerticalAlignment="Center" Margin="20,0,0,0">
+                                            <TextBlock.Style>
+                                                <Style TargetType="TextBlock">
+                                                    <Setter Property="Visibility" Value="Collapsed"/>
+                                                    <Style.Triggers>
+                                                        <DataTrigger Binding="{Binding IsChecked, ElementName=toggleNat1}" Value="True">
+                                                            <Setter Property="Visibility" Value="Visible"/>
+                                                        </DataTrigger>
+                                                    </Style.Triggers>
+                                                </Style>
+                                            </TextBlock.Style>
+                                        </TextBlock>
                                     </StackPanel>
                                 </WrapPanel>
                             </StackPanel>
@@ -150,7 +176,7 @@
                     </TabItem>
                 </TabControl>
 
-                <TextBox x:Name="frpcOutlog" Grid.Row="1" Margin="10,10,10,10" TextWrapping="Wrap" Text="Logs" IsReadOnly="True" HorizontalScrollBarVisibility="Visible" VerticalScrollBarVisibility="Auto" VerticalContentAlignment="Top" Padding="10" Background="Transparent" Foreground="{DynamicResource PrimaryTextBrush}"/>
+                <TextBox x:Name="frpcOutlog" Grid.Row="1" Margin="10,10,10,10" TextWrapping="Wrap" Text="等待隧道启动......" IsReadOnly="True" HorizontalScrollBarVisibility="Visible" VerticalScrollBarVisibility="Auto" VerticalContentAlignment="Top" Padding="10" Background="Transparent" Foreground="{DynamicResource PrimaryTextBrush}"/>
             </Grid>
         </Grid>
     </Border>
