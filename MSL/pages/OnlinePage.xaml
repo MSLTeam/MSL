@@ -6,83 +6,151 @@
       xmlns:hc="https://handyorg.github.io/handycontrol"
       xmlns:local="clr-namespace:MSL.pages"
       xmlns:langs="clr-namespace:MSL.langs"
-      mc:Ignorable="d" d:DesignHeight="460" d:DesignWidth="750" Style="{StaticResource AnimationPage}"
+      mc:Ignorable="d" d:DesignHeight="550" d:DesignWidth="750" Style="{StaticResource AnimationPage}"
       Title="OnlinePage" Loaded="Page_Loaded">
+    
     <Border Style="{StaticResource MagicBorder}" VerticalAlignment="Stretch" Margin="10">
         <Grid>
             <Label Style="{StaticResource BorderTitle}" Content="{Binding [Page_OnlinePage_Title], Source={x:Static langs:LanguageManager.Instance}}"/>
             <hc:Shield Subject="{Binding [Page_OnlinePage_UseTip], Source={x:Static langs:LanguageManager.Instance}}" Status="{Binding [OpenWebsite], Source={x:Static langs:LanguageManager.Instance}}" Margin="10" Command="hc:ControlCommands.OpenLink" CommandParameter="https://www.mslmc.cn/docs/proxy/p2p/" HorizontalAlignment="Right" VerticalAlignment="Top" Height="25"/>
             <TextBlock x:Name="serverState" Text="{Binding [Page_OnlinePage_ServerStatusChecking], Source={x:Static langs:LanguageManager.Instance}}" Foreground="{DynamicResource DarkPrimaryBrush}" Margin="10,35,0,0" VerticalAlignment="Top" HorizontalAlignment="Left" FontSize="16"/>
+
             <Grid Margin="0,65,0,0">
                 <Grid.RowDefinitions>
-                    <RowDefinition Height="Auto"/>
-                    <RowDefinition/>
-                </Grid.RowDefinitions>
-                <StackPanel Grid.Row="0">
-                    <Expander x:Name="masterExp" Margin="10,0,10,0" Expanded="masterExp_Expanded" Header="{Binding [Page_OnlinePage_Header_Create], Source={x:Static langs:LanguageManager.Instance}}" >
-                        <WrapPanel>
-                            <StackPanel Orientation="Horizontal" Margin="10">
-                                <Label Content="{Binding [Page_OnlinePage_Create_RoomNo.], Source={x:Static langs:LanguageManager.Instance}}" Height="30" FontSize="14" Background="{x:Null}" BorderBrush="{x:Null}"/>
-                                <TextBox x:Name="masterQQ" Height="30"  TextWrapping="Wrap" Text="" Width="180"/>
+                    <RowDefinition Height="*"/>
+                    <RowDefinition Height="139"/> </Grid.RowDefinitions>
+
+                <TabControl Style="{StaticResource TabControlCapsule}" Grid.Row="0" Background="Transparent" BorderBrush="Transparent" BorderThickness="0" Margin="0,5,0,0">
+                   
+
+                    <TabItem Header="点对点联机 (P2P)" Foreground="{DynamicResource PrimaryTextBrush}">
+                        <ScrollViewer VerticalScrollBarVisibility="Auto" Background="Transparent">
+                            <StackPanel Margin="0,10,0,0">
+                                <Expander x:Name="masterExp" Margin="10,0,10,0" Expanded="masterExp_Expanded" Header="{Binding [Page_OnlinePage_Header_Create], Source={x:Static langs:LanguageManager.Instance}}" >
+                                    <WrapPanel>
+                                        <StackPanel Orientation="Horizontal" Margin="10">
+                                            <Label Content="{Binding [Page_OnlinePage_Create_RoomNo.], Source={x:Static langs:LanguageManager.Instance}}" Height="30" FontSize="14" Background="{x:Null}" BorderBrush="{x:Null}"/>
+                                            <TextBox x:Name="masterQQ" Height="30" TextWrapping="Wrap" Text="" Width="180"/>
+                                        </StackPanel>
+                                        <StackPanel Orientation="Horizontal" Margin="10">
+                                            <Label Content="{Binding [Page_OnlinePage_Create_key], Source={x:Static langs:LanguageManager.Instance}}" Height="30" FontSize="14" Background="{x:Null}" BorderBrush="{x:Null}"/>
+                                            <TextBox x:Name="masterKey" Height="30" TextWrapping="Wrap" Text="" Width="180"/>
+                                        </StackPanel>
+                                        <StackPanel Orientation="Horizontal" Margin="10">
+                                            <Label Content="{Binding [Page_OnlinePage_Create_Port], Source={x:Static langs:LanguageManager.Instance}}" Height="30" FontSize="14" Background="{x:Null}" BorderBrush="{x:Null}"/>
+                                            <TextBox x:Name="masterPort" Height="30" TextWrapping="Wrap" Text="" Width="180"/>
+                                        </StackPanel>
+                                        <ToggleButton x:Name="createRoom" Margin="10" Height="30" Click="createRoom_Click" MinWidth="130">
+                                            <ToggleButton.Style>
+                                                <Style TargetType="ToggleButton" BasedOn="{StaticResource ToggleButton.NoCheckedBorder}">
+                                                    <Style.Triggers>
+                                                        <Trigger Property="IsChecked" Value="True">
+                                                            <Setter Property="Content" Value="{Binding [Page_OnlinePage_CloseRoom], Source={x:Static langs:LanguageManager.Instance}}" />
+                                                        </Trigger>
+                                                        <Trigger Property="IsChecked" Value="False">
+                                                            <Setter Property="Content" Value="{Binding [Page_OnlinePage_CreateRoom], Source={x:Static langs:LanguageManager.Instance}}" />
+                                                        </Trigger>
+                                                    </Style.Triggers>
+                                                </Style>
+                                            </ToggleButton.Style>
+                                        </ToggleButton>
+                                    </WrapPanel>
+                                </Expander>
+
+                                <Expander x:Name="visiterExp" Margin="10,10,10,0" Expanded="visiterExp_Expanded" Header="{Binding [Page_OnlinePage_Header_Join], Source={x:Static langs:LanguageManager.Instance}}">
+                                    <WrapPanel>
+                                        <StackPanel Orientation="Horizontal" Margin="10">
+                                            <Label Content="{Binding [Page_OnlinePage_Join_RoomNo.], Source={x:Static langs:LanguageManager.Instance}}" Height="30" FontSize="14" Background="{x:Null}" BorderBrush="{x:Null}"/>
+                                            <TextBox x:Name="visiterQQ" Height="30" TextWrapping="Wrap" Text="" Width="180"/>
+                                        </StackPanel>
+                                        <StackPanel Orientation="Horizontal" Margin="10">
+                                            <Label Content="{Binding [Page_OnlinePage_Join_Key], Source={x:Static langs:LanguageManager.Instance}}" Height="30" FontSize="14" Background="{x:Null}" BorderBrush="{x:Null}"/>
+                                            <TextBox x:Name="visiterKey" Height="30" TextWrapping="Wrap" Text="" Width="180"/>
+                                        </StackPanel>
+                                        <StackPanel Orientation="Horizontal" Margin="10">
+                                            <Label Content="{Binding [Page_OnlinePage_Join_Port], Source={x:Static langs:LanguageManager.Instance}}" Height="30" FontSize="14" Background="{x:Null}" BorderBrush="{x:Null}"/>
+                                            <TextBox x:Name="visiterPort" Height="30" TextWrapping="Wrap" Text="25565" VerticalAlignment="Top" Width="180"/>
+                                        </StackPanel>
+                                        <ToggleButton x:Name="joinRoom" Margin="10" Height="30" Click="joinRoom_Click" MinWidth="130">
+                                            <ToggleButton.Style>
+                                                <Style TargetType="ToggleButton" BasedOn="{StaticResource ToggleButton.NoCheckedBorder}">
+                                                    <Style.Triggers>
+                                                        <Trigger Property="IsChecked" Value="True">
+                                                            <Setter Property="Content" Value="{Binding [Page_OnlinePage_ExitRoom], Source={x:Static langs:LanguageManager.Instance}}" />
+                                                        </Trigger>
+                                                        <Trigger Property="IsChecked" Value="False">
+                                                            <Setter Property="Content" Value="{Binding [Page_OnlinePage_JoinRoom], Source={x:Static langs:LanguageManager.Instance}}" />
+                                                        </Trigger>
+                                                    </Style.Triggers>
+                                                </Style>
+                                            </ToggleButton.Style>
+                                        </ToggleButton>
+                                    </WrapPanel>
+                                </Expander>
                             </StackPanel>
-                            <StackPanel Orientation="Horizontal" Margin="10">
-                                <Label Content="{Binding [Page_OnlinePage_Create_key], Source={x:Static langs:LanguageManager.Instance}}" Height="30" FontSize="14" Background="{x:Null}" BorderBrush="{x:Null}"/>
-                                <TextBox x:Name="masterKey" Height="30" TextWrapping="Wrap" Text="" Width="180"/>
+                        </ScrollViewer>
+                    </TabItem>
+
+                    <TabItem Header="STUN 隧道 (直连)" Foreground="{DynamicResource PrimaryTextBrush}">
+                        <Grid Margin="10,10,10,0">
+                            <Grid.RowDefinitions>
+                                <RowDefinition Height="Auto"/>
+                                <RowDefinition Height="*"/>
+                            </Grid.RowDefinitions>
+
+                            <Border Grid.Row="0" Background="#15FF5722" BorderBrush="#40FF5722" BorderThickness="1" CornerRadius="6" Padding="15,10">
+                                <Grid>
+                                    <Grid.ColumnDefinitions>
+                                        <ColumnDefinition Width="Auto"/>
+                                        <ColumnDefinition Width="*"/>
+                                    </Grid.ColumnDefinitions>
+
+                                    <Path Grid.Column="0" Data="M12,2C6.48,2 2,6.48 2,12s4.48,10 10,10 10,-4.48 10,-10S17.52,2 12,2zm1,15h-2v-2h2v2zm0,-4h-2V7h2v6z" Fill="#FF5722" Stretch="Uniform" Width="14" Height="14" VerticalAlignment="Center"/>
+
+                                    <TextBlock Grid.Column="1" 
+                   Text="提示：本功能的开启条件比较苛刻，需要您的本地网络为 NAT1 全锥形 (Full-Cone)。若遭遇连不上或超时，请切换到 FRP 映射 或「点对点联机」。" 
+                   Foreground="{DynamicResource PrimaryTextBrush}" 
+                   FontSize="13" 
+                   Margin="8,0,0,0" 
+                   VerticalAlignment="Center" 
+                   TextWrapping="Wrap"/>
+                                </Grid>
+                            </Border>
+
+                            <StackPanel Grid.Row="1" Margin="0,15,0,0">
+                                <WrapPanel>
+                                    <StackPanel Orientation="Horizontal" Margin="0,10,10,10">
+                                        <Label Content="游戏本地端口" Height="30" FontSize="14" Background="{x:Null}" BorderBrush="{x:Null}" VerticalContentAlignment="Center"/>
+                                        <TextBox x:Name="nat1LocalPort" Height="30" Text="25565" Width="120" VerticalContentAlignment="Center"/>
+                                    </StackPanel>
+                                    
+                                    <ToggleButton x:Name="toggleNat1" Margin="10" Height="30" Click="toggleNat1_Click" MinWidth="130">
+                                        <ToggleButton.Style>
+                                            <Style TargetType="ToggleButton" BasedOn="{StaticResource ToggleButton.NoCheckedBorder}">
+                                                <Style.Triggers>
+                                                    <Trigger Property="IsChecked" Value="True">
+                                                        <Setter Property="Content" Value="关闭 STUN 隧道" />
+                                                    </Trigger>
+                                                    <Trigger Property="IsChecked" Value="False">
+                                                        <Setter Property="Content" Value="开启 STUN 隧道" />
+                                                    </Trigger>
+                                                </Style.Triggers>
+                                            </Style>
+                                        </ToggleButton.Style>
+                                    </ToggleButton>
+
+                                    <StackPanel Orientation="Horizontal" Margin="15,10,10,10" VerticalAlignment="Center">
+                                        <TextBlock Text="公网直连地址: " FontSize="14" VerticalAlignment="Center" Foreground="{DynamicResource PrimaryTextBrush}"/>
+                                        <TextBlock x:Name="nat1OuterAddress" Text="未开启" Foreground="#FF2DB7F5" FontWeight="Bold" FontSize="15" VerticalAlignment="Center" Margin="5,0,0,0"/>
+                                    </StackPanel>
+                                </WrapPanel>
                             </StackPanel>
-                            <StackPanel Orientation="Horizontal" Margin="10">
-                                <Label Content="{Binding [Page_OnlinePage_Create_Port], Source={x:Static langs:LanguageManager.Instance}}" Height="30" FontSize="14" Background="{x:Null}" BorderBrush="{x:Null}"/>
-                                <TextBox x:Name="masterPort" Height="30" TextWrapping="Wrap" Text="" Width="180"/>
-                            </StackPanel>
-                            <ToggleButton x:Name="createRoom" Margin="10" Height="30" Click="createRoom_Click" MinWidth="130">
-                                <ToggleButton.Style>
-                                    <Style TargetType="ToggleButton" BasedOn="{StaticResource ToggleButton.NoCheckedBorder}">
-                                        <Style.Triggers>
-                                            <Trigger Property="IsChecked" Value="True">
-                                                <Setter Property="Content" Value="{Binding [Page_OnlinePage_CloseRoom], Source={x:Static langs:LanguageManager.Instance}}" />
-                                            </Trigger>
-                                            <Trigger Property="IsChecked" Value="False">
-                                                <Setter Property="Content" Value="{Binding [Page_OnlinePage_CreateRoom], Source={x:Static langs:LanguageManager.Instance}}" />
-                                            </Trigger>
-                                        </Style.Triggers>
-                                    </Style>
-                                </ToggleButton.Style>
-                            </ToggleButton>
-                        </WrapPanel>
-                    </Expander>
-                    <Expander x:Name="visiterExp" Margin="10,10,10,0" Expanded="visiterExp_Expanded" Header="{Binding [Page_OnlinePage_Header_Join], Source={x:Static langs:LanguageManager.Instance}}">
-                        <WrapPanel>
-                            <StackPanel Orientation="Horizontal" Margin="10">
-                                <Label Content="{Binding [Page_OnlinePage_Join_RoomNo.], Source={x:Static langs:LanguageManager.Instance}}" Height="30" FontSize="14" Background="{x:Null}" BorderBrush="{x:Null}"/>
-                                <TextBox x:Name="visiterQQ" Height="30" TextWrapping="Wrap" Text="" Width="180"/>
-                            </StackPanel>
-                            <StackPanel Orientation="Horizontal" Margin="10">
-                                <Label Content="{Binding [Page_OnlinePage_Join_Key], Source={x:Static langs:LanguageManager.Instance}}" Height="30" FontSize="14" Background="{x:Null}" BorderBrush="{x:Null}"/>
-                                <TextBox x:Name="visiterKey" Height="30" TextWrapping="Wrap" Text="" Width="180"/>
-                            </StackPanel>
-                            <StackPanel Orientation="Horizontal" Margin="10">
-                                <Label Content="{Binding [Page_OnlinePage_Join_Port], Source={x:Static langs:LanguageManager.Instance}}" Height="30" FontSize="14" Background="{x:Null}" BorderBrush="{x:Null}"/>
-                                <TextBox x:Name="visiterPort" Height="30" TextWrapping="Wrap" Text="25565" VerticalAlignment="Top" Width="180"/>
-                            </StackPanel>
-                            <ToggleButton x:Name="joinRoom" Margin="10" Height="30" Click="joinRoom_Click" MinWidth="130">
-                                <ToggleButton.Style>
-                                    <Style TargetType="ToggleButton" BasedOn="{StaticResource ToggleButton.NoCheckedBorder}">
-                                        <Style.Triggers>
-                                            <Trigger Property="IsChecked" Value="True">
-                                                <Setter Property="Content" Value="{Binding [Page_OnlinePage_ExitRoom], Source={x:Static langs:LanguageManager.Instance}}" />
-                                            </Trigger>
-                                            <Trigger Property="IsChecked" Value="False">
-                                                <Setter Property="Content" Value="{Binding [Page_OnlinePage_JoinRoom], Source={x:Static langs:LanguageManager.Instance}}" />
-                                            </Trigger>
-                                        </Style.Triggers>
-                                    </Style>
-                                </ToggleButton.Style>
-                            </ToggleButton>
-                        </WrapPanel>
-                    </Expander>
-                </StackPanel>
-                <TextBox x:Name="frpcOutlog" Grid.Row="1" Margin="10,10,10,10" TextWrapping="Wrap" Text="Logs" IsReadOnly="True" HorizontalScrollBarVisibility="Visible" VerticalScrollBarVisibility="Auto" VerticalContentAlignment="Top" Padding="10" Background="{x:Null}"/>
+                        </Grid>
+                    </TabItem>
+                </TabControl>
+
+                <TextBox x:Name="frpcOutlog" Grid.Row="1" Margin="10,10,10,10" TextWrapping="Wrap" Text="Logs" IsReadOnly="True" HorizontalScrollBarVisibility="Visible" VerticalScrollBarVisibility="Auto" VerticalContentAlignment="Top" Padding="10" Background="Transparent" Foreground="{DynamicResource PrimaryTextBrush}"/>
             </Grid>
         </Grid>
     </Border>
-    
 </Page>

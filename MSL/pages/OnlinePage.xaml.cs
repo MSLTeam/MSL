@@ -6,27 +6,33 @@ using Newtonsoft.Json.Linq;
 using System;
 using System.Diagnostics;
 using System.IO;
+using System.Net;
 using System.Net.NetworkInformation;
+using System.Net.Sockets;
 using System.Text;
 using System.Text.RegularExpressions;
+using System.Threading;
 using System.Threading.Tasks;
 using System.Windows;
 using System.Windows.Controls;
 using System.Windows.Threading;
 using MessageBox = System.Windows.MessageBox;
-using Window = System.Windows.Window;
 
 namespace MSL.pages
 {
-    /// <summary>
-    /// OnlinePage.xaml 的交互逻辑
-    /// </summary>
     public partial class OnlinePage : Page
     {
         public static Process FrpcProcess;
         private bool isMaster;
+
+        // P2PFRP 服务器参数
         private string ipAddress = "";
         private string ipPort = "";
+
+        // NAT1 STUN 状态数据
+        private CancellationTokenSource _nat1Cts;
+        private TcpListener _natterListener;
+        private const int MaxThreads = 128;
 
         public OnlinePage()
         {
@@ -38,76 +44,58 @@ namespace MSL.pages
             LogHelper.Write.Info("联机页面已加载，开始检查本地P2P配置。");
             if (File.Exists("MSL\\frp\\P2Pfrpc"))
             {
-                string a = File.ReadAllText("MSL\\frp\\P2Pfrpc");
-                if (string.IsNullOrEmpty(a))
+                string content = File.ReadAllText("MSL\\frp\\P2Pfrpc");
+                if (string.IsNullOrEmpty(content))
                 {
-                    LogHelper.Write.Info("P2P配置文件存在但为空，将展开房主设置。");
                     masterExp.IsExpanded = true;
                     return;
                 }
-                if (a.IndexOf("role = visitor") + 1 != 0)
+                if (content.IndexOf("role = visitor") + 1 != 0)
                 {
-                    LogHelper.Write.Info("检测到P2P配置文件为访客(visitor)角色。");
                     visiterExp.IsExpanded = true;
                 }
                 else
                 {
-                    LogHelper.Write.Info("检测到P2P配置文件为房主(master)角色。");
                     masterExp.IsExpanded = true;
                 }
             }
             else
             {
-                //MagicShow.ShowMsgDialog(Window.GetWindow(this),"注意：此功能目前不稳定，无法穿透所有类型的NAT，若联机失败，请尝试开服务器并使用内网映射联机！\r\n该功能可能需要正版账户，若无法联机，请从网络上寻找解决方法或尝试开服务器并使用内网映射联机！", "警告");
-                LogHelper.Write.Info("未找到P2P配置文件，判定为首次使用，弹出提示。");
                 if (await MagicShow.ShowMsgDialogAsync(Functions.GetWindow(this), LanguageManager.Instance["Page_OnlinePage_Announce"], LanguageManager.Instance["Warning"], true, "确定", "不再提示"))
                 {
                     Directory.CreateDirectory("MSL\\frp");
                     File.WriteAllText("MSL\\frp\\P2Pfrpc", string.Empty);
-                    LogHelper.Write.Info("用户确认提示，已创建空的P2P配置文件。");
                 }
                 masterExp.IsExpanded = true;
             }
             await GetFrpcInfo();
         }
 
+        #region P2P 联机
         private async Task GetFrpcInfo()
         {
             try
             {
-                LogHelper.Write.Info("开始从API获取FRP服务器信息。");
                 JObject p2p_res = await HttpService.GetApiContentAsync("software/p2p_server");
                 ipAddress = p2p_res["data"]["ip"].ToString();
                 ipPort = p2p_res["data"]["port"].ToString();
-                LogHelper.Write.Info($"成功解析到FRP服务器地址: {ipAddress}:{ipPort}");
                 await Task.Run(() =>
                 {
-                    LogHelper.Write.Info($"正在 Ping 服务器: {ipAddress}");
                     Ping pingSender = new Ping();
                     PingReply reply = pingSender.Send(ipAddress, 2000);
                     if (reply.Status == IPStatus.Success)
                     {
-                        LogHelper.Write.Info($"Ping 服务器 {ipAddress} 成功，延迟: {reply.RoundtripTime}ms。");
-                        Dispatcher.Invoke(() =>
-                        {
-                            //服务器活着，太好了！
-                            serverState.Text = LanguageManager.Instance["Page_OnlinePage_ServerStatusOK"];
-                        });
+                        Dispatcher.Invoke(() => { serverState.Text = LanguageManager.Instance["Page_OnlinePage_ServerStatusOK"]; });
                     }
                     else
                     {
-                        LogHelper.Write.Error($"Ping 服务器 {ipAddress} 失败，状态: {reply.Status}。");
-                        Dispatcher.Invoke(() =>
-                        {
-                            //跑路了.jpg
-                            serverState.Text = LanguageManager.Instance["Page_OnlinePage_ServerStatusDown"];
-                        });
+                        Dispatcher.Invoke(() => { serverState.Text = LanguageManager.Instance["Page_OnlinePage_ServerStatusDown"]; });
                     }
                 });
             }
             catch (Exception ex)
             {
-                LogHelper.Write.Error($"获取FRP服务器信息时发生错误: {ex.ToString()}");
+                LogHelper.Write.Error($"获取FRP信息异常: {ex.Message}");
                 serverState.Text = LanguageManager.Instance["Page_OnlinePage_ServerStatusDown"];
             }
         }
@@ -117,23 +105,16 @@ namespace MSL.pages
         private void masterExp_Expanded(object sender, RoutedEventArgs e)
         {
             visiterExp.IsExpanded = false;
-
             string content = ReadFrpcConfig();
             if (content == null) return;
-
-            // 房主模式：不含 role = visitor
             if (!content.Contains("role = visitor"))
             {
-                // 匹配: [Wyy12337] type=xtcp local_ip=... local_port=25565 sk=12306
-                var match = Regex.Match(content,
-                    @"\[(\w+)\]\s*type\s*=\s*xtcp\s*local_ip\s*=\s*\S+\s*local_port\s*=\s*(\d+)\s*sk\s*=\s*(\S+)",
-                    RegexOptions.Singleline);
-
+                var match = Regex.Match(content, @"\[(\w+)\]\s*type\s*=\s*xtcp\s*local_ip\s*=\s*\S+\s*local_port\s*=\s*(\d+)\s*sk\s*=\s*(\S+)", RegexOptions.Singleline);
                 if (match.Success)
                 {
-                    masterQQ.Text = match.Groups[1].Value;  // 节点名，如 Wyy12337
-                    masterPort.Text = match.Groups[2].Value;  // local_port，如 25565
-                    masterKey.Text = match.Groups[3].Value;  // sk，如 12306
+                    masterQQ.Text = match.Groups[1].Value;
+                    masterPort.Text = match.Groups[2].Value;
+                    masterKey.Text = match.Groups[3].Value;
                 }
             }
         }
@@ -141,23 +122,16 @@ namespace MSL.pages
         private void visiterExp_Expanded(object sender, RoutedEventArgs e)
         {
             masterExp.IsExpanded = false;
-
             string content = ReadFrpcConfig();
             if (content == null) return;
-
-            // 访客模式：含 role = visitor
             if (content.Contains("role = visitor"))
             {
-                // 匹配: bind_port=25565 server_name=Wyy12337 sk=12306
-                var match = Regex.Match(content,
-                    @"bind_port\s*=\s*(\d+)\s*server_name\s*=\s*(\S+)\s*sk\s*=\s*(\S+)",
-                    RegexOptions.Singleline);
-
+                var match = Regex.Match(content, @"bind_port\s*=\s*(\d+)\s*server_name\s*=\s*(\S+)\s*sk\s*=\s*(\S+)", RegexOptions.Singleline);
                 if (match.Success)
                 {
-                    visiterPort.Text = match.Groups[1].Value;  // bind_port，如 25565
-                    visiterQQ.Text = match.Groups[2].Value;  // server_name，如 Wyy12337
-                    visiterKey.Text = match.Groups[3].Value;  // sk，如 12306
+                    visiterPort.Text = match.Groups[1].Value;
+                    visiterQQ.Text = match.Groups[2].Value;
+                    visiterKey.Text = match.Groups[3].Value;
                 }
             }
         }
@@ -166,23 +140,16 @@ namespace MSL.pages
         {
             if (createRoom.IsChecked == true)
             {
-                LogHelper.Write.Info("用户点击“创建房间”，准备作为房主启动。");
                 string a = "[common]\r\nserver_port = " + ipPort + "\r\nserver_addr = " + ipAddress + "\r\n\r\n[" + masterQQ.Text + "]\r\ntype = xtcp\r\nlocal_ip = 127.0.0.1\r\nlocal_port = " + masterPort.Text + "\r\nsk = " + masterKey.Text + "\r\n";
                 Directory.CreateDirectory("MSL\\frp");
                 File.WriteAllText("MSL\\frp\\P2Pfrpc", a);
-                LogHelper.Write.Info("已生成并写入房主P2P配置文件。");
                 isMaster = true;
                 visiterExp.IsEnabled = false;
                 await StartFrpc();
             }
             else
             {
-                if (!FrpcProcess.HasExited)
-                {
-                    LogHelper.Write.Warn("用户取消“创建房间”，准备终止frpc进程。");
-                    createRoom.IsChecked = true;
-                    FrpcProcess.Kill();
-                }
+                if (FrpcProcess != null && !FrpcProcess.HasExited) { createRoom.IsChecked = true; FrpcProcess.Kill(); }
             }
         }
 
@@ -190,23 +157,16 @@ namespace MSL.pages
         {
             if (joinRoom.IsChecked == true)
             {
-                LogHelper.Write.Info("用户点击“加入房间”，准备作为访客启动。");
                 string a = "[common]\r\nserver_port = " + ipPort + "\r\nserver_addr = " + ipAddress + "\r\n\r\n[p2p_ssh_visitor]\r\ntype = xtcp\r\nrole = visitor\r\nbind_addr = 127.0.0.1\r\nbind_port = " + visiterPort.Text + "\r\nserver_name = " + visiterQQ.Text + "\r\nsk = " + visiterKey.Text + "\r\n";
                 Directory.CreateDirectory("MSL\\frp");
                 File.WriteAllText("MSL\\frp\\P2Pfrpc", a);
-                LogHelper.Write.Info("已生成并写入访客P2P配置文件。");
                 isMaster = false;
                 masterExp.IsEnabled = false;
                 await StartFrpc();
             }
             else
             {
-                if (!FrpcProcess.HasExited)
-                {
-                    LogHelper.Write.Warn("用户取消“加入房间”，准备终止frpc进程。");
-                    joinRoom.IsChecked = true;
-                    FrpcProcess.Kill();
-                }
+                if (FrpcProcess != null && !FrpcProcess.HasExited) { joinRoom.IsChecked = true; FrpcProcess.Kill(); }
             }
         }
 
@@ -214,141 +174,363 @@ namespace MSL.pages
         {
             try
             {
-                //内网映射版本检测
-                try
+                Directory.CreateDirectory("MSL\\frp");
+                if (!File.Exists("MSL\\frp\\frpc.exe"))
                 {
-                    Directory.CreateDirectory("MSL\\frp");
-                    if (!File.Exists("MSL\\frp\\frpc.exe"))
-                    {
-                        LogHelper.Write.Warn("frpc.exe 文件不存在，开始下载。");
-                        string _dnfrpc, os = "10";
-                        if (Environment.OSVersion.Version.Major == 6 && Environment.OSVersion.Version.Minor == 1)
-                        {
-                            os = "6";
-                        }
-
-                        _dnfrpc = (await HttpService.GetApiContentAsync("/download/frpc/MSLFrp/amd64?os=" + os))["data"]["url"].ToString();
-                        LogHelper.Write.Info($"获取到frpc下载地址: {_dnfrpc}");
-                        await MagicShow.ShowDownloader(Window.GetWindow(this), _dnfrpc, "MSL\\frp", "frpc.exe", LanguageManager.Instance["Download_Frpc_Info"]);
-                        LogHelper.Write.Info("frpc.exe 下载完成。");
-                    }
-                }
-                catch (Exception ex)
-                {
-                    LogHelper.Write.Error($"下载 frpc.exe 过程中发生错误: {ex.ToString()}");
-                    return;
+                    string _dnfrpc, os = "10";
+                    if (Environment.OSVersion.Version.Major == 6 && Environment.OSVersion.Version.Minor == 1) os = "6";
+                    _dnfrpc = (await HttpService.GetApiContentAsync("/download/frpc/MSLFrp/amd64?os=" + os))["data"]["url"].ToString();
+                    await MagicShow.ShowDownloader(Functions.GetWindow(this), _dnfrpc, "MSL\\frp", "frpc.exe", LanguageManager.Instance["Download_Frpc_Info"]);
                 }
                 frpcOutlog.Text = string.Empty;
                 FrpcProcess = new();
                 FrpcProcess.StartInfo.WorkingDirectory = "MSL\\frp";
-                FrpcProcess.StartInfo.FileName = "MSL\\frp\\" + "frpc.exe";
+                FrpcProcess.StartInfo.FileName = "MSL\\frp\\frpc.exe";
                 FrpcProcess.StartInfo.Arguments = "-c P2Pfrpc";
                 FrpcProcess.StartInfo.CreateNoWindow = true;
                 FrpcProcess.StartInfo.UseShellExecute = false;
-                FrpcProcess.StartInfo.RedirectStandardInput = true;
                 FrpcProcess.StartInfo.RedirectStandardOutput = true;
                 FrpcProcess.StartInfo.StandardOutputEncoding = Encoding.UTF8;
-                LogHelper.Write.Info($"准备启动frpc进程，参数: {FrpcProcess.StartInfo.Arguments}");
                 FrpcProcess.Start();
                 FrpcProcess.OutputDataReceived += new DataReceivedEventHandler(OutputDataReceived);
                 FrpcProcess.BeginOutputReadLine();
-                LogHelper.Write.Info($"frpc进程已启动，进程ID: {FrpcProcess.Id}");
                 await Task.Run(FrpcProcess.WaitForExit);
                 FrpcProcess.CancelOutputRead();
-                LogHelper.Write.Info($"frpc进程(ID: {FrpcProcess.Id})已退出。");
                 FrpcProcess.OutputDataReceived -= OutputDataReceived;
                 FrpcProcess.Dispose();
                 FrpcProcess = null;
             }
             catch (Exception e)
             {
-                LogHelper.Write.Fatal($"启动或运行frpc进程时发生致命错误: {e.ToString()}");
                 MessageBox.Show(LanguageManager.Instance["Page_OnlinePage_ErrMsg1"] + e.Message, LanguageManager.Instance["Error"], MessageBoxButton.OK, MessageBoxImage.Error);
             }
             finally
             {
-                if (isMaster)
-                {
-                    createRoom.IsChecked = false;
-                    visiterExp.IsEnabled = true;
-                }
-                else
-                {
-                    joinRoom.IsChecked = false;
-                    masterExp.IsEnabled = true;
-                }
+                createRoom.IsChecked = false;
+                joinRoom.IsChecked = false;
+                masterExp.IsEnabled = true;
+                visiterExp.IsEnabled = true;
             }
         }
 
         private void OutputDataReceived(object sender, DataReceivedEventArgs e)
         {
-            if (e.Data != null)
-            {
-                Dispatcher.Invoke(() =>
-                {
-                    ReadStdOutputAction(e.Data);
-                });
-            }
+            if (e.Data != null) { Dispatcher.Invoke(() => { ReadStdOutputAction(e.Data); }); }
         }
 
         private void ReadStdOutputAction(string msg)
         {
-            // 此处原始日志会显示在UI上，可以只记录关键解析事件，避免日志重复
             if (msg.Contains("\x1B"))
             {
                 string[] splitMsg = msg.Split(new[] { '\x1B' }, StringSplitOptions.RemoveEmptyEntries);
                 foreach (var everyMsg in splitMsg)
                 {
-                    if (everyMsg == string.Empty)
-                    {
-                        continue;
-                    }
-
-                    // 提取ANSI码和文本内容
+                    if (everyMsg == string.Empty) continue;
                     int mIndex = everyMsg.IndexOf('m');
-                    if (mIndex == -1)
-                    {
-                        continue;
-                    }
-
+                    if (mIndex == -1) continue;
                     msg = everyMsg.Substring(mIndex + 1);
                 }
             }
             frpcOutlog.Text = frpcOutlog.Text + msg + "\n";
-            if (msg.IndexOf("login") + 1 != 0)
-            {
-                if (msg.IndexOf("failed") + 1 != 0)
-                {
-                    LogHelper.Write.Warn($"[FRPC] 登录服务器失败: {msg}");
-                    Growl.Error(LanguageManager.Instance["Page_OnlinePage_Err"]);
-                    if (!FrpcProcess.HasExited)
-                    {
-                        FrpcProcess.Kill();
-                    }
-                }
-                if (msg.IndexOf("success") + 1 != 0)
-                {
-                    LogHelper.Write.Info($"[FRPC] 登录服务器成功: {msg}");
-                    frpcOutlog.Text = frpcOutlog.Text + LanguageManager.Instance["Page_OnlinePage_LoginSuc"] + "\n";
-                }
-            }
-            if (msg.IndexOf("start") + 1 != 0)
-            {
-                if (msg.IndexOf("success") + 1 != 0)
-                {
-                    LogHelper.Write.Info($"[FRPC] 代理启动成功: {msg}");
-                    frpcOutlog.Text = frpcOutlog.Text + LanguageManager.Instance["Page_OnlinePage_Suc"] + "\n";
-                    Growl.Success(LanguageManager.Instance["Page_OnlinePage_Suc"]);
-                }
-                if (msg.IndexOf("error") + 1 != 0)
-                {
-                    LogHelper.Write.Warn($"[FRPC] 代理启动失败: {msg}");
-                    frpcOutlog.Text = frpcOutlog.Text + LanguageManager.Instance["Page_OnlinePage_Err"] + "\n";
-                    Growl.Error(LanguageManager.Instance["Page_OnlinePage_Err"]);
-                    FrpcProcess.Kill();
-                }
-            }
             frpcOutlog.ScrollToEnd();
         }
+        #endregion
+
+        #region STUN隧道
+
+
+        private async void toggleNat1_Click(object sender, RoutedEventArgs e)
+        {
+            if (toggleNat1.IsChecked == true)
+            {
+                frpcOutlog.Text = string.Empty;
+                AppendNat1Log("[INFO] STUN 隧道环境初始化...");
+                nat1OuterAddress.Text = "正在启动隧道中...";
+                nat1OuterAddress.Foreground = System.Windows.Media.Brushes.Orange;
+
+                _nat1Cts = new CancellationTokenSource();
+                int localTargetPort = int.TryParse(nat1LocalPort.Text, out int res) ? res : 25565;
+
+                try
+                {
+                    await Task.Run(() => DoNat1SocketForwardWork(localTargetPort, _nat1Cts.Token));
+                }
+                catch (Exception ex)
+                {
+                    AppendNat1Log($"[ERROR] 隧道宿主致命崩溃: {ex.Message}");
+                    StopNat1Tunnel();
+                }
+            }
+            else
+            {
+                AppendNat1Log("[INFO] 正在关闭当前隧道...");
+                StopNat1Tunnel();
+            }
+        }
+
+        private void DoNat1SocketForwardWork(int localTargetPort, CancellationToken token)
+        {
+            string[] stunServers = {
+        "fwa.lifesizecloud.com",
+        "global.turn.twilio.com",
+        "turn.cloudflare.com",
+        "stun.nextcloud.com",
+        "stun.freeswitch.org"
+    };
+
+            while (!token.IsCancellationRequested)
+            {
+                IPEndPoint outerEndPoint = null;
+                int allocatedLocalPort = 0;
+
+                foreach (var server in stunServers)
+                {
+                    if (token.IsCancellationRequested) return;
+                    AppendNat1Log($"[INFO] 正在尝试从 STUN 服务器探测: {server}...");
+                    try
+                    {
+                        outerEndPoint = GetCleanStunMapping(server, out allocatedLocalPort);
+                        if (outerEndPoint != null) break;
+                    }
+                    catch (Exception ex)
+                    {
+                        AppendNat1Log($"[WARN] STUN [{server}] 暂未响应: {ex.Message}");
+                    }
+                }
+
+                if (outerEndPoint == null)
+                {
+                    AppendNat1Log("[ERROR] 隧道启动失败，请更换使用 Frp映射或点对点联机服务...");
+                    StopNat1Tunnel(true);
+                    return;
+                }
+
+                IPAddress basePublicIP = outerEndPoint.Address;
+
+                using (var tunnelCts = CancellationTokenSource.CreateLinkedTokenSource(token))
+                {
+                    Task.Run(() => StartWindowsKeepAlivePump(allocatedLocalPort, tunnelCts.Token), tunnelCts.Token);
+
+                    try
+                    {
+                        _natterListener = new TcpListener(IPAddress.Any, allocatedLocalPort);
+                        _natterListener.Server.SetSocketOption(SocketOptionLevel.Socket, SocketOptionName.ReuseAddress, true);
+                        _natterListener.Start(5);
+
+                        AppendNat1Log($"[INFO] 隧道服务已就绪！");
+                        AppendNat1Log($"[INFO] tcp://127.0.0.1:{localTargetPort} 隧道到 tcp://0.0.0.0:{allocatedLocalPort}");
+                        AppendNat1Log($"[INFO] 远程地址 tcp://{outerEndPoint}");
+                        Dispatcher.Invoke(() => {
+                            nat1OuterAddress.Text = outerEndPoint.ToString();
+                            nat1OuterAddress.Foreground = System.Windows.Media.Brushes.Green;
+                            Growl.Success("STUN 隧道穿透成功！");
+                        });
+
+                        int activeThreadsCount = 0;
+                        var listenTask = Task.Run(() =>
+                        {
+                            try
+                            {
+                                while (!tunnelCts.Token.IsCancellationRequested)
+                                {
+                                    TcpClient inboundClient = _natterListener.AcceptTcpClient();
+                                    if (activeThreadsCount >= MaxThreads) { inboundClient.Close(); continue; }
+                                    Task.Run(async () =>
+                                    {
+                                        Interlocked.Increment(ref activeThreadsCount);
+                                        await HandleTcpSocketForward(inboundClient, localTargetPort, tunnelCts.Token);
+                                        Interlocked.Decrement(ref activeThreadsCount);
+                                    }, tunnelCts.Token);
+                                }
+                            }
+                            catch { }
+                        }, tunnelCts.Token);
+
+                        // 监听IP变化
+                        int checkCounter = 0;
+                        while (!tunnelCts.Token.IsCancellationRequested)
+                        {
+                            try { Task.Delay(15000, tunnelCts.Token).Wait(tunnelCts.Token); } catch { break; }
+
+                            checkCounter = (checkCounter + 1) % 4; 
+                            if (checkCounter == 0)
+                            {
+                                IPEndPoint currentOuterEndPoint = null;
+                                foreach (var server in stunServers)
+                                {
+                                    try
+                                    {
+                                        int tempPort;
+                                        currentOuterEndPoint = GetCleanStunMapping(server, out tempPort);
+                                        if (currentOuterEndPoint != null) break;
+                                    }
+                                    catch { }
+                                }
+
+                                if (currentOuterEndPoint != null && !currentOuterEndPoint.Address.Equals(basePublicIP))
+                                {
+                                    AppendNat1Log($"[WARN] 检测到公网 IP 发生变动！旧IP: {basePublicIP} -> 新IP: {currentOuterEndPoint.Address}");
+                                    AppendNat1Log("[INFO] 正在重载隧道服务...");
+                                    tunnelCts.Cancel();
+                                    _natterListener?.Stop();
+                                    break;
+                                }
+                            }
+                        }
+                    }
+                    catch (Exception ex)
+                    {
+                        AppendNat1Log($"[ERROR] 底层管道产生异常: {ex.Message}，10秒后进行重试...");
+                        try { Task.Delay(10000, token).Wait(token); } catch { return; }
+                    }
+                    finally
+                    {
+                        _natterListener?.Stop();
+                    }
+                }
+            }
+        }
+
+        private IPEndPoint GetCleanStunMapping(string stunServer, out int localPort)
+        {
+            localPort = 0;
+            byte[] stunRequest = new byte[20];
+            stunRequest[0] = 0x00; stunRequest[1] = 0x01;
+            stunRequest[4] = 0x21; stunRequest[5] = 0x12; stunRequest[6] = 0xA4; stunRequest[7] = 0x42;
+            Random rand = new Random();
+            for (int i = 8; i < 20; i++) stunRequest[i] = (byte)rand.Next(0, 256);
+
+            using (TcpClient client = new TcpClient())
+            {
+                client.Client.SetSocketOption(SocketOptionLevel.Socket, SocketOptionName.ReuseAddress, true);
+                var result = client.BeginConnect(stunServer, 3478, null, null);
+                var success = result.AsyncWaitHandle.WaitOne(TimeSpan.FromSeconds(3));
+                if (!success) throw new TimeoutException();
+                client.EndConnect(result);
+
+                localPort = ((IPEndPoint)client.Client.LocalEndPoint).Port;
+
+                using (NetworkStream stream = client.GetStream())
+                {
+                    stream.Write(stunRequest, 0, stunRequest.Length);
+                    byte[] response = new byte[512];
+                    int bytesRead = stream.Read(response, 0, response.Length);
+
+                    if (bytesRead < 20) return null;
+
+                    int payloadLen = (response[2] << 8) | response[3];
+                    int index = 20;
+
+                    while (index < 20 + payloadLen && index < bytesRead)
+                    {
+                        int attrType = (response[index] << 8) | response[index + 1];
+                        int attrLen = (response[index + 2] << 8) | response[index + 3];
+
+                        if (attrType == 1 || attrType == 0x0020)
+                        {
+                            int port = (response[index + 6] << 8) | response[index + 7];
+                            if (attrType == 0x0020) port ^= 0x2112;
+
+                            byte[] ipBytes = new byte[4];
+                            Array.Copy(response, index + 8, ipBytes, 0, 4);
+                            if (attrType == 0x0020)
+                            {
+                                ipBytes[0] ^= 0x21; ipBytes[1] ^= 0x12;
+                                ipBytes[2] ^= 0xA4; ipBytes[3] ^= 0x42;
+                            }
+                            return new IPEndPoint(new IPAddress(ipBytes), port);
+                        }
+                        index += 4 + attrLen;
+                    }
+                }
+            }
+            return null;
+        }
+
+        private async Task StartWindowsKeepAlivePump(int boundLocalPort, CancellationToken token)
+        {
+            while (!token.IsCancellationRequested)
+            {
+                try
+                {
+                    using (Socket keepAliveSock = new Socket(AddressFamily.InterNetwork, SocketType.Stream, ProtocolType.Tcp))
+                    {
+                        keepAliveSock.SetSocketOption(SocketOptionLevel.Socket, SocketOptionName.ReuseAddress, true);
+                        keepAliveSock.Bind(new IPEndPoint(IPAddress.Any, boundLocalPort));
+
+                        IAsyncResult result = keepAliveSock.BeginConnect("www.baidu.com", 80, null, null);
+                        if (result.AsyncWaitHandle.WaitOne(TimeSpan.FromSeconds(2)))
+                        {
+                            keepAliveSock.EndConnect(result);
+                            string httpReq = "HEAD /natter-keep-alive HTTP/1.1\r\nHost: www.baidu.com\r\nConnection: close\r\n\r\n";
+                            keepAliveSock.Send(Encoding.ASCII.GetBytes(httpReq));
+                        }
+                    }
+                }
+                catch { }
+                await Task.Delay(15000, token);
+            }
+        }
+
+        private async Task HandleTcpSocketForward(TcpClient inboundClient, int targetPort, CancellationToken token)
+        {
+            using (inboundClient)
+            using (TcpClient localBackendClient = new TcpClient())
+            {
+                try
+                {
+                    var result = localBackendClient.BeginConnect("127.0.0.1", targetPort, null, null);
+                    if (!result.AsyncWaitHandle.WaitOne(TimeSpan.FromSeconds(3))) return;
+                    localBackendClient.EndConnect(result);
+
+                    using (NetworkStream extStream = inboundClient.GetStream())
+                    using (NetworkStream localStream = localBackendClient.GetStream())
+                    {
+                        Task extToLocal = CopySocketStreamAsync(extStream, localStream, token);
+                        Task localToExt = CopySocketStreamAsync(localStream, extStream, token);
+                        await Task.WhenAny(extToLocal, localToExt);
+                    }
+                }
+                catch { }
+            }
+        }
+
+        private async Task CopySocketStreamAsync(NetworkStream source, NetworkStream destination, CancellationToken token)
+        {
+            byte[] buffer = new byte[8192];
+            int read;
+            try
+            {
+                while (!token.IsCancellationRequested && (read = await source.ReadAsync(buffer, 0, buffer.Length, token)) > 0)
+                {
+                    await destination.WriteAsync(buffer, 0, read, token);
+                    await destination.FlushAsync(token);
+                }
+            }
+            catch { }
+        }
+
+        private void StopNat1Tunnel(bool failed = false)
+        {
+            try { _nat1Cts?.Cancel(); } catch { }
+            try { _natterListener?.Stop(); } catch { }
+
+            Dispatcher.Invoke(() => {
+                toggleNat1.IsChecked = false;
+                nat1OuterAddress.Text = failed ? "无法启动，请改用其他 Frp 映射或点对点联机" : "未开启";
+                nat1OuterAddress.Foreground = failed ? System.Windows.Media.Brushes.Red : System.Windows.Media.Brushes.Gray;
+            });
+            AppendNat1Log(failed ? "[ERROR] STUN 打洞隧道后台服务已被关闭。" : "[INFO] STUN 打洞隧道后台服务已被关闭。");
+        }
+
+        private void AppendNat1Log(string logMsg)
+        {
+            Dispatcher.Invoke(() => {
+                frpcOutlog.Text += $"{DateTime.Now:yyyy-MM-dd HH:mm:ss} {logMsg}\n";
+                frpcOutlog.ScrollToEnd();
+            });
+        }
+
+        #endregion
     }
 }
