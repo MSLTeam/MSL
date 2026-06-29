@@ -409,7 +409,66 @@ namespace MSL.utils
                 return ((int)res.HttpResponseCode, $"({(int)res.HttpResponseCode}){res.HttpResponseContent}");
             }
         }
+
+        // 免费子域名API
+        internal class DomainDnsInfo
+        {
+            [JsonProperty("id")] public int ID { get; set; }
+            [JsonProperty("domain_id")] public string DomainID { get; set; }
+            [JsonProperty("domain")] public string DomainName { get; set; }
+            [JsonProperty("name")] public string SubName { get; set; }
+            [JsonProperty("record")] public string RecordValue { get; set; }
+            [JsonProperty("type")] public string RecordType { get; set; }
+        }
+
+        internal class AvailableDomainInfo
+        {
+            [JsonProperty("id")] public int ID { get; set; }
+            [JsonProperty("domain")] public string DomainName { get; set; }
+            [JsonProperty("allow_types")] public string AllowTypes { get; set; }
+        }
+
+
+        /// <summary>获取用户的全部子域名解析列表</summary>
+        public static async Task<(int Code, List<DomainDnsInfo> List, string Msg)> GetUserDnsList()
+        {
+            var res = await ApiGet("/domain/dns/list");
+            if (res.Code == 200 && res.Data is JArray jarr)
+            {
+                return (200, jarr.ToObject<List<DomainDnsInfo>>(), res.Msg);
+            }
+            return (res.Code, null, res.Msg);
+        }
+
+        /// <summary>获取平台全部可用的根域名列表</summary>
+        public static async Task<(int Code, List<AvailableDomainInfo> List, string Msg)> GetAvailableDomainList()
+        {
+            var res = await ApiGet("/domain/list");
+            if (res.Code == 200 && res.Data is JArray jarr)
+            {
+                return (200, jarr.ToObject<List<AvailableDomainInfo>>(), res.Msg);
+            }
+            return (res.Code, null, res.Msg);
+        }
+
+        /// <summary>添加或修改解析记录 (isEdit=true 为修改，false 为添加)</summary>
+        public static async Task<(int Code, string Msg)> SubmitDnsRecord(int id, int domainId, string name, string type, string record, bool isEdit)
+        {
+            var body = new JObject
+            {
+                ["id"] = id,
+                ["domain_id"] = domainId,
+                ["name"] = name,
+                ["type"] = type,
+                ["record"] = record
+            };
+            string route = isEdit ? "/domain/dns/edit" : "/domain/dns/add";
+            var res = await ApiPost(route, HttpService.PostContentType.Json, body);
+            return (res.Code, res.Msg);
+        }
     }
+
+
     #endregion
 
     #region OpenFrp Api

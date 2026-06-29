@@ -4,8 +4,10 @@ using MSL.utils;
 using Newtonsoft.Json;
 using Newtonsoft.Json.Linq;
 using System;
+using System.Collections.Generic;
 using System.Diagnostics;
 using System.IO;
+using System.Linq;
 using System.Net;
 using System.Net.NetworkInformation;
 using System.Net.Sockets;
@@ -33,6 +35,7 @@ namespace MSL.pages
         private CancellationTokenSource _nat1Cts;
         private TcpListener _natterListener;
         private const int MaxThreads = 128;
+        private List<MSLFrpApi.AvailableDomainInfo> _cachedAvailableDomains = new();
 
         public OnlinePage()
         {
@@ -79,6 +82,17 @@ namespace MSL.pages
 
                 var savedLog = MSL.utils.Config.Config.Read("Nat1ShowConnLog")?.ToObject<bool>();
                 if (savedLog != null) chkShowConnLog.IsChecked = savedLog;
+
+                var savedAutoSrv = MSL.utils.Config.Config.Read("Nat1AutoSrv")?.ToObject<bool>();
+                if (savedAutoSrv != null) chkAutoSrv.IsChecked = savedAutoSrv;
+
+                var savedPrefix = MSL.utils.Config.Config.Read("Nat1SrvPrefix")?.ToString();
+                if (!string.IsNullOrEmpty(savedPrefix)) txtSrvPrefix.Text = savedPrefix;
+
+                if (chkAutoSrv.IsChecked == true)
+                {
+                    _ = FetchRootDomainsToUiAsync();
+                }
             }
             catch { }
             await GetFrpcInfo();
@@ -338,6 +352,11 @@ namespace MSL.pages
                             nat1OuterAddress.Text = outerEndPoint.ToString();
                             nat1OuterAddress.Foreground = System.Windows.Media.Brushes.Green;
                             Growl.Success("STUN 隧道穿透成功！");
+                        });
+
+                        // SRV解析
+                        _ = Task.Run(async () => {
+                            await ProcessMslFrpSrvMappingAsync(outerEndPoint);
                         });
 
                         int activeThreadsCount = 0;
@@ -624,6 +643,12 @@ namespace MSL.pages
                 MSL.utils.Config.Config.Write("Nat1LocalPort", nat1LocalPort.Text);
                 MSL.utils.Config.Config.Write("Nat1ProxyProtocol", chkProxyProtocol.IsChecked == true);
                 MSL.utils.Config.Config.Write("Nat1ShowConnLog", chkShowConnLog.IsChecked == true);
+                MSL.utils.Config.Config.Write("Nat1AutoSrv", chkAutoSrv.IsChecked == true);
+                MSL.utils.Config.Config.Write("Nat1SrvPrefix", txtSrvPrefix.Text.Trim());
+                if (cmbRootDomain.SelectedItem != null)
+                {
+                    MSL.utils.Config.Config.Write("Nat1SrvSuffix", cmbRootDomain.SelectedItem.ToString());
+                }
             }
             catch { }
         }
@@ -652,6 +677,255 @@ namespace MSL.pages
             {
                 txtActiveConnections.Text = $" 当前连接数: {currentCount} / {MaxThreads}";
             });
+        }
+
+        // ====== 解析到MSLFrp子域名======
+        private async Task ProcessMslFrpSrvMappingAsync(IPEndPoint outerEndPoint)
+        {
+            bool enableAutoSrv = false;
+            string subNamePrefix = "";
+            string rootDomainName = "";
+            string currentPublicIp = "";
+
+            Dispatcher.Invoke(() => {
+                enableAutoSrv = chkAutoSrv.IsChecked == true;
+                subNamePrefix = txtSrvPrefix.Text.Trim().ToLower();
+                rootDomainName = cmbRootDomain.SelectedItem?.ToString();
+
+                currentPublicIp = outerEndPoint.Address.ToString();
+            });
+
+            if (!enableAutoSrv || string.IsNullOrEmpty(subNamePrefix) || string.IsNullOrEmpty(rootDomainName)) return;
+
+            if (string.IsNullOrEmpty(currentPublicIp) || currentPublicIp == "未开启" || currentPublicIp == "正在启动隧道中..." || currentPublicIp.Contains("无法启动"))
+            {
+                AppendNat1Log("[DNS-ERROR] 自动解析取消：未获取到有效的本地公网直连 IP。");
+                return;
+            }
+
+            string fullInputDomain = $"{subNamePrefix}.{rootDomainName}";
+            string targetSrvName = $"_minecraft._tcp.{subNamePrefix}";
+
+            AppendNat1Log("[DNS-INFO] 正在初始化 MSLFrp 自动登录会话...");
+
+            var token = string.IsNullOrEmpty(MSLFrpApi.UserToken)
+                ? MSL.utils.Config.Config.Read("MSLUserAccessToken")?.ToString()
+                : MSLFrpApi.UserToken;
+
+            if (string.IsNullOrEmpty(token))
+            {
+                LogHelper.Write.Warn("[DNS] 未找到本地或内存中的 Token，无法自动登录初始化。");
+                Dispatcher.Invoke(() => {
+                    Growl.Error("自动SRV解析失败：未检测到MSLFrp登录凭证，请先前往「映射」- 「我的MSLFrp」登录您的账号。");
+                });
+                AppendNat1Log("[DNS-ERROR] 拒绝执行：未找到有效的 Token 凭证，请先前往「映射」-「我的MSLFrp」进行登录。");
+                return;
+            }
+
+            var loginResult = await MSLFrpApi.UserLogin(token);
+            if (loginResult.Code != 200)
+            {
+                LogHelper.Write.Warn($"[DNS] Token 自动登录初始化失败: {loginResult.Msg}");
+                Dispatcher.Invoke(() => {
+                    Growl.Error($"自动SRV解析失败：MSLFrp 自动登录失败！\n{loginResult.Msg}");
+                });
+                AppendNat1Log($"[DNS-ERROR] 自动登录初始化失败: {loginResult.Msg}。请尝试去「映射」-「我的MSLFrp」重新登录。");
+                return;
+            }
+
+            LogHelper.Write.Info("[DNS] MSLFrp 自动登录初始化成功，开始同步解析。");
+
+            string currentARecordValue = currentPublicIp;
+            int realPublicPort = outerEndPoint.Port;
+            string currentSrvRecordValue = $"5 5 {realPublicPort} {fullInputDomain}.";
+
+            // 开始处理同步
+            try
+            {
+                AppendNat1Log("[DNS-INFO] 正在同步解析 (A 记录 + SRV 记录)...");
+                var dnsListRes = await MSLFrpApi.GetUserDnsList();
+
+                if (dnsListRes.Code == 200 && dnsListRes.List != null)
+                {
+                    var matchedA = dnsListRes.List.FirstOrDefault(d =>
+                        d.RecordType == "A" &&
+                        d.SubName == subNamePrefix &&
+                        d.DomainName == rootDomainName);
+
+                    if (matchedA != null)
+                    {
+                        if (matchedA.RecordValue != currentARecordValue)
+                        {
+                            AppendNat1Log($"[DNS-INFO] 检测到公网 IP 变动，正在同步修改 A 记录 ➡️ {currentARecordValue}");
+                            int.TryParse(matchedA.DomainID, out int aDomId);
+                            await MSLFrpApi.SubmitDnsRecord(matchedA.ID, aDomId, matchedA.SubName, "A", currentARecordValue, true);
+                            await Task.Delay(2500);
+                        }
+                    }
+                    else
+                    {
+                        if (_cachedAvailableDomains == null || _cachedAvailableDomains.Count == 0)
+                        {
+                            var reloadPool = await MSLFrpApi.GetAvailableDomainList();
+                            if (reloadPool.Code == 200) _cachedAvailableDomains = reloadPool.List;
+                        }
+                        var rootDom = _cachedAvailableDomains?.FirstOrDefault(d => d.DomainName == rootDomainName);
+                        if (rootDom != null)
+                        {
+                            AppendNat1Log($"[DNS-INFO] 正在创建 A 记录映射 ➡️ {currentARecordValue}");
+                            await MSLFrpApi.SubmitDnsRecord(0, rootDom.ID, subNamePrefix, "A", currentARecordValue, false);
+                            await Task.Delay(2500);
+                        }
+                    }
+
+                    var matchedSrv = dnsListRes.List.FirstOrDefault(d =>
+                        d.RecordType == "SRV" &&
+                        d.SubName == targetSrvName &&
+                        d.DomainName == rootDomainName);
+
+                    if (matchedSrv != null)
+                    {
+                        if (matchedSrv.RecordValue == currentSrvRecordValue)
+                        {
+                            AppendNat1Log($"[DNS-INFO] 检测到 A+SRV 解析一致 [{fullInputDomain}]，无需重复写入。");
+                            return;
+                        }
+
+                        AppendNat1Log($"[DNS-INFO] 发现隧道有变动，正在修改 SRV 记录 ➡️ {currentSrvRecordValue}");
+                        int.TryParse(matchedSrv.DomainID, out int srvDomId);
+                        var editRes = await MSLFrpApi.SubmitDnsRecord(matchedSrv.ID, srvDomId, matchedSrv.SubName, "SRV", currentSrvRecordValue, true);
+
+                        AppendNat1Log(editRes.Code == 200 ? $"[DNS-INFO] 域名修改成功！" : $"[DNS-INFO-ERROR] SRV记录修改失败: {editRes.Msg}");
+                        return;
+                    }
+                }
+
+                if (_cachedAvailableDomains == null || _cachedAvailableDomains.Count == 0)
+                {
+                    var reloadPool = await MSLFrpApi.GetAvailableDomainList();
+                    if (reloadPool.Code == 200) _cachedAvailableDomains = reloadPool.List;
+                }
+
+                var finalRoot = _cachedAvailableDomains?.FirstOrDefault(d => d.DomainName == rootDomainName);
+                if (finalRoot != null)
+                {
+                    AppendNat1Log($"[DNS-INFO] 正在初次同步解析...");
+
+                    var checkDnsAgain = await MSLFrpApi.GetUserDnsList();
+                    if (checkDnsAgain.List?.Any(d => d.RecordType == "A" && d.SubName == subNamePrefix && d.DomainName == rootDomainName) == false)
+                    {
+                        await MSLFrpApi.SubmitDnsRecord(0, finalRoot.ID, subNamePrefix, "A", currentARecordValue, false);
+                    }
+
+                    AppendNat1Log($"[DNS-INFO] 新增 SRV 映射 ➡️ {currentSrvRecordValue}");
+                    var addRes = await MSLFrpApi.SubmitDnsRecord(0, finalRoot.ID, targetSrvName, "SRV", currentSrvRecordValue, false);
+                    AppendNat1Log(addRes.Code == 200 ? $"[DNS-INFO] 恭喜，A+SRV 解析创建成功！玩家现在可以通过 [{fullInputDomain}] 连接游戏。" : $"[DNS-ERROR] 初始化SRV失败: {addRes.Msg}");
+                }
+                else
+                {
+                    AppendNat1Log($"[DNS-ERROR] 错误：未找到根域名 '{rootDomainName}' 的有效宿主 ID。");
+                }
+            }
+            catch (Exception ex)
+            {
+                AppendNat1Log($"[DNS-CRITICAL] 运行突发未捕获异常: {ex.Message}");
+            }
+        }
+
+        private async void CheckBox_Click(object sender, RoutedEventArgs e)
+        {
+            if (chkAutoSrv.IsChecked != true)
+            {
+                SaveNat1Config();
+                return;
+            }
+
+            var authCheck = await MSLFrpApi.ApiGet("/user/info");
+            if (authCheck.Code != 200)
+            {
+                Dispatcher.Invoke(() =>
+                {
+                    chkAutoSrv.IsChecked = false;
+                    Growl.Error("操作失败：未检测到有效的 MSLFrp 登录会话！\n请前往「映射」-「我的MSLFrp」板块进行登录。");
+                });
+
+                SaveNat1Config();
+                return;
+            }
+
+            SaveNat1Config();
+            _ = FetchRootDomainsToUiAsync();
+        }
+
+        private async Task FetchRootDomainsToUiAsync()
+        {
+            if (_cachedAvailableDomains != null && _cachedAvailableDomains.Count > 0) return;
+
+            try
+            {
+                var token = string.IsNullOrEmpty(MSLFrpApi.UserToken)
+                    ? MSL.utils.Config.Config.Read("MSLUserAccessToken")?.ToString()
+                    : MSLFrpApi.UserToken;
+
+                if (string.IsNullOrEmpty(token))
+                {
+                    LogHelper.Write.Warn("[DNS] 未找到本地或内存中的 Token，放弃拉取域名列表。");
+                    return;
+                }
+
+                var loginResult = await MSLFrpApi.UserLogin(token, saveToken: true);
+                if (loginResult.Code != 200)
+                {
+                    LogHelper.Write.Warn($"[DNS] 下拉框初始化时的自动登录失败: {loginResult.Msg}");
+                    return;
+                }
+
+                LogHelper.Write.Info("[DNS] 下拉框初始化自动登录成功，开始请求平台可用根域名列表...");
+
+                var res = await MSLFrpApi.GetAvailableDomainList();
+                if (res.Code == 200 && res.List != null)
+                {
+                    _cachedAvailableDomains = res.List;
+
+                    Dispatcher.Invoke(() =>
+                    {
+                        cmbRootDomain.SelectionChanged -= cmbRootDomain_SelectionChanged;
+
+                        string previouslySavedSuffix = MSL.utils.Config.Config.Read("Nat1SrvSuffix")?.ToString();
+
+                        cmbRootDomain.Items.Clear();
+                        foreach (var dom in _cachedAvailableDomains)
+                        {
+                            cmbRootDomain.Items.Add(dom.DomainName);
+                        }
+
+                        // 尝试恢复上一次选中的后缀
+                        if (!string.IsNullOrEmpty(previouslySavedSuffix) && cmbRootDomain.Items.Contains(previouslySavedSuffix))
+                        {
+                            cmbRootDomain.SelectedItem = previouslySavedSuffix;
+                        }
+                        else if (cmbRootDomain.Items.Count > 0)
+                        {
+                            cmbRootDomain.SelectedIndex = 0; // 默认选中第一个
+                        }
+
+                        cmbRootDomain.SelectionChanged += cmbRootDomain_SelectionChanged;
+                    });
+                }
+                else
+                {
+                    LogHelper.Write.Error($"[DNS] 动态拉取域名池失败，服务端响应: {res.Msg}");
+                }
+            }
+            catch (Exception ex)
+            {
+                LogHelper.Write.Error($"[DNS-CRITICAL] 拉取根域名下拉框时发生未捕获异常: {ex.Message}");
+            }
+        }
+
+        private void cmbRootDomain_SelectionChanged(object sender, SelectionChangedEventArgs e)
+        {
+            SaveNat1Config();
         }
 
 

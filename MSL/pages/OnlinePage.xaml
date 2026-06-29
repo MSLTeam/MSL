@@ -126,6 +126,28 @@
                                     </StackPanel>
                                     <CheckBox x:Name="chkProxyProtocol" Content="启用 Proxy Protocol v2 (透传玩家真实IP)" Margin="10" VerticalAlignment="Center" Foreground="{DynamicResource PrimaryTextBrush}"/>
                                     <CheckBox x:Name="chkShowConnLog" Content="显示玩家连接日志" IsChecked="True" Margin="10" VerticalAlignment="Center" Foreground="{DynamicResource PrimaryTextBrush}"/>
+                                    <CheckBox x:Name="chkAutoSrv" Content="自动 SRV 解析到 MSLFrp 免费域名" Margin="10" VerticalAlignment="Center" Foreground="{DynamicResource PrimaryTextBrush}" Click="CheckBox_Click"/>
+
+                                    <StackPanel Orientation="Horizontal" VerticalAlignment="Center" Margin="10,0,10,0">
+                                        <StackPanel.Style>
+                                            <Style TargetType="StackPanel">
+                                                <Setter Property="Visibility" Value="Collapsed"/>
+                                                <Style.Triggers>
+                                                    <DataTrigger Binding="{Binding IsChecked, ElementName=chkAutoSrv}" Value="True">
+                                                        <Setter Property="Visibility" Value="Visible"/>
+                                                    </DataTrigger>
+                                                </Style.Triggers>
+                                            </Style>
+                                        </StackPanel.Style>
+
+                                        <Label Content="自定义解析域名:" FontSize="13" VerticalContentAlignment="Center" BorderBrush="{x:Null}" Background="{x:Null}"/>
+
+                                        <TextBox x:Name="txtSrvPrefix" Width="100" Height="28" hc:InfoElement.Placeholder="例如: qaq" VerticalContentAlignment="Center"/>
+
+                                        <TextBlock Text="." FontSize="16" FontWeight="Bold" VerticalAlignment="Center" Margin="2,0,2,0" Foreground="{DynamicResource PrimaryTextBrush}"/>
+
+                                        <ComboBox x:Name="cmbRootDomain" Width="120" Height="28" VerticalContentAlignment="Center" SelectionChanged="cmbRootDomain_SelectionChanged"/>
+                                    </StackPanel>
                                     <ToggleButton x:Name="toggleNat1" Margin="10" Height="30" Click="toggleNat1_Click" MinWidth="130">
                                         <ToggleButton.Style>
                                             <Style TargetType="ToggleButton" BasedOn="{StaticResource ToggleButton.NoCheckedBorder}">
