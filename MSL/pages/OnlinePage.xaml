@@ -8,23 +8,40 @@
       xmlns:langs="clr-namespace:MSL.langs"
       mc:Ignorable="d" d:DesignHeight="550" d:DesignWidth="750" Style="{StaticResource AnimationPage}"
       Title="OnlinePage" Loaded="Page_Loaded">
-    
+
     <Border Style="{StaticResource MagicBorder}" VerticalAlignment="Stretch" Margin="10">
         <Grid>
             <Label Style="{StaticResource BorderTitle}" Content="{Binding [Page_OnlinePage_Title], Source={x:Static langs:LanguageManager.Instance}}"/>
             <hc:Shield Subject="{Binding [Page_OnlinePage_UseTip], Source={x:Static langs:LanguageManager.Instance}}" Status="{Binding [OpenWebsite], Source={x:Static langs:LanguageManager.Instance}}" Margin="10" Command="hc:ControlCommands.OpenLink" CommandParameter="https://www.mslmc.cn/docs/proxy/p2p/" HorizontalAlignment="Right" VerticalAlignment="Top" Height="25"/>
-            <TextBlock x:Name="serverState" Text="{Binding [Page_OnlinePage_ServerStatusChecking], Source={x:Static langs:LanguageManager.Instance}}" Foreground="{DynamicResource DarkPrimaryBrush}" Margin="10,35,0,0" VerticalAlignment="Top" HorizontalAlignment="Left" FontSize="16"/>
+            <TextBlock x:Name="serverState" 
+           Text="{Binding [Page_OnlinePage_ServerStatusChecking], Source={x:Static langs:LanguageManager.Instance}}" 
+           Foreground="{DynamicResource DarkPrimaryBrush}" 
+           Margin="10,35,0,0" 
+           VerticalAlignment="Top" 
+           HorizontalAlignment="Left" 
+           FontSize="16">
+                <TextBlock.Style>
+                    <Style TargetType="TextBlock">
+                        <Setter Property="Visibility" Value="Collapsed"/>
+                        <Style.Triggers>
+                            <DataTrigger Binding="{Binding IsSelected, ElementName=tabP2P}" Value="True">
+                                <Setter Property="Visibility" Value="Visible"/>
+                            </DataTrigger>
+                        </Style.Triggers>
+                    </Style>
+                </TextBlock.Style>
+            </TextBlock>
 
             <Grid Margin="0,65,0,0">
                 <Grid.RowDefinitions>
                     <RowDefinition Height="auto"/>
-                    <RowDefinition Height="*"/> 
+                    <RowDefinition Height="*"/>
                 </Grid.RowDefinitions>
 
                 <TabControl Style="{StaticResource TabControlCapsule}" Grid.Row="0" Background="Transparent" BorderBrush="Transparent" BorderThickness="0" Margin="0,5,0,0">
-                   
 
-                    <TabItem Header="点对点联机 (P2P)" Foreground="{DynamicResource PrimaryTextBrush}">
+
+                    <TabItem x:Name="tabP2P" Header="点对点联机 (P2P)" Foreground="{DynamicResource PrimaryTextBrush}">
                         <ScrollViewer VerticalScrollBarVisibility="Auto" Background="Transparent">
                             <StackPanel Margin="0,10,0,0">
                                 <Expander x:Name="masterExp" Margin="10,0,10,0" Expanded="masterExp_Expanded" Header="{Binding [Page_OnlinePage_Header_Create], Source={x:Static langs:LanguageManager.Instance}}" >
@@ -105,95 +122,148 @@
                                         <ColumnDefinition Width="Auto"/>
                                         <ColumnDefinition Width="*"/>
                                     </Grid.ColumnDefinitions>
-
                                     <Path Grid.Column="0" Data="M12,2C6.48,2 2,6.48 2,12s4.48,10 10,10 10,-4.48 10,-10S17.52,2 12,2zm1,15h-2v-2h2v2zm0,-4h-2V7h2v6z" Fill="#FF5722" Stretch="Uniform" Width="14" Height="14" VerticalAlignment="Center"/>
-
-                                    <TextBlock Grid.Column="1" 
-                   Text="提示：本功能的开启条件比较苛刻，需要您的本地网络为 NAT1 全锥形 (Full-Cone)。若遭遇连不上或超时，请切换到 FRP 映射 或「点对点联机」。" 
-                   Foreground="{DynamicResource PrimaryTextBrush}" 
-                   FontSize="13" 
-                   Margin="8,0,0,0" 
-                   VerticalAlignment="Center" 
-                   TextWrapping="Wrap"/>
+                                    <TextBlock Grid.Column="1" Text="提示：本功能的开启条件比较苛刻，需要您的本地网络为 NAT1 全锥形 (Full-Cone)。若遭遇连不上或超时，请切换到 FRP 映射 或「点对点联机」。" Foreground="{DynamicResource PrimaryTextBrush}" FontSize="13" Margin="8,0,0,0" VerticalAlignment="Center" TextWrapping="Wrap"/>
                                 </Grid>
                             </Border>
 
-                            <StackPanel Grid.Row="1" Margin="0,15,0,0">
-                                <WrapPanel>
-                                    <StackPanel Orientation="Horizontal" Margin="0,10,10,10">
-                                        <Label Content="游戏本地端口" Height="30" FontSize="14" Background="{x:Null}" BorderBrush="{x:Null}" VerticalContentAlignment="Center"/>
-                                        <TextBox x:Name="nat1LocalPort" Height="30" Text="25565" Width="120" VerticalContentAlignment="Center"/>
-                                    </StackPanel>
-                                    <CheckBox x:Name="chkProxyProtocol" Content="启用 Proxy Protocol v2 (透传玩家真实IP)" Margin="10" VerticalAlignment="Center" Foreground="{DynamicResource PrimaryTextBrush}"/>
-                                    <CheckBox x:Name="chkShowConnLog" Content="显示玩家连接日志" IsChecked="True" Margin="10" VerticalAlignment="Center" Foreground="{DynamicResource PrimaryTextBrush}"/>
-                                    <CheckBox x:Name="chkAutoSrv" Content="自动 SRV 解析到 MSLFrp 免费域名" Margin="10" VerticalAlignment="Center" Foreground="{DynamicResource PrimaryTextBrush}" Click="CheckBox_Click"/>
+                            <ScrollViewer Grid.Row="1" VerticalScrollBarVisibility="Auto" Background="Transparent" Margin="0,10,0,0">
+                                <StackPanel>
 
-                                    <StackPanel Orientation="Horizontal" VerticalAlignment="Center" Margin="10,0,10,0">
-                                        <StackPanel.Style>
-                                            <Style TargetType="StackPanel">
-                                                <Setter Property="Visibility" Value="Collapsed"/>
-                                                <Style.Triggers>
-                                                    <DataTrigger Binding="{Binding IsChecked, ElementName=chkAutoSrv}" Value="True">
-                                                        <Setter Property="Visibility" Value="Visible"/>
-                                                    </DataTrigger>
-                                                </Style.Triggers>
-                                            </Style>
-                                        </StackPanel.Style>
+                                    <Expander Header="基础设置" Margin="0,0,0,10" IsExpanded="True" Padding="10">
+                                        <StackPanel>
+                                            <WrapPanel HorizontalAlignment="Left" VerticalAlignment="Center">
+                                                <StackPanel Orientation="Horizontal" Margin="5">
+                                                    <Label Content="游戏本地端口" Height="30" FontSize="14" Background="{x:Null}" BorderBrush="{x:Null}" VerticalContentAlignment="Center"/>
+                                                    <TextBox x:Name="nat1LocalPort" Height="30" Text="25565" Width="100" VerticalContentAlignment="Center"/>
+                                                </StackPanel>
 
-                                        <Label Content="自定义解析域名:" FontSize="13" VerticalContentAlignment="Center" BorderBrush="{x:Null}" Background="{x:Null}"/>
+                                                <ToggleButton x:Name="toggleNat1" Margin="10,5" Height="30" Click="toggleNat1_Click" MinWidth="130">
+                                                    <ToggleButton.Style>
+                                                        <Style TargetType="ToggleButton" BasedOn="{StaticResource ToggleButton.NoCheckedBorder}">
+                                                            <Style.Triggers>
+                                                                <Trigger Property="IsChecked" Value="True">
+                                                                    <Setter Property="Content" Value="关闭 STUN 隧道" />
+                                                                </Trigger>
+                                                                <Trigger Property="IsChecked" Value="False">
+                                                                    <Setter Property="Content" Value="开启 STUN 隧道" />
+                                                                </Trigger>
+                                                            </Style.Triggers>
+                                                        </Style>
+                                                    </ToggleButton.Style>
+                                                </ToggleButton>
 
-                                        <TextBox x:Name="txtSrvPrefix" Width="100" Height="28" hc:InfoElement.Placeholder="例如: qaq" VerticalContentAlignment="Center"/>
+                                                <StackPanel Orientation="Horizontal" Margin="10,5">
+                                                    <TextBlock Text="公网直连地址: " FontSize="14" VerticalAlignment="Center" Foreground="{DynamicResource PrimaryTextBrush}"/>
+                                                    <TextBlock x:Name="nat1OuterAddress" Text="未开启" Foreground="#FF2DB7F5" FontWeight="Bold" FontSize="15" VerticalAlignment="Center" Margin="5,0,0,0"/>
+                                                    <Button x:Name="btnCopyAddress" Content="复制" Margin="8,0,0,0" Height="24" Padding="8,0" FontSize="12" Click="btnCopyAddress_Click">
+                                                        <Button.Style>
+                                                            <Style TargetType="Button" BasedOn="{StaticResource ButtonPrimary}">
+                                                                <Setter Property="Visibility" Value="Collapsed"/>
+                                                                <Style.Triggers>
+                                                                    <DataTrigger Binding="{Binding IsChecked, ElementName=toggleNat1}" Value="True">
+                                                                        <Setter Property="Visibility" Value="Visible"/>
+                                                                    </DataTrigger>
+                                                                </Style.Triggers>
+                                                            </Style>
+                                                        </Button.Style>
+                                                    </Button>
+                                                </StackPanel>
+                                            </WrapPanel>
 
-                                        <TextBlock Text="." FontSize="16" FontWeight="Bold" VerticalAlignment="Center" Margin="2,0,2,0" Foreground="{DynamicResource PrimaryTextBrush}"/>
+                                            <Border BorderThickness="0,1,0,0" BorderBrush="{DynamicResource BorderBrush}" Margin="5,10,5,5" Padding="0,10,0,0">
+                                                <StackPanel>
+                                                    <StackPanel.Style>
+                                                        <Style TargetType="StackPanel">
+                                                            <Setter Property="Visibility" Value="Collapsed"/>
+                                                            <Style.Triggers>
+                                                                <MultiDataTrigger>
+                                                                    <MultiDataTrigger.Conditions>
+                                                                        <Condition Binding="{Binding IsChecked, ElementName=toggleNat1}" Value="True"/>
+                                                                        <Condition Binding="{Binding IsChecked, ElementName=chkShowTraffic}" Value="True"/>
+                                                                    </MultiDataTrigger.Conditions>
+                                                                    <Setter Property="Visibility" Value="Visible"/>
+                                                                </MultiDataTrigger>
+                                                            </Style.Triggers>
+                                                        </Style>
+                                                    </StackPanel.Style>
+                                                    <WrapPanel>
+                                                        <StackPanel Orientation="Horizontal" Margin="5,5,25,5">
+                                                            <Path Data="M11,4.001L6,4.001 6,6.001 9.586,6.001 4.293,11.294 5.707,12.708 11,7.415 11,11.001 13,11.001 13,5.001C13,4.449 12.552,4.001 11,4.001z M13,13.001L11,13.001 11,16.587 5.707,11.294 4.293,12.708 9.586,18.001 6,18.001 6,20.001 12,20.001C12.552,20.001 13,19.553 13,19.001z" Fill="{DynamicResource SuccessBrush}" Stretch="Uniform" Width="14" Margin="0,0,6,0"/>
+                                                            <TextBlock Text="实时网速：" FontSize="13" Foreground="{DynamicResource SecondaryTextBrush}" VerticalAlignment="Center"/>
+                                                            <TextBlock x:Name="txtRealtimeSpeed" Text="↑ 0 KB/s  ↓ 0 KB/s" FontWeight="SemiBold" FontSize="13" Foreground="{DynamicResource PrimaryTextBrush}" VerticalAlignment="Center"/>
+                                                        </StackPanel>
 
-                                        <ComboBox x:Name="cmbRootDomain" Width="120" Height="28" VerticalContentAlignment="Center" SelectionChanged="cmbRootDomain_SelectionChanged"/>
-                                    </StackPanel>
-                                    <ToggleButton x:Name="toggleNat1" Margin="10" Height="30" Click="toggleNat1_Click" MinWidth="130">
-                                        <ToggleButton.Style>
-                                            <Style TargetType="ToggleButton" BasedOn="{StaticResource ToggleButton.NoCheckedBorder}">
-                                                <Style.Triggers>
-                                                    <Trigger Property="IsChecked" Value="True">
-                                                        <Setter Property="Content" Value="关闭 STUN 隧道" />
-                                                    </Trigger>
-                                                    <Trigger Property="IsChecked" Value="False">
-                                                        <Setter Property="Content" Value="开启 STUN 隧道" />
-                                                    </Trigger>
-                                                </Style.Triggers>
-                                            </Style>
-                                        </ToggleButton.Style>
-                                    </ToggleButton>
+                                                        <StackPanel Orientation="Horizontal" Margin="5,5,25,5">
+                                                            <Path Data="M4,17H20V19H4V17M12,2A3,3 0 0,1 15,5V11H19L12,18L5,11H9V5A3,3 0 0,1 12,2M12,4A1,1 0 0,0 11,5V13H8.83L12,16.17L15.17,13H13V5A1,1 0 0,0 12,4Z" Fill="{DynamicResource InfoBrush}" Stretch="Uniform" Width="14" Margin="0,0,6,0"/>
+                                                            <TextBlock Text="流量统计：" FontSize="13" Foreground="{DynamicResource SecondaryTextBrush}" VerticalAlignment="Center"/>
+                                                            <TextBlock x:Name="txtTotalTraffic" Text="已发送: 0 KB | 已接收: 0 KB" FontSize="13" Foreground="{DynamicResource PrimaryTextBrush}" VerticalAlignment="Center"/>
+                                                        </StackPanel>
 
-                                    <StackPanel Orientation="Horizontal" Margin="15,10,10,10" VerticalAlignment="Center">
-                                        <TextBlock Text="公网直连地址: " FontSize="14" VerticalAlignment="Center" Foreground="{DynamicResource PrimaryTextBrush}"/>
-                                        <TextBlock x:Name="nat1OuterAddress" Text="未开启" Foreground="#FF2DB7F5" FontWeight="Bold" FontSize="15" VerticalAlignment="Center" Margin="5,0,0,0"/>
-                                        <Button x:Name="btnCopyAddress" Content="复制" Margin="8,0,0,0" Height="24" Padding="8,0" FontSize="12" Click="btnCopyAddress_Click">
-                                            <Button.Style>
-                                                <Style TargetType="Button" BasedOn="{StaticResource ButtonPrimary}">
-                                                    <Setter Property="Visibility" Value="Collapsed"/>
-                                                    <Style.Triggers>
-                                                        <DataTrigger Binding="{Binding IsChecked, ElementName=toggleNat1}" Value="True">
-                                                            <Setter Property="Visibility" Value="Visible"/>
-                                                        </DataTrigger>
-                                                    </Style.Triggers>
-                                                </Style>
-                                            </Button.Style>
-                                        </Button>
+                                                        <StackPanel Orientation="Horizontal" VerticalAlignment="Center" Margin="5,5,10,5">
+                                                            <StackPanel.Style>
+                                                                <Style TargetType="StackPanel">
+                                                                    <Setter Property="Visibility" Value="Collapsed"/>
+                                                                    <Style.Triggers>
+                                                                        <DataTrigger Binding="{Binding IsChecked, ElementName=toggleNat1}" Value="True">
+                                                                            <Setter Property="Visibility" Value="Visible"/>
+                                                                        </DataTrigger>
+                                                                    </Style.Triggers>
+                                                                </Style>
+                                                            </StackPanel.Style>
 
-                                        <TextBlock x:Name="txtActiveConnections" Text=" 当前连接数: 0 / 128" FontSize="13" Foreground="{DynamicResource SecondaryTextBrush}" VerticalAlignment="Center" Margin="20,0,0,0">
-                                            <TextBlock.Style>
-                                                <Style TargetType="TextBlock">
-                                                    <Setter Property="Visibility" Value="Collapsed"/>
-                                                    <Style.Triggers>
-                                                        <DataTrigger Binding="{Binding IsChecked, ElementName=toggleNat1}" Value="True">
-                                                            <Setter Property="Visibility" Value="Visible"/>
-                                                        </DataTrigger>
-                                                    </Style.Triggers>
-                                                </Style>
-                                            </TextBlock.Style>
-                                        </TextBlock>
-                                    </StackPanel>
-                                </WrapPanel>
-                            </StackPanel>
+                                                            <Path Data="M12,5.5A3.5,3.5 0 0,1 15.5,9A3.5,3.5 0 0,1 12,12.5A3.5,3.5 0 0,1 8.5,9A3.5,3.5 0 0,1 12,5.5M5,8A2.5,2.5 0 0,1 7.5,10.5A2.5,2.5 0 0,1 5,13A2.5,2.5 0 0,1 2.5,10.5A2.5,2.5 0 0,1 5,8M19,8A2.5,2.5 0 0,1 21.5,10.5A2.5,2.5 0 0,1 19,13A2.5,2.5 0 0,1 16.5,10.5A2.5,2.5 0 0,1 19,8M12,14C14.73,14 19.34,15.22 20,17V19H4V17C4.66,15.22 9.27,14 12,14M5,14.5C6.18,14.5 7.74,14.89 8.74,15.43C8.12,16.5 8,17.76 8,19H2V17C2,15.74 4.03,14.5 5,14.5M19,14.5C19.97,14.5 22,15.74 22,17V19H16C16,17.76 15.88,16.5 15.26,15.43C16.26,14.89 17.82,14.5 19,14.5Z" 
+              Fill="{DynamicResource SecondaryTextBrush}" 
+              Stretch="Uniform" 
+              Width="15" 
+              Margin="0,0,6,0" 
+              VerticalAlignment="Center"/>
+
+                                                            <TextBlock x:Name="txtActiveConnections" 
+                   Text="当前连接数: 0 / 128" 
+                   FontSize="13" 
+                   Foreground="{DynamicResource SecondaryTextBrush}" 
+                   VerticalAlignment="Center"/>
+                                                        </StackPanel>
+                                                    </WrapPanel>
+                                                </StackPanel>
+                                            </Border>
+                                        </StackPanel>
+                                    </Expander>
+
+                                    <Expander Header="高级设置" Margin="0,0,0,10" Padding="10">
+                                        <WrapPanel>
+                                            <CheckBox x:Name="chkShowTraffic" Content="启用实时流量与网速监控" IsChecked="True" Margin="10" VerticalAlignment="Center" Foreground="{DynamicResource PrimaryTextBrush}"/>
+                                            <CheckBox x:Name="chkProxyProtocol" Content="启用 Proxy Protocol v2 (透传玩家真实IP)" Margin="10" VerticalAlignment="Center" Foreground="{DynamicResource PrimaryTextBrush}"/>
+                                            <CheckBox x:Name="chkShowConnLog" Content="显示连接日志" IsChecked="True" Margin="10" VerticalAlignment="Center" Foreground="{DynamicResource PrimaryTextBrush}"/>
+
+                                        </WrapPanel>
+                                    </Expander>
+
+                                    <Expander Header="自动 SRV 解析到 MSLFrp 免费域名" Margin="0,0,0,10" Padding="12">
+                                        <StackPanel>
+                                            <CheckBox x:Name="chkAutoSrv" Content="开启自动解析到云端映射域名" Margin="5,6,5,10" VerticalAlignment="Center" Foreground="{DynamicResource PrimaryTextBrush}" Click="CheckBox_Click"/>
+                                            <StackPanel Orientation="Horizontal" VerticalAlignment="Center" Margin="5,5,5,5">
+                                                <StackPanel.Style>
+                                                    <Style TargetType="StackPanel">
+                                                        <Setter Property="Visibility" Value="Collapsed"/>
+                                                        <Style.Triggers>
+                                                            <DataTrigger Binding="{Binding IsChecked, ElementName=chkAutoSrv}" Value="True">
+                                                                <Setter Property="Visibility" Value="Visible"/>
+                                                            </DataTrigger>
+                                                        </Style.Triggers>
+                                                    </Style>
+                                                </StackPanel.Style>
+                                                <Label Content="自定义解析域名:" FontSize="13" VerticalContentAlignment="Center" BorderBrush="{x:Null}" Background="{x:Null}"/>
+                                                <TextBox x:Name="txtSrvPrefix" Width="110" Height="28" hc:InfoElement.Placeholder="例如: qaq" VerticalContentAlignment="Center"/>
+                                                <TextBlock Text="." FontSize="16" FontWeight="Bold" VerticalAlignment="Center" Margin="4,0,4,0" Foreground="{DynamicResource PrimaryTextBrush}"/>
+                                                <ComboBox x:Name="cmbRootDomain" Width="140" Height="28" VerticalContentAlignment="Center" SelectionChanged="cmbRootDomain_SelectionChanged"/>
+                                            </StackPanel>
+                                        </StackPanel>
+                                    </Expander>
+
+                                </StackPanel>
+                            </ScrollViewer>
                         </Grid>
                     </TabItem>
                 </TabControl>

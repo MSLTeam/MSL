@@ -36,6 +36,12 @@ namespace MSL.pages
         private TcpListener _natterListener;
         private const int MaxThreads = 128;
         private List<MSLFrpApi.AvailableDomainInfo> _cachedAvailableDomains = new();
+        // 流量统计
+        private long _totalUploadBytes = 0;   // 本次累计上行字节
+        private long _totalDownloadBytes = 0; // 本次累计下行字节
+        private long _lastUploadBytes = 0;    // 上一秒上行字节数
+        private long _lastDownloadBytes = 0;  // 上一秒下行字节数
+        private System.Threading.Timer _speedTimer; // 1秒触发一次的定时器
 
         public OnlinePage()
         {
@@ -88,6 +94,10 @@ namespace MSL.pages
 
                 var savedPrefix = MSL.utils.Config.Config.Read("Nat1SrvPrefix")?.ToString();
                 if (!string.IsNullOrEmpty(savedPrefix)) txtSrvPrefix.Text = savedPrefix;
+
+                var savedShowTraffic = MSL.utils.Config.Config.Read("Nat1ShowTraffic")?.ToObject<bool>();
+                if (savedShowTraffic != null) chkShowTraffic.IsChecked = savedShowTraffic;
+
 
                 if (chkAutoSrv.IsChecked == true)
                 {
@@ -275,6 +285,15 @@ namespace MSL.pages
                 AppendNat1Log("[INFO] STUN 隧道环境初始化...");
                 nat1OuterAddress.Text = "正在启动隧道中...";
                 nat1OuterAddress.Foreground = System.Windows.Media.Brushes.Orange;
+
+                // 重置流量统计
+                _totalUploadBytes = 0;
+                _totalDownloadBytes = 0;
+                _lastUploadBytes = 0;
+                _lastDownloadBytes = 0;
+
+                // 定时器
+                _speedTimer = new System.Threading.Timer(SpeedTimer_Tick, null, 1000, 1000);
 
                 _nat1Cts = new CancellationTokenSource();
                 int localTargetPort = int.TryParse(nat1LocalPort.Text, out int res) ? res : 25565;
@@ -556,8 +575,8 @@ namespace MSL.pages
 
                         if (showConnLog) AppendNat1Log($"[CONN] [{remoteEpStr}] 已连上隧道服务。");
 
-                        Task extToLocal = CopySocketStreamAsync(extStream, localStream, token);
-                        Task localToExt = CopySocketStreamAsync(localStream, extStream, token);
+                        Task extToLocal = CopySocketStreamAsync(extStream, localStream, false, token);
+                        Task localToExt = CopySocketStreamAsync(localStream, extStream, true, token);
                         await Task.WhenAny(extToLocal, localToExt);
                     }
                 }
@@ -599,7 +618,7 @@ namespace MSL.pages
             }
         }
 
-        private async Task CopySocketStreamAsync(NetworkStream source, NetworkStream destination, CancellationToken token)
+        private async Task CopySocketStreamAsync(NetworkStream source, NetworkStream destination, bool isUpload, CancellationToken token)
         {
             byte[] buffer = new byte[8192];
             int read;
@@ -609,23 +628,70 @@ namespace MSL.pages
                 {
                     await destination.WriteAsync(buffer, 0, read, token);
                     await destination.FlushAsync(token);
+                    // 流量统计
+                    if (isUpload)
+                    {
+                        Interlocked.Add(ref _totalUploadBytes, read);
+                    }
+                    else
+                    {
+                        Interlocked.Add(ref _totalDownloadBytes, read);
+                    }
                 }
             }
             catch { }
+        }
+
+        // 定时器每秒触发一次
+        private void SpeedTimer_Tick(object state)
+        {
+            bool showTraffic = false;
+            Dispatcher.Invoke(() => showTraffic = chkShowTraffic.IsChecked == true);
+            if (!showTraffic) return;
+
+            long currentUpload = Interlocked.Read(ref _totalUploadBytes);
+            long currentDownload = Interlocked.Read(ref _totalDownloadBytes);
+
+            // 计算网速 (Bytes/s)
+            long speedUpload = currentUpload - _lastUploadBytes;
+            long speedDownload = currentDownload - _lastDownloadBytes;
+
+            _lastUploadBytes = currentUpload;
+            _lastDownloadBytes = currentDownload;
+
+            Dispatcher.Invoke(() =>
+            {
+                txtRealtimeSpeed.Text = $"↑ {FormatTraffic(speedUpload)}/s  ↓ {FormatTraffic(speedDownload)}/s";
+                txtTotalTraffic.Text = $"已发送: {FormatTraffic(currentUpload)} | 已接收: {FormatTraffic(currentDownload)}";
+            });
+        }
+
+        private string FormatTraffic(long bytes)
+        {
+            if (bytes < 1024) return $"{bytes} B";
+            double kb = bytes / 1024.0;
+            if (kb < 1024) return $"{kb:F2} KB";
+            double mb = kb / 1024.0;
+            if (mb < 1024) return $"{mb:F2} MB";
+            double gb = mb / 1024.0;
+            return $"{gb:F2} GB";
         }
 
         private void StopNat1Tunnel(bool failed = false)
         {
             try { _nat1Cts?.Cancel(); } catch { }
             try { _natterListener?.Stop(); } catch { }
+            try { _speedTimer?.Dispose(); _speedTimer = null; } catch { }
 
             Dispatcher.Invoke(() => {
                 toggleNat1.IsChecked = false;
                 nat1OuterAddress.Text = failed ? "无法启动，请改用其他 Frp 映射或点对点联机" : "未开启";
                 nat1OuterAddress.Foreground = failed ? System.Windows.Media.Brushes.Red : System.Windows.Media.Brushes.Gray;
                 txtActiveConnections.Text = " 当前连接数: 0 / 128";
+                txtRealtimeSpeed.Text = "↑ 0 KB/s  ↓ 0 KB/s";
+                txtTotalTraffic.Text = "已发送: 0 KB | 已接收: 0 KB";
             });
-            AppendNat1Log(failed ? "[ERROR] STUN 打洞隧道后台服务已被关闭。" : "[INFO] STUN 打洞隧道后台服务已被关闭。");
+            AppendNat1Log(failed ? "[ERROR] STUN 隧道服务已被关闭。" : "[INFO] STUN 隧道服务已被关闭。");
         }
 
         private void AppendNat1Log(string logMsg)
@@ -645,6 +711,7 @@ namespace MSL.pages
                 MSL.utils.Config.Config.Write("Nat1ShowConnLog", chkShowConnLog.IsChecked == true);
                 MSL.utils.Config.Config.Write("Nat1AutoSrv", chkAutoSrv.IsChecked == true);
                 MSL.utils.Config.Config.Write("Nat1SrvPrefix", txtSrvPrefix.Text.Trim());
+                MSL.utils.Config.Config.Write("Nat1ShowTraffic", chkShowTraffic.IsChecked == true);
                 if (cmbRootDomain.SelectedItem != null)
                 {
                     MSL.utils.Config.Config.Write("Nat1SrvSuffix", cmbRootDomain.SelectedItem.ToString());
