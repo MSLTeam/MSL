@@ -1,4 +1,4 @@
-using Newtonsoft.Json;
+﻿using Newtonsoft.Json;
 using Newtonsoft.Json.Linq;
 using System.Collections.Concurrent;
 using System.IO;
@@ -23,9 +23,15 @@ namespace MSL.utils.Config
                 NullValueHandling = NullValueHandling.Ignore,
             };
             public FullSaveJob(AppConfig cfg) => _cfg = cfg;
+            private static readonly object _configLock = new object();
             public override void Execute()
             {
-                string json = JsonConvert.SerializeObject(_cfg, _settings);
+                string json;
+                lock (_configLock)
+                {
+                    json = JsonConvert.SerializeObject(_cfg, _settings);
+                }
+
                 AtomicWrite(AppConfig.ConfigPath, json);
             }
         }

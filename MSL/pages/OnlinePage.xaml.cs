@@ -901,26 +901,13 @@ namespace MSL.pages
 
         private async void CheckBox_Click(object sender, RoutedEventArgs e)
         {
+
             if (chkAutoSrv.IsChecked != true)
             {
                 SaveNat1Config();
                 return;
             }
 
-            var authCheck = await MSLFrpApi.ApiGet("/user/info");
-            if (authCheck.Code != 200)
-            {
-                Dispatcher.Invoke(() =>
-                {
-                    chkAutoSrv.IsChecked = false;
-                    Growl.Error("操作失败：未检测到有效的 MSLFrp 登录会话！\n请前往「映射」-「我的MSLFrp」板块进行登录。");
-                });
-
-                SaveNat1Config();
-                return;
-            }
-
-            SaveNat1Config();
             _ = FetchRootDomainsToUiAsync();
         }
 
@@ -937,6 +924,13 @@ namespace MSL.pages
                 if (string.IsNullOrEmpty(token))
                 {
                     LogHelper.Write.Warn("[DNS] 未找到本地或内存中的 Token，放弃拉取域名列表。");
+                    Dispatcher.Invoke(() =>
+                    {
+                        if (chkAutoSrv.IsChecked == true) {
+                            chkAutoSrv.IsChecked = false;
+                            Growl.Error("操作失败：未检测到有效的 MSLFrp 登录凭证！\n请前往「映射」-「我的MSLFrp」板块进行登录。");
+                        }
+                    });
                     return;
                 }
 
@@ -944,6 +938,14 @@ namespace MSL.pages
                 if (loginResult.Code != 200)
                 {
                     LogHelper.Write.Warn($"[DNS] 下拉框初始化时的自动登录失败: {loginResult.Msg}");
+                    Dispatcher.Invoke(() =>
+                    {
+                        if (chkAutoSrv.IsChecked == true)
+                        {
+                            chkAutoSrv.IsChecked = false;
+                            Growl.Error("操作失败：未检测到有效的 MSLFrp 登录凭证！\n请前往「映射」-「我的MSLFrp」板块进行登录。");
+                        }
+                    });
                     return;
                 }
 
