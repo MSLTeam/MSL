@@ -1,4 +1,4 @@
-using Cronos;
+﻿using Cronos;
 using HandyControl.Controls;
 using HandyControl.Data;
 using HandyControl.Tools;
@@ -538,19 +538,23 @@ namespace MSL
             IPAddress[] localIPs = Dns.GetHostAddresses(Dns.GetHostName());
             // 正则表达式匹配内网地址的模式
             string privateIpPattern = @"^(10\.|192\.168\.|172\.(1[6-9]|2[0-9]|3[0-1])\.)";
+            // radmin IP段
+            string radminIpPattern = @"^26\.";
+
             // 遍历IP地址列表
             foreach (IPAddress localIP in localIPs)
             {
                 // 检查IPv4地址是否为公网IP
                 if (localIP.AddressFamily == System.Net.Sockets.AddressFamily.InterNetwork &&
                     !IPAddress.IsLoopback(localIP) &&
-                    !Regex.IsMatch(localIP.ToString(), privateIpPattern))
+                    !Regex.IsMatch(localIP.ToString(), privateIpPattern) && !Regex.IsMatch(localIP.ToString(), radminIpPattern))
                 {
                     ipAddress = localServerIPLab.Content.ToString();
 
                     if (ipAddress.Contains(":"))
                     {
-                        MagicShow.ShowMsgDialog(this, "您的公网IP为：" + localIP.ToString() + "\n您的服务器远程进入地址为：" + localIP.ToString() + ":" + ipAddress.Substring(ipAddress.IndexOf(":") + 1, ipAddress.Length - ipAddress.IndexOf(":") - 1) + "\n注意：记得检查您的防火墙是否关闭，否则远程玩家无法进入服务器！", "信息");
+                        string port = ipAddress.Substring(ipAddress.IndexOf(":") + 1);
+                        MagicShow.ShowMsgDialog(this, "您的公网IP为：" + localIP.ToString() + "\n您的服务器远程进入地址为：" + localIP.ToString() + ":" + port + "\n注意：记得检查您的防火墙是否关闭，否则远程玩家无法进入服务器！", "信息");
                     }
                     else
                     {
@@ -559,6 +563,29 @@ namespace MSL
                     return;
                 }
             }
+
+            // 检查radmin地址
+            foreach (IPAddress localIP in localIPs)
+            {
+                if (localIP.AddressFamily == System.Net.Sockets.AddressFamily.InterNetwork)
+                {
+                    string ipStr = localIP.ToString();
+                    if (Regex.IsMatch(ipStr, radminIpPattern))
+                    {
+                        ipAddress = localServerIPLab.Content.ToString();
+                        string portSuffix = ipAddress.Contains(":") ? ":" + ipAddress.Substring(ipAddress.IndexOf(":") + 1) : "";
+
+                        MagicShow.ShowMsgDialog(this,
+                            "检测到您正在使用 Radmin Lan！\n" +
+                            "您的 Radmin IP 为：" + ipStr + "\n" +
+                            "您的服务器远程进入地址为：" + ipStr + portSuffix + "\n" +
+                            "注意：联机小伙伴必须加入同一个 Radmin 房间，且记得检查防火墙是否关闭！",
+                            "Radmin 联机提示");
+                        return;
+                    }
+                }
+            }
+
             await MagicShow.ShowMsgDialogAsync(this, "服务器开启后，通常远程的小伙伴是无法进入的，您需要进行内网映射才可让他人进入。开服器内置有免费的内网映射，您可点击主界面左侧的“内网映射”按钮查看详情并进行配置。", "注意", false);
         }
 
