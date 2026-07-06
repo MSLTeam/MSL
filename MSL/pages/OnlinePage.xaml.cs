@@ -423,7 +423,12 @@ namespace MSL.pages
                     }
                     finally
                     {
-                        _natterListener?.Stop();
+                        if (_natterListener != null)
+                        {
+                            try { _natterListener.Stop(); } catch { }
+                            _natterListener = null;
+                        }
+                        Thread.Sleep(1000);
                     }
                 }
             }
