@@ -1,7 +1,6 @@
 ﻿using HandyControl.Controls;
 using MSL.langs;
 using MSL.utils;
-using Newtonsoft.Json;
 using Newtonsoft.Json.Linq;
 using System;
 using System.Collections.Generic;
@@ -25,7 +24,6 @@ namespace MSL.pages
     public partial class OnlinePage : Page
     {
         public static Process FrpcProcess;
-        private bool isMaster;
 
         // P2PFRP 服务器参数
         private string ipAddress = "";
@@ -41,7 +39,7 @@ namespace MSL.pages
         private long _totalDownloadBytes = 0; // 本次累计下行字节
         private long _lastUploadBytes = 0;    // 上一秒上行字节数
         private long _lastDownloadBytes = 0;  // 上一秒下行字节数
-        private System.Threading.Timer _speedTimer; // 1秒触发一次的定时器
+        private Timer _speedTimer; // 1秒触发一次的定时器
 
         public OnlinePage()
         {
@@ -51,31 +49,12 @@ namespace MSL.pages
         private async void Page_Loaded(object sender, RoutedEventArgs e)
         {
             LogHelper.Write.Info("联机页面已加载，开始检查本地P2P配置。");
+            masterExp.IsExpanded = true;
             if (File.Exists("MSL\\frp\\P2Pfrpc"))
             {
                 string content = File.ReadAllText("MSL\\frp\\P2Pfrpc");
-                if (string.IsNullOrEmpty(content))
-                {
-                    masterExp.IsExpanded = true;
-                    return;
-                }
                 if (content.IndexOf("role = visitor") + 1 != 0)
-                {
                     visiterExp.IsExpanded = true;
-                }
-                else
-                {
-                    masterExp.IsExpanded = true;
-                }
-            }
-            else
-            {
-                if (await MagicShow.ShowMsgDialogAsync(Functions.GetWindow(this), LanguageManager.Instance["Page_OnlinePage_Announce"], LanguageManager.Instance["Warning"], true, "确定", "不再提示"))
-                {
-                    Directory.CreateDirectory("MSL\\frp");
-                    File.WriteAllText("MSL\\frp\\P2Pfrpc", string.Empty);
-                }
-                masterExp.IsExpanded = true;
             }
             // 读取 STUN 隧道相关配置
             try
@@ -180,7 +159,6 @@ namespace MSL.pages
                 string a = "[common]\r\nserver_port = " + ipPort + "\r\nserver_addr = " + ipAddress + "\r\n\r\n[" + masterQQ.Text + "]\r\ntype = xtcp\r\nlocal_ip = 127.0.0.1\r\nlocal_port = " + masterPort.Text + "\r\nsk = " + masterKey.Text + "\r\n";
                 Directory.CreateDirectory("MSL\\frp");
                 File.WriteAllText("MSL\\frp\\P2Pfrpc", a);
-                isMaster = true;
                 visiterExp.IsEnabled = false;
                 await StartFrpc();
             }
@@ -197,7 +175,6 @@ namespace MSL.pages
                 string a = "[common]\r\nserver_port = " + ipPort + "\r\nserver_addr = " + ipAddress + "\r\n\r\n[p2p_ssh_visitor]\r\ntype = xtcp\r\nrole = visitor\r\nbind_addr = 127.0.0.1\r\nbind_port = " + visiterPort.Text + "\r\nserver_name = " + visiterQQ.Text + "\r\nsk = " + visiterKey.Text + "\r\n";
                 Directory.CreateDirectory("MSL\\frp");
                 File.WriteAllText("MSL\\frp\\P2Pfrpc", a);
-                isMaster = false;
                 masterExp.IsEnabled = false;
                 await StartFrpc();
             }
@@ -996,7 +973,6 @@ namespace MSL.pages
         {
             SaveNat1Config();
         }
-
 
         #endregion
     }
