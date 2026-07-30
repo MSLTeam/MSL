@@ -38,7 +38,10 @@
                     </Grid>
                     <hc:UniformSpacingPanel Orientation="Vertical" Spacing="3" Grid.Row="1" VerticalAlignment="Center">
                         <Label x:Name="QQ_Label" Style="{StaticResource MagicLabel14}"/>
-                        <Label x:Name="Score_Label" Style="{StaticResource MagicLabel14}"/>
+                        <StackPanel Orientation="Horizontal">
+                            <Label x:Name="Score_Label" Style="{StaticResource MagicLabel14}"/>
+                            <Button x:Name="AdReward_Button" Click="AdReward_Button_Click" Content="赚积分" Margin="5,0,0,0" Style="{StaticResource ButtonPrimary}"/>
+                        </StackPanel>
                         <Label x:Name="RegTime_Label" Style="{StaticResource MagicLabel14}"/>
                         <Label x:Name="LastLogin_Label" Style="{StaticResource MagicLabel14}"/>
                         <Label x:Name="Perm_Label" Style="{StaticResource MagicLabel14}"/>

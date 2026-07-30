@@ -11,6 +11,7 @@ using System.Windows;
 using System.Windows.Controls;
 using System.Windows.Media;
 using System.Windows.Media.Imaging;
+using System.IO;
 
 namespace MSL.pages.frpProviders.MSLFrp
 {
@@ -230,6 +231,102 @@ namespace MSL.pages.frpProviders.MSLFrp
                 MagicShow.ShowMsgDialog(Functions.GetWindow(this), Msg, "错误");
             }
             RealnameVerify_Button.IsEnabled = true;
+        }
+
+        private async void AdReward_Button_Click(object sender, RoutedEventArgs e)
+        {
+            LogHelper.Write.Info("用户点击赚积分按钮。");
+            AdReward_Button.IsEnabled = false;
+
+            MagicDialog magicDialog = new MagicDialog();
+            magicDialog.ShowTextDialog(Window.GetWindow(this), "正在加载广告任务...");
+
+            // 获取任务状态
+            var (statusCode, statusData, statusMsg) = await MSLFrpApi.ApiGet("/user/ad-reward/status");
+            if (statusCode != 200 || statusData == null)
+            {
+                magicDialog.CloseTextDialog();
+                LogHelper.Write.Error($"获取广告状态失败: {statusMsg}");
+                MagicShow.ShowMsgDialog(Functions.GetWindow(this), statusMsg ?? "获取状态失败", "错误");
+                AdReward_Button.IsEnabled = true;
+                return;
+            }
+
+            int watchedCount = statusData["watchedCount"]?.Value<int>() ?? 0;
+            int maxDaily = statusData["maxDaily"]?.Value<int>() ?? 0;
+
+            if (watchedCount >= maxDaily)
+            {
+                magicDialog.CloseTextDialog();
+                string nextAvailable = DateTime.Today.AddDays(1).ToString("yyyy-MM-dd 00:00:00");
+                MagicShow.ShowMsgDialog(Functions.GetWindow(this), $"您今日的广告观看次数已达上限 ({maxDaily}/{maxDaily})。\n\n下次可用时间: {nextAvailable}", "提示");
+                AdReward_Button.IsEnabled = true;
+                return;
+            }
+
+            // 获取广告二维码
+            var (qrCode, qrData, qrMsg) = await MSLFrpApi.ApiGet("/user/ad-reward/qrcode?mode=qrcode");
+            magicDialog.CloseTextDialog();
+
+            if (qrCode == 200 && qrData != null)
+            {
+                string base64Image = qrData?.Value<string>();
+                if (!string.IsNullOrEmpty(base64Image))
+                {
+                    if (base64Image.StartsWith("data:image"))
+                    {
+                        base64Image = base64Image.Substring(base64Image.IndexOf(",") + 1);
+                    }
+
+                    try
+                    {
+                        byte[] imageBytes = Convert.FromBase64String(base64Image);
+                        BitmapImage bitmapImage = new BitmapImage();
+                        using (MemoryStream stream = new MemoryStream(imageBytes))
+                        {
+                            bitmapImage.BeginInit();
+                            bitmapImage.CacheOption = BitmapCacheOption.OnLoad;
+                            bitmapImage.StreamSource = stream;
+                            bitmapImage.EndInit();
+                        }
+
+                        Image qrCodeImageBox = new()
+                        {
+                            Width = 172,
+                            Height = 172,
+                            Source = bitmapImage
+                        };
+
+                        string message = $"今日剩余次数: {maxDaily - watchedCount} 次\n\n请使用当前账号绑定的微信扫描下方小程序码观看广告。\n观看完成后点击“我已完成”刷新积分。";
+                        
+                        // 弹窗展示
+                        await MagicShow.ShowMsgDialogAsync(
+                            Functions.GetWindow(this),
+                            message,
+                            "看广告赚积分",
+                            true,
+                            "取消",
+                            "我已完成",
+                            qrCodeImageBox
+                        );
+
+                        // 无论用户点击取消还是完成，都重新获取一次信息刷新UI积分
+                        await GetUserInfo();
+                    }
+                    catch (Exception ex)
+                    {
+                        LogHelper.Write.Error($"解析广告二维码图片失败: {ex.Message}");
+                        MagicShow.ShowMsgDialog(Functions.GetWindow(this), "解析二维码图片失败", "错误");
+                    }
+                }
+            }
+            else
+            {
+                LogHelper.Write.Error($"获取广告二维码失败: {qrMsg}");
+                MagicShow.ShowMsgDialog(Functions.GetWindow(this), qrMsg ?? "获取二维码失败", "错误");
+            }
+
+            AdReward_Button.IsEnabled = true;
         }
 
         private async Task GetGoods()

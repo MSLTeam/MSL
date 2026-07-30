@@ -1,4 +1,4 @@
-﻿<UserControl x:Class="MSL.pages.frpProviders.MSLFrp.MSLFrpLogin"
+<UserControl x:Class="MSL.pages.frpProviders.MSLFrp.MSLFrpLogin"
              xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
              xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
              xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006" 
@@ -6,6 +6,7 @@
              xmlns:local="clr-namespace:MSL.pages.frpProviders.MSLFrp"
              xmlns:hc="https://handyorg.github.io/handycontrol"
              xmlns:controls="clr-namespace:MSL.controls"
+             xmlns:iconPacks="http://metro.mahapps.com/winfx/xaml/iconpacks"
              mc:Ignorable="d" 
              d:DesignHeight="450" d:DesignWidth="800">
     <Grid>
@@ -30,9 +31,25 @@ Margin="0,0,0,-5"/>
                         </StackPanel>
                     </hc:UniformSpacingPanel>
                     <StackPanel Orientation="Horizontal" HorizontalAlignment="Center">
-                        <Button x:Name="BrowserLoginButton" Content="通过浏览器登录" Style="{StaticResource ButtonPrimary}" Margin="0,0,0,0" Click="BrowserLoginButton_Click"/>
+                        <Button x:Name="BrowserLoginButton" Style="{StaticResource ButtonPrimary}" Margin="0,0,5,0" Click="BrowserLoginButton_Click">
+                            <StackPanel Orientation="Horizontal">
+                                <iconPacks:PackIconMaterial Kind="Web" VerticalAlignment="Center" Margin="0,0,5,0" Width="14" Height="14"/>
+                                <TextBlock Text="通过浏览器登录 (推荐)" VerticalAlignment="Center"/>
+                            </StackPanel>
+                        </Button>
+                        <Button x:Name="WechatLoginButton" Style="{StaticResource ButtonPrimary}" Margin="0,0,5,0" Click="WechatLoginButton_Click" Background="#07C160" BorderBrush="#07C160" Foreground="White">
+                            <StackPanel Orientation="Horizontal">
+                                <iconPacks:PackIconMaterial Kind="Wechat" VerticalAlignment="Center" Margin="0,0,5,0" Width="14" Height="14"/>
+                                <TextBlock Text="微信扫码登录" VerticalAlignment="Center"/>
+                            </StackPanel>
+                        </Button>
                         <Button Visibility="Collapsed" x:Name="UserLogin" Content="登录" Width="100" Style="{StaticResource ButtonPrimary}"  Margin="0,0,5,0" Click="UserLogin_Click"/>
-                        <Button x:Name="userRegister" Content="注册/用户中心" Width="100" Margin="5,0,0,0" Command="hc:ControlCommands.OpenLink" CommandParameter="https://user.mslmc.cn"/>
+                        <Button x:Name="userRegister" Width="130" Margin="0,0,0,0" Command="hc:ControlCommands.OpenLink" CommandParameter="https://user.mslmc.cn">
+                            <StackPanel Orientation="Horizontal">
+                                <iconPacks:PackIconMaterial Kind="AccountOutline" VerticalAlignment="Center" Margin="0,0,5,0" Width="14" Height="14"/>
+                                <TextBlock Text="注册 / 用户中心" VerticalAlignment="Center"/>
+                            </StackPanel>
+                        </Button>
                     </StackPanel>
                     <CheckBox Content="保存登录状态（风险自负哦~）" HorizontalAlignment="Center" x:Name="SaveToken"/>
                     <TextBlock Text="MSLFrp 是由 MSL 的开发团队 MSLTeam 参与联合开发运营的内网穿透服务&#13;登录您的 MSL 账号即可开始使用" HorizontalAlignment="Center" TextAlignment="Center" VerticalAlignment="Center"  FontSize="13" Foreground="{DynamicResource PrimaryTextBrush}" Margin="0,10,0,0"/>
@@ -75,6 +92,24 @@ Margin="0,0,0,-5"/>
                         <Button Content="复制登录链接" Width="100" Margin="5,0,0,0" Click="CopyBrowserLinkButton_Click"/>
                     </StackPanel>
                     <Button x:Name="CancelBrowserLoginButton" Content="取消" Width="100" Margin="0,5,0,0" Click="CancelBrowserLoginButton_Click" Style="{StaticResource ButtonDanger}"/>
+                </hc:UniformSpacingPanel>
+            </controls:MagicCard>
+        </Grid>
+
+        <Grid x:Name="WechatLoginGrid" Visibility="Collapsed">
+            <controls:MagicCard Margin="10">
+                <hc:UniformSpacingPanel Spacing="20" Orientation="Vertical" HorizontalAlignment="Center" VerticalAlignment="Center" ItemHorizontalAlignment="Center" >
+                    <TextBlock Text="微信扫码登录" Style="{StaticResource MagicText16}" FontWeight="Bold"/>
+                    <TextBlock Text="请使用微信扫描下方小程序码进行登录：" Style="{StaticResource MagicText14}" TextWrapping="Wrap" HorizontalAlignment="Center" TextAlignment="Center"/>
+                    <TextBlock Text="（请确保您已在 MSL 用户中心绑定微信，否则会登录失败哦~）" FontSize="12" Foreground="Gray" TextWrapping="Wrap" HorizontalAlignment="Center" TextAlignment="Center" Margin="0,-15,0,0"/>
+
+                    <Image x:Name="WechatQrCodeImage" Width="172" Height="172" Margin="0,10,0,0" RenderOptions.BitmapScalingMode="HighQuality"/>
+
+                    <hc:LoadingCircle x:Name="WechatLoadingCircle" Style="{StaticResource LoadingCircleLarge}" Margin="0,10,0,0" Visibility="Collapsed"/>
+                    
+                    <TextBlock x:Name="WechatLoginStatusText" Text="加载中..." Style="{StaticResource MagicText14}" TextWrapping="Wrap" HorizontalAlignment="Center" TextAlignment="Center"/>
+
+                    <Button x:Name="CancelWechatLoginButton" Content="取消" Width="100" Margin="0,5,0,0" Click="CancelWechatLoginButton_Click" Style="{StaticResource ButtonDanger}"/>
                 </hc:UniformSpacingPanel>
             </controls:MagicCard>
         </Grid>
