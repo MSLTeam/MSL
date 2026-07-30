@@ -1,4 +1,4 @@
-﻿using Newtonsoft.Json;
+using Newtonsoft.Json;
 using Newtonsoft.Json.Linq;
 using System;
 using System.Collections.Generic;
@@ -27,6 +27,9 @@ namespace MSL.utils
 
     internal class HttpService
     {
+        private static readonly HttpClientHandler _sharedHandler = new HttpClientHandler { CookieContainer = new CookieContainer(), UseCookies = true };
+        private static readonly HttpClient _sharedHttpClient = new HttpClient(_sharedHandler) { Timeout = TimeSpan.FromSeconds(30) };
+
         /// <summary>
         /// WebGet
         /// </summary>
@@ -147,25 +150,28 @@ namespace MSL.utils
         /// <returns>HttpGet 包含响应代码和页内容</returns>
         public static async Task<HttpResponse> GetAsync(string url, Action<HttpRequestHeaders> configureHeaders = null, int headerUAMode = 1, string headerUA = null)
         {
-            HttpClient httpClient = new HttpClient();
             HttpResponse httpResponse = new HttpResponse();
-            configureHeaders?.Invoke(httpClient.DefaultRequestHeaders);
+            HttpRequestMessage request = new HttpRequestMessage(HttpMethod.Get, url);
+
+            configureHeaders?.Invoke(request.Headers);
+
             if (headerUAMode == 1)
             {
-                httpClient.DefaultRequestHeaders.UserAgent.TryParseAdd($"MSLTeam-MSL/{ConfigStore.MSLVersion}");
+                request.Headers.UserAgent.TryParseAdd($"MSLTeam-MSL/{ConfigStore.MSLVersion}");
             }
             else if (headerUAMode == 2)
             {
-                httpClient.DefaultRequestHeaders.UserAgent.TryParseAdd("Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/126.0.0.0 Safari/537.36");
+                request.Headers.UserAgent.TryParseAdd("Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/126.0.0.0 Safari/537.36");
             }
             else if (headerUAMode == 3 && !string.IsNullOrEmpty(headerUA))
             {
-                httpClient.DefaultRequestHeaders.UserAgent.TryParseAdd(headerUA);
+                request.Headers.UserAgent.TryParseAdd(headerUA);
             }
+
             LogHelper.Write.Info($"HTTP GET: {url}");
             try
             {
-                HttpResponseMessage response = await httpClient.GetAsync(url);
+                HttpResponseMessage response = await _sharedHttpClient.SendAsync(request);
                 httpResponse.HttpResponseCode = response.StatusCode;
                 httpResponse.HttpResponseContent = await response.Content.ReadAsStringAsync();
             }
@@ -174,7 +180,6 @@ namespace MSL.utils
                 httpResponse.HttpResponseException = ex;
                 LogHelper.Write.Error($"HTTP GET异常: {ex.Message}");
             }
-            httpClient.Dispose();
             return httpResponse;
         }
 
@@ -269,21 +274,22 @@ namespace MSL.utils
         /// <returns>HttpResponse</returns>
         public static async Task<HttpResponse> PostAsync(string url, PostContentType contentType = PostContentType.Json, object parameterData = null, Action<HttpRequestHeaders> configureHeaders = null, int headerUAMode = 1, string headerUA = null)
         {
-            HttpClient httpClient = new HttpClient();
             HttpResponse httpResponse = new HttpResponse();
-            HttpContent content;
+            HttpRequestMessage request = new HttpRequestMessage(HttpMethod.Post, url);
+            HttpContent content = null;
+            
             switch (contentType)
             {
                 case PostContentType.Json:
-                    httpClient.DefaultRequestHeaders.Accept.Add(new MediaTypeWithQualityHeaderValue("application/json"));
+                    request.Headers.Accept.Add(new MediaTypeWithQualityHeaderValue("application/json"));
                     content = new StringContent(JsonConvert.SerializeObject(parameterData), Encoding.UTF8, "application/json");
                     break;
                 case PostContentType.Text:
-                    httpClient.DefaultRequestHeaders.Accept.Add(new MediaTypeWithQualityHeaderValue("text/plain"));
+                    request.Headers.Accept.Add(new MediaTypeWithQualityHeaderValue("text/plain"));
                     content = new StringContent(parameterData as string, Encoding.UTF8, "text/plain");
                     break;
                 case PostContentType.FormUrlEncoded:
-                    httpClient.DefaultRequestHeaders.Accept.Add(new MediaTypeWithQualityHeaderValue("application/x-www-form-urlencoded"));
+                    request.Headers.Accept.Add(new MediaTypeWithQualityHeaderValue("application/x-www-form-urlencoded"));
                     if (parameterData is IDictionary<string, string> data)
                     {
                         content = new FormUrlEncodedContent(data);
@@ -300,28 +306,31 @@ namespace MSL.utils
                     content = null;
                     break;
                 default:
-                    httpClient.DefaultRequestHeaders.Accept.Add(new MediaTypeWithQualityHeaderValue("text/plain"));
+                    request.Headers.Accept.Add(new MediaTypeWithQualityHeaderValue("text/plain"));
                     content = new StringContent(parameterData as string, Encoding.UTF8, "text/plain");
                     break;
             }
 
-            configureHeaders?.Invoke(httpClient.DefaultRequestHeaders);
+            request.Content = content;
+
+            configureHeaders?.Invoke(request.Headers);
+            
             if (headerUAMode == 1)
             {
-                httpClient.DefaultRequestHeaders.UserAgent.TryParseAdd($"MSLTeam-MSL/{ConfigStore.MSLVersion}");
+                request.Headers.UserAgent.TryParseAdd($"MSLTeam-MSL/{ConfigStore.MSLVersion}");
             }
             else if (headerUAMode == 2)
             {
-                httpClient.DefaultRequestHeaders.UserAgent.TryParseAdd("Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/126.0.0.0 Safari/537.36");
+                request.Headers.UserAgent.TryParseAdd("Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/126.0.0.0 Safari/537.36");
             }
             else if (headerUAMode == 3 && !string.IsNullOrEmpty(headerUA))
             {
-                httpClient.DefaultRequestHeaders.UserAgent.TryParseAdd(headerUA);
+                request.Headers.UserAgent.TryParseAdd(headerUA);
             }
 
             try
             {
-                HttpResponseMessage response = await httpClient.PostAsync(url, content);
+                HttpResponseMessage response = await _sharedHttpClient.SendAsync(request);
                 httpResponse.HttpResponseCode = response.StatusCode;
                 httpResponse.HttpResponseContent = await response.Content.ReadAsStringAsync();
             }
@@ -329,17 +338,15 @@ namespace MSL.utils
             {
                 httpResponse.HttpResponseException = ex;
             }
-            httpClient.Dispose();
+            
             return httpResponse;
         }
 
         public static async Task<string> GetRemoteFileNameAsync(string url)
         {
-            HttpClient _httpClient = new HttpClient();
             try
             {
-                // 仅获取头部信息（使用HEAD方法）
-                using var response = await _httpClient.SendAsync(
+                using var response = await _sharedHttpClient.SendAsync(
                     new HttpRequestMessage(HttpMethod.Head, url),
                     HttpCompletionOption.ResponseHeadersRead
                 );
