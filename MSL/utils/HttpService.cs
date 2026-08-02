@@ -1,4 +1,4 @@
-using Newtonsoft.Json;
+﻿using Newtonsoft.Json;
 using Newtonsoft.Json.Linq;
 using System;
 using System.Collections.Generic;
@@ -29,6 +29,19 @@ namespace MSL.utils
     {
         private static readonly HttpClientHandler _sharedHandler = new HttpClientHandler { CookieContainer = new CookieContainer(), UseCookies = true };
         private static readonly HttpClient _sharedHttpClient = new HttpClient(_sharedHandler) { Timeout = TimeSpan.FromSeconds(30) };
+
+        static HttpService()
+        {
+            try
+            {
+                ServicePointManager.SecurityProtocol = SecurityProtocolType.Tls12
+                                                      | (SecurityProtocolType)12288 /* Tls13 */;
+            }
+            catch
+            {
+                ServicePointManager.SecurityProtocol = SecurityProtocolType.Tls12;
+            }
+        }
 
         /// <summary>
         /// WebGet
@@ -135,10 +148,23 @@ namespace MSL.utils
         public static async Task<object> GetContentAsync(string url, Action<HttpRequestHeaders> configureHeaders = null, int headerUAMode = 0, string headerUA = null)
         {
             HttpResponse _response = await GetAsync(url, configureHeaders, headerUAMode, headerUA);
-            if(_response.HttpResponseCode == HttpStatusCode.OK)
+
+            if (_response.HttpResponseException != null)
+            {
+                if (_response.HttpResponseException is Exception ex)
+                {
+                    throw new HttpRequestException("HTTP 请求发送失败，请检查网络连接或目标服务状态。", ex);
+                }
+            }
+
+            if (_response.HttpResponseCode == HttpStatusCode.OK)
+            {
                 return _response.HttpResponseContent;
+            }
             else
-                throw new HttpRequestException($"{_response.HttpResponseContent}", new Exception(_response.HttpResponseCode.ToString()));
+            {
+                throw new HttpRequestException($"服务器响应异常，状态码: {(int)_response.HttpResponseCode} ({_response.HttpResponseCode})");
+            }
         }
 
         /// <summary>
@@ -161,7 +187,7 @@ namespace MSL.utils
             }
             else if (headerUAMode == 2)
             {
-                request.Headers.UserAgent.TryParseAdd("Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/126.0.0.0 Safari/537.36");
+                request.Headers.UserAgent.TryParseAdd("Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/151.0.0.0 Safari/537.36 Edg/151.0.0.0");
             }
             else if (headerUAMode == 3 && !string.IsNullOrEmpty(headerUA))
             {
@@ -321,7 +347,7 @@ namespace MSL.utils
             }
             else if (headerUAMode == 2)
             {
-                request.Headers.UserAgent.TryParseAdd("Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/126.0.0.0 Safari/537.36");
+                request.Headers.UserAgent.TryParseAdd("Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/151.0.0.0 Safari/537.36 Edg/151.0.0.0");
             }
             else if (headerUAMode == 3 && !string.IsNullOrEmpty(headerUA))
             {

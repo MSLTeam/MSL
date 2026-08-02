@@ -5,6 +5,7 @@ using System;
 using System.ComponentModel;
 using System.IO;
 using System.Net;
+using System.Net.Http;
 using System.Security.Cryptography;
 using System.Security.Permissions;
 using System.Threading;
@@ -33,8 +34,11 @@ namespace MSL
         private readonly int headerMode; // 0等于无Header，1等于MSL Downloader，2等于伪装浏览器Header
         private DownloadService downloader;
         private DispatcherTimer updateUITimer;
+        private readonly bool useNativeHttpClient = true;
+        private CancellationTokenSource _nativeCts;
+        private ManualResetEventSlim _pauseEvent = new ManualResetEventSlim(true);
 
-        public DownloadDialog(string _downloadurl, string _downloadPath, string _filename, string downloadinfo, string sha256 = "", bool _closeDirectly = false, bool _enableParalle = true, int header = 1)
+        public DownloadDialog(string _downloadurl, string _downloadPath, string _filename, string downloadinfo, string sha256 = "", bool _closeDirectly = false, bool _enableParalle = true, int header = 1, bool _useNativeHttpClient = false)
         {
             InitializeComponent();
             Directory.CreateDirectory(_downloadPath);
@@ -46,12 +50,26 @@ namespace MSL
             headerMode = header;
             taskinfo.Text = downloadinfo;
             enableParalle = _enableParalle;
+            useNativeHttpClient = _useNativeHttpClient;
             Task.Run(Downloader);
         }
 
-        private void Downloader()
+        private async void Downloader()
         {
             LogHelper.Write.Info($"开始下载：{filename} ，下载地址：{downloadurl} ，保存路径：{downloadPath} ，启用多线程下载：{enableParalle} ，Header模式：{headerMode}。");
+            
+            try
+            {
+                ServicePointManager.SecurityProtocol = SecurityProtocolType.Tls12
+                                                      | SecurityProtocolType.Tls11
+                                                      | (SecurityProtocolType)12288;
+            }
+            catch
+            {
+                ServicePointManager.SecurityProtocol = SecurityProtocolType.Tls12;
+            }
+
+            ServicePointManager.ServerCertificateValidationCallback = (sender, certificate, chain, sslPolicyErrors) => true;
 
             if (File.Exists(Path.Combine(downloadPath, filename)))
             {
@@ -76,6 +94,12 @@ namespace MSL
                         return;
                     }
                 }
+            }
+
+            if (useNativeHttpClient)
+            {
+                await StartNativeHttpClientDownloadAsync();
+                return;
             }
 
             var downloadOpt = new DownloadConfiguration();
@@ -230,6 +254,144 @@ namespace MSL
             return null;
         }
 
+        #region --- 原生 HttpClient 下载 ---
+
+        private async Task StartNativeHttpClientDownloadAsync()
+        {
+            _nativeCts = new CancellationTokenSource();
+            _pauseEvent.Set();
+
+            Dispatcher.Invoke(() =>
+            {
+                PauseBtn.IsEnabled = true;
+                StatusLab.Text = "下载中……";
+                updateUITimer = new DispatcherTimer { Interval = TimeSpan.FromMilliseconds(500) };
+                updateUITimer.Tick += UpdateUITick;
+                updateUITimer.Start();
+            });
+
+            string fullPath = Path.Combine(downloadPath, filename);
+            var handler = new HttpClientHandler
+            {
+                SslProtocols = System.Security.Authentication.SslProtocols.Tls12
+                             | (System.Security.Authentication.SslProtocols)12288,
+                ServerCertificateCustomValidationCallback = (message, cert, chain, errors) => true
+            };
+
+            try
+            {
+                using (var client = new HttpClient(handler) { Timeout = TimeSpan.FromMinutes(10) })
+                {
+                    string ua = DownloadUA();
+                    if (!string.IsNullOrEmpty(ua))
+                    {
+                        client.DefaultRequestHeaders.TryAddWithoutValidation("User-Agent", ua);
+                    }
+
+                    using (var response = await client.GetAsync(downloadurl, HttpCompletionOption.ResponseHeadersRead, _nativeCts.Token))
+                    {
+                        response.EnsureSuccessStatusCode();
+                        totalBytesToReceive = response.Content.Headers.ContentLength ?? -1;
+
+                        using (var streamToReadFrom = await response.Content.ReadAsStreamAsync())
+                        using (var streamToWriteTo = File.Create(fullPath))
+                        {
+                            byte[] buffer = new byte[8192];
+                            int bytesRead;
+                            long totalRead = 0;
+                            var stopwatch = System.Diagnostics.Stopwatch.StartNew();
+                            long lastBytes = 0;
+                            double lastTime = 0;
+
+                            while ((bytesRead = await streamToReadFrom.ReadAsync(buffer, 0, buffer.Length, _nativeCts.Token)) > 0)
+                            {
+                                _pauseEvent.Wait(_nativeCts.Token);
+
+                                await streamToWriteTo.WriteAsync(buffer, 0, bytesRead, _nativeCts.Token);
+                                totalRead += bytesRead;
+
+                                receivedBytes = totalRead;
+                                if (totalBytesToReceive > 0)
+                                {
+                                    progressPercentage = (double)totalRead / totalBytesToReceive * 100;
+                                }
+
+                                double elapsed = stopwatch.Elapsed.TotalSeconds;
+                                if (elapsed - lastTime >= 0.5)
+                                {
+                                    bytesPerSecondSpeed = (totalRead - lastBytes) / (elapsed - lastTime);
+                                    lastBytes = totalRead;
+                                    lastTime = elapsed;
+                                }
+                            }
+                        }
+                    }
+                }
+
+                // 成功完成逻辑
+                if (!string.IsNullOrEmpty(expectedSha256))
+                {
+                    if (!VerifyFileSHA256(fullPath, expectedSha256))
+                    {
+                        _dialogReturn = 3;
+                        Dispatcher.Invoke(() =>
+                        {
+                            button1.Content = LanguageManager.Instance["Close"];
+                            infolabel.Text = LanguageManager.Instance["CheckIntegrityFailed"];
+                            try { File.Delete(fullPath); } catch { }
+                        });
+                        if (closeDirectly)
+                        {
+                            Thread.Sleep(1000);
+                            Dispatcher.Invoke(Close);
+                        }
+                        return;
+                    }
+                }
+
+                Dispatcher.Invoke(() =>
+                {
+                    PauseBtn.IsEnabled = false;
+                    updateUITimer?.Stop();
+                    infolabel.Text = LanguageManager.Instance["DownloadComplete"];
+                    pbar.Value = 100;
+                });
+
+                _dialogReturn = 1;
+                Thread.Sleep(1000);
+                Dispatcher.Invoke(Close);
+            }
+            catch (OperationCanceledException)
+            {
+                Dispatcher.Invoke(() =>
+                {
+                    PauseBtn.IsEnabled = false;
+                    updateUITimer?.Stop();
+                    infolabel.Text = LanguageManager.Instance["DownloadCancel"];
+                    StatusLab.Text = LanguageManager.Instance["DownloadCancel"];
+                    button1.Content = LanguageManager.Instance["Close"];
+                    try
+                    {
+                        if (File.Exists(fullPath)) File.Delete(fullPath);
+                    }
+                    catch { }
+                });
+            }
+            catch (Exception ex)
+            {
+                LogHelper.Write.Error($"原生 HttpClient 下载失败: {ex.Message}");
+                Dispatcher.Invoke(() =>
+                {
+                    StatusLab.Text = "下载中……";
+                    pbar.Value = 0;
+                    Thread thread = new Thread(DownloadFile);
+                    thread.Start();
+                });
+            }
+        }
+
+        #endregion
+
         private void DownloadFile()
         {
             // 使用Task异步执行下载任务
@@ -362,13 +524,27 @@ namespace MSL
         {
             if (PauseBtn.Content.ToString() == "暂停")
             {
-                downloader.Pause();
+                if (useNativeHttpClient)
+                {
+                    _pauseEvent.Reset();
+                }
+                else
+                {
+                    downloader?.Pause();
+                }
                 PauseBtn.Content = "继续";
                 StatusLab.Text = "已暂停";
             }
             else
             {
-                downloader.Resume();
+                if (useNativeHttpClient)
+                {
+                    _pauseEvent.Set();
+                }
+                else
+                {
+                    downloader?.Resume();
+                }
                 PauseBtn.Content = "暂停";
                 StatusLab.Text = "下载中……";
             }
@@ -382,8 +558,17 @@ namespace MSL
             }
             else
             {
-                downloader?.CancelAsync();
                 _dialogReturn = 2;
+                if (useNativeHttpClient)
+                {
+                    _pauseEvent.Set();
+                    _nativeCts?.Cancel();
+                }
+                else
+                {
+                    downloader?.CancelAsync();
+                }
+
                 Task.Run(async () =>
                 {
                     await Task.Delay(1000);
@@ -406,8 +591,16 @@ namespace MSL
             }
             else
             {
-                downloader?.CancelAsync();
                 _dialogReturn = 2;
+                if (useNativeHttpClient)
+                {
+                    _pauseEvent.Set();
+                    _nativeCts?.Cancel();
+                }
+                else
+                {
+                    downloader?.CancelAsync();
+                }
                 Close();
             }
         }

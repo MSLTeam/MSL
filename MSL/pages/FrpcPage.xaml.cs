@@ -553,7 +553,7 @@ namespace MSL.pages
                             }
                             string fileName = $"https://drive.mcsl.com.cn/d/ME-Frp/Lanzou/MEFrp-Core/{version}/{targetFile["name"].ToString()}";
                             LogHelper.Write.Info($"找到 ME Frp 下载链接: {fileName}");
-                            await MagicShow.ShowDownloader(Window.GetWindow(this), fileName, "MSL\\frp", downloadFileName, LanguageManager.Instance["Download_Frpc_Info"]);
+                            await MagicShow.ShowDownloader(Window.GetWindow(this), fileName, "MSL\\frp", downloadFileName, LanguageManager.Instance["Download_Frpc_Info"],enableParalle:false,useNativeHttpClient:true);
                         }
                         catch (Exception ex)
                         {
