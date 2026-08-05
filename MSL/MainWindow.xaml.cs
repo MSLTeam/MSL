@@ -1,4 +1,4 @@
-using HandyControl.Controls;
+﻿using HandyControl.Controls;
 using HandyControl.Themes;
 using HandyControl.Tools;
 using MSL.langs;
@@ -289,7 +289,7 @@ namespace MSL
         #region 联网服务
         private async Task OnlineService(AppConfig cfg, bool isBackupUrl = false)
         {
-            LogHelper.Write.Info("正在连接到MSL-API-V3服务...");
+            LogHelper.Write.Info("正在连接到MSL-API-V4服务...");
             try
             {
                 ServicePointManager.SecurityProtocol = SecurityProtocolType.Tls12;
@@ -314,15 +314,13 @@ namespace MSL
 
                 try
                 {
-                    var publicSources = request["data"]?["apiInfo"]?["downloadSources"]?["public"];
-                    if (publicSources != null && publicSources.HasValues)
+                    //LogHelper.Write.Info($"Data token: {request["data"]?.ToString(Newtonsoft.Json.Formatting.None)}");
+                    var publicSource = request["data"]?["apiInfo"]?["downloadSources"]?["public"]?.ToString();
+                    if (!string.IsNullOrEmpty(publicSource))
                     {
-                        string firstUrl = publicSources[0]?.ToString();
-                        if (!string.IsNullOrEmpty(firstUrl))
-                        {
-                            Uri uri = new Uri(firstUrl);
-                            ConfigStore.DownloadMirrorDomain = uri.Host;
-                        }
+                        Uri uri = new Uri(publicSource);
+                        ConfigStore.DownloadMirrorDomain = uri.Host;
+                        LogHelper.Write.Info($"动态镜像源域名: " + uri.Host);
                     }
                 }
                 catch (Exception ex)
