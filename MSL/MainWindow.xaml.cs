@@ -1,4 +1,4 @@
-﻿using HandyControl.Controls;
+using HandyControl.Controls;
 using HandyControl.Themes;
 using HandyControl.Tools;
 using MSL.langs;
@@ -311,6 +311,24 @@ namespace MSL
                     $"设备用户信息：UID={request["data"]["userInfo"]["uid"]} " +
                     $"注册时间={request["data"]["userInfo"]["regTime"]} " +
                     $"设备ID={request["data"]["userInfo"]["deviceID"]}");
+
+                try
+                {
+                    var publicSources = request["data"]?["apiInfo"]?["downloadSources"]?["public"];
+                    if (publicSources != null && publicSources.HasValues)
+                    {
+                        string firstUrl = publicSources[0]?.ToString();
+                        if (!string.IsNullOrEmpty(firstUrl))
+                        {
+                            Uri uri = new Uri(firstUrl);
+                            ConfigStore.DownloadMirrorDomain = uri.Host;
+                        }
+                    }
+                }
+                catch (Exception ex)
+                {
+                    LogHelper.Write.Error($"提取动态镜像源域名失败: {ex.Message}");
+                }
             }
             catch (Newtonsoft.Json.JsonException ex)
             {

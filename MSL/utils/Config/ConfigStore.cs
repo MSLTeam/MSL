@@ -1,4 +1,4 @@
-﻿using System;
+using System;
 using System.Windows.Media;
 
 namespace MSL.utils
@@ -6,6 +6,7 @@ namespace MSL.utils
     public class ConfigStore
     {
         public static string ApiLink { get; set; } = "https://api.mslmc.cn/v4";
+        public static string DownloadMirrorDomain { get; set; } = "file.mslmc.cn";
         public static Version MSLVersion { get; set; }
         public static string DeviceID { get; set; }
         public static bool GetServerInfo { get; set; } = false;

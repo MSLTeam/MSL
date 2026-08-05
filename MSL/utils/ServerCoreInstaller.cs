@@ -1,4 +1,4 @@
-﻿using HandyControl.Controls;
+using HandyControl.Controls;
 using MSL.controls.dialogs;
 using Newtonsoft.Json.Linq;
 using System;
@@ -290,7 +290,7 @@ namespace MSL.utils
 
             // 原版文件：镜像地址 → Mojang 官方
             url = url.Replace(
-                "file.mslmc.cn/mirrors/vanilla/",
+                $"{ConfigStore.DownloadMirrorDomain}/mirrors/vanilla/",
                 "piston-data.mojang.com/v1/objects/");
 
             // Forge：从镜像 URL 的 query 参数重建 Maven 官方地址

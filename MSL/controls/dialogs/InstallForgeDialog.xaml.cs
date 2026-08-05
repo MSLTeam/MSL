@@ -1,4 +1,4 @@
-﻿using ICSharpCode.SharpZipLib.Zip;
+using ICSharpCode.SharpZipLib.Zip;
 using MSL.utils;
 using Newtonsoft.Json.Linq;
 using System;
@@ -59,7 +59,6 @@ namespace MSL.controls
             await Install();
         }
 
-        //安装forge的主方法CancelButton_Click
         private async Task Install()
         {
             try
@@ -198,7 +197,7 @@ namespace MSL.controls
                 //是否使用镜像源 不用镜像就替换回原版
                 if (useMirrorUrl == 2)
                 {
-                    vanillaUrl = vanillaUrl.Replace("file.mslmc.cn/mirrors/vanilla/", "piston-data.mojang.com/v1/objects/");
+                    vanillaUrl = vanillaUrl.Replace($"{ConfigStore.DownloadMirrorDomain}/mirrors/vanilla/", "piston-data.mojang.com/v1/objects/");
                 }
 
                 // 创建下载组
@@ -732,7 +731,7 @@ namespace MSL.controls
                 str = str.Replace("https://files.minecraftforge.net", "https://v2.mirrors.mslmc.cn/libs/forge-files");
                 str = str.Replace("https://libraries.minecraft.net", "https://v2.mirrors.mslmc.cn/libs/mc-libs");
                 str = str.Replace("https://piston-meta.mojang.com", "https://v2.mirrors.mslmc.cn/libs/mc-meta");
-                str = str.Replace("piston-data.mojang.com/v1/objects/", "file.mslmc.cn/mirrors/vanilla/");
+                str = str.Replace("piston-data.mojang.com/v1/objects/", $"{ConfigStore.DownloadMirrorDomain}/mirrors/vanilla/");
             }
             // 备用镜像源
             if (useMirrorUrl == 1)
@@ -743,14 +742,14 @@ namespace MSL.controls
                 str = str.Replace("https://files.minecraftforge.net", "https://forge-files.mirrors.mslmc.cn");
                 str = str.Replace("https://libraries.minecraft.net", "https://mclibs.mirrors.mslmc.cn");
                 str = str.Replace("https://piston-meta.mojang.com", "https://mc-meta.mirrors.mslmc.cn");
-                str = str.Replace("piston-data.mojang.com/v1/objects/", "file.mslmc.cn/mirrors/vanilla/");
+                str = str.Replace("piston-data.mojang.com/v1/objects/", $"{ConfigStore.DownloadMirrorDomain}/mirrors/vanilla/");
                 /* 已弃用
                 str = str.Replace("https://maven.neoforged.net", "https://neoforge.mc-mirrors.aino.cyou");
                 str = str.Replace("https://maven.minecraftforge.net", "https://forge-maven.mc-mirrors.aino.cyou");
                 str = str.Replace("https://files.minecraftforge.net", "https://forge-files.mc-mirrors.aino.cyou");
                 str = str.Replace("https://libraries.minecraft.net", "https://mclibs.mc-mirrors.aino.cyou");
                 str = str.Replace("https://piston-meta.mojang.com", "https://mcmeta.mc-mirrors.aino.cyou");
-                str = str.Replace("piston-data.mojang.com/v1/objects/", "file.mslmc.cn/mirrors/vanilla/");
+                str = str.Replace("piston-data.mojang.com/v1/objects/", $"{ConfigStore.DownloadMirrorDomain}/mirrors/vanilla/");
                 */
             }
             //构建时候的变量
