@@ -8,7 +8,7 @@
 ![GitHub Repo stars](https://img.shields.io/github/stars/MSLTeam/MSL)
 
 这是一个使用WPF制作的面向Win系统的Minecraft玩家联机工具
-  
+
 ## 本软件支持：
 开服联机：界面友好，操作简单，方便您创建和管理您的联机服务器  
 FRP局域网联机：我们接入了OpenFrp、ChmlFrp等诸多映射服务商，一键式配置、启动映射服务  
@@ -31,7 +31,7 @@ Windows 7 及以上系统
 ### 下载地址：
 官网：  
 [点击下载](https://api.mslmc.cn/v3/download/update?direct=true)
-  
+
 Github Release：  
 https://github.com/MSLTeam/MSL/releases
 
@@ -42,8 +42,8 @@ https://www.mslmc.cn/
 
 <a href="https://www.star-history.com/?repos=MSLTeam%2FMSL&type=date&legend=top-left">
  <picture>
-   <source media="(prefers-color-scheme: dark)" srcset="https://api.star-history.com/chart?repos=MSLTeam/MSL&type=date&theme=dark&legend=top-left" />
-   <source media="(prefers-color-scheme: light)" srcset="https://api.star-history.com/chart?repos=MSLTeam/MSL&type=date&legend=top-left" />
-   <img alt="Star History Chart" src="https://api.star-history.com/chart?repos=MSLTeam/MSL&type=date&legend=top-left" />
+   <source media="(prefers-color-scheme: dark)" srcset="https://api.star-history.com/chart?repos=MSLTeam/MSL&type=date&theme=dark&legend=top-left&sealed_token=UshsXMwmaGsI4dZPaEZIvI76pKosz8eI6b64MgmbCWEeRFfEdK5L9C6qFBYnfSNurJr32N3tvePq5TWKTLrKAPoGerJLKt5wlDaHHnkUA5geL-tF3xCKDQ" />
+   <source media="(prefers-color-scheme: light)" srcset="https://api.star-history.com/chart?repos=MSLTeam/MSL&type=date&legend=top-left&sealed_token=UshsXMwmaGsI4dZPaEZIvI76pKosz8eI6b64MgmbCWEeRFfEdK5L9C6qFBYnfSNurJr32N3tvePq5TWKTLrKAPoGerJLKt5wlDaHHnkUA5geL-tF3xCKDQ" />
+   <img alt="Star History Chart" src="https://api.star-history.com/chart?repos=MSLTeam/MSL&type=date&legend=top-left&sealed_token=UshsXMwmaGsI4dZPaEZIvI76pKosz8eI6b64MgmbCWEeRFfEdK5L9C6qFBYnfSNurJr32N3tvePq5TWKTLrKAPoGerJLKt5wlDaHHnkUA5geL-tF3xCKDQ" />
  </picture>
 </a>
