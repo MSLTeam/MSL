@@ -40,7 +40,7 @@ namespace MSL.utils
         private readonly Action<string> _onPlayerListRemove;
         private readonly Action _onChangeEncodingOut;
 
-        public bool recordPlayInfo = false;
+        public bool recordPlayInfo = true;
         public bool outlogEncodingAsk = true;
 
         public string _tempLog;
@@ -668,6 +668,32 @@ namespace MSL.utils
             return string.Empty;
         }
         #endregion
+
+        /// <summary>
+        /// 获取当前服务器进程的内存占用（GB），供 SystemMonitor 订阅者使用
+        /// </summary>
+        public double GetProcessMemoryGB()
+        {
+            try
+            {
+                Process targetProc = null;
+                if (ServerProcess != null && !ServerProcess.HasExited)
+                    targetProc = ServerProcess;
+                else if (ServerTerm != null && ServerTerm.IsRunning)
+                {
+                    var p = ServerTerm._process.Process;
+                    if (!p.HasExited) targetProc = p;
+                }
+
+                if (targetProc != null)
+                {
+                    targetProc.Refresh();
+                    return targetProc.WorkingSet64 / (1024.0 * 1024.0 * 1024.0);
+                }
+            }
+            catch { }
+            return 0;
+        }
     }
 
     public class MCSLogHandler : IDisposable

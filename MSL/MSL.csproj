@@ -173,10 +173,12 @@
     <Compile Include="utils\LogHelper.cs" />
     <Compile Include="utils\MCServerLogHelper.cs" />
     <Compile Include="utils\MCServerService.cs" />
+    <Compile Include="utils\SystemMonitor.cs" />
     <Compile Include="utils\MinecraftServerTerm.cs" />
     <Compile Include="utils\ServerCoreInstaller.cs" />
     <Compile Include="utils\ServerRunnerModel.cs" />
     <Compile Include="utils\ShowService.cs" />
+    <Compile Include="utils\SkinHelper.cs" />
     <Compile Include="controls\dialogs\TextDialog.xaml.cs">
       <DependentUpon>TextDialog.xaml</DependentUpon>
     </Compile>
@@ -224,6 +226,24 @@
     </Compile>
     <Compile Include="forms\ServerRunner.xaml.cs">
       <DependentUpon>ServerRunner.xaml</DependentUpon>
+    </Compile>
+    <Compile Include="pages\serverrunner\SRPluginsMods.xaml.cs">
+      <DependentUpon>SRPluginsMods.xaml</DependentUpon>
+    </Compile>
+    <Compile Include="pages\serverrunner\SRDashboard.xaml.cs">
+      <DependentUpon>SRDashboard.xaml</DependentUpon>
+    </Compile>
+    <Compile Include="pages\serverrunner\SRConsole.xaml.cs">
+      <DependentUpon>SRConsole.xaml</DependentUpon>
+    </Compile>
+    <Compile Include="pages\serverrunner\SRInstanceSettings.xaml.cs">
+      <DependentUpon>SRInstanceSettings.xaml</DependentUpon>
+    </Compile>
+    <Compile Include="pages\serverrunner\SRMoreFunctions.xaml.cs">
+      <DependentUpon>SRMoreFunctions.xaml</DependentUpon>
+    </Compile>
+    <Compile Include="pages\serverrunner\SRTimerTasks.xaml.cs">
+      <DependentUpon>SRTimerTasks.xaml</DependentUpon>
     </Compile>
     <Compile Include="forms\FrpProvider.xaml.cs">
       <DependentUpon>FrpProvider.xaml</DependentUpon>
@@ -384,6 +404,30 @@
       <Generator>MSBuild:Compile</Generator>
     </Page>
     <Page Include="forms\ServerRunner.xaml">
+      <SubType>Designer</SubType>
+      <Generator>MSBuild:Compile</Generator>
+    </Page>
+    <Page Include="pages\serverrunner\SRPluginsMods.xaml">
+      <SubType>Designer</SubType>
+      <Generator>MSBuild:Compile</Generator>
+    </Page>
+    <Page Include="pages\serverrunner\SRDashboard.xaml">
+      <SubType>Designer</SubType>
+      <Generator>MSBuild:Compile</Generator>
+    </Page>
+    <Page Include="pages\serverrunner\SRConsole.xaml">
+      <SubType>Designer</SubType>
+      <Generator>MSBuild:Compile</Generator>
+    </Page>
+    <Page Include="pages\serverrunner\SRInstanceSettings.xaml">
+      <SubType>Designer</SubType>
+      <Generator>MSBuild:Compile</Generator>
+    </Page>
+    <Page Include="pages\serverrunner\SRMoreFunctions.xaml">
+      <SubType>Designer</SubType>
+      <Generator>MSBuild:Compile</Generator>
+    </Page>
+    <Page Include="pages\serverrunner\SRTimerTasks.xaml">
       <SubType>Designer</SubType>
       <Generator>MSBuild:Compile</Generator>
     </Page>

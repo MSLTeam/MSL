@@ -135,6 +135,19 @@ namespace MSL.controls
     public class ListBoxSideMenu : Control
     {
         public ImageSource Icon { get; set; }
+
+        public static readonly DependencyProperty IconKindProperty =
+        DependencyProperty.Register(
+            "IconKind", typeof(PackIconMaterialKind),
+            typeof(ListBoxSideMenu),
+            new PropertyMetadata(PackIconMaterialKind.None));
+
+        public PackIconMaterialKind IconKind
+        {
+            get { return (PackIconMaterialKind)GetValue(IconKindProperty); }
+            set { SetValue(IconKindProperty, value); }
+        }
+
         public static readonly DependencyProperty TextProperty =
         DependencyProperty.Register(
             "Text",

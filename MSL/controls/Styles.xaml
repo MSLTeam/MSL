@@ -152,7 +152,31 @@
             <Setter.Value>
                 <DataTemplate>
                     <StackPanel Orientation="Horizontal">
-                        <Image Source="{Binding Icon}" Width="22" Height="22" HorizontalAlignment="Left"/>
+                        <Image Source="{Binding Icon}" Width="22" Height="22" HorizontalAlignment="Left">
+                            <Image.Style>
+                                <Style TargetType="Image">
+                                    <Setter Property="Visibility" Value="Visible"/>
+                                    <Style.Triggers>
+                                        <DataTrigger Binding="{Binding Icon}" Value="{x:Null}">
+                                            <Setter Property="Visibility" Value="Collapsed"/>
+                                        </DataTrigger>
+                                    </Style.Triggers>
+                                </Style>
+                            </Image.Style>
+                        </Image>
+                        <iconPacks:PackIconMaterial Kind="{Binding IconKind}" Foreground="{DynamicResource PrimaryTextBrush}"
+                                                    Margin="2.5" Width="18" Height="18" HorizontalAlignment="Left" VerticalAlignment="Center">
+                            <iconPacks:PackIconMaterial.Style>
+                                <Style TargetType="iconPacks:PackIconMaterial" BasedOn="{StaticResource {x:Type iconPacks:PackIconMaterial}}">
+                                    <Setter Property="Visibility" Value="Collapsed"/>
+                                    <Style.Triggers>
+                                        <DataTrigger Binding="{Binding Icon}" Value="{x:Null}">
+                                            <Setter Property="Visibility" Value="Visible"/>
+                                        </DataTrigger>
+                                    </Style.Triggers>
+                                </Style>
+                            </iconPacks:PackIconMaterial.Style>
+                        </iconPacks:PackIconMaterial>
                         <TextBlock Text="{Binding Text}" Foreground="{DynamicResource PrimaryTextBrush}" Margin="10,0,5,0" VerticalAlignment="Center" HorizontalAlignment="Left" FontSize="14"/>
                     </StackPanel>
                 </DataTemplate>
@@ -418,6 +442,19 @@
     </Style>
 
     <Style TargetType="Page" x:Key="AnimationPage">
+        <Setter Property="RenderTransform">
+            <Setter.Value>
+                <TranslateTransform/>
+            </Setter.Value>
+        </Setter>
+        <Style.Triggers>
+            <EventTrigger RoutedEvent="Loaded">
+                <BeginStoryboard Storyboard="{StaticResource ShowPage}"/>
+            </EventTrigger>
+        </Style.Triggers>
+    </Style>
+
+    <Style TargetType="UserControl" x:Key="AnimationControl">
         <Setter Property="RenderTransform">
             <Setter.Value>
                 <TranslateTransform/>

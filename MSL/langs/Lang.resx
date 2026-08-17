@@ -886,7 +886,7 @@ MSLAPI —— MSL自有服务端&amp;运行库镜像源
     <value>服务器状态</value>
   </data>
   <data name="SR_OnlineMode" xml:space="preserve">
-    <value>正版验证：</value>
+    <value>正版验证</value>
   </data>
   <data name="SR_GameMode" xml:space="preserve">
     <value>游戏模式</value>
@@ -1355,6 +1355,9 @@ MSLAPI —— MSL自有服务端&amp;运行库镜像源
   </data>
   <data name="SR_DisableOutputPreview" xml:space="preserve">
     <value>关闭此功能后，输出预览功能也将同时关闭！</value>
+  </data>
+  <data name="SR_GlobalOccupancyDisabled" xml:space="preserve">
+    <value>全局"自动显示占用"已关闭，请在设置中开启后再使用此功能。</value>
   </data>
   <data name="SR_MemInfoFormat" xml:space="preserve">
     <value>总内存: {0}G
@@ -3229,9 +3232,9 @@ ID: {1} 远程端口: {2}</value>
     <value>根据您的选择，MSL为您选出了以下版本的Java和服务端核心，请点击确定按钮以安装……</value>
   </data>
   <data name="Page_CreateServer_JavaVersionDesc" xml:space="preserve">
-    <value>Java版本（此版本为MSL评估的最优版本，
+    <value>此版本为MSL评估的最优版本，
 如果您后续要加载的插件或模组
-有要求Java版本的话，请在此处更改）：</value>
+有要求Java版本的话，请在此处更改</value>
   </data>
   <data name="Page_CreateServer_ServerCoreDescLabel" xml:space="preserve">
     <value>服务端核心（若不会选择，保持默认即可）：</value>
@@ -3626,5 +3629,11 @@ ID: {1} 远程端口: {2}</value>
   </data>
   <data name="Form_DownloadServer_UseMirror" xml:space="preserve">
     <value>Vanilla和Forge使用镜像源</value>
+  </data>
+  <data name="Page_CreateServer_JavaVersionTitle" xml:space="preserve">
+    <value>Java版本：</value>
+  </data>
+  <data name="SR_InstanceSettings_Announce" xml:space="preserve">
+    <value>注意：此页面的更改需要保存才能生效，保存按钮在页面底部，如有设置修改，请务必及时保存！</value>
   </data>
 </root>

@@ -3584,13 +3584,22 @@ namespace MSL.langs {
         }
         
         /// <summary>
-        ///   查找类似 Java版本（此版本为MSL评估的最优版本，
+        ///   查找类似 此版本为MSL评估的最优版本，
         ///如果您后续要加载的插件或模组
-        ///有要求Java版本的话，请在此处更改）： 的本地化字符串。
+        ///有要求Java版本的话，请在此处更改 的本地化字符串。
         /// </summary>
         public static string Page_CreateServer_JavaVersionDesc {
             get {
                 return ResourceManager.GetString("Page_CreateServer_JavaVersionDesc", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   查找类似 Java版本： 的本地化字符串。
+        /// </summary>
+        public static string Page_CreateServer_JavaVersionTitle {
+            get {
+                return ResourceManager.GetString("Page_CreateServer_JavaVersionTitle", resourceCulture);
             }
         }
         
@@ -7946,6 +7955,15 @@ namespace MSL.langs {
         }
         
         /// <summary>
+        ///   查找类似 全局&quot;自动显示占用&quot;已关闭，请在设置中开启后再使用此功能。 的本地化字符串。
+        /// </summary>
+        public static string SR_GlobalOccupancyDisabled {
+            get {
+                return ResourceManager.GetString("SR_GlobalOccupancyDisabled", resourceCulture);
+            }
+        }
+        
+        /// <summary>
         ///   查找类似 困难 的本地化字符串。
         /// </summary>
         public static string SR_Hard {
@@ -8042,6 +8060,15 @@ namespace MSL.langs {
         public static string SR_InstanceSettings {
             get {
                 return ResourceManager.GetString("SR_InstanceSettings", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   查找类似 注意：此页面的更改需要保存才能生效，保存按钮在页面底部，如有设置修改，请务必及时保存！ 的本地化字符串。
+        /// </summary>
+        public static string SR_InstanceSettings_Announce {
+            get {
+                return ResourceManager.GetString("SR_InstanceSettings_Announce", resourceCulture);
             }
         }
         
@@ -8623,7 +8650,7 @@ namespace MSL.langs {
         }
         
         /// <summary>
-        ///   查找类似 正版验证： 的本地化字符串。
+        ///   查找类似 正版验证 的本地化字符串。
         /// </summary>
         public static string SR_OnlineMode {
             get {

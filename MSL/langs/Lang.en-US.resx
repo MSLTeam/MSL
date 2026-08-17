@@ -1355,6 +1355,9 @@ It is recommended not to upload these mods to the server.</value>
   <data name="SR_DisableOutputPreview" xml:space="preserve">
     <value>After disabling this feature, the output preview will also be closed!</value>
   </data>
+  <data name="SR_GlobalOccupancyDisabled" xml:space="preserve">
+    <value>Global "Auto Show Occupancy" is disabled. Enable it in settings first.</value>
+  </data>
   <data name="SR_MemInfoFormat" xml:space="preserve">
     <value>Total Memory: {0}G
 Used: {1}G
@@ -2008,10 +2011,10 @@ Size: </value>
     <value>Cannot open file '{0}' in shared read-only mode. Server has an exclusive lock. Error: {1}</value>
   </data>
   <data name="SR_GameModeDesc" xml:space="preserve">
-    <value>Game mode description (select according to config file format)</value>
+    <value>Game mode description</value>
   </data>
   <data name="SR_GameDiffDesc" xml:space="preserve">
-    <value>Game difficulty description (select according to config file format)</value>
+    <value>Game difficulty description</value>
   </data>
   <data name="SR_Survival" xml:space="preserve">
     <value>Survival</value>
@@ -3156,10 +3159,10 @@ Login with your MSL account to start using.</value>
     <value>Please select a creation mode to continue:</value>
   </data>
   <data name="Page_CreateServer_FastMode" xml:space="preserve">
-    <value>Quick Mode (Recommended for Beginners)</value>
+    <value>Quick Mode</value>
   </data>
   <data name="Page_CreateServer_CustomMode" xml:space="preserve">
-    <value>Custom Mode (For Advanced Users)</value>
+    <value>Custom Mode</value>
   </data>
   <data name="Page_CreateServer_ImportPackMode" xml:space="preserve">
     <value>Import Modpack Mode</value>
@@ -3186,10 +3189,10 @@ Login with your MSL account to start using.</value>
     <value>BDS Server Tutorial</value>
   </data>
   <data name="Page_CreateServer_InstanceNameLabel" xml:space="preserve">
-    <value>Instance Name (will be displayed in the instance list):</value>
+    <value>Instance Name:</value>
   </data>
   <data name="Page_CreateServer_ServerTypeLabel" xml:space="preserve">
-    <value>Server Type (select the type of server you want):</value>
+    <value>Server Type:</value>
   </data>
   <data name="Page_CreateServer_PluginServer" xml:space="preserve">
     <value>Plugin Server</value>
@@ -3216,15 +3219,16 @@ Login with your MSL account to start using.</value>
     <value>Proxy Server</value>
   </data>
   <data name="Page_CreateServer_ServerVersionLabel" xml:space="preserve">
-    <value>Server Version (select the version you want):</value>
+    <value>Server Version:</value>
   </data>
   <data name="Page_CreateServer_FastInstallIntro" xml:space="preserve">
     <value>Based on your selection, MSL has chosen the following Java version and server core for you. Please click OK to install...</value>
   </data>
   <data name="Page_CreateServer_JavaVersionDesc" xml:space="preserve">
-    <value>Java Version (This is the optimal version evaluated by MSL.
-If your plugins or mods require a different Java version,
-please change it here):</value>
+    <value>This is the optimal version evaluated
+by MSL. If your plugins or mods
+require a different Java version,
+please change it here.</value>
   </data>
   <data name="Page_CreateServer_ServerCoreDescLabel" xml:space="preserve">
     <value>Server Core (keep default if unsure):</value>
@@ -3619,5 +3623,11 @@ Please go to "Mapping" - "My MSLFrp" to login.</value>
   </data>
   <data name="Form_DownloadServer_UseMirror" xml:space="preserve">
     <value>Use mirror for Vanilla and Forge</value>
+  </data>
+  <data name="Page_CreateServer_JavaVersionTitle" xml:space="preserve">
+    <value>Java Version:</value>
+  </data>
+  <data name="SR_InstanceSettings_Announce" xml:space="preserve">
+    <value>Note: Changes made on this page require saving to take effect. The save button is located at the bottom of the page. If there are any settings modifications, please be sure to save them promptly!</value>
   </data>
 </root>

@@ -1,0 +1,175 @@
+<UserControl x:Class="MSL.pages.serverrunner.SRMoreFunctions"
+        xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+        xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+        xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
+        xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+        xmlns:hc="https://handyorg.github.io/handycontrol"
+        xmlns:iconPacks="http://metro.mahapps.com/winfx/xaml/iconpacks"
+        xmlns:controls="clr-namespace:MSL.controls"
+        xmlns:langs="clr-namespace:MSL.langs"
+        xmlns:local="clr-namespace:MSL" Style="{StaticResource AnimationControl}"
+        mc:Ignorable="d">
+    <Grid>
+        <controls:MagicScrollViewer>
+            <controls:MagicCard Title="{Binding [SR_RunnerFeaturesTitle], Source={x:Static langs:LanguageManager.Instance}}" Margin="-5,10,0,0">
+                <hc:UniformSpacingPanel Spacing="10" Orientation="Vertical">
+                    <Grid>
+                        <Grid.ColumnDefinitions>
+                            <ColumnDefinition Width="auto"/>
+                            <ColumnDefinition Width="*"/>
+                        </Grid.ColumnDefinitions>
+                        <Label Content="{Binding [SR_DashboardFunc], Source={x:Static langs:LanguageManager.Instance}}" Grid.Column="0" Style="{StaticResource MagicLabel16}"/>
+                        <hc:UniformSpacingPanel Spacing="10" Orientation="Vertical" Grid.Column="1" >
+                            <StackPanel Orientation="Horizontal">
+                                <Label Content="{Binding [SR_ShowSysOccupation], Source={x:Static langs:LanguageManager.Instance}}" Style="{StaticResource MagicLabel14}"/>
+                                <ToggleButton x:Name="systemInfoBtn" Style="{StaticResource ToggleButtonSwitch.Content}" Click="systemInfoBtn_Click"/>
+                            </StackPanel>
+                            <StackPanel Orientation="Horizontal">
+                                <Label Content="{Binding [SR_RecordPlayers], Source={x:Static langs:LanguageManager.Instance}}" Style="{StaticResource MagicLabel14}"/>
+                                <ToggleButton x:Name="playerInfoBtn" IsChecked="True" Style="{StaticResource ToggleButtonSwitch.Content}" Click="playerInfoBtn_Click"/>
+                            </StackPanel>
+                        </hc:UniformSpacingPanel>
+                    </Grid>
+                    <hc:Divider Margin="0"/>
+                    <Grid>
+                        <Grid.ColumnDefinitions>
+                            <ColumnDefinition Width="auto"/>
+                            <ColumnDefinition Width="*"/>
+                        </Grid.ColumnDefinitions>
+                        <Label Content="{Binding [SR_ServerControl], Source={x:Static langs:LanguageManager.Instance}}" Grid.Column="0"  Style="{StaticResource MagicLabel16}"/>
+                        <hc:UniformSpacingPanel Spacing="10" Orientation="Vertical"  Grid.Column="1" >
+                            <StackPanel Orientation="Horizontal">
+                                <Label Content="{Binding [SR_CmdCompletion], Source={x:Static langs:LanguageManager.Instance}}" Style="{StaticResource MagicLabel14}"/>
+                                <ToggleButton x:Name="useConpty" Style="{StaticResource ToggleButtonSwitch.Content}" Click="useConpty_Click"/>
+                            </StackPanel>
+                            <StackPanel Orientation="Horizontal">
+                                <Label Content="{Binding [SR_AutoRestart], Source={x:Static langs:LanguageManager.Instance}}" Style="{StaticResource MagicLabel14}"/>
+                                <ToggleButton x:Name="autoStartserver" Style="{StaticResource ToggleButtonSwitch.Content}" Click="autostartServer_Click"/>
+                            </StackPanel>
+                            <StackPanel Orientation="Horizontal">
+                                <Label Content="{Binding [SR_ForceUTF8], Source={x:Static langs:LanguageManager.Instance}}" Style="{StaticResource MagicLabel14}"/>
+                                <ToggleButton x:Name="fileforceUTF8encoding" Style="{StaticResource ToggleButtonSwitch.Content}" Click="fileforceUTF8encoding_Click"/>
+                            </StackPanel>
+                            <StackPanel Orientation="Horizontal">
+                                <Label Content="{Binding [SR_ForceKillProcTree], Source={x:Static langs:LanguageManager.Instance}}" Style="{StaticResource MagicLabel14}"/>
+                                <ToggleButton x:Name="KillProcessTreeTogBtn" Style="{StaticResource ToggleButtonSwitch.Content}" Click="KillProcessTreeTogBtn_Click"/>
+                            </StackPanel>
+                        </hc:UniformSpacingPanel>
+                    </Grid>
+                    <hc:Divider Margin="0"/>
+                    <Grid x:Name="Tradition_LogFunGrid">
+                        <Grid.ColumnDefinitions>
+                            <ColumnDefinition Width="auto"/>
+                            <ColumnDefinition Width="*"/>
+                        </Grid.ColumnDefinitions>
+                        <Label Content="{Binding [SR_ServerTerminal], Source={x:Static langs:LanguageManager.Instance}}" Grid.Column="0" Style="{StaticResource MagicLabel16}"/>
+                        <hc:UniformSpacingPanel Grid.Column="1" Spacing="10" Orientation="Vertical">
+                            <StackPanel Orientation="Horizontal">
+                                <Label Content="{Binding [SR_LogOutputLabel], Source={x:Static langs:LanguageManager.Instance}}" Style="{StaticResource MagicLabel14}"/>
+                                <ToggleButton x:Name="showOutlog" IsChecked="True" Style="{StaticResource ToggleButtonSwitch.Content}" Click="showOutlog_Click"/>
+                            </StackPanel>
+                            <StackPanel Orientation="Horizontal">
+                                <Label Content="{Binding [SR_AutoClearScreen], Source={x:Static langs:LanguageManager.Instance}}" Style="{StaticResource MagicLabel14}"/>
+                                <ToggleButton x:Name="autoClearOutlog" IsChecked="True" Style="{StaticResource ToggleButtonSwitch.Content}" Click="autoClearOutlog_Click"/>
+                            </StackPanel>
+                            <StackPanel Orientation="Horizontal">
+                                <Label Content="{Binding [SR_ShieldStackTrace], Source={x:Static langs:LanguageManager.Instance}}" Style="{StaticResource MagicLabel14}"/>
+                                <ToggleButton x:Name="shieldStackOut" IsChecked="True" Style="{StaticResource ToggleButtonSwitch.Content}" Click="shieldStackOut_Click"/>
+                            </StackPanel>
+                            <StackPanel Orientation="Horizontal">
+                                <Label Content="{Binding [SR_FormatLogHeader], Source={x:Static langs:LanguageManager.Instance}}" Style="{StaticResource MagicLabel14}"/>
+                                <ToggleButton x:Name="formatOutHead" IsChecked="True" Style="{StaticResource ToggleButtonSwitch.Content}" Click="formatOutHead_Click"/>
+                            </StackPanel>
+                            <hc:UniformSpacingPanel x:Name="ServerEncodingSettings" Orientation="Vertical" Spacing="10">
+                                <StackPanel Orientation="Horizontal">
+                                    <Label Content="{Binding [SR_InputEncoding], Source={x:Static langs:LanguageManager.Instance}}" Style="{StaticResource MagicLabel14}"/>
+                                    <Button x:Name="inputCmdEncoding" Content="UTF8" Click="inputCmdEncoding_Click"/>
+                                </StackPanel>
+                                <StackPanel Orientation="Horizontal">
+                                    <Label Content="{Binding [SR_OutputEncoding], Source={x:Static langs:LanguageManager.Instance}}" Style="{StaticResource MagicLabel14}"/>
+                                    <Button x:Name="outputCmdEncoding" Content="UTF8" Click="outputCmdEncoding_Click"/>
+                                </StackPanel>
+                            </hc:UniformSpacingPanel>
+                            <Grid>
+                                <Grid.ColumnDefinitions>
+                                    <ColumnDefinition Width="auto"/>
+                                    <ColumnDefinition/>
+                                    <ColumnDefinition Width="10"/>
+                                    <ColumnDefinition/>
+                                </Grid.ColumnDefinitions>
+                                <Label Content="{Binding [SR_SpecialLogs], Source={x:Static langs:LanguageManager.Instance}}" Style="{StaticResource MagicLabel14}"/>
+                                <Grid Grid.Column="1">
+                                    <Grid.RowDefinitions>
+                                        <RowDefinition Height="Auto"/>
+                                        <RowDefinition/>
+                                        <RowDefinition Height="Auto"/>
+                                    </Grid.RowDefinitions>
+                                    <ToggleButton Grid.Row="0" x:Name="shieldLogBtn" Content="{Binding [SR_ShieldKeywordLog], Source={x:Static langs:LanguageManager.Instance}}" Style="{StaticResource ToggleButtonSwitch.Content}" Click="shieldLogBtn_Click"/>
+                                    <ListBox x:Name="ShieldLogList" Grid.Row="1" Margin="0,5,0,5" Height="120"/>
+                                    <Grid Grid.Row="2">
+                                        <Grid.ColumnDefinitions>
+                                            <ColumnDefinition/>
+                                            <ColumnDefinition Width="5"/>
+                                            <ColumnDefinition/>
+                                        </Grid.ColumnDefinitions>
+                                        <Button x:Name="LogShield_Add" Content="{Binding [SR_Add], Source={x:Static langs:LanguageManager.Instance}}" Grid.Column="0" HorizontalAlignment="Stretch" Click="LogShield_Add_Click"/>
+                                        <Button x:Name="LogShield_Del" Content="{Binding [SR_Remove], Source={x:Static langs:LanguageManager.Instance}}" Grid.Column="2" HorizontalAlignment="Stretch" Click="LogShield_Del_Click"/>
+                                    </Grid>
+                                </Grid>
+                                <Grid Grid.Column="3">
+                                    <Grid.RowDefinitions>
+                                        <RowDefinition Height="Auto"/>
+                                        <RowDefinition/>
+                                        <RowDefinition Height="Auto"/>
+                                    </Grid.RowDefinitions>
+                                    <ToggleButton Grid.Row="0" x:Name="highLightLogBtn" Content="{Binding [SR_HighlightKeywordLog], Source={x:Static langs:LanguageManager.Instance}}" Style="{StaticResource ToggleButtonSwitch.Content}" Click="highLightLogBtn_Click"/>
+                                    <ListBox x:Name="HighLightLogList" Grid.Row="1" Margin="0,5,0,5" Height="120"/>
+                                    <Grid Grid.Row="2">
+                                        <Grid.ColumnDefinitions>
+                                            <ColumnDefinition/>
+                                            <ColumnDefinition Width="5"/>
+                                            <ColumnDefinition/>
+                                        </Grid.ColumnDefinitions>
+                                        <Button x:Name="LogHighLight_Add" Content="{Binding [SR_Add], Source={x:Static langs:LanguageManager.Instance}}" Grid.Column="0" HorizontalAlignment="Stretch" Click="LogHighLight_Add_Click"/>
+                                        <Button x:Name="LogHighLight_Del" Content="{Binding [SR_Remove], Source={x:Static langs:LanguageManager.Instance}}" Grid.Column="2" HorizontalAlignment="Stretch" Click="LogHighLight_Del_Click"/>
+                                    </Grid>
+                                </Grid>
+                            </Grid>
+                        </hc:UniformSpacingPanel>
+                    </Grid>
+                    <hc:Divider Margin="0"/>
+                    <Grid>
+                        <Grid.ColumnDefinitions>
+                            <ColumnDefinition Width="auto"/>
+                            <ColumnDefinition Width="*"/>
+                        </Grid.ColumnDefinitions>
+                        <Label Content="{Binding [SR_OtherFeatures], Source={x:Static langs:LanguageManager.Instance}}" Grid.Column="0" Style="{StaticResource MagicLabel16}"/>
+                        <WrapPanel Grid.Column="1">
+                            <Button x:Name="onlineMode" Content="{Binding [SR_DisableOnlineMode], Source={x:Static langs:LanguageManager.Instance}}" Click="onlineMode_Click" FontSize="14" Margin="0,0,5,5"/>
+                            <Button x:Name="shareLog" Content="{Binding [SR_UploadServerLog], Source={x:Static langs:LanguageManager.Instance}}" FontSize="14" Margin="0,0,5,5" Click="shareLog_Click"/>
+                            <Button x:Name="forgeInstallLogUpload" Content="{Binding [SR_UploadForgeLog], Source={x:Static langs:LanguageManager.Instance}}" FontSize="14" Click="forgeInstallLogUpload_Click" Margin="0,0,5,5"/>
+                            <Button x:Name="logsAnalyse" Content="{Binding [SR_AILogAnalysis], Source={x:Static langs:LanguageManager.Instance}}" FontSize="14" Click="logsAnalyse_Click" Margin="0,0,5,5"/>
+                            <Button x:Name="GetIPV6" Content="{Binding [SR_ViewIPv6], Source={x:Static langs:LanguageManager.Instance}}" FontSize="14" Click="GetIPV6_Click" Margin="0,0,5,5"/>
+                        </WrapPanel>
+                    </Grid>
+                </hc:UniformSpacingPanel>
+            </controls:MagicCard>
+            <controls:MagicCard Title="{Binding [SR_QuickCmdBar], Source={x:Static langs:LanguageManager.Instance}}" x:Name="Tradition_CMDCard" Margin="0,0,0,20">
+                <Grid>
+                    <Grid.ColumnDefinitions>
+                        <ColumnDefinition Width="*"/>
+                        <ColumnDefinition Width="auto"/>
+                        <ColumnDefinition Width="auto"/>
+                    </Grid.ColumnDefinitions>
+                    <ListBox x:Name="fastCmdList" Margin="5" Grid.Column="0" Height="160"/>
+                    <StackPanel Grid.Column="1">
+                        <Button x:Name="refrushFastCmd" Content="{Binding [SR_Refresh], Source={x:Static langs:LanguageManager.Instance}}" Height="70" MinWidth="110" Padding="10,0" Click="refrushFastCmd_Click" FontSize="18" VerticalAlignment="Top" HorizontalAlignment="Center" Margin="0,5,0,0"/>
+                        <Button x:Name="addFastCmd" Content="{Binding [SR_Add], Source={x:Static langs:LanguageManager.Instance}}" Margin="5" Height="40" MinWidth="110" Padding="10,0" Click="addFastCmd_Click" FontSize="18" VerticalAlignment="Top" HorizontalAlignment="Right" />
+                        <Button x:Name="delFastCmd" Content="{Binding [SR_Delete], Source={x:Static langs:LanguageManager.Instance}}" Height="40" MinWidth="110" Padding="10,0" Click="delFastCmd_Click" FontSize="18" HorizontalAlignment="Center" VerticalAlignment="Top" Margin="0,0,0,5" />
+                    </StackPanel>
+                    <Button Grid.Column="2" x:Name="resetFastCmd" Content="{Binding [SR_Reset], Source={x:Static langs:LanguageManager.Instance}}" MinWidth="110" Padding="10,0" Height="160" Click="resetFastCmd_Click" FontSize="18" HorizontalAlignment="Right"/>
+                </Grid>
+            </controls:MagicCard>
+        </controls:MagicScrollViewer>
+    </Grid>
+</UserControl>
