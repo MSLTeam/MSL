@@ -51,7 +51,7 @@
                                 <ColumnDefinition Width="5"/>
                                 <ColumnDefinition Width="*"/>
                             </Grid.ColumnDefinitions>
-                            <Button Content="{Binding [Frp_MSLFrp_Refresh], Source={x:Static langs:LanguageManager.Instance}}" x:Name="RefreshBtn" HorizontalAlignment="Stretch" Grid.Column="0" Click="RefreshBtn_Click"/>
+                            <Button Content="{Binding [Refresh], Source={x:Static langs:LanguageManager.Instance}}" x:Name="RefreshBtn" HorizontalAlignment="Stretch" Grid.Column="0" Click="RefreshBtn_Click"/>
                             <Button Content="{Binding [Frp_MSLFrp_DeleteSelectedTunnel], Source={x:Static langs:LanguageManager.Instance}}" x:Name="Del_Tunnel" Style="{DynamicResource ButtonDanger}" Grid.Column="2" HorizontalAlignment="Stretch" Click="Del_Tunnel_Click" />
                         </Grid>
                     </Grid>

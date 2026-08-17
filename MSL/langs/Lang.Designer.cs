@@ -5834,6 +5834,15 @@ namespace MSL.langs {
         }
         
         /// <summary>
+        ///   查找类似 刷新 的本地化字符串。
+        /// </summary>
+        public static string Refresh {
+            get {
+                return ResourceManager.GetString("Refresh", resourceCulture);
+            }
+        }
+        
+        /// <summary>
         ///   查找类似 已将其添加至任务列表中！ 的本地化字符串。
         /// </summary>
         public static string SettingsPage_AddedToTaskList {

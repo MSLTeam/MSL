@@ -3630,4 +3630,7 @@ Please go to "Mapping" - "My MSLFrp" to login.</value>
   <data name="SR_InstanceSettings_Announce" xml:space="preserve">
     <value>Note: Changes made on this page require saving to take effect. The save button is located at the bottom of the page. If there are any settings modifications, please be sure to save them promptly!</value>
   </data>
+  <data name="Refresh" xml:space="preserve">
+    <value>Refresh</value>
+  </data>
 </root>
