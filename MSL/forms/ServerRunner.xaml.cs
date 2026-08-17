@@ -18,6 +18,7 @@ using Newtonsoft.Json.Linq;
 using Ookii.Dialogs.Wpf;
 using System;
 using System.Collections.Generic;
+using System.ComponentModel;
 using System.Diagnostics;
 using System.Globalization;
 using System.IO;
@@ -43,12 +44,27 @@ namespace MSL
     /// <summary>
     /// ServerRunner.xaml 的交互逻辑
     /// </summary>
-    public partial class ServerRunner : HandyControl.Controls.Window
+    public partial class ServerRunner : HandyControl.Controls.Window, INotifyPropertyChanged
     {
         #region 事件定义
         public static event App.DeleControl SaveConfigEvent;
         public static event App.DeleControl ServerStateChange;
+        public event PropertyChangedEventHandler PropertyChanged;
         #endregion
+
+        #region MVVM 辅助
+        protected void OnPropertyChanged([System.Runtime.CompilerServices.CallerMemberName] string propertyName = null)
+            => PropertyChanged?.Invoke(this, new PropertyChangedEventArgs(propertyName));
+
+        protected bool SetProperty<T>(ref T field, T value, [System.Runtime.CompilerServices.CallerMemberName] string propertyName = null)
+        {
+            if (EqualityComparer<T>.Default.Equals(field, value)) return false;
+            field = value;
+            OnPropertyChanged(propertyName);
+            return true;
+        }
+        #endregion
+
         #region 字段&属性&类定义
         private short GetServerInfoLine = 0;
         private readonly short FirstStartTab;
@@ -61,6 +77,49 @@ namespace MSL
 
         // 全局指令列表
         private List<FastCommandInfo> CurrentFastCmds = new List<FastCommandInfo>();
+
+        // MVVM 绑定属性 - 服务器信息面板
+        private string _serverStateText;
+        public string ServerStateText
+        {
+            get => _serverStateText;
+            set => SetProperty(ref _serverStateText, value);
+        }
+
+        private string _onlineModeText;
+        public string OnlineModeText
+        {
+            get => _onlineModeText;
+            set => SetProperty(ref _onlineModeText, value);
+        }
+
+        private string _gameTypeText;
+        public string GameTypeText
+        {
+            get => _gameTypeText;
+            set => SetProperty(ref _gameTypeText, value);
+        }
+
+        private string _gameDifficultyText;
+        public string GameDifficultyText
+        {
+            get => _gameDifficultyText;
+            set => SetProperty(ref _gameDifficultyText, value);
+        }
+
+        private string _serverIPText;
+        public string ServerIPText
+        {
+            get => _serverIPText;
+            set => SetProperty(ref _serverIPText, value);
+        }
+
+        private string _localIPText;
+        public string LocalIPText
+        {
+            get => _localIPText;
+            set => SetProperty(ref _localIPText, value);
+        }
         #endregion
 
         #region 初始化
@@ -73,7 +132,19 @@ namespace MSL
         public ServerRunner(int serverID, short controlTab = 0)
         {
             InitializeComponent();
+            DataContext = this;
             InitializeOutlog();
+            previewOutlog.Text = Lang.SR_PreviewHint;
+            cmdtext.Text = Lang.SR_ServerClosed;
+            memoryInfo.Text = Lang.SR_AutoDetectMem;
+
+            // 初始化 MVVM 绑定属性默认值
+            ServerStateText = Lang.SR_Closed;
+            OnlineModeText = Lang.SR_Fetching;
+            GameTypeText = Lang.SR_Fetching;
+            GameDifficultyText = Lang.SR_Fetching;
+            ServerIPText = Lang.SR_Fetching;
+            LocalIPText = Lang.SR_Fetching;
 
             SettingsPage.ChangeSkinStyle += ChangeSkinStyle;
             RserverID = serverID;
@@ -200,7 +271,7 @@ namespace MSL
                 {
                     Icon = new BitmapImage(new Uri(ServerService.ServerBase + "\\server-icon.png"));
                 }
-                catch { Console.WriteLine("加载服务器Icon失败。"); }
+                catch { Console.WriteLine(LanguageManager.Instance["SR_IconLoadFailed"]); }
             }
 
             if (ServerService.InstanceConfig.UseConpty)
@@ -312,7 +383,7 @@ namespace MSL
             {
                 var poptip = new Poptip
                 {
-                    Content = "由于用户拒绝更新或检测更新失败，此版本可能并非最新版本",
+                    Content = LanguageManager.Instance["SR_NotLatestVersion"],
                     PlacementType = PlacementType.Right,
                     HorizontalOffset = -345
                 };
@@ -438,7 +509,7 @@ namespace MSL
                     }
                     else
                     {
-                        dialog = MagicShow.ShowMsg(this, "检测到您没有关闭服务器，是否隐藏此窗口？\n如要重新显示此窗口，请在服务器列表内双击该服务器（或点击开启服务器按钮）", "警告", true, "取消");
+                        dialog = MagicShow.ShowMsg(this, LanguageManager.Instance["SR_HideWindowConfirm"], LanguageManager.Instance["Warning"], true, LanguageManager.Instance["Cancel"]);
                     }
 
                     if (dialog == 1)
@@ -486,7 +557,7 @@ namespace MSL
 
         private async void solveProblemBtn_Click(object sender, RoutedEventArgs e)
         {
-            bool dialogRet = await MagicShow.ShowMsgDialogAsync(this, "分析报告将在服务器关闭后生成！若使用后还是无法解决问题，请尝试进Q群询问（附带日志或日志链接，日志链接可以点击分享日志按钮生成）：\n一群：1145888872  二群：234477679", "警告", true, "取消");
+            bool dialogRet = await MagicShow.ShowMsgDialogAsync(this, LanguageManager.Instance["SR_CrashAnalysisInfo"], LanguageManager.Instance["Warning"], true, LanguageManager.Instance["Cancel"]);
             if (dialogRet)
             {
                 ServerService.ProblemSolveSystem = true;
@@ -495,7 +566,7 @@ namespace MSL
         }
         private void openServerDir_Click(object sender, RoutedEventArgs e)
         {
-            Growl.Info("正在为您打开服务器目录……");
+            Growl.Info(LanguageManager.Instance["SR_OpeningServerDir"]);
             Process.Start(ServerService.ServerBase);
         }
 
@@ -503,31 +574,30 @@ namespace MSL
         {
             if (serverPlayerList.SelectedValue == null)
             {
-                MagicFlowMsg.ShowMessage("请先选择一个玩家！", 2);
+                MagicFlowMsg.ShowMessage(LanguageManager.Instance["SR_SelectPlayerFirst"], 2);
                 return;
             }
-            MagicFlowMsg.ShowMessage("复制成功！");
+            MagicFlowMsg.ShowMessage(LanguageManager.Instance["SR_CopySuccess"]);
             Clipboard.SetText(serverPlayerList.SelectedValue.ToString());
         }
 
         private async void kickPlayer_Click(object sender, RoutedEventArgs e)
         {
-            bool dialogRet = await MagicShow.ShowMsgDialogAsync(this, "确定要踢出这个玩家吗？", "警告", true, "取消");
+            bool dialogRet = await MagicShow.ShowMsgDialogAsync(this, LanguageManager.Instance["SR_ConfirmKick"], LanguageManager.Instance["Warning"], true, LanguageManager.Instance["Cancel"]);
             if (dialogRet)
             {
                 if (!ServerService.SendCommand("kick " + serverPlayerList.SelectedItem.ToString().Substring(0, serverPlayerList.SelectedItem.ToString().IndexOf("["))))
-                    Growl.Error("操作失败！");
+                    Growl.Error(LanguageManager.Instance["SR_OperationFailed"]);
             }
         }
 
         private async void banPlayer_Click(object sender, RoutedEventArgs e)
         {
-            bool dialogRet = await MagicShow.ShowMsgDialogAsync(this, "确定要封禁这个玩家吗？封禁后该玩家将永远无法进入服务器！\n" +
-                "（原版解封指令：pardon +玩家名字，若添加插件，请使用插件的解封指令）", "警告", true, "取消");
+            bool dialogRet = await MagicShow.ShowMsgDialogAsync(this, LanguageManager.Instance["SR_ConfirmBan"], LanguageManager.Instance["Warning"], true, LanguageManager.Instance["Cancel"]);
             if (dialogRet)
             {
                 if (!ServerService.SendCommand("ban " + serverPlayerList.SelectedItem.ToString().Substring(0, serverPlayerList.SelectedItem.ToString().IndexOf("["))))
-                    Growl.Error("操作失败！");
+                    Growl.Error(LanguageManager.Instance["SR_OperationFailed"]);
             }
         }
 
@@ -549,16 +619,16 @@ namespace MSL
                     !IPAddress.IsLoopback(localIP) &&
                     !Regex.IsMatch(localIP.ToString(), privateIpPattern) && !Regex.IsMatch(localIP.ToString(), radminIpPattern))
                 {
-                    ipAddress = localServerIPLab.Content.ToString();
+                    ipAddress = LocalIPText;
 
                     if (ipAddress.Contains(":"))
                     {
                         string port = ipAddress.Substring(ipAddress.IndexOf(":") + 1);
-                        MagicShow.ShowMsgDialog(this, "您的公网IP为：" + localIP.ToString() + "\n您的服务器远程进入地址为：" + localIP.ToString() + ":" + port + "\n注意：记得检查您的防火墙是否关闭，否则远程玩家无法进入服务器！", "信息");
+                        MagicShow.ShowMsgDialog(this, string.Format(LanguageManager.Instance["SR_PublicIPInfo"], localIP.ToString(), port), LanguageManager.Instance["Tip"]);
                     }
                     else
                     {
-                        MagicShow.ShowMsgDialog(this, "您的公网IP为：" + localIP.ToString() + "\n您的服务器远程进入地址为：" + localIP.ToString() + "\n注意：记得检查您的防火墙是否关闭，否则远程玩家无法进入服务器！", "信息");
+                        MagicShow.ShowMsgDialog(this, string.Format(LanguageManager.Instance["SR_PublicIPInfoNoPort"], localIP.ToString()), LanguageManager.Instance["Tip"]);
                     }
                     return;
                 }
@@ -572,21 +642,18 @@ namespace MSL
                     string ipStr = localIP.ToString();
                     if (Regex.IsMatch(ipStr, radminIpPattern))
                     {
-                        ipAddress = localServerIPLab.Content.ToString();
+                        ipAddress = LocalIPText;
                         string portSuffix = ipAddress.Contains(":") ? ":" + ipAddress.Substring(ipAddress.IndexOf(":") + 1) : "";
 
                         MagicShow.ShowMsgDialog(this,
-                            "检测到您正在使用 Radmin Lan！\n" +
-                            "您的 Radmin IP 为：" + ipStr + "\n" +
-                            "您的服务器远程进入地址为：" + ipStr + portSuffix + "\n" +
-                            "注意：联机小伙伴必须加入同一个 Radmin 房间，且记得检查防火墙是否关闭！",
-                            "Radmin 联机提示");
+                            string.Format(LanguageManager.Instance["SR_RadminDetected"], ipStr, portSuffix),
+                            LanguageManager.Instance["SR_RadminTitle"]);
                         return;
                     }
                 }
             }
 
-            await MagicShow.ShowMsgDialogAsync(this, "服务器开启后，通常远程的小伙伴是无法进入的，您需要进行内网映射才可让他人进入。开服器内置有免费的内网映射，您可点击主界面左侧的“内网映射”按钮查看详情并进行配置。", "注意", false);
+            await MagicShow.ShowMsgDialogAsync(this, LanguageManager.Instance["SR_NetworkMappingTip"], LanguageManager.Instance["Tip"], false);
         }
 
         private async void systemInfoBtn_Click(object sender, RoutedEventArgs e)
@@ -599,8 +666,8 @@ namespace MSL
             }
             else
             {
-                await MagicShow.ShowMsgDialogAsync(this, "关闭此功能后，输出预览功能也将同时关闭！", "注意");
-                previewOutlog.Text = "预览功能已关闭，请前往服务器控制台界面查看日志信息！";
+                await MagicShow.ShowMsgDialogAsync(this, LanguageManager.Instance["SR_DisableOutputPreview"], LanguageManager.Instance["Tip"]);
+                previewOutlog.Text = LanguageManager.Instance["SR_PreviewClosed"];
                 getSystemInfo = false;
             }
         }
@@ -629,8 +696,8 @@ namespace MSL
             {
                 Dispatcher.Invoke(() =>
                 {
-                    Growl.Error("无法获取系统占用信息！显示占用功能已自动关闭！\n通常此问题是因为系统原因造成的，不影响软件正常使用！");
-                    previewOutlog.Text = "预览功能已关闭，请前往服务器控制台界面查看日志信息！";
+                    Growl.Error(LanguageManager.Instance["SR_SysOccupationErr"]);
+                    previewOutlog.Text = LanguageManager.Instance["SR_PreviewClosed"];
                 });
                 getSystemInfo = false;
                 return;
@@ -698,12 +765,12 @@ namespace MSL
 
         private void UpdateMemoryInfo(float ramAvailable, double allMemory, double processUsedMemory)
         {
-            memoryInfoLab.Content = $"总内存: {allMemory:f2}G\n已使用: {allMemory - ramAvailable:f2}G\n可使用: {ramAvailable:f2}G";
+            memoryInfoLab.Content = string.Format(LanguageManager.Instance["SR_MemInfoFormat"], $"{allMemory:f2}", $"{allMemory - ramAvailable:f2}", $"{ramAvailable:f2}");
             double usedMemoryPercentage = (allMemory - ramAvailable) / allMemory;
             memoryInfoBar.Value = usedMemoryPercentage * 100;
             processMemoryInfoBar.Value = (processUsedMemory / allMemory) * 100;
-            usedMemoryLab.Content = $"系统已用内存: {usedMemoryPercentage:P}";
-            processMemoryInfoLab.Content = $"进程已用内存: {processUsedMemory:f2}G 占比: {(processUsedMemory / allMemory):P}";
+            usedMemoryLab.Content = string.Format(LanguageManager.Instance["SR_SysMemUsedFormat"], $"{usedMemoryPercentage:P}");
+            processMemoryInfoLab.Content = string.Format(LanguageManager.Instance["SR_ProcMemUsedFormat"], $"{processUsedMemory:f2}", $"{(processUsedMemory / allMemory):P}");
         }
 
         private void UpdateLogPreview()
@@ -729,12 +796,12 @@ namespace MSL
             if (playerInfoBtn.IsChecked == true)
             {
                 ServerService.recordPlayInfo = true;
-                Growl.Success("已开启");
+                Growl.Success(LanguageManager.Instance["SR_EnabledLower"]);
             }
             else
             {
                 ServerService.recordPlayInfo = false;
-                Growl.Success("已关闭");
+                Growl.Success(LanguageManager.Instance["SR_DisabledLower"]);
             }
         }
         #endregion
@@ -788,8 +855,7 @@ namespace MSL
                     Subject = "https://aka.ms/MinecraftEULA",
                     Status = LanguageManager.Instance["OpenWebsite"]
                 };
-                bool dialog = await MagicShow.ShowMsgDialogAsync(this, "开启Minecraft服务器需要接受Mojang的EULA，" +
-                    "是否仔细阅读EULA条款（https://aka.ms/MinecraftEULA）并继续开服？", "提示", true, "否", "是", shield);
+                bool dialog = await MagicShow.ShowMsgDialogAsync(this, LanguageManager.Instance["SR_MCEulaPrompt"], LanguageManager.Instance["Tip"], true, LanguageManager.Instance["No"], LanguageManager.Instance["Yes"], shield);
                 if (dialog == true)
                 {
                     try
@@ -811,7 +877,7 @@ namespace MSL
                     }
                     catch (Exception a)
                     {
-                        MessageBox.Show("出现错误，请手动修改eula文件或重试:" + a, "错误", MessageBoxButton.OK, MessageBoxImage.Error);
+                        MessageBox.Show(LanguageManager.Instance["SR_EulaError"] + a, LanguageManager.Instance["Error"], MessageBoxButton.OK, MessageBoxImage.Error);
                         return false;
                     }
                 }
@@ -838,10 +904,10 @@ namespace MSL
                     //下载或更新authlib-injector.jar
                     bool download_suc = await MagicShow.ShowDownloader(this,
                         authlib_jobj["download_url"].ToString().Replace("authlib-injector.yushi.moe", "authlib-injector.mirrors.mslmc.cn"),
-                        ServerService.ServerBase, "authlib-injector.jar", "正在更新外置登录库文件...", authlib_jobj["checksums"]["sha256"].ToString());
+                        ServerService.ServerBase, "authlib-injector.jar", LanguageManager.Instance["SR_AuthlibUpdating"], authlib_jobj["checksums"]["sha256"].ToString());
                     if (!download_suc)
                     {
-                        Growl.Error("下载外置登录库文件失败，请检查网络连接或稍后重试！");
+                        Growl.Error(LanguageManager.Instance["SR_DownloadFailed"]);
                         return false;
                     }
                 }
@@ -854,7 +920,7 @@ namespace MSL
                 }
                 else
                 {
-                    Growl.Error("无法获取最新的authlib-injector.jar信息，且本地没有authlib-injector.jar文件，请检查网络连接或稍后重试！");
+                    Growl.Error(LanguageManager.Instance["SR_AuthlibNotFound"]);
                     return false;
                 }
             }
@@ -872,19 +938,19 @@ namespace MSL
                 ServerStateChange();
                 GetServerInfoLine = 0;
                 serverPlayerList.Items.Clear();
-                serverStateLab.Content = "运行中";
+                ServerStateText = LanguageManager.Instance["SR_Running"];
                 serverStateLab.Foreground = Brushes.Red;
                 solveProblemBtn.IsEnabled = false;
                 controlServer.IsChecked = true;
                 controlServer1.IsChecked = true;
                 MoreOperation.IsEnabled = false; //服务器完成启动前禁止备份
-                gameDifficultyLab.Content = "获取中";
-                gameTypeLab.Content = "获取中";
-                serverIPLab.Content = "获取中";
-                localServerIPLab.Content = "获取中";
-                MagicFlowMsg.ShowMessage("开服中，请稍等……");
+                GameDifficultyText = LanguageManager.Instance["SR_Fetching"];
+                GameTypeText = LanguageManager.Instance["SR_Fetching"];
+                ServerIPText = LanguageManager.Instance["SR_Fetching"];
+                LocalIPText = LanguageManager.Instance["SR_Fetching"];
+                MagicFlowMsg.ShowMessage(LanguageManager.Instance["SR_Launching"]);
                 ClearLog();
-                PrintLog("正在开启服务器，请稍等...", ConfigStore.LogColor.INFO);
+                PrintLog(LanguageManager.Instance["SR_Launching"], ConfigStore.LogColor.INFO);
                 cmdtext.IsEnabled = true;
                 cmdtext.Clear();
                 fastCMD.IsEnabled = true;
@@ -898,17 +964,17 @@ namespace MSL
                 }
                 ServerStateChange();
 
-                serverStateLab.Content = "已关闭";
+                ServerStateText = LanguageManager.Instance["SR_Closed"];
                 serverStateLab.Foreground = Brushes.Green;
                 solveProblemBtn.IsEnabled = true;
                 controlServer.IsChecked = false;
                 controlServer1.IsChecked = false;
                 MoreOperation.IsEnabled = true; // 服务器关闭后允许备份
-                MagicFlowMsg.ShowMessage("服务器已关闭！");
+                MagicFlowMsg.ShowMessage(LanguageManager.Instance["SR_ServerClosedMsg"]);
                 sendcmd.IsEnabled = false;
                 cmdtext.IsEnabled = false;
                 fastCMD.IsEnabled = false;
-                cmdtext.Text = "服务器已关闭";
+                cmdtext.Text = LanguageManager.Instance["SR_ServerClosed"];
             }
         }
 
@@ -967,8 +1033,8 @@ namespace MSL
 
         private void ServerStartedEvent()
         {
-            MagicFlowMsg.ShowMessage(string.Format("服务器 {0} 已成功开启！", ServerService.ServerName), 1);
-            serverStateLab.Content = "已开服";
+            MagicFlowMsg.ShowMessage(string.Format(LanguageManager.Instance["SR_ServerLaunchedSuccess"], ServerService.ServerName), 1);
+            ServerStateText = LanguageManager.Instance["SR_Launched"];
             GetServerInfoSys();
             MoreOperation.IsEnabled = true;
         }
@@ -990,38 +1056,38 @@ namespace MSL
                 {
                     if (string.IsNullOrEmpty(ServerService.ServerYggAddr))
                     {
-                        PrintLog("检测到您没有关闭正版验证，如果客户端为离线登录的话，请点击“更多功能”里“关闭正版验证”按钮以关闭正版验证。否则离线账户将无法进入服务器！", Colors.OrangeRed);
+                        PrintLog(LanguageManager.Instance["SR_OnlineModeWarn"], Colors.OrangeRed);
                     }
                     else
                     {
-                        PrintLog("检测到您正在使用第三方外置登录验证，请确保客户端均采用第三方外置登录进入游戏，否则将无法进入服务器哦！", Colors.OrangeRed);
+                        PrintLog(LanguageManager.Instance["SR_OnlineModeThirdParty"], Colors.OrangeRed);
                     }
-                    onlineModeLab.Content = "已开启";
+                    OnlineModeText = LanguageManager.Instance["SR_EnabledLower"];
                 }
                 else if (onlineMode == "false")
                 {
                     if (string.IsNullOrEmpty(ServerService.ServerYggAddr))
                     {
-                        PrintLog("检测到您关闭了正版验证，若没有采取相关措施来保护服务器（如添加登录插件等），服务器会有被入侵的风险，请务必注意！", Colors.OrangeRed);
+                        PrintLog(LanguageManager.Instance["SR_OnlineModeClosedWarn"], Colors.OrangeRed);
                     }
                     else
                     {
-                        PrintLog("检测到您配置了外置登录且关闭了正版验证，这样做是无效的！！！请您打开正版验证！！！", Colors.Red);
+                        PrintLog(LanguageManager.Instance["SR_OnlineModeThirdPartyClosed"], Colors.Red);
                     }
-                    onlineModeLab.Content = "已关闭";
+                    OnlineModeText = LanguageManager.Instance["SR_DisabledLower"];
                 }
                 string[] strings1 = config.Split('\n');
                 foreach (string s in strings1)
                 {
                     if (s.StartsWith("gamemode="))
                     {
-                        gameTypeLab.Content = s.Substring(9);
+                        GameTypeText = s.Substring(9);
                         break;
                     }
                 }
                 int dc1 = config.IndexOf("difficulty=") + 11;
                 string dc2 = config.Substring(dc1);
-                gameDifficultyLab.Content = dc2.Substring(0, dc2.IndexOf("\n"));
+                GameDifficultyText = dc2.Substring(0, dc2.IndexOf("\n"));
                 int ip1 = config.IndexOf("server-ip=") + 10;
                 string ip2 = config.Substring(ip1);
                 string serverIP = ip2.Substring(0, ip2.IndexOf("\n"));
@@ -1029,7 +1095,7 @@ namespace MSL
                 int sp1 = config.IndexOf("server-port=") + 12;
                 string sp2 = config.Substring(sp1);
                 string serverPort = sp2.Substring(0, sp2.IndexOf("\n"));
-                serverIPLab.Content = serverIP + ":" + serverPort;
+                ServerIPText = serverIP + ":" + serverPort;
                 if (string.IsNullOrEmpty(serverIP))
                 {
                     serverIP = "127.0.0.1";
@@ -1042,11 +1108,11 @@ namespace MSL
                 {
                     serverPort = ":" + serverPort;
                 }
-                localServerIPLab.Content = serverIP + serverPort;
+                LocalIPText = serverIP + serverPort;
             }
             catch
             {
-                Growl.Info("开服器在获取服务器信息时出现错误！此问题不影响服务器运行，您可继续正常使用或将此问题报告给作者！");
+                Growl.Info(LanguageManager.Instance["SR_ServerInfoErr"]);
             }
         }
 
@@ -1079,7 +1145,7 @@ namespace MSL
             }
             catch
             {
-                Growl.Error("好像出现了点错误……");
+                Growl.Error(LanguageManager.Instance["SR_SomeError"]);
             }
         }
 
@@ -1093,18 +1159,18 @@ namespace MSL
                     ServerService.ProblemSolveSystem = false;
                     if (string.IsNullOrEmpty(ServerService.ProblemFound))
                     {
-                        MagicShow.ShowMsgDialog(this, "服务器已关闭！开服器未检测到相关问题，您可将服务器日志发送给他人以寻求帮助！\n日志发送方式：\n1.直接截图控制台内容\n2.服务器目录\\logs\\latest.log\n3.前往“更多功能”界面上传至Internet", "崩溃分析系统");
+                        MagicShow.ShowMsgDialog(this, LanguageManager.Instance["SR_ServerClosedForAnalysis"], LanguageManager.Instance["SR_CrashAnalysisSystem"]);
                     }
                     else
                     {
-                        Growl.Info("服务器已关闭！即将为您展示分析报告！");
-                        MagicShow.ShowMsgDialog(this, ServerService.ProblemFound + "\nPS:软件检测不一定准确，若您无法解决，可将服务器日志发送给他人以寻求帮助，但请不要截图此弹窗！！！\n日志发送方式：\n1.直接截图控制台内容\n2.服务器目录\\logs\\latest.log\n3.前往“更多功能”界面上传至Internet", "服务器分析报告");
+                        Growl.Info(LanguageManager.Instance["SR_ServerClosedShowingReport"]);
+                        MagicShow.ShowMsgDialog(this, ServerService.ProblemFound + "\n" + LanguageManager.Instance["SR_ProblemFoundPS"], LanguageManager.Instance["SR_ServerAnalysisReport"]);
                         ServerService.ProblemFound = string.Empty;
                     }
                 }
                 else if (exitCode != 0 && GetServerInfoLine <= 100)
                 {
-                    bool dialogRet = await MagicShow.ShowMsgDialogAsync(this, "服务器疑似异常关闭，是您人为关闭的吗？\n您可使用MSL的崩溃分析系统进行检测，也可使用AI日志分析功能或将服务器日志发送给他人以寻求帮助！\n注意:请不要截图此弹窗！！！\nAI日志分析入口：服务器控制台的更多操作栏，或“更多功能”页面里。\n服务器日志在何处：\n1.服务器控制台内容；2.服务器目录\\logs\\latest.log；3.“更多功能”界面将日志上传至Internet。\n\n点击确定开始进行崩溃分析", "提示", true);
+                    bool dialogRet = await MagicShow.ShowMsgDialogAsync(this, LanguageManager.Instance["SR_AbnormalClose"], LanguageManager.Instance["Tip"], true);
                     if (dialogRet)
                     {
                         TabCtrl.SelectedIndex = 1;
@@ -1114,7 +1180,7 @@ namespace MSL
                 }
                 else if (autoStartserver.IsChecked == true)
                 {
-                    Console.WriteLine("服务器已关闭，触发重启事件...");
+                    Console.WriteLine(LanguageManager.Instance["SR_ServerClosedRestartEvent"]);
                     await Task.Delay(200);
                     RestartServer();
                 }
@@ -1124,27 +1190,27 @@ namespace MSL
         private void RestartServer()
         {
             MagicFlowMsg.ShowAskMessage(
-                message: "服务器已关闭。倒计时结束后将自动重启，\n您也可以提前点击按钮操作。",
+                message: LanguageManager.Instance["SR_RestartConfirmMsg"],
                 callback: confirmed =>
                 {
                     if (confirmed)
                     {
                         if (ServerService != null)
                         {
-                            MagicFlowMsg.ShowMessage("服务器正在重启...", type: 1);
+                            MagicFlowMsg.ShowMessage(LanguageManager.Instance["SR_ServerRestarting"], type: 1);
                             LaunchServer();
                         }
                     }
                     else
                     {
                         // 用户主动取消
-                        MagicFlowMsg.ShowMessage("已取消本次服务器重启", type: 3);
+                        MagicFlowMsg.ShowMessage(LanguageManager.Instance["SR_RestartCancelled"], type: 3);
                     }
                 },
                 waitSeconds: 5,
-                titleText: "服务器已关闭，将自动重启。",
-                confirmText: "立即重启",
-                cancelText: "取消重启",
+                titleText: LanguageManager.Instance["SR_RestartAutoTitle"],
+                confirmText: LanguageManager.Instance["SR_RestartNow"],
+                cancelText: LanguageManager.Instance["SR_RestartCancel"],
                 container: GrowlPanel
             );
         }
@@ -1158,8 +1224,7 @@ namespace MSL
             }
             Growl.Ask(new GrowlInfo
             {
-                Message = "MSL检测到您的服务器输出了乱码日志，是否将服务器输出编码更改为“" + encoding +
-                "”？\n点击确定后将自动更改编码并重启服务器（注意：软件会强制关闭服务器进程，若害怕服务器数据丢失，可先手动关服，然后再点击确定按钮）。",
+                Message = string.Format(LanguageManager.Instance["SR_EncodingChangeMsg"], encoding),
                 ActionBeforeClose = isConfirmed =>
                 {
                     if (isConfirmed)
@@ -1169,7 +1234,7 @@ namespace MSL
                         Dispatcher.InvokeAsync(() =>
                         {
                             outputCmdEncoding.Content = encoding;
-                            Growl.Success("更改完毕！");
+                            Growl.Success(LanguageManager.Instance["SR_ChangeDone"]);
                         });
                         Task.Run(async () =>
                         {
@@ -1233,7 +1298,7 @@ namespace MSL
             catch (Exception ex)
             {
                 fastCMD.SelectedIndex = 0;
-                PrintLog($"发送指令时出错：{ex.Message}", Colors.Red);
+                PrintLog(string.Format(LanguageManager.Instance["SR_SendCmdError"], ex.Message), Colors.Red);
             }
         }
 
@@ -1290,7 +1355,7 @@ namespace MSL
             if (ServerService.ServerTerm == null || !ServerService.ServerTerm.IsRunning) return;
 
             completionList.Items.Clear();
-            completionList.Items.Add("正在获取补全...");
+            completionList.Items.Add(LanguageManager.Instance["SR_FetchingCompletion"]);
             completionPopup.IsOpen = true;
 
             var candidates = await ServerService.ServerTerm.RequestCompletionAsync(cmdtext.Text);
@@ -1375,7 +1440,7 @@ namespace MSL
                 }
                 else
                 {
-                    MagicFlowMsg.ShowMessage("关服中，请耐心等待……\n双击按钮可强制关服（不建议）");
+                    MagicFlowMsg.ShowMessage(LanguageManager.Instance["SR_Stopping"]);
                     ServerService.StopServer();
                 }
 
@@ -1497,12 +1562,12 @@ namespace MSL
         {
             if (ServerService.CheckServerRunning())
             {
-                MagicShow.ShowMsgDialog(this, "服务器在运行中，无法进行操作！请关闭服务器后再试！", "警告");
+                MagicShow.ShowMsgDialog(this, LanguageManager.Instance["SR_ServerRunningCantOp"], LanguageManager.Instance["Warning"]);
                 return false;
             }
             if (selectedItems.Count == 0)
             {
-                MagicFlowMsg.ShowMessage($"请先选择至少一个{itemTypeName}！", 3);
+                MagicFlowMsg.ShowMessage(string.Format(LanguageManager.Instance["SR_SelectAtLeastOne"], itemTypeName), 3);
                 return false;
             }
             return true;
@@ -1511,7 +1576,7 @@ namespace MSL
         // 插件事件
         private void disPlugin_Click(object sender, RoutedEventArgs e)
         {
-            if (!GuardCanOperate(pluginslist.SelectedItems, "插件")) return;
+            if (!GuardCanOperate(pluginslist.SelectedItems, LanguageManager.Instance["SR_Plugin"])) return;
             try { FileListManager.ToggleDisabled(PluginsDir, pluginslist.SelectedItems.Cast<SR_PluginInfo>()); }
             catch { return; }
             ReFreshPluginsAndMods();
@@ -1519,7 +1584,7 @@ namespace MSL
 
         private void delPlugin_Click(object sender, RoutedEventArgs e)
         {
-            if (!GuardCanOperate(pluginslist.SelectedItems, "插件")) return;
+            if (!GuardCanOperate(pluginslist.SelectedItems, LanguageManager.Instance["SR_Plugin"])) return;
             try { FileListManager.DeleteItems(PluginsDir, pluginslist.SelectedItems.Cast<SR_PluginInfo>()); }
             catch { return; }
             ReFreshPluginsAndMods();
@@ -1545,7 +1610,7 @@ namespace MSL
         // 模组事件
         private void disMod_Click(object sender, RoutedEventArgs e)
         {
-            if (!GuardCanOperate(modslist.SelectedItems, "模组")) return;
+            if (!GuardCanOperate(modslist.SelectedItems, LanguageManager.Instance["SR_Mod"])) return;
             try { FileListManager.ToggleDisabled(ModsDir, modslist.SelectedItems.Cast<SR_ModInfo>()); }
             catch { return; }
             ReFreshPluginsAndMods();
@@ -1553,7 +1618,7 @@ namespace MSL
 
         private void delMod_Click(object sender, RoutedEventArgs e)
         {
-            if (!GuardCanOperate(modslist.SelectedItems, "模组")) return;
+            if (!GuardCanOperate(modslist.SelectedItems, LanguageManager.Instance["SR_Mod"])) return;
             try { FileListManager.DeleteItems(ModsDir, modslist.SelectedItems.Cast<SR_ModInfo>()); }
             catch { return; }
             ReFreshPluginsAndMods();
@@ -1589,11 +1654,8 @@ namespace MSL
         private async void addModsTip_Click(object sender, RoutedEventArgs e)
         {
             bool confirmed = await MagicShow.ShowMsgDialogAsync(this,
-                "服务器需要添加的模组和客户端要添加的模组有所不同，增加方块、实体、玩法的MOD，" +
-                "是服务器需要安装的（也就是服务端和客户端都需要安装），而小地图、皮肤补丁、" +
-                "输入补丁、优化MOD、视觉显示类的MOD，服务器是一定不需要安装的（也就是只能加在客户端里）\n" +
-                "点击确定查看详细区分方法",
-                "提示", true, "取消");
+                LanguageManager.Instance["SR_ModDescTip"],
+                LanguageManager.Instance["Tip"], true, LanguageManager.Instance["Cancel"]);
 
             if (confirmed)
                 Process.Start("https://zhidao.baidu.com/question/927720370906860259.html");
@@ -1628,7 +1690,7 @@ namespace MSL
             {
                 if (ServerService.CheckServerRunning())
                 {
-                    MagicShow.ShowMsgDialog(this, "服务器在运行中，无法进行操作！请关闭服务器后再试！", "警告");
+                    MagicShow.ShowMsgDialog(this, LanguageManager.Instance["SR_ServerRunningCantOp"], LanguageManager.Instance["Warning"]);
                     return false;
                 }
             }
@@ -1643,8 +1705,8 @@ namespace MSL
             {
                 InitialDirectory = AppDomain.CurrentDomain.BaseDirectory,
                 Multiselect = true,
-                Title = "请选择文件",
-                Filter = "JAR文件|*.jar|所有文件类型|*.*"
+                Title = LanguageManager.Instance["SR_SelectFile"],
+                Filter = LanguageManager.Instance["SR_JarFileFilter"]
             };
 
             if (dialog.ShowDialog() == true)
@@ -1683,7 +1745,7 @@ namespace MSL
         {
             if (!Directory.Exists(ServerService.ServerBase + @"\mods"))
             {
-                MagicShow.ShowMsgDialog(this, "未找到mods文件夹！", "错误");
+                MagicShow.ShowMsgDialog(this, LanguageManager.Instance["SR_NoModsFolder"], LanguageManager.Instance["Error"]);
                 return;
             }
 
@@ -1747,11 +1809,11 @@ namespace MSL
             int clientCount = resultList.Count(x => x.IsClient);
             if (clientCount > 0)
             {
-                MagicShow.ShowMsgDialog(this, $"检测完成！发现 {clientCount} 个仅客户端模组（已标记为橙色）。\n建议不要将这些模组上传到服务器。", "检测结果");
+                MagicShow.ShowMsgDialog(this, string.Format(LanguageManager.Instance["SR_ClientModDetectResult"], clientCount), LanguageManager.Instance["SR_DetectResult"]);
             }
             else
             {
-                MagicFlowMsg.ShowMessage("未检测到明确声明为仅客户端的模组。", 3);
+                MagicFlowMsg.ShowMessage(LanguageManager.Instance["SR_NoClientMods"], 3);
             }
         }
 
@@ -1870,7 +1932,7 @@ namespace MSL
                 //检测是否自定义模式
                 if (ServerService.ServerMode == 1)
                 {
-                    LabelArgsText.Content = "自定义启动参数:";
+                    LabelArgsText.Content = LanguageManager.Instance["SR_CustomArgs"];
                     GridServerCore.Visibility = Visibility.Collapsed;
                     GridJavaSet.Visibility = Visibility.Collapsed;
                     GridJavaRem.Visibility = Visibility.Collapsed;
@@ -1879,18 +1941,18 @@ namespace MSL
                     DivRemSet.Visibility = Visibility.Collapsed;
                     DivYggdrasilSet.Visibility = Visibility.Collapsed;
                     GridYggdrasilSet.Visibility = Visibility.Collapsed;
-                    TextArgsTips.Text = "提示：您正在使用自定义参数模式哦~";
+                    TextArgsTips.Text = LanguageManager.Instance["SR_CustomArgsHint"];
                 }
                 else
                 {
-                    LabelArgsText.Content = "服务器JVM参数:";
+                    LabelArgsText.Content = LanguageManager.Instance["SR_JvmArgs"];
                     GridServerCore.Visibility = Visibility.Visible;
                     GridJavaSet.Visibility = Visibility.Visible;
                     GridJavaRem.Visibility = Visibility.Visible;
                     DivJavaSet.Visibility = Visibility.Visible;
                     DivJvmSet.Visibility = Visibility.Visible;
                     DivRemSet.Visibility = Visibility.Visible;
-                    TextArgsTips.Text = "提示：一般格式为 -参数，如 -Dlog4j2.formatMsgNoLookups=true，非必要无需填写";
+                    TextArgsTips.Text = LanguageManager.Instance["SR_JvmArgsHint"];
                 }
                 nAme.Text = ServerService.ServerName;
                 server.Text = ServerService.ServerCore;
@@ -1906,7 +1968,7 @@ namespace MSL
                 {
                     memorySlider.IsEnabled = false;
                     autoSetMemory.IsChecked = true;
-                    memoryInfo.Text = "内存：自动分配";
+                    memoryInfo.Text = LanguageManager.Instance["SR_MemAutoAlloc"];
                 }
                 else
                 {
@@ -1936,14 +1998,14 @@ namespace MSL
 
                         memorySlider.ValueStart = minMemory;
                         memorySlider.ValueEnd = maxMemory;
-                        memoryInfo.Text = $"最小:{minMemory}M, 最大:{maxMemory}M";
+                        memoryInfo.Text = string.Format(LanguageManager.Instance["SR_MemMinMax"], minMemory, maxMemory);
                     }
                     catch (Exception ex)
                     {
                         memorySlider.ValueStart = 0;
                         memorySlider.ValueEnd = 0;
-                        memoryInfo.Text = "解析内存参数失败";
-                        Console.WriteLine("错误: " + ex.Message);
+                        memoryInfo.Text = LanguageManager.Instance["SR_MemParseFailed"];
+                        Console.WriteLine(string.Format(LanguageManager.Instance["SR_ErrorPrefix"], ex.Message));
                     }
                 }
             }
@@ -2053,7 +2115,7 @@ namespace MSL
             {
                 if (ServerService.CheckServerRunning())
                 {
-                    MagicShow.ShowMsgDialog(this, "服务器运行时无法更改服务器设置！", "错误");
+                    MagicShow.ShowMsgDialog(this, LanguageManager.Instance["SR_CantChangeWhileRunning"], LanguageManager.Instance["Error"]);
                     return;
                 }
             }
@@ -2074,7 +2136,7 @@ namespace MSL
                 {
                     if (useDownJv.IsChecked == true)
                     {
-                        Growl.Info("获取Java地址……");
+                        Growl.Info(LanguageManager.Instance["SR_GettingJavaPath"]);
                         try
                         {
                             var selectedJava = selectJava.SelectedValue?.ToString();
@@ -2084,17 +2146,17 @@ namespace MSL
                             refreahConfig.IsEnabled = true;
                             if (Status == 1 || Status == 2)
                             {
-                                Growl.Info("Java下载完成！");
+                                Growl.Info(LanguageManager.Instance["SR_JavaDownloadDone"]);
                                 jAva.Text = JavaPath;
                             }
                             else if (Status == 3)
                             {
-                                MagicShow.ShowMsgDialog(this, "下载取消！", "提示");
+                                MagicShow.ShowMsgDialog(this, LanguageManager.Instance["SR_DownloadCancelled"], LanguageManager.Instance["Tip"]);
                                 return;
                             }
                             else
                             {
-                                MagicShow.ShowMsgDialog(this, "下载失败！\n" + Msg, "错误");
+                                MagicShow.ShowMsgDialog(this, LanguageManager.Instance["SR_DownloadFailedMsg"] + "\n" + Msg, LanguageManager.Instance["Error"]);
                                 return;
                             }
                         }
@@ -2102,7 +2164,7 @@ namespace MSL
                         {
                             doneBtn1.IsEnabled = true;
                             refreahConfig.IsEnabled = true;
-                            Growl.Error("出现错误，请检查网络连接！");
+                            Growl.Error(LanguageManager.Instance["SR_NetworkError"]);
                             return;
                         }
                     }
@@ -2112,15 +2174,15 @@ namespace MSL
                         {
                             jAva.Text = AppDomain.CurrentDomain.BaseDirectory.ToString() + jAva.Text;
                         }
-                        Growl.Info("正在检查所选Java可用性，请稍等……");
+                        Growl.Info(LanguageManager.Instance["SR_CheckingJava"]);
                         (bool javaAvailability, string javainfo) = await JavaScanner.CheckJavaAvailabilityAsync(jAva.Text);
                         if (javaAvailability)
                         {
-                            Growl.Success("检测完毕，Java可用！\n" + "版本：" + javainfo);
+                            Growl.Success(LanguageManager.Instance["SR_JavaAvailable"] + javainfo);
                         }
                         else
                         {
-                            MagicShow.ShowMsgDialog(this, "检测Java可用性失败，您的Java似乎不可用！请检查是否选择正确！", "错误");
+                            MagicShow.ShowMsgDialog(this, LanguageManager.Instance["SR_JavaCheckFailed"], LanguageManager.Instance["Error"]);
                             doneBtn1.IsEnabled = true;
                             refreahConfig.IsEnabled = true;
                             return;
@@ -2156,7 +2218,7 @@ namespace MSL
                 }
                 if (Functions.CheckForgeInstaller(fullFileName))
                 {
-                    bool dialog = await MagicShow.ShowMsgDialogAsync(this, "您选择的服务端是forge安装器，是否将其展开安装？\n如果不展开安装，服务器可能无法开启！", "提示", true, "取消");
+                    bool dialog = await MagicShow.ShowMsgDialogAsync(this, LanguageManager.Instance["SR_ForgeInstaller"], LanguageManager.Instance["Tip"], true, LanguageManager.Instance["Cancel"]);
                     if (dialog)
                     {
                         string installReturn;
@@ -2164,7 +2226,7 @@ namespace MSL
                         string[] installForge = await MagicShow.ShowInstallForge(this, ServerService.ServerBase, server.Text, Rserverjava);
                         if (installForge[0] == "0")
                         {
-                            if (await MagicShow.ShowMsgDialogAsync(this, "自动安装失败！是否尝试使用命令行安装方式？", "错误", true))
+                            if (await MagicShow.ShowMsgDialogAsync(this, LanguageManager.Instance["SR_AutoInstallFailed"], LanguageManager.Instance["Error"], true))
                             {
                                 installReturn = Functions.InstallForge(Rserverjava, ServerService.ServerBase, server.Text, string.Empty, false);
                             }
@@ -2195,7 +2257,7 @@ namespace MSL
                         }
                         if (installReturn == null)
                         {
-                            MagicShow.ShowMsgDialog(this, "下载失败！", "错误");
+                            MagicShow.ShowMsgDialog(this, LanguageManager.Instance["SR_DownloadFailedSimple"], LanguageManager.Instance["Error"]);
                             return;
                         }
                         server.Text = installReturn;
@@ -2204,7 +2266,7 @@ namespace MSL
                 ServerService.ServerCore = server.Text;
                 if (ServerService.ServerBase != bAse.Text)
                 {
-                    bool dialog = await MagicShow.ShowMsgDialogAsync(this, "检测到您更改了服务器目录，是否将当前的服务器目录移动至新的目录？", "警告", true, "取消");
+                    bool dialog = await MagicShow.ShowMsgDialogAsync(this, LanguageManager.Instance["SR_DirChanged"], LanguageManager.Instance["Warning"], true, LanguageManager.Instance["Cancel"]);
                     if (dialog)
                     {
                         await Functions.MoveFolder(ServerService.ServerBase, bAse.Text);
@@ -2216,7 +2278,7 @@ namespace MSL
                 //粗略检测外置登录地址的合法性
                 if (YggdrasilAddr.Text.Length > 0 && !YggdrasilAddr.Text.Contains("http://") && !YggdrasilAddr.Text.Contains("https://"))
                 {
-                    MagicShow.ShowMsgDialog(this, "外置登录地址不合法！请检查地址是否正确！", "错误");
+                    MagicShow.ShowMsgDialog(this, LanguageManager.Instance["SR_YggInvalid"], LanguageManager.Instance["Error"]);
                     doneBtn1.IsEnabled = true;
                     refreahConfig.IsEnabled = true;
                     return;
@@ -2231,24 +2293,24 @@ namespace MSL
                 {
                     if (int.Parse(TextBackupMaxLimitCount.Text) < 0)
                     {
-                        throw new Exception("最大备份数量必须大于等于0！");
+                        throw new Exception(LanguageManager.Instance["SR_MaxBackupGE0"]);
                     }
                     if (int.Parse(TextBackupDelay.Text) < 5)
                     {
-                        throw new Exception("备份保存延时必须大于等于5秒！");
+                        throw new Exception(LanguageManager.Instance["SR_BackupDelayGE5"]);
                     }
                     if (ComboBackupPath.SelectedIndex == 2)
                     {
                         if (String.IsNullOrEmpty(TextBackupPath.Text) || TextBackupPath.Text.IndexOfAny(Path.GetInvalidPathChars()) >= 0)
                         {
-                            throw new Exception("自定义备份路径不合法！");
+                            throw new Exception(LanguageManager.Instance["SR_CustomPathInvalid"]);
                         }
                         Path.GetFullPath(TextBackupPath.Text); // 这个东西能检测路径合法不 不合法会抛出异常~
                     }
                 }
                 catch (Exception ex)
                 {
-                    MagicShow.ShowMsgDialog(this, "备份设置参数有误，请检查！\n" + ex.Message, "错误");
+                    MagicShow.ShowMsgDialog(this, LanguageManager.Instance["SR_BackupParamsError"] + "\n" + ex.Message, LanguageManager.Instance["Error"]);
                     doneBtn1.IsEnabled = true;
                     refreahConfig.IsEnabled = true;
                     return;
@@ -2273,11 +2335,11 @@ namespace MSL
                 await LoadSettings();
                 SaveConfigEvent();
 
-                MagicShow.ShowMsgDialog(this, "保存完毕！", "信息");
+                MagicShow.ShowMsgDialog(this, LanguageManager.Instance["SR_ChangeDone"], LanguageManager.Instance["Tip"]);
             }
             catch (Exception err)
             {
-                MessageBox.Show("出现错误！请重试:\n" + err.Message, "ERROR", MessageBoxButton.OK, MessageBoxImage.Error);
+                MessageBox.Show(LanguageManager.Instance["SR_GeneralError"] + "\n" + err.Message, LanguageManager.Instance["Error"], MessageBoxButton.OK, MessageBoxImage.Error);
                 doneBtn1.IsEnabled = true;
                 refreahConfig.IsEnabled = true;
             }
@@ -2286,7 +2348,7 @@ namespace MSL
         private void a0_Click(object sender, RoutedEventArgs e)
         {
             System.Windows.Forms.FolderBrowserDialog dialog = new System.Windows.Forms.FolderBrowserDialog();
-            dialog.Description = "请选择文件夹";
+            dialog.Description = LanguageManager.Instance["SR_SelectFolder"];
             if (dialog.ShowDialog() == System.Windows.Forms.DialogResult.OK)
             {
                 bAse.Text = dialog.SelectedPath;
@@ -2298,8 +2360,8 @@ namespace MSL
             OpenFileDialog openfile = new OpenFileDialog
             {
                 InitialDirectory = AppDomain.CurrentDomain.BaseDirectory,
-                Title = "请选择文件，通常为*.jar",
-                Filter = "JAR文件|*.jar|所有文件类型|*.*"
+                Title = LanguageManager.Instance["SR_SelectJarFile"],
+                Filter = LanguageManager.Instance["SR_JarFileFilter"]
             };
             var res = openfile.ShowDialog();
             if (res == true)
@@ -2313,10 +2375,10 @@ namespace MSL
                 {
                     if (Path.GetDirectoryName(openfile.FileName) != ServerService.ServerBase)
                     {
-                        if (await MagicShow.ShowMsgDialogAsync(this, "所选的服务端核心文件并不在服务器目录中，是否将其复制进服务器目录？\n若不复制，请留意勿将核心文件删除！", "提示", true))
+                        if (await MagicShow.ShowMsgDialogAsync(this, LanguageManager.Instance["SR_CoreNotInDir"], LanguageManager.Instance["Tip"], true))
                         {
                             File.Copy(openfile.FileName, ServerService.ServerBase + @"\" + openfile.SafeFileName, true);
-                            MagicShow.ShowMsgDialog(this, "已将服务端核心复制到了服务器目录之中，您现在可以将源文件删除了！", "提示");
+                            MagicShow.ShowMsgDialog(this, LanguageManager.Instance["SR_CoreCopied"], LanguageManager.Instance["Tip"]);
                             server.Text = openfile.SafeFileName;
                         }
                     }
@@ -2328,8 +2390,8 @@ namespace MSL
         {
             OpenFileDialog openfile = new OpenFileDialog();
             openfile.InitialDirectory = AppDomain.CurrentDomain.BaseDirectory;
-            openfile.Title = "请选择文件，通常为java.exe";
-            openfile.Filter = "EXE文件|*.exe|所有文件类型|*.*";
+            openfile.Title = LanguageManager.Instance["SR_SelectJavaExe"];
+            openfile.Filter = LanguageManager.Instance["SR_ExeFileFilter"];
             var res = openfile.ShowDialog();
             if (res == true)
             {
@@ -2350,12 +2412,12 @@ namespace MSL
                 if (File.Exists(ServerService.ServerBase + @"\" + filename))
                 {
                     server.Text = filename;
-                    Growl.Success("服务端下载完毕！已自动选择该服务端核心，请记得保存哦~");
+                    Growl.Success(LanguageManager.Instance["SR_ServerDownloadDone"]);
                 }
                 else if (filename.StartsWith("@libraries/"))
                 {
                     server.Text = filename;
-                    Growl.Success("服务端下载完毕！已自动选择该服务端核心，请记得保存哦~");
+                    Growl.Success(LanguageManager.Instance["SR_ServerDownloadDone"]);
                 }
                 this.Content = tempContent;
                 downloadServerPage.Dispose();
@@ -2370,17 +2432,17 @@ namespace MSL
             if (autoSetMemory.IsChecked == true)
             {
                 memorySlider.IsEnabled = false;
-                memoryInfo.Text = "内存：自动分配";
+                memoryInfo.Text = LanguageManager.Instance["SR_MemAutoAlloc"];
             }
             else
             {
                 memorySlider.IsEnabled = true;
-                memoryInfo.Text = "最小:" + memorySlider.ValueStart.ToString("f0") + "M," + "最大:" + memorySlider.ValueEnd.ToString("f0") + "M";
+                memoryInfo.Text = string.Format(LanguageManager.Instance["SR_MemMinMax"], memorySlider.ValueStart.ToString("f0"), memorySlider.ValueEnd.ToString("f0"));
             }
         }
         private void memorySlider_ValueChanged(object sender, RoutedPropertyChangedEventArgs<DoubleRange> e)
         {
-            memoryInfo.Text = "最小:" + memorySlider.ValueStart.ToString("f0") + "M," + "最大:" + memorySlider.ValueEnd.ToString("f0") + "M";
+            memoryInfo.Text = string.Format(LanguageManager.Instance["SR_MemMinMax"], memorySlider.ValueStart.ToString("f0"), memorySlider.ValueEnd.ToString("f0"));
         }
         private void memoryInfo_TextChanged(object sender, TextChangedEventArgs e)
         {
@@ -2408,16 +2470,16 @@ namespace MSL
         {
             if (useJvpath.IsChecked == true)
             {
-                Growl.Info("正在检查环境变量可用性，请稍等……");
+                Growl.Info(LanguageManager.Instance["SR_CheckingEnvVar"]);
                 (bool javaAvailability, string javainfo) = await JavaScanner.CheckJavaAvailabilityAsync("java");
                 if (javaAvailability)
                 {
-                    Growl.Success("检查完毕，您的环境变量正常！");
-                    useJvpath.Content = "使用环境变量：" + javainfo;
+                    Growl.Success(LanguageManager.Instance["SR_EnvVarOK"]);
+                    useJvpath.Content = LanguageManager.Instance["SR_UseEnvVar"] + javainfo;
                 }
                 else
                 {
-                    MagicShow.ShowMsgDialog(this, "检测失败，您的环境变量似乎不存在！", "错误");
+                    MagicShow.ShowMsgDialog(this, LanguageManager.Instance["SR_EnvVarFailed"], LanguageManager.Instance["Error"]);
                 }
             }
         }
@@ -2426,7 +2488,7 @@ namespace MSL
         {
             if (selectCheckedJavaComb.Items.Count == 0)
             {
-                MagicShow.ShowMsgDialog(this, "请先进行搜索！", "警告");
+                MagicShow.ShowMsgDialog(this, LanguageManager.Instance["SR_SearchFirst"], LanguageManager.Instance["Warning"]);
                 useSelf.IsChecked = true;
             }
         }
@@ -2434,12 +2496,12 @@ namespace MSL
         private async void ScanJava_Click(object sender, RoutedEventArgs e)
         {
             List<JavaScanner.JavaInfo> strings = null;
-            int dialog = MagicShow.ShowMsg(this, "即将开始检测电脑上的Java，此过程可能需要一些时间，请耐心等待。\n目前有两种检测模式，一种是简单检测，只检测一些关键目录，用时较少，普通用户可优先使用此模式。\n第二种是深度检测，将检测所有磁盘的所有目录，耗时可能会很久，请慎重选择！", "提示", true, "开始深度检测", "开始简单检测");
+            int dialog = MagicShow.ShowMsg(this, LanguageManager.Instance["SR_JavaDetectIntro"], LanguageManager.Instance["Tip"], true, LanguageManager.Instance["SR_DeepDetect"], LanguageManager.Instance["SR_SimpleDetect"]);
             if (dialog == 2)
             {
                 return;
             }
-            Dialog waitDialog = Dialog.Show(new TextDialog("检测中，请稍等……"));
+            Dialog waitDialog = Dialog.Show(new TextDialog(LanguageManager.Instance["SR_Scanning"]));
             JavaScanner javaScanner = new();
             if (dialog == 1)
             {
@@ -2464,12 +2526,12 @@ namespace MSL
             }
             if (selectCheckedJavaComb.Items.Count > 0)
             {
-                Growl.Success("检查完毕！");
+                Growl.Success(LanguageManager.Instance["SR_CheckComplete"]);
                 selectCheckedJavaComb.SelectedIndex = 0;
             }
             else
             {
-                Growl.Error("暂未找到Java");
+                Growl.Error(LanguageManager.Instance["SR_NoJavaFound"]);
             }
         }
 
@@ -2511,7 +2573,7 @@ namespace MSL
 
                 string filePath = Path.Combine(ServerService.ServerBase, "StartServer.bat");
                 File.WriteAllText(filePath, content, Encoding.Default);
-                MessageBox.Show("脚本文件：" + ServerService.ServerBase + @"\StartServer.bat", "INFO", MessageBoxButton.OK, MessageBoxImage.Information);
+                MessageBox.Show(LanguageManager.Instance["SR_ScriptFile"] + ServerService.ServerBase + @"\StartServer.bat", "INFO", MessageBoxButton.OK, MessageBoxImage.Information);
                 Process.Start("explorer.exe", ServerService.ServerBase);
             }
             catch (Exception ex)
@@ -2546,7 +2608,7 @@ namespace MSL
         private async void GetIPV6_Click(object sender, RoutedEventArgs e)
         {
             GetIPV6.IsEnabled = false;
-            Growl.Info("获取中，请稍后……");
+            Growl.Info(LanguageManager.Instance["SR_FetchingWait"]);
             try
             {
                 HttpResponse response = await HttpService.GetAsync("https://6.ipw.cn");
@@ -2555,7 +2617,7 @@ namespace MSL
                     string ipv6 = response?.HttpResponseContent.ToString();
                     Clipboard.Clear();
                     Clipboard.SetText(ipv6);
-                    MagicShow.ShowMsgDialog(this, $"您的IPV6公网地址是：{ipv6}\n已经帮您复制到剪贴板啦！\n注意：IPV6地址格式是：[IP]:端口\n若无法使用IPV6连接，请检查：\n-连接方是否有IPV6地址\n-防火墙是否拦截", "成功获取IPV6公网地址！");
+                    MagicShow.ShowMsgDialog(this, string.Format(LanguageManager.Instance["SR_IPv6Success"], ipv6), LanguageManager.Instance["SR_IPv6SuccessTitle"]);
                 }
                 else
                 {
@@ -2564,7 +2626,7 @@ namespace MSL
             }
             catch (Exception ex)
             {
-                MagicShow.ShowMsgDialog(this, "出现错误，您当前的网络可能没有IPV6支持\n您可上网搜索IPV6开启教程或联系运营商以获取帮助\n错误信息：" + ex.Message, "获取IPV6地址失败！");
+                MagicShow.ShowMsgDialog(this, LanguageManager.Instance["SR_IPv6Failed"] + ex.Message, LanguageManager.Instance["SR_IPv6FailedTitle"]);
             }
             finally
             {
@@ -2591,7 +2653,7 @@ namespace MSL
                 inputCmdEncoding.Content = "ANSI";
             }
             ServerConfig.Current.Save();
-            MagicFlowMsg.ShowMessage("编码更改已生效！", 1);
+            MagicFlowMsg.ShowMessage(LanguageManager.Instance["SR_EncodingChanged"], 1);
         }
 
         private void outputCmdEncoding_Click(object sender, RoutedEventArgs e)
@@ -2611,24 +2673,24 @@ namespace MSL
             {
                 if (ServerService.CheckServerRunning())
                 {
-                    MagicFlowMsg.ShowMessage("编码已更改，重启服务器后生效！", 3);
+                    MagicFlowMsg.ShowMessage(LanguageManager.Instance["SR_EncodingRestartRequired"], 3);
 
                 }
                 else
                 {
-                    MagicFlowMsg.ShowMessage("编码更改已生效！", 1);
+                    MagicFlowMsg.ShowMessage(LanguageManager.Instance["SR_EncodingChanged"], 1);
                 }
             }
             catch
             {
-                MagicFlowMsg.ShowMessage("编码更改已生效！", 1);
+                MagicFlowMsg.ShowMessage(LanguageManager.Instance["SR_EncodingChanged"], 1);
             }
         }
         private void fileforceUTF8encoding_Click(object sender, RoutedEventArgs e)
         {
             ServerService.InstanceConfig.FileForceUTF8 = fileforceUTF8encoding.IsChecked == true;
             ServerConfig.Current.Save();
-            MagicFlowMsg.ShowMessage("设置已更改，重启服务器生效！", 1);
+            MagicFlowMsg.ShowMessage(LanguageManager.Instance["SR_SettingRestartRequired"], 1);
         }
 
         private void KillProcessTreeTogBtn_Click(object sender, RoutedEventArgs e)
@@ -2641,7 +2703,7 @@ namespace MSL
         {
             if (ServerService.CheckServerRunning())
             {
-                MagicShow.ShowMsgDialog(this, "请关闭服务器后再进行更改！", "提示");
+                MagicShow.ShowMsgDialog(this, LanguageManager.Instance["SR_CloseServerFirst"], LanguageManager.Instance["Tip"]);
                 if (useConpty.IsChecked == false)
                 {
                     useConpty.IsChecked = true;
@@ -2671,7 +2733,7 @@ namespace MSL
             {
                 if (ServerService.CheckServerRunning())
                 {
-                    bool dialogRet = await MagicShow.ShowMsgDialogAsync(this, "检测到服务器正在运行，点击确定以关闭服务器", "信息");
+                    bool dialogRet = await MagicShow.ShowMsgDialogAsync(this, LanguageManager.Instance["SR_ServerRunningCloseConfirm"], LanguageManager.Instance["Tip"]);
                     if (!dialogRet)
                     {
                         return;
@@ -2691,11 +2753,11 @@ namespace MSL
                     streamWriter.WriteLine(line);
                     streamWriter.Flush();
                     streamWriter.Close();
-                    MagicShow.ShowMsgDialog(this, "修改完毕，请重新开启服务器！", "信息");
+                    MagicShow.ShowMsgDialog(this, LanguageManager.Instance["SR_ModifyDone"], LanguageManager.Instance["Tip"]);
                 }
                 catch (Exception a)
                 {
-                    MessageBox.Show("出现错误，您确定您的服务器启动过一次吗？请手动修改server.properties文件或重试:" + a.Message, "错误", MessageBoxButton.OK, MessageBoxImage.Error);
+                    MessageBox.Show(LanguageManager.Instance["SR_OnlineModeError"] + a.Message, LanguageManager.Instance["Error"], MessageBoxButton.OK, MessageBoxImage.Error);
                 }
             }
             catch
@@ -2713,11 +2775,11 @@ namespace MSL
                     streamWriter.WriteLine(line);
                     streamWriter.Flush();
                     streamWriter.Close();
-                    MagicShow.ShowMsgDialog(this, "修改完毕，请重新开启服务器！", "信息");
+                    MagicShow.ShowMsgDialog(this, LanguageManager.Instance["SR_ModifyDone"], LanguageManager.Instance["Tip"]);
                 }
                 catch (Exception a)
                 {
-                    MessageBox.Show("出现错误，您确定您的服务器启动过一次吗？请手动修改server.properties文件或重试:" + a.Message, "错误", MessageBoxButton.OK, MessageBoxImage.Error);
+                    MessageBox.Show(LanguageManager.Instance["SR_OnlineModeError"] + a.Message, LanguageManager.Instance["Error"], MessageBoxButton.OK, MessageBoxImage.Error);
                 }
             }
         }
@@ -2772,7 +2834,7 @@ namespace MSL
                 }
                 else
                 {
-                    MagicFlowMsg.ShowMessage("请先进行添加！", 2);
+                    MagicFlowMsg.ShowMessage(LanguageManager.Instance["SR_AddFirst"], 2);
                     shieldLogBtn.IsChecked = false;
                 }
             }
@@ -2788,7 +2850,7 @@ namespace MSL
 
         private async void LogShield_Add_Click(object sender, RoutedEventArgs e)
         {
-            string text = await MagicShow.ShowInput(this, "输入你想屏蔽的关键字，\n开服器将不会输出含有此关键字的日志");
+            string text = await MagicShow.ShowInput(this, LanguageManager.Instance["SR_ShieldLogInput"]);
             if ((!string.IsNullOrEmpty(text)) && (!ShieldLogList.Items.Contains(text)))
             {
                 ShieldLogList.Items.Add(text);
@@ -2824,7 +2886,7 @@ namespace MSL
                 }
                 else
                 {
-                    MagicFlowMsg.ShowMessage("请先进行添加！", 2);
+                    MagicFlowMsg.ShowMessage(LanguageManager.Instance["SR_AddFirst"], 2);
                     highLightLogBtn.IsChecked = false;
                 }
             }
@@ -2840,7 +2902,7 @@ namespace MSL
 
         private async void LogHighLight_Add_Click(object sender, RoutedEventArgs e)
         {
-            string text = await MagicShow.ShowInput(this, "输入你想高亮日志的关键字");
+            string text = await MagicShow.ShowInput(this, LanguageManager.Instance["SR_HighlightInput"]);
             if ((!string.IsNullOrEmpty(text)) && (!HighLightLogList.Items.Contains(text)))
             {
                 HighLightLogList.Items.Add(text);
@@ -2875,8 +2937,8 @@ namespace MSL
             if (autoClearOutlog.IsChecked == false)
             {
                 bool msgreturn = await MagicShow.ShowMsgDialogAsync(this,
-                    "关闭此功能后，服务器输出界面超过一定数量的日志后将不再清屏，这样可能会造成性能损失，您确定要继续吗？",
-                    "警告", true, "取消");
+                    LanguageManager.Instance["SR_AutoClearWarning"],
+                    LanguageManager.Instance["Warning"], true, LanguageManager.Instance["Cancel"]);
                 if (msgreturn)
                 {
                     ServerService.InstanceConfig.AutoClearOutlog = false;
@@ -2912,7 +2974,7 @@ namespace MSL
         private async void shareLog_Click(object sender, RoutedEventArgs e)
         {
             shareLog.IsEnabled = false;
-            Growl.Info("请稍等……");
+            Growl.Info(LanguageManager.Instance["SR_PleaseWait"]);
             string logs = string.Empty;
             string uploadMode = "A";
             if (File.Exists(ServerService.ServerBase + "\\logs\\latest.log"))
@@ -2944,11 +3006,11 @@ namespace MSL
 
             if (string.IsNullOrEmpty(logs))
             {
-                Growl.Info("日志为空，请重试！");
+                Growl.Info(LanguageManager.Instance["SR_LogEmpty"]);
                 shareLog.IsEnabled = true;
                 return;
             }
-            Growl.Info("正在上传，模式 " + uploadMode + "，请稍等……");
+            Growl.Info(string.Format(LanguageManager.Instance["SR_Uploading"], uploadMode));
             //启动线程上传日志
             await UploadLogs(logs, true);
             shareLog.IsEnabled = true;
@@ -2966,7 +3028,7 @@ namespace MSL
 
         private async Task UpdateLogOtherPlan()
         {
-            Growl.Info("请稍等……");
+            Growl.Info(LanguageManager.Instance["SR_PleaseWait"]);
             string logs = string.Empty;
             string uploadMode = "A";
 
@@ -2976,11 +3038,11 @@ namespace MSL
 
             if (string.IsNullOrEmpty(logs))
             {
-                Growl.Info("日志为空，请重试！");
+                Growl.Info(LanguageManager.Instance["SR_LogEmpty"]);
                 shareLog.IsEnabled = true;
                 return;
             }
-            Growl.Info("正在上传，模式 " + uploadMode + "，请稍等……");
+            Growl.Info(string.Format(LanguageManager.Instance["SR_Uploading"], uploadMode));
             //启动线程上传日志
             await UploadLogs(logs);
         }
@@ -3003,23 +3065,23 @@ namespace MSL
                     {
                         Clipboard.Clear();
                         Clipboard.SetText(jsonResponse.url.ToString());
-                        Growl.Success("日志地址: " + jsonResponse.url + "\n已经复制到剪贴板啦！\n如果遇到问题且不会看日志,\n请把链接粘贴给别人寻求帮助，\n记得要详细描述你的问题哦！");
+                        Growl.Success(string.Format(LanguageManager.Instance["SR_UploadSuccess"], jsonResponse.url));
                     }
                     else
                     {
-                        Growl.Error("请求失败: " + jsonResponse.error);
+                        Growl.Error(LanguageManager.Instance["SR_UploadFailed"] + jsonResponse.error);
                     }
                 }
                 catch
                 {
-                    Growl.Error("解析失败");
+                    Growl.Error(LanguageManager.Instance["SR_ParseFailed"]);
                 }
             }
             else
             {
                 if (canUseOtherPlan)
                 {
-                    if ((await MagicShow.ShowMsgDialogAsync(this, "请求失败：可能由于日志过大，请尝试手动上传日志或使用其他模式！\n" + response.HttpResponseCode + " " + response.HttpResponseContent + "\n点击确定将使用其他模式进行上传", "错误", true) == true))
+                    if ((await MagicShow.ShowMsgDialogAsync(this, string.Format(LanguageManager.Instance["SR_LogUploadBigFail"], response.HttpResponseCode + " " + response.HttpResponseContent), LanguageManager.Instance["Error"], true) == true))
                     {
                         await UpdateLogOtherPlan();
                     }
@@ -3030,7 +3092,7 @@ namespace MSL
                 }
                 else
                 {
-                    Growl.Error("请求失败: 可能日志过大，请尝试手动上传日志！\n" + response.HttpResponseCode + " " + response.HttpResponseContent);
+                    Growl.Error(string.Format(LanguageManager.Instance["SR_LogUploadManualFail"], response.HttpResponseCode + " " + response.HttpResponseContent));
                     return;
                 }
             }
@@ -3052,18 +3114,18 @@ namespace MSL
                 }
                 if (logsContent == "")
                 {
-                    Growl.Error("未找到Forge安装日志！");
+                    Growl.Error(LanguageManager.Instance["SR_ForgeLogNotFound"]);
                 }
                 else
                 {
                     //启动线程上传日志
                     await UploadLogs(logsContent);
-                    Growl.Info("正在上传···");
+                    Growl.Info(LanguageManager.Instance["SR_UploadingDots"]);
                 }
             }
             catch (Exception ex)
             {
-                Growl.Error("Forge安装日志上传失败！" + ex.Message);
+                Growl.Error(LanguageManager.Instance["SR_ForgeLogUploadFail"] + ex.Message);
             }
         }
 
@@ -3072,7 +3134,7 @@ namespace MSL
         private void GetFastCmd()
         {
             CurrentFastCmds.Clear();
-            CurrentFastCmds.Add(new FastCommandInfo { Cmd = "/", Remark = "指令" });
+            CurrentFastCmds.Add(new FastCommandInfo { Cmd = "/", Remark = LanguageManager.Instance["SR_CmdRemark"] });
 
             var config = ServerService.InstanceConfig;
             if (config.FastCmds != null && config.FastCmds.Count > 0)
@@ -3090,11 +3152,11 @@ namespace MSL
             }
             else
             {
-                CurrentFastCmds.Add(new FastCommandInfo { Cmd = "/op", Remark = "设置管理员" });
-                CurrentFastCmds.Add(new FastCommandInfo { Cmd = "/deop", Remark = "去除管理员" });
-                CurrentFastCmds.Add(new FastCommandInfo { Cmd = "/ban", Remark = "封禁玩家" });
-                CurrentFastCmds.Add(new FastCommandInfo { Cmd = "/pardon", Remark = "解封玩家" });
-                CurrentFastCmds.Add(new FastCommandInfo { Cmd = "/say", Remark = "全服说话" });
+                CurrentFastCmds.Add(new FastCommandInfo { Cmd = "/op", Remark = LanguageManager.Instance["SR_SetAdmin"] });
+                CurrentFastCmds.Add(new FastCommandInfo { Cmd = "/deop", Remark = LanguageManager.Instance["SR_RemoveAdmin"] });
+                CurrentFastCmds.Add(new FastCommandInfo { Cmd = "/ban", Remark = LanguageManager.Instance["SR_BanPlayerCmd"] });
+                CurrentFastCmds.Add(new FastCommandInfo { Cmd = "/pardon", Remark = LanguageManager.Instance["SR_UnbanPlayer"] });
+                CurrentFastCmds.Add(new FastCommandInfo { Cmd = "/say", Remark = LanguageManager.Instance["SR_SayAll"] });
             }
 
             fastCMD.ItemsSource = null;
@@ -3137,7 +3199,7 @@ namespace MSL
             {
                 ServerService.InstanceConfig.FastCmds = null;
                 ServerConfig.Current.Save();
-                MagicShow.ShowMsgDialog(this, "要使重置生效需重启此窗口，请您手动关闭此窗口并打开", "提示");
+                MagicShow.ShowMsgDialog(this, LanguageManager.Instance["SR_RestartWindowHint"], LanguageManager.Instance["Tip"]);
             }
         }
 
@@ -3150,14 +3212,14 @@ namespace MSL
                 var remarkBox = new System.Windows.Controls.TextBox { Name = "RemarkTextBox" };
                 var aliasBox = new System.Windows.Controls.TextBox { Name = "AliasTextBox" };
 
-                uniformStack.Children.Add(new TextBlock { Text = "指令（如：op，无需 '/' 前缀）：" });
+                uniformStack.Children.Add(new TextBlock { Text = LanguageManager.Instance["SR_CmdInputHint"] });
                 uniformStack.Children.Add(cmdBox);
-                uniformStack.Children.Add(new TextBlock { Text = "备注（如：给管理员，非必填）：" });
+                uniformStack.Children.Add(new TextBlock { Text = LanguageManager.Instance["SR_RemarkInputHint"] });
                 uniformStack.Children.Add(remarkBox);
-                uniformStack.Children.Add(new TextBlock { Text = "别名（如：o，可在控制台快速调用，非必填）：" });
+                uniformStack.Children.Add(new TextBlock { Text = LanguageManager.Instance["SR_AliasInputHint"] });
                 uniformStack.Children.Add(aliasBox);
 
-                await MagicShow.ShowMsgDialogAsync(this, "添加快捷指令", "输入", uIElement: uniformStack);
+                await MagicShow.ShowMsgDialogAsync(this, LanguageManager.Instance["SR_AddFastCmd"], LanguageManager.Instance["SR_Input"], uIElement: uniformStack);
 
                 // 读取三个 TextBox 的值
                 string newCmd = cmdBox.Text.Trim();
@@ -3176,12 +3238,12 @@ namespace MSL
                 }
                 else
                 {
-                    MagicFlowMsg.ShowMessage("指令不能为空！", 2);
+                    MagicFlowMsg.ShowMessage(LanguageManager.Instance["SR_CmdEmpty"], 2);
                 }
             }
             catch (Exception ex)
             {
-                MessageBox.Show($"添加失败: {ex.Message}");
+                MessageBox.Show(LanguageManager.Instance["SR_AddFailed"] + ex.Message);
             }
         }
 
@@ -3191,7 +3253,7 @@ namespace MSL
             {
                 if (fastCmdList.SelectedIndex <= 0)
                 {
-                    MessageBox.Show("无法删除根命令或未选中任何项！");
+                    MessageBox.Show(LanguageManager.Instance["SR_CantDeleteRoot"]);
                     return;
                 }
                 CurrentFastCmds.RemoveAt(fastCmdList.SelectedIndex);
@@ -3238,7 +3300,7 @@ namespace MSL
             taskCmds.Add(newId, DefaultCmd);
 
             RefreshTaskList();
-            loadOrSaveTaskConfig.Content = "保存任务配置";
+            loadOrSaveTaskConfig.Content = LanguageManager.Instance["SR_SaveTaskConfig"];
         }
 
         // 删除任务
@@ -3249,7 +3311,7 @@ namespace MSL
             int selectedId = GetSelectedTaskId();
             if (taskFlag[selectedId])
             {
-                MagicShow.ShowMsgDialog(this, "请先停止该任务！", "警告");
+                MagicShow.ShowMsgDialog(this, LanguageManager.Instance["SR_StopTaskFirst"], LanguageManager.Instance["Warning"]);
                 return;
             }
 
@@ -3266,7 +3328,7 @@ namespace MSL
             RefreshTaskList();
 
             if (tasksList.Items.Count == 0)
-                loadOrSaveTaskConfig.Content = "加载任务配置";
+                loadOrSaveTaskConfig.Content = LanguageManager.Instance["SR_LoadTaskConfig"];
         }
 
         // 删除所有任务
@@ -3276,7 +3338,7 @@ namespace MSL
             {
                 if (taskf.Value)
                 {
-                    MagicShow.ShowMsgDialog(this, "请先停止所有任务！", "警告");
+                    MagicShow.ShowMsgDialog(this, LanguageManager.Instance["SR_StopAllTasksFirst"], LanguageManager.Instance["Warning"]);
                     return;
                 }
             }
@@ -3292,7 +3354,7 @@ namespace MSL
             taskCtsMap.Clear();
 
             RefreshTaskList();
-            loadOrSaveTaskConfig.Content = "加载任务配置";
+            loadOrSaveTaskConfig.Content = LanguageManager.Instance["SR_LoadTaskConfig"];
         }
 
         // 选择任务变更
@@ -3308,7 +3370,7 @@ namespace MSL
             TimerTaskSettings.IsEnabled = true;
             int id = GetSelectedTaskId();
             startTimercmd.IsChecked = taskFlag[id];
-            timerCmdout.Text = "无";
+            timerCmdout.Text = LanguageManager.Instance["SR_NoneText"];
             timercmdCron.Text = taskCrons[id];
             timercmdCmd.Text = taskCmds[id];
         }
@@ -3324,13 +3386,13 @@ namespace MSL
                 string nextRun = next.HasValue
                     ? next.Value.LocalDateTime.ToString("F")
                     : "--";
-                cronValidationText.Text = $"✓ 有效，下次执行: {nextRun}";
+                cronValidationText.Text = LanguageManager.Instance["SR_CronValid"] + nextRun;
                 cronValidationText.Foreground = new SolidColorBrush(Colors.Green);
                 taskCrons[GetSelectedTaskId()] = expr;
             }
             else
             {
-                cronValidationText.Text = "✗ 无效";
+                cronValidationText.Text = LanguageManager.Instance["SR_CronInvalid"];
                 cronValidationText.Foreground = new SolidColorBrush(Colors.Red);
             }
         }
@@ -3356,7 +3418,7 @@ namespace MSL
             {
                 if (tasksList.SelectedIndex == -1)
                 {
-                    timerCmdout.Text = "执行失败，请先选择一个任务！";
+                    timerCmdout.Text = LanguageManager.Instance["SR_SelectTaskFirst"];
                     startTimercmd.IsChecked = false;
                     return;
                 }
@@ -3367,7 +3429,7 @@ namespace MSL
                 {
                     if (!TryParseCron(taskCrons[id], out _))
                     {
-                        MagicShow.ShowMsgDialog(this, "Cron 表达式无效，请检查后重试！", "错误");
+                        MagicShow.ShowMsgDialog(this, LanguageManager.Instance["SR_CronInvalidDialog"], LanguageManager.Instance["Error"]);
                         startTimercmd.IsChecked = false;
                         return;
                     }
@@ -3396,7 +3458,7 @@ namespace MSL
             }
             catch (Exception ex)
             {
-                timerCmdout.Text = "执行失败，" + ex.Message;
+                timerCmdout.Text = LanguageManager.Instance["SR_ExecFailedPrefix"] + ex.Message;
                 startTimercmd.IsChecked = false;
             }
         }
@@ -3457,35 +3519,35 @@ namespace MSL
                             if (MoreOperation.IsEnabled)
                             {
                                 _ = BackupWorld();
-                                PrintLog("[MSL备份] 定时备份任务开始执行~", Colors.Blue);
+                                PrintLog(LanguageManager.Instance["SR_ScheduledBackupStarting"], Colors.Blue);
                             }
                             break;
                         default:
                             ServerService.SendCommand(cmd);
-                            PrintLog($"[MSL定时任务] 执行指令：{cmd}", Colors.Blue);
+                            PrintLog(string.Format(LanguageManager.Instance["SR_ScheduledTaskExecCmd"], cmd), Colors.Blue);
                             break;
                     }
 
                     if (tasksList.SelectedIndex != -1 && GetSelectedTaskId() == id)
-                        timerCmdout.Text = "执行成功  时间：" + DateTime.Now.ToString("F");
+                        timerCmdout.Text = LanguageManager.Instance["SR_ExecSuccessTime"] + DateTime.Now.ToString("F");
                 }
                 else
                 {
                     if (tasksList.SelectedIndex != -1 && GetSelectedTaskId() == id)
-                        timerCmdout.Text = "服务器未开启  时间：" + DateTime.Now.ToString("F");
+                        timerCmdout.Text = LanguageManager.Instance["SR_ServerNotOpenTime"] + DateTime.Now.ToString("F");
                 }
             }
             catch (Exception ex)
             {
                 if (tasksList.SelectedIndex != -1 && GetSelectedTaskId() == id)
-                    timerCmdout.Text = $"执行失败: {ex.Message}  时间：" + DateTime.Now.ToString("F");
+                    timerCmdout.Text = string.Format(LanguageManager.Instance["SR_ExecFailedTime"], ex.Message) + DateTime.Now.ToString("F");
             }
         }
 
         // 加载&保存配置
         private void LoadOrSaveTaskConfig_Click(object sender, RoutedEventArgs e)
         {
-            if (loadOrSaveTaskConfig.Content.ToString() == "加载任务配置")
+            if (loadOrSaveTaskConfig.Content.ToString() == LanguageManager.Instance["SR_LoadTaskConfig"])
             {
                 if (ServerService.InstanceConfig.TimerTasks != null)
                 {
@@ -3522,9 +3584,9 @@ namespace MSL
                     RefreshTaskList();
                 }
 
-                Growl.Success("加载成功！");
+                Growl.Success(LanguageManager.Instance["SR_LoadSuccess"]);
                 if (tasksList.Items.Count != 0)
-                    loadOrSaveTaskConfig.Content = "保存任务配置";
+                    loadOrSaveTaskConfig.Content = LanguageManager.Instance["SR_SaveTaskConfig"];
             }
             else
             {
@@ -3540,7 +3602,7 @@ namespace MSL
                 ServerService.InstanceConfig.TimerTasks = newTasks;
 
                 ServerConfig.Current.Save();
-                Growl.Success("保存成功！");
+                Growl.Success(LanguageManager.Instance["SR_SaveSuccess"]);
             }
         }
 
@@ -3548,7 +3610,7 @@ namespace MSL
         {
             ServerService.InstanceConfig.TimerTasks.Clear();
             ServerConfig.Current.Save();
-            Growl.Success("清除成功！");
+            Growl.Success(LanguageManager.Instance["SR_ClearSuccess"]);
         }
 
         // 私有工具方法
@@ -3652,9 +3714,9 @@ namespace MSL
                 ServerService.SendCommand("save-off");
                 await Task.Delay(1000);
                 ServerService.SendCommand("save-all");
-                ServerService.SendCommand("tellraw @a [{\"text\":\"[\",\"color\":\"yellow\"},{\"text\":\"MSL\",\"color\":\"green\"},{\"text\":\"]\",\"color\":\"yellow\"},{\"text\":\"正在进行服务器存档备份，请勿关闭服务器哦，否则可能造成回档！备份期间不会影响正常游戏~\",\"color\":\"aqua\"}]");
-                Growl.Info("开始执行备份···");
-                PrintLog("[MSL备份]开始执行备份···", Colors.Blue);
+                ServerService.SendCommand("tellraw @a [{\"text\":\"[\",\"color\":\"yellow\"},{\"text\":\"MSL\",\"color\":\"green\"},{\"text\":\"]\",\"color\":\"yellow\"},{\"text\":\"" + LanguageManager.Instance["SR_TellrawBackupInProgress"] + "\",\"color\":\"aqua\"}]");
+                Growl.Info(LanguageManager.Instance["SR_BackupStarting"]);
+                PrintLog(LanguageManager.Instance["SR_BackupStartingLog"], Colors.Blue);
             }
             try
             {
@@ -3693,13 +3755,13 @@ namespace MSL
 
                 if (foldersToCompress.Count == 0)
                 {
-                    Growl.Error("未找到任何世界存档文件夹（包括主世界、下界、末地），备份失败！");
-                    PrintLog("[MSL备份]未找到任何世界存档文件夹（包括主世界、下界、末地），备份失败！", Colors.Red);
+                    Growl.Error(LanguageManager.Instance["SR_NoWorldFolder"]);
+                    PrintLog(LanguageManager.Instance["SR_NoWorldFolder"], Colors.Red);
                     LogHelper.Write.Error("未找到任何世界存档文件夹（包括主世界、下界、末地），备份失败！");
                     if (ServerService.CheckServerRunning())
                     {
                         ServerService.SendCommand("save-on");
-                        ServerService.SendCommand("tellraw @a [{\"text\":\"[\",\"color\":\"yellow\"},{\"text\":\"MSL\",\"color\":\"green\"},{\"text\":\"]\",\"color\":\"yellow\"},{\"text\":\"备份失败！未找到任何世界存档文件夹！\",\"color\":\"red\"}]");
+                        ServerService.SendCommand("tellraw @a [{\"text\":\"[\",\"color\":\"yellow\"},{\"text\":\"MSL\",\"color\":\"green\"},{\"text\":\"]\",\"color\":\"yellow\"},{\"text\":\"" + LanguageManager.Instance["SR_TellrawBackupNoWorld"] + "\",\"color\":\"red\"}]");
                     }
                     return;
                 }
@@ -3718,7 +3780,7 @@ namespace MSL
                         }
                         else
                         {
-                            PrintLog("[MSL备份]自定义备份路径为空，已使用默认路径！", Colors.OrangeRed);
+                            PrintLog(LanguageManager.Instance["SR_BackupUsingDefaultPath"], Colors.OrangeRed);
                         }
                         break;
                 }
@@ -3750,11 +3812,11 @@ namespace MSL
                             try
                             {
                                 fileToDelete.Delete();
-                                PrintLog($"[MSL备份]已删除旧备份：{fileToDelete.Name}", Colors.Blue);
+                                PrintLog(string.Format(LanguageManager.Instance["SR_BackupDeletedOld"], fileToDelete.Name), Colors.Blue);
                             }
                             catch (Exception ex)
                             {
-                                PrintLog($"[MSL备份]删除旧备份 {fileToDelete.Name} 失败：{ex.Message}", Colors.OrangeRed);
+                                PrintLog(string.Format(LanguageManager.Instance["SR_BackupDeleteOldFailed"], fileToDelete.Name, ex.Message), Colors.OrangeRed);
                                 LogHelper.Write.Warn($"删除旧备份 {fileToDelete.Name} 失败：{ex}");
                             }
                         }
@@ -3762,11 +3824,11 @@ namespace MSL
                 }
                 catch (Exception ex)
                 {
-                    PrintLog("[MSL备份]目录检查或旧备份清理失败：" + ex.Message, Colors.OrangeRed);
+                    PrintLog(string.Format(LanguageManager.Instance["SR_BackupCleanupFailed"], ex.Message), Colors.OrangeRed);
                     LogHelper.Write.Error("检查并清理旧备份时发生错误：" + ex);
                 }
 
-                PrintLog("[MSL备份]正在压缩存档文件，请稍等···", Colors.Blue);
+                PrintLog(LanguageManager.Instance["SR_BackupCompressing"], Colors.Blue);
                 LogHelper.Write.Info("正在压缩存档文件，请稍等···");
                 using (ZipOutputStream zipStream = new ZipOutputStream(File.Create(backupPath)))
                 {
@@ -3793,10 +3855,10 @@ namespace MSL
                         tellrawMessage += "{\"text\":\"[\",\"color\":\"yellow\"},";
                         tellrawMessage += "{\"text\":\"MSL\",\"color\":\"green\"},";
                         tellrawMessage += "{\"text\":\"]\",\"color\":\"yellow\"},";
-                        tellrawMessage += "{\"text\":\" 服务器存档备份完成！\\n\",\"color\":\"aqua\"},";
-                        tellrawMessage += $"{{\"text\":\"文件名: \",\"color\":\"gray\"}},";
+                        tellrawMessage += $"{{\"text\":\"{LanguageManager.Instance["SR_TellrawBackupDoneDetail"]}\",\"color\":\"aqua\"}},";
+                        tellrawMessage += $"{{\"text\":\"{LanguageManager.Instance["SR_TellrawFileName"]}\",\"color\":\"gray\"}},";
                         tellrawMessage += $"{{\"text\":\"{fileName}\",\"color\":\"white\"}},";
-                        tellrawMessage += $"{{\"text\":\"\\n大小: \",\"color\":\"gray\"}},";
+                        tellrawMessage += $"{{\"text\":\"{LanguageManager.Instance["SR_TellrawFileSize"]}\",\"color\":\"gray\"}},";
                         tellrawMessage += $"{{\"text\":\"{formattedSize}\",\"color\":\"white\"}}";
                         tellrawMessage += "]";
                         ServerService.SendCommand("save-on");
@@ -3804,26 +3866,26 @@ namespace MSL
                     }
                     catch (Exception ex)
                     {
-                        PrintLog("[MSL备份]无法获取备份文件信息：" + ex.Message, Colors.OrangeRed);
+                        PrintLog(string.Format(LanguageManager.Instance["SR_BackupFileInfoFailed"], ex.Message), Colors.OrangeRed);
                         LogHelper.Write.Warn("无法获取备份文件信息：" + ex);
                         ServerService.SendCommand("save-on");
-                        ServerService.SendCommand("tellraw @a [{\"text\":\"[\",\"color\":\"yellow\"},{\"text\":\"MSL\",\"color\":\"green\"},{\"text\":\"]\",\"color\":\"yellow\"},{\"text\":\"服务器存档备份完成！\",\"color\":\"aqua\"}]");
+                        ServerService.SendCommand("tellraw @a [{\"text\":\"[\",\"color\":\"yellow\"},{\"text\":\"MSL\",\"color\":\"green\"},{\"text\":\"]\",\"color\":\"yellow\"},{\"text\":\"" + LanguageManager.Instance["SR_TellrawBackupDone"] + "\",\"color\":\"aqua\"}]");
                     }
                 }
 
-                Growl.Success($"存档备份成功！已保存至：{backupPath}");
-                PrintLog($"[MSL备份]存档备份成功！已保存至：{backupPath}", Colors.Blue);
+                Growl.Success(string.Format(LanguageManager.Instance["SR_BackupSuccessMsg"], backupPath));
+                PrintLog(string.Format(LanguageManager.Instance["SR_BackupSuccessLog"], backupPath), Colors.Blue);
                 LogHelper.Write.Info($"存档备份成功！已保存至：{backupPath}");
             }
             catch (Exception ex)
             {
-                Growl.Error("备份失败！" + ex.Message);
-                PrintLog("[MSL备份]备份失败！" + ex.Message, Colors.Red);
+                Growl.Error(LanguageManager.Instance["SR_BackupFailedMsg"] + ex.Message);
+                PrintLog(string.Format(LanguageManager.Instance["SR_BackupFailedLog"], ex.Message), Colors.Red);
                 LogHelper.Write.Error("备份失败！" + ex);
                 if (ServerService.CheckServerRunning())
                 {
                     ServerService.SendCommand("save-on");
-                    ServerService.SendCommand("tellraw @a [{\"text\":\"[\",\"color\":\"yellow\"},{\"text\":\"MSL\",\"color\":\"green\"},{\"text\":\"]\",\"color\":\"yellow\"},{\"text\":\"备份过程中发生错误，备份失败！\",\"color\":\"red\"}]");
+                    ServerService.SendCommand("tellraw @a [{\"text\":\"[\",\"color\":\"yellow\"},{\"text\":\"MSL\",\"color\":\"green\"},{\"text\":\"]\",\"color\":\"yellow\"},{\"text\":\"" + LanguageManager.Instance["SR_TellrawBackupError"] + "\",\"color\":\"red\"}]");
                 }
                 return;
             }
@@ -3865,7 +3927,7 @@ namespace MSL
                 }
                 catch (IOException ex)
                 {
-                    throw new IOException($"无法以共享只读模式打开文件 '{entryName}'。服务器施加了排他锁。错误: {ex.Message}", ex);
+                    throw new IOException(string.Format(LanguageManager.Instance["SR_ExclusiveLockError"], entryName, ex.Message), ex);
                 }
             }
 
@@ -3891,7 +3953,7 @@ namespace MSL
         private void BtnSelBackupPath_Click(object sender, RoutedEventArgs e)
         {
             var dialog = new VistaFolderBrowserDialog();
-            dialog.Description = "请选择一个文件夹用于存放备份文件";
+            dialog.Description = LanguageManager.Instance["SR_SelectBackupFolder"];
             dialog.UseDescriptionForTitle = true;
 
             if (dialog.ShowDialog(this).GetValueOrDefault())
@@ -3917,7 +3979,7 @@ namespace MSL
                     }
                     else
                     {
-                        Growl.Error("自定义备份路径为空！");
+                        Growl.Error(LanguageManager.Instance["SR_CustomBackupPathEmpty"]);
                         return;
                     }
                     break;
@@ -3940,7 +4002,7 @@ namespace MSL
             }
             catch (Exception ex)
             {
-                Growl.Error("打开备份文件夹失败！" + ex.Message);
+                Growl.Error(LanguageManager.Instance["SR_OpenBackupFailed"] + ex.Message);
             }
         }
 

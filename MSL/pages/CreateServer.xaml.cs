@@ -2,6 +2,7 @@
 using ICSharpCode.SharpZipLib.Zip;
 using MSL.controls;
 using MSL.controls.dialogs;
+using MSL.langs;
 using MSL.utils;
 using MSL.utils.Config;
 using Newtonsoft.Json;
@@ -42,6 +43,8 @@ namespace MSL.pages
         public CreateServer()
         {
             InitializeComponent();
+            BDSTipRun.Text = Lang.Page_CreateServer_BDSTip;
+            BDSTutorialLinkRun.Text = Lang.Page_CreateServer_BDSTutorialLink;
         }
 
         private void Page_Loaded(object sender, RoutedEventArgs e)
@@ -92,7 +95,7 @@ namespace MSL.pages
             if (ImportPack.SelectedIndex == 1)
             {
                 ImportPack.SelectedIndex = 0;
-                await MagicShow.ShowMsgDialogAsync(Window.GetWindow(this), "请务必下载文件名含有“server”且为.zip格式的服务端整合包！否则会出现软件无法读取或开服失败的问题！", "下载须知");
+                await MagicShow.ShowMsgDialogAsync(Window.GetWindow(this), Lang.Page_CreateServer_DownloadNotice, Lang.Page_CreateServer_DownloadNoticeTitle);
                 var tempContent = this.Content;
                 DownloadMod downloadModPage = null;
                 bool isClosed = false;
@@ -119,15 +122,15 @@ namespace MSL.pages
                 }
                 if (!File.Exists($"MSL\\Downloads\\{dFilename}"))
                 {
-                    MagicShow.ShowMsgDialog(Window.GetWindow(this), "下载失败！", "错误");
+                    MagicShow.ShowMsgDialog(Window.GetWindow(this), Lang.Page_CreateServer_DownloadFailed, Lang.Error);
                     return;
                 }
                 if (Path.GetExtension($"MSL\\Downloads\\{dFilename}") != ".zip")
                 {
-                    MagicShow.ShowMsgDialog(Window.GetWindow(this), "您所下载的整合包文件不符合导入格式（目前软件仅支持导入.zip文件）！请检查您所下载的文件是否为服务端专用包并重试！\n错误的格式：" + Path.GetExtension($"MSL\\Downloads\\{dFilename}"), "错误");
+                    MagicShow.ShowMsgDialog(Window.GetWindow(this), Lang.Page_CreateServer_PackFormatError + Path.GetExtension($"MSL\\Downloads\\{dFilename}"), Lang.Error);
                     return;
                 }
-                string input = await MagicShow.ShowInput(Window.GetWindow(this), "服务器名称：", "MyServer");
+                string input = await MagicShow.ShowInput(Window.GetWindow(this), Lang.Page_CreateServer_ServerNamePrompt, "MyServer");
                 if (input != null)
                 {
                     servername = input;
@@ -148,7 +151,7 @@ namespace MSL.pages
                     Dialog waitDialog = null;
                     try
                     {
-                        waitDialog = Dialog.Show(new TextDialog("解压整合包中，请稍等……"));
+                        waitDialog = Dialog.Show(new TextDialog(Lang.Page_CreateServer_ExtractingPack));
                         await Task.Run(() => new FastZip().ExtractZip("MSL\\Downloads\\" + dFilename, serverPath, ""));
                         DirectoryInfo[] dirs = new DirectoryInfo(serverPath).GetDirectories();
                         if (dirs.Length == 1)
@@ -161,7 +164,7 @@ namespace MSL.pages
                     {
                         Window.GetWindow(this).Focus();
                         waitDialog.Close();
-                        MagicShow.ShowMsgDialog(Window.GetWindow(this), "整合包解压失败！请确认您的整合包是.zip格式！\n错误代码：" + ex.Message, "错误");
+                        MagicShow.ShowMsgDialog(Window.GetWindow(this), Lang.Page_CreateServer_ExtractPackFailed + ex.Message, Lang.Error);
                         return;
                     }
                     Window.GetWindow(this).Focus();
@@ -179,10 +182,10 @@ namespace MSL.pages
                     }
                     else
                     {
-                        Growl.Error("出现错误，获取Java版本列表失败！");
+                        Growl.Error(Lang.Page_CreateServer_GetJavaListFailed);
                     }
 
-                    Growl.Info("整合包解压完成！请在此界面选择Java环境，Java的版本要和导入整合包的版本相对应，详情查看界面下方的表格");
+                    Growl.Info(Lang.Page_CreateServer_PackExtractedSelectJava);
                     sjava.IsSelected = true;
                     sjava.IsEnabled = true;
                     welcome.IsEnabled = false;
@@ -192,10 +195,10 @@ namespace MSL.pages
             else if (ImportPack.SelectedIndex == 2)
             {
                 ImportPack.SelectedIndex = 0;
-                bool dialog = await MagicShow.ShowMsgDialogAsync(Window.GetWindow(this), "目前仅支持导入.zip格式的整合包文件，如果您要导入的是模组整合包，请确保您下载的整合包是服务器专用包（如RLCraft下载界面就有一个ServerPack的压缩包），否则可能会出现无法开服或者崩溃的问题！", "提示", true, "取消");
+                bool dialog = await MagicShow.ShowMsgDialogAsync(Window.GetWindow(this), Lang.Page_CreateServer_ImportPackTip, Lang.Tip, true, Lang.Cancel);
                 if (dialog == true)
                 {
-                    string input = await MagicShow.ShowInput(Window.GetWindow(this), "服务器名称：", "MyServer");
+                    string input = await MagicShow.ShowInput(Window.GetWindow(this), Lang.Page_CreateServer_ServerNamePrompt, "MyServer");
                     if (input != null)
                     {
                         servername = input;
@@ -216,8 +219,8 @@ namespace MSL.pages
                         OpenFileDialog openfile = new OpenFileDialog
                         {
                             InitialDirectory = "MSL",
-                            Title = "请选择整合包压缩文件",
-                            Filter = "ZIP文件|*.zip|所有文件类型|*.*"
+                            Title = Lang.Page_CreateServer_SelectPackFile,
+                            Filter = Lang.Page_CreateServer_ZipFileFilter
                         };
                         var res = openfile.ShowDialog();
                         if (res == true)
@@ -226,7 +229,7 @@ namespace MSL.pages
                             //Dialog waitDialog = null;
                             try
                             {
-                                MagicDialog.ShowTextDialog(Window.GetWindow(this), "解压整合包中，请稍等……");
+                                MagicDialog.ShowTextDialog(Window.GetWindow(this), Lang.Page_CreateServer_ExtractingPack);
                                 //waitDialog = Dialog.Show(new TextDialog("解压整合包中，请稍等……"));
                                 await Task.Run(() => new FastZip().ExtractZip(openfile.FileName, serverPath, ""));
                                 DirectoryInfo[] dirs = new DirectoryInfo(serverPath).GetDirectories();
@@ -238,7 +241,7 @@ namespace MSL.pages
                             catch (Exception ex)
                             {
                                 MagicDialog.CloseTextDialog();
-                                MagicShow.ShowMsgDialog(Window.GetWindow(this), "整合包解压失败！请确认您的整合包是.zip格式！\n错误代码：" + ex.Message, "错误");
+                                MagicShow.ShowMsgDialog(Window.GetWindow(this), Lang.Page_CreateServer_ExtractPackFailed + ex.Message, Lang.Error);
                                 return;
                             }
                             MagicDialog.CloseTextDialog();
@@ -255,10 +258,10 @@ namespace MSL.pages
                             }
                             else
                             {
-                                Growl.Error("出现错误，获取Java版本列表失败！");
+                                Growl.Error(Lang.Page_CreateServer_GetJavaListFailed);
                             }
 
-                            Growl.Info("整合包解压完成！请在此界面选择Java环境，Java的版本要和导入整合包的版本相对应，详情查看界面下方的表格");
+                            Growl.Info(Lang.Page_CreateServer_PackExtractedSelectJava);
                             sjava.IsSelected = true;
                             sjava.IsEnabled = true;
                             welcome.IsEnabled = false;
@@ -280,7 +283,7 @@ namespace MSL.pages
                 string forge = Functions.InstallForge("", serverbase, "", "");
                 if (forge != null)
                 {
-                    bool ret = await MagicShow.ShowMsgDialogAsync(Window.GetWindow(this), "开服器在整合包中检测到了Forge服务端启动文件" + forge + "，是否选择为开服核心？", "提示", true, "取消");
+                    bool ret = await MagicShow.ShowMsgDialogAsync(Window.GetWindow(this), string.Format(Lang.Page_CreateServer_ForgeDetected, forge), Lang.Tip, true, Lang.Cancel);
                     if (ret)
                     {
                         txb3.Text = forge;
@@ -308,19 +311,19 @@ namespace MSL.pages
                         filestr += "\n" + i.ToString() + "." + file;
                         i++;
                     }
-                    string selectFile = await MagicShow.ShowInput(Window.GetWindow(this), "开服器在整合包中检测到了以下jar文件，你可输选择一个作为开服核心（输入文件前对应的数字，取消为不选择以下文件）\n" + filestr);
+                    string selectFile = await MagicShow.ShowInput(Window.GetWindow(this), Lang.Page_CreateServer_SelectJarAsCore + "\n" + filestr);
                     if (selectFile != null)
                     {
                         txb3.Text = files[int.Parse(selectFile)];
                         if (Functions.CheckForgeInstaller(serverbase + "\\" + txb3.Text))
                         {
-                            bool dialog = await MagicShow.ShowMsgDialogAsync(Window.GetWindow(this), "您选择的服务端疑似是forge安装器，是否将其展开安装？\n如果不展开安装，服务器可能无法开启！", "提示", true, "取消");
+                            bool dialog = await MagicShow.ShowMsgDialogAsync(Window.GetWindow(this), Lang.Page_CreateServer_ForgeInstallerConfirm, Lang.Tip, true, Lang.Cancel);
                             if (dialog)
                             {
                                 string installReturn = await InstallForge(txb3.Text);
                                 if (installReturn == null)
                                 {
-                                    MagicShow.ShowMsgDialog(Window.GetWindow(this), "下载失败！", "错误");
+                                    MagicShow.ShowMsgDialog(Window.GetWindow(this), Lang.Page_CreateServer_DownloadFailed, Lang.Error);
                                     return;
                                 }
                                 txb3.Text = installReturn;
@@ -334,19 +337,19 @@ namespace MSL.pages
                 }
                 else if (files.Count == 1)
                 {
-                    bool ret = await MagicShow.ShowMsgDialogAsync(Window.GetWindow(this), "开服器在整合包中检测到了jar文件" + files[0] + "，是否选择此文件为开服核心？", "提示", true, "取消");
+                    bool ret = await MagicShow.ShowMsgDialogAsync(Window.GetWindow(this), string.Format(Lang.Page_CreateServer_JarDetected, files[0]), Lang.Tip, true, Lang.Cancel);
                     if (ret)
                     {
                         txb3.Text = files[0];
                         if (Functions.CheckForgeInstaller(serverbase + "\\" + txb3.Text))
                         {
-                            bool dialog = await MagicShow.ShowMsgDialogAsync(Window.GetWindow(this), "您选择的服务端疑似是forge安装器，是否将其展开安装？\n如果不展开安装，服务器可能无法开启！", "提示", true, "取消");
+                            bool dialog = await MagicShow.ShowMsgDialogAsync(Window.GetWindow(this), Lang.Page_CreateServer_ForgeInstallerConfirm, Lang.Tip, true, Lang.Cancel);
                             if (dialog)
                             {
                                 string installReturn = await InstallForge(txb3.Text);
                                 if (installReturn == null)
                                 {
-                                    MagicShow.ShowMsgDialog(Window.GetWindow(this), "下载失败！", "错误");
+                                    MagicShow.ShowMsgDialog(Window.GetWindow(this), Lang.Page_CreateServer_DownloadFailed, Lang.Error);
                                     return;
                                 }
                                 txb3.Text = installReturn;
@@ -360,7 +363,7 @@ namespace MSL.pages
                 }
                 else if (files.Count == 0)
                 {
-                    Growl.Info("开服器未在整合包中找到核心文件，请您进行下载或手动选择已有核心，核心的版本要和整合包对应的游戏版本一致");
+                    Growl.Info(Lang.Page_CreateServer_NoCoreFound);
                 }
             }
         }
@@ -384,8 +387,8 @@ namespace MSL.pages
         {
             OpenFileDialog openfile = new OpenFileDialog();
             openfile.InitialDirectory = AppDomain.CurrentDomain.BaseDirectory;
-            openfile.Title = "请选择文件";
-            openfile.Filter = "JAR文件|*.jar|所有文件类型|*.*";
+            openfile.Title = Lang.Page_CreateServer_SelectFileTitle;
+            openfile.Filter = Lang.SR_JarFileFilter;
             var res = openfile.ShowDialog();
             if (res == true)
             {
@@ -397,7 +400,7 @@ namespace MSL.pages
         private void a0003_Click(object sender, RoutedEventArgs e)
         {
             FolderBrowserDialog dialog = new FolderBrowserDialog();
-            dialog.Description = "请选择文件夹";
+            dialog.Description = Lang.SR_SelectFolder;
             if (dialog.ShowDialog() == System.Windows.Forms.DialogResult.OK)
             {
                 txb6.Text = dialog.SelectedPath;
@@ -408,8 +411,8 @@ namespace MSL.pages
         {
             OpenFileDialog openfile = new OpenFileDialog();
             openfile.InitialDirectory = AppDomain.CurrentDomain.BaseDirectory;
-            openfile.Title = "请选择文件，通常为java.exe";
-            openfile.Filter = "EXE文件|*.exe|所有文件类型|*.*";
+            openfile.Title = Lang.SR_SelectJavaExe;
+            openfile.Filter = Lang.SR_ExeFileFilter;
             var res = openfile.ShowDialog();
             if (res == true)
             {
@@ -429,7 +432,7 @@ namespace MSL.pages
         {
             if (selectCheckedJavaComb.Items.Count == 0)
             {
-                MagicShow.ShowMsgDialog(Window.GetWindow(this), "请先进行检测", "提示");
+                MagicShow.ShowMsgDialog(Window.GetWindow(this), Lang.SR_SearchFirst, Lang.Tip);
                 usedownloadjv.IsChecked = true;
                 return;
             }
@@ -438,14 +441,14 @@ namespace MSL.pages
         private async void SearchJavaBtn_Click(object sender, RoutedEventArgs e)
         {
             List<JavaScanner.JavaInfo> strings = null;
-            int dialog = MagicShow.ShowMsg(Window.GetWindow(Window.GetWindow(this)), "即将开始检测电脑上的Java，此过程可能需要一些时间，请耐心等待。\n目前有两种检测模式，一种是简单检测，只检测一些关键目录，用时较少，普通用户可优先使用此模式。\n第二种是深度检测，将检测所有磁盘的所有目录，耗时可能会很久，请慎重选择！", "提示", true, "开始深度检测", "开始简单检测");
+            int dialog = MagicShow.ShowMsg(Window.GetWindow(Window.GetWindow(this)), Lang.SR_JavaDetectIntro, Lang.Tip, true, "开始深度检测", "开始简单检测");
             if (dialog == 2)
             {
                 return;
             }
             txjava.IsEnabled = false;
             a0002_Copy.IsEnabled = false;
-            Dialog waitDialog = Dialog.Show(new TextDialog("检测中，请稍等……"));
+            Dialog waitDialog = Dialog.Show(new TextDialog(Lang.SR_Scanning));
             JavaScanner javaScanner = new();
             if (dialog == 1)
             {
@@ -469,31 +472,31 @@ namespace MSL.pages
             }
             if (selectCheckedJavaComb.Items.Count > 0)
             {
-                Growl.Success("检测完毕！");
+                Growl.Success(Lang.SR_CheckComplete);
                 selectCheckedJavaComb.SelectedIndex = 0;
             }
             else
             {
-                Growl.Info("检测完毕，暂未找到Java");
+                Growl.Info(Lang.Page_CreateServer_DetectCompleteNoJava);
                 usedownloadjv.IsChecked = true;
             }
         }
 
         private async void usejvPath_Checked(object sender, RoutedEventArgs e)
         {
-            Growl.Info("正在检查环境变量可用性，请稍等……");
+            Growl.Info(Lang.SR_CheckingEnvVar);
             txjava.IsEnabled = false;
             a0002_Copy.IsEnabled = false;
             (bool javaAvailability, string javainfo) = await JavaScanner.CheckJavaAvailabilityAsync("java");
             if (javaAvailability)
             {
-                Growl.Success("环境变量可用性检查完毕，您的环境变量正常！");
-                usejvPath.Content = "使用环境变量：" + javainfo;
+                Growl.Success(Lang.SR_EnvVarOK);
+                usejvPath.Content = Lang.Page_CreateServer_UseEnvVarColon + javainfo;
             }
             else
             {
-                Growl.Error("检测环境变量失败");
-                MagicShow.ShowMsgDialog(Window.GetWindow(this), "检测环境变量失败，您的环境变量似乎不存在！", "错误");
+                Growl.Error(Lang.SR_EnvVarFailed);
+                MagicShow.ShowMsgDialog(Window.GetWindow(this), Lang.Page_CreateServer_EnvVarNotExist, Lang.Error);
                 usedownloadjv.IsChecked = true;
             }
         }
@@ -566,12 +569,12 @@ namespace MSL.pages
                 }
                 else
                 {
-                    Growl.Error("获取版本列表失败或数据为空！");
+                    Growl.Error(Lang.Page_CreateServer_GetVersionListFailed);
                 }
             }
             catch
             {
-                Growl.Error("出现错误，请检查网络连接！");
+                Growl.Error(Lang.Page_CreateServer_NetworkError);
                 useCustomCmd.IsChecked = true;
             }
             finally
@@ -605,13 +608,13 @@ namespace MSL.pages
                     if (downDialog)
                     {
                         if (dwnItem.Status == DownloadStatus.Cancelled)
-                            return (false, "下载已取消");
+                            return (false, Lang.Page_CreateServer_DownloadCancelledStatus);
                         if (dwnItem.Status != DownloadStatus.Completed)
-                            return (false, "下载失败，错误信息：" + dwnItem.ErrorMessage);
+                            return (false, Lang.Page_CreateServer_DownloadErrorMsg + dwnItem.ErrorMessage);
 
                         // 解压
                         var magicDialog = new MagicDialog();
-                        magicDialog.ShowTextDialog(Functions.GetWindow(this), "解压基岩版服务端资源中……");
+                        magicDialog.ShowTextDialog(Functions.GetWindow(this), Lang.Page_CreateServer_ExtractingBedrock);
                         await Task.Run(() => new FastZip().ExtractZip("MSL\\Downloads\\" + filename, serverPath, ""));
                         DirectoryInfo[] dirs = new DirectoryInfo(serverPath).GetDirectories();
                         if (dirs.Length == 1)
@@ -625,18 +628,18 @@ namespace MSL.pages
                     }
                     else
                     {
-                        return (false, "下载失败");
+                        return (false, Lang.Page_CreateServer_DownloadFailedSimple);
                     }
                 }
                 else
                 {
-                    return (false, "获取基岩版服务端下载地址失败。");
+                    return (false, Lang.Page_CreateServer_GetBedrockUrlFailed);
                 }
 
             }
             catch (Exception ex)
             {
-                return (false, "安装基岩版服务端失败：" + ex.Message);
+                return (false, Lang.Page_CreateServer_InstallBedrockFailed + ex.Message);
             }
         }
 
@@ -645,7 +648,7 @@ namespace MSL.pages
             servername = serverNameBox.Text;
             if ((new Regex("[\u4E00-\u9FA5]").IsMatch(txb6.Text)) || txb6.Text.Contains(" "))
             {
-                if (!await MagicShow.ShowMsgDialogAsync(Window.GetWindow(this), "使用带有中文字符或空格的路径可能造成编码错误，导致无法开服，您确定要继续吗？", "警告", true))
+                if (!await MagicShow.ShowMsgDialogAsync(Window.GetWindow(this), Lang.Page_CreateServer_PathChineseCharWarning, Lang.Warning, true))
                 {
                     return;
                 }
@@ -668,7 +671,7 @@ namespace MSL.pages
             }
             else
             {
-                Growl.Error("出现错误，获取Java版本列表失败！");
+                Growl.Error(Lang.Page_CreateServer_GetJavaListFailed);
             }
 
             try
@@ -698,16 +701,16 @@ namespace MSL.pages
             useServerself.IsEnabled = true;
             if (useJVself.IsChecked == true)
             {
-                Growl.Info("正在检查所选Java可用性，请稍等……");
+                Growl.Info(Lang.Page_CreateServer_CheckingJavaAvail);
                 (bool javaAvailability, string javainfo) = await JavaScanner.CheckJavaAvailabilityAsync(txjava.Text);
                 if (javaAvailability)
                 {
-                    Growl.Info("所选Java版本：" + javainfo);
+                    Growl.Info(Lang.Page_CreateServer_SelectedJavaVer + javainfo);
                 }
                 else
                 {
-                    Growl.Error("检测Java可用性失败");
-                    MagicShow.ShowMsgDialog(Window.GetWindow(this), "检测Java可用性失败，您的Java似乎不可用！请检查是否选择正确！", "错误");
+                    Growl.Error(Lang.Page_CreateServer_DetectEnvVarFailed);
+                    MagicShow.ShowMsgDialog(Window.GetWindow(this), Lang.Page_CreateServer_JavaUnavailMsg, Lang.Error);
                     usedownloadjv.IsChecked = true;
                     noNext = true;
                 }
@@ -748,18 +751,18 @@ namespace MSL.pages
                     }
                     else if (Status == 3)
                     {
-                        MagicShow.ShowMsgDialog(Functions.GetWindow(this), "下载取消！", "提示");
+                        MagicShow.ShowMsgDialog(Functions.GetWindow(this), Lang.Page_CreateServer_DownloadCancelled, Lang.Tip);
                         noNext = true;
                     }
                     else
                     {
-                        MagicShow.ShowMsgDialog(Functions.GetWindow(this), "下载失败！\n" + Msg, "错误");
+                        MagicShow.ShowMsgDialog(Functions.GetWindow(this), Lang.Page_CreateServer_DownloadFailedMsg + Msg, Lang.Error);
                         noNext = true;
                     }
                 }
                 catch
                 {
-                    Growl.Error("出现错误，请检查网络连接！");
+                    Growl.Error(Lang.Page_CreateServer_NetworkError);
                     noNext = true;
                 }
             }
@@ -784,7 +787,7 @@ namespace MSL.pages
                 {
                     if (filename.Contains("bedrock-server"))
                     {
-                        MagicShow.ShowMsgDialog(Window.GetWindow(this), "如果需要开基岩版官方服务端（BDS）\n请在返回并选择基岩版服务端，而不应该在这里下载基岩版资源文件！", "错误");
+                        MagicShow.ShowMsgDialog(Window.GetWindow(this), Lang.Page_CreateServer_BDSHereDownload, Lang.Error);
                         return;
                     }
                     if (File.Exists(serverbase + "\\" + filename))
@@ -848,13 +851,13 @@ namespace MSL.pages
                     // 检查是否为forge端
                     if (Functions.CheckForgeInstaller(fullFileName))
                     {
-                        bool dialog = await MagicShow.ShowMsgDialogAsync(Window.GetWindow(this), "您选择的服务端疑似是forge安装器，是否将其展开安装？\n如果不展开安装，服务器可能无法开启！", "提示", true, "取消");
+                        bool dialog = await MagicShow.ShowMsgDialogAsync(Window.GetWindow(this), Lang.Page_CreateServer_ForgeInstallerConfirm, Lang.Tip, true, Lang.Cancel);
                         if (dialog)
                         {
                             string installReturn = await InstallForge(txb3.Text);
                             if (installReturn == null)
                             {
-                                MagicShow.ShowMsgDialog(Window.GetWindow(this), "下载失败！", "错误");
+                                MagicShow.ShowMsgDialog(Window.GetWindow(this), Lang.Page_CreateServer_DownloadFailed, Lang.Error);
                                 return;
                             }
                             txb3.Text = installReturn;
@@ -868,7 +871,7 @@ namespace MSL.pages
                 }
                 catch (Exception ex)
                 {
-                    MagicShow.ShowMsgDialog(Window.GetWindow(this), ex.Message, "错误");
+                    MagicShow.ShowMsgDialog(Window.GetWindow(this), ex.Message, Lang.Error);
                 }
             }
             else if(useBedrockServer.IsChecked == true) // bds
@@ -876,7 +879,7 @@ namespace MSL.pages
                 var installBds = await DownloadAndUnzipBedrockServer(serverbase,comboBedrockVersion.SelectionBoxItem.ToString());
                 if(!installBds.suc)
                 {
-                    MagicShow.ShowMsgDialog(Window.GetWindow(this), installBds.msg, "错误");
+                    MagicShow.ShowMsgDialog(Window.GetWindow(this), installBds.msg, Lang.Error);
                     return;
                 }
                 launchmode = 1; // 1是自定义命令模式
@@ -901,10 +904,10 @@ namespace MSL.pages
 
         private async Task MoveFileInServerBase(string _filename)
         {
-            if (await MagicShow.ShowMsgDialogAsync(Window.GetWindow(this), "所选的服务端核心文件并不在服务器目录中，是否将其复制进服务器目录？\n若不复制，请留意勿将核心文件删除！", "提示", true))
+            if (await MagicShow.ShowMsgDialogAsync(Window.GetWindow(this), Lang.Page_CreateServer_CoreNotInDirConfirm, Lang.Tip, true))
             {
                 File.Copy(txb3.Text, serverbase + "\\" + _filename, true);
-                await MagicShow.ShowMsgDialogAsync(Window.GetWindow(this), "已将服务端核心复制到了服务器目录之中，您现在可以将源文件删除了！", "提示");
+                await MagicShow.ShowMsgDialogAsync(Window.GetWindow(this), Lang.Page_CreateServer_CoreCopiedDone, Lang.Tip);
                 txb3.Text = _filename;
             }
         }
@@ -919,7 +922,7 @@ namespace MSL.pages
             {
                 if (string.IsNullOrEmpty(txb4.Text) || string.IsNullOrEmpty(txb5.Text))
                 {
-                    MagicShow.ShowMsgDialog(Window.GetWindow(this), "请填写开服内存信息！", "错误");
+                    MagicShow.ShowMsgDialog(Window.GetWindow(this), Lang.Page_CreateServer_FillMemInfo, Lang.Error);
                     return;
                 }
                 if (txb4.Text.All(char.IsDigit) == true && txb5.Text.All(char.IsDigit) == true)
@@ -938,7 +941,7 @@ namespace MSL.pages
                 }
                 else
                 {
-                    MagicShow.ShowMsgDialog(Window.GetWindow(this), "开服内存参数不正确（只能为纯数字）！", "错误");
+                    MagicShow.ShowMsgDialog(Window.GetWindow(this), Lang.Page_CreateServer_MemParamInvalid, Lang.Error);
                     return;
                 }
             }
@@ -956,7 +959,7 @@ namespace MSL.pages
         {
             if ((bool)usebasicfastJvm.IsChecked)
             {
-                await MagicShow.ShowMsgDialogAsync(Window.GetWindow(this), "使用优化参数需要手动设置大小相同的内存，请对上面的内存进行更改！Java11及以上请勿选择此优化参数！", "警告");
+                await MagicShow.ShowMsgDialogAsync(Window.GetWindow(this), Lang.Page_CreateServer_BasicOptWarning, Lang.Warning);
                 useJVM.IsChecked = true;
                 usefastJvm.IsChecked = false;
                 txb7.Text = "-XX:+AggressiveOpts";
@@ -973,7 +976,7 @@ namespace MSL.pages
         {
             if ((bool)usefastJvm.IsChecked)
             {
-                await MagicShow.ShowMsgDialogAsync(Window.GetWindow(this), "使用优化参数需要手动设置大小相同的内存，请对上面的内存进行更改！", "警告");
+                await MagicShow.ShowMsgDialogAsync(Window.GetWindow(this), Lang.Page_CreateServer_AdvOptWarning, Lang.Warning);
                 useJVM.IsChecked = true;
                 usebasicfastJvm.IsChecked = false;
                 txb7.Text = "-XX:+UseG1GC -XX:+UnlockExperimentalVMOptions -XX:+ParallelRefProcEnabled -XX:MaxGCPauseMillis=200 -XX:+UnlockExperimentalVMOptions -XX:+DisableExplicitGC -XX:+AlwaysPreTouch -XX:G1NewSizePercent=30 -XX:G1MaxNewSizePercent=40 -XX:G1HeapRegionSize=8M -XX:G1ReservePercent=20 -XX:G1HeapWastePercent=5 -XX:G1MixedGCCountTarget=4 -XX:InitiatingHeapOccupancyPercent=15 -XX:G1MixedGCLiveThresholdPercent=90 -XX:G1RSetUpdatingPauseTimePercent=5 -XX:SurvivorRatio=32 -XX:+PerfDisableSharedMem -XX:MaxTenuringThreshold=1 -Dusing.aikars.flags=https://mcflags.emc.gs -Daikars.new.flags=true";
@@ -992,7 +995,7 @@ namespace MSL.pages
             string[] installForge = await MagicShow.ShowInstallForge(Window.GetWindow(this), serverbase, filename, serverjava);
             if (installForge[0] == "0")
             {
-                if (await MagicShow.ShowMsgDialogAsync(Window.GetWindow(this), "自动安装失败！是否尝试使用命令行安装方式？", "错误", true))
+                if (await MagicShow.ShowMsgDialogAsync(Window.GetWindow(this), Lang.Page_CreateServer_AutoInstallFailed, Lang.Error, true))
                 {
                     return Functions.InstallForge(serverjava, serverbase, filename, string.Empty, false);
                 }
@@ -1039,7 +1042,7 @@ namespace MSL.pages
             }
             catch (Exception a)
             {
-                Growl.Info("获取服务端失败！请重试" + a.Message);
+                Growl.Info(Lang.Page_CreateServer_GetServerFailed + a.Message);
             }
         }
 
@@ -1056,7 +1059,7 @@ namespace MSL.pages
             tempServerCore.Clear();
             if (serverTypes == null)
             {
-                MagicShow.ShowMsgDialog(Window.GetWindow(this), "服务端正在加载中，请稍后再选择！", "提示");
+                MagicShow.ShowMsgDialog(Window.GetWindow(this), Lang.Page_CreateServer_ServerLoadingWait, Lang.Tip);
                 return;
             }
             await GetServerVersion();
@@ -1081,7 +1084,7 @@ namespace MSL.pages
             }
             catch (Exception ex)
             {
-                MagicShow.ShowMsgDialog(Window.GetWindow(this), "出现错误：" + ex.Message, "ERR");
+                MagicShow.ShowMsgDialog(Window.GetWindow(this), Lang.Page_CreateServer_ErrorOccurred + ex.Message, "ERR");
                 FastModeNextBtn.IsEnabled = true;
                 return;
             }
@@ -1093,28 +1096,28 @@ namespace MSL.pages
             switch (ServerCoreCombo.SelectedIndex)
             {
                 case 0:
-                    ServerCoreDescrip.Text = "插件服务器：指在服务端添加插件（客户端无需添加），通过更改服务端底层来增加功能，这种方式极易做到对服务器、服务器用户玩家进行管理，如权限组、封禁系统等，但这种方式不能修改客户端内容，所以也导致很多功能很难实现，如添加新的物品，只能通过更改材质包的方式让客户端显示新的物品";
+                    ServerCoreDescrip.Text = Lang.Page_CreateServer_SrvDescPlugin;
                     break;
                 case 1:
-                    ServerCoreDescrip.Text = "插件模组混合服务器（Forge加载器）：这种服务器将插件服务端和Forge服务端合二为一，既吸取了二者的优点（服务器管理功能可通过添加插件做到，添加新物品更改游戏玩法可通过添加模组做到），同时又有许多缺点（如服务器不稳定，同时添加插件和模组，极易造成冲突问题，且也存在模组服务器服务端和客户端需要同步模组的问题）";
+                    ServerCoreDescrip.Text = Lang.Page_CreateServer_SrvDescHybridNeoForge;
                     break;
                 case 2:
-                    ServerCoreDescrip.Text = "插件模组混合服务器（Fabric加载器）：这种服务器将插件服务端和Fabric服务端合二为一，既吸取了二者的优点（服务器管理功能可通过添加插件做到，添加新物品更改游戏玩法可通过添加模组做到），同时又有许多缺点（如服务器不稳定，同时添加插件和模组，极易造成冲突问题，且也存在模组服务器服务端和客户端需要同步模组的问题）";
+                    ServerCoreDescrip.Text = Lang.Page_CreateServer_SrvDescHybridFabric;
                     break;
                 case 3:
-                    ServerCoreDescrip.Text = "模组服务器（Forge加载器）：指通过Forge加载器，添加模组来增加功能（服务端和客户端均需添加），这种方式既可以更改服务端的内容，也可以更改客户端的内容，所以插件服务器无法实现的功能在这里即可轻易做到，但是这种方式很难做到插件服的管理功能，且需要客户端的模组和服务端进行同步，会给玩家造成一定的麻烦";
+                    ServerCoreDescrip.Text = Lang.Page_CreateServer_SrvDescModNeoForge;
                     break;
                 case 4:
-                    ServerCoreDescrip.Text = "模组服务器（Fabric加载器）：指通过Fabric加载器，添加模组来增加功能（服务端和客户端均需添加），这种方式既可以更改服务端的内容，也可以更改客户端的内容，所以插件服务器无法实现的功能在这里即可轻易做到，但是这种方式很难做到插件服的管理功能，且需要客户端的模组和服务端进行同步，会给玩家造成一定的麻烦";
+                    ServerCoreDescrip.Text = Lang.Page_CreateServer_SrvDescModFabric;
                     break;
                 case 5:
-                    ServerCoreDescrip.Text = "原版服务器：Mojang纯原生服务器，不能添加任何插件或模组，给您原汁原味的体验";
+                    ServerCoreDescrip.Text = Lang.Page_CreateServer_SrvDescVanilla;
                     break;
                 case 6:
-                    ServerCoreDescrip.Text = "基岩版服务器：专为基岩版提供的服务器，这种服务器在配置等方面和Java版服务器不太一样，同时开服器也不太适配，更改配置文件等相关操作只能您手动操作。（此处仅支持部署Nukkit端，若需要使用官方基岩版服务端BDS，请返回选择自定义模式！）";
+                    ServerCoreDescrip.Text = Lang.Page_CreateServer_SrvDescBedrock;
                     break;
                 case 7:
-                    ServerCoreDescrip.Text = "代理服务器：指Java版群组服务器的转发服务器，这种服务器相当于一个桥梁，将玩家在不同的服务器之间进行传送转发，使用这种服务器您首先需要开启一个普通服务器，因为这种服务器没有游戏内容，如果没有普通服务器进行连接，玩家根本无法进入，且目前开服器并不兼容这种服务器，创建完毕后您需在列表右键该服务器并使用“命令行开服”功能来启动";
+                    ServerCoreDescrip.Text = Lang.Page_CreateServer_SrvDescProxy;
                     break;
             }
         }
@@ -1161,7 +1164,7 @@ namespace MSL.pages
             servername = ServerNameBox.Text;
             if ((new Regex("[\u4E00-\u9FA5]").IsMatch(txb6.Text)) || txb6.Text.Contains(" "))
             {
-                if (!await MagicShow.ShowMsgDialogAsync(Window.GetWindow(this), "开服器被放置于带有中文字符或空格的目录里，这可能会造成编码错误，从而无法开服，您确定要继续吗？", "警告", true))
+                if (!await MagicShow.ShowMsgDialogAsync(Window.GetWindow(this), Lang.Page_CreateServer_DirChineseCharWarning, Lang.Warning, true))
                 {
                     return;
                 }
@@ -1180,7 +1183,7 @@ namespace MSL.pages
                         string finallyCoreName = _item.Key + "-" + version;
                         if (finallyCoreName.StartsWith("bedrock-server"))
                         {
-                            Growl.Error("您选择的基岩版版本为官方服务端（BDS），仅支持使用自定义模式创建！请点击上一步并选择自定义模式哦！");
+                            Growl.Error(Lang.Page_CreateServer_BedrockOnlyCustomMode);
                             FastModeNextBtn.IsEnabled = true;
                             return;
                         }
@@ -1196,7 +1199,7 @@ namespace MSL.pages
             }
             else
             {
-                Growl.Error("出现错误，获取Java版本列表失败！");
+                Growl.Error(Lang.Page_CreateServer_GetJavaListFailed);
             }
 
             string javaVersion;
@@ -1223,43 +1226,43 @@ namespace MSL.pages
                 if (_version <= targetVersion1)
                 {
                     //_version <=1.7
-                    FinallyJavaDescrip.Text = "根据您的选择，最适合您服务器的Java版本为：Java7-Java8";
+                    FinallyJavaDescrip.Text = Lang.Page_CreateServer_JavaRec7to8;
                     javaVersion = "8";
                 }
                 else if (_version <= targetVersion2)
                 {
                     //1.7< _version <=1.12
-                    FinallyJavaDescrip.Text = "根据您的选择，最适合您服务器的Java版本为：Java8-Java11";
+                    FinallyJavaDescrip.Text = Lang.Page_CreateServer_JavaRec8to11;
                     javaVersion = "8";
                 }
                 else if (_version <= targetVersion3)
                 {
                     //1.12< _version <=1.16
-                    FinallyJavaDescrip.Text = "根据您的选择，最适合您服务器的Java版本为：Java11-Java17（或更高）";
+                    FinallyJavaDescrip.Text = Lang.Page_CreateServer_JavaRec11to17;
                     javaVersion = "11";
                 }
                 else if (_version <= targetVersion4)
                 {
                     //1.16< _version <=1.20.4
-                    FinallyJavaDescrip.Text = "根据您的选择，最适合您服务器的Java版本为：Java17及以上";
+                    FinallyJavaDescrip.Text = Lang.Page_CreateServer_JavaRec17Plus;
                     javaVersion = "17";
                 }
                 else if (_version <= targetVersion5)
                 {
                     // 不知道喵
-                    FinallyJavaDescrip.Text = "根据您的选择，最适合您服务器的Java版本为：Java21及以上";
+                    FinallyJavaDescrip.Text = Lang.Page_CreateServer_JavaRec21Plus;
                     javaVersion = "21";
                 }
                 else
                 {
                     // 26.1+
-                    FinallyJavaDescrip.Text = "根据您的选择，最适合您服务器的Java版本为：Java25及以上";
+                    FinallyJavaDescrip.Text = Lang.Page_CreateServer_JavaRec25Plus;
                     javaVersion = "25";
                 }
             }
             else
             {
-                FinallyJavaDescrip.Text = "根据您的选择，最适合您服务器的Java版本为：Java8-Java21（或更高）";
+                FinallyJavaDescrip.Text = Lang.Page_CreateServer_JavaRec8to21;
                 javaVersion = "Java21";
             }
             FinallyJavaCombo.SelectedIndex = FinallyJavaCombo.Items.Count - 1;
@@ -1281,7 +1284,7 @@ namespace MSL.pages
         private async Task<List<string>> AsyncGetJavaVersion()
         {
             MagicDialog MagicDialog = new MagicDialog();
-            MagicDialog.ShowTextDialog(Window.GetWindow(this), "获取Java版本列表中，请稍等……");
+            MagicDialog.ShowTextDialog(Window.GetWindow(this), Lang.Page_CreateServer_GettingJavaList);
             await Task.Delay(100);
             try
             {
@@ -1314,7 +1317,7 @@ namespace MSL.pages
             SetInstallButtonsEnabled(false);
             try
             {
-                FastInstallProcess.Text = "当前进度:下载Java……";
+                FastInstallProcess.Text = Lang.Page_CreateServer_ProgressDownloadingJava;
                 var selectJava = FinallyJavaCombo.SelectedValue.ToString();
 
                 var (Status, JavaPath, Msg) = await Functions.DownloadJava(Window.GetWindow(this), selectJava,
@@ -1323,26 +1326,26 @@ namespace MSL.pages
                 if (Status == 1 || Status == 2)
                 {
                     serverjava = JavaPath;
-                    FastInstallProcess.Text = "当前进度:下载服务端……";
+                    FastInstallProcess.Text = Lang.Page_CreateServer_ProgressDownloadingServer;
                     await FastModeInstallCore();
                 }
                 else if (Status == 3)
                 {
-                    MagicShow.ShowMsgDialog(Window.GetWindow(this),"下载取消！", "提示");
-                    FastInstallProcess.Text = "取消安装！";
+                    MagicShow.ShowMsgDialog(Window.GetWindow(this), Lang.Page_CreateServer_DownloadCancelled, Lang.Tip);
+                    FastInstallProcess.Text = Lang.Page_CreateServer_InstallCancelled;
                     return;
                 }
                 else
                 {
-                    MagicShow.ShowMsgDialog(Window.GetWindow(this),"下载失败！\n" + Msg, "错误");
-                    FastInstallProcess.Text = "取消安装！";
+                    MagicShow.ShowMsgDialog(Window.GetWindow(this), Lang.Page_CreateServer_DownloadFailedMsg + Msg, Lang.Error);
+                    FastInstallProcess.Text = Lang.Page_CreateServer_InstallCancelled;
                     return;
                 }
             }
             catch
             {
-                Growl.Error("出现错误，请检查网络连接！");
-                FastInstallProcess.Text = "取消安装！";
+                Growl.Error(Lang.Page_CreateServer_NetworkError);
+                FastInstallProcess.Text = Lang.Page_CreateServer_InstallCancelled;
                 return;
             }
         }
@@ -1365,12 +1368,12 @@ namespace MSL.pages
             if (!result.Success)
             {
                 MagicShow.ShowMsgDialog(Functions.GetWindow(this), result.ErrorMessage, "INFO");
-                FastInstallProcess.Text = "取消安装！";
+                FastInstallProcess.Text = Lang.Page_CreateServer_InstallCancelled;
                 return;
             }
 
             servercore = result.FinalFileName;
-            FastInstallProcess.Text = "当前进度:下载完成！";
+            FastInstallProcess.Text = Lang.Page_CreateServer_ProgressDone;
             SelectTerminalGrid.Visibility = Visibility.Visible;
             InstallGrid.Visibility = Visibility.Collapsed;
             returnMode = 3;
@@ -1452,7 +1455,7 @@ namespace MSL.pages
         private void ConptyModeBtn_Checked(object sender, RoutedEventArgs e)
         {
             TraditionModeBtn.IsChecked = false;
-            MagicShow.ShowMsgDialog(Window.GetWindow(this), "若使用此模式出现问题，可在服务器运行窗口的“更多功能”界面修改此项。", "提示");
+            MagicShow.ShowMsgDialog(Window.GetWindow(this), Lang.Page_CreateServer_ConPtyTip, Lang.Tip);
         }
 
         private async void DoneBtn_Click(object sender, RoutedEventArgs e)
@@ -1475,13 +1478,13 @@ namespace MSL.pages
                     newInstance.YggApi = txb_ygg_api.Text.Trim();
                 ServerConfig.Current.Add(newInstance);
                 ServerConfig.Current.Save();
-                await MagicShow.ShowMsgDialogAsync(Window.GetWindow(this), "创建完毕，请点击“开启服务器”按钮以开服", "信息");
+                await MagicShow.ShowMsgDialogAsync(Window.GetWindow(this), Lang.Page_CreateServer_CreateDone, "信息");
                 GotoServerList();
                 ReInit();
             }
             catch (Exception ex)
             {
-                MessageBox.Show("出现错误，请重试：" + ex.Message, "Error", MessageBoxButton.OK, MessageBoxImage.Error);
+                MessageBox.Show(Lang.Page_CreateServer_ErrorRetry + ex.Message, "Error", MessageBoxButton.OK, MessageBoxImage.Error);
             }
         }
 
@@ -1502,7 +1505,7 @@ namespace MSL.pages
             usedownloadjv.IsChecked = true;
             selectJavaComb.ItemsSource = null;
             selectJavaComb.Items.Clear();
-            usejvPath.Content = "使用环境变量";
+            usejvPath.Content = Lang.SR_UseEnvVar;
             selectCheckedJavaComb.ItemsSource = null;
             selectCheckedJavaComb.Items.Clear();
             txjava.Text = string.Empty;

@@ -5,6 +5,7 @@
       xmlns:d="http://schemas.microsoft.com/expression/blend/2008" 
       xmlns:local="clr-namespace:MSL.pages.frpProviders.MSLFrp"
       xmlns:controls="clr-namespace:MSL.controls"
+      xmlns:langs="clr-namespace:MSL.langs"
       mc:Ignorable="d"  Loaded="Page_Loaded"
       xmlns:hc="https://handyorg.github.io/handycontrol"
       d:DesignHeight="450" d:DesignWidth="800"
@@ -18,7 +19,7 @@
     <Grid>
         <ContentControl x:Name="LoginControl" Visibility="Collapsed"/>
         <TabControl x:Name="MainCtrl" Margin="10,5,10,10" Style="{StaticResource TabControlCapsuleSolidInLine}" Background="Transparent" BorderThickness="0" SelectionChanged="MainCtrl_SelectionChanged">
-            <TabItem Header="我的隧道">
+            <TabItem Header="{Binding [Frp_MSLFrp_MyTunnels], Source={x:Static langs:LanguageManager.Instance}}">
                 <Grid x:Name="MainGrid">
                     <Grid.ColumnDefinitions>
                         <ColumnDefinition Width="auto"/>
@@ -31,7 +32,7 @@
                             <RowDefinition Height="auto"/>
                         </Grid.RowDefinitions>
                         <Border Style="{StaticResource BorderTipPrimary}" Margin="3">
-                            <TextBlock LineHeight="20" Foreground="{DynamicResource PrimaryTextBrush}" Text="我创建的隧道：" FontSize="14" HorizontalAlignment="Left"/>
+                            <TextBlock LineHeight="20" Foreground="{DynamicResource PrimaryTextBrush}" Text="{Binding [Frp_MSLFrp_MyCreatedTunnels], Source={x:Static langs:LanguageManager.Instance}}" FontSize="14" HorizontalAlignment="Left"/>
                         </Border>
                         <ListBox x:Name="FrpList" Grid.Row="1" MinWidth="300" hc:Empty.ShowEmpty="true" SelectionMode="Single" SelectionChanged="FrpList_SelectionChanged" >
                             <ListBox.ItemTemplate>
@@ -50,8 +51,8 @@
                                 <ColumnDefinition Width="5"/>
                                 <ColumnDefinition Width="*"/>
                             </Grid.ColumnDefinitions>
-                            <Button Content="刷新" x:Name="RefreshBtn" HorizontalAlignment="Stretch" Grid.Column="0" Click="RefreshBtn_Click"/>
-                            <Button Content="删除所选隧道" x:Name="Del_Tunnel" Style="{DynamicResource ButtonDanger}" Grid.Column="2" HorizontalAlignment="Stretch" Click="Del_Tunnel_Click" />
+                            <Button Content="{Binding [Frp_MSLFrp_Refresh], Source={x:Static langs:LanguageManager.Instance}}" x:Name="RefreshBtn" HorizontalAlignment="Stretch" Grid.Column="0" Click="RefreshBtn_Click"/>
+                            <Button Content="{Binding [Frp_MSLFrp_DeleteSelectedTunnel], Source={x:Static langs:LanguageManager.Instance}}" x:Name="Del_Tunnel" Style="{DynamicResource ButtonDanger}" Grid.Column="2" HorizontalAlignment="Stretch" Click="Del_Tunnel_Click" />
                         </Grid>
                     </Grid>
                     <Grid Grid.Column="1" Margin="10,0,0,0" >
@@ -68,30 +69,30 @@
                                             <ColumnDefinition Width="auto"/>
                                         </Grid.ColumnDefinitions>
                                         <StackPanel Margin="5" Grid.Column="0" HorizontalAlignment="Left">
-                                            <Label Content="用户信息" Style="{DynamicResource MagicLabel16}"/>
+                                            <Label Content="{Binding [Frp_MSLFrp_UserInfo], Source={x:Static langs:LanguageManager.Instance}}" Style="{DynamicResource MagicLabel16}"/>
                                             <Label x:Name="UserInfo" Style="{DynamicResource MagicLabel14}" Margin="5,0" Content="Loadings..."/>
                                         </StackPanel>
                                         <StackPanel Grid.Column="1" Margin="5" >
-                                            <Button Content="打开官网" x:Name="OpenWeb" Style="{StaticResource ButtonPrimary}" Margin="0,0,0,3" HorizontalAlignment="Stretch" Command="hc:ControlCommands.OpenLink" CommandParameter="https://user.mslmc.net"/>
-                                            <Button Content="退出登录" x:Name="ExitBtn" Margin="0,3,0,0" HorizontalAlignment="Stretch" Click="ExitBtn_Click" />
+                                            <Button Content="{Binding [Frp_MSLFrp_OpenWebsite], Source={x:Static langs:LanguageManager.Instance}}" x:Name="OpenWeb" Style="{StaticResource ButtonPrimary}" Margin="0,0,0,3" HorizontalAlignment="Stretch" Command="hc:ControlCommands.OpenLink" CommandParameter="https://user.mslmc.net"/>
+                                            <Button Content="{Binding [Frp_MSLFrp_Logout], Source={x:Static langs:LanguageManager.Instance}}" x:Name="ExitBtn" Margin="0,3,0,0" HorizontalAlignment="Stretch" Click="ExitBtn_Click" />
                                         </StackPanel>
                                     </Grid>
                                 </hc:Card>
                                 <hc:Card>
                                     <StackPanel Margin="5" HorizontalAlignment="Left">
-                                        <Label Content="隧道信息" Style="{DynamicResource MagicLabel16}"/>
-                                        <Label x:Name="TunnelInfo_Text" Style="{DynamicResource MagicLabel14}" Content="请选择一条隧道~" Margin="5,0"/>
+                                        <Label Content="{Binding [Frp_MSLFrp_TunnelInfo], Source={x:Static langs:LanguageManager.Instance}}" Style="{DynamicResource MagicLabel16}"/>
+                                        <Label x:Name="TunnelInfo_Text" Style="{DynamicResource MagicLabel14}" Content="{Binding [Frp_MSLFrp_SelectTunnel], Source={x:Static langs:LanguageManager.Instance}}" Margin="5,0"/>
                                     </StackPanel>
                                 </hc:Card>
                             </hc:UniformSpacingPanel>
                         </hc:ScrollViewer>
                         <StackPanel Grid.Row="1" Orientation="Horizontal" HorizontalAlignment="Right" VerticalAlignment="Bottom">
-                            <Button Content="选择该隧道" MinWidth="100" MinHeight="45" Style="{StaticResource ButtonPrimary}" FontSize="14" x:Name="OKBtn" Click="OKBtn_Click" />
+                            <Button Content="{Binding [Frp_MSLFrp_SelectThisTunnel], Source={x:Static langs:LanguageManager.Instance}}" MinWidth="100" MinHeight="45" Style="{StaticResource ButtonPrimary}" FontSize="14" x:Name="OKBtn" Click="OKBtn_Click" />
                         </StackPanel>
                     </Grid>
                 </Grid>
             </TabItem>
-            <TabItem Header="创建新的隧道">
+            <TabItem Header="{Binding [Frp_MSLFrp_CreateNewTunnel], Source={x:Static langs:LanguageManager.Instance}}">
                 <Grid x:Name="CreateGrid">
                     <Grid.ColumnDefinitions>
                         <ColumnDefinition Width="5*"/>
@@ -130,11 +131,11 @@
                                             <Label Content="{Binding KCP, Converter={StaticResource KCPConverter}}" Visibility="{Binding KCP, Converter={StaticResource KCPVisibleConverter}}" Foreground="White" Background="{DynamicResource DarkPrimaryBrush}"/>
                                         </hc:UniformSpacingPanel>
                                         <StackPanel Orientation="Horizontal">
-                                            <TextBlock Text="类型：" Style="{StaticResource MagicText14}"/>
+                                            <TextBlock Text="{Binding [Frp_MSLFrp_Type], Source={x:Static langs:LanguageManager.Instance}}" Style="{StaticResource MagicText14}"/>
                                             <TextBlock Text="{Binding VipName}" Style="{StaticResource MagicText14}"/>
                                         </StackPanel>
                                         <StackPanel Orientation="Horizontal">
-                                            <TextBlock Text="带宽：" Style="{StaticResource MagicText14}"/>
+                                            <TextBlock Text="{Binding [Frp_MSLFrp_Bandwidth], Source={x:Static langs:LanguageManager.Instance}}" Style="{StaticResource MagicText14}"/>
                                             <TextBlock Text="{Binding Band}" Style="{StaticResource MagicText14}"/>
                                             <TextBlock Text="M" Style="{StaticResource MagicText14}"/>
                                         </StackPanel>
@@ -143,7 +144,7 @@
                                                 <ColumnDefinition Width="Auto"/>
                                                 <ColumnDefinition/>
                                             </Grid.ColumnDefinitions>
-                                            <TextBlock Text="备注：" Style="{StaticResource MagicText14}"/>
+                                            <TextBlock Text="{Binding [Frp_MSLFrp_Remark], Source={x:Static langs:LanguageManager.Instance}}" Style="{StaticResource MagicText14}"/>
                                             <TextBlock Grid.Column="1" Text="{Binding Remark}" Style="{StaticResource MagicText14}" TextWrapping="Wrap"/>
                                         </Grid>
                                     </hc:UniformSpacingPanel>
@@ -156,7 +157,7 @@
                             <RowDefinition Height="*"/>
                             <RowDefinition Height="auto"/>
                         </Grid.RowDefinitions>
-                        <controls:MagicCard Title="填写隧道参数" VerticalAlignment="Top">
+                        <controls:MagicCard Title="{Binding [Frp_MSLFrp_FillTunnelParams], Source={x:Static langs:LanguageManager.Instance}}" VerticalAlignment="Top">
                             <ScrollViewer>
                             <hc:UniformSpacingPanel Orientation="Vertical" Spacing="10" Margin="0,0,12,0">
                                 <Grid>
@@ -164,7 +165,7 @@
                                         <ColumnDefinition Width="auto"/>
                                         <ColumnDefinition Width="*"/>
                                     </Grid.ColumnDefinitions>
-                                    <Label Style="{DynamicResource MagicLabel}" Content="隧道名称（英文）：" VerticalAlignment="Center"/>
+                                    <Label Style="{DynamicResource MagicLabel}" Content="{Binding [Frp_MSLFrp_TunnelNameEn], Source={x:Static langs:LanguageManager.Instance}}" VerticalAlignment="Center"/>
                                     <TextBox Grid.Column="1" Text="MyTunnel" x:Name="Create_Name"/>
                                 </Grid>
                                 <Grid>
@@ -172,7 +173,7 @@
                                         <ColumnDefinition Width="auto"/>
                                         <ColumnDefinition Width="*"/>
                                     </Grid.ColumnDefinitions>
-                                    <Label Style="{DynamicResource MagicLabel}" Content="备注（允许中文）：" VerticalAlignment="Center"/>
+                                    <Label Style="{DynamicResource MagicLabel}" Content="{Binding [Frp_MSLFrp_RemarkCn], Source={x:Static langs:LanguageManager.Instance}}" VerticalAlignment="Center"/>
                                     <TextBox Grid.Column="1" Text="Create By MSL Client" x:Name="Create_Remarks"/>
                                 </Grid>
                                 <Grid>
@@ -180,7 +181,7 @@
                                         <ColumnDefinition Width="auto"/>
                                         <ColumnDefinition Width="*"/>
                                     </Grid.ColumnDefinitions>
-                                    <Label Style="{DynamicResource MagicLabel}" Content="本地IP：" VerticalAlignment="Center"/>
+                                    <Label Style="{DynamicResource MagicLabel}" Content="{Binding [Frp_MSLFrp_LocalIP], Source={x:Static langs:LanguageManager.Instance}}" VerticalAlignment="Center"/>
                                     <TextBox Grid.Column="1" Text="127.0.0.1" x:Name="Create_LocalIP"/>
                                 </Grid>
                                 <Grid>
@@ -188,7 +189,7 @@
                                         <ColumnDefinition Width="auto"/>
                                         <ColumnDefinition Width="*"/>
                                     </Grid.ColumnDefinitions>
-                                    <Label Style="{DynamicResource MagicLabel}" Content="本地端口：" VerticalAlignment="Center"/>
+                                    <Label Style="{DynamicResource MagicLabel}" Content="{Binding [Frp_MSLFrp_LocalPort], Source={x:Static langs:LanguageManager.Instance}}" VerticalAlignment="Center"/>
                                     <TextBox Grid.Column="1" Text="25565" x:Name="Create_LocalPort"/>
                                 </Grid>
                                 <Grid>
@@ -197,16 +198,16 @@
                                         <ColumnDefinition Width="*"/>
                                         <ColumnDefinition Width="auto"/>
                                     </Grid.ColumnDefinitions>
-                                    <Label Style="{DynamicResource MagicLabel}" Content="远程端口：" VerticalAlignment="Center"/>
+                                    <Label Style="{DynamicResource MagicLabel}" Content="{Binding [Frp_MSLFrp_RemotePort], Source={x:Static langs:LanguageManager.Instance}}" VerticalAlignment="Center"/>
                                     <TextBox Grid.Column="1" Text="25565" x:Name="Create_RemotePort"/>
-                                    <Button Grid.Column="2" x:Name="GenerateRandomPort" Margin="5,0,0,0" Content="随机生成" Click="GenerateRandomPort_Click"/>
+                                    <Button Grid.Column="2" x:Name="GenerateRandomPort" Margin="5,0,0,0" Content="{Binding [Frp_MSLFrp_RandomGen], Source={x:Static langs:LanguageManager.Instance}}" Click="GenerateRandomPort_Click"/>
                                 </Grid>
                                 <Grid>
                                     <Grid.ColumnDefinitions>
                                         <ColumnDefinition Width="auto"/>
                                         <ColumnDefinition Width="*"/>
                                     </Grid.ColumnDefinitions>
-                                    <Label Style="{DynamicResource MagicLabel}" Content="网络协议：" VerticalAlignment="Center"/>
+                                    <Label Style="{DynamicResource MagicLabel}" Content="{Binding [Frp_MSLFrp_Protocol], Source={x:Static langs:LanguageManager.Instance}}" VerticalAlignment="Center"/>
                                     <hc:ComboBox Grid.Column="1" SelectedIndex="0" x:Name="Create_Protocol">
                                         <ComboBoxItem Content="tcp"/>
                                         <ComboBoxItem Content="udp"/>
@@ -217,19 +218,19 @@
                                         <ColumnDefinition Width="auto"/>
                                         <ColumnDefinition Width="auto"/>
                                     </Grid.ColumnDefinitions>
-                                    <Label Style="{DynamicResource MagicLabel}" Content="启用KCP协议传输：" VerticalAlignment="Center"/>
+                                    <Label Style="{DynamicResource MagicLabel}" Content="{Binding [Frp_MSLFrp_EnableKCP], Source={x:Static langs:LanguageManager.Instance}}" VerticalAlignment="Center"/>
                                         <ToggleButton Grid.Column="1" Style="{StaticResource ToggleButtonSwitch}" x:Name="KCPProtocol" Content="" Checked="KCPProtocol_Checked"/>
                                 </Grid>
                             </hc:UniformSpacingPanel>
                             </ScrollViewer>
                         </controls:MagicCard>
                         <StackPanel Grid.Row="1" HorizontalAlignment="Right" VerticalAlignment="Bottom">
-                            <Button Content="确定创建" Style="{DynamicResource ButtonPrimary}" MinWidth="100" MinHeight="45" FontSize="14" x:Name="Create_OKBtn" Click="Create_OKBtn_Click"/>
+                            <Button Content="{Binding [Frp_MSLFrp_ConfirmCreate], Source={x:Static langs:LanguageManager.Instance}}" Style="{DynamicResource ButtonPrimary}" MinWidth="100" MinHeight="45" FontSize="14" x:Name="Create_OKBtn" Click="Create_OKBtn_Click"/>
                         </StackPanel>
                     </Grid>
                 </Grid>
             </TabItem>
-            <TabItem Header="个人中心">
+            <TabItem Header="{Binding [Frp_MSLFrp_UserCenter], Source={x:Static langs:LanguageManager.Instance}}">
                 <Frame x:Name="UserCenterFrame" BorderThickness="0"/>
             </TabItem>
         </TabControl>

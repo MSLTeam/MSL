@@ -34,20 +34,20 @@ namespace MSL
             e.Handled = true;
 
             var exception = e.Exception;
-            string fullTrace = exception?.ToString() ?? "没有可用的堆栈跟踪信息。";
+            string fullTrace = exception?.ToString() ?? Lang.App_Error_NoStackTrace;
 
             // 记录本地日志
             LogHelper.Write.Fatal($"捕获到UI线程异常: {fullTrace}");
 
             // 准备提示信息
             var messageBuilder = new StringBuilder();
-            messageBuilder.AppendLine($"程序在运行的时候发生了异常。");
-            messageBuilder.AppendLine(exception.Message?? "未知错误");
-            messageBuilder.AppendLine($"请检查是否安装了.NET Framework 4.7.2运行库。");
-            messageBuilder.AppendLine($"若确定运行环境正常，请将错误提交给开发者处理哦！");
+            messageBuilder.AppendLine(Lang.App_Error_RuntimeException);
+            messageBuilder.AppendLine(exception.Message ?? Lang.App_Error_UnknownError);
+            messageBuilder.AppendLine(Lang.App_Error_CheckDotNet);
+            messageBuilder.AppendLine(Lang.App_Error_ReportToDev);
 
             // 向用户显示所有信息
-            MessageBox.Show(messageBuilder.ToString(), "应用程序错误", MessageBoxButton.OK, MessageBoxImage.Error);
+            MessageBox.Show(messageBuilder.ToString(), Lang.App_Error_Title, MessageBoxButton.OK, MessageBoxImage.Error);
         }
 
 
@@ -55,15 +55,15 @@ namespace MSL
         private void AppDomain_UnhandledException(object sender, UnhandledExceptionEventArgs e)
         {
             var exception = e.ExceptionObject as Exception;
-            string fullTrace = exception?.ToString() ?? "没有可用的堆栈跟踪信息。";
+            string fullTrace = exception?.ToString() ?? Lang.App_Error_NoStackTrace;
 
             // 写入本地日志
             LogHelper.Write.Fatal($"捕获到致命的非UI线程异常，程序即将退出: {fullTrace}");
 
             MessageBox.Show(
-                "程序遇到了一个无法恢复的致命错误，即将关闭。" + (exception.Message ?? "未知错误" )+ "\n\n" +
-                "请查看本地日志文件获取详细信息。建议提交给开发者哦！",
-                "致命错误", MessageBoxButton.OK, MessageBoxImage.Error);
+                Lang.App_Error_Fatal + (exception.Message ?? Lang.App_Error_UnknownError) + "\n\n" +
+                Lang.App_Error_FatalDetail,
+                Lang.App_Error_FatalTitle, MessageBoxButton.OK, MessageBoxImage.Error);
         }
 
         //以创建Mutex的方式防止同目录多开，避免奇奇怪怪的文件占用错误
@@ -94,6 +94,20 @@ namespace MSL
                 // 初始化日志系统
                 LogHelper.Init();
                 LogHelper.Write.Info("MSL，启动！");
+
+                // 尽早恢复语言设置，确保所有窗口（包括 ServerRunner）创建时 Culture 已正确
+                try
+                {
+                    var cfg = MSL.utils.Config.AppConfig.Current;
+                    if (!string.IsNullOrEmpty(cfg.Lang))
+                    {
+                        langs.LanguageManager.Instance.ChangeLanguage(new System.Globalization.CultureInfo(cfg.Lang));
+                    }
+                }
+                catch (Exception langEx)
+                {
+                    LogHelper.Write.Warn($"恢复语言设置失败: {langEx.Message}");
+                }
             }
             finally
             {

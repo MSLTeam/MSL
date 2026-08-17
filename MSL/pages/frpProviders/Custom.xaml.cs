@@ -1,4 +1,5 @@
-﻿using MSL.utils;
+﻿using MSL.langs;
+using MSL.utils;
 using Newtonsoft.Json.Linq;
 using System;
 using System.IO;
@@ -39,7 +40,7 @@ namespace MSL.pages.frpProviders
                     if (ServerIP.Text == "" || ServerPort.Text == "" || ClientRemotePort.Text == "" || ClientIP.Text == "" || ClientPort.Text == "")
                     {
                         LogHelper.Write.Warn("用户提交的表单中存在未填写的必填项。");
-                        MagicShow.ShowMsg(Window.GetWindow(this), "存在未填写的数据！\n请检查！", "错误！");
+                        MagicShow.ShowMsg(Window.GetWindow(this), Lang.Frp_Custom_UnfilledData, "错误！");
                     }
                     else
                     {
@@ -80,14 +81,14 @@ namespace MSL.pages.frpProviders
             catch (Exception ex)
             {
                 LogHelper.Write.Fatal($"在 OKBtn_Click 事件处理中发生严重错误: {ex.ToString()}");
-                MagicShow.ShowMsg(Window.GetWindow(this), "创建配置文件时发生未知错误，请检查日志！", "致命错误！");
+                MagicShow.ShowMsg(Window.GetWindow(this), Lang.Frp_Custom_CreateError, Lang.Frp_Custom_FatalError);
             }
         }
 
         private async void SetFrpcPath(int number)
         {
             LogHelper.Write.Info($"开始为隧道 {number} 设置最终配置路径和名称。");
-            string sn = await MagicShow.ShowInput(Window.GetWindow(this), "给此隧道取一个名字吧：", "我的自定义Frp节点");
+            string sn = await MagicShow.ShowInput(Window.GetWindow(this), Lang.Frp_Custom_NameTunnel, Lang.Frp_Custom_DefaultName);
             if (sn == null)
             {
                 LogHelper.Write.Warn($"用户取消了为隧道 {number} 命名，配置流程中止。");
@@ -110,10 +111,10 @@ namespace MSL.pages.frpProviders
                     LogHelper.Write.Info("用户选择使用自定义Frpc客户端。");
                     //选择文件对话框
                     OpenFileDialog openFileDialog = new OpenFileDialog();
-                    openFileDialog.Filter = "exe应用程序 (*.exe)|*.exe";
+                    openFileDialog.Filter = Lang.Frp_Custom_ExeFilter;
                     openFileDialog.FilterIndex = 1;
                     openFileDialog.RestoreDirectory = true;
-                    openFileDialog.Title = "请选择您的Frpc客户端";
+                    openFileDialog.Title = Lang.Frp_Custom_SelectFrpc;
 
                     if (openFileDialog.ShowDialog() == DialogResult.OK)
                     {
@@ -153,14 +154,14 @@ namespace MSL.pages.frpProviders
                 string convertString = Convert.ToString(jobject);
                 File.WriteAllText(@"MSL\frp\config.json", convertString, Encoding.UTF8);
                 LogHelper.Write.Info("最终配置 config.json 已成功保存。");
-                await MagicShow.ShowMsgDialogAsync(Window.GetWindow(this), "隧道配置成功，请您点击“启动内网映射”以启动映射！", "信息");
+                await MagicShow.ShowMsgDialogAsync(Window.GetWindow(this), Lang.Frp_Custom_TunnelSuccess, "信息");
                 LogHelper.Write.Info($"隧道 {number} (名称: {sn}) 的配置流程已全部成功完成。");
                 _onReturn?.Invoke();
             }
             catch (Exception ex)
             {
                 LogHelper.Write.Fatal($"在 SetFrpcPath 方法中发生严重错误: {ex.ToString()}");
-                await MagicShow.ShowMsgDialogAsync(Window.GetWindow(this), "保存最终配置时发生错误，请检查日志！", "致命错误！");
+                await MagicShow.ShowMsgDialogAsync(Window.GetWindow(this), Lang.Frp_Custom_SaveError, Lang.Frp_Custom_FatalError);
             }
         }
 

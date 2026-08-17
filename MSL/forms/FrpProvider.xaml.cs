@@ -1,4 +1,5 @@
-﻿using MSL.pages.frpProviders;
+﻿using MSL.langs;
+using MSL.pages.frpProviders;
 using MSL.pages.frpProviders.MSLFrp;
 using System;
 using System.Collections.Generic;

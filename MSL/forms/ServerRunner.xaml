@@ -38,7 +38,7 @@
             </TabControl.Resources>
             <TabItem x:Name="Tab_Home" Width="50" Style="{StaticResource TabItemSideMenu}">
                 <TabItem.Header>
-                    <controls:TabControlHeader Text="仪表盘" IconKind="HomeOutline"/>
+                    <controls:TabControlHeader Text="{Binding [SR_Dashboard], Source={x:Static langs:LanguageManager.Instance}}" IconKind="HomeOutline"/>
                 </TabItem.Header>
                 <Grid Style="{StaticResource GridAnimation}">
                     <Grid.RowDefinitions>
@@ -53,14 +53,14 @@
                         <controls:MagicCard Grid.Column="0" Margin="10" Padding="0">
                             <hc:ScrollViewer IsInertiaEnabled="True" Margin="5" Padding="5">
                                 <StackPanel>
-                                    <Label Content="服务器基本信息" Style="{StaticResource BorderTitle}"/>
+                                    <Label Content="{Binding [SR_ServerBasicInfo], Source={x:Static langs:LanguageManager.Instance}}" Style="{StaticResource BorderTitle}"/>
                                     <Grid>
                                         <Grid.Resources>
                                             <Style TargetType="Label" BasedOn="{StaticResource {x:Type Label}}">
                                                 <Setter Property="HorizontalAlignment" Value="Stretch"/>
                                                 <Setter Property="VerticalAlignment" Value="Center"/>
                                                 <Setter Property="Height" Value="32"/>
-                                                <Setter Property="Margin" Value="90,0,0,0"/>
+                                                <Setter Property="Margin" Value="10,0,0,0"/>
                                                 <Setter Property="FontSize" Value="14"/>
                                             </Style>
                                             <Style TargetType="TextBlock">
@@ -79,29 +79,59 @@
                                             <RowDefinition Height="45"/>
                                             <RowDefinition Height="45"/>
                                         </Grid.RowDefinitions>
-                                        <TextBlock Grid.Row="0" Text="服务器状态"/>
-                                        <Label Grid.Row="0" x:Name="serverStateLab" Content="已关闭" Foreground="Green"/>
-                                        <TextBlock Grid.Row="1" Text="正版验证"/>
-                                        <Label Grid.Row="1" x:Name="onlineModeLab" Content="获取中"/>
-                                        <TextBlock Grid.Row="2" Text="游戏模式"/>
-                                        <Label Grid.Row="2" x:Name="gameTypeLab" Content="获取中"/>
-                                        <TextBlock Grid.Row="3" Text="游戏难度"/>
-                                        <Label Grid.Row="3" x:Name="gameDifficultyLab" Content="获取中"/>
-                                        <TextBlock Grid.Row="4" Text="服务器IP"/>
-                                        <Label Grid.Row="4" x:Name="serverIPLab" Content="获取中"/>
-                                        <TextBlock Grid.Row="5" Text="本地进入IP"/>
-                                        <Label Grid.Row="5" x:Name="localServerIPLab" Content="获取中"/>
-                                        <TextBlock Grid.Row="6" Text="远程进入IP"/>
-                                        <Button Grid.Row="6" x:Name="gotoFrpc" HorizontalAlignment="Stretch" Margin="90,0,0,0" VerticalAlignment="Center" Height="32" Content="点击获取" FontSize="14" Click="gotoFrpc_Click"/>
+                                        <Label Grid.Row="0">
+                                            <TextBlock>
+                                                <Run Text="{Binding [SR_ServerStatus], Source={x:Static langs:LanguageManager.Instance}, Mode=OneWay}"/>
+                                                <Run Text=": "/>
+                                                <Run x:Name="serverStateLab" Text="{Binding ServerStateText, Mode=OneWay}" Foreground="Green"/>
+                                            </TextBlock>
+                                        </Label>
+                                        <Label Grid.Row="1" x:Name="onlineModeLab">
+                                            <TextBlock>
+                                                <Run Text="{Binding [SR_OnlineMode], Source={x:Static langs:LanguageManager.Instance}, Mode=OneWay}"/>
+                                                <Run Text=": "/>
+                                                <Run Text="{Binding OnlineModeText, Mode=OneWay}" Foreground="{DynamicResource DarkPrimaryBrush}"/>
+                                            </TextBlock>
+                                        </Label>
+                                        <Label Grid.Row="2" x:Name="gameTypeLab">
+                                            <TextBlock>
+                                                <Run Text="{Binding [SR_GameMode], Source={x:Static langs:LanguageManager.Instance}, Mode=OneWay}"/>
+                                                <Run Text=": "/>
+                                                <Run Text="{Binding GameTypeText, Mode=OneWay}" Foreground="{DynamicResource DarkPrimaryBrush}"/>
+                                            </TextBlock>
+                                        </Label>
+                                        <Label Grid.Row="3" x:Name="gameDifficultyLab">
+                                            <TextBlock>
+                                                <Run Text="{Binding [SR_GameDifficulty], Source={x:Static langs:LanguageManager.Instance}, Mode=OneWay}"/>
+                                                <Run Text=": "/>
+                                                <Run Text="{Binding GameDifficultyText, Mode=OneWay}" Foreground="{DynamicResource DarkPrimaryBrush}"/>
+                                            </TextBlock>
+                                        </Label>
+                                        <Label Grid.Row="4" x:Name="serverIPLab">
+                                            <TextBlock>
+                                                <Run Text="{Binding [SR_ServerIP], Source={x:Static langs:LanguageManager.Instance}, Mode=OneWay}"/>
+                                                <Run Text=": "/>
+                                                <Run Text="{Binding ServerIPText, Mode=OneWay}" Foreground="{DynamicResource DarkPrimaryBrush}"/>
+                                            </TextBlock>
+                                        </Label>
+                                        <Label Grid.Row="5" x:Name="localServerIPLab">
+                                            <TextBlock>
+                                                <Run Text="{Binding [SR_LocalIP], Source={x:Static langs:LanguageManager.Instance}, Mode=OneWay}"/>
+                                                <Run Text=": "/>
+                                                <Run Text="{Binding LocalIPText, Mode=OneWay}" Foreground="{DynamicResource DarkPrimaryBrush}"/>
+                                            </TextBlock>
+                                        </Label>
+                                        <TextBlock Grid.Row="6" Text="{Binding [SR_RemoteIP], Source={x:Static langs:LanguageManager.Instance}}"/>
+                                        <Button Grid.Row="6" x:Name="gotoFrpc" HorizontalAlignment="Stretch" Margin="90,0,0,0" VerticalAlignment="Center" Height="32" Content="{Binding [SR_ClickToGet], Source={x:Static langs:LanguageManager.Instance}}" FontSize="14" Click="gotoFrpc_Click"/>
                                     </Grid>
-                                    <Label Margin="0,20,0,0" Content="系统占用" Style="{StaticResource BorderTitle}"/>
+                                    <Label Margin="0,20,0,0" Content="{Binding [SR_SysUsage], Source={x:Static langs:LanguageManager.Instance}}" Style="{StaticResource BorderTitle}"/>
                                     <Grid Margin="0,10,0,20">
-                                        <Label x:Name="cpuInfoLab" Content="CPU占用" Height="30" VerticalAlignment="Top" HorizontalAlignment="Stretch"/>
+                                        <Label x:Name="cpuInfoLab" Content="{Binding [SR_CPUUsage], Source={x:Static langs:LanguageManager.Instance}}" Height="30" VerticalAlignment="Top" HorizontalAlignment="Stretch"/>
                                         <ProgressBar x:Name="cpuInfoBar" Style="{StaticResource ProgressBarFlat}" Height="25" Margin="0,40,0,0" VerticalAlignment="Top"/>
-                                        <Label x:Name="memoryInfoLab" Content="内存占用" Height="60" Margin="0,80,0,0" VerticalAlignment="Top" HorizontalAlignment="Stretch"/>
-                                        <Label x:Name="usedMemoryLab" Content="系统已用内存" Height="30" Margin="0,150,0,0" VerticalAlignment="Top" HorizontalAlignment="Stretch"/>
+                                        <Label x:Name="memoryInfoLab" Content="{Binding [SR_MemUsage], Source={x:Static langs:LanguageManager.Instance}}" Height="60" Margin="0,80,0,0" VerticalAlignment="Top" HorizontalAlignment="Stretch"/>
+                                        <Label x:Name="usedMemoryLab" Content="{Binding [SR_SysMemUsed], Source={x:Static langs:LanguageManager.Instance}}" Height="30" Margin="0,150,0,0" VerticalAlignment="Top" HorizontalAlignment="Stretch"/>
                                         <ProgressBar x:Name="memoryInfoBar" Style="{StaticResource ProgressBarFlat}" Height="25" Margin="0,190,0,0" VerticalAlignment="Top"/>
-                                        <Label x:Name="processMemoryInfoLab" Content="系统空闲内存" Height="30" Margin="0,225,0,0" HorizontalAlignment="Stretch" VerticalAlignment="Top"/>
+                                        <Label x:Name="processMemoryInfoLab" Content="{Binding [SR_SysMemFree], Source={x:Static langs:LanguageManager.Instance}}" Height="30" Margin="0,225,0,0" HorizontalAlignment="Stretch" VerticalAlignment="Top"/>
                                         <ProgressBar x:Name="processMemoryInfoBar" Style="{StaticResource ProgressBarFlat}" Height="25" Margin="0,265,0,0" VerticalAlignment="Top"/>
                                     </Grid>
                                 </StackPanel>
@@ -114,27 +144,27 @@
                             </Grid.RowDefinitions>
                             <Border Grid.Row="0" Style="{StaticResource MagicBorder}" Margin="0,10,10,10" VerticalAlignment="Stretch" >
                                 <Grid>
-                                    <Label Content="日志输出" Style="{StaticResource BorderTitle}"/>
-                                    <TextBox x:Name="previewOutlog" Text="此处仅显示部分日志，完整输出请转到控制台界面" Margin="5,35,5,5" IsReadOnly="True" TextWrapping="Wrap" VerticalContentAlignment="Top" FontSize="14" Padding="10" VerticalScrollBarVisibility="Auto"/>
+                                    <Label Content="{Binding [SR_LogOutput], Source={x:Static langs:LanguageManager.Instance}}" Style="{StaticResource BorderTitle}"/>
+                                    <TextBox x:Name="previewOutlog" Margin="5,35,5,5" IsReadOnly="True" TextWrapping="Wrap" VerticalContentAlignment="Top" FontSize="14" Padding="10" VerticalScrollBarVisibility="Auto"/>
                                 </Grid>
                             </Border>
                             <Border Grid.Row="1" Style="{StaticResource MagicBorder}" VerticalAlignment="Stretch" Margin="0,0,10,10" >
                                 <Grid>
-                                    <Label Content="玩家列表" Style="{StaticResource BorderTitle}"/>
+                                    <Label Content="{Binding [SR_PlayerList], Source={x:Static langs:LanguageManager.Instance}}" Style="{StaticResource BorderTitle}"/>
                                     <ListBox x:Name="serverPlayerList" hc:ScrollViewer.HorizontalScrollBarVisibility="Auto" hc:Empty.ShowEmpty="true" Margin="5,35,5,5">
                                         <ListBox.ContextMenu>
                                             <ContextMenu>
-                                                <MenuItem x:Name="copyPlayer" Click="copyPlayer_Click" Header="复制信息">
+                                                <MenuItem x:Name="copyPlayer" Click="copyPlayer_Click" Header="{Binding [SR_CopyInfo], Source={x:Static langs:LanguageManager.Instance}}">
                                                     <MenuItem.Icon>
                                                         <iconPacks:PackIconMaterial Kind="ContentCopy"/>
                                                     </MenuItem.Icon>
                                                 </MenuItem>
-                                                <MenuItem x:Name="kickPlayer" Click="kickPlayer_Click" Header="踢出玩家">
+                                                <MenuItem x:Name="kickPlayer" Click="kickPlayer_Click" Header="{Binding [SR_KickPlayer], Source={x:Static langs:LanguageManager.Instance}}">
                                                     <MenuItem.Icon>
                                                         <iconPacks:PackIconMaterial Kind="AccountRemove"/>
                                                     </MenuItem.Icon>
                                                 </MenuItem>
-                                                <MenuItem x:Name="banPlayer" Click="banPlayer_Click" Header="封禁玩家">
+                                                <MenuItem x:Name="banPlayer" Click="banPlayer_Click" Header="{Binding [SR_BanPlayer], Source={x:Static langs:LanguageManager.Instance}}">
                                                     <MenuItem.Icon>
                                                         <iconPacks:PackIconMaterial Kind="AccountCancel"/>
                                                     </MenuItem.Icon>
@@ -166,12 +196,12 @@
                                 </Style>
                             </ToggleButton.Style>
                         </ToggleButton>
-                        <Button x:Name="solveProblemBtn" Grid.Column="1" hc:IconElement.Geometry="{StaticResource AskGeometry}" hc:IconElement.Height="18" Style="{StaticResource ButtonDanger}" Content="崩溃检测"  Click="solveProblemBtn_Click" FontSize="14" VerticalAlignment="Stretch" Margin="0,0,10,10" HorizontalAlignment="Stretch"/>
+                        <Button x:Name="solveProblemBtn" Grid.Column="1" hc:IconElement.Geometry="{StaticResource AskGeometry}" hc:IconElement.Height="18" Style="{StaticResource ButtonDanger}" Content="{Binding [SR_CrashDetect], Source={x:Static langs:LanguageManager.Instance}}"  Click="solveProblemBtn_Click" FontSize="14" VerticalAlignment="Stretch" Margin="0,0,10,10" HorizontalAlignment="Stretch"/>
                         <Button x:Name="openServerDir" Grid.Column="2" Height="60" VerticalAlignment="Bottom" HorizontalAlignment="Stretch" Margin="0,0,10,10" FontSize="14" Click="openServerDir_Click">
                             <Button.Content>
                                 <hc:UniformSpacingPanel Orientation="Horizontal" Spacing="5">
                                     <iconPacks:PackIconMaterial Kind="Folder"/>
-                                    <TextBlock Text="打开服务器目录"/>
+                                    <TextBlock Text="{Binding [SR_OpenServerDir], Source={x:Static langs:LanguageManager.Instance}}"/>
                                 </hc:UniformSpacingPanel>
                             </Button.Content>
                         </Button>
@@ -180,7 +210,7 @@
             </TabItem>
             <TabItem x:Name="Tab_Console" Width="50" Style="{StaticResource TabItemSideMenu}">
                 <TabItem.Header>
-                    <controls:TabControlHeader IconKind="Console" Text="控制台"/>
+                    <controls:TabControlHeader IconKind="Console" Text="{Binding [SR_Console], Source={x:Static langs:LanguageManager.Instance}}"/>
                 </TabItem.Header>
                 <Grid x:Name="CmdGrid" Style="{StaticResource GridAnimation}">
                     <avalon:TextEditor x:Name="outlog"
@@ -189,18 +219,18 @@
                                        BorderBrush="{DynamicResource BorderBrush}" BorderThickness="1" WordWrap="True">
                         <avalon:TextEditor.ContextMenu>
                             <ContextMenu>
-                                <MenuItem Header="复制" x:Name="AEMenuCopy" Click="LogMenu_Copy">
+                                <MenuItem Header="{Binding [SR_Copy], Source={x:Static langs:LanguageManager.Instance}}" x:Name="AEMenuCopy" Click="LogMenu_Copy">
                                     <MenuItem.Icon>
                                         <iconPacks:PackIconMaterial Kind="ContentCopy"/>
                                     </MenuItem.Icon>
                                 </MenuItem>
-                                <MenuItem Header="全选" x:Name="AEMenuSelectAll" Click="LogMenu_SelectAll">
+                                <MenuItem Header="{Binding [SR_SelectAll], Source={x:Static langs:LanguageManager.Instance}}" x:Name="AEMenuSelectAll" Click="LogMenu_SelectAll">
                                     <MenuItem.Icon>
                                         <iconPacks:PackIconMaterial Kind="SelectAll"/>
                                     </MenuItem.Icon>
                                 </MenuItem>
                                 <Separator/>
-                                <MenuItem Header="清屏" x:Name="AEMenuClear" Click="LogMenu_Clear">
+                                <MenuItem Header="{Binding [SR_ClearScreen], Source={x:Static langs:LanguageManager.Instance}}" x:Name="AEMenuClear" Click="LogMenu_Clear">
                                     <MenuItem.Icon>
                                         <iconPacks:PackIconMaterial Kind="Broom"/>
                                     </MenuItem.Icon>
@@ -227,15 +257,15 @@
                         </Grid.ColumnDefinitions>
 
                         <ComboBox Grid.Column="0" x:Name="fastCMD" HorizontalAlignment="Left" Margin="10,0,5,10" SelectedIndex="0" IsEnabled="False" Width="100" Height="32">
-                            <ComboBoxItem Content="/（指令）"/>
+                            <ComboBoxItem Content="{Binding [SR_CmdHint], Source={x:Static langs:LanguageManager.Instance}}"/>
                         </ComboBox>
 
-                        <TextBox x:Name="cmdtext" Grid.Column="1" Margin="0,0,5,10" Text="服务器已关闭" KeyDown="cmdtext_KeyDown" PreviewKeyDown="cmdtext_PreviewKeyDown" IsEnabled="False"/>
-                        <Button x:Name="sendcmd" Grid.Column="2" Content="发送" Style="{StaticResource ButtonPrimary}" Width="60" Height="32" Margin="0,0,5,10" Click="sendcmd_Click" IsEnabled="False"/>
+                        <TextBox x:Name="cmdtext" Grid.Column="1" Margin="0,0,5,10" KeyDown="cmdtext_KeyDown" PreviewKeyDown="cmdtext_PreviewKeyDown" IsEnabled="False"/>
+                        <Button x:Name="sendcmd" Grid.Column="2" Content="{Binding [SR_Send], Source={x:Static langs:LanguageManager.Instance}}" Style="{StaticResource ButtonPrimary}" MinWidth="60" Padding="10,0" Height="32" Margin="0,0,5,10" Click="sendcmd_Click" IsEnabled="False"/>
                         <ComboBox x:Name="MoreOperation" Grid.Column="3" Height="32" Margin="0,0,5,10" SelectionChanged="MoreOperation_SelectionChanged">
-                            <ComboBoxItem Content="更多操作" IsSelected="True"/>
-                            <ComboBoxItem Content="备份"/>
-                            <ComboBoxItem Content="日志分析"/>
+                            <ComboBoxItem Content="{Binding [SR_MoreActions], Source={x:Static langs:LanguageManager.Instance}}" IsSelected="True"/>
+                            <ComboBoxItem Content="{Binding [SR_Backup], Source={x:Static langs:LanguageManager.Instance}}"/>
+                            <ComboBoxItem Content="{Binding [SR_LogAnalysis], Source={x:Static langs:LanguageManager.Instance}}"/>
                         </ComboBox>
                         <ToggleButton x:Name="controlServer" Grid.Column="4" Margin="0,0,5,10" MinWidth="60" Height="32" Click="controlServer_Click" MouseDoubleClick="controlServer_MouseDoubleClick">
                             <ToggleButton.Style>
@@ -258,11 +288,11 @@
             </TabItem>
             <TabItem x:Name="Tab_Plugins" Width="50" Style="{StaticResource TabItemSideMenu}">
                 <TabItem.Header>
-                    <controls:TabControlHeader IconKind="FolderFileOutline" Text="插件/模组"/>
+                    <controls:TabControlHeader IconKind="FolderFileOutline" Text="{Binding [SR_PluginsMods], Source={x:Static langs:LanguageManager.Instance}}"/>
                 </TabItem.Header>
                 <Grid Style="{StaticResource GridAnimation}">
                     <TabControl x:Name="pluginsAndModsTab" Margin="10,5,10,10" Style="{StaticResource TabControlCapsuleInLine}" Background="Transparent" BorderThickness="0">
-                        <TabItem x:Name="pluginsTabItem" Header="管理服务器插件">
+                        <TabItem x:Name="pluginsTabItem" Header="{Binding [SR_ManagePlugins], Source={x:Static langs:LanguageManager.Instance}}">
                             <controls:MagicCard x:Name="ManagePluginsCard">
                                 <Grid>
                                     <Grid.ColumnDefinitions>
@@ -273,22 +303,22 @@
                                         <Grid.Resources>
                                             <ResourceDictionary>
                                                 <ContextMenu x:Key="PluginListContextMenu">
-                                                    <MenuItem x:Name="disPlugin" Click="disPlugin_Click" Header="禁用/启用所选插件">
+                                                    <MenuItem x:Name="disPlugin" Click="disPlugin_Click" Header="{Binding [SR_TogglePlugin], Source={x:Static langs:LanguageManager.Instance}}">
                                                         <MenuItem.Icon>
                                                             <iconPacks:PackIconMaterial Kind="FileCancel"/>
                                                         </MenuItem.Icon>
                                                     </MenuItem>
-                                                    <MenuItem x:Name="delPlugin" Click="delPlugin_Click" Header="删除所选插件">
+                                                    <MenuItem x:Name="delPlugin" Click="delPlugin_Click" Header="{Binding [SR_DeletePlugin], Source={x:Static langs:LanguageManager.Instance}}">
                                                         <MenuItem.Icon>
                                                             <iconPacks:PackIconMaterial Kind="FileRemove"/>
                                                         </MenuItem.Icon>
                                                     </MenuItem>
-                                                    <MenuItem x:Name="disAllPlugin" Click="disAllPlugin_Click" Header="禁用/启用全部插件">
+                                                    <MenuItem x:Name="disAllPlugin" Click="disAllPlugin_Click" Header="{Binding [SR_ToggleAllPlugins], Source={x:Static langs:LanguageManager.Instance}}">
                                                         <MenuItem.Icon>
                                                             <iconPacks:PackIconMaterial Kind="Cancel"/>
                                                         </MenuItem.Icon>
                                                     </MenuItem>
-                                                    <MenuItem x:Name="openpluginsDir" Click="openpluginsDir_Click" Header="打开插件文件夹">
+                                                    <MenuItem x:Name="openpluginsDir" Click="openpluginsDir_Click" Header="{Binding [SR_OpenPluginDir], Source={x:Static langs:LanguageManager.Instance}}">
                                                         <MenuItem.Icon>
                                                             <iconPacks:PackIconMaterial Kind="Folder"/>
                                                         </MenuItem.Icon>
@@ -302,8 +332,8 @@
                                             <RowDefinition/>
                                         </Grid.RowDefinitions>
                                         <hc:UniformSpacingPanel Orientation="Horizontal" Spacing="10">
-                                            <TextBlock Text="插件列表" FontSize="18" FontWeight="Bold" Foreground="{DynamicResource PrimaryTextBrush}"/>
-                                            <TextBlock Text="(插件变动在服务器重启后生效)" FontSize="16" Foreground="{DynamicResource PrimaryTextBrush}"/>
+                                            <TextBlock Text="{Binding [SR_PluginList], Source={x:Static langs:LanguageManager.Instance}}" FontSize="18" FontWeight="Bold" Foreground="{DynamicResource PrimaryTextBrush}"/>
+                                            <TextBlock Text="{Binding [SR_PluginRestartHint], Source={x:Static langs:LanguageManager.Instance}}" FontSize="16" Foreground="{DynamicResource PrimaryTextBrush}"/>
                                         </hc:UniformSpacingPanel>
 
                                         <ListView x:Name="pluginslist"
@@ -326,7 +356,7 @@
                                                             </DataTemplate>
                                                         </GridViewColumn.CellTemplate>
                                                     </GridViewColumn>
-                                                    <GridViewColumn x:Name="pluginlistPluginName" Width="350" Header="插件名称">
+                                                    <GridViewColumn x:Name="pluginlistPluginName" Width="350" Header="{Binding [SR_PluginName], Source={x:Static langs:LanguageManager.Instance}}">
                                                         <GridViewColumn.CellTemplate>
                                                             <DataTemplate>
                                                                 <hc:UniformSpacingPanel Orientation="Horizontal" Spacing="5">
@@ -343,7 +373,7 @@
                                                                                 </Style.Triggers>
                                                                             </Style>
                                                                         </Border.Style>
-                                                                        <TextBlock Text="已禁用" FontSize="10" Foreground="White" VerticalAlignment="Center"/>
+                                                                        <TextBlock Text="{Binding [SR_Disabled], Source={x:Static langs:LanguageManager.Instance}}" FontSize="10" Foreground="White" VerticalAlignment="Center"/>
                                                                     </Border>
 
                                                                     <TextBlock Width="Auto" Text="{Binding PluginName}" FontSize="12"/>
@@ -355,7 +385,7 @@
                                                         <GridViewColumn.CellTemplate>
                                                             <DataTemplate>
                                                                 <Button hc:IconElement.Width="14"
-                                                                        hc:Poptip.Content="显示操作"
+                                                                        hc:Poptip.Content="{Binding [SR_ShowActions], Source={x:Static langs:LanguageManager.Instance}}"
                                                                         hc:Poptip.HorizontalOffset="40"
                                                                         hc:Poptip.Placement="Left"
                                                                         Click="MenuButton_Click"
@@ -390,12 +420,12 @@
                                             </Style>
                                         </hc:UniformSpacingPanel.Resources>
 
-                                        <TextBlock Text="操作" FontSize="18" FontWeight="Bold" Foreground="{DynamicResource PrimaryTextBrush}"/>
+                                        <TextBlock Text="{Binding [SR_Actions], Source={x:Static langs:LanguageManager.Instance}}" FontSize="18" FontWeight="Bold" Foreground="{DynamicResource PrimaryTextBrush}"/>
                                         <Button x:Name="reFresh_Copy" Style="{StaticResource PrimaryButtonStyle}" Click="reFresh_Click">
                                             <Button.Content>
                                                 <hc:UniformSpacingPanel Orientation="Horizontal" Spacing="5">
                                                     <iconPacks:PackIconMaterial Kind="Refresh"/>
-                                                    <TextBlock Text="刷新"/>
+                                                    <TextBlock Text="{Binding [SR_Refresh], Source={x:Static langs:LanguageManager.Instance}}"/>
                                                 </hc:UniformSpacingPanel>
                                             </Button.Content>
                                         </Button>
@@ -403,7 +433,7 @@
                                             <Button.Content>
                                                 <hc:UniformSpacingPanel Orientation="Horizontal" Spacing="5">
                                                     <iconPacks:PackIconMaterial Kind="Plus"/>
-                                                    <TextBlock Text="添加插件"/>
+                                                    <TextBlock Text="{Binding [SR_AddPlugin], Source={x:Static langs:LanguageManager.Instance}}"/>
                                                 </hc:UniformSpacingPanel>
                                             </Button.Content>
                                         </Button>
@@ -411,7 +441,7 @@
                                             <Button.Content>
                                                 <hc:UniformSpacingPanel Orientation="Horizontal" Spacing="5">
                                                     <iconPacks:PackIconMaterial Kind="Download"/>
-                                                    <TextBlock Text="下载插件"/>
+                                                    <TextBlock Text="{Binding [SR_DownloadPlugin], Source={x:Static langs:LanguageManager.Instance}}"/>
                                                 </hc:UniformSpacingPanel>
                                             </Button.Content>
                                         </Button>
@@ -419,7 +449,7 @@
                                             <Button.Content>
                                                 <hc:UniformSpacingPanel Orientation="Horizontal" Spacing="5">
                                                     <iconPacks:PackIconMaterial Kind="Folder"/>
-                                                    <TextBlock Text="打开文件夹"/>
+                                                    <TextBlock Text="{Binding [SR_OpenFolder], Source={x:Static langs:LanguageManager.Instance}}"/>
                                                 </hc:UniformSpacingPanel>
                                             </Button.Content>
                                         </Button>
@@ -427,7 +457,7 @@
                                 </Grid>
                             </controls:MagicCard>
                         </TabItem>
-                        <TabItem x:Name="modsTabItem" Header="管理服务器模组">
+                        <TabItem x:Name="modsTabItem" Header="{Binding [SR_ManageMods], Source={x:Static langs:LanguageManager.Instance}}">
                             <controls:MagicCard x:Name="ManageModsCard">
                                 <Grid>
                                     <Grid.ColumnDefinitions>
@@ -438,22 +468,22 @@
                                         <Grid.Resources>
                                             <ResourceDictionary>
                                                 <ContextMenu x:Key="PluginListContextMenu">
-                                                    <MenuItem x:Name="disMod" Click="disMod_Click" Header="禁用/启用所选模组">
+                                                    <MenuItem x:Name="disMod" Click="disMod_Click" Header="{Binding [SR_ToggleMod], Source={x:Static langs:LanguageManager.Instance}}">
                                                         <MenuItem.Icon>
                                                             <iconPacks:PackIconMaterial Kind="FileCancel"/>
                                                         </MenuItem.Icon>
                                                     </MenuItem>
-                                                    <MenuItem x:Name="delMod" Click="delMod_Click" Header="删除所选模组">
+                                                    <MenuItem x:Name="delMod" Click="delMod_Click" Header="{Binding [SR_DeleteMod], Source={x:Static langs:LanguageManager.Instance}}">
                                                         <MenuItem.Icon>
                                                             <iconPacks:PackIconMaterial Kind="FileRemove"/>
                                                         </MenuItem.Icon>
                                                     </MenuItem>
-                                                    <MenuItem x:Name="disAllMod" Click="disAllMod_Click" Header="禁用/启用全部模组">
+                                                    <MenuItem x:Name="disAllMod" Click="disAllMod_Click" Header="{Binding [SR_ToggleAllMods], Source={x:Static langs:LanguageManager.Instance}}">
                                                         <MenuItem.Icon>
                                                             <iconPacks:PackIconMaterial Kind="Cancel"/>
                                                         </MenuItem.Icon>
                                                     </MenuItem>
-                                                    <MenuItem x:Name="openmodsDir" Click="openmodsDir_Click" Header="打开模组文件夹">
+                                                    <MenuItem x:Name="openmodsDir" Click="openmodsDir_Click" Header="{Binding [SR_OpenModDir], Source={x:Static langs:LanguageManager.Instance}}">
                                                         <MenuItem.Icon>
                                                             <iconPacks:PackIconMaterial Kind="Folder"/>
                                                         </MenuItem.Icon>
@@ -467,8 +497,8 @@
                                             <RowDefinition/>
                                         </Grid.RowDefinitions>
                                         <hc:UniformSpacingPanel Orientation="Horizontal" Spacing="10">
-                                            <TextBlock Text="模组列表" FontSize="18" FontWeight="Bold" Foreground="{DynamicResource PrimaryTextBrush}"/>
-                                            <TextBlock Text="(模组变动在服务器重启后生效)" FontSize="16" Foreground="{DynamicResource PrimaryTextBrush}"/>
+                                            <TextBlock Text="{Binding [SR_ModList], Source={x:Static langs:LanguageManager.Instance}}" FontSize="18" FontWeight="Bold" Foreground="{DynamicResource PrimaryTextBrush}"/>
+                                            <TextBlock Text="{Binding [SR_ModRestartHint], Source={x:Static langs:LanguageManager.Instance}}" FontSize="16" Foreground="{DynamicResource PrimaryTextBrush}"/>
                                         </hc:UniformSpacingPanel>
 
                                         <ListView x:Name="modslist"
@@ -491,7 +521,7 @@
                                                             </DataTemplate>
                                                         </GridViewColumn.CellTemplate>
                                                     </GridViewColumn>
-                                                    <GridViewColumn x:Name="modlistModName" Width="350" Header="模组名称">
+                                                    <GridViewColumn x:Name="modlistModName" Width="350" Header="{Binding [SR_ModName], Source={x:Static langs:LanguageManager.Instance}}">
                                                         <GridViewColumn.CellTemplate>
                                                             <DataTemplate>
                                                                 <hc:UniformSpacingPanel Orientation="Horizontal" Spacing="5">
@@ -508,7 +538,7 @@
                                                                                 </Style.Triggers>
                                                                             </Style>
                                                                         </Border.Style>
-                                                                        <TextBlock Text="已禁用" FontSize="10" Foreground="White" VerticalAlignment="Center"/>
+                                                                        <TextBlock Text="{Binding [SR_Disabled], Source={x:Static langs:LanguageManager.Instance}}" FontSize="10" Foreground="White" VerticalAlignment="Center"/>
                                                                     </Border>
 
                                                                     <Border CornerRadius="4" Background="Orange" Margin="0,0,5,0" Padding="4,1">
@@ -522,7 +552,7 @@
                                                                                 </Style.Triggers>
                                                                             </Style>
                                                                         </Border.Style>
-                                                                        <TextBlock Text="客户端" FontSize="10" Foreground="White" VerticalAlignment="Center"/>
+                                                                        <TextBlock Text="{Binding [SR_ClientSide], Source={x:Static langs:LanguageManager.Instance}}" FontSize="10" Foreground="White" VerticalAlignment="Center"/>
                                                                     </Border>
 
                                                                     <TextBlock Width="Auto" Text="{Binding ModName}" FontSize="12"/>
@@ -534,7 +564,7 @@
                                                         <GridViewColumn.CellTemplate>
                                                             <DataTemplate>
                                                                 <Button hc:IconElement.Width="14"
-                                                                        hc:Poptip.Content="显示操作"
+                                                                        hc:Poptip.Content="{Binding [SR_ShowActions], Source={x:Static langs:LanguageManager.Instance}}"
                                                                         hc:Poptip.HorizontalOffset="40"
                                                                         hc:Poptip.Placement="Left"
                                                                         Click="MenuButton_Click"
@@ -570,12 +600,12 @@
                                             </Style>
                                         </hc:UniformSpacingPanel.Resources>
 
-                                        <TextBlock Text="操作" FontSize="18" FontWeight="Bold" Foreground="{DynamicResource PrimaryTextBrush}"/>
+                                        <TextBlock Text="{Binding [SR_Actions], Source={x:Static langs:LanguageManager.Instance}}" FontSize="18" FontWeight="Bold" Foreground="{DynamicResource PrimaryTextBrush}"/>
                                         <Button Style="{StaticResource PrimaryButtonStyle}" Click="reFresh_Click">
                                             <Button.Content>
                                                 <hc:UniformSpacingPanel Orientation="Horizontal" Spacing="5">
                                                     <iconPacks:PackIconMaterial Kind="Refresh"/>
-                                                    <TextBlock Text="刷新"/>
+                                                    <TextBlock Text="{Binding [SR_Refresh], Source={x:Static langs:LanguageManager.Instance}}"/>
                                                 </hc:UniformSpacingPanel>
                                             </Button.Content>
                                         </Button>
@@ -583,7 +613,7 @@
                                             <Button.Content>
                                                 <hc:UniformSpacingPanel Orientation="Horizontal" Spacing="5">
                                                     <iconPacks:PackIconMaterial Kind="Lightbulb"/>
-                                                    <TextBlock Text="添加模组必看"/>
+                                                    <TextBlock Text="{Binding [SR_AddModNote], Source={x:Static langs:LanguageManager.Instance}}"/>
                                                 </hc:UniformSpacingPanel>
                                             </Button.Content>
                                         </Button>
@@ -591,7 +621,7 @@
                                             <Button.Content>
                                                 <hc:UniformSpacingPanel Orientation="Horizontal" Spacing="5">
                                                     <iconPacks:PackIconMaterial Kind="MagnifyScan"/>
-                                                    <TextBlock Text="检测客户端模组"/>
+                                                    <TextBlock Text="{Binding [SR_DetectClientMods], Source={x:Static langs:LanguageManager.Instance}}"/>
                                                 </hc:UniformSpacingPanel>
                                             </Button.Content>
                                         </Button>
@@ -599,7 +629,7 @@
                                             <Button.Content>
                                                 <hc:UniformSpacingPanel Orientation="Horizontal" Spacing="5">
                                                     <iconPacks:PackIconMaterial Kind="Plus"/>
-                                                    <TextBlock Text="添加模组"/>
+                                                    <TextBlock Text="{Binding [SR_AddMod], Source={x:Static langs:LanguageManager.Instance}}"/>
                                                 </hc:UniformSpacingPanel>
                                             </Button.Content>
                                         </Button>
@@ -607,7 +637,7 @@
                                             <Button.Content>
                                                 <hc:UniformSpacingPanel Orientation="Horizontal" Spacing="5">
                                                     <iconPacks:PackIconMaterial Kind="Download"/>
-                                                    <TextBlock Text="下载模组"/>
+                                                    <TextBlock Text="{Binding [SR_DownloadMod], Source={x:Static langs:LanguageManager.Instance}}"/>
                                                 </hc:UniformSpacingPanel>
                                             </Button.Content>
                                         </Button>
@@ -615,7 +645,7 @@
                                             <Button.Content>
                                                 <hc:UniformSpacingPanel Orientation="Horizontal" Spacing="5">
                                                     <iconPacks:PackIconMaterial Kind="Folder"/>
-                                                    <TextBlock Text="打开文件夹"/>
+                                                    <TextBlock Text="{Binding [SR_OpenFolder], Source={x:Static langs:LanguageManager.Instance}}"/>
                                                 </hc:UniformSpacingPanel>
                                             </Button.Content>
                                         </Button>
@@ -629,97 +659,104 @@
             </TabItem>
             <TabItem x:Name="Tab_Settings" Width="50" Style="{StaticResource TabItemSideMenu}">
                 <TabItem.Header>
-                    <controls:TabControlHeader IconKind="Tune" Text="实例设置"/>
+                    <controls:TabControlHeader IconKind="Tune" Text="{Binding [SR_InstanceSettings], Source={x:Static langs:LanguageManager.Instance}}"/>
                 </TabItem.Header>
                 <Grid Style="{StaticResource GridAnimation}">
                     <TabControl Margin="10,5,10,10" Style="{StaticResource TabControlCapsuleInLine}" Background="Transparent" BorderThickness="0">
-                        <TabItem Header="实例设置">
+                        <TabItem Header="{Binding [SR_InstanceSettings], Source={x:Static langs:LanguageManager.Instance}}">
                             <hc:ScrollViewer IsInertiaEnabled="True">
                                 <controls:MagicCard >
                                     <StackPanel>
                                         <StackPanel>
-                                            <Label Content="实例信息" Style="{StaticResource BorderTitle}"/>
+                                            <Label Content="{Binding [SR_InstanceInfo], Source={x:Static langs:LanguageManager.Instance}}" Style="{StaticResource BorderTitle}"/>
                                             <Grid>
-                                                <Label Content="实例名称：" Style="{StaticResource MagicLabel14}"/>
+                                                <Label Content="{Binding [SR_InstanceName], Source={x:Static langs:LanguageManager.Instance}}" Style="{StaticResource MagicLabel14}"/>
                                                 <TextBox x:Name="nAme" MaxLines="1" AutoWordSelection="True" Margin="125,0,0,0" VerticalAlignment="Top"/>
-                                                <Label Content="实例存放目录：" Style="{StaticResource MagicLabel14}" Margin="0,35,0,0" />
+                                                <Label Content="{Binding [SR_InstanceDir], Source={x:Static langs:LanguageManager.Instance}}" Style="{StaticResource MagicLabel14}" Margin="0,35,0,0" />
                                                 <TextBox x:Name="bAse" MaxLines="1" AutoWordSelection="True" VerticalAlignment="Top" Margin="125,35,65,0"/>
-                                                <Button x:Name="a0" Content="浏览" Width="60" VerticalAlignment="Top" HorizontalAlignment="Right" Margin="0,35,0,0" Click="a0_Click"/>
+                                                <Button x:Name="a0" Content="{Binding [SR_Browse], Source={x:Static langs:LanguageManager.Instance}}" MinWidth="60" Padding="8,0" VerticalAlignment="Top" HorizontalAlignment="Right" Margin="0,35,0,0" Click="a0_Click"/>
                                             </Grid>
                                         </StackPanel>
                                         <StackPanel Margin="0,10,0,0">
-                                            <Label Content="实例设置" Style="{StaticResource BorderTitle}"/>
+                                            <Label Content="{Binding [SR_InstanceSettingsCard], Source={x:Static langs:LanguageManager.Instance}}" Style="{StaticResource BorderTitle}"/>
                                             <Grid x:Name="GridJavaSet">
-                                                <Label Content="Java地址：" Style="{StaticResource MagicLabel14}"/>
-                                                <RadioButton x:Name="useSelf" Content="手动选择Java" IsChecked="True" VerticalAlignment="Top" HorizontalAlignment="Left" Margin="125,5,0,0"/>
+                                                <Label Content="{Binding [SR_JavaPath], Source={x:Static langs:LanguageManager.Instance}}" Style="{StaticResource MagicLabel14}"/>
+                                                <RadioButton x:Name="useSelf" Content="{Binding [SR_ManualJava], Source={x:Static langs:LanguageManager.Instance}}" IsChecked="True" VerticalAlignment="Top" HorizontalAlignment="Left" Margin="125,5,0,0"/>
                                                 <TextBox x:Name="jAva" MaxLines="1" AutoWordSelection="True" VerticalAlignment="Top" Margin="250,0,65,0"/>
-                                                <Button x:Name="a03" Content="浏览" Width="60" Click="a03_Click" FontWeight="Normal" FontSize="12" Height="28" VerticalAlignment="Top" HorizontalAlignment="Right"/>
-                                                <RadioButton x:Name="useDownJv" Content="开服器在线下载" VerticalAlignment="Top" HorizontalAlignment="Left" Margin="125,40,0,0"/>
+                                                <Button x:Name="a03" Content="{Binding [SR_Browse], Source={x:Static langs:LanguageManager.Instance}}" MinWidth="60" Padding="8,0" Click="a03_Click" FontWeight="Normal" FontSize="12" Height="28" VerticalAlignment="Top" HorizontalAlignment="Right"/>
+                                                <RadioButton x:Name="useDownJv" Content="{Binding [SR_OnlineDownload], Source={x:Static langs:LanguageManager.Instance}}" VerticalAlignment="Top" HorizontalAlignment="Left" Margin="125,40,0,0"/>
                                                 <ComboBox x:Name="selectJava" Width="200" HorizontalAlignment="Left" VerticalAlignment="Top" Margin="250,35,0,0"/>
-                                                <RadioButton x:Name="usecheckedjv" Content="电脑上的Java" Margin="125,75,0,0" VerticalAlignment="Top" HorizontalAlignment="Left" Checked="usecheckedjv_Checked"/>
+                                                <RadioButton x:Name="usecheckedjv" Content="{Binding [SR_LocalJava], Source={x:Static langs:LanguageManager.Instance}}" Margin="125,75,0,0" VerticalAlignment="Top" HorizontalAlignment="Left" Checked="usecheckedjv_Checked"/>
                                                 <ComboBox x:Name="selectCheckedJavaComb" Margin="250,70,0,0" HorizontalAlignment="Left" VerticalAlignment="Top" Width="200"/>
-                                                <Button x:Name="ScanJava" Content="点我搜索" HorizontalAlignment="Left" Margin="455,70,0,0" VerticalAlignment="Top" Click="ScanJava_Click"/>
-                                                <RadioButton x:Name="useJvpath" Content="使用环境变量" VerticalAlignment="Top" HorizontalAlignment="Left" Margin="125,110,0,0" Click="useJvpath_Click"/>
+                                                <Button x:Name="ScanJava" Content="{Binding [SR_ScanJava], Source={x:Static langs:LanguageManager.Instance}}" HorizontalAlignment="Left" Margin="455,70,0,0" VerticalAlignment="Top" Click="ScanJava_Click"/>
+                                                <RadioButton x:Name="useJvpath" Content="{Binding [SR_UseEnvVar], Source={x:Static langs:LanguageManager.Instance}}" VerticalAlignment="Top" HorizontalAlignment="Left" Margin="125,110,0,0" Click="useJvpath_Click"/>
                                             </Grid>
                                             <hc:Divider Margin="0,10,0,10" x:Name="DivJavaSet"/>
                                             <Grid x:Name="GridServerCore">
-                                                <Label Content="服务端核心文件：" Style="{StaticResource MagicLabel14}"/>
-                                                <TextBox x:Name="server" MaxLines="1" AutoWordSelection="True" Margin="125,0,220,0"/>
-                                                <Button x:Name="a01" Content="浏览" Width="60" Click="a01_Click" HorizontalAlignment="Right" Margin="0,0,155,0"/>
-                                                <Button x:Name="downloadServer" hc:IconElement.Geometry="{StaticResource DownloadGeometry}" Content="下载服务端" Width="150" Click="downloadServer_Click" HorizontalAlignment="Right"/>
+                                                <Grid.ColumnDefinitions>
+                                                    <ColumnDefinition Width="Auto"/>
+                                                    <ColumnDefinition Width="*"/>
+                                                    <ColumnDefinition Width="Auto"/>
+                                                </Grid.ColumnDefinitions>
+                                                <Label Content="{Binding [SR_ServerCore], Source={x:Static langs:LanguageManager.Instance}}" Style="{StaticResource MagicLabel14}"/>
+                                                <TextBox Grid.Column="1" x:Name="server" MaxLines="1" AutoWordSelection="True"/>
+                                                <StackPanel Grid.Column="2" Orientation="Horizontal">
+                                                    <Button x:Name="a01" Margin="5,0,5,0" Content="{Binding [SR_Browse], Source={x:Static langs:LanguageManager.Instance}}" MinWidth="60" Padding="8,0" Click="a01_Click" HorizontalAlignment="Right"/>
+                                                    <Button x:Name="downloadServer" hc:IconElement.Geometry="{StaticResource DownloadGeometry}" Content="{Binding [SR_DownloadServer], Source={x:Static langs:LanguageManager.Instance}}" MinWidth="120" Padding="10,0" Click="downloadServer_Click" HorizontalAlignment="Right"/>
+                                                </StackPanel>
                                             </Grid>
                                             <hc:Divider Margin="0,10,0,10" x:Name="DivRemSet"/>
                                             <Grid x:Name="GridJavaRem">
-                                                <Label Content="服务器运行内存：" Style="{StaticResource MagicLabel14}"/>
-                                                <ToggleButton x:Name="autoSetMemory" Content="让Java自动分配" VerticalAlignment="Top" HorizontalAlignment="Left" Margin="125,0,0,0" Style="{StaticResource ToggleButtonSwitch}" Click="autoSetMemory_Click"/>
+                                                <Label Content="{Binding [SR_ServerMemory], Source={x:Static langs:LanguageManager.Instance}}" Style="{StaticResource MagicLabel14}"/>
+                                                <ToggleButton x:Name="autoSetMemory" Content="{Binding [SR_AutoAlloc], Source={x:Static langs:LanguageManager.Instance}}" VerticalAlignment="Top" HorizontalAlignment="Left" Margin="125,0,0,0" Style="{StaticResource ToggleButtonSwitch}" Click="autoSetMemory_Click"/>
                                                 <hc:RangeSlider x:Name="memorySlider" ValueChanged="memorySlider_ValueChanged" Height="18" VerticalAlignment="Top" Margin="125,35,180,5"/>
-                                                <TextBox x:Name="memoryInfo" Text="当前为自动分配" Foreground="{DynamicResource DarkPrimaryBrush}" TextAlignment="Center" TextChanged="memoryInfo_TextChanged" Width="165" HorizontalAlignment="Right" VerticalAlignment="Bottom"/>
+                                                <TextBox x:Name="memoryInfo" Foreground="{DynamicResource DarkPrimaryBrush}" TextAlignment="Center" TextChanged="memoryInfo_TextChanged" MinWidth="120" Padding="8,0" HorizontalAlignment="Right" VerticalAlignment="Bottom"/>
                                             </Grid>
                                             <hc:Divider Margin="0,10,0,10" x:Name="DivJvmSet"/>
                                             <Grid>
-                                                <Label x:Name="LabelArgsText" Content="服务器JVM参数：" Style="{StaticResource MagicLabel14}"/>
+                                                <Label x:Name="LabelArgsText" Content="{Binding [SR_JvmArgs], Source={x:Static langs:LanguageManager.Instance}}" Style="{StaticResource MagicLabel14}"/>
                                                 <StackPanel Margin="125,0,0,0">
                                                     <TextBox x:Name="jVMcmd" AutoWordSelection="True" VerticalAlignment="Top" AcceptsReturn="True" TextWrapping="Wrap"/>
                                                     <Border Margin="0,5" Style="{StaticResource BorderTipPrimary}">
-                                                        <TextBlock x:Name="TextArgsTips" Text="提示：一般格式为 -参数，如 -Dlog4j2.formatMsgNoLookups=true，非必要无需填写" TextWrapping="Wrap" Foreground="{DynamicResource DarkPrimaryBrush}" FontSize="14" HorizontalAlignment="Left" VerticalAlignment="Top"/>
+                                                        <TextBlock x:Name="TextArgsTips" Text="{Binding [SR_JvmArgsHint], Source={x:Static langs:LanguageManager.Instance}}" TextWrapping="Wrap" Foreground="{DynamicResource DarkPrimaryBrush}" FontSize="14" HorizontalAlignment="Left" VerticalAlignment="Top"/>
                                                     </Border>
                                                 </StackPanel>
                                             </Grid>
                                             <hc:Divider Margin="0,10,0,10" x:Name="DivYggdrasilSet"/>
                                             <Grid x:Name="GridYggdrasilSet">
                                                 <StackPanel Margin="0,0,0,0">
-                                                    <Label x:Name="LabelYggdrasilText" Content="外置登录验证地址配置(Yggdrasil API 认证服务器)：" Style="{StaticResource MagicLabel14}"/>
+                                                    <Label x:Name="LabelYggdrasilText" Content="{Binding [SR_YggdrasilConfig], Source={x:Static langs:LanguageManager.Instance}}" Style="{StaticResource MagicLabel14}"/>
                                                     <TextBox x:Name="YggdrasilAddr" AutoWordSelection="True" VerticalAlignment="Top" AcceptsReturn="True" TextWrapping="Wrap"/>
                                                     <StackPanel Margin="0,5" Orientation="Horizontal">
-                                                        <Button Content="设置为MSL统一身份认证(MSL Skin)" x:Name="YggMSL" Margin="0,0,5,0" Click="YggMSL_Click" />
-                                                        <Button Content="设置为Littleskin" x:Name="YggLittleskin" Margin="0,0,5,0" Click="YggLittleskin_Click"/>
-                                                        <Button Content="外置登录设置教程" x:Name="YggDocs" Margin="0,0,5,0" Click="YggDocs_Click"/>
+                                                        <Button Content="{Binding [SR_SetMSLAuth], Source={x:Static langs:LanguageManager.Instance}}" x:Name="YggMSL" Margin="0,0,5,0" Click="YggMSL_Click" />
+                                                        <Button Content="{Binding [SR_SetLittleskin], Source={x:Static langs:LanguageManager.Instance}}" x:Name="YggLittleskin" Margin="0,0,5,0" Click="YggLittleskin_Click"/>
+                                                        <Button Content="{Binding [SR_YggDocs], Source={x:Static langs:LanguageManager.Instance}}" x:Name="YggDocs" Margin="0,0,5,0" Click="YggDocs_Click"/>
                                                     </StackPanel>
                                                     <Border Margin="0,5" Style="{StaticResource BorderTipPrimary}">
-                                                        <TextBlock x:Name="TextYggdrasilTips" Text="填写此地址后将自动启用外置登录验证&#13;若需要关闭外置登录验证，请将此栏目清空即可！" TextWrapping="Wrap" Foreground="{DynamicResource DarkPrimaryBrush}" FontSize="14" HorizontalAlignment="Left" VerticalAlignment="Top"/>
+                                                        <TextBlock x:Name="TextYggdrasilTips" Text="{Binding [SR_YggHint], Source={x:Static langs:LanguageManager.Instance}}" TextWrapping="Wrap" Foreground="{DynamicResource DarkPrimaryBrush}" FontSize="14" HorizontalAlignment="Left" VerticalAlignment="Top"/>
                                                     </Border>
                                                 </StackPanel>
                                             </Grid>
                                             <hc:Divider Margin="0,10,0,10"/>
-                                            <Label Content="备份设置" Style="{StaticResource BorderTitle}"/>
+                                            <Label Content="{Binding [SR_BackupSettings], Source={x:Static langs:LanguageManager.Instance}}" Style="{StaticResource BorderTitle}"/>
                                             <Grid x:Name="GridBackupSet">
                                                 <StackPanel Margin="0,0,0,0">
                                                     <StackPanel  Orientation="Horizontal">
-                                                        <Label Content="最大备份数量 (填0为不限制)：" Style="{StaticResource MagicLabel14}"/>
+                                                        <Label Content="{Binding [SR_MaxBackups], Source={x:Static langs:LanguageManager.Instance}}" Style="{StaticResource MagicLabel14}"/>
                                                         <TextBox x:Name="TextBackupMaxLimitCount" Text="20" InputMethod.IsInputMethodEnabled="False" PreviewTextInput="NumberValidationTextBox" Width="50" Margin="2,0,0,0" />
                                                     </StackPanel>
                                                     <StackPanel  Orientation="Horizontal" Margin="0,3,0,0">
-                                                        <Label Content="备份保存等待 (秒) - 不知道就保持默认即可：" Style="{StaticResource MagicLabel14}"/>
+                                                        <Label Content="{Binding [SR_BackupWaitSec], Source={x:Static langs:LanguageManager.Instance}}" Style="{StaticResource MagicLabel14}"/>
                                                         <TextBox x:Name="TextBackupDelay" Text="10" InputMethod.IsInputMethodEnabled="False" PreviewTextInput="NumberValidationTextBox" Width="50" Margin="2,0,0,0" />
                                                     </StackPanel>
                                                     <StackPanel  Orientation="Horizontal" Margin="0,3,0,0">
-                                                        <Label Content="备份位置：" Style="{StaticResource MagicLabel14}"/>
+                                                        <Label Content="{Binding [SR_BackupLocation], Source={x:Static langs:LanguageManager.Instance}}" Style="{StaticResource MagicLabel14}"/>
                                                         <ComboBox x:Name="ComboBackupPath" SelectionChanged="ComboBackupPath_SelectionChanged">
-                                                            <ComboBoxItem Content="(服务端内)服务器目录/msl-backups" />
-                                                            <ComboBoxItem Content="(服务端外)MSL/server-backups"/>
-                                                            <ComboBoxItem Content="自定义"/>
+                                                            <ComboBoxItem Content="{Binding [SR_BackupLocInServer], Source={x:Static langs:LanguageManager.Instance}}" />
+                                                            <ComboBoxItem Content="{Binding [SR_BackupLocOutServer], Source={x:Static langs:LanguageManager.Instance}}"/>
+                                                            <ComboBoxItem Content="{Binding [SR_BackupLocCustom], Source={x:Static langs:LanguageManager.Instance}}"/>
                                                         </ComboBox>
-                                                        <Button Content="打开备份文件夹" x:Name="BtnOpenBackupFolder" Margin="3,0,0,0" Click="BtnOpenBackupFolder_Click"/>
+                                                        <Button Content="{Binding [SR_OpenBackupDir], Source={x:Static langs:LanguageManager.Instance}}" x:Name="BtnOpenBackupFolder" Margin="3,0,0,0" Click="BtnOpenBackupFolder_Click"/>
                                                     </StackPanel>
                                                     <Grid Margin="0,3,0,0" x:Name="GridSelBackupPath">
                                                         <Grid.ColumnDefinitions>
@@ -727,26 +764,26 @@
                                                             <ColumnDefinition Width="*"/>
                                                             <ColumnDefinition Width="Auto"/>
                                                         </Grid.ColumnDefinitions>
-                                                        <Label Content="自定义备份路径：" Style="{StaticResource MagicLabel14}"/>
+                                                        <Label Content="{Binding [SR_CustomBackupPathLabel], Source={x:Static langs:LanguageManager.Instance}}" Style="{StaticResource MagicLabel14}"/>
                                                         <TextBox x:Name="TextBackupPath" Grid.Column="1" MaxLines="1"  Margin="2,0,6,0" VerticalAlignment="Top"/>
-                                                        <Button x:Name="BtnSelBackupPath" Content="浏览" Grid.Column="2" VerticalAlignment="Top" HorizontalAlignment="Right" Click="BtnSelBackupPath_Click" />
+                                                        <Button x:Name="BtnSelBackupPath" Content="{Binding [SR_Browse], Source={x:Static langs:LanguageManager.Instance}}" Grid.Column="2" VerticalAlignment="Top" HorizontalAlignment="Right" Click="BtnSelBackupPath_Click" />
                                                     </Grid>
                                                     <Border Margin="0,5" Style="{StaticResource BorderTipPrimary}">
-                                                        <TextBlock Text="若需要启用自动备份，请在定时任务添加指令为'.backup'的任务即可！" TextWrapping="Wrap" Foreground="{DynamicResource DarkPrimaryBrush}" FontSize="14" HorizontalAlignment="Left" VerticalAlignment="Top"/>
+                                                        <TextBlock Text="{Binding [SR_BackupCronTip], Source={x:Static langs:LanguageManager.Instance}}" TextWrapping="Wrap" Foreground="{DynamicResource DarkPrimaryBrush}" FontSize="14" HorizontalAlignment="Left" VerticalAlignment="Top"/>
                                                     </Border>
                                                 </StackPanel>
                                             </Grid>
                                             <Grid>
-                                                <Button x:Name="refreahConfig" Content="刷新" Style="{StaticResource ButtonPrimary}" Width="120" Height="35" FontSize="14" Click="refreahConfig_Click" HorizontalAlignment="Center" Margin="0,0,350,0"/>
-                                                <Button x:Name="doneBtn1" Content="保存/应用" Style="{StaticResource ButtonPrimary}" Width="120" Click="doneBtn1_Click" Height="35" FontSize="14" HorizontalAlignment="Center" />
-                                                <Button x:Name="getLaunchercode" Content="生成启动脚本" Style="{StaticResource ButtonPrimary}" Width="120" Height="35" FontSize="14" Click="getLaunchercode_Click" HorizontalAlignment="Center" Margin="350,0,0,0"/>
+                                                <Button x:Name="refreahConfig" Content="{Binding [SR_Refresh], Source={x:Static langs:LanguageManager.Instance}}" Style="{StaticResource ButtonPrimary}" MinWidth="100" Padding="10,0" Height="35" FontSize="14" Click="refreahConfig_Click" HorizontalAlignment="Center" Margin="0,0,350,0"/>
+                                                <Button x:Name="doneBtn1" Content="{Binding [SR_SaveApply], Source={x:Static langs:LanguageManager.Instance}}" Style="{StaticResource ButtonPrimary}" MinWidth="100" Padding="10,0" Click="doneBtn1_Click" Height="35" FontSize="14" HorizontalAlignment="Center" />
+                                                <Button x:Name="getLaunchercode" Content="{Binding [SR_GenLaunchScript], Source={x:Static langs:LanguageManager.Instance}}" Style="{StaticResource ButtonPrimary}" MinWidth="100" Padding="10,0" Height="35" FontSize="14" Click="getLaunchercode_Click" HorizontalAlignment="Center" Margin="350,0,0,0"/>
                                             </Grid>
                                         </StackPanel>
                                     </StackPanel>
                                 </controls:MagicCard>
                             </hc:ScrollViewer>
                         </TabItem>
-                        <TabItem Header="服务器配置">
+                        <TabItem Header="{Binding [SR_ServerConfig], Source={x:Static langs:LanguageManager.Instance}}">
                             <hc:ScrollViewer x:Name="SettingsGrid" IsInertiaEnabled="True"/>
                         </TabItem>
                     </TabControl>
@@ -755,25 +792,25 @@
             </TabItem>
             <TabItem x:Name="Tab_MoreFunctions" Width="50" Style="{StaticResource TabItemSideMenu}">
                 <TabItem.Header>
-                    <controls:TabControlHeader IconKind="ViewGridOutline" Text="更多功能"/>
+                    <controls:TabControlHeader IconKind="ViewGridOutline" Text="{Binding [SR_MoreFeatures], Source={x:Static langs:LanguageManager.Instance}}"/>
                 </TabItem.Header>
                 <Grid Style="{StaticResource GridAnimation}">
                     <controls:MagicScrollViewer>
-                        <controls:MagicCard Title="开服器功能" Margin="0,10,0,0">
+                        <controls:MagicCard Title="{Binding [SR_RunnerFeaturesTitle], Source={x:Static langs:LanguageManager.Instance}}" Margin="0,10,0,0">
                             <hc:UniformSpacingPanel Spacing="10" Orientation="Vertical">
                                 <Grid>
                                     <Grid.ColumnDefinitions>
                                         <ColumnDefinition Width="auto"/>
                                         <ColumnDefinition Width="*"/>
                                     </Grid.ColumnDefinitions>
-                                    <Label Content="仪表盘功能：" Grid.Column="0" Style="{StaticResource MagicLabel16}"/>
+                                    <Label Content="{Binding [SR_DashboardFunc], Source={x:Static langs:LanguageManager.Instance}}" Grid.Column="0" Style="{StaticResource MagicLabel16}"/>
                                     <hc:UniformSpacingPanel Spacing="10" Orientation="Vertical" Grid.Column="1" >
                                         <StackPanel Orientation="Horizontal">
-                                            <Label Content="显示占用：" Style="{StaticResource MagicLabel14}"/>
+                                            <Label Content="{Binding [SR_ShowSysOccupation], Source={x:Static langs:LanguageManager.Instance}}" Style="{StaticResource MagicLabel14}"/>
                                             <ToggleButton x:Name="systemInfoBtn" Style="{StaticResource ToggleButtonSwitch.Content}" Click="systemInfoBtn_Click"/>
                                         </StackPanel>
                                         <StackPanel Orientation="Horizontal">
-                                            <Label Content="记录玩家：" Style="{StaticResource MagicLabel14}"/>
+                                            <Label Content="{Binding [SR_RecordPlayers], Source={x:Static langs:LanguageManager.Instance}}" Style="{StaticResource MagicLabel14}"/>
                                             <ToggleButton x:Name="playerInfoBtn" Style="{StaticResource ToggleButtonSwitch.Content}" Click="playerInfoBtn_Click"/>
                                         </StackPanel>
                                     </hc:UniformSpacingPanel>
@@ -784,22 +821,22 @@
                                         <ColumnDefinition Width="auto"/>
                                         <ColumnDefinition Width="*"/>
                                     </Grid.ColumnDefinitions>
-                                    <Label Content="服务器控制：" Grid.Column="0"  Style="{StaticResource MagicLabel16}"/>
+                                    <Label Content="{Binding [SR_ServerControl], Source={x:Static langs:LanguageManager.Instance}}" Grid.Column="0"  Style="{StaticResource MagicLabel16}"/>
                                     <hc:UniformSpacingPanel Spacing="10" Orientation="Vertical"  Grid.Column="1" >
                                         <StackPanel Orientation="Horizontal">
-                                            <Label Content="启用命令补全功能（ConPTY）：" Style="{StaticResource MagicLabel14}"/>
+                                            <Label Content="{Binding [SR_CmdCompletion], Source={x:Static langs:LanguageManager.Instance}}" Style="{StaticResource MagicLabel14}"/>
                                             <ToggleButton x:Name="useConpty" Style="{StaticResource ToggleButtonSwitch.Content}" Click="useConpty_Click"/>
                                         </StackPanel>
                                         <StackPanel Orientation="Horizontal">
-                                            <Label Content="关服自动重启：" Style="{StaticResource MagicLabel14}"/>
+                                            <Label Content="{Binding [SR_AutoRestart], Source={x:Static langs:LanguageManager.Instance}}" Style="{StaticResource MagicLabel14}"/>
                                             <ToggleButton x:Name="autoStartserver" Style="{StaticResource ToggleButtonSwitch.Content}" Click="autostartServer_Click"/>
                                         </StackPanel>
                                         <StackPanel Orientation="Horizontal">
-                                            <Label Content="强制服务器文件UTF8编码：" Style="{StaticResource MagicLabel14}"/>
+                                            <Label Content="{Binding [SR_ForceUTF8], Source={x:Static langs:LanguageManager.Instance}}" Style="{StaticResource MagicLabel14}"/>
                                             <ToggleButton x:Name="fileforceUTF8encoding" Style="{StaticResource ToggleButtonSwitch.Content}" Click="fileforceUTF8encoding_Click"/>
                                         </StackPanel>
                                         <StackPanel Orientation="Horizontal">
-                                            <Label Content="强制关服时结束进程树（仅在非ConPTY环境下生效）：" Style="{StaticResource MagicLabel14}"/>
+                                            <Label Content="{Binding [SR_ForceKillProcTree], Source={x:Static langs:LanguageManager.Instance}}" Style="{StaticResource MagicLabel14}"/>
                                             <ToggleButton x:Name="KillProcessTreeTogBtn" Style="{StaticResource ToggleButtonSwitch.Content}" Click="KillProcessTreeTogBtn_Click"/>
                                         </StackPanel>
                                     </hc:UniformSpacingPanel>
@@ -810,31 +847,31 @@
                                         <ColumnDefinition Width="auto"/>
                                         <ColumnDefinition Width="*"/>
                                     </Grid.ColumnDefinitions>
-                                    <Label Content="服务器终端：" Grid.Column="0" Style="{StaticResource MagicLabel16}"/>
+                                    <Label Content="{Binding [SR_ServerTerminal], Source={x:Static langs:LanguageManager.Instance}}" Grid.Column="0" Style="{StaticResource MagicLabel16}"/>
                                     <hc:UniformSpacingPanel Grid.Column="1" Spacing="10" Orientation="Vertical">
                                         <StackPanel Orientation="Horizontal">
-                                            <Label Content="日志输出：" Style="{StaticResource MagicLabel14}"/>
+                                            <Label Content="{Binding [SR_LogOutputLabel], Source={x:Static langs:LanguageManager.Instance}}" Style="{StaticResource MagicLabel14}"/>
                                             <ToggleButton x:Name="showOutlog" IsChecked="True" Style="{StaticResource ToggleButtonSwitch.Content}" Click="showOutlog_Click"/>
                                         </StackPanel>
                                         <StackPanel Orientation="Horizontal">
-                                            <Label Content="自动清屏：" Style="{StaticResource MagicLabel14}"/>
+                                            <Label Content="{Binding [SR_AutoClearScreen], Source={x:Static langs:LanguageManager.Instance}}" Style="{StaticResource MagicLabel14}"/>
                                             <ToggleButton x:Name="autoClearOutlog" IsChecked="True" Style="{StaticResource ToggleButtonSwitch.Content}" Click="autoClearOutlog_Click"/>
                                         </StackPanel>
                                         <StackPanel Orientation="Horizontal">
-                                            <Label Content="屏蔽堆栈追踪：" Style="{StaticResource MagicLabel14}"/>
+                                            <Label Content="{Binding [SR_ShieldStackTrace], Source={x:Static langs:LanguageManager.Instance}}" Style="{StaticResource MagicLabel14}"/>
                                             <ToggleButton x:Name="shieldStackOut" IsChecked="True" Style="{StaticResource ToggleButtonSwitch.Content}" Click="shieldStackOut_Click"/>
                                         </StackPanel>
                                         <StackPanel Orientation="Horizontal">
-                                            <Label Content="格式化的日志头信息：" Style="{StaticResource MagicLabel14}"/>
+                                            <Label Content="{Binding [SR_FormatLogHeader], Source={x:Static langs:LanguageManager.Instance}}" Style="{StaticResource MagicLabel14}"/>
                                             <ToggleButton x:Name="formatOutHead" IsChecked="True" Style="{StaticResource ToggleButtonSwitch.Content}" Click="formatOutHead_Click"/>
                                         </StackPanel>
                                         <hc:UniformSpacingPanel x:Name="ServerEncodingSettings" Orientation="Vertical" Spacing="10">
                                             <StackPanel Orientation="Horizontal">
-                                                <Label Content="输入编码：" Style="{StaticResource MagicLabel14}"/>
+                                                <Label Content="{Binding [SR_InputEncoding], Source={x:Static langs:LanguageManager.Instance}}" Style="{StaticResource MagicLabel14}"/>
                                                 <Button x:Name="inputCmdEncoding" Content="UTF8" Click="inputCmdEncoding_Click"/>
                                             </StackPanel>
                                             <StackPanel Orientation="Horizontal">
-                                                <Label Content="输出编码：" Style="{StaticResource MagicLabel14}"/>
+                                                <Label Content="{Binding [SR_OutputEncoding], Source={x:Static langs:LanguageManager.Instance}}" Style="{StaticResource MagicLabel14}"/>
                                                 <Button x:Name="outputCmdEncoding" Content="UTF8" Click="outputCmdEncoding_Click"/>
                                             </StackPanel>
                                         </hc:UniformSpacingPanel>
@@ -845,14 +882,14 @@
                                                 <ColumnDefinition Width="10"/>
                                                 <ColumnDefinition/>
                                             </Grid.ColumnDefinitions>
-                                            <Label Content="特殊日志：" Style="{StaticResource MagicLabel14}"/>
+                                            <Label Content="{Binding [SR_SpecialLogs], Source={x:Static langs:LanguageManager.Instance}}" Style="{StaticResource MagicLabel14}"/>
                                             <Grid Grid.Column="1">
                                                 <Grid.RowDefinitions>
                                                     <RowDefinition Height="Auto"/>
                                                     <RowDefinition/>
                                                     <RowDefinition Height="Auto"/>
                                                 </Grid.RowDefinitions>
-                                                <ToggleButton Grid.Row="0" x:Name="shieldLogBtn" Content="屏蔽关键字日志" Style="{StaticResource ToggleButtonSwitch.Content}" Click="shieldLogBtn_Click"/>
+                                                <ToggleButton Grid.Row="0" x:Name="shieldLogBtn" Content="{Binding [SR_ShieldKeywordLog], Source={x:Static langs:LanguageManager.Instance}}" Style="{StaticResource ToggleButtonSwitch.Content}" Click="shieldLogBtn_Click"/>
                                                 <ListBox x:Name="ShieldLogList" Grid.Row="1" Margin="0,5,0,5" Height="120"/>
                                                 <Grid Grid.Row="2">
                                                     <Grid.ColumnDefinitions>
@@ -860,8 +897,8 @@
                                                         <ColumnDefinition Width="5"/>
                                                         <ColumnDefinition/>
                                                     </Grid.ColumnDefinitions>
-                                                    <Button x:Name="LogShield_Add" Content="添加" Grid.Column="0" HorizontalAlignment="Stretch" Click="LogShield_Add_Click"/>
-                                                    <Button x:Name="LogShield_Del" Content="移除" Grid.Column="2" HorizontalAlignment="Stretch" Click="LogShield_Del_Click"/>
+                                                    <Button x:Name="LogShield_Add" Content="{Binding [SR_Add], Source={x:Static langs:LanguageManager.Instance}}" Grid.Column="0" HorizontalAlignment="Stretch" Click="LogShield_Add_Click"/>
+                                                    <Button x:Name="LogShield_Del" Content="{Binding [SR_Remove], Source={x:Static langs:LanguageManager.Instance}}" Grid.Column="2" HorizontalAlignment="Stretch" Click="LogShield_Del_Click"/>
                                                 </Grid>
                                             </Grid>
                                             <Grid Grid.Column="3">
@@ -870,7 +907,7 @@
                                                     <RowDefinition/>
                                                     <RowDefinition Height="Auto"/>
                                                 </Grid.RowDefinitions>
-                                                <ToggleButton Grid.Row="0" x:Name="highLightLogBtn" Content="高亮关键字日志" Style="{StaticResource ToggleButtonSwitch.Content}" Click="highLightLogBtn_Click"/>
+                                                <ToggleButton Grid.Row="0" x:Name="highLightLogBtn" Content="{Binding [SR_HighlightKeywordLog], Source={x:Static langs:LanguageManager.Instance}}" Style="{StaticResource ToggleButtonSwitch.Content}" Click="highLightLogBtn_Click"/>
                                                 <ListBox x:Name="HighLightLogList" Grid.Row="1" Margin="0,5,0,5" Height="120"/>
                                                 <Grid Grid.Row="2">
                                                     <Grid.ColumnDefinitions>
@@ -878,8 +915,8 @@
                                                         <ColumnDefinition Width="5"/>
                                                         <ColumnDefinition/>
                                                     </Grid.ColumnDefinitions>
-                                                    <Button x:Name="LogHighLight_Add" Content="添加" Grid.Column="0" HorizontalAlignment="Stretch" Click="LogHighLight_Add_Click"/>
-                                                    <Button x:Name="LogHighLight_Del" Content="移除" Grid.Column="2" HorizontalAlignment="Stretch" Click="LogHighLight_Del_Click"/>
+                                                    <Button x:Name="LogHighLight_Add" Content="{Binding [SR_Add], Source={x:Static langs:LanguageManager.Instance}}" Grid.Column="0" HorizontalAlignment="Stretch" Click="LogHighLight_Add_Click"/>
+                                                    <Button x:Name="LogHighLight_Del" Content="{Binding [SR_Remove], Source={x:Static langs:LanguageManager.Instance}}" Grid.Column="2" HorizontalAlignment="Stretch" Click="LogHighLight_Del_Click"/>
                                                 </Grid>
                                             </Grid>
                                         </Grid>
@@ -891,18 +928,18 @@
                                         <ColumnDefinition Width="auto"/>
                                         <ColumnDefinition Width="*"/>
                                     </Grid.ColumnDefinitions>
-                                    <Label Content="其它功能项：" Grid.Column="0" Style="{StaticResource MagicLabel16}"/>
+                                    <Label Content="{Binding [SR_OtherFeatures], Source={x:Static langs:LanguageManager.Instance}}" Grid.Column="0" Style="{StaticResource MagicLabel16}"/>
                                     <WrapPanel Grid.Column="1">
-                                        <Button x:Name="onlineMode" Content="关闭正版验证" Click="onlineMode_Click" FontSize="14" Margin="0,0,5,5"/>
-                                        <Button x:Name="shareLog" Content="上传服务器日志" FontSize="14" Margin="0,0,5,5" Click="shareLog_Click" MouseDoubleClick="controlServer_MouseDoubleClick"/>
-                                        <Button x:Name="forgeInstallLogUpload" Content="上传Forge安装日志" FontSize="14" Click="forgeInstallLogUpload_Click" Margin="0,0,5,5"/>
-                                        <Button x:Name="logsAnalyse" Content="AI日志分析功能" FontSize="14" Click="logsAnalyse_Click" Margin="0,0,5,5"/>
-                                        <Button x:Name="GetIPV6" Content="查看IPV6公网地址" FontSize="14" Click="GetIPV6_Click" Margin="0,0,5,5"/>
+                                        <Button x:Name="onlineMode" Content="{Binding [SR_DisableOnlineMode], Source={x:Static langs:LanguageManager.Instance}}" Click="onlineMode_Click" FontSize="14" Margin="0,0,5,5"/>
+                                        <Button x:Name="shareLog" Content="{Binding [SR_UploadServerLog], Source={x:Static langs:LanguageManager.Instance}}" FontSize="14" Margin="0,0,5,5" Click="shareLog_Click" MouseDoubleClick="controlServer_MouseDoubleClick"/>
+                                        <Button x:Name="forgeInstallLogUpload" Content="{Binding [SR_UploadForgeLog], Source={x:Static langs:LanguageManager.Instance}}" FontSize="14" Click="forgeInstallLogUpload_Click" Margin="0,0,5,5"/>
+                                        <Button x:Name="logsAnalyse" Content="{Binding [SR_AILogAnalysis], Source={x:Static langs:LanguageManager.Instance}}" FontSize="14" Click="logsAnalyse_Click" Margin="0,0,5,5"/>
+                                        <Button x:Name="GetIPV6" Content="{Binding [SR_ViewIPv6], Source={x:Static langs:LanguageManager.Instance}}" FontSize="14" Click="GetIPV6_Click" Margin="0,0,5,5"/>
                                     </WrapPanel>
                                 </Grid>
                             </hc:UniformSpacingPanel>
                         </controls:MagicCard>
-                        <controls:MagicCard Title="快捷指令栏" x:Name="Tradition_CMDCard" Margin="0,0,0,20">
+                        <controls:MagicCard Title="{Binding [SR_QuickCmdBar], Source={x:Static langs:LanguageManager.Instance}}" x:Name="Tradition_CMDCard" Margin="0,0,0,20">
                             <Grid>
                                 <Grid.ColumnDefinitions>
                                     <ColumnDefinition Width="*"/>
@@ -911,11 +948,11 @@
                                 </Grid.ColumnDefinitions>
                                 <ListBox x:Name="fastCmdList" Margin="5" Grid.Column="0" Height="160"/>
                                 <StackPanel Grid.Column="1">
-                                    <Button x:Name="refrushFastCmd" Content="刷新" Height="70" Width="110" Click="refrushFastCmd_Click" FontSize="18" VerticalAlignment="Top" HorizontalAlignment="Center" Margin="0,5,0,0"/>
-                                    <Button x:Name="addFastCmd" Content="添加" Margin="5" Height="40" Width="110" Click="addFastCmd_Click" FontSize="18" VerticalAlignment="Top" HorizontalAlignment="Right" />
-                                    <Button x:Name="delFastCmd" Content="删除" Height="40" Width="110" Click="delFastCmd_Click" FontSize="18" HorizontalAlignment="Center" VerticalAlignment="Top" Margin="0,0,0,5" />
+                                    <Button x:Name="refrushFastCmd" Content="{Binding [SR_Refresh], Source={x:Static langs:LanguageManager.Instance}}" Height="70" MinWidth="110" Padding="10,0" Click="refrushFastCmd_Click" FontSize="18" VerticalAlignment="Top" HorizontalAlignment="Center" Margin="0,5,0,0"/>
+                                    <Button x:Name="addFastCmd" Content="{Binding [SR_Add], Source={x:Static langs:LanguageManager.Instance}}" Margin="5" Height="40" MinWidth="110" Padding="10,0" Click="addFastCmd_Click" FontSize="18" VerticalAlignment="Top" HorizontalAlignment="Right" />
+                                    <Button x:Name="delFastCmd" Content="{Binding [SR_Delete], Source={x:Static langs:LanguageManager.Instance}}" Height="40" MinWidth="110" Padding="10,0" Click="delFastCmd_Click" FontSize="18" HorizontalAlignment="Center" VerticalAlignment="Top" Margin="0,0,0,5" />
                                 </StackPanel>
-                                <Button Grid.Column="2" x:Name="resetFastCmd" Content="重置" Width="110" Height="160" Click="resetFastCmd_Click" FontSize="18" HorizontalAlignment="Right"/>
+                                <Button Grid.Column="2" x:Name="resetFastCmd" Content="{Binding [SR_Reset], Source={x:Static langs:LanguageManager.Instance}}" MinWidth="110" Padding="10,0" Height="160" Click="resetFastCmd_Click" FontSize="18" HorizontalAlignment="Right"/>
                             </Grid>
                         </controls:MagicCard>
                     </controls:MagicScrollViewer>
@@ -923,17 +960,17 @@
             </TabItem>
             <TabItem x:Name="Tab_Timer" Width="50" Style="{StaticResource TabItemSideMenu}">
                 <TabItem.Header>
-                    <controls:TabControlHeader IconKind="TimerOutline" Text="定时任务"/>
+                    <controls:TabControlHeader IconKind="TimerOutline" Text="{Binding [SR_ScheduledTasks], Source={x:Static langs:LanguageManager.Instance}}"/>
                 </TabItem.Header>
-                <Grid Style="{StaticResource GridAnimation}">
-                    <Grid>
-                        <Grid.RowDefinitions>
+                <ScrollViewer>
+                    <Grid Style="{StaticResource GridAnimation}">
+                    <Grid.RowDefinitions>
                             <RowDefinition/>
                             <RowDefinition Height="Auto"/>
                         </Grid.RowDefinitions>
 
                         <!-- 任务列表 -->
-                        <controls:MagicCard Title="任务列表（添加任务后选中即可编辑）" Grid.Row="0" Margin="10">
+                        <controls:MagicCard Title="{Binding [SR_TaskListTitle], Source={x:Static langs:LanguageManager.Instance}}" Grid.Row="0" Margin="10">
                             <Grid>
                                 <Grid.ColumnDefinitions>
                                     <ColumnDefinition/>
@@ -945,7 +982,7 @@
                                             <Button.Content>
                                                 <hc:UniformSpacingPanel Orientation="Horizontal" Spacing="5">
                                                     <iconPacks:PackIconMaterial Kind="Plus" Height="14"/>
-                                                    <TextBlock Text="添加新任务" FontSize="14"/>
+                                                    <TextBlock Text="{Binding [SR_AddNewTask], Source={x:Static langs:LanguageManager.Instance}}" FontSize="14"/>
                                                 </hc:UniformSpacingPanel>
                                             </Button.Content>
                                         </Button>
@@ -959,7 +996,7 @@
                                             <Button.Content>
                                                 <hc:UniformSpacingPanel Orientation="Horizontal" Spacing="5">
                                                     <iconPacks:PackIconMaterial Kind="DeleteOutline" Height="14"/>
-                                                    <TextBlock Text="删除所选任务" FontSize="14"/>
+                                                    <TextBlock Text="{Binding [SR_DeleteSelectedTask], Source={x:Static langs:LanguageManager.Instance}}" FontSize="14"/>
                                                 </hc:UniformSpacingPanel>
                                             </Button.Content>
                                         </Button>
@@ -967,13 +1004,13 @@
                                             <Button.Content>
                                                 <hc:UniformSpacingPanel Orientation="Horizontal" Spacing="5">
                                                     <iconPacks:PackIconMaterial Kind="Delete" Height="14"/>
-                                                    <TextBlock Text="删除所有任务" FontSize="14"/>
+                                                    <TextBlock Text="{Binding [SR_DeleteAllTasks], Source={x:Static langs:LanguageManager.Instance}}" FontSize="14"/>
                                                 </hc:UniformSpacingPanel>
                                             </Button.Content>
                                         </Button>
                                     </Grid>
-                                    <Button Grid.Row="2" x:Name="loadOrSaveTaskConfig" Click="LoadOrSaveTaskConfig_Click" FontSize="14" Content="加载任务配置" HorizontalAlignment="Stretch"/>
-                                    <Button Grid.Row="4" x:Name="delTaskConfig" Click="delTaskConfig_Click" FontSize="14" Content="清除任务配置" HorizontalAlignment="Stretch"/>
+                                    <Button Grid.Row="2" x:Name="loadOrSaveTaskConfig" Click="LoadOrSaveTaskConfig_Click" FontSize="14" Content="{Binding [SR_LoadTaskConfig], Source={x:Static langs:LanguageManager.Instance}}" HorizontalAlignment="Stretch"/>
+                                    <Button Grid.Row="4" x:Name="delTaskConfig" Click="delTaskConfig_Click" FontSize="14" Content="{Binding [SR_ClearTaskConfig], Source={x:Static langs:LanguageManager.Instance}}" HorizontalAlignment="Stretch"/>
                                 </hc:UniformSpacingPanel>
                             </Grid>
                         </controls:MagicCard>
@@ -994,7 +1031,7 @@
                                         <ColumnDefinition/>
                                         <ColumnDefinition Width="Auto"/>
                                     </Grid.ColumnDefinitions>
-                                    <Label Grid.Column="0" Content="Cron表达式：" FontSize="14"
+                                    <Label Grid.Column="0" Content="{Binding [SR_CronExpr], Source={x:Static langs:LanguageManager.Instance}}" FontSize="14"
                                            BorderThickness="0" Background="Transparent"/>
                                     <TextBox Grid.Column="1" x:Name="timercmdCron" FontSize="14"
                                              TextChanged="timercmdCron_TextChanged"/>
@@ -1004,21 +1041,21 @@
 
                                 <!-- 快捷模板 -->
                                 <WrapPanel Grid.Row="1" Margin="0,5,0,0" Orientation="Horizontal">
-                                    <Label Content="快捷模板：" FontSize="14" VerticalAlignment="Center"
+                                    <Label Content="{Binding [SR_QuickTemplate], Source={x:Static langs:LanguageManager.Instance}}" FontSize="14" VerticalAlignment="Center"
                                            BorderThickness="0" Background="Transparent"/>
-                                    <Button Content="每10秒" Margin="2"
+                                    <Button Content="{Binding [SR_Every10Sec], Source={x:Static langs:LanguageManager.Instance}}" Margin="2"
                                             Click="CronTemplate_Click" Tag="*/10 * * * * *"/>
-                                    <Button Content="每分钟" Margin="2"
+                                    <Button Content="{Binding [SR_EveryMin], Source={x:Static langs:LanguageManager.Instance}}" Margin="2"
                                             Click="CronTemplate_Click" Tag="0 * * * * *"/>
-                                    <Button Content="每5分钟" Margin="2"
+                                    <Button Content="{Binding [SR_Every5Min], Source={x:Static langs:LanguageManager.Instance}}" Margin="2"
                                             Click="CronTemplate_Click" Tag="0 */5 * * * *"/>
-                                    <Button Content="每30分钟" Margin="2"
+                                    <Button Content="{Binding [SR_Every30Min], Source={x:Static langs:LanguageManager.Instance}}" Margin="2"
                                             Click="CronTemplate_Click" Tag="0 */30 * * * *"/>
-                                    <Button Content="每小时" Margin="2"
+                                    <Button Content="{Binding [SR_EveryHour], Source={x:Static langs:LanguageManager.Instance}}" Margin="2"
                                             Click="CronTemplate_Click" Tag="0 0 * * * *"/>
-                                    <Button Content="每天凌晨3点" Margin="2"
+                                    <Button Content="{Binding [SR_EveryDay3AM], Source={x:Static langs:LanguageManager.Instance}}" Margin="2"
                                             Click="CronTemplate_Click" Tag="0 0 3 * * *"/>
-                                    <Button Content="每周日凌晨3点" Margin="2"
+                                    <Button Content="{Binding [SR_EverySun3AM], Source={x:Static langs:LanguageManager.Instance}}" Margin="2"
                                             Click="CronTemplate_Click" Tag="0 0 3 * * 0"/>
                                 </WrapPanel>
 
@@ -1028,7 +1065,7 @@
                                         <ColumnDefinition Width="Auto"/>
                                         <ColumnDefinition/>
                                     </Grid.ColumnDefinitions>
-                                    <Label Grid.Column="0" Content="指令：" FontSize="14"
+                                    <Label Grid.Column="0" Content="{Binding [SR_CommandLabel], Source={x:Static langs:LanguageManager.Instance}}" FontSize="14"
                                            BorderThickness="0" Background="Transparent" Width="65"/>
                                     <TextBox Grid.Column="1" x:Name="timercmdCmd"
                                              TextChanged="timercmdCmd_TextChanged"/>
@@ -1041,8 +1078,8 @@
                                     </Grid.RowDefinitions>
                                     <Border Grid.Row="0" Margin="0,0,0,5" Style="{StaticResource BorderTipPrimary}">
                                         <TextBlock TextWrapping="Wrap" Foreground="{DynamicResource DarkPrimaryBrush}"
-                                                   FontSize="13" HorizontalAlignment="Left">
-                                            提示：Cron 格式为「秒 分 时 日 月 周」6字段。MSL备份指令为 .backup，可填入指令栏。
+                                                   FontSize="13" HorizontalAlignment="Left"
+                                                   Text="{Binding [SR_CronFormatTip], Source={x:Static langs:LanguageManager.Instance}}">
                                         </TextBlock>
                                     </Border>
                                     <Grid Grid.Row="1">
@@ -1052,8 +1089,8 @@
                                         </Grid.ColumnDefinitions>
                                         <StackPanel Grid.Column="0" Orientation="Vertical">
                                             <StackPanel Orientation="Horizontal">
-                                                <Label Content="上次执行：" FontSize="14" BorderThickness="0" Background="Transparent"/>
-                                                <TextBlock x:Name="timerCmdout" Text="无"
+                                                <Label Content="{Binding [SR_LastExec], Source={x:Static langs:LanguageManager.Instance}}" FontSize="14" BorderThickness="0" Background="Transparent"/>
+                                                <TextBlock x:Name="timerCmdout" Text="{Binding [None], Source={x:Static langs:LanguageManager.Instance}}"
                                                            Foreground="{DynamicResource PrimaryTextBrush}"
                                                            VerticalAlignment="Center" TextWrapping="Wrap"/>
                                             </StackPanel>
@@ -1068,7 +1105,7 @@
                                                                 <Setter.Value>
                                                                     <hc:UniformSpacingPanel Orientation="Horizontal" Spacing="3">
                                                                         <iconPacks:PackIconMaterial Kind="Stop"/>
-                                                                        <TextBlock Text="停止定时任务" FontSize="14"/>
+                                                                        <TextBlock Text="{Binding [SR_StopScheduledTask], Source={x:Static langs:LanguageManager.Instance}}" FontSize="14"/>
                                                                     </hc:UniformSpacingPanel>
                                                                 </Setter.Value>
                                                             </Setter>
@@ -1078,7 +1115,7 @@
                                                                 <Setter.Value>
                                                                     <hc:UniformSpacingPanel Orientation="Horizontal" Spacing="3">
                                                                         <iconPacks:PackIconMaterial Kind="Play"/>
-                                                                        <TextBlock Text="启动定时任务" FontSize="14"/>
+                                                                        <TextBlock Text="{Binding [SR_StartScheduledTask], Source={x:Static langs:LanguageManager.Instance}}" FontSize="14"/>
                                                                     </hc:UniformSpacingPanel>
                                                                 </Setter.Value>
                                                             </Setter>
@@ -1092,7 +1129,7 @@
                             </Grid>
                         </Border>
                     </Grid>
-                </Grid>
+                </ScrollViewer>
             </TabItem>
         </TabControl>
         <Button x:Name="SideMenuContextOpen" HorizontalAlignment="Left" VerticalAlignment="Bottom" Width="50" Height="42" BorderThickness="0" Background="Transparent" Click="SideMenuContextOpen_Click">

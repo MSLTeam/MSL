@@ -44,6 +44,9 @@ namespace MSL.pages
         public OnlinePage()
         {
             InitializeComponent();
+            frpcOutlog.Text = Lang.Page_OnlinePage_WaitingTunnel;
+            txtTotalTraffic.Text = string.Format(Lang.Page_OnlinePage_SentReceived, "0 KB", "0 KB");
+            txtActiveConnections.Text = string.Format(Lang.Page_OnlinePage_ActiveConnections, 0, MaxThreads);
         }
 
         private async void Page_Loaded(object sender, RoutedEventArgs e)
@@ -260,7 +263,7 @@ namespace MSL.pages
                 SaveNat1Config();
                 frpcOutlog.Text = string.Empty;
                 AppendNat1Log("[INFO] STUN 隧道环境初始化...");
-                nat1OuterAddress.Text = "正在启动隧道中...";
+                nat1OuterAddress.Text = Lang.Page_OnlinePage_StartingTunnel;
                 nat1OuterAddress.Foreground = System.Windows.Media.Brushes.Orange;
 
                 // 重置流量统计
@@ -347,7 +350,7 @@ namespace MSL.pages
                         Dispatcher.Invoke(() => {
                             nat1OuterAddress.Text = outerEndPoint.ToString();
                             nat1OuterAddress.Foreground = System.Windows.Media.Brushes.Green;
-                            Growl.Success("STUN 隧道穿透成功！");
+                            Growl.Success(Lang.Page_OnlinePage_STUNSuccess);
                         });
 
                         // SRV解析
@@ -644,7 +647,7 @@ namespace MSL.pages
             Dispatcher.Invoke(() =>
             {
                 txtRealtimeSpeed.Text = $"↑ {FormatTraffic(speedUpload)}/s  ↓ {FormatTraffic(speedDownload)}/s";
-                txtTotalTraffic.Text = $"已发送: {FormatTraffic(currentUpload)} | 已接收: {FormatTraffic(currentDownload)}";
+                txtTotalTraffic.Text = string.Format(Lang.Page_OnlinePage_SentReceived, FormatTraffic(currentUpload), FormatTraffic(currentDownload));
             });
         }
 
@@ -667,11 +670,11 @@ namespace MSL.pages
 
             Dispatcher.Invoke(() => {
                 toggleNat1.IsChecked = false;
-                nat1OuterAddress.Text = failed ? "无法启动，请改用其他 Frp 映射或点对点联机" : "未开启";
+                nat1OuterAddress.Text = failed ? Lang.Page_OnlinePage_StartupFailed : Lang.Page_OnlinePage_NotEnabled;
                 nat1OuterAddress.Foreground = failed ? System.Windows.Media.Brushes.Red : System.Windows.Media.Brushes.Gray;
-                txtActiveConnections.Text = " 当前连接数: 0 / 128";
+                txtActiveConnections.Text = string.Format(Lang.Page_OnlinePage_ActiveConnections, 0, MaxThreads);
                 txtRealtimeSpeed.Text = "↑ 0 KB/s  ↓ 0 KB/s";
-                txtTotalTraffic.Text = "已发送: 0 KB | 已接收: 0 KB";
+                txtTotalTraffic.Text = string.Format(Lang.Page_OnlinePage_SentReceived, "0 KB", "0 KB");
             });
             AppendNat1Log(failed ? "[ERROR] STUN 隧道服务已被关闭。" : "[INFO] STUN 隧道服务已被关闭。");
         }
@@ -704,19 +707,19 @@ namespace MSL.pages
 
         private void btnCopyAddress_Click(object sender, RoutedEventArgs e)
         {
-            if (nat1OuterAddress.Text == "未开启" || nat1OuterAddress.Text == "正在启动隧道中..." || nat1OuterAddress.Text.Contains("无法启动"))
+            if (nat1OuterAddress.Text == Lang.Page_OnlinePage_NotEnabled || nat1OuterAddress.Text == Lang.Page_OnlinePage_StartingTunnel || nat1OuterAddress.Text.Contains(Lang.Page_OnlinePage_StartupFailed))
             {
-                Growl.Warning("当前没有有效的公网直连地址可供复制！");
+                Growl.Warning(Lang.Page_OnlinePage_NoValidAddress);
                 return;
             }
             try
             {
                 Clipboard.SetText(nat1OuterAddress.Text);
-                Growl.Success("公网直连地址已成功复制到剪贴板！");
+                Growl.Success(Lang.Page_OnlinePage_CopySuccess);
             }
             catch (Exception ex)
             {
-                Growl.Error($"复制失败: {ex.Message}");
+                Growl.Error(Lang.Page_OnlinePage_CopyFailed + ex.Message);
             }
         }
 
@@ -724,7 +727,7 @@ namespace MSL.pages
         {
             Dispatcher.Invoke(() =>
             {
-                txtActiveConnections.Text = $" 当前连接数: {currentCount} / {MaxThreads}";
+                txtActiveConnections.Text = string.Format(Lang.Page_OnlinePage_ActiveConnections, currentCount, MaxThreads);
             });
         }
 
@@ -746,7 +749,7 @@ namespace MSL.pages
 
             if (!enableAutoSrv || string.IsNullOrEmpty(subNamePrefix) || string.IsNullOrEmpty(rootDomainName)) return;
 
-            if (string.IsNullOrEmpty(currentPublicIp) || currentPublicIp == "未开启" || currentPublicIp == "正在启动隧道中..." || currentPublicIp.Contains("无法启动"))
+            if (string.IsNullOrEmpty(currentPublicIp) || currentPublicIp == Lang.Page_OnlinePage_NotEnabled || currentPublicIp == Lang.Page_OnlinePage_StartingTunnel || currentPublicIp.Contains(Lang.Page_OnlinePage_StartupFailed))
             {
                 AppendNat1Log("[DNS-ERROR] 自动解析取消：未获取到有效的本地公网直连 IP。");
                 return;
@@ -765,7 +768,7 @@ namespace MSL.pages
             {
                 LogHelper.Write.Warn("[DNS] 未找到本地或内存中的 Token，无法自动登录初始化。");
                 Dispatcher.Invoke(() => {
-                    Growl.Error("自动SRV解析失败：未检测到MSLFrp登录凭证，请先前往「映射」- 「我的MSLFrp」登录您的账号。");
+                    Growl.Error(Lang.Page_OnlinePage_AutoSrvNoCredential);
                 });
                 AppendNat1Log("[DNS-ERROR] 拒绝执行：未找到有效的 Token 凭证，请先前往「映射」-「我的MSLFrp」进行登录。");
                 return;
@@ -776,7 +779,7 @@ namespace MSL.pages
             {
                 LogHelper.Write.Warn($"[DNS] Token 自动登录初始化失败: {loginResult.Msg}");
                 Dispatcher.Invoke(() => {
-                    Growl.Error($"自动SRV解析失败：MSLFrp 自动登录失败！\n{loginResult.Msg}");
+                    Growl.Error(string.Format(Lang.Page_OnlinePage_AutoSrvLoginFailed, loginResult.Msg));
                 });
                 AppendNat1Log($"[DNS-ERROR] 自动登录初始化失败: {loginResult.Msg}。请尝试去「映射」-「我的MSLFrp」重新登录。");
                 return;
@@ -910,7 +913,7 @@ namespace MSL.pages
                     {
                         if (chkAutoSrv.IsChecked == true) {
                             chkAutoSrv.IsChecked = false;
-                            Growl.Error("操作失败：未检测到有效的 MSLFrp 登录凭证！\n请前往「映射」-「我的MSLFrp」板块进行登录。");
+                            Growl.Error(Lang.Page_OnlinePage_OperationFailedNoCredential);
                         }
                     });
                     return;
@@ -925,7 +928,7 @@ namespace MSL.pages
                         if (chkAutoSrv.IsChecked == true)
                         {
                             chkAutoSrv.IsChecked = false;
-                            Growl.Error("操作失败：未检测到有效的 MSLFrp 登录凭证！\n请前往「映射」-「我的MSLFrp」板块进行登录。");
+                            Growl.Error(Lang.Page_OnlinePage_OperationFailedNoCredential);
                         }
                     });
                     return;

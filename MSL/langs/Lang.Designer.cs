@@ -79,6 +79,87 @@ namespace MSL.langs {
         }
         
         /// <summary>
+        ///   查找类似 请检查是否安装了.NET Framework 4.7.2运行库。 的本地化字符串。
+        /// </summary>
+        public static string App_Error_CheckDotNet {
+            get {
+                return ResourceManager.GetString("App_Error_CheckDotNet", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   查找类似 程序遇到了一个无法恢复的致命错误，即将关闭。 的本地化字符串。
+        /// </summary>
+        public static string App_Error_Fatal {
+            get {
+                return ResourceManager.GetString("App_Error_Fatal", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   查找类似 请查看本地日志文件获取详细信息。建议提交给开发者哦！ 的本地化字符串。
+        /// </summary>
+        public static string App_Error_FatalDetail {
+            get {
+                return ResourceManager.GetString("App_Error_FatalDetail", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   查找类似 致命错误 的本地化字符串。
+        /// </summary>
+        public static string App_Error_FatalTitle {
+            get {
+                return ResourceManager.GetString("App_Error_FatalTitle", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   查找类似 没有可用的堆栈跟踪信息。 的本地化字符串。
+        /// </summary>
+        public static string App_Error_NoStackTrace {
+            get {
+                return ResourceManager.GetString("App_Error_NoStackTrace", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   查找类似 若确定运行环境正常，请将错误提交给开发者处理哦！ 的本地化字符串。
+        /// </summary>
+        public static string App_Error_ReportToDev {
+            get {
+                return ResourceManager.GetString("App_Error_ReportToDev", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   查找类似 程序在运行的时候发生了异常。 的本地化字符串。
+        /// </summary>
+        public static string App_Error_RuntimeException {
+            get {
+                return ResourceManager.GetString("App_Error_RuntimeException", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   查找类似 应用程序错误 的本地化字符串。
+        /// </summary>
+        public static string App_Error_Title {
+            get {
+                return ResourceManager.GetString("App_Error_Title", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   查找类似 未知错误 的本地化字符串。
+        /// </summary>
+        public static string App_Error_UnknownError {
+            get {
+                return ResourceManager.GetString("App_Error_UnknownError", resourceCulture);
+            }
+        }
+        
+        /// <summary>
         ///   查找类似 取消 的本地化字符串。
         /// </summary>
         public static string Cancel {
@@ -156,6 +237,15 @@ namespace MSL.langs {
         public static string DownloadDialog_CheckIntegrityFailed {
             get {
                 return ResourceManager.GetString("DownloadDialog_CheckIntegrityFailed", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   查找类似 双击取消按钮可强制关闭此对话框（不推荐） 的本地化字符串。
+        /// </summary>
+        public static string DownloadDialog_DoubleClickForceClose {
+            get {
+                return ResourceManager.GetString("DownloadDialog_DoubleClickForceClose", resourceCulture);
             }
         }
         
@@ -241,6 +331,245 @@ namespace MSL.langs {
         }
         
         /// <summary>
+        ///   查找类似 全部 的本地化字符串。
+        /// </summary>
+        public static string Form_DownloadMod_All {
+            get {
+                return ResourceManager.GetString("Form_DownloadMod_All", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   查找类似 精选 的本地化字符串。
+        /// </summary>
+        public static string Form_DownloadMod_Featured {
+            get {
+                return ResourceManager.GetString("Form_DownloadMod_Featured", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   查找类似 获取模组/整合包失败！请重试或尝试连接代理后再试！
+        /// 的本地化字符串。
+        /// </summary>
+        public static string Form_DownloadMod_FetchFailed {
+            get {
+                return ResourceManager.GetString("Form_DownloadMod_FetchFailed", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   查找类似 加载失败！请重试或尝试连接代理后再试！
+        /// 的本地化字符串。
+        /// </summary>
+        public static string Form_DownloadMod_LoadFailed {
+            get {
+                return ResourceManager.GetString("Form_DownloadMod_LoadFailed", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   查找类似 加载中 的本地化字符串。
+        /// </summary>
+        public static string Form_DownloadMod_Loading {
+            get {
+                return ResourceManager.GetString("Form_DownloadMod_Loading", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   查找类似 搜索失败！请重试或尝试连接代理后再试！
+        /// 的本地化字符串。
+        /// </summary>
+        public static string Form_DownloadMod_SearchFailed {
+            get {
+                return ResourceManager.GetString("Form_DownloadMod_SearchFailed", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   查找类似 是否仅展示适用于服务器的整合包文件？
+        ///注意：如果不使用服务器专用包开服，可能会出现无法开服/崩溃的问题！ 的本地化字符串。
+        /// </summary>
+        public static string Form_DownloadMod_ServerPackConfirm {
+            get {
+                return ResourceManager.GetString("Form_DownloadMod_ServerPackConfirm", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   查找类似 已添加至下载列表~ 的本地化字符串。
+        /// </summary>
+        public static string Form_DownloadServer_AddedToDownloadList {
+            get {
+                return ResourceManager.GetString("Form_DownloadServer_AddedToDownloadList", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   查找类似 请检查您是否已正确选择 服务端-版本-构建版本 ！ 的本地化字符串。
+        /// </summary>
+        public static string Form_DownloadServer_CheckSelection {
+            get {
+                return ResourceManager.GetString("Form_DownloadServer_CheckSelection", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   查找类似 教程文档 的本地化字符串。
+        /// </summary>
+        public static string Form_DownloadServer_Docs {
+            get {
+                return ResourceManager.GetString("Form_DownloadServer_Docs", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   查找类似 下载列表 的本地化字符串。
+        /// </summary>
+        public static string Form_DownloadServer_DownloadList {
+            get {
+                return ResourceManager.GetString("Form_DownloadServer_DownloadList", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   查找类似 获取服务端失败！请重试！ 的本地化字符串。
+        /// </summary>
+        public static string Form_DownloadServer_FetchServerFailed {
+            get {
+                return ResourceManager.GetString("Form_DownloadServer_FetchServerFailed", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   查找类似 最新构建版本 的本地化字符串。
+        /// </summary>
+        public static string Form_DownloadServer_LatestBuild {
+            get {
+                return ResourceManager.GetString("Form_DownloadServer_LatestBuild", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   查找类似 加载中，请稍候…… 的本地化字符串。
+        /// </summary>
+        public static string Form_DownloadServer_Loading {
+            get {
+                return ResourceManager.GetString("Form_DownloadServer_Loading", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   查找类似 请求错误！请重试！ 的本地化字符串。
+        /// </summary>
+        public static string Form_DownloadServer_RequestError {
+            get {
+                return ResourceManager.GetString("Form_DownloadServer_RequestError", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   查找类似 请先选择一个构建版本！ 的本地化字符串。
+        /// </summary>
+        public static string Form_DownloadServer_SelectBuild {
+            get {
+                return ResourceManager.GetString("Form_DownloadServer_SelectBuild", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   查找类似 服务端描述 的本地化字符串。
+        /// </summary>
+        public static string Form_DownloadServer_ServerDesc {
+            get {
+                return ResourceManager.GetString("Form_DownloadServer_ServerDesc", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   查找类似 Vanilla和Forge使用镜像源 的本地化字符串。
+        /// </summary>
+        public static string Form_DownloadServer_UseMirror {
+            get {
+                return ResourceManager.GetString("Form_DownloadServer_UseMirror", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   查找类似 返回 的本地化字符串。
+        /// </summary>
+        public static string Form_FrpProvider_Back {
+            get {
+                return ResourceManager.GetString("Form_FrpProvider_Back", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   查找类似 自定义Frp 的本地化字符串。
+        /// </summary>
+        public static string Form_FrpProvider_CustomFrp {
+            get {
+                return ResourceManager.GetString("Form_FrpProvider_CustomFrp", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   查找类似 即将跳转到Github填写接入申请···
+        ///记得填写接入服务商信息和联系方式哦！ 的本地化字符串。
+        /// </summary>
+        public static string Form_FrpProvider_GithubRedirect {
+            get {
+                return ResourceManager.GetString("Form_FrpProvider_GithubRedirect", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   查找类似 即将跳转··· 的本地化字符串。
+        /// </summary>
+        public static string Form_FrpProvider_GithubRedirectTitle {
+            get {
+                return ResourceManager.GetString("Form_FrpProvider_GithubRedirectTitle", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   查找类似 更多Frp 的本地化字符串。
+        /// </summary>
+        public static string Form_FrpProvider_MoreFrp {
+            get {
+                return ResourceManager.GetString("Form_FrpProvider_MoreFrp", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   查找类似 如果您是Frp服务商，希望我们接入，可进入MSL的Github仓库提交issue。 的本地化字符串。
+        /// </summary>
+        public static string Form_FrpProvider_ProviderInfo {
+            get {
+                return ResourceManager.GetString("Form_FrpProvider_ProviderInfo", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   查找类似 如果您是个人用户，希望MSL接入你所使用的Frp服务，请先在联系您的服务商询问是否愿意提供接入API支持后，再进入MSL的Github仓库提交接入申请issue。 的本地化字符串。
+        /// </summary>
+        public static string Form_FrpProvider_UserInfo {
+            get {
+                return ResourceManager.GetString("Form_FrpProvider_UserInfo", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   查找类似 想要MSL接入更多第三方Frp服务吗？ 的本地化字符串。
+        /// </summary>
+        public static string Form_FrpProvider_WantMore {
+            get {
+                return ResourceManager.GetString("Form_FrpProvider_WantMore", resourceCulture);
+            }
+        }
+        
+        /// <summary>
         ///   查找类似 开服 的本地化字符串。
         /// </summary>
         public static string Form_ServerRunner_Launch {
@@ -255,6 +584,1717 @@ namespace MSL.langs {
         public static string Form_ServerRunner_Stop {
             get {
                 return ResourceManager.GetString("Form_ServerRunner_Stop", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   查找类似 转换编码 的本地化字符串。
+        /// </summary>
+        public static string Form_SetServerconfig_ChangeEncoding {
+            get {
+                return ResourceManager.GetString("Form_SetServerconfig_ChangeEncoding", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   查找类似 配置文件 的本地化字符串。
+        /// </summary>
+        public static string Form_SetServerconfig_ConfigFiles {
+            get {
+                return ResourceManager.GetString("Form_SetServerconfig_ConfigFiles", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   查找类似 复制 的本地化字符串。
+        /// </summary>
+        public static string Form_SetServerconfig_Copy {
+            get {
+                return ResourceManager.GetString("Form_SetServerconfig_Copy", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   查找类似 剪切 的本地化字符串。
+        /// </summary>
+        public static string Form_SetServerconfig_Cut {
+            get {
+                return ResourceManager.GetString("Form_SetServerconfig_Cut", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   查找类似 粘贴 的本地化字符串。
+        /// </summary>
+        public static string Form_SetServerconfig_Paste {
+            get {
+                return ResourceManager.GetString("Form_SetServerconfig_Paste", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   查找类似 刷新 的本地化字符串。
+        /// </summary>
+        public static string Form_SetServerconfig_Refresh {
+            get {
+                return ResourceManager.GetString("Form_SetServerconfig_Refresh", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   查找类似 保存更改 的本地化字符串。
+        /// </summary>
+        public static string Form_SetServerconfig_SaveChanges {
+            get {
+                return ResourceManager.GetString("Form_SetServerconfig_SaveChanges", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   查找类似 保存成功！重启服务器生效！ 的本地化字符串。
+        /// </summary>
+        public static string Form_SetServerconfig_SaveSuccess {
+            get {
+                return ResourceManager.GetString("Form_SetServerconfig_SaveSuccess", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   查找类似 全选 的本地化字符串。
+        /// </summary>
+        public static string Form_SetServerconfig_SelectAll {
+            get {
+                return ResourceManager.GetString("Form_SetServerconfig_SelectAll", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   查找类似 修改配置文件 的本地化字符串。
+        /// </summary>
+        public static string Form_SetServerconfig_Title {
+            get {
+                return ResourceManager.GetString("Form_SetServerconfig_Title", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   查找类似 授权已取消。 的本地化字符串。
+        /// </summary>
+        public static string Frp_Chml_AuthCancelled {
+            get {
+                return ResourceManager.GetString("Frp_Chml_AuthCancelled", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   查找类似 用户已拒绝授权。 的本地化字符串。
+        /// </summary>
+        public static string Frp_Chml_AuthDenied {
+            get {
+                return ResourceManager.GetString("Frp_Chml_AuthDenied", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   查找类似 授权码已过期，请重新开始授权。 的本地化字符串。
+        /// </summary>
+        public static string Frp_Chml_AuthExpired {
+            get {
+                return ResourceManager.GetString("Frp_Chml_AuthExpired", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   查找类似 授权失败： 的本地化字符串。
+        /// </summary>
+        public static string Frp_Chml_AuthFailed {
+            get {
+                return ResourceManager.GetString("Frp_Chml_AuthFailed", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   查找类似 授权成功，正在加载数据…… 的本地化字符串。
+        /// </summary>
+        public static string Frp_Chml_AuthSuccess {
+            get {
+                return ResourceManager.GetString("Frp_Chml_AuthSuccess", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   查找类似 请在浏览器中完成授权…… 的本地化字符串。
+        /// </summary>
+        public static string Frp_Chml_BrowserAuth {
+            get {
+                return ResourceManager.GetString("Frp_Chml_BrowserAuth", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   查找类似 确定删除所选隧道吗？ 的本地化字符串。
+        /// </summary>
+        public static string Frp_Chml_ConfirmDelete {
+            get {
+                return ResourceManager.GetString("Frp_Chml_ConfirmDelete", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   查找类似 隧道创建失败！
+        /// 的本地化字符串。
+        /// </summary>
+        public static string Frp_Chml_CreateFailed {
+            get {
+                return ResourceManager.GetString("Frp_Chml_CreateFailed", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   查找类似 隧道创建成功！ 的本地化字符串。
+        /// </summary>
+        public static string Frp_Chml_CreateSuccess {
+            get {
+                return ResourceManager.GetString("Frp_Chml_CreateSuccess", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   查找类似 隧道删除失败！
+        /// 的本地化字符串。
+        /// </summary>
+        public static string Frp_Chml_DeleteFailed {
+            get {
+                return ResourceManager.GetString("Frp_Chml_DeleteFailed", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   查找类似 隧道删除成功！ 的本地化字符串。
+        /// </summary>
+        public static string Frp_Chml_DeleteSuccess {
+            get {
+                return ResourceManager.GetString("Frp_Chml_DeleteSuccess", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   查找类似 删除隧道 的本地化字符串。
+        /// </summary>
+        public static string Frp_Chml_DeleteTunnel {
+            get {
+                return ResourceManager.GetString("Frp_Chml_DeleteTunnel", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   查找类似 邮箱： 的本地化字符串。
+        /// </summary>
+        public static string Frp_Chml_Email {
+            get {
+                return ResourceManager.GetString("Frp_Chml_Email", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   查找类似 服务器返回的配置内容为空 的本地化字符串。
+        /// </summary>
+        public static string Frp_Chml_EmptyConfig {
+            get {
+                return ResourceManager.GetString("Frp_Chml_EmptyConfig", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   查找类似 获取配置失败！
+        /// 的本地化字符串。
+        /// </summary>
+        public static string Frp_Chml_GetConfigFailed {
+            get {
+                return ResourceManager.GetString("Frp_Chml_GetConfigFailed", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   查找类似 节点列表获取失败！
+        /// 的本地化字符串。
+        /// </summary>
+        public static string Frp_Chml_GetNodeFailed {
+            get {
+                return ResourceManager.GetString("Frp_Chml_GetNodeFailed", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   查找类似 获取节点列表失败！ 的本地化字符串。
+        /// </summary>
+        public static string Frp_Chml_GetNodeListFailed {
+            get {
+                return ResourceManager.GetString("Frp_Chml_GetNodeListFailed", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   查找类似 正在获取授权码…… 的本地化字符串。
+        /// </summary>
+        public static string Frp_Chml_GettingAuthCode {
+            get {
+                return ResourceManager.GetString("Frp_Chml_GettingAuthCode", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   查找类似 账户中心返回了无效的授权响应，请稍后重试。 的本地化字符串。
+        /// </summary>
+        public static string Frp_Chml_InvalidAuthResponse {
+            get {
+                return ResourceManager.GetString("Frp_Chml_InvalidAuthResponse", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   查找类似 登录中…… 的本地化字符串。
+        /// </summary>
+        public static string Frp_Chml_LoggingIn {
+            get {
+                return ResourceManager.GetString("Frp_Chml_LoggingIn", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   查找类似 登录失败！
+        /// 的本地化字符串。
+        /// </summary>
+        public static string Frp_Chml_LoginFailed {
+            get {
+                return ResourceManager.GetString("Frp_Chml_LoginFailed", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   查找类似 登录失败！
+        ///服务器返回内容为空。 的本地化字符串。
+        /// </summary>
+        public static string Frp_Chml_LoginFailedEmpty {
+            get {
+                return ResourceManager.GetString("Frp_Chml_LoginFailedEmpty", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   查找类似 登录失败！
+        ///服务器返回了无效数据。 的本地化字符串。
+        /// </summary>
+        public static string Frp_Chml_LoginFailedInvalid {
+            get {
+                return ResourceManager.GetString("Frp_Chml_LoginFailedInvalid", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   查找类似 映射配置成功，请您点击 启动内网映射 以启动映射！ 的本地化字符串。
+        /// </summary>
+        public static string Frp_Chml_MapSuccess {
+            get {
+                return ResourceManager.GetString("Frp_Chml_MapSuccess", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   查找类似 会员类型： 的本地化字符串。
+        /// </summary>
+        public static string Frp_Chml_MemberType {
+            get {
+                return ResourceManager.GetString("Frp_Chml_MemberType", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   查找类似 您似乎没有选择任何节点！ 的本地化字符串。
+        /// </summary>
+        public static string Frp_Chml_NoNode {
+            get {
+                return ResourceManager.GetString("Frp_Chml_NoNode", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   查找类似 普通节点 的本地化字符串。
+        /// </summary>
+        public static string Frp_Chml_NormalNode {
+            get {
+                return ResourceManager.GetString("Frp_Chml_NormalNode", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   查找类似 请先选择一个节点！ 的本地化字符串。
+        /// </summary>
+        public static string Frp_Chml_SelectNode {
+            get {
+                return ResourceManager.GetString("Frp_Chml_SelectNode", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   查找类似 请您选择一个隧道再按确定哦~ 的本地化字符串。
+        /// </summary>
+        public static string Frp_Chml_SelectTunnel {
+            get {
+                return ResourceManager.GetString("Frp_Chml_SelectTunnel", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   查找类似 请选择一个隧道再操作！ 的本地化字符串。
+        /// </summary>
+        public static string Frp_Chml_SelectTunnelFirst {
+            get {
+                return ResourceManager.GetString("Frp_Chml_SelectTunnelFirst", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   查找类似 请求过于频繁，已自动降低频率…… 的本地化字符串。
+        /// </summary>
+        public static string Frp_Chml_TooFrequent {
+            get {
+                return ResourceManager.GetString("Frp_Chml_TooFrequent", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   查找类似 隧道数量： 的本地化字符串。
+        /// </summary>
+        public static string Frp_Chml_TunnelCount {
+            get {
+                return ResourceManager.GetString("Frp_Chml_TunnelCount", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   查找类似 隧道呢？ 的本地化字符串。
+        /// </summary>
+        public static string Frp_Chml_TunnelSelectTitle {
+            get {
+                return ResourceManager.GetString("Frp_Chml_TunnelSelectTitle", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   查找类似 未知错误 的本地化字符串。
+        /// </summary>
+        public static string Frp_Chml_UnknownError {
+            get {
+                return ResourceManager.GetString("Frp_Chml_UnknownError", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   查找类似 用户： 的本地化字符串。
+        /// </summary>
+        public static string Frp_Chml_User {
+            get {
+                return ResourceManager.GetString("Frp_Chml_User", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   查找类似 VIP节点 的本地化字符串。
+        /// </summary>
+        public static string Frp_Chml_VipNode {
+            get {
+                return ResourceManager.GetString("Frp_Chml_VipNode", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   查找类似 等待用户在浏览器中确认授权…… 的本地化字符串。
+        /// </summary>
+        public static string Frp_Chml_WaitingAuth {
+            get {
+                return ResourceManager.GetString("Frp_Chml_WaitingAuth", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   查找类似 创建配置文件时发生未知错误，请检查日志！ 的本地化字符串。
+        /// </summary>
+        public static string Frp_Custom_CreateError {
+            get {
+                return ResourceManager.GetString("Frp_Custom_CreateError", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   查找类似 我的自定义Frp节点 的本地化字符串。
+        /// </summary>
+        public static string Frp_Custom_DefaultName {
+            get {
+                return ResourceManager.GetString("Frp_Custom_DefaultName", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   查找类似 exe应用程序 (*.exe)|*.exe 的本地化字符串。
+        /// </summary>
+        public static string Frp_Custom_ExeFilter {
+            get {
+                return ResourceManager.GetString("Frp_Custom_ExeFilter", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   查找类似 致命错误！ 的本地化字符串。
+        /// </summary>
+        public static string Frp_Custom_FatalError {
+            get {
+                return ResourceManager.GetString("Frp_Custom_FatalError", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   查找类似 给此隧道取一个名字吧： 的本地化字符串。
+        /// </summary>
+        public static string Frp_Custom_NameTunnel {
+            get {
+                return ResourceManager.GetString("Frp_Custom_NameTunnel", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   查找类似 保存最终配置时发生错误，请检查日志！ 的本地化字符串。
+        /// </summary>
+        public static string Frp_Custom_SaveError {
+            get {
+                return ResourceManager.GetString("Frp_Custom_SaveError", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   查找类似 请选择您的Frpc客户端 的本地化字符串。
+        /// </summary>
+        public static string Frp_Custom_SelectFrpc {
+            get {
+                return ResourceManager.GetString("Frp_Custom_SelectFrpc", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   查找类似 隧道配置成功，请您点击&quot;启动内网映射&quot;以启动映射！ 的本地化字符串。
+        /// </summary>
+        public static string Frp_Custom_TunnelSuccess {
+            get {
+                return ResourceManager.GetString("Frp_Custom_TunnelSuccess", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   查找类似 存在未填写的数据！
+        ///请检查！ 的本地化字符串。
+        /// </summary>
+        public static string Frp_Custom_UnfilledData {
+            get {
+                return ResourceManager.GetString("Frp_Custom_UnfilledData", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   查找类似 带宽： 的本地化字符串。
+        /// </summary>
+        public static string Frp_MSLFrp_Bandwidth {
+            get {
+                return ResourceManager.GetString("Frp_MSLFrp_Bandwidth", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   查找类似 确定创建 的本地化字符串。
+        /// </summary>
+        public static string Frp_MSLFrp_ConfirmCreate {
+            get {
+                return ResourceManager.GetString("Frp_MSLFrp_ConfirmCreate", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   查找类似 创建新的隧道 的本地化字符串。
+        /// </summary>
+        public static string Frp_MSLFrp_CreateNewTunnel {
+            get {
+                return ResourceManager.GetString("Frp_MSLFrp_CreateNewTunnel", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   查找类似 删除所选隧道 的本地化字符串。
+        /// </summary>
+        public static string Frp_MSLFrp_DeleteSelectedTunnel {
+            get {
+                return ResourceManager.GetString("Frp_MSLFrp_DeleteSelectedTunnel", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   查找类似 启用KCP协议传输： 的本地化字符串。
+        /// </summary>
+        public static string Frp_MSLFrp_EnableKCP {
+            get {
+                return ResourceManager.GetString("Frp_MSLFrp_EnableKCP", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   查找类似 填写隧道参数 的本地化字符串。
+        /// </summary>
+        public static string Frp_MSLFrp_FillTunnelParams {
+            get {
+                return ResourceManager.GetString("Frp_MSLFrp_FillTunnelParams", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   查找类似 本地IP： 的本地化字符串。
+        /// </summary>
+        public static string Frp_MSLFrp_LocalIP {
+            get {
+                return ResourceManager.GetString("Frp_MSLFrp_LocalIP", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   查找类似 本地端口： 的本地化字符串。
+        /// </summary>
+        public static string Frp_MSLFrp_LocalPort {
+            get {
+                return ResourceManager.GetString("Frp_MSLFrp_LocalPort", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   查找类似 退出登录 的本地化字符串。
+        /// </summary>
+        public static string Frp_MSLFrp_Logout {
+            get {
+                return ResourceManager.GetString("Frp_MSLFrp_Logout", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   查找类似 我创建的隧道： 的本地化字符串。
+        /// </summary>
+        public static string Frp_MSLFrp_MyCreatedTunnels {
+            get {
+                return ResourceManager.GetString("Frp_MSLFrp_MyCreatedTunnels", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   查找类似 我的隧道 的本地化字符串。
+        /// </summary>
+        public static string Frp_MSLFrp_MyTunnels {
+            get {
+                return ResourceManager.GetString("Frp_MSLFrp_MyTunnels", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   查找类似 打开官网 的本地化字符串。
+        /// </summary>
+        public static string Frp_MSLFrp_OpenWebsite {
+            get {
+                return ResourceManager.GetString("Frp_MSLFrp_OpenWebsite", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   查找类似 网络协议： 的本地化字符串。
+        /// </summary>
+        public static string Frp_MSLFrp_Protocol {
+            get {
+                return ResourceManager.GetString("Frp_MSLFrp_Protocol", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   查找类似 随机生成 的本地化字符串。
+        /// </summary>
+        public static string Frp_MSLFrp_RandomGen {
+            get {
+                return ResourceManager.GetString("Frp_MSLFrp_RandomGen", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   查找类似 备注： 的本地化字符串。
+        /// </summary>
+        public static string Frp_MSLFrp_Remark {
+            get {
+                return ResourceManager.GetString("Frp_MSLFrp_Remark", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   查找类似 备注（允许中文）： 的本地化字符串。
+        /// </summary>
+        public static string Frp_MSLFrp_RemarkCn {
+            get {
+                return ResourceManager.GetString("Frp_MSLFrp_RemarkCn", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   查找类似 远程端口： 的本地化字符串。
+        /// </summary>
+        public static string Frp_MSLFrp_RemotePort {
+            get {
+                return ResourceManager.GetString("Frp_MSLFrp_RemotePort", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   查找类似 选择该隧道 的本地化字符串。
+        /// </summary>
+        public static string Frp_MSLFrp_SelectThisTunnel {
+            get {
+                return ResourceManager.GetString("Frp_MSLFrp_SelectThisTunnel", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   查找类似 请选择一条隧道~ 的本地化字符串。
+        /// </summary>
+        public static string Frp_MSLFrp_SelectTunnel {
+            get {
+                return ResourceManager.GetString("Frp_MSLFrp_SelectTunnel", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   查找类似 隧道信息 的本地化字符串。
+        /// </summary>
+        public static string Frp_MSLFrp_TunnelInfo {
+            get {
+                return ResourceManager.GetString("Frp_MSLFrp_TunnelInfo", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   查找类似 隧道名称（英文）： 的本地化字符串。
+        /// </summary>
+        public static string Frp_MSLFrp_TunnelNameEn {
+            get {
+                return ResourceManager.GetString("Frp_MSLFrp_TunnelNameEn", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   查找类似 类型： 的本地化字符串。
+        /// </summary>
+        public static string Frp_MSLFrp_Type {
+            get {
+                return ResourceManager.GetString("Frp_MSLFrp_Type", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   查找类似 个人中心 的本地化字符串。
+        /// </summary>
+        public static string Frp_MSLFrp_UserCenter {
+            get {
+                return ResourceManager.GetString("Frp_MSLFrp_UserCenter", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   查找类似 用户信息 的本地化字符串。
+        /// </summary>
+        public static string Frp_MSLFrp_UserInfo {
+            get {
+                return ResourceManager.GetString("Frp_MSLFrp_UserInfo", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   查找类似 双重验证（2FA） 的本地化字符串。
+        /// </summary>
+        public static string Frp_MSLFrpLogin_2FA {
+            get {
+                return ResourceManager.GetString("Frp_MSLFrpLogin_2FA", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   查找类似 验证码： 的本地化字符串。
+        /// </summary>
+        public static string Frp_MSLFrpLogin_2FACode {
+            get {
+                return ResourceManager.GetString("Frp_MSLFrpLogin_2FACode", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   查找类似 我们向您的邮箱发送了一个验证码，请输入验证码以完成登录。 的本地化字符串。
+        /// </summary>
+        public static string Frp_MSLFrpLogin_2FAEmail {
+            get {
+                return ResourceManager.GetString("Frp_MSLFrpLogin_2FAEmail", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   查找类似 请输入您绑定的2FA软件的实时代码以登录。 的本地化字符串。
+        /// </summary>
+        public static string Frp_MSLFrpLogin_2FATypeApp {
+            get {
+                return ResourceManager.GetString("Frp_MSLFrpLogin_2FATypeApp", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   查找类似 API返回错误。 的本地化字符串。
+        /// </summary>
+        public static string Frp_MSLFrpLogin_ApiError {
+            get {
+                return ResourceManager.GetString("Frp_MSLFrpLogin_ApiError", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   查找类似 API返回数据格式不正确 (url/ssid为空) 的本地化字符串。
+        /// </summary>
+        public static string Frp_MSLFrpLogin_ApiFormatError {
+            get {
+                return ResourceManager.GetString("Frp_MSLFrpLogin_ApiFormatError", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   查找类似 通过浏览器登录 (推荐) 的本地化字符串。
+        /// </summary>
+        public static string Frp_MSLFrpLogin_BrowserLogin {
+            get {
+                return ResourceManager.GetString("Frp_MSLFrpLogin_BrowserLogin", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   查找类似 已在您的默认浏览器中打开登录页面，请完成登录... 的本地化字符串。
+        /// </summary>
+        public static string Frp_MSLFrpLogin_BrowserLoginDesc {
+            get {
+                return ResourceManager.GetString("Frp_MSLFrpLogin_BrowserLoginDesc", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   查找类似 浏览器登录 的本地化字符串。
+        /// </summary>
+        public static string Frp_MSLFrpLogin_BrowserLoginTitle {
+            get {
+                return ResourceManager.GetString("Frp_MSLFrpLogin_BrowserLoginTitle", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   查找类似 登录完成后此窗口将自动继续... 的本地化字符串。
+        /// </summary>
+        public static string Frp_MSLFrpLogin_BrowserLoginWait {
+            get {
+                return ResourceManager.GetString("Frp_MSLFrpLogin_BrowserLoginWait", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   查找类似 自动打开浏览器失败，请手动复制链接 的本地化字符串。
+        /// </summary>
+        public static string Frp_MSLFrpLogin_BrowserOpenFailed {
+            get {
+                return ResourceManager.GetString("Frp_MSLFrpLogin_BrowserOpenFailed", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   查找类似 取消 的本地化字符串。
+        /// </summary>
+        public static string Frp_MSLFrpLogin_Cancel {
+            get {
+                return ResourceManager.GetString("Frp_MSLFrpLogin_Cancel", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   查找类似 验证码已发送，请注意查收！ 的本地化字符串。
+        /// </summary>
+        public static string Frp_MSLFrpLogin_CodeSent {
+            get {
+                return ResourceManager.GetString("Frp_MSLFrpLogin_CodeSent", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   查找类似 复制失败:  的本地化字符串。
+        /// </summary>
+        public static string Frp_MSLFrpLogin_CopyFailed {
+            get {
+                return ResourceManager.GetString("Frp_MSLFrpLogin_CopyFailed", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   查找类似 复制登录链接 的本地化字符串。
+        /// </summary>
+        public static string Frp_MSLFrpLogin_CopyLink {
+            get {
+                return ResourceManager.GetString("Frp_MSLFrpLogin_CopyLink", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   查找类似 邮箱： 的本地化字符串。
+        /// </summary>
+        public static string Frp_MSLFrpLogin_Email {
+            get {
+                return ResourceManager.GetString("Frp_MSLFrpLogin_Email", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   查找类似 请输入账号和密码！ 的本地化字符串。
+        /// </summary>
+        public static string Frp_MSLFrpLogin_EnterAccountPassword {
+            get {
+                return ResourceManager.GetString("Frp_MSLFrpLogin_EnterAccountPassword", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   查找类似 请输入验证代码！ 的本地化字符串。
+        /// </summary>
+        public static string Frp_MSLFrpLogin_EnterCode {
+            get {
+                return ResourceManager.GetString("Frp_MSLFrpLogin_EnterCode", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   查找类似 获取授权状态失败 的本地化字符串。
+        /// </summary>
+        public static string Frp_MSLFrpLogin_GetAuthFailed {
+            get {
+                return ResourceManager.GetString("Frp_MSLFrpLogin_GetAuthFailed", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   查找类似 获取二维码失败 的本地化字符串。
+        /// </summary>
+        public static string Frp_MSLFrpLogin_GetQrFailed {
+            get {
+                return ResourceManager.GetString("Frp_MSLFrpLogin_GetQrFailed", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   查找类似 正在获取微信登录二维码... 的本地化字符串。
+        /// </summary>
+        public static string Frp_MSLFrpLogin_GettingQrCode {
+            get {
+                return ResourceManager.GetString("Frp_MSLFrpLogin_GettingQrCode", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   查找类似 登录链接已复制到剪贴板！ 的本地化字符串。
+        /// </summary>
+        public static string Frp_MSLFrpLogin_LinkCopied {
+            get {
+                return ResourceManager.GetString("Frp_MSLFrpLogin_LinkCopied", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   查找类似 加载中... 的本地化字符串。
+        /// </summary>
+        public static string Frp_MSLFrpLogin_Loading {
+            get {
+                return ResourceManager.GetString("Frp_MSLFrpLogin_Loading", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   查找类似 登录中…… 的本地化字符串。
+        /// </summary>
+        public static string Frp_MSLFrpLogin_LoggingIn {
+            get {
+                return ResourceManager.GetString("Frp_MSLFrpLogin_LoggingIn", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   查找类似 登录 的本地化字符串。
+        /// </summary>
+        public static string Frp_MSLFrpLogin_Login {
+            get {
+                return ResourceManager.GetString("Frp_MSLFrpLogin_Login", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   查找类似 登录失败 的本地化字符串。
+        /// </summary>
+        public static string Frp_MSLFrpLogin_LoginFailed {
+            get {
+                return ResourceManager.GetString("Frp_MSLFrpLogin_LoginFailed", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   查找类似 登录已超时或失败，请重试。 的本地化字符串。
+        /// </summary>
+        public static string Frp_MSLFrpLogin_LoginTimeout {
+            get {
+                return ResourceManager.GetString("Frp_MSLFrpLogin_LoginTimeout", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   查找类似 打开失败:  的本地化字符串。
+        /// </summary>
+        public static string Frp_MSLFrpLogin_OpenFailed {
+            get {
+                return ResourceManager.GetString("Frp_MSLFrpLogin_OpenFailed", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   查找类似 解析二维码图片失败 的本地化字符串。
+        /// </summary>
+        public static string Frp_MSLFrpLogin_ParseQrFailed {
+            get {
+                return ResourceManager.GetString("Frp_MSLFrpLogin_ParseQrFailed", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   查找类似 密码： 的本地化字符串。
+        /// </summary>
+        public static string Frp_MSLFrpLogin_Password {
+            get {
+                return ResourceManager.GetString("Frp_MSLFrpLogin_Password", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   查找类似 轮询时发生错误:  的本地化字符串。
+        /// </summary>
+        public static string Frp_MSLFrpLogin_PollingError {
+            get {
+                return ResourceManager.GetString("Frp_MSLFrpLogin_PollingError", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   查找类似 正在准备浏览器登录... 的本地化字符串。
+        /// </summary>
+        public static string Frp_MSLFrpLogin_PreparingBrowser {
+            get {
+                return ResourceManager.GetString("Frp_MSLFrpLogin_PreparingBrowser", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   查找类似 二维码已过期，请重试。 的本地化字符串。
+        /// </summary>
+        public static string Frp_MSLFrpLogin_QrExpired {
+            get {
+                return ResourceManager.GetString("Frp_MSLFrpLogin_QrExpired", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   查找类似 二维码已过期，请返回重试。 的本地化字符串。
+        /// </summary>
+        public static string Frp_MSLFrpLogin_QrExpiredConfirm {
+            get {
+                return ResourceManager.GetString("Frp_MSLFrpLogin_QrExpiredConfirm", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   查找类似 返回的二维码数据格式不正确 的本地化字符串。
+        /// </summary>
+        public static string Frp_MSLFrpLogin_QrFormatError {
+            get {
+                return ResourceManager.GetString("Frp_MSLFrpLogin_QrFormatError", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   查找类似 注册 / 用户中心 的本地化字符串。
+        /// </summary>
+        public static string Frp_MSLFrpLogin_Register {
+            get {
+                return ResourceManager.GetString("Frp_MSLFrpLogin_Register", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   查找类似 重新打开网页 的本地化字符串。
+        /// </summary>
+        public static string Frp_MSLFrpLogin_ReopenBrowser {
+            get {
+                return ResourceManager.GetString("Frp_MSLFrpLogin_ReopenBrowser", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   查找类似 请求失败，未知错误 的本地化字符串。
+        /// </summary>
+        public static string Frp_MSLFrpLogin_RequestFailed {
+            get {
+                return ResourceManager.GetString("Frp_MSLFrpLogin_RequestFailed", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   查找类似 重新发送 的本地化字符串。
+        /// </summary>
+        public static string Frp_MSLFrpLogin_Resend {
+            get {
+                return ResourceManager.GetString("Frp_MSLFrpLogin_Resend", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   查找类似 重新发送({0}s) 的本地化字符串。
+        /// </summary>
+        public static string Frp_MSLFrpLogin_ResendCountdown {
+            get {
+                return ResourceManager.GetString("Frp_MSLFrpLogin_ResendCountdown", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   查找类似 保存登录状态（风险自负哦~） 的本地化字符串。
+        /// </summary>
+        public static string Frp_MSLFrpLogin_SaveToken {
+            get {
+                return ResourceManager.GetString("Frp_MSLFrpLogin_SaveToken", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   查找类似 扫码成功，正在登录... 的本地化字符串。
+        /// </summary>
+        public static string Frp_MSLFrpLogin_Scanned {
+            get {
+                return ResourceManager.GetString("Frp_MSLFrpLogin_Scanned", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   查找类似 请使用微信扫描上方小程序码 的本地化字符串。
+        /// </summary>
+        public static string Frp_MSLFrpLogin_ScanQrCode {
+            get {
+                return ResourceManager.GetString("Frp_MSLFrpLogin_ScanQrCode", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   查找类似 MSLFrp 是由 MSL 的开发团队 MSLTeam 参与联合开发运营的内网穿透服务
+        ///登录您的 MSL 账号即可开始使用 的本地化字符串。
+        /// </summary>
+        public static string Frp_MSLFrpLogin_ServiceDesc {
+            get {
+                return ResourceManager.GetString("Frp_MSLFrpLogin_ServiceDesc", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   查找类似 未知错误，请稍后再试！ 的本地化字符串。
+        /// </summary>
+        public static string Frp_MSLFrpLogin_UnknownError {
+            get {
+                return ResourceManager.GetString("Frp_MSLFrpLogin_UnknownError", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   查找类似 正在验证登录... 的本地化字符串。
+        /// </summary>
+        public static string Frp_MSLFrpLogin_Verifying {
+            get {
+                return ResourceManager.GetString("Frp_MSLFrpLogin_Verifying", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   查找类似 （请确保您已在 MSL 用户中心绑定微信，否则会登录失败哦~） 的本地化字符串。
+        /// </summary>
+        public static string Frp_MSLFrpLogin_WechatBind {
+            get {
+                return ResourceManager.GetString("Frp_MSLFrpLogin_WechatBind", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   查找类似 请使用微信扫描下方小程序码进行登录： 的本地化字符串。
+        /// </summary>
+        public static string Frp_MSLFrpLogin_WechatDesc {
+            get {
+                return ResourceManager.GetString("Frp_MSLFrpLogin_WechatDesc", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   查找类似 微信扫码登录 的本地化字符串。
+        /// </summary>
+        public static string Frp_MSLFrpLogin_WechatLogin {
+            get {
+                return ResourceManager.GetString("Frp_MSLFrpLogin_WechatLogin", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   查找类似 微信扫码登录 的本地化字符串。
+        /// </summary>
+        public static string Frp_MSLFrpLogin_WechatTitle {
+            get {
+                return ResourceManager.GetString("Frp_MSLFrpLogin_WechatTitle", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   查找类似 欢迎登录 MSLFrp 的本地化字符串。
+        /// </summary>
+        public static string Frp_MSLFrpLogin_Welcome {
+            get {
+                return ResourceManager.GetString("Frp_MSLFrpLogin_Welcome", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   查找类似 支付宝 的本地化字符串。
+        /// </summary>
+        public static string Frp_MSLFrpProfile_Alipay {
+            get {
+                return ResourceManager.GetString("Frp_MSLFrpProfile_Alipay", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   查找类似 赚积分 的本地化字符串。
+        /// </summary>
+        public static string Frp_MSLFrpProfile_EarnPoints {
+            get {
+                return ResourceManager.GetString("Frp_MSLFrpProfile_EarnPoints", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   查找类似 输入金额[￥1=100积分] (单位: 元)： 的本地化字符串。
+        /// </summary>
+        public static string Frp_MSLFrpProfile_InputAmount {
+            get {
+                return ResourceManager.GetString("Frp_MSLFrpProfile_InputAmount", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   查找类似 我的信息 的本地化字符串。
+        /// </summary>
+        public static string Frp_MSLFrpProfile_MyInfo {
+            get {
+                return ResourceManager.GetString("Frp_MSLFrpProfile_MyInfo", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   查找类似 付款遇到问题? 的本地化字符串。
+        /// </summary>
+        public static string Frp_MSLFrpProfile_PayIssue {
+            get {
+                return ResourceManager.GetString("Frp_MSLFrpProfile_PayIssue", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   查找类似 积分兑换 的本地化字符串。
+        /// </summary>
+        public static string Frp_MSLFrpProfile_PointExchange {
+            get {
+                return ResourceManager.GetString("Frp_MSLFrpProfile_PointExchange", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   查找类似 积分购买 的本地化字符串。
+        /// </summary>
+        public static string Frp_MSLFrpProfile_PointPurchase {
+            get {
+                return ResourceManager.GetString("Frp_MSLFrpProfile_PointPurchase", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   查找类似 购买 的本地化字符串。
+        /// </summary>
+        public static string Frp_MSLFrpProfile_Purchase {
+            get {
+                return ResourceManager.GetString("Frp_MSLFrpProfile_Purchase", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   查找类似 点我实名 的本地化字符串。
+        /// </summary>
+        public static string Frp_MSLFrpProfile_RealnameVerify {
+            get {
+                return ResourceManager.GetString("Frp_MSLFrpProfile_RealnameVerify", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   查找类似 选择付款方式： 的本地化字符串。
+        /// </summary>
+        public static string Frp_MSLFrpProfile_SelectPayMethod {
+            get {
+                return ResourceManager.GetString("Frp_MSLFrpProfile_SelectPayMethod", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   查找类似 微信 的本地化字符串。
+        /// </summary>
+        public static string Frp_MSLFrpProfile_Wechat {
+            get {
+                return ResourceManager.GetString("Frp_MSLFrpProfile_Wechat", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   查找类似 请在打开的浏览器网页中确认授权…… 的本地化字符串。
+        /// </summary>
+        public static string Frp_OpenFrp_BrowserAuth {
+            get {
+                return ResourceManager.GetString("Frp_OpenFrp_BrowserAuth", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   查找类似 登录失败！请检查您的Authorization是否正确！ 的本地化字符串。
+        /// </summary>
+        public static string Frp_OpenFrp_CheckAuth {
+            get {
+                return ResourceManager.GetString("Frp_OpenFrp_CheckAuth", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   查找类似 创建失败！ 的本地化字符串。
+        /// </summary>
+        public static string Frp_OpenFrp_CreateFailed {
+            get {
+                return ResourceManager.GetString("Frp_OpenFrp_CreateFailed", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   查找类似 隧道创建成功！ 的本地化字符串。
+        /// </summary>
+        public static string Frp_OpenFrp_CreateSuccess {
+            get {
+                return ResourceManager.GetString("Frp_OpenFrp_CreateSuccess", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   查找类似 解密过程中出错:  的本地化字符串。
+        /// </summary>
+        public static string Frp_OpenFrp_DecryptError {
+            get {
+                return ResourceManager.GetString("Frp_OpenFrp_DecryptError", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   查找类似 解密失败:  的本地化字符串。
+        /// </summary>
+        public static string Frp_OpenFrp_DecryptFailed {
+            get {
+                return ResourceManager.GetString("Frp_OpenFrp_DecryptFailed", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   查找类似 删除失败！ 的本地化字符串。
+        /// </summary>
+        public static string Frp_OpenFrp_DeleteFailed {
+            get {
+                return ResourceManager.GetString("Frp_OpenFrp_DeleteFailed", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   查找类似 删除成功！ 的本地化字符串。
+        /// </summary>
+        public static string Frp_OpenFrp_DeleteSuccess {
+            get {
+                return ResourceManager.GetString("Frp_OpenFrp_DeleteSuccess", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   查找类似 出现错误！ 的本地化字符串。
+        /// </summary>
+        public static string Frp_OpenFrp_Error {
+            get {
+                return ResourceManager.GetString("Frp_OpenFrp_Error", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   查找类似 获取失败！ 的本地化字符串。
+        /// </summary>
+        public static string Frp_OpenFrp_GetFailed {
+            get {
+                return ResourceManager.GetString("Frp_OpenFrp_GetFailed", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   查找类似 获取节点列表失败！ 的本地化字符串。
+        /// </summary>
+        public static string Frp_OpenFrp_GetNodeListFailed {
+            get {
+                return ResourceManager.GetString("Frp_OpenFrp_GetNodeListFailed", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   查找类似 获取公钥失败！ 的本地化字符串。
+        /// </summary>
+        public static string Frp_OpenFrp_GetPubKeyFailed {
+            get {
+                return ResourceManager.GetString("Frp_OpenFrp_GetPubKeyFailed", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   查找类似 请输入Authorization 的本地化字符串。
+        /// </summary>
+        public static string Frp_OpenFrp_InputAuth {
+            get {
+                return ResourceManager.GetString("Frp_OpenFrp_InputAuth", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   查找类似 登录中…… 的本地化字符串。
+        /// </summary>
+        public static string Frp_OpenFrp_LoggingIn {
+            get {
+                return ResourceManager.GetString("Frp_OpenFrp_LoggingIn", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   查找类似 登陆失败！ 的本地化字符串。
+        /// </summary>
+        public static string Frp_OpenFrp_LoginFailed {
+            get {
+                return ResourceManager.GetString("Frp_OpenFrp_LoginFailed", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   查找类似 映射配置成功，请您点击&quot;启动内网映射&quot;以启动映射！ 的本地化字符串。
+        /// </summary>
+        public static string Frp_OpenFrp_MapSuccess {
+            get {
+                return ResourceManager.GetString("Frp_OpenFrp_MapSuccess", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   查找类似 请求失败！请重试！ 的本地化字符串。
+        /// </summary>
+        public static string Frp_OpenFrp_RequestFailed {
+            get {
+                return ResourceManager.GetString("Frp_OpenFrp_RequestFailed", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   查找类似 请先选择一个节点 的本地化字符串。
+        /// </summary>
+        public static string Frp_OpenFrp_SelectNode {
+            get {
+                return ResourceManager.GetString("Frp_OpenFrp_SelectNode", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   查找类似 请确保您选择了一个隧道 的本地化字符串。
+        /// </summary>
+        public static string Frp_OpenFrp_SelectTunnel {
+            get {
+                return ResourceManager.GetString("Frp_OpenFrp_SelectTunnel", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   查找类似 请先选择一个隧道 的本地化字符串。
+        /// </summary>
+        public static string Frp_OpenFrp_SelectTunnelFirst {
+            get {
+                return ResourceManager.GetString("Frp_OpenFrp_SelectTunnelFirst", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   查找类似 给隧道取个名称吧（不支持中文） 的本地化字符串。
+        /// </summary>
+        public static string Frp_OpenFrp_TunnelName {
+            get {
+                return ResourceManager.GetString("Frp_OpenFrp_TunnelName", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   查找类似 青铜节点 的本地化字符串。
+        /// </summary>
+        public static string Frp_Sakura_BronzeNode {
+            get {
+                return ResourceManager.GetString("Frp_Sakura_BronzeNode", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   查找类似 配置输出失败！ 的本地化字符串。
+        /// </summary>
+        public static string Frp_Sakura_ConfigFailed {
+            get {
+                return ResourceManager.GetString("Frp_Sakura_ConfigFailed", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   查找类似 创建失败！发生异常:  的本地化字符串。
+        /// </summary>
+        public static string Frp_Sakura_CreateError {
+            get {
+                return ResourceManager.GetString("Frp_Sakura_CreateError", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   查找类似 创建失败！请尝试更换隧道名称/节点！ 的本地化字符串。
+        /// </summary>
+        public static string Frp_Sakura_CreateFailed {
+            get {
+                return ResourceManager.GetString("Frp_Sakura_CreateFailed", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   查找类似 {0}隧道创建成功！
+        ///ID: {1} 远程端口: {2} 的本地化字符串。
+        /// </summary>
+        public static string Frp_Sakura_CreateSuccess {
+            get {
+                return ResourceManager.GetString("Frp_Sakura_CreateSuccess", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   查找类似 删除失败！ 的本地化字符串。
+        /// </summary>
+        public static string Frp_Sakura_DeleteFailed {
+            get {
+                return ResourceManager.GetString("Frp_Sakura_DeleteFailed", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   查找类似 获取隧道列表失败！ 的本地化字符串。
+        /// </summary>
+        public static string Frp_Sakura_GetTunnelFailed {
+            get {
+                return ResourceManager.GetString("Frp_Sakura_GetTunnelFailed", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   查找类似 请输入Sakura账户Token 的本地化字符串。
+        /// </summary>
+        public static string Frp_Sakura_InputToken {
+            get {
+                return ResourceManager.GetString("Frp_Sakura_InputToken", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   查找类似 登录中…… 的本地化字符串。
+        /// </summary>
+        public static string Frp_Sakura_Login {
+            get {
+                return ResourceManager.GetString("Frp_Sakura_Login", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   查找类似 登陆失败！ 的本地化字符串。
+        /// </summary>
+        public static string Frp_Sakura_LoginFailed {
+            get {
+                return ResourceManager.GetString("Frp_Sakura_LoginFailed", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   查找类似 映射配置成功，请您点击&quot;启动内网映射&quot;以启动映射！ 的本地化字符串。
+        /// </summary>
+        public static string Frp_Sakura_MapSuccess {
+            get {
+                return ResourceManager.GetString("Frp_Sakura_MapSuccess", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   查找类似 节点带宽:  的本地化字符串。
+        /// </summary>
+        public static string Frp_Sakura_NodeBand {
+            get {
+                return ResourceManager.GetString("Frp_Sakura_NodeBand", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   查找类似 您似乎没有选择任何节点！ 的本地化字符串。
+        /// </summary>
+        public static string Frp_Sakura_NoNode {
+            get {
+                return ResourceManager.GetString("Frp_Sakura_NoNode", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   查找类似 节点没有备注 的本地化字符串。
+        /// </summary>
+        public static string Frp_Sakura_NoNodeDesc {
+            get {
+                return ResourceManager.GetString("Frp_Sakura_NoNodeDesc", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   查找类似 普通节点 的本地化字符串。
+        /// </summary>
+        public static string Frp_Sakura_NormalNode {
+            get {
+                return ResourceManager.GetString("Frp_Sakura_NormalNode", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   查找类似 您似乎没有选择任何隧道！ 的本地化字符串。
+        /// </summary>
+        public static string Frp_Sakura_NoTunnel {
+            get {
+                return ResourceManager.GetString("Frp_Sakura_NoTunnel", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   查找类似 离线 的本地化字符串。
+        /// </summary>
+        public static string Frp_Sakura_Offline {
+            get {
+                return ResourceManager.GetString("Frp_Sakura_Offline", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   查找类似 在线 的本地化字符串。
+        /// </summary>
+        public static string Frp_Sakura_Online {
+            get {
+                return ResourceManager.GetString("Frp_Sakura_Online", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   查找类似 远程端口:  的本地化字符串。
+        /// </summary>
+        public static string Frp_Sakura_RemotePort {
+            get {
+                return ResourceManager.GetString("Frp_Sakura_RemotePort", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   查找类似 白银节点 的本地化字符串。
+        /// </summary>
+        public static string Frp_Sakura_SilverNode {
+            get {
+                return ResourceManager.GetString("Frp_Sakura_SilverNode", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   查找类似 限速:  的本地化字符串。
+        /// </summary>
+        public static string Frp_Sakura_SpeedLimit {
+            get {
+                return ResourceManager.GetString("Frp_Sakura_SpeedLimit", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   查找类似 隧道ID:  的本地化字符串。
+        /// </summary>
+        public static string Frp_Sakura_TunnelID {
+            get {
+                return ResourceManager.GetString("Frp_Sakura_TunnelID", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   查找类似 隧道名:  的本地化字符串。
+        /// </summary>
+        public static string Frp_Sakura_TunnelName {
+            get {
+                return ResourceManager.GetString("Frp_Sakura_TunnelName", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   查找类似 隧道状态： 的本地化字符串。
+        /// </summary>
+        public static string Frp_Sakura_TunnelStatus {
+            get {
+                return ResourceManager.GetString("Frp_Sakura_TunnelStatus", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   查找类似 用户名:  的本地化字符串。
+        /// </summary>
+        public static string Frp_Sakura_UserName {
+            get {
+                return ResourceManager.GetString("Frp_Sakura_UserName", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   查找类似 用户类型:  的本地化字符串。
+        /// </summary>
+        public static string Frp_Sakura_UserType {
+            get {
+                return ResourceManager.GetString("Frp_Sakura_UserType", resourceCulture);
             }
         }
         
@@ -301,6 +2341,24 @@ namespace MSL.langs {
         public static string MainWindow_Close_Warning2 {
             get {
                 return ResourceManager.GetString("MainWindow_Close_Warning2", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   查找类似 下载新版本中…… 的本地化字符串。
+        /// </summary>
+        public static string MainWindow_DownloadNewVer {
+            get {
+                return ResourceManager.GetString("MainWindow_DownloadNewVer", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   查找类似 软件将使用备用URL... 的本地化字符串。
+        /// </summary>
+        public static string MainWindow_FallbackUrl {
+            get {
+                return ResourceManager.GetString("MainWindow_FallbackUrl", resourceCulture);
             }
         }
         
@@ -489,6 +2547,27 @@ namespace MSL.langs {
         }
         
         /// <summary>
+        ///   查找类似 软件加载时出现错误！若无法正常使用，请联系作者进行解决。
+        ///错误信息： 的本地化字符串。
+        /// </summary>
+        public static string MainWindow_LoadError {
+            get {
+                return ResourceManager.GetString("MainWindow_LoadError", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   查找类似 软件加载时出现错误！
+        ///请检查您是否安装了.NET Framework 4.7.2运行库，若安装后依旧出错，请联系作者！
+        ///错误信息： 的本地化字符串。
+        /// </summary>
+        public static string MainWindow_LoadErrorDotNet {
+            get {
+                return ResourceManager.GetString("MainWindow_LoadErrorDotNet", resourceCulture);
+            }
+        }
+        
+        /// <summary>
         ///   查找类似 关于 的本地化字符串。
         /// </summary>
         public static string MainWindow_Menu_About {
@@ -539,6 +2618,33 @@ namespace MSL.langs {
         public static string MainWindow_Menu_Setting {
             get {
                 return ResourceManager.GetString("MainWindow_Menu_Setting", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   查找类似 退出程序 的本地化字符串。
+        /// </summary>
+        public static string MainWindow_Tray_Exit {
+            get {
+                return ResourceManager.GetString("MainWindow_Tray_Exit", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   查找类似 打开主界面 的本地化字符串。
+        /// </summary>
+        public static string MainWindow_Tray_OpenMain {
+            get {
+                return ResourceManager.GetString("MainWindow_Tray_OpenMain", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   查找类似 出现错误，更新失败！ 的本地化字符串。
+        /// </summary>
+        public static string MainWindow_UpdateFailed {
+            get {
+                return ResourceManager.GetString("MainWindow_UpdateFailed", resourceCulture);
             }
         }
         
@@ -606,6 +2712,33 @@ namespace MSL.langs {
         }
         
         /// <summary>
+        ///   查找类似 项目贡献者 (Contributors) 的本地化字符串。
+        /// </summary>
+        public static string Page_About_Contributors {
+            get {
+                return ResourceManager.GetString("Page_About_Contributors", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   查找类似 觉得好用？欢迎去 GitHub 留个脚印： 的本地化字符串。
+        /// </summary>
+        public static string Page_About_GitHubStar {
+            get {
+                return ResourceManager.GetString("Page_About_GitHubStar", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   查找类似 展开更多... 的本地化字符串。
+        /// </summary>
+        public static string Page_About_LoadMore {
+            get {
+                return ResourceManager.GetString("Page_About_LoadMore", resourceCulture);
+            }
+        }
+        
+        /// <summary>
         ///   查找类似 Minecraft Server Launcher(MSL) Copyright © 2021-2026 By MSLTeam
         ///本软件与Microsoft、Mojang Studio(Mojang AB)无任何隶属关系
         ///本软件为开源软件，用户使用本软件从事的任何行为均与开发者无关
@@ -632,6 +2765,15 @@ namespace MSL.langs {
         public static string Page_About_OpenSource {
             get {
                 return ResourceManager.GetString("Page_About_OpenSource", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   查找类似 项目开源仓库 (Github) 的本地化字符串。
+        /// </summary>
+        public static string Page_About_OpenSourceRepo {
+            get {
+                return ResourceManager.GetString("Page_About_OpenSourceRepo", resourceCulture);
             }
         }
         
@@ -663,11 +2805,1399 @@ namespace MSL.langs {
         }
         
         /// <summary>
+        ///   查找类似 致谢与支持 (Stargazers) 的本地化字符串。
+        /// </summary>
+        public static string Page_About_Thanks {
+            get {
+                return ResourceManager.GetString("Page_About_Thanks", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   查找类似 感谢以下小伙伴为 MSL 点亮的星星！每一次 Star 都是对开源项目最大的鼓励。 的本地化字符串。
+        /// </summary>
+        public static string Page_About_ThanksContent {
+            get {
+                return ResourceManager.GetString("Page_About_ThanksContent", resourceCulture);
+            }
+        }
+        
+        /// <summary>
         ///   查找类似 官方网站/文档：https://www.mslmc.cn/ 的本地化字符串。
         /// </summary>
         public static string Page_About_Website {
             get {
                 return ResourceManager.GetString("Page_About_Website", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   查找类似 高级优化参数（需分配内存为4G） 的本地化字符串。
+        /// </summary>
+        public static string Page_CreateServer_AdvOptArgs {
+            get {
+                return ResourceManager.GetString("Page_CreateServer_AdvOptArgs", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   查找类似 使用优化参数需要手动设置大小相同的内存，请对上面的内存进行更改！ 的本地化字符串。
+        /// </summary>
+        public static string Page_CreateServer_AdvOptWarning {
+            get {
+                return ResourceManager.GetString("Page_CreateServer_AdvOptWarning", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   查找类似 非必要勿选择或填写此栏内容，如出现无法开服的情况请删除启动参数 的本地化字符串。
+        /// </summary>
+        public static string Page_CreateServer_ArgsWarning {
+            get {
+                return ResourceManager.GetString("Page_CreateServer_ArgsWarning", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   查找类似 自动安装失败！是否尝试使用命令行安装方式？ 的本地化字符串。
+        /// </summary>
+        public static string Page_CreateServer_AutoInstallFailed {
+            get {
+                return ResourceManager.GetString("Page_CreateServer_AutoInstallFailed", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   查找类似 返回实例列表 的本地化字符串。
+        /// </summary>
+        public static string Page_CreateServer_BackToList {
+            get {
+                return ResourceManager.GetString("Page_CreateServer_BackToList", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   查找类似 基本信息 的本地化字符串。
+        /// </summary>
+        public static string Page_CreateServer_BasicInfo {
+            get {
+                return ResourceManager.GetString("Page_CreateServer_BasicInfo", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   查找类似 基本优化参数（Java11及以上勿选） 的本地化字符串。
+        /// </summary>
+        public static string Page_CreateServer_BasicOptArgs {
+            get {
+                return ResourceManager.GetString("Page_CreateServer_BasicOptArgs", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   查找类似 使用优化参数需要手动设置大小相同的内存，请对上面的内存进行更改！Java11及以上请勿选择此优化参数！ 的本地化字符串。
+        /// </summary>
+        public static string Page_CreateServer_BasicOptWarning {
+            get {
+                return ResourceManager.GetString("Page_CreateServer_BasicOptWarning", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   查找类似 如果需要开基岩版官方服务端（BDS）
+        ///请在返回并选择基岩版服务端，而不应该在这里下载基岩版资源文件！ 的本地化字符串。
+        /// </summary>
+        public static string Page_CreateServer_BDSHereDownload {
+            get {
+                return ResourceManager.GetString("Page_CreateServer_BDSHereDownload", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   查找类似 ►提示：若需要开基岩版官方服务器（BDS），请使用自定义模式并参照 的本地化字符串。
+        /// </summary>
+        public static string Page_CreateServer_BDSTip {
+            get {
+                return ResourceManager.GetString("Page_CreateServer_BDSTip", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   查找类似 BDS开服教程 的本地化字符串。
+        /// </summary>
+        public static string Page_CreateServer_BDSTutorialLink {
+            get {
+                return ResourceManager.GetString("Page_CreateServer_BDSTutorialLink", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   查找类似 您选择的基岩版版本为官方服务端（BDS），仅支持使用自定义模式创建！请点击上一步并选择自定义模式哦！ 的本地化字符串。
+        /// </summary>
+        public static string Page_CreateServer_BedrockOnlyCustomMode {
+            get {
+                return ResourceManager.GetString("Page_CreateServer_BedrockOnlyCustomMode", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   查找类似 基岩版服务器 的本地化字符串。
+        /// </summary>
+        public static string Page_CreateServer_BedrockServer {
+            get {
+                return ResourceManager.GetString("Page_CreateServer_BedrockServer", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   查找类似 正在检查所选Java可用性，请稍等…… 的本地化字符串。
+        /// </summary>
+        public static string Page_CreateServer_CheckingJavaAvail {
+            get {
+                return ResourceManager.GetString("Page_CreateServer_CheckingJavaAvail", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   查找类似 点我检测 的本地化字符串。
+        /// </summary>
+        public static string Page_CreateServer_ClickToDetect {
+            get {
+                return ResourceManager.GetString("Page_CreateServer_ClickToDetect", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   查找类似 伪终端（ConPty）模式：目前可用Tab键指令补全功能，且还在测试中，若出现问题请及时关闭此功能。 的本地化字符串。
+        /// </summary>
+        public static string Page_CreateServer_ConPtyModeDesc {
+            get {
+                return ResourceManager.GetString("Page_CreateServer_ConPtyModeDesc", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   查找类似 若使用此模式出现问题，可在服务器运行窗口的&quot;更多功能&quot;界面修改此项。 的本地化字符串。
+        /// </summary>
+        public static string Page_CreateServer_ConPtyTip {
+            get {
+                return ResourceManager.GetString("Page_CreateServer_ConPtyTip", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   查找类似 已将服务端核心复制到了服务器目录之中，您现在可以将源文件删除了！ 的本地化字符串。
+        /// </summary>
+        public static string Page_CreateServer_CoreCopiedDone {
+            get {
+                return ResourceManager.GetString("Page_CreateServer_CoreCopiedDone", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   查找类似 所选的服务端核心文件并不在服务器目录中，是否将其复制进服务器目录？
+        ///若不复制，请留意勿将核心文件删除！ 的本地化字符串。
+        /// </summary>
+        public static string Page_CreateServer_CoreNotInDirConfirm {
+            get {
+                return ResourceManager.GetString("Page_CreateServer_CoreNotInDirConfirm", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   查找类似 创建完毕，请点击&quot;开启服务器&quot;按钮以开服 的本地化字符串。
+        /// </summary>
+        public static string Page_CreateServer_CreateDone {
+            get {
+                return ResourceManager.GetString("Page_CreateServer_CreateDone", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   查找类似 将通过几个步骤为您创建一个服务器…… 的本地化字符串。
+        /// </summary>
+        public static string Page_CreateServer_CreatingSteps {
+            get {
+                return ResourceManager.GetString("Page_CreateServer_CreatingSteps", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   查找类似 自定义启动指令 的本地化字符串。
+        /// </summary>
+        public static string Page_CreateServer_CustomCmd {
+            get {
+                return ResourceManager.GetString("Page_CreateServer_CustomCmd", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   查找类似 自定义模式（适合老手） 的本地化字符串。
+        /// </summary>
+        public static string Page_CreateServer_CustomMode {
+            get {
+                return ResourceManager.GetString("Page_CreateServer_CustomMode", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   查找类似 ⭐自定义模式：您将手动进行Java版本选择，服务端核心选择等操作，可操作性高，可以更改服务器运行内存和启动参数。 的本地化字符串。
+        /// </summary>
+        public static string Page_CreateServer_CustomModeDesc {
+            get {
+                return ResourceManager.GetString("Page_CreateServer_CustomModeDesc", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   查找类似 检测完毕，暂未找到Java 的本地化字符串。
+        /// </summary>
+        public static string Page_CreateServer_DetectCompleteNoJava {
+            get {
+                return ResourceManager.GetString("Page_CreateServer_DetectCompleteNoJava", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   查找类似 检测Java可用性失败 的本地化字符串。
+        /// </summary>
+        public static string Page_CreateServer_DetectEnvVarFailed {
+            get {
+                return ResourceManager.GetString("Page_CreateServer_DetectEnvVarFailed", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   查找类似 开服器被放置于带有中文字符或空格的目录里，这可能会造成编码错误，从而无法开服，您确定要继续吗？ 的本地化字符串。
+        /// </summary>
+        public static string Page_CreateServer_DirChineseCharWarning {
+            get {
+                return ResourceManager.GetString("Page_CreateServer_DirChineseCharWarning", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   查找类似 选择提示：请不要选择桌面或磁盘根目录，否则会生成许多存储文件且会造成误删问题 的本地化字符串。
+        /// </summary>
+        public static string Page_CreateServer_DirSelectTip {
+            get {
+                return ResourceManager.GetString("Page_CreateServer_DirSelectTip", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   查找类似 文档/教程 的本地化字符串。
+        /// </summary>
+        public static string Page_CreateServer_DocsTutorial {
+            get {
+                return ResourceManager.GetString("Page_CreateServer_DocsTutorial", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   查找类似 下载取消！ 的本地化字符串。
+        /// </summary>
+        public static string Page_CreateServer_DownloadCancelled {
+            get {
+                return ResourceManager.GetString("Page_CreateServer_DownloadCancelled", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   查找类似 下载已取消 的本地化字符串。
+        /// </summary>
+        public static string Page_CreateServer_DownloadCancelledStatus {
+            get {
+                return ResourceManager.GetString("Page_CreateServer_DownloadCancelledStatus", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   查找类似 下载失败，错误信息： 的本地化字符串。
+        /// </summary>
+        public static string Page_CreateServer_DownloadErrorMsg {
+            get {
+                return ResourceManager.GetString("Page_CreateServer_DownloadErrorMsg", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   查找类似 下载失败！ 的本地化字符串。
+        /// </summary>
+        public static string Page_CreateServer_DownloadFailed {
+            get {
+                return ResourceManager.GetString("Page_CreateServer_DownloadFailed", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   查找类似 下载失败！
+        /// 的本地化字符串。
+        /// </summary>
+        public static string Page_CreateServer_DownloadFailedMsg {
+            get {
+                return ResourceManager.GetString("Page_CreateServer_DownloadFailedMsg", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   查找类似 下载失败 的本地化字符串。
+        /// </summary>
+        public static string Page_CreateServer_DownloadFailedSimple {
+            get {
+                return ResourceManager.GetString("Page_CreateServer_DownloadFailedSimple", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   查找类似 开服器下载（推荐） 的本地化字符串。
+        /// </summary>
+        public static string Page_CreateServer_DownloadJavaRecommended {
+            get {
+                return ResourceManager.GetString("Page_CreateServer_DownloadJavaRecommended", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   查找类似 请务必下载文件名含有&quot;server&quot;且为.zip格式的服务端整合包！否则会出现软件无法读取或开服失败的问题！ 的本地化字符串。
+        /// </summary>
+        public static string Page_CreateServer_DownloadNotice {
+            get {
+                return ResourceManager.GetString("Page_CreateServer_DownloadNotice", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   查找类似 下载须知 的本地化字符串。
+        /// </summary>
+        public static string Page_CreateServer_DownloadNoticeTitle {
+            get {
+                return ResourceManager.GetString("Page_CreateServer_DownloadNoticeTitle", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   查找类似 下载整合包 的本地化字符串。
+        /// </summary>
+        public static string Page_CreateServer_DownloadPack {
+            get {
+                return ResourceManager.GetString("Page_CreateServer_DownloadPack", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   查找类似 使用开服器下载（推荐） 的本地化字符串。
+        /// </summary>
+        public static string Page_CreateServer_DownloadServerRecommended {
+            get {
+                return ResourceManager.GetString("Page_CreateServer_DownloadServerRecommended", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   查找类似 启用指令补全（测试中） 的本地化字符串。
+        /// </summary>
+        public static string Page_CreateServer_EnableCmdCompletion {
+            get {
+                return ResourceManager.GetString("Page_CreateServer_EnableCmdCompletion", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   查找类似 检测环境变量失败，您的环境变量似乎不存在！ 的本地化字符串。
+        /// </summary>
+        public static string Page_CreateServer_EnvVarNotExist {
+            get {
+                return ResourceManager.GetString("Page_CreateServer_EnvVarNotExist", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   查找类似 出现错误： 的本地化字符串。
+        /// </summary>
+        public static string Page_CreateServer_ErrorOccurred {
+            get {
+                return ResourceManager.GetString("Page_CreateServer_ErrorOccurred", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   查找类似 出现错误，请重试： 的本地化字符串。
+        /// </summary>
+        public static string Page_CreateServer_ErrorRetry {
+            get {
+                return ResourceManager.GetString("Page_CreateServer_ErrorRetry", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   查找类似 配置外置登录(可选) 的本地化字符串。
+        /// </summary>
+        public static string Page_CreateServer_ExternalAuthOptional {
+            get {
+                return ResourceManager.GetString("Page_CreateServer_ExternalAuthOptional", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   查找类似 解压基岩版服务端资源中…… 的本地化字符串。
+        /// </summary>
+        public static string Page_CreateServer_ExtractingBedrock {
+            get {
+                return ResourceManager.GetString("Page_CreateServer_ExtractingBedrock", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   查找类似 解压整合包中，请稍等…… 的本地化字符串。
+        /// </summary>
+        public static string Page_CreateServer_ExtractingPack {
+            get {
+                return ResourceManager.GetString("Page_CreateServer_ExtractingPack", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   查找类似 整合包解压失败！请确认您的整合包是.zip格式！
+        ///错误代码： 的本地化字符串。
+        /// </summary>
+        public static string Page_CreateServer_ExtractPackFailed {
+            get {
+                return ResourceManager.GetString("Page_CreateServer_ExtractPackFailed", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   查找类似 根据您的选择，MSL为您选出了以下版本的Java和服务端核心，请点击确定按钮以安装…… 的本地化字符串。
+        /// </summary>
+        public static string Page_CreateServer_FastInstallIntro {
+            get {
+                return ResourceManager.GetString("Page_CreateServer_FastInstallIntro", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   查找类似 快速模式（适合小白） 的本地化字符串。
+        /// </summary>
+        public static string Page_CreateServer_FastMode {
+            get {
+                return ResourceManager.GetString("Page_CreateServer_FastMode", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   查找类似 ⭐快速模式：开服器会根据您想要开的服务器类型自动下载需要的核心和Java。 的本地化字符串。
+        /// </summary>
+        public static string Page_CreateServer_FastModeDesc {
+            get {
+                return ResourceManager.GetString("Page_CreateServer_FastModeDesc", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   查找类似 请填写开服内存信息！ 的本地化字符串。
+        /// </summary>
+        public static string Page_CreateServer_FillMemInfo {
+            get {
+                return ResourceManager.GetString("Page_CreateServer_FillMemInfo", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   查找类似 开服器在整合包中检测到了Forge服务端启动文件{0}，是否选择为开服核心？ 的本地化字符串。
+        /// </summary>
+        public static string Page_CreateServer_ForgeDetected {
+            get {
+                return ResourceManager.GetString("Page_CreateServer_ForgeDetected", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   查找类似 您选择的服务端疑似是forge安装器，是否将其展开安装？
+        ///如果不展开安装，服务器可能无法开启！ 的本地化字符串。
+        /// </summary>
+        public static string Page_CreateServer_ForgeInstallerConfirm {
+            get {
+                return ResourceManager.GetString("Page_CreateServer_ForgeInstallerConfirm", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   查找类似 获取基岩版服务端下载地址失败。 的本地化字符串。
+        /// </summary>
+        public static string Page_CreateServer_GetBedrockUrlFailed {
+            get {
+                return ResourceManager.GetString("Page_CreateServer_GetBedrockUrlFailed", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   查找类似 出现错误，获取Java版本列表失败！ 的本地化字符串。
+        /// </summary>
+        public static string Page_CreateServer_GetJavaListFailed {
+            get {
+                return ResourceManager.GetString("Page_CreateServer_GetJavaListFailed", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   查找类似 获取服务端失败！请重试 的本地化字符串。
+        /// </summary>
+        public static string Page_CreateServer_GetServerFailed {
+            get {
+                return ResourceManager.GetString("Page_CreateServer_GetServerFailed", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   查找类似 获取Java版本列表中，请稍等…… 的本地化字符串。
+        /// </summary>
+        public static string Page_CreateServer_GettingJavaList {
+            get {
+                return ResourceManager.GetString("Page_CreateServer_GettingJavaList", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   查找类似 获取版本列表失败或数据为空！ 的本地化字符串。
+        /// </summary>
+        public static string Page_CreateServer_GetVersionListFailed {
+            get {
+                return ResourceManager.GetString("Page_CreateServer_GetVersionListFailed", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   查找类似 导入整合包模式 的本地化字符串。
+        /// </summary>
+        public static string Page_CreateServer_ImportPackMode {
+            get {
+                return ResourceManager.GetString("Page_CreateServer_ImportPackMode", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   查找类似 ⭐导入整合包模式：想要在线下载一个服务器整合包来进行导入？或是自己备有一个整合包文件？那就使用此模式吧！ 的本地化字符串。
+        /// </summary>
+        public static string Page_CreateServer_ImportPackModeDesc {
+            get {
+                return ResourceManager.GetString("Page_CreateServer_ImportPackModeDesc", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   查找类似 目前仅支持导入.zip格式的整合包文件，如果您要导入的是模组整合包，请确保您下载的整合包是服务器专用包（如RLCraft下载界面就有一个ServerPack的压缩包），否则可能会出现无法开服或者崩溃的问题！ 的本地化字符串。
+        /// </summary>
+        public static string Page_CreateServer_ImportPackTip {
+            get {
+                return ResourceManager.GetString("Page_CreateServer_ImportPackTip", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   查找类似 安装基岩版服务端失败： 的本地化字符串。
+        /// </summary>
+        public static string Page_CreateServer_InstallBedrockFailed {
+            get {
+                return ResourceManager.GetString("Page_CreateServer_InstallBedrockFailed", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   查找类似 取消安装！ 的本地化字符串。
+        /// </summary>
+        public static string Page_CreateServer_InstallCancelled {
+            get {
+                return ResourceManager.GetString("Page_CreateServer_InstallCancelled", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   查找类似 在此选择实例目录（用于安放服务器的相关文件）： 的本地化字符串。
+        /// </summary>
+        public static string Page_CreateServer_InstanceDirLabel {
+            get {
+                return ResourceManager.GetString("Page_CreateServer_InstanceDirLabel", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   查找类似 实例名称（将在实例列表中显示该名称）： 的本地化字符串。
+        /// </summary>
+        public static string Page_CreateServer_InstanceNameLabel {
+            get {
+                return ResourceManager.GetString("Page_CreateServer_InstanceNameLabel", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   查找类似 开服器在整合包中检测到了jar文件{0}，是否选择此文件为开服核心？ 的本地化字符串。
+        /// </summary>
+        public static string Page_CreateServer_JarDetected {
+            get {
+                return ResourceManager.GetString("Page_CreateServer_JarDetected", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   查找类似 Java环境 的本地化字符串。
+        /// </summary>
+        public static string Page_CreateServer_JavaEnvironment {
+            get {
+                return ResourceManager.GetString("Page_CreateServer_JavaEnvironment", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   查找类似 1.12.2 以及更低版本：Java8 的本地化字符串。
+        /// </summary>
+        public static string Page_CreateServer_JavaHelpLine1 {
+            get {
+                return ResourceManager.GetString("Page_CreateServer_JavaHelpLine1", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   查找类似 1.13-1.16.5：Java8/Java11 的本地化字符串。
+        /// </summary>
+        public static string Page_CreateServer_JavaHelpLine2 {
+            get {
+                return ResourceManager.GetString("Page_CreateServer_JavaHelpLine2", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   查找类似 1.17/1.17.1：Java16 的本地化字符串。
+        /// </summary>
+        public static string Page_CreateServer_JavaHelpLine3 {
+            get {
+                return ResourceManager.GetString("Page_CreateServer_JavaHelpLine3", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   查找类似 1.18-1.20.4：Java17及以上 的本地化字符串。
+        /// </summary>
+        public static string Page_CreateServer_JavaHelpLine4 {
+            get {
+                return ResourceManager.GetString("Page_CreateServer_JavaHelpLine4", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   查找类似 1.20.5-1.21.11：Java21及以上 的本地化字符串。
+        /// </summary>
+        public static string Page_CreateServer_JavaHelpLine5 {
+            get {
+                return ResourceManager.GetString("Page_CreateServer_JavaHelpLine5", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   查找类似 26.1 及更高：Java25及以上 的本地化字符串。
+        /// </summary>
+        public static string Page_CreateServer_JavaHelpLine6 {
+            get {
+                return ResourceManager.GetString("Page_CreateServer_JavaHelpLine6", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   查找类似 帮助：如何选择Java？ 的本地化字符串。
+        /// </summary>
+        public static string Page_CreateServer_JavaHelpTitle {
+            get {
+                return ResourceManager.GetString("Page_CreateServer_JavaHelpTitle", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   查找类似 根据您的选择，最适合您服务器的Java版本为：Java11-Java17（或更高） 的本地化字符串。
+        /// </summary>
+        public static string Page_CreateServer_JavaRec11to17 {
+            get {
+                return ResourceManager.GetString("Page_CreateServer_JavaRec11to17", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   查找类似 根据您的选择，最适合您服务器的Java版本为：Java17及以上 的本地化字符串。
+        /// </summary>
+        public static string Page_CreateServer_JavaRec17Plus {
+            get {
+                return ResourceManager.GetString("Page_CreateServer_JavaRec17Plus", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   查找类似 根据您的选择，最适合您服务器的Java版本为：Java21及以上 的本地化字符串。
+        /// </summary>
+        public static string Page_CreateServer_JavaRec21Plus {
+            get {
+                return ResourceManager.GetString("Page_CreateServer_JavaRec21Plus", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   查找类似 根据您的选择，最适合您服务器的Java版本为：Java25及以上 的本地化字符串。
+        /// </summary>
+        public static string Page_CreateServer_JavaRec25Plus {
+            get {
+                return ResourceManager.GetString("Page_CreateServer_JavaRec25Plus", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   查找类似 根据您的选择，最适合您服务器的Java版本为：Java7-Java8 的本地化字符串。
+        /// </summary>
+        public static string Page_CreateServer_JavaRec7to8 {
+            get {
+                return ResourceManager.GetString("Page_CreateServer_JavaRec7to8", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   查找类似 根据您的选择，最适合您服务器的Java版本为：Java8-Java11 的本地化字符串。
+        /// </summary>
+        public static string Page_CreateServer_JavaRec8to11 {
+            get {
+                return ResourceManager.GetString("Page_CreateServer_JavaRec8to11", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   查找类似 根据您的选择，最适合您服务器的Java版本为：Java8-Java21（或更高） 的本地化字符串。
+        /// </summary>
+        public static string Page_CreateServer_JavaRec8to21 {
+            get {
+                return ResourceManager.GetString("Page_CreateServer_JavaRec8to21", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   查找类似 检测Java可用性失败，您的Java似乎不可用！请检查是否选择正确！ 的本地化字符串。
+        /// </summary>
+        public static string Page_CreateServer_JavaUnavailMsg {
+            get {
+                return ResourceManager.GetString("Page_CreateServer_JavaUnavailMsg", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   查找类似 Java版本（此版本为MSL评估的最优版本，
+        ///如果您后续要加载的插件或模组
+        ///有要求Java版本的话，请在此处更改）： 的本地化字符串。
+        /// </summary>
+        public static string Page_CreateServer_JavaVersionDesc {
+            get {
+                return ResourceManager.GetString("Page_CreateServer_JavaVersionDesc", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   查找类似 启动参数(可选) 的本地化字符串。
+        /// </summary>
+        public static string Page_CreateServer_LaunchArgsOptional {
+            get {
+                return ResourceManager.GetString("Page_CreateServer_LaunchArgsOptional", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   查找类似 电脑上的Java 的本地化字符串。
+        /// </summary>
+        public static string Page_CreateServer_LocalJava {
+            get {
+                return ResourceManager.GetString("Page_CreateServer_LocalJava", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   查找类似 手动设置 的本地化字符串。
+        /// </summary>
+        public static string Page_CreateServer_ManualSet {
+            get {
+                return ResourceManager.GetString("Page_CreateServer_ManualSet", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   查找类似 最大 的本地化字符串。
+        /// </summary>
+        public static string Page_CreateServer_MaxLabel {
+            get {
+                return ResourceManager.GetString("Page_CreateServer_MaxLabel", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   查找类似 开服内存  手动设置提示：内存分配建议为电脑运行内存的80%    单位换算：1GB=1024MB 的本地化字符串。
+        /// </summary>
+        public static string Page_CreateServer_MemManualTip {
+            get {
+                return ResourceManager.GetString("Page_CreateServer_MemManualTip", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   查找类似 开服内存及启动参数 的本地化字符串。
+        /// </summary>
+        public static string Page_CreateServer_MemoryAndArgs {
+            get {
+                return ResourceManager.GetString("Page_CreateServer_MemoryAndArgs", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   查找类似 开服内存参数不正确（只能为纯数字）！ 的本地化字符串。
+        /// </summary>
+        public static string Page_CreateServer_MemParamInvalid {
+            get {
+                return ResourceManager.GetString("Page_CreateServer_MemParamInvalid", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   查找类似 最小 的本地化字符串。
+        /// </summary>
+        public static string Page_CreateServer_MinLabel {
+            get {
+                return ResourceManager.GetString("Page_CreateServer_MinLabel", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   查找类似 模组服务器（Fabric） 的本地化字符串。
+        /// </summary>
+        public static string Page_CreateServer_ModServerFabric {
+            get {
+                return ResourceManager.GetString("Page_CreateServer_ModServerFabric", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   查找类似 模组服务器（NeoForge/Forge） 的本地化字符串。
+        /// </summary>
+        public static string Page_CreateServer_ModServerNeoForge {
+            get {
+                return ResourceManager.GetString("Page_CreateServer_ModServerNeoForge", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   查找类似 出现错误，请检查网络连接！ 的本地化字符串。
+        /// </summary>
+        public static string Page_CreateServer_NetworkError {
+            get {
+                return ResourceManager.GetString("Page_CreateServer_NetworkError", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   查找类似 下一步 的本地化字符串。
+        /// </summary>
+        public static string Page_CreateServer_NextStep {
+            get {
+                return ResourceManager.GetString("Page_CreateServer_NextStep", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   查找类似 不启用指令补全 的本地化字符串。
+        /// </summary>
+        public static string Page_CreateServer_NoCmdCompletion {
+            get {
+                return ResourceManager.GetString("Page_CreateServer_NoCmdCompletion", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   查找类似 开服器未在整合包中找到核心文件，请您进行下载或手动选择已有核心，核心的版本要和整合包对应的游戏版本一致 的本地化字符串。
+        /// </summary>
+        public static string Page_CreateServer_NoCoreFound {
+            get {
+                return ResourceManager.GetString("Page_CreateServer_NoCoreFound", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   查找类似 不使用Java (若服务端不依赖于Java，请选择此项) 的本地化字符串。
+        /// </summary>
+        public static string Page_CreateServer_NoJavaOption {
+            get {
+                return ResourceManager.GetString("Page_CreateServer_NoJavaOption", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   查找类似 整合包解压完成！请在此界面选择Java环境，Java的版本要和导入整合包的版本相对应，详情查看界面下方的表格 的本地化字符串。
+        /// </summary>
+        public static string Page_CreateServer_PackExtractedSelectJava {
+            get {
+                return ResourceManager.GetString("Page_CreateServer_PackExtractedSelectJava", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   查找类似 您所下载的整合包文件不符合导入格式（目前软件仅支持导入.zip文件）！请检查您所下载的文件是否为服务端专用包并重试！
+        ///错误的格式： 的本地化字符串。
+        /// </summary>
+        public static string Page_CreateServer_PackFormatError {
+            get {
+                return ResourceManager.GetString("Page_CreateServer_PackFormatError", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   查找类似 使用带有中文字符或空格的路径可能造成编码错误，导致无法开服，您确定要继续吗？ 的本地化字符串。
+        /// </summary>
+        public static string Page_CreateServer_PathChineseCharWarning {
+            get {
+                return ResourceManager.GetString("Page_CreateServer_PathChineseCharWarning", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   查找类似 插件模组混合服务器（Fabric） 的本地化字符串。
+        /// </summary>
+        public static string Page_CreateServer_PluginModHybridFabric {
+            get {
+                return ResourceManager.GetString("Page_CreateServer_PluginModHybridFabric", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   查找类似 插件模组混合服务器（NeoForge/Forge） 的本地化字符串。
+        /// </summary>
+        public static string Page_CreateServer_PluginModHybridNeoForge {
+            get {
+                return ResourceManager.GetString("Page_CreateServer_PluginModHybridNeoForge", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   查找类似 插件服务器 的本地化字符串。
+        /// </summary>
+        public static string Page_CreateServer_PluginServer {
+            get {
+                return ResourceManager.GetString("Page_CreateServer_PluginServer", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   查找类似 上一步 的本地化字符串。
+        /// </summary>
+        public static string Page_CreateServer_PreviousStep {
+            get {
+                return ResourceManager.GetString("Page_CreateServer_PreviousStep", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   查找类似 当前进度:下载完成！ 的本地化字符串。
+        /// </summary>
+        public static string Page_CreateServer_ProgressDone {
+            get {
+                return ResourceManager.GetString("Page_CreateServer_ProgressDone", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   查找类似 当前进度:下载Java…… 的本地化字符串。
+        /// </summary>
+        public static string Page_CreateServer_ProgressDownloadingJava {
+            get {
+                return ResourceManager.GetString("Page_CreateServer_ProgressDownloadingJava", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   查找类似 当前进度:下载服务端…… 的本地化字符串。
+        /// </summary>
+        public static string Page_CreateServer_ProgressDownloadingServer {
+            get {
+                return ResourceManager.GetString("Page_CreateServer_ProgressDownloadingServer", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   查找类似 代理服务器 的本地化字符串。
+        /// </summary>
+        public static string Page_CreateServer_ProxyServer {
+            get {
+                return ResourceManager.GetString("Page_CreateServer_ProxyServer", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   查找类似 请选择一个创建模式以继续： 的本地化字符串。
+        /// </summary>
+        public static string Page_CreateServer_SelectCreateMode {
+            get {
+                return ResourceManager.GetString("Page_CreateServer_SelectCreateMode", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   查找类似 所选Java版本： 的本地化字符串。
+        /// </summary>
+        public static string Page_CreateServer_SelectedJavaVer {
+            get {
+                return ResourceManager.GetString("Page_CreateServer_SelectedJavaVer", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   查找类似 请选择文件 的本地化字符串。
+        /// </summary>
+        public static string Page_CreateServer_SelectFileTitle {
+            get {
+                return ResourceManager.GetString("Page_CreateServer_SelectFileTitle", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   查找类似 开服器在整合包中检测到了以下jar文件，你可输选择一个作为开服核心（输入文件前对应的数字，取消为不选择以下文件）
+        /// 的本地化字符串。
+        /// </summary>
+        public static string Page_CreateServer_SelectJarAsCore {
+            get {
+                return ResourceManager.GetString("Page_CreateServer_SelectJarAsCore", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   查找类似 在此选择一个Java环境 的本地化字符串。
+        /// </summary>
+        public static string Page_CreateServer_SelectJavaEnv {
+            get {
+                return ResourceManager.GetString("Page_CreateServer_SelectJavaEnv", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   查找类似 选择本地整合包 的本地化字符串。
+        /// </summary>
+        public static string Page_CreateServer_SelectLocalPack {
+            get {
+                return ResourceManager.GetString("Page_CreateServer_SelectLocalPack", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   查找类似 请选择整合包压缩文件 的本地化字符串。
+        /// </summary>
+        public static string Page_CreateServer_SelectPackFile {
+            get {
+                return ResourceManager.GetString("Page_CreateServer_SelectPackFile", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   查找类似 选择地址 的本地化字符串。
+        /// </summary>
+        public static string Page_CreateServer_SelectPath {
+            get {
+                return ResourceManager.GetString("Page_CreateServer_SelectPath", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   查找类似 在此选择一个服务端核心 的本地化字符串。
+        /// </summary>
+        public static string Page_CreateServer_SelectServerCore {
+            get {
+                return ResourceManager.GetString("Page_CreateServer_SelectServerCore", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   查找类似 备有服务端，选择地址 的本地化字符串。
+        /// </summary>
+        public static string Page_CreateServer_SelectServerPath {
+            get {
+                return ResourceManager.GetString("Page_CreateServer_SelectServerPath", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   查找类似 请选择一个终端模式以继续： 的本地化字符串。
+        /// </summary>
+        public static string Page_CreateServer_SelectTerminalMode {
+            get {
+                return ResourceManager.GetString("Page_CreateServer_SelectTerminalMode", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   查找类似 服务端核心（若不会选择，保持默认即可）： 的本地化字符串。
+        /// </summary>
+        public static string Page_CreateServer_ServerCoreDescLabel {
+            get {
+                return ResourceManager.GetString("Page_CreateServer_ServerCoreDescLabel", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   查找类似 服务端正在加载中，请稍后再选择！ 的本地化字符串。
+        /// </summary>
+        public static string Page_CreateServer_ServerLoadingWait {
+            get {
+                return ResourceManager.GetString("Page_CreateServer_ServerLoadingWait", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   查找类似 服务器名称： 的本地化字符串。
+        /// </summary>
+        public static string Page_CreateServer_ServerNamePrompt {
+            get {
+                return ResourceManager.GetString("Page_CreateServer_ServerNamePrompt", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   查找类似 服务器类型（选择你想要开的服务器类型）： 的本地化字符串。
+        /// </summary>
+        public static string Page_CreateServer_ServerTypeLabel {
+            get {
+                return ResourceManager.GetString("Page_CreateServer_ServerTypeLabel", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   查找类似 服务器版本（选择你想要开的服务器版本）： 的本地化字符串。
+        /// </summary>
+        public static string Page_CreateServer_ServerVersionLabel {
+            get {
+                return ResourceManager.GetString("Page_CreateServer_ServerVersionLabel", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   查找类似 在此设置开服需要分配的内存 的本地化字符串。
+        /// </summary>
+        public static string Page_CreateServer_SetMemory {
+            get {
+                return ResourceManager.GetString("Page_CreateServer_SetMemory", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   查找类似 基岩版服务器：专为基岩版提供的服务器，这种服务器在配置等方面和Java版服务器不太一样，同时开服器也不太适配，更改配置文件等相关操作只能您手动操作。（此处仅支持部署Nukkit端，若需要使用官方基岩版服务端BDS，请返回选择自定义模式！） 的本地化字符串。
+        /// </summary>
+        public static string Page_CreateServer_SrvDescBedrock {
+            get {
+                return ResourceManager.GetString("Page_CreateServer_SrvDescBedrock", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   查找类似 插件模组混合服务器（Fabric加载器）：这种服务器将插件服务端和Fabric服务端合二为一，既吸取了二者的优点（服务器管理功能可通过添加插件做到，添加新物品更改游戏玩法可通过添加模组做到），同时又有许多缺点（如服务器不稳定，同时添加插件和模组，极易造成冲突问题，且也存在模组服务器服务端和客户端需要同步模组的问题） 的本地化字符串。
+        /// </summary>
+        public static string Page_CreateServer_SrvDescHybridFabric {
+            get {
+                return ResourceManager.GetString("Page_CreateServer_SrvDescHybridFabric", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   查找类似 插件模组混合服务器（Forge加载器）：这种服务器将插件服务端和Forge服务端合二为一，既吸取了二者的优点（服务器管理功能可通过添加插件做到，添加新物品更改游戏玩法可通过添加模组做到），同时又有许多缺点（如服务器不稳定，同时添加插件和模组，极易造成冲突问题，且也存在模组服务器服务端和客户端需要同步模组的问题） 的本地化字符串。
+        /// </summary>
+        public static string Page_CreateServer_SrvDescHybridNeoForge {
+            get {
+                return ResourceManager.GetString("Page_CreateServer_SrvDescHybridNeoForge", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   查找类似 模组服务器（Fabric加载器）：指通过Fabric加载器，添加模组来增加功能（服务端和客户端均需添加），这种方式既可以更改服务端的内容，也可以更改客户端的内容，所以插件服务器无法实现的功能在这里即可轻易做到，但是这种方式很难做到插件服的管理功能，且需要客户端的模组和服务端进行同步，会给玩家造成一定的麻烦 的本地化字符串。
+        /// </summary>
+        public static string Page_CreateServer_SrvDescModFabric {
+            get {
+                return ResourceManager.GetString("Page_CreateServer_SrvDescModFabric", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   查找类似 模组服务器（Forge加载器）：指通过Forge加载器，添加模组来增加功能（服务端和客户端均需添加），这种方式既可以更改服务端的内容，也可以更改客户端的内容，所以插件服务器无法实现的功能在这里即可轻易做到，但是这种方式很难做到插件服的管理功能，且需要客户端的模组和服务端进行同步，会给玩家造成一定的麻烦 的本地化字符串。
+        /// </summary>
+        public static string Page_CreateServer_SrvDescModNeoForge {
+            get {
+                return ResourceManager.GetString("Page_CreateServer_SrvDescModNeoForge", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   查找类似 插件服务器：指在服务端添加插件（客户端无需添加），通过更改服务端底层来增加功能，这种方式极易做到对服务器、服务器用户玩家进行管理，如权限组、封禁系统等，但这种方式不能修改客户端内容，所以也导致很多功能很难实现，如添加新的物品，只能通过更改材质包的方式让客户端显示新的物品 的本地化字符串。
+        /// </summary>
+        public static string Page_CreateServer_SrvDescPlugin {
+            get {
+                return ResourceManager.GetString("Page_CreateServer_SrvDescPlugin", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   查找类似 代理服务器：指Java版群组服务器的转发服务器，这种服务器相当于一个桥梁，将玩家在不同的服务器之间进行传送转发，使用这种服务器您首先需要开启一个普通服务器，因为这种服务器没有游戏内容，如果没有普通服务器进行连接，玩家根本无法进入，且目前开服器并不兼容这种服务器，创建完毕后您需在列表右键该服务器并使用&quot;命令行开服&quot;功能来启动 的本地化字符串。
+        /// </summary>
+        public static string Page_CreateServer_SrvDescProxy {
+            get {
+                return ResourceManager.GetString("Page_CreateServer_SrvDescProxy", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   查找类似 原版服务器：Mojang纯原生服务器，不能添加任何插件或模组，给您原汁原味的体验 的本地化字符串。
+        /// </summary>
+        public static string Page_CreateServer_SrvDescVanilla {
+            get {
+                return ResourceManager.GetString("Page_CreateServer_SrvDescVanilla", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   查找类似 传统模式：传统的服务器启动模式，缺少部分真实终端特性，无法使用Tab键补全指令。但比较稳定，可切换输入和输出编码。 的本地化字符串。
+        /// </summary>
+        public static string Page_CreateServer_TraditionalModeDesc {
+            get {
+                return ResourceManager.GetString("Page_CreateServer_TraditionalModeDesc", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   查找类似 使用基岩版官方服务端 的本地化字符串。
+        /// </summary>
+        public static string Page_CreateServer_UseBedrockOfficial {
+            get {
+                return ResourceManager.GetString("Page_CreateServer_UseBedrockOfficial", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   查找类似 使用环境变量： 的本地化字符串。
+        /// </summary>
+        public static string Page_CreateServer_UseEnvVarColon {
+            get {
+                return ResourceManager.GetString("Page_CreateServer_UseEnvVarColon", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   查找类似 原版服务器 的本地化字符串。
+        /// </summary>
+        public static string Page_CreateServer_VanillaServer {
+            get {
+                return ResourceManager.GetString("Page_CreateServer_VanillaServer", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   查找类似 请填入外置登录验证服务器地址(Yggdrasil API): 的本地化字符串。
+        /// </summary>
+        public static string Page_CreateServer_YggApiLabel {
+            get {
+                return ResourceManager.GetString("Page_CreateServer_YggApiLabel", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   查找类似 填写登录服务器地址后MSL将在开服时为您自动接入外置登录验证，您不需要额外操作。
+        ///如果您不知道这是什么，请您留空。 的本地化字符串。
+        /// </summary>
+        public static string Page_CreateServer_YggAutoFillTip {
+            get {
+                return ResourceManager.GetString("Page_CreateServer_YggAutoFillTip", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   查找类似 ZIP文件|*.zip|所有文件类型|*.* 的本地化字符串。
+        /// </summary>
+        public static string Page_CreateServer_ZipFileFilter {
+            get {
+                return ResourceManager.GetString("Page_CreateServer_ZipFileFilter", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   查找类似 添加隧道 的本地化字符串。
+        /// </summary>
+        public static string Page_FrpcList_AddTunnel {
+            get {
+                return ResourceManager.GetString("Page_FrpcList_AddTunnel", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   查找类似 删除选中 的本地化字符串。
+        /// </summary>
+        public static string Page_FrpcList_DeleteSelected {
+            get {
+                return ResourceManager.GetString("Page_FrpcList_DeleteSelected", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   查找类似 该映射正在运行中，请先关闭！ 的本地化字符串。
+        /// </summary>
+        public static string Page_FrpcList_MappingRunning {
+            get {
+                return ResourceManager.GetString("Page_FrpcList_MappingRunning", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   查找类似 MSL用户中心 - MSLFrp信息 的本地化字符串。
+        /// </summary>
+        public static string Page_FrpcList_MslUserCenter {
+            get {
+                return ResourceManager.GetString("Page_FrpcList_MslUserCenter", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   查找类似 我的MSL Frp信息 的本地化字符串。
+        /// </summary>
+        public static string Page_FrpcList_MyInfo {
+            get {
+                return ResourceManager.GetString("Page_FrpcList_MyInfo", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   查找类似 未命名的隧道 的本地化字符串。
+        /// </summary>
+        public static string Page_FrpcList_UnnamedTunnel {
+            get {
+                return ResourceManager.GetString("Page_FrpcList_UnnamedTunnel", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   查找类似 内网映射桥接失败！ 的本地化字符串。
+        /// </summary>
+        public static string Page_FrpcPage_BridgeFailed {
+            get {
+                return ResourceManager.GetString("Page_FrpcPage_BridgeFailed", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   查找类似 内网映射桥接成功！ 的本地化字符串。
+        /// </summary>
+        public static string Page_FrpcPage_BridgeSuccess {
+            get {
+                return ResourceManager.GetString("Page_FrpcPage_BridgeSuccess", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   查找类似 内网映射桥接成功！您可复制IP进入游戏了！
+        /// 的本地化字符串。
+        /// </summary>
+        public static string Page_FrpcPage_BridgeSuccessFull {
+            get {
+                return ResourceManager.GetString("Page_FrpcPage_BridgeSuccessFull", resourceCulture);
             }
         }
         
@@ -681,6 +4211,16 @@ namespace MSL.langs {
         }
         
         /// <summary>
+        ///   查找类似 连接超时，该节点可能下线，请重新配置！
+        /// 的本地化字符串。
+        /// </summary>
+        public static string Page_FrpcPage_ConnectionTimeout {
+            get {
+                return ResourceManager.GetString("Page_FrpcPage_ConnectionTimeout", resourceCulture);
+            }
+        }
+        
+        /// <summary>
         ///   查找类似 复制 的本地化字符串。
         /// </summary>
         public static string Page_FrpcPage_Copy {
@@ -690,11 +4230,103 @@ namespace MSL.langs {
         }
         
         /// <summary>
+        ///   查找类似 复制失败！ 的本地化字符串。
+        /// </summary>
+        public static string Page_FrpcPage_CopyFailed {
+            get {
+                return ResourceManager.GetString("Page_FrpcPage_CopyFailed", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   查找类似 复制成功！ 的本地化字符串。
+        /// </summary>
+        public static string Page_FrpcPage_CopySuccess {
+            get {
+                return ResourceManager.GetString("Page_FrpcPage_CopySuccess", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   查找类似 找不到自定义的Frpc客户端，请重新配置！
+        /// 的本地化字符串。
+        /// </summary>
+        public static string Page_FrpcPage_CustomFrpcNotFound {
+            get {
+                return ResourceManager.GetString("Page_FrpcPage_CustomFrpcNotFound", resourceCulture);
+            }
+        }
+        
+        /// <summary>
         ///   查找类似 连接地址： 的本地化字符串。
         /// </summary>
         public static string Page_FrpcPage_Domain {
             get {
                 return ResourceManager.GetString("Page_FrpcPage_Domain", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   查找类似 错误 的本地化字符串。
+        /// </summary>
+        public static string Page_FrpcPage_Error {
+            get {
+                return ResourceManager.GetString("Page_FrpcPage_Error", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   查找类似 出现错误，请检查是否有杀毒软件误杀并重试: 的本地化字符串。
+        /// </summary>
+        public static string Page_FrpcPage_ErrorCheckAV {
+            get {
+                return ResourceManager.GetString("Page_FrpcPage_ErrorCheckAV", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   查找类似 出现错误，请检查是否有杀毒软件误杀并重试: 的本地化字符串。
+        /// </summary>
+        public static string Page_FrpcPage_ErrorCheckAVFull {
+            get {
+                return ResourceManager.GetString("Page_FrpcPage_ErrorCheckAVFull", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   查找类似 出现错误，请重试 的本地化字符串。
+        /// </summary>
+        public static string Page_FrpcPage_ErrorRetry {
+            get {
+                return ResourceManager.GetString("Page_FrpcPage_ErrorRetry", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   查找类似 获取ChmlFrp下载地址失败！ 的本地化字符串。
+        /// </summary>
+        public static string Page_FrpcPage_GetChmlDownloadFailed {
+            get {
+                return ResourceManager.GetString("Page_FrpcPage_GetChmlDownloadFailed", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   查找类似 获取ME Frp下载地址失败！
+        ///请重新在添加隧道页面登录MEFrp并选择保存登录状态 的本地化字符串。
+        /// </summary>
+        public static string Page_FrpcPage_GetMEDownloadFailed {
+            get {
+                return ResourceManager.GetString("Page_FrpcPage_GetMEDownloadFailed", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   查找类似 获取ME Frp下载地址失败！ 的本地化字符串。
+        /// </summary>
+        public static string Page_FrpcPage_GetMEDownloadFailedShort {
+            get {
+                return ResourceManager.GetString("Page_FrpcPage_GetMEDownloadFailedShort", resourceCulture);
             }
         }
         
@@ -735,6 +4367,98 @@ namespace MSL.langs {
         }
         
         /// <summary>
+        ///   查找类似 登录服务器成功！
+        /// 的本地化字符串。
+        /// </summary>
+        public static string Page_FrpcPage_LoginSuccess {
+            get {
+                return ResourceManager.GetString("Page_FrpcPage_LoginSuccess", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   查找类似 内网映射已关闭！ 的本地化字符串。
+        /// </summary>
+        public static string Page_FrpcPage_MappingClosed {
+            get {
+                return ResourceManager.GetString("Page_FrpcPage_MappingClosed", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   查找类似 ME Frp下载失败！ 的本地化字符串。
+        /// </summary>
+        public static string Page_FrpcPage_MEDownloadFailed {
+            get {
+                return ResourceManager.GetString("Page_FrpcPage_MEDownloadFailed", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   查找类似 ME Frp节点 的本地化字符串。
+        /// </summary>
+        public static string Page_FrpcPage_MEFrpNode {
+            get {
+                return ResourceManager.GetString("Page_FrpcPage_MEFrpNode", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   查找类似 节点状态 的本地化字符串。
+        /// </summary>
+        public static string Page_FrpcPage_NodeStatus {
+            get {
+                return ResourceManager.GetString("Page_FrpcPage_NodeStatus", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   查找类似 未找到Windows AMD64版本文件 的本地化字符串。
+        /// </summary>
+        public static string Page_FrpcPage_NoWindowsAmd64 {
+            get {
+                return ResourceManager.GetString("Page_FrpcPage_NoWindowsAmd64", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   查找类似 返回Frpc列表 的本地化字符串。
+        /// </summary>
+        public static string Page_FrpcPage_Return {
+            get {
+                return ResourceManager.GetString("Page_FrpcPage_Return", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   查找类似 SakuraFrp节点 的本地化字符串。
+        /// </summary>
+        public static string Page_FrpcPage_SakuraFrpNode {
+            get {
+                return ResourceManager.GetString("Page_FrpcPage_SakuraFrpNode", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   查找类似 启动中，请稍候……
+        /// 的本地化字符串。
+        /// </summary>
+        public static string Page_FrpcPage_Starting {
+            get {
+                return ResourceManager.GetString("Page_FrpcPage_Starting", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   查找类似 正在启动内网映射！ 的本地化字符串。
+        /// </summary>
+        public static string Page_FrpcPage_StartingMapping {
+            get {
+                return ResourceManager.GetString("Page_FrpcPage_StartingMapping", resourceCulture);
+            }
+        }
+        
+        /// <summary>
         ///   查找类似 检测节点信息中…… 的本地化字符串。
         /// </summary>
         public static string Page_FrpcPage_Status_Checking {
@@ -767,6 +4491,15 @@ namespace MSL.langs {
         public static string Page_FrpcPage_Status_Failed {
             get {
                 return ResourceManager.GetString("Page_FrpcPage_Status_Failed", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   查找类似 ME Frp节点 的本地化字符串。
+        /// </summary>
+        public static string Page_FrpcPage_Status_MEFrp {
+            get {
+                return ResourceManager.GetString("Page_FrpcPage_Status_MEFrp", resourceCulture);
             }
         }
         
@@ -807,6 +4540,15 @@ namespace MSL.langs {
         }
         
         /// <summary>
+        ///   查找类似 SakuraFrp节点 的本地化字符串。
+        /// </summary>
+        public static string Page_FrpcPage_Status_SakuraFrp {
+            get {
+                return ResourceManager.GetString("Page_FrpcPage_Status_SakuraFrp", resourceCulture);
+            }
+        }
+        
+        /// <summary>
         ///   查找类似 隧道列表（双击进入详情页） 的本地化字符串。
         /// </summary>
         public static string Page_FrpcPage_Title {
@@ -843,6 +4585,15 @@ namespace MSL.langs {
         }
         
         /// <summary>
+        ///   查找类似 获取公告失败... 的本地化字符串。
+        /// </summary>
+        public static string Page_Home_NoticeFailed {
+            get {
+                return ResourceManager.GetString("Page_Home_NoticeFailed", resourceCulture);
+            }
+        }
+        
+        /// <summary>
         ///   查找类似 点对点联机 的本地化字符串。
         /// </summary>
         public static string Page_Home_P2PPlay {
@@ -861,12 +4612,67 @@ namespace MSL.langs {
         }
         
         /// <summary>
+        ///   查找类似 当前连接数: {0} / {1} 的本地化字符串。
+        /// </summary>
+        public static string Page_OnlinePage_ActiveConnections {
+            get {
+                return ResourceManager.GetString("Page_OnlinePage_ActiveConnections", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   查找类似 高级设置 的本地化字符串。
+        /// </summary>
+        public static string Page_OnlinePage_AdvancedSettings {
+            get {
+                return ResourceManager.GetString("Page_OnlinePage_AdvancedSettings", resourceCulture);
+            }
+        }
+        
+        /// <summary>
         ///   查找类似 注意：此功能尚不稳定，无法穿透所有类型的NAT，若联机失败，请尝试开服务器并使用内网映射联机！
         ///该功能可能需要正版账户，若无法联机，请从网络上寻找解决方法或尝试开服务器并使用内网映射联机！ 的本地化字符串。
         /// </summary>
         public static string Page_OnlinePage_Announce {
             get {
                 return ResourceManager.GetString("Page_OnlinePage_Announce", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   查找类似 自动 SRV 解析到 MSLFrp 免费域名 的本地化字符串。
+        /// </summary>
+        public static string Page_OnlinePage_AutoSrvHeader {
+            get {
+                return ResourceManager.GetString("Page_OnlinePage_AutoSrvHeader", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   查找类似 自动SRV解析失败：MSLFrp 自动登录失败！
+        ///{0} 的本地化字符串。
+        /// </summary>
+        public static string Page_OnlinePage_AutoSrvLoginFailed {
+            get {
+                return ResourceManager.GetString("Page_OnlinePage_AutoSrvLoginFailed", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   查找类似 自动SRV解析失败：未检测到MSLFrp登录凭证，请先前往「映射」- 「我的MSLFrp」登录您的账号。 的本地化字符串。
+        /// </summary>
+        public static string Page_OnlinePage_AutoSrvNoCredential {
+            get {
+                return ResourceManager.GetString("Page_OnlinePage_AutoSrvNoCredential", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   查找类似 基础设置 的本地化字符串。
+        /// </summary>
+        public static string Page_OnlinePage_BasicSettings {
+            get {
+                return ResourceManager.GetString("Page_OnlinePage_BasicSettings", resourceCulture);
             }
         }
         
@@ -880,11 +4686,56 @@ namespace MSL.langs {
         }
         
         /// <summary>
+        ///   查找类似 关闭 STUN 隧道 的本地化字符串。
+        /// </summary>
+        public static string Page_OnlinePage_CloseSTUN {
+            get {
+                return ResourceManager.GetString("Page_OnlinePage_CloseSTUN", resourceCulture);
+            }
+        }
+        
+        /// <summary>
         ///   查找类似 关闭成功！ 的本地化字符串。
         /// </summary>
         public static string Page_OnlinePage_CloseSuc {
             get {
                 return ResourceManager.GetString("Page_OnlinePage_CloseSuc", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   查找类似 转发失败：无法连接到本地游戏端口 的本地化字符串。
+        /// </summary>
+        public static string Page_OnlinePage_ConnectionFailed {
+            get {
+                return ResourceManager.GetString("Page_OnlinePage_ConnectionFailed", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   查找类似 复制 的本地化字符串。
+        /// </summary>
+        public static string Page_OnlinePage_Copy {
+            get {
+                return ResourceManager.GetString("Page_OnlinePage_Copy", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   查找类似 复制失败:  的本地化字符串。
+        /// </summary>
+        public static string Page_OnlinePage_CopyFailed {
+            get {
+                return ResourceManager.GetString("Page_OnlinePage_CopyFailed", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   查找类似 公网直连地址已成功复制到剪贴板！ 的本地化字符串。
+        /// </summary>
+        public static string Page_OnlinePage_CopySuccess {
+            get {
+                return ResourceManager.GetString("Page_OnlinePage_CopySuccess", resourceCulture);
             }
         }
         
@@ -921,6 +4772,42 @@ namespace MSL.langs {
         public static string Page_OnlinePage_CreateRoom {
             get {
                 return ResourceManager.GetString("Page_OnlinePage_CreateRoom", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   查找类似 自定义解析域名: 的本地化字符串。
+        /// </summary>
+        public static string Page_OnlinePage_CustomDomain {
+            get {
+                return ResourceManager.GetString("Page_OnlinePage_CustomDomain", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   查找类似 开启自动解析到云端映射域名 的本地化字符串。
+        /// </summary>
+        public static string Page_OnlinePage_EnableAutoResolve {
+            get {
+                return ResourceManager.GetString("Page_OnlinePage_EnableAutoResolve", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   查找类似 启用 Proxy Protocol v2 (透传玩家真实IP) 的本地化字符串。
+        /// </summary>
+        public static string Page_OnlinePage_EnableProxyProtocol {
+            get {
+                return ResourceManager.GetString("Page_OnlinePage_EnableProxyProtocol", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   查找类似 启用实时流量与网速监控 的本地化字符串。
+        /// </summary>
+        public static string Page_OnlinePage_EnableTrafficMonitor {
+            get {
+                return ResourceManager.GetString("Page_OnlinePage_EnableTrafficMonitor", resourceCulture);
             }
         }
         
@@ -1006,6 +4893,15 @@ namespace MSL.langs {
         }
         
         /// <summary>
+        ///   查找类似 游戏本地端口 的本地化字符串。
+        /// </summary>
+        public static string Page_OnlinePage_LocalPort {
+            get {
+                return ResourceManager.GetString("Page_OnlinePage_LocalPort", resourceCulture);
+            }
+        }
+        
+        /// <summary>
         ///   查找类似 日志 的本地化字符串。
         /// </summary>
         public static string Page_OnlinePage_Log {
@@ -1020,6 +4916,70 @@ namespace MSL.langs {
         public static string Page_OnlinePage_LoginSuc {
             get {
                 return ResourceManager.GetString("Page_OnlinePage_LoginSuc", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   查找类似 未开启 的本地化字符串。
+        /// </summary>
+        public static string Page_OnlinePage_NotEnabled {
+            get {
+                return ResourceManager.GetString("Page_OnlinePage_NotEnabled", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   查找类似 当前没有有效的公网直连地址可供复制！ 的本地化字符串。
+        /// </summary>
+        public static string Page_OnlinePage_NoValidAddress {
+            get {
+                return ResourceManager.GetString("Page_OnlinePage_NoValidAddress", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   查找类似 开启 STUN 隧道 的本地化字符串。
+        /// </summary>
+        public static string Page_OnlinePage_OpenSTUN {
+            get {
+                return ResourceManager.GetString("Page_OnlinePage_OpenSTUN", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   查找类似 操作失败：未检测到有效的 MSLFrp 登录凭证！
+        ///请前往「映射」-「我的MSLFrp」板块进行登录。 的本地化字符串。
+        /// </summary>
+        public static string Page_OnlinePage_OperationFailedNoCredential {
+            get {
+                return ResourceManager.GetString("Page_OnlinePage_OperationFailedNoCredential", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   查找类似 公网直连地址:  的本地化字符串。
+        /// </summary>
+        public static string Page_OnlinePage_PublicDirectAddr {
+            get {
+                return ResourceManager.GetString("Page_OnlinePage_PublicDirectAddr", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   查找类似 实时网速： 的本地化字符串。
+        /// </summary>
+        public static string Page_OnlinePage_RealtimeSpeed {
+            get {
+                return ResourceManager.GetString("Page_OnlinePage_RealtimeSpeed", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   查找类似 已发送: {0} | 已接收: {1} 的本地化字符串。
+        /// </summary>
+        public static string Page_OnlinePage_SentReceived {
+            get {
+                return ResourceManager.GetString("Page_OnlinePage_SentReceived", resourceCulture);
             }
         }
         
@@ -1051,11 +5011,83 @@ namespace MSL.langs {
         }
         
         /// <summary>
+        ///   查找类似 显示连接日志 的本地化字符串。
+        /// </summary>
+        public static string Page_OnlinePage_ShowConnLog {
+            get {
+                return ResourceManager.GetString("Page_OnlinePage_ShowConnLog", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   查找类似 正在启动隧道中... 的本地化字符串。
+        /// </summary>
+        public static string Page_OnlinePage_StartingTunnel {
+            get {
+                return ResourceManager.GetString("Page_OnlinePage_StartingTunnel", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   查找类似 无法启动，请改用其他 Frp 映射或点对点联机 的本地化字符串。
+        /// </summary>
+        public static string Page_OnlinePage_StartupFailed {
+            get {
+                return ResourceManager.GetString("Page_OnlinePage_StartupFailed", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   查找类似 STUN 隧道穿透成功！ 的本地化字符串。
+        /// </summary>
+        public static string Page_OnlinePage_STUNSuccess {
+            get {
+                return ResourceManager.GetString("Page_OnlinePage_STUNSuccess", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   查找类似 提示：本功能的开启条件比较苛刻，需要您的本地网络为 NAT1 全锥形 (Full-Cone)。若遭遇连不上或超时，请切换到 FRP 映射 或「点对点联机」。 的本地化字符串。
+        /// </summary>
+        public static string Page_OnlinePage_STUNTip {
+            get {
+                return ResourceManager.GetString("Page_OnlinePage_STUNTip", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   查找类似 STUN隧道教程 的本地化字符串。
+        /// </summary>
+        public static string Page_OnlinePage_STUNTutorial {
+            get {
+                return ResourceManager.GetString("Page_OnlinePage_STUNTutorial", resourceCulture);
+            }
+        }
+        
+        /// <summary>
         ///   查找类似 桥接成功！ 的本地化字符串。
         /// </summary>
         public static string Page_OnlinePage_Suc {
             get {
                 return ResourceManager.GetString("Page_OnlinePage_Suc", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   查找类似 点对点联机 (P2P) 的本地化字符串。
+        /// </summary>
+        public static string Page_OnlinePage_TabP2P {
+            get {
+                return ResourceManager.GetString("Page_OnlinePage_TabP2P", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   查找类似 STUN 隧道 (直连) 的本地化字符串。
+        /// </summary>
+        public static string Page_OnlinePage_TabSTUN {
+            get {
+                return ResourceManager.GetString("Page_OnlinePage_TabSTUN", resourceCulture);
             }
         }
         
@@ -1069,6 +5101,15 @@ namespace MSL.langs {
         }
         
         /// <summary>
+        ///   查找类似 流量统计： 的本地化字符串。
+        /// </summary>
+        public static string Page_OnlinePage_TrafficStats {
+            get {
+                return ResourceManager.GetString("Page_OnlinePage_TrafficStats", resourceCulture);
+            }
+        }
+        
+        /// <summary>
         ///   查找类似 联机教程 的本地化字符串。
         /// </summary>
         public static string Page_OnlinePage_UseTip {
@@ -1078,11 +5119,74 @@ namespace MSL.langs {
         }
         
         /// <summary>
+        ///   查找类似 等待隧道启动...... 的本地化字符串。
+        /// </summary>
+        public static string Page_OnlinePage_WaitingTunnel {
+            get {
+                return ResourceManager.GetString("Page_OnlinePage_WaitingTunnel", resourceCulture);
+            }
+        }
+        
+        /// <summary>
         ///   查找类似 删除所选服务器 的本地化字符串。
         /// </summary>
         public static string Page_ServerList_Delete {
             get {
                 return ResourceManager.GetString("Page_ServerList_Delete", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   查找类似 删除服务器成功！ 的本地化字符串。
+        /// </summary>
+        public static string Page_ServerList_Deleted {
+            get {
+                return ResourceManager.GetString("Page_ServerList_Deleted", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   查找类似 删除服务器失败！ 的本地化字符串。
+        /// </summary>
+        public static string Page_ServerList_DeleteFailed {
+            get {
+                return ResourceManager.GetString("Page_ServerList_DeleteFailed", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   查找类似 删除该服务器 的本地化字符串。
+        /// </summary>
+        public static string Page_ServerList_DeleteServer {
+            get {
+                return ResourceManager.GetString("Page_ServerList_DeleteServer", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   查找类似 请在关闭服务器并关掉服务器窗口后再进行删除！ 的本地化字符串。
+        /// </summary>
+        public static string Page_ServerList_Dialog_CloseFirst {
+            get {
+                return ResourceManager.GetString("Page_ServerList_Dialog_CloseFirst", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   查找类似 您确定要删除该服务器吗？ 的本地化字符串。
+        /// </summary>
+        public static string Page_ServerList_Dialog_ConfirmDelete {
+            get {
+                return ResourceManager.GetString("Page_ServerList_Dialog_ConfirmDelete", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   查找类似 是否删除该服务器的目录？（服务器目录中的所有文件都会被移至回收站） 的本地化字符串。
+        /// </summary>
+        public static string Page_ServerList_Dialog_DeleteDir {
+            get {
+                return ResourceManager.GetString("Page_ServerList_Dialog_DeleteDir", resourceCulture);
             }
         }
         
@@ -1097,11 +5201,85 @@ namespace MSL.langs {
         }
         
         /// <summary>
+        ///   查找类似 服务器目录已成功移至回收站！ 的本地化字符串。
+        /// </summary>
+        public static string Page_ServerList_DirDeleted {
+            get {
+                return ResourceManager.GetString("Page_ServerList_DirDeleted", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   查找类似 服务器目录删除失败！ 的本地化字符串。
+        /// </summary>
+        public static string Page_ServerList_DirDeleteFailed {
+            get {
+                return ResourceManager.GetString("Page_ServerList_DirDeleteFailed", resourceCulture);
+            }
+        }
+        
+        /// <summary>
         ///   查找类似 操作 的本地化字符串。
         /// </summary>
         public static string Page_ServerList_Do {
             get {
                 return ResourceManager.GetString("Page_ServerList_Do", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   查找类似 这是单独的服务端下载界面
+        ///下载的服务端均在MSL\Downloads文件夹内 的本地化字符串。
+        /// </summary>
+        public static string Page_ServerList_DownloadCoreTip {
+            get {
+                return ResourceManager.GetString("Page_ServerList_DownloadCoreTip", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   查找类似 这是单独的模组/插件/整合包下载界面
+        ///下载的文件均在MSL\Downloads文件夹内 的本地化字符串。
+        /// </summary>
+        public static string Page_ServerList_DownloadModTip {
+            get {
+                return ResourceManager.GetString("Page_ServerList_DownloadModTip", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   查找类似 下载资源 的本地化字符串。
+        /// </summary>
+        public static string Page_ServerList_DownloadResources {
+            get {
+                return ResourceManager.GetString("Page_ServerList_DownloadResources", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   查找类似 下载服务端 的本地化字符串。
+        /// </summary>
+        public static string Page_ServerList_DownloadServerCore {
+            get {
+                return ResourceManager.GetString("Page_ServerList_DownloadServerCore", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   查找类似 出现错误，请检查您是否选择了服务器！ 的本地化字符串。
+        /// </summary>
+        public static string Page_ServerList_ErrorNoSelection {
+            get {
+                return ResourceManager.GetString("Page_ServerList_ErrorNoSelection", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   查找类似 实例ID： 的本地化字符串。
+        /// </summary>
+        public static string Page_ServerList_InstanceID {
+            get {
+                return ResourceManager.GetString("Page_ServerList_InstanceID", resourceCulture);
             }
         }
         
@@ -1124,11 +5302,29 @@ namespace MSL.langs {
         }
         
         /// <summary>
+        ///   查找类似 您还没有一个服务器呢，点击右下角加号创建一个吧~ 的本地化字符串。
+        /// </summary>
+        public static string Page_ServerList_NoServer {
+            get {
+                return ResourceManager.GetString("Page_ServerList_NoServer", resourceCulture);
+            }
+        }
+        
+        /// <summary>
         ///   查找类似 打开服务器文件夹 的本地化字符串。
         /// </summary>
         public static string Page_ServerList_OpenDir {
             get {
                 return ResourceManager.GetString("Page_ServerList_OpenDir", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   查找类似 正在为您打开服务器文件夹…… 的本地化字符串。
+        /// </summary>
+        public static string Page_ServerList_OpeningFolder {
+            get {
+                return ResourceManager.GetString("Page_ServerList_OpeningFolder", resourceCulture);
             }
         }
         
@@ -1142,11 +5338,29 @@ namespace MSL.langs {
         }
         
         /// <summary>
+        ///   查找类似 刷新成功！ 的本地化字符串。
+        /// </summary>
+        public static string Page_ServerList_RefreshSuccess {
+            get {
+                return ResourceManager.GetString("Page_ServerList_RefreshSuccess", resourceCulture);
+            }
+        }
+        
+        /// <summary>
         ///   查找类似 服务器名称 的本地化字符串。
         /// </summary>
         public static string Page_ServerList_ServerName {
             get {
                 return ResourceManager.GetString("Page_ServerList_ServerName", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   查找类似 服务器设置 的本地化字符串。
+        /// </summary>
+        public static string Page_ServerList_ServerSetting {
+            get {
+                return ResourceManager.GetString("Page_ServerList_ServerSetting", resourceCulture);
             }
         }
         
@@ -1169,6 +5383,42 @@ namespace MSL.langs {
         }
         
         /// <summary>
+        ///   查找类似 状态： 的本地化字符串。
+        /// </summary>
+        public static string Page_ServerList_StatusLabel {
+            get {
+                return ResourceManager.GetString("Page_ServerList_StatusLabel", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   查找类似 未运行 的本地化字符串。
+        /// </summary>
+        public static string Page_ServerList_StatusNotRunning {
+            get {
+                return ResourceManager.GetString("Page_ServerList_StatusNotRunning", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   查找类似 运行中 的本地化字符串。
+        /// </summary>
+        public static string Page_ServerList_StatusRunning {
+            get {
+                return ResourceManager.GetString("Page_ServerList_StatusRunning", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   查找类似 已开服 的本地化字符串。
+        /// </summary>
+        public static string Page_ServerList_StatusStarted {
+            get {
+                return ResourceManager.GetString("Page_ServerList_StatusStarted", resourceCulture);
+            }
+        }
+        
+        /// <summary>
         ///   查找类似 实例列表 的本地化字符串。
         /// </summary>
         public static string Page_ServerList_Title {
@@ -1183,6 +5433,16 @@ namespace MSL.langs {
         public static string Page_ServerList_UseCMDLaunch {
             get {
                 return ResourceManager.GetString("Page_ServerList_UseCMDLaunch", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   查找类似 您配置了外置登录但是外置登录库并未下载
+        ///如需正常使用外置登录+命令行开服，请先在MSL内正常开服一次！ 的本地化字符串。
+        /// </summary>
+        public static string Page_ServerList_YggWarning {
+            get {
+                return ResourceManager.GetString("Page_ServerList_YggWarning", resourceCulture);
             }
         }
         
@@ -1561,6 +5821,4478 @@ namespace MSL.langs {
         public static string Page_SettingsPage_SS_WesternEgg {
             get {
                 return ResourceManager.GetString("Page_SettingsPage_SS_WesternEgg", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   查找类似 已将其添加至任务列表中！ 的本地化字符串。
+        /// </summary>
+        public static string SettingsPage_AddedToTaskList {
+            get {
+                return ResourceManager.GetString("SettingsPage_AddedToTaskList", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   查找类似 请先将需要自启动的Frpc之ID填入框中！ 的本地化字符串。
+        /// </summary>
+        public static string SettingsPage_AddFrpcIdFirst {
+            get {
+                return ResourceManager.GetString("SettingsPage_AddFrpcIdFirst", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   查找类似 请先将服务器添加至启动列表！ 的本地化字符串。
+        /// </summary>
+        public static string SettingsPage_AddServerFirst {
+            get {
+                return ResourceManager.GetString("SettingsPage_AddServerFirst", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   查找类似 所有文件类型|*.* 的本地化字符串。
+        /// </summary>
+        public static string SettingsPage_AllFiles {
+            get {
+                return ResourceManager.GetString("SettingsPage_AllFiles", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   查找类似 应用 的本地化字符串。
+        /// </summary>
+        public static string SettingsPage_Apply {
+            get {
+                return ResourceManager.GetString("SettingsPage_Apply", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   查找类似 更换背景图片失败！
+        ///错误代码： 的本地化字符串。
+        /// </summary>
+        public static string SettingsPage_ChangeBgFailed {
+            get {
+                return ResourceManager.GetString("SettingsPage_ChangeBgFailed", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   查找类似 请先关闭开关后再进行调整！ 的本地化字符串。
+        /// </summary>
+        public static string SettingsPage_CloseBeforeAdjust {
+            get {
+                return ResourceManager.GetString("SettingsPage_CloseBeforeAdjust", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   查找类似 您的服务器/内网映射/联机正在运行中，请将其关闭后再更新！ 的本地化字符串。
+        /// </summary>
+        public static string SettingsPage_CloseBeforeUpdate {
+            get {
+                return ResourceManager.GetString("SettingsPage_CloseBeforeUpdate", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   查找类似 服务器运行窗口关闭时的运行提示:  的本地化字符串。
+        /// </summary>
+        public static string SettingsPage_CloseWindowHint {
+            get {
+                return ResourceManager.GetString("SettingsPage_CloseWindowHint", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   查找类似 加载配置时发生错误！此错误不影响使用，您可继续使用或将其反馈给作者！ 的本地化字符串。
+        /// </summary>
+        public static string SettingsPage_ConfigLoadErr {
+            get {
+                return ResourceManager.GetString("SettingsPage_ConfigLoadErr", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   查找类似 复制失败！ 的本地化字符串。
+        /// </summary>
+        public static string SettingsPage_CopyFailed {
+            get {
+                return ResourceManager.GetString("SettingsPage_CopyFailed", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   查找类似 设备ID复制成功！ 的本地化字符串。
+        /// </summary>
+        public static string SettingsPage_CopyIdSuc {
+            get {
+                return ResourceManager.GetString("SettingsPage_CopyIdSuc", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   查找类似 清除背景图片失败！
+        ///错误代码： 的本地化字符串。
+        /// </summary>
+        public static string SettingsPage_DelBgFailed {
+            get {
+                return ResourceManager.GetString("SettingsPage_DelBgFailed", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   查找类似 关闭此功能后，读取服务器信息、玩家等功能将会失效，请谨慎选择！ 的本地化字符串。
+        /// </summary>
+        public static string SettingsPage_DisableMslTipsWarning {
+            get {
+                return ResourceManager.GetString("SettingsPage_DisableMslTipsWarning", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   查找类似 URL: {0}
+        ///文件名称: {1}
+        ///文件将保存至 MSL\Downloads 文件夹内！
+        ///
+        ///点击确定以下载 的本地化字符串。
+        /// </summary>
+        public static string SettingsPage_DownloadConfirm {
+            get {
+                return ResourceManager.GetString("SettingsPage_DownloadConfirm", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   查找类似 你都已经点过了，别再点了！ 的本地化字符串。
+        /// </summary>
+        public static string SettingsPage_EggAlreadyClicked {
+            get {
+                return ResourceManager.GetString("SettingsPage_EggAlreadyClicked", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   查找类似 为什么要胡乱输入！不玩了！ 的本地化字符串。
+        /// </summary>
+        public static string SettingsPage_EggBadInput {
+            get {
+                return ResourceManager.GetString("SettingsPage_EggBadInput", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   查找类似 恭喜你！ 的本地化字符串。
+        /// </summary>
+        public static string SettingsPage_EggCongrats {
+            get {
+                return ResourceManager.GetString("SettingsPage_EggCongrats", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   查找类似 爱猜不猜，哼！ 的本地化字符串。
+        /// </summary>
+        public static string SettingsPage_EggDontGuess {
+            get {
+                return ResourceManager.GetString("SettingsPage_EggDontGuess", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   查找类似 不，我不知道 的本地化字符串。
+        /// </summary>
+        public static string SettingsPage_EggDontKnow {
+            get {
+                return ResourceManager.GetString("SettingsPage_EggDontKnow", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   查找类似 好吧，那来玩一个小游戏吧！ 的本地化字符串。
+        /// </summary>
+        public static string SettingsPage_EggGameTime {
+            get {
+                return ResourceManager.GetString("SettingsPage_EggGameTime", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   查找类似 我生成了一个1-500的整数，你能猜对它吗？
+        ///请输入数字（1-500） 的本地化字符串。
+        /// </summary>
+        public static string SettingsPage_EggGuessIntro {
+            get {
+                return ResourceManager.GetString("SettingsPage_EggGuessIntro", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   查找类似 我知道了 的本地化字符串。
+        /// </summary>
+        public static string SettingsPage_EggIKnow {
+            get {
+                return ResourceManager.GetString("SettingsPage_EggIKnow", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   查找类似 你还真是执着呢！ 的本地化字符串。
+        /// </summary>
+        public static string SettingsPage_EggPersistent {
+            get {
+                return ResourceManager.GetString("SettingsPage_EggPersistent", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   查找类似 你真是个执着的家伙！ 的本地化字符串。
+        /// </summary>
+        public static string SettingsPage_EggPersistent2 {
+            get {
+                return ResourceManager.GetString("SettingsPage_EggPersistent2", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   查找类似 你猜的数字大了！ 的本地化字符串。
+        /// </summary>
+        public static string SettingsPage_EggTooBig {
+            get {
+                return ResourceManager.GetString("SettingsPage_EggTooBig", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   查找类似 你猜的数字小了！ 的本地化字符串。
+        /// </summary>
+        public static string SettingsPage_EggTooSmall {
+            get {
+                return ResourceManager.GetString("SettingsPage_EggTooSmall", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   查找类似 再猜一次吧！
+        ///请输入数字（1-500） 的本地化字符串。
+        /// </summary>
+        public static string SettingsPage_EggTryAgain {
+            get {
+                return ResourceManager.GetString("SettingsPage_EggTryAgain", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   查找类似 我不确定QWQ 的本地化字符串。
+        /// </summary>
+        public static string SettingsPage_EggUnsure {
+            get {
+                return ResourceManager.GetString("SettingsPage_EggUnsure", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   查找类似 点击此按钮后软件出现任何问题作者概不负责，你确定要继续吗？
+        ///（光敏性癫痫警告！若您患有光敏性癫痫，请不要点击确定！） 的本地化字符串。
+        /// </summary>
+        public static string SettingsPage_EggWarning {
+            get {
+                return ResourceManager.GetString("SettingsPage_EggWarning", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   查找类似 你真厉害！居然猜对了！ 的本地化字符串。
+        /// </summary>
+        public static string SettingsPage_EggWon {
+            get {
+                return ResourceManager.GetString("SettingsPage_EggWon", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   查找类似 猜对了：{0}！
+        ///你真厉害！ 的本地化字符串。
+        /// </summary>
+        public static string SettingsPage_EggWonTitle {
+            get {
+                return ResourceManager.GetString("SettingsPage_EggWonTitle", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   查找类似 请输入地址后再进行下载！ 的本地化字符串。
+        /// </summary>
+        public static string SettingsPage_EnterUrl {
+            get {
+                return ResourceManager.GetString("SettingsPage_EnterUrl", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   查找类似 请输入有效的字体大小！ 的本地化字符串。
+        /// </summary>
+        public static string SettingsPage_InvalidFontSize {
+            get {
+                return ResourceManager.GetString("SettingsPage_InvalidFontSize", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   查找类似 终端日志颜色： 的本地化字符串。
+        /// </summary>
+        public static string SettingsPage_LogColor {
+            get {
+                return ResourceManager.GetString("SettingsPage_LogColor", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   查找类似 终端日志字体： 的本地化字符串。
+        /// </summary>
+        public static string SettingsPage_LogFont {
+            get {
+                return ResourceManager.GetString("SettingsPage_LogFont", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   查找类似 终端日志字号： 的本地化字符串。
+        /// </summary>
+        public static string SettingsPage_LogFontSize {
+            get {
+                return ResourceManager.GetString("SettingsPage_LogFontSize", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   查找类似 已关闭Mica效果！ 的本地化字符串。
+        /// </summary>
+        public static string SettingsPage_MicaOff {
+            get {
+                return ResourceManager.GetString("SettingsPage_MicaOff", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   查找类似 已开启Mica效果！ 的本地化字符串。
+        /// </summary>
+        public static string SettingsPage_MicaOn {
+            get {
+                return ResourceManager.GetString("SettingsPage_MicaOn", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   查找类似 发现新版本：{0}，是否更新？
+        ///更新日志： 的本地化字符串。
+        /// </summary>
+        public static string SettingsPage_NewVersionFound {
+            get {
+                return ResourceManager.GetString("SettingsPage_NewVersionFound", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   查找类似 点击选色 的本地化字符串。
+        /// </summary>
+        public static string SettingsPage_PickColor {
+            get {
+                return ResourceManager.GetString("SettingsPage_PickColor", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   查找类似 恢复默认设置会清除MSL文件夹内的所有文件，请您谨慎选择！ 的本地化字符串。
+        /// </summary>
+        public static string SettingsPage_RecoveryWarning {
+            get {
+                return ResourceManager.GetString("SettingsPage_RecoveryWarning", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   查找类似 您拒绝了更新新版本，若在此版本中遇到bug，请勿报告给作者！ 的本地化字符串。
+        /// </summary>
+        public static string SettingsPage_RefuseUpdate {
+            get {
+                return ResourceManager.GetString("SettingsPage_RefuseUpdate", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   查找类似 重置 的本地化字符串。
+        /// </summary>
+        public static string SettingsPage_Reset {
+            get {
+                return ResourceManager.GetString("SettingsPage_Reset", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   查找类似 已恢复默认日志颜色！重新打开服务器运行窗口以使其生效！ 的本地化字符串。
+        /// </summary>
+        public static string SettingsPage_RestoreLogColorSuc {
+            get {
+                return ResourceManager.GetString("SettingsPage_RestoreLogColorSuc", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   查找类似 保存颜色成功！ 的本地化字符串。
+        /// </summary>
+        public static string SettingsPage_SaveColorSuc {
+            get {
+                return ResourceManager.GetString("SettingsPage_SaveColorSuc", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   查找类似 保存日志颜色成功！重新打开服务器运行窗口以使其生效！ 的本地化字符串。
+        /// </summary>
+        public static string SettingsPage_SaveLogColorSuc {
+            get {
+                return ResourceManager.GetString("SettingsPage_SaveLogColorSuc", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   查找类似 保存日志字体成功！重新打开服务器运行窗口以使其生效！ 的本地化字符串。
+        /// </summary>
+        public static string SettingsPage_SaveLogFontSuc {
+            get {
+                return ResourceManager.GetString("SettingsPage_SaveLogFontSuc", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   查找类似 请选择文件 的本地化字符串。
+        /// </summary>
+        public static string SettingsPage_SelectFile {
+            get {
+                return ResourceManager.GetString("SettingsPage_SelectFile", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   查找类似 系统默认 的本地化字符串。
+        /// </summary>
+        public static string SettingsPage_SysDefault {
+            get {
+                return ResourceManager.GetString("SettingsPage_SysDefault", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   查找类似 关闭成功！ 的本地化字符串。
+        /// </summary>
+        public static string SettingsPage_ToggleOff {
+            get {
+                return ResourceManager.GetString("SettingsPage_ToggleOff", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   查找类似 关闭成功！重启服务器运行界面以生效！ 的本地化字符串。
+        /// </summary>
+        public static string SettingsPage_ToggleOffRestart {
+            get {
+                return ResourceManager.GetString("SettingsPage_ToggleOffRestart", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   查找类似 开启成功！ 的本地化字符串。
+        /// </summary>
+        public static string SettingsPage_ToggleOn {
+            get {
+                return ResourceManager.GetString("SettingsPage_ToggleOn", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   查找类似 开启成功！重启服务器运行界面以生效！ 的本地化字符串。
+        /// </summary>
+        public static string SettingsPage_ToggleOnRestart {
+            get {
+                return ResourceManager.GetString("SettingsPage_ToggleOnRestart", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   查找类似 更新失败！ 的本地化字符串。
+        /// </summary>
+        public static string SettingsPage_UpdateFailed {
+            get {
+                return ResourceManager.GetString("SettingsPage_UpdateFailed", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   查找类似 更新 的本地化字符串。
+        /// </summary>
+        public static string SettingsPage_UpdateNow {
+            get {
+                return ResourceManager.GetString("SettingsPage_UpdateNow", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   查找类似 使用云母效果 的本地化字符串。
+        /// </summary>
+        public static string SettingsPage_UseMica {
+            get {
+                return ResourceManager.GetString("SettingsPage_UseMica", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   查找类似 服务器疑似异常关闭，是您人为关闭的吗？
+        ///您可使用MSL的崩溃分析系统进行检测，也可使用AI日志分析功能或将服务器日志发送给他人以寻求帮助！
+        ///注意:请不要截图此弹窗！！！
+        ///AI日志分析入口：服务器控制台的更多操作栏，或&quot;更多功能&quot;页面里。
+        ///服务器日志在何处：
+        ///1.服务器控制台内容；2.服务器目录\logs\latest.log；3.&quot;更多功能&quot;界面将日志上传至Internet。
+        ///
+        ///点击确定开始进行崩溃分析 的本地化字符串。
+        /// </summary>
+        public static string SR_AbnormalClose {
+            get {
+                return ResourceManager.GetString("SR_AbnormalClose", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   查找类似 操作 的本地化字符串。
+        /// </summary>
+        public static string SR_Actions {
+            get {
+                return ResourceManager.GetString("SR_Actions", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   查找类似 添加 的本地化字符串。
+        /// </summary>
+        public static string SR_Add {
+            get {
+                return ResourceManager.GetString("SR_Add", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   查找类似 添加失败:  的本地化字符串。
+        /// </summary>
+        public static string SR_AddFailed {
+            get {
+                return ResourceManager.GetString("SR_AddFailed", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   查找类似 添加快捷指令 的本地化字符串。
+        /// </summary>
+        public static string SR_AddFastCmd {
+            get {
+                return ResourceManager.GetString("SR_AddFastCmd", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   查找类似 请先进行添加！ 的本地化字符串。
+        /// </summary>
+        public static string SR_AddFirst {
+            get {
+                return ResourceManager.GetString("SR_AddFirst", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   查找类似 添加模组 的本地化字符串。
+        /// </summary>
+        public static string SR_AddMod {
+            get {
+                return ResourceManager.GetString("SR_AddMod", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   查找类似 添加模组必看 的本地化字符串。
+        /// </summary>
+        public static string SR_AddModNote {
+            get {
+                return ResourceManager.GetString("SR_AddModNote", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   查找类似 添加新任务 的本地化字符串。
+        /// </summary>
+        public static string SR_AddNewTask {
+            get {
+                return ResourceManager.GetString("SR_AddNewTask", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   查找类似 添加插件 的本地化字符串。
+        /// </summary>
+        public static string SR_AddPlugin {
+            get {
+                return ResourceManager.GetString("SR_AddPlugin", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   查找类似 冒险 的本地化字符串。
+        /// </summary>
+        public static string SR_Adventure {
+            get {
+                return ResourceManager.GetString("SR_Adventure", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   查找类似 AI日志分析功能 的本地化字符串。
+        /// </summary>
+        public static string SR_AILogAnalysis {
+            get {
+                return ResourceManager.GetString("SR_AILogAnalysis", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   查找类似 别名（如：o，可在控制台快速调用，非必填）： 的本地化字符串。
+        /// </summary>
+        public static string SR_AliasInputHint {
+            get {
+                return ResourceManager.GetString("SR_AliasInputHint", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   查找类似 分析结果输出 的本地化字符串。
+        /// </summary>
+        public static string SR_AnalysisOutput {
+            get {
+                return ResourceManager.GetString("SR_AnalysisOutput", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   查找类似 此处显示AI分析结果…… 的本地化字符串。
+        /// </summary>
+        public static string SR_AnalysisResultPlaceholder {
+            get {
+                return ResourceManager.GetString("SR_AnalysisResultPlaceholder", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   查找类似 无法获取最新的authlib-injector.jar信息，且本地没有authlib-injector.jar文件，请检查网络连接或稍后重试！ 的本地化字符串。
+        /// </summary>
+        public static string SR_AuthlibNotFound {
+            get {
+                return ResourceManager.GetString("SR_AuthlibNotFound", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   查找类似 正在更新外置登录库文件... 的本地化字符串。
+        /// </summary>
+        public static string SR_AuthlibUpdating {
+            get {
+                return ResourceManager.GetString("SR_AuthlibUpdating", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   查找类似 让Java自动分配 的本地化字符串。
+        /// </summary>
+        public static string SR_AutoAlloc {
+            get {
+                return ResourceManager.GetString("SR_AutoAlloc", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   查找类似 自动备份 的本地化字符串。
+        /// </summary>
+        public static string SR_AutoBackup {
+            get {
+                return ResourceManager.GetString("SR_AutoBackup", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   查找类似 自动清屏： 的本地化字符串。
+        /// </summary>
+        public static string SR_AutoClearScreen {
+            get {
+                return ResourceManager.GetString("SR_AutoClearScreen", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   查找类似 关闭此功能后，服务器输出界面超过一定数量的日志后将不再清屏，这样可能会造成性能损失，您确定要继续吗？ 的本地化字符串。
+        /// </summary>
+        public static string SR_AutoClearWarning {
+            get {
+                return ResourceManager.GetString("SR_AutoClearWarning", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   查找类似 当前为自动分配 的本地化字符串。
+        /// </summary>
+        public static string SR_AutoDetectMem {
+            get {
+                return ResourceManager.GetString("SR_AutoDetectMem", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   查找类似 自动安装失败！是否尝试使用命令行安装方式？ 的本地化字符串。
+        /// </summary>
+        public static string SR_AutoInstallFailed {
+            get {
+                return ResourceManager.GetString("SR_AutoInstallFailed", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   查找类似 关服自动重启： 的本地化字符串。
+        /// </summary>
+        public static string SR_AutoRestart {
+            get {
+                return ResourceManager.GetString("SR_AutoRestart", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   查找类似 备份 的本地化字符串。
+        /// </summary>
+        public static string SR_Backup {
+            get {
+                return ResourceManager.GetString("SR_Backup", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   查找类似 [MSL备份]目录检查或旧备份清理失败：{0} 的本地化字符串。
+        /// </summary>
+        public static string SR_BackupCleanupFailed {
+            get {
+                return ResourceManager.GetString("SR_BackupCleanupFailed", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   查找类似 [MSL备份]正在压缩存档文件，请稍等··· 的本地化字符串。
+        /// </summary>
+        public static string SR_BackupCompressing {
+            get {
+                return ResourceManager.GetString("SR_BackupCompressing", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   查找类似 若需要启用自动备份，请在定时任务添加指令为&apos;.backup&apos;的任务即可！ 的本地化字符串。
+        /// </summary>
+        public static string SR_BackupCronTip {
+            get {
+                return ResourceManager.GetString("SR_BackupCronTip", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   查找类似 备份保存延时必须大于等于5秒！ 的本地化字符串。
+        /// </summary>
+        public static string SR_BackupDelayGE5 {
+            get {
+                return ResourceManager.GetString("SR_BackupDelayGE5", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   查找类似 [MSL备份]已删除旧备份：{0} 的本地化字符串。
+        /// </summary>
+        public static string SR_BackupDeletedOld {
+            get {
+                return ResourceManager.GetString("SR_BackupDeletedOld", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   查找类似 [MSL备份]删除旧备份 {0} 失败：{1} 的本地化字符串。
+        /// </summary>
+        public static string SR_BackupDeleteOldFailed {
+            get {
+                return ResourceManager.GetString("SR_BackupDeleteOldFailed", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   查找类似 [MSL备份]备份失败！{0} 的本地化字符串。
+        /// </summary>
+        public static string SR_BackupFailedLog {
+            get {
+                return ResourceManager.GetString("SR_BackupFailedLog", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   查找类似 备份失败！ 的本地化字符串。
+        /// </summary>
+        public static string SR_BackupFailedMsg {
+            get {
+                return ResourceManager.GetString("SR_BackupFailedMsg", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   查找类似 [MSL备份]无法获取备份文件信息：{0} 的本地化字符串。
+        /// </summary>
+        public static string SR_BackupFileInfoFailed {
+            get {
+                return ResourceManager.GetString("SR_BackupFileInfoFailed", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   查找类似 备份间隔（分钟）： 的本地化字符串。
+        /// </summary>
+        public static string SR_BackupInterval {
+            get {
+                return ResourceManager.GetString("SR_BackupInterval", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   查找类似 备份位置： 的本地化字符串。
+        /// </summary>
+        public static string SR_BackupLocation {
+            get {
+                return ResourceManager.GetString("SR_BackupLocation", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   查找类似 自定义 的本地化字符串。
+        /// </summary>
+        public static string SR_BackupLocCustom {
+            get {
+                return ResourceManager.GetString("SR_BackupLocCustom", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   查找类似 (服务端内)服务器目录/msl-backups 的本地化字符串。
+        /// </summary>
+        public static string SR_BackupLocInServer {
+            get {
+                return ResourceManager.GetString("SR_BackupLocInServer", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   查找类似 (服务端外)MSL/server-backups 的本地化字符串。
+        /// </summary>
+        public static string SR_BackupLocOutServer {
+            get {
+                return ResourceManager.GetString("SR_BackupLocOutServer", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   查找类似 备份设置参数有误，请检查！ 的本地化字符串。
+        /// </summary>
+        public static string SR_BackupParamsError {
+            get {
+                return ResourceManager.GetString("SR_BackupParamsError", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   查找类似 备份设置 的本地化字符串。
+        /// </summary>
+        public static string SR_BackupSettings {
+            get {
+                return ResourceManager.GetString("SR_BackupSettings", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   查找类似 开始执行备份··· 的本地化字符串。
+        /// </summary>
+        public static string SR_BackupStarting {
+            get {
+                return ResourceManager.GetString("SR_BackupStarting", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   查找类似 [MSL备份]开始执行备份··· 的本地化字符串。
+        /// </summary>
+        public static string SR_BackupStartingLog {
+            get {
+                return ResourceManager.GetString("SR_BackupStartingLog", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   查找类似 [MSL备份]存档备份成功！已保存至：{0} 的本地化字符串。
+        /// </summary>
+        public static string SR_BackupSuccessLog {
+            get {
+                return ResourceManager.GetString("SR_BackupSuccessLog", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   查找类似 存档备份成功！已保存至：{0} 的本地化字符串。
+        /// </summary>
+        public static string SR_BackupSuccessMsg {
+            get {
+                return ResourceManager.GetString("SR_BackupSuccessMsg", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   查找类似 [MSL备份]自定义备份路径为空，已使用默认路径！ 的本地化字符串。
+        /// </summary>
+        public static string SR_BackupUsingDefaultPath {
+            get {
+                return ResourceManager.GetString("SR_BackupUsingDefaultPath", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   查找类似 备份保存等待 (秒) - 不知道就保持默认即可： 的本地化字符串。
+        /// </summary>
+        public static string SR_BackupWaitSec {
+            get {
+                return ResourceManager.GetString("SR_BackupWaitSec", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   查找类似 封禁玩家 的本地化字符串。
+        /// </summary>
+        public static string SR_BanPlayer {
+            get {
+                return ResourceManager.GetString("SR_BanPlayer", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   查找类似 封禁玩家 的本地化字符串。
+        /// </summary>
+        public static string SR_BanPlayerCmd {
+            get {
+                return ResourceManager.GetString("SR_BanPlayerCmd", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   查找类似 浏览 的本地化字符串。
+        /// </summary>
+        public static string SR_Browse {
+            get {
+                return ResourceManager.GetString("SR_Browse", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   查找类似 全部取消 的本地化字符串。
+        /// </summary>
+        public static string SR_CancelAll {
+            get {
+                return ResourceManager.GetString("SR_CancelAll", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   查找类似 取消 的本地化字符串。
+        /// </summary>
+        public static string SR_CancelItem {
+            get {
+                return ResourceManager.GetString("SR_CancelItem", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   查找类似 取消任务中，请稍等…… 的本地化字符串。
+        /// </summary>
+        public static string SR_CancellingTask {
+            get {
+                return ResourceManager.GetString("SR_CancellingTask", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   查找类似 服务器运行时无法更改服务器设置！ 的本地化字符串。
+        /// </summary>
+        public static string SR_CantChangeWhileRunning {
+            get {
+                return ResourceManager.GetString("SR_CantChangeWhileRunning", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   查找类似 无法删除根命令或未选中任何项！ 的本地化字符串。
+        /// </summary>
+        public static string SR_CantDeleteRoot {
+            get {
+                return ResourceManager.GetString("SR_CantDeleteRoot", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   查找类似 无法管理该服务器的模组 的本地化字符串。
+        /// </summary>
+        public static string SR_CantManageMods {
+            get {
+                return ResourceManager.GetString("SR_CantManageMods", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   查找类似 无法管理该服务器的插件 的本地化字符串。
+        /// </summary>
+        public static string SR_CantManagePlugins {
+            get {
+                return ResourceManager.GetString("SR_CantManagePlugins", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   查找类似 更改完毕！ 的本地化字符串。
+        /// </summary>
+        public static string SR_ChangeDone {
+            get {
+                return ResourceManager.GetString("SR_ChangeDone", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   查找类似 修改服务器图标 的本地化字符串。
+        /// </summary>
+        public static string SR_ChangeServerIcon {
+            get {
+                return ResourceManager.GetString("SR_ChangeServerIcon", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   查找类似 更换主世界地图 的本地化字符串。
+        /// </summary>
+        public static string SR_ChangeWorldMap {
+            get {
+                return ResourceManager.GetString("SR_ChangeWorldMap", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   查找类似 检查完毕！ 的本地化字符串。
+        /// </summary>
+        public static string SR_CheckComplete {
+            get {
+                return ResourceManager.GetString("SR_CheckComplete", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   查找类似 正在检查环境变量可用性，请稍等…… 的本地化字符串。
+        /// </summary>
+        public static string SR_CheckingEnvVar {
+            get {
+                return ResourceManager.GetString("SR_CheckingEnvVar", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   查找类似 正在检查所选Java可用性，请稍等…… 的本地化字符串。
+        /// </summary>
+        public static string SR_CheckingJava {
+            get {
+                return ResourceManager.GetString("SR_CheckingJava", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   查找类似 清屏 的本地化字符串。
+        /// </summary>
+        public static string SR_ClearScreen {
+            get {
+                return ResourceManager.GetString("SR_ClearScreen", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   查找类似 清除成功！ 的本地化字符串。
+        /// </summary>
+        public static string SR_ClearSuccess {
+            get {
+                return ResourceManager.GetString("SR_ClearSuccess", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   查找类似 清除任务配置 的本地化字符串。
+        /// </summary>
+        public static string SR_ClearTaskConfig {
+            get {
+                return ResourceManager.GetString("SR_ClearTaskConfig", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   查找类似 点击获取 的本地化字符串。
+        /// </summary>
+        public static string SR_ClickToGet {
+            get {
+                return ResourceManager.GetString("SR_ClickToGet", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   查找类似 检测完成！发现 {0} 个仅客户端模组（已标记为橙色）。
+        ///建议不要将这些模组上传到服务器。 的本地化字符串。
+        /// </summary>
+        public static string SR_ClientModDetectResult {
+            get {
+                return ResourceManager.GetString("SR_ClientModDetectResult", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   查找类似 客户端 的本地化字符串。
+        /// </summary>
+        public static string SR_ClientSide {
+            get {
+                return ResourceManager.GetString("SR_ClientSide", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   查找类似 已关闭 的本地化字符串。
+        /// </summary>
+        public static string SR_Closed {
+            get {
+                return ResourceManager.GetString("SR_Closed", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   查找类似 请关闭服务器后再进行更改！ 的本地化字符串。
+        /// </summary>
+        public static string SR_CloseServerFirst {
+            get {
+                return ResourceManager.GetString("SR_CloseServerFirst", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   查找类似 启用命令补全功能（ConPTY）： 的本地化字符串。
+        /// </summary>
+        public static string SR_CmdCompletion {
+            get {
+                return ResourceManager.GetString("SR_CmdCompletion", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   查找类似 指令不能为空！ 的本地化字符串。
+        /// </summary>
+        public static string SR_CmdEmpty {
+            get {
+                return ResourceManager.GetString("SR_CmdEmpty", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   查找类似 /（指令） 的本地化字符串。
+        /// </summary>
+        public static string SR_CmdHint {
+            get {
+                return ResourceManager.GetString("SR_CmdHint", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   查找类似 指令（如：op，无需 &apos;/&apos; 前缀）： 的本地化字符串。
+        /// </summary>
+        public static string SR_CmdInputHint {
+            get {
+                return ResourceManager.GetString("SR_CmdInputHint", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   查找类似 指令 的本地化字符串。
+        /// </summary>
+        public static string SR_CmdRemark {
+            get {
+                return ResourceManager.GetString("SR_CmdRemark", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   查找类似 指令： 的本地化字符串。
+        /// </summary>
+        public static string SR_CommandLabel {
+            get {
+                return ResourceManager.GetString("SR_CommandLabel", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   查找类似 并发数：1 的本地化字符串。
+        /// </summary>
+        public static string SR_Concurrency1 {
+            get {
+                return ResourceManager.GetString("SR_Concurrency1", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   查找类似 并发数：2 的本地化字符串。
+        /// </summary>
+        public static string SR_Concurrency2 {
+            get {
+                return ResourceManager.GetString("SR_Concurrency2", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   查找类似 并发数：3 的本地化字符串。
+        /// </summary>
+        public static string SR_Concurrency3 {
+            get {
+                return ResourceManager.GetString("SR_Concurrency3", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   查找类似 并发数：4 的本地化字符串。
+        /// </summary>
+        public static string SR_Concurrency4 {
+            get {
+                return ResourceManager.GetString("SR_Concurrency4", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   查找类似 并发数：5 的本地化字符串。
+        /// </summary>
+        public static string SR_Concurrency5 {
+            get {
+                return ResourceManager.GetString("SR_Concurrency5", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   查找类似 并发数：6 的本地化字符串。
+        /// </summary>
+        public static string SR_Concurrency6 {
+            get {
+                return ResourceManager.GetString("SR_Concurrency6", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   查找类似 并发数：7 的本地化字符串。
+        /// </summary>
+        public static string SR_Concurrency7 {
+            get {
+                return ResourceManager.GetString("SR_Concurrency7", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   查找类似 并发数：8 的本地化字符串。
+        /// </summary>
+        public static string SR_Concurrency8 {
+            get {
+                return ResourceManager.GetString("SR_Concurrency8", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   查找类似 确定要封禁这个玩家吗？封禁后该玩家将永远无法进入服务器！
+        ///（原版解封指令：pardon +玩家名字，若添加插件，请使用插件的解封指令） 的本地化字符串。
+        /// </summary>
+        public static string SR_ConfirmBan {
+            get {
+                return ResourceManager.GetString("SR_ConfirmBan", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   查找类似 确定要踢出这个玩家吗？ 的本地化字符串。
+        /// </summary>
+        public static string SR_ConfirmKick {
+            get {
+                return ResourceManager.GetString("SR_ConfirmKick", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   查找类似 控制台 的本地化字符串。
+        /// </summary>
+        public static string SR_Console {
+            get {
+                return ResourceManager.GetString("SR_Console", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   查找类似 复制 的本地化字符串。
+        /// </summary>
+        public static string SR_Copy {
+            get {
+                return ResourceManager.GetString("SR_Copy", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   查找类似 复制信息 的本地化字符串。
+        /// </summary>
+        public static string SR_CopyInfo {
+            get {
+                return ResourceManager.GetString("SR_CopyInfo", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   查找类似 复制成功！ 的本地化字符串。
+        /// </summary>
+        public static string SR_CopySuccess {
+            get {
+                return ResourceManager.GetString("SR_CopySuccess", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   查找类似 已将服务端核心复制到了服务器目录之中，您现在可以将源文件删除了！ 的本地化字符串。
+        /// </summary>
+        public static string SR_CoreCopied {
+            get {
+                return ResourceManager.GetString("SR_CoreCopied", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   查找类似 所选的服务端核心文件并不在服务器目录中，是否将其复制进服务器目录？
+        ///若不复制，请留意勿将核心文件删除！ 的本地化字符串。
+        /// </summary>
+        public static string SR_CoreNotInDir {
+            get {
+                return ResourceManager.GetString("SR_CoreNotInDir", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   查找类似 CPU占用 的本地化字符串。
+        /// </summary>
+        public static string SR_CPUUsage {
+            get {
+                return ResourceManager.GetString("SR_CPUUsage", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   查找类似 分析报告将在服务器关闭后生成！若使用后还是无法解决问题，请尝试进Q群询问（附带日志或日志链接，日志链接可以点击分享日志按钮生成）：
+        ///一群：1145888872  二群：234477679 的本地化字符串。
+        /// </summary>
+        public static string SR_CrashAnalysisInfo {
+            get {
+                return ResourceManager.GetString("SR_CrashAnalysisInfo", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   查找类似 崩溃分析系统 的本地化字符串。
+        /// </summary>
+        public static string SR_CrashAnalysisSystem {
+            get {
+                return ResourceManager.GetString("SR_CrashAnalysisSystem", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   查找类似 崩溃检测 的本地化字符串。
+        /// </summary>
+        public static string SR_CrashDetect {
+            get {
+                return ResourceManager.GetString("SR_CrashDetect", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   查找类似 创建备份 的本地化字符串。
+        /// </summary>
+        public static string SR_CreateBackup {
+            get {
+                return ResourceManager.GetString("SR_CreateBackup", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   查找类似 创造 的本地化字符串。
+        /// </summary>
+        public static string SR_Creative {
+            get {
+                return ResourceManager.GetString("SR_Creative", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   查找类似 Cron表达式： 的本地化字符串。
+        /// </summary>
+        public static string SR_CronExpr {
+            get {
+                return ResourceManager.GetString("SR_CronExpr", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   查找类似 提示：Cron 格式为「秒 分 时 日 月 周」6字段。MSL备份指令为 .backup，可填入指令栏。 的本地化字符串。
+        /// </summary>
+        public static string SR_CronFormatTip {
+            get {
+                return ResourceManager.GetString("SR_CronFormatTip", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   查找类似 提示：使用标准Cron表达式，如 0 */30 * * * 表示每30分钟 的本地化字符串。
+        /// </summary>
+        public static string SR_CronHint {
+            get {
+                return ResourceManager.GetString("SR_CronHint", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   查找类似 ✗ 无效 的本地化字符串。
+        /// </summary>
+        public static string SR_CronInvalid {
+            get {
+                return ResourceManager.GetString("SR_CronInvalid", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   查找类似 Cron 表达式无效，请检查后重试！ 的本地化字符串。
+        /// </summary>
+        public static string SR_CronInvalidDialog {
+            get {
+                return ResourceManager.GetString("SR_CronInvalidDialog", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   查找类似 ✓ 有效，下次执行:  的本地化字符串。
+        /// </summary>
+        public static string SR_CronValid {
+            get {
+                return ResourceManager.GetString("SR_CronValid", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   查找类似 当前状态： 的本地化字符串。
+        /// </summary>
+        public static string SR_CurrentStatus {
+            get {
+                return ResourceManager.GetString("SR_CurrentStatus", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   查找类似 自定义启动参数: 的本地化字符串。
+        /// </summary>
+        public static string SR_CustomArgs {
+            get {
+                return ResourceManager.GetString("SR_CustomArgs", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   查找类似 提示：您正在使用自定义参数模式哦~ 的本地化字符串。
+        /// </summary>
+        public static string SR_CustomArgsHint {
+            get {
+                return ResourceManager.GetString("SR_CustomArgsHint", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   查找类似 自定义备份路径为空！ 的本地化字符串。
+        /// </summary>
+        public static string SR_CustomBackupPathEmpty {
+            get {
+                return ResourceManager.GetString("SR_CustomBackupPathEmpty", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   查找类似 自定义备份路径： 的本地化字符串。
+        /// </summary>
+        public static string SR_CustomBackupPathLabel {
+            get {
+                return ResourceManager.GetString("SR_CustomBackupPathLabel", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   查找类似 自定义备份路径不合法！ 的本地化字符串。
+        /// </summary>
+        public static string SR_CustomPathInvalid {
+            get {
+                return ResourceManager.GetString("SR_CustomPathInvalid", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   查找类似 仪表盘 的本地化字符串。
+        /// </summary>
+        public static string SR_Dashboard {
+            get {
+                return ResourceManager.GetString("SR_Dashboard", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   查找类似 仪表盘功能： 的本地化字符串。
+        /// </summary>
+        public static string SR_DashboardFunc {
+            get {
+                return ResourceManager.GetString("SR_DashboardFunc", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   查找类似 开始深度检测 的本地化字符串。
+        /// </summary>
+        public static string SR_DeepDetect {
+            get {
+                return ResourceManager.GetString("SR_DeepDetect", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   查找类似 删除 的本地化字符串。
+        /// </summary>
+        public static string SR_Delete {
+            get {
+                return ResourceManager.GetString("SR_Delete", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   查找类似 删除所有任务 的本地化字符串。
+        /// </summary>
+        public static string SR_DeleteAllTasks {
+            get {
+                return ResourceManager.GetString("SR_DeleteAllTasks", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   查找类似 删除所选模组 的本地化字符串。
+        /// </summary>
+        public static string SR_DeleteMod {
+            get {
+                return ResourceManager.GetString("SR_DeleteMod", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   查找类似 删除所选插件 的本地化字符串。
+        /// </summary>
+        public static string SR_DeletePlugin {
+            get {
+                return ResourceManager.GetString("SR_DeletePlugin", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   查找类似 删除所选任务 的本地化字符串。
+        /// </summary>
+        public static string SR_DeleteSelectedTask {
+            get {
+                return ResourceManager.GetString("SR_DeleteSelectedTask", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   查找类似 检测客户端模组 的本地化字符串。
+        /// </summary>
+        public static string SR_DetectClientMods {
+            get {
+                return ResourceManager.GetString("SR_DetectClientMods", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   查找类似 检测结果 的本地化字符串。
+        /// </summary>
+        public static string SR_DetectResult {
+            get {
+                return ResourceManager.GetString("SR_DetectResult", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   查找类似 检测到您更改了服务器目录，是否将当前的服务器目录移动至新的目录？ 的本地化字符串。
+        /// </summary>
+        public static string SR_DirChanged {
+            get {
+                return ResourceManager.GetString("SR_DirChanged", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   查找类似 已禁用 的本地化字符串。
+        /// </summary>
+        public static string SR_Disabled {
+            get {
+                return ResourceManager.GetString("SR_Disabled", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   查找类似 已关闭 的本地化字符串。
+        /// </summary>
+        public static string SR_DisabledLower {
+            get {
+                return ResourceManager.GetString("SR_DisabledLower", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   查找类似 关闭正版验证 的本地化字符串。
+        /// </summary>
+        public static string SR_DisableOnlineMode {
+            get {
+                return ResourceManager.GetString("SR_DisableOnlineMode", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   查找类似 关闭此功能后，输出预览功能也将同时关闭！ 的本地化字符串。
+        /// </summary>
+        public static string SR_DisableOutputPreview {
+            get {
+                return ResourceManager.GetString("SR_DisableOutputPreview", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   查找类似 下载 的本地化字符串。
+        /// </summary>
+        public static string SR_Download {
+            get {
+                return ResourceManager.GetString("SR_Download", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   查找类似 下载取消！ 的本地化字符串。
+        /// </summary>
+        public static string SR_DownloadCancelled {
+            get {
+                return ResourceManager.GetString("SR_DownloadCancelled", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   查找类似 下载外置登录库文件失败，请检查网络连接或稍后重试！ 的本地化字符串。
+        /// </summary>
+        public static string SR_DownloadFailed {
+            get {
+                return ResourceManager.GetString("SR_DownloadFailed", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   查找类似 下载失败！ 的本地化字符串。
+        /// </summary>
+        public static string SR_DownloadFailedMsg {
+            get {
+                return ResourceManager.GetString("SR_DownloadFailedMsg", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   查找类似 下载失败！ 的本地化字符串。
+        /// </summary>
+        public static string SR_DownloadFailedSimple {
+            get {
+                return ResourceManager.GetString("SR_DownloadFailedSimple", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   查找类似 下载中…… 的本地化字符串。
+        /// </summary>
+        public static string SR_Downloading {
+            get {
+                return ResourceManager.GetString("SR_Downloading", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   查找类似 正在下载:  的本地化字符串。
+        /// </summary>
+        public static string SR_DownloadingLabel {
+            get {
+                return ResourceManager.GetString("SR_DownloadingLabel", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   查找类似 下载项 的本地化字符串。
+        /// </summary>
+        public static string SR_DownloadItem {
+            get {
+                return ResourceManager.GetString("SR_DownloadItem", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   查找类似 下载模组 的本地化字符串。
+        /// </summary>
+        public static string SR_DownloadMod {
+            get {
+                return ResourceManager.GetString("SR_DownloadMod", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   查找类似 下载插件 的本地化字符串。
+        /// </summary>
+        public static string SR_DownloadPlugin {
+            get {
+                return ResourceManager.GetString("SR_DownloadPlugin", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   查找类似 下载服务端 的本地化字符串。
+        /// </summary>
+        public static string SR_DownloadServer {
+            get {
+                return ResourceManager.GetString("SR_DownloadServer", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   查找类似 简单 的本地化字符串。
+        /// </summary>
+        public static string SR_Easy {
+            get {
+                return ResourceManager.GetString("SR_Easy", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   查找类似 已开启 的本地化字符串。
+        /// </summary>
+        public static string SR_Enabled {
+            get {
+                return ResourceManager.GetString("SR_Enabled", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   查找类似 已开启 的本地化字符串。
+        /// </summary>
+        public static string SR_EnabledLower {
+            get {
+                return ResourceManager.GetString("SR_EnabledLower", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   查找类似 编码更改已生效！ 的本地化字符串。
+        /// </summary>
+        public static string SR_EncodingChanged {
+            get {
+                return ResourceManager.GetString("SR_EncodingChanged", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   查找类似 MSL检测到您的服务器输出了乱码日志，是否将服务器输出编码更改为&quot;{0}&quot;？
+        ///点击确定后将自动更改编码并重启服务器（注意：软件会强制关闭服务器进程，若害怕服务器数据丢失，可先手动关服，然后再点击确定按钮）。 的本地化字符串。
+        /// </summary>
+        public static string SR_EncodingChangeMsg {
+            get {
+                return ResourceManager.GetString("SR_EncodingChangeMsg", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   查找类似 编码已更改，重启服务器后生效！ 的本地化字符串。
+        /// </summary>
+        public static string SR_EncodingRestartRequired {
+            get {
+                return ResourceManager.GetString("SR_EncodingRestartRequired", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   查找类似 检测失败，您的环境变量似乎不存在！ 的本地化字符串。
+        /// </summary>
+        public static string SR_EnvVarFailed {
+            get {
+                return ResourceManager.GetString("SR_EnvVarFailed", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   查找类似 检查完毕，您的环境变量正常！ 的本地化字符串。
+        /// </summary>
+        public static string SR_EnvVarOK {
+            get {
+                return ResourceManager.GetString("SR_EnvVarOK", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   查找类似 错误: {0} 的本地化字符串。
+        /// </summary>
+        public static string SR_ErrorPrefix {
+            get {
+                return ResourceManager.GetString("SR_ErrorPrefix", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   查找类似 出现错误，请手动修改eula文件或重试: 的本地化字符串。
+        /// </summary>
+        public static string SR_EulaError {
+            get {
+                return ResourceManager.GetString("SR_EulaError", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   查找类似 每10秒 的本地化字符串。
+        /// </summary>
+        public static string SR_Every10Sec {
+            get {
+                return ResourceManager.GetString("SR_Every10Sec", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   查找类似 每30分钟 的本地化字符串。
+        /// </summary>
+        public static string SR_Every30Min {
+            get {
+                return ResourceManager.GetString("SR_Every30Min", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   查找类似 每5分钟 的本地化字符串。
+        /// </summary>
+        public static string SR_Every5Min {
+            get {
+                return ResourceManager.GetString("SR_Every5Min", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   查找类似 每天凌晨3点 的本地化字符串。
+        /// </summary>
+        public static string SR_EveryDay3AM {
+            get {
+                return ResourceManager.GetString("SR_EveryDay3AM", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   查找类似 每小时 的本地化字符串。
+        /// </summary>
+        public static string SR_EveryHour {
+            get {
+                return ResourceManager.GetString("SR_EveryHour", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   查找类似 每分钟 的本地化字符串。
+        /// </summary>
+        public static string SR_EveryMin {
+            get {
+                return ResourceManager.GetString("SR_EveryMin", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   查找类似 每周日凌晨3点 的本地化字符串。
+        /// </summary>
+        public static string SR_EverySun3AM {
+            get {
+                return ResourceManager.GetString("SR_EverySun3AM", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   查找类似 无法以共享只读模式打开文件 &apos;{0}&apos;。服务器施加了排他锁。错误: {1} 的本地化字符串。
+        /// </summary>
+        public static string SR_ExclusiveLockError {
+            get {
+                return ResourceManager.GetString("SR_ExclusiveLockError", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   查找类似 执行失败， 的本地化字符串。
+        /// </summary>
+        public static string SR_ExecFailedPrefix {
+            get {
+                return ResourceManager.GetString("SR_ExecFailedPrefix", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   查找类似 执行失败: {0}  时间： 的本地化字符串。
+        /// </summary>
+        public static string SR_ExecFailedTime {
+            get {
+                return ResourceManager.GetString("SR_ExecFailedTime", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   查找类似 执行成功  时间： 的本地化字符串。
+        /// </summary>
+        public static string SR_ExecSuccessTime {
+            get {
+                return ResourceManager.GetString("SR_ExecSuccessTime", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   查找类似 EXE文件|*.exe|所有文件类型|*.* 的本地化字符串。
+        /// </summary>
+        public static string SR_ExeFileFilter {
+            get {
+                return ResourceManager.GetString("SR_ExeFileFilter", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   查找类似 获取中 的本地化字符串。
+        /// </summary>
+        public static string SR_Fetching {
+            get {
+                return ResourceManager.GetString("SR_Fetching", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   查找类似 正在获取补全... 的本地化字符串。
+        /// </summary>
+        public static string SR_FetchingCompletion {
+            get {
+                return ResourceManager.GetString("SR_FetchingCompletion", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   查找类似 获取中，请稍后…… 的本地化字符串。
+        /// </summary>
+        public static string SR_FetchingWait {
+            get {
+                return ResourceManager.GetString("SR_FetchingWait", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   查找类似 文件已存在，下载完成 的本地化字符串。
+        /// </summary>
+        public static string SR_FileExistsDownloadDone {
+            get {
+                return ResourceManager.GetString("SR_FileExistsDownloadDone", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   查找类似 强制关服时结束进程树（仅在非ConPTY环境下生效）： 的本地化字符串。
+        /// </summary>
+        public static string SR_ForceKillProcTree {
+            get {
+                return ResourceManager.GetString("SR_ForceKillProcTree", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   查找类似 强制服务器文件UTF8编码： 的本地化字符串。
+        /// </summary>
+        public static string SR_ForceUTF8 {
+            get {
+                return ResourceManager.GetString("SR_ForceUTF8", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   查找类似 您选择的服务端是forge安装器，是否将其展开安装？
+        ///如果不展开安装，服务器可能无法开启！ 的本地化字符串。
+        /// </summary>
+        public static string SR_ForgeInstaller {
+            get {
+                return ResourceManager.GetString("SR_ForgeInstaller", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   查找类似 未找到Forge安装日志！ 的本地化字符串。
+        /// </summary>
+        public static string SR_ForgeLogNotFound {
+            get {
+                return ResourceManager.GetString("SR_ForgeLogNotFound", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   查找类似 Forge安装日志上传失败！ 的本地化字符串。
+        /// </summary>
+        public static string SR_ForgeLogUploadFail {
+            get {
+                return ResourceManager.GetString("SR_ForgeLogUploadFail", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   查找类似 格式化的日志头信息： 的本地化字符串。
+        /// </summary>
+        public static string SR_FormatLogHeader {
+            get {
+                return ResourceManager.GetString("SR_FormatLogHeader", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   查找类似 游戏难度说明（请根据配置文件的格式进行选择） 的本地化字符串。
+        /// </summary>
+        public static string SR_GameDiffDesc {
+            get {
+                return ResourceManager.GetString("SR_GameDiffDesc", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   查找类似 游戏难度 的本地化字符串。
+        /// </summary>
+        public static string SR_GameDifficulty {
+            get {
+                return ResourceManager.GetString("SR_GameDifficulty", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   查找类似 游戏模式 的本地化字符串。
+        /// </summary>
+        public static string SR_GameMode {
+            get {
+                return ResourceManager.GetString("SR_GameMode", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   查找类似 游戏模式说明（请根据配置文件的格式进行选择） 的本地化字符串。
+        /// </summary>
+        public static string SR_GameModeDesc {
+            get {
+                return ResourceManager.GetString("SR_GameModeDesc", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   查找类似 出现错误！请重试: 的本地化字符串。
+        /// </summary>
+        public static string SR_GeneralError {
+            get {
+                return ResourceManager.GetString("SR_GeneralError", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   查找类似 生成启动脚本 的本地化字符串。
+        /// </summary>
+        public static string SR_GenLaunchScript {
+            get {
+                return ResourceManager.GetString("SR_GenLaunchScript", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   查找类似 获取Java地址…… 的本地化字符串。
+        /// </summary>
+        public static string SR_GettingJavaPath {
+            get {
+                return ResourceManager.GetString("SR_GettingJavaPath", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   查找类似 困难 的本地化字符串。
+        /// </summary>
+        public static string SR_Hard {
+            get {
+                return ResourceManager.GetString("SR_Hard", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   查找类似 检测到您没有关闭服务器，是否隐藏此窗口？
+        ///如要重新显示此窗口，请在服务器列表内双击该服务器（或点击开启服务器按钮） 的本地化字符串。
+        /// </summary>
+        public static string SR_HideWindowConfirm {
+            get {
+                return ResourceManager.GetString("SR_HideWindowConfirm", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   查找类似 输入你想高亮日志的关键字 的本地化字符串。
+        /// </summary>
+        public static string SR_HighlightInput {
+            get {
+                return ResourceManager.GetString("SR_HighlightInput", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   查找类似 高亮关键字日志 的本地化字符串。
+        /// </summary>
+        public static string SR_HighlightKeywordLog {
+            get {
+                return ResourceManager.GetString("SR_HighlightKeywordLog", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   查找类似 加载服务器Icon失败。 的本地化字符串。
+        /// </summary>
+        public static string SR_IconLoadFailed {
+            get {
+                return ResourceManager.GetString("SR_IconLoadFailed", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   查找类似 输入 的本地化字符串。
+        /// </summary>
+        public static string SR_Input {
+            get {
+                return ResourceManager.GetString("SR_Input", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   查找类似 输入编码： 的本地化字符串。
+        /// </summary>
+        public static string SR_InputEncoding {
+            get {
+                return ResourceManager.GetString("SR_InputEncoding", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   查找类似 实例存放目录： 的本地化字符串。
+        /// </summary>
+        public static string SR_InstanceDir {
+            get {
+                return ResourceManager.GetString("SR_InstanceDir", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   查找类似 实例信息 的本地化字符串。
+        /// </summary>
+        public static string SR_InstanceInfo {
+            get {
+                return ResourceManager.GetString("SR_InstanceInfo", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   查找类似 实例名称： 的本地化字符串。
+        /// </summary>
+        public static string SR_InstanceName {
+            get {
+                return ResourceManager.GetString("SR_InstanceName", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   查找类似 实例设置 的本地化字符串。
+        /// </summary>
+        public static string SR_InstanceSettings {
+            get {
+                return ResourceManager.GetString("SR_InstanceSettings", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   查找类似 实例设置 的本地化字符串。
+        /// </summary>
+        public static string SR_InstanceSettingsCard {
+            get {
+                return ResourceManager.GetString("SR_InstanceSettingsCard", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   查找类似 出现错误，您当前的网络可能没有IPV6支持
+        ///您可上网搜索IPV6开启教程或联系运营商以获取帮助
+        ///错误信息： 的本地化字符串。
+        /// </summary>
+        public static string SR_IPv6Failed {
+            get {
+                return ResourceManager.GetString("SR_IPv6Failed", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   查找类似 获取IPV6地址失败！ 的本地化字符串。
+        /// </summary>
+        public static string SR_IPv6FailedTitle {
+            get {
+                return ResourceManager.GetString("SR_IPv6FailedTitle", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   查找类似 您的IPV6公网地址是：{0}
+        ///已经帮您复制到剪贴板啦！
+        ///注意：IPV6地址格式是：[IP]:端口
+        ///若无法使用IPV6连接，请检查：
+        ///-连接方是否有IPV6地址
+        ///-防火墙是否拦截 的本地化字符串。
+        /// </summary>
+        public static string SR_IPv6Success {
+            get {
+                return ResourceManager.GetString("SR_IPv6Success", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   查找类似 成功获取IPV6公网地址！ 的本地化字符串。
+        /// </summary>
+        public static string SR_IPv6SuccessTitle {
+            get {
+                return ResourceManager.GetString("SR_IPv6SuccessTitle", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   查找类似 JAR文件|*.jar|所有文件类型|*.* 的本地化字符串。
+        /// </summary>
+        public static string SR_JarFileFilter {
+            get {
+                return ResourceManager.GetString("SR_JarFileFilter", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   查找类似 检测完毕，Java可用！
+        ///版本： 的本地化字符串。
+        /// </summary>
+        public static string SR_JavaAvailable {
+            get {
+                return ResourceManager.GetString("SR_JavaAvailable", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   查找类似 检测Java可用性失败，您的Java似乎不可用！请检查是否选择正确！ 的本地化字符串。
+        /// </summary>
+        public static string SR_JavaCheckFailed {
+            get {
+                return ResourceManager.GetString("SR_JavaCheckFailed", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   查找类似 即将开始检测电脑上的Java，此过程可能需要一些时间，请耐心等待。
+        ///目前有两种检测模式，一种是简单检测，只检测一些关键目录，用时较少，普通用户可优先使用此模式。
+        ///第二种是深度检测，将检测所有磁盘的所有目录，耗时可能会很久，请慎重选择！ 的本地化字符串。
+        /// </summary>
+        public static string SR_JavaDetectIntro {
+            get {
+                return ResourceManager.GetString("SR_JavaDetectIntro", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   查找类似 Java下载完成！ 的本地化字符串。
+        /// </summary>
+        public static string SR_JavaDownloadDone {
+            get {
+                return ResourceManager.GetString("SR_JavaDownloadDone", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   查找类似 Java地址： 的本地化字符串。
+        /// </summary>
+        public static string SR_JavaPath {
+            get {
+                return ResourceManager.GetString("SR_JavaPath", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   查找类似 服务器JVM参数： 的本地化字符串。
+        /// </summary>
+        public static string SR_JvmArgs {
+            get {
+                return ResourceManager.GetString("SR_JvmArgs", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   查找类似 提示：一般格式为 -参数，如 -Dlog4j2.formatMsgNoLookups=true，非必要无需填写 的本地化字符串。
+        /// </summary>
+        public static string SR_JvmArgsHint {
+            get {
+                return ResourceManager.GetString("SR_JvmArgsHint", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   查找类似 踢出玩家 的本地化字符串。
+        /// </summary>
+        public static string SR_KickPlayer {
+            get {
+                return ResourceManager.GetString("SR_KickPlayer", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   查找类似 上次执行： 的本地化字符串。
+        /// </summary>
+        public static string SR_LastExec {
+            get {
+                return ResourceManager.GetString("SR_LastExec", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   查找类似 已开服 的本地化字符串。
+        /// </summary>
+        public static string SR_Launched {
+            get {
+                return ResourceManager.GetString("SR_Launched", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   查找类似 开服中，请稍等…… 的本地化字符串。
+        /// </summary>
+        public static string SR_Launching {
+            get {
+                return ResourceManager.GetString("SR_Launching", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   查找类似 正在开启服务器，请稍等... 的本地化字符串。
+        /// </summary>
+        public static string SR_LaunchingServer {
+            get {
+                return ResourceManager.GetString("SR_LaunchingServer", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   查找类似 加载成功！ 的本地化字符串。
+        /// </summary>
+        public static string SR_LoadSuccess {
+            get {
+                return ResourceManager.GetString("SR_LoadSuccess", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   查找类似 加载任务配置 的本地化字符串。
+        /// </summary>
+        public static string SR_LoadTaskConfig {
+            get {
+                return ResourceManager.GetString("SR_LoadTaskConfig", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   查找类似 本地进入IP 的本地化字符串。
+        /// </summary>
+        public static string SR_LocalIP {
+            get {
+                return ResourceManager.GetString("SR_LocalIP", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   查找类似 电脑上的Java 的本地化字符串。
+        /// </summary>
+        public static string SR_LocalJava {
+            get {
+                return ResourceManager.GetString("SR_LocalJava", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   查找类似 日志分析 的本地化字符串。
+        /// </summary>
+        public static string SR_LogAnalysis {
+            get {
+                return ResourceManager.GetString("SR_LogAnalysis", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   查找类似 日志为空，请重试！ 的本地化字符串。
+        /// </summary>
+        public static string SR_LogEmpty {
+            get {
+                return ResourceManager.GetString("SR_LogEmpty", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   查找类似 日志输出 的本地化字符串。
+        /// </summary>
+        public static string SR_LogOutput {
+            get {
+                return ResourceManager.GetString("SR_LogOutput", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   查找类似 日志输出： 的本地化字符串。
+        /// </summary>
+        public static string SR_LogOutputLabel {
+            get {
+                return ResourceManager.GetString("SR_LogOutputLabel", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   查找类似 请求失败：可能由于日志过大，请尝试手动上传日志或使用其他模式！
+        ///{0}
+        ///点击确定将使用其他模式进行上传 的本地化字符串。
+        /// </summary>
+        public static string SR_LogUploadBigFail {
+            get {
+                return ResourceManager.GetString("SR_LogUploadBigFail", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   查找类似 请求失败: 可能日志过大，请尝试手动上传日志！
+        ///{0} 的本地化字符串。
+        /// </summary>
+        public static string SR_LogUploadManualFail {
+            get {
+                return ResourceManager.GetString("SR_LogUploadManualFail", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   查找类似 管理服务器模组 的本地化字符串。
+        /// </summary>
+        public static string SR_ManageMods {
+            get {
+                return ResourceManager.GetString("SR_ManageMods", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   查找类似 管理服务器插件 的本地化字符串。
+        /// </summary>
+        public static string SR_ManagePlugins {
+            get {
+                return ResourceManager.GetString("SR_ManagePlugins", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   查找类似 手动选择Java 的本地化字符串。
+        /// </summary>
+        public static string SR_ManualJava {
+            get {
+                return ResourceManager.GetString("SR_ManualJava", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   查找类似 商城 的本地化字符串。
+        /// </summary>
+        public static string SR_Marketplace {
+            get {
+                return ResourceManager.GetString("SR_Marketplace", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   查找类似 最大备份数量必须大于等于0！ 的本地化字符串。
+        /// </summary>
+        public static string SR_MaxBackupGE0 {
+            get {
+                return ResourceManager.GetString("SR_MaxBackupGE0", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   查找类似 最大备份数量 (填0为不限制)： 的本地化字符串。
+        /// </summary>
+        public static string SR_MaxBackups {
+            get {
+                return ResourceManager.GetString("SR_MaxBackups", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   查找类似 开启Minecraft服务器需要接受Mojang的EULA，
+        ///是否仔细阅读EULA条款（https://aka.ms/MinecraftEULA）并继续开服？ 的本地化字符串。
+        /// </summary>
+        public static string SR_MCEulaPrompt {
+            get {
+                return ResourceManager.GetString("SR_MCEulaPrompt", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   查找类似 内存：自动分配 的本地化字符串。
+        /// </summary>
+        public static string SR_MemAutoAlloc {
+            get {
+                return ResourceManager.GetString("SR_MemAutoAlloc", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   查找类似 总内存: {0}G
+        ///已使用: {1}G
+        ///可使用: {2}G 的本地化字符串。
+        /// </summary>
+        public static string SR_MemInfoFormat {
+            get {
+                return ResourceManager.GetString("SR_MemInfoFormat", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   查找类似 最小:{0}M,最大:{1}M 的本地化字符串。
+        /// </summary>
+        public static string SR_MemMinMax {
+            get {
+                return ResourceManager.GetString("SR_MemMinMax", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   查找类似 解析内存参数失败 的本地化字符串。
+        /// </summary>
+        public static string SR_MemParseFailed {
+            get {
+                return ResourceManager.GetString("SR_MemParseFailed", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   查找类似 内存占用 的本地化字符串。
+        /// </summary>
+        public static string SR_MemUsage {
+            get {
+                return ResourceManager.GetString("SR_MemUsage", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   查找类似 模组 的本地化字符串。
+        /// </summary>
+        public static string SR_Mod {
+            get {
+                return ResourceManager.GetString("SR_Mod", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   查找类似 服务器需要添加的模组和客户端要添加的模组有所不同，增加方块、实体、玩法的MOD，是服务器需要安装的（也就是服务端和客户端都需要安装），而小地图、皮肤补丁、输入补丁、优化MOD、视觉显示类的MOD，服务器是一定不需要安装的（也就是只能加在客户端里）
+        ///点击确定查看详细区分方法 的本地化字符串。
+        /// </summary>
+        public static string SR_ModDescTip {
+            get {
+                return ResourceManager.GetString("SR_ModDescTip", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   查找类似 修改完毕，请重新开启服务器！ 的本地化字符串。
+        /// </summary>
+        public static string SR_ModifyDone {
+            get {
+                return ResourceManager.GetString("SR_ModifyDone", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   查找类似 模组列表 的本地化字符串。
+        /// </summary>
+        public static string SR_ModList {
+            get {
+                return ResourceManager.GetString("SR_ModList", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   查找类似 模组名称 的本地化字符串。
+        /// </summary>
+        public static string SR_ModName {
+            get {
+                return ResourceManager.GetString("SR_ModName", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   查找类似 (模组变动在服务器重启后生效) 的本地化字符串。
+        /// </summary>
+        public static string SR_ModRestartHint {
+            get {
+                return ResourceManager.GetString("SR_ModRestartHint", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   查找类似 更多操作 的本地化字符串。
+        /// </summary>
+        public static string SR_MoreActions {
+            get {
+                return ResourceManager.GetString("SR_MoreActions", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   查找类似 修改更多配置 的本地化字符串。
+        /// </summary>
+        public static string SR_MoreConfig {
+            get {
+                return ResourceManager.GetString("SR_MoreConfig", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   查找类似 更多功能 的本地化字符串。
+        /// </summary>
+        public static string SR_MoreFeatures {
+            get {
+                return ResourceManager.GetString("SR_MoreFeatures", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   查找类似 NeoForge安装器 的本地化字符串。
+        /// </summary>
+        public static string SR_NeoForgeInstaller {
+            get {
+                return ResourceManager.GetString("SR_NeoForgeInstaller", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   查找类似 出现错误，请检查网络连接！ 的本地化字符串。
+        /// </summary>
+        public static string SR_NetworkError {
+            get {
+                return ResourceManager.GetString("SR_NetworkError", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   查找类似 服务器开启后，通常远程的小伙伴是无法进入的，您需要进行内网映射才可让他人进入。开服器内置有免费的内网映射，您可点击主界面左侧的&quot;内网映射&quot;按钮查看详情并进行配置。 的本地化字符串。
+        /// </summary>
+        public static string SR_NetworkMappingTip {
+            get {
+                return ResourceManager.GetString("SR_NetworkMappingTip", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   查找类似 未检测到明确声明为仅客户端的模组。 的本地化字符串。
+        /// </summary>
+        public static string SR_NoClientMods {
+            get {
+                return ResourceManager.GetString("SR_NoClientMods", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   查找类似 暂未找到Java 的本地化字符串。
+        /// </summary>
+        public static string SR_NoJavaFound {
+            get {
+                return ResourceManager.GetString("SR_NoJavaFound", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   查找类似 未找到mods文件夹！ 的本地化字符串。
+        /// </summary>
+        public static string SR_NoModsFolder {
+            get {
+                return ResourceManager.GetString("SR_NoModsFolder", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   查找类似 未检测到mods文件夹，您所使用的服务端核心支持加载模组吗？
+        ///请重启服务器并检查所用服务端是否支持相应功能后再试 的本地化字符串。
+        /// </summary>
+        public static string SR_NoModsFolderDesc {
+            get {
+                return ResourceManager.GetString("SR_NoModsFolderDesc", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   查找类似 无 的本地化字符串。
+        /// </summary>
+        public static string SR_NoneText {
+            get {
+                return ResourceManager.GetString("SR_NoneText", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   查找类似 未检测到plugins文件夹，您所使用的服务端核心支持加载插件吗？
+        ///请重启服务器并检查所用服务端是否支持相应功能后再试 的本地化字符串。
+        /// </summary>
+        public static string SR_NoPluginsFolder {
+            get {
+                return ResourceManager.GetString("SR_NoPluginsFolder", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   查找类似 普通 的本地化字符串。
+        /// </summary>
+        public static string SR_Normal {
+            get {
+                return ResourceManager.GetString("SR_Normal", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   查找类似 由于用户拒绝更新或检测更新失败，此版本可能并非最新版本 的本地化字符串。
+        /// </summary>
+        public static string SR_NotLatestVersion {
+            get {
+                return ResourceManager.GetString("SR_NotLatestVersion", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   查找类似 未找到任何世界存档文件夹（包括主世界、下界、末地），备份失败！ 的本地化字符串。
+        /// </summary>
+        public static string SR_NoWorldFolder {
+            get {
+                return ResourceManager.GetString("SR_NoWorldFolder", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   查找类似 开服器在线下载 的本地化字符串。
+        /// </summary>
+        public static string SR_OnlineDownload {
+            get {
+                return ResourceManager.GetString("SR_OnlineDownload", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   查找类似 正版验证： 的本地化字符串。
+        /// </summary>
+        public static string SR_OnlineMode {
+            get {
+                return ResourceManager.GetString("SR_OnlineMode", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   查找类似 检测到您关闭了正版验证，若没有采取相关措施来保护服务器（如添加登录插件等），服务器会有被入侵的风险，请务必注意！ 的本地化字符串。
+        /// </summary>
+        public static string SR_OnlineModeClosedWarn {
+            get {
+                return ResourceManager.GetString("SR_OnlineModeClosedWarn", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   查找类似 出现错误，您确定您的服务器启动过一次吗？请手动修改server.properties文件或重试: 的本地化字符串。
+        /// </summary>
+        public static string SR_OnlineModeError {
+            get {
+                return ResourceManager.GetString("SR_OnlineModeError", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   查找类似 检测到您正在使用第三方外置登录验证，请确保客户端均采用第三方外置登录进入游戏，否则将无法进入服务器哦！ 的本地化字符串。
+        /// </summary>
+        public static string SR_OnlineModeThirdParty {
+            get {
+                return ResourceManager.GetString("SR_OnlineModeThirdParty", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   查找类似 检测到您配置了外置登录且关闭了正版验证，这样做是无效的！！！请您打开正版验证！！！ 的本地化字符串。
+        /// </summary>
+        public static string SR_OnlineModeThirdPartyClosed {
+            get {
+                return ResourceManager.GetString("SR_OnlineModeThirdPartyClosed", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   查找类似 检测到您没有关闭正版验证，如果客户端为离线登录的话，请点击&quot;更多功能&quot;里&quot;关闭正版验证&quot;按钮以关闭正版验证。否则离线账户将无法进入服务器！ 的本地化字符串。
+        /// </summary>
+        public static string SR_OnlineModeWarn {
+            get {
+                return ResourceManager.GetString("SR_OnlineModeWarn", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   查找类似 打开备份文件夹 的本地化字符串。
+        /// </summary>
+        public static string SR_OpenBackupDir {
+            get {
+                return ResourceManager.GetString("SR_OpenBackupDir", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   查找类似 打开备份文件夹失败！ 的本地化字符串。
+        /// </summary>
+        public static string SR_OpenBackupFailed {
+            get {
+                return ResourceManager.GetString("SR_OpenBackupFailed", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   查找类似 打开文件夹 的本地化字符串。
+        /// </summary>
+        public static string SR_OpenFolder {
+            get {
+                return ResourceManager.GetString("SR_OpenFolder", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   查找类似 正在为您打开服务器目录…… 的本地化字符串。
+        /// </summary>
+        public static string SR_OpeningServerDir {
+            get {
+                return ResourceManager.GetString("SR_OpeningServerDir", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   查找类似 打开模组文件夹 的本地化字符串。
+        /// </summary>
+        public static string SR_OpenModDir {
+            get {
+                return ResourceManager.GetString("SR_OpenModDir", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   查找类似 打开插件文件夹 的本地化字符串。
+        /// </summary>
+        public static string SR_OpenPluginDir {
+            get {
+                return ResourceManager.GetString("SR_OpenPluginDir", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   查找类似 打开服务器目录 的本地化字符串。
+        /// </summary>
+        public static string SR_OpenServerDir {
+            get {
+                return ResourceManager.GetString("SR_OpenServerDir", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   查找类似 操作失败！ 的本地化字符串。
+        /// </summary>
+        public static string SR_OperationFailed {
+            get {
+                return ResourceManager.GetString("SR_OperationFailed", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   查找类似 其它功能项： 的本地化字符串。
+        /// </summary>
+        public static string SR_OtherFeatures {
+            get {
+                return ResourceManager.GetString("SR_OtherFeatures", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   查找类似 输出编码： 的本地化字符串。
+        /// </summary>
+        public static string SR_OutputEncoding {
+            get {
+                return ResourceManager.GetString("SR_OutputEncoding", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   查找类似 解析失败 的本地化字符串。
+        /// </summary>
+        public static string SR_ParseFailed {
+            get {
+                return ResourceManager.GetString("SR_ParseFailed", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   查找类似 暂停 的本地化字符串。
+        /// </summary>
+        public static string SR_Pause {
+            get {
+                return ResourceManager.GetString("SR_Pause", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   查找类似 全部暂停 的本地化字符串。
+        /// </summary>
+        public static string SR_PauseAll {
+            get {
+                return ResourceManager.GetString("SR_PauseAll", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   查找类似 已暂停 的本地化字符串。
+        /// </summary>
+        public static string SR_Paused {
+            get {
+                return ResourceManager.GetString("SR_Paused", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   查找类似 和平 的本地化字符串。
+        /// </summary>
+        public static string SR_Peaceful {
+            get {
+                return ResourceManager.GetString("SR_Peaceful", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   查找类似 玩家列表 的本地化字符串。
+        /// </summary>
+        public static string SR_PlayerList {
+            get {
+                return ResourceManager.GetString("SR_PlayerList", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   查找类似 请输入内容！ 的本地化字符串。
+        /// </summary>
+        public static string SR_PleaseInputContent {
+            get {
+                return ResourceManager.GetString("SR_PleaseInputContent", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   查找类似 请稍等…… 的本地化字符串。
+        /// </summary>
+        public static string SR_PleaseWait {
+            get {
+                return ResourceManager.GetString("SR_PleaseWait", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   查找类似 插件 的本地化字符串。
+        /// </summary>
+        public static string SR_Plugin {
+            get {
+                return ResourceManager.GetString("SR_Plugin", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   查找类似 插件列表 的本地化字符串。
+        /// </summary>
+        public static string SR_PluginList {
+            get {
+                return ResourceManager.GetString("SR_PluginList", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   查找类似 插件名称 的本地化字符串。
+        /// </summary>
+        public static string SR_PluginName {
+            get {
+                return ResourceManager.GetString("SR_PluginName", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   查找类似 (插件变动在服务器重启后生效) 的本地化字符串。
+        /// </summary>
+        public static string SR_PluginRestartHint {
+            get {
+                return ResourceManager.GetString("SR_PluginRestartHint", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   查找类似 插件/模组 的本地化字符串。
+        /// </summary>
+        public static string SR_PluginsMods {
+            get {
+                return ResourceManager.GetString("SR_PluginsMods", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   查找类似 预览功能已关闭，请前往服务器控制台界面查看日志信息！ 的本地化字符串。
+        /// </summary>
+        public static string SR_PreviewClosed {
+            get {
+                return ResourceManager.GetString("SR_PreviewClosed", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   查找类似 此处仅显示部分日志，完整输出请转到控制台界面 的本地化字符串。
+        /// </summary>
+        public static string SR_PreviewHint {
+            get {
+                return ResourceManager.GetString("SR_PreviewHint", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   查找类似 输出预览 的本地化字符串。
+        /// </summary>
+        public static string SR_PreviewOutput {
+            get {
+                return ResourceManager.GetString("SR_PreviewOutput", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   查找类似 PS:软件检测不一定准确，若您无法解决，可将服务器日志发送给他人以寻求帮助，但请不要截图此弹窗！！！
+        ///日志发送方式：
+        ///1.直接截图控制台内容
+        ///2.服务器目录\logs\latest.log
+        ///3.前往&quot;更多功能&quot;界面上传至Internet 的本地化字符串。
+        /// </summary>
+        public static string SR_ProblemFoundPS {
+            get {
+                return ResourceManager.GetString("SR_ProblemFoundPS", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   查找类似 进程已用内存: {0}G 占比: {1} 的本地化字符串。
+        /// </summary>
+        public static string SR_ProcMemUsedFormat {
+            get {
+                return ResourceManager.GetString("SR_ProcMemUsedFormat", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   查找类似 您的公网IP为：{0}
+        ///您的服务器远程进入地址为：{0}:{1}
+        ///注意：记得检查您的防火墙是否关闭，否则远程玩家无法进入服务器！ 的本地化字符串。
+        /// </summary>
+        public static string SR_PublicIPInfo {
+            get {
+                return ResourceManager.GetString("SR_PublicIPInfo", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   查找类似 您的公网IP为：{0}
+        ///您的服务器远程进入地址为：{0}
+        ///注意：记得检查您的防火墙是否关闭，否则远程玩家无法进入服务器！ 的本地化字符串。
+        /// </summary>
+        public static string SR_PublicIPInfoNoPort {
+            get {
+                return ResourceManager.GetString("SR_PublicIPInfoNoPort", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   查找类似 快捷指令栏 的本地化字符串。
+        /// </summary>
+        public static string SR_QuickCmdBar {
+            get {
+                return ResourceManager.GetString("SR_QuickCmdBar", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   查找类似 快捷模板： 的本地化字符串。
+        /// </summary>
+        public static string SR_QuickTemplate {
+            get {
+                return ResourceManager.GetString("SR_QuickTemplate", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   查找类似 检测到您正在使用 Radmin Lan！
+        ///您的 Radmin IP 为：{0}
+        ///您的服务器远程进入地址为：{0}{1}
+        ///注意：联机小伙伴必须加入同一个 Radmin 房间，且记得检查防火墙是否关闭！ 的本地化字符串。
+        /// </summary>
+        public static string SR_RadminDetected {
+            get {
+                return ResourceManager.GetString("SR_RadminDetected", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   查找类似 Radmin 联机提示 的本地化字符串。
+        /// </summary>
+        public static string SR_RadminTitle {
+            get {
+                return ResourceManager.GetString("SR_RadminTitle", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   查找类似 记录玩家 的本地化字符串。
+        /// </summary>
+        public static string SR_RecordPlayers {
+            get {
+                return ResourceManager.GetString("SR_RecordPlayers", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   查找类似 刷新 的本地化字符串。
+        /// </summary>
+        public static string SR_Refresh {
+            get {
+                return ResourceManager.GetString("SR_Refresh", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   查找类似  剩余时间： 的本地化字符串。
+        /// </summary>
+        public static string SR_RemainingTime {
+            get {
+                return ResourceManager.GetString("SR_RemainingTime", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   查找类似 备注（如：给管理员，非必填）： 的本地化字符串。
+        /// </summary>
+        public static string SR_RemarkInputHint {
+            get {
+                return ResourceManager.GetString("SR_RemarkInputHint", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   查找类似 远程进入IP 的本地化字符串。
+        /// </summary>
+        public static string SR_RemoteIP {
+            get {
+                return ResourceManager.GetString("SR_RemoteIP", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   查找类似 移除 的本地化字符串。
+        /// </summary>
+        public static string SR_Remove {
+            get {
+                return ResourceManager.GetString("SR_Remove", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   查找类似 去除管理员 的本地化字符串。
+        /// </summary>
+        public static string SR_RemoveAdmin {
+            get {
+                return ResourceManager.GetString("SR_RemoveAdmin", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   查找类似 移除已完成/已取消 的本地化字符串。
+        /// </summary>
+        public static string SR_RemoveDoneCancelled {
+            get {
+                return ResourceManager.GetString("SR_RemoveDoneCancelled", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   查找类似 移除 的本地化字符串。
+        /// </summary>
+        public static string SR_RemoveItem {
+            get {
+                return ResourceManager.GetString("SR_RemoveItem", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   查找类似 重置 的本地化字符串。
+        /// </summary>
+        public static string SR_Reset {
+            get {
+                return ResourceManager.GetString("SR_Reset", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   查找类似 服务器已关闭。倒计时结束后将自动重启，
+        ///您也可以提前点击按钮操作。 的本地化字符串。
+        /// </summary>
+        public static string SR_RestartAutoTitle {
+            get {
+                return ResourceManager.GetString("SR_RestartAutoTitle", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   查找类似 取消重启 的本地化字符串。
+        /// </summary>
+        public static string SR_RestartCancel {
+            get {
+                return ResourceManager.GetString("SR_RestartCancel", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   查找类似 已取消本次服务器重启 的本地化字符串。
+        /// </summary>
+        public static string SR_RestartCancelled {
+            get {
+                return ResourceManager.GetString("SR_RestartCancelled", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   查找类似 服务器已关闭。倒计时结束后将自动重启，
+        ///您也可以提前点击按钮操作。 的本地化字符串。
+        /// </summary>
+        public static string SR_RestartConfirmMsg {
+            get {
+                return ResourceManager.GetString("SR_RestartConfirmMsg", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   查找类似 服务器已关闭，将自动重启。 的本地化字符串。
+        /// </summary>
+        public static string SR_RestartConfirmTitle {
+            get {
+                return ResourceManager.GetString("SR_RestartConfirmTitle", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   查找类似 立即重启 的本地化字符串。
+        /// </summary>
+        public static string SR_RestartNow {
+            get {
+                return ResourceManager.GetString("SR_RestartNow", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   查找类似 要使重置生效需重启此窗口，请您手动关闭此窗口并打开 的本地化字符串。
+        /// </summary>
+        public static string SR_RestartWindowHint {
+            get {
+                return ResourceManager.GetString("SR_RestartWindowHint", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   查找类似 恢复备份 的本地化字符串。
+        /// </summary>
+        public static string SR_RestoreBackup {
+            get {
+                return ResourceManager.GetString("SR_RestoreBackup", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   查找类似 继续 的本地化字符串。
+        /// </summary>
+        public static string SR_Resume {
+            get {
+                return ResourceManager.GetString("SR_Resume", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   查找类似 全部继续 的本地化字符串。
+        /// </summary>
+        public static string SR_ResumeAll {
+            get {
+                return ResourceManager.GetString("SR_ResumeAll", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   查找类似 返回 的本地化字符串。
+        /// </summary>
+        public static string SR_Return {
+            get {
+                return ResourceManager.GetString("SR_Return", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   查找类似 开服器功能 的本地化字符串。
+        /// </summary>
+        public static string SR_RunnerFeaturesTitle {
+            get {
+                return ResourceManager.GetString("SR_RunnerFeaturesTitle", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   查找类似 服务器运行窗口设置 的本地化字符串。
+        /// </summary>
+        public static string SR_RunnerSettings {
+            get {
+                return ResourceManager.GetString("SR_RunnerSettings", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   查找类似 运行中 的本地化字符串。
+        /// </summary>
+        public static string SR_Running {
+            get {
+                return ResourceManager.GetString("SR_Running", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   查找类似 保存 的本地化字符串。
+        /// </summary>
+        public static string SR_Save {
+            get {
+                return ResourceManager.GetString("SR_Save", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   查找类似 保存/应用 的本地化字符串。
+        /// </summary>
+        public static string SR_SaveApply {
+            get {
+                return ResourceManager.GetString("SR_SaveApply", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   查找类似 保存成功！ 的本地化字符串。
+        /// </summary>
+        public static string SR_SaveSuccess {
+            get {
+                return ResourceManager.GetString("SR_SaveSuccess", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   查找类似 保存任务配置 的本地化字符串。
+        /// </summary>
+        public static string SR_SaveTaskConfig {
+            get {
+                return ResourceManager.GetString("SR_SaveTaskConfig", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   查找类似 全服说话 的本地化字符串。
+        /// </summary>
+        public static string SR_SayAll {
+            get {
+                return ResourceManager.GetString("SR_SayAll", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   查找类似 点我搜索 的本地化字符串。
+        /// </summary>
+        public static string SR_ScanJava {
+            get {
+                return ResourceManager.GetString("SR_ScanJava", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   查找类似 检测中，请稍等…… 的本地化字符串。
+        /// </summary>
+        public static string SR_Scanning {
+            get {
+                return ResourceManager.GetString("SR_Scanning", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   查找类似 定时备份 的本地化字符串。
+        /// </summary>
+        public static string SR_ScheduledBackup {
+            get {
+                return ResourceManager.GetString("SR_ScheduledBackup", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   查找类似 [MSL备份] 定时备份任务开始执行~ 的本地化字符串。
+        /// </summary>
+        public static string SR_ScheduledBackupStarting {
+            get {
+                return ResourceManager.GetString("SR_ScheduledBackupStarting", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   查找类似 [MSL定时任务] 执行指令：{0} 的本地化字符串。
+        /// </summary>
+        public static string SR_ScheduledTaskExecCmd {
+            get {
+                return ResourceManager.GetString("SR_ScheduledTaskExecCmd", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   查找类似 定时任务 的本地化字符串。
+        /// </summary>
+        public static string SR_ScheduledTasks {
+            get {
+                return ResourceManager.GetString("SR_ScheduledTasks", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   查找类似 脚本文件： 的本地化字符串。
+        /// </summary>
+        public static string SR_ScriptFile {
+            get {
+                return ResourceManager.GetString("SR_ScriptFile", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   查找类似 请先进行搜索！ 的本地化字符串。
+        /// </summary>
+        public static string SR_SearchFirst {
+            get {
+                return ResourceManager.GetString("SR_SearchFirst", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   查找类似 全选 的本地化字符串。
+        /// </summary>
+        public static string SR_SelectAll {
+            get {
+                return ResourceManager.GetString("SR_SelectAll", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   查找类似 请先选择至少一个{0}！ 的本地化字符串。
+        /// </summary>
+        public static string SR_SelectAtLeastOne {
+            get {
+                return ResourceManager.GetString("SR_SelectAtLeastOne", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   查找类似 请选择一个文件夹用于存放备份文件 的本地化字符串。
+        /// </summary>
+        public static string SR_SelectBackupFolder {
+            get {
+                return ResourceManager.GetString("SR_SelectBackupFolder", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   查找类似 请选择文件 的本地化字符串。
+        /// </summary>
+        public static string SR_SelectFile {
+            get {
+                return ResourceManager.GetString("SR_SelectFile", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   查找类似 请选择文件夹 的本地化字符串。
+        /// </summary>
+        public static string SR_SelectFolder {
+            get {
+                return ResourceManager.GetString("SR_SelectFolder", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   查找类似 请选择文件，通常为*.jar 的本地化字符串。
+        /// </summary>
+        public static string SR_SelectJarFile {
+            get {
+                return ResourceManager.GetString("SR_SelectJarFile", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   查找类似 请选择文件，通常为java.exe 的本地化字符串。
+        /// </summary>
+        public static string SR_SelectJavaExe {
+            get {
+                return ResourceManager.GetString("SR_SelectJavaExe", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   查找类似 选择模型 的本地化字符串。
+        /// </summary>
+        public static string SR_SelectModel {
+            get {
+                return ResourceManager.GetString("SR_SelectModel", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   查找类似 请先选择一个玩家！ 的本地化字符串。
+        /// </summary>
+        public static string SR_SelectPlayerFirst {
+            get {
+                return ResourceManager.GetString("SR_SelectPlayerFirst", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   查找类似 执行失败，请先选择一个任务！ 的本地化字符串。
+        /// </summary>
+        public static string SR_SelectTaskFirst {
+            get {
+                return ResourceManager.GetString("SR_SelectTaskFirst", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   查找类似 发送 的本地化字符串。
+        /// </summary>
+        public static string SR_Send {
+            get {
+                return ResourceManager.GetString("SR_Send", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   查找类似 发送指令时出错：{0} 的本地化字符串。
+        /// </summary>
+        public static string SR_SendCmdError {
+            get {
+                return ResourceManager.GetString("SR_SendCmdError", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   查找类似 服务器分析报告 的本地化字符串。
+        /// </summary>
+        public static string SR_ServerAnalysisReport {
+            get {
+                return ResourceManager.GetString("SR_ServerAnalysisReport", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   查找类似 服务器基本信息 的本地化字符串。
+        /// </summary>
+        public static string SR_ServerBasicInfo {
+            get {
+                return ResourceManager.GetString("SR_ServerBasicInfo", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   查找类似 服务器已关闭 的本地化字符串。
+        /// </summary>
+        public static string SR_ServerClosed {
+            get {
+                return ResourceManager.GetString("SR_ServerClosed", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   查找类似 服务器已关闭！开服器未检测到相关问题，您可将服务器日志发送给他人以寻求帮助！
+        ///日志发送方式：
+        ///1.直接截图控制台内容
+        ///2.服务器目录\logs\latest.log
+        ///3.前往&quot;更多功能&quot;界面上传至Internet 的本地化字符串。
+        /// </summary>
+        public static string SR_ServerClosedForAnalysis {
+            get {
+                return ResourceManager.GetString("SR_ServerClosedForAnalysis", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   查找类似 服务器已关闭！ 的本地化字符串。
+        /// </summary>
+        public static string SR_ServerClosedMsg {
+            get {
+                return ResourceManager.GetString("SR_ServerClosedMsg", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   查找类似 服务器已关闭，触发重启事件... 的本地化字符串。
+        /// </summary>
+        public static string SR_ServerClosedRestartEvent {
+            get {
+                return ResourceManager.GetString("SR_ServerClosedRestartEvent", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   查找类似 服务器已关闭！即将为您展示分析报告！ 的本地化字符串。
+        /// </summary>
+        public static string SR_ServerClosedShowingReport {
+            get {
+                return ResourceManager.GetString("SR_ServerClosedShowingReport", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   查找类似 服务器配置 的本地化字符串。
+        /// </summary>
+        public static string SR_ServerConfig {
+            get {
+                return ResourceManager.GetString("SR_ServerConfig", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   查找类似 服务器控制： 的本地化字符串。
+        /// </summary>
+        public static string SR_ServerControl {
+            get {
+                return ResourceManager.GetString("SR_ServerControl", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   查找类似 服务端核心文件： 的本地化字符串。
+        /// </summary>
+        public static string SR_ServerCore {
+            get {
+                return ResourceManager.GetString("SR_ServerCore", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   查找类似 服务端下载完毕！已自动选择该服务端核心，请记得保存哦~ 的本地化字符串。
+        /// </summary>
+        public static string SR_ServerDownloadDone {
+            get {
+                return ResourceManager.GetString("SR_ServerDownloadDone", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   查找类似 服务器信息 的本地化字符串。
+        /// </summary>
+        public static string SR_ServerInfo {
+            get {
+                return ResourceManager.GetString("SR_ServerInfo", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   查找类似 开服器在获取服务器信息时出现错误！此问题不影响服务器运行，您可继续正常使用或将此问题报告给作者！ 的本地化字符串。
+        /// </summary>
+        public static string SR_ServerInfoErr {
+            get {
+                return ResourceManager.GetString("SR_ServerInfoErr", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   查找类似 服务器信息输入 的本地化字符串。
+        /// </summary>
+        public static string SR_ServerInfoInput {
+            get {
+                return ResourceManager.GetString("SR_ServerInfoInput", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   查找类似 服务器IP 的本地化字符串。
+        /// </summary>
+        public static string SR_ServerIP {
+            get {
+                return ResourceManager.GetString("SR_ServerIP", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   查找类似 服务器 {0} 已成功开启！ 的本地化字符串。
+        /// </summary>
+        public static string SR_ServerLaunchedSuccess {
+            get {
+                return ResourceManager.GetString("SR_ServerLaunchedSuccess", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   查找类似 服务器日志 的本地化字符串。
+        /// </summary>
+        public static string SR_ServerLog {
+            get {
+                return ResourceManager.GetString("SR_ServerLog", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   查找类似 服务器运行内存： 的本地化字符串。
+        /// </summary>
+        public static string SR_ServerMemory {
+            get {
+                return ResourceManager.GetString("SR_ServerMemory", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   查找类似 服务器未开启  时间： 的本地化字符串。
+        /// </summary>
+        public static string SR_ServerNotOpenTime {
+            get {
+                return ResourceManager.GetString("SR_ServerNotOpenTime", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   查找类似 服务器正在重启... 的本地化字符串。
+        /// </summary>
+        public static string SR_ServerRestarting {
+            get {
+                return ResourceManager.GetString("SR_ServerRestarting", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   查找类似 服务器运行窗口设置 的本地化字符串。
+        /// </summary>
+        public static string SR_ServerRunnerSettings {
+            get {
+                return ResourceManager.GetString("SR_ServerRunnerSettings", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   查找类似 服务器在运行中，无法进行操作！请关闭服务器后再试！ 的本地化字符串。
+        /// </summary>
+        public static string SR_ServerRunningCantOp {
+            get {
+                return ResourceManager.GetString("SR_ServerRunningCantOp", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   查找类似 检测到服务器正在运行，点击确定以关闭服务器 的本地化字符串。
+        /// </summary>
+        public static string SR_ServerRunningCloseConfirm {
+            get {
+                return ResourceManager.GetString("SR_ServerRunningCloseConfirm", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   查找类似 服务器状态 的本地化字符串。
+        /// </summary>
+        public static string SR_ServerStatus {
+            get {
+                return ResourceManager.GetString("SR_ServerStatus", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   查找类似 服务器终端： 的本地化字符串。
+        /// </summary>
+        public static string SR_ServerTerminal {
+            get {
+                return ResourceManager.GetString("SR_ServerTerminal", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   查找类似 设置管理员 的本地化字符串。
+        /// </summary>
+        public static string SR_SetAdmin {
+            get {
+                return ResourceManager.GetString("SR_SetAdmin", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   查找类似 设置为Littleskin 的本地化字符串。
+        /// </summary>
+        public static string SR_SetLittleskin {
+            get {
+                return ResourceManager.GetString("SR_SetLittleskin", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   查找类似 设置为MSL统一身份认证(MSL Skin) 的本地化字符串。
+        /// </summary>
+        public static string SR_SetMSLAuth {
+            get {
+                return ResourceManager.GetString("SR_SetMSLAuth", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   查找类似 设置已更改，重启服务器生效！ 的本地化字符串。
+        /// </summary>
+        public static string SR_SettingRestartRequired {
+            get {
+                return ResourceManager.GetString("SR_SettingRestartRequired", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   查找类似 屏蔽关键字日志 的本地化字符串。
+        /// </summary>
+        public static string SR_ShieldKeywordLog {
+            get {
+                return ResourceManager.GetString("SR_ShieldKeywordLog", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   查找类似 输入你想屏蔽的关键字，
+        ///开服器将不会输出含有此关键字的日志 的本地化字符串。
+        /// </summary>
+        public static string SR_ShieldLogInput {
+            get {
+                return ResourceManager.GetString("SR_ShieldLogInput", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   查找类似 屏蔽堆栈追踪： 的本地化字符串。
+        /// </summary>
+        public static string SR_ShieldStackTrace {
+            get {
+                return ResourceManager.GetString("SR_ShieldStackTrace", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   查找类似 显示操作 的本地化字符串。
+        /// </summary>
+        public static string SR_ShowActions {
+            get {
+                return ResourceManager.GetString("SR_ShowActions", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   查找类似 显示系统占用 的本地化字符串。
+        /// </summary>
+        public static string SR_ShowSysOccupation {
+            get {
+                return ResourceManager.GetString("SR_ShowSysOccupation", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   查找类似 开始简单检测 的本地化字符串。
+        /// </summary>
+        public static string SR_SimpleDetect {
+            get {
+                return ResourceManager.GetString("SR_SimpleDetect", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   查找类似 好像出现了点错误…… 的本地化字符串。
+        /// </summary>
+        public static string SR_SomeError {
+            get {
+                return ResourceManager.GetString("SR_SomeError", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   查找类似 下载源：MSL镜像源 的本地化字符串。
+        /// </summary>
+        public static string SR_SourceMSL {
+            get {
+                return ResourceManager.GetString("SR_SourceMSL", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   查找类似 下载源：MSL镜像源 - 备用 的本地化字符串。
+        /// </summary>
+        public static string SR_SourceMSLBackup {
+            get {
+                return ResourceManager.GetString("SR_SourceMSLBackup", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   查找类似 下载源：官方 的本地化字符串。
+        /// </summary>
+        public static string SR_SourceOfficial {
+            get {
+                return ResourceManager.GetString("SR_SourceOfficial", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   查找类似 特殊日志： 的本地化字符串。
+        /// </summary>
+        public static string SR_SpecialLogs {
+            get {
+                return ResourceManager.GetString("SR_SpecialLogs", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   查找类似 旁观 的本地化字符串。
+        /// </summary>
+        public static string SR_Spectator {
+            get {
+                return ResourceManager.GetString("SR_Spectator", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   查找类似 速度： 的本地化字符串。
+        /// </summary>
+        public static string SR_Speed {
+            get {
+                return ResourceManager.GetString("SR_Speed", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   查找类似 开始分析 的本地化字符串。
+        /// </summary>
+        public static string SR_StartAnalysis {
+            get {
+                return ResourceManager.GetString("SR_StartAnalysis", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   查找类似 正在开启服务器，请稍等... 的本地化字符串。
+        /// </summary>
+        public static string SR_StartingServer {
+            get {
+                return ResourceManager.GetString("SR_StartingServer", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   查找类似 启动定时任务 的本地化字符串。
+        /// </summary>
+        public static string SR_StartScheduledTask {
+            get {
+                return ResourceManager.GetString("SR_StartScheduledTask", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   查找类似 已取消 的本地化字符串。
+        /// </summary>
+        public static string SR_StatusCancelled {
+            get {
+                return ResourceManager.GetString("SR_StatusCancelled", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   查找类似 取消中 的本地化字符串。
+        /// </summary>
+        public static string SR_StatusCancelling {
+            get {
+                return ResourceManager.GetString("SR_StatusCancelling", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   查找类似 已完成 的本地化字符串。
+        /// </summary>
+        public static string SR_StatusCompleted {
+            get {
+                return ResourceManager.GetString("SR_StatusCompleted", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   查找类似 失败: {0} 的本地化字符串。
+        /// </summary>
+        public static string SR_StatusFailed {
+            get {
+                return ResourceManager.GetString("SR_StatusFailed", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   查找类似 下载中 的本地化字符串。
+        /// </summary>
+        public static string SR_StatusInProgress {
+            get {
+                return ResourceManager.GetString("SR_StatusInProgress", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   查找类似 已暂停 的本地化字符串。
+        /// </summary>
+        public static string SR_StatusPaused {
+            get {
+                return ResourceManager.GetString("SR_StatusPaused", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   查找类似 等待中 的本地化字符串。
+        /// </summary>
+        public static string SR_StatusPending {
+            get {
+                return ResourceManager.GetString("SR_StatusPending", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   查找类似 失败，将重试: {0} 的本地化字符串。
+        /// </summary>
+        public static string SR_StatusRetrying {
+            get {
+                return ResourceManager.GetString("SR_StatusRetrying", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   查找类似 请先停止所有任务！ 的本地化字符串。
+        /// </summary>
+        public static string SR_StopAllTasksFirst {
+            get {
+                return ResourceManager.GetString("SR_StopAllTasksFirst", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   查找类似 关服中，请耐心等待……
+        ///双击按钮可强制关服（不建议） 的本地化字符串。
+        /// </summary>
+        public static string SR_Stopping {
+            get {
+                return ResourceManager.GetString("SR_Stopping", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   查找类似 停止定时任务 的本地化字符串。
+        /// </summary>
+        public static string SR_StopScheduledTask {
+            get {
+                return ResourceManager.GetString("SR_StopScheduledTask", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   查找类似 请先停止该任务！ 的本地化字符串。
+        /// </summary>
+        public static string SR_StopTaskFirst {
+            get {
+                return ResourceManager.GetString("SR_StopTaskFirst", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   查找类似 生存 的本地化字符串。
+        /// </summary>
+        public static string SR_Survival {
+            get {
+                return ResourceManager.GetString("SR_Survival", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   查找类似 系统空闲内存 的本地化字符串。
+        /// </summary>
+        public static string SR_SysMemFree {
+            get {
+                return ResourceManager.GetString("SR_SysMemFree", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   查找类似 系统已用内存 的本地化字符串。
+        /// </summary>
+        public static string SR_SysMemUsed {
+            get {
+                return ResourceManager.GetString("SR_SysMemUsed", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   查找类似 系统已用内存: {0} 的本地化字符串。
+        /// </summary>
+        public static string SR_SysMemUsedFormat {
+            get {
+                return ResourceManager.GetString("SR_SysMemUsedFormat", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   查找类似 无法获取系统占用信息！显示占用功能已自动关闭！
+        ///通常此问题是因为系统原因造成的，不影响软件正常使用！ 的本地化字符串。
+        /// </summary>
+        public static string SR_SysOccupationErr {
+            get {
+                return ResourceManager.GetString("SR_SysOccupationErr", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   查找类似 系统占用 的本地化字符串。
+        /// </summary>
+        public static string SR_SysUsage {
+            get {
+                return ResourceManager.GetString("SR_SysUsage", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   查找类似 任务列表（添加任务后选中即可编辑） 的本地化字符串。
+        /// </summary>
+        public static string SR_TaskListTitle {
+            get {
+                return ResourceManager.GetString("SR_TaskListTitle", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   查找类似 服务器存档备份完成！ 的本地化字符串。
+        /// </summary>
+        public static string SR_TellrawBackupDone {
+            get {
+                return ResourceManager.GetString("SR_TellrawBackupDone", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   查找类似  服务器存档备份完成！
+        /// 的本地化字符串。
+        /// </summary>
+        public static string SR_TellrawBackupDoneDetail {
+            get {
+                return ResourceManager.GetString("SR_TellrawBackupDoneDetail", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   查找类似 备份过程中发生错误，备份失败！ 的本地化字符串。
+        /// </summary>
+        public static string SR_TellrawBackupError {
+            get {
+                return ResourceManager.GetString("SR_TellrawBackupError", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   查找类似 正在进行服务器存档备份，请勿关闭服务器哦，否则可能造成回档！备份期间不会影响正常游戏~ 的本地化字符串。
+        /// </summary>
+        public static string SR_TellrawBackupInProgress {
+            get {
+                return ResourceManager.GetString("SR_TellrawBackupInProgress", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   查找类似 备份失败！未找到任何世界存档文件夹！ 的本地化字符串。
+        /// </summary>
+        public static string SR_TellrawBackupNoWorld {
+            get {
+                return ResourceManager.GetString("SR_TellrawBackupNoWorld", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   查找类似 文件名:  的本地化字符串。
+        /// </summary>
+        public static string SR_TellrawFileName {
+            get {
+                return ResourceManager.GetString("SR_TellrawFileName", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   查找类似 
+        ///大小:  的本地化字符串。
+        /// </summary>
+        public static string SR_TellrawFileSize {
+            get {
+                return ResourceManager.GetString("SR_TellrawFileSize", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   查找类似 {0}时{1}分 的本地化字符串。
+        /// </summary>
+        public static string SR_TimeHours {
+            get {
+                return ResourceManager.GetString("SR_TimeHours", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   查找类似 {0}分{1}秒 的本地化字符串。
+        /// </summary>
+        public static string SR_TimeMinutes {
+            get {
+                return ResourceManager.GetString("SR_TimeMinutes", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   查找类似 {0}秒 的本地化字符串。
+        /// </summary>
+        public static string SR_TimeSeconds {
+            get {
+                return ResourceManager.GetString("SR_TimeSeconds", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   查找类似 禁用/启用全部模组 的本地化字符串。
+        /// </summary>
+        public static string SR_ToggleAllMods {
+            get {
+                return ResourceManager.GetString("SR_ToggleAllMods", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   查找类似 禁用/启用全部插件 的本地化字符串。
+        /// </summary>
+        public static string SR_ToggleAllPlugins {
+            get {
+                return ResourceManager.GetString("SR_ToggleAllPlugins", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   查找类似 禁用/启用所选模组 的本地化字符串。
+        /// </summary>
+        public static string SR_ToggleMod {
+            get {
+                return ResourceManager.GetString("SR_ToggleMod", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   查找类似 禁用/启用所选插件 的本地化字符串。
+        /// </summary>
+        public static string SR_TogglePlugin {
+            get {
+                return ResourceManager.GetString("SR_TogglePlugin", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   查找类似 解封玩家 的本地化字符串。
+        /// </summary>
+        public static string SR_UnbanPlayer {
+            get {
+                return ResourceManager.GetString("SR_UnbanPlayer", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   查找类似 请求失败:  的本地化字符串。
+        /// </summary>
+        public static string SR_UploadFailed {
+            get {
+                return ResourceManager.GetString("SR_UploadFailed", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   查找类似 上传Forge安装日志 的本地化字符串。
+        /// </summary>
+        public static string SR_UploadForgeLog {
+            get {
+                return ResourceManager.GetString("SR_UploadForgeLog", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   查找类似 正在上传，模式 {0}，请稍等…… 的本地化字符串。
+        /// </summary>
+        public static string SR_Uploading {
+            get {
+                return ResourceManager.GetString("SR_Uploading", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   查找类似 正在上传··· 的本地化字符串。
+        /// </summary>
+        public static string SR_UploadingDots {
+            get {
+                return ResourceManager.GetString("SR_UploadingDots", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   查找类似 上传服务器日志 的本地化字符串。
+        /// </summary>
+        public static string SR_UploadServerLog {
+            get {
+                return ResourceManager.GetString("SR_UploadServerLog", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   查找类似 日志地址: {0}
+        ///已经复制到剪贴板啦！
+        ///如果遇到问题且不会看日志,
+        ///请把链接粘贴给别人寻求帮助，
+        ///记得要详细描述你的问题哦！ 的本地化字符串。
+        /// </summary>
+        public static string SR_UploadSuccess {
+            get {
+                return ResourceManager.GetString("SR_UploadSuccess", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   查找类似 改用命令行安装 的本地化字符串。
+        /// </summary>
+        public static string SR_UseCmdInstall {
+            get {
+                return ResourceManager.GetString("SR_UseCmdInstall", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   查找类似 使用环境变量 的本地化字符串。
+        /// </summary>
+        public static string SR_UseEnvVar {
+            get {
+                return ResourceManager.GetString("SR_UseEnvVar", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   查找类似 用户信息 的本地化字符串。
+        /// </summary>
+        public static string SR_UserInfo {
+            get {
+                return ResourceManager.GetString("SR_UserInfo", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   查找类似 查看IPV6公网地址 的本地化字符串。
+        /// </summary>
+        public static string SR_ViewIPv6 {
+            get {
+                return ResourceManager.GetString("SR_ViewIPv6", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   查找类似 等待安装开始…… 的本地化字符串。
+        /// </summary>
+        public static string SR_WaitingInstall {
+            get {
+                return ResourceManager.GetString("SR_WaitingInstall", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   查找类似 外置登录设置教程 的本地化字符串。
+        /// </summary>
+        public static string SR_YggDocs {
+            get {
+                return ResourceManager.GetString("SR_YggDocs", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   查找类似 外置登录验证地址配置(Yggdrasil API 认证服务器)： 的本地化字符串。
+        /// </summary>
+        public static string SR_YggdrasilConfig {
+            get {
+                return ResourceManager.GetString("SR_YggdrasilConfig", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   查找类似 填写此地址后将自动启用外置登录验证
+        ///若需要关闭外置登录验证，请将此栏目清空即可！ 的本地化字符串。
+        /// </summary>
+        public static string SR_YggHint {
+            get {
+                return ResourceManager.GetString("SR_YggHint", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   查找类似 外置登录地址不合法！请检查地址是否正确！ 的本地化字符串。
+        /// </summary>
+        public static string SR_YggInvalid {
+            get {
+                return ResourceManager.GetString("SR_YggInvalid", resourceCulture);
             }
         }
         

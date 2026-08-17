@@ -5,13 +5,14 @@
              xmlns:d="http://schemas.microsoft.com/expression/blend/2008" 
              xmlns:hc="https://handyorg.github.io/handycontrol"
              xmlns:local="clr-namespace:MSL.controls"
+             xmlns:langs="clr-namespace:MSL.langs"
              mc:Ignorable="d" 
              d:DesignHeight="450" d:DesignWidth="800">
     <local:MagicCard>
         <hc:UniformSpacingPanel Orientation="Vertical" Spacing="10">
             <StackPanel Orientation="Horizontal">
-                <TextBlock x:Name="changeServerPropertiesLab" VerticalAlignment="Center" FontSize="18" FontWeight="Bold" Foreground="{DynamicResource PrimaryTextBrush}" Text="服务器配置"/>
-                <Button x:Name="refreahServerConfig" Margin="10,0,0,0" Content="刷新" Width="80" Click="refreahServerConfig_Click"/>
+                <TextBlock x:Name="changeServerPropertiesLab" VerticalAlignment="Center" FontSize="18" FontWeight="Bold" Foreground="{DynamicResource PrimaryTextBrush}" Text="{Binding [SR_ServerConfig], Source={x:Static langs:LanguageManager.Instance}}"/>
+                <Button x:Name="refreahServerConfig" Margin="10,0,0,0" Content="{Binding [SR_Refresh], Source={x:Static langs:LanguageManager.Instance}}" MinWidth="80" Padding="10,0" Click="refreahServerConfig_Click"/>
             </StackPanel>
             <Grid>
                 <Grid.Resources>
@@ -25,8 +26,8 @@
                         <ColumnDefinition/>
                         <ColumnDefinition/>
                     </Grid.ColumnDefinitions>
-                    <TextBlock Grid.Column="0" Text="游戏模式说明（请根据配置文件的格式进行选择）" HorizontalAlignment="Center" VerticalAlignment="Top" Margin="0,10,0,0"/>
-                    <TextBlock Grid.Column="1" Text="游戏难度说明（请根据配置文件的格式进行选择）" HorizontalAlignment="Center" VerticalAlignment="Top" Margin="0,10,0,0"/>
+                    <TextBlock Grid.Column="0" Text="{Binding [SR_GameModeDesc], Source={x:Static langs:LanguageManager.Instance}}" HorizontalAlignment="Center" VerticalAlignment="Top" Margin="0,10,0,0"/>
+                    <TextBlock Grid.Column="1" Text="{Binding [SR_GameDiffDesc], Source={x:Static langs:LanguageManager.Instance}}" HorizontalAlignment="Center" VerticalAlignment="Top" Margin="0,10,0,0"/>
                 </Grid>
                 <Rectangle Height="1" Stroke="{DynamicResource BorderBrush}" Margin="0,30,0,0" VerticalAlignment="Top"/>
                 <Grid>
@@ -41,14 +42,14 @@
                         <ColumnDefinition/>
                     </Grid.ColumnDefinitions>
                     <Rectangle Grid.Column="3" Stroke="{DynamicResource BorderBrush}" Width="1" RenderTransformOrigin="0.5,0.5" HorizontalAlignment="Right"/>
-                    <TextBlock Grid.Column="0" TextWrapping="Wrap" Text="生存" Margin="0,40,0,0" HorizontalAlignment="Center" VerticalAlignment="Top"/>
-                    <TextBlock Grid.Column="1" TextWrapping="Wrap" Text="创造" Margin="0,40,0,0" HorizontalAlignment="Center" VerticalAlignment="Top"/>
-                    <TextBlock Grid.Column="2" TextWrapping="Wrap" Text="冒险" Margin="0,40,0,0" HorizontalAlignment="Center" VerticalAlignment="Top"/>
-                    <TextBlock Grid.Column="3" TextWrapping="Wrap" Text="旁观" Margin="0,40,0,0" HorizontalAlignment="Center" VerticalAlignment="Top"/>
-                    <TextBlock Grid.Column="4" TextWrapping="Wrap" Text="和平" Margin="0,40,0,0" HorizontalAlignment="Center" VerticalAlignment="Top"/>
-                    <TextBlock Grid.Column="5" TextWrapping="Wrap" Text="简单" Margin="0,40,0,0" HorizontalAlignment="Center" VerticalAlignment="Top"/>
-                    <TextBlock Grid.Column="6" TextWrapping="Wrap" Text="普通" Margin="0,40,0,0" HorizontalAlignment="Center" VerticalAlignment="Top"/>
-                    <TextBlock Grid.Column="7" TextWrapping="Wrap" Text="困难" Margin="0,40,0,0" HorizontalAlignment="Center" VerticalAlignment="Top"/>
+                    <TextBlock Grid.Column="0" TextWrapping="Wrap" Text="{Binding [SR_Survival], Source={x:Static langs:LanguageManager.Instance}}" Margin="0,40,0,0" HorizontalAlignment="Center" VerticalAlignment="Top"/>
+                    <TextBlock Grid.Column="1" TextWrapping="Wrap" Text="{Binding [SR_Creative], Source={x:Static langs:LanguageManager.Instance}}" Margin="0,40,0,0" HorizontalAlignment="Center" VerticalAlignment="Top"/>
+                    <TextBlock Grid.Column="2" TextWrapping="Wrap" Text="{Binding [SR_Adventure], Source={x:Static langs:LanguageManager.Instance}}" Margin="0,40,0,0" HorizontalAlignment="Center" VerticalAlignment="Top"/>
+                    <TextBlock Grid.Column="3" TextWrapping="Wrap" Text="{Binding [SR_Spectator], Source={x:Static langs:LanguageManager.Instance}}" Margin="0,40,0,0" HorizontalAlignment="Center" VerticalAlignment="Top"/>
+                    <TextBlock Grid.Column="4" TextWrapping="Wrap" Text="{Binding [SR_Peaceful], Source={x:Static langs:LanguageManager.Instance}}" Margin="0,40,0,0" HorizontalAlignment="Center" VerticalAlignment="Top"/>
+                    <TextBlock Grid.Column="5" TextWrapping="Wrap" Text="{Binding [SR_Easy], Source={x:Static langs:LanguageManager.Instance}}" Margin="0,40,0,0" HorizontalAlignment="Center" VerticalAlignment="Top"/>
+                    <TextBlock Grid.Column="6" TextWrapping="Wrap" Text="{Binding [SR_Normal], Source={x:Static langs:LanguageManager.Instance}}" Margin="0,40,0,0" HorizontalAlignment="Center" VerticalAlignment="Top"/>
+                    <TextBlock Grid.Column="7" TextWrapping="Wrap" Text="{Binding [SR_Hard], Source={x:Static langs:LanguageManager.Instance}}" Margin="0,40,0,0" HorizontalAlignment="Center" VerticalAlignment="Top"/>
                     <TextBlock Grid.Column="0" TextWrapping="Wrap" Text="Survival" Margin="0,65,0,0" HorizontalAlignment="Center" VerticalAlignment="Top"/>
                     <TextBlock Grid.Column="1" TextWrapping="Wrap" Text="Creative" Margin="0,65,0,0" HorizontalAlignment="Center" VerticalAlignment="Top"/>
                     <TextBlock Grid.Column="2" TextWrapping="Wrap" Text="Adventure" Margin="0,65,0,0" HorizontalAlignment="Center" VerticalAlignment="Top"/>
@@ -82,10 +83,10 @@
                     <ColumnDefinition/>
                     <ColumnDefinition/>
                 </Grid.ColumnDefinitions>
-                <Button x:Name="saveServerConfig" Grid.Column="0" Style="{StaticResource ButtonPrimary}" Content="保存" Height="35" Click="saveServerConfig_Click" FontSize="14" HorizontalAlignment="Stretch" Margin="10,0,10,0"/>
-                <Button x:Name="changeServerIcon" Grid.Column="1" Content="修改服务器图标" Height="35" FontSize="14" Click="changeServerIcon_Click" VerticalAlignment="Top" HorizontalAlignment="Stretch" Margin="10,0,10,0"/>
-                <Button x:Name="changeWorldMap" Grid.Column="2" Content="更换主世界地图" Click="changeWorldMap_Click" Height="35" FontSize="14" VerticalAlignment="Top" HorizontalAlignment="Stretch" Margin="10,0,10,0"/>
-                <Button x:Name="setServerconfig" Grid.Column="3" Content="修改更多配置" Height="35" FontSize="14" Click="setServerconfig_Click" VerticalAlignment="Top" HorizontalAlignment="Stretch" Margin="10,0,10,0"/>
+                <Button x:Name="saveServerConfig" Grid.Column="0" Style="{StaticResource ButtonPrimary}" Content="{Binding [SR_Save], Source={x:Static langs:LanguageManager.Instance}}" Height="35" Click="saveServerConfig_Click" FontSize="14" HorizontalAlignment="Stretch" Margin="10,0,10,0"/>
+                <Button x:Name="changeServerIcon" Grid.Column="1" Content="{Binding [SR_ChangeServerIcon], Source={x:Static langs:LanguageManager.Instance}}" Height="35" FontSize="14" Click="changeServerIcon_Click" VerticalAlignment="Top" HorizontalAlignment="Stretch" Margin="10,0,10,0"/>
+                <Button x:Name="changeWorldMap" Grid.Column="2" Content="{Binding [SR_ChangeWorldMap], Source={x:Static langs:LanguageManager.Instance}}" Click="changeWorldMap_Click" Height="35" FontSize="14" VerticalAlignment="Top" HorizontalAlignment="Stretch" Margin="10,0,10,0"/>
+                <Button x:Name="setServerconfig" Grid.Column="3" Content="{Binding [SR_MoreConfig], Source={x:Static langs:LanguageManager.Instance}}" Height="35" FontSize="14" Click="setServerconfig_Click" VerticalAlignment="Top" HorizontalAlignment="Stretch" Margin="10,0,10,0"/>
             </Grid>
         </hc:UniformSpacingPanel>
     </local:MagicCard>

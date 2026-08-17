@@ -37,6 +37,7 @@ namespace MSL.pages
         public DownloadServer(Action<string> onClose, string savingPath, Mode downloadMode, string javaPath = "")
         {
             InitializeComponent();
+            server_d.Text = Lang.Form_DownloadServer_ServerDesc;
             DownloadMode = downloadMode;
             SavingPath = savingPath;
             SavingPath = savingPath;
@@ -84,7 +85,7 @@ namespace MSL.pages
         {
             if (versionBuildList.SelectedIndex == -1)
             {
-                MagicShow.ShowMsgDialog(FatherWindow, "请先选择一个构建版本！", "警告");
+                MagicShow.ShowMsgDialog(FatherWindow, Lang.Form_DownloadServer_SelectBuild, "警告");
                 return;
             }
             versionBuildList.IsEnabled = false;
@@ -105,7 +106,7 @@ namespace MSL.pages
         {
             if (versionBuildList.SelectedIndex == -1)
             {
-                MagicShow.ShowMsgDialog(FatherWindow, "请先选择一个构建版本！", "警告");
+                MagicShow.ShowMsgDialog(FatherWindow, Lang.Form_DownloadServer_SelectBuild, "警告");
                 return;
             }
             versionBuildList.IsEnabled = false;
@@ -157,7 +158,7 @@ namespace MSL.pages
                 coreVersionList.SelectedIndex == -1 ||
                 versionBuildList.SelectedIndex == -1)
             {
-                MagicShow.ShowMsgDialog(FatherWindow, "请检查您是否已正确选择 服务端-版本-构建版本 ！", "错误");
+                MagicShow.ShowMsgDialog(FatherWindow, Lang.Form_DownloadServer_CheckSelection, "错误");
                 return;
             }
 
@@ -184,7 +185,7 @@ namespace MSL.pages
                 dwnManager.StartDownloadGroup(groupId);
                 DownloadManagerDialog.Instance.ManagerControl.AddDownloadGroup(groupId, true);
 
-                MagicFlowMsg.ShowMessage("已添加至下载列表~");
+                MagicFlowMsg.ShowMessage(Lang.Form_DownloadServer_AddedToDownloadList);
             }
             else
             {
@@ -220,14 +221,14 @@ namespace MSL.pages
                 }
                 else
                 {
-                    server_d.Text = "请求错误！请重试！";
-                    serverCoreLoadTip.Text = "请求错误！请重试\n(" + httpResponse.HttpResponseCode.ToString() + ")" + httpResponse.HttpResponseContent.ToString();
+                    server_d.Text = Lang.Form_DownloadServer_RequestError;
+                    serverCoreLoadTip.Text = Lang.Form_DownloadServer_RequestError + "\n(" + httpResponse.HttpResponseCode.ToString() + ")" + httpResponse.HttpResponseContent.ToString();
                 }
             }
             catch (Exception a)
             {
-                server_d.Text = "获取服务端失败！请重试！";
-                serverCoreLoadTip.Text = "获取服务端失败！请重试\n" + a.Message;
+                server_d.Text = Lang.Form_DownloadServer_FetchServerFailed;
+                serverCoreLoadTip.Text = Lang.Form_DownloadServer_FetchServerFailed + "\n" + a.Message;
             }
         }
 
@@ -257,14 +258,14 @@ namespace MSL.pages
                 }
                 else
                 {
-                    server_d.Text = "请求错误！请重试！";
-                    coreVersionLoadTip.Text = "请求错误！请重试\n(" + httpResponse.HttpResponseCode.ToString() + ")" + httpResponse.HttpResponseContent.ToString();
+                    server_d.Text = Lang.Form_DownloadServer_RequestError;
+                    coreVersionLoadTip.Text = Lang.Form_DownloadServer_RequestError + "\n(" + httpResponse.HttpResponseCode.ToString() + ")" + httpResponse.HttpResponseContent.ToString();
                 }
             }
             catch (Exception a)
             {
-                server_d.Text = "获取服务端失败！请重试！";
-                coreVersionLoadTip.Text = "获取服务端失败！请重试\n" + a.Message;
+                server_d.Text = Lang.Form_DownloadServer_FetchServerFailed;
+                coreVersionLoadTip.Text = Lang.Form_DownloadServer_FetchServerFailed + "\n" + a.Message;
             }
         }
 
@@ -286,7 +287,7 @@ namespace MSL.pages
                     string resultData = ((JObject)JsonConvert.DeserializeObject(httpResponse.HttpResponseContent.ToString()))["data"] .ToString();
                     if (resultData.Contains("latest"))
                     {
-                        resultData = resultData.Replace("latest", "latest - 最新构建版本");
+                        resultData = resultData.Replace("latest", "latest - " + Lang.Form_DownloadServer_LatestBuild);
                     }
                     JArray serverVersions = JArray.Parse(resultData);
                     List<string> sortedVersions = serverVersions.ToObject<List<string>>().OrderByDescending(v => Functions.VersionCompare(v)).ToList();
@@ -296,14 +297,14 @@ namespace MSL.pages
                 }
                 else
                 {
-                    server_d.Text = "请求错误！请重试！";
-                    versionBuildLoadTip.Text = "请求错误！请重试\n(" + httpResponse.HttpResponseCode.ToString() + ")" + httpResponse.HttpResponseContent.ToString();
+                    server_d.Text = Lang.Form_DownloadServer_RequestError;
+                    versionBuildLoadTip.Text = Lang.Form_DownloadServer_RequestError + "\n(" + httpResponse.HttpResponseCode.ToString() + ")" + httpResponse.HttpResponseContent.ToString();
                 }
             }
             catch (Exception a)
             {
-                server_d.Text = "获取服务端失败！请重试！";
-                versionBuildLoadTip.Text = "获取服务端失败！请重试\n" + a.Message;
+                server_d.Text = Lang.Form_DownloadServer_FetchServerFailed;
+                versionBuildLoadTip.Text = Lang.Form_DownloadServer_FetchServerFailed + "\n" + a.Message;
             }
         }
 

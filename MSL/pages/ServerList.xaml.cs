@@ -57,7 +57,7 @@ namespace MSL.pages
         {
             LogHelper.Write.Info("用户请求刷新服务器列表。");
             GetServerConfig();
-            Growl.Success("刷新成功！");
+            Growl.Success(Lang.Page_ServerList_RefreshSuccess);
         }
 
         private async void GetServerConfig()
@@ -72,7 +72,7 @@ namespace MSL.pages
             {
                 await Dispatcher.InvokeAsync(() =>
                 {
-                    MagicFlowMsg.ShowMessage("您还没有一个服务器呢，点击右下角加号创建一个吧~");
+                    MagicFlowMsg.ShowMessage(Lang.Page_ServerList_NoServer);
                 });
                 return;
             }
@@ -86,11 +86,11 @@ namespace MSL.pages
                     var serverName = item.Value.Name ?? string.Empty;
                     var serverCore = item.Value.Core ?? string.Empty;
 
-                    string status = "未运行";
+                    string status = Lang.Page_ServerList_StatusNotRunning;
                     Brush brushes = Brushes.MediumSeaGreen;
                     if (RunningServers.Contains(int.Parse(item.Key)))
                     {
-                        status = "运行中";
+                        status = Lang.Page_ServerList_StatusRunning;
                         brushes = Brushes.Orange;
                     }
                     if (File.Exists(serverBase + "\\server-icon.png"))
@@ -195,7 +195,7 @@ namespace MSL.pages
             catch (Exception ex)
             {
                 LogHelper.Write.Error($"打开服务器设置时出错: {ex.ToString()}");
-                MessageBox.Show("出现错误，请检查您是否选择了服务器！\n" + ex.Message);
+                MessageBox.Show(Lang.Page_ServerList_ErrorNoSelection + "\n" + ex.Message);
             }
         }
 
@@ -218,10 +218,10 @@ namespace MSL.pages
             if (ServerWindowList.ContainsKey(serverID))
             {
                 LogHelper.Write.Warn($"试图删除一个仍在运行或窗口未关闭的服务器 (ID: {serverID})，操作被中止。");
-                MagicShow.ShowMsgDialog(Window.GetWindow(this), "请在关闭服务器并关掉服务器窗口后再进行删除！", "警告");
+                MagicShow.ShowMsgDialog(Window.GetWindow(this), Lang.Page_ServerList_Dialog_CloseFirst, Lang.Warning);
                 return;
             }
-            bool dialogRet = await MagicShow.ShowMsgDialogAsync(Functions.GetWindow(this), "您确定要删除该服务器吗？", "提示", true, "取消", isDangerPrimaryBtn: true);
+            bool dialogRet = await MagicShow.ShowMsgDialogAsync(Functions.GetWindow(this), Lang.Page_ServerList_Dialog_ConfirmDelete, Lang.Tip, true, Lang.Cancel, isDangerPrimaryBtn: true);
             if (!dialogRet)
             {
                 LogHelper.Write.Info($"用户取消了删除服务器ID: {serverID} 的操作。");
@@ -230,7 +230,7 @@ namespace MSL.pages
 
             try
             {
-                bool _dialogRet = await MagicShow.ShowMsgDialogAsync(Functions.GetWindow(this), "是否删除该服务器的目录？（服务器目录中的所有文件都会被移至回收站）", "提示", true, "取消", isDangerPrimaryBtn: true);
+                bool _dialogRet = await MagicShow.ShowMsgDialogAsync(Functions.GetWindow(this), Lang.Page_ServerList_Dialog_DeleteDir, Lang.Tip, true, Lang.Cancel, isDangerPrimaryBtn: true);
                 if (_dialogRet)
                 {
                     LogHelper.Write.Info($"用户确认删除服务器ID: {serverID} 的文件目录。");
@@ -239,26 +239,26 @@ namespace MSL.pages
                     FileSystem.DeleteDirectory(serverPath, UIOption.OnlyErrorDialogs, RecycleOption.SendToRecycleBin);
                     LogHelper.Write.Info($"已将服务器ID: {serverID} 的目录 '{serverPath}' 发送到回收站。");
                     //Directory.Delete(_json["base"].ToString(), true);
-                    Growl.Success("服务器目录已成功移至回收站！");
+                    Growl.Success(Lang.Page_ServerList_DirDeleted);
                 }
             }
             catch (Exception ex)
             {
                 LogHelper.Write.Error($"删除服务器ID: {serverID} 的目录失败: {ex.ToString()}");
-                MagicShow.ShowMsgDialog(Window.GetWindow(this), "服务器目录删除失败！\n" + ex.Message, "警告");
+                MagicShow.ShowMsgDialog(Window.GetWindow(this), Lang.Page_ServerList_DirDeleteFailed + "\n" + ex.Message, Lang.Warning);
             }
             try
             {
                 ServerConfig.Current.Remove(serverID.ToString());
                 ServerConfig.Current.Save();
                 LogHelper.Write.Info($"已成功从 ServerList.json 中移除服务器ID: {serverID} 的配置。");
-                Growl.Success("删除服务器成功！");
+                Growl.Success(Lang.Page_ServerList_Deleted);
             }
             catch (Exception ex)
             {
                 LogHelper.Write.Error($"从 ServerList.json 中删除服务器ID: {serverID} 的配置失败: {ex.ToString()}");
-                Growl.Error("删除服务器失败！");
-                MagicShow.ShowMsgDialog(Window.GetWindow(this), "服务器删除失败！", "警告");
+                Growl.Error(Lang.Page_ServerList_DeleteFailed);
+                MagicShow.ShowMsgDialog(Window.GetWindow(this), Lang.Page_ServerList_DeleteFailed, Lang.Warning);
             }
             finally
             {
@@ -288,7 +288,7 @@ namespace MSL.pages
                     }
                     else
                     {
-                        Growl.Warning("您配置了外置登录但是外置登录库并未下载\n如需正常使用外置登录+命令行开服，请先在MSL内正常开服一次！");
+                        Growl.Warning(Lang.Page_ServerList_YggWarning);
                     }  
                 }
                 if (instance.Core.StartsWith("@libraries/"))
@@ -306,7 +306,7 @@ namespace MSL.pages
             catch (Exception ex)
             {
                 LogHelper.Write.Error($"使用CMD启动服务器时出错: {ex.ToString()}");
-                MessageBox.Show("出现错误，请检查您是否选择了服务器！\n" + ex.Message);
+                MessageBox.Show(Lang.Page_ServerList_ErrorNoSelection + "\n" + ex.Message);
             }
         }
 
@@ -319,14 +319,14 @@ namespace MSL.pages
                 LogHelper.Write.Info($"用户请求打开服务器ID: {serverID} 的文件夹。");
                 ServerConfig.Current.TryGet(serverID, out var instance);
                 string path = instance.Base;
-                Growl.Info("正在为您打开服务器文件夹……");
+                Growl.Info(Lang.Page_ServerList_OpeningFolder);
                 Process.Start(path);
                 LogHelper.Write.Info($"已成功打开服务器ID: {serverID} 的文件夹，路径: {path}");
             }
             catch (Exception ex)
             {
                 LogHelper.Write.Error($"打开服务器文件夹时出错: {ex.ToString()}");
-                MessageBox.Show("出现错误，请检查您是否选择了服务器！\n" + ex.Message);
+                MessageBox.Show(Lang.Page_ServerList_ErrorNoSelection + "\n" + ex.Message);
             }
         }
 
@@ -339,7 +339,7 @@ namespace MSL.pages
             catch (Exception ex)
             {
                 LogHelper.Write.Error($"打开服务器Mod/插件管理时出错: {ex.ToString()}");
-                MessageBox.Show("出现错误，请检查您是否选择了服务器！\n" + ex.Message);
+                MessageBox.Show(Lang.Page_ServerList_ErrorNoSelection + "\n" + ex.Message);
             }
         }
 
@@ -434,7 +434,7 @@ namespace MSL.pages
         //单独的下载按钮
         private async void DlModBtn_Click(object sender, RoutedEventArgs e)
         {
-            await MagicShow.ShowMsgDialogAsync(Window.GetWindow(this), "这是单独的模组/插件/整合包下载界面\n下载的文件均在MSL\\Downloads文件夹内", "提示");
+            await MagicShow.ShowMsgDialogAsync(Window.GetWindow(this), Lang.Page_ServerList_DownloadModTip, Lang.Tip);
             LogHelper.Write.Info("用户点击'下载模组/插件'按钮，打开独立下载窗口。");
             var tempContent = this.Content;
             DownloadMod downloadModPage = null;
@@ -450,7 +450,7 @@ namespace MSL.pages
 
         private async void DlServerCoreBtn_Click(object sender, RoutedEventArgs e)
         {
-            await MagicShow.ShowMsgDialogAsync(Window.GetWindow(this), "这是单独的服务端下载界面\n下载的服务端均在MSL\\Downloads文件夹内", "提示");
+            await MagicShow.ShowMsgDialogAsync(Window.GetWindow(this), Lang.Page_ServerList_DownloadCoreTip, Lang.Tip);
             LogHelper.Write.Info("用户点击'下载服务端'按钮，打开独立下载窗口。");
             var tempContent = this.Content;
             DownloadServer downloadServerPage = null;

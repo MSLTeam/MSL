@@ -643,4 +643,2988 @@ MSLAPI —— MSL自有服务端&amp;运行库镜像源
   <data name="_OK" xml:space="preserve">
     <value>确定</value>
   </data>
+  <data name="App_Error_NoStackTrace" xml:space="preserve">
+    <value>没有可用的堆栈跟踪信息。</value>
+  </data>
+  <data name="App_Error_RuntimeException" xml:space="preserve">
+    <value>程序在运行的时候发生了异常。</value>
+  </data>
+  <data name="App_Error_UnknownError" xml:space="preserve">
+    <value>未知错误</value>
+  </data>
+  <data name="App_Error_CheckDotNet" xml:space="preserve">
+    <value>请检查是否安装了.NET Framework 4.7.2运行库。</value>
+  </data>
+  <data name="App_Error_ReportToDev" xml:space="preserve">
+    <value>若确定运行环境正常，请将错误提交给开发者处理哦！</value>
+  </data>
+  <data name="App_Error_Title" xml:space="preserve">
+    <value>应用程序错误</value>
+  </data>
+  <data name="App_Error_Fatal" xml:space="preserve">
+    <value>程序遇到了一个无法恢复的致命错误，即将关闭。</value>
+  </data>
+  <data name="App_Error_FatalDetail" xml:space="preserve">
+    <value>请查看本地日志文件获取详细信息。建议提交给开发者哦！</value>
+  </data>
+  <data name="App_Error_FatalTitle" xml:space="preserve">
+    <value>致命错误</value>
+  </data>
+  <data name="MainWindow_Tray_OpenMain" xml:space="preserve">
+    <value>打开主界面</value>
+  </data>
+  <data name="MainWindow_Tray_Exit" xml:space="preserve">
+    <value>退出程序</value>
+  </data>
+  <data name="MainWindow_FallbackUrl" xml:space="preserve">
+    <value>软件将使用备用URL...</value>
+  </data>
+  <data name="MainWindow_UpdateFailed" xml:space="preserve">
+    <value>出现错误，更新失败！</value>
+  </data>
+  <data name="MainWindow_DownloadNewVer" xml:space="preserve">
+    <value>下载新版本中……</value>
+  </data>
+  <data name="MainWindow_LoadErrorDotNet" xml:space="preserve">
+    <value>软件加载时出现错误！
+请检查您是否安装了.NET Framework 4.7.2运行库，若安装后依旧出错，请联系作者！
+错误信息：</value>
+  </data>
+  <data name="MainWindow_LoadError" xml:space="preserve">
+    <value>软件加载时出现错误！若无法正常使用，请联系作者进行解决。
+错误信息：</value>
+  </data>
+  <data name="SettingsPage_ConfigLoadErr" xml:space="preserve">
+    <value>加载配置时发生错误！此错误不影响使用，您可继续使用或将其反馈给作者！</value>
+  </data>
+  <data name="SettingsPage_EnterUrl" xml:space="preserve">
+    <value>请输入地址后再进行下载！</value>
+  </data>
+  <data name="SettingsPage_DownloadConfirm" xml:space="preserve">
+    <value>URL: {0}
+文件名称: {1}
+文件将保存至 MSL\Downloads 文件夹内！
+
+点击确定以下载</value>
+  </data>
+  <data name="SettingsPage_AddedToTaskList" xml:space="preserve">
+    <value>已将其添加至任务列表中！</value>
+  </data>
+  <data name="SettingsPage_RecoveryWarning" xml:space="preserve">
+    <value>恢复默认设置会清除MSL文件夹内的所有文件，请您谨慎选择！</value>
+  </data>
+  <data name="SettingsPage_ToggleOn" xml:space="preserve">
+    <value>开启成功！</value>
+  </data>
+  <data name="SettingsPage_ToggleOff" xml:space="preserve">
+    <value>关闭成功！</value>
+  </data>
+  <data name="SettingsPage_AddServerFirst" xml:space="preserve">
+    <value>请先将服务器添加至启动列表！</value>
+  </data>
+  <data name="SettingsPage_AddFrpcIdFirst" xml:space="preserve">
+    <value>请先将需要自启动的Frpc之ID填入框中！</value>
+  </data>
+  <data name="SettingsPage_SaveColorSuc" xml:space="preserve">
+    <value>保存颜色成功！</value>
+  </data>
+  <data name="SettingsPage_MicaOn" xml:space="preserve">
+    <value>已开启Mica效果！</value>
+  </data>
+  <data name="SettingsPage_MicaOff" xml:space="preserve">
+    <value>已关闭Mica效果！</value>
+  </data>
+  <data name="SettingsPage_SelectFile" xml:space="preserve">
+    <value>请选择文件</value>
+  </data>
+  <data name="SettingsPage_AllFiles" xml:space="preserve">
+    <value>所有文件类型|*.*</value>
+  </data>
+  <data name="SettingsPage_ChangeBgFailed" xml:space="preserve">
+    <value>更换背景图片失败！
+错误代码：</value>
+  </data>
+  <data name="SettingsPage_DelBgFailed" xml:space="preserve">
+    <value>清除背景图片失败！
+错误代码：</value>
+  </data>
+  <data name="SettingsPage_SaveLogColorSuc" xml:space="preserve">
+    <value>保存日志颜色成功！重新打开服务器运行窗口以使其生效！</value>
+  </data>
+  <data name="SettingsPage_RestoreLogColorSuc" xml:space="preserve">
+    <value>已恢复默认日志颜色！重新打开服务器运行窗口以使其生效！</value>
+  </data>
+  <data name="SettingsPage_InvalidFontSize" xml:space="preserve">
+    <value>请输入有效的字体大小！</value>
+  </data>
+  <data name="SettingsPage_SaveLogFontSuc" xml:space="preserve">
+    <value>保存日志字体成功！重新打开服务器运行窗口以使其生效！</value>
+  </data>
+  <data name="SettingsPage_NewVersionFound" xml:space="preserve">
+    <value>发现新版本：{0}，是否更新？
+更新日志：</value>
+  </data>
+  <data name="SettingsPage_UpdateNow" xml:space="preserve">
+    <value>更新</value>
+  </data>
+  <data name="SettingsPage_RefuseUpdate" xml:space="preserve">
+    <value>您拒绝了更新新版本，若在此版本中遇到bug，请勿报告给作者！</value>
+  </data>
+  <data name="SettingsPage_CloseBeforeUpdate" xml:space="preserve">
+    <value>您的服务器/内网映射/联机正在运行中，请将其关闭后再更新！</value>
+  </data>
+  <data name="SettingsPage_UpdateFailed" xml:space="preserve">
+    <value>更新失败！</value>
+  </data>
+  <data name="SettingsPage_ToggleOffRestart" xml:space="preserve">
+    <value>关闭成功！重启服务器运行界面以生效！</value>
+  </data>
+  <data name="SettingsPage_ToggleOnRestart" xml:space="preserve">
+    <value>开启成功！重启服务器运行界面以生效！</value>
+  </data>
+  <data name="SettingsPage_CloseBeforeAdjust" xml:space="preserve">
+    <value>请先关闭开关后再进行调整！</value>
+  </data>
+  <data name="SettingsPage_DisableMslTipsWarning" xml:space="preserve">
+    <value>关闭此功能后，读取服务器信息、玩家等功能将会失效，请谨慎选择！</value>
+  </data>
+  <data name="SettingsPage_CopyIdSuc" xml:space="preserve">
+    <value>设备ID复制成功！</value>
+  </data>
+  <data name="SettingsPage_CopyFailed" xml:space="preserve">
+    <value>复制失败！</value>
+  </data>
+  <data name="SettingsPage_EggAlreadyClicked" xml:space="preserve">
+    <value>你都已经点过了，别再点了！</value>
+  </data>
+  <data name="SettingsPage_EggPersistent" xml:space="preserve">
+    <value>你还真是执着呢！</value>
+  </data>
+  <data name="SettingsPage_EggPersistent2" xml:space="preserve">
+    <value>你真是个执着的家伙！</value>
+  </data>
+  <data name="SettingsPage_EggGameTime" xml:space="preserve">
+    <value>好吧，那来玩一个小游戏吧！</value>
+  </data>
+  <data name="SettingsPage_EggGuessIntro" xml:space="preserve">
+    <value>我生成了一个1-500的整数，你能猜对它吗？
+请输入数字（1-500）</value>
+  </data>
+  <data name="SettingsPage_EggDontGuess" xml:space="preserve">
+    <value>爱猜不猜，哼！</value>
+  </data>
+  <data name="SettingsPage_EggBadInput" xml:space="preserve">
+    <value>为什么要胡乱输入！不玩了！</value>
+  </data>
+  <data name="SettingsPage_EggTooBig" xml:space="preserve">
+    <value>你猜的数字大了！</value>
+  </data>
+  <data name="SettingsPage_EggTooSmall" xml:space="preserve">
+    <value>你猜的数字小了！</value>
+  </data>
+  <data name="SettingsPage_EggTryAgain" xml:space="preserve">
+    <value>再猜一次吧！
+请输入数字（1-500）</value>
+  </data>
+  <data name="SettingsPage_EggWon" xml:space="preserve">
+    <value>你真厉害！居然猜对了！</value>
+  </data>
+  <data name="SettingsPage_EggWonTitle" xml:space="preserve">
+    <value>猜对了：{0}！
+你真厉害！</value>
+  </data>
+  <data name="SettingsPage_EggCongrats" xml:space="preserve">
+    <value>恭喜你！</value>
+  </data>
+  <data name="SettingsPage_EggDontKnow" xml:space="preserve">
+    <value>不，我不知道</value>
+  </data>
+  <data name="SettingsPage_EggIKnow" xml:space="preserve">
+    <value>我知道了</value>
+  </data>
+  <data name="SettingsPage_EggWarning" xml:space="preserve">
+    <value>点击此按钮后软件出现任何问题作者概不负责，你确定要继续吗？
+（光敏性癫痫警告！若您患有光敏性癫痫，请不要点击确定！）</value>
+  </data>
+  <data name="SettingsPage_EggUnsure" xml:space="preserve">
+    <value>我不确定QWQ</value>
+  </data>
+  <data name="SettingsPage_CloseWindowHint" xml:space="preserve">
+    <value>服务器运行窗口关闭时的运行提示: </value>
+  </data>
+  <data name="SettingsPage_PickColor" xml:space="preserve">
+    <value>点击选色</value>
+  </data>
+  <data name="SettingsPage_UseMica" xml:space="preserve">
+    <value>使用云母效果</value>
+  </data>
+  <data name="SettingsPage_LogColor" xml:space="preserve">
+    <value>终端日志颜色：</value>
+  </data>
+  <data name="SettingsPage_Reset" xml:space="preserve">
+    <value>重置</value>
+  </data>
+  <data name="SettingsPage_LogFont" xml:space="preserve">
+    <value>终端日志字体：</value>
+  </data>
+  <data name="SettingsPage_SysDefault" xml:space="preserve">
+    <value>系统默认</value>
+  </data>
+  <data name="SettingsPage_LogFontSize" xml:space="preserve">
+    <value>终端日志字号：</value>
+  </data>
+  <data name="SettingsPage_Apply" xml:space="preserve">
+    <value>应用</value>
+  </data>
+  <data name="SR_Dashboard" xml:space="preserve">
+    <value>仪表盘</value>
+  </data>
+  <data name="SR_ServerBasicInfo" xml:space="preserve">
+    <value>服务器基本信息</value>
+  </data>
+  <data name="SR_ServerStatus" xml:space="preserve">
+    <value>服务器状态</value>
+  </data>
+  <data name="SR_OnlineMode" xml:space="preserve">
+    <value>正版验证：</value>
+  </data>
+  <data name="SR_GameMode" xml:space="preserve">
+    <value>游戏模式</value>
+  </data>
+  <data name="SR_GameDifficulty" xml:space="preserve">
+    <value>游戏难度</value>
+  </data>
+  <data name="SR_ServerIP" xml:space="preserve">
+    <value>服务器IP</value>
+  </data>
+  <data name="SR_LocalIP" xml:space="preserve">
+    <value>本地进入IP</value>
+  </data>
+  <data name="SR_RemoteIP" xml:space="preserve">
+    <value>远程进入IP</value>
+  </data>
+  <data name="SR_ClickToGet" xml:space="preserve">
+    <value>点击获取</value>
+  </data>
+  <data name="SR_SysUsage" xml:space="preserve">
+    <value>系统占用</value>
+  </data>
+  <data name="SR_CPUUsage" xml:space="preserve">
+    <value>CPU占用</value>
+  </data>
+  <data name="SR_MemUsage" xml:space="preserve">
+    <value>内存占用</value>
+  </data>
+  <data name="SR_SysMemUsed" xml:space="preserve">
+    <value>系统已用内存</value>
+  </data>
+  <data name="SR_SysMemFree" xml:space="preserve">
+    <value>系统空闲内存</value>
+  </data>
+  <data name="SR_LogOutput" xml:space="preserve">
+    <value>日志输出</value>
+  </data>
+  <data name="SR_PreviewHint" xml:space="preserve">
+    <value>此处仅显示部分日志，完整输出请转到控制台界面</value>
+  </data>
+  <data name="SR_PlayerList" xml:space="preserve">
+    <value>玩家列表</value>
+  </data>
+  <data name="SR_CopyInfo" xml:space="preserve">
+    <value>复制信息</value>
+  </data>
+  <data name="SR_KickPlayer" xml:space="preserve">
+    <value>踢出玩家</value>
+  </data>
+  <data name="SR_BanPlayer" xml:space="preserve">
+    <value>封禁玩家</value>
+  </data>
+  <data name="SR_CrashDetect" xml:space="preserve">
+    <value>崩溃检测</value>
+  </data>
+  <data name="SR_OpenServerDir" xml:space="preserve">
+    <value>打开服务器目录</value>
+  </data>
+  <data name="SR_Console" xml:space="preserve">
+    <value>控制台</value>
+  </data>
+  <data name="SR_Copy" xml:space="preserve">
+    <value>复制</value>
+  </data>
+  <data name="SR_SelectAll" xml:space="preserve">
+    <value>全选</value>
+  </data>
+  <data name="SR_ClearScreen" xml:space="preserve">
+    <value>清屏</value>
+  </data>
+  <data name="SR_CmdHint" xml:space="preserve">
+    <value>/（指令）</value>
+  </data>
+  <data name="SR_ServerClosed" xml:space="preserve">
+    <value>服务器已关闭</value>
+  </data>
+  <data name="SR_Send" xml:space="preserve">
+    <value>发送</value>
+  </data>
+  <data name="SR_MoreActions" xml:space="preserve">
+    <value>更多操作</value>
+  </data>
+  <data name="SR_Backup" xml:space="preserve">
+    <value>备份</value>
+  </data>
+  <data name="SR_LogAnalysis" xml:space="preserve">
+    <value>日志分析</value>
+  </data>
+  <data name="SR_PluginsMods" xml:space="preserve">
+    <value>插件/模组</value>
+  </data>
+  <data name="SR_ManagePlugins" xml:space="preserve">
+    <value>管理服务器插件</value>
+  </data>
+  <data name="SR_TogglePlugin" xml:space="preserve">
+    <value>禁用/启用所选插件</value>
+  </data>
+  <data name="SR_DeletePlugin" xml:space="preserve">
+    <value>删除所选插件</value>
+  </data>
+  <data name="SR_ToggleAllPlugins" xml:space="preserve">
+    <value>禁用/启用全部插件</value>
+  </data>
+  <data name="SR_OpenPluginDir" xml:space="preserve">
+    <value>打开插件文件夹</value>
+  </data>
+  <data name="SR_PluginList" xml:space="preserve">
+    <value>插件列表</value>
+  </data>
+  <data name="SR_PluginRestartHint" xml:space="preserve">
+    <value>(插件变动在服务器重启后生效)</value>
+  </data>
+  <data name="SR_PluginName" xml:space="preserve">
+    <value>插件名称</value>
+  </data>
+  <data name="SR_Disabled" xml:space="preserve">
+    <value>已禁用</value>
+  </data>
+  <data name="SR_ShowActions" xml:space="preserve">
+    <value>显示操作</value>
+  </data>
+  <data name="SR_Actions" xml:space="preserve">
+    <value>操作</value>
+  </data>
+  <data name="SR_Refresh" xml:space="preserve">
+    <value>刷新</value>
+  </data>
+  <data name="SR_AddPlugin" xml:space="preserve">
+    <value>添加插件</value>
+  </data>
+  <data name="SR_DownloadPlugin" xml:space="preserve">
+    <value>下载插件</value>
+  </data>
+  <data name="SR_OpenFolder" xml:space="preserve">
+    <value>打开文件夹</value>
+  </data>
+  <data name="SR_ManageMods" xml:space="preserve">
+    <value>管理服务器模组</value>
+  </data>
+  <data name="SR_ToggleMod" xml:space="preserve">
+    <value>禁用/启用所选模组</value>
+  </data>
+  <data name="SR_DeleteMod" xml:space="preserve">
+    <value>删除所选模组</value>
+  </data>
+  <data name="SR_ToggleAllMods" xml:space="preserve">
+    <value>禁用/启用全部模组</value>
+  </data>
+  <data name="SR_OpenModDir" xml:space="preserve">
+    <value>打开模组文件夹</value>
+  </data>
+  <data name="SR_ModList" xml:space="preserve">
+    <value>模组列表</value>
+  </data>
+  <data name="SR_ModRestartHint" xml:space="preserve">
+    <value>(模组变动在服务器重启后生效)</value>
+  </data>
+  <data name="SR_ModName" xml:space="preserve">
+    <value>模组名称</value>
+  </data>
+  <data name="SR_ClientSide" xml:space="preserve">
+    <value>客户端</value>
+  </data>
+  <data name="SR_AddModNote" xml:space="preserve">
+    <value>添加模组必看</value>
+  </data>
+  <data name="SR_DetectClientMods" xml:space="preserve">
+    <value>检测客户端模组</value>
+  </data>
+  <data name="SR_AddMod" xml:space="preserve">
+    <value>添加模组</value>
+  </data>
+  <data name="SR_DownloadMod" xml:space="preserve">
+    <value>下载模组</value>
+  </data>
+  <data name="SR_InstanceSettings" xml:space="preserve">
+    <value>实例设置</value>
+  </data>
+  <data name="SR_InstanceInfo" xml:space="preserve">
+    <value>实例信息</value>
+  </data>
+  <data name="SR_InstanceName" xml:space="preserve">
+    <value>实例名称：</value>
+  </data>
+  <data name="SR_InstanceDir" xml:space="preserve">
+    <value>实例存放目录：</value>
+  </data>
+  <data name="SR_Browse" xml:space="preserve">
+    <value>浏览</value>
+  </data>
+  <data name="SR_InstanceSettingsCard" xml:space="preserve">
+    <value>实例设置</value>
+  </data>
+  <data name="SR_JavaPath" xml:space="preserve">
+    <value>Java地址：</value>
+  </data>
+  <data name="SR_ManualJava" xml:space="preserve">
+    <value>手动选择Java</value>
+  </data>
+  <data name="SR_OnlineDownload" xml:space="preserve">
+    <value>开服器在线下载</value>
+  </data>
+  <data name="SR_LocalJava" xml:space="preserve">
+    <value>电脑上的Java</value>
+  </data>
+  <data name="SR_ScanJava" xml:space="preserve">
+    <value>点我搜索</value>
+  </data>
+  <data name="SR_UseEnvVar" xml:space="preserve">
+    <value>使用环境变量</value>
+  </data>
+  <data name="SR_ServerCore" xml:space="preserve">
+    <value>服务端核心文件：</value>
+  </data>
+  <data name="SR_DownloadServer" xml:space="preserve">
+    <value>下载服务端</value>
+  </data>
+  <data name="SR_ServerMemory" xml:space="preserve">
+    <value>服务器运行内存：</value>
+  </data>
+  <data name="SR_AutoAlloc" xml:space="preserve">
+    <value>让Java自动分配</value>
+  </data>
+  <data name="SR_JvmArgs" xml:space="preserve">
+    <value>服务器JVM参数：</value>
+  </data>
+  <data name="SR_JvmArgsHint" xml:space="preserve">
+    <value>提示：一般格式为 -参数，如 -Dlog4j2.formatMsgNoLookups=true，非必要无需填写</value>
+  </data>
+  <data name="SR_YggdrasilConfig" xml:space="preserve">
+    <value>外置登录验证地址配置(Yggdrasil API 认证服务器)：</value>
+  </data>
+  <data name="SR_SetMSLAuth" xml:space="preserve">
+    <value>设置为MSL统一身份认证(MSL Skin)</value>
+  </data>
+  <data name="SR_SetLittleskin" xml:space="preserve">
+    <value>设置为Littleskin</value>
+  </data>
+  <data name="SR_YggDocs" xml:space="preserve">
+    <value>外置登录设置教程</value>
+  </data>
+  <data name="SR_YggHint" xml:space="preserve">
+    <value>填写此地址后将自动启用外置登录验证
+若需要关闭外置登录验证，请将此栏目清空即可！</value>
+  </data>
+  <data name="SR_BackupSettings" xml:space="preserve">
+    <value>备份设置</value>
+  </data>
+  <data name="SR_MaxBackups" xml:space="preserve">
+    <value>最大备份数量 (填0为不限制)：</value>
+  </data>
+  <data name="SR_ScheduledBackup" xml:space="preserve">
+    <value>定时备份</value>
+  </data>
+  <data name="SR_BackupInterval" xml:space="preserve">
+    <value>备份间隔（分钟）：</value>
+  </data>
+  <data name="SR_CronExpr" xml:space="preserve">
+    <value>Cron表达式：</value>
+  </data>
+  <data name="SR_CronHint" xml:space="preserve">
+    <value>提示：使用标准Cron表达式，如 0 */30 * * * 表示每30分钟</value>
+  </data>
+  <data name="SR_MoreFeatures" xml:space="preserve">
+    <value>更多功能</value>
+  </data>
+  <data name="SR_AutoBackup" xml:space="preserve">
+    <value>自动备份</value>
+  </data>
+  <data name="SR_OpenBackupDir" xml:space="preserve">
+    <value>打开备份文件夹</value>
+  </data>
+  <data name="SR_CreateBackup" xml:space="preserve">
+    <value>创建备份</value>
+  </data>
+  <data name="SR_RestoreBackup" xml:space="preserve">
+    <value>恢复备份</value>
+  </data>
+  <data name="SR_RunnerSettings" xml:space="preserve">
+    <value>服务器运行窗口设置</value>
+  </data>
+  <data name="SR_ServerRunnerSettings" xml:space="preserve">
+    <value>服务器运行窗口设置</value>
+  </data>
+  <data name="SR_ShowSysOccupation" xml:space="preserve">
+    <value>显示系统占用</value>
+  </data>
+  <data name="SR_RecordPlayers" xml:space="preserve">
+    <value>记录玩家</value>
+  </data>
+  <data name="SR_PreviewOutput" xml:space="preserve">
+    <value>输出预览</value>
+  </data>
+  <data name="SR_AutoDetectMem" xml:space="preserve">
+    <value>当前为自动分配</value>
+  </data>
+  <data name="SR_Running" xml:space="preserve">
+    <value>运行中</value>
+  </data>
+  <data name="SR_Closed" xml:space="preserve">
+    <value>已关闭</value>
+  </data>
+  <data name="SR_Fetching" xml:space="preserve">
+    <value>获取中</value>
+  </data>
+  <data name="SR_Launched" xml:space="preserve">
+    <value>已开服</value>
+  </data>
+  <data name="SR_Enabled" xml:space="preserve">
+    <value>已开启</value>
+  </data>
+  <data name="SR_OpeningServerDir" xml:space="preserve">
+    <value>正在为您打开服务器目录……</value>
+  </data>
+  <data name="SR_SelectPlayerFirst" xml:space="preserve">
+    <value>请先选择一个玩家！</value>
+  </data>
+  <data name="SR_CopySuccess" xml:space="preserve">
+    <value>复制成功！</value>
+  </data>
+  <data name="SR_ConfirmKick" xml:space="preserve">
+    <value>确定要踢出这个玩家吗？</value>
+  </data>
+  <data name="SR_OperationFailed" xml:space="preserve">
+    <value>操作失败！</value>
+  </data>
+  <data name="SR_ConfirmBan" xml:space="preserve">
+    <value>确定要封禁这个玩家吗？封禁后该玩家将永远无法进入服务器！
+（原版解封指令：pardon +玩家名字，若添加插件，请使用插件的解封指令）</value>
+  </data>
+  <data name="SR_PublicIPInfo" xml:space="preserve">
+    <value>您的公网IP为：{0}
+您的服务器远程进入地址为：{0}:{1}
+注意：记得检查您的防火墙是否关闭，否则远程玩家无法进入服务器！</value>
+  </data>
+  <data name="SR_PublicIPInfoNoPort" xml:space="preserve">
+    <value>您的公网IP为：{0}
+您的服务器远程进入地址为：{0}
+注意：记得检查您的防火墙是否关闭，否则远程玩家无法进入服务器！</value>
+  </data>
+  <data name="SR_RadminDetected" xml:space="preserve">
+    <value>检测到您正在使用 Radmin Lan！
+您的 Radmin IP 为：{0}
+您的服务器远程进入地址为：{0}{1}
+注意：联机小伙伴必须加入同一个 Radmin 房间，且记得检查防火墙是否关闭！</value>
+  </data>
+  <data name="SR_RadminTitle" xml:space="preserve">
+    <value>Radmin 联机提示</value>
+  </data>
+  <data name="SR_NetworkMappingTip" xml:space="preserve">
+    <value>服务器开启后，通常远程的小伙伴是无法进入的，您需要进行内网映射才可让他人进入。开服器内置有免费的内网映射，您可点击主界面左侧的"内网映射"按钮查看详情并进行配置。</value>
+  </data>
+  <data name="SR_CrashAnalysisInfo" xml:space="preserve">
+    <value>分析报告将在服务器关闭后生成！若使用后还是无法解决问题，请尝试进Q群询问（附带日志或日志链接，日志链接可以点击分享日志按钮生成）：
+一群：1145888872  二群：234477679</value>
+  </data>
+  <data name="SR_HideWindowConfirm" xml:space="preserve">
+    <value>检测到您没有关闭服务器，是否隐藏此窗口？
+如要重新显示此窗口，请在服务器列表内双击该服务器（或点击开启服务器按钮）</value>
+  </data>
+  <data name="SR_ServerRunningCantOp" xml:space="preserve">
+    <value>服务器在运行中，无法进行操作！请关闭服务器后再试！</value>
+  </data>
+  <data name="SR_Launching" xml:space="preserve">
+    <value>开服中，请稍等……</value>
+  </data>
+  <data name="SR_ServerClosedMsg" xml:space="preserve">
+    <value>服务器已关闭！</value>
+  </data>
+  <data name="SR_Stopping" xml:space="preserve">
+    <value>关服中，请耐心等待……
+双击按钮可强制关服（不建议）</value>
+  </data>
+  <data name="SR_EnabledLower" xml:space="preserve">
+    <value>已开启</value>
+  </data>
+  <data name="SR_DisabledLower" xml:space="preserve">
+    <value>已关闭</value>
+  </data>
+  <data name="SR_PreviewClosed" xml:space="preserve">
+    <value>预览功能已关闭，请前往服务器控制台界面查看日志信息！</value>
+  </data>
+  <data name="SR_SysOccupationErr" xml:space="preserve">
+    <value>无法获取系统占用信息！显示占用功能已自动关闭！
+通常此问题是因为系统原因造成的，不影响软件正常使用！</value>
+  </data>
+  <data name="SR_ServerInfoErr" xml:space="preserve">
+    <value>开服器在获取服务器信息时出现错误！此问题不影响服务器运行，您可继续正常使用或将此问题报告给作者！</value>
+  </data>
+  <data name="SR_SomeError" xml:space="preserve">
+    <value>好像出现了点错误……</value>
+  </data>
+  <data name="SR_ServerClosedForAnalysis" xml:space="preserve">
+    <value>服务器已关闭！开服器未检测到相关问题，您可将服务器日志发送给他人以寻求帮助！
+日志发送方式：
+1.直接截图控制台内容
+2.服务器目录\logs\latest.log
+3.前往"更多功能"界面上传至Internet</value>
+  </data>
+  <data name="SR_CrashAnalysisSystem" xml:space="preserve">
+    <value>崩溃分析系统</value>
+  </data>
+  <data name="SR_ServerClosedShowingReport" xml:space="preserve">
+    <value>服务器已关闭！即将为您展示分析报告！</value>
+  </data>
+  <data name="SR_ServerAnalysisReport" xml:space="preserve">
+    <value>服务器分析报告</value>
+  </data>
+  <data name="SR_ServerRestarting" xml:space="preserve">
+    <value>服务器正在重启...</value>
+  </data>
+  <data name="SR_RestartCancelled" xml:space="preserve">
+    <value>已取消本次服务器重启</value>
+  </data>
+  <data name="SR_ChangeDone" xml:space="preserve">
+    <value>更改完毕！</value>
+  </data>
+  <data name="SR_NoModsFolder" xml:space="preserve">
+    <value>未找到mods文件夹！</value>
+  </data>
+  <data name="SR_ClientModDetectResult" xml:space="preserve">
+    <value>检测完成！发现 {0} 个仅客户端模组（已标记为橙色）。
+建议不要将这些模组上传到服务器。</value>
+  </data>
+  <data name="SR_DetectResult" xml:space="preserve">
+    <value>检测结果</value>
+  </data>
+  <data name="SR_NoClientMods" xml:space="preserve">
+    <value>未检测到明确声明为仅客户端的模组。</value>
+  </data>
+  <data name="SR_CustomArgs" xml:space="preserve">
+    <value>自定义启动参数:</value>
+  </data>
+  <data name="SR_CustomArgsHint" xml:space="preserve">
+    <value>提示：您正在使用自定义参数模式哦~</value>
+  </data>
+  <data name="SR_MemAutoAlloc" xml:space="preserve">
+    <value>内存：自动分配</value>
+  </data>
+  <data name="SR_MemParseFailed" xml:space="preserve">
+    <value>解析内存参数失败</value>
+  </data>
+  <data name="SR_CantChangeWhileRunning" xml:space="preserve">
+    <value>服务器运行时无法更改服务器设置！</value>
+  </data>
+  <data name="SR_GettingJavaPath" xml:space="preserve">
+    <value>获取Java地址……</value>
+  </data>
+  <data name="SR_DownloadCancelled" xml:space="preserve">
+    <value>下载取消！</value>
+  </data>
+  <data name="SR_DownloadFailed" xml:space="preserve">
+    <value>下载外置登录库文件失败，请检查网络连接或稍后重试！</value>
+  </data>
+  <data name="SR_AuthlibNotFound" xml:space="preserve">
+    <value>无法获取最新的authlib-injector.jar信息，且本地没有authlib-injector.jar文件，请检查网络连接或稍后重试！</value>
+  </data>
+  <data name="SR_SaveApply" xml:space="preserve">
+    <value>保存/应用</value>
+  </data>
+  <data name="SR_GenLaunchScript" xml:space="preserve">
+    <value>生成启动脚本</value>
+  </data>
+  <data name="SR_ServerConfig" xml:space="preserve">
+    <value>服务器配置</value>
+  </data>
+  <data name="SR_DisableOutputPreview" xml:space="preserve">
+    <value>关闭此功能后，输出预览功能也将同时关闭！</value>
+  </data>
+  <data name="SR_MemInfoFormat" xml:space="preserve">
+    <value>总内存: {0}G
+已使用: {1}G
+可使用: {2}G</value>
+  </data>
+  <data name="SR_SysMemUsedFormat" xml:space="preserve">
+    <value>系统已用内存: {0}</value>
+  </data>
+  <data name="SR_ProcMemUsedFormat" xml:space="preserve">
+    <value>进程已用内存: {0}G 占比: {1}</value>
+  </data>
+  <data name="SR_MCEulaPrompt" xml:space="preserve">
+    <value>开启Minecraft服务器需要接受Mojang的EULA，
+是否仔细阅读EULA条款（https://aka.ms/MinecraftEULA）并继续开服？</value>
+  </data>
+  <data name="SR_EulaError" xml:space="preserve">
+    <value>出现错误，请手动修改eula文件或重试:</value>
+  </data>
+  <data name="SR_AuthlibUpdating" xml:space="preserve">
+    <value>正在更新外置登录库文件...</value>
+  </data>
+  <data name="SR_LaunchingServer" xml:space="preserve">
+    <value>正在开启服务器，请稍等...</value>
+  </data>
+  <data name="SR_StartingServer" xml:space="preserve">
+    <value>正在开启服务器，请稍等...</value>
+  </data>
+  <data name="SR_ServerLaunchedSuccess" xml:space="preserve">
+    <value>服务器 {0} 已成功开启！</value>
+  </data>
+  <data name="SR_OnlineModeWarn" xml:space="preserve">
+    <value>检测到您没有关闭正版验证，如果客户端为离线登录的话，请点击"更多功能"里"关闭正版验证"按钮以关闭正版验证。否则离线账户将无法进入服务器！</value>
+  </data>
+  <data name="SR_OnlineModeThirdParty" xml:space="preserve">
+    <value>检测到您正在使用第三方外置登录验证，请确保客户端均采用第三方外置登录进入游戏，否则将无法进入服务器哦！</value>
+  </data>
+  <data name="SR_OnlineModeClosedWarn" xml:space="preserve">
+    <value>检测到您关闭了正版验证，若没有采取相关措施来保护服务器（如添加登录插件等），服务器会有被入侵的风险，请务必注意！</value>
+  </data>
+  <data name="SR_OnlineModeThirdPartyClosed" xml:space="preserve">
+    <value>检测到您配置了外置登录且关闭了正版验证，这样做是无效的！！！请您打开正版验证！！！</value>
+  </data>
+  <data name="SR_RestartConfirmMsg" xml:space="preserve">
+    <value>服务器已关闭。倒计时结束后将自动重启，
+您也可以提前点击按钮操作。</value>
+  </data>
+  <data name="SR_RestartConfirmTitle" xml:space="preserve">
+    <value>服务器已关闭，将自动重启。</value>
+  </data>
+  <data name="SR_RestartAutoTitle" xml:space="preserve">
+    <value>服务器已关闭。倒计时结束后将自动重启，
+您也可以提前点击按钮操作。</value>
+  </data>
+  <data name="SR_RestartNow" xml:space="preserve">
+    <value>立即重启</value>
+  </data>
+  <data name="SR_RestartCancel" xml:space="preserve">
+    <value>取消重启</value>
+  </data>
+  <data name="SR_EncodingChangeMsg" xml:space="preserve">
+    <value>MSL检测到您的服务器输出了乱码日志，是否将服务器输出编码更改为"{0}"？
+点击确定后将自动更改编码并重启服务器（注意：软件会强制关闭服务器进程，若害怕服务器数据丢失，可先手动关服，然后再点击确定按钮）。</value>
+  </data>
+  <data name="SR_EncodingChanged" xml:space="preserve">
+    <value>编码更改已生效！</value>
+  </data>
+  <data name="SR_ProblemFoundPS" xml:space="preserve">
+    <value>PS:软件检测不一定准确，若您无法解决，可将服务器日志发送给他人以寻求帮助，但请不要截图此弹窗！！！
+日志发送方式：
+1.直接截图控制台内容
+2.服务器目录\logs\latest.log
+3.前往"更多功能"界面上传至Internet</value>
+  </data>
+  <data name="SR_AbnormalClose" xml:space="preserve">
+    <value>服务器疑似异常关闭，是您人为关闭的吗？
+您可使用MSL的崩溃分析系统进行检测，也可使用AI日志分析功能或将服务器日志发送给他人以寻求帮助！
+注意:请不要截图此弹窗！！！
+AI日志分析入口：服务器控制台的更多操作栏，或"更多功能"页面里。
+服务器日志在何处：
+1.服务器控制台内容；2.服务器目录\logs\latest.log；3."更多功能"界面将日志上传至Internet。
+
+点击确定开始进行崩溃分析</value>
+  </data>
+  <data name="SR_FetchingCompletion" xml:space="preserve">
+    <value>正在获取补全...</value>
+  </data>
+  <data name="SR_EncodingRestartRequired" xml:space="preserve">
+    <value>编码已更改，重启服务器后生效！</value>
+  </data>
+  <data name="SR_SettingRestartRequired" xml:space="preserve">
+    <value>设置已更改，重启服务器生效！</value>
+  </data>
+  <data name="SR_CloseServerFirst" xml:space="preserve">
+    <value>请关闭服务器后再进行更改！</value>
+  </data>
+  <data name="SR_ServerRunningCloseConfirm" xml:space="preserve">
+    <value>检测到服务器正在运行，点击确定以关闭服务器</value>
+  </data>
+  <data name="SR_ModifyDone" xml:space="preserve">
+    <value>修改完毕，请重新开启服务器！</value>
+  </data>
+  <data name="SR_OnlineModeError" xml:space="preserve">
+    <value>出现错误，您确定您的服务器启动过一次吗？请手动修改server.properties文件或重试:</value>
+  </data>
+  <data name="SR_JavaDownloadDone" xml:space="preserve">
+    <value>Java下载完成！</value>
+  </data>
+  <data name="SR_DownloadFailedMsg" xml:space="preserve">
+    <value>下载失败！</value>
+  </data>
+  <data name="SR_NetworkError" xml:space="preserve">
+    <value>出现错误，请检查网络连接！</value>
+  </data>
+  <data name="SR_CheckingJava" xml:space="preserve">
+    <value>正在检查所选Java可用性，请稍等……</value>
+  </data>
+  <data name="SR_JavaAvailable" xml:space="preserve">
+    <value>检测完毕，Java可用！
+版本：</value>
+  </data>
+  <data name="SR_JavaCheckFailed" xml:space="preserve">
+    <value>检测Java可用性失败，您的Java似乎不可用！请检查是否选择正确！</value>
+  </data>
+  <data name="SR_ForgeInstaller" xml:space="preserve">
+    <value>您选择的服务端是forge安装器，是否将其展开安装？
+如果不展开安装，服务器可能无法开启！</value>
+  </data>
+  <data name="SR_AutoInstallFailed" xml:space="preserve">
+    <value>自动安装失败！是否尝试使用命令行安装方式？</value>
+  </data>
+  <data name="SR_DownloadFailedSimple" xml:space="preserve">
+    <value>下载失败！</value>
+  </data>
+  <data name="SR_DirChanged" xml:space="preserve">
+    <value>检测到您更改了服务器目录，是否将当前的服务器目录移动至新的目录？</value>
+  </data>
+  <data name="SR_YggInvalid" xml:space="preserve">
+    <value>外置登录地址不合法！请检查地址是否正确！</value>
+  </data>
+  <data name="SR_BackupParamsError" xml:space="preserve">
+    <value>备份设置参数有误，请检查！</value>
+  </data>
+  <data name="SR_GeneralError" xml:space="preserve">
+    <value>出现错误！请重试:</value>
+  </data>
+  <data name="SR_SelectFolder" xml:space="preserve">
+    <value>请选择文件夹</value>
+  </data>
+  <data name="SR_SelectJarFile" xml:space="preserve">
+    <value>请选择文件，通常为*.jar</value>
+  </data>
+  <data name="SR_JarFileFilter" xml:space="preserve">
+    <value>JAR文件|*.jar|所有文件类型|*.*</value>
+  </data>
+  <data name="SR_CoreNotInDir" xml:space="preserve">
+    <value>所选的服务端核心文件并不在服务器目录中，是否将其复制进服务器目录？
+若不复制，请留意勿将核心文件删除！</value>
+  </data>
+  <data name="SR_CoreCopied" xml:space="preserve">
+    <value>已将服务端核心复制到了服务器目录之中，您现在可以将源文件删除了！</value>
+  </data>
+  <data name="SR_SelectJavaExe" xml:space="preserve">
+    <value>请选择文件，通常为java.exe</value>
+  </data>
+  <data name="SR_ExeFileFilter" xml:space="preserve">
+    <value>EXE文件|*.exe|所有文件类型|*.*</value>
+  </data>
+  <data name="SR_ServerDownloadDone" xml:space="preserve">
+    <value>服务端下载完毕！已自动选择该服务端核心，请记得保存哦~</value>
+  </data>
+  <data name="SR_MemMinMax" xml:space="preserve">
+    <value>最小:{0}M,最大:{1}M</value>
+  </data>
+  <data name="SR_CheckingEnvVar" xml:space="preserve">
+    <value>正在检查环境变量可用性，请稍等……</value>
+  </data>
+  <data name="SR_EnvVarOK" xml:space="preserve">
+    <value>检查完毕，您的环境变量正常！</value>
+  </data>
+  <data name="SR_EnvVarFailed" xml:space="preserve">
+    <value>检测失败，您的环境变量似乎不存在！</value>
+  </data>
+  <data name="SR_SearchFirst" xml:space="preserve">
+    <value>请先进行搜索！</value>
+  </data>
+  <data name="SR_JavaDetectIntro" xml:space="preserve">
+    <value>即将开始检测电脑上的Java，此过程可能需要一些时间，请耐心等待。
+目前有两种检测模式，一种是简单检测，只检测一些关键目录，用时较少，普通用户可优先使用此模式。
+第二种是深度检测，将检测所有磁盘的所有目录，耗时可能会很久，请慎重选择！</value>
+  </data>
+  <data name="SR_DeepDetect" xml:space="preserve">
+    <value>开始深度检测</value>
+  </data>
+  <data name="SR_SimpleDetect" xml:space="preserve">
+    <value>开始简单检测</value>
+  </data>
+  <data name="SR_Scanning" xml:space="preserve">
+    <value>检测中，请稍等……</value>
+  </data>
+  <data name="SR_CheckComplete" xml:space="preserve">
+    <value>检查完毕！</value>
+  </data>
+  <data name="SR_NoJavaFound" xml:space="preserve">
+    <value>暂未找到Java</value>
+  </data>
+  <data name="SR_FetchingWait" xml:space="preserve">
+    <value>获取中，请稍后……</value>
+  </data>
+  <data name="SR_IPv6Success" xml:space="preserve">
+    <value>您的IPV6公网地址是：{0}
+已经帮您复制到剪贴板啦！
+注意：IPV6地址格式是：[IP]:端口
+若无法使用IPV6连接，请检查：
+-连接方是否有IPV6地址
+-防火墙是否拦截</value>
+  </data>
+  <data name="SR_IPv6SuccessTitle" xml:space="preserve">
+    <value>成功获取IPV6公网地址！</value>
+  </data>
+  <data name="SR_IPv6Failed" xml:space="preserve">
+    <value>出现错误，您当前的网络可能没有IPV6支持
+您可上网搜索IPV6开启教程或联系运营商以获取帮助
+错误信息：</value>
+  </data>
+  <data name="SR_IPv6FailedTitle" xml:space="preserve">
+    <value>获取IPV6地址失败！</value>
+  </data>
+  <data name="SR_AddFirst" xml:space="preserve">
+    <value>请先进行添加！</value>
+  </data>
+  <data name="SR_ShieldLogInput" xml:space="preserve">
+    <value>输入你想屏蔽的关键字，
+开服器将不会输出含有此关键字的日志</value>
+  </data>
+  <data name="SR_HighlightInput" xml:space="preserve">
+    <value>输入你想高亮日志的关键字</value>
+  </data>
+  <data name="SR_AutoClearWarning" xml:space="preserve">
+    <value>关闭此功能后，服务器输出界面超过一定数量的日志后将不再清屏，这样可能会造成性能损失，您确定要继续吗？</value>
+  </data>
+  <data name="SR_PleaseWait" xml:space="preserve">
+    <value>请稍等……</value>
+  </data>
+  <data name="SR_LogEmpty" xml:space="preserve">
+    <value>日志为空，请重试！</value>
+  </data>
+  <data name="SR_Uploading" xml:space="preserve">
+    <value>正在上传，模式 {0}，请稍等……</value>
+  </data>
+  <data name="SR_UploadSuccess" xml:space="preserve">
+    <value>日志地址: {0}
+已经复制到剪贴板啦！
+如果遇到问题且不会看日志,
+请把链接粘贴给别人寻求帮助，
+记得要详细描述你的问题哦！</value>
+  </data>
+  <data name="SR_UploadFailed" xml:space="preserve">
+    <value>请求失败: </value>
+  </data>
+  <data name="SR_ParseFailed" xml:space="preserve">
+    <value>解析失败</value>
+  </data>
+  <data name="SR_SelectAtLeastOne" xml:space="preserve">
+    <value>请先选择至少一个{0}！</value>
+  </data>
+  <data name="SR_Plugin" xml:space="preserve">
+    <value>插件</value>
+  </data>
+  <data name="SR_Mod" xml:space="preserve">
+    <value>模组</value>
+  </data>
+  <data name="SR_ModDescTip" xml:space="preserve">
+    <value>服务器需要添加的模组和客户端要添加的模组有所不同，增加方块、实体、玩法的MOD，是服务器需要安装的（也就是服务端和客户端都需要安装），而小地图、皮肤补丁、输入补丁、优化MOD、视觉显示类的MOD，服务器是一定不需要安装的（也就是只能加在客户端里）
+点击确定查看详细区分方法</value>
+  </data>
+  <data name="SR_SelectFile" xml:space="preserve">
+    <value>请选择文件</value>
+  </data>
+  <data name="SR_MaxBackupGE0" xml:space="preserve">
+    <value>最大备份数量必须大于等于0！</value>
+  </data>
+  <data name="SR_BackupDelayGE5" xml:space="preserve">
+    <value>备份保存延时必须大于等于5秒！</value>
+  </data>
+  <data name="SR_CustomPathInvalid" xml:space="preserve">
+    <value>自定义备份路径不合法！</value>
+  </data>
+  <data name="SR_ScriptFile" xml:space="preserve">
+    <value>脚本文件：</value>
+  </data>
+  <data name="SR_LogUploadBigFail" xml:space="preserve">
+    <value>请求失败：可能由于日志过大，请尝试手动上传日志或使用其他模式！
+{0}
+点击确定将使用其他模式进行上传</value>
+  </data>
+  <data name="SR_LogUploadManualFail" xml:space="preserve">
+    <value>请求失败: 可能日志过大，请尝试手动上传日志！
+{0}</value>
+  </data>
+  <data name="SR_ForgeLogNotFound" xml:space="preserve">
+    <value>未找到Forge安装日志！</value>
+  </data>
+  <data name="SR_UploadingDots" xml:space="preserve">
+    <value>正在上传···</value>
+  </data>
+  <data name="SR_ForgeLogUploadFail" xml:space="preserve">
+    <value>Forge安装日志上传失败！</value>
+  </data>
+  <data name="SR_CmdRemark" xml:space="preserve">
+    <value>指令</value>
+  </data>
+  <data name="SR_SetAdmin" xml:space="preserve">
+    <value>设置管理员</value>
+  </data>
+  <data name="SR_RemoveAdmin" xml:space="preserve">
+    <value>去除管理员</value>
+  </data>
+  <data name="SR_BanPlayerCmd" xml:space="preserve">
+    <value>封禁玩家</value>
+  </data>
+  <data name="SR_UnbanPlayer" xml:space="preserve">
+    <value>解封玩家</value>
+  </data>
+  <data name="SR_SayAll" xml:space="preserve">
+    <value>全服说话</value>
+  </data>
+  <data name="SR_RestartWindowHint" xml:space="preserve">
+    <value>要使重置生效需重启此窗口，请您手动关闭此窗口并打开</value>
+  </data>
+  <data name="SR_CmdInputHint" xml:space="preserve">
+    <value>指令（如：op，无需 '/' 前缀）：</value>
+  </data>
+  <data name="SR_RemarkInputHint" xml:space="preserve">
+    <value>备注（如：给管理员，非必填）：</value>
+  </data>
+  <data name="SR_AliasInputHint" xml:space="preserve">
+    <value>别名（如：o，可在控制台快速调用，非必填）：</value>
+  </data>
+  <data name="SR_AddFastCmd" xml:space="preserve">
+    <value>添加快捷指令</value>
+  </data>
+  <data name="SR_Input" xml:space="preserve">
+    <value>输入</value>
+  </data>
+  <data name="SR_CmdEmpty" xml:space="preserve">
+    <value>指令不能为空！</value>
+  </data>
+  <data name="SR_AddFailed" xml:space="preserve">
+    <value>添加失败: </value>
+  </data>
+  <data name="SR_CantDeleteRoot" xml:space="preserve">
+    <value>无法删除根命令或未选中任何项！</value>
+  </data>
+  <data name="SR_SaveTaskConfig" xml:space="preserve">
+    <value>保存任务配置</value>
+  </data>
+  <data name="SR_LoadTaskConfig" xml:space="preserve">
+    <value>加载任务配置</value>
+  </data>
+  <data name="SR_StopTaskFirst" xml:space="preserve">
+    <value>请先停止该任务！</value>
+  </data>
+  <data name="SR_StopAllTasksFirst" xml:space="preserve">
+    <value>请先停止所有任务！</value>
+  </data>
+  <data name="SR_NoneText" xml:space="preserve">
+    <value>无</value>
+  </data>
+  <data name="SR_CronValid" xml:space="preserve">
+    <value>✓ 有效，下次执行: </value>
+  </data>
+  <data name="SR_CronInvalid" xml:space="preserve">
+    <value>✗ 无效</value>
+  </data>
+  <data name="SR_SelectTaskFirst" xml:space="preserve">
+    <value>执行失败，请先选择一个任务！</value>
+  </data>
+  <data name="SR_CronInvalidDialog" xml:space="preserve">
+    <value>Cron 表达式无效，请检查后重试！</value>
+  </data>
+  <data name="SR_ExecFailedPrefix" xml:space="preserve">
+    <value>执行失败，</value>
+  </data>
+  <data name="SR_ExecSuccessTime" xml:space="preserve">
+    <value>执行成功  时间：</value>
+  </data>
+  <data name="SR_ServerNotOpenTime" xml:space="preserve">
+    <value>服务器未开启  时间：</value>
+  </data>
+  <data name="SR_ExecFailedTime" xml:space="preserve">
+    <value>执行失败: {0}  时间：</value>
+  </data>
+  <data name="SR_LoadSuccess" xml:space="preserve">
+    <value>加载成功！</value>
+  </data>
+  <data name="SR_SaveSuccess" xml:space="preserve">
+    <value>保存成功！</value>
+  </data>
+  <data name="SR_ClearSuccess" xml:space="preserve">
+    <value>清除成功！</value>
+  </data>
+  <data name="SR_BackupStarting" xml:space="preserve">
+    <value>开始执行备份···</value>
+  </data>
+  <data name="SR_NoWorldFolder" xml:space="preserve">
+    <value>未找到任何世界存档文件夹（包括主世界、下界、末地），备份失败！</value>
+  </data>
+  <data name="SR_BackupSuccessMsg" xml:space="preserve">
+    <value>存档备份成功！已保存至：{0}</value>
+  </data>
+  <data name="SR_BackupFailedMsg" xml:space="preserve">
+    <value>备份失败！</value>
+  </data>
+  <data name="SR_SelectBackupFolder" xml:space="preserve">
+    <value>请选择一个文件夹用于存放备份文件</value>
+  </data>
+  <data name="SR_CustomBackupPathEmpty" xml:space="preserve">
+    <value>自定义备份路径为空！</value>
+  </data>
+  <data name="SR_OpenBackupFailed" xml:space="preserve">
+    <value>打开备份文件夹失败！</value>
+  </data>
+  <data name="SR_NotLatestVersion" xml:space="preserve">
+    <value>由于用户拒绝更新或检测更新失败，此版本可能并非最新版本</value>
+  </data>
+  <data name="SR_BackupWaitSec" xml:space="preserve">
+    <value>备份保存等待 (秒) - 不知道就保持默认即可：</value>
+  </data>
+  <data name="SR_BackupLocation" xml:space="preserve">
+    <value>备份位置：</value>
+  </data>
+  <data name="SR_BackupLocInServer" xml:space="preserve">
+    <value>(服务端内)服务器目录/msl-backups</value>
+  </data>
+  <data name="SR_BackupLocOutServer" xml:space="preserve">
+    <value>(服务端外)MSL/server-backups</value>
+  </data>
+  <data name="SR_BackupLocCustom" xml:space="preserve">
+    <value>自定义</value>
+  </data>
+  <data name="SR_CustomBackupPathLabel" xml:space="preserve">
+    <value>自定义备份路径：</value>
+  </data>
+  <data name="SR_BackupCronTip" xml:space="preserve">
+    <value>若需要启用自动备份，请在定时任务添加指令为'.backup'的任务即可！</value>
+  </data>
+  <data name="SR_RunnerFeaturesTitle" xml:space="preserve">
+    <value>开服器功能</value>
+  </data>
+  <data name="SR_DashboardFunc" xml:space="preserve">
+    <value>仪表盘功能：</value>
+  </data>
+  <data name="SR_ServerControl" xml:space="preserve">
+    <value>服务器控制：</value>
+  </data>
+  <data name="SR_CmdCompletion" xml:space="preserve">
+    <value>启用命令补全功能（ConPTY）：</value>
+  </data>
+  <data name="SR_AutoRestart" xml:space="preserve">
+    <value>关服自动重启：</value>
+  </data>
+  <data name="SR_ForceUTF8" xml:space="preserve">
+    <value>强制服务器文件UTF8编码：</value>
+  </data>
+  <data name="SR_ForceKillProcTree" xml:space="preserve">
+    <value>强制关服时结束进程树（仅在非ConPTY环境下生效）：</value>
+  </data>
+  <data name="SR_ServerTerminal" xml:space="preserve">
+    <value>服务器终端：</value>
+  </data>
+  <data name="SR_LogOutputLabel" xml:space="preserve">
+    <value>日志输出：</value>
+  </data>
+  <data name="SR_AutoClearScreen" xml:space="preserve">
+    <value>自动清屏：</value>
+  </data>
+  <data name="SR_ShieldStackTrace" xml:space="preserve">
+    <value>屏蔽堆栈追踪：</value>
+  </data>
+  <data name="SR_FormatLogHeader" xml:space="preserve">
+    <value>格式化的日志头信息：</value>
+  </data>
+  <data name="SR_InputEncoding" xml:space="preserve">
+    <value>输入编码：</value>
+  </data>
+  <data name="SR_OutputEncoding" xml:space="preserve">
+    <value>输出编码：</value>
+  </data>
+  <data name="SR_SpecialLogs" xml:space="preserve">
+    <value>特殊日志：</value>
+  </data>
+  <data name="SR_ShieldKeywordLog" xml:space="preserve">
+    <value>屏蔽关键字日志</value>
+  </data>
+  <data name="SR_HighlightKeywordLog" xml:space="preserve">
+    <value>高亮关键字日志</value>
+  </data>
+  <data name="SR_OtherFeatures" xml:space="preserve">
+    <value>其它功能项：</value>
+  </data>
+  <data name="SR_DisableOnlineMode" xml:space="preserve">
+    <value>关闭正版验证</value>
+  </data>
+  <data name="SR_UploadServerLog" xml:space="preserve">
+    <value>上传服务器日志</value>
+  </data>
+  <data name="SR_UploadForgeLog" xml:space="preserve">
+    <value>上传Forge安装日志</value>
+  </data>
+  <data name="SR_AILogAnalysis" xml:space="preserve">
+    <value>AI日志分析功能</value>
+  </data>
+  <data name="SR_ViewIPv6" xml:space="preserve">
+    <value>查看IPV6公网地址</value>
+  </data>
+  <data name="SR_QuickCmdBar" xml:space="preserve">
+    <value>快捷指令栏</value>
+  </data>
+  <data name="SR_Add" xml:space="preserve">
+    <value>添加</value>
+  </data>
+  <data name="SR_Delete" xml:space="preserve">
+    <value>删除</value>
+  </data>
+  <data name="SR_Reset" xml:space="preserve">
+    <value>重置</value>
+  </data>
+  <data name="SR_ScheduledTasks" xml:space="preserve">
+    <value>定时任务</value>
+  </data>
+  <data name="SR_TaskListTitle" xml:space="preserve">
+    <value>任务列表（添加任务后选中即可编辑）</value>
+  </data>
+  <data name="SR_AddNewTask" xml:space="preserve">
+    <value>添加新任务</value>
+  </data>
+  <data name="SR_DeleteSelectedTask" xml:space="preserve">
+    <value>删除所选任务</value>
+  </data>
+  <data name="SR_DeleteAllTasks" xml:space="preserve">
+    <value>删除所有任务</value>
+  </data>
+  <data name="SR_ClearTaskConfig" xml:space="preserve">
+    <value>清除任务配置</value>
+  </data>
+  <data name="SR_QuickTemplate" xml:space="preserve">
+    <value>快捷模板：</value>
+  </data>
+  <data name="SR_Every10Sec" xml:space="preserve">
+    <value>每10秒</value>
+  </data>
+  <data name="SR_EveryMin" xml:space="preserve">
+    <value>每分钟</value>
+  </data>
+  <data name="SR_Every5Min" xml:space="preserve">
+    <value>每5分钟</value>
+  </data>
+  <data name="SR_Every30Min" xml:space="preserve">
+    <value>每30分钟</value>
+  </data>
+  <data name="SR_EveryHour" xml:space="preserve">
+    <value>每小时</value>
+  </data>
+  <data name="SR_EveryDay3AM" xml:space="preserve">
+    <value>每天凌晨3点</value>
+  </data>
+  <data name="SR_EverySun3AM" xml:space="preserve">
+    <value>每周日凌晨3点</value>
+  </data>
+  <data name="SR_CommandLabel" xml:space="preserve">
+    <value>指令：</value>
+  </data>
+  <data name="SR_CronFormatTip" xml:space="preserve">
+    <value>提示：Cron 格式为「秒 分 时 日 月 周」6字段。MSL备份指令为 .backup，可填入指令栏。</value>
+  </data>
+  <data name="SR_LastExec" xml:space="preserve">
+    <value>上次执行：</value>
+  </data>
+  <data name="SR_StopScheduledTask" xml:space="preserve">
+    <value>停止定时任务</value>
+  </data>
+  <data name="SR_StartScheduledTask" xml:space="preserve">
+    <value>启动定时任务</value>
+  </data>
+  <data name="SR_Remove" xml:space="preserve">
+    <value>移除</value>
+  </data>
+  <data name="SR_IconLoadFailed" xml:space="preserve">
+    <value>加载服务器Icon失败。</value>
+  </data>
+  <data name="SR_ServerClosedRestartEvent" xml:space="preserve">
+    <value>服务器已关闭，触发重启事件...</value>
+  </data>
+  <data name="SR_SendCmdError" xml:space="preserve">
+    <value>发送指令时出错：{0}</value>
+  </data>
+  <data name="SR_ErrorPrefix" xml:space="preserve">
+    <value>错误: {0}</value>
+  </data>
+  <data name="SR_ScheduledBackupStarting" xml:space="preserve">
+    <value>[MSL备份] 定时备份任务开始执行~</value>
+  </data>
+  <data name="SR_ScheduledTaskExecCmd" xml:space="preserve">
+    <value>[MSL定时任务] 执行指令：{0}</value>
+  </data>
+  <data name="SR_TellrawBackupInProgress" xml:space="preserve">
+    <value>正在进行服务器存档备份，请勿关闭服务器哦，否则可能造成回档！备份期间不会影响正常游戏~</value>
+  </data>
+  <data name="SR_BackupStartingLog" xml:space="preserve">
+    <value>[MSL备份]开始执行备份···</value>
+  </data>
+  <data name="SR_TellrawBackupNoWorld" xml:space="preserve">
+    <value>备份失败！未找到任何世界存档文件夹！</value>
+  </data>
+  <data name="SR_BackupUsingDefaultPath" xml:space="preserve">
+    <value>[MSL备份]自定义备份路径为空，已使用默认路径！</value>
+  </data>
+  <data name="SR_BackupDeletedOld" xml:space="preserve">
+    <value>[MSL备份]已删除旧备份：{0}</value>
+  </data>
+  <data name="SR_BackupDeleteOldFailed" xml:space="preserve">
+    <value>[MSL备份]删除旧备份 {0} 失败：{1}</value>
+  </data>
+  <data name="SR_BackupCleanupFailed" xml:space="preserve">
+    <value>[MSL备份]目录检查或旧备份清理失败：{0}</value>
+  </data>
+  <data name="SR_BackupCompressing" xml:space="preserve">
+    <value>[MSL备份]正在压缩存档文件，请稍等···</value>
+  </data>
+  <data name="SR_TellrawBackupDoneDetail" xml:space="preserve">
+    <value> 服务器存档备份完成！
+</value>
+  </data>
+  <data name="SR_TellrawFileName" xml:space="preserve">
+    <value>文件名: </value>
+  </data>
+  <data name="SR_TellrawFileSize" xml:space="preserve">
+    <value>
+大小: </value>
+  </data>
+  <data name="SR_BackupFileInfoFailed" xml:space="preserve">
+    <value>[MSL备份]无法获取备份文件信息：{0}</value>
+  </data>
+  <data name="SR_TellrawBackupDone" xml:space="preserve">
+    <value>服务器存档备份完成！</value>
+  </data>
+  <data name="SR_BackupSuccessLog" xml:space="preserve">
+    <value>[MSL备份]存档备份成功！已保存至：{0}</value>
+  </data>
+  <data name="SR_BackupFailedLog" xml:space="preserve">
+    <value>[MSL备份]备份失败！{0}</value>
+  </data>
+  <data name="SR_TellrawBackupError" xml:space="preserve">
+    <value>备份过程中发生错误，备份失败！</value>
+  </data>
+  <data name="SR_ExclusiveLockError" xml:space="preserve">
+    <value>无法以共享只读模式打开文件 '{0}'。服务器施加了排他锁。错误: {1}</value>
+  </data>
+  <data name="SR_GameModeDesc" xml:space="preserve">
+    <value>游戏模式说明（请根据配置文件的格式进行选择）</value>
+  </data>
+  <data name="SR_GameDiffDesc" xml:space="preserve">
+    <value>游戏难度说明（请根据配置文件的格式进行选择）</value>
+  </data>
+  <data name="SR_Survival" xml:space="preserve">
+    <value>生存</value>
+  </data>
+  <data name="SR_Creative" xml:space="preserve">
+    <value>创造</value>
+  </data>
+  <data name="SR_Adventure" xml:space="preserve">
+    <value>冒险</value>
+  </data>
+  <data name="SR_Spectator" xml:space="preserve">
+    <value>旁观</value>
+  </data>
+  <data name="SR_Peaceful" xml:space="preserve">
+    <value>和平</value>
+  </data>
+  <data name="SR_Easy" xml:space="preserve">
+    <value>简单</value>
+  </data>
+  <data name="SR_Normal" xml:space="preserve">
+    <value>普通</value>
+  </data>
+  <data name="SR_Hard" xml:space="preserve">
+    <value>困难</value>
+  </data>
+  <data name="SR_Save" xml:space="preserve">
+    <value>保存</value>
+  </data>
+  <data name="SR_ChangeServerIcon" xml:space="preserve">
+    <value>修改服务器图标</value>
+  </data>
+  <data name="SR_ChangeWorldMap" xml:space="preserve">
+    <value>更换主世界地图</value>
+  </data>
+  <data name="SR_MoreConfig" xml:space="preserve">
+    <value>修改更多配置</value>
+  </data>
+  <data name="SR_CantManageMods" xml:space="preserve">
+    <value>无法管理该服务器的模组</value>
+  </data>
+  <data name="SR_NoModsFolderDesc" xml:space="preserve">
+    <value>未检测到mods文件夹，您所使用的服务端核心支持加载模组吗？
+请重启服务器并检查所用服务端是否支持相应功能后再试</value>
+  </data>
+  <data name="SR_CantManagePlugins" xml:space="preserve">
+    <value>无法管理该服务器的插件</value>
+  </data>
+  <data name="SR_NoPluginsFolder" xml:space="preserve">
+    <value>未检测到plugins文件夹，您所使用的服务端核心支持加载插件吗？
+请重启服务器并检查所用服务端是否支持相应功能后再试</value>
+  </data>
+  <data name="SR_Pause" xml:space="preserve">
+    <value>暂停</value>
+  </data>
+  <data name="SR_Downloading" xml:space="preserve">
+    <value>下载中……</value>
+  </data>
+  <data name="SR_Paused" xml:space="preserve">
+    <value>已暂停</value>
+  </data>
+  <data name="SR_FileExistsDownloadDone" xml:space="preserve">
+    <value>文件已存在，下载完成</value>
+  </data>
+  <data name="SR_Resume" xml:space="preserve">
+    <value>继续</value>
+  </data>
+  <data name="SR_CancellingTask" xml:space="preserve">
+    <value>取消任务中，请稍等……</value>
+  </data>
+  <data name="SR_PauseAll" xml:space="preserve">
+    <value>全部暂停</value>
+  </data>
+  <data name="SR_ResumeAll" xml:space="preserve">
+    <value>全部继续</value>
+  </data>
+  <data name="SR_CancelAll" xml:space="preserve">
+    <value>全部取消</value>
+  </data>
+  <data name="SR_RemoveDoneCancelled" xml:space="preserve">
+    <value>移除已完成/已取消</value>
+  </data>
+  <data name="SR_StatusPending" xml:space="preserve">
+    <value>等待中</value>
+  </data>
+  <data name="SR_StatusInProgress" xml:space="preserve">
+    <value>下载中</value>
+  </data>
+  <data name="SR_StatusPaused" xml:space="preserve">
+    <value>已暂停</value>
+  </data>
+  <data name="SR_StatusCancelling" xml:space="preserve">
+    <value>取消中</value>
+  </data>
+  <data name="SR_StatusCancelled" xml:space="preserve">
+    <value>已取消</value>
+  </data>
+  <data name="SR_StatusCompleted" xml:space="preserve">
+    <value>已完成</value>
+  </data>
+  <data name="SR_StatusFailed" xml:space="preserve">
+    <value>失败: {0}</value>
+  </data>
+  <data name="SR_StatusRetrying" xml:space="preserve">
+    <value>失败，将重试: {0}</value>
+  </data>
+  <data name="SR_RemoveItem" xml:space="preserve">
+    <value>移除</value>
+  </data>
+  <data name="SR_CancelItem" xml:space="preserve">
+    <value>取消</value>
+  </data>
+  <data name="SR_TimeHours" xml:space="preserve">
+    <value>{0}时{1}分</value>
+  </data>
+  <data name="SR_TimeMinutes" xml:space="preserve">
+    <value>{0}分{1}秒</value>
+  </data>
+  <data name="SR_TimeSeconds" xml:space="preserve">
+    <value>{0}秒</value>
+  </data>
+  <data name="SR_DownloadItem" xml:space="preserve">
+    <value>下载项</value>
+  </data>
+  <data name="SR_Speed" xml:space="preserve">
+    <value>速度：</value>
+  </data>
+  <data name="SR_RemainingTime" xml:space="preserve">
+    <value> 剩余时间：</value>
+  </data>
+  <data name="SR_DownloadingLabel" xml:space="preserve">
+    <value>正在下载: </value>
+  </data>
+  <data name="SR_NeoForgeInstaller" xml:space="preserve">
+    <value>NeoForge安装器</value>
+  </data>
+  <data name="SR_SourceMSL" xml:space="preserve">
+    <value>下载源：MSL镜像源</value>
+  </data>
+  <data name="SR_SourceMSLBackup" xml:space="preserve">
+    <value>下载源：MSL镜像源 - 备用</value>
+  </data>
+  <data name="SR_SourceOfficial" xml:space="preserve">
+    <value>下载源：官方</value>
+  </data>
+  <data name="SR_Concurrency1" xml:space="preserve">
+    <value>并发数：1</value>
+  </data>
+  <data name="SR_Concurrency2" xml:space="preserve">
+    <value>并发数：2</value>
+  </data>
+  <data name="SR_Concurrency3" xml:space="preserve">
+    <value>并发数：3</value>
+  </data>
+  <data name="SR_Concurrency4" xml:space="preserve">
+    <value>并发数：4</value>
+  </data>
+  <data name="SR_Concurrency5" xml:space="preserve">
+    <value>并发数：5</value>
+  </data>
+  <data name="SR_Concurrency6" xml:space="preserve">
+    <value>并发数：6</value>
+  </data>
+  <data name="SR_Concurrency7" xml:space="preserve">
+    <value>并发数：7</value>
+  </data>
+  <data name="SR_Concurrency8" xml:space="preserve">
+    <value>并发数：8</value>
+  </data>
+  <data name="SR_CurrentStatus" xml:space="preserve">
+    <value>当前状态：</value>
+  </data>
+  <data name="SR_WaitingInstall" xml:space="preserve">
+    <value>等待安装开始……</value>
+  </data>
+  <data name="SR_UseCmdInstall" xml:space="preserve">
+    <value>改用命令行安装</value>
+  </data>
+  <data name="SR_ServerInfoInput" xml:space="preserve">
+    <value>服务器信息输入</value>
+  </data>
+  <data name="SR_AnalysisOutput" xml:space="preserve">
+    <value>分析结果输出</value>
+  </data>
+  <data name="SR_UserInfo" xml:space="preserve">
+    <value>用户信息</value>
+  </data>
+  <data name="SR_ServerInfo" xml:space="preserve">
+    <value>服务器信息</value>
+  </data>
+  <data name="SR_ServerLog" xml:space="preserve">
+    <value>服务器日志</value>
+  </data>
+  <data name="SR_SelectModel" xml:space="preserve">
+    <value>选择模型</value>
+  </data>
+  <data name="SR_Marketplace" xml:space="preserve">
+    <value>商城</value>
+  </data>
+  <data name="SR_StartAnalysis" xml:space="preserve">
+    <value>开始分析</value>
+  </data>
+  <data name="SR_AnalysisResultPlaceholder" xml:space="preserve">
+    <value>此处显示AI分析结果……</value>
+  </data>
+  <data name="SR_PleaseInputContent" xml:space="preserve">
+    <value>请输入内容！</value>
+  </data>
+  <data name="DownloadDialog_DoubleClickForceClose" xml:space="preserve">
+    <value>双击取消按钮可强制关闭此对话框（不推荐）</value>
+  </data>
+  <data name="Page_ServerList_DownloadResources" xml:space="preserve">
+    <value>下载资源</value>
+  </data>
+  <data name="Page_ServerList_DownloadServerCore" xml:space="preserve">
+    <value>下载服务端</value>
+  </data>
+  <data name="Page_ServerList_StatusLabel" xml:space="preserve">
+    <value>状态：</value>
+  </data>
+  <data name="Page_ServerList_InstanceID" xml:space="preserve">
+    <value>实例ID：</value>
+  </data>
+  <data name="Page_ServerList_ServerSetting" xml:space="preserve">
+    <value>服务器设置</value>
+  </data>
+  <data name="Page_ServerList_DeleteServer" xml:space="preserve">
+    <value>删除该服务器</value>
+  </data>
+  <data name="Page_ServerList_StatusNotRunning" xml:space="preserve">
+    <value>未运行</value>
+  </data>
+  <data name="Page_ServerList_StatusRunning" xml:space="preserve">
+    <value>运行中</value>
+  </data>
+  <data name="Page_ServerList_StatusStarted" xml:space="preserve">
+    <value>已开服</value>
+  </data>
+  <data name="Page_ServerList_RefreshSuccess" xml:space="preserve">
+    <value>刷新成功！</value>
+  </data>
+  <data name="Page_ServerList_NoServer" xml:space="preserve">
+    <value>您还没有一个服务器呢，点击右下角加号创建一个吧~</value>
+  </data>
+  <data name="Page_ServerList_Dialog_CloseFirst" xml:space="preserve">
+    <value>请在关闭服务器并关掉服务器窗口后再进行删除！</value>
+  </data>
+  <data name="Page_ServerList_Dialog_ConfirmDelete" xml:space="preserve">
+    <value>您确定要删除该服务器吗？</value>
+  </data>
+  <data name="Page_ServerList_Dialog_DeleteDir" xml:space="preserve">
+    <value>是否删除该服务器的目录？（服务器目录中的所有文件都会被移至回收站）</value>
+  </data>
+  <data name="Page_ServerList_DirDeleted" xml:space="preserve">
+    <value>服务器目录已成功移至回收站！</value>
+  </data>
+  <data name="Page_ServerList_DirDeleteFailed" xml:space="preserve">
+    <value>服务器目录删除失败！</value>
+  </data>
+  <data name="Page_ServerList_Deleted" xml:space="preserve">
+    <value>删除服务器成功！</value>
+  </data>
+  <data name="Page_ServerList_DeleteFailed" xml:space="preserve">
+    <value>删除服务器失败！</value>
+  </data>
+  <data name="Page_ServerList_ErrorNoSelection" xml:space="preserve">
+    <value>出现错误，请检查您是否选择了服务器！</value>
+  </data>
+  <data name="Page_ServerList_OpeningFolder" xml:space="preserve">
+    <value>正在为您打开服务器文件夹……</value>
+  </data>
+  <data name="Page_ServerList_DownloadModTip" xml:space="preserve">
+    <value>这是单独的模组/插件/整合包下载界面
+下载的文件均在MSL\Downloads文件夹内</value>
+  </data>
+  <data name="Page_ServerList_DownloadCoreTip" xml:space="preserve">
+    <value>这是单独的服务端下载界面
+下载的服务端均在MSL\Downloads文件夹内</value>
+  </data>
+  <data name="Page_ServerList_YggWarning" xml:space="preserve">
+    <value>您配置了外置登录但是外置登录库并未下载
+如需正常使用外置登录+命令行开服，请先在MSL内正常开服一次！</value>
+  </data>
+  <data name="Page_About_Contributors" xml:space="preserve">
+    <value>项目贡献者 (Contributors)</value>
+  </data>
+  <data name="Page_About_Thanks" xml:space="preserve">
+    <value>致谢与支持 (Stargazers)</value>
+  </data>
+  <data name="Page_About_ThanksContent" xml:space="preserve">
+    <value>感谢以下小伙伴为 MSL 点亮的星星！每一次 Star 都是对开源项目最大的鼓励。</value>
+  </data>
+  <data name="Page_About_GitHubStar" xml:space="preserve">
+    <value>觉得好用？欢迎去 GitHub 留个脚印：</value>
+  </data>
+  <data name="Page_About_LoadMore" xml:space="preserve">
+    <value>展开更多...</value>
+  </data>
+  <data name="Page_About_OpenSourceRepo" xml:space="preserve">
+    <value>项目开源仓库 (Github)</value>
+  </data>
+  <data name="Page_FrpcList_MyInfo" xml:space="preserve">
+    <value>我的MSL Frp信息</value>
+  </data>
+  <data name="Page_FrpcList_AddTunnel" xml:space="preserve">
+    <value>添加隧道</value>
+  </data>
+  <data name="Page_FrpcList_DeleteSelected" xml:space="preserve">
+    <value>删除选中</value>
+  </data>
+  <data name="Page_FrpcList_MappingRunning" xml:space="preserve">
+    <value>该映射正在运行中，请先关闭！</value>
+  </data>
+  <data name="Page_FrpcList_UnnamedTunnel" xml:space="preserve">
+    <value>未命名的隧道</value>
+  </data>
+  <data name="Page_FrpcList_MslUserCenter" xml:space="preserve">
+    <value>MSL用户中心 - MSLFrp信息</value>
+  </data>
+  <data name="Page_FrpcPage_Return" xml:space="preserve">
+    <value>返回Frpc列表</value>
+  </data>
+  <data name="Page_FrpcPage_NodeStatus" xml:space="preserve">
+    <value>节点状态</value>
+  </data>
+  <data name="Page_FrpcPage_CopySuccess" xml:space="preserve">
+    <value>复制成功！</value>
+  </data>
+  <data name="Page_FrpcPage_CopyFailed" xml:space="preserve">
+    <value>复制失败！</value>
+  </data>
+  <data name="Page_FrpcPage_StartingMapping" xml:space="preserve">
+    <value>正在启动内网映射！</value>
+  </data>
+  <data name="Page_FrpcPage_Starting" xml:space="preserve">
+    <value>启动中，请稍候……
+</value>
+  </data>
+  <data name="Page_FrpcPage_SakuraFrpNode" xml:space="preserve">
+    <value>SakuraFrp节点</value>
+  </data>
+  <data name="Page_FrpcPage_MEFrpNode" xml:space="preserve">
+    <value>ME Frp节点</value>
+  </data>
+  <data name="Page_FrpcPage_ErrorRetry" xml:space="preserve">
+    <value>出现错误，请重试</value>
+  </data>
+  <data name="Page_FrpcPage_ErrorCheckAV" xml:space="preserve">
+    <value>出现错误，请检查是否有杀毒软件误杀并重试:</value>
+  </data>
+  <data name="Page_FrpcPage_Error" xml:space="preserve">
+    <value>错误</value>
+  </data>
+  <data name="Page_FrpcPage_CustomFrpcNotFound" xml:space="preserve">
+    <value>找不到自定义的Frpc客户端，请重新配置！
+</value>
+  </data>
+  <data name="Page_FrpcPage_ErrorCheckAVFull" xml:space="preserve">
+    <value>出现错误，请检查是否有杀毒软件误杀并重试:</value>
+  </data>
+  <data name="Page_FrpcPage_MappingClosed" xml:space="preserve">
+    <value>内网映射已关闭！</value>
+  </data>
+  <data name="Page_FrpcPage_BridgeFailed" xml:space="preserve">
+    <value>内网映射桥接失败！</value>
+  </data>
+  <data name="Page_FrpcPage_BridgeSuccess" xml:space="preserve">
+    <value>内网映射桥接成功！</value>
+  </data>
+  <data name="Page_FrpcPage_LoginSuccess" xml:space="preserve">
+    <value>登录服务器成功！
+</value>
+  </data>
+  <data name="Page_FrpcPage_BridgeSuccessFull" xml:space="preserve">
+    <value>内网映射桥接成功！您可复制IP进入游戏了！
+</value>
+  </data>
+  <data name="Page_FrpcPage_ConnectionTimeout" xml:space="preserve">
+    <value>连接超时，该节点可能下线，请重新配置！
+</value>
+  </data>
+  <data name="Page_FrpcPage_GetChmlDownloadFailed" xml:space="preserve">
+    <value>获取ChmlFrp下载地址失败！</value>
+  </data>
+  <data name="Page_FrpcPage_GetMEDownloadFailed" xml:space="preserve">
+    <value>获取ME Frp下载地址失败！
+请重新在添加隧道页面登录MEFrp并选择保存登录状态</value>
+  </data>
+  <data name="Page_FrpcPage_GetMEDownloadFailedShort" xml:space="preserve">
+    <value>获取ME Frp下载地址失败！</value>
+  </data>
+  <data name="Page_FrpcPage_NoWindowsAmd64" xml:space="preserve">
+    <value>未找到Windows AMD64版本文件</value>
+  </data>
+  <data name="Page_FrpcPage_MEDownloadFailed" xml:space="preserve">
+    <value>ME Frp下载失败！</value>
+  </data>
+  <data name="Page_FrpcPage_Status_SakuraFrp" xml:space="preserve">
+    <value>SakuraFrp节点</value>
+  </data>
+  <data name="Page_FrpcPage_Status_MEFrp" xml:space="preserve">
+    <value>ME Frp节点</value>
+  </data>
+  <data name="Page_OnlinePage_STUNTutorial" xml:space="preserve">
+    <value>STUN隧道教程</value>
+  </data>
+  <data name="Page_OnlinePage_TabP2P" xml:space="preserve">
+    <value>点对点联机 (P2P)</value>
+  </data>
+  <data name="Page_OnlinePage_TabSTUN" xml:space="preserve">
+    <value>STUN 隧道 (直连)</value>
+  </data>
+  <data name="Page_OnlinePage_STUNTip" xml:space="preserve">
+    <value>提示：本功能的开启条件比较苛刻，需要您的本地网络为 NAT1 全锥形 (Full-Cone)。若遭遇连不上或超时，请切换到 FRP 映射 或「点对点联机」。</value>
+  </data>
+  <data name="Page_OnlinePage_BasicSettings" xml:space="preserve">
+    <value>基础设置</value>
+  </data>
+  <data name="Page_OnlinePage_LocalPort" xml:space="preserve">
+    <value>游戏本地端口</value>
+  </data>
+  <data name="Page_OnlinePage_CloseSTUN" xml:space="preserve">
+    <value>关闭 STUN 隧道</value>
+  </data>
+  <data name="Page_OnlinePage_OpenSTUN" xml:space="preserve">
+    <value>开启 STUN 隧道</value>
+  </data>
+  <data name="Page_OnlinePage_PublicDirectAddr" xml:space="preserve">
+    <value>公网直连地址: </value>
+  </data>
+  <data name="Page_OnlinePage_NotEnabled" xml:space="preserve">
+    <value>未开启</value>
+  </data>
+  <data name="Page_OnlinePage_Copy" xml:space="preserve">
+    <value>复制</value>
+  </data>
+  <data name="Page_OnlinePage_RealtimeSpeed" xml:space="preserve">
+    <value>实时网速：</value>
+  </data>
+  <data name="Page_OnlinePage_TrafficStats" xml:space="preserve">
+    <value>流量统计：</value>
+  </data>
+  <data name="Page_OnlinePage_SentReceived" xml:space="preserve">
+    <value>已发送: {0} | 已接收: {1}</value>
+  </data>
+  <data name="Page_OnlinePage_ActiveConnections" xml:space="preserve">
+    <value>当前连接数: {0} / {1}</value>
+  </data>
+  <data name="Page_OnlinePage_AdvancedSettings" xml:space="preserve">
+    <value>高级设置</value>
+  </data>
+  <data name="Page_OnlinePage_EnableTrafficMonitor" xml:space="preserve">
+    <value>启用实时流量与网速监控</value>
+  </data>
+  <data name="Page_OnlinePage_EnableProxyProtocol" xml:space="preserve">
+    <value>启用 Proxy Protocol v2 (透传玩家真实IP)</value>
+  </data>
+  <data name="Page_OnlinePage_ShowConnLog" xml:space="preserve">
+    <value>显示连接日志</value>
+  </data>
+  <data name="Page_OnlinePage_AutoSrvHeader" xml:space="preserve">
+    <value>自动 SRV 解析到 MSLFrp 免费域名</value>
+  </data>
+  <data name="Page_OnlinePage_EnableAutoResolve" xml:space="preserve">
+    <value>开启自动解析到云端映射域名</value>
+  </data>
+  <data name="Page_OnlinePage_CustomDomain" xml:space="preserve">
+    <value>自定义解析域名:</value>
+  </data>
+  <data name="Page_OnlinePage_WaitingTunnel" xml:space="preserve">
+    <value>等待隧道启动......</value>
+  </data>
+  <data name="Page_OnlinePage_StartingTunnel" xml:space="preserve">
+    <value>正在启动隧道中...</value>
+  </data>
+  <data name="Page_OnlinePage_StartupFailed" xml:space="preserve">
+    <value>无法启动，请改用其他 Frp 映射或点对点联机</value>
+  </data>
+  <data name="Page_OnlinePage_CopySuccess" xml:space="preserve">
+    <value>公网直连地址已成功复制到剪贴板！</value>
+  </data>
+  <data name="Page_OnlinePage_CopyFailed" xml:space="preserve">
+    <value>复制失败: </value>
+  </data>
+  <data name="Page_OnlinePage_NoValidAddress" xml:space="preserve">
+    <value>当前没有有效的公网直连地址可供复制！</value>
+  </data>
+  <data name="Page_OnlinePage_STUNSuccess" xml:space="preserve">
+    <value>STUN 隧道穿透成功！</value>
+  </data>
+  <data name="Page_OnlinePage_ConnectionFailed" xml:space="preserve">
+    <value>转发失败：无法连接到本地游戏端口</value>
+  </data>
+  <data name="Page_Home_NoticeFailed" xml:space="preserve">
+    <value>获取公告失败...</value>
+  </data>
+  <data name="Form_SetServerconfig_Title" xml:space="preserve">
+    <value>修改配置文件</value>
+  </data>
+  <data name="Form_SetServerconfig_Refresh" xml:space="preserve">
+    <value>刷新</value>
+  </data>
+  <data name="Form_SetServerconfig_ConfigFiles" xml:space="preserve">
+    <value>配置文件</value>
+  </data>
+  <data name="Form_SetServerconfig_Copy" xml:space="preserve">
+    <value>复制</value>
+  </data>
+  <data name="Form_SetServerconfig_Paste" xml:space="preserve">
+    <value>粘贴</value>
+  </data>
+  <data name="Form_SetServerconfig_Cut" xml:space="preserve">
+    <value>剪切</value>
+  </data>
+  <data name="Form_SetServerconfig_SelectAll" xml:space="preserve">
+    <value>全选</value>
+  </data>
+  <data name="Form_SetServerconfig_ChangeEncoding" xml:space="preserve">
+    <value>转换编码</value>
+  </data>
+  <data name="Form_SetServerconfig_SaveChanges" xml:space="preserve">
+    <value>保存更改</value>
+  </data>
+  <data name="Form_SetServerconfig_SaveSuccess" xml:space="preserve">
+    <value>保存成功！重启服务器生效！</value>
+  </data>
+  <data name="Form_DownloadServer_ServerDesc" xml:space="preserve">
+    <value>服务端描述</value>
+  </data>
+  <data name="Form_DownloadServer_Loading" xml:space="preserve">
+    <value>加载中，请稍候……</value>
+  </data>
+  <data name="Form_DownloadServer_SelectBuild" xml:space="preserve">
+    <value>请先选择一个构建版本！</value>
+  </data>
+  <data name="Form_DownloadServer_CheckSelection" xml:space="preserve">
+    <value>请检查您是否已正确选择 服务端-版本-构建版本 ！</value>
+  </data>
+  <data name="Form_DownloadServer_AddedToDownloadList" xml:space="preserve">
+    <value>已添加至下载列表~</value>
+  </data>
+  <data name="Form_DownloadServer_RequestError" xml:space="preserve">
+    <value>请求错误！请重试！</value>
+  </data>
+  <data name="Form_DownloadServer_FetchServerFailed" xml:space="preserve">
+    <value>获取服务端失败！请重试！</value>
+  </data>
+  <data name="Form_DownloadServer_LatestBuild" xml:space="preserve">
+    <value>最新构建版本</value>
+  </data>
+  <data name="Form_DownloadMod_Featured" xml:space="preserve">
+    <value>精选</value>
+  </data>
+  <data name="Form_DownloadMod_FetchFailed" xml:space="preserve">
+    <value>获取模组/整合包失败！请重试或尝试连接代理后再试！
+</value>
+  </data>
+  <data name="Form_DownloadMod_SearchFailed" xml:space="preserve">
+    <value>搜索失败！请重试或尝试连接代理后再试！
+</value>
+  </data>
+  <data name="Form_DownloadMod_LoadFailed" xml:space="preserve">
+    <value>加载失败！请重试或尝试连接代理后再试！
+</value>
+  </data>
+  <data name="Form_DownloadMod_All" xml:space="preserve">
+    <value>全部</value>
+  </data>
+  <data name="Form_DownloadMod_ServerPackConfirm" xml:space="preserve">
+    <value>是否仅展示适用于服务器的整合包文件？
+注意：如果不使用服务器专用包开服，可能会出现无法开服/崩溃的问题！</value>
+  </data>
+  <data name="Form_DownloadMod_Loading" xml:space="preserve">
+    <value>加载中</value>
+  </data>
+  <data name="Form_FrpProvider_Back" xml:space="preserve">
+    <value>返回</value>
+  </data>
+  <data name="Form_FrpProvider_CustomFrp" xml:space="preserve">
+    <value>自定义Frp</value>
+  </data>
+  <data name="Form_FrpProvider_MoreFrp" xml:space="preserve">
+    <value>更多Frp</value>
+  </data>
+  <data name="Form_FrpProvider_WantMore" xml:space="preserve">
+    <value>想要MSL接入更多第三方Frp服务吗？</value>
+  </data>
+  <data name="Form_FrpProvider_ProviderInfo" xml:space="preserve">
+    <value>如果您是Frp服务商，希望我们接入，可进入MSL的Github仓库提交issue。</value>
+  </data>
+  <data name="Form_FrpProvider_UserInfo" xml:space="preserve">
+    <value>如果您是个人用户，希望MSL接入你所使用的Frp服务，请先在联系您的服务商询问是否愿意提供接入API支持后，再进入MSL的Github仓库提交接入申请issue。</value>
+  </data>
+  <data name="Form_FrpProvider_GithubRedirect" xml:space="preserve">
+    <value>即将跳转到Github填写接入申请···
+记得填写接入服务商信息和联系方式哦！</value>
+  </data>
+  <data name="Form_FrpProvider_GithubRedirectTitle" xml:space="preserve">
+    <value>即将跳转···</value>
+  </data>
+  <data name="Frp_Sakura_Login" xml:space="preserve">
+    <value>登录中……</value>
+  </data>
+  <data name="Frp_Sakura_InputToken" xml:space="preserve">
+    <value>请输入Sakura账户Token</value>
+  </data>
+  <data name="Frp_Sakura_LoginFailed" xml:space="preserve">
+    <value>登陆失败！</value>
+  </data>
+  <data name="Frp_Sakura_GetTunnelFailed" xml:space="preserve">
+    <value>获取隧道列表失败！</value>
+  </data>
+  <data name="Frp_Sakura_TunnelName" xml:space="preserve">
+    <value>隧道名: </value>
+  </data>
+  <data name="Frp_Sakura_TunnelID" xml:space="preserve">
+    <value>隧道ID: </value>
+  </data>
+  <data name="Frp_Sakura_RemotePort" xml:space="preserve">
+    <value>远程端口: </value>
+  </data>
+  <data name="Frp_Sakura_Online" xml:space="preserve">
+    <value>在线</value>
+  </data>
+  <data name="Frp_Sakura_Offline" xml:space="preserve">
+    <value>离线</value>
+  </data>
+  <data name="Frp_Sakura_MapSuccess" xml:space="preserve">
+    <value>映射配置成功，请您点击"启动内网映射"以启动映射！</value>
+  </data>
+  <data name="Frp_Sakura_ConfigFailed" xml:space="preserve">
+    <value>配置输出失败！</value>
+  </data>
+  <data name="Frp_Sakura_NoTunnel" xml:space="preserve">
+    <value>您似乎没有选择任何隧道！</value>
+  </data>
+  <data name="Frp_Sakura_DeleteFailed" xml:space="preserve">
+    <value>删除失败！</value>
+  </data>
+  <data name="Frp_Sakura_NormalNode" xml:space="preserve">
+    <value>普通节点</value>
+  </data>
+  <data name="Frp_Sakura_BronzeNode" xml:space="preserve">
+    <value>青铜节点</value>
+  </data>
+  <data name="Frp_Sakura_SilverNode" xml:space="preserve">
+    <value>白银节点</value>
+  </data>
+  <data name="Frp_Sakura_NoNodeDesc" xml:space="preserve">
+    <value>节点没有备注</value>
+  </data>
+  <data name="Frp_Sakura_NodeBand" xml:space="preserve">
+    <value>节点带宽: </value>
+  </data>
+  <data name="Frp_Sakura_CreateSuccess" xml:space="preserve">
+    <value>{0}隧道创建成功！
+ID: {1} 远程端口: {2}</value>
+  </data>
+  <data name="Frp_Sakura_CreateFailed" xml:space="preserve">
+    <value>创建失败！请尝试更换隧道名称/节点！</value>
+  </data>
+  <data name="Frp_Sakura_CreateError" xml:space="preserve">
+    <value>创建失败！发生异常: </value>
+  </data>
+  <data name="Frp_Sakura_NoNode" xml:space="preserve">
+    <value>您似乎没有选择任何节点！</value>
+  </data>
+  <data name="Frp_Sakura_UserName" xml:space="preserve">
+    <value>用户名: </value>
+  </data>
+  <data name="Frp_Sakura_UserType" xml:space="preserve">
+    <value>用户类型: </value>
+  </data>
+  <data name="Frp_Sakura_SpeedLimit" xml:space="preserve">
+    <value>限速: </value>
+  </data>
+  <data name="Frp_OpenFrp_RequestFailed" xml:space="preserve">
+    <value>请求失败！请重试！</value>
+  </data>
+  <data name="Frp_OpenFrp_LoginFailed" xml:space="preserve">
+    <value>登陆失败！</value>
+  </data>
+  <data name="Frp_OpenFrp_BrowserAuth" xml:space="preserve">
+    <value>请在打开的浏览器网页中确认授权……</value>
+  </data>
+  <data name="Frp_OpenFrp_GetPubKeyFailed" xml:space="preserve">
+    <value>获取公钥失败！</value>
+  </data>
+  <data name="Frp_OpenFrp_DecryptFailed" xml:space="preserve">
+    <value>解密失败: </value>
+  </data>
+  <data name="Frp_OpenFrp_DecryptError" xml:space="preserve">
+    <value>解密过程中出错: </value>
+  </data>
+  <data name="Frp_OpenFrp_InputAuth" xml:space="preserve">
+    <value>请输入Authorization</value>
+  </data>
+  <data name="Frp_OpenFrp_CheckAuth" xml:space="preserve">
+    <value>登录失败！请检查您的Authorization是否正确！</value>
+  </data>
+  <data name="Frp_OpenFrp_GetFailed" xml:space="preserve">
+    <value>获取失败！</value>
+  </data>
+  <data name="Frp_OpenFrp_GetNodeListFailed" xml:space="preserve">
+    <value>获取节点列表失败！</value>
+  </data>
+  <data name="Frp_OpenFrp_SelectTunnel" xml:space="preserve">
+    <value>请确保您选择了一个隧道</value>
+  </data>
+  <data name="Frp_OpenFrp_MapSuccess" xml:space="preserve">
+    <value>映射配置成功，请您点击"启动内网映射"以启动映射！</value>
+  </data>
+  <data name="Frp_OpenFrp_SelectNode" xml:space="preserve">
+    <value>请先选择一个节点</value>
+  </data>
+  <data name="Frp_OpenFrp_TunnelName" xml:space="preserve">
+    <value>给隧道取个名称吧（不支持中文）</value>
+  </data>
+  <data name="Frp_OpenFrp_CreateSuccess" xml:space="preserve">
+    <value>隧道创建成功！</value>
+  </data>
+  <data name="Frp_OpenFrp_CreateFailed" xml:space="preserve">
+    <value>创建失败！</value>
+  </data>
+  <data name="Frp_OpenFrp_Error" xml:space="preserve">
+    <value>出现错误！</value>
+  </data>
+  <data name="Frp_OpenFrp_SelectTunnelFirst" xml:space="preserve">
+    <value>请先选择一个隧道</value>
+  </data>
+  <data name="Frp_OpenFrp_DeleteSuccess" xml:space="preserve">
+    <value>删除成功！</value>
+  </data>
+  <data name="Frp_OpenFrp_DeleteFailed" xml:space="preserve">
+    <value>删除失败！</value>
+  </data>
+  <data name="Frp_OpenFrp_LoggingIn" xml:space="preserve">
+    <value>登录中……</value>
+  </data>
+  <data name="Frp_Chml_LoginFailedEmpty" xml:space="preserve">
+    <value>登录失败！
+服务器返回内容为空。</value>
+  </data>
+  <data name="Frp_Chml_LoginFailedInvalid" xml:space="preserve">
+    <value>登录失败！
+服务器返回了无效数据。</value>
+  </data>
+  <data name="Frp_Chml_UnknownError" xml:space="preserve">
+    <value>未知错误</value>
+  </data>
+  <data name="Frp_Chml_GettingAuthCode" xml:space="preserve">
+    <value>正在获取授权码……</value>
+  </data>
+  <data name="Frp_Chml_BrowserAuth" xml:space="preserve">
+    <value>请在浏览器中完成授权……</value>
+  </data>
+  <data name="Frp_Chml_AuthCancelled" xml:space="preserve">
+    <value>授权已取消。</value>
+  </data>
+  <data name="Frp_Chml_AuthSuccess" xml:space="preserve">
+    <value>授权成功，正在加载数据……</value>
+  </data>
+  <data name="Frp_Chml_WaitingAuth" xml:space="preserve">
+    <value>等待用户在浏览器中确认授权……</value>
+  </data>
+  <data name="Frp_Chml_TooFrequent" xml:space="preserve">
+    <value>请求过于频繁，已自动降低频率……</value>
+  </data>
+  <data name="Frp_Chml_AuthExpired" xml:space="preserve">
+    <value>授权码已过期，请重新开始授权。</value>
+  </data>
+  <data name="Frp_Chml_AuthDenied" xml:space="preserve">
+    <value>用户已拒绝授权。</value>
+  </data>
+  <data name="Frp_Chml_AuthFailed" xml:space="preserve">
+    <value>授权失败：</value>
+  </data>
+  <data name="Frp_Chml_InvalidAuthResponse" xml:space="preserve">
+    <value>账户中心返回了无效的授权响应，请稍后重试。</value>
+  </data>
+  <data name="Frp_Chml_SelectTunnel" xml:space="preserve">
+    <value>请您选择一个隧道再按确定哦~</value>
+  </data>
+  <data name="Frp_Chml_TunnelSelectTitle" xml:space="preserve">
+    <value>隧道呢？</value>
+  </data>
+  <data name="Frp_Chml_EmptyConfig" xml:space="preserve">
+    <value>服务器返回的配置内容为空</value>
+  </data>
+  <data name="Frp_Chml_MapSuccess" xml:space="preserve">
+    <value>映射配置成功，请您点击 启动内网映射 以启动映射！</value>
+  </data>
+  <data name="Frp_Chml_GetConfigFailed" xml:space="preserve">
+    <value>获取配置失败！
+</value>
+  </data>
+  <data name="Frp_Chml_ConfirmDelete" xml:space="preserve">
+    <value>确定删除所选隧道吗？</value>
+  </data>
+  <data name="Frp_Chml_DeleteTunnel" xml:space="preserve">
+    <value>删除隧道</value>
+  </data>
+  <data name="Frp_Chml_SelectTunnelFirst" xml:space="preserve">
+    <value>请选择一个隧道再操作！</value>
+  </data>
+  <data name="Frp_Chml_DeleteSuccess" xml:space="preserve">
+    <value>隧道删除成功！</value>
+  </data>
+  <data name="Frp_Chml_DeleteFailed" xml:space="preserve">
+    <value>隧道删除失败！
+</value>
+  </data>
+  <data name="Frp_Chml_GetNodeFailed" xml:space="preserve">
+    <value>节点列表获取失败！
+</value>
+  </data>
+  <data name="Frp_Chml_VipNode" xml:space="preserve">
+    <value>VIP节点</value>
+  </data>
+  <data name="Frp_Chml_NormalNode" xml:space="preserve">
+    <value>普通节点</value>
+  </data>
+  <data name="Frp_Chml_GetNodeListFailed" xml:space="preserve">
+    <value>获取节点列表失败！</value>
+  </data>
+  <data name="Frp_Chml_SelectNode" xml:space="preserve">
+    <value>请先选择一个节点！</value>
+  </data>
+  <data name="Frp_Chml_CreateSuccess" xml:space="preserve">
+    <value>隧道创建成功！</value>
+  </data>
+  <data name="Frp_Chml_CreateFailed" xml:space="preserve">
+    <value>隧道创建失败！
+</value>
+  </data>
+  <data name="Frp_Chml_NoNode" xml:space="preserve">
+    <value>您似乎没有选择任何节点！</value>
+  </data>
+  <data name="Frp_Chml_LoginFailed" xml:space="preserve">
+    <value>登录失败！
+</value>
+  </data>
+  <data name="Frp_Chml_LoggingIn" xml:space="preserve">
+    <value>登录中……</value>
+  </data>
+  <data name="Frp_Custom_UnfilledData" xml:space="preserve">
+    <value>存在未填写的数据！
+请检查！</value>
+  </data>
+  <data name="Frp_Custom_CreateError" xml:space="preserve">
+    <value>创建配置文件时发生未知错误，请检查日志！</value>
+  </data>
+  <data name="Frp_Custom_FatalError" xml:space="preserve">
+    <value>致命错误！</value>
+  </data>
+  <data name="Frp_Custom_NameTunnel" xml:space="preserve">
+    <value>给此隧道取一个名字吧：</value>
+  </data>
+  <data name="Frp_Custom_DefaultName" xml:space="preserve">
+    <value>我的自定义Frp节点</value>
+  </data>
+  <data name="Frp_Custom_SelectFrpc" xml:space="preserve">
+    <value>请选择您的Frpc客户端</value>
+  </data>
+  <data name="Frp_Custom_ExeFilter" xml:space="preserve">
+    <value>exe应用程序 (*.exe)|*.exe</value>
+  </data>
+  <data name="Frp_Custom_TunnelSuccess" xml:space="preserve">
+    <value>隧道配置成功，请您点击"启动内网映射"以启动映射！</value>
+  </data>
+  <data name="Frp_Custom_SaveError" xml:space="preserve">
+    <value>保存最终配置时发生错误，请检查日志！</value>
+  </data>
+  <data name="Frp_MSLFrp_MyTunnels" xml:space="preserve">
+    <value>我的隧道</value>
+  </data>
+  <data name="Frp_MSLFrp_MyCreatedTunnels" xml:space="preserve">
+    <value>我创建的隧道：</value>
+  </data>
+  <data name="Frp_MSLFrp_DeleteSelectedTunnel" xml:space="preserve">
+    <value>删除所选隧道</value>
+  </data>
+  <data name="Frp_MSLFrp_UserInfo" xml:space="preserve">
+    <value>用户信息</value>
+  </data>
+  <data name="Frp_MSLFrp_OpenWebsite" xml:space="preserve">
+    <value>打开官网</value>
+  </data>
+  <data name="Frp_MSLFrp_Logout" xml:space="preserve">
+    <value>退出登录</value>
+  </data>
+  <data name="Frp_MSLFrp_TunnelInfo" xml:space="preserve">
+    <value>隧道信息</value>
+  </data>
+  <data name="Frp_MSLFrp_SelectTunnel" xml:space="preserve">
+    <value>请选择一条隧道~</value>
+  </data>
+  <data name="Frp_MSLFrp_SelectThisTunnel" xml:space="preserve">
+    <value>选择该隧道</value>
+  </data>
+  <data name="Frp_MSLFrp_CreateNewTunnel" xml:space="preserve">
+    <value>创建新的隧道</value>
+  </data>
+  <data name="Frp_MSLFrp_FillTunnelParams" xml:space="preserve">
+    <value>填写隧道参数</value>
+  </data>
+  <data name="Frp_MSLFrp_TunnelNameEn" xml:space="preserve">
+    <value>隧道名称（英文）：</value>
+  </data>
+  <data name="Frp_MSLFrp_RemarkCn" xml:space="preserve">
+    <value>备注（允许中文）：</value>
+  </data>
+  <data name="Frp_MSLFrp_LocalIP" xml:space="preserve">
+    <value>本地IP：</value>
+  </data>
+  <data name="Frp_MSLFrp_LocalPort" xml:space="preserve">
+    <value>本地端口：</value>
+  </data>
+  <data name="Frp_MSLFrp_RemotePort" xml:space="preserve">
+    <value>远程端口：</value>
+  </data>
+  <data name="Frp_MSLFrp_RandomGen" xml:space="preserve">
+    <value>随机生成</value>
+  </data>
+  <data name="Frp_MSLFrp_Protocol" xml:space="preserve">
+    <value>网络协议：</value>
+  </data>
+  <data name="Frp_MSLFrp_EnableKCP" xml:space="preserve">
+    <value>启用KCP协议传输：</value>
+  </data>
+  <data name="Frp_MSLFrp_ConfirmCreate" xml:space="preserve">
+    <value>确定创建</value>
+  </data>
+  <data name="Frp_MSLFrp_UserCenter" xml:space="preserve">
+    <value>个人中心</value>
+  </data>
+  <data name="Frp_MSLFrp_Type" xml:space="preserve">
+    <value>类型：</value>
+  </data>
+  <data name="Frp_MSLFrp_Bandwidth" xml:space="preserve">
+    <value>带宽：</value>
+  </data>
+  <data name="Frp_MSLFrp_Remark" xml:space="preserve">
+    <value>备注：</value>
+  </data>
+  <data name="Frp_MSLFrpLogin_Welcome" xml:space="preserve">
+    <value>欢迎登录 MSLFrp</value>
+  </data>
+  <data name="Frp_MSLFrpLogin_Email" xml:space="preserve">
+    <value>邮箱：</value>
+  </data>
+  <data name="Frp_MSLFrpLogin_Password" xml:space="preserve">
+    <value>密码：</value>
+  </data>
+  <data name="Frp_MSLFrpLogin_BrowserLogin" xml:space="preserve">
+    <value>通过浏览器登录 (推荐)</value>
+  </data>
+  <data name="Frp_MSLFrpLogin_WechatLogin" xml:space="preserve">
+    <value>微信扫码登录</value>
+  </data>
+  <data name="Frp_MSLFrpLogin_Login" xml:space="preserve">
+    <value>登录</value>
+  </data>
+  <data name="Frp_MSLFrpLogin_Register" xml:space="preserve">
+    <value>注册 / 用户中心</value>
+  </data>
+  <data name="Frp_MSLFrpLogin_SaveToken" xml:space="preserve">
+    <value>保存登录状态（风险自负哦~）</value>
+  </data>
+  <data name="Frp_MSLFrpLogin_ServiceDesc" xml:space="preserve">
+    <value>MSLFrp 是由 MSL 的开发团队 MSLTeam 参与联合开发运营的内网穿透服务
+登录您的 MSL 账号即可开始使用</value>
+  </data>
+  <data name="Frp_MSLFrpLogin_2FA" xml:space="preserve">
+    <value>双重验证（2FA）</value>
+  </data>
+  <data name="Frp_MSLFrpLogin_2FAEmail" xml:space="preserve">
+    <value>我们向您的邮箱发送了一个验证码，请输入验证码以完成登录。</value>
+  </data>
+  <data name="Frp_MSLFrpLogin_2FACode" xml:space="preserve">
+    <value>验证码：</value>
+  </data>
+  <data name="Frp_MSLFrpLogin_Resend" xml:space="preserve">
+    <value>重新发送</value>
+  </data>
+  <data name="Frp_MSLFrpLogin_EnterAccountPassword" xml:space="preserve">
+    <value>请输入账号和密码！</value>
+  </data>
+  <data name="Frp_MSLFrpLogin_UnknownError" xml:space="preserve">
+    <value>未知错误，请稍后再试！</value>
+  </data>
+  <data name="Frp_MSLFrpLogin_2FATypeApp" xml:space="preserve">
+    <value>请输入您绑定的2FA软件的实时代码以登录。</value>
+  </data>
+  <data name="Frp_MSLFrpLogin_EnterCode" xml:space="preserve">
+    <value>请输入验证代码！</value>
+  </data>
+  <data name="Frp_MSLFrpLogin_CodeSent" xml:space="preserve">
+    <value>验证码已发送，请注意查收！</value>
+  </data>
+  <data name="Frp_MSLFrpLogin_ResendCountdown" xml:space="preserve">
+    <value>重新发送({0}s)</value>
+  </data>
+  <data name="Frp_MSLFrpLogin_LoggingIn" xml:space="preserve">
+    <value>登录中……</value>
+  </data>
+  <data name="Frp_MSLFrpLogin_PreparingBrowser" xml:space="preserve">
+    <value>正在准备浏览器登录...</value>
+  </data>
+  <data name="Frp_MSLFrpLogin_BrowserOpenFailed" xml:space="preserve">
+    <value>自动打开浏览器失败，请手动复制链接</value>
+  </data>
+  <data name="Frp_MSLFrpLogin_LinkCopied" xml:space="preserve">
+    <value>登录链接已复制到剪贴板！</value>
+  </data>
+  <data name="Frp_MSLFrpLogin_BrowserLoginTitle" xml:space="preserve">
+    <value>浏览器登录</value>
+  </data>
+  <data name="Frp_MSLFrpLogin_BrowserLoginDesc" xml:space="preserve">
+    <value>已在您的默认浏览器中打开登录页面，请完成登录...</value>
+  </data>
+  <data name="Frp_MSLFrpLogin_BrowserLoginWait" xml:space="preserve">
+    <value>登录完成后此窗口将自动继续...</value>
+  </data>
+  <data name="Frp_MSLFrpLogin_ReopenBrowser" xml:space="preserve">
+    <value>重新打开网页</value>
+  </data>
+  <data name="Frp_MSLFrpLogin_CopyLink" xml:space="preserve">
+    <value>复制登录链接</value>
+  </data>
+  <data name="Frp_MSLFrpLogin_Cancel" xml:space="preserve">
+    <value>取消</value>
+  </data>
+  <data name="Frp_MSLFrpLogin_WechatTitle" xml:space="preserve">
+    <value>微信扫码登录</value>
+  </data>
+  <data name="Frp_MSLFrpLogin_WechatDesc" xml:space="preserve">
+    <value>请使用微信扫描下方小程序码进行登录：</value>
+  </data>
+  <data name="Frp_MSLFrpLogin_WechatBind" xml:space="preserve">
+    <value>（请确保您已在 MSL 用户中心绑定微信，否则会登录失败哦~）</value>
+  </data>
+  <data name="Frp_MSLFrpLogin_Loading" xml:space="preserve">
+    <value>加载中...</value>
+  </data>
+  <data name="Frp_MSLFrpLogin_GettingQrCode" xml:space="preserve">
+    <value>正在获取微信登录二维码...</value>
+  </data>
+  <data name="Frp_MSLFrpLogin_GetAuthFailed" xml:space="preserve">
+    <value>获取授权状态失败</value>
+  </data>
+  <data name="Frp_MSLFrpLogin_ScanQrCode" xml:space="preserve">
+    <value>请使用微信扫描上方小程序码</value>
+  </data>
+  <data name="Frp_MSLFrpLogin_QrFormatError" xml:space="preserve">
+    <value>返回的二维码数据格式不正确</value>
+  </data>
+  <data name="Frp_MSLFrpLogin_GetQrFailed" xml:space="preserve">
+    <value>获取二维码失败</value>
+  </data>
+  <data name="Frp_MSLFrpLogin_Scanned" xml:space="preserve">
+    <value>扫码成功，正在登录...</value>
+  </data>
+  <data name="Frp_MSLFrpLogin_QrExpired" xml:space="preserve">
+    <value>二维码已过期，请重试。</value>
+  </data>
+  <data name="Frp_MSLFrpLogin_QrExpiredConfirm" xml:space="preserve">
+    <value>二维码已过期，请返回重试。</value>
+  </data>
+  <data name="Frp_MSLFrpLogin_Verifying" xml:space="preserve">
+    <value>正在验证登录...</value>
+  </data>
+  <data name="Frp_MSLFrpLogin_LoginFailed" xml:space="preserve">
+    <value>登录失败</value>
+  </data>
+  <data name="Frp_MSLFrpLogin_PollingError" xml:space="preserve">
+    <value>轮询时发生错误: </value>
+  </data>
+  <data name="Frp_MSLFrpLogin_LoginTimeout" xml:space="preserve">
+    <value>登录已超时或失败，请重试。</value>
+  </data>
+  <data name="Frp_MSLFrpLogin_CopyFailed" xml:space="preserve">
+    <value>复制失败: </value>
+  </data>
+  <data name="Frp_MSLFrpLogin_OpenFailed" xml:space="preserve">
+    <value>打开失败: </value>
+  </data>
+  <data name="Frp_MSLFrpLogin_ParseQrFailed" xml:space="preserve">
+    <value>解析二维码图片失败</value>
+  </data>
+  <data name="Frp_MSLFrpLogin_ApiFormatError" xml:space="preserve">
+    <value>API返回数据格式不正确 (url/ssid为空)</value>
+  </data>
+  <data name="Frp_MSLFrpLogin_ApiError" xml:space="preserve">
+    <value>API返回错误。</value>
+  </data>
+  <data name="Frp_MSLFrpLogin_RequestFailed" xml:space="preserve">
+    <value>请求失败，未知错误</value>
+  </data>
+  <data name="Frp_MSLFrpProfile_MyInfo" xml:space="preserve">
+    <value>我的信息</value>
+  </data>
+  <data name="Frp_MSLFrpProfile_EarnPoints" xml:space="preserve">
+    <value>赚积分</value>
+  </data>
+  <data name="Frp_MSLFrpProfile_RealnameVerify" xml:space="preserve">
+    <value>点我实名</value>
+  </data>
+  <data name="Frp_MSLFrpProfile_PointPurchase" xml:space="preserve">
+    <value>积分购买</value>
+  </data>
+  <data name="Frp_MSLFrpProfile_InputAmount" xml:space="preserve">
+    <value>输入金额[￥1=100积分] (单位: 元)：</value>
+  </data>
+  <data name="Frp_MSLFrpProfile_SelectPayMethod" xml:space="preserve">
+    <value>选择付款方式：</value>
+  </data>
+  <data name="Frp_MSLFrpProfile_Alipay" xml:space="preserve">
+    <value>支付宝</value>
+  </data>
+  <data name="Frp_MSLFrpProfile_Wechat" xml:space="preserve">
+    <value>微信</value>
+  </data>
+  <data name="Frp_MSLFrpProfile_Purchase" xml:space="preserve">
+    <value>购买</value>
+  </data>
+  <data name="Frp_MSLFrpProfile_PayIssue" xml:space="preserve">
+    <value>付款遇到问题?</value>
+  </data>
+  <data name="Frp_MSLFrpProfile_PointExchange" xml:space="preserve">
+    <value>积分兑换</value>
+  </data>
+  <data name="Page_CreateServer_BackToList" xml:space="preserve">
+    <value>返回实例列表</value>
+  </data>
+  <data name="Page_CreateServer_CreatingSteps" xml:space="preserve">
+    <value>将通过几个步骤为您创建一个服务器……</value>
+  </data>
+  <data name="Page_CreateServer_DocsTutorial" xml:space="preserve">
+    <value>文档/教程</value>
+  </data>
+  <data name="Page_CreateServer_SelectCreateMode" xml:space="preserve">
+    <value>请选择一个创建模式以继续：</value>
+  </data>
+  <data name="Page_CreateServer_FastMode" xml:space="preserve">
+    <value>快速模式（适合小白）</value>
+  </data>
+  <data name="Page_CreateServer_CustomMode" xml:space="preserve">
+    <value>自定义模式（适合老手）</value>
+  </data>
+  <data name="Page_CreateServer_ImportPackMode" xml:space="preserve">
+    <value>导入整合包模式</value>
+  </data>
+  <data name="Page_CreateServer_DownloadPack" xml:space="preserve">
+    <value>下载整合包</value>
+  </data>
+  <data name="Page_CreateServer_SelectLocalPack" xml:space="preserve">
+    <value>选择本地整合包</value>
+  </data>
+  <data name="Page_CreateServer_FastModeDesc" xml:space="preserve">
+    <value>⭐快速模式：开服器会根据您想要开的服务器类型自动下载需要的核心和Java。</value>
+  </data>
+  <data name="Page_CreateServer_CustomModeDesc" xml:space="preserve">
+    <value>⭐自定义模式：您将手动进行Java版本选择，服务端核心选择等操作，可操作性高，可以更改服务器运行内存和启动参数。</value>
+  </data>
+  <data name="Page_CreateServer_ImportPackModeDesc" xml:space="preserve">
+    <value>⭐导入整合包模式：想要在线下载一个服务器整合包来进行导入？或是自己备有一个整合包文件？那就使用此模式吧！</value>
+  </data>
+  <data name="Page_CreateServer_BDSTip" xml:space="preserve">
+    <value>►提示：若需要开基岩版官方服务器（BDS），请使用自定义模式并参照</value>
+  </data>
+  <data name="Page_CreateServer_BDSTutorialLink" xml:space="preserve">
+    <value>BDS开服教程</value>
+  </data>
+  <data name="Page_CreateServer_InstanceNameLabel" xml:space="preserve">
+    <value>实例名称（将在实例列表中显示该名称）：</value>
+  </data>
+  <data name="Page_CreateServer_ServerTypeLabel" xml:space="preserve">
+    <value>服务器类型（选择你想要开的服务器类型）：</value>
+  </data>
+  <data name="Page_CreateServer_PluginServer" xml:space="preserve">
+    <value>插件服务器</value>
+  </data>
+  <data name="Page_CreateServer_PluginModHybridNeoForge" xml:space="preserve">
+    <value>插件模组混合服务器（NeoForge/Forge）</value>
+  </data>
+  <data name="Page_CreateServer_PluginModHybridFabric" xml:space="preserve">
+    <value>插件模组混合服务器（Fabric）</value>
+  </data>
+  <data name="Page_CreateServer_ModServerNeoForge" xml:space="preserve">
+    <value>模组服务器（NeoForge/Forge）</value>
+  </data>
+  <data name="Page_CreateServer_ModServerFabric" xml:space="preserve">
+    <value>模组服务器（Fabric）</value>
+  </data>
+  <data name="Page_CreateServer_VanillaServer" xml:space="preserve">
+    <value>原版服务器</value>
+  </data>
+  <data name="Page_CreateServer_BedrockServer" xml:space="preserve">
+    <value>基岩版服务器</value>
+  </data>
+  <data name="Page_CreateServer_ProxyServer" xml:space="preserve">
+    <value>代理服务器</value>
+  </data>
+  <data name="Page_CreateServer_ServerVersionLabel" xml:space="preserve">
+    <value>服务器版本（选择你想要开的服务器版本）：</value>
+  </data>
+  <data name="Page_CreateServer_FastInstallIntro" xml:space="preserve">
+    <value>根据您的选择，MSL为您选出了以下版本的Java和服务端核心，请点击确定按钮以安装……</value>
+  </data>
+  <data name="Page_CreateServer_JavaVersionDesc" xml:space="preserve">
+    <value>Java版本（此版本为MSL评估的最优版本，
+如果您后续要加载的插件或模组
+有要求Java版本的话，请在此处更改）：</value>
+  </data>
+  <data name="Page_CreateServer_ServerCoreDescLabel" xml:space="preserve">
+    <value>服务端核心（若不会选择，保持默认即可）：</value>
+  </data>
+  <data name="Page_CreateServer_InstanceDirLabel" xml:space="preserve">
+    <value>在此选择实例目录（用于安放服务器的相关文件）：</value>
+  </data>
+  <data name="Page_CreateServer_DirSelectTip" xml:space="preserve">
+    <value>选择提示：请不要选择桌面或磁盘根目录，否则会生成许多存储文件且会造成误删问题</value>
+  </data>
+  <data name="Page_CreateServer_JavaEnvironment" xml:space="preserve">
+    <value>Java环境</value>
+  </data>
+  <data name="Page_CreateServer_SelectJavaEnv" xml:space="preserve">
+    <value>在此选择一个Java环境</value>
+  </data>
+  <data name="Page_CreateServer_DownloadJavaRecommended" xml:space="preserve">
+    <value>开服器下载（推荐）</value>
+  </data>
+  <data name="Page_CreateServer_LocalJava" xml:space="preserve">
+    <value>电脑上的Java</value>
+  </data>
+  <data name="Page_CreateServer_SelectPath" xml:space="preserve">
+    <value>选择地址</value>
+  </data>
+  <data name="Page_CreateServer_ClickToDetect" xml:space="preserve">
+    <value>点我检测</value>
+  </data>
+  <data name="Page_CreateServer_NoJavaOption" xml:space="preserve">
+    <value>不使用Java (若服务端不依赖于Java，请选择此项)</value>
+  </data>
+  <data name="Page_CreateServer_JavaHelpTitle" xml:space="preserve">
+    <value>帮助：如何选择Java？</value>
+  </data>
+  <data name="Page_CreateServer_JavaHelpLine1" xml:space="preserve">
+    <value>1.12.2 以及更低版本：Java8</value>
+  </data>
+  <data name="Page_CreateServer_JavaHelpLine2" xml:space="preserve">
+    <value>1.13-1.16.5：Java8/Java11</value>
+  </data>
+  <data name="Page_CreateServer_JavaHelpLine3" xml:space="preserve">
+    <value>1.17/1.17.1：Java16</value>
+  </data>
+  <data name="Page_CreateServer_JavaHelpLine4" xml:space="preserve">
+    <value>1.18-1.20.4：Java17及以上</value>
+  </data>
+  <data name="Page_CreateServer_JavaHelpLine5" xml:space="preserve">
+    <value>1.20.5-1.21.11：Java21及以上</value>
+  </data>
+  <data name="Page_CreateServer_JavaHelpLine6" xml:space="preserve">
+    <value>26.1 及更高：Java25及以上</value>
+  </data>
+  <data name="Page_CreateServer_SelectServerCore" xml:space="preserve">
+    <value>在此选择一个服务端核心</value>
+  </data>
+  <data name="Page_CreateServer_DownloadServerRecommended" xml:space="preserve">
+    <value>使用开服器下载（推荐）</value>
+  </data>
+  <data name="Page_CreateServer_SelectServerPath" xml:space="preserve">
+    <value>备有服务端，选择地址</value>
+  </data>
+  <data name="Page_CreateServer_CustomCmd" xml:space="preserve">
+    <value>自定义启动指令</value>
+  </data>
+  <data name="Page_CreateServer_UseBedrockOfficial" xml:space="preserve">
+    <value>使用基岩版官方服务端</value>
+  </data>
+  <data name="Page_CreateServer_MemoryAndArgs" xml:space="preserve">
+    <value>开服内存及启动参数</value>
+  </data>
+  <data name="Page_CreateServer_SetMemory" xml:space="preserve">
+    <value>在此设置开服需要分配的内存</value>
+  </data>
+  <data name="Page_CreateServer_ManualSet" xml:space="preserve">
+    <value>手动设置</value>
+  </data>
+  <data name="Page_CreateServer_MinLabel" xml:space="preserve">
+    <value>最小</value>
+  </data>
+  <data name="Page_CreateServer_MaxLabel" xml:space="preserve">
+    <value>最大</value>
+  </data>
+  <data name="Page_CreateServer_MemManualTip" xml:space="preserve">
+    <value>开服内存  手动设置提示：内存分配建议为电脑运行内存的80%    单位换算：1GB=1024MB</value>
+  </data>
+  <data name="Page_CreateServer_LaunchArgsOptional" xml:space="preserve">
+    <value>启动参数(可选)</value>
+  </data>
+  <data name="Page_CreateServer_BasicOptArgs" xml:space="preserve">
+    <value>基本优化参数（Java11及以上勿选）</value>
+  </data>
+  <data name="Page_CreateServer_AdvOptArgs" xml:space="preserve">
+    <value>高级优化参数（需分配内存为4G）</value>
+  </data>
+  <data name="Page_CreateServer_ArgsWarning" xml:space="preserve">
+    <value>非必要勿选择或填写此栏内容，如出现无法开服的情况请删除启动参数</value>
+  </data>
+  <data name="Page_CreateServer_ExternalAuthOptional" xml:space="preserve">
+    <value>配置外置登录(可选)</value>
+  </data>
+  <data name="Page_CreateServer_YggApiLabel" xml:space="preserve">
+    <value>请填入外置登录验证服务器地址(Yggdrasil API):</value>
+  </data>
+  <data name="Page_CreateServer_YggAutoFillTip" xml:space="preserve">
+    <value>填写登录服务器地址后MSL将在开服时为您自动接入外置登录验证，您不需要额外操作。
+如果您不知道这是什么，请您留空。</value>
+  </data>
+  <data name="Page_CreateServer_SelectTerminalMode" xml:space="preserve">
+    <value>请选择一个终端模式以继续：</value>
+  </data>
+  <data name="Page_CreateServer_NoCmdCompletion" xml:space="preserve">
+    <value>不启用指令补全</value>
+  </data>
+  <data name="Page_CreateServer_TraditionalModeDesc" xml:space="preserve">
+    <value>传统模式：传统的服务器启动模式，缺少部分真实终端特性，无法使用Tab键补全指令。但比较稳定，可切换输入和输出编码。</value>
+  </data>
+  <data name="Page_CreateServer_EnableCmdCompletion" xml:space="preserve">
+    <value>启用指令补全（测试中）</value>
+  </data>
+  <data name="Page_CreateServer_ConPtyModeDesc" xml:space="preserve">
+    <value>伪终端（ConPty）模式：目前可用Tab键指令补全功能，且还在测试中，若出现问题请及时关闭此功能。</value>
+  </data>
+  <data name="Page_CreateServer_BasicInfo" xml:space="preserve">
+    <value>基本信息</value>
+  </data>
+  <data name="Page_CreateServer_DownloadNotice" xml:space="preserve">
+    <value>请务必下载文件名含有"server"且为.zip格式的服务端整合包！否则会出现软件无法读取或开服失败的问题！</value>
+  </data>
+  <data name="Page_CreateServer_DownloadNoticeTitle" xml:space="preserve">
+    <value>下载须知</value>
+  </data>
+  <data name="Page_CreateServer_DownloadFailed" xml:space="preserve">
+    <value>下载失败！</value>
+  </data>
+  <data name="Page_CreateServer_PackFormatError" xml:space="preserve">
+    <value>您所下载的整合包文件不符合导入格式（目前软件仅支持导入.zip文件）！请检查您所下载的文件是否为服务端专用包并重试！
+错误的格式：</value>
+  </data>
+  <data name="Page_CreateServer_ServerNamePrompt" xml:space="preserve">
+    <value>服务器名称：</value>
+  </data>
+  <data name="Page_CreateServer_ExtractingPack" xml:space="preserve">
+    <value>解压整合包中，请稍等……</value>
+  </data>
+  <data name="Page_CreateServer_ExtractPackFailed" xml:space="preserve">
+    <value>整合包解压失败！请确认您的整合包是.zip格式！
+错误代码：</value>
+  </data>
+  <data name="Page_CreateServer_GetJavaListFailed" xml:space="preserve">
+    <value>出现错误，获取Java版本列表失败！</value>
+  </data>
+  <data name="Page_CreateServer_PackExtractedSelectJava" xml:space="preserve">
+    <value>整合包解压完成！请在此界面选择Java环境，Java的版本要和导入整合包的版本相对应，详情查看界面下方的表格</value>
+  </data>
+  <data name="Page_CreateServer_ImportPackTip" xml:space="preserve">
+    <value>目前仅支持导入.zip格式的整合包文件，如果您要导入的是模组整合包，请确保您下载的整合包是服务器专用包（如RLCraft下载界面就有一个ServerPack的压缩包），否则可能会出现无法开服或者崩溃的问题！</value>
+  </data>
+  <data name="Page_CreateServer_SelectPackFile" xml:space="preserve">
+    <value>请选择整合包压缩文件</value>
+  </data>
+  <data name="Page_CreateServer_ZipFileFilter" xml:space="preserve">
+    <value>ZIP文件|*.zip|所有文件类型|*.*</value>
+  </data>
+  <data name="Page_CreateServer_ForgeDetected" xml:space="preserve">
+    <value>开服器在整合包中检测到了Forge服务端启动文件{0}，是否选择为开服核心？</value>
+  </data>
+  <data name="Page_CreateServer_SelectJarAsCore" xml:space="preserve">
+    <value>开服器在整合包中检测到了以下jar文件，你可输选择一个作为开服核心（输入文件前对应的数字，取消为不选择以下文件）
+</value>
+  </data>
+  <data name="Page_CreateServer_ForgeInstallerConfirm" xml:space="preserve">
+    <value>您选择的服务端疑似是forge安装器，是否将其展开安装？
+如果不展开安装，服务器可能无法开启！</value>
+  </data>
+  <data name="Page_CreateServer_JarDetected" xml:space="preserve">
+    <value>开服器在整合包中检测到了jar文件{0}，是否选择此文件为开服核心？</value>
+  </data>
+  <data name="Page_CreateServer_NoCoreFound" xml:space="preserve">
+    <value>开服器未在整合包中找到核心文件，请您进行下载或手动选择已有核心，核心的版本要和整合包对应的游戏版本一致</value>
+  </data>
+  <data name="Page_CreateServer_PathChineseCharWarning" xml:space="preserve">
+    <value>使用带有中文字符或空格的路径可能造成编码错误，导致无法开服，您确定要继续吗？</value>
+  </data>
+  <data name="Page_CreateServer_DirChineseCharWarning" xml:space="preserve">
+    <value>开服器被放置于带有中文字符或空格的目录里，这可能会造成编码错误，从而无法开服，您确定要继续吗？</value>
+  </data>
+  <data name="Page_CreateServer_CheckingJavaAvail" xml:space="preserve">
+    <value>正在检查所选Java可用性，请稍等……</value>
+  </data>
+  <data name="Page_CreateServer_SelectedJavaVer" xml:space="preserve">
+    <value>所选Java版本：</value>
+  </data>
+  <data name="Page_CreateServer_JavaUnavailMsg" xml:space="preserve">
+    <value>检测Java可用性失败，您的Java似乎不可用！请检查是否选择正确！</value>
+  </data>
+  <data name="Page_CreateServer_DownloadCancelled" xml:space="preserve">
+    <value>下载取消！</value>
+  </data>
+  <data name="Page_CreateServer_DownloadFailedMsg" xml:space="preserve">
+    <value>下载失败！
+</value>
+  </data>
+  <data name="Page_CreateServer_NetworkError" xml:space="preserve">
+    <value>出现错误，请检查网络连接！</value>
+  </data>
+  <data name="Page_CreateServer_BDSHereDownload" xml:space="preserve">
+    <value>如果需要开基岩版官方服务端（BDS）
+请在返回并选择基岩版服务端，而不应该在这里下载基岩版资源文件！</value>
+  </data>
+  <data name="Page_CreateServer_ExtractingBedrock" xml:space="preserve">
+    <value>解压基岩版服务端资源中……</value>
+  </data>
+  <data name="Page_CreateServer_DownloadCancelledStatus" xml:space="preserve">
+    <value>下载已取消</value>
+  </data>
+  <data name="Page_CreateServer_DownloadErrorMsg" xml:space="preserve">
+    <value>下载失败，错误信息：</value>
+  </data>
+  <data name="Page_CreateServer_DownloadFailedSimple" xml:space="preserve">
+    <value>下载失败</value>
+  </data>
+  <data name="Page_CreateServer_GetBedrockUrlFailed" xml:space="preserve">
+    <value>获取基岩版服务端下载地址失败。</value>
+  </data>
+  <data name="Page_CreateServer_InstallBedrockFailed" xml:space="preserve">
+    <value>安装基岩版服务端失败：</value>
+  </data>
+  <data name="Page_CreateServer_FillMemInfo" xml:space="preserve">
+    <value>请填写开服内存信息！</value>
+  </data>
+  <data name="Page_CreateServer_MemParamInvalid" xml:space="preserve">
+    <value>开服内存参数不正确（只能为纯数字）！</value>
+  </data>
+  <data name="Page_CreateServer_BasicOptWarning" xml:space="preserve">
+    <value>使用优化参数需要手动设置大小相同的内存，请对上面的内存进行更改！Java11及以上请勿选择此优化参数！</value>
+  </data>
+  <data name="Page_CreateServer_AdvOptWarning" xml:space="preserve">
+    <value>使用优化参数需要手动设置大小相同的内存，请对上面的内存进行更改！</value>
+  </data>
+  <data name="Page_CreateServer_AutoInstallFailed" xml:space="preserve">
+    <value>自动安装失败！是否尝试使用命令行安装方式？</value>
+  </data>
+  <data name="Page_CreateServer_GetServerFailed" xml:space="preserve">
+    <value>获取服务端失败！请重试</value>
+  </data>
+  <data name="Page_CreateServer_ServerLoadingWait" xml:space="preserve">
+    <value>服务端正在加载中，请稍后再选择！</value>
+  </data>
+  <data name="Page_CreateServer_ErrorOccurred" xml:space="preserve">
+    <value>出现错误：</value>
+  </data>
+  <data name="Page_CreateServer_GettingJavaList" xml:space="preserve">
+    <value>获取Java版本列表中，请稍等……</value>
+  </data>
+  <data name="Page_CreateServer_ProgressDownloadingJava" xml:space="preserve">
+    <value>当前进度:下载Java……</value>
+  </data>
+  <data name="Page_CreateServer_ProgressDownloadingServer" xml:space="preserve">
+    <value>当前进度:下载服务端……</value>
+  </data>
+  <data name="Page_CreateServer_InstallCancelled" xml:space="preserve">
+    <value>取消安装！</value>
+  </data>
+  <data name="Page_CreateServer_ProgressDone" xml:space="preserve">
+    <value>当前进度:下载完成！</value>
+  </data>
+  <data name="Page_CreateServer_CreateDone" xml:space="preserve">
+    <value>创建完毕，请点击"开启服务器"按钮以开服</value>
+  </data>
+  <data name="Page_CreateServer_ErrorRetry" xml:space="preserve">
+    <value>出现错误，请重试：</value>
+  </data>
+  <data name="Page_CreateServer_ConPtyTip" xml:space="preserve">
+    <value>若使用此模式出现问题，可在服务器运行窗口的"更多功能"界面修改此项。</value>
+  </data>
+  <data name="Page_CreateServer_GetVersionListFailed" xml:space="preserve">
+    <value>获取版本列表失败或数据为空！</value>
+  </data>
+  <data name="Page_CreateServer_BedrockOnlyCustomMode" xml:space="preserve">
+    <value>您选择的基岩版版本为官方服务端（BDS），仅支持使用自定义模式创建！请点击上一步并选择自定义模式哦！</value>
+  </data>
+  <data name="Page_CreateServer_JavaRec7to8" xml:space="preserve">
+    <value>根据您的选择，最适合您服务器的Java版本为：Java7-Java8</value>
+  </data>
+  <data name="Page_CreateServer_JavaRec8to11" xml:space="preserve">
+    <value>根据您的选择，最适合您服务器的Java版本为：Java8-Java11</value>
+  </data>
+  <data name="Page_CreateServer_JavaRec11to17" xml:space="preserve">
+    <value>根据您的选择，最适合您服务器的Java版本为：Java11-Java17（或更高）</value>
+  </data>
+  <data name="Page_CreateServer_JavaRec17Plus" xml:space="preserve">
+    <value>根据您的选择，最适合您服务器的Java版本为：Java17及以上</value>
+  </data>
+  <data name="Page_CreateServer_JavaRec21Plus" xml:space="preserve">
+    <value>根据您的选择，最适合您服务器的Java版本为：Java21及以上</value>
+  </data>
+  <data name="Page_CreateServer_JavaRec25Plus" xml:space="preserve">
+    <value>根据您的选择，最适合您服务器的Java版本为：Java25及以上</value>
+  </data>
+  <data name="Page_CreateServer_JavaRec8to21" xml:space="preserve">
+    <value>根据您的选择，最适合您服务器的Java版本为：Java8-Java21（或更高）</value>
+  </data>
+  <data name="Page_CreateServer_SrvDescPlugin" xml:space="preserve">
+    <value>插件服务器：指在服务端添加插件（客户端无需添加），通过更改服务端底层来增加功能，这种方式极易做到对服务器、服务器用户玩家进行管理，如权限组、封禁系统等，但这种方式不能修改客户端内容，所以也导致很多功能很难实现，如添加新的物品，只能通过更改材质包的方式让客户端显示新的物品</value>
+  </data>
+  <data name="Page_CreateServer_SrvDescHybridNeoForge" xml:space="preserve">
+    <value>插件模组混合服务器（Forge加载器）：这种服务器将插件服务端和Forge服务端合二为一，既吸取了二者的优点（服务器管理功能可通过添加插件做到，添加新物品更改游戏玩法可通过添加模组做到），同时又有许多缺点（如服务器不稳定，同时添加插件和模组，极易造成冲突问题，且也存在模组服务器服务端和客户端需要同步模组的问题）</value>
+  </data>
+  <data name="Page_CreateServer_SrvDescHybridFabric" xml:space="preserve">
+    <value>插件模组混合服务器（Fabric加载器）：这种服务器将插件服务端和Fabric服务端合二为一，既吸取了二者的优点（服务器管理功能可通过添加插件做到，添加新物品更改游戏玩法可通过添加模组做到），同时又有许多缺点（如服务器不稳定，同时添加插件和模组，极易造成冲突问题，且也存在模组服务器服务端和客户端需要同步模组的问题）</value>
+  </data>
+  <data name="Page_CreateServer_SrvDescModNeoForge" xml:space="preserve">
+    <value>模组服务器（Forge加载器）：指通过Forge加载器，添加模组来增加功能（服务端和客户端均需添加），这种方式既可以更改服务端的内容，也可以更改客户端的内容，所以插件服务器无法实现的功能在这里即可轻易做到，但是这种方式很难做到插件服的管理功能，且需要客户端的模组和服务端进行同步，会给玩家造成一定的麻烦</value>
+  </data>
+  <data name="Page_CreateServer_SrvDescModFabric" xml:space="preserve">
+    <value>模组服务器（Fabric加载器）：指通过Fabric加载器，添加模组来增加功能（服务端和客户端均需添加），这种方式既可以更改服务端的内容，也可以更改客户端的内容，所以插件服务器无法实现的功能在这里即可轻易做到，但是这种方式很难做到插件服的管理功能，且需要客户端的模组和服务端进行同步，会给玩家造成一定的麻烦</value>
+  </data>
+  <data name="Page_CreateServer_SrvDescVanilla" xml:space="preserve">
+    <value>原版服务器：Mojang纯原生服务器，不能添加任何插件或模组，给您原汁原味的体验</value>
+  </data>
+  <data name="Page_CreateServer_SrvDescBedrock" xml:space="preserve">
+    <value>基岩版服务器：专为基岩版提供的服务器，这种服务器在配置等方面和Java版服务器不太一样，同时开服器也不太适配，更改配置文件等相关操作只能您手动操作。（此处仅支持部署Nukkit端，若需要使用官方基岩版服务端BDS，请返回选择自定义模式！）</value>
+  </data>
+  <data name="Page_CreateServer_SrvDescProxy" xml:space="preserve">
+    <value>代理服务器：指Java版群组服务器的转发服务器，这种服务器相当于一个桥梁，将玩家在不同的服务器之间进行传送转发，使用这种服务器您首先需要开启一个普通服务器，因为这种服务器没有游戏内容，如果没有普通服务器进行连接，玩家根本无法进入，且目前开服器并不兼容这种服务器，创建完毕后您需在列表右键该服务器并使用"命令行开服"功能来启动</value>
+  </data>
+  <data name="Page_CreateServer_UseEnvVarColon" xml:space="preserve">
+    <value>使用环境变量：</value>
+  </data>
+  <data name="Page_CreateServer_DetectCompleteNoJava" xml:space="preserve">
+    <value>检测完毕，暂未找到Java</value>
+  </data>
+  <data name="Page_CreateServer_EnvVarNotExist" xml:space="preserve">
+    <value>检测环境变量失败，您的环境变量似乎不存在！</value>
+  </data>
+  <data name="Page_CreateServer_CoreNotInDirConfirm" xml:space="preserve">
+    <value>所选的服务端核心文件并不在服务器目录中，是否将其复制进服务器目录？
+若不复制，请留意勿将核心文件删除！</value>
+  </data>
+  <data name="Page_CreateServer_CoreCopiedDone" xml:space="preserve">
+    <value>已将服务端核心复制到了服务器目录之中，您现在可以将源文件删除了！</value>
+  </data>
+  <data name="Page_CreateServer_SelectFileTitle" xml:space="preserve">
+    <value>请选择文件</value>
+  </data>
+  <data name="Page_CreateServer_DetectEnvVarFailed" xml:space="preserve">
+    <value>检测Java可用性失败</value>
+  </data>
+  <data name="Page_OnlinePage_AutoSrvNoCredential" xml:space="preserve">
+    <value>自动SRV解析失败：未检测到MSLFrp登录凭证，请先前往「映射」- 「我的MSLFrp」登录您的账号。</value>
+  </data>
+  <data name="Page_OnlinePage_AutoSrvLoginFailed" xml:space="preserve">
+    <value>自动SRV解析失败：MSLFrp 自动登录失败！
+{0}</value>
+  </data>
+  <data name="Page_OnlinePage_OperationFailedNoCredential" xml:space="preserve">
+    <value>操作失败：未检测到有效的 MSLFrp 登录凭证！
+请前往「映射」-「我的MSLFrp」板块进行登录。</value>
+  </data>
+  <data name="Page_CreateServer_PreviousStep" xml:space="preserve">
+    <value>上一步</value>
+  </data>
+  <data name="Page_CreateServer_NextStep" xml:space="preserve">
+    <value>下一步</value>
+  </data>
+  <data name="Frp_Sakura_TunnelStatus" xml:space="preserve">
+    <value>隧道状态：</value>
+  </data>
+  <data name="Frp_Chml_User" xml:space="preserve">
+    <value>用户：</value>
+  </data>
+  <data name="Frp_Chml_Email" xml:space="preserve">
+    <value>邮箱：</value>
+  </data>
+  <data name="Frp_Chml_MemberType" xml:space="preserve">
+    <value>会员类型：</value>
+  </data>
+  <data name="Frp_Chml_TunnelCount" xml:space="preserve">
+    <value>隧道数量：</value>
+  </data>
+  <data name="SR_Return" xml:space="preserve">
+    <value>返回</value>
+  </data>
+  <data name="SR_Download" xml:space="preserve">
+    <value>下载</value>
+  </data>
+  <data name="Form_DownloadServer_DownloadList" xml:space="preserve">
+    <value>下载列表</value>
+  </data>
+  <data name="Form_DownloadServer_Docs" xml:space="preserve">
+    <value>教程文档</value>
+  </data>
+  <data name="Form_DownloadServer_UseMirror" xml:space="preserve">
+    <value>Vanilla和Forge使用镜像源</value>
+  </data>
 </root>

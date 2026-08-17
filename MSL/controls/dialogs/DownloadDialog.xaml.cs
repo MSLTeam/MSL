@@ -57,7 +57,7 @@ namespace MSL
         private async void Downloader()
         {
             LogHelper.Write.Info($"开始下载：{filename} ，下载地址：{downloadurl} ，保存路径：{downloadPath} ，启用多线程下载：{enableParalle} ，Header模式：{headerMode}。");
-            
+
             try
             {
                 ServicePointManager.SecurityProtocol = SecurityProtocolType.Tls12
@@ -78,12 +78,12 @@ namespace MSL
                     if (VerifyFileSHA256(Path.Combine(downloadPath, filename), expectedSha256))
                     {
                         _dialogReturn = 1;
-                        Task.Run(async () =>
+                        _ = Task.Run(async () =>
                         {
                             Dispatcher.Invoke(() =>
                             {
-                                infolabel.Text = "文件已存在，下载完成";
-                                StatusLab.Text = "下载完成";
+                                infolabel.Text = Lang.SR_FileExistsDownloadDone;
+                                StatusLab.Text = LanguageManager.Instance["DownloadDialog_DownloadComplete"];
                             });
                             await Task.Delay(1000);
                             Dispatcher.Invoke(() =>
@@ -127,9 +127,9 @@ namespace MSL
             // Download completed event that can include occurred errors or 
             // cancelled or download completed successfully.
             downloader.DownloadFileCompleted += OnDownloadFileCompleted;
-            downloader.DownloadFileTaskAsync(downloadurl, downloadPath + "\\" + filename);
+            _ = downloader.DownloadFileTaskAsync(downloadurl, downloadPath + "\\" + filename);
 
-            Task.Run(async () =>
+            _ = Task.Run(async () =>
             {
                 await Task.Delay(5000);
                 Dispatcher.Invoke(() =>
@@ -153,7 +153,7 @@ namespace MSL
                 };
                 updateUITimer.Tick += UpdateUITick;
                 updateUITimer.Start();
-                StatusLab.Text = "下载中……";
+                StatusLab.Text = Lang.SR_Downloading;
             });
         }
 
@@ -189,7 +189,7 @@ namespace MSL
                 {
                     Dispatcher.Invoke(() =>
                     {
-                        StatusLab.Text = "下载中……";
+                        StatusLab.Text = Lang.SR_Downloading;
                         pbar.Value = 0;
                         Thread thread = new Thread(DownloadFile);
                         thread.Start();
@@ -264,7 +264,7 @@ namespace MSL
             Dispatcher.Invoke(() =>
             {
                 PauseBtn.IsEnabled = true;
-                StatusLab.Text = "下载中……";
+                StatusLab.Text = Lang.SR_Downloading;
                 updateUITimer = new DispatcherTimer { Interval = TimeSpan.FromMilliseconds(500) };
                 updateUITimer.Tick += UpdateUITick;
                 updateUITimer.Start();
@@ -382,7 +382,7 @@ namespace MSL
                 LogHelper.Write.Error($"原生 HttpClient 下载失败: {ex.Message}");
                 Dispatcher.Invoke(() =>
                 {
-                    StatusLab.Text = "下载中……";
+                    StatusLab.Text = Lang.SR_Downloading;
                     pbar.Value = 0;
                     Thread thread = new Thread(DownloadFile);
                     thread.Start();
@@ -522,7 +522,7 @@ namespace MSL
 
         private void PauseBtn_Click(object sender, RoutedEventArgs e)
         {
-            if (PauseBtn.Content.ToString() == "暂停")
+            if (PauseBtn.Content.ToString() == Lang.SR_Pause)
             {
                 if (useNativeHttpClient)
                 {
@@ -532,8 +532,8 @@ namespace MSL
                 {
                     downloader?.Pause();
                 }
-                PauseBtn.Content = "继续";
-                StatusLab.Text = "已暂停";
+                PauseBtn.Content = Lang.SR_Resume;
+                StatusLab.Text = Lang.SR_Paused;
             }
             else
             {
@@ -545,8 +545,8 @@ namespace MSL
                 {
                     downloader?.Resume();
                 }
-                PauseBtn.Content = "暂停";
-                StatusLab.Text = "下载中……";
+                PauseBtn.Content = Lang.SR_Pause;
+                StatusLab.Text = Lang.SR_Downloading;
             }
         }
 
@@ -576,7 +576,7 @@ namespace MSL
                     {
                         if (StatusLab.Text.ToString() != LanguageManager.Instance["DownloadDialog_DownloadCancel"])
                         {
-                            StatusLab.Text = "取消任务中，请稍等……\n双击取消按钮可强制关闭此对话框（不推荐）";
+                            StatusLab.Text = Lang.SR_CancellingTask + "\n" + LanguageManager.Instance["DownloadDialog_DoubleClickForceClose"];
                         }
                     });
                 });

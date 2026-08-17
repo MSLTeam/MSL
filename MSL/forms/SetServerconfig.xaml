@@ -6,9 +6,10 @@
         xmlns:hc="https://handyorg.github.io/handycontrol"
         xmlns:avalon="http://icsharpcode.net/sharpdevelop/avalonedit"
         xmlns:local="clr-namespace:MSL"
+        xmlns:langs="clr-namespace:MSL.langs"
         mc:Ignorable="d"
         NonClientAreaBackground="{DynamicResource BackgroundBrush}" ShowMinButton="False"
-        Title="修改配置文件" Height="450" Width="750" MinHeight="450" MinWidth="750" 
+        Title="{Binding [Form_SetServerconfig_Title], Source={x:Static langs:LanguageManager.Instance}}" Height="450" Width="750" MinHeight="450" MinWidth="750" 
         Loaded="Window_Loaded" WindowStartupLocation="CenterOwner" 
         Background="{DynamicResource BackgroundBrush}">
     <Grid>
@@ -19,10 +20,10 @@
 
         <!-- 左侧文件树 -->
         <DockPanel Grid.Column="0" Margin="10">
-            <Button DockPanel.Dock="Bottom" x:Name="RefreshBtn" Content="刷新" 
+            <Button DockPanel.Dock="Bottom" x:Name="RefreshBtn" Content="{Binding [Form_SetServerconfig_Refresh], Source={x:Static langs:LanguageManager.Instance}}"
                     HorizontalAlignment="Stretch" Margin="0,5,0,0" Click="RefreshBtn_Click"/>
             <TreeView x:Name="FileTreeViewContainer">
-                <TreeViewItem x:Name="FileTreeView" Header="配置文件" IsExpanded="True" 
+                <TreeViewItem x:Name="FileTreeView" Header="{Binding [Form_SetServerconfig_ConfigFiles], Source={x:Static langs:LanguageManager.Instance}}" IsExpanded="True" 
                               Selected="FileTreeView_Selected"/>
             </TreeView>
         </DockPanel>
@@ -42,10 +43,10 @@
                 BorderBrush="{DynamicResource BorderBrush}" BorderThickness="1">
                 <avalon:TextEditor.ContextMenu>
                     <ContextMenu>
-                        <MenuItem Header="复制" x:Name="AEMenuCopy" Click="AEMenu_Copy"/>
-                        <MenuItem Header="粘贴" x:Name="AEMenuPaste" Click="AEMenu_Paste"/>
-                        <MenuItem Header="剪切" x:Name="AEMenuCut" Click="AEMenu_Cut"/>
-                        <MenuItem Header="全选" x:Name="AEMenuSelectAll" Click="AEMenu_SelectAll"/>
+                        <MenuItem Header="{Binding [Form_SetServerconfig_Copy], Source={x:Static langs:LanguageManager.Instance}}" x:Name="AEMenuCopy" Click="AEMenu_Copy"/>
+                        <MenuItem Header="{Binding [Form_SetServerconfig_Paste], Source={x:Static langs:LanguageManager.Instance}}" x:Name="AEMenuPaste" Click="AEMenu_Paste"/>
+                        <MenuItem Header="{Binding [Form_SetServerconfig_Cut], Source={x:Static langs:LanguageManager.Instance}}" x:Name="AEMenuCut" Click="AEMenu_Cut"/>
+                        <MenuItem Header="{Binding [Form_SetServerconfig_SelectAll], Source={x:Static langs:LanguageManager.Instance}}" x:Name="AEMenuSelectAll" Click="AEMenu_SelectAll"/>
                     </ContextMenu>
                 </avalon:TextEditor.ContextMenu>
             </avalon:TextEditor>
@@ -53,9 +54,9 @@
             <StackPanel Grid.Row="1" Orientation="Horizontal" 
                         Margin="0,5,0,0" HorizontalAlignment="Right">
                 <Label x:Name="FileEncoding" Content="Encoding" VerticalAlignment="Center"/>
-                <Button x:Name="ChangeEncoding" Content="转换编码" IsEnabled="False"
+                <Button x:Name="ChangeEncoding" Content="{Binding [Form_SetServerconfig_ChangeEncoding], Source={x:Static langs:LanguageManager.Instance}}" IsEnabled="False"
                         Margin="5,0" Click="ChangeEncoding_Click"/>
-                <Button x:Name="SaveChange" Content="保存更改" IsEnabled="False"
+                <Button x:Name="SaveChange" Content="{Binding [Form_SetServerconfig_SaveChanges], Source={x:Static langs:LanguageManager.Instance}}" IsEnabled="False"
                         Style="{StaticResource ButtonPrimary}" Click="SaveChange_Click"/>
             </StackPanel>
         </Grid>

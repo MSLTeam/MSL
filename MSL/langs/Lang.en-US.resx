@@ -642,4 +642,2982 @@ Do you want to create a new server?</value>
   <data name="_OK" xml:space="preserve">
     <value>OK</value>
   </data>
+  <data name="App_Error_NoStackTrace" xml:space="preserve">
+    <value>No stack trace available.</value>
+  </data>
+  <data name="App_Error_RuntimeException" xml:space="preserve">
+    <value>An exception occurred while running the application.</value>
+  </data>
+  <data name="App_Error_UnknownError" xml:space="preserve">
+    <value>Unknown error</value>
+  </data>
+  <data name="App_Error_CheckDotNet" xml:space="preserve">
+    <value>Please check if .NET Framework 4.7.2 runtime is installed.</value>
+  </data>
+  <data name="App_Error_ReportToDev" xml:space="preserve">
+    <value>If the runtime environment is correct, please report this error to the developers.</value>
+  </data>
+  <data name="App_Error_Title" xml:space="preserve">
+    <value>Application Error</value>
+  </data>
+  <data name="App_Error_Fatal" xml:space="preserve">
+    <value>The application encountered an unrecoverable fatal error and will close.</value>
+  </data>
+  <data name="App_Error_FatalDetail" xml:space="preserve">
+    <value>Please check the local log file for details. It is recommended to report this to the developers.</value>
+  </data>
+  <data name="App_Error_FatalTitle" xml:space="preserve">
+    <value>Fatal Error</value>
+  </data>
+  <data name="MainWindow_Tray_OpenMain" xml:space="preserve">
+    <value>Open Main Window</value>
+  </data>
+  <data name="MainWindow_Tray_Exit" xml:space="preserve">
+    <value>Exit</value>
+  </data>
+  <data name="MainWindow_FallbackUrl" xml:space="preserve">
+    <value>The software will use a backup URL...</value>
+  </data>
+  <data name="MainWindow_UpdateFailed" xml:space="preserve">
+    <value>An error occurred, update failed!</value>
+  </data>
+  <data name="MainWindow_DownloadNewVer" xml:space="preserve">
+    <value>Downloading new version...</value>
+  </data>
+  <data name="MainWindow_LoadErrorDotNet" xml:space="preserve">
+    <value>An error occurred while loading the software!
+Please check if .NET Framework 4.7.2 runtime is installed. If the error persists after installation, please contact the author!
+Error message:</value>
+  </data>
+  <data name="MainWindow_LoadError" xml:space="preserve">
+    <value>An error occurred while loading the software! If you cannot use it normally, please contact the author for help.
+Error message:</value>
+  </data>
+  <data name="SettingsPage_ConfigLoadErr" xml:space="preserve">
+    <value>An error occurred while loading the configuration. This does not affect usage, but you can report it to the author!</value>
+  </data>
+  <data name="SettingsPage_EnterUrl" xml:space="preserve">
+    <value>Please enter a URL before downloading!</value>
+  </data>
+  <data name="SettingsPage_DownloadConfirm" xml:space="preserve">
+    <value>URL: {0}
+Filename: {1}
+The file will be saved to MSL\Downloads folder.
+
+Click OK to download.</value>
+  </data>
+  <data name="SettingsPage_AddedToTaskList" xml:space="preserve">
+    <value>Added to the task list!</value>
+  </data>
+  <data name="SettingsPage_RecoveryWarning" xml:space="preserve">
+    <value>Restoring default settings will delete all files in the MSL folder. Please proceed with caution!</value>
+  </data>
+  <data name="SettingsPage_ToggleOn" xml:space="preserve">
+    <value>Enabled!</value>
+  </data>
+  <data name="SettingsPage_ToggleOff" xml:space="preserve">
+    <value>Disabled!</value>
+  </data>
+  <data name="SettingsPage_AddServerFirst" xml:space="preserve">
+    <value>Please add a server to the startup list first!</value>
+  </data>
+  <data name="SettingsPage_AddFrpcIdFirst" xml:space="preserve">
+    <value>Please enter the Frpc ID(s) to auto-start!</value>
+  </data>
+  <data name="SettingsPage_SaveColorSuc" xml:space="preserve">
+    <value>Color saved successfully!</value>
+  </data>
+  <data name="SettingsPage_MicaOn" xml:space="preserve">
+    <value>Mica effect enabled!</value>
+  </data>
+  <data name="SettingsPage_MicaOff" xml:space="preserve">
+    <value>Mica effect disabled!</value>
+  </data>
+  <data name="SettingsPage_SelectFile" xml:space="preserve">
+    <value>Select a file</value>
+  </data>
+  <data name="SettingsPage_AllFiles" xml:space="preserve">
+    <value>All file types|*.*</value>
+  </data>
+  <data name="SettingsPage_ChangeBgFailed" xml:space="preserve">
+    <value>Failed to change background image!
+Error code:</value>
+  </data>
+  <data name="SettingsPage_DelBgFailed" xml:space="preserve">
+    <value>Failed to clear background image!
+Error code:</value>
+  </data>
+  <data name="SettingsPage_SaveLogColorSuc" xml:space="preserve">
+    <value>Log color saved! Reopen the server runner window to apply.</value>
+  </data>
+  <data name="SettingsPage_RestoreLogColorSuc" xml:space="preserve">
+    <value>Default log colors restored! Reopen the server runner window to apply.</value>
+  </data>
+  <data name="SettingsPage_InvalidFontSize" xml:space="preserve">
+    <value>Please enter a valid font size!</value>
+  </data>
+  <data name="SettingsPage_SaveLogFontSuc" xml:space="preserve">
+    <value>Log font saved! Reopen the server runner window to apply.</value>
+  </data>
+  <data name="SettingsPage_NewVersionFound" xml:space="preserve">
+    <value>New version found: {0}. Update now?
+Changelog:</value>
+  </data>
+  <data name="SettingsPage_UpdateNow" xml:space="preserve">
+    <value>Update</value>
+  </data>
+  <data name="SettingsPage_RefuseUpdate" xml:space="preserve">
+    <value>You refused to update. If you encounter bugs in this version, please do not report them!</value>
+  </data>
+  <data name="SettingsPage_CloseBeforeUpdate" xml:space="preserve">
+    <value>Your server/mapping/online features are running. Please close them before updating!</value>
+  </data>
+  <data name="SettingsPage_UpdateFailed" xml:space="preserve">
+    <value>Update failed!</value>
+  </data>
+  <data name="SettingsPage_ToggleOffRestart" xml:space="preserve">
+    <value>Disabled! Restart the server runner to apply.</value>
+  </data>
+  <data name="SettingsPage_ToggleOnRestart" xml:space="preserve">
+    <value>Enabled! Restart the server runner to apply.</value>
+  </data>
+  <data name="SettingsPage_CloseBeforeAdjust" xml:space="preserve">
+    <value>Please turn off the switch before making changes!</value>
+  </data>
+  <data name="SettingsPage_DisableMslTipsWarning" xml:space="preserve">
+    <value>Disabling this will prevent reading server/player info. Proceed with caution!</value>
+  </data>
+  <data name="SettingsPage_CopyIdSuc" xml:space="preserve">
+    <value>Device ID copied!</value>
+  </data>
+  <data name="SettingsPage_CopyFailed" xml:space="preserve">
+    <value>Copy failed!</value>
+  </data>
+  <data name="SettingsPage_EggAlreadyClicked" xml:space="preserve">
+    <value>You already clicked this! Don't click again!</value>
+  </data>
+  <data name="SettingsPage_EggPersistent" xml:space="preserve">
+    <value>You're really persistent!</value>
+  </data>
+  <data name="SettingsPage_EggPersistent2" xml:space="preserve">
+    <value>You're really something!</value>
+  </data>
+  <data name="SettingsPage_EggGameTime" xml:space="preserve">
+    <value>Alright, let's play a little game!</value>
+  </data>
+  <data name="SettingsPage_EggGuessIntro" xml:space="preserve">
+    <value>I've generated an integer from 1-500. Can you guess it?
+Enter a number (1-500)</value>
+  </data>
+  <data name="SettingsPage_EggDontGuess" xml:space="preserve">
+    <value>Fine, don't guess!</value>
+  </data>
+  <data name="SettingsPage_EggBadInput" xml:space="preserve">
+    <value>Why enter random input! I'm done!</value>
+  </data>
+  <data name="SettingsPage_EggTooBig" xml:space="preserve">
+    <value>Too high!</value>
+  </data>
+  <data name="SettingsPage_EggTooSmall" xml:space="preserve">
+    <value>Too low!</value>
+  </data>
+  <data name="SettingsPage_EggTryAgain" xml:space="preserve">
+    <value>Try again!
+Enter a number (1-500)</value>
+  </data>
+  <data name="SettingsPage_EggWon" xml:space="preserve">
+    <value>Amazing! You guessed it!</value>
+  </data>
+  <data name="SettingsPage_EggWonTitle" xml:space="preserve">
+    <value>Correct: {0}!
+You're awesome!</value>
+  </data>
+  <data name="SettingsPage_EggCongrats" xml:space="preserve">
+    <value>Congratulations!</value>
+  </data>
+  <data name="SettingsPage_EggDontKnow" xml:space="preserve">
+    <value>No, I don't know</value>
+  </data>
+  <data name="SettingsPage_EggIKnow" xml:space="preserve">
+    <value>I know</value>
+  </data>
+  <data name="SettingsPage_EggWarning" xml:space="preserve">
+    <value>The author is not responsible for any issues after clicking this. Continue?
+(Photosensitivity epilepsy warning! Do not click OK if you have photosensitive epilepsy!)</value>
+  </data>
+  <data name="SettingsPage_EggUnsure" xml:space="preserve">
+    <value>I'm not sure QWQ</value>
+  </data>
+  <data name="SettingsPage_CloseWindowHint" xml:space="preserve">
+    <value>Prompt when server runner closes: </value>
+  </data>
+  <data name="SettingsPage_PickColor" xml:space="preserve">
+    <value>Pick color</value>
+  </data>
+  <data name="SettingsPage_UseMica" xml:space="preserve">
+    <value>Use Mica effect</value>
+  </data>
+  <data name="SettingsPage_LogColor" xml:space="preserve">
+    <value>Terminal log color:</value>
+  </data>
+  <data name="SettingsPage_Reset" xml:space="preserve">
+    <value>Reset</value>
+  </data>
+  <data name="SettingsPage_LogFont" xml:space="preserve">
+    <value>Terminal log font:</value>
+  </data>
+  <data name="SettingsPage_SysDefault" xml:space="preserve">
+    <value>System default</value>
+  </data>
+  <data name="SettingsPage_LogFontSize" xml:space="preserve">
+    <value>Terminal log font size:</value>
+  </data>
+  <data name="SettingsPage_Apply" xml:space="preserve">
+    <value>Apply</value>
+  </data>
+  <data name="SR_Dashboard" xml:space="preserve">
+    <value>Dashboard</value>
+  </data>
+  <data name="SR_ServerBasicInfo" xml:space="preserve">
+    <value>Server Basic Info</value>
+  </data>
+  <data name="SR_ServerStatus" xml:space="preserve">
+    <value>Server Status</value>
+  </data>
+  <data name="SR_OnlineMode" xml:space="preserve">
+    <value>Online Mode</value>
+  </data>
+  <data name="SR_GameMode" xml:space="preserve">
+    <value>Game Mode</value>
+  </data>
+  <data name="SR_GameDifficulty" xml:space="preserve">
+    <value>Game Difficulty</value>
+  </data>
+  <data name="SR_ServerIP" xml:space="preserve">
+    <value>Server IP</value>
+  </data>
+  <data name="SR_LocalIP" xml:space="preserve">
+    <value>Local IP</value>
+  </data>
+  <data name="SR_RemoteIP" xml:space="preserve">
+    <value>Remote IP</value>
+  </data>
+  <data name="SR_ClickToGet" xml:space="preserve">
+    <value>Click to get</value>
+  </data>
+  <data name="SR_SysUsage" xml:space="preserve">
+    <value>System Usage</value>
+  </data>
+  <data name="SR_CPUUsage" xml:space="preserve">
+    <value>CPU Usage</value>
+  </data>
+  <data name="SR_MemUsage" xml:space="preserve">
+    <value>Memory Usage</value>
+  </data>
+  <data name="SR_SysMemUsed" xml:space="preserve">
+    <value>System Memory Used</value>
+  </data>
+  <data name="SR_SysMemFree" xml:space="preserve">
+    <value>System Memory Free</value>
+  </data>
+  <data name="SR_LogOutput" xml:space="preserve">
+    <value>Log Output</value>
+  </data>
+  <data name="SR_PreviewHint" xml:space="preserve">
+    <value>Only partial logs shown here. Go to Console for full output.</value>
+  </data>
+  <data name="SR_PlayerList" xml:space="preserve">
+    <value>Player List</value>
+  </data>
+  <data name="SR_CopyInfo" xml:space="preserve">
+    <value>Copy Info</value>
+  </data>
+  <data name="SR_KickPlayer" xml:space="preserve">
+    <value>Kick Player</value>
+  </data>
+  <data name="SR_BanPlayer" xml:space="preserve">
+    <value>Ban Player</value>
+  </data>
+  <data name="SR_CrashDetect" xml:space="preserve">
+    <value>Crash Detection</value>
+  </data>
+  <data name="SR_OpenServerDir" xml:space="preserve">
+    <value>Open Server Directory</value>
+  </data>
+  <data name="SR_Console" xml:space="preserve">
+    <value>Console</value>
+  </data>
+  <data name="SR_Copy" xml:space="preserve">
+    <value>Copy</value>
+  </data>
+  <data name="SR_SelectAll" xml:space="preserve">
+    <value>Select All</value>
+  </data>
+  <data name="SR_ClearScreen" xml:space="preserve">
+    <value>Clear Screen</value>
+  </data>
+  <data name="SR_CmdHint" xml:space="preserve">
+    <value>/ (command)</value>
+  </data>
+  <data name="SR_ServerClosed" xml:space="preserve">
+    <value>Server is closed</value>
+  </data>
+  <data name="SR_Send" xml:space="preserve">
+    <value>Send</value>
+  </data>
+  <data name="SR_MoreActions" xml:space="preserve">
+    <value>More Actions</value>
+  </data>
+  <data name="SR_Backup" xml:space="preserve">
+    <value>Backup</value>
+  </data>
+  <data name="SR_LogAnalysis" xml:space="preserve">
+    <value>Log Analysis</value>
+  </data>
+  <data name="SR_PluginsMods" xml:space="preserve">
+    <value>Plugins/Mods</value>
+  </data>
+  <data name="SR_ManagePlugins" xml:space="preserve">
+    <value>Manage Server Plugins</value>
+  </data>
+  <data name="SR_TogglePlugin" xml:space="preserve">
+    <value>Disable/Enable Selected Plugin</value>
+  </data>
+  <data name="SR_DeletePlugin" xml:space="preserve">
+    <value>Delete Selected Plugin</value>
+  </data>
+  <data name="SR_ToggleAllPlugins" xml:space="preserve">
+    <value>Disable/Enable All Plugins</value>
+  </data>
+  <data name="SR_OpenPluginDir" xml:space="preserve">
+    <value>Open Plugin Folder</value>
+  </data>
+  <data name="SR_PluginList" xml:space="preserve">
+    <value>Plugin List</value>
+  </data>
+  <data name="SR_PluginRestartHint" xml:space="preserve">
+    <value>(Plugin changes take effect after server restart)</value>
+  </data>
+  <data name="SR_PluginName" xml:space="preserve">
+    <value>Plugin Name</value>
+  </data>
+  <data name="SR_Disabled" xml:space="preserve">
+    <value>Disabled</value>
+  </data>
+  <data name="SR_ShowActions" xml:space="preserve">
+    <value>Show Actions</value>
+  </data>
+  <data name="SR_Actions" xml:space="preserve">
+    <value>Actions</value>
+  </data>
+  <data name="SR_Refresh" xml:space="preserve">
+    <value>Refresh</value>
+  </data>
+  <data name="SR_AddPlugin" xml:space="preserve">
+    <value>Add Plugin</value>
+  </data>
+  <data name="SR_DownloadPlugin" xml:space="preserve">
+    <value>Download Plugin</value>
+  </data>
+  <data name="SR_OpenFolder" xml:space="preserve">
+    <value>Open Folder</value>
+  </data>
+  <data name="SR_ManageMods" xml:space="preserve">
+    <value>Manage Server Mods</value>
+  </data>
+  <data name="SR_ToggleMod" xml:space="preserve">
+    <value>Disable/Enable Selected Mod</value>
+  </data>
+  <data name="SR_DeleteMod" xml:space="preserve">
+    <value>Delete Selected Mod</value>
+  </data>
+  <data name="SR_ToggleAllMods" xml:space="preserve">
+    <value>Disable/Enable All Mods</value>
+  </data>
+  <data name="SR_OpenModDir" xml:space="preserve">
+    <value>Open Mod Folder</value>
+  </data>
+  <data name="SR_ModList" xml:space="preserve">
+    <value>Mod List</value>
+  </data>
+  <data name="SR_ModRestartHint" xml:space="preserve">
+    <value>(Mod changes take effect after server restart)</value>
+  </data>
+  <data name="SR_ModName" xml:space="preserve">
+    <value>Mod Name</value>
+  </data>
+  <data name="SR_ClientSide" xml:space="preserve">
+    <value>Client-side</value>
+  </data>
+  <data name="SR_AddModNote" xml:space="preserve">
+    <value>Must-read for Adding Mods</value>
+  </data>
+  <data name="SR_DetectClientMods" xml:space="preserve">
+    <value>Detect Client-side Mods</value>
+  </data>
+  <data name="SR_AddMod" xml:space="preserve">
+    <value>Add Mod</value>
+  </data>
+  <data name="SR_DownloadMod" xml:space="preserve">
+    <value>Download Mod</value>
+  </data>
+  <data name="SR_InstanceSettings" xml:space="preserve">
+    <value>Instance Settings</value>
+  </data>
+  <data name="SR_InstanceInfo" xml:space="preserve">
+    <value>Instance Info</value>
+  </data>
+  <data name="SR_InstanceName" xml:space="preserve">
+    <value>Name:</value>
+  </data>
+  <data name="SR_InstanceDir" xml:space="preserve">
+    <value>Directory:</value>
+  </data>
+  <data name="SR_Browse" xml:space="preserve">
+    <value>Browse</value>
+  </data>
+  <data name="SR_InstanceSettingsCard" xml:space="preserve">
+    <value>Instance Settings</value>
+  </data>
+  <data name="SR_JavaPath" xml:space="preserve">
+    <value>Java Path:</value>
+  </data>
+  <data name="SR_ManualJava" xml:space="preserve">
+    <value>Manual Selection</value>
+  </data>
+  <data name="SR_OnlineDownload" xml:space="preserve">
+    <value>Online Download</value>
+  </data>
+  <data name="SR_LocalJava" xml:space="preserve">
+    <value>Local Java</value>
+  </data>
+  <data name="SR_ScanJava" xml:space="preserve">
+    <value>Scan</value>
+  </data>
+  <data name="SR_UseEnvVar" xml:space="preserve">
+    <value>Use Environment Variable</value>
+  </data>
+  <data name="SR_ServerCore" xml:space="preserve">
+    <value>Server Core File:</value>
+  </data>
+  <data name="SR_DownloadServer" xml:space="preserve">
+    <value>Download</value>
+  </data>
+  <data name="SR_ServerMemory" xml:space="preserve">
+    <value>Server Memory:</value>
+  </data>
+  <data name="SR_AutoAlloc" xml:space="preserve">
+    <value>Auto-allocate</value>
+  </data>
+  <data name="SR_JvmArgs" xml:space="preserve">
+    <value>Server JVM Args:</value>
+  </data>
+  <data name="SR_JvmArgsHint" xml:space="preserve">
+    <value>Tip: Format is -param, e.g. -Dlog4j2.formatMsgNoLookups=true. Leave blank if unnecessary.</value>
+  </data>
+  <data name="SR_YggdrasilConfig" xml:space="preserve">
+    <value>External Auth Config (Yggdrasil API):</value>
+  </data>
+  <data name="SR_SetMSLAuth" xml:space="preserve">
+    <value>Set to MSL Unified Auth (MSL Skin)</value>
+  </data>
+  <data name="SR_SetLittleskin" xml:space="preserve">
+    <value>Set to Littleskin</value>
+  </data>
+  <data name="SR_YggDocs" xml:space="preserve">
+    <value>External Auth Tutorial</value>
+  </data>
+  <data name="SR_YggHint" xml:space="preserve">
+    <value>Filling this will enable external auth.
+Clear this field to disable.</value>
+  </data>
+  <data name="SR_BackupSettings" xml:space="preserve">
+    <value>Backup Settings</value>
+  </data>
+  <data name="SR_MaxBackups" xml:space="preserve">
+    <value>Max Backups (0=unlimited):</value>
+  </data>
+  <data name="SR_ScheduledBackup" xml:space="preserve">
+    <value>Scheduled Backup</value>
+  </data>
+  <data name="SR_BackupInterval" xml:space="preserve">
+    <value>Backup Interval (min):</value>
+  </data>
+  <data name="SR_CronExpr" xml:space="preserve">
+    <value>Cron Expression:</value>
+  </data>
+  <data name="SR_CronHint" xml:space="preserve">
+    <value>Tip: Use standard Cron, e.g. 0 */30 * * * for every 30 min</value>
+  </data>
+  <data name="SR_MoreFeatures" xml:space="preserve">
+    <value>More Features</value>
+  </data>
+  <data name="SR_AutoBackup" xml:space="preserve">
+    <value>Auto Backup</value>
+  </data>
+  <data name="SR_OpenBackupDir" xml:space="preserve">
+    <value>Open Backup Folder</value>
+  </data>
+  <data name="SR_CreateBackup" xml:space="preserve">
+    <value>Create Backup</value>
+  </data>
+  <data name="SR_RestoreBackup" xml:space="preserve">
+    <value>Restore Backup</value>
+  </data>
+  <data name="SR_RunnerSettings" xml:space="preserve">
+    <value>Server Runner Settings</value>
+  </data>
+  <data name="SR_ServerRunnerSettings" xml:space="preserve">
+    <value>Server Runner Settings</value>
+  </data>
+  <data name="SR_ShowSysOccupation" xml:space="preserve">
+    <value>Show System Usage</value>
+  </data>
+  <data name="SR_RecordPlayers" xml:space="preserve">
+    <value>Record Players</value>
+  </data>
+  <data name="SR_PreviewOutput" xml:space="preserve">
+    <value>Output Preview</value>
+  </data>
+  <data name="SR_AutoDetectMem" xml:space="preserve">
+    <value>Auto-allocated</value>
+  </data>
+  <data name="SR_Running" xml:space="preserve">
+    <value>Running</value>
+  </data>
+  <data name="SR_Closed" xml:space="preserve">
+    <value>Closed</value>
+  </data>
+  <data name="SR_Fetching" xml:space="preserve">
+    <value>Fetching</value>
+  </data>
+  <data name="SR_Launched" xml:space="preserve">
+    <value>Launched</value>
+  </data>
+  <data name="SR_Enabled" xml:space="preserve">
+    <value>Enabled</value>
+  </data>
+  <data name="SR_OpeningServerDir" xml:space="preserve">
+    <value>Opening server directory...</value>
+  </data>
+  <data name="SR_SelectPlayerFirst" xml:space="preserve">
+    <value>Please select a player first!</value>
+  </data>
+  <data name="SR_CopySuccess" xml:space="preserve">
+    <value>Copied!</value>
+  </data>
+  <data name="SR_ConfirmKick" xml:space="preserve">
+    <value>Are you sure you want to kick this player?</value>
+  </data>
+  <data name="SR_OperationFailed" xml:space="preserve">
+    <value>Operation failed!</value>
+  </data>
+  <data name="SR_ConfirmBan" xml:space="preserve">
+    <value>Are you sure you want to ban this player? The player will never be able to join the server!
+(Vanilla unban command: pardon +player name. If using plugins, use the plugin's unban command)</value>
+  </data>
+  <data name="SR_PublicIPInfo" xml:space="preserve">
+    <value>Your public IP is: {0}
+Your server remote access address is: {0}:{1}
+Note: Make sure your firewall is disabled, otherwise remote players cannot join!</value>
+  </data>
+  <data name="SR_PublicIPInfoNoPort" xml:space="preserve">
+    <value>Your public IP is: {0}
+Your server remote access address is: {0}
+Note: Make sure your firewall is disabled, otherwise remote players cannot join!</value>
+  </data>
+  <data name="SR_RadminDetected" xml:space="preserve">
+    <value>Radmin Lan detected!
+Your Radmin IP is: {0}
+Your server remote access address is: {0}{1}
+Note: All players must join the same Radmin room, and make sure the firewall is disabled!</value>
+  </data>
+  <data name="SR_RadminTitle" xml:space="preserve">
+    <value>Radmin LAN Play</value>
+  </data>
+  <data name="SR_NetworkMappingTip" xml:space="preserve">
+    <value>After the server starts, remote players usually cannot join. You need to set up network mapping to allow others to join. The launcher has built-in free network mapping - click the 'Mapping' button on the left side of the main interface for details.</value>
+  </data>
+  <data name="SR_CrashAnalysisInfo" xml:space="preserve">
+    <value>The analysis report will be generated after the server shuts down! If the problem persists, try asking in our QQ groups (with logs or log links):
+Group 1: 1145888872  Group 2: 234477679</value>
+  </data>
+  <data name="SR_HideWindowConfirm" xml:space="preserve">
+    <value>Server is still running. Hide this window?
+To show this window again, double-click the server in the server list (or click the Launch Server button)</value>
+  </data>
+  <data name="SR_ServerRunningCantOp" xml:space="preserve">
+    <value>Server is running! Please stop the server first!</value>
+  </data>
+  <data name="SR_Launching" xml:space="preserve">
+    <value>Launching server, please wait...</value>
+  </data>
+  <data name="SR_ServerClosedMsg" xml:space="preserve">
+    <value>Server has been closed!</value>
+  </data>
+  <data name="SR_Stopping" xml:space="preserve">
+    <value>Stopping server, please wait...
+Double-click the button to force stop (not recommended)</value>
+  </data>
+  <data name="SR_EnabledLower" xml:space="preserve">
+    <value>Enabled</value>
+  </data>
+  <data name="SR_DisabledLower" xml:space="preserve">
+    <value>Disabled</value>
+  </data>
+  <data name="SR_PreviewClosed" xml:space="preserve">
+    <value>Preview disabled. Go to the Console tab to view logs!</value>
+  </data>
+  <data name="SR_SysOccupationErr" xml:space="preserve">
+    <value>Failed to get system usage info! Display occupation feature has been auto-disabled!
+This is usually caused by system issues and does not affect normal usage!</value>
+  </data>
+  <data name="SR_ServerInfoErr" xml:space="preserve">
+    <value>Error getting server info! This does not affect server operation. You can continue using or report this to the author!</value>
+  </data>
+  <data name="SR_SomeError" xml:space="preserve">
+    <value>Something went wrong...</value>
+  </data>
+  <data name="SR_ServerClosedForAnalysis" xml:space="preserve">
+    <value>Server closed! No related issues detected. You can share the server logs for help!
+How to share logs:
+1. Screenshot the console
+2. Server directory\logs\latest.log
+3. Upload to Internet via 'More Features'</value>
+  </data>
+  <data name="SR_CrashAnalysisSystem" xml:space="preserve">
+    <value>Crash Analysis System</value>
+  </data>
+  <data name="SR_ServerClosedShowingReport" xml:space="preserve">
+    <value>Server closed! Showing analysis report...</value>
+  </data>
+  <data name="SR_ServerAnalysisReport" xml:space="preserve">
+    <value>Server Analysis Report</value>
+  </data>
+  <data name="SR_ServerRestarting" xml:space="preserve">
+    <value>Server is restarting...</value>
+  </data>
+  <data name="SR_RestartCancelled" xml:space="preserve">
+    <value>Server restart cancelled</value>
+  </data>
+  <data name="SR_ChangeDone" xml:space="preserve">
+    <value>Changes applied!</value>
+  </data>
+  <data name="SR_NoModsFolder" xml:space="preserve">
+    <value>mods folder not found!</value>
+  </data>
+  <data name="SR_ClientModDetectResult" xml:space="preserve">
+    <value>Detection complete! Found {0} client-only mod(s) (marked in orange).
+It is recommended not to upload these mods to the server.</value>
+  </data>
+  <data name="SR_DetectResult" xml:space="preserve">
+    <value>Detection Result</value>
+  </data>
+  <data name="SR_NoClientMods" xml:space="preserve">
+    <value>No client-only mods detected.</value>
+  </data>
+  <data name="SR_CustomArgs" xml:space="preserve">
+    <value>Custom launch args:</value>
+  </data>
+  <data name="SR_CustomArgsHint" xml:space="preserve">
+    <value>Tip: You are using custom args mode~</value>
+  </data>
+  <data name="SR_MemAutoAlloc" xml:space="preserve">
+    <value>Memory: Auto-allocated</value>
+  </data>
+  <data name="SR_MemParseFailed" xml:space="preserve">
+    <value>Failed to parse memory parameters</value>
+  </data>
+  <data name="SR_CantChangeWhileRunning" xml:space="preserve">
+    <value>Cannot change server settings while running!</value>
+  </data>
+  <data name="SR_GettingJavaPath" xml:space="preserve">
+    <value>Getting Java path...</value>
+  </data>
+  <data name="SR_DownloadCancelled" xml:space="preserve">
+    <value>Download cancelled!</value>
+  </data>
+  <data name="SR_DownloadFailed" xml:space="preserve">
+    <value>Failed to download authlib file. Please check your network connection!</value>
+  </data>
+  <data name="SR_AuthlibNotFound" xml:space="preserve">
+    <value>Failed to get latest authlib-injector.jar info and no local file found. Please check your network connection!</value>
+  </data>
+  <data name="SR_SaveApply" xml:space="preserve">
+    <value>Save/Apply</value>
+  </data>
+  <data name="SR_GenLaunchScript" xml:space="preserve">
+    <value>Generate Launch Script</value>
+  </data>
+  <data name="SR_ServerConfig" xml:space="preserve">
+    <value>Server Config</value>
+  </data>
+  <data name="SR_DisableOutputPreview" xml:space="preserve">
+    <value>After disabling this feature, the output preview will also be closed!</value>
+  </data>
+  <data name="SR_MemInfoFormat" xml:space="preserve">
+    <value>Total Memory: {0}G
+Used: {1}G
+Available: {2}G</value>
+  </data>
+  <data name="SR_SysMemUsedFormat" xml:space="preserve">
+    <value>System Used Memory: {0}</value>
+  </data>
+  <data name="SR_ProcMemUsedFormat" xml:space="preserve">
+    <value>Process Used Memory: {0}G Ratio: {1}</value>
+  </data>
+  <data name="SR_MCEulaPrompt" xml:space="preserve">
+    <value>Starting a Minecraft server requires accepting Mojang's EULA.
+Do you want to carefully read the EULA terms (https://aka.ms/MinecraftEULA) and continue?</value>
+  </data>
+  <data name="SR_EulaError" xml:space="preserve">
+    <value>An error occurred. Please manually modify the eula file or retry:</value>
+  </data>
+  <data name="SR_AuthlibUpdating" xml:space="preserve">
+    <value>Updating auth library...</value>
+  </data>
+  <data name="SR_LaunchingServer" xml:space="preserve">
+    <value>Launching server, please wait...</value>
+  </data>
+  <data name="SR_StartingServer" xml:space="preserve">
+    <value>Starting server, please wait...</value>
+  </data>
+  <data name="SR_ServerLaunchedSuccess" xml:space="preserve">
+    <value>Server {0} has been launched successfully!</value>
+  </data>
+  <data name="SR_OnlineModeWarn" xml:space="preserve">
+    <value>Detected that you have not disabled online mode verification. If clients are using offline login, please click the "Disable Online Mode" button in "More Functions" to disable it. Otherwise offline accounts will not be able to enter the server!</value>
+  </data>
+  <data name="SR_OnlineModeThirdParty" xml:space="preserve">
+    <value>Detected that you are using third-party authentication. Please ensure all clients use third-party login to enter the game, otherwise they will not be able to enter the server!</value>
+  </data>
+  <data name="SR_OnlineModeClosedWarn" xml:space="preserve">
+    <value>Detected that you have disabled online mode verification. If you haven't taken related measures to protect the server (such as adding login plugins), the server is at risk of being compromised. Please be careful!</value>
+  </data>
+  <data name="SR_OnlineModeThirdPartyClosed" xml:space="preserve">
+    <value>Detected that you configured third-party authentication AND disabled online mode verification. This is ineffective!!! Please enable online mode verification!!!</value>
+  </data>
+  <data name="SR_RestartConfirmMsg" xml:space="preserve">
+    <value>Server has been closed. It will automatically restart after the countdown.
+You can also click the button to operate in advance.</value>
+  </data>
+  <data name="SR_RestartConfirmTitle" xml:space="preserve">
+    <value>Server closed, will auto-restart.</value>
+  </data>
+  <data name="SR_RestartAutoTitle" xml:space="preserve">
+    <value>Server closed, will auto-restart.</value>
+  </data>
+  <data name="SR_RestartNow" xml:space="preserve">
+    <value>Restart Now</value>
+  </data>
+  <data name="SR_RestartCancel" xml:space="preserve">
+    <value>Cancel Restart</value>
+  </data>
+  <data name="SR_EncodingChangeMsg" xml:space="preserve">
+    <value>MSL detected garbled log output from your server. Do you want to change the server output encoding to "{0}"?
+After clicking confirm, the encoding will be automatically changed and the server will restart (Note: the software will forcefully close the server process. If you are afraid of data loss, you can manually stop the server first, then click confirm).</value>
+  </data>
+  <data name="SR_EncodingChanged" xml:space="preserve">
+    <value>Encoding changed!</value>
+  </data>
+  <data name="SR_ProblemFoundPS" xml:space="preserve">
+    <value>PS: Software detection is not always accurate. If you cannot resolve the issue, you can send server logs to others for help, but please do not screenshot this dialog!!!
+Log sending methods:
+1. Screenshot the console content directly
+2. Server directory\logs\latest.log
+3. Go to "More Functions" to upload to Internet</value>
+  </data>
+  <data name="SR_AbnormalClose" xml:space="preserve">
+    <value>The server appears to have closed abnormally. Did you close it manually?
+You can use MSL's crash analysis system to detect issues, or use AI log analysis or send server logs to others for help!
+Note: Please do not screenshot this dialog!!!
+AI log analysis entry: More operations bar in server console, or "More Functions" page.
+Where are server logs:
+1. Server console content; 2. Server directory\logs\latest.log; 3. "More Functions" page to upload logs to Internet.
+
+Click OK to start crash analysis</value>
+  </data>
+  <data name="SR_FetchingCompletion" xml:space="preserve">
+    <value>Fetching completions...</value>
+  </data>
+  <data name="SR_EncodingRestartRequired" xml:space="preserve">
+    <value>Encoding changed. Takes effect after server restart!</value>
+  </data>
+  <data name="SR_SettingRestartRequired" xml:space="preserve">
+    <value>Settings changed. Takes effect after server restart!</value>
+  </data>
+  <data name="SR_CloseServerFirst" xml:space="preserve">
+    <value>Please close the server before making changes!</value>
+  </data>
+  <data name="SR_ServerRunningCloseConfirm" xml:space="preserve">
+    <value>Server is detected running. Click OK to close the server.</value>
+  </data>
+  <data name="SR_ModifyDone" xml:space="preserve">
+    <value>Modification complete. Please restart the server!</value>
+  </data>
+  <data name="SR_OnlineModeError" xml:space="preserve">
+    <value>An error occurred. Are you sure your server has been started at least once? Please manually modify the server.properties file or retry:</value>
+  </data>
+  <data name="SR_JavaDownloadDone" xml:space="preserve">
+    <value>Java download complete!</value>
+  </data>
+  <data name="SR_DownloadFailedMsg" xml:space="preserve">
+    <value>Download failed!</value>
+  </data>
+  <data name="SR_NetworkError" xml:space="preserve">
+    <value>An error occurred. Please check your network connection!</value>
+  </data>
+  <data name="SR_CheckingJava" xml:space="preserve">
+    <value>Checking selected Java availability, please wait...</value>
+  </data>
+  <data name="SR_JavaAvailable" xml:space="preserve">
+    <value>Check complete. Java is available!
+Version: </value>
+  </data>
+  <data name="SR_JavaCheckFailed" xml:space="preserve">
+    <value>Failed to check Java availability. Your Java seems to be unavailable! Please check if the selection is correct!</value>
+  </data>
+  <data name="SR_ForgeInstaller" xml:space="preserve">
+    <value>The server you selected is a Forge installer. Do you want to expand and install it?
+If not expanded and installed, the server may not start!</value>
+  </data>
+  <data name="SR_AutoInstallFailed" xml:space="preserve">
+    <value>Automatic installation failed! Do you want to try command-line installation?</value>
+  </data>
+  <data name="SR_DownloadFailedSimple" xml:space="preserve">
+    <value>Download failed!</value>
+  </data>
+  <data name="SR_DirChanged" xml:space="preserve">
+    <value>Detected that you changed the server directory. Do you want to move the current server directory to the new location?</value>
+  </data>
+  <data name="SR_YggInvalid" xml:space="preserve">
+    <value>The authentication address is invalid! Please check if the address is correct!</value>
+  </data>
+  <data name="SR_BackupParamsError" xml:space="preserve">
+    <value>Backup settings are incorrect. Please check!</value>
+  </data>
+  <data name="SR_GeneralError" xml:space="preserve">
+    <value>An error occurred! Please retry:</value>
+  </data>
+  <data name="SR_SelectFolder" xml:space="preserve">
+    <value>Please select a folder</value>
+  </data>
+  <data name="SR_SelectJarFile" xml:space="preserve">
+    <value>Please select a file, usually *.jar</value>
+  </data>
+  <data name="SR_JarFileFilter" xml:space="preserve">
+    <value>JAR Files|*.jar|All File Types|*.*</value>
+  </data>
+  <data name="SR_CoreNotInDir" xml:space="preserve">
+    <value>The selected server core file is not in the server directory. Do you want to copy it to the server directory?
+If not copied, be careful not to delete the core file!</value>
+  </data>
+  <data name="SR_CoreCopied" xml:space="preserve">
+    <value>The server core has been copied to the server directory. You can now delete the source file!</value>
+  </data>
+  <data name="SR_SelectJavaExe" xml:space="preserve">
+    <value>Please select a file, usually java.exe</value>
+  </data>
+  <data name="SR_ExeFileFilter" xml:space="preserve">
+    <value>EXE Files|*.exe|All File Types|*.*</value>
+  </data>
+  <data name="SR_ServerDownloadDone" xml:space="preserve">
+    <value>Server download complete! The server core has been auto-selected. Remember to save!</value>
+  </data>
+  <data name="SR_MemMinMax" xml:space="preserve">
+    <value>Min:{0}M, Max:{1}M</value>
+  </data>
+  <data name="SR_CheckingEnvVar" xml:space="preserve">
+    <value>Checking environment variable availability, please wait...</value>
+  </data>
+  <data name="SR_EnvVarOK" xml:space="preserve">
+    <value>Check complete. Your environment variable is working!</value>
+  </data>
+  <data name="SR_EnvVarFailed" xml:space="preserve">
+    <value>Check failed. Your environment variable seems to not exist!</value>
+  </data>
+  <data name="SR_SearchFirst" xml:space="preserve">
+    <value>Please search first!</value>
+  </data>
+  <data name="SR_JavaDetectIntro" xml:space="preserve">
+    <value>About to scan for Java. This may take some time.
+Two modes: Simple (quick) and Deep (thorough but slow).</value>
+  </data>
+  <data name="SR_DeepDetect" xml:space="preserve">
+    <value>Start Deep Scan</value>
+  </data>
+  <data name="SR_SimpleDetect" xml:space="preserve">
+    <value>Start Simple Scan</value>
+  </data>
+  <data name="SR_Scanning" xml:space="preserve">
+    <value>Scanning please wait...</value>
+  </data>
+  <data name="SR_CheckComplete" xml:space="preserve">
+    <value>Check complete!</value>
+  </data>
+  <data name="SR_NoJavaFound" xml:space="preserve">
+    <value>No Java found</value>
+  </data>
+  <data name="SR_FetchingWait" xml:space="preserve">
+    <value>Fetching please wait...</value>
+  </data>
+  <data name="SR_IPv6Success" xml:space="preserve">
+    <value>Your IPv6 public address is: {0}
+Copied to clipboard!
+Note: IPv6 format is [IP]:port
+If unable to connect check IPv6 support and firewall.</value>
+  </data>
+  <data name="SR_IPv6SuccessTitle" xml:space="preserve">
+    <value>IPv6 Address Obtained!</value>
+  </data>
+  <data name="SR_IPv6Failed" xml:space="preserve">
+    <value>Error: Your network may not support IPv6.
+Search online for IPv6 setup or contact your ISP.
+Error:</value>
+  </data>
+  <data name="SR_IPv6FailedTitle" xml:space="preserve">
+    <value>Failed to Get IPv6 Address!</value>
+  </data>
+  <data name="SR_AddFirst" xml:space="preserve">
+    <value>Please add items first!</value>
+  </data>
+  <data name="SR_ShieldLogInput" xml:space="preserve">
+    <value>Enter keyword to filter from logs.
+Logs containing this keyword will be hidden.</value>
+  </data>
+  <data name="SR_HighlightInput" xml:space="preserve">
+    <value>Enter keyword to highlight in logs</value>
+  </data>
+  <data name="SR_AutoClearWarning" xml:space="preserve">
+    <value>Disabling this will stop auto-clearing output when logs exceed a threshold. This may cause performance issues. Continue?</value>
+  </data>
+  <data name="SR_PleaseWait" xml:space="preserve">
+    <value>Please wait...</value>
+  </data>
+  <data name="SR_LogEmpty" xml:space="preserve">
+    <value>Log is empty please retry!</value>
+  </data>
+  <data name="SR_Uploading" xml:space="preserve">
+    <value>Uploading mode {0} please wait...</value>
+  </data>
+  <data name="SR_UploadSuccess" xml:space="preserve">
+    <value>Log URL: {0}
+Copied to clipboard!
+Share this link for help. Remember to describe your problem!</value>
+  </data>
+  <data name="SR_UploadFailed" xml:space="preserve">
+    <value>Request failed: </value>
+  </data>
+  <data name="SR_ParseFailed" xml:space="preserve">
+    <value>Parse failed</value>
+  </data>
+  <data name="SR_SelectAtLeastOne" xml:space="preserve">
+    <value>Please select at least one {0}!</value>
+  </data>
+  <data name="SR_Plugin" xml:space="preserve">
+    <value>plugin</value>
+  </data>
+  <data name="SR_Mod" xml:space="preserve">
+    <value>mod</value>
+  </data>
+  <data name="SR_ModDescTip" xml:space="preserve">
+    <value>Server mods and client mods are different. Mods that add blocks, entities, or gameplay mechanics must be installed on both server and client. Mods like minimaps, skin patches, input patches, optimization mods, and visual mods only need to be on the client.
+Click OK to see a detailed guide.</value>
+  </data>
+  <data name="SR_SelectFile" xml:space="preserve">
+    <value>Select File</value>
+  </data>
+  <data name="SR_MaxBackupGE0" xml:space="preserve">
+    <value>Max backup count must be &gt;= 0!</value>
+  </data>
+  <data name="SR_BackupDelayGE5" xml:space="preserve">
+    <value>Backup save delay must be &gt;= 5 seconds!</value>
+  </data>
+  <data name="SR_CustomPathInvalid" xml:space="preserve">
+    <value>Custom backup path is invalid!</value>
+  </data>
+  <data name="SR_ScriptFile" xml:space="preserve">
+    <value>Script file: </value>
+  </data>
+  <data name="SR_LogUploadBigFail" xml:space="preserve">
+    <value>Request failed: Log may be too large. Try manual upload or another mode.
+{0}
+Click OK to try another mode.</value>
+  </data>
+  <data name="SR_LogUploadManualFail" xml:space="preserve">
+    <value>Request failed: Log may be too large. Try manual upload!
+{0}</value>
+  </data>
+  <data name="SR_ForgeLogNotFound" xml:space="preserve">
+    <value>Forge install log not found!</value>
+  </data>
+  <data name="SR_UploadingDots" xml:space="preserve">
+    <value>Uploading...</value>
+  </data>
+  <data name="SR_ForgeLogUploadFail" xml:space="preserve">
+    <value>Forge log upload failed!</value>
+  </data>
+  <data name="SR_CmdRemark" xml:space="preserve">
+    <value>Command</value>
+  </data>
+  <data name="SR_SetAdmin" xml:space="preserve">
+    <value>Set Admin</value>
+  </data>
+  <data name="SR_RemoveAdmin" xml:space="preserve">
+    <value>Remove Admin</value>
+  </data>
+  <data name="SR_BanPlayerCmd" xml:space="preserve">
+    <value>Ban Player</value>
+  </data>
+  <data name="SR_UnbanPlayer" xml:space="preserve">
+    <value>Unban Player</value>
+  </data>
+  <data name="SR_SayAll" xml:space="preserve">
+    <value>Server Broadcast</value>
+  </data>
+  <data name="SR_RestartWindowHint" xml:space="preserve">
+    <value>Restart this window for changes to take effect. Please close and reopen manually.</value>
+  </data>
+  <data name="SR_CmdInputHint" xml:space="preserve">
+    <value>Command (e.g.: op, no '/' prefix needed):</value>
+  </data>
+  <data name="SR_RemarkInputHint" xml:space="preserve">
+    <value>Remark (e.g.: give admin, optional):</value>
+  </data>
+  <data name="SR_AliasInputHint" xml:space="preserve">
+    <value>Alias (e.g.: o, for quick console use, optional):</value>
+  </data>
+  <data name="SR_AddFastCmd" xml:space="preserve">
+    <value>Add Fast Command</value>
+  </data>
+  <data name="SR_Input" xml:space="preserve">
+    <value>Input</value>
+  </data>
+  <data name="SR_CmdEmpty" xml:space="preserve">
+    <value>Command cannot be empty!</value>
+  </data>
+  <data name="SR_AddFailed" xml:space="preserve">
+    <value>Add failed: </value>
+  </data>
+  <data name="SR_CantDeleteRoot" xml:space="preserve">
+    <value>Cannot delete root command or no item selected!</value>
+  </data>
+  <data name="SR_SaveTaskConfig" xml:space="preserve">
+    <value>Save Task Config</value>
+  </data>
+  <data name="SR_LoadTaskConfig" xml:space="preserve">
+    <value>Load Task Config</value>
+  </data>
+  <data name="SR_StopTaskFirst" xml:space="preserve">
+    <value>Please stop the task first!</value>
+  </data>
+  <data name="SR_StopAllTasksFirst" xml:space="preserve">
+    <value>Please stop all tasks first!</value>
+  </data>
+  <data name="SR_NoneText" xml:space="preserve">
+    <value>None</value>
+  </data>
+  <data name="SR_CronValid" xml:space="preserve">
+    <value>✓ Valid, next run: </value>
+  </data>
+  <data name="SR_CronInvalid" xml:space="preserve">
+    <value>✗ Invalid</value>
+  </data>
+  <data name="SR_SelectTaskFirst" xml:space="preserve">
+    <value>Execution failed. Please select a task first!</value>
+  </data>
+  <data name="SR_CronInvalidDialog" xml:space="preserve">
+    <value>Invalid Cron expression. Please check and retry!</value>
+  </data>
+  <data name="SR_ExecFailedPrefix" xml:space="preserve">
+    <value>Execution failed, </value>
+  </data>
+  <data name="SR_ExecSuccessTime" xml:space="preserve">
+    <value>Executed successfully  Time: </value>
+  </data>
+  <data name="SR_ServerNotOpenTime" xml:space="preserve">
+    <value>Server not running  Time: </value>
+  </data>
+  <data name="SR_ExecFailedTime" xml:space="preserve">
+    <value>Execution failed: {0}  Time: </value>
+  </data>
+  <data name="SR_LoadSuccess" xml:space="preserve">
+    <value>Loaded!</value>
+  </data>
+  <data name="SR_SaveSuccess" xml:space="preserve">
+    <value>Saved!</value>
+  </data>
+  <data name="SR_ClearSuccess" xml:space="preserve">
+    <value>Cleared!</value>
+  </data>
+  <data name="SR_BackupStarting" xml:space="preserve">
+    <value>Starting backup...</value>
+  </data>
+  <data name="SR_NoWorldFolder" xml:space="preserve">
+    <value>No world save folders found (overworld, nether, end). Backup failed!</value>
+  </data>
+  <data name="SR_BackupSuccessMsg" xml:space="preserve">
+    <value>Backup successful! Saved to: {0}</value>
+  </data>
+  <data name="SR_BackupFailedMsg" xml:space="preserve">
+    <value>Backup failed!</value>
+  </data>
+  <data name="SR_SelectBackupFolder" xml:space="preserve">
+    <value>Select a folder for backup files</value>
+  </data>
+  <data name="SR_CustomBackupPathEmpty" xml:space="preserve">
+    <value>Custom backup path is empty!</value>
+  </data>
+  <data name="SR_OpenBackupFailed" xml:space="preserve">
+    <value>Failed to open backup folder!</value>
+  </data>
+  <data name="SR_NotLatestVersion" xml:space="preserve">
+    <value>This may not be the latest version because the user declined the update or the update check failed.</value>
+  </data>
+  <data name="SR_BackupWaitSec" xml:space="preserve">
+    <value>Backup Save Delay (sec) - Keep default if unsure:</value>
+  </data>
+  <data name="SR_BackupLocation" xml:space="preserve">
+    <value>Backup Location:</value>
+  </data>
+  <data name="SR_BackupLocInServer" xml:space="preserve">
+    <value>(In server dir) server-dir/msl-backups</value>
+  </data>
+  <data name="SR_BackupLocOutServer" xml:space="preserve">
+    <value>(Outside server) MSL/server-backups</value>
+  </data>
+  <data name="SR_BackupLocCustom" xml:space="preserve">
+    <value>Custom</value>
+  </data>
+  <data name="SR_CustomBackupPathLabel" xml:space="preserve">
+    <value>Custom Backup Path:</value>
+  </data>
+  <data name="SR_BackupCronTip" xml:space="preserve">
+    <value>To enable auto backup, add a scheduled task with command '.backup'!</value>
+  </data>
+  <data name="SR_RunnerFeaturesTitle" xml:space="preserve">
+    <value>Server Runner Features</value>
+  </data>
+  <data name="SR_DashboardFunc" xml:space="preserve">
+    <value>Dashboard Features:</value>
+  </data>
+  <data name="SR_ServerControl" xml:space="preserve">
+    <value>Server Control:</value>
+  </data>
+  <data name="SR_CmdCompletion" xml:space="preserve">
+    <value>Enable Command Completion (ConPTY):</value>
+  </data>
+  <data name="SR_AutoRestart" xml:space="preserve">
+    <value>Auto Restart on Close:</value>
+  </data>
+  <data name="SR_ForceUTF8" xml:space="preserve">
+    <value>Force Server Files UTF-8 Encoding:</value>
+  </data>
+  <data name="SR_ForceKillProcTree" xml:space="preserve">
+    <value>Force Kill Process Tree on Stop (Non-ConPTY only):</value>
+  </data>
+  <data name="SR_ServerTerminal" xml:space="preserve">
+    <value>Server Terminal:</value>
+  </data>
+  <data name="SR_LogOutputLabel" xml:space="preserve">
+    <value>Log Output:</value>
+  </data>
+  <data name="SR_AutoClearScreen" xml:space="preserve">
+    <value>Auto Clear Screen:</value>
+  </data>
+  <data name="SR_ShieldStackTrace" xml:space="preserve">
+    <value>Shield Stack Traces:</value>
+  </data>
+  <data name="SR_FormatLogHeader" xml:space="preserve">
+    <value>Formatted Log Header:</value>
+  </data>
+  <data name="SR_InputEncoding" xml:space="preserve">
+    <value>Input Encoding:</value>
+  </data>
+  <data name="SR_OutputEncoding" xml:space="preserve">
+    <value>Output Encoding:</value>
+  </data>
+  <data name="SR_SpecialLogs" xml:space="preserve">
+    <value>Special Logs:</value>
+  </data>
+  <data name="SR_ShieldKeywordLog" xml:space="preserve">
+    <value>Filter Keyword Logs</value>
+  </data>
+  <data name="SR_HighlightKeywordLog" xml:space="preserve">
+    <value>Highlight Keyword Logs</value>
+  </data>
+  <data name="SR_OtherFeatures" xml:space="preserve">
+    <value>Other Features:</value>
+  </data>
+  <data name="SR_DisableOnlineMode" xml:space="preserve">
+    <value>Disable Online Mode</value>
+  </data>
+  <data name="SR_UploadServerLog" xml:space="preserve">
+    <value>Upload Server Log</value>
+  </data>
+  <data name="SR_UploadForgeLog" xml:space="preserve">
+    <value>Upload Forge Install Log</value>
+  </data>
+  <data name="SR_AILogAnalysis" xml:space="preserve">
+    <value>AI Log Analysis</value>
+  </data>
+  <data name="SR_ViewIPv6" xml:space="preserve">
+    <value>View IPv6 Public Address</value>
+  </data>
+  <data name="SR_QuickCmdBar" xml:space="preserve">
+    <value>Quick Command Bar</value>
+  </data>
+  <data name="SR_Add" xml:space="preserve">
+    <value>Add</value>
+  </data>
+  <data name="SR_Delete" xml:space="preserve">
+    <value>Delete</value>
+  </data>
+  <data name="SR_Reset" xml:space="preserve">
+    <value>Reset</value>
+  </data>
+  <data name="SR_ScheduledTasks" xml:space="preserve">
+    <value>Scheduled Tasks</value>
+  </data>
+  <data name="SR_TaskListTitle" xml:space="preserve">
+    <value>Task List (Select to edit after adding)</value>
+  </data>
+  <data name="SR_AddNewTask" xml:space="preserve">
+    <value>Add New Task</value>
+  </data>
+  <data name="SR_DeleteSelectedTask" xml:space="preserve">
+    <value>Delete Selected Task</value>
+  </data>
+  <data name="SR_DeleteAllTasks" xml:space="preserve">
+    <value>Delete All Tasks</value>
+  </data>
+  <data name="SR_ClearTaskConfig" xml:space="preserve">
+    <value>Clear Task Config</value>
+  </data>
+  <data name="SR_QuickTemplate" xml:space="preserve">
+    <value>Quick Template:</value>
+  </data>
+  <data name="SR_Every10Sec" xml:space="preserve">
+    <value>Every 10 sec</value>
+  </data>
+  <data name="SR_EveryMin" xml:space="preserve">
+    <value>Every minute</value>
+  </data>
+  <data name="SR_Every5Min" xml:space="preserve">
+    <value>Every 5 min</value>
+  </data>
+  <data name="SR_Every30Min" xml:space="preserve">
+    <value>Every 30 min</value>
+  </data>
+  <data name="SR_EveryHour" xml:space="preserve">
+    <value>Every hour</value>
+  </data>
+  <data name="SR_EveryDay3AM" xml:space="preserve">
+    <value>Daily at 3 AM</value>
+  </data>
+  <data name="SR_EverySun3AM" xml:space="preserve">
+    <value>Every Sunday at 3 AM</value>
+  </data>
+  <data name="SR_CommandLabel" xml:space="preserve">
+    <value>Command:</value>
+  </data>
+  <data name="SR_CronFormatTip" xml:space="preserve">
+    <value>Tip: Cron format is 6 fields: sec min hour day month weekday. MSL backup command is .backup</value>
+  </data>
+  <data name="SR_LastExec" xml:space="preserve">
+    <value>Last Exec:</value>
+  </data>
+  <data name="SR_StopScheduledTask" xml:space="preserve">
+    <value>Stop Scheduled Task</value>
+  </data>
+  <data name="SR_StartScheduledTask" xml:space="preserve">
+    <value>Start Scheduled Task</value>
+  </data>
+  <data name="SR_Remove" xml:space="preserve">
+    <value>Remove</value>
+  </data>
+  <data name="SR_IconLoadFailed" xml:space="preserve">
+    <value>Failed to load server icon.</value>
+  </data>
+  <data name="SR_ServerClosedRestartEvent" xml:space="preserve">
+    <value>Server closed, triggering restart event...</value>
+  </data>
+  <data name="SR_SendCmdError" xml:space="preserve">
+    <value>Error sending command: {0}</value>
+  </data>
+  <data name="SR_ErrorPrefix" xml:space="preserve">
+    <value>Error: {0}</value>
+  </data>
+  <data name="SR_ScheduledBackupStarting" xml:space="preserve">
+    <value>[MSL Backup] Scheduled backup task starting~</value>
+  </data>
+  <data name="SR_ScheduledTaskExecCmd" xml:space="preserve">
+    <value>[MSL Scheduled Task] Executing command: {0}</value>
+  </data>
+  <data name="SR_TellrawBackupInProgress" xml:space="preserve">
+    <value>Server world backup in progress, please do not shut down the server, otherwise rollback may occur! Normal gameplay will not be affected~</value>
+  </data>
+  <data name="SR_BackupStartingLog" xml:space="preserve">
+    <value>[MSL Backup] Starting backup...</value>
+  </data>
+  <data name="SR_TellrawBackupNoWorld" xml:space="preserve">
+    <value>Backup failed! No world save folders found!</value>
+  </data>
+  <data name="SR_BackupUsingDefaultPath" xml:space="preserve">
+    <value>[MSL Backup] Custom backup path is empty, using default path!</value>
+  </data>
+  <data name="SR_BackupDeletedOld" xml:space="preserve">
+    <value>[MSL Backup] Deleted old backup: {0}</value>
+  </data>
+  <data name="SR_BackupDeleteOldFailed" xml:space="preserve">
+    <value>[MSL Backup] Failed to delete old backup {0}: {1}</value>
+  </data>
+  <data name="SR_BackupCleanupFailed" xml:space="preserve">
+    <value>[MSL Backup] Directory check or old backup cleanup failed: {0}</value>
+  </data>
+  <data name="SR_BackupCompressing" xml:space="preserve">
+    <value>[MSL Backup] Compressing save files, please wait...</value>
+  </data>
+  <data name="SR_TellrawBackupDoneDetail" xml:space="preserve">
+    <value> Server world backup completed!
+</value>
+  </data>
+  <data name="SR_TellrawFileName" xml:space="preserve">
+    <value>File: </value>
+  </data>
+  <data name="SR_TellrawFileSize" xml:space="preserve">
+    <value>
+Size: </value>
+  </data>
+  <data name="SR_BackupFileInfoFailed" xml:space="preserve">
+    <value>[MSL Backup] Failed to get backup file info: {0}</value>
+  </data>
+  <data name="SR_TellrawBackupDone" xml:space="preserve">
+    <value>Server world backup completed!</value>
+  </data>
+  <data name="SR_BackupSuccessLog" xml:space="preserve">
+    <value>[MSL Backup] Backup successful! Saved to: {0}</value>
+  </data>
+  <data name="SR_BackupFailedLog" xml:space="preserve">
+    <value>[MSL Backup] Backup failed! {0}</value>
+  </data>
+  <data name="SR_TellrawBackupError" xml:space="preserve">
+    <value>An error occurred during backup, backup failed!</value>
+  </data>
+  <data name="SR_ExclusiveLockError" xml:space="preserve">
+    <value>Cannot open file '{0}' in shared read-only mode. Server has an exclusive lock. Error: {1}</value>
+  </data>
+  <data name="SR_GameModeDesc" xml:space="preserve">
+    <value>Game mode description (select according to config file format)</value>
+  </data>
+  <data name="SR_GameDiffDesc" xml:space="preserve">
+    <value>Game difficulty description (select according to config file format)</value>
+  </data>
+  <data name="SR_Survival" xml:space="preserve">
+    <value>Survival</value>
+  </data>
+  <data name="SR_Creative" xml:space="preserve">
+    <value>Creative</value>
+  </data>
+  <data name="SR_Adventure" xml:space="preserve">
+    <value>Adventure</value>
+  </data>
+  <data name="SR_Spectator" xml:space="preserve">
+    <value>Spectator</value>
+  </data>
+  <data name="SR_Peaceful" xml:space="preserve">
+    <value>Peaceful</value>
+  </data>
+  <data name="SR_Easy" xml:space="preserve">
+    <value>Easy</value>
+  </data>
+  <data name="SR_Normal" xml:space="preserve">
+    <value>Normal</value>
+  </data>
+  <data name="SR_Hard" xml:space="preserve">
+    <value>Hard</value>
+  </data>
+  <data name="SR_Save" xml:space="preserve">
+    <value>Save</value>
+  </data>
+  <data name="SR_ChangeServerIcon" xml:space="preserve">
+    <value>Change Server Icon</value>
+  </data>
+  <data name="SR_ChangeWorldMap" xml:space="preserve">
+    <value>Change Overworld Map</value>
+  </data>
+  <data name="SR_MoreConfig" xml:space="preserve">
+    <value>More Config</value>
+  </data>
+  <data name="SR_CantManageMods" xml:space="preserve">
+    <value>Cannot manage mods for this server</value>
+  </data>
+  <data name="SR_NoModsFolderDesc" xml:space="preserve">
+    <value>mods folder not detected. Does your server core support loading mods?
+Please restart the server and check if the server core supports this feature.</value>
+  </data>
+  <data name="SR_CantManagePlugins" xml:space="preserve">
+    <value>Cannot manage plugins for this server</value>
+  </data>
+  <data name="SR_NoPluginsFolder" xml:space="preserve">
+    <value>plugins folder not detected. Does your server core support loading plugins?
+Please restart the server and check if the server core supports this feature.</value>
+  </data>
+  <data name="SR_Pause" xml:space="preserve">
+    <value>Pause</value>
+  </data>
+  <data name="SR_Downloading" xml:space="preserve">
+    <value>Downloading...</value>
+  </data>
+  <data name="SR_Paused" xml:space="preserve">
+    <value>Paused</value>
+  </data>
+  <data name="SR_FileExistsDownloadDone" xml:space="preserve">
+    <value>File already exists, download complete</value>
+  </data>
+  <data name="SR_Resume" xml:space="preserve">
+    <value>Resume</value>
+  </data>
+  <data name="SR_CancellingTask" xml:space="preserve">
+    <value>Cancelling task, please wait...</value>
+  </data>
+  <data name="SR_PauseAll" xml:space="preserve">
+    <value>Pause All</value>
+  </data>
+  <data name="SR_ResumeAll" xml:space="preserve">
+    <value>Resume All</value>
+  </data>
+  <data name="SR_CancelAll" xml:space="preserve">
+    <value>Cancel All</value>
+  </data>
+  <data name="SR_RemoveDoneCancelled" xml:space="preserve">
+    <value>Remove Completed/Cancelled</value>
+  </data>
+  <data name="SR_StatusPending" xml:space="preserve">
+    <value>Pending</value>
+  </data>
+  <data name="SR_StatusInProgress" xml:space="preserve">
+    <value>Downloading</value>
+  </data>
+  <data name="SR_StatusPaused" xml:space="preserve">
+    <value>Paused</value>
+  </data>
+  <data name="SR_StatusCancelling" xml:space="preserve">
+    <value>Cancelling</value>
+  </data>
+  <data name="SR_StatusCancelled" xml:space="preserve">
+    <value>Cancelled</value>
+  </data>
+  <data name="SR_StatusCompleted" xml:space="preserve">
+    <value>Completed</value>
+  </data>
+  <data name="SR_StatusFailed" xml:space="preserve">
+    <value>Failed: {0}</value>
+  </data>
+  <data name="SR_StatusRetrying" xml:space="preserve">
+    <value>Failed, retrying: {0}</value>
+  </data>
+  <data name="SR_RemoveItem" xml:space="preserve">
+    <value>Remove</value>
+  </data>
+  <data name="SR_CancelItem" xml:space="preserve">
+    <value>Cancel</value>
+  </data>
+  <data name="SR_TimeHours" xml:space="preserve">
+    <value>{0}h {1}m</value>
+  </data>
+  <data name="SR_TimeMinutes" xml:space="preserve">
+    <value>{0}m {1}s</value>
+  </data>
+  <data name="SR_TimeSeconds" xml:space="preserve">
+    <value>{0}s</value>
+  </data>
+  <data name="SR_DownloadItem" xml:space="preserve">
+    <value>Download Item</value>
+  </data>
+  <data name="SR_Speed" xml:space="preserve">
+    <value>Speed: </value>
+  </data>
+  <data name="SR_RemainingTime" xml:space="preserve">
+    <value> Remaining: </value>
+  </data>
+  <data name="SR_DownloadingLabel" xml:space="preserve">
+    <value>Downloading: </value>
+  </data>
+  <data name="SR_NeoForgeInstaller" xml:space="preserve">
+    <value>NeoForge Installer</value>
+  </data>
+  <data name="SR_SourceMSL" xml:space="preserve">
+    <value>Source: MSL Mirror</value>
+  </data>
+  <data name="SR_SourceMSLBackup" xml:space="preserve">
+    <value>Source: MSL Mirror - Backup</value>
+  </data>
+  <data name="SR_SourceOfficial" xml:space="preserve">
+    <value>Source: Official</value>
+  </data>
+  <data name="SR_Concurrency1" xml:space="preserve">
+    <value>Concurrency: 1</value>
+  </data>
+  <data name="SR_Concurrency2" xml:space="preserve">
+    <value>Concurrency: 2</value>
+  </data>
+  <data name="SR_Concurrency3" xml:space="preserve">
+    <value>Concurrency: 3</value>
+  </data>
+  <data name="SR_Concurrency4" xml:space="preserve">
+    <value>Concurrency: 4</value>
+  </data>
+  <data name="SR_Concurrency5" xml:space="preserve">
+    <value>Concurrency: 5</value>
+  </data>
+  <data name="SR_Concurrency6" xml:space="preserve">
+    <value>Concurrency: 6</value>
+  </data>
+  <data name="SR_Concurrency7" xml:space="preserve">
+    <value>Concurrency: 7</value>
+  </data>
+  <data name="SR_Concurrency8" xml:space="preserve">
+    <value>Concurrency: 8</value>
+  </data>
+  <data name="SR_CurrentStatus" xml:space="preserve">
+    <value>Current Status: </value>
+  </data>
+  <data name="SR_WaitingInstall" xml:space="preserve">
+    <value>Waiting for installation to begin...</value>
+  </data>
+  <data name="SR_UseCmdInstall" xml:space="preserve">
+    <value>Use Command Line Install</value>
+  </data>
+  <data name="SR_ServerInfoInput" xml:space="preserve">
+    <value>Server Info Input</value>
+  </data>
+  <data name="SR_AnalysisOutput" xml:space="preserve">
+    <value>Analysis Result Output</value>
+  </data>
+  <data name="SR_UserInfo" xml:space="preserve">
+    <value>User Info</value>
+  </data>
+  <data name="SR_ServerInfo" xml:space="preserve">
+    <value>Server Info</value>
+  </data>
+  <data name="SR_ServerLog" xml:space="preserve">
+    <value>Server Log</value>
+  </data>
+  <data name="SR_SelectModel" xml:space="preserve">
+    <value>Select Model</value>
+  </data>
+  <data name="SR_Marketplace" xml:space="preserve">
+    <value>Marketplace</value>
+  </data>
+  <data name="SR_StartAnalysis" xml:space="preserve">
+    <value>Start Analysis</value>
+  </data>
+  <data name="SR_AnalysisResultPlaceholder" xml:space="preserve">
+    <value>AI analysis results will be displayed here...</value>
+  </data>
+  <data name="SR_PleaseInputContent" xml:space="preserve">
+    <value>Please enter content!</value>
+  </data>
+  <data name="DownloadDialog_DoubleClickForceClose" xml:space="preserve">
+    <value>Double-click Cancel to force close this dialog (not recommended)</value>
+  </data>
+  <data name="Page_ServerList_DownloadResources" xml:space="preserve">
+    <value>Download Resources</value>
+  </data>
+  <data name="Page_ServerList_DownloadServerCore" xml:space="preserve">
+    <value>Download Server Core</value>
+  </data>
+  <data name="Page_ServerList_StatusLabel" xml:space="preserve">
+    <value>Status: </value>
+  </data>
+  <data name="Page_ServerList_InstanceID" xml:space="preserve">
+    <value>Instance ID: </value>
+  </data>
+  <data name="Page_ServerList_ServerSetting" xml:space="preserve">
+    <value>Server Settings</value>
+  </data>
+  <data name="Page_ServerList_DeleteServer" xml:space="preserve">
+    <value>Delete This Server</value>
+  </data>
+  <data name="Page_ServerList_StatusNotRunning" xml:space="preserve">
+    <value>Not Running</value>
+  </data>
+  <data name="Page_ServerList_StatusRunning" xml:space="preserve">
+    <value>Running</value>
+  </data>
+  <data name="Page_ServerList_StatusStarted" xml:space="preserve">
+    <value>Started</value>
+  </data>
+  <data name="Page_ServerList_RefreshSuccess" xml:space="preserve">
+    <value>Refreshed successfully!</value>
+  </data>
+  <data name="Page_ServerList_NoServer" xml:space="preserve">
+    <value>You don't have a server yet. Click the plus button in the bottom right to create one~</value>
+  </data>
+  <data name="Page_ServerList_Dialog_CloseFirst" xml:space="preserve">
+    <value>Please close the server and its window before deleting!</value>
+  </data>
+  <data name="Page_ServerList_Dialog_ConfirmDelete" xml:space="preserve">
+    <value>Are you sure you want to delete this server?</value>
+  </data>
+  <data name="Page_ServerList_Dialog_DeleteDir" xml:space="preserve">
+    <value>Delete the server directory? (All files will be moved to the recycle bin)</value>
+  </data>
+  <data name="Page_ServerList_DirDeleted" xml:space="preserve">
+    <value>Server directory moved to recycle bin successfully!</value>
+  </data>
+  <data name="Page_ServerList_DirDeleteFailed" xml:space="preserve">
+    <value>Failed to delete server directory!</value>
+  </data>
+  <data name="Page_ServerList_Deleted" xml:space="preserve">
+    <value>Server deleted successfully!</value>
+  </data>
+  <data name="Page_ServerList_DeleteFailed" xml:space="preserve">
+    <value>Failed to delete server!</value>
+  </data>
+  <data name="Page_ServerList_ErrorNoSelection" xml:space="preserve">
+    <value>An error occurred. Please check if you selected a server!</value>
+  </data>
+  <data name="Page_ServerList_OpeningFolder" xml:space="preserve">
+    <value>Opening server folder for you...</value>
+  </data>
+  <data name="Page_ServerList_DownloadModTip" xml:space="preserve">
+    <value>This is the standalone mod/plugin/modpack download page
+Downloaded files are in the MSL\Downloads folder</value>
+  </data>
+  <data name="Page_ServerList_DownloadCoreTip" xml:space="preserve">
+    <value>This is the standalone server core download page
+Downloaded server cores are in the MSL\Downloads folder</value>
+  </data>
+  <data name="Page_ServerList_YggWarning" xml:space="preserve">
+    <value>You configured external login but the library is not downloaded
+To use external login + CMD launch, please start the server normally in MSL first!</value>
+  </data>
+  <data name="Page_About_Contributors" xml:space="preserve">
+    <value>Contributors</value>
+  </data>
+  <data name="Page_About_Thanks" xml:space="preserve">
+    <value>Stargazers</value>
+  </data>
+  <data name="Page_About_ThanksContent" xml:space="preserve">
+    <value>Thanks to all the friends who starred MSL! Every Star is the greatest encouragement for this open-source project.</value>
+  </data>
+  <data name="Page_About_GitHubStar" xml:space="preserve">
+    <value>Like it? Leave a footprint on GitHub:</value>
+  </data>
+  <data name="Page_About_LoadMore" xml:space="preserve">
+    <value>Show More...</value>
+  </data>
+  <data name="Page_About_OpenSourceRepo" xml:space="preserve">
+    <value>Open Source Repository (Github)</value>
+  </data>
+  <data name="Page_FrpcList_MyInfo" xml:space="preserve">
+    <value>My MSL Frp Info</value>
+  </data>
+  <data name="Page_FrpcList_AddTunnel" xml:space="preserve">
+    <value>Add Tunnel</value>
+  </data>
+  <data name="Page_FrpcList_DeleteSelected" xml:space="preserve">
+    <value>Delete Selected</value>
+  </data>
+  <data name="Page_FrpcList_MappingRunning" xml:space="preserve">
+    <value>This mapping is running, please close it first!</value>
+  </data>
+  <data name="Page_FrpcList_UnnamedTunnel" xml:space="preserve">
+    <value>Unnamed Tunnel</value>
+  </data>
+  <data name="Page_FrpcList_MslUserCenter" xml:space="preserve">
+    <value>MSL User Center - MSLFrp Info</value>
+  </data>
+  <data name="Page_FrpcPage_Return" xml:space="preserve">
+    <value>Back to Frpc List</value>
+  </data>
+  <data name="Page_FrpcPage_NodeStatus" xml:space="preserve">
+    <value>Node Status</value>
+  </data>
+  <data name="Page_FrpcPage_CopySuccess" xml:space="preserve">
+    <value>Copied successfully!</value>
+  </data>
+  <data name="Page_FrpcPage_CopyFailed" xml:space="preserve">
+    <value>Copy failed!</value>
+  </data>
+  <data name="Page_FrpcPage_StartingMapping" xml:space="preserve">
+    <value>Starting internal mapping...</value>
+  </data>
+  <data name="Page_FrpcPage_Starting" xml:space="preserve">
+    <value>Starting, please wait...
+</value>
+  </data>
+  <data name="Page_FrpcPage_SakuraFrpNode" xml:space="preserve">
+    <value>SakuraFrp Node</value>
+  </data>
+  <data name="Page_FrpcPage_MEFrpNode" xml:space="preserve">
+    <value>ME Frp Node</value>
+  </data>
+  <data name="Page_FrpcPage_ErrorRetry" xml:space="preserve">
+    <value>An error occurred, please retry</value>
+  </data>
+  <data name="Page_FrpcPage_ErrorCheckAV" xml:space="preserve">
+    <value>An error occurred, please check if antivirus software intercepted it and retry:</value>
+  </data>
+  <data name="Page_FrpcPage_Error" xml:space="preserve">
+    <value>Error</value>
+  </data>
+  <data name="Page_FrpcPage_CustomFrpcNotFound" xml:space="preserve">
+    <value>Custom Frpc client not found, please reconfigure!
+</value>
+  </data>
+  <data name="Page_FrpcPage_ErrorCheckAVFull" xml:space="preserve">
+    <value>An error occurred, please check if antivirus software intercepted it and retry:</value>
+  </data>
+  <data name="Page_FrpcPage_MappingClosed" xml:space="preserve">
+    <value>Internal mapping closed!</value>
+  </data>
+  <data name="Page_FrpcPage_BridgeFailed" xml:space="preserve">
+    <value>Internal mapping bridge failed!</value>
+  </data>
+  <data name="Page_FrpcPage_BridgeSuccess" xml:space="preserve">
+    <value>Internal mapping bridge successful!</value>
+  </data>
+  <data name="Page_FrpcPage_LoginSuccess" xml:space="preserve">
+    <value>Login to server successful!
+</value>
+  </data>
+  <data name="Page_FrpcPage_BridgeSuccessFull" xml:space="preserve">
+    <value>Internal mapping bridge successful! You can copy the IP and join the game!
+</value>
+  </data>
+  <data name="Page_FrpcPage_ConnectionTimeout" xml:space="preserve">
+    <value>Connection timed out, this node may be offline, please reconfigure!
+</value>
+  </data>
+  <data name="Page_FrpcPage_GetChmlDownloadFailed" xml:space="preserve">
+    <value>Failed to get ChmlFrp download URL!</value>
+  </data>
+  <data name="Page_FrpcPage_GetMEDownloadFailed" xml:space="preserve">
+    <value>Failed to get ME Frp download URL!
+Please re-login to MEFrp on the Add Tunnel page and save login status</value>
+  </data>
+  <data name="Page_FrpcPage_GetMEDownloadFailedShort" xml:space="preserve">
+    <value>Failed to get ME Frp download URL!</value>
+  </data>
+  <data name="Page_FrpcPage_NoWindowsAmd64" xml:space="preserve">
+    <value>Windows AMD64 version file not found</value>
+  </data>
+  <data name="Page_FrpcPage_MEDownloadFailed" xml:space="preserve">
+    <value>ME Frp download failed!</value>
+  </data>
+  <data name="Page_FrpcPage_Status_SakuraFrp" xml:space="preserve">
+    <value>SakuraFrp Node</value>
+  </data>
+  <data name="Page_FrpcPage_Status_MEFrp" xml:space="preserve">
+    <value>ME Frp Node</value>
+  </data>
+  <data name="Page_OnlinePage_STUNTutorial" xml:space="preserve">
+    <value>STUN Tunnel Tutorial</value>
+  </data>
+  <data name="Page_OnlinePage_TabP2P" xml:space="preserve">
+    <value>P2P Play (P2P)</value>
+  </data>
+  <data name="Page_OnlinePage_TabSTUN" xml:space="preserve">
+    <value>STUN Tunnel (Direct)</value>
+  </data>
+  <data name="Page_OnlinePage_STUNTip" xml:space="preserve">
+    <value>Tip: This feature requires NAT1 Full-Cone network. If you encounter connection issues or timeouts, please switch to FRP mapping or P2P Play.</value>
+  </data>
+  <data name="Page_OnlinePage_BasicSettings" xml:space="preserve">
+    <value>Basic Settings</value>
+  </data>
+  <data name="Page_OnlinePage_LocalPort" xml:space="preserve">
+    <value>Game Local Port</value>
+  </data>
+  <data name="Page_OnlinePage_CloseSTUN" xml:space="preserve">
+    <value>Close STUN Tunnel</value>
+  </data>
+  <data name="Page_OnlinePage_OpenSTUN" xml:space="preserve">
+    <value>Open STUN Tunnel</value>
+  </data>
+  <data name="Page_OnlinePage_PublicDirectAddr" xml:space="preserve">
+    <value>Public Direct Address: </value>
+  </data>
+  <data name="Page_OnlinePage_NotEnabled" xml:space="preserve">
+    <value>Not Enabled</value>
+  </data>
+  <data name="Page_OnlinePage_Copy" xml:space="preserve">
+    <value>Copy</value>
+  </data>
+  <data name="Page_OnlinePage_RealtimeSpeed" xml:space="preserve">
+    <value>Realtime Speed:</value>
+  </data>
+  <data name="Page_OnlinePage_TrafficStats" xml:space="preserve">
+    <value>Traffic Stats:</value>
+  </data>
+  <data name="Page_OnlinePage_SentReceived" xml:space="preserve">
+    <value>Sent: {0} | Received: {1}</value>
+  </data>
+  <data name="Page_OnlinePage_ActiveConnections" xml:space="preserve">
+    <value>Active Connections: {0} / {1}</value>
+  </data>
+  <data name="Page_OnlinePage_AdvancedSettings" xml:space="preserve">
+    <value>Advanced Settings</value>
+  </data>
+  <data name="Page_OnlinePage_EnableTrafficMonitor" xml:space="preserve">
+    <value>Enable realtime traffic and speed monitoring</value>
+  </data>
+  <data name="Page_OnlinePage_EnableProxyProtocol" xml:space="preserve">
+    <value>Enable Proxy Protocol v2 (pass through player real IP)</value>
+  </data>
+  <data name="Page_OnlinePage_ShowConnLog" xml:space="preserve">
+    <value>Show connection logs</value>
+  </data>
+  <data name="Page_OnlinePage_AutoSrvHeader" xml:space="preserve">
+    <value>Auto SRV resolve to MSLFrp free domain</value>
+  </data>
+  <data name="Page_OnlinePage_EnableAutoResolve" xml:space="preserve">
+    <value>Enable auto resolve to cloud mapped domain</value>
+  </data>
+  <data name="Page_OnlinePage_CustomDomain" xml:space="preserve">
+    <value>Custom resolve domain:</value>
+  </data>
+  <data name="Page_OnlinePage_WaitingTunnel" xml:space="preserve">
+    <value>Waiting for tunnel to start...</value>
+  </data>
+  <data name="Page_OnlinePage_StartingTunnel" xml:space="preserve">
+    <value>Starting tunnel...</value>
+  </data>
+  <data name="Page_OnlinePage_StartupFailed" xml:space="preserve">
+    <value>Failed to start, please use other Frp mapping or P2P instead</value>
+  </data>
+  <data name="Page_OnlinePage_CopySuccess" xml:space="preserve">
+    <value>Public direct address copied to clipboard!</value>
+  </data>
+  <data name="Page_OnlinePage_CopyFailed" xml:space="preserve">
+    <value>Copy failed: </value>
+  </data>
+  <data name="Page_OnlinePage_NoValidAddress" xml:space="preserve">
+    <value>No valid public direct address available to copy!</value>
+  </data>
+  <data name="Page_OnlinePage_STUNSuccess" xml:space="preserve">
+    <value>STUN tunnel penetration successful!</value>
+  </data>
+  <data name="Page_OnlinePage_ConnectionFailed" xml:space="preserve">
+    <value>Forward failed: unable to connect to local game port</value>
+  </data>
+  <data name="Page_Home_NoticeFailed" xml:space="preserve">
+    <value>Failed to get notice...</value>
+  </data>
+  <data name="Form_SetServerconfig_Title" xml:space="preserve">
+    <value>Edit Config File</value>
+  </data>
+  <data name="Form_SetServerconfig_Refresh" xml:space="preserve">
+    <value>Refresh</value>
+  </data>
+  <data name="Form_SetServerconfig_ConfigFiles" xml:space="preserve">
+    <value>Config Files</value>
+  </data>
+  <data name="Form_SetServerconfig_Copy" xml:space="preserve">
+    <value>Copy</value>
+  </data>
+  <data name="Form_SetServerconfig_Paste" xml:space="preserve">
+    <value>Paste</value>
+  </data>
+  <data name="Form_SetServerconfig_Cut" xml:space="preserve">
+    <value>Cut</value>
+  </data>
+  <data name="Form_SetServerconfig_SelectAll" xml:space="preserve">
+    <value>Select All</value>
+  </data>
+  <data name="Form_SetServerconfig_ChangeEncoding" xml:space="preserve">
+    <value>Change Encoding</value>
+  </data>
+  <data name="Form_SetServerconfig_SaveChanges" xml:space="preserve">
+    <value>Save Changes</value>
+  </data>
+  <data name="Form_SetServerconfig_SaveSuccess" xml:space="preserve">
+    <value>Saved successfully! Restart the server to take effect!</value>
+  </data>
+  <data name="Form_DownloadServer_ServerDesc" xml:space="preserve">
+    <value>Server Description</value>
+  </data>
+  <data name="Form_DownloadServer_Loading" xml:space="preserve">
+    <value>Loading, please wait...</value>
+  </data>
+  <data name="Form_DownloadServer_SelectBuild" xml:space="preserve">
+    <value>Please select a build version first!</value>
+  </data>
+  <data name="Form_DownloadServer_CheckSelection" xml:space="preserve">
+    <value>Please check if you have correctly selected Server-Version-Build!</value>
+  </data>
+  <data name="Form_DownloadServer_AddedToDownloadList" xml:space="preserve">
+    <value>Added to download list~</value>
+  </data>
+  <data name="Form_DownloadServer_RequestError" xml:space="preserve">
+    <value>Request error! Please retry!</value>
+  </data>
+  <data name="Form_DownloadServer_FetchServerFailed" xml:space="preserve">
+    <value>Failed to get server! Please retry!</value>
+  </data>
+  <data name="Form_DownloadServer_LatestBuild" xml:space="preserve">
+    <value>Latest Build</value>
+  </data>
+  <data name="Form_DownloadMod_Featured" xml:space="preserve">
+    <value>Featured</value>
+  </data>
+  <data name="Form_DownloadMod_FetchFailed" xml:space="preserve">
+    <value>Failed to get mods/modpacks! Please retry or try connecting to a proxy!
+</value>
+  </data>
+  <data name="Form_DownloadMod_SearchFailed" xml:space="preserve">
+    <value>Search failed! Please retry or try connecting to a proxy!
+</value>
+  </data>
+  <data name="Form_DownloadMod_LoadFailed" xml:space="preserve">
+    <value>Load failed! Please retry or try connecting to a proxy!
+</value>
+  </data>
+  <data name="Form_DownloadMod_All" xml:space="preserve">
+    <value>All</value>
+  </data>
+  <data name="Form_DownloadMod_ServerPackConfirm" xml:space="preserve">
+    <value>Only show server pack files for this modpack?
+Note: Not using the server pack may cause issues!</value>
+  </data>
+  <data name="Form_DownloadMod_Loading" xml:space="preserve">
+    <value>Loading</value>
+  </data>
+  <data name="Form_FrpProvider_Back" xml:space="preserve">
+    <value>Back</value>
+  </data>
+  <data name="Form_FrpProvider_CustomFrp" xml:space="preserve">
+    <value>Custom Frp</value>
+  </data>
+  <data name="Form_FrpProvider_MoreFrp" xml:space="preserve">
+    <value>More Frp</value>
+  </data>
+  <data name="Form_FrpProvider_WantMore" xml:space="preserve">
+    <value>Want MSL to integrate more third-party Frp services?</value>
+  </data>
+  <data name="Form_FrpProvider_ProviderInfo" xml:space="preserve">
+    <value>If you are an Frp provider, you can submit an issue in MSL's GitHub repository.</value>
+  </data>
+  <data name="Form_FrpProvider_UserInfo" xml:space="preserve">
+    <value>If you are a user and want MSL to integrate your Frp service, please contact your provider first to ask if they are willing to provide API support, then submit an integration request issue in MSL's GitHub repository.</value>
+  </data>
+  <data name="Form_FrpProvider_GithubRedirect" xml:space="preserve">
+    <value>Redirecting to GitHub to fill in the integration request...
+Remember to fill in the provider info and contact details!</value>
+  </data>
+  <data name="Form_FrpProvider_GithubRedirectTitle" xml:space="preserve">
+    <value>Redirecting...</value>
+  </data>
+  <data name="Frp_Sakura_Login" xml:space="preserve">
+    <value>Logging in...</value>
+  </data>
+  <data name="Frp_Sakura_InputToken" xml:space="preserve">
+    <value>Please enter Sakura account Token</value>
+  </data>
+  <data name="Frp_Sakura_LoginFailed" xml:space="preserve">
+    <value>Login failed!</value>
+  </data>
+  <data name="Frp_Sakura_GetTunnelFailed" xml:space="preserve">
+    <value>Failed to get tunnel list!</value>
+  </data>
+  <data name="Frp_Sakura_TunnelName" xml:space="preserve">
+    <value>Tunnel Name: </value>
+  </data>
+  <data name="Frp_Sakura_TunnelID" xml:space="preserve">
+    <value>Tunnel ID: </value>
+  </data>
+  <data name="Frp_Sakura_RemotePort" xml:space="preserve">
+    <value>Remote Port: </value>
+  </data>
+  <data name="Frp_Sakura_Online" xml:space="preserve">
+    <value>Online</value>
+  </data>
+  <data name="Frp_Sakura_Offline" xml:space="preserve">
+    <value>Offline</value>
+  </data>
+  <data name="Frp_Sakura_MapSuccess" xml:space="preserve">
+    <value>Mapping config successful! Please click "Start Network Mapping" to start!</value>
+  </data>
+  <data name="Frp_Sakura_ConfigFailed" xml:space="preserve">
+    <value>Config output failed!</value>
+  </data>
+  <data name="Frp_Sakura_NoTunnel" xml:space="preserve">
+    <value>You don't seem to have selected any tunnel!</value>
+  </data>
+  <data name="Frp_Sakura_DeleteFailed" xml:space="preserve">
+    <value>Delete failed!</value>
+  </data>
+  <data name="Frp_Sakura_NormalNode" xml:space="preserve">
+    <value>Normal Node</value>
+  </data>
+  <data name="Frp_Sakura_BronzeNode" xml:space="preserve">
+    <value>Bronze Node</value>
+  </data>
+  <data name="Frp_Sakura_SilverNode" xml:space="preserve">
+    <value>Silver Node</value>
+  </data>
+  <data name="Frp_Sakura_NoNodeDesc" xml:space="preserve">
+    <value>No node description</value>
+  </data>
+  <data name="Frp_Sakura_NodeBand" xml:space="preserve">
+    <value>Node Bandwidth: </value>
+  </data>
+  <data name="Frp_Sakura_CreateSuccess" xml:space="preserve">
+    <value>{0} tunnel created successfully!
+ID: {1} Remote Port: {2}</value>
+  </data>
+  <data name="Frp_Sakura_CreateFailed" xml:space="preserve">
+    <value>Create failed! Please try changing the tunnel name/node!</value>
+  </data>
+  <data name="Frp_Sakura_CreateError" xml:space="preserve">
+    <value>Create failed! Exception: </value>
+  </data>
+  <data name="Frp_Sakura_NoNode" xml:space="preserve">
+    <value>You don't seem to have selected any node!</value>
+  </data>
+  <data name="Frp_Sakura_UserName" xml:space="preserve">
+    <value>Username: </value>
+  </data>
+  <data name="Frp_Sakura_UserType" xml:space="preserve">
+    <value>User Type: </value>
+  </data>
+  <data name="Frp_Sakura_SpeedLimit" xml:space="preserve">
+    <value>Speed Limit: </value>
+  </data>
+  <data name="Frp_OpenFrp_RequestFailed" xml:space="preserve">
+    <value>Request failed! Please retry!</value>
+  </data>
+  <data name="Frp_OpenFrp_LoginFailed" xml:space="preserve">
+    <value>Login failed!</value>
+  </data>
+  <data name="Frp_OpenFrp_BrowserAuth" xml:space="preserve">
+    <value>Please confirm authorization in the opened browser...</value>
+  </data>
+  <data name="Frp_OpenFrp_GetPubKeyFailed" xml:space="preserve">
+    <value>Failed to get public key!</value>
+  </data>
+  <data name="Frp_OpenFrp_DecryptFailed" xml:space="preserve">
+    <value>Decrypt failed: </value>
+  </data>
+  <data name="Frp_OpenFrp_DecryptError" xml:space="preserve">
+    <value>Error during decryption: </value>
+  </data>
+  <data name="Frp_OpenFrp_InputAuth" xml:space="preserve">
+    <value>Please enter Authorization</value>
+  </data>
+  <data name="Frp_OpenFrp_CheckAuth" xml:space="preserve">
+    <value>Login failed! Please check if your Authorization is correct!</value>
+  </data>
+  <data name="Frp_OpenFrp_GetFailed" xml:space="preserve">
+    <value>Failed to get!</value>
+  </data>
+  <data name="Frp_OpenFrp_GetNodeListFailed" xml:space="preserve">
+    <value>Failed to get node list!</value>
+  </data>
+  <data name="Frp_OpenFrp_SelectTunnel" xml:space="preserve">
+    <value>Please make sure you have selected a tunnel</value>
+  </data>
+  <data name="Frp_OpenFrp_MapSuccess" xml:space="preserve">
+    <value>Mapping config successful! Please click "Start Network Mapping" to start!</value>
+  </data>
+  <data name="Frp_OpenFrp_SelectNode" xml:space="preserve">
+    <value>Please select a node first</value>
+  </data>
+  <data name="Frp_OpenFrp_TunnelName" xml:space="preserve">
+    <value>Give the tunnel a name (no Chinese)</value>
+  </data>
+  <data name="Frp_OpenFrp_CreateSuccess" xml:space="preserve">
+    <value>Tunnel created successfully!</value>
+  </data>
+  <data name="Frp_OpenFrp_CreateFailed" xml:space="preserve">
+    <value>Create failed!</value>
+  </data>
+  <data name="Frp_OpenFrp_Error" xml:space="preserve">
+    <value>An error occurred!</value>
+  </data>
+  <data name="Frp_OpenFrp_SelectTunnelFirst" xml:space="preserve">
+    <value>Please select a tunnel first</value>
+  </data>
+  <data name="Frp_OpenFrp_DeleteSuccess" xml:space="preserve">
+    <value>Delete successful!</value>
+  </data>
+  <data name="Frp_OpenFrp_DeleteFailed" xml:space="preserve">
+    <value>Delete failed!</value>
+  </data>
+  <data name="Frp_OpenFrp_LoggingIn" xml:space="preserve">
+    <value>Logging in...</value>
+  </data>
+  <data name="Frp_Chml_LoginFailedEmpty" xml:space="preserve">
+    <value>Login failed!
+Server returned empty content.</value>
+  </data>
+  <data name="Frp_Chml_LoginFailedInvalid" xml:space="preserve">
+    <value>Login failed!
+Server returned invalid data.</value>
+  </data>
+  <data name="Frp_Chml_UnknownError" xml:space="preserve">
+    <value>Unknown error</value>
+  </data>
+  <data name="Frp_Chml_GettingAuthCode" xml:space="preserve">
+    <value>Getting authorization code...</value>
+  </data>
+  <data name="Frp_Chml_BrowserAuth" xml:space="preserve">
+    <value>Please complete authorization in browser...</value>
+  </data>
+  <data name="Frp_Chml_AuthCancelled" xml:space="preserve">
+    <value>Authorization cancelled.</value>
+  </data>
+  <data name="Frp_Chml_AuthSuccess" xml:space="preserve">
+    <value>Authorization successful, loading data...</value>
+  </data>
+  <data name="Frp_Chml_WaitingAuth" xml:space="preserve">
+    <value>Waiting for user to confirm authorization in browser...</value>
+  </data>
+  <data name="Frp_Chml_TooFrequent" xml:space="preserve">
+    <value>Too frequent requests, automatically slowing down...</value>
+  </data>
+  <data name="Frp_Chml_AuthExpired" xml:space="preserve">
+    <value>Authorization code expired, please restart authorization.</value>
+  </data>
+  <data name="Frp_Chml_AuthDenied" xml:space="preserve">
+    <value>User has denied authorization.</value>
+  </data>
+  <data name="Frp_Chml_AuthFailed" xml:space="preserve">
+    <value>Authorization failed: </value>
+  </data>
+  <data name="Frp_Chml_InvalidAuthResponse" xml:space="preserve">
+    <value>Account center returned invalid auth response, please retry later.</value>
+  </data>
+  <data name="Frp_Chml_SelectTunnel" xml:space="preserve">
+    <value>Please select a tunnel first~</value>
+  </data>
+  <data name="Frp_Chml_TunnelSelectTitle" xml:space="preserve">
+    <value>Where's the tunnel?</value>
+  </data>
+  <data name="Frp_Chml_EmptyConfig" xml:space="preserve">
+    <value>Server returned empty config</value>
+  </data>
+  <data name="Frp_Chml_MapSuccess" xml:space="preserve">
+    <value>Mapping config successful! Please click Start Network Mapping to start!</value>
+  </data>
+  <data name="Frp_Chml_GetConfigFailed" xml:space="preserve">
+    <value>Failed to get config!
+</value>
+  </data>
+  <data name="Frp_Chml_ConfirmDelete" xml:space="preserve">
+    <value>Are you sure you want to delete the selected tunnel?</value>
+  </data>
+  <data name="Frp_Chml_DeleteTunnel" xml:space="preserve">
+    <value>Delete Tunnel</value>
+  </data>
+  <data name="Frp_Chml_SelectTunnelFirst" xml:space="preserve">
+    <value>Please select a tunnel first!</value>
+  </data>
+  <data name="Frp_Chml_DeleteSuccess" xml:space="preserve">
+    <value>Tunnel deleted successfully!</value>
+  </data>
+  <data name="Frp_Chml_DeleteFailed" xml:space="preserve">
+    <value>Tunnel delete failed!
+</value>
+  </data>
+  <data name="Frp_Chml_GetNodeFailed" xml:space="preserve">
+    <value>Failed to get node list!
+</value>
+  </data>
+  <data name="Frp_Chml_VipNode" xml:space="preserve">
+    <value>VIP Node</value>
+  </data>
+  <data name="Frp_Chml_NormalNode" xml:space="preserve">
+    <value>Normal Node</value>
+  </data>
+  <data name="Frp_Chml_GetNodeListFailed" xml:space="preserve">
+    <value>Failed to get node list!</value>
+  </data>
+  <data name="Frp_Chml_SelectNode" xml:space="preserve">
+    <value>Please select a node first!</value>
+  </data>
+  <data name="Frp_Chml_CreateSuccess" xml:space="preserve">
+    <value>Tunnel created successfully!</value>
+  </data>
+  <data name="Frp_Chml_CreateFailed" xml:space="preserve">
+    <value>Tunnel create failed!
+</value>
+  </data>
+  <data name="Frp_Chml_NoNode" xml:space="preserve">
+    <value>You don't seem to have selected any node!</value>
+  </data>
+  <data name="Frp_Chml_LoginFailed" xml:space="preserve">
+    <value>Login failed!
+</value>
+  </data>
+  <data name="Frp_Chml_LoggingIn" xml:space="preserve">
+    <value>Logging in...</value>
+  </data>
+  <data name="Frp_Custom_UnfilledData" xml:space="preserve">
+    <value>There is unfilled data!
+Please check!</value>
+  </data>
+  <data name="Frp_Custom_CreateError" xml:space="preserve">
+    <value>Unknown error creating config file, please check logs!</value>
+  </data>
+  <data name="Frp_Custom_FatalError" xml:space="preserve">
+    <value>Fatal Error!</value>
+  </data>
+  <data name="Frp_Custom_NameTunnel" xml:space="preserve">
+    <value>Give this tunnel a name:</value>
+  </data>
+  <data name="Frp_Custom_DefaultName" xml:space="preserve">
+    <value>My Custom Frp Node</value>
+  </data>
+  <data name="Frp_Custom_SelectFrpc" xml:space="preserve">
+    <value>Please select your Frpc client</value>
+  </data>
+  <data name="Frp_Custom_ExeFilter" xml:space="preserve">
+    <value>exe Application (*.exe)|*.exe</value>
+  </data>
+  <data name="Frp_Custom_TunnelSuccess" xml:space="preserve">
+    <value>Tunnel config successful! Please click "Start Network Mapping" to start!</value>
+  </data>
+  <data name="Frp_Custom_SaveError" xml:space="preserve">
+    <value>Error saving final config, please check logs!</value>
+  </data>
+  <data name="Frp_MSLFrp_MyTunnels" xml:space="preserve">
+    <value>My Tunnels</value>
+  </data>
+  <data name="Frp_MSLFrp_MyCreatedTunnels" xml:space="preserve">
+    <value>My Created Tunnels:</value>
+  </data>
+  <data name="Frp_MSLFrp_DeleteSelectedTunnel" xml:space="preserve">
+    <value>Delete Selected Tunnel</value>
+  </data>
+  <data name="Frp_MSLFrp_UserInfo" xml:space="preserve">
+    <value>User Info</value>
+  </data>
+  <data name="Frp_MSLFrp_OpenWebsite" xml:space="preserve">
+    <value>Open Website</value>
+  </data>
+  <data name="Frp_MSLFrp_Logout" xml:space="preserve">
+    <value>Logout</value>
+  </data>
+  <data name="Frp_MSLFrp_TunnelInfo" xml:space="preserve">
+    <value>Tunnel Info</value>
+  </data>
+  <data name="Frp_MSLFrp_SelectTunnel" xml:space="preserve">
+    <value>Please select a tunnel~</value>
+  </data>
+  <data name="Frp_MSLFrp_SelectThisTunnel" xml:space="preserve">
+    <value>Select This Tunnel</value>
+  </data>
+  <data name="Frp_MSLFrp_CreateNewTunnel" xml:space="preserve">
+    <value>Create New Tunnel</value>
+  </data>
+  <data name="Frp_MSLFrp_FillTunnelParams" xml:space="preserve">
+    <value>Fill Tunnel Parameters</value>
+  </data>
+  <data name="Frp_MSLFrp_TunnelNameEn" xml:space="preserve">
+    <value>Tunnel Name (English):</value>
+  </data>
+  <data name="Frp_MSLFrp_RemarkCn" xml:space="preserve">
+    <value>Remark (Chinese allowed):</value>
+  </data>
+  <data name="Frp_MSLFrp_LocalIP" xml:space="preserve">
+    <value>Local IP:</value>
+  </data>
+  <data name="Frp_MSLFrp_LocalPort" xml:space="preserve">
+    <value>Local Port:</value>
+  </data>
+  <data name="Frp_MSLFrp_RemotePort" xml:space="preserve">
+    <value>Remote Port:</value>
+  </data>
+  <data name="Frp_MSLFrp_RandomGen" xml:space="preserve">
+    <value>Random</value>
+  </data>
+  <data name="Frp_MSLFrp_Protocol" xml:space="preserve">
+    <value>Protocol:</value>
+  </data>
+  <data name="Frp_MSLFrp_EnableKCP" xml:space="preserve">
+    <value>Enable KCP Protocol:</value>
+  </data>
+  <data name="Frp_MSLFrp_ConfirmCreate" xml:space="preserve">
+    <value>Confirm Create</value>
+  </data>
+  <data name="Frp_MSLFrp_UserCenter" xml:space="preserve">
+    <value>User Center</value>
+  </data>
+  <data name="Frp_MSLFrp_Type" xml:space="preserve">
+    <value>Type:</value>
+  </data>
+  <data name="Frp_MSLFrp_Bandwidth" xml:space="preserve">
+    <value>Bandwidth:</value>
+  </data>
+  <data name="Frp_MSLFrp_Remark" xml:space="preserve">
+    <value>Remark:</value>
+  </data>
+  <data name="Frp_MSLFrpLogin_Welcome" xml:space="preserve">
+    <value>Welcome to MSLFrp</value>
+  </data>
+  <data name="Frp_MSLFrpLogin_Email" xml:space="preserve">
+    <value>Email:</value>
+  </data>
+  <data name="Frp_MSLFrpLogin_Password" xml:space="preserve">
+    <value>Password:</value>
+  </data>
+  <data name="Frp_MSLFrpLogin_BrowserLogin" xml:space="preserve">
+    <value>Login via Browser (Recommended)</value>
+  </data>
+  <data name="Frp_MSLFrpLogin_WechatLogin" xml:space="preserve">
+    <value>WeChat QR Login</value>
+  </data>
+  <data name="Frp_MSLFrpLogin_Login" xml:space="preserve">
+    <value>Login</value>
+  </data>
+  <data name="Frp_MSLFrpLogin_Register" xml:space="preserve">
+    <value>Register / User Center</value>
+  </data>
+  <data name="Frp_MSLFrpLogin_SaveToken" xml:space="preserve">
+    <value>Save login status (at your own risk~)</value>
+  </data>
+  <data name="Frp_MSLFrpLogin_ServiceDesc" xml:space="preserve">
+    <value>MSLFrp is an intranet penetration service jointly operated by MSLTeam.
+Login with your MSL account to start using.</value>
+  </data>
+  <data name="Frp_MSLFrpLogin_2FA" xml:space="preserve">
+    <value>Two-Factor Authentication (2FA)</value>
+  </data>
+  <data name="Frp_MSLFrpLogin_2FAEmail" xml:space="preserve">
+    <value>We sent a verification code to your email. Please enter it to complete login.</value>
+  </data>
+  <data name="Frp_MSLFrpLogin_2FACode" xml:space="preserve">
+    <value>Verification Code:</value>
+  </data>
+  <data name="Frp_MSLFrpLogin_Resend" xml:space="preserve">
+    <value>Resend</value>
+  </data>
+  <data name="Frp_MSLFrpLogin_EnterAccountPassword" xml:space="preserve">
+    <value>Please enter account and password!</value>
+  </data>
+  <data name="Frp_MSLFrpLogin_UnknownError" xml:space="preserve">
+    <value>Unknown error, please try again later!</value>
+  </data>
+  <data name="Frp_MSLFrpLogin_2FATypeApp" xml:space="preserve">
+    <value>Please enter the real-time code from your 2FA app.</value>
+  </data>
+  <data name="Frp_MSLFrpLogin_EnterCode" xml:space="preserve">
+    <value>Please enter verification code!</value>
+  </data>
+  <data name="Frp_MSLFrpLogin_CodeSent" xml:space="preserve">
+    <value>Verification code sent, please check!</value>
+  </data>
+  <data name="Frp_MSLFrpLogin_ResendCountdown" xml:space="preserve">
+    <value>Resend ({0}s)</value>
+  </data>
+  <data name="Frp_MSLFrpLogin_LoggingIn" xml:space="preserve">
+    <value>Logging in...</value>
+  </data>
+  <data name="Frp_MSLFrpLogin_PreparingBrowser" xml:space="preserve">
+    <value>Preparing browser login...</value>
+  </data>
+  <data name="Frp_MSLFrpLogin_BrowserOpenFailed" xml:space="preserve">
+    <value>Failed to auto-open browser, please copy the link manually</value>
+  </data>
+  <data name="Frp_MSLFrpLogin_LinkCopied" xml:space="preserve">
+    <value>Login link copied to clipboard!</value>
+  </data>
+  <data name="Frp_MSLFrpLogin_BrowserLoginTitle" xml:space="preserve">
+    <value>Browser Login</value>
+  </data>
+  <data name="Frp_MSLFrpLogin_BrowserLoginDesc" xml:space="preserve">
+    <value>Login page opened in your default browser, please complete login...</value>
+  </data>
+  <data name="Frp_MSLFrpLogin_BrowserLoginWait" xml:space="preserve">
+    <value>This window will auto-continue after login...</value>
+  </data>
+  <data name="Frp_MSLFrpLogin_ReopenBrowser" xml:space="preserve">
+    <value>Reopen Webpage</value>
+  </data>
+  <data name="Frp_MSLFrpLogin_CopyLink" xml:space="preserve">
+    <value>Copy Login Link</value>
+  </data>
+  <data name="Frp_MSLFrpLogin_Cancel" xml:space="preserve">
+    <value>Cancel</value>
+  </data>
+  <data name="Frp_MSLFrpLogin_WechatTitle" xml:space="preserve">
+    <value>WeChat QR Login</value>
+  </data>
+  <data name="Frp_MSLFrpLogin_WechatDesc" xml:space="preserve">
+    <value>Please scan the mini program QR code below with WeChat:</value>
+  </data>
+  <data name="Frp_MSLFrpLogin_WechatBind" xml:space="preserve">
+    <value>(Make sure you've bound WeChat in MSL User Center, otherwise login will fail~)</value>
+  </data>
+  <data name="Frp_MSLFrpLogin_Loading" xml:space="preserve">
+    <value>Loading...</value>
+  </data>
+  <data name="Frp_MSLFrpLogin_GettingQrCode" xml:space="preserve">
+    <value>Getting WeChat QR code...</value>
+  </data>
+  <data name="Frp_MSLFrpLogin_GetAuthFailed" xml:space="preserve">
+    <value>Failed to get auth status</value>
+  </data>
+  <data name="Frp_MSLFrpLogin_ScanQrCode" xml:space="preserve">
+    <value>Please scan the QR code above with WeChat</value>
+  </data>
+  <data name="Frp_MSLFrpLogin_QrFormatError" xml:space="preserve">
+    <value>QR code data format is incorrect</value>
+  </data>
+  <data name="Frp_MSLFrpLogin_GetQrFailed" xml:space="preserve">
+    <value>Failed to get QR code</value>
+  </data>
+  <data name="Frp_MSLFrpLogin_Scanned" xml:space="preserve">
+    <value>Scanned successfully, logging in...</value>
+  </data>
+  <data name="Frp_MSLFrpLogin_QrExpired" xml:space="preserve">
+    <value>QR code expired, please retry.</value>
+  </data>
+  <data name="Frp_MSLFrpLogin_QrExpiredConfirm" xml:space="preserve">
+    <value>QR code expired, please go back and retry.</value>
+  </data>
+  <data name="Frp_MSLFrpLogin_Verifying" xml:space="preserve">
+    <value>Verifying login...</value>
+  </data>
+  <data name="Frp_MSLFrpLogin_LoginFailed" xml:space="preserve">
+    <value>Login Failed</value>
+  </data>
+  <data name="Frp_MSLFrpLogin_PollingError" xml:space="preserve">
+    <value>Polling error: </value>
+  </data>
+  <data name="Frp_MSLFrpLogin_LoginTimeout" xml:space="preserve">
+    <value>Login timed out or failed, please retry.</value>
+  </data>
+  <data name="Frp_MSLFrpLogin_CopyFailed" xml:space="preserve">
+    <value>Copy failed: </value>
+  </data>
+  <data name="Frp_MSLFrpLogin_OpenFailed" xml:space="preserve">
+    <value>Open failed: </value>
+  </data>
+  <data name="Frp_MSLFrpLogin_ParseQrFailed" xml:space="preserve">
+    <value>Failed to parse QR code image</value>
+  </data>
+  <data name="Frp_MSLFrpLogin_ApiFormatError" xml:space="preserve">
+    <value>API response format incorrect (url/ssid empty)</value>
+  </data>
+  <data name="Frp_MSLFrpLogin_ApiError" xml:space="preserve">
+    <value>API returned error.</value>
+  </data>
+  <data name="Frp_MSLFrpLogin_RequestFailed" xml:space="preserve">
+    <value>Request failed, unknown error</value>
+  </data>
+  <data name="Frp_MSLFrpProfile_MyInfo" xml:space="preserve">
+    <value>My Info</value>
+  </data>
+  <data name="Frp_MSLFrpProfile_EarnPoints" xml:space="preserve">
+    <value>Earn Points</value>
+  </data>
+  <data name="Frp_MSLFrpProfile_RealnameVerify" xml:space="preserve">
+    <value>Verify Real Name</value>
+  </data>
+  <data name="Frp_MSLFrpProfile_PointPurchase" xml:space="preserve">
+    <value>Points Purchase</value>
+  </data>
+  <data name="Frp_MSLFrpProfile_InputAmount" xml:space="preserve">
+    <value>Enter amount [¥1=100 points] (unit: yuan):</value>
+  </data>
+  <data name="Frp_MSLFrpProfile_SelectPayMethod" xml:space="preserve">
+    <value>Select payment method:</value>
+  </data>
+  <data name="Frp_MSLFrpProfile_Alipay" xml:space="preserve">
+    <value>Alipay</value>
+  </data>
+  <data name="Frp_MSLFrpProfile_Wechat" xml:space="preserve">
+    <value>WeChat</value>
+  </data>
+  <data name="Frp_MSLFrpProfile_Purchase" xml:space="preserve">
+    <value>Purchase</value>
+  </data>
+  <data name="Frp_MSLFrpProfile_PayIssue" xml:space="preserve">
+    <value>Payment Issues?</value>
+  </data>
+  <data name="Frp_MSLFrpProfile_PointExchange" xml:space="preserve">
+    <value>Points Exchange</value>
+  </data>
+  <data name="Page_CreateServer_BackToList" xml:space="preserve">
+    <value>Back to Instance List</value>
+  </data>
+  <data name="Page_CreateServer_CreatingSteps" xml:space="preserve">
+    <value>Creating a server in a few steps...</value>
+  </data>
+  <data name="Page_CreateServer_DocsTutorial" xml:space="preserve">
+    <value>Docs/Tutorial</value>
+  </data>
+  <data name="Page_CreateServer_SelectCreateMode" xml:space="preserve">
+    <value>Please select a creation mode to continue:</value>
+  </data>
+  <data name="Page_CreateServer_FastMode" xml:space="preserve">
+    <value>Quick Mode (Recommended for Beginners)</value>
+  </data>
+  <data name="Page_CreateServer_CustomMode" xml:space="preserve">
+    <value>Custom Mode (For Advanced Users)</value>
+  </data>
+  <data name="Page_CreateServer_ImportPackMode" xml:space="preserve">
+    <value>Import Modpack Mode</value>
+  </data>
+  <data name="Page_CreateServer_DownloadPack" xml:space="preserve">
+    <value>Download Modpack</value>
+  </data>
+  <data name="Page_CreateServer_SelectLocalPack" xml:space="preserve">
+    <value>Select Local Modpack</value>
+  </data>
+  <data name="Page_CreateServer_FastModeDesc" xml:space="preserve">
+    <value>⭐Quick Mode: The launcher will automatically download the required core and Java based on your server type.</value>
+  </data>
+  <data name="Page_CreateServer_CustomModeDesc" xml:space="preserve">
+    <value>⭐Custom Mode: You will manually select Java version, server core, etc. Higher flexibility, allowing changes to server memory and launch arguments.</value>
+  </data>
+  <data name="Page_CreateServer_ImportPackModeDesc" xml:space="preserve">
+    <value>⭐Import Modpack Mode: Want to download a server modpack online or use a local modpack file? Use this mode!</value>
+  </data>
+  <data name="Page_CreateServer_BDSTip" xml:space="preserve">
+    <value>►Tip: For Bedrock Edition official servers (BDS), please use Custom Mode and refer to the</value>
+  </data>
+  <data name="Page_CreateServer_BDSTutorialLink" xml:space="preserve">
+    <value>BDS Server Tutorial</value>
+  </data>
+  <data name="Page_CreateServer_InstanceNameLabel" xml:space="preserve">
+    <value>Instance Name (will be displayed in the instance list):</value>
+  </data>
+  <data name="Page_CreateServer_ServerTypeLabel" xml:space="preserve">
+    <value>Server Type (select the type of server you want):</value>
+  </data>
+  <data name="Page_CreateServer_PluginServer" xml:space="preserve">
+    <value>Plugin Server</value>
+  </data>
+  <data name="Page_CreateServer_PluginModHybridNeoForge" xml:space="preserve">
+    <value>Plugin-Mod Hybrid Server (NeoForge/Forge)</value>
+  </data>
+  <data name="Page_CreateServer_PluginModHybridFabric" xml:space="preserve">
+    <value>Plugin-Mod Hybrid Server (Fabric)</value>
+  </data>
+  <data name="Page_CreateServer_ModServerNeoForge" xml:space="preserve">
+    <value>Mod Server (NeoForge/Forge)</value>
+  </data>
+  <data name="Page_CreateServer_ModServerFabric" xml:space="preserve">
+    <value>Mod Server (Fabric)</value>
+  </data>
+  <data name="Page_CreateServer_VanillaServer" xml:space="preserve">
+    <value>Vanilla Server</value>
+  </data>
+  <data name="Page_CreateServer_BedrockServer" xml:space="preserve">
+    <value>Bedrock Edition Server</value>
+  </data>
+  <data name="Page_CreateServer_ProxyServer" xml:space="preserve">
+    <value>Proxy Server</value>
+  </data>
+  <data name="Page_CreateServer_ServerVersionLabel" xml:space="preserve">
+    <value>Server Version (select the version you want):</value>
+  </data>
+  <data name="Page_CreateServer_FastInstallIntro" xml:space="preserve">
+    <value>Based on your selection, MSL has chosen the following Java version and server core for you. Please click OK to install...</value>
+  </data>
+  <data name="Page_CreateServer_JavaVersionDesc" xml:space="preserve">
+    <value>Java Version (This is the optimal version evaluated by MSL.
+If your plugins or mods require a different Java version,
+please change it here):</value>
+  </data>
+  <data name="Page_CreateServer_ServerCoreDescLabel" xml:space="preserve">
+    <value>Server Core (keep default if unsure):</value>
+  </data>
+  <data name="Page_CreateServer_InstanceDirLabel" xml:space="preserve">
+    <value>Select instance directory (for server-related files):</value>
+  </data>
+  <data name="Page_CreateServer_DirSelectTip" xml:space="preserve">
+    <value>Tip: Do not select Desktop or disk root directories, as this may create many storage files and cause accidental deletion issues.</value>
+  </data>
+  <data name="Page_CreateServer_JavaEnvironment" xml:space="preserve">
+    <value>Java Environment</value>
+  </data>
+  <data name="Page_CreateServer_SelectJavaEnv" xml:space="preserve">
+    <value>Select a Java environment</value>
+  </data>
+  <data name="Page_CreateServer_DownloadJavaRecommended" xml:space="preserve">
+    <value>Download via Launcher (Recommended)</value>
+  </data>
+  <data name="Page_CreateServer_LocalJava" xml:space="preserve">
+    <value>Local Java</value>
+  </data>
+  <data name="Page_CreateServer_SelectPath" xml:space="preserve">
+    <value>Select Path</value>
+  </data>
+  <data name="Page_CreateServer_ClickToDetect" xml:space="preserve">
+    <value>Click to Detect</value>
+  </data>
+  <data name="Page_CreateServer_NoJavaOption" xml:space="preserve">
+    <value>No Java (select this if the server doesn't depend on Java)</value>
+  </data>
+  <data name="Page_CreateServer_JavaHelpTitle" xml:space="preserve">
+    <value>Help: How to choose Java?</value>
+  </data>
+  <data name="Page_CreateServer_JavaHelpLine1" xml:space="preserve">
+    <value>1.12.2 and below: Java8</value>
+  </data>
+  <data name="Page_CreateServer_JavaHelpLine2" xml:space="preserve">
+    <value>1.13-1.16.5: Java8/Java11</value>
+  </data>
+  <data name="Page_CreateServer_JavaHelpLine3" xml:space="preserve">
+    <value>1.17/1.17.1: Java16</value>
+  </data>
+  <data name="Page_CreateServer_JavaHelpLine4" xml:space="preserve">
+    <value>1.18-1.20.4: Java17+</value>
+  </data>
+  <data name="Page_CreateServer_JavaHelpLine5" xml:space="preserve">
+    <value>1.20.5-1.21.11: Java21+</value>
+  </data>
+  <data name="Page_CreateServer_JavaHelpLine6" xml:space="preserve">
+    <value>26.1 and above: Java25+</value>
+  </data>
+  <data name="Page_CreateServer_SelectServerCore" xml:space="preserve">
+    <value>Select a server core</value>
+  </data>
+  <data name="Page_CreateServer_DownloadServerRecommended" xml:space="preserve">
+    <value>Download via Launcher (Recommended)</value>
+  </data>
+  <data name="Page_CreateServer_SelectServerPath" xml:space="preserve">
+    <value>Have server core, select path</value>
+  </data>
+  <data name="Page_CreateServer_CustomCmd" xml:space="preserve">
+    <value>Custom Launch Command</value>
+  </data>
+  <data name="Page_CreateServer_UseBedrockOfficial" xml:space="preserve">
+    <value>Use Bedrock Edition Official Server</value>
+  </data>
+  <data name="Page_CreateServer_MemoryAndArgs" xml:space="preserve">
+    <value>Server Memory &amp; Launch Args</value>
+  </data>
+  <data name="Page_CreateServer_SetMemory" xml:space="preserve">
+    <value>Set memory allocation for the server</value>
+  </data>
+  <data name="Page_CreateServer_ManualSet" xml:space="preserve">
+    <value>Manual</value>
+  </data>
+  <data name="Page_CreateServer_MinLabel" xml:space="preserve">
+    <value>Min</value>
+  </data>
+  <data name="Page_CreateServer_MaxLabel" xml:space="preserve">
+    <value>Max</value>
+  </data>
+  <data name="Page_CreateServer_MemManualTip" xml:space="preserve">
+    <value>Manual memory tip: Recommended 80% of your system RAM. Unit conversion: 1GB=1024MB</value>
+  </data>
+  <data name="Page_CreateServer_LaunchArgsOptional" xml:space="preserve">
+    <value>Launch Arguments (Optional)</value>
+  </data>
+  <data name="Page_CreateServer_BasicOptArgs" xml:space="preserve">
+    <value>Basic optimization args (not for Java 11+)</value>
+  </data>
+  <data name="Page_CreateServer_AdvOptArgs" xml:space="preserve">
+    <value>Advanced optimization args (requires 4G memory)</value>
+  </data>
+  <data name="Page_CreateServer_ArgsWarning" xml:space="preserve">
+    <value>Do not modify this unless necessary. If the server fails to start, please remove the launch arguments.</value>
+  </data>
+  <data name="Page_CreateServer_ExternalAuthOptional" xml:space="preserve">
+    <value>External Authentication (Optional)</value>
+  </data>
+  <data name="Page_CreateServer_YggApiLabel" xml:space="preserve">
+    <value>Enter external auth verification server address (Yggdrasil API):</value>
+  </data>
+  <data name="Page_CreateServer_YggAutoFillTip" xml:space="preserve">
+    <value>After filling in the auth server address, MSL will automatically connect to the external auth verification when starting the server.
+If you don't know what this is, please leave it blank.</value>
+  </data>
+  <data name="Page_CreateServer_SelectTerminalMode" xml:space="preserve">
+    <value>Please select a terminal mode to continue:</value>
+  </data>
+  <data name="Page_CreateServer_NoCmdCompletion" xml:space="preserve">
+    <value>Disable Command Completion</value>
+  </data>
+  <data name="Page_CreateServer_TraditionalModeDesc" xml:space="preserve">
+    <value>Traditional Mode: Classic server launch mode with limited terminal features. No Tab command completion, but more stable with switchable input/output encoding.</value>
+  </data>
+  <data name="Page_CreateServer_EnableCmdCompletion" xml:space="preserve">
+    <value>Enable Command Completion (Testing)</value>
+  </data>
+  <data name="Page_CreateServer_ConPtyModeDesc" xml:space="preserve">
+    <value>Pseudo Terminal (ConPty) Mode: Supports Tab command completion, currently in testing. Please disable if issues occur.</value>
+  </data>
+  <data name="Page_CreateServer_BasicInfo" xml:space="preserve">
+    <value>Basic Info</value>
+  </data>
+  <data name="Page_CreateServer_DownloadNotice" xml:space="preserve">
+    <value>Please download a server modpack with "server" in the filename and in .zip format! Otherwise, the software may fail to read it or the server may fail to start!</value>
+  </data>
+  <data name="Page_CreateServer_DownloadNoticeTitle" xml:space="preserve">
+    <value>Download Notice</value>
+  </data>
+  <data name="Page_CreateServer_DownloadFailed" xml:space="preserve">
+    <value>Download failed!</value>
+  </data>
+  <data name="Page_CreateServer_PackFormatError" xml:space="preserve">
+    <value>The downloaded modpack file does not match the import format (currently only .zip files are supported)! Please check if the file is a dedicated server pack and try again!
+Invalid format:</value>
+  </data>
+  <data name="Page_CreateServer_ServerNamePrompt" xml:space="preserve">
+    <value>Server Name:</value>
+  </data>
+  <data name="Page_CreateServer_ExtractingPack" xml:space="preserve">
+    <value>Extracting modpack, please wait...</value>
+  </data>
+  <data name="Page_CreateServer_ExtractPackFailed" xml:space="preserve">
+    <value>Modpack extraction failed! Please ensure your modpack is in .zip format!
+Error code:</value>
+  </data>
+  <data name="Page_CreateServer_GetJavaListFailed" xml:space="preserve">
+    <value>Error occurred, failed to get Java version list!</value>
+  </data>
+  <data name="Page_CreateServer_PackExtractedSelectJava" xml:space="preserve">
+    <value>Modpack extracted! Please select a Java environment on this page. The Java version should match the modpack version. See the table below for details.</value>
+  </data>
+  <data name="Page_CreateServer_ImportPackTip" xml:space="preserve">
+    <value>Currently only .zip format modpack files are supported. If you are importing a mod modpack, please ensure it is a server-specific pack (e.g., RLCraft has a ServerPack zip in its download page). Otherwise, the server may fail to start or crash!</value>
+  </data>
+  <data name="Page_CreateServer_SelectPackFile" xml:space="preserve">
+    <value>Select modpack archive file</value>
+  </data>
+  <data name="Page_CreateServer_ZipFileFilter" xml:space="preserve">
+    <value>ZIP Files|*.zip|All Files|*.*</value>
+  </data>
+  <data name="Page_CreateServer_ForgeDetected" xml:space="preserve">
+    <value>The launcher detected a Forge server startup file {0} in the modpack. Set it as the server core?</value>
+  </data>
+  <data name="Page_CreateServer_SelectJarAsCore" xml:space="preserve">
+    <value>The launcher detected the following jar files in the modpack. Enter the number to select one as the server core (cancel to skip):
+</value>
+  </data>
+  <data name="Page_CreateServer_ForgeInstallerConfirm" xml:space="preserve">
+    <value>The selected server appears to be a Forge installer. Would you like to expand and install it?
+If not installed, the server may not start!</value>
+  </data>
+  <data name="Page_CreateServer_JarDetected" xml:space="preserve">
+    <value>The launcher detected jar file {0} in the modpack. Set it as the server core?</value>
+  </data>
+  <data name="Page_CreateServer_NoCoreFound" xml:space="preserve">
+    <value>No core file found in the modpack. Please download or manually select a core. The core version must match the modpack's game version.</value>
+  </data>
+  <data name="Page_CreateServer_PathChineseCharWarning" xml:space="preserve">
+    <value>Using paths with Chinese characters or spaces may cause encoding errors and prevent the server from starting. Are you sure you want to continue?</value>
+  </data>
+  <data name="Page_CreateServer_DirChineseCharWarning" xml:space="preserve">
+    <value>The launcher is placed in a directory with Chinese characters or spaces, which may cause encoding errors and prevent the server from starting. Are you sure you want to continue?</value>
+  </data>
+  <data name="Page_CreateServer_CheckingJavaAvail" xml:space="preserve">
+    <value>Checking selected Java availability, please wait...</value>
+  </data>
+  <data name="Page_CreateServer_SelectedJavaVer" xml:space="preserve">
+    <value>Selected Java version:</value>
+  </data>
+  <data name="Page_CreateServer_JavaUnavailMsg" xml:space="preserve">
+    <value>Java availability check failed. Your Java seems unavailable! Please check your selection!</value>
+  </data>
+  <data name="Page_CreateServer_DownloadCancelled" xml:space="preserve">
+    <value>Download cancelled!</value>
+  </data>
+  <data name="Page_CreateServer_DownloadFailedMsg" xml:space="preserve">
+    <value>Download failed!
+</value>
+  </data>
+  <data name="Page_CreateServer_NetworkError" xml:space="preserve">
+    <value>Error occurred, please check your network connection!</value>
+  </data>
+  <data name="Page_CreateServer_BDSHereDownload" xml:space="preserve">
+    <value>If you want to run a Bedrock Edition official server (BDS)
+please go back and select Bedrock Edition Server instead of downloading Bedrock resources here!</value>
+  </data>
+  <data name="Page_CreateServer_ExtractingBedrock" xml:space="preserve">
+    <value>Extracting Bedrock server resources...</value>
+  </data>
+  <data name="Page_CreateServer_DownloadCancelledStatus" xml:space="preserve">
+    <value>Download cancelled</value>
+  </data>
+  <data name="Page_CreateServer_DownloadErrorMsg" xml:space="preserve">
+    <value>Download failed, error:</value>
+  </data>
+  <data name="Page_CreateServer_DownloadFailedSimple" xml:space="preserve">
+    <value>Download failed</value>
+  </data>
+  <data name="Page_CreateServer_GetBedrockUrlFailed" xml:space="preserve">
+    <value>Failed to get Bedrock server download URL.</value>
+  </data>
+  <data name="Page_CreateServer_InstallBedrockFailed" xml:space="preserve">
+    <value>Bedrock server installation failed:</value>
+  </data>
+  <data name="Page_CreateServer_FillMemInfo" xml:space="preserve">
+    <value>Please fill in the server memory information!</value>
+  </data>
+  <data name="Page_CreateServer_MemParamInvalid" xml:space="preserve">
+    <value>Invalid memory parameter (digits only)!</value>
+  </data>
+  <data name="Page_CreateServer_BasicOptWarning" xml:space="preserve">
+    <value>Using optimization args requires manually setting identical memory values. Please adjust the memory above! Do not select this for Java 11+!</value>
+  </data>
+  <data name="Page_CreateServer_AdvOptWarning" xml:space="preserve">
+    <value>Using optimization args requires manually setting identical memory values. Please adjust the memory above!</value>
+  </data>
+  <data name="Page_CreateServer_AutoInstallFailed" xml:space="preserve">
+    <value>Automatic installation failed! Would you like to try command-line installation?</value>
+  </data>
+  <data name="Page_CreateServer_GetServerFailed" xml:space="preserve">
+    <value>Failed to get server! Please retry.</value>
+  </data>
+  <data name="Page_CreateServer_ServerLoadingWait" xml:space="preserve">
+    <value>Server is still loading, please wait before selecting!</value>
+  </data>
+  <data name="Page_CreateServer_ErrorOccurred" xml:space="preserve">
+    <value>Error occurred:</value>
+  </data>
+  <data name="Page_CreateServer_GettingJavaList" xml:space="preserve">
+    <value>Getting Java version list, please wait...</value>
+  </data>
+  <data name="Page_CreateServer_ProgressDownloadingJava" xml:space="preserve">
+    <value>Current progress: Downloading Java...</value>
+  </data>
+  <data name="Page_CreateServer_ProgressDownloadingServer" xml:space="preserve">
+    <value>Current progress: Downloading server...</value>
+  </data>
+  <data name="Page_CreateServer_InstallCancelled" xml:space="preserve">
+    <value>Installation cancelled!</value>
+  </data>
+  <data name="Page_CreateServer_ProgressDone" xml:space="preserve">
+    <value>Current progress: Download complete!</value>
+  </data>
+  <data name="Page_CreateServer_CreateDone" xml:space="preserve">
+    <value>Creation complete! Please click the "Start Server" button to launch.</value>
+  </data>
+  <data name="Page_CreateServer_ErrorRetry" xml:space="preserve">
+    <value>Error occurred, please retry:</value>
+  </data>
+  <data name="Page_CreateServer_ConPtyTip" xml:space="preserve">
+    <value>If issues occur with this mode, you can change it in the "More Features" section of the server runner window.</value>
+  </data>
+  <data name="Page_CreateServer_GetVersionListFailed" xml:space="preserve">
+    <value>Failed to get version list or data is empty!</value>
+  </data>
+  <data name="Page_CreateServer_BedrockOnlyCustomMode" xml:space="preserve">
+    <value>The Bedrock version you selected is the official server (BDS), which only supports Custom Mode creation! Please go back and select Custom Mode!</value>
+  </data>
+  <data name="Page_CreateServer_JavaRec7to8" xml:space="preserve">
+    <value>Based on your selection, the best Java version for your server is: Java7-Java8</value>
+  </data>
+  <data name="Page_CreateServer_JavaRec8to11" xml:space="preserve">
+    <value>Based on your selection, the best Java version for your server is: Java8-Java11</value>
+  </data>
+  <data name="Page_CreateServer_JavaRec11to17" xml:space="preserve">
+    <value>Based on your selection, the best Java version for your server is: Java11-Java17 (or higher)</value>
+  </data>
+  <data name="Page_CreateServer_JavaRec17Plus" xml:space="preserve">
+    <value>Based on your selection, the best Java version for your server is: Java17+</value>
+  </data>
+  <data name="Page_CreateServer_JavaRec21Plus" xml:space="preserve">
+    <value>Based on your selection, the best Java version for your server is: Java21+</value>
+  </data>
+  <data name="Page_CreateServer_JavaRec25Plus" xml:space="preserve">
+    <value>Based on your selection, the best Java version for your server is: Java25+</value>
+  </data>
+  <data name="Page_CreateServer_JavaRec8to21" xml:space="preserve">
+    <value>Based on your selection, the best Java version for your server is: Java8-Java21 (or higher)</value>
+  </data>
+  <data name="Page_CreateServer_SrvDescPlugin" xml:space="preserve">
+    <value>Plugin Server: Plugins are added to the server side (no client changes needed), extending functionality by modifying the server internals. This makes it easy to manage the server and players (e.g., permission groups, ban systems), but cannot modify client content, making it hard to add new items (only texture pack changes are possible).</value>
+  </data>
+  <data name="Page_CreateServer_SrvDescHybridNeoForge" xml:space="preserve">
+    <value>Plugin-Mod Hybrid Server (Forge loader): Combines plugin server and Forge server. Benefits: server management via plugins, new items/gameplay via mods. Drawbacks: instability, high risk of conflicts between plugins and mods, and client-server mod sync required.</value>
+  </data>
+  <data name="Page_CreateServer_SrvDescHybridFabric" xml:space="preserve">
+    <value>Plugin-Mod Hybrid Server (Fabric loader): Combines plugin server and Fabric server. Benefits: server management via plugins, new items/gameplay via mods. Drawbacks: instability, high risk of conflicts between plugins and mods, and client-server mod sync required.</value>
+  </data>
+  <data name="Page_CreateServer_SrvDescModNeoForge" xml:space="preserve">
+    <value>Mod Server (Forge loader): Uses Forge loader to add mods (both server and client required). Can modify both server and client content, enabling features impossible with plugin servers. However, plugin-based management is difficult, and client mods must sync with server mods.</value>
+  </data>
+  <data name="Page_CreateServer_SrvDescModFabric" xml:space="preserve">
+    <value>Mod Server (Fabric loader): Uses Fabric loader to add mods (both server and client required). Can modify both server and client content, enabling features impossible with plugin servers. However, plugin-based management is difficult, and client mods must sync with server mods.</value>
+  </data>
+  <data name="Page_CreateServer_SrvDescVanilla" xml:space="preserve">
+    <value>Vanilla Server: Mojang's pure native server. No plugins or mods can be added. A pure vanilla experience.</value>
+  </data>
+  <data name="Page_CreateServer_SrvDescBedrock" xml:space="preserve">
+    <value>Bedrock Edition Server: Designed for Bedrock Edition. Configuration differs from Java Edition servers, and the launcher has limited compatibility. Config file changes must be done manually. (Only supports Nukkit here; for official BDS, go back and select Custom Mode!)</value>
+  </data>
+  <data name="Page_CreateServer_SrvDescProxy" xml:space="preserve">
+    <value>Proxy Server: A forwarding server for Java Edition server groups. Acts as a bridge to transfer players between servers. You must first set up a regular server since proxy servers have no game content. Players cannot enter without a regular server to connect to. Currently, the launcher doesn't fully support this type; after creation, right-click the server in the list and use "Command Line Launch" to start it.</value>
+  </data>
+  <data name="Page_CreateServer_UseEnvVarColon" xml:space="preserve">
+    <value>Using environment variable:</value>
+  </data>
+  <data name="Page_CreateServer_DetectCompleteNoJava" xml:space="preserve">
+    <value>Detection complete, no Java found</value>
+  </data>
+  <data name="Page_CreateServer_EnvVarNotExist" xml:space="preserve">
+    <value>Environment variable check failed. Your environment variable seems to not exist!</value>
+  </data>
+  <data name="Page_CreateServer_CoreNotInDirConfirm" xml:space="preserve">
+    <value>The selected server core file is not in the server directory. Copy it to the server directory?
+If not copied, be careful not to delete the core file!</value>
+  </data>
+  <data name="Page_CreateServer_CoreCopiedDone" xml:space="preserve">
+    <value>The server core has been copied to the server directory. You can now delete the source file.</value>
+  </data>
+  <data name="Page_CreateServer_SelectFileTitle" xml:space="preserve">
+    <value>Select File</value>
+  </data>
+  <data name="Page_CreateServer_DetectEnvVarFailed" xml:space="preserve">
+    <value>Java availability check failed</value>
+  </data>
+  <data name="Page_OnlinePage_AutoSrvNoCredential" xml:space="preserve">
+    <value>Auto SRV resolution failed: MSLFrp credentials not detected. Please go to "Mapping" - "My MSLFrp" to login.</value>
+  </data>
+  <data name="Page_OnlinePage_AutoSrvLoginFailed" xml:space="preserve">
+    <value>Auto SRV resolution failed: MSLFrp auto-login failed!
+{0}</value>
+  </data>
+  <data name="Page_OnlinePage_OperationFailedNoCredential" xml:space="preserve">
+    <value>Operation failed: No valid MSLFrp credentials detected!
+Please go to "Mapping" - "My MSLFrp" to login.</value>
+  </data>
+  <data name="Page_CreateServer_PreviousStep" xml:space="preserve">
+    <value>Previous</value>
+  </data>
+  <data name="Page_CreateServer_NextStep" xml:space="preserve">
+    <value>Next</value>
+  </data>
+  <data name="Frp_Sakura_TunnelStatus" xml:space="preserve">
+    <value>Tunnel Status: </value>
+  </data>
+  <data name="Frp_Chml_User" xml:space="preserve">
+    <value>User: </value>
+  </data>
+  <data name="Frp_Chml_Email" xml:space="preserve">
+    <value>Email: </value>
+  </data>
+  <data name="Frp_Chml_MemberType" xml:space="preserve">
+    <value>Member Type: </value>
+  </data>
+  <data name="Frp_Chml_TunnelCount" xml:space="preserve">
+    <value>Tunnel Count: </value>
+  </data>
+  <data name="SR_Return" xml:space="preserve">
+    <value>Return</value>
+  </data>
+  <data name="SR_Download" xml:space="preserve">
+    <value>Download</value>
+  </data>
+  <data name="Form_DownloadServer_DownloadList" xml:space="preserve">
+    <value>Download List</value>
+  </data>
+  <data name="Form_DownloadServer_Docs" xml:space="preserve">
+    <value>Docs/Tutorial</value>
+  </data>
+  <data name="Form_DownloadServer_UseMirror" xml:space="preserve">
+    <value>Use mirror for Vanilla and Forge</value>
+  </data>
 </root>

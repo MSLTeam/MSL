@@ -65,7 +65,7 @@ namespace MSL.pages
             catch (Exception ex)
             {
                 LogHelper.Write.Error($"FrpcPage (FrpID: {FrpID}) 页面加载时发生错误: {ex.ToString()}");
-                MessageBox.Show("出现错误，请重试");
+                MessageBox.Show(Lang.Page_FrpcPage_ErrorRetry);
             }
         }
 
@@ -98,11 +98,11 @@ namespace MSL.pages
                 }
                 else if (FrpcServer == 3) // 否则，为3时，则为SF节点
                 {
-                    frplab1.Text = "SakuraFrp节点";
+                    frplab1.Text = Lang.Page_FrpcPage_Status_SakuraFrp;
                 }
                 else if (FrpcServer == 4) // 否则，为4时，则为me节点
                 {
-                    frplab1.Text = "ME Frp节点";
+                    frplab1.Text = Lang.Page_FrpcPage_Status_MEFrp;
                 }
             }
             catch (Exception ex)
@@ -281,12 +281,12 @@ namespace MSL.pages
                     try
                     {
                         Clipboard.SetText(addressTextBlock.Text);
-                        MagicFlowMsg.ShowMessage("复制成功！", 1);
+                        MagicFlowMsg.ShowMessage(Lang.Page_FrpcPage_CopySuccess, 1);
                     }
                     catch (Exception ex)
                     {
                         LogHelper.Write.Error($"复制地址到剪贴板时失败: {ex.ToString()}");
-                        MagicFlowMsg.ShowMessage("复制失败！", 2);
+                        MagicFlowMsg.ShowMessage(Lang.Page_FrpcPage_CopyFailed, 2);
                     }
                 };
 
@@ -326,10 +326,10 @@ namespace MSL.pages
             try
             {
                 Directory.CreateDirectory("MSL\\frp");
-                MagicFlowMsg.ShowMessage("正在启动内网映射！", 4);
+                MagicFlowMsg.ShowMessage(Lang.Page_FrpcPage_StartingMapping, 4);
                 //Growl.Info("正在启动内网映射！");
                 startfrpcBtn.IsEnabled = false;
-                frpcOutlog.Text = "启动中，请稍候……\n";
+                frpcOutlog.Text = Lang.Page_FrpcPage_Starting;
                 // 读取配置
                 JObject jobject = JObject.Parse(File.ReadAllText(@"MSL\frp\config.json", Encoding.UTF8));
                 // 默认的玩意
@@ -491,7 +491,7 @@ namespace MSL.pages
                         if ((int)apiData["code"] != 200)
                         {
                             LogHelper.Write.Error("获取ChmlFrp下载地址失败！API返回码不为200。");
-                            Growl.Error("获取ChmlFrp下载地址失败！");
+                            Growl.Error(Lang.Page_FrpcPage_GetChmlDownloadFailed);
                             return;
                         }
                         string link = apiData["link"].ToString();
@@ -515,7 +515,7 @@ namespace MSL.pages
                             if (Config.Read("MEFrpToken").ToString() == "")
                             {
                                 LogHelper.Write.Error("ME Frp Token 为空，下载失败。");
-                                Growl.Error("获取ME Frp下载地址失败！\n请重新在添加隧道页面登录MEFrp并选择保存登录状态");
+                                Growl.Error(Lang.Page_FrpcPage_GetMEDownloadFailed);
                                 return;
                             }
                             HttpResponse res = await HttpService.GetAsync("https://api.mefrp.com/api/auth/products", headers =>
@@ -526,7 +526,7 @@ namespace MSL.pages
                             if ((int)apiData["code"] != 200)
                             {
                                 LogHelper.Write.Error($"获取 ME Frp 产品列表失败，API返回码: {(int)apiData["code"]}");
-                                Growl.Error("获取ME Frp下载地址失败！");
+                                Growl.Error(Lang.Page_FrpcPage_GetMEDownloadFailedShort);
                                 return;
                             }
 
@@ -539,7 +539,7 @@ namespace MSL.pages
                             if ((int)apiData_alist["code"] != 200)
                             {
                                 LogHelper.Write.Error($"获取 ME Frp 文件列表失败，API返回码: {(int)apiData_alist["code"]}");
-                                Growl.Error("获取ME Frp下载地址失败！");
+                                Growl.Error(Lang.Page_FrpcPage_GetMEDownloadFailedShort);
                                 return;
                             }
                             var targetFile = ((JArray)apiData_alist["data"]["content"])
@@ -548,7 +548,7 @@ namespace MSL.pages
                             if (targetFile == null)
                             {
                                 LogHelper.Write.Error("在ME Frp文件列表中未找到 windows_amd64 版本文件。");
-                                Growl.Error("未找到Windows AMD64版本文件");
+                                Growl.Error(Lang.Page_FrpcPage_NoWindowsAmd64);
                                 return;
                             }
                             string fileName = $"https://drive.mcsl.com.cn/d/ME-Frp/Lanzou/MEFrp-Core/{version}/{targetFile["name"].ToString()}";
@@ -558,7 +558,7 @@ namespace MSL.pages
                         catch (Exception ex)
                         {
                             LogHelper.Write.Error($"ME Frp 下载过程中发生异常: {ex.ToString()}");
-                            Growl.Error("ME Frp下载失败！" + ex.Message);
+                            Growl.Error(Lang.Page_FrpcPage_MEDownloadFailed + ex.Message);
                             return;
                         }
 
@@ -639,7 +639,7 @@ namespace MSL.pages
                 LogHelper.Write.Info($"Frpc (FrpID: {FrpID}) 进程已退出。");
                 FrpcList.RunningFrpc.Remove(FrpID);
                 // 到这里就关掉了
-                MagicFlowMsg.ShowMessage("内网映射已关闭！", 4);
+                MagicFlowMsg.ShowMessage(Lang.Page_FrpcPage_MappingClosed, 4);
                 //Growl.Info("内网映射已关闭！");
                 tempStr = string.Empty;
             }
@@ -648,11 +648,11 @@ namespace MSL.pages
                 LogHelper.Write.Fatal($"启动 Frpc (FrpID: {FrpID}) 时发生严重错误: {e.ToString()}");
                 if (e.Message.Contains("Frpc Not Found"))
                 {
-                    MagicShow.ShowMsg(Window.GetWindow(this), "找不到自定义的Frpc客户端，请重新配置！\n" + e.Message, "错误");
+                    MagicShow.ShowMsg(Window.GetWindow(this), Lang.Page_FrpcPage_CustomFrpcNotFound + e.Message, Lang.Page_FrpcPage_Error);
                 }
                 else
                 {
-                    MagicShow.ShowMsg(Window.GetWindow(this), "出现错误，请检查是否有杀毒软件误杀并重试:" + e.Message, "错误");
+                    MagicShow.ShowMsg(Window.GetWindow(this), Lang.Page_FrpcPage_ErrorCheckAVFull + e.Message, Lang.Page_FrpcPage_Error);
                 }
             }
             finally
@@ -707,12 +707,12 @@ namespace MSL.pages
                 if (msg.Contains("failed"))
                 {
                     LogHelper.Write.Error($"Frpc (FrpID: {FrpID}) 登录失败: {msg}");
-                    frpcOutlog.Text += "内网映射桥接失败！\n";
-                    MagicFlowMsg.ShowMessage("内网映射桥接失败！", 2);
+                    frpcOutlog.Text += Lang.Page_FrpcPage_BridgeFailed + "\n";
+                    MagicFlowMsg.ShowMessage(Lang.Page_FrpcPage_BridgeFailed, 2);
                     //Growl.Error("内网映射桥接失败！");
                     if (msg.Contains("i/o timeout"))
                     {
-                        frpcOutlog.Text += "连接超时，该节点可能下线，请重新配置！\n";
+                        frpcOutlog.Text += Lang.Page_FrpcPage_ConnectionTimeout;
                     }
                     if (!FrpcProcess.HasExited)
                     {
@@ -722,7 +722,7 @@ namespace MSL.pages
                 if (msg.Contains("success"))
                 {
                     LogHelper.Write.Info($"Frpc (FrpID: {FrpID}) 登录成功。");
-                    frpcOutlog.Text += "登录服务器成功！\n";
+                    frpcOutlog.Text += Lang.Page_FrpcPage_LoginSuccess;
                 }
             }
             if (msg.Contains("start"))
@@ -730,14 +730,14 @@ namespace MSL.pages
                 if (msg.Contains("success"))
                 {
                     LogHelper.Write.Info($"Frpc (FrpID: {FrpID}) 代理启动成功。");
-                    frpcOutlog.Text += "内网映射桥接成功！您可复制IP进入游戏了！\n";
-                    MagicFlowMsg.ShowMessage("内网映射桥接成功！", 1);
+                    frpcOutlog.Text += Lang.Page_FrpcPage_BridgeSuccessFull;
+                    MagicFlowMsg.ShowMessage(Lang.Page_FrpcPage_BridgeSuccess, 1);
                 }
                 if (msg.Contains("error"))
                 {
                     LogHelper.Write.Error($"Frpc (FrpID: {FrpID}) 代理启动错误: {msg}");
-                    frpcOutlog.Text = frpcOutlog.Text + "内网映射桥接失败！\n";
-                    MagicFlowMsg.ShowMessage("内网映射桥接失败！", 2);
+                    frpcOutlog.Text = frpcOutlog.Text + Lang.Page_FrpcPage_BridgeFailed + "\n";
+                    MagicFlowMsg.ShowMessage(Lang.Page_FrpcPage_BridgeFailed, 2);
                     if (msg.Contains("port already used"))
                     {
                         frpcOutlog.Text += "本地端口被占用，请检查是否有程序占用或后台是否存在frpc进程，您可尝试手动结束frpc进程或重启电脑再试。\n";

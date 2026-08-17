@@ -1,4 +1,5 @@
-﻿using MSL.utils;
+﻿using MSL.langs;
+using MSL.utils;
 using System;
 using System.Collections.ObjectModel;
 using System.ComponentModel;
@@ -352,10 +353,10 @@ namespace MSL.controls.dialogs
                     _status = value;
                     OnPropertyChanged(nameof(Status));
                     StatusText = GetStatusText(_status);
-                    PauseResumeButtonText = (_status == DownloadStatus.InProgress) ? "暂停" :
-                                           (_status == DownloadStatus.Paused) ? "继续" : "---";
-                    CancelRemoveButtonText = (_status == DownloadStatus.Cancelled || _status == DownloadStatus.Completed || _status == DownloadStatus.Failed) ? "移除" :
-                                           (_status == DownloadStatus.InProgress || _status == DownloadStatus.Paused) ? "取消" : "---";
+                    PauseResumeButtonText = (_status == DownloadStatus.InProgress) ? Lang.SR_Pause :
+                                           (_status == DownloadStatus.Paused) ? Lang.SR_Resume : "---";
+                    CancelRemoveButtonText = (_status == DownloadStatus.Cancelled || _status == DownloadStatus.Completed || _status == DownloadStatus.Failed) ? Lang.SR_RemoveItem :
+                                           (_status == DownloadStatus.InProgress || _status == DownloadStatus.Paused) ? Lang.SR_CancelItem : "---";
                 }
             }
 
@@ -441,14 +442,14 @@ namespace MSL.controls.dialogs
             {
                 switch (status)
                 {
-                    case DownloadStatus.Pending: return "等待中";
-                    case DownloadStatus.InProgress: return "下载中";
-                    case DownloadStatus.Paused: return "已暂停";
-                    case DownloadStatus.Cancelling: return "取消中";
-                    case DownloadStatus.Cancelled: return "已取消";
-                    case DownloadStatus.Completed: return "已完成";
-                    case DownloadStatus.Failed: return $"失败: {ErrorMessage}";
-                    case DownloadStatus.Retrying: return $"失败，将重试: {ErrorMessage}";
+                    case DownloadStatus.Pending: return Lang.SR_StatusPending;
+                    case DownloadStatus.InProgress: return Lang.SR_StatusInProgress;
+                    case DownloadStatus.Paused: return Lang.SR_StatusPaused;
+                    case DownloadStatus.Cancelling: return Lang.SR_StatusCancelling;
+                    case DownloadStatus.Cancelled: return Lang.SR_StatusCancelled;
+                    case DownloadStatus.Completed: return Lang.SR_StatusCompleted;
+                    case DownloadStatus.Failed: return string.Format(Lang.SR_StatusFailed, ErrorMessage);
+                    case DownloadStatus.Retrying: return string.Format(Lang.SR_StatusRetrying, ErrorMessage);
                     default: return status.ToString();
                 }
             }
@@ -470,9 +471,9 @@ namespace MSL.controls.dialogs
             private string FormatTimeRemaining(TimeSpan timeSpan)
             {
                 if (timeSpan.TotalSeconds < 1) return "---";
-                if (timeSpan.TotalHours >= 1) return $"{(int)timeSpan.TotalHours}时{timeSpan.Minutes}分";
-                if (timeSpan.TotalMinutes >= 1) return $"{timeSpan.Minutes}分{timeSpan.Seconds}秒";
-                return $"{timeSpan.Seconds}秒";
+                if (timeSpan.TotalHours >= 1) return string.Format(Lang.SR_TimeHours, (int)timeSpan.TotalHours, timeSpan.Minutes);
+                if (timeSpan.TotalMinutes >= 1) return string.Format(Lang.SR_TimeMinutes, timeSpan.Minutes, timeSpan.Seconds);
+                return string.Format(Lang.SR_TimeSeconds, timeSpan.Seconds);
             }
 
             public event PropertyChangedEventHandler PropertyChanged;

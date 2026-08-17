@@ -115,7 +115,7 @@ namespace MSL.pages
             }
             catch
             {
-                Growl.Error("加载配置时发生错误！此错误不影响使用，您可继续使用或将其反馈给作者！");
+                Growl.Error(LanguageManager.Instance["SettingsPage_ConfigLoadErr"]);
             }
         }
 
@@ -173,12 +173,12 @@ namespace MSL.pages
             string url = DownloadUrl.Text;
             if (string.IsNullOrWhiteSpace(url))
             {
-                MagicShow.ShowMsgDialog(Functions.GetWindow(this), "请输入地址后再进行下载！", "提示");
+                MagicShow.ShowMsgDialog(Functions.GetWindow(this), LanguageManager.Instance["SettingsPage_EnterUrl"], LanguageManager.Instance["Tip"]);
                 return;
             }
             string filename = await HttpService.GetRemoteFileNameAsync(url);
             if (!await MagicShow.ShowMsgDialogAsync(Functions.GetWindow(this),
-                $"URL: {url}\n文件名称: {filename}\n文件将保存至 MSL\\Downloads 文件夹内！\n\n点击确定以下载", "信息", true))
+                string.Format(LanguageManager.Instance["SettingsPage_DownloadConfirm"], url, filename), LanguageManager.Instance["Tip"], true))
                 return;
 
             var dwnManager = DownloadManager.Instance;
@@ -187,7 +187,7 @@ namespace MSL.pages
             dwnManager.StartDownloadGroup(groupid);
             DownloadManagerDialog.Instance.ManagerControl.AddDownloadGroup(groupid, true);
 
-            MagicFlowMsg.ShowMessage("已将其添加至任务列表中！");
+            MagicFlowMsg.ShowMessage(LanguageManager.Instance["SettingsPage_AddedToTaskList"]);
         }
 
         private void OpenDownloadManager_Click(object sender, RoutedEventArgs e)
@@ -201,7 +201,7 @@ namespace MSL.pages
         private async void setdefault_Click(object sender, RoutedEventArgs e)
         {
             if (!await MagicShow.ShowMsgDialogAsync(Functions.GetWindow(this),
-                "恢复默认设置会清除MSL文件夹内的所有文件，请您谨慎选择！", "警告", true, isDangerPrimaryBtn: true))
+                LanguageManager.Instance["SettingsPage_RecoveryWarning"], LanguageManager.Instance["Warning"], true, isDangerPrimaryBtn: true))
                 return;
             try { Directory.Delete(@"MSL", true); } catch { }
             Process.Start(Application.ResourceAssembly.Location);
@@ -214,7 +214,7 @@ namespace MSL.pages
             C_NotifyIcon();
             Cfg.NotifyIcon = notifyIconbtn.IsChecked == true;
             Cfg.Save();
-            MagicFlowMsg.ShowMessage(Cfg.NotifyIcon ? "开启成功！" : "关闭成功！", Cfg.NotifyIcon ? 1 : 2);
+            MagicFlowMsg.ShowMessage(Cfg.NotifyIcon ? LanguageManager.Instance["SettingsPage_ToggleOn"] : LanguageManager.Instance["SettingsPage_ToggleOff"], Cfg.NotifyIcon ? 1 : 2);
         }
 
         // 自动开启服务器
@@ -224,7 +224,7 @@ namespace MSL.pages
             {
                 if (_autoStartList == "")
                 {
-                    Growl.Error("请先将服务器添加至启动列表！");
+                    Growl.Error(LanguageManager.Instance["SettingsPage_AddServerFirst"]);
                     openserversOnStart.IsChecked = false;
                     return;
                 }
@@ -235,7 +235,7 @@ namespace MSL.pages
                 Cfg.AutoOpenServer = "False";
             }
             Cfg.Save();
-            MagicFlowMsg.ShowMessage(openserversOnStart.IsChecked == true ? "开启成功！" : "关闭成功！", 1);
+            MagicFlowMsg.ShowMessage(openserversOnStart.IsChecked == true ? LanguageManager.Instance["SettingsPage_ToggleOn"] : LanguageManager.Instance["SettingsPage_ToggleOff"], 1);
         }
 
         // 自动开启 Frpc
@@ -245,7 +245,7 @@ namespace MSL.pages
             {
                 if (string.IsNullOrWhiteSpace(AutoOpenFrpcList.Text))
                 {
-                    Growl.Error("请先将需要自启动的Frpc之ID填入框中！");
+                    Growl.Error(LanguageManager.Instance["SettingsPage_AddFrpcIdFirst"]);
                     openfrpOnStart.IsChecked = false;
                     return;
                 }
@@ -258,7 +258,7 @@ namespace MSL.pages
                 AutoOpenFrpcList.IsEnabled = true;
             }
             Cfg.Save();
-            MagicFlowMsg.ShowMessage(openfrpOnStart.IsChecked == true ? "开启成功！" : "关闭成功！", 1);
+            MagicFlowMsg.ShowMessage(openfrpOnStart.IsChecked == true ? LanguageManager.Instance["SettingsPage_ToggleOn"] : LanguageManager.Instance["SettingsPage_ToggleOff"], 1);
         }
 
         // 玩家信息&服务器信息
@@ -267,7 +267,7 @@ namespace MSL.pages
             Cfg.AutoGetPlayerInfo = autoGetPlayerInfo.IsChecked == true;
             Cfg.Save();
             ConfigStore.GetPlayerInfo = Cfg.AutoGetPlayerInfo;
-            MagicFlowMsg.ShowMessage(Cfg.AutoGetPlayerInfo ? "开启成功！" : "关闭成功！", 1);
+            MagicFlowMsg.ShowMessage(Cfg.AutoGetPlayerInfo ? LanguageManager.Instance["SettingsPage_ToggleOn"] : LanguageManager.Instance["SettingsPage_ToggleOff"], 1);
         }
 
         private void autoGetServerInfo_Click(object sender, RoutedEventArgs e)
@@ -275,7 +275,7 @@ namespace MSL.pages
             Cfg.AutoGetServerInfo = autoGetServerInfo.IsChecked == true;
             Cfg.Save();
             ConfigStore.GetServerInfo = Cfg.AutoGetServerInfo;
-            MagicFlowMsg.ShowMessage(Cfg.AutoGetServerInfo ? "开启成功！" : "关闭成功！", 1);
+            MagicFlowMsg.ShowMessage(Cfg.AutoGetServerInfo ? LanguageManager.Instance["SettingsPage_ToggleOn"] : LanguageManager.Instance["SettingsPage_ToggleOff"], 1);
         }
 
         // 主题
@@ -290,7 +290,7 @@ namespace MSL.pages
                 darkTheme.IsChecked = false;
                 darkTheme.IsEnabled = false;
                 ChangeSkinColor.IsEnabled = false;
-                MagicFlowMsg.ShowMessage("开启成功！", 1);
+                MagicFlowMsg.ShowMessage(LanguageManager.Instance["SettingsPage_ToggleOn"], 1);
             }
             else
             {
@@ -301,7 +301,7 @@ namespace MSL.pages
                 ThemeManager.Current.ApplicationTheme = ApplicationTheme.Light;
                 darkTheme.IsEnabled = true;
                 ChangeSkinColor.IsEnabled = true;
-                MagicFlowMsg.ShowMessage("关闭成功！", 1);
+                MagicFlowMsg.ShowMessage(LanguageManager.Instance["SettingsPage_ToggleOff"], 1);
             }
         }
 
@@ -318,7 +318,7 @@ namespace MSL.pages
                 window.Close();
                 Cfg.SkinColor = picker.SelectedBrush.ToString();
                 Cfg.Save();
-                MagicFlowMsg.ShowMessage("保存颜色成功！", 1);
+                MagicFlowMsg.ShowMessage(LanguageManager.Instance["SettingsPage_SaveColorSuc"], 1);
             };
             picker.Canceled += delegate { window.Close(); ThemeManager.Current.AccentColor = tempColor; };
             window.Show(ChangeSkinColor, false);
@@ -339,7 +339,7 @@ namespace MSL.pages
                 LogHelper.Write.Info("[Settings] 暗色模式已关闭！");
             }
             Cfg.Save();
-            MagicFlowMsg.ShowMessage(darkTheme.IsChecked == true ? "开启成功！" : "关闭成功！", 1);
+            MagicFlowMsg.ShowMessage(darkTheme.IsChecked == true ? LanguageManager.Instance["SettingsPage_ToggleOn"] : LanguageManager.Instance["SettingsPage_ToggleOff"], 1);
         }
 
         private void semitransparentTitle_Click(object sender, RoutedEventArgs e)
@@ -348,7 +348,7 @@ namespace MSL.pages
             Cfg.Save();
             ChangeSkinStyle();
             LogHelper.Write.Info($"[Settings] 半透明标题栏功能已{(Cfg.SemitransparentTitle ? "打开" : "关闭")}！");
-            MagicFlowMsg.ShowMessage(Cfg.SemitransparentTitle ? "开启成功！" : "关闭成功！", 1);
+            MagicFlowMsg.ShowMessage(Cfg.SemitransparentTitle ? LanguageManager.Instance["SettingsPage_ToggleOn"] : LanguageManager.Instance["SettingsPage_ToggleOff"], 1);
         }
 
         // 云母效果
@@ -365,7 +365,7 @@ namespace MSL.pages
                 changeBackImg.Visibility = Visibility.Collapsed;
                 delBackImg.Visibility = Visibility.Collapsed;
                 WesternEgg.Visibility = Visibility.Collapsed;
-                MagicFlowMsg.ShowMessage("已开启Mica效果！", 1);
+                MagicFlowMsg.ShowMessage(LanguageManager.Instance["SettingsPage_MicaOn"], 1);
             }
             else
             {
@@ -376,7 +376,7 @@ namespace MSL.pages
                 changeBackImg.Visibility = Visibility.Visible;
                 delBackImg.Visibility = Visibility.Visible;
                 WesternEgg.Visibility = Visibility.Visible;
-                MagicFlowMsg.ShowMessage("已关闭Mica效果！", 1);
+                MagicFlowMsg.ShowMessage(LanguageManager.Instance["SettingsPage_MicaOff"], 1);
             }
             Cfg.Save();
             autoSetTheme.IsChecked = true;
@@ -392,8 +392,8 @@ namespace MSL.pages
             var openfile = new OpenFileDialog
             {
                 InitialDirectory = AppDomain.CurrentDomain.BaseDirectory,
-                Title = "请选择文件",
-                Filter = "所有文件类型|*.*"
+                Title = LanguageManager.Instance["SettingsPage_SelectFile"],
+                Filter = LanguageManager.Instance["SettingsPage_AllFiles"]
             };
             if (openfile.ShowDialog() != true) return;
             try
@@ -406,7 +406,7 @@ namespace MSL.pages
             }
             catch (Exception ex)
             {
-                MagicShow.ShowMsgDialog(Window.GetWindow(this), "更换背景图片失败！\n错误代码：" + ex.Message, "错误");
+                MagicShow.ShowMsgDialog(Window.GetWindow(this), LanguageManager.Instance["SettingsPage_ChangeBgFailed"] + ex.Message, LanguageManager.Instance["Error"]);
             }
         }
 
@@ -419,7 +419,7 @@ namespace MSL.pages
             }
             catch (Exception ex)
             {
-                MagicShow.ShowMsgDialog(Window.GetWindow(this), "清除背景图片失败！\n错误代码：" + ex.Message, "错误");
+                MagicShow.ShowMsgDialog(Window.GetWindow(this), LanguageManager.Instance["SettingsPage_DelBgFailed"] + ex.Message, LanguageManager.Instance["Error"]);
             }
         }
 
@@ -439,7 +439,7 @@ namespace MSL.pages
 
             SetCurrentLogBrush(picker.SelectedBrush.Color);
             SaveLogColors();
-            MagicFlowMsg.ShowMessage("保存日志颜色成功！重新打开服务器运行窗口以使其生效！", 1);
+            MagicFlowMsg.ShowMessage(LanguageManager.Instance["SettingsPage_SaveLogColorSuc"], 1);
         }
 
         private void RestoreLogForeColor_Click(object sender, RoutedEventArgs e)
@@ -451,7 +451,7 @@ namespace MSL.pages
 
             Cfg.LogColor = new AppConfig.LogColorConfig();  // 重置为默认值
             Cfg.Save();
-            MagicFlowMsg.ShowMessage("已恢复默认日志颜色！重新打开服务器运行窗口以使其生效！", 1);
+            MagicFlowMsg.ShowMessage(LanguageManager.Instance["SettingsPage_RestoreLogColorSuc"], 1);
         }
 
         private Color GetCurrentLogBrush()
@@ -502,12 +502,12 @@ namespace MSL.pages
             }
             else
             {
-                MagicShow.ShowMsgDialog(Functions.GetWindow(this), "请输入有效的字体大小！", "错误");
+                MagicShow.ShowMsgDialog(Functions.GetWindow(this), LanguageManager.Instance["SettingsPage_InvalidFontSize"], LanguageManager.Instance["Error"]);
                 return;
             }
             Cfg.Save();
 
-            MagicFlowMsg.ShowMessage("保存日志字体成功！重新打开服务器运行窗口以使其生效！", 1);
+            MagicFlowMsg.ShowMessage(LanguageManager.Instance["SettingsPage_SaveLogFontSuc"], 1);
         }
 
         // 开机自启
@@ -533,7 +533,7 @@ namespace MSL.pages
         {
             Cfg.AutoUpdateApp = autoUpdateApp.IsChecked == true;
             Cfg.Save();
-            MagicFlowMsg.ShowMessage(Cfg.AutoUpdateApp ? "开启成功！" : "关闭成功！", 1);
+            MagicFlowMsg.ShowMessage(Cfg.AutoUpdateApp ? LanguageManager.Instance["SettingsPage_ToggleOn"] : LanguageManager.Instance["SettingsPage_ToggleOff"], 1);
         }
 
         // 手动检查更新
@@ -551,29 +551,29 @@ namespace MSL.pages
                     string updateLog = httpReturn["data"]["log"].ToString();
                     bool confirmed = await MagicShow.ShowMsgDialogAsync(
                         Window.GetWindow(this),
-                        $"发现新版本：{latestVersionStr}，是否更新？\n更新日志：\n{updateLog}",
-                        "更新", true, "取消");
+                        string.Format(LanguageManager.Instance["SettingsPage_NewVersionFound"], latestVersionStr) + "\n" + updateLog,
+                        LanguageManager.Instance["SettingsPage_UpdateNow"], true, LanguageManager.Instance["Cancel"]);
 
                     if (!confirmed)
                     {
-                        Growl.Error("您拒绝了更新新版本，若在此版本中遇到bug，请勿报告给作者！");
+                        Growl.Error(LanguageManager.Instance["SettingsPage_RefuseUpdate"]);
                         return;
                     }
                     if (MainWindow.ProcessRunningCheck())
                     {
                         MagicShow.ShowMsgDialog(Window.GetWindow(this),
-                            "您的服务器/内网映射/联机正在运行中，请将其关闭后再更新！", "警告");
+                            LanguageManager.Instance["SettingsPage_CloseBeforeUpdate"], LanguageManager.Instance["Warning"]);
                         return;
                     }
 
                     string downloadUrl = (await HttpService.GetApiContentAsync("download/update"))["data"].ToString();
                     await MagicShow.ShowDownloader(Window.GetWindow(this), downloadUrl,
-                        AppDomain.CurrentDomain.BaseDirectory, $"MSL{latestVersionStr}.exe", "下载新版本中……");
+                        AppDomain.CurrentDomain.BaseDirectory, $"MSL{latestVersionStr}.exe", LanguageManager.Instance["MainWindow_DownloadNewVer"]);
 
                     string newExe = $"MSL{latestVersionStr}.exe";
                     if (!File.Exists(newExe))
                     {
-                        MessageBox.Show("更新失败！", "错误", MessageBoxButton.OK, MessageBoxImage.Error);
+                        MessageBox.Show(LanguageManager.Instance["SettingsPage_UpdateFailed"], LanguageManager.Instance["Error"], MessageBoxButton.OK, MessageBoxImage.Error);
                         return;
                     }
 
@@ -590,16 +590,16 @@ namespace MSL.pages
                 }
                 else if (newVersion < version)
                 {
-                    MagicFlowMsg.ShowMessage("当前版本高于正式版本，若使用中遇到BUG，请及时反馈！", 4);
+                    MagicFlowMsg.ShowMessage(LanguageManager.Instance["MainWindow_GrowlMsg_BeatVersion"], 4);
                 }
                 else
                 {
-                    MagicFlowMsg.ShowMessage("您使用的开服器已是最新版本！", 1);
+                    MagicFlowMsg.ShowMessage(LanguageManager.Instance["MainWindow_GrowlMsg_LatestVersion"], 1);
                 }
             }
             catch
             {
-                Growl.Error("检查更新失败！");
+                Growl.Error(LanguageManager.Instance["MainWindow_GrowlMsg_CheckUpdateErr"]);
             }
         }
 
@@ -615,7 +615,7 @@ namespace MSL.pages
         {
             if (openserversOnStart.IsChecked == true)
             {
-                MagicShow.ShowMsgDialog(Window.GetWindow(this), "请先关闭开关后再进行调整！", "提示");
+                MagicShow.ShowMsgDialog(Window.GetWindow(this), LanguageManager.Instance["SettingsPage_CloseBeforeAdjust"], LanguageManager.Instance["Tip"]);
                 return;
             }
             MoveItems(AutoStartServers, ServersList);
@@ -626,7 +626,7 @@ namespace MSL.pages
         {
             if (openserversOnStart.IsChecked == true)
             {
-                MagicShow.ShowMsgDialog(Window.GetWindow(this), "请先关闭开关后再进行调整！", "提示");
+                MagicShow.ShowMsgDialog(Window.GetWindow(this), LanguageManager.Instance["SettingsPage_CloseBeforeAdjust"], LanguageManager.Instance["Tip"]);
                 return;
             }
             MoveItems(ServersList, AutoStartServers);
@@ -665,7 +665,7 @@ namespace MSL.pages
             {
                 bool confirmed = await MagicShow.ShowMsgDialogAsync(
                     Window.GetWindow(this),
-                    "关闭此功能后，读取服务器信息、玩家等功能将会失效，请谨慎选择！", "警告", true);
+                    LanguageManager.Instance["SettingsPage_DisableMslTipsWarning"], LanguageManager.Instance["Warning"], true);
 
                 if (!confirmed)
                 {
@@ -674,13 +674,13 @@ namespace MSL.pages
                 }
                 Cfg.MSLTips = false;
                 Cfg.Save();
-                MagicFlowMsg.ShowMessage("关闭成功！重启服务器运行界面以生效！", 1);
+                MagicFlowMsg.ShowMessage(LanguageManager.Instance["SettingsPage_ToggleOffRestart"], 1);
             }
             else
             {
                 Cfg.MSLTips = true;
                 Cfg.Save();
-                MagicFlowMsg.ShowMessage("开启成功！重启服务器运行界面以生效！", 1);
+                MagicFlowMsg.ShowMessage(LanguageManager.Instance["SettingsPage_ToggleOnRestart"], 1);
             }
         }
 
@@ -691,21 +691,21 @@ namespace MSL.pages
         {
             var random = new Random();
             int num = random.Next(1, 501);
-            string input = await MagicShow.ShowInput(Window.GetWindow(this), "我生成了一个1-500的整数，你能猜对它吗？\n请输入数字（1-500）");
-            if (string.IsNullOrEmpty(input)) { MagicFlowMsg.ShowMessage("爱猜不猜，哼！"); return; }
-            if (!int.TryParse(input, out int guess)) { MagicFlowMsg.ShowMessage("为什么要胡乱输入！不玩了！", 2); return; }
+            string input = await MagicShow.ShowInput(Window.GetWindow(this), LanguageManager.Instance["SettingsPage_EggGuessIntro"]);
+            if (string.IsNullOrEmpty(input)) { MagicFlowMsg.ShowMessage(LanguageManager.Instance["SettingsPage_EggDontGuess"]); return; }
+            if (!int.TryParse(input, out int guess)) { MagicFlowMsg.ShowMessage(LanguageManager.Instance["SettingsPage_EggBadInput"], 2); return; }
 
             while (guess != num)
             {
-                string tip = guess > num ? "你猜的数字大了！" : "你猜的数字小了！";
+                string tip = guess > num ? LanguageManager.Instance["SettingsPage_EggTooBig"] : LanguageManager.Instance["SettingsPage_EggTooSmall"];
                 MagicFlowMsg.ShowMessage(tip, 0);
-                string next = await MagicShow.ShowInput(Window.GetWindow(this), tip + "再猜一次吧！\n请输入数字（1-500）");
-                if (string.IsNullOrEmpty(next)) { MagicFlowMsg.ShowMessage("爱猜不猜，哼！"); return; }
-                if (!int.TryParse(next, out guess)) { MagicFlowMsg.ShowMessage("为什么要胡乱输入！不玩了！", 2); return; }
+                string next = await MagicShow.ShowInput(Window.GetWindow(this), tip + LanguageManager.Instance["SettingsPage_EggTryAgain"]);
+                if (string.IsNullOrEmpty(next)) { MagicFlowMsg.ShowMessage(LanguageManager.Instance["SettingsPage_EggDontGuess"]); return; }
+                if (!int.TryParse(next, out guess)) { MagicFlowMsg.ShowMessage(LanguageManager.Instance["SettingsPage_EggBadInput"], 2); return; }
             }
 
-            MagicFlowMsg.ShowMessage("你真厉害！居然猜对了！", 1);
-            bool knows = await MagicShow.ShowMsgDialogAsync(Functions.GetWindow(this), $"猜对了：{num}！\n你真厉害！", "恭喜你！", true, "不，我不知道", "我知道了");
+            MagicFlowMsg.ShowMessage(LanguageManager.Instance["SettingsPage_EggWon"], 1);
+            bool knows = await MagicShow.ShowMsgDialogAsync(Functions.GetWindow(this), string.Format(LanguageManager.Instance["SettingsPage_EggWonTitle"], num), LanguageManager.Instance["SettingsPage_EggCongrats"], true, LanguageManager.Instance["SettingsPage_EggDontKnow"], LanguageManager.Instance["SettingsPage_EggIKnow"]);
             Window.GetWindow(this).Title = knows ? ":)" : ":(";
         }
 
@@ -713,7 +713,7 @@ namespace MSL.pages
         {
             if (_isWesternEgg != 0)
             {
-                string[] msgs = { "", "你都已经点过了，别再点了！", "你还真是执着呢！", "你真是个执着的家伙！", "好吧，那来玩一个小游戏吧！" };
+                string[] msgs = { "", LanguageManager.Instance["SettingsPage_EggAlreadyClicked"], LanguageManager.Instance["SettingsPage_EggPersistent"], LanguageManager.Instance["SettingsPage_EggPersistent2"], LanguageManager.Instance["SettingsPage_EggGameTime"] };
                 int[] levels = { 0, 0, 3, 2, 1 };
                 MagicFlowMsg.ShowMessage(msgs[_isWesternEgg], levels[_isWesternEgg]);
                 if (_isWesternEgg == 4) await GuessNumGame();
@@ -722,8 +722,8 @@ namespace MSL.pages
             }
 
             bool go = await MagicShow.ShowMsgDialogAsync(Functions.GetWindow(this),
-                "点击此按钮后软件出现任何问题作者概不负责，你确定要继续吗？\n（光敏性癫痫警告！若您患有光敏性癫痫，请不要点击确定！）",
-                "警告", true, isDangerPrimaryBtn: true, closeBtnContext: "我不确定QWQ");
+                LanguageManager.Instance["SettingsPage_EggWarning"],
+                LanguageManager.Instance["Warning"], true, isDangerPrimaryBtn: true, closeBtnContext: LanguageManager.Instance["SettingsPage_EggUnsure"]);
             _isWesternEgg = 1;
             if (!go) return;
 
@@ -771,11 +771,11 @@ namespace MSL.pages
             {
                 Clipboard.Clear();
                 Clipboard.SetText(Functions.GetDeviceID());
-                MagicFlowMsg.ShowMessage("设备ID复制成功！", 1);
+                MagicFlowMsg.ShowMessage(LanguageManager.Instance["SettingsPage_CopyIdSuc"], 1);
             }
             catch
             {
-                MagicFlowMsg.ShowMessage("复制失败！", 2);
+                MagicFlowMsg.ShowMessage(LanguageManager.Instance["SettingsPage_CopyFailed"], 2);
             }
         }
     }

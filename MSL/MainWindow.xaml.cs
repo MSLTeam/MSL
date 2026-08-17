@@ -9,6 +9,7 @@ using Newtonsoft.Json.Linq;
 using System;
 using System.Collections.Generic;
 using System.Diagnostics;
+using System.Globalization;
 using System.IO;
 using System.Net;
 using System.Net.Http;
@@ -65,6 +66,12 @@ namespace MSL
                 var cfg = AppConfig.Current;
                 ConfigStore.DeviceID = Functions.GetDeviceID();
 
+                // 恢复语言设置
+                if (!string.IsNullOrEmpty(cfg.Lang))
+                {
+                    LanguageManager.Instance.ChangeLanguage(new CultureInfo(cfg.Lang));
+                }
+
                 // EULA 检查
                 if (cfg.Eula == null || cfg.Eula != ConfigStore.DeviceID.Substring(0, 5))
                 {
@@ -102,15 +109,15 @@ namespace MSL
             {
                 LogHelper.Write.Error($"执行主窗体初始化任务时出错： {ex}");
                 MagicShow.ShowMsgDialog(this,
-                    $"软件加载时出现错误！\n请检查您是否安装了.NET Framework 4.7.2运行库，若安装后依旧出错，请联系作者！\n错误信息：{ex.Message}",
-                    "错误");
+                    LanguageManager.Instance["MainWindow_LoadErrorDotNet"] + ex.Message,
+                    LanguageManager.Instance["Error"]);
             }
             catch (Exception ex)
             {
                 LogHelper.Write.Error($"执行主窗体初始化任务时出错： {ex}");
                 MagicShow.ShowMsgDialog(this,
-                    $"软件加载时出现错误！若无法正常使用，请联系作者进行解决。\n错误信息：{ex.Message}",
-                    "错误");
+                    LanguageManager.Instance["MainWindow_LoadError"] + ex.Message,
+                    LanguageManager.Instance["Error"]);
             }
         }
 
@@ -299,7 +306,7 @@ namespace MSL
                     MagicFlowMsg.ShowMessage(LanguageManager.Instance["MainWindow_GrowlMsg_MSLServerDown"], 2);
                     if (!isBackupUrl)
                     {
-                        MagicFlowMsg.ShowMessage("软件将使用备用URL...");
+                        MagicFlowMsg.ShowMessage(LanguageManager.Instance["MainWindow_FallbackUrl"]);
                         LogHelper.Write.Warn("正在尝试使用备用API地址...");
                         ConfigStore.ApiLink = "https://api.mslmc.net/v4";
                         await OnlineService(cfg, true);
@@ -339,7 +346,7 @@ namespace MSL
                 MagicFlowMsg.ShowMessage(LanguageManager.Instance["MainWindow_GrowlMsg_MSLServerDown"] + $"\n[HTTP]{ex.InnerException?.Message}", 2);
                 if (!isBackupUrl)
                 {
-                    MagicFlowMsg.ShowMessage("软件将使用备用URL...");
+                    MagicFlowMsg.ShowMessage(LanguageManager.Instance["MainWindow_FallbackUrl"]);
                     LogHelper.Write.Warn("正在尝试使用备用API地址...");
                     ConfigStore.ApiLink = "https://api.mslmc.net/v4";
                     await OnlineService(cfg, true);
@@ -474,7 +481,7 @@ namespace MSL
                 LogHelper.Write.Info($"获取到MSL {latestVersion} 的下载地址: {downloadUrl}");
 
                 await MagicShow.ShowDownloader(this, downloadUrl, AppDomain.CurrentDomain.BaseDirectory,
-                    "MSL" + latestVersion + ".exe", "下载新版本中……");
+                    "MSL" + latestVersion + ".exe", LanguageManager.Instance["MainWindow_DownloadNewVer"]);
 
                 string newExe = "MSL" + latestVersion + ".exe";
                 if (!File.Exists(newExe))
@@ -503,7 +510,7 @@ namespace MSL
             catch (Exception ex)
             {
                 LogHelper.Write.Error(ex.ToString());
-                MagicShow.ShowMsgDialog(this, "出现错误，更新失败！\n" + ex.Message, LanguageManager.Instance["Error"]);
+                MagicShow.ShowMsgDialog(this, LanguageManager.Instance["MainWindow_UpdateFailed"] + "\n" + ex.Message, LanguageManager.Instance["Error"]);
             }
         }
         #endregion

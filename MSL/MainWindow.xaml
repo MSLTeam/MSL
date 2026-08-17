@@ -65,8 +65,8 @@
         <hc:NotifyIcon x:Name="MainNotifyIcon" Text="Minecraft Server Launcher" Visibility="Collapsed" Click="MainNotifyIcon_Click">
             <hc:NotifyIcon.ContextMenu>
                 <ContextMenu>
-                    <MenuItem Command="hc:ControlCommands.PushMainWindow2Top" Header="打开主界面"/>
-                    <MenuItem x:Name="NotifyClose" Header="退出程序" Click="NotifyClose_Click"/>
+                    <MenuItem Command="hc:ControlCommands.PushMainWindow2Top" Header="{Binding [MainWindow_Tray_OpenMain], Source={x:Static langs:LanguageManager.Instance}}"/>
+                    <MenuItem x:Name="NotifyClose" Header="{Binding [MainWindow_Tray_Exit], Source={x:Static langs:LanguageManager.Instance}}" Click="NotifyClose_Click"/>
                 </ContextMenu>
             </hc:NotifyIcon.ContextMenu>
         </hc:NotifyIcon>

@@ -1,4 +1,5 @@
 ﻿using ICSharpCode.AvalonEdit.Highlighting;
+using MSL.langs;
 using MSL.utils;
 using System;
 using System.IO;
@@ -172,7 +173,7 @@ namespace MSL
                     : (Encoding)Encoding.Default;
 
                 File.WriteAllText(serverbase + "\\" + path, EditorBox.Text, writeEncoding);
-                MagicShow.ShowMsgDialog(this, "保存成功！重启服务器生效！", "提示");
+                MagicShow.ShowMsgDialog(this, Lang.Form_SetServerconfig_SaveSuccess, Lang.Tip);
             }
             catch (Exception ex)
             {

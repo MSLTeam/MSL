@@ -5,6 +5,7 @@
         xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
         xmlns:hc="https://handyorg.github.io/handycontrol"
         xmlns:local="clr-namespace:MSL.pages"
+        xmlns:langs="clr-namespace:MSL.langs"
         mc:Ignorable="d" Title="CreateServer"
         d:DesignHeight="460" d:DesignWidth="750" Style="{StaticResource AnimationPage}"
         Loaded="Page_Loaded">
@@ -15,9 +16,9 @@
                 <RowDefinition/>
             </Grid.RowDefinitions>
             <StackPanel Grid.Row="0" Orientation="Horizontal" Margin="10,10,10,0" VerticalAlignment="Top">
-                <Button x:Name="CancelBtn" hc:IconElement.Geometry="{StaticResource LeftGeometry}" Content="返回实例列表" Click="CancelBtn_Click"/>
-                <Label Content="将通过几个步骤为您创建一个服务器……" Margin="5,0,0,0" Foreground="{DynamicResource DarkPrimaryBrush}" FontSize="14"/>
-                <Button Name="WikiButton" Margin="5" Content="文档/教程" FontSize="14" Foreground="{DynamicResource DarkPrimaryBrush}" Command="hc:ControlCommands.OpenLink" CommandParameter="https://www.mslmc.cn/docs/mc-server/start/"/>
+                <Button x:Name="CancelBtn" hc:IconElement.Geometry="{StaticResource LeftGeometry}" Content="{Binding [Page_CreateServer_BackToList], Source={x:Static langs:LanguageManager.Instance}}" Click="CancelBtn_Click"/>
+                <Label Content="{Binding [Page_CreateServer_CreatingSteps], Source={x:Static langs:LanguageManager.Instance}}" Margin="5,0,0,0" Foreground="{DynamicResource DarkPrimaryBrush}" FontSize="14"/>
+                <Button Name="WikiButton" Margin="5" Content="{Binding [Page_CreateServer_DocsTutorial], Source={x:Static langs:LanguageManager.Instance}}" FontSize="14" Foreground="{DynamicResource DarkPrimaryBrush}" Command="hc:ControlCommands.OpenLink" CommandParameter="https://www.mslmc.cn/docs/mc-server/start/"/>
             </StackPanel>
             <Border Grid.Row="1" Style="{StaticResource MagicBorder}" Margin="10" VerticalAlignment="Stretch">
                 <Grid>
@@ -28,20 +29,20 @@
                         <RowDefinition/>
                         <RowDefinition Height="auto"/>
                     </Grid.RowDefinitions>
-                    <Label Grid.Row="0" Content="请选择一个创建模式以继续：" Style="{StaticResource BorderTitle}" FontWeight="Normal" Margin="10" FontSize="16"/>
-                    <Button Grid.Row="1" x:Name="FastModeBtn" Content="快速模式（适合小白）" FontSize="18" hc:BorderElement.CornerRadius="10" Style="{StaticResource ButtonPrimary}" Click="FastModeBtn_Click" Width="250" Height="80" VerticalAlignment="Center" HorizontalAlignment="Left" Margin="50,0,0,0"/>
-                    <Button Grid.Row="2" x:Name="CustomModeBtn" Content="自定义模式（适合老手）" FontSize="18" hc:BorderElement.CornerRadius="10" Width="250" Height="80" Click="CustomModeBtn_Click" VerticalAlignment="Center" HorizontalAlignment="Left" Margin="50,0,0,0"/>
+                    <Label Grid.Row="0" Content="{Binding [Page_CreateServer_SelectCreateMode], Source={x:Static langs:LanguageManager.Instance}}" Style="{StaticResource BorderTitle}" FontWeight="Normal" Margin="10" FontSize="16"/>
+                    <Button Grid.Row="1" x:Name="FastModeBtn" Content="{Binding [Page_CreateServer_FastMode], Source={x:Static langs:LanguageManager.Instance}}" FontSize="18" hc:BorderElement.CornerRadius="10" Style="{StaticResource ButtonPrimary}" Click="FastModeBtn_Click" Width="250" Height="80" VerticalAlignment="Center" HorizontalAlignment="Left" Margin="50,0,0,0"/>
+                    <Button Grid.Row="2" x:Name="CustomModeBtn" Content="{Binding [Page_CreateServer_CustomMode], Source={x:Static langs:LanguageManager.Instance}}" FontSize="18" hc:BorderElement.CornerRadius="10" Width="250" Height="80" Click="CustomModeBtn_Click" VerticalAlignment="Center" HorizontalAlignment="Left" Margin="50,0,0,0"/>
                     <ComboBox Grid.Row="3" Name="ImportPack" FontSize="18" hc:BorderElement.CornerRadius="10" VerticalAlignment="Center" Width="250" HorizontalAlignment="Left" Height="80" Margin="50,0,0,0" HorizontalContentAlignment="Center" SelectionChanged="ImportPack_SelectionChanged">
-                        <ComboBoxItem IsSelected="True" Content="导入整合包模式" FontSize="14"/>
-                        <ComboBoxItem Content="下载整合包" FontSize="14"/>
-                        <ComboBoxItem Content="选择本地整合包" FontSize="14"/>
+                        <ComboBoxItem IsSelected="True" Content="{Binding [Page_CreateServer_ImportPackMode], Source={x:Static langs:LanguageManager.Instance}}" FontSize="14"/>
+                        <ComboBoxItem Content="{Binding [Page_CreateServer_DownloadPack], Source={x:Static langs:LanguageManager.Instance}}" FontSize="14"/>
+                        <ComboBoxItem Content="{Binding [Page_CreateServer_SelectLocalPack], Source={x:Static langs:LanguageManager.Instance}}" FontSize="14"/>
                     </ComboBox>
-                    <TextBlock Grid.Row="1" Text="⭐快速模式：开服器会根据您想要开的服务器类型自动下载需要的核心和Java。" FontSize="16" VerticalAlignment="Center" TextWrapping="Wrap" Margin="320,0,50,0"/>
-                    <TextBlock Grid.Row="2" Text="⭐自定义模式：您将手动进行Java版本选择，服务端核心选择等操作，可操作性高，可以更改服务器运行内存和启动参数。" FontSize="16" VerticalAlignment="Center" TextWrapping="Wrap" Margin="320,0,50,0"/>
-                    <TextBlock Grid.Row="3" Text="⭐导入整合包模式：想要在线下载一个服务器整合包来进行导入？或是自己备有一个整合包文件？那就使用此模式吧！" FontSize="16" VerticalAlignment="Center" TextWrapping="Wrap" Margin="320,0,50,0"/>
+                    <TextBlock Grid.Row="1" Text="{Binding [Page_CreateServer_FastModeDesc], Source={x:Static langs:LanguageManager.Instance}}" FontSize="16" VerticalAlignment="Center" TextWrapping="Wrap" Margin="320,0,50,0"/>
+                    <TextBlock Grid.Row="2" Text="{Binding [Page_CreateServer_CustomModeDesc], Source={x:Static langs:LanguageManager.Instance}}" FontSize="16" VerticalAlignment="Center" TextWrapping="Wrap" Margin="320,0,50,0"/>
+                    <TextBlock Grid.Row="3" Text="{Binding [Page_CreateServer_ImportPackModeDesc], Source={x:Static langs:LanguageManager.Instance}}" FontSize="16" VerticalAlignment="Center" TextWrapping="Wrap" Margin="320,0,50,0"/>
                     <TextBlock Grid.Row="4"  FontSize="16" VerticalAlignment="Center" TextWrapping="Wrap" Margin="10,0,50,0">
-                        <Run Text="►提示：若需要开基岩版官方服务器（BDS），请使用自定义模式并参照" FontSize="16" Foreground="{DynamicResource PrimaryTextBrush}"/>
-                        <Hyperlink Command="hc:ControlCommands.OpenLink" CommandParameter="https://www.mslmc.cn/docs/mc-server/launch-bds/">BDS开服教程</Hyperlink>
+                        <Run x:Name="BDSTipRun" FontSize="16" Foreground="{DynamicResource PrimaryTextBrush}"/>
+                        <Hyperlink Command="hc:ControlCommands.OpenLink" CommandParameter="https://www.mslmc.cn/docs/mc-server/launch-bds/"><Run x:Name="BDSTutorialLinkRun"/></Hyperlink>
                         <Run Text="！"/>
                     </TextBlock>
                     <Image Grid.Row="4" Source="/icon.ico" VerticalAlignment="Bottom" HorizontalAlignment="Right" Width="50"/>
@@ -52,93 +53,93 @@
             <StackPanel>
                 <Border Style="{StaticResource MagicBorder}" Margin="10,10,10,0">
                     <Grid>
-                        <Label Content="实例名称" Style="{StaticResource BorderTitle}"/>
-                        <Label Content="实例名称（将在实例列表中显示该名称）：" HorizontalAlignment="Left" Margin="10,35,0,0" VerticalAlignment="Top" FontSize="16" BorderBrush="{x:Null}" Background="{x:Null}" Height="35"/>
+                        <Label Content="{Binding [SR_InstanceName], Source={x:Static langs:LanguageManager.Instance}}" Style="{StaticResource BorderTitle}"/>
+                        <Label Content="{Binding [Page_CreateServer_InstanceNameLabel], Source={x:Static langs:LanguageManager.Instance}}" HorizontalAlignment="Left" Margin="10,35,0,0" VerticalAlignment="Top" FontSize="16" BorderBrush="{x:Null}" Background="{x:Null}" Height="35"/>
                         <TextBox x:Name="ServerNameBox" Margin="360,35,10,0" TextWrapping="Wrap" Text="MyServer" HorizontalAlignment="Stretch" VerticalAlignment="Top" Height="35"/>
                     </Grid>
                 </Border>
                 <Border Style="{StaticResource MagicBorder}">
                     <Grid>
-                        <Label Content="服务器类型" Style="{StaticResource BorderTitle}"/>
-                        <Label Content="服务器类型（选择你想要开的服务器类型）：" HorizontalAlignment="Left" Margin="10,35,0,0" VerticalAlignment="Top" FontSize="16" BorderBrush="{x:Null}" Background="{x:Null}" Height="35"/>
+                        <Label Content="{Binding [SR_ServerCore], Source={x:Static langs:LanguageManager.Instance}}" Style="{StaticResource BorderTitle}"/>
+                        <Label Content="{Binding [Page_CreateServer_ServerTypeLabel], Source={x:Static langs:LanguageManager.Instance}}" HorizontalAlignment="Left" Margin="10,35,0,0" VerticalAlignment="Top" FontSize="16" BorderBrush="{x:Null}" Background="{x:Null}" Height="35"/>
                         <ComboBox x:Name="ServerCoreCombo" Margin="360,35,10,0" HorizontalAlignment="Stretch" VerticalAlignment="Top" Height="35" SelectionChanged="ServerCoreCombo_SelectionChanged">
-                            <ComboBoxItem Content="插件服务器"/>
-                            <ComboBoxItem Content="插件模组混合服务器（NeoForge/Forge）"/>
-                            <ComboBoxItem Content="插件模组混合服务器（Fabric）"/>
-                            <ComboBoxItem Content="模组服务器（NeoForge/Forge）"/>
-                            <ComboBoxItem Content="模组服务器（Fabric）"/>
-                            <ComboBoxItem Content="原版服务器"/>
-                            <ComboBoxItem Content="基岩版服务器"/>
-                            <ComboBoxItem Content="代理服务器"/>
+                            <ComboBoxItem Content="{Binding [Page_CreateServer_PluginServer], Source={x:Static langs:LanguageManager.Instance}}"/>
+                            <ComboBoxItem Content="{Binding [Page_CreateServer_PluginModHybridNeoForge], Source={x:Static langs:LanguageManager.Instance}}"/>
+                            <ComboBoxItem Content="{Binding [Page_CreateServer_PluginModHybridFabric], Source={x:Static langs:LanguageManager.Instance}}"/>
+                            <ComboBoxItem Content="{Binding [Page_CreateServer_ModServerNeoForge], Source={x:Static langs:LanguageManager.Instance}}"/>
+                            <ComboBoxItem Content="{Binding [Page_CreateServer_ModServerFabric], Source={x:Static langs:LanguageManager.Instance}}"/>
+                            <ComboBoxItem Content="{Binding [Page_CreateServer_VanillaServer], Source={x:Static langs:LanguageManager.Instance}}"/>
+                            <ComboBoxItem Content="{Binding [Page_CreateServer_BedrockServer], Source={x:Static langs:LanguageManager.Instance}}"/>
+                            <ComboBoxItem Content="{Binding [Page_CreateServer_ProxyServer], Source={x:Static langs:LanguageManager.Instance}}"/>
                         </ComboBox>
                         <Border Margin="20,75,10,0" Style="{StaticResource BorderTipPrimary}">
-                            <TextBlock x:Name="ServerCoreDescrip" Text="加载中，请稍等……" Foreground="{DynamicResource PrimaryTextBrush}" VerticalAlignment="Top" HorizontalAlignment="Left" TextWrapping="Wrap"/>
+                            <TextBlock x:Name="ServerCoreDescrip" Text="{Binding [Loading_PlzWait], Source={x:Static langs:LanguageManager.Instance}}" Foreground="{DynamicResource PrimaryTextBrush}" VerticalAlignment="Top" HorizontalAlignment="Left" TextWrapping="Wrap"/>
                         </Border>
                     </Grid>
                 </Border>
                 <Border Style="{StaticResource MagicBorder}" Margin="10,10,10,10">
                     <Grid>
-                        <Label Content="服务器版本" Style="{StaticResource BorderTitle}"/>
-                        <Label Content="服务器版本（选择你想要开的服务器版本）：" HorizontalAlignment="Left" Margin="10,35,0,0" VerticalAlignment="Top" FontSize="16" BorderBrush="{x:Null}" Background="{x:Null}" Height="35"/>
+                        <Label Content="{Binding [Page_CreateServer_ServerVersionLabel], Source={x:Static langs:LanguageManager.Instance}}" Style="{StaticResource BorderTitle}"/>
+                        <Label Content="{Binding [Page_CreateServer_ServerVersionLabel], Source={x:Static langs:LanguageManager.Instance}}" HorizontalAlignment="Left" Margin="10,35,0,0" VerticalAlignment="Top" FontSize="16" BorderBrush="{x:Null}" Background="{x:Null}" Height="35"/>
                         <ComboBox x:Name="ServerVersionCombo" Margin="360,35,10,0" HorizontalAlignment="Stretch" VerticalAlignment="Top" Height="35"/>
                     </Grid>
                 </Border>
                 <Grid VerticalAlignment="Bottom" Margin="0,0,0,10">
-                    <Button Content="上一步" Width="150" Click="Return_Click" Height="45" FontSize="18" Margin="0,0,300,0"/>
-                    <Button x:Name="FastModeNextBtn" Content="下一步" IsEnabled="False" Style="{StaticResource ButtonPrimary}" Width="150" Click="FastModeNextBtn_Click" Height="45" FontSize="18" Margin="200,0,0,0"/>
+                    <Button Content="{Binding [Page_CreateServer_PreviousStep], Source={x:Static langs:LanguageManager.Instance}}" MinWidth="150" Padding="10,0" Click="Return_Click" Height="45" FontSize="18" Margin="0,0,300,0"/>
+                    <Button x:Name="FastModeNextBtn" Content="{Binding [Page_CreateServer_NextStep], Source={x:Static langs:LanguageManager.Instance}}" IsEnabled="False" Style="{StaticResource ButtonPrimary}" MinWidth="150" Padding="10,0" Click="FastModeNextBtn_Click" Height="45" FontSize="18" Margin="200,0,0,0"/>
                 </Grid>
             </StackPanel>
         </ScrollViewer>
         <StackPanel x:Name="InstallGrid" Visibility="Collapsed">
-            <Label Content="根据您的选择，MSL为您选出了以下版本的Java和服务端核心，请点击确定按钮以安装……" Margin="10" Foreground="{DynamicResource DarkPrimaryBrush}" FontSize="14" HorizontalAlignment="Left"/>
+            <Label Content="{Binding [Page_CreateServer_FastInstallIntro], Source={x:Static langs:LanguageManager.Instance}}" Margin="10" Foreground="{DynamicResource DarkPrimaryBrush}" FontSize="14" HorizontalAlignment="Left"/>
             <Border Style="{StaticResource MagicBorder}" Margin="10,0,10,10">
                 <Grid>
-                    <Label Content="Java版本" Style="{StaticResource BorderTitle}"/>
-                    <Label Content="Java版本（此版本为MSL评估的最优版本，&#xA;如果您后续要加载的插件或模组&#xA;有要求Java版本的话，请在此处更改）：" HorizontalAlignment="Left" Margin="10,30,0,0" VerticalAlignment="Top" FontSize="16" BorderBrush="{x:Null}" Background="{x:Null}" Height="90"/>
+                    <Label Content="{Binding [Page_CreateServer_JavaVersionDesc], Source={x:Static langs:LanguageManager.Instance}}" Style="{StaticResource BorderTitle}"/>
+                    <Label Content="{Binding [Page_CreateServer_JavaVersionDesc], Source={x:Static langs:LanguageManager.Instance}}" HorizontalAlignment="Left" Margin="10,30,0,0" VerticalAlignment="Top" FontSize="16" BorderBrush="{x:Null}" Background="{x:Null}" Height="90"/>
                     <ComboBox x:Name="FinallyJavaCombo" Margin="360,60,10,0" VerticalAlignment="Top" Height="35"/>
                     <Border  Margin="20,120,10,0" Style="{StaticResource BorderTipPrimary}">
                         <TextBlock x:Name="FinallyJavaDescrip" Foreground="{DynamicResource PrimaryTextBrush}" HorizontalAlignment="Left" VerticalAlignment="Top" />
                     </Border>
-                   
+
                 </Grid>
             </Border>
             <Border Style="{StaticResource MagicBorder}" Margin="10,0,10,10">
                 <Grid>
-                    <Label Content="服务端核心" Style="{StaticResource BorderTitle}"/>
-                    <Label Content="服务端核心（若不会选择，保持默认即可）：" HorizontalAlignment="Left" Margin="10,35,0,0" VerticalAlignment="Top" FontSize="16" BorderBrush="{x:Null}" Background="{x:Null}" Height="35"/>
+                    <Label Content="{Binding [SR_ServerCore], Source={x:Static langs:LanguageManager.Instance}}" Style="{StaticResource BorderTitle}"/>
+                    <Label Content="{Binding [Page_CreateServer_ServerCoreDescLabel], Source={x:Static langs:LanguageManager.Instance}}" HorizontalAlignment="Left" Margin="10,35,0,0" VerticalAlignment="Top" FontSize="16" BorderBrush="{x:Null}" Background="{x:Null}" Height="35"/>
                     <ComboBox x:Name="FinallyCoreCombo" Margin="360,35,10,0" VerticalAlignment="Top" Height="35"/>
                 </Grid>
             </Border>
             <TextBlock x:Name="FastInstallProcess" Text="" Foreground="{DynamicResource DarkPrimaryBrush}" Margin="15,0,0,0" />
             <Grid VerticalAlignment="Bottom" Margin="0,0,0,10">
-                <Button x:Name="FastModeReturnBtn" Content="上一步" Width="150" Click="Return_Click" Height="45" FontSize="18" Margin="0,0,300,0"/>
-                <Button x:Name="FastModeInstallBtn" Content="下一步" Style="{StaticResource ButtonPrimary}" Width="150" Click="FastModeInstallBtn_Click" Height="45" FontSize="18" Margin="200,0,0,0"/>
+                <Button x:Name="FastModeReturnBtn" Content="{Binding [Page_CreateServer_PreviousStep], Source={x:Static langs:LanguageManager.Instance}}" MinWidth="150" Padding="10,0" Click="Return_Click" Height="45" FontSize="18" Margin="0,0,300,0"/>
+                <Button x:Name="FastModeInstallBtn" Content="{Binding [Page_CreateServer_NextStep], Source={x:Static langs:LanguageManager.Instance}}" Style="{StaticResource ButtonPrimary}" MinWidth="150" Padding="10,0" Click="FastModeInstallBtn_Click" Height="45" FontSize="18" Margin="200,0,0,0"/>
             </Grid>
         </StackPanel>
         <TabControl x:Name="tabCtrl" Visibility="Collapsed" Background="{x:Null}" BorderThickness="0,1,0,0" Style="{StaticResource TabControlInLine}">
-            <TabItem x:Name="welcome" Header="基本信息" FontSize="14" Background="{DynamicResource SideMenuBrush}">
+            <TabItem x:Name="welcome" Header="{Binding [Page_CreateServer_BasicInfo], Source={x:Static langs:LanguageManager.Instance}}" FontSize="14" Background="{DynamicResource SideMenuBrush}">
                 <StackPanel>
                     <Border Style="{StaticResource MagicBorder}" Margin="10,10,10,0">
                         <Grid>
-                            <Label Content="实例名称" HorizontalAlignment="Left" Style="{StaticResource BorderTitle}"/>
-                            <TextBlock Text="实例名称（将在实例列表中显示该名称）：" Foreground="{DynamicResource PrimaryTextBrush}" Margin="25,35,0,10" FontSize="16" HorizontalAlignment="Left" VerticalAlignment="Top"/>
+                            <Label Content="{Binding [SR_InstanceName], Source={x:Static langs:LanguageManager.Instance}}" HorizontalAlignment="Left" Style="{StaticResource BorderTitle}"/>
+                            <TextBlock Text="{Binding [Page_CreateServer_InstanceNameLabel], Source={x:Static langs:LanguageManager.Instance}}" Foreground="{DynamicResource PrimaryTextBrush}" Margin="25,35,0,10" FontSize="16" HorizontalAlignment="Left" VerticalAlignment="Top"/>
                             <TextBox x:Name="serverNameBox" Margin="370,30,0,0" TextWrapping="Wrap" Text="MyServer" VerticalAlignment="Top" Height="32"/>
                         </Grid>
                     </Border>
                     <Border Style="{StaticResource MagicBorder}">
                         <Grid>
-                            <Label Content="实例目录" HorizontalAlignment="Left" Style="{StaticResource BorderTitle}"/>
-                            <TextBlock Text="在此选择实例目录（用于安放服务器的相关文件）：" Foreground="{DynamicResource PrimaryTextBrush}" Margin="25,40,0,0" FontSize="16" HorizontalAlignment="Left" VerticalAlignment="Top"/>
+                            <Label Content="{Binding [SR_InstanceDir], Source={x:Static langs:LanguageManager.Instance}}" HorizontalAlignment="Left" Style="{StaticResource BorderTitle}"/>
+                            <TextBlock Text="{Binding [Page_CreateServer_InstanceDirLabel], Source={x:Static langs:LanguageManager.Instance}}" Foreground="{DynamicResource PrimaryTextBrush}" Margin="25,40,0,0" FontSize="16" HorizontalAlignment="Left" VerticalAlignment="Top"/>
                             <TextBox x:Name="txb6" Margin="25,70,60,0" VerticalAlignment="Top" MaxLines="1"/>
-                            <Button x:Name="a0003" Content="浏览" Margin="0,70,0,0" VerticalAlignment="Top" Click="a0003_Click" FontWeight="Normal" HorizontalAlignment="Right" Width="60"/>
+                            <Button x:Name="a0003" Content="{Binding [SR_Browse], Source={x:Static langs:LanguageManager.Instance}}" Margin="0,70,0,0" VerticalAlignment="Top" Click="a0003_Click" FontWeight="Normal" HorizontalAlignment="Right" MinWidth="60" Padding="10,0"/>
                             <Border Margin="25,105,0,5" Grid.Row="1" Style="{StaticResource BorderTipPrimary}">
-                                <TextBlock Text="选择提示：请不要选择桌面或磁盘根目录，否则会生成许多存储文件且会造成误删问题" HorizontalAlignment="Left"  VerticalAlignment="Top" FontSize="14"  />
+                                <TextBlock Text="{Binding [Page_CreateServer_DirSelectTip], Source={x:Static langs:LanguageManager.Instance}}" HorizontalAlignment="Left"  VerticalAlignment="Top" FontSize="14"  />
                             </Border>
                         </Grid>
                     </Border>
                     <Grid Margin="0,20,0,0">
-                        <Button x:Name="CustomModeDirReturn" Content="上一步" Margin="0,0,250,0" VerticalAlignment="Center" Width="150" Click="Return_Click" Height="48" FontSize="18" HorizontalAlignment="Center"/>
-                        <Button x:Name="CustomModeDirNext" Content="下一步" Style="{StaticResource ButtonPrimary}" Margin="200,0,0,0" VerticalAlignment="Center" Width="150" Click="CustomModeDirNext_Click" Height="48" FontSize="18" HorizontalAlignment="Center"/>
+                        <Button x:Name="CustomModeDirReturn" Content="{Binding [Page_CreateServer_PreviousStep], Source={x:Static langs:LanguageManager.Instance}}" Margin="0,0,250,0" VerticalAlignment="Center" MinWidth="150" Padding="10,0" Click="Return_Click" Height="48" FontSize="18" HorizontalAlignment="Center"/>
+                        <Button x:Name="CustomModeDirNext" Content="{Binding [Page_CreateServer_NextStep], Source={x:Static langs:LanguageManager.Instance}}" Style="{StaticResource ButtonPrimary}" Margin="200,0,0,0" VerticalAlignment="Center" MinWidth="150" Padding="10,0" Click="CustomModeDirNext_Click" Height="48" FontSize="18" HorizontalAlignment="Center"/>
                     </Grid>
                 </StackPanel>
             </TabItem>
@@ -146,18 +147,18 @@
                 <StackPanel>
                     <Border Style="{StaticResource MagicBorder}">
                         <Grid x:Name="javagrid">
-                            <Label Content="Java环境" Style="{StaticResource BorderTitle}"/>
-                            <TextBlock Text="在此选择一个Java环境" Foreground="{DynamicResource PrimaryTextBrush}" Margin="20,35,0,0" HorizontalAlignment="Left" VerticalAlignment="Top" FontSize="16"/>
-                            <RadioButton x:Name="usedownloadjv" Content="开服器下载（推荐）" IsChecked="True" Margin="20,70,0,0" VerticalAlignment="Top" HorizontalAlignment="Left" FontSize="14" Checked="usedownloadjv_Checked"/>
-                            <RadioButton x:Name="usecheckedjv" Content="电脑上的Java" Margin="20,110,0,0" VerticalAlignment="Top" HorizontalAlignment="Left" FontSize="14" Checked="usecheckedjv_Checked"/>
+                            <Label Content="{Binding [Page_CreateServer_JavaEnvironment], Source={x:Static langs:LanguageManager.Instance}}" Style="{StaticResource BorderTitle}"/>
+                            <TextBlock Text="{Binding [Page_CreateServer_SelectJavaEnv], Source={x:Static langs:LanguageManager.Instance}}" Foreground="{DynamicResource PrimaryTextBrush}" Margin="20,35,0,0" HorizontalAlignment="Left" VerticalAlignment="Top" FontSize="16"/>
+                            <RadioButton x:Name="usedownloadjv" Content="{Binding [Page_CreateServer_DownloadJavaRecommended], Source={x:Static langs:LanguageManager.Instance}}" IsChecked="True" Margin="20,70,0,0" VerticalAlignment="Top" HorizontalAlignment="Left" FontSize="14" Checked="usedownloadjv_Checked"/>
+                            <RadioButton x:Name="usecheckedjv" Content="{Binding [Page_CreateServer_LocalJava], Source={x:Static langs:LanguageManager.Instance}}" Margin="20,110,0,0" VerticalAlignment="Top" HorizontalAlignment="Left" FontSize="14" Checked="usecheckedjv_Checked"/>
                             <ComboBox x:Name="selectJavaComb" Margin="180,65,0,0" HorizontalAlignment="Left" VerticalAlignment="Top" Width="150" SelectedIndex="0"/>
-                            <RadioButton x:Name="usejvPath" Content="使用环境变量" HorizontalAlignment="Left" Margin="20,150,0,0" VerticalAlignment="Top" FontSize="14" Checked="usejvPath_Checked"/>
-                            <RadioButton x:Name="useJVself" Content="选择地址" Margin="20,190,0,0" VerticalAlignment="Top" Checked="useJVself_Checked" HorizontalAlignment="Left" FontSize="14"/>
+                            <RadioButton x:Name="usejvPath" Content="{Binding [SR_UseEnvVar], Source={x:Static langs:LanguageManager.Instance}}" HorizontalAlignment="Left" Margin="20,150,0,0" VerticalAlignment="Top" FontSize="14" Checked="usejvPath_Checked"/>
+                            <RadioButton x:Name="useJVself" Content="{Binding [Page_CreateServer_SelectPath], Source={x:Static langs:LanguageManager.Instance}}" Margin="20,190,0,0" VerticalAlignment="Top" Checked="useJVself_Checked" HorizontalAlignment="Left" FontSize="14"/>
                             <ComboBox x:Name="selectCheckedJavaComb" Margin="180,105,0,0" HorizontalAlignment="Left" VerticalAlignment="Top" Width="150"/>
-                            <Button x:Name="SearchJavaBtn" Content="点我检测" Margin="340,105,0,0" HorizontalAlignment="Left" VerticalAlignment="Top" Click="SearchJavaBtn_Click"/>
+                            <Button x:Name="SearchJavaBtn" Content="{Binding [Page_CreateServer_ClickToDetect], Source={x:Static langs:LanguageManager.Instance}}" Margin="340,105,0,0" HorizontalAlignment="Left" VerticalAlignment="Top" Click="SearchJavaBtn_Click"/>
                             <TextBox x:Name="txjava" Margin="115,185,60,0" VerticalAlignment="Top" IsEnabled="False" MaxLines="1"/>
-                            <Button x:Name="a0002_Copy" Content="浏览" IsEnabled="False" Margin="0,185,0,0" VerticalAlignment="Top" Width="60" FontWeight="Normal" Click="a0002_Copy_Click" HorizontalAlignment="Right"/>
-                            <RadioButton x:Name="usejvNull" Content="不使用Java (若服务端不依赖于Java，请选择此项)" HorizontalAlignment="Left" Margin="20,230,0,0" VerticalAlignment="Top" FontSize="14" Checked="usejvNull_Checked"/>
+                            <Button x:Name="a0002_Copy" Content="{Binding [SR_Browse], Source={x:Static langs:LanguageManager.Instance}}" IsEnabled="False" Margin="0,185,0,0" VerticalAlignment="Top" MinWidth="60" Padding="10,0" FontWeight="Normal" Click="a0002_Copy_Click" HorizontalAlignment="Right"/>
+                            <RadioButton x:Name="usejvNull" Content="{Binding [Page_CreateServer_NoJavaOption], Source={x:Static langs:LanguageManager.Instance}}" HorizontalAlignment="Left" Margin="20,230,0,0" VerticalAlignment="Top" FontSize="14" Checked="usejvNull_Checked"/>
                             <Grid HorizontalAlignment="Right" VerticalAlignment="Top">
                                 <Grid.RowDefinitions>
                                     <RowDefinition Height="Auto"/>
@@ -165,60 +166,60 @@
                                 </Grid.RowDefinitions>
                                 <Border Grid.Row="1" Style="{StaticResource BorderTipPrimary}">
                                     <StackPanel>
-                                        <TextBlock Text="帮助：如何选择Java？" FontSize="16" Foreground="{DynamicResource PrimaryTextBrush}" FontWeight="Bold" HorizontalAlignment="Center" Margin="0,0,0,5"/>
-                                        <TextBlock Text="1.12.2 以及更低版本：Java8" />
-                                        <TextBlock Text="1.13-1.16.5：Java8/Java11" />
-                                        <TextBlock Text="1.17/1.17.1：Java16" />
-                                        <TextBlock Text="1.18-1.20.4：Java17及以上" />
-                                        <TextBlock Text="1.20.5-1.21.11：Java21及以上" />
-                                        <TextBlock Text="26.1 及更高：Java25及以上" />
+                                        <TextBlock Text="{Binding [Page_CreateServer_JavaHelpTitle], Source={x:Static langs:LanguageManager.Instance}}" FontSize="16" Foreground="{DynamicResource PrimaryTextBrush}" FontWeight="Bold" HorizontalAlignment="Center" Margin="0,0,0,5"/>
+                                        <TextBlock Text="{Binding [Page_CreateServer_JavaHelpLine1], Source={x:Static langs:LanguageManager.Instance}}" />
+                                        <TextBlock Text="{Binding [Page_CreateServer_JavaHelpLine2], Source={x:Static langs:LanguageManager.Instance}}" />
+                                        <TextBlock Text="{Binding [Page_CreateServer_JavaHelpLine3], Source={x:Static langs:LanguageManager.Instance}}" />
+                                        <TextBlock Text="{Binding [Page_CreateServer_JavaHelpLine4], Source={x:Static langs:LanguageManager.Instance}}" />
+                                        <TextBlock Text="{Binding [Page_CreateServer_JavaHelpLine5], Source={x:Static langs:LanguageManager.Instance}}" />
+                                        <TextBlock Text="{Binding [Page_CreateServer_JavaHelpLine6], Source={x:Static langs:LanguageManager.Instance}}" />
                                     </StackPanel>
                                 </Border>
                             </Grid>
                         </Grid>
                     </Border>
                     <Grid Margin="0,20,0,0">
-                        <Button x:Name="CustomModeJavaReturn" Content="上一步" Margin="0,0,250,0" VerticalAlignment="Center" Width="150" Click="Return_Click" Height="48" FontSize="18" HorizontalAlignment="Center"/>
-                        <Button x:Name="CustomModeJavaNext" Content="下一步" Style="{StaticResource ButtonPrimary}" Margin="200,0,0,0" VerticalAlignment="Center" Width="150" Click="CustomModeJavaNext_Click" Height="48" FontSize="18" HorizontalAlignment="Center"/>
+                        <Button x:Name="CustomModeJavaReturn" Content="{Binding [Page_CreateServer_PreviousStep], Source={x:Static langs:LanguageManager.Instance}}" Margin="0,0,250,0" VerticalAlignment="Center" MinWidth="150" Padding="10,0" Click="Return_Click" Height="48" FontSize="18" HorizontalAlignment="Center"/>
+                        <Button x:Name="CustomModeJavaNext" Content="{Binding [Page_CreateServer_NextStep], Source={x:Static langs:LanguageManager.Instance}}" Style="{StaticResource ButtonPrimary}" Margin="200,0,0,0" VerticalAlignment="Center" MinWidth="150" Padding="10,0" Click="CustomModeJavaNext_Click" Height="48" FontSize="18" HorizontalAlignment="Center"/>
                     </Grid>
                 </StackPanel>
             </TabItem>
-            <TabItem x:Name="sserver" Header="服务端" IsEnabled="False" FontSize="14" Background="{DynamicResource SideMenuBrush}">
+            <TabItem x:Name="sserver" Header="{Binding [SR_ServerCore], Source={x:Static langs:LanguageManager.Instance}}" IsEnabled="False" FontSize="14" Background="{DynamicResource SideMenuBrush}">
                 <StackPanel>
                     <Border Style="{StaticResource MagicBorder}">
                         <Grid x:Name="servergrid">
-                            <Label Content="服务端" Style="{StaticResource BorderTitle}"/>
-                            <TextBlock Text="在此选择一个服务端核心" Foreground="{DynamicResource PrimaryTextBrush}" Margin="20,35,0,0" HorizontalAlignment="Left" VerticalAlignment="Top" FontSize="16" />
-                            <RadioButton x:Name="usedownloadserver" Content="使用开服器下载（推荐）" IsChecked="True" Margin="20,70,0,0" VerticalAlignment="Top" HorizontalAlignment="Left" FontSize="14" Checked="usedownloadserver_Checked"/>
-                            <RadioButton x:Name="useServerself" Content="备有服务端，选择地址" Margin="20,110,0,0" VerticalAlignment="Top" Checked="useServerself_Checked" HorizontalAlignment="Left" FontSize="14"/>
+                            <Label Content="{Binding [SR_ServerCore], Source={x:Static langs:LanguageManager.Instance}}" Style="{StaticResource BorderTitle}"/>
+                            <TextBlock Text="{Binding [Page_CreateServer_SelectServerCore], Source={x:Static langs:LanguageManager.Instance}}" Foreground="{DynamicResource PrimaryTextBrush}" Margin="20,35,0,0" HorizontalAlignment="Left" VerticalAlignment="Top" FontSize="16" />
+                            <RadioButton x:Name="usedownloadserver" Content="{Binding [Page_CreateServer_DownloadServerRecommended], Source={x:Static langs:LanguageManager.Instance}}" IsChecked="True" Margin="20,70,0,0" VerticalAlignment="Top" HorizontalAlignment="Left" FontSize="14" Checked="usedownloadserver_Checked"/>
+                            <RadioButton x:Name="useServerself" Content="{Binding [Page_CreateServer_SelectServerPath], Source={x:Static langs:LanguageManager.Instance}}" Margin="20,110,0,0" VerticalAlignment="Top" Checked="useServerself_Checked" HorizontalAlignment="Left" FontSize="14"/>
                             <TextBox x:Name="txb3" Margin="20,135,60,0" VerticalAlignment="Top" MaxLines="1" FontSize="14" IsEnabled="False"/>
-                            <Button x:Name="a0002" Content="浏览" IsEnabled="False" Margin="0,135,0,0" Width="60" Click="a0002_Click" FontWeight="Normal" HorizontalAlignment="Right" VerticalAlignment="Top"/>
-                            <RadioButton x:Name="useCustomCmd" Content="自定义启动指令" Margin="20,175,0,0" VerticalAlignment="Top" Checked="useCustomCmd_Checked" HorizontalAlignment="Left" FontSize="14"/>
+                            <Button x:Name="a0002" Content="{Binding [SR_Browse], Source={x:Static langs:LanguageManager.Instance}}" IsEnabled="False" Margin="0,135,0,0" MinWidth="60" Padding="10,0" Click="a0002_Click" FontWeight="Normal" HorizontalAlignment="Right" VerticalAlignment="Top"/>
+                            <RadioButton x:Name="useCustomCmd" Content="{Binding [Page_CreateServer_CustomCmd], Source={x:Static langs:LanguageManager.Instance}}" Margin="20,175,0,0" VerticalAlignment="Top" Checked="useCustomCmd_Checked" HorizontalAlignment="Left" FontSize="14"/>
                             <TextBox x:Name="textCustomCmd" Margin="20,200,60,0" VerticalAlignment="Top" MaxLines="1" FontSize="14" IsEnabled="False"/>
-                            <RadioButton x:Name="useBedrockServer" Content="使用基岩版官方服务端" Margin="20,240,0,0" VerticalAlignment="Top" Checked="useBedrockServer_Checked" HorizontalAlignment="Left" FontSize="14"/>
+                            <RadioButton x:Name="useBedrockServer" Content="{Binding [Page_CreateServer_UseBedrockOfficial], Source={x:Static langs:LanguageManager.Instance}}" Margin="20,240,0,0" VerticalAlignment="Top" Checked="useBedrockServer_Checked" HorizontalAlignment="Left" FontSize="14"/>
                             <ComboBox x:Name="comboBedrockVersion" Margin="20,265,60,0" VerticalAlignment="Top" FontSize="14" IsEnabled="False"/>
                         </Grid>
                     </Border>
                     <Grid Margin="0,20,0,0">
-                        <Button x:Name="CustomModeServerCoreReturn" Content="上一步" Margin="0,0,250,0" VerticalAlignment="Center" Width="150" Click="Return_Click" Height="48" FontSize="18" HorizontalAlignment="Center"/>
-                        <Button x:Name="CustomModeServerCoreNext" Content="下一步" Style="{StaticResource ButtonPrimary}" Margin="200,0,0,0" VerticalAlignment="Center" Width="150" Click="CustomModeServerCoreNext_Click" Height="48" FontSize="18" HorizontalAlignment="Center"/>
+                        <Button x:Name="CustomModeServerCoreReturn" Content="{Binding [Page_CreateServer_PreviousStep], Source={x:Static langs:LanguageManager.Instance}}" Margin="0,0,250,0" VerticalAlignment="Center" MinWidth="150" Padding="10,0" Click="Return_Click" Height="48" FontSize="18" HorizontalAlignment="Center"/>
+                        <Button x:Name="CustomModeServerCoreNext" Content="{Binding [Page_CreateServer_NextStep], Source={x:Static langs:LanguageManager.Instance}}" Style="{StaticResource ButtonPrimary}" Margin="200,0,0,0" VerticalAlignment="Center" MinWidth="150" Padding="10,0" Click="CustomModeServerCoreNext_Click" Height="48" FontSize="18" HorizontalAlignment="Center"/>
                     </Grid>
                 </StackPanel>
             </TabItem>
-            <TabItem x:Name="sJVM" Header="开服内存及启动参数" IsEnabled="False" FontSize="14" Background="{DynamicResource SideMenuBrush}">
+            <TabItem x:Name="sJVM" Header="{Binding [Page_CreateServer_MemoryAndArgs], Source={x:Static langs:LanguageManager.Instance}}" IsEnabled="False" FontSize="14" Background="{DynamicResource SideMenuBrush}">
                 <Grid>
                     <ScrollViewer>
                         <StackPanel>
                             <Border Style="{StaticResource MagicBorder}">
                                 <Grid>
-                                    <Label Content="开服内存" Style="{StaticResource BorderTitle}"/>
-                                    <TextBlock Text="在此设置开服需要分配的内存" Foreground="{DynamicResource PrimaryTextBrush}" HorizontalAlignment="Left" VerticalAlignment="Top" Margin="20,35,0,0" FontSize="16" />
-                                    <RadioButton x:Name="usedefault" Content="自动分配" Margin="20,70,0,0" VerticalAlignment="Top" IsChecked="True" Checked="usedefault_Checked" HorizontalAlignment="Left"/>
-                                    <RadioButton x:Name="useJVM" Content="手动设置" Margin="20,110,0,0" VerticalAlignment="Top" Checked="useJVM_Checked" HorizontalAlignment="Left"/>
+                                    <Label Content="{Binding [SR_ServerMemory], Source={x:Static langs:LanguageManager.Instance}}" Style="{StaticResource BorderTitle}"/>
+                                    <TextBlock Text="{Binding [Page_CreateServer_SetMemory], Source={x:Static langs:LanguageManager.Instance}}" Foreground="{DynamicResource PrimaryTextBrush}" HorizontalAlignment="Left" VerticalAlignment="Top" Margin="20,35,0,0" FontSize="16" />
+                                    <RadioButton x:Name="usedefault" Content="{Binding [SR_AutoAlloc], Source={x:Static langs:LanguageManager.Instance}}" Margin="20,70,0,0" VerticalAlignment="Top" IsChecked="True" Checked="usedefault_Checked" HorizontalAlignment="Left"/>
+                                    <RadioButton x:Name="useJVM" Content="{Binding [Page_CreateServer_ManualSet], Source={x:Static langs:LanguageManager.Instance}}" Margin="20,110,0,0" VerticalAlignment="Top" Checked="useJVM_Checked" HorizontalAlignment="Left"/>
                                     <TextBox x:Name="txb4" HorizontalAlignment="Left" Margin="170,105,0,0" TextWrapping="Wrap" VerticalAlignment="Top" Width="120" IsEnabled="False" FontFamily="Microsoft YaHei UI"/>
                                     <TextBox x:Name="txb5" HorizontalAlignment="Left" Margin="403,105,0,0" TextWrapping="Wrap" VerticalAlignment="Top" Width="120" IsEnabled="False" FontFamily="Microsoft YaHei UI"/>
-                                    <Label Content="最小" HorizontalAlignment="Left" Margin="120,105,0,0" VerticalAlignment="Top" FontSize="14" Background="{x:Null}" BorderBrush="{x:Null}"/>
-                                    <Label Content="最大" HorizontalAlignment="Left" Margin="353,105,0,0" VerticalAlignment="Top" FontSize="14" Background="{x:Null}" BorderBrush="{x:Null}"/>
+                                    <Label Content="{Binding [Page_CreateServer_MinLabel], Source={x:Static langs:LanguageManager.Instance}}" HorizontalAlignment="Left" Margin="120,105,0,0" VerticalAlignment="Top" FontSize="14" Background="{x:Null}" BorderBrush="{x:Null}"/>
+                                    <Label Content="{Binding [Page_CreateServer_MaxLabel], Source={x:Static langs:LanguageManager.Instance}}" HorizontalAlignment="Left" Margin="353,105,0,0" VerticalAlignment="Top" FontSize="14" Background="{x:Null}" BorderBrush="{x:Null}"/>
                                     <ComboBox x:Name="XmsUnit" HorizontalAlignment="Left" SelectedIndex="0" Margin="290,105,0,0" VerticalAlignment="Top" FontSize="14" >
                                         <ComboBoxItem Content="M"/>
                                         <ComboBoxItem Content="G"/>
@@ -228,42 +229,42 @@
                                         <ComboBoxItem Content="G"/>
                                     </ComboBox>
                                     <Border Margin="15,138,0,0" Grid.Row="1" Style="{StaticResource BorderTipPrimary}">
-                                        <TextBlock Text="开服内存  手动设置提示：内存分配建议为电脑运行内存的80%    单位换算：1GB=1024MB" HorizontalAlignment="Left"  VerticalAlignment="Top" FontSize="14" />
+                                        <TextBlock Text="{Binding [Page_CreateServer_MemManualTip], Source={x:Static langs:LanguageManager.Instance}}" HorizontalAlignment="Left"  VerticalAlignment="Top" FontSize="14" />
                                     </Border>
                                 </Grid>
                             </Border>
                             <Border Style="{StaticResource MagicBorder}">
                                 <StackPanel>
-                                    <Label Content="启动参数(可选)" Style="{StaticResource BorderTitle}"/>
+                                    <Label Content="{Binding [Page_CreateServer_LaunchArgsOptional], Source={x:Static langs:LanguageManager.Instance}}" Style="{StaticResource BorderTitle}"/>
                                     <StackPanel Orientation="Horizontal" Margin="10">
-                                        <CheckBox x:Name="usebasicfastJvm" Content="基本优化参数（Java11及以上勿选）" Margin="10,0,0,0" VerticalAlignment="Top" Click="usebasicfastJvm_Click"/>
-                                        <CheckBox x:Name="usefastJvm" Content="高级优化参数（需分配内存为4G）" Margin="20,0,188,0" VerticalAlignment="Top" Click="usefastJvm_Click"/>
+                                        <CheckBox x:Name="usebasicfastJvm" Content="{Binding [Page_CreateServer_BasicOptArgs], Source={x:Static langs:LanguageManager.Instance}}" Margin="10,0,0,0" VerticalAlignment="Top" Click="usebasicfastJvm_Click"/>
+                                        <CheckBox x:Name="usefastJvm" Content="{Binding [Page_CreateServer_AdvOptArgs], Source={x:Static langs:LanguageManager.Instance}}" Margin="20,0,188,0" VerticalAlignment="Top" Click="usefastJvm_Click"/>
                                     </StackPanel>
                                     <TextBox x:Name="txb7" Margin="20,0,0,0" TextWrapping="Wrap" AcceptsReturn="True" AutoWordSelection="True" VerticalAlignment="Top"/>
-                                   
+
                                     <Border Margin="15,5,0,0" Style="{StaticResource BorderTipDanger}" >
-                                        <TextBlock Text="非必要勿选择或填写此栏内容，如出现无法开服的情况请删除启动参数" HorizontalAlignment="Left"  VerticalAlignment="Top" FontSize="14" />
+                                        <TextBlock Text="{Binding [Page_CreateServer_ArgsWarning], Source={x:Static langs:LanguageManager.Instance}}" HorizontalAlignment="Left"  VerticalAlignment="Top" FontSize="14" />
                                     </Border>
                                 </StackPanel>
                             </Border>
                             <Border Style="{StaticResource MagicBorder}">
                                 <StackPanel>
-                                    <Label Content="配置外置登录(可选)" Style="{StaticResource BorderTitle}"/>
-                                    <Label  Content="请填入外置登录验证服务器地址(Yggdrasil API):" Margin="10,0,0,0" HorizontalAlignment="Left"  VerticalAlignment="Top" FontSize="14" Background="{x:Null}" BorderBrush="{x:Null}" />
+                                    <Label Content="{Binding [SR_YggdrasilConfig], Source={x:Static langs:LanguageManager.Instance}}" Style="{StaticResource BorderTitle}"/>
+                                    <Label  Content="{Binding [Page_CreateServer_YggApiLabel], Source={x:Static langs:LanguageManager.Instance}}" Margin="10,0,0,0" HorizontalAlignment="Left"  VerticalAlignment="Top" FontSize="14" Background="{x:Null}" BorderBrush="{x:Null}" />
                                     <TextBox x:Name="txb_ygg_api" Margin="20,0,0,0" TextWrapping="Wrap" AcceptsReturn="True" AutoWordSelection="True" VerticalAlignment="Top"/>
                                     <StackPanel Margin="20,5,0,0" Orientation="Horizontal">
-                                        <Button Content="设置为MSL统一身份认证(MSL Skin)" x:Name="YggMSL" Margin="0,0,5,0" Click="YggMSL_Click"/>
-                                        <Button Content="设置为Littleskin" x:Name="YggLittleskin" Margin="0,0,5,0" Click="YggLittleskin_Click"/>
-                                        <Button Content="外置登录设置教程" x:Name="YggDocs" Margin="0,0,5,0" Click="YggDocs_Click"/>
+                                        <Button Content="{Binding [SR_SetMSLAuth], Source={x:Static langs:LanguageManager.Instance}}" x:Name="YggMSL" Margin="0,0,5,0" Click="YggMSL_Click"/>
+                                        <Button Content="{Binding [SR_SetLittleskin], Source={x:Static langs:LanguageManager.Instance}}" x:Name="YggLittleskin" Margin="0,0,5,0" Click="YggLittleskin_Click"/>
+                                        <Button Content="{Binding [SR_YggDocs], Source={x:Static langs:LanguageManager.Instance}}" x:Name="YggDocs" Margin="0,0,5,0" Click="YggDocs_Click"/>
                                     </StackPanel>
                                     <Border Margin="15,5,0,0" Style="{StaticResource BorderTipInfo}" >
-                                        <TextBlock Text="填写登录服务器地址后MSL将在开服时为您自动接入外置登录验证，您不需要额外操作。&#13;如果您不知道这是什么，请您留空。" HorizontalAlignment="Left"  VerticalAlignment="Top" FontSize="14" />
+                                        <TextBlock Text="{Binding [SR_YggHint], Source={x:Static langs:LanguageManager.Instance}}" HorizontalAlignment="Left"  VerticalAlignment="Top" FontSize="14" />
                                     </Border>
                                 </StackPanel>
                             </Border>
                             <Grid Margin="10">
-                                <Button x:Name="return3" Content="上一步" Margin="0,0,250,0" VerticalAlignment="Center" Width="150" Click="Return_Click" Height="48" FontSize="18" HorizontalAlignment="Center"/>
-                                <Button x:Name="CustomModeFinallyNext" Content="下一步" Style="{StaticResource ButtonPrimary}" Margin="200,0,0,0" VerticalAlignment="Center" Width="150" Click="CustomModeFinallyNext_Click" Height="48" FontSize="18" HorizontalAlignment="Center"/>
+                                <Button x:Name="return3" Content="{Binding [Page_CreateServer_PreviousStep], Source={x:Static langs:LanguageManager.Instance}}" Margin="0,0,250,0" VerticalAlignment="Center" MinWidth="150" Padding="10,0" Click="Return_Click" Height="48" FontSize="18" HorizontalAlignment="Center"/>
+                                <Button x:Name="CustomModeFinallyNext" Content="{Binding [Page_CreateServer_NextStep], Source={x:Static langs:LanguageManager.Instance}}" Style="{StaticResource ButtonPrimary}" Margin="200,0,0,0" VerticalAlignment="Center" MinWidth="150" Padding="10,0" Click="CustomModeFinallyNext_Click" Height="48" FontSize="18" HorizontalAlignment="Center"/>
                             </Grid>
                         </StackPanel>
                     </ScrollViewer>
@@ -279,15 +280,15 @@
                         <RowDefinition/>
                         <RowDefinition Height="50"/>
                     </Grid.RowDefinitions>
-                    <Label Grid.Row="0" Content="请选择一个终端模式以继续：" Style="{StaticResource BorderTitle}" Margin="10,10,3,3"/>
+                    <Label Grid.Row="0" Content="{Binding [Page_CreateServer_SelectTerminalMode], Source={x:Static langs:LanguageManager.Instance}}" Style="{StaticResource BorderTitle}" Margin="10,10,3,3"/>
                     <Grid Grid.Row="1">
                         <Grid.ColumnDefinitions>
                             <ColumnDefinition/>
                             <ColumnDefinition Width="Auto"/>
                         </Grid.ColumnDefinitions>
                         <StackPanel Grid.Column="0" VerticalAlignment="Center">
-                            <RadioButton x:Name="TraditionModeBtn" Content="不启用指令补全" Foreground="{DynamicResource DarkPrimaryBrush}" FontSize="16" VerticalAlignment="Center" HorizontalAlignment="Left" Margin="10" IsChecked="True" Checked="TraditionModeBtn_Checked"/>
-                            <TextBlock Text="传统模式：传统的服务器启动模式，缺少部分真实终端特性，无法使用Tab键补全指令。但比较稳定，可切换输入和输出编码。" Foreground="{DynamicResource PrimaryTextBrush}" FontSize="14" VerticalAlignment="Center" TextWrapping="Wrap" Margin="10"/>
+                            <RadioButton x:Name="TraditionModeBtn" Content="{Binding [Page_CreateServer_NoCmdCompletion], Source={x:Static langs:LanguageManager.Instance}}" Foreground="{DynamicResource DarkPrimaryBrush}" FontSize="16" VerticalAlignment="Center" HorizontalAlignment="Left" Margin="10" IsChecked="True" Checked="TraditionModeBtn_Checked"/>
+                            <TextBlock Text="{Binding [Page_CreateServer_TraditionalModeDesc], Source={x:Static langs:LanguageManager.Instance}}" Foreground="{DynamicResource PrimaryTextBrush}" FontSize="14" VerticalAlignment="Center" TextWrapping="Wrap" Margin="10"/>
                         </StackPanel>
                         <Image Grid.Column="1" Source="/images/TraditionTerm.png" Margin="10" HorizontalAlignment="Right" MaxWidth="350"/>
                     </Grid>
@@ -297,14 +298,14 @@
                             <ColumnDefinition Width="Auto"/>
                         </Grid.ColumnDefinitions>
                         <StackPanel Grid.Column="0" VerticalAlignment="Center">
-                            <RadioButton x:Name="ConptyModeBtn" Content="启用指令补全（测试中）" Foreground="{DynamicResource DarkPrimaryBrush}" FontSize="16" VerticalAlignment="Center" HorizontalAlignment="Left" Margin="10" Checked="ConptyModeBtn_Checked"/>
-                            <TextBlock Text="伪终端（ConPty）模式：目前可用Tab键指令补全功能，且还在测试中，若出现问题请及时关闭此功能。" Foreground="{DynamicResource PrimaryTextBrush}" FontSize="14" VerticalAlignment="Center" TextWrapping="Wrap" Margin="10"/>
+                            <RadioButton x:Name="ConptyModeBtn" Content="{Binding [Page_CreateServer_EnableCmdCompletion], Source={x:Static langs:LanguageManager.Instance}}" Foreground="{DynamicResource DarkPrimaryBrush}" FontSize="16" VerticalAlignment="Center" HorizontalAlignment="Left" Margin="10" Checked="ConptyModeBtn_Checked"/>
+                            <TextBlock Text="{Binding [Page_CreateServer_ConPtyModeDesc], Source={x:Static langs:LanguageManager.Instance}}" Foreground="{DynamicResource PrimaryTextBrush}" FontSize="14" VerticalAlignment="Center" TextWrapping="Wrap" Margin="10"/>
                         </StackPanel>
                         <Image Grid.Column="1" Source="/images/ConPtyTerm.png" Margin="10" HorizontalAlignment="Right" MaxWidth="350"/>
                     </Grid>
                     <Grid Grid.Row="3"  VerticalAlignment="Bottom">
-                        <Button Content="上一步" Width="150" Click="Return_Click" Height="45" FontSize="18" Margin="0,0,250,0"/>
-                        <Button Content="完成" Style="{StaticResource ButtonPrimary}" Width="150" Click="DoneBtn_Click" Height="45" FontSize="18" Margin="250,0,0,0"/>
+                        <Button Content="{Binding [Page_CreateServer_PreviousStep], Source={x:Static langs:LanguageManager.Instance}}" MinWidth="150" Padding="10,0" Click="Return_Click" Height="45" FontSize="18" Margin="0,0,250,0"/>
+                        <Button Content="{Binding [Done], Source={x:Static langs:LanguageManager.Instance}}" Style="{StaticResource ButtonPrimary}" MinWidth="150" Padding="10,0" Click="DoneBtn_Click" Height="45" FontSize="18" Margin="250,0,0,0"/>
                     </Grid>
                 </Grid>
             </Border>

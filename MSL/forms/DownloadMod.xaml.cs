@@ -4,6 +4,7 @@ using CurseForge.APIClient.Models.Mods;
 using Modrinth;
 using Modrinth.Models;
 using MSL.controls;
+using MSL.langs;
 using MSL.utils;
 using System;
 using System.Collections.Generic;
@@ -107,7 +108,7 @@ namespace MSL
                     {
                         list.Add(new DM_ModsInfo(featuredMod.Id.ToString(), featuredMod.Logo.ThumbnailUrl, featuredMod.Name, featuredMod.Links.WebsiteUrl.ToString()));
                     }
-                    NowPageLabel.Content = "精选";
+                    NowPageLabel.Content = Lang.Form_DownloadMod_Featured;
                 }
                 else if (LoadType == 1)
                 {
@@ -122,7 +123,7 @@ namespace MSL
             }
             catch (Exception ex)
             {
-                MagicShow.ShowMsgDialog(FatherWindow, "获取模组/整合包失败！请重试或尝试连接代理后再试！\n" + ex.Message, "错误");
+                MagicShow.ShowMsgDialog(FatherWindow, Lang.Form_DownloadMod_FetchFailed + ex.Message, "错误");
             }
         }
 
@@ -204,7 +205,7 @@ namespace MSL
             }
             catch (Exception ex)
             {
-                MagicShow.ShowMsgDialog(FatherWindow, "获取模组/整合包失败！请重试或尝试连接代理后再试！\n" + ex.Message, "错误");
+                MagicShow.ShowMsgDialog(FatherWindow, Lang.Form_DownloadMod_FetchFailed + ex.Message, "错误");
             }
         }
 
@@ -242,7 +243,7 @@ namespace MSL
             }
             catch (Exception ex)
             {
-                MagicShow.ShowMsgDialog(FatherWindow, "获取模组/整合包失败！请重试或尝试连接代理后再试！\n" + ex.Message, "错误");
+                MagicShow.ShowMsgDialog(FatherWindow, Lang.Form_DownloadMod_FetchFailed + ex.Message, "错误");
             }
         }
 
@@ -292,7 +293,7 @@ namespace MSL
             }
             catch (Exception ex)
             {
-                MagicShow.ShowMsgDialog(FatherWindow, "获取模组/整合包失败！请重试或尝试连接代理后再试！\n" + ex.Message, "错误");
+                MagicShow.ShowMsgDialog(FatherWindow, Lang.Form_DownloadMod_FetchFailed + ex.Message, "错误");
             }
         }
 
@@ -320,7 +321,7 @@ namespace MSL
             }
             catch (Exception ex)
             {
-                MagicShow.ShowMsgDialog(FatherWindow, "搜索失败！请重试或尝试连接代理后再试！\n" + ex.Message, "错误");
+                MagicShow.ShowMsgDialog(FatherWindow, Lang.Form_DownloadMod_SearchFailed + ex.Message, "错误");
             }
         }
 
@@ -335,7 +336,7 @@ namespace MSL
             try
             {
                 int nowPage;
-                if (NowPageLabel.Content.ToString() == "精选")
+                if (NowPageLabel.Content.ToString() == Lang.Form_DownloadMod_Featured)
                 {
                     nowPage = 0;
                 }
@@ -367,7 +368,7 @@ namespace MSL
             }
             catch (Exception ex)
             {
-                MagicShow.ShowMsgDialog(FatherWindow, "加载失败！请重试或尝试连接代理后再试！\n" + ex.Message, "错误");
+                MagicShow.ShowMsgDialog(FatherWindow, Lang.Form_DownloadMod_LoadFailed + ex.Message, "错误");
             }
         }
 
@@ -376,7 +377,7 @@ namespace MSL
             try
             {
                 int nowPage;
-                if (NowPageLabel.Content.ToString() == "精选")
+                if (NowPageLabel.Content.ToString() == Lang.Form_DownloadMod_Featured)
                 {
                     nowPage = 0;
                 }
@@ -404,7 +405,7 @@ namespace MSL
             }
             catch (Exception ex)
             {
-                MagicShow.ShowMsgDialog(FatherWindow, "加载失败！请重试或尝试连接代理后再试！\n" + ex.Message, "错误");
+                MagicShow.ShowMsgDialog(FatherWindow, Lang.Form_DownloadMod_LoadFailed + ex.Message, "错误");
             }
         }
 
@@ -418,7 +419,7 @@ namespace MSL
 
             // 获取用户是否仅展示适用于服务器的整合包文件
             if (LoadType == 1 && await MagicShow.ShowMsgDialogAsync(FatherWindow,
-                "是否仅展示适用于服务器的整合包文件？\n注意：如果不使用服务器专用包开服，可能会出现无法开服/崩溃的问题！", "询问", true) == true)
+                Lang.Form_DownloadMod_ServerPackConfirm, "询问", true) == true)
             {
                 onlyShowServerPack = true;
             }
@@ -512,8 +513,8 @@ namespace MSL
         private async Task ModInfo_Modrinth(DM_ModsInfo info,string MCVersion = "0")
         {
             var modInfo = await ModrinthApiClient.Project.GetAsync(info.ID);
-            ModInfoLoadingProcess.Content = "加载中";
-            VerFilterCombo.Items.Add("全部");
+            ModInfoLoadingProcess.Content = Lang.Form_DownloadMod_Loading;
+            VerFilterCombo.Items.Add(Lang.Form_DownloadMod_All);
             VerFilterCombo.SelectedIndex = 0;
             foreach (var gameVersion in modInfo.GameVersions.Reverse())
             {
@@ -659,7 +660,7 @@ namespace MSL
         private void VerFilter_SelectionChanged(object sender, System.Windows.Controls.SelectionChangedEventArgs e)
         {
             if (VerFilterCombo.Items.Count == 0) return;
-            if (VerFilterCombo.SelectedItem.ToString() == "全部")
+            if (VerFilterCombo.SelectedItem.ToString() == Lang.Form_DownloadMod_All)
             {
                 foreach (DM_ModInfo item in ModVerList.Items)
                 {
@@ -719,7 +720,7 @@ namespace MSL
                 LogHelper.Write.Info("[下载资源页]正在从原版服务端获取 MC 版本列表");
                 MinecraftVersionTypeBox.Items.Clear();
                 var mcVersions = await HttpService.GetApiContentAsync("mirrors/vanilla");
-                MinecraftVersionTypeBox.Items.Add("全部");
+                MinecraftVersionTypeBox.Items.Add(Lang.Form_DownloadMod_All);
                 foreach (var mcVersion in mcVersions["data"]["versions"])
                 {
                     MinecraftVersionTypeBox.Items.Add(mcVersion.ToString());
@@ -728,7 +729,7 @@ namespace MSL
             }
             catch (Exception ex) {
                 MinecraftVersionTypeBox.Items.Clear();
-                MinecraftVersionTypeBox.Items.Add("全部");
+                MinecraftVersionTypeBox.Items.Add(Lang.Form_DownloadMod_All);
                 MinecraftVersionTypeBox.SelectedIndex = 0;
                 LogHelper.Write.Error("[下载资源页]获取 MC 版本列表失败" + ex.ToString());
             }

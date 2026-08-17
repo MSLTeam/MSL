@@ -1,5 +1,6 @@
 ﻿using MSL.utils;
 using MSL.utils.Config;
+using MSL.langs;
 using Newtonsoft.Json.Linq;
 using System;
 using System.IO;
@@ -141,7 +142,7 @@ namespace MSL.pages
                 }
                 else
                 {
-                    RenderContentToPanel(noticeStackPanel, "获取公告失败...");
+                    RenderContentToPanel(noticeStackPanel, Lang.Page_Home_NoticeFailed);
                 }
 
                 // 处理 recommendations
@@ -228,7 +229,7 @@ namespace MSL.pages
                     await MagicShow.ShowMsgDialogAsync(
                         _window: Window.GetWindow(this),
                         text: "",
-                        title: "公告",
+                        title: Lang.Page_Home_Notice,
                         uIElement: contentPanel
                     );
                 });
@@ -490,7 +491,7 @@ namespace MSL.pages
             {
                 if (startServerDropdown.SelectedIndex == -1)
                 {
-                    selectedItemTextBlock.Text = "创建一个新的服务器";
+                    selectedItemTextBlock.Text = Lang.Page_Home_CreateServer;
                 }
                 else
                 {

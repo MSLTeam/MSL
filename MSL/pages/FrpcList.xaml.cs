@@ -1,4 +1,5 @@
-﻿using MSL.pages.frpProviders.MSLFrp;
+﻿using MSL.langs;
+using MSL.pages.frpProviders.MSLFrp;
 using MSL.utils;
 using Newtonsoft.Json.Linq;
 using System;
@@ -73,7 +74,7 @@ namespace MSL.pages
                 }
                 else
                 {
-                    frplist.Add(new FrpcInfo { ID = key, Name = $"[{key}] 未命名的隧道" });
+                    frplist.Add(new FrpcInfo { ID = key, Name = $"[{key}] {Lang.Page_FrpcList_UnnamedTunnel}" });
                 }
             }
         }
@@ -107,7 +108,7 @@ namespace MSL.pages
             {
                 NonClientAreaBackground = (Brush)FindResource("BackgroundBrush"),
                 Background = (Brush)FindResource("BackgroundBrush"),
-                Title = "MSL用户中心 - MSLFrp信息",
+                Title = Lang.Page_FrpcList_MslUserCenter,
                 MinHeight = 450,
                 MinWidth = 750,
                 Height = 450,
@@ -144,7 +145,7 @@ namespace MSL.pages
             {
                 if (RunningFrpc.Contains(int.Parse(selectedTunnel.ID)))
                 {
-                    MagicShow.ShowMsgDialog(Window.GetWindow(this), "该映射正在运行中，请先关闭！", "提示");
+                    MagicShow.ShowMsgDialog(Window.GetWindow(this), Lang.Page_FrpcList_MappingRunning, Lang.Tip);
                     return;
                 }
                 JObject keyValuePairs = JObject.Parse(File.ReadAllText(Path.Combine("MSL", "frp", "config.json")));
