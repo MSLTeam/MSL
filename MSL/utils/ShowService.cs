@@ -1,7 +1,9 @@
-﻿using HandyControl.Controls;
+using HandyControl.Controls;
 using HandyControl.Tools;
 using MSL.controls;
+using MSL.controls.dialogs;
 using System;
+using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
 using System.Windows;
@@ -90,6 +92,23 @@ namespace MSL.utils
             MagicDialog MagicDialog = new MagicDialog();
             string _ret = await MagicDialog.ShowInpputDialog(_window, dialogText, textboxText, passwordMode);
             return _ret;
+        }
+
+        /// <summary>
+        /// 显示配置项选择窗口（独立窗口，可大于主程序窗口；用于保存配置预设：默认全选，可手动勾选；预设名称在第一步输入）
+        /// </summary>
+        /// <param name="_window">父窗体</param>
+        /// <param name="allValues">全部配置键值对</param>
+        /// <param name="descriptions">配置项说明（key -> 说明文字，可选，显示在每项下方）</param>
+        /// <returns>窗口实例（读取 SelectedValues，取消时为 null）</returns>
+        public static SelectConfigPresetDialog ShowSelectConfigPreset(Window _window, Dictionary<string, string> allValues, Dictionary<string, string> descriptions = null)
+        {
+            SelectConfigPresetDialog selectDialog = new SelectConfigPresetDialog(allValues, descriptions)
+            {
+                Owner = _window
+            };
+            selectDialog.ShowDialog();
+            return selectDialog;
         }
 
         public static async Task<string[]> ShowInstallForge(Window _window, string installPath, string forgeFileName, string javaPath)

@@ -1,6 +1,8 @@
 using HandyControl.Controls;
 using Microsoft.Win32;
+using MSL.controls.dialogs;
 using MSL.utils;
+using MSL.utils.Config;
 using System;
 using System.Collections.Generic;
 using System.IO;
@@ -25,12 +27,33 @@ namespace MSL.controls.ctrls_serverrunner
             FatherControl = fatherControl;
             FatherService= fatherService;
             Rserverbase = serverBase;
+            RefreshPresetComboBox();
         }
 
         private readonly ServerRunner FatherControl;
         private readonly MCServerService FatherService;
         private readonly string Rserverbase;
         private Dictionary<string, TextBox> configTextBoxes = new Dictionary<string, TextBox>();
+        private readonly List<ServerPropertiesPreset> presetCache = new List<ServerPropertiesPreset>();
+
+        /// <summary>
+        /// 常用配置项的中文说明（显示在配置项下方的"注：..."，主界面与选择预设对话框共用）
+        /// </summary>
+        private readonly Dictionary<string, string> commonConfigDescs = new Dictionary<string, string>
+        {
+            { "online-mode", "注：正版验证，若开启（true），盗版/离线用户将无法进入该服务器，关闭请输入false" },
+            { "gamemode", "注：游戏模式，不同版本改法不一致，具体可参照上面的表格" },
+            { "difficulty", "注：游戏难度，不同版本改法不一致，具体可参照上面的表格" },
+            { "max-players", "注：最大玩家数，在此输入数字来改变服务器最大人数" },
+            { "server-port", "注：服务器端口，非必要无需更改" },
+            { "server-ip", "注：绑定服务器ip，如果你不知道这是什么，请不要随意在这里填写东西！这里并不能自定义您的服务器地址！" },
+            { "enable-command-block", "注：启用命令方块，若开启(true)，服务器可使用命令方块，关闭请输入false" },
+            { "view-distance", "注：视距，和游戏内的渲染距离意思相近，设置过大会影响服务器性能" },
+            { "pvp", "注：PVP模式，若开启（true），玩家间可互相伤害，关闭请输入false" },
+            { "level-name", "注：世界名称，默认为world，非必要无需更改" },
+            { "motd", "注：服务器MOTD，服务器列表中显示的服务器简介" },
+            { "allow-flight", "注：允许飞行（若使用喷气背包/鞘翅飞行时被踢出服务器，请将这里设置为true）" },
+        };
 
         #region 核心函数
 
@@ -179,6 +202,244 @@ namespace MSL.controls.ctrls_serverrunner
         }
         #endregion
 
+        #region 配置预设
+
+        /// <summary>
+        /// 刷新预设下拉框（预设全局共享，所有服务器可见）
+        /// </summary>
+        /// <param name="selectName">刷新后要选中的预设名，为null时尽量保持原选择</param>
+        private void RefreshPresetComboBox(string selectName = null)
+        {
+            string oldSelected = presetComboBox.SelectedItem as string;
+
+            presetCache.Clear();
+            presetCache.AddRange(ServerPropertiesPresetManager.LoadAll());
+
+            presetComboBox.Items.Clear();
+            foreach (var preset in presetCache.OrderBy(p => p.Name))
+            {
+                presetComboBox.Items.Add(preset.Name);
+            }
+
+            string target = selectName ?? oldSelected;
+            if (!string.IsNullOrEmpty(target) && presetComboBox.Items.Contains(target))
+            {
+                presetComboBox.SelectedItem = target;
+            }
+            UpdatePresetButtons();
+        }
+
+        /// <summary>
+        /// 根据当前下拉框选择更新按钮可用状态
+        /// </summary>
+        private void UpdatePresetButtons()
+        {
+            bool hasSelection = presetComboBox.SelectedItem != null;
+            applyPresetBtn.IsEnabled = hasSelection;
+            deletePresetBtn.IsEnabled = hasSelection;
+        }
+
+        private void presetComboBox_SelectionChanged(object sender, SelectionChangedEventArgs e)
+        {
+            UpdatePresetButtons();
+        }
+
+        /// <summary>
+        /// 将当前界面显示的配置值保存为预设（第一步输入名称，第二步勾选要保存的配置项）
+        /// </summary>
+        private async void savePreset_Click(object sender, RoutedEventArgs e)
+        {
+            try
+            {
+                if (configTextBoxes.Count == 0)
+                {
+                    MagicShow.ShowMsgDialog(FatherControl, "当前没有可保存的配置项，请先刷新服务器配置！", "错误");
+                    return;
+                }
+
+                // 第一步：输入预设名称
+                string presetName = await MagicShow.ShowInput(FatherControl, "请输入预设名称（例如：纯净生存服）：", "");
+                if (string.IsNullOrEmpty(presetName))
+                    return;
+                presetName = presetName.Trim();
+
+                // 重名检查（提前询问覆盖，避免用户白选一遍配置）
+                var existing = presetCache.FirstOrDefault(p => p.Name == presetName);
+                if (existing != null)
+                {
+                    bool overwrite = await MagicShow.ShowMsgDialogAsync(FatherControl, $"已存在名为 \"{presetName}\" 的预设，是否覆盖？", "提示", true, "取消", "覆盖");
+                    if (!overwrite)
+                        return;
+                }
+
+                // 收集当前界面所有配置项的数值
+                var allValues = new Dictionary<string, string>();
+                foreach (var kvp in configTextBoxes)
+                {
+                    allValues[kvp.Key] = kvp.Value.Text.Trim();
+                }
+
+                // 第二步：弹出选择窗口（独立窗口，默认全选，可手动勾选要保存的配置项，配置项下方带"注：..."说明）
+                SelectConfigPresetDialog selectDialog = MagicShow.ShowSelectConfigPreset(FatherControl, allValues, commonConfigDescs);
+                if (selectDialog == null || selectDialog.SelectedValues == null || selectDialog.SelectedValues.Count == 0)
+                {
+                    MagicShow.ShowMsgDialog(FatherControl, "未选择任何配置项，预设未保存！", "提示");
+                    return;
+                }
+                var values = selectDialog.SelectedValues;
+
+                if (existing != null)
+                {
+                    existing.Values = values;
+                    existing.CreatedAt = DateTime.Now;
+                }
+                else
+                {
+                    presetCache.Add(new ServerPropertiesPreset
+                    {
+                        Name = presetName,
+                        Values = values,
+                        CreatedAt = DateTime.Now
+                    });
+                }
+
+                ServerPropertiesPresetManager.SaveAll(presetCache);
+                RefreshPresetComboBox(presetName);
+                Growl.Success("预设保存成功！");
+            }
+            catch (Exception ex)
+            {
+                MagicShow.ShowMsgDialog(FatherControl, "保存预设失败！\n错误代码：" + ex.Message, "错误");
+            }
+        }
+
+        /// <summary>
+        /// 将选中的预设应用到当前服务器
+        /// </summary>
+        private async void applyPreset_Click(object sender, RoutedEventArgs e)
+        {
+            try
+            {
+                string presetName = presetComboBox.SelectedItem as string;
+                if (string.IsNullOrEmpty(presetName))
+                    return;
+                var preset = presetCache.FirstOrDefault(p => p.Name == presetName);
+                if (preset == null || preset.Values.Count == 0)
+                {
+                    MagicShow.ShowMsgDialog(FatherControl, "该预设没有任何配置项！", "错误");
+                    return;
+                }
+                if (FatherService.CheckServerRunning())
+                {
+                    MagicShow.ShowMsgDialog(FatherControl, "服务器运行时无法应用配置预设！", "错误");
+                    return;
+                }
+                string propertiesPath = Path.Combine(Rserverbase, "server.properties");
+                if (!File.Exists(propertiesPath))
+                {
+                    MagicShow.ShowMsgDialog(FatherControl, "配置文件不存在！", "错误");
+                    return;
+                }
+
+                bool apply = await MagicShow.ShowMsgDialogAsync(FatherControl, $"确定要将预设 \"{presetName}\" 应用到当前服务器吗？\n将写入 server.properties 中的 {preset.Values.Count} 个配置项（已存在的键会被覆盖，不存在的键会追加）。", "应用预设", true, "取消", "确定应用");
+                if (!apply)
+                    return;
+
+                int changed = ApplyPresetValues(propertiesPath, preset.Values);
+                RefreshServerConfig();
+                Growl.Success($"预设应用成功，共写入 {changed} 个配置项！");
+            }
+            catch (Exception ex)
+            {
+                MagicShow.ShowMsgDialog(FatherControl, "应用预设失败！\n错误代码：" + ex.Message, "错误");
+            }
+        }
+
+        /// <summary>
+        /// 删除选中的预设
+        /// </summary>
+        private async void deletePreset_Click(object sender, RoutedEventArgs e)
+        {
+            try
+            {
+                string presetName = presetComboBox.SelectedItem as string;
+                if (string.IsNullOrEmpty(presetName))
+                    return;
+
+                bool confirm = await MagicShow.ShowMsgDialogAsync(FatherControl, $"确定要删除预设 \"{presetName}\" 吗？此操作不可恢复！", "删除预设", true, "取消", "删除", isDangerPrimaryBtn: true);
+                if (!confirm)
+                    return;
+
+                presetCache.RemoveAll(p => p.Name == presetName);
+                ServerPropertiesPresetManager.SaveAll(presetCache);
+                RefreshPresetComboBox();
+                Growl.Success("预设删除成功！");
+            }
+            catch (Exception ex)
+            {
+                MagicShow.ShowMsgDialog(FatherControl, "删除预设失败！\n错误代码：" + ex.Message, "错误");
+            }
+        }
+
+        /// <summary>
+        /// 将预设键值批量写入 server.properties（已存在的键覆盖，不存在的键追加到末尾），返回实际写入的项数
+        /// </summary>
+        private int ApplyPresetValues(string propertiesPath, Dictionary<string, string> values)
+        {
+            Encoding encoding = Functions.GetTextFileEncodingType(propertiesPath);
+            List<string> lines = File.ReadAllLines(propertiesPath, encoding).ToList();
+            int changed = 0;
+
+            foreach (var kvp in values)
+            {
+                bool keyFound = false;
+                for (int i = 0; i < lines.Count; i++)
+                {
+                    string trimmedLine = lines[i].Trim();
+                    if (string.IsNullOrEmpty(trimmedLine) || trimmedLine.StartsWith("#"))
+                        continue;
+
+                    int separatorIndex = trimmedLine.IndexOf('=');
+                    if (separatorIndex > 0)
+                    {
+                        string lineKey = trimmedLine.Substring(0, separatorIndex).Trim();
+                        if (lineKey.Equals(kvp.Key, StringComparison.OrdinalIgnoreCase))
+                        {
+                            string oldValue = trimmedLine.Substring(separatorIndex + 1).Trim();
+                            if (!oldValue.Equals(kvp.Value, StringComparison.Ordinal))
+                            {
+                                lines[i] = lineKey + "=" + kvp.Value;
+                                changed++;
+                            }
+                            keyFound = true;
+                            break;
+                        }
+                    }
+                }
+
+                if (!keyFound)
+                {
+                    lines.Add(kvp.Key + "=" + kvp.Value);
+                    changed++;
+                }
+            }
+
+            if (changed > 0)
+            {
+                if (encoding == Encoding.UTF8)
+                {
+                    File.WriteAllLines(propertiesPath, lines, new UTF8Encoding(false));
+                }
+                else
+                {
+                    File.WriteAllLines(propertiesPath, lines, encoding);
+                }
+            }
+            return changed;
+        }
+
+        #endregion
+
         #region 服务器功能调整
 
         private void refreahServerConfig_Click(object sender, RoutedEventArgs e)
@@ -211,22 +472,8 @@ namespace MSL.controls.ctrls_serverrunner
                 ChangeServerProperties.RowDefinitions.Clear();
                 configTextBoxes.Clear();
 
-                // 定义常用配置项的显示顺序、中文名称和描述
-                var commonConfigs = new Dictionary<string, string>
-                {
-                    { "online-mode", "注：正版验证，若开启（true），盗版/离线用户将无法进入该服务器，关闭请输入false" },
-                    { "gamemode", "注：游戏模式，不同版本改法不一致，具体可参照上面的表格" },
-                    { "difficulty", "注：游戏难度，不同版本改法不一致，具体可参照上面的表格" },
-                    { "max-players", "注：最大玩家数，在此输入数字来改变服务器最大人数" },
-                    { "server-port", "注：服务器端口，非必要无需更改" },
-                    { "server-ip", "注：绑定服务器ip，如果你不知道这是什么，请不要随意在这里填写东西！这里并不能自定义您的服务器地址！" },
-                    { "enable-command-block", "注：启用命令方块，若开启(true)，服务器可使用命令方块，关闭请输入false" },
-                    { "view-distance", "注：视距，和游戏内的渲染距离意思相近，设置过大会影响服务器性能" },
-                    { "pvp", "注：PVP模式，若开启（true），玩家间可互相伤害，关闭请输入false" },
-                    { "level-name", "注：世界名称，默认为world，非必要无需更改" },
-                    { "motd", "注：服务器MOTD，服务器列表中显示的服务器简介" },
-                    { "allow-flight", "注：允许飞行（若使用喷气背包/鞘翅飞行时被踢出服务器，请将这里设置为true）" },
-                };
+                // 定义常用配置项的显示顺序、中文名称和描述（commonConfigDescs 字段）
+                var commonConfigs = commonConfigDescs;
 
                 int rowIndex = 0;
 

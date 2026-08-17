@@ -1,4 +1,4 @@
-﻿<?xml version="1.0" encoding="utf-8"?>
+<?xml version="1.0" encoding="utf-8"?>
 <Project ToolsVersion="15.0" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
   <Import Project="$(MSBuildExtensionsPath)\$(MSBuildToolsVersion)\Microsoft.Common.props" Condition="Exists('$(MSBuildExtensionsPath)\$(MSBuildToolsVersion)\Microsoft.Common.props')" />
   <PropertyGroup>
@@ -152,6 +152,7 @@
     <Compile Include="utils\Config\ConfigStore.cs" />
     <Compile Include="utils\Config\ConfigWriter.cs" />
     <Compile Include="utils\Config\ServerConfig.cs" />
+    <Compile Include="utils\Config\ServerPropertiesPreset.cs" />
     <Compile Include="utils\DownloadManager.cs" />
     <Compile Include="utils\FrpApiUtils.cs" />
     <Compile Include="utils\Functions.cs" />
@@ -164,6 +165,9 @@
     </Compile>
     <Compile Include="controls\dialogs\MessageDialog.xaml.cs">
       <DependentUpon>MessageDialog.xaml</DependentUpon>
+    </Compile>
+    <Compile Include="controls\dialogs\SelectConfigPresetDialog.xaml.cs">
+      <DependentUpon>SelectConfigPresetDialog.xaml</DependentUpon>
     </Compile>
     <Compile Include="utils\HttpService.cs" />
     <Compile Include="utils\JavaScanner.cs" />
@@ -273,6 +277,10 @@
       <Generator>MSBuild:Compile</Generator>
     </Page>
     <Page Include="controls\dialogs\MessageDialog.xaml">
+      <SubType>Designer</SubType>
+      <Generator>MSBuild:Compile</Generator>
+    </Page>
+    <Page Include="controls\dialogs\SelectConfigPresetDialog.xaml">
       <SubType>Designer</SubType>
       <Generator>MSBuild:Compile</Generator>
     </Page>

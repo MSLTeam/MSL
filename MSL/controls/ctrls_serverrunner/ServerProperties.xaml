@@ -1,4 +1,4 @@
-﻿<UserControl x:Class="MSL.controls.ctrls_serverrunner.ServerProperties"
+<UserControl x:Class="MSL.controls.ctrls_serverrunner.ServerProperties"
              xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
              xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
              xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006" 
@@ -13,6 +13,21 @@
                 <TextBlock x:Name="changeServerPropertiesLab" VerticalAlignment="Center" FontSize="18" FontWeight="Bold" Foreground="{DynamicResource PrimaryTextBrush}" Text="服务器配置"/>
                 <Button x:Name="refreahServerConfig" Margin="10,0,0,0" Content="刷新" Width="80" Click="refreahServerConfig_Click"/>
             </StackPanel>
+            <!-- 配置预设工具栏：预设全局共享，所有服务器可见 -->
+            <Grid>
+                <Grid.ColumnDefinitions>
+                    <ColumnDefinition Width="Auto"/>
+                    <ColumnDefinition/>
+                    <ColumnDefinition Width="Auto"/>
+                    <ColumnDefinition Width="Auto"/>
+                    <ColumnDefinition Width="Auto"/>
+                </Grid.ColumnDefinitions>
+                <TextBlock Grid.Column="0" Text="配置预设：" VerticalAlignment="Center" FontSize="14" Foreground="{DynamicResource PrimaryTextBrush}"/>
+                <ComboBox Grid.Column="1" x:Name="presetComboBox" Margin="5,0" MinWidth="150" VerticalAlignment="Center" SelectionChanged="presetComboBox_SelectionChanged"/>
+                <Button Grid.Column="2" x:Name="savePresetBtn" Content="保存为预设" Margin="10,0,0,0" Click="savePreset_Click"/>
+                <Button Grid.Column="3" x:Name="applyPresetBtn" Content="应用预设" Margin="10,0,0,0" IsEnabled="False" Click="applyPreset_Click"/>
+                <Button Grid.Column="4" x:Name="deletePresetBtn" Content="删除预设" Margin="10,0,0,0" IsEnabled="False" Click="deletePreset_Click"/>
+            </Grid>
             <Grid>
                 <Grid.Resources>
                     <Style TargetType="TextBlock">
