@@ -76,8 +76,17 @@
                     <ColumnDefinition Width="Auto"/>
                     <ColumnDefinition Width="Auto"/>
                 </Grid.ColumnDefinitions>
-                <TextBlock Text="配置预设：" Style="{StaticResource MagicText16}" FontSize="18" FontWeight="Bold" VerticalAlignment="Center"/>
-                <WrapPanel x:Name="ConfigPresetButtonsPanel" Grid.Column="1" Margin="8,0,5,0" VerticalAlignment="Center"/>
+                <TextBlock Text="配置预设：" FontSize="18" FontWeight="Bold"
+                           Foreground="{DynamicResource PrimaryTextBrush}" VerticalAlignment="Center"/>
+                <Border Grid.Column="1" Margin="8,0,5,0" MinHeight="34" MaxHeight="76"
+                        Padding="5,3" BorderBrush="{DynamicResource BorderBrush}"
+                        BorderThickness="1" CornerRadius="6"
+                        Background="{DynamicResource BorderBackground}">
+                    <ScrollViewer VerticalScrollBarVisibility="Auto"
+                                  HorizontalScrollBarVisibility="Disabled">
+                        <WrapPanel x:Name="ConfigPresetButtonsPanel" VerticalAlignment="Center"/>
+                    </ScrollViewer>
+                </Border>
                 <Button x:Name="LoadSelectedConfigPresetButton" Grid.Column="2" Content="加载预设" MinWidth="90" Padding="10,0"
                         IsEnabled="False"
                         Margin="0,0,5,0" Click="LoadConfigPreset_Click"/>
@@ -85,6 +94,8 @@
                         IsEnabled="False"
                         Click="configPresetButton_Click"/>
             </Grid>
+            <TextBlock x:Name="ConfigPresetStatusText" Visibility="Collapsed"
+                       Foreground="{DynamicResource DarkPrimaryBrush}" TextWrapping="Wrap"/>
             <Border x:Name="ConfigPresetPanel" Visibility="Collapsed" Padding="10"
                     BorderBrush="{DynamicResource BorderBrush}" BorderThickness="1" CornerRadius="6"
                     Background="{DynamicResource BorderBackground}">
@@ -93,12 +104,16 @@
                         <RowDefinition Height="Auto"/>
                         <RowDefinition Height="8"/>
                         <RowDefinition Height="Auto"/>
-                        <RowDefinition Height="8"/>
-                        <RowDefinition Height="Auto"/>
                     </Grid.RowDefinitions>
                     <Grid>
-                        <TextBlock Text="功能配置文件预设" Style="{StaticResource MagicText16}" FontWeight="Bold" VerticalAlignment="Center"/>
-                        <hc:UniformSpacingPanel Orientation="Horizontal" HorizontalAlignment="Right" Spacing="5">
+                        <Grid.ColumnDefinitions>
+                            <ColumnDefinition Width="*"/>
+                            <ColumnDefinition Width="Auto"/>
+                        </Grid.ColumnDefinitions>
+                        <TextBlock Text="功能配置文件预设" Style="{StaticResource MagicText16}" FontWeight="Bold"
+                                   VerticalAlignment="Center" TextTrimming="CharacterEllipsis"
+                                   ToolTip="功能配置文件预设"/>
+                        <hc:UniformSpacingPanel Grid.Column="1" Orientation="Horizontal" Spacing="5">
                             <Button Content="全选" Click="SelectAllConfigPreset_Click"/>
                             <Button Content="全不选" Click="SelectNoneConfigPreset_Click"/>
                             <Button Content="收起" Click="CollapseConfigPreset_Click"/>
@@ -110,36 +125,66 @@
                             <ColumnDefinition Width="12"/>
                             <ColumnDefinition Width="1*" MinWidth="180"/>
                         </Grid.ColumnDefinitions>
-                        <ListView x:Name="ConfigPresetList" MinHeight="150" MaxHeight="400" VerticalAlignment="Top"
-                                  ItemsSource="{Binding ConfigPresetItems, ElementName=Root}"
-                                  BorderThickness="0" Background="{DynamicResource ContentRegionBrush}"
-                                  ScrollViewer.HorizontalScrollBarVisibility="Auto"
-                                  ScrollViewer.VerticalScrollBarVisibility="Auto"
-                                  PreviewMouseLeftButtonDown="ConfigPresetList_PreviewMouseLeftButtonDown">
-                            <ListView.View>
-                                <GridView>
-                                    <GridViewColumn Header="保存" Width="50">
-                                        <GridViewColumn.CellTemplate>
-                                            <DataTemplate>
-                                                <CheckBox IsChecked="{Binding IsSelected, Mode=TwoWay}" HorizontalAlignment="Center" VerticalAlignment="Center"/>
-                                            </DataTemplate>
-                                        </GridViewColumn.CellTemplate>
-                                    </GridViewColumn>
-                                    <GridViewColumn Header="配置项" Width="320" DisplayMemberBinding="{Binding Key}"/>
-                                    <GridViewColumn Header="配置值" Width="260" DisplayMemberBinding="{Binding Value}"/>
-                                </GridView>
-                            </ListView.View>
-                        </ListView>
+                        <Grid>
+                            <Grid.RowDefinitions>
+                                <RowDefinition Height="Auto"/>
+                                <RowDefinition Height="Auto"/>
+                            </Grid.RowDefinitions>
+                            <Grid Margin="2,0,2,4">
+                                <Grid.ColumnDefinitions>
+                                    <ColumnDefinition Width="36"/>
+                                    <ColumnDefinition Width="2*"/>
+                                    <ColumnDefinition Width="3*"/>
+                                </Grid.ColumnDefinitions>
+                                <TextBlock Text="保存" HorizontalAlignment="Center"/>
+                                <TextBlock Grid.Column="1" Text="配置项" Margin="0,0,8,0"/>
+                                <TextBlock Grid.Column="2" Text="配置值"/>
+                            </Grid>
+                            <ListView x:Name="ConfigPresetList" Grid.Row="1" MinHeight="150" MaxHeight="400"
+                                      VerticalAlignment="Top" HorizontalContentAlignment="Stretch"
+                                      ItemsSource="{Binding ConfigPresetItems, ElementName=Root}"
+                                      BorderThickness="0" Background="{DynamicResource ContentRegionBrush}"
+                                      ScrollViewer.HorizontalScrollBarVisibility="Disabled"
+                                      ScrollViewer.VerticalScrollBarVisibility="Auto"
+                                      PreviewMouseLeftButtonDown="ConfigPresetList_PreviewMouseLeftButtonDown">
+                                <ListView.ItemContainerStyle>
+                                    <Style TargetType="ListViewItem">
+                                        <Setter Property="HorizontalContentAlignment" Value="Stretch"/>
+                                        <Setter Property="Focusable" Value="False"/>
+                                        <Setter Property="IsTabStop" Value="False"/>
+                                    </Style>
+                                </ListView.ItemContainerStyle>
+                                <ListView.ItemTemplate>
+                                    <DataTemplate>
+                                        <Grid Margin="2">
+                                            <Grid.ColumnDefinitions>
+                                                <ColumnDefinition Width="36"/>
+                                                <ColumnDefinition Width="2*"/>
+                                                <ColumnDefinition Width="3*"/>
+                                            </Grid.ColumnDefinitions>
+                                            <CheckBox IsChecked="{Binding IsSelected, Mode=TwoWay}"
+                                                      HorizontalAlignment="Center" VerticalAlignment="Center"/>
+                                            <TextBlock Grid.Column="1" Text="{Binding Key}" TextTrimming="CharacterEllipsis"
+                                                       ToolTip="{Binding Key}" VerticalAlignment="Center" Margin="0,0,8,0"/>
+                                            <TextBlock Grid.Column="2" Text="{Binding Value}" TextTrimming="CharacterEllipsis"
+                                                       ToolTip="{Binding Value}" VerticalAlignment="Center"/>
+                                        </Grid>
+                                    </DataTemplate>
+                                </ListView.ItemTemplate>
+                            </ListView>
+                        </Grid>
                         <hc:UniformSpacingPanel Grid.Column="2" Orientation="Vertical" Spacing="8">
                             <TextBlock Text="预设名称" Foreground="{DynamicResource PrimaryTextBrush}"/>
                             <TextBox x:Name="ConfigPresetNameTextBox" Height="30" VerticalContentAlignment="Center"/>
                             <Button x:Name="SaveConfigPresetButton" Content="保存预设" Style="{StaticResource ButtonPrimary}"
                                     Click="SaveConfigPreset_Click" Visibility="Collapsed"/>
-                            <Button Content="应用预设" Style="{StaticResource ButtonPrimary}" Click="ApplyConfigPreset_Click"/>
-                            <Button Content="删除预设" Click="DeleteConfigPreset_Click"/>
+                            <Button x:Name="ApplyConfigPresetButton" Content="应用预设"
+                                    Style="{StaticResource ButtonPrimary}" Click="ApplyConfigPreset_Click"
+                                    Visibility="Collapsed"/>
+                            <Button x:Name="DeleteConfigPresetButton" Content="删除预设"
+                                    Click="DeleteConfigPreset_Click" Visibility="Collapsed"/>
                         </hc:UniformSpacingPanel>
                     </Grid>
-                    <TextBlock x:Name="ConfigPresetStatusText" Grid.Row="4" Foreground="{DynamicResource DarkPrimaryBrush}" TextWrapping="Wrap"/>
                 </Grid>
             </Border>
             <Grid x:Name="ChangeServerProperties">
