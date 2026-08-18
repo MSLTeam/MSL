@@ -1,4 +1,5 @@
 ﻿<UserControl x:Class="MSL.controls.ctrls_serverrunner.ServerProperties"
+             x:Name="Root"
              xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
              xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
              xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006" 
@@ -68,6 +69,78 @@
                     <TextBlock Grid.Column="7" Margin="0,90,0,0" TextWrapping="Wrap" Text="3" HorizontalAlignment="Center" VerticalAlignment="Top"/>
                 </Grid>
             </Grid>
+            <Grid>
+                <Grid.ColumnDefinitions>
+                    <ColumnDefinition Width="Auto"/>
+                    <ColumnDefinition Width="*"/>
+                    <ColumnDefinition Width="Auto"/>
+                    <ColumnDefinition Width="Auto"/>
+                </Grid.ColumnDefinitions>
+                <TextBlock Text="配置预设：" Style="{StaticResource MagicText16}" FontSize="18" FontWeight="Bold" VerticalAlignment="Center"/>
+                <WrapPanel x:Name="ConfigPresetButtonsPanel" Grid.Column="1" Margin="8,0,5,0" VerticalAlignment="Center"/>
+                <Button x:Name="LoadSelectedConfigPresetButton" Grid.Column="2" Content="加载预设" MinWidth="90" Padding="10,0"
+                        IsEnabled="False"
+                        Margin="0,0,5,0" Click="LoadConfigPreset_Click"/>
+                <Button x:Name="configPresetButton" Grid.Column="3" Content="添加预设" MinWidth="90" Padding="10,0"
+                        IsEnabled="False"
+                        Click="configPresetButton_Click"/>
+            </Grid>
+            <Border x:Name="ConfigPresetPanel" Visibility="Collapsed" Padding="10"
+                    BorderBrush="{DynamicResource BorderBrush}" BorderThickness="1" CornerRadius="6"
+                    Background="{DynamicResource BorderBackground}">
+                <Grid>
+                    <Grid.RowDefinitions>
+                        <RowDefinition Height="Auto"/>
+                        <RowDefinition Height="8"/>
+                        <RowDefinition Height="Auto"/>
+                        <RowDefinition Height="8"/>
+                        <RowDefinition Height="Auto"/>
+                    </Grid.RowDefinitions>
+                    <Grid>
+                        <TextBlock Text="功能配置文件预设" Style="{StaticResource MagicText16}" FontWeight="Bold" VerticalAlignment="Center"/>
+                        <hc:UniformSpacingPanel Orientation="Horizontal" HorizontalAlignment="Right" Spacing="5">
+                            <Button Content="全选" Click="SelectAllConfigPreset_Click"/>
+                            <Button Content="全不选" Click="SelectNoneConfigPreset_Click"/>
+                            <Button Content="收起" Click="CollapseConfigPreset_Click"/>
+                        </hc:UniformSpacingPanel>
+                    </Grid>
+                    <Grid Grid.Row="2">
+                        <Grid.ColumnDefinitions>
+                            <ColumnDefinition Width="3*"/>
+                            <ColumnDefinition Width="12"/>
+                            <ColumnDefinition Width="1*" MinWidth="180"/>
+                        </Grid.ColumnDefinitions>
+                        <ListView x:Name="ConfigPresetList" Height="300"
+                                  ItemsSource="{Binding ConfigPresetItems, ElementName=Root}"
+                                  BorderThickness="0" Background="{DynamicResource ContentRegionBrush}"
+                                  ScrollViewer.HorizontalScrollBarVisibility="Auto"
+                                  PreviewMouseLeftButtonDown="ConfigPresetList_PreviewMouseLeftButtonDown">
+                            <ListView.View>
+                                <GridView>
+                                    <GridViewColumn Header="保存" Width="50">
+                                        <GridViewColumn.CellTemplate>
+                                            <DataTemplate>
+                                                <CheckBox IsChecked="{Binding IsSelected, Mode=TwoWay}" HorizontalAlignment="Center" VerticalAlignment="Center"/>
+                                            </DataTemplate>
+                                        </GridViewColumn.CellTemplate>
+                                    </GridViewColumn>
+                                    <GridViewColumn Header="配置项" Width="320" DisplayMemberBinding="{Binding Key}"/>
+                                    <GridViewColumn Header="配置值" Width="260" DisplayMemberBinding="{Binding Value}"/>
+                                </GridView>
+                            </ListView.View>
+                        </ListView>
+                        <hc:UniformSpacingPanel Grid.Column="2" Orientation="Vertical" Spacing="8">
+                            <TextBlock Text="预设名称" Foreground="{DynamicResource PrimaryTextBrush}"/>
+                            <TextBox x:Name="ConfigPresetNameTextBox" Height="30" VerticalContentAlignment="Center"/>
+                            <Button x:Name="SaveConfigPresetButton" Content="保存预设" Style="{StaticResource ButtonPrimary}"
+                                    Click="SaveConfigPreset_Click" Visibility="Collapsed"/>
+                            <Button Content="应用预设" Style="{StaticResource ButtonPrimary}" Click="ApplyConfigPreset_Click"/>
+                            <Button Content="删除预设" Click="DeleteConfigPreset_Click"/>
+                        </hc:UniformSpacingPanel>
+                    </Grid>
+                    <TextBlock x:Name="ConfigPresetStatusText" Grid.Row="4" Foreground="{DynamicResource DarkPrimaryBrush}" TextWrapping="Wrap"/>
+                </Grid>
+            </Border>
             <Grid x:Name="ChangeServerProperties">
                 <Grid.Resources>
                     <Style TargetType="TextBlock">

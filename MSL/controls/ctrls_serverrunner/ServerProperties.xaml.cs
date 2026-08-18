@@ -1,14 +1,19 @@
 using HandyControl.Controls;
 using Microsoft.Win32;
 using MSL.utils;
+using Newtonsoft.Json;
 using System;
 using System.Collections.Generic;
+using System.Collections.ObjectModel;
+using System.ComponentModel;
 using System.IO;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 using System.Windows;
 using System.Windows.Controls;
+using System.Windows.Input;
+using System.Windows.Media;
 using TextBox = System.Windows.Controls.TextBox;
 using Window = System.Windows.Window;
 
@@ -25,12 +30,31 @@ namespace MSL.controls.ctrls_serverrunner
             FatherControl = fatherControl;
             FatherService= fatherService;
             Rserverbase = serverBase;
+            LegacyConfigPresetPath = Path.Combine(serverBase, "config-presets.json");
         }
 
         private readonly ServerRunner FatherControl;
         private readonly MCServerService FatherService;
         private readonly string Rserverbase;
+        private static readonly string ConfigPresetPath = Path.Combine(
+            AppDomain.CurrentDomain.BaseDirectory,
+            "MSL",
+            "config-presets.json");
+        private static readonly Dictionary<ServerRunner, List<ConfigPresetDefinition>> SessionConfigPresetsByWindow =
+            new Dictionary<ServerRunner, List<ConfigPresetDefinition>>();
+        private readonly string LegacyConfigPresetPath;
         private Dictionary<string, TextBox> configTextBoxes = new Dictionary<string, TextBox>();
+        private readonly List<string> configKeyOrder = new List<string>();
+        private ConfigPresetDefinition _selectedConfigPreset;
+        private bool _configPresetsLoaded;
+        public ObservableCollection<ConfigPresetDefinition> ConfigPresets { get; } = new ObservableCollection<ConfigPresetDefinition>();
+        public ObservableCollection<ConfigPresetItem> ConfigPresetItems { get; } = new ObservableCollection<ConfigPresetItem>();
+
+        public static void ClearSessionConfigPresetCache(ServerRunner serverRunner)
+        {
+            if (serverRunner != null)
+                SessionConfigPresetsByWindow.Remove(serverRunner);
+        }
 
         #region 核心函数
 
@@ -176,6 +200,8 @@ namespace MSL.controls.ctrls_serverrunner
             ChangeServerProperties.Children.Clear();
             ChangeServerProperties.RowDefinitions.Clear();
             configTextBoxes.Clear();
+            configKeyOrder.Clear();
+            ResetConfigPresetToolbar();
         }
         #endregion
 
@@ -198,18 +224,24 @@ namespace MSL.controls.ctrls_serverrunner
                 {
                     changeServerPropertiesLab.Text = "服务器配置（未找到文件，无法更改基础配置，运行一下服务器再试）";
                     saveServerConfig.IsEnabled = false;
+                    LoadSelectedConfigPresetButton.IsEnabled = false;
+                    configPresetButton.IsEnabled = false;
                     ChangeServerProperties.Visibility = Visibility.Collapsed;
+                    ResetConfigPresetToolbar();
                     return;
                 }
 
                 changeServerPropertiesLab.Text = "服务器配置信息";
                 saveServerConfig.IsEnabled = true;
+                LoadSelectedConfigPresetButton.IsEnabled = true;
+                configPresetButton.IsEnabled = true;
                 ChangeServerProperties.Visibility = Visibility.Visible;
 
                 // 清理现有内容
                 ChangeServerProperties.Children.Clear();
                 ChangeServerProperties.RowDefinitions.Clear();
                 configTextBoxes.Clear();
+                configKeyOrder.Clear();
 
                 // 定义常用配置项的显示顺序、中文名称和描述
                 var commonConfigs = new Dictionary<string, string>
@@ -249,11 +281,32 @@ namespace MSL.controls.ctrls_serverrunner
                         rowIndex++;
                     }
                 }
+
+                if (!_configPresetsLoaded && SessionConfigPresetsByWindow.ContainsKey(FatherControl))
+                {
+                    RestoreSessionConfigPresets();
+                    RenderConfigPresetButtons();
+                }
+
+                if (ConfigPresetPanel.Visibility == Visibility.Visible)
+                {
+                    if (_selectedConfigPreset != null)
+                        InitializeConfigPresetItems(_selectedConfigPreset.Values, _selectedConfigPreset.Values.Keys);
+                    else
+                        InitializeConfigPresetItems(GetCurrentConfigValues());
+                    if (_selectedConfigPreset != null)
+                        LoadConfigPresetIntoEditor(_selectedConfigPreset);
+                }
+                else if (!_configPresetsLoaded)
+                    ResetConfigPresetToolbar();
             }
             catch
             {
                 changeServerPropertiesLab.Text = "找不到配置文件，无法更改相关设置（请尝试开启一次服务器）";
+                configPresetButton.IsEnabled = false;
+                LoadSelectedConfigPresetButton.IsEnabled = false;
                 ChangeServerProperties.Visibility = Visibility.Collapsed;
+                ResetConfigPresetToolbar();
             }
             finally
             {
@@ -328,6 +381,7 @@ namespace MSL.controls.ctrls_serverrunner
 
             // 保存引用
             configTextBoxes[key] = textBox;
+            configKeyOrder.Add(key);
         }
 
         private void saveServerConfig_Click(object sender, RoutedEventArgs e)
@@ -596,6 +650,652 @@ namespace MSL.controls.ctrls_serverrunner
             RefreshServerConfig();
         }
 
+        private void configPresetButton_Click(object sender, RoutedEventArgs e)
+        {
+            try
+            {
+                Dictionary<string, string> currentValues = GetCurrentConfigValues();
+                if (currentValues.Count == 0)
+                {
+                    MagicShow.ShowMsgDialog(FatherControl, "未找到 server.properties，无法创建配置预设！", "提示");
+                    return;
+                }
+
+                if (!_configPresetsLoaded)
+                    LoadConfigPresets(false);
+                _selectedConfigPreset = null;
+                RenderConfigPresetButtons();
+                configPresetButton.SetResourceReference(Button.StyleProperty, "ButtonPrimary");
+                InitializeConfigPresetItems(currentValues);
+                ConfigPresetNameTextBox.Clear();
+                SaveConfigPresetButton.Visibility = Visibility.Visible;
+                ConfigPresetPanel.Visibility = Visibility.Visible;
+                SetConfigPresetStatus("正在添加新预设，默认选择全部配置值。");
+            }
+            catch (Exception ex)
+            {
+                MagicShow.ShowMsgDialog(FatherControl, "加载配置预设失败：\n" + ex.Message, "错误");
+            }
+        }
+
+        private void CollapseConfigPreset_Click(object sender, RoutedEventArgs e)
+        {
+            _selectedConfigPreset = null;
+            ConfigPresetItems.Clear();
+            ConfigPresetNameTextBox.Clear();
+            SaveConfigPresetButton.Visibility = Visibility.Collapsed;
+            configPresetButton.ClearValue(Button.StyleProperty);
+            HideConfigPresetPanel();
+            RenderConfigPresetButtons();
+        }
+
+        private void HideConfigPresetPanel()
+        {
+            ConfigPresetPanel.Visibility = Visibility.Collapsed;
+        }
+
+        private void ResetConfigPresetToolbar()
+        {
+            _selectedConfigPreset = null;
+            _configPresetsLoaded = false;
+            ConfigPresets.Clear();
+            ConfigPresetItems.Clear();
+            ConfigPresetButtonsPanel.Children.Clear();
+            ConfigPresetNameTextBox.Clear();
+            SaveConfigPresetButton.Visibility = Visibility.Collapsed;
+            configPresetButton.ClearValue(Button.StyleProperty);
+            HideConfigPresetPanel();
+        }
+
+        private void InitializeConfigPresetItems(IDictionary<string, string> currentValues, IEnumerable<string> keysToInclude = null)
+        {
+            ConfigPresetItems.Clear();
+            HashSet<string> includedKeys = keysToInclude == null
+                ? null
+                : new HashSet<string>(keysToInclude, StringComparer.OrdinalIgnoreCase);
+            HashSet<string> addedKeys = new HashSet<string>(StringComparer.OrdinalIgnoreCase);
+            foreach (string key in configKeyOrder)
+            {
+                if (!currentValues.ContainsKey(key) || (includedKeys != null && !includedKeys.Contains(key)))
+                    continue;
+
+                ConfigPresetItems.Add(new ConfigPresetItem
+                {
+                    Key = key,
+                    Value = currentValues[key] ?? string.Empty,
+                    IsSelected = true
+                });
+                addedKeys.Add(key);
+            }
+
+            foreach (var config in currentValues)
+            {
+                if (addedKeys.Contains(config.Key) || (includedKeys != null && !includedKeys.Contains(config.Key)))
+                    continue;
+
+                ConfigPresetItems.Add(new ConfigPresetItem
+                {
+                    Key = config.Key,
+                    Value = config.Value ?? string.Empty,
+                    IsSelected = true
+                });
+            }
+        }
+
+        private void LoadConfigPresets(bool renderButtons = true)
+        {
+            string selectedName = _selectedConfigPreset?.Name;
+            ConfigPresets.Clear();
+            _selectedConfigPreset = null;
+            _configPresetsLoaded = true;
+
+            string sourcePath = ConfigPresetPath;
+            bool shouldMigrateLegacyFile = false;
+            if (!File.Exists(sourcePath) && File.Exists(LegacyConfigPresetPath))
+            {
+                sourcePath = LegacyConfigPresetPath;
+                shouldMigrateLegacyFile = true;
+            }
+
+            if (!File.Exists(sourcePath))
+            {
+                CacheSessionConfigPresets();
+                if (renderButtons)
+                    RenderConfigPresetButtons();
+                return;
+            }
+
+            try
+            {
+                var presets = JsonConvert.DeserializeObject<List<ConfigPresetDefinition>>(
+                    File.ReadAllText(sourcePath, Encoding.UTF8));
+                if (presets == null)
+                {
+                    CacheSessionConfigPresets();
+                    if (renderButtons)
+                        RenderConfigPresetButtons();
+                    return;
+                }
+
+                foreach (var preset in presets)
+                {
+                    if (preset == null || string.IsNullOrWhiteSpace(preset.Name))
+                        continue;
+
+                    Dictionary<string, string> values = new Dictionary<string, string>(StringComparer.OrdinalIgnoreCase);
+                    if (preset.Values != null)
+                    {
+                        foreach (var value in preset.Values)
+                        {
+                            if (!string.IsNullOrWhiteSpace(value.Key))
+                                values[value.Key] = value.Value ?? string.Empty;
+                        }
+                    }
+
+                    preset.Name = preset.Name.Trim();
+                    preset.Values = values;
+                    ConfigPresets.Add(preset);
+                }
+
+                if (!string.IsNullOrEmpty(selectedName))
+                {
+                    _selectedConfigPreset = ConfigPresets.FirstOrDefault(
+                        preset => string.Equals(preset.Name, selectedName, StringComparison.OrdinalIgnoreCase));
+                }
+
+                CacheSessionConfigPresets();
+                if (shouldMigrateLegacyFile && ConfigPresets.Count > 0)
+                    SaveConfigPresets();
+            }
+            catch (Exception ex)
+            {
+                SetConfigPresetStatus("预设文件读取失败：" + ex.Message);
+            }
+
+            if (renderButtons)
+                RenderConfigPresetButtons();
+        }
+
+        private void RenderConfigPresetButtons()
+        {
+            ConfigPresetButtonsPanel.Children.Clear();
+            foreach (var preset in ConfigPresets)
+            {
+                Button button = new Button
+                {
+                    Content = preset.Name,
+                    Tag = preset,
+                    MinWidth = 50,
+                    Padding = new Thickness(10, 0, 10, 0),
+                    Margin = new Thickness(0, 0, 5, 3)
+                };
+                if (ReferenceEquals(preset, _selectedConfigPreset))
+                    button.SetResourceReference(Button.StyleProperty, "ButtonPrimary");
+                button.Click += ExistingConfigPresetButton_Click;
+                ConfigPresetButtonsPanel.Children.Add(button);
+            }
+
+        }
+
+        private void ExistingConfigPresetButton_Click(object sender, RoutedEventArgs e)
+        {
+            if (!(sender is Button button) || !(button.Tag is ConfigPresetDefinition preset))
+                return;
+
+            if (preset.Values == null || preset.Values.Count == 0)
+                return;
+
+            _selectedConfigPreset = preset;
+            InitializeConfigPresetItems(preset.Values, preset.Values.Keys);
+            LoadConfigPresetIntoEditor(preset);
+            SaveConfigPresetButton.Visibility = Visibility.Collapsed;
+            configPresetButton.ClearValue(Button.StyleProperty);
+            ConfigPresetPanel.Visibility = Visibility.Visible;
+            RenderConfigPresetButtons();
+        }
+
+        private void ConfigPresetList_PreviewMouseLeftButtonDown(object sender, MouseButtonEventArgs e)
+        {
+            DependencyObject source = e.OriginalSource as DependencyObject;
+            while (source != null)
+            {
+                if (source is CheckBox)
+                    return;
+                source = VisualTreeHelper.GetParent(source);
+            }
+
+            ListViewItem listViewItem = ItemsControl.ContainerFromElement(
+                ConfigPresetList,
+                e.OriginalSource as DependencyObject) as ListViewItem;
+            if (listViewItem?.Content is ConfigPresetItem item)
+            {
+                item.IsSelected = !item.IsSelected;
+                e.Handled = true;
+            }
+        }
+
+        private void LoadConfigPresetIntoEditor(ConfigPresetDefinition preset)
+        {
+            foreach (var item in ConfigPresetItems)
+            {
+                if (preset.Values.ContainsKey(item.Key))
+                {
+                    item.Value = preset.Values[item.Key] ?? string.Empty;
+                    item.IsSelected = true;
+                }
+                else
+                {
+                    item.Value = string.Empty;
+                    item.IsSelected = false;
+                }
+            }
+
+            ConfigPresetNameTextBox.Text = preset.Name;
+            SetConfigPresetStatus($"已加载预设“{preset.Name}”，选中 {preset.Values.Count} 项。");
+        }
+
+        private void SaveConfigPresets()
+        {
+            string directory = Path.GetDirectoryName(ConfigPresetPath);
+            if (!string.IsNullOrEmpty(directory) && !Directory.Exists(directory))
+                Directory.CreateDirectory(directory);
+
+            string tempPath = ConfigPresetPath + ".tmp";
+            try
+            {
+                string json = JsonConvert.SerializeObject(ConfigPresets.ToList(), Formatting.Indented);
+                File.WriteAllText(tempPath, json, new UTF8Encoding(false));
+
+                if (File.Exists(ConfigPresetPath))
+                    File.Replace(tempPath, ConfigPresetPath, null);
+                else
+                    File.Move(tempPath, ConfigPresetPath);
+
+                CacheSessionConfigPresets();
+            }
+            finally
+            {
+                if (File.Exists(tempPath))
+                    File.Delete(tempPath);
+            }
+        }
+
+        private void CacheSessionConfigPresets()
+        {
+            SessionConfigPresetsByWindow[FatherControl] = CloneConfigPresets(ConfigPresets);
+        }
+
+        private void RestoreSessionConfigPresets()
+        {
+            if (!SessionConfigPresetsByWindow.TryGetValue(FatherControl, out List<ConfigPresetDefinition> sessionPresets))
+                return;
+
+            ConfigPresets.Clear();
+            foreach (var preset in CloneConfigPresets(sessionPresets))
+                ConfigPresets.Add(preset);
+            _configPresetsLoaded = true;
+        }
+
+        private static List<ConfigPresetDefinition> CloneConfigPresets(IEnumerable<ConfigPresetDefinition> presets)
+        {
+            return presets
+                .Where(preset => preset != null && !string.IsNullOrWhiteSpace(preset.Name))
+                .Select(preset => new ConfigPresetDefinition
+                {
+                    Name = preset.Name,
+                    Values = new Dictionary<string, string>(
+                        preset.Values ?? new Dictionary<string, string>(),
+                        StringComparer.OrdinalIgnoreCase)
+                })
+                .ToList();
+        }
+
+        private Dictionary<string, string> GetSelectedConfigPresetValues()
+        {
+            Dictionary<string, string> values = new Dictionary<string, string>(StringComparer.OrdinalIgnoreCase);
+            foreach (var item in ConfigPresetItems.Where(item => item.IsSelected))
+            {
+                if (configTextBoxes.TryGetValue(item.Key, out TextBox textBox))
+                    values[item.Key] = textBox.Text ?? string.Empty;
+            }
+            return values;
+        }
+
+        private async void SaveConfigPreset_Click(object sender, RoutedEventArgs e)
+        {
+            string name = ConfigPresetNameTextBox.Text?.Trim();
+            if (string.IsNullOrWhiteSpace(name))
+            {
+                SetConfigPresetStatus("请输入预设名称。");
+                ConfigPresetNameTextBox.Focus();
+                return;
+            }
+
+            Dictionary<string, string> values = GetSelectedConfigPresetValues();
+            if (values.Count == 0)
+            {
+                SetConfigPresetStatus("请至少选择一个配置值。");
+                return;
+            }
+
+            try
+            {
+                ConfigPresetDefinition preset = ConfigPresets.FirstOrDefault(
+                    item => string.Equals(item.Name, name, StringComparison.OrdinalIgnoreCase));
+                if (preset != null)
+                {
+                    bool overwrite = await MagicShow.ShowMsgDialogAsync(
+                        FatherControl,
+                        $"预设“{name}”已经存在，是否覆盖原预设？",
+                        "覆盖预设",
+                        true,
+                        "取消",
+                        "覆盖",
+                        null,
+                        true);
+                    if (!overwrite)
+                    {
+                        SetConfigPresetStatus("已取消覆盖预设。");
+                        return;
+                    }
+                }
+                else
+                {
+                    preset = new ConfigPresetDefinition { Name = name };
+                    ConfigPresets.Add(preset);
+                }
+
+                preset.Name = name;
+                preset.Values = values;
+                _selectedConfigPreset = preset;
+                SaveConfigPresets();
+                RenderConfigPresetButtons();
+                SetConfigPresetStatus($"预设“{name}”已保存，共 {values.Count} 项。");
+            }
+            catch (Exception ex)
+            {
+                SetConfigPresetStatus("预设保存失败：" + ex.Message);
+            }
+        }
+
+        private void LoadConfigPreset_Click(object sender, RoutedEventArgs e)
+        {
+            HideConfigPresetPanel();
+            ConfigPresetItems.Clear();
+            ConfigPresetNameTextBox.Clear();
+            _selectedConfigPreset = null;
+            configPresetButton.ClearValue(Button.StyleProperty);
+            LoadConfigPresets();
+        }
+
+        private void ApplyConfigPreset_Click(object sender, RoutedEventArgs e)
+        {
+            if (_selectedConfigPreset == null)
+            {
+                SetConfigPresetStatus("请先选择并加载一个已有预设。");
+                return;
+            }
+
+            HashSet<string> selectedKeys = new HashSet<string>(
+                ConfigPresetItems.Where(item => item.IsSelected).Select(item => item.Key),
+                StringComparer.OrdinalIgnoreCase);
+            Dictionary<string, string> values = new Dictionary<string, string>(StringComparer.OrdinalIgnoreCase);
+            foreach (var item in ConfigPresetItems.Where(item => item.IsSelected))
+            {
+                if (_selectedConfigPreset.Values.TryGetValue(item.Key, out string value))
+                    values[item.Key] = value ?? string.Empty;
+            }
+            if (values.Count == 0)
+            {
+                SetConfigPresetStatus("请至少选择一个配置值。");
+                return;
+            }
+
+            string error = ApplyPresetValues(values);
+            if (string.IsNullOrWhiteSpace(error))
+            {
+                foreach (var item in ConfigPresetItems)
+                    item.IsSelected = selectedKeys.Contains(item.Key);
+            }
+            SetConfigPresetStatus(string.IsNullOrWhiteSpace(error)
+                ? $"已应用 {values.Count} 项配置。"
+                : error);
+        }
+
+        private void DeleteConfigPreset_Click(object sender, RoutedEventArgs e)
+        {
+            if (_selectedConfigPreset == null)
+            {
+                SetConfigPresetStatus("请先选择一个预设。");
+                return;
+            }
+
+            try
+            {
+                ConfigPresetDefinition preset = _selectedConfigPreset;
+                ConfigPresets.Remove(preset);
+                _selectedConfigPreset = null;
+                SaveConfigPresets();
+                ConfigPresetNameTextBox.Clear();
+                RenderConfigPresetButtons();
+                ConfigPresetItems.Clear();
+                SetConfigPresetStatus($"预设“{preset.Name}”已删除。");
+                HideConfigPresetPanel();
+            }
+            catch (Exception ex)
+            {
+                SetConfigPresetStatus("预设删除失败：" + ex.Message);
+            }
+        }
+
+        private void SelectAllConfigPreset_Click(object sender, RoutedEventArgs e)
+        {
+            foreach (var item in ConfigPresetItems)
+                item.IsSelected = true;
+            SetConfigPresetStatus("已选择全部配置值。");
+        }
+
+        private void SelectNoneConfigPreset_Click(object sender, RoutedEventArgs e)
+        {
+            foreach (var item in ConfigPresetItems)
+                item.IsSelected = false;
+            SetConfigPresetStatus("已取消选择全部配置值。");
+        }
+
+        private void SetConfigPresetStatus(string message)
+        {
+            ConfigPresetStatusText.Text = message;
+        }
+
+        private Dictionary<string, string> GetCurrentConfigValues()
+        {
+            if (configTextBoxes.Count == 0)
+                return GetAllConfigs();
+
+            Dictionary<string, string> values = new Dictionary<string, string>(StringComparer.OrdinalIgnoreCase);
+            foreach (var item in configTextBoxes)
+                values[item.Key] = item.Value.Text ?? string.Empty;
+            return values;
+        }
+
+        /// <summary>
+        /// 将预设中选中的值写回 server.properties；返回 null 表示应用成功。
+        /// </summary>
+        private string ApplyPresetValues(IReadOnlyDictionary<string, string> values)
+        {
+            try
+            {
+                if (FatherService.CheckServerRunning())
+                    return "服务器运行时无法应用配置预设！";
+
+                string propertiesPath = Path.Combine(Rserverbase, "server.properties");
+                if (!File.Exists(propertiesPath))
+                    return "配置文件不存在！";
+
+                Encoding encoding = Functions.GetTextFileEncodingType(propertiesPath);
+                string[] lines = File.ReadAllLines(propertiesPath, encoding);
+                bool hasChanges = false;
+
+                for (int i = 0; i < lines.Length; i++)
+                {
+                    string trimmedLine = lines[i].Trim();
+                    if (string.IsNullOrEmpty(trimmedLine) || trimmedLine.StartsWith("#"))
+                        continue;
+
+                    int separatorIndex = trimmedLine.IndexOf('=');
+                    if (separatorIndex <= 0)
+                        continue;
+
+                    string key = trimmedLine.Substring(0, separatorIndex).Trim();
+                    if (!values.TryGetValue(key, out string newValue))
+                        continue;
+
+                    newValue = newValue ?? string.Empty;
+                    string oldValue = trimmedLine.Substring(separatorIndex + 1).Trim();
+                    newValue = ConvertLegacyConfigValue(key, newValue, oldValue);
+                    if (newValue == oldValue)
+                        continue;
+
+                    lines[i] = key + "=" + newValue;
+                    hasChanges = true;
+                }
+
+                if (!hasChanges)
+                    return "没有需要应用的更改。";
+
+                if (encoding == Encoding.UTF8)
+                    File.WriteAllLines(propertiesPath, lines, new UTF8Encoding(false));
+                else
+                    File.WriteAllLines(propertiesPath, lines, encoding);
+
+                RefreshServerConfig();
+                return null;
+            }
+            catch (Exception ex)
+            {
+                return "配置应用失败：" + ex.Message;
+            }
+        }
+
+        private string ConvertLegacyConfigValue(string key, string presetValue, string targetValue)
+        {
+            if (string.IsNullOrWhiteSpace(presetValue) || string.IsNullOrWhiteSpace(targetValue))
+                return presetValue ?? string.Empty;
+
+            if (key.Equals("gamemode", StringComparison.OrdinalIgnoreCase))
+            {
+                bool targetUsesNumber = int.TryParse(targetValue.Trim(), out _);
+                if (targetUsesNumber && TryGetGameModeNumber(presetValue, out int gameModeNumber))
+                    return gameModeNumber.ToString();
+                if (!targetUsesNumber && TryGetGameModeName(presetValue, out string gameModeName))
+                    return gameModeName;
+            }
+            else if (key.Equals("difficulty", StringComparison.OrdinalIgnoreCase))
+            {
+                bool targetUsesNumber = int.TryParse(targetValue.Trim(), out _);
+                if (targetUsesNumber && TryGetDifficultyNumber(presetValue, out int difficultyNumber))
+                    return difficultyNumber.ToString();
+                if (!targetUsesNumber && TryGetDifficultyName(presetValue, out string difficultyName))
+                    return difficultyName;
+            }
+
+            return presetValue;
+        }
+
+        private bool TryGetGameModeNumber(string value, out int number)
+        {
+            if (int.TryParse(value.Trim(), out number))
+                return number >= 0 && number <= 3;
+
+            switch (value.Trim().ToLowerInvariant())
+            {
+                case "survival": number = 0; return true;
+                case "creative": number = 1; return true;
+                case "adventure": number = 2; return true;
+                case "spectator": number = 3; return true;
+                default: number = 0; return false;
+            }
+        }
+
+        private bool TryGetGameModeName(string value, out string name)
+        {
+            switch (value.Trim().ToLowerInvariant())
+            {
+                case "0": case "survival": name = "survival"; return true;
+                case "1": case "creative": name = "creative"; return true;
+                case "2": case "adventure": name = "adventure"; return true;
+                case "3": case "spectator": name = "spectator"; return true;
+                default: name = value; return false;
+            }
+        }
+
+        private bool TryGetDifficultyNumber(string value, out int number)
+        {
+            if (int.TryParse(value.Trim(), out number))
+                return number >= 0 && number <= 3;
+
+            switch (value.Trim().ToLowerInvariant())
+            {
+                case "peaceful": number = 0; return true;
+                case "easy": number = 1; return true;
+                case "normal": number = 2; return true;
+                case "hard": number = 3; return true;
+                default: number = 0; return false;
+            }
+        }
+
+        private bool TryGetDifficultyName(string value, out string name)
+        {
+            switch (value.Trim().ToLowerInvariant())
+            {
+                case "0": case "peaceful": name = "peaceful"; return true;
+                case "1": case "easy": name = "easy"; return true;
+                case "2": case "normal": name = "normal"; return true;
+                case "3": case "hard": name = "hard"; return true;
+                default: name = value; return false;
+            }
+        }
+
         #endregion
+    }
+
+    public sealed class ConfigPresetDefinition
+    {
+        public string Name { get; set; }
+        public Dictionary<string, string> Values { get; set; } = new Dictionary<string, string>(StringComparer.OrdinalIgnoreCase);
+    }
+
+    public sealed class ConfigPresetItem : INotifyPropertyChanged
+    {
+        private bool _isSelected;
+        private string _value;
+
+        public string Key { get; set; }
+
+        public string Value
+        {
+            get => _value;
+            set
+            {
+                if (string.Equals(_value, value, StringComparison.Ordinal))
+                    return;
+                _value = value;
+                PropertyChanged?.Invoke(this, new PropertyChangedEventArgs(nameof(Value)));
+            }
+        }
+
+        public bool IsSelected
+        {
+            get => _isSelected;
+            set
+            {
+                if (_isSelected == value)
+                    return;
+                _isSelected = value;
+                PropertyChanged?.Invoke(this, new PropertyChangedEventArgs(nameof(IsSelected)));
+            }
+        }
+
+        public event PropertyChangedEventHandler PropertyChanged;
     }
 }

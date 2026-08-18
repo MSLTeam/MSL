@@ -167,6 +167,7 @@ namespace MSL
 
         private void Window_Closing(object sender, System.ComponentModel.CancelEventArgs e)
         {
+            ServerProperties.ClearSessionConfigPresetCache(this);
             if (ServerList.RunningServers.Contains(RserverID))
             {
                 e.Cancel = true;
@@ -182,6 +183,7 @@ namespace MSL
 
         public void DisposeRes()
         {
+            ServerProperties.ClearSessionConfigPresetCache(this);
             _dashboardPage?.CleanupSystemMonitoring();
             ServerService?.Dispose();
         }
