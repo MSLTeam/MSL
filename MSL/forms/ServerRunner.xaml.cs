@@ -57,6 +57,7 @@ namespace MSL
         private SRInstanceSettings _instanceSettingsPage;
         private SRMoreFunctions _moreFunctionsPage;
         private SRTimerTasks _timerTasksPage;
+        private bool _isDisposed;
 
         // 备份用
         private UIElement _savedContent;
@@ -110,13 +111,19 @@ namespace MSL
             MainGrid.Children.Add(loadingCircle);
             MainGrid.RegisterName("loadingBar", loadingCircle);
             await Task.Delay(50);
+            if (_isDisposed)
+                return;
 
             if (!await LoadingInfoEvent())
+                return;
+            if (_isDisposed)
                 return;
 
             _moreFunctionsPage.LoadFastCommands();
             _instanceSettingsPage.LoadServerProperties();
             await _instanceSettingsPage.LoadSettings();
+            if (_isDisposed)
+                return;
 
             // 系统资源监控：全局开关(ConfigStore.GetServerInfo) → 实例开关(ShowOccupancy)，两级控制
             if (ConfigStore.GetServerInfo && ServerService.InstanceConfig.ShowOccupancy)
@@ -126,6 +133,8 @@ namespace MSL
             }
 
             await Task.Delay(50);
+            if (_isDisposed)
+                return;
             MainGrid.Children.Remove(loadingCircle);
             MainGrid.UnregisterName("loadingBar");
 
@@ -167,6 +176,7 @@ namespace MSL
 
         private void Window_Closing(object sender, System.ComponentModel.CancelEventArgs e)
         {
+            _instanceSettingsPage?.ServerPropertiesInstance?.ClearConfigPresetState();
             if (ServerList.RunningServers.Contains(RserverID))
             {
                 e.Cancel = true;
@@ -182,6 +192,10 @@ namespace MSL
 
         public void DisposeRes()
         {
+            if (_isDisposed)
+                return;
+            _isDisposed = true;
+            _instanceSettingsPage?.ServerPropertiesInstance?.Dispose();
             _dashboardPage?.CleanupSystemMonitoring();
             ServerService?.Dispose();
         }

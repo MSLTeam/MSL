@@ -3,6 +3,7 @@ using HandyControl.Tools;
 using MSL.controls;
 using System;
 using System.Linq;
+using System.Threading;
 using System.Threading.Tasks;
 using System.Windows;
 using System.Windows.Controls;
@@ -37,10 +38,10 @@ namespace MSL.utils
         /// <param name="closeBtnContext">关闭按钮文字内容</param>
         /// <param name="primaryBtnContext">确认按钮文字内容</param>
         /// <returns>返回值：true；false</returns>
-        public static async Task<bool> ShowMsgDialogAsync(Window _window, string text, string title, bool showPrimaryBtn = false, string closeBtnContext = "CANCEL", string primaryBtnContext = "CONFIRM", UIElement uIElement = null, bool isDangerPrimaryBtn = false)
+        public static async Task<bool> ShowMsgDialogAsync(Window _window, string text, string title, bool showPrimaryBtn = false, string closeBtnContext = "CANCEL", string primaryBtnContext = "CONFIRM", UIElement uIElement = null, bool isDangerPrimaryBtn = false, CancellationToken cancellationToken = default(CancellationToken))
         {
             MagicDialog MagicDialog = new MagicDialog();
-            bool _ret = await MagicDialog.ShowMsgDialog(_window, text, title, showPrimaryBtn, closeBtnContext, primaryBtnContext, uIElement, isDangerPrimaryBtn);
+            bool _ret = await MagicDialog.ShowMsgDialog(_window, text, title, showPrimaryBtn, closeBtnContext, primaryBtnContext, uIElement, isDangerPrimaryBtn, cancellationToken);
             return _ret;
         }
 
@@ -189,17 +190,105 @@ namespace MSL.utils
             _tcs = new TaskCompletionSource<bool>();
         }
 
-        public async Task<bool> ShowMsgDialog(Window _window, string text, string title, bool showPrimaryBtn, string closeBtnContext, string primaryBtnContext, UIElement uIElement, bool isDangerPrimaryBtn)
+        public async Task<bool> ShowMsgDialog(Window _window, string text, string title, bool showPrimaryBtn, string closeBtnContext, string primaryBtnContext, UIElement uIElement, bool isDangerPrimaryBtn, CancellationToken cancellationToken = default(CancellationToken))
         {
+            if (cancellationToken.IsCancellationRequested)
+                return false;
+
             window = _window;
+            string dialogToken = token;
+            Dispatcher dispatcher = _window?.Dispatcher ?? Application.Current?.Dispatcher;
             MessageDialog msgDialog = new MessageDialog(text, title, showPrimaryBtn, closeBtnContext, primaryBtnContext, uIElement, isDangerPrimaryBtn);
-            msgDialog.CloseDialog += CloseMsgDialog;
+            TaskCompletionSource<bool> completionSource = new TaskCompletionSource<bool>(
+                TaskCreationOptions.RunContinuationsAsynchronously);
+
+            void CompleteDialog()
+            {
+                FinishDialog(msgDialog._dialogReturn);
+            }
+
+            void CompleteDialogState(bool result)
+            {
+                msgDialog.CloseDialog -= CompleteDialog;
+                completionSource.TrySetResult(result);
+                if (string.Equals(token, dialogToken, StringComparison.Ordinal))
+                {
+                    window = null;
+                    token = null;
+                }
+            }
+
+            void FinishDialog(bool result)
+            {
+                try
+                {
+                    Dialog.Close(dialogToken);
+                }
+                finally
+                {
+                    CompleteDialogState(result);
+                }
+            }
+
+            void AbandonDialog()
+            {
+                CompleteDialogState(false);
+            }
+
+            msgDialog.CloseDialog += CompleteDialog;
             // window?.Focus();
-            Dialog.SetToken(window, token);
-            Dialog.Show(msgDialog, token);
-            _tcs = new TaskCompletionSource<bool>();
-            await _tcs.Task;
-            return msgDialog._dialogReturn;
+            Dialog.SetToken(window, dialogToken);
+            Dialog.Show(msgDialog, dialogToken);
+
+            CancellationTokenRegistration cancellationRegistration = cancellationToken.Register(() =>
+            {
+                Action cancelDialog = () =>
+                {
+                    FinishDialog(false);
+                };
+
+                try
+                {
+                    if (dispatcher != null && dispatcher.CheckAccess())
+                    {
+                        cancelDialog();
+                    }
+                    else if (dispatcher == null || dispatcher.HasShutdownStarted || dispatcher.HasShutdownFinished)
+                    {
+                        AbandonDialog();
+                    }
+                    else
+                    {
+                        DispatcherOperation operation = dispatcher.BeginInvoke(cancelDialog);
+                        EventHandler abortedHandler = null;
+                        abortedHandler = (sender, args) =>
+                        {
+                            operation.Aborted -= abortedHandler;
+                            AbandonDialog();
+                        };
+                        operation.Aborted += abortedHandler;
+                        if (operation.Status == DispatcherOperationStatus.Aborted)
+                        {
+                            operation.Aborted -= abortedHandler;
+                            AbandonDialog();
+                        }
+                    }
+                }
+                catch
+                {
+                    AbandonDialog();
+                }
+            });
+
+            try
+            {
+                return await completionSource.Task;
+            }
+            finally
+            {
+                cancellationRegistration.Dispose();
+                msgDialog.CloseDialog -= CompleteDialog;
+            }
         }
 
         public async Task<int> ShowDownloadDialog(Window _window, string downloadurl, string downloadPath, string filename, string downloadinfo, string sha256 = "", bool closeDirectly = false, bool enableParalle = true, int headerMode = 1, bool useNativeHttpClient = false)

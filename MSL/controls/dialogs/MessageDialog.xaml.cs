@@ -92,7 +92,7 @@ namespace MSL.controls
                 storyboard.Completed += (s, a) =>
                 {
                     Visibility = Visibility.Collapsed;
-                    CloseDialog();
+                    CloseDialog?.Invoke();
                 };
 
                 storyboard.Begin();
