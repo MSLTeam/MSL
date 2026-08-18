@@ -42,6 +42,7 @@ namespace MSL.controls.ctrls_serverrunner
             "config-presets.json");
         private static readonly Dictionary<ServerRunner, List<ConfigPresetDefinition>> SessionConfigPresetsByWindow =
             new Dictionary<ServerRunner, List<ConfigPresetDefinition>>();
+        private static readonly object ConfigPresetFileLock = new object();
         private readonly string LegacyConfigPresetPath;
         private Dictionary<string, TextBox> configTextBoxes = new Dictionary<string, TextBox>();
         private readonly List<string> configKeyOrder = new List<string>();
@@ -749,51 +750,12 @@ namespace MSL.controls.ctrls_serverrunner
             _selectedConfigPreset = null;
             _configPresetsLoaded = true;
 
-            string sourcePath = ConfigPresetPath;
-            bool shouldMigrateLegacyFile = false;
-            if (!File.Exists(sourcePath) && File.Exists(LegacyConfigPresetPath))
-            {
-                sourcePath = LegacyConfigPresetPath;
-                shouldMigrateLegacyFile = true;
-            }
-
-            if (!File.Exists(sourcePath))
-            {
-                CacheSessionConfigPresets();
-                if (renderButtons)
-                    RenderConfigPresetButtons();
-                return;
-            }
-
             try
             {
-                var presets = JsonConvert.DeserializeObject<List<ConfigPresetDefinition>>(
-                    File.ReadAllText(sourcePath, Encoding.UTF8));
-                if (presets == null)
-                {
-                    CacheSessionConfigPresets();
-                    if (renderButtons)
-                        RenderConfigPresetButtons();
-                    return;
-                }
-
+                MergeLegacyPresetsIntoGlobal();
+                List<ConfigPresetDefinition> presets = ReadConfigPresetDefinitions(ConfigPresetPath);
                 foreach (var preset in presets)
                 {
-                    if (preset == null || string.IsNullOrWhiteSpace(preset.Name))
-                        continue;
-
-                    Dictionary<string, string> values = new Dictionary<string, string>(StringComparer.OrdinalIgnoreCase);
-                    if (preset.Values != null)
-                    {
-                        foreach (var value in preset.Values)
-                        {
-                            if (!string.IsNullOrWhiteSpace(value.Key))
-                                values[value.Key] = value.Value ?? string.Empty;
-                        }
-                    }
-
-                    preset.Name = preset.Name.Trim();
-                    preset.Values = values;
                     ConfigPresets.Add(preset);
                 }
 
@@ -804,8 +766,6 @@ namespace MSL.controls.ctrls_serverrunner
                 }
 
                 CacheSessionConfigPresets();
-                if (shouldMigrateLegacyFile && ConfigPresets.Count > 0)
-                    SaveConfigPresets();
             }
             catch (Exception ex)
             {
@@ -894,24 +854,132 @@ namespace MSL.controls.ctrls_serverrunner
             SetConfigPresetStatus($"已加载预设“{preset.Name}”，选中 {preset.Values.Count} 项。");
         }
 
-        private void SaveConfigPresets()
+        private List<ConfigPresetDefinition> UpsertConfigPreset(string name, IDictionary<string, string> values)
+        {
+            lock (ConfigPresetFileLock)
+            {
+                MergeLegacyPresetsIntoGlobalLocked();
+                List<ConfigPresetDefinition> latest = ReadConfigPresetDefinitions(ConfigPresetPath);
+                ConfigPresetDefinition preset = latest.FirstOrDefault(item =>
+                    string.Equals(item.Name, name, StringComparison.OrdinalIgnoreCase));
+                if (preset == null)
+                {
+                    preset = new ConfigPresetDefinition { Name = name };
+                    latest.Add(preset);
+                }
+
+                if (preset.Values == null)
+                    preset.Values = new Dictionary<string, string>(StringComparer.OrdinalIgnoreCase);
+                foreach (var value in values)
+                    preset.Values[value.Key] = value.Value ?? string.Empty;
+
+                WriteConfigPresetDefinitionsLocked(latest);
+                return CloneConfigPresets(latest);
+            }
+        }
+
+        private List<ConfigPresetDefinition> DeleteConfigPresetFromStorage(string name)
+        {
+            lock (ConfigPresetFileLock)
+            {
+                MergeLegacyPresetsIntoGlobalLocked();
+                List<ConfigPresetDefinition> latest = ReadConfigPresetDefinitions(ConfigPresetPath);
+                latest.RemoveAll(item => string.Equals(item.Name, name, StringComparison.OrdinalIgnoreCase));
+                WriteConfigPresetDefinitionsLocked(latest);
+                return CloneConfigPresets(latest);
+            }
+        }
+
+        private void MergeLegacyPresetsIntoGlobal()
+        {
+            lock (ConfigPresetFileLock)
+                MergeLegacyPresetsIntoGlobalLocked();
+        }
+
+        private void MergeLegacyPresetsIntoGlobalLocked()
+        {
+            if (!File.Exists(LegacyConfigPresetPath))
+                return;
+
+            string globalPath = Path.GetFullPath(ConfigPresetPath);
+            string legacyPath = Path.GetFullPath(LegacyConfigPresetPath);
+            if (string.Equals(globalPath, legacyPath, StringComparison.OrdinalIgnoreCase))
+                return;
+
+            List<ConfigPresetDefinition> legacy = ReadConfigPresetDefinitions(LegacyConfigPresetPath);
+            if (legacy.Count == 0)
+                return;
+
+            List<ConfigPresetDefinition> latest = ReadConfigPresetDefinitions(ConfigPresetPath);
+            bool changed = false;
+            foreach (var legacyPreset in legacy)
+            {
+                ConfigPresetDefinition existing = latest.FirstOrDefault(item =>
+                    string.Equals(item.Name, legacyPreset.Name, StringComparison.OrdinalIgnoreCase));
+                if (existing == null)
+                {
+                    latest.Add(CloneConfigPresets(new[] { legacyPreset }).First());
+                    changed = true;
+                    continue;
+                }
+
+                if (existing.Values == null)
+                    existing.Values = new Dictionary<string, string>(StringComparer.OrdinalIgnoreCase);
+                foreach (var value in legacyPreset.Values ?? new Dictionary<string, string>())
+                {
+                    if (!existing.Values.ContainsKey(value.Key))
+                    {
+                        existing.Values[value.Key] = value.Value ?? string.Empty;
+                        changed = true;
+                    }
+                }
+            }
+
+            if (changed)
+                WriteConfigPresetDefinitionsLocked(latest);
+        }
+
+        private static List<ConfigPresetDefinition> ReadConfigPresetDefinitions(string path)
+        {
+            if (!File.Exists(path))
+                return new List<ConfigPresetDefinition>();
+
+            List<ConfigPresetDefinition> presets = JsonConvert.DeserializeObject<List<ConfigPresetDefinition>>(
+                File.ReadAllText(path, Encoding.UTF8));
+            return NormalizeConfigPresets(presets);
+        }
+
+        private static List<ConfigPresetDefinition> NormalizeConfigPresets(IEnumerable<ConfigPresetDefinition> presets)
+        {
+            return presets == null
+                ? new List<ConfigPresetDefinition>()
+                : presets
+                    .Where(preset => preset != null && !string.IsNullOrWhiteSpace(preset.Name))
+                    .Select(preset => new ConfigPresetDefinition
+                    {
+                        Name = preset.Name.Trim(),
+                        Values = new Dictionary<string, string>(
+                            preset.Values ?? new Dictionary<string, string>(),
+                            StringComparer.OrdinalIgnoreCase)
+                    })
+                    .ToList();
+        }
+
+        private static void WriteConfigPresetDefinitionsLocked(IEnumerable<ConfigPresetDefinition> presets)
         {
             string directory = Path.GetDirectoryName(ConfigPresetPath);
             if (!string.IsNullOrEmpty(directory) && !Directory.Exists(directory))
                 Directory.CreateDirectory(directory);
 
-            string tempPath = ConfigPresetPath + ".tmp";
+            string tempPath = ConfigPresetPath + "." + Guid.NewGuid().ToString("N") + ".tmp";
             try
             {
-                string json = JsonConvert.SerializeObject(ConfigPresets.ToList(), Formatting.Indented);
+                string json = JsonConvert.SerializeObject(presets, Formatting.Indented);
                 File.WriteAllText(tempPath, json, new UTF8Encoding(false));
-
                 if (File.Exists(ConfigPresetPath))
                     File.Replace(tempPath, ConfigPresetPath, null);
                 else
                     File.Move(tempPath, ConfigPresetPath);
-
-                CacheSessionConfigPresets();
             }
             finally
             {
@@ -982,6 +1050,12 @@ namespace MSL.controls.ctrls_serverrunner
             {
                 ConfigPresetDefinition preset = ConfigPresets.FirstOrDefault(
                     item => string.Equals(item.Name, name, StringComparison.OrdinalIgnoreCase));
+                if (preset == null)
+                {
+                    MergeLegacyPresetsIntoGlobal();
+                    preset = ReadConfigPresetDefinitions(ConfigPresetPath).FirstOrDefault(
+                        item => string.Equals(item.Name, name, StringComparison.OrdinalIgnoreCase));
+                }
                 if (preset != null)
                 {
                     bool overwrite = await MagicShow.ShowMsgDialogAsync(
@@ -999,18 +1073,15 @@ namespace MSL.controls.ctrls_serverrunner
                         return;
                     }
                 }
-                else
-                {
-                    preset = new ConfigPresetDefinition { Name = name };
-                    ConfigPresets.Add(preset);
-                }
-
-                preset.Name = name;
-                preset.Values = values;
-                _selectedConfigPreset = preset;
-                SaveConfigPresets();
+                List<ConfigPresetDefinition> latest = UpsertConfigPreset(name, values);
+                ConfigPresets.Clear();
+                foreach (var latestPreset in CloneConfigPresets(latest))
+                    ConfigPresets.Add(latestPreset);
+                _selectedConfigPreset = ConfigPresets.FirstOrDefault(
+                    item => string.Equals(item.Name, name, StringComparison.OrdinalIgnoreCase));
+                CacheSessionConfigPresets();
                 RenderConfigPresetButtons();
-                SetConfigPresetStatus($"预设“{name}”已保存，共 {values.Count} 项。");
+                SetConfigPresetStatus($"预设“{name}”已保存，共 {_selectedConfigPreset?.Values.Count ?? values.Count} 项。");
             }
             catch (Exception ex)
             {
@@ -1073,9 +1144,12 @@ namespace MSL.controls.ctrls_serverrunner
             try
             {
                 ConfigPresetDefinition preset = _selectedConfigPreset;
-                ConfigPresets.Remove(preset);
+                List<ConfigPresetDefinition> latest = DeleteConfigPresetFromStorage(preset.Name);
+                ConfigPresets.Clear();
+                foreach (var latestPreset in CloneConfigPresets(latest))
+                    ConfigPresets.Add(latestPreset);
                 _selectedConfigPreset = null;
-                SaveConfigPresets();
+                CacheSessionConfigPresets();
                 ConfigPresetNameTextBox.Clear();
                 RenderConfigPresetButtons();
                 ConfigPresetItems.Clear();
@@ -1133,10 +1207,11 @@ namespace MSL.controls.ctrls_serverrunner
                     return "配置文件不存在！";
 
                 Encoding encoding = Functions.GetTextFileEncodingType(propertiesPath);
-                string[] lines = File.ReadAllLines(propertiesPath, encoding);
+                List<string> lines = File.ReadAllLines(propertiesPath, encoding).ToList();
+                HashSet<string> foundKeys = new HashSet<string>(StringComparer.OrdinalIgnoreCase);
                 bool hasChanges = false;
 
-                for (int i = 0; i < lines.Length; i++)
+                for (int i = 0; i < lines.Count; i++)
                 {
                     string trimmedLine = lines[i].Trim();
                     if (string.IsNullOrEmpty(trimmedLine) || trimmedLine.StartsWith("#"))
@@ -1150,6 +1225,7 @@ namespace MSL.controls.ctrls_serverrunner
                     if (!values.TryGetValue(key, out string newValue))
                         continue;
 
+                    foundKeys.Add(key);
                     newValue = newValue ?? string.Empty;
                     string oldValue = trimmedLine.Substring(separatorIndex + 1).Trim();
                     newValue = ConvertLegacyConfigValue(key, newValue, oldValue);
@@ -1157,6 +1233,15 @@ namespace MSL.controls.ctrls_serverrunner
                         continue;
 
                     lines[i] = key + "=" + newValue;
+                    hasChanges = true;
+                }
+
+                foreach (var value in values)
+                {
+                    if (foundKeys.Contains(value.Key))
+                        continue;
+
+                    lines.Add(value.Key + "=" + (value.Value ?? string.Empty));
                     hasChanges = true;
                 }
 

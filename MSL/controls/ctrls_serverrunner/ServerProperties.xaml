@@ -110,10 +110,11 @@
                             <ColumnDefinition Width="12"/>
                             <ColumnDefinition Width="1*" MinWidth="180"/>
                         </Grid.ColumnDefinitions>
-                        <ListView x:Name="ConfigPresetList" Height="300"
+                        <ListView x:Name="ConfigPresetList" MinHeight="150" MaxHeight="400" VerticalAlignment="Top"
                                   ItemsSource="{Binding ConfigPresetItems, ElementName=Root}"
                                   BorderThickness="0" Background="{DynamicResource ContentRegionBrush}"
                                   ScrollViewer.HorizontalScrollBarVisibility="Auto"
+                                  ScrollViewer.VerticalScrollBarVisibility="Auto"
                                   PreviewMouseLeftButtonDown="ConfigPresetList_PreviewMouseLeftButtonDown">
                             <ListView.View>
                                 <GridView>
