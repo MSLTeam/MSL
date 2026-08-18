@@ -57,7 +57,6 @@ namespace MSL
         private SRInstanceSettings _instanceSettingsPage;
         private SRMoreFunctions _moreFunctionsPage;
         private SRTimerTasks _timerTasksPage;
-        private bool _isDisposed;
 
         // 备份用
         private UIElement _savedContent;
@@ -111,19 +110,13 @@ namespace MSL
             MainGrid.Children.Add(loadingCircle);
             MainGrid.RegisterName("loadingBar", loadingCircle);
             await Task.Delay(50);
-            if (_isDisposed)
-                return;
 
             if (!await LoadingInfoEvent())
-                return;
-            if (_isDisposed)
                 return;
 
             _moreFunctionsPage.LoadFastCommands();
             _instanceSettingsPage.LoadServerProperties();
             await _instanceSettingsPage.LoadSettings();
-            if (_isDisposed)
-                return;
 
             // 系统资源监控：全局开关(ConfigStore.GetServerInfo) → 实例开关(ShowOccupancy)，两级控制
             if (ConfigStore.GetServerInfo && ServerService.InstanceConfig.ShowOccupancy)
@@ -133,8 +126,6 @@ namespace MSL
             }
 
             await Task.Delay(50);
-            if (_isDisposed)
-                return;
             MainGrid.Children.Remove(loadingCircle);
             MainGrid.UnregisterName("loadingBar");
 
@@ -192,10 +183,7 @@ namespace MSL
 
         public void DisposeRes()
         {
-            if (_isDisposed)
-                return;
-            _isDisposed = true;
-            _instanceSettingsPage?.ServerPropertiesInstance?.Dispose();
+            _instanceSettingsPage?.ServerPropertiesInstance?.ClearConfigPresetState();
             _dashboardPage?.CleanupSystemMonitoring();
             ServerService?.Dispose();
         }
@@ -283,8 +271,10 @@ namespace MSL
         {
             Dispatcher.Invoke(() =>
             {
-                _consolePage.ServerStartedEvent();
+                // 先同步“正在运行”的控件状态，再应用启动完成后的“已开服”和服务器详情。
+                // UpdateServerState(true) 会重置详情为“获取中”，因此必须放在成功回调之前。
                 _dashboardPage.UpdateServerState(true);
+                _consolePage.ServerStartedEvent();
             });
         }
 

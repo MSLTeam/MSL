@@ -81,7 +81,6 @@ namespace MSL.utils.Config
 
         /// <summary>所有实例，key 为字符串索引 "0","1"...</summary>
         private Dictionary<string, ServerInstance> _servers = new Dictionary<string, ServerInstance>();
-        private readonly object _serversLock = new object();
 
         #endregion
 
@@ -128,64 +127,33 @@ namespace MSL.utils.Config
 
         #region CRUD
 
-        public IReadOnlyDictionary<string, ServerInstance> All
-        {
-            get
-            {
-                lock (_serversLock)
-                    return new Dictionary<string, ServerInstance>(_servers);
-            }
-        }
+        public IReadOnlyDictionary<string, ServerInstance> All => _servers;
 
-        public bool TryGet(string id, out ServerInstance inst)
-        {
-            lock (_serversLock)
-                return _servers.TryGetValue(id, out inst);
-        }
+        public bool TryGet(string id, out ServerInstance inst) => _servers.TryGetValue(id, out inst);
 
-        public ServerInstance Get(string id)
-        {
-            lock (_serversLock)
-                return _servers.TryGetValue(id, out var inst) ? inst : null;
-        }
+        public ServerInstance Get(string id) =>
+            _servers.TryGetValue(id, out var inst) ? inst : null;
 
         /// <summary>添加或覆盖实例，返回分配的 id</summary>
         public string AddOrUpdate(string id, ServerInstance inst)
         {
-            lock (_serversLock)
-            {
-                _servers[id] = inst;
-                return id;
-            }
+            _servers[id] = inst;
+            return id;
         }
 
         /// <summary>自动分配下一个可用 id（0-based 字符串）并添加</summary>
         public string Add(ServerInstance inst)
         {
-            lock (_serversLock)
-            {
-                int next = 0;
-                while (_servers.ContainsKey(next.ToString())) next++;
-                string id = next.ToString();
-                _servers[id] = inst;
-                return id;
-            }
+            int next = 0;
+            while (_servers.ContainsKey(next.ToString())) next++;
+            string id = next.ToString();
+            _servers[id] = inst;
+            return id;
         }
 
-        public bool Remove(string id)
-        {
-            lock (_serversLock)
-                return _servers.Remove(id);
-        }
+        public bool Remove(string id) => _servers.Remove(id);
 
-        public int Count
-        {
-            get
-            {
-                lock (_serversLock)
-                    return _servers.Count;
-            }
-        }
+        public int Count => _servers.Count;
 
         #endregion
 
@@ -194,13 +162,10 @@ namespace MSL.utils.Config
         /// <summary>供 ConfigWriter 序列化整个文件</summary>
         internal JObject ToJObject()
         {
-            lock (_serversLock)
-            {
-                var root = new JObject();
-                foreach (var kv in _servers)
-                    root[kv.Key] = JObject.FromObject(kv.Value);
-                return root;
-            }
+            var root = new JObject();
+            foreach (var kv in _servers)
+                root[kv.Key] = JObject.FromObject(kv.Value);
+            return root;
         }
 
         #endregion

@@ -45,8 +45,8 @@
                             <!-- 下载信息和状态 -->
                             <WrapPanel Grid.Row="3" Grid.Column="0" Orientation="Horizontal" Margin="0,5,0,0">
                                 <TextBlock Style="{StaticResource MagicText}" Margin="0,0,15,0">
-                                    <Run>Speed: </Run><Run Text="{Binding SpeedText}"/>
-                                    <Run> Remaining: </Run><Run Text="{Binding RemainingText}"/>
+                                    <Run Text="{Binding [SR_Speed], Source={x:Static langs:LanguageManager.Instance}, Mode=OneWay}"/><Run Text="{Binding SpeedText}"/>
+                                    <Run Text="{Binding [SR_RemainingTime], Source={x:Static langs:LanguageManager.Instance}, Mode=OneWay}"/><Run Text="{Binding RemainingText}"/>
                                 </TextBlock>
                                 <TextBlock Text="{Binding StatusText}" Style="{StaticResource MagicText}" TextWrapping="Wrap"/>
                             </WrapPanel>
