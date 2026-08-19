@@ -73,9 +73,9 @@
                             <WrapPanel Grid.Row="2" Grid.Column="0" Orientation="Horizontal" Margin="0,5,0,0">
                                 <TextBlock Style="{StaticResource MagicText}" Margin="0,0,15,0" VerticalAlignment="Center">
                                     <Run Text="{Binding Progress.ProgressPercentage}"/><Run Text="%"/>
-                                    <Run Text="  Speed: "/>
+                                    <Run Text="  "/><Run Text="{Binding [SR_Speed], Source={x:Static langs:LanguageManager.Instance}, Mode=OneWay}"/>
                                     <Run Text="{Binding SpeedText}"/>
-                                    <Run Text="  Remaining: "/>
+                                    <Run Text="  "/><Run Text="{Binding [SR_RemainingTime], Source={x:Static langs:LanguageManager.Instance}, Mode=OneWay}"/>
                                     <Run Text="{Binding RemainingText}"/>
                                 </TextBlock>
                                 <TextBlock Text="{Binding StatusText}" Style="{StaticResource MagicText}"

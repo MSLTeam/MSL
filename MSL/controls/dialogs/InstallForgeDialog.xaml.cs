@@ -1,4 +1,5 @@
 using ICSharpCode.SharpZipLib.Zip;
+using MSL.langs;
 using MSL.utils;
 using Newtonsoft.Json.Linq;
 using System;
@@ -48,11 +49,16 @@ namespace MSL.controls
         private async void UserControl_Loaded(object sender, RoutedEventArgs e)
         {
             LogHelper.Write.Info("开始加载Forge安装模块，路径：" + InstallPath + " ，安装器：" + ForgePath + " ，Java路径：" + JavaPath);
-            InstallDialogTitle.Text = $"{(ForgePath.Contains("neoforge") ? "NeoForge" : "Forge")}安装器";
+            string installerName = ForgePath.Contains("neoforge")
+                ? LanguageManager.Instance["SR_NeoForgeInstaller"]
+                : LanguageManager.Instance["SR_ForgeInstallerTitle"];
+            InstallDialogTitle.Text = installerName;
             File.Create(InstallPath + "/msl-installForge.log").Close();
             logWriter = File.AppendText(InstallPath + "/msl-installForge.log");
-            Log_in($"准备安装{(ForgePath.Contains("neoforge") ? "NeoForge" : "Forge")}···");
-            Log_in("5秒后开始安装···");
+            Log_in(string.Format(
+                LanguageManager.Instance["SR_ForgePrepareInstall"],
+                ForgePath.Contains("neoforge") ? "NeoForge" : "Forge"));
+            Log_in(LanguageManager.Instance["SR_InstallCountdown"]);
             await Task.Delay(5000);
             Mirror.IsEnabled = false;
             MultiThreadCount.IsEnabled = false;
@@ -103,7 +109,9 @@ namespace MSL.controls
                 {
                     Directory.CreateDirectory(TempPath);
                 }
-                Status_change("正在解压Forge安装器···");
+                Status_change(string.Format(
+                    LanguageManager.Instance["SR_ExtractingInstaller"],
+                    ForgePath.Contains("neoforge") ? "NeoForge" : "Forge"));
                 Log_in("开始解压forge安装器！");
                 bool unzip = ExtractJar(ForgePath, TempPath);//解压
                 if (!unzip)
@@ -154,7 +162,7 @@ namespace MSL.controls
                 var downloadManager = DownloadManager.Instance;
 
                 //第二步，下载原版核心
-                Status_change("下载原版服务端核心");
+                Status_change(LanguageManager.Instance["SR_DownloadVanillaCore"]);
                 Log_in("正在下载原版服务端核心...");
                 string serverJarPath;
                 string vanillaUrl;
@@ -267,7 +275,7 @@ namespace MSL.controls
                 }
 
                 //下载运行库
-                Status_change("正在下载运行Lib，请稍候……");
+                Status_change(LanguageManager.Instance["SR_DownloadRuntimeLib"]);
                 Log_in("正在下载运行Lib···");
 
                 // 创建下载组
@@ -408,7 +416,7 @@ namespace MSL.controls
 
                 Log_in("下载运行Lib成功！");
                 await Task.Delay(1000);
-                Status_change("正在处理编译参数···");
+                Status_change(LanguageManager.Instance["SR_ProcessCompileArgs"]);
                 Log_in("正在处理编译参数");
 
                 if (versionType == 1 && ForgePath.Contains("neoforge") == false) //只有①需要复制这玩意
@@ -504,7 +512,7 @@ namespace MSL.controls
                     if (versionType < 4 && CompareMinecraftVersions(McVersion,"1.21.11") < 1) // 低版本不下载映射表
                     {
                         // 自动DOWNLOAD_MOJMAPS
-                        Status_change("正在下载MC映射表，请耐心等待……");
+                        Status_change(LanguageManager.Instance["SR_DownloadMcMappings"]);
                         string mappings_file_path = ReplaceStr("{MOJMAPS}".Replace("/", "\\"));
                         try
                         {
@@ -577,7 +585,7 @@ namespace MSL.controls
                         }
                     }
 
-                    Status_change("正在编译，请耐心等待……");
+                    Status_change(LanguageManager.Instance["SR_Compiling"]);
                     ChangePlanButton.IsEnabled = false;
                     CancelButton.IsEnabled = false;
                     Log_in("正在编译，请耐心等待……\n");
@@ -614,7 +622,7 @@ namespace MSL.controls
                 }
 
                 Log_in("安装结束！");
-                Status_change("结束！本对话框将自动关闭！");
+                Status_change(LanguageManager.Instance["SR_InstallFinished"]);
                 try
                 {
                     log.Clear();

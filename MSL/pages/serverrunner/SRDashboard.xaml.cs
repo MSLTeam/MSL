@@ -421,32 +421,47 @@ namespace MSL.pages.serverrunner
                 int dc1 = config.IndexOf("difficulty=") + 11;
                 string dc2 = config.Substring(dc1);
                 GameDifficultyText = dc2.Substring(0, dc2.IndexOf("\n"));
-                int ip1 = config.IndexOf("server-ip=") + 10;
-                string ip2 = config.Substring(ip1);
-                string serverIP = ip2.Substring(0, ip2.IndexOf("\n"));
+                string serverIP = GetServerPropertyValue(config, "server-ip");
+                string serverPort = GetServerPropertyValue(config, "server-port");
 
-                int sp1 = config.IndexOf("server-port=") + 12;
-                string sp2 = config.Substring(sp1);
-                string serverPort = sp2.Substring(0, sp2.IndexOf("\n"));
-                ServerIPText = serverIP + ":" + serverPort;
-                if (string.IsNullOrEmpty(serverIP))
+                // server-ip 为空是 Minecraft 的默认配置；部分配置会写成单独的 0。
+                if (string.IsNullOrWhiteSpace(serverIP) || serverIP == "0")
                 {
                     serverIP = "127.0.0.1";
                 }
-                if (serverPort == "25565")
-                {
-                    serverPort = string.Empty;
-                }
-                else
-                {
-                    serverPort = ":" + serverPort;
-                }
-                LocalIPText = serverIP + serverPort;
+
+                // 仪表盘的“服务器IP”栏展示服务器端口；本地进入地址单独展示实际连接地址。
+                ServerIPText = string.IsNullOrWhiteSpace(serverPort) ? "25565" : serverPort;
+                LocalIPText = serverPort == "25565"
+                    ? serverIP
+                    : FormatServerEndpoint(serverIP, serverPort);
             }
             catch
             {
                 Growl.Info(LanguageManager.Instance["SR_ServerInfoErr"]);
             }
+        }
+
+        private static string GetServerPropertyValue(string config, string propertyName)
+        {
+            string prefix = propertyName + "=";
+            foreach (string line in config.Split('\n'))
+            {
+                string trimmedLine = line.Trim();
+                if (trimmedLine.StartsWith(prefix, StringComparison.OrdinalIgnoreCase))
+                {
+                    return trimmedLine.Substring(prefix.Length).Trim();
+                }
+            }
+
+            return string.Empty;
+        }
+
+        private static string FormatServerEndpoint(string serverIP, string serverPort)
+        {
+            if (string.IsNullOrWhiteSpace(serverIP)) return serverPort?.Trim() ?? string.Empty;
+            if (string.IsNullOrWhiteSpace(serverPort)) return serverIP.Trim();
+            return $"{serverIP.Trim()}:{serverPort.Trim()}";
         }
 
         public void HandlePlayerListAdd(string playerName)

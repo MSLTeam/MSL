@@ -167,6 +167,7 @@ namespace MSL
 
         private void Window_Closing(object sender, System.ComponentModel.CancelEventArgs e)
         {
+            _instanceSettingsPage?.ServerPropertiesInstance?.ClearConfigPresetState();
             if (ServerList.RunningServers.Contains(RserverID))
             {
                 e.Cancel = true;
@@ -182,6 +183,7 @@ namespace MSL
 
         public void DisposeRes()
         {
+            _instanceSettingsPage?.ServerPropertiesInstance?.ClearConfigPresetState();
             _dashboardPage?.CleanupSystemMonitoring();
             ServerService?.Dispose();
         }
@@ -269,8 +271,10 @@ namespace MSL
         {
             Dispatcher.Invoke(() =>
             {
-                _consolePage.ServerStartedEvent();
+                // 先同步“正在运行”的控件状态，再应用启动完成后的“已开服”和服务器详情。
+                // UpdateServerState(true) 会重置详情为“获取中”，因此必须放在成功回调之前。
                 _dashboardPage.UpdateServerState(true);
+                _consolePage.ServerStartedEvent();
             });
         }
 
