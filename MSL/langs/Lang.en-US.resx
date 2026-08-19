@@ -3735,6 +3735,45 @@ Please go to "Mapping" - "My MSLFrp" to login.</value>
   <data name="Refresh" xml:space="preserve">
     <value>Refresh</value>
   </data>
+  <data name="Form_DownloadServer_ServerList" xml:space="preserve">
+    <value>Server Core List:</value>
+  </data>
+  <data name="Form_DownloadServer_VersionList" xml:space="preserve">
+    <value>Version List:</value>
+  </data>
+  <data name="Form_DownloadServer_BuildList" xml:space="preserve">
+    <value>Build List:</value>
+  </data>
+  <data name="SR_ForgeInstallerTitle" xml:space="preserve">
+    <value>Forge Installer</value>
+  </data>
+  <data name="SR_ForgePrepareInstall" xml:space="preserve">
+    <value>Preparing to install {0}...</value>
+  </data>
+  <data name="SR_InstallCountdown" xml:space="preserve">
+    <value>Installation will start in 5 seconds...</value>
+  </data>
+  <data name="SR_ExtractingInstaller" xml:space="preserve">
+    <value>Extracting the {0} installer...</value>
+  </data>
+  <data name="SR_DownloadVanillaCore" xml:space="preserve">
+    <value>Downloading vanilla server core</value>
+  </data>
+  <data name="SR_DownloadRuntimeLib" xml:space="preserve">
+    <value>Downloading runtime libraries, please wait...</value>
+  </data>
+  <data name="SR_ProcessCompileArgs" xml:space="preserve">
+    <value>Processing compile arguments...</value>
+  </data>
+  <data name="SR_DownloadMcMappings" xml:space="preserve">
+    <value>Downloading Minecraft mappings, please wait...</value>
+  </data>
+  <data name="SR_Compiling" xml:space="preserve">
+    <value>Compiling, please wait...</value>
+  </data>
+  <data name="SR_InstallFinished" xml:space="preserve">
+    <value>Finished! This dialog will close automatically!</value>
+  </data>
   <data name="Information" xml:space="preserve">
     <value>Information</value>
   </data>

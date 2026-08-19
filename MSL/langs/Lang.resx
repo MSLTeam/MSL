@@ -3741,6 +3741,45 @@ ID: {1} 远程端口: {2}</value>
   <data name="Refresh" xml:space="preserve">
     <value>刷新</value>
   </data>
+  <data name="Form_DownloadServer_ServerList" xml:space="preserve">
+    <value>服务端列表：</value>
+  </data>
+  <data name="Form_DownloadServer_VersionList" xml:space="preserve">
+    <value>版本列表：</value>
+  </data>
+  <data name="Form_DownloadServer_BuildList" xml:space="preserve">
+    <value>构建列表：</value>
+  </data>
+  <data name="SR_ForgeInstallerTitle" xml:space="preserve">
+    <value>Forge安装器</value>
+  </data>
+  <data name="SR_ForgePrepareInstall" xml:space="preserve">
+    <value>准备安装{0}···</value>
+  </data>
+  <data name="SR_InstallCountdown" xml:space="preserve">
+    <value>5秒后开始安装···</value>
+  </data>
+  <data name="SR_ExtractingInstaller" xml:space="preserve">
+    <value>正在解压{0}安装器···</value>
+  </data>
+  <data name="SR_DownloadVanillaCore" xml:space="preserve">
+    <value>下载原版服务端核心</value>
+  </data>
+  <data name="SR_DownloadRuntimeLib" xml:space="preserve">
+    <value>正在下载运行Lib，请稍候……</value>
+  </data>
+  <data name="SR_ProcessCompileArgs" xml:space="preserve">
+    <value>正在处理编译参数···</value>
+  </data>
+  <data name="SR_DownloadMcMappings" xml:space="preserve">
+    <value>正在下载MC映射表，请耐心等待……</value>
+  </data>
+  <data name="SR_Compiling" xml:space="preserve">
+    <value>正在编译，请耐心等待……</value>
+  </data>
+  <data name="SR_InstallFinished" xml:space="preserve">
+    <value>结束！本对话框将自动关闭！</value>
+  </data>
   <data name="Information" xml:space="preserve">
     <value>信息</value>
   </data>
