@@ -1,5 +1,6 @@
 using HandyControl.Controls;
 using Microsoft.Win32;
+using MSL.langs;
 using MSL.utils;
 using Newtonsoft.Json;
 using Newtonsoft.Json.Linq;
@@ -113,7 +114,7 @@ namespace MSL.controls.ctrls_serverrunner
         private void refreahServerConfig_Click(object sender, RoutedEventArgs e)
         {
             RefreshServerConfig();
-            Growl.Success("刷新成功！");
+            Growl.Success(LanguageManager.Instance["Page_ServerList_RefreshSuccess"]);
         }
 
         public void RefreshServerConfig()
@@ -133,7 +134,7 @@ namespace MSL.controls.ctrls_serverrunner
                     return;
                 }
 
-                changeServerPropertiesLab.Text = "服务器配置信息";
+                changeServerPropertiesLab.Text = LanguageManager.Instance["SR_ServerConfig"];
                 saveServerConfig.IsEnabled = true;
                 LoadSelectedConfigPresetButton.IsEnabled = true;
                 configPresetButton.IsEnabled = true;
@@ -280,13 +281,19 @@ namespace MSL.controls.ctrls_serverrunner
             {
                 if (FatherService.CheckServerRunning())
                 {
-                    MagicShow.ShowMsgDialog(FatherControl, "服务器运行时无法调整服务器功能！", "错误");
+                    MagicShow.ShowMsgDialog(
+                        FatherControl,
+                        LanguageManager.Instance["SR_CantChangeWhileRunning"],
+                        LanguageManager.Instance["Error"]);
                     return;
                 }
                 string propertiesPath = Path.Combine(Rserverbase, "server.properties");
                 if (!File.Exists(propertiesPath))
                 {
-                    MagicShow.ShowMsgDialog(FatherControl, "配置文件不存在！", "错误");
+                    MagicShow.ShowMsgDialog(
+                        FatherControl,
+                        LanguageManager.Instance["SR_ServerConfigFileMissing"],
+                        LanguageManager.Instance["Error"]);
                     return;
                 }
 
@@ -338,22 +345,34 @@ namespace MSL.controls.ctrls_serverrunner
                             File.WriteAllLines(propertiesPath, lines, encoding);
                         }
 
-                        MagicShow.ShowMsgDialog(FatherControl, "保存成功！", "信息");
+                        MagicShow.ShowMsgDialog(
+                            FatherControl,
+                            LanguageManager.Instance["SR_SaveSuccess"],
+                            LanguageManager.Instance["Information"]);
                         RefreshServerConfig(); // 重新加载配置
                     }
                     catch (Exception ex)
                     {
-                        MagicShow.ShowMsgDialog(FatherControl, "保存失败！请检查服务器是否关闭！\n错误代码：" + ex.Message, "错误");
+                        MagicShow.ShowMsgDialog(
+                            FatherControl,
+                            string.Format(LanguageManager.Instance["SR_ServerConfigSaveFailed"], ex.Message),
+                            LanguageManager.Instance["Error"]);
                     }
                 }
                 else
                 {
-                    MagicShow.ShowMsgDialog(FatherControl, "没有需要保存的更改！", "信息");
+                    MagicShow.ShowMsgDialog(
+                        FatherControl,
+                        LanguageManager.Instance["SR_ServerConfigNoChanges"],
+                        LanguageManager.Instance["Information"]);
                 }
             }
             catch (Exception ex)
             {
-                MagicShow.ShowMsgDialog(FatherControl, "保存过程中发生错误！\n错误代码：" + ex.Message, "错误");
+                MagicShow.ShowMsgDialog(
+                    FatherControl,
+                    string.Format(LanguageManager.Instance["SR_ServerConfigSaveError"], ex.Message),
+                    LanguageManager.Instance["Error"]);
             }
         }
 
@@ -363,12 +382,20 @@ namespace MSL.controls.ctrls_serverrunner
             {
                 if (FatherService.CheckServerRunning())
                 {
-                    MagicShow.ShowMsgDialog(FatherControl, "服务器运行时无法更换图标！", "错误");
+                    MagicShow.ShowMsgDialog(
+                        FatherControl,
+                        LanguageManager.Instance["SR_ServerIconRunning"],
+                        LanguageManager.Instance["Error"]);
                     return;
                 }
                 if (File.Exists(Rserverbase + "\\server-icon.png"))
                 {
-                    bool dialogret = await MagicShow.ShowMsgDialogAsync(FatherControl, "检测到服务器已设置有图标，是否删除该图标？", "警告", true, "取消");
+                    bool dialogret = await MagicShow.ShowMsgDialogAsync(
+                        FatherControl,
+                        LanguageManager.Instance["SR_ServerIconDeleteConfirm"],
+                        LanguageManager.Instance["Warning"],
+                        true,
+                        LanguageManager.Instance["Cancel"]);
                     if (dialogret)
                     {
                         try
@@ -377,10 +404,18 @@ namespace MSL.controls.ctrls_serverrunner
                         }
                         catch (Exception ex)
                         {
-                            MagicShow.ShowMsgDialog(FatherControl, "图标删除失败！请检查服务器是否关闭！\n错误代码：" + ex.Message, "错误");
+                            MagicShow.ShowMsgDialog(
+                                FatherControl,
+                                string.Format(LanguageManager.Instance["SR_ServerIconDeleteFailed"], ex.Message),
+                                LanguageManager.Instance["Error"]);
                             return;
                         }
-                        bool _dialogret = await MagicShow.ShowMsgDialogAsync(FatherControl, "原图标已删除，是否继续操作？", "提示", true, "取消");
+                        bool _dialogret = await MagicShow.ShowMsgDialogAsync(
+                            FatherControl,
+                            LanguageManager.Instance["SR_ServerIconDeletedContinue"],
+                            LanguageManager.Instance["Tip"],
+                            true,
+                            LanguageManager.Instance["Cancel"]);
                         if (!_dialogret)
                         {
                             return;
@@ -392,12 +427,15 @@ namespace MSL.controls.ctrls_serverrunner
                     }
                 }
 
-                await MagicShow.ShowMsgDialogAsync(FatherControl, "请先准备一张64*64像素的图片（格式为png），准备完成后点击确定以继续", "如何操作？");
+                await MagicShow.ShowMsgDialogAsync(
+                    FatherControl,
+                    LanguageManager.Instance["SR_ServerIconPrepare"],
+                    LanguageManager.Instance["SR_ServerIconHowTo"]);
                 OpenFileDialog openfile = new OpenFileDialog
                 {
                     InitialDirectory = AppDomain.CurrentDomain.BaseDirectory,
-                    Title = "请选择文件",
-                    Filter = "PNG图像|*.png"
+                    Title = LanguageManager.Instance["SR_SelectFile"],
+                    Filter = LanguageManager.Instance["SR_PngImageFilter"]
                 };
                 var res = openfile.ShowDialog();
                 if (res == true)
@@ -405,11 +443,17 @@ namespace MSL.controls.ctrls_serverrunner
                     try
                     {
                         File.Copy(openfile.FileName, Rserverbase + "\\server-icon.png", true);
-                        MagicShow.ShowMsgDialog(FatherControl, "图标更换完成！", "信息");
+                        MagicShow.ShowMsgDialog(
+                            FatherControl,
+                            LanguageManager.Instance["SR_ServerIconChanged"],
+                            LanguageManager.Instance["Information"]);
                     }
                     catch (Exception ex)
                     {
-                        MagicShow.ShowMsgDialog(FatherControl, "图标更换失败！请检查服务器是否关闭！\n错误代码：" + ex.Message, "错误");
+                        MagicShow.ShowMsgDialog(
+                            FatherControl,
+                            string.Format(LanguageManager.Instance["SR_ServerIconChangeFailed"], ex.Message),
+                            LanguageManager.Instance["Error"]);
                     }
                 }
             }
@@ -425,17 +469,25 @@ namespace MSL.controls.ctrls_serverrunner
             {
                 if (FatherService.CheckServerRunning())
                 {
-                    MagicShow.ShowMsgDialog(FatherControl, "服务器运行时无法更换地图！", "错误");
+                    MagicShow.ShowMsgDialog(
+                        FatherControl,
+                        LanguageManager.Instance["SR_WorldMapRunning"],
+                        LanguageManager.Instance["Error"]);
                     return;
                 }
                 string levelName = GetConfigValue("level-name") ?? "world";
 
                 if (Directory.Exists(Rserverbase + @"\" + levelName))
                 {
-                    if (await MagicShow.ShowMsgDialogAsync(FatherControl, "点击确定后，MSL将删除原先主世界地图（删除后，地图将从电脑上彻底消失，如有必要请提前备份！）\n点击取消以中止操作", "警告", true, "取消"))
+                    if (await MagicShow.ShowMsgDialogAsync(
+                        FatherControl,
+                        LanguageManager.Instance["SR_WorldMapDeleteOverworldConfirm"],
+                        LanguageManager.Instance["Warning"],
+                        true,
+                        LanguageManager.Instance["Cancel"]))
                     {
                         MagicDialog dialog = new MagicDialog();
-                        dialog.ShowTextDialog(FatherControl, "删除中，请稍候");
+                        dialog.ShowTextDialog(FatherControl, LanguageManager.Instance["SR_WorldMapDeleting"]);
                         await Task.Run(() =>
                         {
                             DirectoryInfo di = new DirectoryInfo(Rserverbase + @"\" + levelName);
@@ -450,10 +502,15 @@ namespace MSL.controls.ctrls_serverrunner
 
                     if (Directory.Exists(Rserverbase + @"\" + levelName + "_nether"))
                     {
-                        if (await MagicShow.ShowMsgDialogAsync(FatherControl, "MSL同时检测到了下界地图，是否一并删除？\n删除后，地图将从电脑上彻底消失！", "警告", true, "取消"))
+                        if (await MagicShow.ShowMsgDialogAsync(
+                            FatherControl,
+                            LanguageManager.Instance["SR_WorldMapDeleteNetherConfirm"],
+                            LanguageManager.Instance["Warning"],
+                            true,
+                            LanguageManager.Instance["Cancel"]))
                         {
                             MagicDialog dialog = new MagicDialog();
-                            dialog.ShowTextDialog(FatherControl, "删除中，请稍候");
+                            dialog.ShowTextDialog(FatherControl, LanguageManager.Instance["SR_WorldMapDeleting"]);
                             await Task.Run(() =>
                             {
                                 DirectoryInfo di = new DirectoryInfo(Rserverbase + @"\" + levelName + "_nether");
@@ -465,10 +522,15 @@ namespace MSL.controls.ctrls_serverrunner
 
                     if (Directory.Exists(Rserverbase + @"\" + levelName + "_the_end"))
                     {
-                        if (await MagicShow.ShowMsgDialogAsync(FatherControl, "MSL同时检测到了末地地图，是否一并删除？\n删除后，地图将从电脑上彻底消失！", "警告", true, "取消"))
+                        if (await MagicShow.ShowMsgDialogAsync(
+                            FatherControl,
+                            LanguageManager.Instance["SR_WorldMapDeleteEndConfirm"],
+                            LanguageManager.Instance["Warning"],
+                            true,
+                            LanguageManager.Instance["Cancel"]))
                         {
                             MagicDialog dialog = new MagicDialog();
-                            dialog.ShowTextDialog(FatherControl, "删除中，请稍候");
+                            dialog.ShowTextDialog(FatherControl, LanguageManager.Instance["SR_WorldMapDeleting"]);
                             await Task.Run(() =>
                             {
                                 DirectoryInfo di = new DirectoryInfo(Rserverbase + @"\" + levelName + "_the_end");
@@ -478,25 +540,36 @@ namespace MSL.controls.ctrls_serverrunner
                         }
                     }
 
-                    if (await MagicShow.ShowMsgDialogAsync(FatherControl, "相关地图已经成功删除！是否选择新存档进行导入？（如果不导入而直接开服，服务器将会重新创建一个新世界）", "提示", true, "取消"))
+                    if (await MagicShow.ShowMsgDialogAsync(
+                        FatherControl,
+                        LanguageManager.Instance["SR_WorldMapDeletedImportPrompt"],
+                        LanguageManager.Instance["Tip"],
+                        true,
+                        LanguageManager.Instance["Cancel"]))
                     {
                         System.Windows.Forms.FolderBrowserDialog dialog = new System.Windows.Forms.FolderBrowserDialog
                         {
-                            Description = "请选择地图文件夹(或解压后的文件夹)"
+                            Description = LanguageManager.Instance["SR_WorldMapFolderDescription"]
                         };
                         if (dialog.ShowDialog() == System.Windows.Forms.DialogResult.OK)
                         {
                             try
                             {
                                 MagicDialog _dialog = new MagicDialog();
-                                _dialog.ShowTextDialog(FatherControl, "导入中，请稍候");
+                                _dialog.ShowTextDialog(FatherControl, LanguageManager.Instance["SR_WorldMapImporting"]);
                                 await Functions.MoveFolder(dialog.SelectedPath, Rserverbase + @"\" + levelName, false);
                                 _dialog.CloseTextDialog();
-                                MagicShow.ShowMsgDialog(FatherControl, "导入世界成功！源存档目录您可手动进行删除！", "信息");
+                                MagicShow.ShowMsgDialog(
+                                    FatherControl,
+                                    LanguageManager.Instance["SR_WorldMapImportSuccess"],
+                                    LanguageManager.Instance["Information"]);
                             }
                             catch (Exception ex)
                             {
-                                MagicShow.ShowMsgDialog(FatherControl, "导入世界失败！\n错误代码：" + ex.Message, "错误");
+                                MagicShow.ShowMsgDialog(
+                                    FatherControl,
+                                    string.Format(LanguageManager.Instance["SR_WorldMapImportFailed"], ex.Message),
+                                    LanguageManager.Instance["Error"]);
                             }
                         }
                     }
@@ -505,21 +578,27 @@ namespace MSL.controls.ctrls_serverrunner
                 {
                     System.Windows.Forms.FolderBrowserDialog dialog = new System.Windows.Forms.FolderBrowserDialog
                     {
-                        Description = "请选择地图文件夹(或解压后的文件夹)"
+                        Description = LanguageManager.Instance["SR_WorldMapFolderDescription"]
                     };
                     if (dialog.ShowDialog() == System.Windows.Forms.DialogResult.OK)
                     {
                         try
                         {
                             MagicDialog _dialog = new MagicDialog();
-                            _dialog.ShowTextDialog(FatherControl, "导入中，请稍候");
+                            _dialog.ShowTextDialog(FatherControl, LanguageManager.Instance["SR_WorldMapImporting"]);
                             await Functions.MoveFolder(dialog.SelectedPath, Rserverbase + @"\" + levelName, false);
                             _dialog.CloseTextDialog();
-                            MagicShow.ShowMsgDialog(FatherControl, "导入世界成功！源存档目录您可手动进行删除！", "信息");
+                            MagicShow.ShowMsgDialog(
+                                FatherControl,
+                                LanguageManager.Instance["SR_WorldMapImportSuccess"],
+                                LanguageManager.Instance["Information"]);
                         }
                         catch (Exception ex)
                         {
-                            MagicShow.ShowMsgDialog(FatherControl, "导入世界失败！\n错误代码：" + ex.Message, "错误");
+                            MagicShow.ShowMsgDialog(
+                                FatherControl,
+                                string.Format(LanguageManager.Instance["SR_WorldMapImportFailed"], ex.Message),
+                                LanguageManager.Instance["Error"]);
                         }
                     }
                 }
@@ -547,7 +626,10 @@ namespace MSL.controls.ctrls_serverrunner
                 Dictionary<string, string> currentValues = GetCurrentConfigValues();
                 if (currentValues.Count == 0)
                 {
-                    MagicShow.ShowMsgDialog(FatherControl, "未找到 server.properties，无法创建配置预设！", "提示");
+                    MagicShow.ShowMsgDialog(
+                        FatherControl,
+                        LanguageManager.Instance["SR_ConfigPresetNoFile"],
+                        LanguageManager.Instance["Tip"]);
                     return;
                 }
 
@@ -560,11 +642,14 @@ namespace MSL.controls.ctrls_serverrunner
                 ConfigPresetNameTextBox.IsReadOnly = false;
                 SaveConfigPresetButton.Visibility = Visibility.Visible;
                 ConfigPresetPanel.Visibility = Visibility.Visible;
-                SetConfigPresetStatus("正在添加新预设，默认选择全部配置值。");
+                SetConfigPresetStatus(LanguageManager.Instance["SR_ConfigPresetAddHint"]);
             }
             catch (Exception ex)
             {
-                MagicShow.ShowMsgDialog(FatherControl, "加载配置预设失败：\n" + ex.Message, "错误");
+                MagicShow.ShowMsgDialog(
+                    FatherControl,
+                    string.Format(LanguageManager.Instance["SR_ConfigPresetLoadFailed"], ex.Message),
+                    LanguageManager.Instance["Error"]);
             }
         }
 
@@ -661,7 +746,7 @@ namespace MSL.controls.ctrls_serverrunner
             }
             catch (Exception ex)
             {
-                SetConfigPresetStatus("预设文件读取失败：" + ex.Message);
+                SetConfigPresetStatus(string.Format(LanguageManager.Instance["SR_ConfigPresetLoadFailed"], ex.Message));
             }
 
             RenderConfigPresetButtons();
@@ -743,7 +828,10 @@ namespace MSL.controls.ctrls_serverrunner
             }
 
             ConfigPresetNameTextBox.Text = preset.Name;
-            SetConfigPresetStatus($"已加载预设“{preset.Name}”，选中 {preset.Values.Count} 项。");
+            SetConfigPresetStatus(string.Format(
+                LanguageManager.Instance["SR_ConfigPresetLoaded"],
+                preset.Name,
+                preset.Values.Count));
             SetExistingConfigPresetActionsVisibility(Visibility.Visible);
         }
 
@@ -900,7 +988,7 @@ namespace MSL.controls.ctrls_serverrunner
             string name = ConfigPresetNameTextBox.Text?.Trim();
             if (string.IsNullOrWhiteSpace(name))
             {
-                SetConfigPresetStatus("请输入预设名称。");
+                SetConfigPresetStatus(LanguageManager.Instance["SR_ConfigPresetNameRequired"]);
                 ConfigPresetNameTextBox.Focus();
                 return;
             }
@@ -908,7 +996,7 @@ namespace MSL.controls.ctrls_serverrunner
             Dictionary<string, string> values = GetSelectedConfigPresetValues();
             if (values.Count == 0)
             {
-                SetConfigPresetStatus("请至少选择一个配置值。");
+                SetConfigPresetStatus(LanguageManager.Instance["SR_ConfigPresetSelectionRequired"]);
                 return;
             }
 
@@ -926,16 +1014,16 @@ namespace MSL.controls.ctrls_serverrunner
                 {
                     bool overwrite = await MagicShow.ShowMsgDialogAsync(
                         FatherControl,
-                        $"预设“{name}”已经存在，是否覆盖原预设？",
-                        "覆盖预设",
+                        string.Format(LanguageManager.Instance["SR_ConfigPresetOverwriteConfirm"], name),
+                        LanguageManager.Instance["SR_ConfigPresetOverwriteTitle"],
                         true,
-                        "取消",
-                        "覆盖",
+                        LanguageManager.Instance["Cancel"],
+                        LanguageManager.Instance["SR_ConfigPresetOverwrite"],
                         null,
                         true);
                     if (!overwrite)
                     {
-                        SetConfigPresetStatus("已取消覆盖预设。");
+                        SetConfigPresetStatus(LanguageManager.Instance["SR_ConfigPresetOverwriteCanceled"]);
                         return;
                     }
                 }
@@ -949,11 +1037,14 @@ namespace MSL.controls.ctrls_serverrunner
                 ConfigPresetNameTextBox.IsReadOnly = true;
                 SetExistingConfigPresetActionsVisibility(Visibility.Visible);
                 RenderConfigPresetButtons();
-                SetConfigPresetStatus($"预设“{name}”已保存，共 {_selectedConfigPreset?.Values.Count ?? values.Count} 项。");
+                SetConfigPresetStatus(string.Format(
+                    LanguageManager.Instance["SR_ConfigPresetSaved"],
+                    name,
+                    _selectedConfigPreset?.Values.Count ?? values.Count));
             }
             catch (Exception ex)
             {
-                SetConfigPresetStatus("预设保存失败：" + ex.Message);
+                SetConfigPresetStatus(string.Format(LanguageManager.Instance["SR_ConfigPresetSaveFailed"], ex.Message));
             }
         }
 
@@ -971,7 +1062,7 @@ namespace MSL.controls.ctrls_serverrunner
         {
             if (_selectedConfigPreset == null)
             {
-                SetConfigPresetStatus("请先选择并加载一个已有预设。");
+                SetConfigPresetStatus(LanguageManager.Instance["SR_ConfigPresetLoadRequired"]);
                 return;
             }
 
@@ -983,7 +1074,7 @@ namespace MSL.controls.ctrls_serverrunner
             }
             if (values.Count == 0)
             {
-                SetConfigPresetStatus("请至少选择一个配置值。");
+                SetConfigPresetStatus(LanguageManager.Instance["SR_ConfigPresetSelectionRequired"]);
                 return;
             }
 
@@ -994,7 +1085,7 @@ namespace MSL.controls.ctrls_serverrunner
                     item.IsSelected = true;
             }
             SetConfigPresetStatus(string.IsNullOrWhiteSpace(error)
-                ? $"已应用 {values.Count} 项配置。"
+                ? string.Format(LanguageManager.Instance["SR_ConfigPresetApplied"], values.Count)
                 : error);
         }
 
@@ -1002,7 +1093,7 @@ namespace MSL.controls.ctrls_serverrunner
         {
             if (_selectedConfigPreset == null)
             {
-                SetConfigPresetStatus("请先选择一个预设。");
+                SetConfigPresetStatus(LanguageManager.Instance["SR_ConfigPresetSelectRequired"]);
                 return;
             }
 
@@ -1019,12 +1110,12 @@ namespace MSL.controls.ctrls_serverrunner
                 SetExistingConfigPresetActionsVisibility(Visibility.Collapsed);
                 RenderConfigPresetButtons();
                 ConfigPresetItems.Clear();
-                SetConfigPresetStatus($"预设“{preset.Name}”已删除。");
+                SetConfigPresetStatus(string.Format(LanguageManager.Instance["SR_ConfigPresetDeleted"], preset.Name));
                 ConfigPresetPanel.Visibility = Visibility.Collapsed;
             }
             catch (Exception ex)
             {
-                SetConfigPresetStatus("预设删除失败：" + ex.Message);
+                SetConfigPresetStatus(string.Format(LanguageManager.Instance["SR_ConfigPresetDeleteFailed"], ex.Message));
             }
         }
 
@@ -1032,14 +1123,14 @@ namespace MSL.controls.ctrls_serverrunner
         {
             foreach (var item in ConfigPresetItems)
                 item.IsSelected = true;
-            SetConfigPresetStatus("已选择全部配置值。");
+            SetConfigPresetStatus(LanguageManager.Instance["SR_ConfigPresetAllSelected"]);
         }
 
         private void SelectNoneConfigPreset_Click(object sender, RoutedEventArgs e)
         {
             foreach (var item in ConfigPresetItems)
                 item.IsSelected = false;
-            SetConfigPresetStatus("已取消选择全部配置值。");
+            SetConfigPresetStatus(LanguageManager.Instance["SR_ConfigPresetAllUnselected"]);
         }
 
         private void SetConfigPresetStatus(string message)
@@ -1069,11 +1160,11 @@ namespace MSL.controls.ctrls_serverrunner
             try
             {
                 if (FatherService.CheckServerRunning())
-                    return "服务器运行时无法应用配置预设！";
+                    return LanguageManager.Instance["SR_ConfigPresetRunning"];
 
                 string propertiesPath = Path.Combine(Rserverbase, "server.properties");
                 if (!File.Exists(propertiesPath))
-                    return "配置文件不存在！";
+                    return LanguageManager.Instance["SR_ConfigPresetFileMissing"];
 
                 Encoding encoding = Functions.GetTextFileEncodingType(propertiesPath);
                 List<string> lines = File.ReadAllLines(propertiesPath, encoding).ToList();
@@ -1115,7 +1206,7 @@ namespace MSL.controls.ctrls_serverrunner
                 }
 
                 if (!hasChanges)
-                    return "没有需要应用的更改。";
+                    return LanguageManager.Instance["SR_ConfigPresetNoChanges"];
 
                 if (encoding == Encoding.UTF8)
                     File.WriteAllLines(propertiesPath, lines, new UTF8Encoding(false));
@@ -1127,7 +1218,7 @@ namespace MSL.controls.ctrls_serverrunner
             }
             catch (Exception ex)
             {
-                return "配置应用失败：" + ex.Message;
+                return string.Format(LanguageManager.Instance["SR_ConfigPresetApplyFailed"], ex.Message);
             }
         }
 

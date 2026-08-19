@@ -76,7 +76,7 @@
                     <ColumnDefinition Width="Auto"/>
                     <ColumnDefinition Width="Auto"/>
                 </Grid.ColumnDefinitions>
-                <TextBlock Text="配置预设：" FontSize="18" FontWeight="Bold"
+                <TextBlock Text="{Binding [SR_ConfigPreset], Source={x:Static langs:LanguageManager.Instance}}" FontSize="18" FontWeight="Bold"
                            Foreground="{DynamicResource PrimaryTextBrush}" VerticalAlignment="Center"/>
                 <Border Grid.Column="1" Margin="8,0,5,0" MinHeight="34" MaxHeight="76"
                         Padding="5,3" BorderBrush="{DynamicResource BorderBrush}"
@@ -87,10 +87,10 @@
                         <WrapPanel x:Name="ConfigPresetButtonsPanel" VerticalAlignment="Center"/>
                     </ScrollViewer>
                 </Border>
-                <Button x:Name="LoadSelectedConfigPresetButton" Grid.Column="2" Content="加载预设" MinWidth="90" Padding="10,0"
+                <Button x:Name="LoadSelectedConfigPresetButton" Grid.Column="2" Content="{Binding [SR_ConfigPresetLoad], Source={x:Static langs:LanguageManager.Instance}}" MinWidth="90" Padding="10,0"
                         IsEnabled="False"
                         Margin="0,0,5,0" Click="LoadConfigPreset_Click"/>
-                <Button x:Name="configPresetButton" Grid.Column="3" Content="添加预设" MinWidth="90" Padding="10,0"
+                <Button x:Name="configPresetButton" Grid.Column="3" Content="{Binding [SR_ConfigPresetAdd], Source={x:Static langs:LanguageManager.Instance}}" MinWidth="90" Padding="10,0"
                         IsEnabled="False"
                         Click="configPresetButton_Click"/>
             </Grid>
@@ -110,13 +110,13 @@
                             <ColumnDefinition Width="*"/>
                             <ColumnDefinition Width="Auto"/>
                         </Grid.ColumnDefinitions>
-                        <TextBlock Text="功能配置文件预设" Style="{StaticResource MagicText16}" FontWeight="Bold"
+                        <TextBlock Text="{Binding [SR_ConfigPresetPanelTitle], Source={x:Static langs:LanguageManager.Instance}}" Style="{StaticResource MagicText16}" FontWeight="Bold"
                                    VerticalAlignment="Center" TextTrimming="CharacterEllipsis"
-                                   ToolTip="功能配置文件预设"/>
+                                   ToolTip="{Binding [SR_ConfigPresetPanelTitle], Source={x:Static langs:LanguageManager.Instance}}"/>
                         <hc:UniformSpacingPanel Grid.Column="1" Orientation="Horizontal" Spacing="5">
-                            <Button Content="全选" Click="SelectAllConfigPreset_Click"/>
-                            <Button Content="全不选" Click="SelectNoneConfigPreset_Click"/>
-                            <Button Content="收起" Click="CollapseConfigPreset_Click"/>
+                            <Button Content="{Binding [SR_SelectAll], Source={x:Static langs:LanguageManager.Instance}}" Click="SelectAllConfigPreset_Click"/>
+                            <Button Content="{Binding [SR_ConfigPresetSelectNone], Source={x:Static langs:LanguageManager.Instance}}" Click="SelectNoneConfigPreset_Click"/>
+                            <Button Content="{Binding [Collapse], Source={x:Static langs:LanguageManager.Instance}}" Click="CollapseConfigPreset_Click"/>
                         </hc:UniformSpacingPanel>
                     </Grid>
                     <Grid Grid.Row="2">
@@ -136,9 +136,9 @@
                                     <ColumnDefinition Width="2*"/>
                                     <ColumnDefinition Width="3*"/>
                                 </Grid.ColumnDefinitions>
-                                <TextBlock Text="保存" HorizontalAlignment="Center"/>
-                                <TextBlock Grid.Column="1" Text="配置项" Margin="0,0,8,0"/>
-                                <TextBlock Grid.Column="2" Text="配置值"/>
+                                <TextBlock Text="{Binding [SR_Save], Source={x:Static langs:LanguageManager.Instance}}" HorizontalAlignment="Center"/>
+                                <TextBlock Grid.Column="1" Text="{Binding [SR_ConfigPresetItem], Source={x:Static langs:LanguageManager.Instance}}" Margin="0,0,8,0"/>
+                                <TextBlock Grid.Column="2" Text="{Binding [SR_ConfigPresetValue], Source={x:Static langs:LanguageManager.Instance}}"/>
                             </Grid>
                             <ListView x:Name="ConfigPresetList" Grid.Row="1" MinHeight="150" MaxHeight="400"
                                       VerticalAlignment="Top" HorizontalContentAlignment="Stretch"
@@ -174,14 +174,14 @@
                             </ListView>
                         </Grid>
                         <hc:UniformSpacingPanel Grid.Column="2" Orientation="Vertical" Spacing="8">
-                            <TextBlock Text="预设名称" Foreground="{DynamicResource PrimaryTextBrush}"/>
+                            <TextBlock Text="{Binding [SR_ConfigPresetName], Source={x:Static langs:LanguageManager.Instance}}" Foreground="{DynamicResource PrimaryTextBrush}"/>
                             <TextBox x:Name="ConfigPresetNameTextBox" Height="30" VerticalContentAlignment="Center"/>
-                            <Button x:Name="SaveConfigPresetButton" Content="保存预设" Style="{StaticResource ButtonPrimary}"
+                            <Button x:Name="SaveConfigPresetButton" Content="{Binding [SR_ConfigPresetSave], Source={x:Static langs:LanguageManager.Instance}}" Style="{StaticResource ButtonPrimary}"
                                     Click="SaveConfigPreset_Click" Visibility="Collapsed"/>
-                            <Button x:Name="ApplyConfigPresetButton" Content="应用预设"
+                            <Button x:Name="ApplyConfigPresetButton" Content="{Binding [SR_ConfigPresetApply], Source={x:Static langs:LanguageManager.Instance}}"
                                     Style="{StaticResource ButtonPrimary}" Click="ApplyConfigPreset_Click"
                                     Visibility="Collapsed"/>
-                            <Button x:Name="DeleteConfigPresetButton" Content="删除预设"
+                            <Button x:Name="DeleteConfigPresetButton" Content="{Binding [SR_ConfigPresetDelete], Source={x:Static langs:LanguageManager.Instance}}"
                                     Click="DeleteConfigPreset_Click" Visibility="Collapsed"/>
                         </hc:UniformSpacingPanel>
                     </Grid>

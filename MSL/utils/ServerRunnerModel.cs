@@ -2,6 +2,7 @@ using System;
 using System.Collections.Generic;
 using System.IO;
 using System.Windows;
+using MSL.langs;
 
 namespace MSL.utils
 {
@@ -15,7 +16,7 @@ namespace MSL.utils
         {
             get
             {
-                if (Cmd == "/") return "/（指令）"; // 根命令
+                if (Cmd == "/") return LanguageManager.Instance["SR_CmdHint"]; // 根命令
                 string text = $"/{Cmd.TrimStart('/')}"; // 统一显示前缀“/”
                 if (!string.IsNullOrEmpty(Remark)) text += $"（{Remark}）";
                 if (!string.IsNullOrEmpty(Alias)) text += $" [{Alias}]";

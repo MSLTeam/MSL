@@ -1352,6 +1352,108 @@ It is recommended not to upload these mods to the server.</value>
   <data name="SR_ServerConfig" xml:space="preserve">
     <value>Server Config</value>
   </data>
+  <data name="SR_ConfigPreset" xml:space="preserve">
+    <value>Config Presets:</value>
+  </data>
+  <data name="SR_ConfigPresetLoad" xml:space="preserve">
+    <value>Load Presets</value>
+  </data>
+  <data name="SR_ConfigPresetAdd" xml:space="preserve">
+    <value>Add Preset</value>
+  </data>
+  <data name="SR_ConfigPresetPanelTitle" xml:space="preserve">
+    <value>Preset Configuration Items</value>
+  </data>
+  <data name="SR_ConfigPresetSelectNone" xml:space="preserve">
+    <value>Select None</value>
+  </data>
+  <data name="SR_ConfigPresetItem" xml:space="preserve">
+    <value>Configuration Item</value>
+  </data>
+  <data name="SR_ConfigPresetValue" xml:space="preserve">
+    <value>Value</value>
+  </data>
+  <data name="SR_ConfigPresetName" xml:space="preserve">
+    <value>Preset Name</value>
+  </data>
+  <data name="SR_ConfigPresetSave" xml:space="preserve">
+    <value>Save Preset</value>
+  </data>
+  <data name="SR_ConfigPresetApply" xml:space="preserve">
+    <value>Apply Preset</value>
+  </data>
+  <data name="SR_ConfigPresetDelete" xml:space="preserve">
+    <value>Delete Preset</value>
+  </data>
+  <data name="SR_ConfigPresetNoFile" xml:space="preserve">
+    <value>server.properties was not found, so a configuration preset cannot be created.</value>
+  </data>
+  <data name="SR_ConfigPresetLoadFailed" xml:space="preserve">
+    <value>Failed to load configuration presets: {0}</value>
+  </data>
+  <data name="SR_ConfigPresetAddHint" xml:space="preserve">
+    <value>Adding a new preset. All configuration values are selected by default.</value>
+  </data>
+  <data name="SR_ConfigPresetLoaded" xml:space="preserve">
+    <value>Preset “{0}” loaded. {1} item(s) selected.</value>
+  </data>
+  <data name="SR_ConfigPresetNameRequired" xml:space="preserve">
+    <value>Enter a preset name.</value>
+  </data>
+  <data name="SR_ConfigPresetSelectionRequired" xml:space="preserve">
+    <value>Select at least one configuration value.</value>
+  </data>
+  <data name="SR_ConfigPresetOverwriteConfirm" xml:space="preserve">
+    <value>Preset “{0}” already exists. Overwrite it?</value>
+  </data>
+  <data name="SR_ConfigPresetOverwriteTitle" xml:space="preserve">
+    <value>Overwrite Preset</value>
+  </data>
+  <data name="SR_ConfigPresetOverwrite" xml:space="preserve">
+    <value>Overwrite</value>
+  </data>
+  <data name="SR_ConfigPresetOverwriteCanceled" xml:space="preserve">
+    <value>Preset overwrite canceled.</value>
+  </data>
+  <data name="SR_ConfigPresetSaved" xml:space="preserve">
+    <value>Preset “{0}” saved with {1} item(s).</value>
+  </data>
+  <data name="SR_ConfigPresetSaveFailed" xml:space="preserve">
+    <value>Failed to save preset: {0}</value>
+  </data>
+  <data name="SR_ConfigPresetLoadRequired" xml:space="preserve">
+    <value>Select and load an existing preset first.</value>
+  </data>
+  <data name="SR_ConfigPresetApplied" xml:space="preserve">
+    <value>Applied {0} configuration item(s).</value>
+  </data>
+  <data name="SR_ConfigPresetRunning" xml:space="preserve">
+    <value>Configuration presets cannot be applied while the server is running.</value>
+  </data>
+  <data name="SR_ConfigPresetFileMissing" xml:space="preserve">
+    <value>The configuration file does not exist.</value>
+  </data>
+  <data name="SR_ConfigPresetNoChanges" xml:space="preserve">
+    <value>There are no changes to apply.</value>
+  </data>
+  <data name="SR_ConfigPresetApplyFailed" xml:space="preserve">
+    <value>Failed to apply configuration: {0}</value>
+  </data>
+  <data name="SR_ConfigPresetSelectRequired" xml:space="preserve">
+    <value>Select a preset first.</value>
+  </data>
+  <data name="SR_ConfigPresetDeleted" xml:space="preserve">
+    <value>Preset “{0}” deleted.</value>
+  </data>
+  <data name="SR_ConfigPresetDeleteFailed" xml:space="preserve">
+    <value>Failed to delete preset: {0}</value>
+  </data>
+  <data name="SR_ConfigPresetAllSelected" xml:space="preserve">
+    <value>All configuration values selected.</value>
+  </data>
+  <data name="SR_ConfigPresetAllUnselected" xml:space="preserve">
+    <value>All configuration values deselected.</value>
+  </data>
   <data name="SR_DisableOutputPreview" xml:space="preserve">
     <value>After disabling this feature, the output preview will also be closed!</value>
   </data>
@@ -3632,5 +3734,85 @@ Please go to "Mapping" - "My MSLFrp" to login.</value>
   </data>
   <data name="Refresh" xml:space="preserve">
     <value>Refresh</value>
+  </data>
+  <data name="Information" xml:space="preserve">
+    <value>Information</value>
+  </data>
+  <data name="SR_ServerConfigFileMissing" xml:space="preserve">
+    <value>The configuration file does not exist!</value>
+  </data>
+  <data name="SR_ServerConfigSaveFailed" xml:space="preserve">
+    <value>Save failed! Please check whether the server is stopped.
+Error: {0}</value>
+  </data>
+  <data name="SR_ServerConfigNoChanges" xml:space="preserve">
+    <value>There are no changes to save!</value>
+  </data>
+  <data name="SR_ServerConfigSaveError" xml:space="preserve">
+    <value>An error occurred while saving!
+Error: {0}</value>
+  </data>
+  <data name="SR_ServerIconRunning" xml:space="preserve">
+    <value>The server icon cannot be changed while the server is running!</value>
+  </data>
+  <data name="SR_ServerIconDeleteConfirm" xml:space="preserve">
+    <value>This server already has an icon. Delete it?</value>
+  </data>
+  <data name="SR_ServerIconDeleteFailed" xml:space="preserve">
+    <value>Failed to delete the icon! Please check whether the server is stopped.
+Error: {0}</value>
+  </data>
+  <data name="SR_ServerIconDeletedContinue" xml:space="preserve">
+    <value>The original icon was deleted. Continue?</value>
+  </data>
+  <data name="SR_ServerIconHowTo" xml:space="preserve">
+    <value>How to Use</value>
+  </data>
+  <data name="SR_ServerIconPrepare" xml:space="preserve">
+    <value>Prepare a 64*64 pixel PNG image, then click OK to continue.</value>
+  </data>
+  <data name="SR_PngImageFilter" xml:space="preserve">
+    <value>PNG Image|*.png</value>
+  </data>
+  <data name="SR_ServerIconChanged" xml:space="preserve">
+    <value>Server icon changed!</value>
+  </data>
+  <data name="SR_ServerIconChangeFailed" xml:space="preserve">
+    <value>Failed to change the icon! Please check whether the server is stopped.
+Error: {0}</value>
+  </data>
+  <data name="SR_WorldMapRunning" xml:space="preserve">
+    <value>The world map cannot be changed while the server is running!</value>
+  </data>
+  <data name="SR_WorldMapDeleteOverworldConfirm" xml:space="preserve">
+    <value>After clicking Confirm, MSL will delete the current overworld map permanently. Back it up first if needed!
+Click Cancel to abort.</value>
+  </data>
+  <data name="SR_WorldMapDeleting" xml:space="preserve">
+    <value>Deleting, please wait</value>
+  </data>
+  <data name="SR_WorldMapDeleteNetherConfirm" xml:space="preserve">
+    <value>MSL also detected a Nether map. Delete it too?
+It will be permanently removed from the computer!</value>
+  </data>
+  <data name="SR_WorldMapDeleteEndConfirm" xml:space="preserve">
+    <value>MSL also detected an End map. Delete it too?
+It will be permanently removed from the computer!</value>
+  </data>
+  <data name="SR_WorldMapDeletedImportPrompt" xml:space="preserve">
+    <value>The related maps were deleted successfully. Import a new save? If you start the server without importing one, a new world will be created.</value>
+  </data>
+  <data name="SR_WorldMapFolderDescription" xml:space="preserve">
+    <value>Select a world map folder (or an extracted folder).</value>
+  </data>
+  <data name="SR_WorldMapImporting" xml:space="preserve">
+    <value>Importing, please wait</value>
+  </data>
+  <data name="SR_WorldMapImportSuccess" xml:space="preserve">
+    <value>World imported successfully! You can delete the source save folder manually.</value>
+  </data>
+  <data name="SR_WorldMapImportFailed" xml:space="preserve">
+    <value>Failed to import the world!
+Error: {0}</value>
   </data>
 </root>
