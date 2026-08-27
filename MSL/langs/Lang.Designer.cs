@@ -10238,6 +10238,15 @@ namespace MSL.langs {
         }
         
         /// <summary>
+        ///   查找类似 未知 的本地化字符串。
+        /// </summary>
+        public static string SR_Unknown {
+            get {
+                return ResourceManager.GetString("SR_Unknown", resourceCulture);
+            }
+        }
+        
+        /// <summary>
         ///   查找类似 请求失败:  的本地化字符串。
         /// </summary>
         public static string SR_UploadFailed {

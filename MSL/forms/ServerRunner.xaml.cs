@@ -7,14 +7,19 @@ using MSL.pages;
 using MSL.pages.serverrunner;
 using MSL.utils;
 using MSL.utils.Config;
+using Newtonsoft.Json.Linq;
 using System;
 using System.Collections.Generic;
+using System.Globalization;
 using System.IO;
 using System.Linq;
 using System.Net;
+using System.Text;
+using System.Threading;
 using System.Threading.Tasks;
 using System.Windows;
 using System.Windows.Controls;
+using System.Windows.Media;
 using System.Windows.Media.Imaging;
 
 namespace MSL
@@ -118,7 +123,7 @@ namespace MSL
             SideMenu.SelectedIndex = FirstStartTab;
             if (FirstStartTab == 0)
             {
-                _consolePage.LaunchServerOnLoad();
+                LaunchServerOnLoad();
             }
         }
 
@@ -263,6 +268,7 @@ namespace MSL
             {
                 _consolePage.ServerExitEvent(exitCode);
                 _dashboardPage.UpdateServerState(false);
+                ChangeControlsState(false);
             });
         }
 
@@ -272,6 +278,8 @@ namespace MSL
             {
                 _consolePage.ServerStartedEvent();
                 _dashboardPage.UpdateServerState(true);
+                _dashboardPage.ServerStateText = LanguageManager.Instance["SR_Launched"];
+                _dashboardPage.GetServerInfoSys();
             });
         }
 
@@ -319,18 +327,21 @@ namespace MSL
 
         // 转发方法
         public void PrintLog(string msg, System.Windows.Media.Color color) => _consolePage.PrintLog(msg, color);
-        public void GetServerInfoSys() => _dashboardPage.GetServerInfoSys();
-        public void LaunchServer() => _consolePage.LaunchServer();
-        public void UpdateFastCmdComboBox(System.Collections.Generic.List<FastCommandInfo> cmds) => _consolePage.UpdateFastCmds(cmds);
+        public void UpdateFastCmdComboBox(List<FastCommandInfo> cmds) => _consolePage.UpdateFastCmds(cmds);
         public void StartSystemInfoMonitoring() => _dashboardPage.StartSystemInfoMonitoring();
         public void StopSystemInfoMonitoring() => _dashboardPage.StopSystemInfoMonitoring();
         public void SetPreviewOutlogText(string text) => _dashboardPage.SetPreviewOutlogText(text);
 
         // 服务器控制（Dashboard 调用）
-        public void ToggleServerFromDashboard(bool isStart)
+        public void ToggleServer(bool isStart)
         {
             if (isStart)
             {
+                if (GetServerInfoLine == 102)
+                {
+                    GetServerInfoLine = 101;
+                    return;
+                }
                 LaunchServer();
             }
             else
@@ -342,19 +353,21 @@ namespace MSL
                     MagicFlowMsg.ShowMessage(LanguageManager.Instance["SR_Stopping"]);
                     ServerService.StopServer();
                 }
+
+                GetServerInfoLine = 101;
             }
         }
 
-        public void KillServerFromDashboard()
+        public async Task KillServer()
         {
             try
             {
-                if (ServerService.ServerTerm != null)
-                    ServerService.ServerTerm.Kill();
-                else
-                    ServerService.ServerProcess.Kill();
+                GetServerInfoLine = 102;
+                ServerService.KillServer();
             }
             catch { }
+            await Task.Delay(500);
+            GetServerInfoLine = 101;
         }
 
         // 备份
@@ -371,12 +384,6 @@ namespace MSL
             dialog.HorizontalContentAlignment = HorizontalAlignment.Stretch;
             dialog.VerticalContentAlignment = VerticalAlignment.Stretch;
             logAnalysisDialog.SelfDialog = dialog;
-        }
-
-        // 下载 authlib
-        public async Task<bool> DownloadAuthlib()
-        {
-            return await DownloadAuthlibInternal();
         }
         #endregion
 
@@ -592,16 +599,100 @@ namespace MSL
         }
         #endregion
 
-        #region Authlib 下载
-        private async Task<bool> DownloadAuthlibInternal()
+        #region 服务器启动
+
+        public async void LaunchServerOnLoad()
+        {
+            while (!this.IsLoaded)
+            {
+                Thread.Sleep(1000);
+            }
+            await Dispatcher.InvokeAsync(() =>
+            {
+                LaunchServer();
+            });
+        }
+
+        public async void LaunchServer()
+        {
+            LogHelper.Write.Info("开服操作 - 实例ID：" + RserverID);
+            if (await MCEulaEvent() != true)
+                return;
+            if (ServerService.ServerMode == 0 && !string.IsNullOrEmpty(ServerService.ServerYggAddr))
+            {
+                // 代表启动的是一个MC服务器
+                // 处理外置登录
+                if (!await DownloadAuthlib())
+                {
+                    return; // 下载authlib失败，退出
+                }
+                LogHelper.Write.Info("成功启用外置登录库，地址：" + ServerService.ServerYggAddr);
+            }
+            await ServerService.LaunchServer();
+            ChangeControlsState();
+        }
+
+        private async Task<bool> MCEulaEvent()
+        {
+            if (ServerService.ServerMode != 0) // 以自定义命令方式启动时，不执行接受eula事件
+                return true;
+            string path1 = ServerService.ServerBase + "\\eula.txt";
+            if (!File.Exists(path1) || (File.Exists(path1) && !File.ReadAllText(path1).Contains("eula=true")))
+            {
+                var shield = new Shield
+                {
+                    Command = HandyControl.Interactivity.ControlCommands.OpenLink,
+                    CommandParameter = "https://aka.ms/MinecraftEULA",
+                    Subject = "https://aka.ms/MinecraftEULA",
+                    Status = LanguageManager.Instance["OpenWebsite"]
+                };
+                bool dialog = await MagicShow.ShowMsgDialogAsync(this, LanguageManager.Instance["SR_MCEulaPrompt"], LanguageManager.Instance["Tip"], true, LanguageManager.Instance["No"], LanguageManager.Instance["Yes"], shield);
+                if (dialog == true)
+                {
+                    try
+                    {
+                        File.WriteAllText(path1, string.Empty);
+                        FileStream fs = new FileStream(path1, FileMode.Open, FileAccess.Read, FileShare.ReadWrite);
+                        StreamReader sr = new StreamReader(fs, Encoding.Default);
+
+                        StreamWriter streamWriter = new StreamWriter(path1);
+                        // 写入注释和日期
+                        streamWriter.WriteLine("#By changing the setting below to TRUE you are indicating your agreement to our EULA (https://aka.ms/MinecraftEULA).");
+                        streamWriter.WriteLine($"#{DateTime.Now.ToString("ddd MMM dd HH:mm:ss zzz yyyy", CultureInfo.InvariantCulture)}");
+
+                        // 写入eula=true
+                        streamWriter.WriteLine("eula=true");
+                        streamWriter.Flush();
+                        streamWriter.Close();
+                        return true;
+                    }
+                    catch (Exception a)
+                    {
+                        MagicShow.ShowMsgDialog(this,LanguageManager.Instance["SR_EulaError"] + a, LanguageManager.Instance["Error"]);
+                        return false;
+                    }
+                }
+                else
+                {
+                    return false;
+                }
+            }
+            else
+            {
+                return true;
+            }
+        }
+
+        public async Task<bool> DownloadAuthlib()
         {
             HttpResponse res = await HttpService.GetAsync("https://authlib-injector.mirrors.mslmc.cn/artifact/latest.json");
             if (res.HttpResponseCode == HttpStatusCode.OK)
             {
-                var authlib_jobj = Newtonsoft.Json.Linq.JObject.Parse((string)res.HttpResponseContent);
+                JObject authlib_jobj = JObject.Parse((string)res.HttpResponseContent);
                 if (!File.Exists(Path.Combine(ServerService.ServerBase, "authlib-injector.jar")) ||
                     !Functions.VerifyFileSHA256(Path.Combine(ServerService.ServerBase, "authlib-injector.jar"), authlib_jobj["checksums"]["sha256"].ToString()))
                 {
+                    //下载或更新authlib-injector.jar
                     bool download_suc = await MagicShow.ShowDownloader(this,
                         authlib_jobj["download_url"].ToString().Replace("authlib-injector.yushi.moe", "authlib-injector.mirrors.mslmc.cn"),
                         ServerService.ServerBase, "authlib-injector.jar", LanguageManager.Instance["SR_AuthlibUpdating"], authlib_jobj["checksums"]["sha256"].ToString());
@@ -626,6 +717,67 @@ namespace MSL
             }
             return true;
         }
+
+        #endregion
+
+        #region 控件状态
+
+        public void ChangeControlsState(bool isEnable = true)
+        {
+            if (isEnable)
+            {
+                if (!ServerList.RunningServers.Contains(RserverID))
+                {
+                    ServerList.RunningServers.Add(RserverID);
+                }
+                NotifyServerStateChange();
+                GetServerInfoLine = 0;
+                ServerPlayerList.Items.Clear();
+                ServerStateText = LanguageManager.Instance["SR_Running"];
+                ServerStateLab.Foreground = Brushes.Red;
+                SolveProblemBtn.IsEnabled = false;
+                DashboardControlToggle.IsChecked = true;
+                ConsoleControlToggle.IsChecked = true;
+                OnlineModeText = LanguageManager.Instance["SR_Fetching"];
+                GameDifficultyText = LanguageManager.Instance["SR_Fetching"];
+                GameTypeText = LanguageManager.Instance["SR_Fetching"];
+                ServerIPText = LanguageManager.Instance["SR_Fetching"];
+                LocalIPText = LanguageManager.Instance["SR_Fetching"];
+                MagicFlowMsg.ShowMessage(LanguageManager.Instance["SR_Launching"]);
+                
+                PrintLog(LanguageManager.Instance["SR_Launching"], ConfigStore.LogColor.INFO);
+
+                _consolePage.MoreOperation.IsEnabled = false; //服务器完成启动前禁止备份
+                _consolePage.ClearLog();
+                _consolePage.cmdtext.IsEnabled = true;
+                _consolePage.cmdtext.Clear();
+                _consolePage.fastCMD.IsEnabled = true;
+                _consolePage.sendcmd.IsEnabled = true;
+            }
+            else
+            {
+                if (ServerList.RunningServers.Contains(RserverID))
+                {
+                    ServerList.RunningServers.Remove(RserverID);
+                }
+                NotifyServerStateChange();
+
+                ServerStateText = LanguageManager.Instance["SR_Closed"];
+                ServerStateLab.Foreground = Brushes.Green;
+                SolveProblemBtn.IsEnabled = true;
+                DashboardControlToggle.IsChecked = false;
+                ConsoleControlToggle.IsChecked = false;
+                
+                MagicFlowMsg.ShowMessage(LanguageManager.Instance["SR_ServerClosedMsg"]);
+
+                _consolePage.MoreOperation.IsEnabled = true; // 服务器关闭后允许备份
+                _consolePage.sendcmd.IsEnabled = false;
+                _consolePage.cmdtext.IsEnabled = false;
+                _consolePage.fastCMD.IsEnabled = false;
+                _consolePage.cmdtext.Text = LanguageManager.Instance["SR_ServerClosed"];
+            }
+        }
+
         #endregion
     }
 }

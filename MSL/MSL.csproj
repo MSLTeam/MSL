@@ -175,6 +175,7 @@
     <Compile Include="utils\LogHelper.cs" />
     <Compile Include="utils\MCServerLogHelper.cs" />
     <Compile Include="utils\MCServerService.cs" />
+    <Compile Include="utils\MCSLogHandler.cs" />
     <Compile Include="utils\SystemMonitor.cs" />
     <Compile Include="utils\MinecraftServerTerm.cs" />
     <Compile Include="utils\ServerCoreInstaller.cs" />

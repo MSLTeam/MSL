@@ -4,15 +4,9 @@ using HandyControl.Tools.Extension;
 using MSL.langs;
 using MSL.utils;
 using MSL.utils.Config;
-using Newtonsoft.Json.Linq;
 using System;
 using System.Collections.Generic;
-using System.Globalization;
-using System.IO;
 using System.Linq;
-using System.Net;
-using System.Text;
-using System.Threading;
 using System.Threading.Tasks;
 using System.Windows;
 using System.Windows.Controls;
@@ -21,8 +15,6 @@ using System.Windows.Input;
 using System.Windows.Media;
 using System.Windows.Threading;
 using static MSL.utils.LogColorizer;
-using MessageBox = System.Windows.MessageBox;
-using Path = System.IO.Path;
 
 namespace MSL.pages.serverrunner
 {
@@ -117,182 +109,6 @@ namespace MSL.pages.serverrunner
 
         #endregion
 
-        #region 服务器启动
-
-        public async void LaunchServerOnLoad()
-        {
-            while (!_parent.IsLoaded)
-            {
-                Thread.Sleep(1000);
-            }
-            await Dispatcher.InvokeAsync(() =>
-            {
-                LaunchServer();
-            });
-        }
-
-        public async void LaunchServer()
-        {
-            LogHelper.Write.Info("开服操作 - 实例ID：" + _parent.RserverID);
-            if (await MCEulaEvent() != true)
-                return;
-            if (_serverService.ServerMode == 0 && !string.IsNullOrEmpty(_serverService.ServerYggAddr))
-            {
-                // 代表启动的是一个MC服务器
-                // 处理外置登录
-                if (!await DownloadAuthlib())
-                {
-                    return; // 下载authlib失败，退出
-                }
-                LogHelper.Write.Info("成功启用外置登录库，地址：" + _serverService.ServerYggAddr);
-            }
-            await _serverService.LaunchServer();
-            ChangeControlsState();
-        }
-
-        private async Task<bool> MCEulaEvent()
-        {
-            if (_serverService.ServerMode != 0) // 以自定义命令方式启动时，不执行接受eula事件
-                return true;
-            string path1 = _serverService.ServerBase + "\\eula.txt";
-            if (!File.Exists(path1) || (File.Exists(path1) && !File.ReadAllText(path1).Contains("eula=true")))
-            {
-                var shield = new Shield
-                {
-                    Command = HandyControl.Interactivity.ControlCommands.OpenLink,
-                    CommandParameter = "https://aka.ms/MinecraftEULA",
-                    Subject = "https://aka.ms/MinecraftEULA",
-                    Status = LanguageManager.Instance["OpenWebsite"]
-                };
-                bool dialog = await MagicShow.ShowMsgDialogAsync(_parent, LanguageManager.Instance["SR_MCEulaPrompt"], LanguageManager.Instance["Tip"], true, LanguageManager.Instance["No"], LanguageManager.Instance["Yes"], shield);
-                if (dialog == true)
-                {
-                    try
-                    {
-                        File.WriteAllText(path1, string.Empty);
-                        FileStream fs = new FileStream(path1, FileMode.Open, FileAccess.Read, FileShare.ReadWrite);
-                        StreamReader sr = new StreamReader(fs, Encoding.Default);
-
-                        StreamWriter streamWriter = new StreamWriter(path1);
-                        // 写入注释和日期
-                        streamWriter.WriteLine("#By changing the setting below to TRUE you are indicating your agreement to our EULA (https://aka.ms/MinecraftEULA).");
-                        streamWriter.WriteLine($"#{DateTime.Now.ToString("ddd MMM dd HH:mm:ss zzz yyyy", CultureInfo.InvariantCulture)}");
-
-                        // 写入eula=true
-                        streamWriter.WriteLine("eula=true");
-                        streamWriter.Flush();
-                        streamWriter.Close();
-                        return true;
-                    }
-                    catch (Exception a)
-                    {
-                        MessageBox.Show(LanguageManager.Instance["SR_EulaError"] + a, LanguageManager.Instance["Error"], MessageBoxButton.OK, MessageBoxImage.Error);
-                        return false;
-                    }
-                }
-                else
-                {
-                    return false;
-                }
-            }
-            else
-            {
-                return true;
-            }
-        }
-
-        private async Task<bool> DownloadAuthlib()
-        {
-            HttpResponse res = await HttpService.GetAsync("https://authlib-injector.mirrors.mslmc.cn/artifact/latest.json");
-            if (res.HttpResponseCode == HttpStatusCode.OK)
-            {
-                JObject authlib_jobj = JObject.Parse((string)res.HttpResponseContent);
-                if (!File.Exists(Path.Combine(_serverService.ServerBase, "authlib-injector.jar")) ||
-                    !Functions.VerifyFileSHA256(Path.Combine(_serverService.ServerBase, "authlib-injector.jar"), authlib_jobj["checksums"]["sha256"].ToString()))
-                {
-                    //下载或更新authlib-injector.jar
-                    bool download_suc = await MagicShow.ShowDownloader(_parent,
-                        authlib_jobj["download_url"].ToString().Replace("authlib-injector.yushi.moe", "authlib-injector.mirrors.mslmc.cn"),
-                        _serverService.ServerBase, "authlib-injector.jar", LanguageManager.Instance["SR_AuthlibUpdating"], authlib_jobj["checksums"]["sha256"].ToString());
-                    if (!download_suc)
-                    {
-                        Growl.Error(LanguageManager.Instance["SR_DownloadFailed"]);
-                        return false;
-                    }
-                }
-            }
-            else
-            {
-                if (File.Exists(Path.Combine(_serverService.ServerBase, "authlib-injector.jar")))
-                {
-                    LogHelper.Write.Warn("无法获取最新的authlib-injector.jar信息，使用本地文件。" + res.HttpResponseContent);
-                }
-                else
-                {
-                    Growl.Error(LanguageManager.Instance["SR_AuthlibNotFound"]);
-                    return false;
-                }
-            }
-            return true;
-        }
-
-        #endregion
-
-        #region 控件状态
-
-        public void ChangeControlsState(bool isEnable = true)
-        {
-            if (isEnable)
-            {
-                if (!ServerList.RunningServers.Contains(_parent.RserverID))
-                {
-                    ServerList.RunningServers.Add(_parent.RserverID);
-                }
-                _parent.NotifyServerStateChange();
-                _parent.GetServerInfoLine = 0;
-                _parent.ServerPlayerList.Items.Clear();
-                _parent.ServerStateText = LanguageManager.Instance["SR_Running"];
-                _parent.ServerStateLab.Foreground = Brushes.Red;
-                _parent.SolveProblemBtn.IsEnabled = false;
-                controlServer.IsChecked = true;
-                _parent.DashboardControlToggle.IsChecked = true;
-                MoreOperation.IsEnabled = false; //服务器完成启动前禁止备份
-                _parent.GameDifficultyText = LanguageManager.Instance["SR_Fetching"];
-                _parent.GameTypeText = LanguageManager.Instance["SR_Fetching"];
-                _parent.ServerIPText = LanguageManager.Instance["SR_Fetching"];
-                _parent.LocalIPText = LanguageManager.Instance["SR_Fetching"];
-                MagicFlowMsg.ShowMessage(LanguageManager.Instance["SR_Launching"]);
-                ClearLog();
-                PrintLog(LanguageManager.Instance["SR_Launching"], ConfigStore.LogColor.INFO);
-                cmdtext.IsEnabled = true;
-                cmdtext.Clear();
-                fastCMD.IsEnabled = true;
-                sendcmd.IsEnabled = true;
-            }
-            else
-            {
-                if (ServerList.RunningServers.Contains(_parent.RserverID))
-                {
-                    ServerList.RunningServers.Remove(_parent.RserverID);
-                }
-                _parent.NotifyServerStateChange();
-
-                _parent.ServerStateText = LanguageManager.Instance["SR_Closed"];
-                _parent.ServerStateLab.Foreground = Brushes.Green;
-                _parent.SolveProblemBtn.IsEnabled = true;
-                controlServer.IsChecked = false;
-                _parent.DashboardControlToggle.IsChecked = false;
-                MoreOperation.IsEnabled = true; // 服务器关闭后允许备份
-                MagicFlowMsg.ShowMessage(LanguageManager.Instance["SR_ServerClosedMsg"]);
-                sendcmd.IsEnabled = false;
-                cmdtext.IsEnabled = false;
-                fastCMD.IsEnabled = false;
-                cmdtext.Text = LanguageManager.Instance["SR_ServerClosed"];
-            }
-        }
-
-        #endregion
-
         #region 日志显示功能、日志清空功能
 
         public void PrintLog(string msg, Color defaultColor)
@@ -364,47 +180,41 @@ namespace MSL.pages.serverrunner
         public void ServerStartedEvent()
         {
             MagicFlowMsg.ShowMessage(string.Format(LanguageManager.Instance["SR_ServerLaunchedSuccess"], _serverService.ServerName), 1);
-            _parent.ServerStateText = LanguageManager.Instance["SR_Launched"];
-            _parent.GetServerInfoSys();
             MoreOperation.IsEnabled = true;
         }
 
-        public void ServerExitEvent(int exitCode)
+        public async void ServerExitEvent(int exitCode)
         {
-            Dispatcher.InvokeAsync(async () =>
+            if (_serverService.ProblemSolveSystem)
             {
-                ChangeControlsState(false);
-                if (_serverService.ProblemSolveSystem)
+                _serverService.ProblemSolveSystem = false;
+                if (string.IsNullOrEmpty(_serverService.ProblemFound))
                 {
-                    _serverService.ProblemSolveSystem = false;
-                    if (string.IsNullOrEmpty(_serverService.ProblemFound))
-                    {
-                        MagicShow.ShowMsgDialog(_parent, LanguageManager.Instance["SR_ServerClosedForAnalysis"], LanguageManager.Instance["SR_CrashAnalysisSystem"]);
-                    }
-                    else
-                    {
-                        Growl.Info(LanguageManager.Instance["SR_ServerClosedShowingReport"]);
-                        MagicShow.ShowMsgDialog(_parent, _serverService.ProblemFound + "\n" + LanguageManager.Instance["SR_ProblemFoundPS"], LanguageManager.Instance["SR_ServerAnalysisReport"]);
-                        _serverService.ProblemFound = string.Empty;
-                    }
+                    MagicShow.ShowMsgDialog(_parent, LanguageManager.Instance["SR_ServerClosedForAnalysis"], LanguageManager.Instance["SR_CrashAnalysisSystem"]);
                 }
-                else if (exitCode != 0 && _parent.GetServerInfoLine <= 100)
+                else
                 {
-                    bool dialogRet = await MagicShow.ShowMsgDialogAsync(_parent, LanguageManager.Instance["SR_AbnormalClose"], LanguageManager.Instance["Tip"], true);
-                    if (dialogRet)
-                    {
-                        _parent.NavigateToConsole();
-                        _serverService.ProblemSolveSystem = true;
-                        LaunchServer();
-                    }
+                    Growl.Info(LanguageManager.Instance["SR_ServerClosedShowingReport"]);
+                    MagicShow.ShowMsgDialog(_parent, _serverService.ProblemFound + "\n" + LanguageManager.Instance["SR_ProblemFoundPS"], LanguageManager.Instance["SR_ServerAnalysisReport"]);
+                    _serverService.ProblemFound = string.Empty;
                 }
-                else if (_parent.AutoStartServerToggle.IsChecked == true)
+            }
+            else if (exitCode != 0 && _parent.GetServerInfoLine <= 100)
+            {
+                bool dialogRet = await MagicShow.ShowMsgDialogAsync(_parent, LanguageManager.Instance["SR_AbnormalClose"], LanguageManager.Instance["Tip"], true);
+                if (dialogRet)
                 {
-                    Console.WriteLine(LanguageManager.Instance["SR_ServerClosedRestartEvent"]);
-                    await Task.Delay(200);
-                    RestartServer();
+                    _parent.NavigateToConsole();
+                    _serverService.ProblemSolveSystem = true;
+                    _parent.LaunchServer();
                 }
-            });
+            }
+            else if (_parent.AutoStartServerToggle.IsChecked == true)
+            {
+                Console.WriteLine(LanguageManager.Instance["SR_ServerClosedRestartEvent"]);
+                await Task.Delay(200);
+                RestartServer();
+            }
         }
 
         public void RestartServer()
@@ -418,7 +228,7 @@ namespace MSL.pages.serverrunner
                         if (_serverService != null)
                         {
                             MagicFlowMsg.ShowMessage(LanguageManager.Instance["SR_ServerRestarting"], type: 1);
-                            LaunchServer();
+                            _parent.LaunchServer();
                         }
                     }
                     else
@@ -654,34 +464,9 @@ namespace MSL.pages.serverrunner
 
         private void controlServer_Click(object sender, RoutedEventArgs e)
         {
-            var _sender = sender as ToggleButton;
-            if (_sender.IsChecked == true)
-            {
-                controlServer.IsChecked = false;
-                _parent.DashboardControlToggle.IsChecked = false;
-                if (_parent.GetServerInfoLine == 102)
-                {
-                    _parent.GetServerInfoLine = 101;
-                    return;
-                }
-                LaunchServer();
-            }
-            else
-            {
-                controlServer.IsChecked = true;
-                _parent.DashboardControlToggle.IsChecked = true;
-                if (_serverService.ServerTerm != null)
-                {
-                    _serverService.ServerTerm.Stop();
-                }
-                else
-                {
-                    MagicFlowMsg.ShowMessage(LanguageManager.Instance["SR_Stopping"]);
-                    _serverService.StopServer();
-                }
-
-                _parent.GetServerInfoLine = 101;
-            }
+            bool btnStatus = controlServer.IsChecked == true;
+            controlServer.IsChecked = !btnStatus;
+            _parent.ToggleServer(btnStatus);
         }
 
         private async void controlServer_MouseDoubleClick(object sender, MouseButtonEventArgs e)

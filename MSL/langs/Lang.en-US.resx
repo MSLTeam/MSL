@@ -3648,4 +3648,7 @@ Please go to "Mapping" - "My MSLFrp" to login.</value>
   <data name="Refresh" xml:space="preserve">
     <value>Refresh</value>
   </data>
+  <data name="SR_Unknown" xml:space="preserve">
+    <value>Unknown</value>
+  </data>
 </root>

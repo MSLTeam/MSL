@@ -76,18 +76,12 @@
                     <Style TargetType="Label" BasedOn="{StaticResource MagicLabel14}"/>
                 </Grid.Resources>
             </Grid>
-            <Grid>
-                <Grid.ColumnDefinitions>
-                    <ColumnDefinition/>
-                    <ColumnDefinition/>
-                    <ColumnDefinition/>
-                    <ColumnDefinition/>
-                </Grid.ColumnDefinitions>
-                <Button x:Name="saveServerConfig" Grid.Column="0" Style="{StaticResource ButtonPrimary}" Content="{Binding [SR_Save], Source={x:Static langs:LanguageManager.Instance}}" Height="35" Click="saveServerConfig_Click" FontSize="14" HorizontalAlignment="Stretch" Margin="10,0,10,0"/>
-                <Button x:Name="changeServerIcon" Grid.Column="1" Content="{Binding [SR_ChangeServerIcon], Source={x:Static langs:LanguageManager.Instance}}" Height="35" FontSize="14" Click="changeServerIcon_Click" VerticalAlignment="Top" HorizontalAlignment="Stretch" Margin="10,0,10,0"/>
-                <Button x:Name="changeWorldMap" Grid.Column="2" Content="{Binding [SR_ChangeWorldMap], Source={x:Static langs:LanguageManager.Instance}}" Click="changeWorldMap_Click" Height="35" FontSize="14" VerticalAlignment="Top" HorizontalAlignment="Stretch" Margin="10,0,10,0"/>
-                <Button x:Name="setServerconfig" Grid.Column="3" Content="{Binding [SR_MoreConfig], Source={x:Static langs:LanguageManager.Instance}}" Height="35" FontSize="14" Click="setServerconfig_Click" VerticalAlignment="Top" HorizontalAlignment="Stretch" Margin="10,0,10,0"/>
-            </Grid>
+            <WrapPanel HorizontalAlignment="Center">
+                <Button x:Name="saveServerConfig" MinWidth="150" Style="{StaticResource ButtonPrimary}" Content="{Binding [SR_Save], Source={x:Static langs:LanguageManager.Instance}}" Height="35" Click="saveServerConfig_Click" FontSize="14" HorizontalAlignment="Stretch" Margin="10,0,0,10"/>
+                <Button x:Name="changeServerIcon" MinWidth="150" Content="{Binding [SR_ChangeServerIcon], Source={x:Static langs:LanguageManager.Instance}}" Height="35" FontSize="14" Click="changeServerIcon_Click" VerticalAlignment="Top" HorizontalAlignment="Stretch" Margin="10,0,0,10"/>
+                <Button x:Name="changeWorldMap" MinWidth="150" Content="{Binding [SR_ChangeWorldMap], Source={x:Static langs:LanguageManager.Instance}}" Click="changeWorldMap_Click" Height="35" FontSize="14" VerticalAlignment="Top" HorizontalAlignment="Stretch" Margin="10,0,0,10"/>
+                <Button x:Name="setServerconfig" MinWidth="150" Content="{Binding [SR_MoreConfig], Source={x:Static langs:LanguageManager.Instance}}" Height="35" FontSize="14" Click="setServerconfig_Click" VerticalAlignment="Top" HorizontalAlignment="Stretch" Margin="10,0,0,10"/>
+            </WrapPanel>
         </hc:UniformSpacingPanel>
     </local:MagicCard>
 </UserControl>

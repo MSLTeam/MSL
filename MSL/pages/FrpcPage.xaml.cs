@@ -487,41 +487,18 @@ namespace MSL.pages
                     else if (downloadUrl == "ChmlFrp")
                     {
                         LogHelper.Write.Info("正在获取 ChmlFrp 下载地址。");
-                        JObject apiData = (JObject)JObject.Parse((await HttpService.GetContentAsync("https://cf-v1.uapis.cn/api/dw.php")).ToString());
-                        if ((int)apiData["code"] != 200)
-                        {
-                            LogHelper.Write.Error("获取ChmlFrp下载地址失败！API返回码不为200。");
-                            Growl.Error(Lang.Page_FrpcPage_GetChmlDownloadFailed);
-                            return;
-                        }
-                        string link = apiData["link"].ToString();
-                        JArray fileList = (JArray)apiData["system"]["windows"];
-                        foreach (JObject file in fileList)
-                        {
-                            if (file["architecture"].ToString() == "amd64")
-                            {
-                                string finalUrl = link + file["route"].ToString();
-                                LogHelper.Write.Info($"找到 ChmlFrp amd64 下载地址: {finalUrl}");
-                                await MagicShow.ShowDownloader(Window.GetWindow(this), finalUrl, "MSL\\frp", downloadFileName, LanguageManager.Instance["Download_Frpc_Info"]);
-                                break;
-                            }
-                        }
+                        string link = "https://cf-v1.uapis.cn/download/ChmlFrp-0.51.2_251023_2_windows_amd64.zip";
+
+                        LogHelper.Write.Info($"找到 ChmlFrp amd64 下载地址: {link}");
+                        await MagicShow.ShowDownloader(Window.GetWindow(this), link, "MSL\\frp", downloadFileName, LanguageManager.Instance["Download_Frpc_Info"]);
+
                     }
                     else if (downloadUrl == "MEFrp")
                     {
                         LogHelper.Write.Info("正在获取 ME Frp 下载地址。");
                         try
                         {
-                            if (Config.Read("MEFrpToken").ToString() == "")
-                            {
-                                LogHelper.Write.Error("ME Frp Token 为空，下载失败。");
-                                Growl.Error(Lang.Page_FrpcPage_GetMEDownloadFailed);
-                                return;
-                            }
-                            HttpResponse res = await HttpService.GetAsync("https://api.mefrp.com/api/auth/products", headers =>
-                            {
-                                headers.Add("Authorization", $"Bearer {Config.Read("MEFrpToken")}");
-                            });
+                            HttpResponse res = await HttpService.GetAsync("https://api.mefrp.com/api/auth/products");
                             JObject apiData = JObject.Parse((string)res.HttpResponseContent);
                             if ((int)apiData["code"] != 200)
                             {
@@ -588,22 +565,8 @@ namespace MSL.pages
                         fastZip.ExtractZip($@"MSL\frp\{downloadFileName}", "MSL\\frp", "");
                         File.Delete($@"MSL\frp\{downloadFileName}");
                         LogHelper.Write.Info("文件解压成功，正在重命名并清理。");
-                        if (frpcServer == 1) //这是of的解压处理
-                        {
-                            File.Move("MSL\\frp\\" + fileName, $"MSL\\frp\\{frpcExeName}");
-                            File.Delete("MSL\\frp\\" + fileName);
-                        }
-                        else if (frpcServer == 4) //这是chml的解压处理
-                        {
-                            File.Move("MSL\\frp\\" + fileName + $"\\mefrpc.exe", $"MSL\\frp\\{frpcExeName}");
-                            Directory.Delete("MSL\\frp\\" + fileName, true);
-                        }
-                        else //这是chml的解压处理
-                        {
-                            File.Move("MSL\\frp\\" + fileName + $"\\frpc.exe", $"MSL\\frp\\{frpcExeName}");
-                            Directory.Delete("MSL\\frp\\" + fileName, true);
-                        }
-                        //三个服务 三个下载解压方式 我真是太开心了！(p≧w≦q)
+                        File.Move("MSL\\frp\\" + fileName, $"MSL\\frp\\{frpcExeName}");
+                        File.Delete("MSL\\frp\\" + fileName);
                     }
 
                 }

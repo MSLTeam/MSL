@@ -92,11 +92,11 @@ namespace MSL.pages.serverrunner
 
             // 初始化 MVVM 绑定属性默认值
             ServerStateText = Lang.SR_Closed;
-            OnlineModeText = Lang.SR_Fetching;
-            GameTypeText = Lang.SR_Fetching;
-            GameDifficultyText = Lang.SR_Fetching;
-            ServerIPText = Lang.SR_Fetching;
-            LocalIPText = Lang.SR_Fetching;
+            OnlineModeText = Lang.SR_Unknown;
+            GameTypeText = Lang.SR_Unknown;
+            GameDifficultyText = Lang.SR_Unknown;
+            ServerIPText = Lang.SR_Unknown;
+            LocalIPText = Lang.SR_Unknown;
 
             previewOutlog.Text = Lang.SR_PreviewHint;
         }
@@ -207,13 +207,14 @@ namespace MSL.pages.serverrunner
 
         private void controlServer1_Click(object sender, RoutedEventArgs e)
         {
-            _parent.ToggleServerFromDashboard(controlServer1.IsChecked == true);
-            controlServer1.IsChecked = !controlServer1.IsChecked;
+            bool btnStatus = controlServer1.IsChecked == true;
+            controlServer1.IsChecked = !btnStatus;
+            _parent.ToggleServer(btnStatus);
         }
 
         private async void controlServer1_MouseDoubleClick(object sender, MouseButtonEventArgs e)
         {
-            _parent.KillServerFromDashboard();
+            await _parent.KillServer();
         }
 
         #endregion
@@ -314,9 +315,9 @@ namespace MSL.pages.serverrunner
         #region 公共方法 - 供父窗口调用
 
         // 公共控件访问器 — 供 ServerRunner 桥接
-        public System.Windows.Controls.ListBox PlayerListBox => serverPlayerList;
+        public ListBox PlayerListBox => serverPlayerList;
         public System.Windows.Documents.Run ServerStateLabel => serverStateLab;
-        public System.Windows.Controls.Button SolveProblemButton => solveProblemBtn;
+        public Button SolveProblemButton => solveProblemBtn;
         public System.Windows.Controls.Primitives.ToggleButton ControlToggleButton => controlServer1;
         public short GetServerInfoLine { get => getServerInfoLine; set => getServerInfoLine = value; }
         private short getServerInfoLine = 0;
@@ -377,7 +378,7 @@ namespace MSL.pages.serverrunner
             try
             {
                 Encoding encoding = Functions.GetTextFileEncodingType(_serverService.ServerBase + @"\server.properties");
-                string config = File.ReadAllText(_serverService.ServerBase + @"\server.properties", encoding);
+                string config = Functions.ReadAllTextShared(_serverService.ServerBase + @"\server.properties", encoding);
                 if (config.Contains("\r"))
                 {
                     config = config.Replace("\r", string.Empty);
@@ -480,14 +481,6 @@ namespace MSL.pages.serverrunner
             {
                 Growl.Error(LanguageManager.Instance["SR_SomeError"]);
             }
-        }
-
-        /// <summary>
-        /// 同步 Dashboard 上 controlServer1 的勾选状态（由父窗口调用）
-        /// </summary>
-        public void SyncToggleButton(bool isChecked)
-        {
-            controlServer1.IsChecked = isChecked;
         }
 
         #endregion
