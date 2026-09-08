@@ -1,4 +1,4 @@
-﻿using CurseForge.APIClient;
+using CurseForge.APIClient;
 using CurseForge.APIClient.Models;
 using CurseForge.APIClient.Models.Mods;
 using Modrinth;
@@ -105,7 +105,8 @@ namespace MSL
 
                     foreach (var featuredMod in featuredMods.Data.Popular)
                     {
-                        list.Add(new DM_ModsInfo(featuredMod.Id.ToString(), featuredMod.Logo.ThumbnailUrl, featuredMod.Name, featuredMod.Links.WebsiteUrl.ToString()));
+                        var cn = ModDictionaryService.Instance.GetChineseName(featuredMod.Slug) ?? ModDictionaryService.Instance.GetChineseName(featuredMod.Name);
+                        list.Add(new DM_ModsInfo(featuredMod.Id.ToString(), featuredMod.Logo.ThumbnailUrl, cn ?? featuredMod.Name, featuredMod.Links.WebsiteUrl.ToString()));
                     }
                     NowPageLabel.Content = "精选";
                 }
@@ -114,7 +115,8 @@ namespace MSL
                     var modpacks = await CurseForgeApiClient.SearchModsAsync(432, null, 4475);
                     foreach (var modPack in modpacks.Data)
                     {
-                        list.Add(new DM_ModsInfo(modPack.Id.ToString(), modPack.Logo.ThumbnailUrl, modPack.Name, modPack.Links.WebsiteUrl.ToString()));
+                        var cn = ModDictionaryService.Instance.GetChineseName(modPack.Slug) ?? ModDictionaryService.Instance.GetChineseName(modPack.Name);
+                        list.Add(new DM_ModsInfo(modPack.Id.ToString(), modPack.Logo.ThumbnailUrl, cn ?? modPack.Name, modPack.Links.WebsiteUrl.ToString()));
                     }
                     NowPageLabel.Content = "1";
                 }
@@ -188,7 +190,8 @@ namespace MSL
                 mods = await ModrinthApiClient.Project.SearchAsync("", facets: facets);
                 foreach (var mod in mods?.Hits)
                 {
-                    list.Add(new DM_ModsInfo(mod.ProjectId, mod.IconUrl, mod.Title, mod.Url));
+                    var cn = ModDictionaryService.Instance.GetChineseName(mod.Slug) ?? ModDictionaryService.Instance.GetChineseName(mod.Title);
+                    list.Add(new DM_ModsInfo(mod.ProjectId, mod.IconUrl, cn ?? mod.Title, mod.Url));
                 }
 
                 ModList.ItemsSource = list;
@@ -225,18 +228,20 @@ namespace MSL
                 ModList.Items.Clear();
                 List<DM_ModsInfo> list = new List<DM_ModsInfo>();
                 GenericListResponse<Mod> mods = null;
+                string query = ModDictionaryService.Instance.TranslateChineseQueryToEnglish(name);
                 if (LoadType == 0)
                 {
-                    mods = await CurseForgeApiClient.SearchModsAsync(432, searchFilter: name, index: index);
+                    mods = await CurseForgeApiClient.SearchModsAsync(432, searchFilter: query, index: index);
                 }
                 else if (LoadType == 1)
                 {
-                    mods = await CurseForgeApiClient.SearchModsAsync(432, categoryId: 4475, searchFilter: name, index: index);
+                    mods = await CurseForgeApiClient.SearchModsAsync(432, categoryId: 4475, searchFilter: query, index: index);
                 }
                 foreach (var mod in mods.Data)
                 {
                     //MessageBox.Show(mod.PrimaryCategoryId.ToString());
-                    list.Add(new DM_ModsInfo(mod.Id.ToString(), mod.Logo.ThumbnailUrl, mod.Name, mod.Links.WebsiteUrl.ToString()));
+                    var cn = ModDictionaryService.Instance.GetChineseName(mod.Slug) ?? ModDictionaryService.Instance.GetChineseName(mod.Name);
+                    list.Add(new DM_ModsInfo(mod.Id.ToString(), mod.Logo.ThumbnailUrl, cn ?? mod.Name, mod.Links.WebsiteUrl.ToString()));
                 }
                 ModList.ItemsSource = list;
             }
@@ -281,11 +286,13 @@ namespace MSL
                 {
                     facets.Add(Facet.Category(MinecraftLoaderTypeBox.Text));
                 }
+                string query = ModDictionaryService.Instance.TranslateChineseQueryToEnglish(name);
                 // 执行搜索
-                mods = await ModrinthApiClient.Project.SearchAsync(name, facets: facets,offset:offset);
+                mods = await ModrinthApiClient.Project.SearchAsync(query, facets: facets, offset: offset);
                 foreach (var mod in mods?.Hits)
                 {
-                    list.Add(new DM_ModsInfo(mod.ProjectId, mod.IconUrl, mod.Title, mod.Url));
+                    var cn = ModDictionaryService.Instance.GetChineseName(mod.Slug) ?? ModDictionaryService.Instance.GetChineseName(mod.Title);
+                    list.Add(new DM_ModsInfo(mod.ProjectId, mod.IconUrl, cn ?? mod.Title, mod.Url));
                 }
 
                 ModList.ItemsSource = list;

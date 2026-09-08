@@ -1,4 +1,4 @@
-﻿<?xml version="1.0" encoding="utf-8"?>
+<?xml version="1.0" encoding="utf-8"?>
 <Project ToolsVersion="15.0" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
   <Import Project="$(MSBuildExtensionsPath)\$(MSBuildToolsVersion)\Microsoft.Common.props" Condition="Exists('$(MSBuildExtensionsPath)\$(MSBuildToolsVersion)\Microsoft.Common.props')" />
   <PropertyGroup>
@@ -232,6 +232,7 @@
       <DependentUpon>SetServerconfig.xaml</DependentUpon>
     </Compile>
     <Compile Include="utils\x25519.cs" />
+    <Compile Include="utils\ModDictionaryService.cs" />
     <Page Include="controls\Animations.xaml">
       <SubType>Designer</SubType>
       <Generator>MSBuild:Compile</Generator>
@@ -520,6 +521,7 @@
     <Resource Include="images\150px-Grass_Block_JE7_BE6.png" />
     <Resource Include="images\150px-Wooden_Pickaxe_JE3_BE3.png" />
     <Resource Include="icon.ico" />
+    <EmbeddedResource Include="Resources\MSLX_ModDictionary.json" />
   </ItemGroup>
   <ItemGroup>
     <Resource Include="images\150px-Anvil.png" />
