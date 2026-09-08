@@ -1,4 +1,4 @@
-﻿<?xml version="1.0" encoding="utf-8"?>
+<?xml version="1.0" encoding="utf-8"?>
 <root>
   <!-- 
     Microsoft ResX Schema 
@@ -2958,6 +2958,12 @@ Please check!</value>
   </data>
   <data name="Frp_MSLFrp_EnableKCP" xml:space="preserve">
     <value>Enable KCP Protocol:</value>
+  </data>
+  <data name="Frp_MSLFrp_AccelProtocol" xml:space="preserve">
+    <value>Acceleration Protocol:</value>
+  </data>
+  <data name="Frp_MSLFrp_AccelProtocolTip" xml:space="preserve">
+    <value>Do not change if unsure. If connection fails, switch back to TCP.</value>
   </data>
   <data name="Frp_MSLFrp_ConfirmCreate" xml:space="preserve">
     <value>Confirm Create</value>

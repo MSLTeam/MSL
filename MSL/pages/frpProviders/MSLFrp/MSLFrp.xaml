@@ -1,4 +1,4 @@
-﻿<Page x:Class="MSL.pages.frpProviders.MSLFrp.MSLFrp"
+<Page x:Class="MSL.pages.frpProviders.MSLFrp.MSLFrp"
       xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
       xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
       xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006" 
@@ -216,11 +216,16 @@
                                 <Grid>
                                     <Grid.ColumnDefinitions>
                                         <ColumnDefinition Width="auto"/>
-                                        <ColumnDefinition Width="auto"/>
+                                        <ColumnDefinition Width="*"/>
                                     </Grid.ColumnDefinitions>
-                                    <Label Style="{DynamicResource MagicLabel}" Content="{Binding [Frp_MSLFrp_EnableKCP], Source={x:Static langs:LanguageManager.Instance}}" VerticalAlignment="Center"/>
-                                        <ToggleButton Grid.Column="1" Style="{StaticResource ToggleButtonSwitch}" x:Name="KCPProtocol" Content="" Checked="KCPProtocol_Checked"/>
+                                    <Label Style="{DynamicResource MagicLabel}" Content="{Binding [Frp_MSLFrp_AccelProtocol], Source={x:Static langs:LanguageManager.Instance}}" VerticalAlignment="Center"/>
+                                    <hc:ComboBox Grid.Column="1" SelectedIndex="0" x:Name="Create_AccelProtocol">
+                                        <ComboBoxItem Content="TCP（默认）" Tag="tcp" x:Name="Accel_TCP"/>
+                                        <ComboBoxItem Content="KCP 加速" Tag="kcp" x:Name="Accel_KCP" Visibility="Collapsed"/>
+                                        <ComboBoxItem Content="WSS 加速" Tag="wss" x:Name="Accel_WSS" Visibility="Collapsed"/>
+                                    </hc:ComboBox>
                                 </Grid>
+                                <TextBlock Text="{Binding [Frp_MSLFrp_AccelProtocolTip], Source={x:Static langs:LanguageManager.Instance}}" Foreground="{DynamicResource SecondaryTextBrush}" FontSize="12" Margin="5,0,0,0" TextWrapping="Wrap"/>
                             </hc:UniformSpacingPanel>
                             </ScrollViewer>
                         </controls:MagicCard>

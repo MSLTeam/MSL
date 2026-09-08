@@ -1,4 +1,4 @@
-﻿using Newtonsoft.Json;
+using Newtonsoft.Json;
 using Newtonsoft.Json.Linq;
 using System;
 using System.Collections.Generic;
@@ -173,6 +173,7 @@ namespace MSL.utils
             // Tunnel Status
             public bool Online { get; set; }
             public string Remarks { get; set; }
+            public string Protocol { get; set; }
         }
 
         public static async Task<(int Code, List<TunnelInfo> Tunnels, string Msg)> GetTunnelList()
@@ -239,7 +240,8 @@ namespace MSL.utils
                             LPort = $"{item["local_port"]}",
                             RPort = $"{item["remote_port"]}",
                             Online = (bool)item["status"],
-                            Remarks= $"{item["remarks"]}"
+                            Remarks = $"{item["remarks"]}",
+                            Protocol = item["protocol"] != null ? (string)item["protocol"] : (item["use_kcp"] != null && item["use_kcp"].Value<int>() == 1 ? "kcp" : "tcp")
                         });
                     }
                     return (200, tunnels, string.Empty);
@@ -323,6 +325,7 @@ namespace MSL.utils
             public string VipName { get; set; }
             public int UDP { get; set; }
             public int KCP { get; set; }
+            public int WSS { get; set; }
             public int Status { get; set; }
             public string Band { get; set; }
         }
@@ -361,6 +364,7 @@ namespace MSL.utils
                         VipName = (vip == 0 ? "普通节点" : vip == 1 ? "高级节点" : "超级节点"),
                         UDP = (int)nodeData["udp_support"],
                         KCP = (int)nodeData["kcp_support"],
+                        WSS = nodeData["wss_support"] != null ? (int)nodeData["wss_support"] : 0,
                         Status = (int)nodeData["status"],
                         Band = (string)nodeData["bandwidth"]
                     });
@@ -371,7 +375,7 @@ namespace MSL.utils
             return ((int)res.HttpResponseCode, null, $"({(int)res.HttpResponseCode}){res.HttpResponseContent}");
         }
 
-        public static async Task<(int Code, string Msg)> CreateTunnel(int nodeID, string tunnelName, string tunnelType, string tunnelRemark, string localIP, int localPort, int remotePort, bool useKcp)
+        public static async Task<(int Code, string Msg)> CreateTunnel(int nodeID, string tunnelName, string tunnelType, string tunnelRemark, string localIP, int localPort, int remotePort, string protocol = "tcp")
         {
             //请求头 token
             var headersAction = new Action<HttpRequestHeaders>(headers =>
@@ -385,11 +389,12 @@ namespace MSL.utils
                 ["id"] = nodeID,
                 ["name"] = tunnelName,
                 ["type"] = tunnelType,
-                ["remarks"] = string.IsNullOrEmpty(tunnelRemark)?"Create By MSL Client" : tunnelRemark,
+                ["remarks"] = string.IsNullOrEmpty(tunnelRemark) ? "Create By MSL Client" : tunnelRemark,
                 ["local_ip"] = localIP,
                 ["local_port"] = localPort,
                 ["remote_port"] = remotePort,
-                ["use_kcp"] = useKcp,
+                ["protocol"] = protocol,
+                ["use_kcp"] = protocol != null && protocol.Equals("kcp", StringComparison.OrdinalIgnoreCase),
             };
             HttpResponse res = await HttpService.PostAsync(ApiUrl + "/frp/addTunnel", 0, body, headersAction);
             if (res.HttpResponseCode == HttpStatusCode.OK)
@@ -408,6 +413,11 @@ namespace MSL.utils
             {
                 return ((int)res.HttpResponseCode, $"({(int)res.HttpResponseCode}){res.HttpResponseContent}");
             }
+        }
+
+        public static Task<(int Code, string Msg)> CreateTunnel(int nodeID, string tunnelName, string tunnelType, string tunnelRemark, string localIP, int localPort, int remotePort, bool useKcp)
+        {
+            return CreateTunnel(nodeID, tunnelName, tunnelType, tunnelRemark, localIP, localPort, remotePort, useKcp ? "kcp" : "tcp");
         }
 
         // 免费子域名API

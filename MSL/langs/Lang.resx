@@ -1,4 +1,4 @@
-﻿<?xml version="1.0" encoding="utf-8"?>
+<?xml version="1.0" encoding="utf-8"?>
 <root>
   <!-- 
     Microsoft ResX Schema 
@@ -2965,6 +2965,12 @@ ID: {1} 远程端口: {2}</value>
   </data>
   <data name="Frp_MSLFrp_EnableKCP" xml:space="preserve">
     <value>启用KCP协议传输：</value>
+  </data>
+  <data name="Frp_MSLFrp_AccelProtocol" xml:space="preserve">
+    <value>加速协议：</value>
+  </data>
+  <data name="Frp_MSLFrp_AccelProtocolTip" xml:space="preserve">
+    <value>如果不明白请勿修改，若无法连接，请切换回tcp。</value>
   </data>
   <data name="Frp_MSLFrp_ConfirmCreate" xml:space="preserve">
     <value>确定创建</value>

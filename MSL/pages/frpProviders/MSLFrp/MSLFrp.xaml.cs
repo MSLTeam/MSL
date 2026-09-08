@@ -1,4 +1,4 @@
-﻿using MSL.utils;
+using MSL.utils;
 using MSL.utils.Config;
 using Newtonsoft.Json.Linq;
 using System;
@@ -167,6 +167,9 @@ namespace MSL.pages.frpProviders.MSLFrp
                     LogHelper.Write.Info("切换到创建隧道标签页。");
                     await GetNodeList();
                     Create_Name.Text = Functions.RandomString("MSL_", 6);
+                    Accel_KCP.Visibility = Visibility.Collapsed;
+                    Accel_WSS.Visibility = Visibility.Collapsed;
+                    Create_AccelProtocol.SelectedIndex = 0;
                     break;
                 case 2:
                     LogHelper.Write.Info("切换到用户中心标签页。");
@@ -183,8 +186,15 @@ namespace MSL.pages.frpProviders.MSLFrp
             var listBox = sender as ListBox;
             if (listBox.SelectedItem is MSLFrpApi.TunnelInfo selectedTunnel)
             {
+                string accelProtocol = string.Empty;
+                if (!string.IsNullOrEmpty(selectedTunnel.Protocol) && !selectedTunnel.Protocol.Equals("tcp", StringComparison.OrdinalIgnoreCase))
+                {
+                    accelProtocol = $"\n加速协议: {selectedTunnel.Protocol.ToUpper()}";
+                }
                 TunnelInfo_Text.Content = $"#{selectedTunnel.ID} {selectedTunnel.Name}\n" +
-                    $"本地IP：{selectedTunnel.LIP} 本地端口：{selectedTunnel.LPort}\n远程端口: {selectedTunnel.RPort}" + $"\n隧道状态: {(selectedTunnel.Online ? "在线" : "未启动")}" +$"\n备注：{selectedTunnel.Remarks}";
+                    $"本地IP：{selectedTunnel.LIP} 本地端口：{selectedTunnel.LPort}\n远程端口: {selectedTunnel.RPort}" +
+                    accelProtocol +
+                    $"\n隧道状态: {(selectedTunnel.Online ? "在线" : "未启动")}" + $"\n备注：{selectedTunnel.Remarks}";
             }
         }
 
@@ -262,15 +272,19 @@ namespace MSL.pages.frpProviders.MSLFrp
             if (NodeList.SelectedItem is MSLFrpApi.NodeInfo selectedNode)
             {
                 Create_RemotePort.Text = Functions.GenerateRandomNumber(selectedNode.MinPort, selectedNode.MaxPort).ToString();
-                if (selectedNode.KCP == 1)
+                Accel_KCP.Visibility = selectedNode.KCP == 1 ? Visibility.Visible : Visibility.Collapsed;
+                Accel_WSS.Visibility = selectedNode.WSS == 1 ? Visibility.Visible : Visibility.Collapsed;
+
+                if (Create_AccelProtocol.SelectedItem is ComboBoxItem selectedItem && selectedItem.Visibility == Visibility.Collapsed)
                 {
-                    KCPProtocol.IsEnabled = true;
+                    Create_AccelProtocol.SelectedIndex = 0;
                 }
-                else
-                {
-                    KCPProtocol.IsEnabled = false;
-                    KCPProtocol.IsChecked = false;
-                }
+            }
+            else
+            {
+                Accel_KCP.Visibility = Visibility.Collapsed;
+                Accel_WSS.Visibility = Visibility.Collapsed;
+                Create_AccelProtocol.SelectedIndex = 0;
             }
         }
 
@@ -282,11 +296,9 @@ namespace MSL.pages.frpProviders.MSLFrp
                 Create_OKBtn.IsEnabled = false;
                 try
                 {
-                    bool kcpProtocol = false;
-                    if (KCPProtocol.IsChecked == true)
-                        kcpProtocol = true;
-                    LogHelper.Write.Info($"用户请求创建新隧道。节点ID: {selectedNode.ID}, 隧道名称: {Create_Name.Text}");
-                    var (Code, Msg) = await MSLFrpApi.CreateTunnel(selectedNode.ID, Create_Name.Text, Create_Protocol.Text, Create_Remarks.Text, Create_LocalIP.Text, int.Parse(Create_LocalPort.Text), int.Parse(Create_RemotePort.Text), kcpProtocol);
+                    string protocol = (Create_AccelProtocol.SelectedItem as ComboBoxItem)?.Tag?.ToString() ?? "tcp";
+                    LogHelper.Write.Info($"用户请求创建新隧道。节点ID: {selectedNode.ID}, 隧道名称: {Create_Name.Text}, 加速协议: {protocol}");
+                    var (Code, Msg) = await MSLFrpApi.CreateTunnel(selectedNode.ID, Create_Name.Text, Create_Protocol.Text, Create_Remarks.Text, Create_LocalIP.Text, int.Parse(Create_LocalPort.Text), int.Parse(Create_RemotePort.Text), protocol);
                     if (Code == 200)
                     {
                         LogHelper.Write.Info($"创建隧道成功。名称: {Create_Name.Text}, 节点ID: {selectedNode.ID}, 消息: {Msg}");
@@ -338,11 +350,6 @@ namespace MSL.pages.frpProviders.MSLFrp
             MSLFrpApi.UserToken = string.Empty;
             Config.Remove("MSLUserAccessToken");
             FrpProfile = new MSLFrpProfile();
-        }
-
-        private async void KCPProtocol_Checked(object sender, RoutedEventArgs e)
-        {
-            await MagicShow.ShowMsgDialogAsync(Window.GetWindow(this), "您启用了KCP协议传输，此功能可以优化恶劣网络环境下的延迟，\n但是部分用户启用本功能后会导致隧道无法连接。\n若您后续启动隧道时连接失败，请关闭本功能！", "警告");
         }
     }
 
