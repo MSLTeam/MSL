@@ -55,7 +55,7 @@
                     <ToggleButton Name="MSLTips" IsChecked="True" Style="{StaticResource ToggleButtonSwitch.Content}" HorizontalAlignment="Left" VerticalAlignment="Center" Click="MSLTips_Click"/>
                 </StackPanel>
                 <StackPanel Margin="0,0,0,15" Orientation="Horizontal">
-                    <Label Grid.Column="0" Content="服务器运行窗口关闭时的运行提示: " Margin="0,0,10,0"/>
+                    <Label Grid.Column="0" Content="{Binding [SettingsPage_CloseWindowHint],Source={x:Static lang:LanguageManager.Instance}}" Margin="0,0,10,0"/>
                     <ToggleButton Name="CloseWindowDialog" IsChecked="True" Style="{StaticResource ToggleButtonSwitch.Content}" HorizontalAlignment="Left" VerticalAlignment="Center" Click="CloseWindowDialog_Click"/>
                 </StackPanel>
                 <Grid Margin="0,0,0,15">
@@ -147,35 +147,35 @@
                 <WrapPanel Orientation="Horizontal" Margin="0,0,0,10">
                     <Label Content="{Binding [Page_SettingsPage_SS_ThemeColor],Source={x:Static lang:LanguageManager.Instance}}" Margin="0,0,10,0"/>
                     <ToggleButton x:Name="autoSetTheme" Margin="0,0,20,0" Style="{StaticResource ToggleButtonSwitch}" VerticalAlignment="Center" Click="autoSetTheme_Click" IsChecked="True" Content="{Binding [Page_SettingsPage_SS_UseSysTheme],Source={x:Static lang:LanguageManager.Instance}}" Height="25"/>
-                    <Button x:Name="ChangeSkinColor" Margin="0,0,20,0" Content="点击选色" Click="ChangeSkinColor_Click" IsEnabled="False"/>
+                    <Button x:Name="ChangeSkinColor" Margin="0,0,20,0" Content="{Binding [SettingsPage_PickColor],Source={x:Static lang:LanguageManager.Instance}}" Click="ChangeSkinColor_Click" IsEnabled="False"/>
                     <ToggleButton x:Name="darkTheme" Margin="0,0,20,0" Style="{StaticResource ToggleButtonSwitch}" VerticalAlignment="Center" Click="darkTheme_Click" IsEnabled="False" Content="{Binding [Page_SettingsPage_SS_DarkTheme],Source={x:Static lang:LanguageManager.Instance}}" Height="25"/>
                     <ToggleButton x:Name="semitransparentTitle" Style="{StaticResource ToggleButtonSwitch}" VerticalAlignment="Center" Content="{Binding [Page_SettingsPage_SS_SemitransparentTitle],Source={x:Static lang:LanguageManager.Instance}}" Height="25" Click="semitransparentTitle_Click"/>
                 </WrapPanel>
                 
-                <StackPanel Orientation="Horizontal" Margin="0,0,0,5">
+                <WrapPanel Orientation="Horizontal" Margin="0,0,0,5">
                     <Label Content="{Binding [Page_SettingsPage_SS_Background],Source={x:Static lang:LanguageManager.Instance}}" Margin="0,0,10,0"/>
-                    <ToggleButton x:Name="UseMicaEffect" Content="使用云母效果" Margin="0,0,10,0" Style="{StaticResource ToggleButtonSwitch}" Click="UseMicaEffect_Click"/>
+                    <ToggleButton x:Name="UseMicaEffect" Content="{Binding [SettingsPage_UseMica],Source={x:Static lang:LanguageManager.Instance}}" Margin="0,0,10,0" Style="{StaticResource ToggleButtonSwitch}" Click="UseMicaEffect_Click"/>
                     <Button x:Name="changeBackImg" Margin="0,0,10,0" Content="{Binding [Page_SettingsPage_SS_BI_ChangeBackImg],Source={x:Static lang:LanguageManager.Instance}}" VerticalAlignment="Center" Click="changeBackImg_Click"/>
                     <Button x:Name="delBackImg" Margin="0,0,10,0" Content="{Binding [Page_SettingsPage_SS_BI_DelBackImg],Source={x:Static lang:LanguageManager.Instance}}" VerticalAlignment="Center" Click="delBackImg_Click"/>
                     <Button x:Name="WesternEgg" Content="{Binding [Page_SettingsPage_SS_WesternEgg],Source={x:Static lang:LanguageManager.Instance}}" Style="{StaticResource ButtonDanger}" HorizontalAlignment="Left" VerticalAlignment="Center" Click="WesternEgg_Click" MinWidth="100"/>
-                </StackPanel>
+                </WrapPanel>
                 <hc:UniformSpacingPanel Orientation="Horizontal" Spacing="5" Margin="0,0,0,5">
-                    <Label Content="终端日志颜色：" Margin="0,0,10,0"/>
+                    <Label Content="{Binding [SettingsPage_LogColor],Source={x:Static lang:LanguageManager.Instance}}" Margin="0,0,10,0"/>
                     <ComboBox x:Name="LogForeTypeCombo">
                         <ComboBoxItem Content="INFO" IsSelected="True"/>
                         <ComboBoxItem Content="WARN"/>
                         <ComboBoxItem Content="ERROR"/>
                         <ComboBoxItem Content="HIGHLIGHT"/>
                     </ComboBox>
-                    <Button x:Name="ChangeLogForeColor" Content="点击选色" Click="ChangeLogForeColor_Click"/>
-                    <Button x:Name="RestoreLogForeColor" Content="重置" Click="RestoreLogForeColor_Click"/>
+                    <Button x:Name="ChangeLogForeColor" Content="{Binding [SettingsPage_PickColor],Source={x:Static lang:LanguageManager.Instance}}" Click="ChangeLogForeColor_Click"/>
+                    <Button x:Name="RestoreLogForeColor" Content="{Binding [SettingsPage_Reset],Source={x:Static lang:LanguageManager.Instance}}" Click="RestoreLogForeColor_Click"/>
                 </hc:UniformSpacingPanel>
                 <hc:UniformSpacingPanel Orientation="Horizontal" Spacing="5" Margin="0,0,0,5">
-                    <Label Content="终端日志字体：" Margin="0,0,10,0"/>
-                    <ComboBox x:Name="LogFontCombo" hc:InfoElement.Placeholder="系统默认" Style="{StaticResource ComboBoxExtend}"/>
-                    <Label Content="终端日志字号：" Margin="0,0,10,0"/>
+                    <Label Content="{Binding [SettingsPage_LogFont],Source={x:Static lang:LanguageManager.Instance}}" Margin="0,0,10,0"/>
+                    <ComboBox x:Name="LogFontCombo" hc:InfoElement.Placeholder="{Binding [SettingsPage_SysDefault],Source={x:Static lang:LanguageManager.Instance}}" Style="{StaticResource ComboBoxExtend}"/>
+                    <Label Content="{Binding [SettingsPage_LogFontSize],Source={x:Static lang:LanguageManager.Instance}}" Margin="0,0,10,0"/>
                     <TextBox x:Name="LogFontSizeBox" MinWidth="48"/>
-                    <Button x:Name="ApplyLogFontConfig" Content="应用" Click="ApplyLogFontConfig_Click"/>
+                    <Button x:Name="ApplyLogFontConfig" Content="{Binding [SettingsPage_Apply],Source={x:Static lang:LanguageManager.Instance}}" Click="ApplyLogFontConfig_Click"/>
                 </hc:UniformSpacingPanel>
             </StackPanel>
         </controls:MagicCard>

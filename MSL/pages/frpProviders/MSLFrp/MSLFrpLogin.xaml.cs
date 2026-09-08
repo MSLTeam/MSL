@@ -1,4 +1,5 @@
 ﻿using MSL.utils;
+using MSL.langs;
 using Newtonsoft.Json.Linq;
 using System;
 using System.Collections.Generic;
@@ -40,7 +41,7 @@ namespace MSL.pages.frpProviders.MSLFrp
             if (string.IsNullOrEmpty(userAccount) || string.IsNullOrEmpty(userPassword))
             {
                 LogHelper.Write.Warn("登录尝试中止：账号或密码为空。");
-                MagicFlowMsg.ShowMessage("请输入账号和密码！", 2);
+                MagicFlowMsg.ShowMessage(Lang.Frp_MSLFrpLogin_EnterAccountPassword, 2);
                 return;
             }
             LogHelper.Write.Info($"用户 '{userAccount}' 正在尝试登录...");
@@ -53,7 +54,7 @@ namespace MSL.pages.frpProviders.MSLFrp
                     if (ContentInfo == null)
                     {
                         LogHelper.Write.Error("2FA流程中止：ContentInfo为空，可能为API异常。");
-                        MagicFlowMsg.ShowMessage("未知错误，请稍后再试！", 2);
+                        MagicFlowMsg.ShowMessage(Lang.Frp_MSLFrpLogin_UnknownError, 2);
                         return;
                     }
                     LoginGrid.Visibility = Visibility.Collapsed;
@@ -61,13 +62,13 @@ namespace MSL.pages.frpProviders.MSLFrp
 
                     if (ContentInfo["type"].Value<string>() == "email")
                     {
-                        Auth2FARemark.Text = "我们向您的邮箱发送了一个验证码，请输入验证码以完成登录。";
+                        Auth2FARemark.Text = Lang.Frp_MSLFrpLogin_2FAEmail;
                         Auth2FAResend.Visibility = Visibility.Visible;
                         await Resend2FA();
                     }
                     else
                     {
-                        Auth2FARemark.Text = "请输入您绑定的2FA软件的实时代码以登录。";
+                        Auth2FARemark.Text = Lang.Frp_MSLFrpLogin_2FATypeApp;
                         Auth2FAResend.Visibility = Visibility.Collapsed;
                     }
                     return;
@@ -104,7 +105,7 @@ namespace MSL.pages.frpProviders.MSLFrp
             if (string.IsNullOrEmpty(userAuth2FA))
             {
                 LogHelper.Write.Warn("2FA登录尝试中止：验证码为空。");
-                MagicFlowMsg.ShowMessage("请输入验证代码！", 2);
+                MagicFlowMsg.ShowMessage(Lang.Frp_MSLFrpLogin_EnterCode, 2);
                 return;
             }
             LogHelper.Write.Info($"用户 '{userAccount}' 正在提交2FA验证码...");
@@ -152,14 +153,14 @@ namespace MSL.pages.frpProviders.MSLFrp
                 return;
             }
             LogHelper.Write.Info("已成功请求发送2FA验证码。");
-            MagicFlowMsg.ShowMessage("验证码已发送，请注意查收！", 1, panel: Auth2FAGrid);
+            MagicFlowMsg.ShowMessage(Lang.Frp_MSLFrpLogin_CodeSent, 1, panel: Auth2FAGrid);
             Auth2FACode.Focus();
             for (int i = 60; i > 0; i--)
             {
-                Auth2FAResend.Content = $"重新发送({i}s)";
+                Auth2FAResend.Content = string.Format(Lang.Frp_MSLFrpLogin_ResendCountdown, i);
                 await Task.Delay(1000);
             }
-            Auth2FAResend.Content = "重新发送";
+            Auth2FAResend.Content = Lang.Frp_MSLFrpLogin_Resend;
             Auth2FAResend.IsEnabled = true;
         }
 
@@ -170,7 +171,7 @@ namespace MSL.pages.frpProviders.MSLFrp
             LogHelper.Write.Info($"执行登录API调用。账号: {userAccount}, 是否提供2FA码: {!string.IsNullOrEmpty(auth2FA)}");
             bool save = (bool)SaveToken.IsChecked;
             MagicDialog MagicDialog = new MagicDialog();
-            MagicDialog.ShowTextDialog(Window.GetWindow(this), "登录中……");
+            MagicDialog.ShowTextDialog(Window.GetWindow(this), Lang.Frp_MSLFrpLogin_LoggingIn);
 
             var (Code, Msg, ContentInfo) = await MSLFrpApi.UserLogin(string.Empty, userAccount, userPassword, auth2FA, save);
 
@@ -220,7 +221,7 @@ namespace MSL.pages.frpProviders.MSLFrp
         {
             LogHelper.Write.Info("开始浏览器登录流程...");
             MagicDialog magicDialog = new MagicDialog();
-            magicDialog.ShowTextDialog(Window.GetWindow(this), "正在准备浏览器登录...");
+            magicDialog.ShowTextDialog(Window.GetWindow(this), Lang.Frp_MSLFrpLogin_PreparingBrowser);
 
             var (success, ssid, url, msg, csrf) = await InitiateBrowserLogin();
 
@@ -246,7 +247,7 @@ namespace MSL.pages.frpProviders.MSLFrp
                     LoginGrid.Visibility = Visibility.Collapsed;
                     BrowserLoginGrid.Visibility = Visibility.Visible;
                     StartPolling(ssid, csrf);
-                    MagicFlowMsg.ShowMessage("自动打开浏览器失败，请手动复制链接", 3);
+                    MagicFlowMsg.ShowMessage(Lang.Frp_MSLFrpLogin_BrowserOpenFailed, 3);
                 }
             }
             else
@@ -267,7 +268,7 @@ namespace MSL.pages.frpProviders.MSLFrp
                 }
                 catch (Exception ex)
                 {
-                    MagicFlowMsg.ShowMessage($"打开失败: {ex.Message}", 2);
+                    MagicFlowMsg.ShowMessage(Lang.Frp_MSLFrpLogin_OpenFailed + ex.Message, 2);
                 }
             }
         }
@@ -280,11 +281,11 @@ namespace MSL.pages.frpProviders.MSLFrp
                 try
                 {
                     Clipboard.SetText(_currentBrowserLoginUrl);
-                    MagicFlowMsg.ShowMessage("登录链接已复制到剪贴板！",1);
+                    MagicFlowMsg.ShowMessage(Lang.Frp_MSLFrpLogin_LinkCopied,1);
                 }
                 catch (Exception ex)
                 {
-                    MagicFlowMsg.ShowMessage($"复制失败: {ex.Message}", 2);
+                    MagicFlowMsg.ShowMessage(Lang.Frp_MSLFrpLogin_CopyFailed + ex.Message, 2);
                 }
             }
         }
@@ -327,15 +328,15 @@ namespace MSL.pages.frpProviders.MSLFrp
                 }
                 else
                 {
-                    return (false, null, null, "API返回数据格式不正确 (url/ssid为空)", null);
+                    return (false, null, null, Lang.Frp_MSLFrpLogin_ApiFormatError, null);
                 }
             }
             else
             {
                 string errorMsg = (Code == 200 && (ContentInfo == null || ContentInfo.Type == JTokenType.Null))
-                                ? "API返回错误。"
+                                ? Lang.Frp_MSLFrpLogin_ApiError
                                 : Msg;
-                return (false, null, null, errorMsg ?? "请求失败，未知错误", null);
+                return (false, null, null, errorMsg ?? Lang.Frp_MSLFrpLogin_RequestFailed, null);
             }
         }
 
@@ -375,7 +376,7 @@ namespace MSL.pages.frpProviders.MSLFrp
                     {
                         // 出现错误
                         LogHelper.Write.Error($"轮询失败。代码: {Code}, 消息: {Msg}");
-                        MagicShow.ShowMsgDialog(Window.GetWindow(this), Msg ?? "登录已超时或失败，请重试。", "登录失败");
+                        MagicShow.ShowMsgDialog(Window.GetWindow(this), Msg ?? Lang.Frp_MSLFrpLogin_LoginTimeout, "登录失败");
                         CancelBrowserLoginButton_Click(null, null); // 自动取消
                         return; // 结束轮询
                     }
@@ -391,7 +392,7 @@ namespace MSL.pages.frpProviders.MSLFrp
             catch (Exception ex)
             {
                 LogHelper.Write.Error($"轮询时发生意外错误: {ex.Message}");
-                MagicShow.ShowMsgDialog(Window.GetWindow(this), $"轮询时发生错误: {ex.Message}", "错误");
+                MagicShow.ShowMsgDialog(Window.GetWindow(this), Lang.Frp_MSLFrpLogin_PollingError + ex.Message, "错误");
                 CancelBrowserLoginButton_Click(null, null); // 自动取消
             }
             finally
@@ -410,7 +411,7 @@ namespace MSL.pages.frpProviders.MSLFrp
             bool save = (bool)SaveToken.IsChecked;
 
             MagicDialog magicDialog = new MagicDialog();
-            magicDialog.ShowTextDialog(Window.GetWindow(this), "正在验证登录...");
+            magicDialog.ShowTextDialog(Window.GetWindow(this), Lang.Frp_MSLFrpLogin_Verifying);
 
             var (Code, Msg, ContentInfo) = await MSLFrpApi.UserLogin(
                 appToken,
@@ -447,7 +448,7 @@ namespace MSL.pages.frpProviders.MSLFrp
         {
             LogHelper.Write.Info("开始微信扫码登录流程...");
             MagicDialog magicDialog = new MagicDialog();
-            magicDialog.ShowTextDialog(Window.GetWindow(this), "正在获取微信登录二维码...");
+            magicDialog.ShowTextDialog(Window.GetWindow(this), Lang.Frp_MSLFrpLogin_GettingQrCode);
 
             // 1. 获取 state 并保持 Cookie
             var (Code, ContentInfo, Msg) = await MSLFrpApi.ApiGet("/oauth/redirect?provider=wechat_miniprogram&mode=login", true);
@@ -455,7 +456,7 @@ namespace MSL.pages.frpProviders.MSLFrp
             {
                 magicDialog.CloseTextDialog();
                 LogHelper.Write.Error($"获取微信授权重定向失败: {Msg}");
-                MagicShow.ShowMsgDialog(Window.GetWindow(this), Msg ?? "获取授权状态失败", "错误");
+                MagicShow.ShowMsgDialog(Window.GetWindow(this), Msg ?? Lang.Frp_MSLFrpLogin_GetAuthFailed, "错误");
                 return;
             }
 
@@ -464,7 +465,7 @@ namespace MSL.pages.frpProviders.MSLFrp
             {
                 magicDialog.CloseTextDialog();
                 LogHelper.Write.Error($"获取微信授权重定向解析状态失败");
-                MagicShow.ShowMsgDialog(Window.GetWindow(this), "获取授权状态失败", "错误");
+                MagicShow.ShowMsgDialog(Window.GetWindow(this), Lang.Frp_MSLFrpLogin_GetAuthFailed, "错误");
                 return;
             }
 
@@ -511,26 +512,26 @@ namespace MSL.pages.frpProviders.MSLFrp
                     catch (Exception ex)
                     {
                         LogHelper.Write.Error($"解析二维码图片失败: {ex.Message}");
-                        MagicShow.ShowMsgDialog(Window.GetWindow(this), "解析二维码图片失败", "错误");
+                        MagicShow.ShowMsgDialog(Window.GetWindow(this), Lang.Frp_MSLFrpLogin_ParseQrFailed, "错误");
                         return;
                     }
 
                     LoginGrid.Visibility = Visibility.Collapsed;
                     WechatLoginGrid.Visibility = Visibility.Visible;
-                    WechatLoginStatusText.Text = "请使用微信扫描上方小程序码";
+                    WechatLoginStatusText.Text = Lang.Frp_MSLFrpLogin_ScanQrCode;
                     WechatQrCodeImage.Visibility = Visibility.Visible;
 
                     StartWechatPolling(sessionId);
                 }
                 else
                 {
-                    MagicShow.ShowMsgDialog(Window.GetWindow(this), "返回的二维码数据格式不正确", "错误");
+                    MagicShow.ShowMsgDialog(Window.GetWindow(this), Lang.Frp_MSLFrpLogin_QrFormatError, "错误");
                 }
             }
             else
             {
                 LogHelper.Write.Error($"获取微信二维码失败: {qrMsg}");
-                MagicShow.ShowMsgDialog(Window.GetWindow(this), qrMsg ?? "获取二维码失败", "错误");
+                MagicShow.ShowMsgDialog(Window.GetWindow(this), qrMsg ?? Lang.Frp_MSLFrpLogin_GetQrFailed, "错误");
             }
         }
 
@@ -560,7 +561,7 @@ namespace MSL.pages.frpProviders.MSLFrp
                             if (!string.IsNullOrEmpty(authCode))
                             {
                                 LogHelper.Write.Info("微信扫码成功，开始执行登录...");
-                                WechatLoginStatusText.Text = "扫码成功，正在登录...";
+                                WechatLoginStatusText.Text = Lang.Frp_MSLFrpLogin_Scanned;
                                 WechatQrCodeImage.Visibility = Visibility.Collapsed;
                                 WechatLoadingCircle.Visibility = Visibility.Visible;
 
@@ -576,8 +577,8 @@ namespace MSL.pages.frpProviders.MSLFrp
                         else if (status == "expired")
                         {
                             LogHelper.Write.Info("微信二维码已过期。");
-                            WechatLoginStatusText.Text = "二维码已过期，请重试。";
-                            MagicShow.ShowMsgDialog(Window.GetWindow(this), "二维码已过期，请返回重试。", "提示");
+                            WechatLoginStatusText.Text = Lang.Frp_MSLFrpLogin_QrExpired;
+                            MagicShow.ShowMsgDialog(Window.GetWindow(this), Lang.Frp_MSLFrpLogin_QrExpiredConfirm, "提示");
                             CancelWechatLoginButton_Click(null, null);
                             return;
                         }
@@ -602,7 +603,7 @@ namespace MSL.pages.frpProviders.MSLFrp
             catch (Exception ex)
             {
                 LogHelper.Write.Error($"微信轮询时发生意外错误: {ex.Message}");
-                MagicShow.ShowMsgDialog(Window.GetWindow(this), $"轮询时发生错误: {ex.Message}", "错误");
+                MagicShow.ShowMsgDialog(Window.GetWindow(this), Lang.Frp_MSLFrpLogin_PollingError + ex.Message, "错误");
                 CancelWechatLoginButton_Click(null, null);
             }
             finally

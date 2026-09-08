@@ -9,7 +9,7 @@ namespace MSL.utils.Config
 {
     public class ServerConfig
     {
-        public static readonly string ConfigPath = @"MSL\ServerList.json";
+        public static readonly string ConfigPath = ConfigPaths.Resolve(@"MSL\ServerList.json");
         private static ServerConfig _current;
         public static ServerConfig Current => _current ??= Load();
 
@@ -61,6 +61,7 @@ namespace MSL.utils.Config
             public bool AutoClearOutlog { get; set; } = false;
             public bool UseConpty { get; set; } = false;
             public bool ShowOutlog { get; set; } = true;
+            public bool ShowOccupancy { get; set; } = true;
             public bool FormatLogPrefix { get; set; } = true;
             public bool ShieldStackOut { get; set; } = true;
             public bool KillProcessTree { get; set; } = false;
@@ -180,6 +181,7 @@ namespace MSL.utils.Config
                 // 旧版字符串布尔迁移
                 MigrateBoolStr(obj, "useConpty", "UseConpty");
                 MigrateBoolStr(obj, "showOutlog", "ShowOutlog");
+                MigrateBoolStr(obj, "showOccupancy", "ShowOccupancy");
 
                 RenameKey(obj, "name", "Name");
                 RenameKey(obj, "java", "Java");

@@ -1,9 +1,10 @@
 using CurseForge.APIClient;
-using CurseForge.APIClient.Models;
 using CurseForge.APIClient.Models.Mods;
 using Modrinth;
 using Modrinth.Models;
+using Modrinth.Models.Enums;
 using MSL.controls;
+using MSL.langs;
 using MSL.utils;
 using System;
 using System.Collections.Generic;
@@ -19,23 +20,52 @@ using System.Windows.Media.Imaging;
 
 namespace MSL
 {
-    /// <summary>
-    /// DownloadMods.xaml 的交互逻辑
-    /// </summary>
     public partial class DownloadMod : UserControl
     {
+        #region Fields & Properties
+
+        public enum LoadSourceEnum
+        {
+            CurseForge = 0,
+            Modrinth = 1
+        }
+        
+        public enum LoadTypeEnum
+        {
+            Mods = 0,
+            Modpacks = 1,
+            Plugins = 2,
+            Datapacks = 3
+        }
+
         private string FileName { get; set; }
         public Action<string> _onClose;
-        private int LoadType = 0;  //0: mods , 1: modpacks  , 2: plugins ,3: datapacks
-        private int LoadSource = 1;  //0: Curseforge , 1: Modrinth 
+        private LoadTypeEnum LoadType = LoadTypeEnum.Mods;  // 0: mods, 1: modpacks, 2: plugins, 3: datapacks
+        private LoadSourceEnum LoadSource = LoadSourceEnum.Modrinth; // 0: CurseForge, 1: Modrinth
         private readonly bool CloseImmediately;
         private readonly string SavingPath;
         private ApiClient CurseForgeApiClient;
         private ModrinthClient ModrinthApiClient;
         private Window FatherWindow;
+        private bool _isInitiated = false;
+        private bool _isLoading = false;
+        private bool _mcVersionLoaded = false;
 
-        public DownloadMod(Action<string> onClose,string savingPath,
-            int loadSource = 1, int loadType = 0,
+        // CurseForge class IDs
+        private const int CF_GAME_ID = 432;
+        private const int CF_CLASSID_MODS = 6;
+        private const int CF_CLASSID_MODPACKS = 4471;
+
+        // Pagination
+        private const int CF_PAGE_SIZE = 50;
+        private const int MODRINTH_PAGE_SIZE = 20;
+
+        #endregion
+
+        #region Constructor & Lifecycle
+
+        public DownloadMod(Action<string> onClose, string savingPath,
+            LoadSourceEnum loadSource = LoadSourceEnum.Modrinth, LoadTypeEnum loadType = LoadTypeEnum.Mods,
             bool canChangeLoadType = true, bool canChangeSource = true, bool closeImmediately = false)
         {
             InitializeComponent();
@@ -43,29 +73,40 @@ namespace MSL
             SavingPath = savingPath;
             LoadSource = loadSource;
             LoadType = loadType;
-            LoadSourceBox.SelectedIndex = loadSource;
-            LoadTypeBox.SelectedIndex = loadType;
-            if (LoadSource == 0)
-            {
-                LTB_Plugins.Visibility = Visibility.Collapsed;
-                LTB_DataPacks.Visibility = Visibility.Collapsed;
-            }
-            if (LoadType == 2 || LoadType == 3)
-            {
-                LSB_CurseForge.Visibility = Visibility.Collapsed;
-            }
+
+            // Set source radio buttons
+            SourceComboBox.SelectedIndex = loadSource == LoadSourceEnum.CurseForge ? 1 : 0;
+
+            // Set type radio buttons
+            SetLoadTypeRadio(loadType);
+
             if (!canChangeLoadType)
             {
-                LoadTypeBox.IsEnabled = false;
+                TypeModBtn.IsEnabled = false;
+                TypeModpackBtn.IsEnabled = false;
+                TypePluginBtn.IsEnabled = false;
+                TypeDatapackBtn.IsEnabled = false;
             }
             if (!canChangeSource)
             {
-                LoadSourceBox.IsEnabled = false;
+                SourceComboBox.IsEnabled = false;
             }
             CloseImmediately = closeImmediately;
+            UpdateSourceVisibility();
+            UpdateTypeVisibility();
         }
 
-        private bool _isInitiated = false;
+        private void SetLoadTypeRadio(LoadTypeEnum loadType)
+        {
+            switch (loadType)
+            {
+                case LoadTypeEnum.Mods: TypeModBtn.IsChecked = true; break;
+                case LoadTypeEnum.Modpacks: TypeModpackBtn.IsChecked = true; break;
+                case LoadTypeEnum.Plugins: TypePluginBtn.IsChecked = true; break;
+                case LoadTypeEnum.Datapacks: TypeDatapackBtn.IsChecked = true; break;
+            }
+        }
+
         private async void Window_Loaded(object sender, RoutedEventArgs e)
         {
             FatherWindow = Window.GetWindow(this);
@@ -76,342 +117,100 @@ namespace MSL
             }
         }
 
-        private async Task LoadEvent_CurseForge()
+        #endregion
+
+        #region CurseForge API
+
+        private async Task<ApiClient> EnsureCurseForgeClient()
         {
-            try
+            if (CurseForgeApiClient == null)
             {
-                SelMCVerCard.IsEnabled = false;
-                SelMCLoaderCard.IsEnabled = false;
-                if (CurseForgeApiClient == null)
-                {
-                    string token = string.Empty;
-                    string _token = (await HttpService.GetApiContentAsync("software/cf_token"))["data"].ToString();
-                    byte[] data = Convert.FromBase64String(_token);
-                    string decodedString = Encoding.UTF8.GetString(data);
-                    token = decodedString;
-                    CurseForgeApiClient = new ApiClient(token);
-                }
-                ModList.ItemsSource = null;
-                ModList.Items.Clear();
-                List<DM_ModsInfo> list = new List<DM_ModsInfo>();
-                if (LoadType == 0)
-                {
-                    var featuredMods = await CurseForgeApiClient.GetFeaturedModsAsync(new GetFeaturedModsRequestBody
-                    {
-                        GameId = 432,
-                        ExcludedModIds = new List<int>(),
-                        GameVersionTypeId = null,
-                    });
-
-                    foreach (var featuredMod in featuredMods.Data.Popular)
-                    {
-                        var cn = ModDictionaryService.Instance.GetChineseName(featuredMod.Slug) ?? ModDictionaryService.Instance.GetChineseName(featuredMod.Name);
-                        list.Add(new DM_ModsInfo(featuredMod.Id.ToString(), featuredMod.Logo.ThumbnailUrl, cn ?? featuredMod.Name, featuredMod.Links.WebsiteUrl.ToString()));
-                    }
-                    NowPageLabel.Content = "精选";
-                }
-                else if (LoadType == 1)
-                {
-                    var modpacks = await CurseForgeApiClient.SearchModsAsync(432, null, 4475);
-                    foreach (var modPack in modpacks.Data)
-                    {
-                        var cn = ModDictionaryService.Instance.GetChineseName(modPack.Slug) ?? ModDictionaryService.Instance.GetChineseName(modPack.Name);
-                        list.Add(new DM_ModsInfo(modPack.Id.ToString(), modPack.Logo.ThumbnailUrl, cn ?? modPack.Name, modPack.Links.WebsiteUrl.ToString()));
-                    }
-                    NowPageLabel.Content = "1";
-                }
-                ModList.ItemsSource = list;
+                string _token = (await HttpService.GetApiContentAsync("software/cf_token"))["data"].ToString();
+                byte[] data = Convert.FromBase64String(_token);
+                string token = Encoding.UTF8.GetString(data);
+                CurseForgeApiClient = new ApiClient(token);
             }
-            catch (Exception ex)
-            {
-                MagicShow.ShowMsgDialog(FatherWindow, "获取模组/整合包失败！请重试或尝试连接代理后再试！\n" + ex.Message, "错误");
-            }
-        }
-
-        private async Task LoadEvent_Modrinth()
-        {
-            try
-            {
-                SelMCVerCard.IsEnabled = true;
-                SelMCLoaderCard.IsEnabled = true;
-                if (ModrinthApiClient == null)
-                {
-                    // Note: All properties are optional, and will be ignored if they are null or empty
-                    var userAgent = new UserAgent
-                    {
-                        ProjectName = "MSL",
-                        ProjectVersion = System.Reflection.Assembly.GetExecutingAssembly().GetName().Version.ToString(),
-                        GitHubUsername = "MSLTeam"
-                    };
-
-                    var options = new ModrinthClientConfig
-                    {
-                        // Optional, if you want to access authenticated API endpoints
-                        //ModrinthToken = "Your_Authentication_Token",
-                        // For Modrinth API, you must specify a user-agent
-                        // There is a default library user-agent, but it is recommended to specify your own
-                        UserAgent = userAgent.ToString()
-                    };
-
-                    ModrinthApiClient = new ModrinthClient(options);
-                }
-                ModList.ItemsSource = null;
-                ModList.Items.Clear();
-                List<DM_ModsInfo> list = new List<DM_ModsInfo>();
-                SearchResponse mods = null;
-                var facets = new FacetCollection();
-                // 筛选类型
-                switch (LoadType)
-                {
-                    case 0:
-                        facets.Add(Facet.ProjectType(Modrinth.Models.Enums.Project.ProjectType.Mod));
-                        break;
-                    case 1:
-                        facets.Add(Facet.ProjectType(Modrinth.Models.Enums.Project.ProjectType.Modpack));
-                        break;
-                    case 3:
-                        facets.Add(Facet.ProjectType(Modrinth.Models.Enums.Project.ProjectType.Datapack));
-                        break;
-                    default:
-                        facets.Add(Facet.ProjectType(Modrinth.Models.Enums.Project.ProjectType.Plugin));
-                        break;
-                }
-                // 版本筛选
-                if(MinecraftVersionTypeBox.SelectedIndex!=-1 && MinecraftVersionTypeBox.SelectedIndex != 0)
-                {
-                    facets.Add(Facet.Version(MinecraftVersionTypeBox.Text));
-                }
-                // 加载器筛选
-                if((LoadType == 1 || LoadType == 0) && MinecraftLoaderTypeBox.SelectedIndex != 0 && MinecraftLoaderTypeBox.SelectedIndex != -1)
-                {
-                    facets.Add(Facet.Category(MinecraftLoaderTypeBox.Text));
-                }
-                // 执行搜索
-                mods = await ModrinthApiClient.Project.SearchAsync("", facets: facets);
-                foreach (var mod in mods?.Hits)
-                {
-                    var cn = ModDictionaryService.Instance.GetChineseName(mod.Slug) ?? ModDictionaryService.Instance.GetChineseName(mod.Title);
-                    list.Add(new DM_ModsInfo(mod.ProjectId, mod.IconUrl, cn ?? mod.Title, mod.Url));
-                }
-
-                ModList.ItemsSource = list;
-                NowPageLabel.Content = "1";
-            }
-            catch (OperationCanceledException)
-            {
-                return;
-            }
-            catch (ObjectDisposedException)
-            {
-                return;
-            }
-            catch (Exception ex)
-            {
-                MagicShow.ShowMsgDialog(FatherWindow, "获取模组/整合包失败！请重试或尝试连接代理后再试！\n" + ex.Message, "错误");
-            }
+            return CurseForgeApiClient;
         }
 
         private async Task Search_CurseForge(string name, int index = 0)
         {
             try
             {
-                if (CurseForgeApiClient == null)
-                {
-                    string token = string.Empty;
-                    string _token = (await HttpService.GetApiContentAsync("software/cf_token"))["data"].ToString();
-                    byte[] data = Convert.FromBase64String(_token);
-                    string decodedString = Encoding.UTF8.GetString(data);
-                    token = decodedString;
-                    CurseForgeApiClient = new ApiClient(token);
-                }
+                var client = await EnsureCurseForgeClient();
                 ModList.ItemsSource = null;
                 ModList.Items.Clear();
-                List<DM_ModsInfo> list = new List<DM_ModsInfo>();
-                GenericListResponse<Mod> mods = null;
+                var list = new List<DM_ModsInfo>();
+
+                int? classId = LoadType == LoadTypeEnum.Modpacks ? CF_CLASSID_MODPACKS : CF_CLASSID_MODS;
+                int? categoryId = GetSelectedCurseForgeCategoryId();
+                var sortField = GetCurseForgeSortField();
+
+                // Build game version filter
+                string gameVersion = GetSelectedMCVersion();
+
                 string query = ModDictionaryService.Instance.TranslateChineseQueryToEnglish(name);
-                if (LoadType == 0)
-                {
-                    mods = await CurseForgeApiClient.SearchModsAsync(432, searchFilter: query, index: index);
-                }
-                else if (LoadType == 1)
-                {
-                    mods = await CurseForgeApiClient.SearchModsAsync(432, categoryId: 4475, searchFilter: query, index: index);
-                }
+
+                var mods = await client.SearchModsAsync(CF_GAME_ID,
+                    classId: classId,
+                    categoryId: categoryId,
+                    gameVersion: gameVersion,
+                    searchFilter: string.IsNullOrWhiteSpace(query) ? null : query,
+                    sortField: sortField,
+                    index: index,
+                    pageSize: CF_PAGE_SIZE);
+
                 foreach (var mod in mods.Data)
                 {
-                    //MessageBox.Show(mod.PrimaryCategoryId.ToString());
-                    var cn = ModDictionaryService.Instance.GetChineseName(mod.Slug) ?? ModDictionaryService.Instance.GetChineseName(mod.Name);
-                    list.Add(new DM_ModsInfo(mod.Id.ToString(), mod.Logo.ThumbnailUrl, cn ?? mod.Name, mod.Links.WebsiteUrl.ToString()));
-                }
-                ModList.ItemsSource = list;
-            }
-            catch (Exception ex)
-            {
-                MagicShow.ShowMsgDialog(FatherWindow, "获取模组/整合包失败！请重试或尝试连接代理后再试！\n" + ex.Message, "错误");
-            }
-        }
-
-        private async Task Search_Modrinth(string name, int offset = 0)
-        {
-            try
-            {
-                ModList.ItemsSource = null;
-                ModList.Items.Clear();
-                List<DM_ModsInfo> list = new List<DM_ModsInfo>();
-                SearchResponse mods = null;
-                var facets = new FacetCollection();
-                // 筛选类型
-                switch (LoadType)
-                {
-                    case 0:
-                        facets.Add(Facet.ProjectType(Modrinth.Models.Enums.Project.ProjectType.Mod));
-                        break;
-                    case 1:
-                        facets.Add(Facet.ProjectType(Modrinth.Models.Enums.Project.ProjectType.Modpack));
-                        break;
-                    case 3:
-                        facets.Add(Facet.ProjectType(Modrinth.Models.Enums.Project.ProjectType.Datapack));
-                        break;
-                    default:
-                        facets.Add(Facet.ProjectType(Modrinth.Models.Enums.Project.ProjectType.Plugin));
-                        break;
-                }
-                // 版本筛选
-                if (MinecraftVersionTypeBox.SelectedIndex != -1 && MinecraftVersionTypeBox.SelectedIndex != 0)
-                {
-                    facets.Add(Facet.Version(MinecraftVersionTypeBox.Text));
-                }
-                // 加载器筛选
-                if ((LoadType == 1 || LoadType == 0) && MinecraftLoaderTypeBox.SelectedIndex != 0 && MinecraftLoaderTypeBox.SelectedIndex != -1)
-                {
-                    facets.Add(Facet.Category(MinecraftLoaderTypeBox.Text));
-                }
-                string query = ModDictionaryService.Instance.TranslateChineseQueryToEnglish(name);
-                // 执行搜索
-                mods = await ModrinthApiClient.Project.SearchAsync(query, facets: facets, offset: offset);
-                foreach (var mod in mods?.Hits)
-                {
-                    var cn = ModDictionaryService.Instance.GetChineseName(mod.Slug) ?? ModDictionaryService.Instance.GetChineseName(mod.Title);
-                    list.Add(new DM_ModsInfo(mod.ProjectId, mod.IconUrl, cn ?? mod.Title, mod.Url));
+                    list.Add(CreateCFModInfo(mod));
                 }
 
                 ModList.ItemsSource = list;
             }
             catch (Exception ex)
             {
-                MagicShow.ShowMsgDialog(FatherWindow, "获取模组/整合包失败！请重试或尝试连接代理后再试！\n" + ex.Message, "错误");
+                MagicShow.ShowMsgDialog(FatherWindow, Lang.Form_DownloadMod_FetchFailed + ex.Message, "错误");
             }
         }
 
-        private async void searchMod_Click(object sender, RoutedEventArgs e)
+        private DM_ModsInfo CreateCFModInfo(Mod mod)
         {
-            try
-            {
-                ModListGrid.IsEnabled = false;
-                //lCircle.IsRunning = true;
-                //lCircle.Visibility = Visibility.Visible;
-                lb01.Visibility = Visibility.Visible;
-                if (LoadSource == 0)
-                {
-                    await Search_CurseForge(SearchTextBox.Text);
-                }
-                else if (LoadSource == 1)
-                {
-                    await Search_Modrinth(SearchTextBox.Text);
-                }
-                //lCircle.IsRunning = false;
-                //lCircle.Visibility = Visibility.Collapsed;
-                lb01.Visibility = Visibility.Collapsed;
-                ModListGrid.IsEnabled = true;
-                NowPageLabel.Content = 1;
-            }
-            catch (Exception ex)
-            {
-                MagicShow.ShowMsgDialog(FatherWindow, "搜索失败！请重试或尝试连接代理后再试！\n" + ex.Message, "错误");
-            }
+            var categories = mod.Categories?.Take(4).Select(c => c.Name).ToList() ?? new List<string>();
+            var author = mod.Authors?.FirstOrDefault()?.Name ?? "";
+            var cn = ModDictionaryService.Instance.GetChineseName(mod.Slug) ?? ModDictionaryService.Instance.GetChineseName(mod.Name);
+
+            return new DM_ModsInfo(
+                mod.Id.ToString(),
+                mod.Logo?.ThumbnailUrl ?? "",
+                cn ?? mod.Name,
+                mod.Links?.WebsiteUrl?.ToString() ?? "",
+                description: Truncate(mod.Summary, 120),
+                author: author,
+                downloadCountText: FormatDownloadCount(mod.DownloadCount),
+                lastUpdatedText: FormatRelativeTime(mod.DateModified),
+                categoryText: string.Join(", ", categories),
+                categoryTags: categories
+            );
         }
 
-        private async void homeBtn_Click(object sender, RoutedEventArgs e)
+        private int? GetSelectedCurseForgeCategoryId()
         {
-            SearchTextBox.Clear();
-            await LoadEvent();
+            if (LoadSource != 0) return null;
+            var selected = CurseForgeCategoryCombo.SelectedItem as ComboBoxItem;
+            if (selected?.Tag is string tagStr && int.TryParse(tagStr, out int catId) && catId > 0)
+                return catId;
+            return null;
         }
 
-        private async void LastPageBtn_Click(object sender, RoutedEventArgs e)
+        private ModsSearchSortField? GetCurseForgeSortField()
         {
-            try
+            if (SortCombo.SelectedIndex <= 0) return null; // relevance is default
+            switch (SortCombo.SelectedIndex)
             {
-                int nowPage;
-                if (NowPageLabel.Content.ToString() == "精选")
-                {
-                    nowPage = 0;
-                }
-                else
-                {
-                    nowPage = int.Parse(NowPageLabel.Content.ToString());
-                }
-                if (nowPage <= 1)
-                {
-                    return;
-                }
-                ModListGrid.IsEnabled = false;
-                //lCircle.IsRunning = true;
-                //lCircle.Visibility = Visibility.Visible;
-                lb01.Visibility = Visibility.Visible;
-                if (LoadSource == 0)
-                {
-                    await Search_CurseForge(SearchTextBox.Text, ((int)nowPage - 2) * 50);
-                }
-                else if (LoadSource == 1)
-                {
-                    await Search_Modrinth(SearchTextBox.Text, (nowPage - 2) * 10);
-                }
-                //lCircle.IsRunning = false;
-                //lCircle.Visibility = Visibility.Collapsed;
-                lb01.Visibility = Visibility.Collapsed;
-                ModListGrid.IsEnabled = true;
-                NowPageLabel.Content = nowPage - 1;
-            }
-            catch (Exception ex)
-            {
-                MagicShow.ShowMsgDialog(FatherWindow, "加载失败！请重试或尝试连接代理后再试！\n" + ex.Message, "错误");
-            }
-        }
-
-        private async void NextPageBtn_Click(object sender, RoutedEventArgs e)
-        {
-            try
-            {
-                int nowPage;
-                if (NowPageLabel.Content.ToString() == "精选")
-                {
-                    nowPage = 0;
-                }
-                else
-                {
-                    nowPage = int.Parse(NowPageLabel.Content.ToString());
-                }
-                ModListGrid.IsEnabled = false;
-                //lCircle.IsRunning = true;
-                //lCircle.Visibility = Visibility.Visible;
-                lb01.Visibility = Visibility.Visible;
-                if (LoadSource == 0)
-                {
-                    await Search_CurseForge(SearchTextBox.Text, (int)nowPage * 50);
-                }
-                else if (LoadSource == 1)
-                {
-                    await Search_Modrinth(SearchTextBox.Text, nowPage * 10);
-                }
-                //lCircle.IsRunning = false;
-                //lCircle.Visibility = Visibility.Collapsed;
-                lb01.Visibility = Visibility.Collapsed;
-                ModListGrid.IsEnabled = true;
-                NowPageLabel.Content = nowPage + 1;
-            }
-            catch (Exception ex)
-            {
-                MagicShow.ShowMsgDialog(FatherWindow, "加载失败！请重试或尝试连接代理后再试！\n" + ex.Message, "错误");
+                case 1: return ModsSearchSortField.TotalDownloads;
+                case 2: return ModsSearchSortField.LastUpdated;
+                case 3: return ModsSearchSortField.Name;
+                default: return null;
             }
         }
 
@@ -423,9 +222,8 @@ namespace MSL
             using var semaphore = new SemaphoreSlim(50);
             bool onlyShowServerPack = false;
 
-            // 获取用户是否仅展示适用于服务器的整合包文件
-            if (LoadType == 1 && await MagicShow.ShowMsgDialogAsync(FatherWindow,
-                "是否仅展示适用于服务器的整合包文件？\n注意：如果不使用服务器专用包开服，可能会出现无法开服/崩溃的问题！", "询问", true) == true)
+            if (LoadType == LoadTypeEnum.Modpacks && await MagicShow.ShowMsgDialogAsync(FatherWindow,
+                Lang.Form_DownloadMod_ServerPackConfirm, "询问", true) == true)
             {
                 onlyShowServerPack = true;
             }
@@ -435,57 +233,46 @@ namespace MSL
                 await semaphore.WaitAsync();
                 try
                 {
-                    // 用于保存要显示的 modInfo
                     DM_ModInfo modInfo = null;
                     DM_ModInfo _modInfo = null;
 
-                    if (LoadType == 0)
+                    if (LoadType == LoadTypeEnum.Mods)
                     {
-                        // 直接加载 Mod 信息
-                        modInfo = await CreateModInfo(modData);
+                        modInfo = await CreateModInfoFromCF(modData);
                     }
-                    else if (LoadType == 1)
+                    else if (LoadType == LoadTypeEnum.Modpacks)
                     {
                         if (!onlyShowServerPack)
                         {
-                            // 加载非服务器专用包文件
                             var _modFile = await CurseForgeApiClient.GetModFileAsync(int.Parse(info.ID), modData.Id);
-                            _modInfo = await CreateModInfo(_modFile.Data);
+                            _modInfo = await CreateModInfoFromCF(_modFile.Data);
                         }
 
-                        // 加载服务器专用包文件
                         if (modData.ServerPackFileId.HasValue)
                         {
                             var modFile = await CurseForgeApiClient.GetModFileAsync(int.Parse(info.ID), modData.ServerPackFileId.Value);
-                            modInfo = await CreateModInfo(modFile.Data);
+                            modInfo = await CreateModInfoFromCF(modFile.Data);
                         }
                         else
                         {
-                            // 处理没有 ServerPackFileId 的情况
-                            Console.WriteLine("ServerPackFileId is null for " + modData.DisplayName);
-                            return;  // 没有服务器专用包，退出处理
+                            return;
                         }
                     }
                     else
                     {
-                        return; // 不支持的 LoadType
+                        return;
                     }
 
-                    // 在 UI 线程中更新界面
                     await Dispatcher.InvokeAsync(() =>
                     {
                         ModVerList.Items.Add(modInfo);
                         if (_modInfo != null)
-                        {
                             ModVerList.Items.Add(_modInfo);
-                        }
                         loadedCount++;
-                        ModInfoLoadingProcess.Content = $"{loadedCount}/{totalCount}";
                     });
                 }
                 catch (Exception ex)
                 {
-                    // 处理异常，避免整个流程崩溃
                     Console.WriteLine($"Error loading mod info: {ex.Message}");
                 }
                 finally
@@ -494,9 +281,8 @@ namespace MSL
                 }
             }
 
-            async Task<DM_ModInfo> CreateModInfo(CurseForge.APIClient.Models.Files.File modData)
+            async Task<DM_ModInfo> CreateModInfoFromCF(CurseForge.APIClient.Models.Files.File modData)
             {
-                // 构造并返回一个 DM_ModInfo 对象
                 var dependencies = await Task.WhenAll(modData.Dependencies.Select(s => CurseForgeApiClient.GetModAsync(s.ModId)));
                 var dependenciesNames = string.Join(",", dependencies.Select(p => p.Data.Name));
                 var gameVersions = string.Join(",", modData.GameVersions);
@@ -513,63 +299,466 @@ namespace MSL
 
             var loadTasks = modFiles.Data.Select(LoadAndAddModInfo);
             await Task.WhenAll(loadTasks);
-
         }
 
-        private async Task ModInfo_Modrinth(DM_ModsInfo info,string MCVersion = "0")
+        #endregion
+
+        #region Modrinth API
+
+        private async Task EnsureModrinthClient()
+        {
+            if (ModrinthApiClient == null)
+            {
+                var userAgent = new UserAgent
+                {
+                    ProjectName = "MSL",
+                    ProjectVersion = System.Reflection.Assembly.GetExecutingAssembly().GetName().Version.ToString(),
+                    GitHubUsername = "MSLTeam"
+                };
+
+                var options = new ModrinthClientConfig
+                {
+                    UserAgent = userAgent.ToString()
+                };
+
+                ModrinthApiClient = new ModrinthClient(options);
+            }
+        }
+
+        private FacetCollection BuildModrinthFacets()
+        {
+            var facets = new FacetCollection();
+
+            // Project type
+            switch (LoadType)
+            {
+                case LoadTypeEnum.Mods: facets.Add(Facet.ProjectType(Modrinth.Models.Enums.Project.ProjectType.Mod)); break;
+                case LoadTypeEnum.Modpacks: facets.Add(Facet.ProjectType(Modrinth.Models.Enums.Project.ProjectType.Modpack)); break;
+                case LoadTypeEnum.Datapacks: facets.Add(Facet.ProjectType(Modrinth.Models.Enums.Project.ProjectType.Datapack)); break;
+                default: facets.Add(Facet.ProjectType(Modrinth.Models.Enums.Project.ProjectType.Plugin)); break;
+            }
+
+            // MC version
+            string mcVersion = GetSelectedMCVersion();
+            if (!string.IsNullOrEmpty(mcVersion))
+                facets.Add(Facet.Version(mcVersion));
+
+            // Loader
+            string loader = GetSelectedLoader();
+            if (!string.IsNullOrEmpty(loader) && (LoadType == LoadTypeEnum.Mods || LoadType == LoadTypeEnum.Modpacks))
+                facets.Add(Facet.Category(loader));
+
+            // Modrinth category tag
+            string categoryTag = GetSelectedModrinthCategory();
+            if (!string.IsNullOrEmpty(categoryTag))
+                facets.Add(Facet.Category(categoryTag));
+
+            return facets;
+        }
+
+        private async Task Search_Modrinth(string name, int offset = 0)
+        {
+            try
+            {
+                ModList.ItemsSource = null;
+                ModList.Items.Clear();
+                var list = new List<DM_ModsInfo>();
+
+                var facets = BuildModrinthFacets();
+                var sort = GetModrinthSort();
+                string query = ModDictionaryService.Instance.TranslateChineseQueryToEnglish(name);
+                var mods = await ModrinthApiClient.Project.SearchAsync(
+                    string.IsNullOrWhiteSpace(query) ? "" : query,
+                    facets: facets,
+                    offset: offset,
+                    limit: MODRINTH_PAGE_SIZE,
+                    index: sort);
+
+                foreach (var mod in mods?.Hits)
+                {
+                    list.Add(CreateModrinthModInfo(mod));
+                }
+
+                ModList.ItemsSource = list;
+            }
+            catch (Exception ex)
+            {
+                MagicShow.ShowMsgDialog(FatherWindow, Lang.Form_DownloadMod_FetchFailed + ex.Message, "错误");
+            }
+        }
+
+        private DM_ModsInfo CreateModrinthModInfo(SearchResult mod)
+        {
+            var categories = mod.Categories?.Take(4).ToList() ?? new List<string>();
+            var cn = ModDictionaryService.Instance.GetChineseName(mod.Slug) ?? ModDictionaryService.Instance.GetChineseName(mod.Title);
+            return new DM_ModsInfo(
+                mod.ProjectId,
+                mod.IconUrl ?? "",
+                cn ?? mod.Title,
+                mod.Url ?? "",
+                description: Truncate(mod.Description, 120),
+                author: mod.Author ?? "",
+                downloadCountText: FormatDownloadCount(mod.Downloads),
+                lastUpdatedText: FormatRelativeTime(mod.DateModified),
+                categoryText: string.Join(", ", categories),
+                categoryTags: categories
+            );
+        }
+
+        private Index GetModrinthSort()
+        {
+            switch (SortCombo.SelectedIndex)
+            {
+                case 1: return Index.Downloads;
+                case 2: return Index.Updated;
+                case 3: return Index.Newest;
+                default: return Index.Relevance;
+            }
+        }
+
+        private async Task ModInfo_Modrinth(DM_ModsInfo info, string MCVersion = "0")
         {
             var modInfo = await ModrinthApiClient.Project.GetAsync(info.ID);
-            ModInfoLoadingProcess.Content = "加载中";
-            VerFilterCombo.Items.Add("全部");
+            VerFilterCombo.Items.Add(Lang.Form_DownloadMod_All);
             VerFilterCombo.SelectedIndex = 0;
             foreach (var gameVersion in modInfo.GameVersions.Reverse())
             {
                 VerFilterCombo.Items.Add(gameVersion);
-                if(MCVersion != "0" && gameVersion == MCVersion)
-                {
+                if (MCVersion != "0" && gameVersion == MCVersion)
                     VerFilterCombo.SelectedItem = gameVersion;
-                }
             }
-            //var loadedCount = 0;
+
             var modInfo1 = await ModrinthApiClient.Version.GetProjectVersionListAsync(info.ID);
             foreach (var version in modInfo1)
             {
-                //MessageBox.Show(version.Name);
                 foreach (var file in version.Files)
                 {
-                    //MessageBox.Show(file.FileName);
-                    DM_ModInfo DMmodInfo = null;
-
-                    if (LoadType == 1)
-                    {
-                        DMmodInfo = new DM_ModInfo(
-                            version.Name,
-                            file.Url,
-                            file.FileName,
-                            string.Join(",", version.Loaders),
-                            "",
-                            GetMcVersion(version.GameVersions)
-                        );
-                    }
-                    else
-                    {
-                        DMmodInfo = new DM_ModInfo(
-                            version.Name,
-                            file.Url,
-                            file.FileName,
-                            string.Join(",", version.Loaders),
-                            "",
-                            GetMcVersion(version.GameVersions)
-                        );
-                    }
-                    ModVerList.Items.Add(DMmodInfo);  // 将每个 modInfo 添加到列表
+                    var dmModInfo = new DM_ModInfo(
+                        version.Name,
+                        file.Url,
+                        file.FileName,
+                        string.Join(",", version.Loaders),
+                        "",
+                        GetMcVersion(version.GameVersions)
+                    );
+                    ModVerList.Items.Add(dmModInfo);
                     VerFilter_VersList.Add(version.GameVersions);
+                }
+            }
+        }
+
+        #endregion
+
+        #region UI Event Handlers
+        private void ShowLoadingIndicator(bool show)
+        {
+            lb01.Visibility = show ? Visibility.Visible : Visibility.Collapsed;
+            lbCircle.IsRunning = show;
+            ModListGrid.IsEnabled = !show;
+        }
+
+
+        private async void searchMod_Click(object sender, RoutedEventArgs e)
+        {
+            try
+            {
+                ShowLoadingIndicator(true);
+                if (LoadSource == 0)
+                    await Search_CurseForge(SearchTextBox.Text);
+                else
+                    await Search_Modrinth(SearchTextBox.Text);
+
+                ShowLoadingIndicator(false);
+                NowPageLabel.Text = "1";
+            }
+            catch (Exception ex)
+            {
+                MagicShow.ShowMsgDialog(FatherWindow, Lang.Form_DownloadMod_SearchFailed + ex.Message, "错误");
+            }
+        }
+
+        private void SearchTextBox_KeyDown(object sender, KeyEventArgs e)
+        {
+            if (e.Key == Key.Enter)
+                searchMod_Click(sender, e);
+        }
+
+        private async void homeBtn_Click(object sender, RoutedEventArgs e)
+        {
+            SearchTextBox.Clear();
+            await LoadEvent();
+        }
+
+        private async void LastPageBtn_Click(object sender, RoutedEventArgs e)
+        {
+            try
+            {
+                int nowPage;
+                if (NowPageLabel.Text == Lang.Form_DownloadMod_Featured)
+                    nowPage = 0;
+                else
+                    nowPage = int.Parse(NowPageLabel.Text);
+
+                if (nowPage <= 1) return;
+
+                ShowLoadingIndicator(true);
+
+                if (LoadSource == 0)
+                    await Search_CurseForge(SearchTextBox.Text, (nowPage - 2) * CF_PAGE_SIZE);
+                else
+                    await Search_Modrinth(SearchTextBox.Text, (nowPage - 2) * MODRINTH_PAGE_SIZE);
+
+                ShowLoadingIndicator(false);
+                NowPageLabel.Text = (nowPage - 1).ToString();
+            }
+            catch (Exception ex)
+            {
+                MagicShow.ShowMsgDialog(FatherWindow, Lang.Form_DownloadMod_LoadFailed + ex.Message, "错误");
+            }
+        }
+
+        private async void NextPageBtn_Click(object sender, RoutedEventArgs e)
+        {
+            try
+            {
+                int nowPage;
+                if (NowPageLabel.Text == Lang.Form_DownloadMod_Featured)
+                    nowPage = 0;
+                else
+                    nowPage = int.Parse(NowPageLabel.Text);
+
+                ShowLoadingIndicator(true);
+
+                if (LoadSource == 0)
+                    await Search_CurseForge(SearchTextBox.Text, nowPage * CF_PAGE_SIZE);
+                else
+                    await Search_Modrinth(SearchTextBox.Text, nowPage * MODRINTH_PAGE_SIZE);
+
+                ShowLoadingIndicator(false);
+                NowPageLabel.Text = (nowPage + 1).ToString();
+            }
+            catch (Exception ex)
+            {
+                MagicShow.ShowMsgDialog(FatherWindow, Lang.Form_DownloadMod_LoadFailed + ex.Message, "错误");
+            }
+        }
+
+        private void SourceComboBox_SelectionChanged(object sender, SelectionChangedEventArgs e)
+        {
+            if (!IsLoaded || _isLoading) return;
+            LoadSource = SourceComboBox.SelectedIndex == 1 ? LoadSourceEnum.CurseForge : LoadSourceEnum.Modrinth;
+            UpdateSourceVisibility();
+            _ = LoadEvent();
+        }
+
+        private void TypeBtn_CheckedChanged(object sender, RoutedEventArgs e)
+        {
+            if (!IsLoaded || _isLoading) return;
+            if (TypeModBtn.IsChecked == true) LoadType = LoadTypeEnum.Mods;
+            else if (TypeModpackBtn.IsChecked == true) LoadType = LoadTypeEnum.Modpacks;
+            else if (TypePluginBtn.IsChecked == true) LoadType = LoadTypeEnum.Plugins;
+            else if (TypeDatapackBtn.IsChecked == true) LoadType = LoadTypeEnum.Datapacks;
+            UpdateTypeVisibility();
+            _ = LoadEvent();
+        }
+
+        private void UpdateSourceVisibility()
+        {
+            // CurseForge doesn't support plugins/datapacks
+            if (LoadSource == LoadSourceEnum.CurseForge)
+            {
+                TypePluginBtn.Visibility = Visibility.Collapsed;
+                TypeDatapackBtn.Visibility = Visibility.Collapsed;
+                CurseForgeCategoryPanel.Visibility = Visibility.Visible;
+                ModrinthCategoryPanel.Visibility = Visibility.Collapsed;
+                // If currently on plugin/datapack, switch to mods (with guard to prevent re-entry)
+                if (LoadType == LoadTypeEnum.Plugins || LoadType == LoadTypeEnum.Datapacks)
+                {
+                    LoadType = LoadTypeEnum.Mods;
+                    _isLoading = true;
+                    TypeModBtn.IsChecked = true;
+                    _isLoading = false;
+                }
+            }
+            else
+            {
+                TypePluginBtn.Visibility = Visibility.Visible;
+                TypeDatapackBtn.Visibility = Visibility.Visible;
+                CurseForgeCategoryPanel.Visibility = Visibility.Collapsed;
+                ModrinthCategoryPanel.Visibility = Visibility.Visible;
+            }
+        }
+
+        private void UpdateTypeVisibility()
+        {
+            // Show/hide loader filter based on type
+            bool showLoader = LoadType == LoadTypeEnum.Mods || LoadType == LoadTypeEnum.Modpacks;
+            LoaderFilterTitle.Visibility = showLoader ? Visibility.Visible : Visibility.Collapsed;
+            LoaderFilterPanel.Visibility = showLoader ? Visibility.Visible : Visibility.Collapsed;
+        }
+
+        private async void Filter_Changed(object sender, SelectionChangedEventArgs e)
+        {
+            if (!IsLoaded || _isLoading) return;
+            // Re-trigger search with current filters
+            if (!string.IsNullOrWhiteSpace(SearchTextBox.Text))
+                await Search_ModrinthOrCurseForge(SearchTextBox.Text);
+            else
+                await LoadEvent();
+        }
+
+        private void LoaderFilter_Changed(object sender, RoutedEventArgs e)
+        {
+            if (!IsLoaded || _isLoading) return;
+            // When a specific loader is checked, uncheck "All" (with guard)
+            _isLoading = true;
+            if (sender is CheckBox cb && cb != LoaderAll && cb.IsChecked == true)
+                LoaderAll.IsChecked = false;
+            else if (sender == LoaderAll && LoaderAll.IsChecked == true)
+            {
+                LoaderForge.IsChecked = false;
+                LoaderFabric.IsChecked = false;
+                LoaderNeoForge.IsChecked = false;
+                LoaderQuilt.IsChecked = false;
+            }
+            _isLoading = false;
+
+            if (!string.IsNullOrWhiteSpace(SearchTextBox.Text))
+                _ = Search_ModrinthOrCurseForge(SearchTextBox.Text);
+            else
+                _ = LoadEvent();
+        }
+
+        private async void ResetFilters_Click(object sender, RoutedEventArgs e)
+        {
+            _isLoading = true;
+            SearchTextBox.Clear();
+            MinecraftVersionTypeBox.SelectedIndex = 0;
+            SortCombo.SelectedIndex = 0;
+            LoaderAll.IsChecked = true;
+            LoaderForge.IsChecked = false;
+            LoaderFabric.IsChecked = false;
+            LoaderNeoForge.IsChecked = false;
+            LoaderQuilt.IsChecked = false;
+            CurseForgeCategoryCombo.SelectedIndex = 0;
+            ModrinthCategoryCombo.SelectedIndex = 0;
+            _isLoading = false;
+            await LoadEvent();
+        }
+
+        private async Task Search_ModrinthOrCurseForge(string name, int offset = 0)
+        {
+            if (LoadSource == 0)
+                await Search_CurseForge(name, offset);
+            else
+                await Search_Modrinth(name, offset);
+        }
+
+        #endregion
+
+        #region Filter Helpers
+
+        private string GetSelectedMCVersion()
+        {
+            if (MinecraftVersionTypeBox.SelectedIndex <= 0) return null;
+            return MinecraftVersionTypeBox.Text;
+        }
+
+        private string GetSelectedLoader()
+        {
+            if (LoaderForge.IsChecked == true) return "Forge";
+            if (LoaderFabric.IsChecked == true) return "Fabric";
+            if (LoaderNeoForge.IsChecked == true) return "NeoForge";
+            if (LoaderQuilt.IsChecked == true) return "Quilt";
+            return null;
+        }
+
+        private string GetSelectedModrinthCategory()
+        {
+            if (LoadSource != LoadSourceEnum.Modrinth) return null;
+            var selected = ModrinthCategoryCombo.SelectedItem as ComboBoxItem;
+            var content = selected?.Content?.ToString();
+            if (content == "全部标签" || string.IsNullOrEmpty(content)) return null;
+            return content;
+        }
+
+        #endregion
+
+        #region Mod Info / Version List
+
+        private async void ModList_MouseDoubleClick(object sender, MouseButtonEventArgs e)
+        {
+            if (ModList.Items.Count == 0 || ModList.SelectedIndex == -1) return;
+            try
+            {
+                var info = ModList.SelectedItem as DM_ModsInfo;
+                ShowLoadingIndicator(true);
+                ModInfoGrid.Visibility = Visibility.Visible;
+                ModIconLabel.Source = string.IsNullOrEmpty(info.Icon) ? null : new BitmapImage(new Uri(info.Icon));
+                ModNameLabel.Text = info.Name;
+                ModWebsiteUrl.Subject = info.WebsiteUrl;
+                ModWebsiteUrl.CommandParameter = info.WebsiteUrl;
+                VerFilterCombo.Items.Clear();
+
+                if (LoadSource == 0)
+                {
+                    VerFilterPannel.Visibility = Visibility.Collapsed;
+                    await ModInfo_CurseForge(info);
+                }
+                else
+                {
+                    VerFilterPannel.Visibility = Visibility.Visible;
+                    await ModInfo_Modrinth(info, MinecraftVersionTypeBox.SelectedIndex == 0 ? "0" : MinecraftVersionTypeBox.Text);
+                }
+            }
+            catch (Exception ex)
+            {
+                await MagicShow.ShowMsgDialogAsync(FatherWindow, "获取失败！请重试或尝试连接代理后再试！\n" + ex.Message, "错误");
+            }
+            finally
+            {
+                ShowLoadingIndicator(false);
+                VerFilter_SelectionChanged(null, null);
+            }
+        }
+
+        private void backBtn_Click(object sender, RoutedEventArgs e)
+        {
+            ModInfoGrid.Visibility = Visibility.Collapsed;
+            ModVerList.Items.Clear();
+            VerFilter_VersList.Clear();
+        }
+
+        private List<string[]> VerFilter_VersList = new List<string[]>();
+
+        private void VerFilter_SelectionChanged(object sender, SelectionChangedEventArgs e)
+        {
+            if (VerFilterCombo.Items.Count == 0) return;
+            if (VerFilterCombo.SelectedItem?.ToString() == Lang.Form_DownloadMod_All)
+            {
+                foreach (DM_ModInfo item in ModVerList.Items)
+                {
+                    if (!item.IsVisible) item.IsVisible = true;
+                }
+            }
+            else
+            {
+                int i = 0;
+                foreach (var item in VerFilter_VersList)
+                {
+                    if (i < ModVerList.Items.Count)
+                    {
+                        var dM_ModInfo = ModVerList.Items[i] as DM_ModInfo;
+                        dM_ModInfo.IsVisible = item.Contains(VerFilterCombo.SelectedItem.ToString());
+                    }
+                    i++;
                 }
             }
         }
 
         public static string GetMcVersion(string[] lists)
         {
+            if (lists == null || lists.Length == 0) return "";
             string output = "";
             if (lists.Length == 1)
             {
@@ -588,207 +777,31 @@ namespace MSL
 
                     if (currentVersionSplit.Length > 1 && lastVersionSplit.Length > 1)
                     {
-                        int lastVersionNumber;
-                        int currentVersionNumber;
-                        if (int.TryParse(lastVersionSplit[1], out lastVersionNumber) && int.TryParse(currentVersionSplit[1], out currentVersionNumber) && currentVersionNumber - lastVersionNumber > 1)
+                        if (int.TryParse(lastVersionSplit[1], out int lastNum) &&
+                            int.TryParse(currentVersionSplit[1], out int curNum) &&
+                            curNum - lastNum > 1)
                         {
                             output += startVersion + " - " + lastVersion + " / ";
                             startVersion = currentVersion;
                         }
                     }
-
                     lastVersion = currentVersion;
                 }
-
                 output += startVersion + " - " + lastVersion;
             }
-
             return output;
         }
 
-        private async void ModList_MouseDoubleClick(object sender, MouseButtonEventArgs e)
-        {
-            if (ModList.Items.Count == 0 || ModList.SelectedIndex == -1)
-            {
-                return;
-            }
-            try
-            {
-                var info = ModList.SelectedItem as DM_ModsInfo;
-                backBtn.IsEnabled = false;
-                ModInfoGrid.Visibility = Visibility.Visible;
-                ModIconLabel.Source = new BitmapImage(new Uri(info.Icon));
-                ModNameLabel.Content = info.Name;
-                ModWebsiteUrl.Subject = info.WebsiteUrl;
-                ModWebsiteUrl.CommandParameter = info.WebsiteUrl;
-                ModInfoLoadingProcess.Content = "0/0";
-                ModInfoLoadingProcess.Visibility = Visibility.Visible;
-                VerFilterCombo.Items.Clear();
-                VerFilterCombo.IsEnabled = false;
+        #endregion
 
-                if (LoadSource == 0)
-                {
-                    VerFilterPannel.Visibility = Visibility.Collapsed;
-                    MVL_Platform.Width = 0;
-                    MVL_Dependency.Width = 100;
-                    await ModInfo_CurseForge(info);
-                }
-                else
-                {
-                    VerFilterPannel.Visibility = Visibility.Visible;
-                    MVL_Platform.Width = 100;
-                    MVL_Dependency.Width = 0;
-                    await ModInfo_Modrinth(info, MinecraftVersionTypeBox.SelectedIndex == 0 ? "0" : MinecraftVersionTypeBox.Text);
-                }
-                ModInfoLoadingProcess.Visibility = Visibility.Collapsed;
-            }
-            catch (Exception ex)
-            {
-                await MagicShow.ShowMsgDialogAsync(FatherWindow, "获取失败！请重试或尝试连接代理后再试！\n" + ex.Message, "错误");
-            }
-            finally
-            {
-                backBtn.IsEnabled = true;
-                VerFilterCombo.IsEnabled = true;
-                // 触发一次版本筛选
-                VerFilter_SelectionChanged(null, null);
-            }
-        }
-
-        private void backBtn_Click(object sender, RoutedEventArgs e)
-        {
-            ModInfoGrid.Visibility = Visibility.Collapsed;
-            ModVerList.Items.Clear();
-            VerFilter_VersList.Clear();
-        }
-
-        private List<string[]> VerFilter_VersList = new List<string[]>();
-        private void VerFilter_SelectionChanged(object sender, System.Windows.Controls.SelectionChangedEventArgs e)
-        {
-            if (VerFilterCombo.Items.Count == 0) return;
-            if (VerFilterCombo.SelectedItem.ToString() == "全部")
-            {
-                foreach (DM_ModInfo item in ModVerList.Items)
-                {
-                    if (item.IsVisible == false)
-                    {
-                        item.IsVisible = true;
-                    }
-                    else
-                    {
-                        continue;
-                    }
-                }
-            }
-            else
-            {
-                int i = 0;
-                foreach (var item in VerFilter_VersList)
-                {
-                    DM_ModInfo dM_ModInfo = ModVerList.Items[i] as DM_ModInfo;
-                    if (!item.Contains(VerFilterCombo.SelectedItem.ToString()))
-                    {
-                        dM_ModInfo.IsVisible = false;
-                    }
-                    else
-                    {
-                        if (dM_ModInfo.IsVisible == false)
-                        {
-                            dM_ModInfo.IsVisible = true;
-                        }
-                    }
-                    i++;
-                }
-            }
-        }
-
-        private async Task LoadEvent()
-        {
-            lb01.Visibility = Visibility.Visible;
-            ModListGrid.IsEnabled = false;
-            if (LoadSource == 0)
-            {
-                await LoadEvent_CurseForge();
-            }
-            else if (LoadSource == 1)
-            {
-                await LoadEvent_Modrinth();
-            }
-            await LoadMCVersion();
-            lb01.Visibility = Visibility.Collapsed;
-            ModListGrid.IsEnabled = true;
-        }
-
-        private async Task LoadMCVersion()
-        {
-            try
-            {
-                LogHelper.Write.Info("[下载资源页]正在从原版服务端获取 MC 版本列表");
-                MinecraftVersionTypeBox.Items.Clear();
-                var mcVersions = await HttpService.GetApiContentAsync("mirrors/vanilla");
-                MinecraftVersionTypeBox.Items.Add("全部");
-                foreach (var mcVersion in mcVersions["data"]["versions"])
-                {
-                    MinecraftVersionTypeBox.Items.Add(mcVersion.ToString());
-                }
-                MinecraftVersionTypeBox.SelectedIndex = 0;
-            }
-            catch (Exception ex) {
-                MinecraftVersionTypeBox.Items.Clear();
-                MinecraftVersionTypeBox.Items.Add("全部");
-                MinecraftVersionTypeBox.SelectedIndex = 0;
-                LogHelper.Write.Error("[下载资源页]获取 MC 版本列表失败" + ex.ToString());
-            }
-        }
-
-        private async void LoadSourceBox_SelectionChanged(object sender, System.Windows.Controls.SelectionChangedEventArgs e)
-        {
-            if (!IsLoaded)
-            {
-                return;
-            }
-            LoadSource = LoadSourceBox.SelectedIndex;
-            if (LoadSource == 0)
-            {
-                LTB_Plugins.Visibility = Visibility.Collapsed;
-                LTB_DataPacks.Visibility = Visibility.Collapsed;
-            }
-            else
-            {
-                LTB_Plugins.Visibility = Visibility.Visible;
-                LTB_DataPacks.Visibility = Visibility.Visible;
-            }
-            await LoadEvent();
-        }
-
-        private async void LoadTypeBox_SelectionChanged(object sender, System.Windows.Controls.SelectionChangedEventArgs e)
-        {
-            if (!IsLoaded)
-            {
-                return;
-            }
-            LoadType = LoadTypeBox.SelectedIndex;
-            if (LoadType == 2 || LoadType == 3)
-            {
-                LSB_CurseForge.Visibility = Visibility.Collapsed;
-            }
-            else
-            {
-                LSB_CurseForge.Visibility = Visibility.Visible;
-            }
-            await LoadEvent();
-        }
+        #region Download
 
         private async void ModVerList_MouseDoubleClick(object sender, MouseButtonEventArgs e)
         {
-            if (ModVerList.Items.Count == 0 || ModVerList.SelectedIndex == -1)
-            {
-                return;
-            }
+            if (ModVerList.Items.Count == 0 || ModVerList.SelectedIndex == -1) return;
             var iteminfo = ModVerList.SelectedItem as DM_ModInfo;
             Directory.CreateDirectory(SavingPath);
             FileName = iteminfo.FileName;
-            //MessageBox.Show(iteminfo.DownloadUrl);
             bool dwnRet = await MagicShow.ShowDownloader(FatherWindow, iteminfo.DownloadUrl, SavingPath, FileName, "下载中……", "", false);
             if (dwnRet)
             {
@@ -801,30 +814,171 @@ namespace MSL
             }
         }
 
+        #endregion
+
+        #region Load Event & MC Version
+
+        private async Task LoadEvent()
+        {
+            _isLoading = true;
+            ShowLoadingIndicator(true);
+            try
+            {
+                if (LoadSource == 0)
+                    await LoadEvent_CurseForge();
+                else
+                    await LoadEvent_Modrinth();
+                await LoadMCVersion();
+            }
+            finally
+            {
+                ShowLoadingIndicator(false);
+                _isLoading = false;
+            }
+        }
+
+        private async Task LoadEvent_Modrinth()
+        {
+            try
+            {
+                await EnsureModrinthClient();
+                await Search_Modrinth("");
+            }
+            catch (OperationCanceledException) { }
+            catch (ObjectDisposedException) { }
+            catch (Exception ex)
+            {
+                MagicShow.ShowMsgDialog(FatherWindow, Lang.Form_DownloadMod_FetchFailed + ex.Message, "错误");
+            }
+        }
+
+        private async Task LoadEvent_CurseForge()
+        {
+            try
+            {
+                var client = await EnsureCurseForgeClient();
+                ModList.ItemsSource = null;
+                ModList.Items.Clear();
+                var list = new List<DM_ModsInfo>();
+
+                if (LoadType == 0) // Mods
+                {
+                    var featuredMods = await client.GetFeaturedModsAsync(new GetFeaturedModsRequestBody
+                    {
+                        GameId = CF_GAME_ID,
+                        ExcludedModIds = new List<int>(),
+                        GameVersionTypeId = null,
+                    });
+
+                    foreach (var mod in featuredMods.Data.Popular)
+                    {
+                        list.Add(CreateCFModInfo(mod));
+                    }
+                    NowPageLabel.Text = Lang.Form_DownloadMod_Featured;
+                }
+                else if (LoadType == LoadTypeEnum.Modpacks) // Modpacks - FIXED: use classId instead of categoryId
+                {
+                    var modpacks = await client.SearchModsAsync(CF_GAME_ID, classId: CF_CLASSID_MODPACKS);
+                    foreach (var mod in modpacks.Data)
+                    {
+                        list.Add(CreateCFModInfo(mod));
+                    }
+                    NowPageLabel.Text = "1";
+                }
+
+                ModList.ItemsSource = list;
+            }
+            catch (Exception ex)
+            {
+                MagicShow.ShowMsgDialog(FatherWindow, Lang.Form_DownloadMod_FetchFailed + ex.Message, "错误");
+            }
+        }
+
+        private async Task LoadMCVersion()
+        {
+            if (_mcVersionLoaded) return;
+            try
+            {
+                _mcVersionLoaded = true;
+                LogHelper.Write.Info("[下载资源页]正在从原版服务端获取 MC 版本列表");
+                MinecraftVersionTypeBox.Items.Clear();
+                var mcVersions = await HttpService.GetApiContentAsync("mirrors/vanilla");
+                MinecraftVersionTypeBox.Items.Add(Lang.Form_DownloadMod_All);
+                foreach (var mcVersion in mcVersions["data"]["versions"])
+                {
+                    MinecraftVersionTypeBox.Items.Add(mcVersion.ToString());
+                }
+                MinecraftVersionTypeBox.SelectedIndex = 0;
+            }
+            catch (Exception ex)
+            {
+                _mcVersionLoaded = false;
+                MinecraftVersionTypeBox.Items.Clear();
+                MinecraftVersionTypeBox.Items.Add(Lang.Form_DownloadMod_All);
+                MinecraftVersionTypeBox.SelectedIndex = 0;
+                LogHelper.Write.Error("[下载资源页]获取 MC 版本列表失败" + ex.ToString());
+            }
+        }
+
+        #endregion
+
+        #region Utility
+
         private void CloseBtn_Click(object sender, RoutedEventArgs e)
         {
             _onClose?.Invoke(null);
         }
 
+        private static string FormatDownloadCount(double count)
+        {
+            if (count >= 1_000_000)
+                return (count / 1_000_000.0).ToString("F1") + "M";
+            if (count >= 1_000)
+                return (count / 1_000.0).ToString("F1") + "K";
+            return ((int)count).ToString();
+        }
+
+        private static string FormatRelativeTime(DateTime dateTime)
+        {
+            var span = DateTime.UtcNow - dateTime.ToUniversalTime();
+            return FormatTimeSpan(span);
+        }
+
+        private static string FormatRelativeTime(DateTimeOffset dateTime)
+        {
+            var span = DateTimeOffset.UtcNow - dateTime;
+            return FormatTimeSpan(span);
+        }
+
+        private static string FormatTimeSpan(TimeSpan span)
+        {
+            if (span.TotalDays > 365) return (span.TotalDays / 365).ToString("F0") + " 年前";
+            if (span.TotalDays > 30) return (span.TotalDays / 30).ToString("F0") + " 个月前";
+            if (span.TotalDays > 0) return span.TotalDays.ToString("F0") + " 天前";
+            if (span.TotalHours > 0) return span.TotalHours.ToString("F0") + " 小时前";
+            if (span.TotalMinutes > 0) return span.TotalMinutes.ToString("F0") + " 分钟前";
+            return "刚刚";
+        }
+
+        private static string Truncate(string text, int maxLength)
+        {
+            if (string.IsNullOrEmpty(text)) return "";
+            return text.Length <= maxLength ? text : text.Substring(0, maxLength) + "…";
+        }
+
         public void Dispose()
         {
-            if (CurseForgeApiClient != null)
-            {
-                CurseForgeApiClient.Dispose();
-                CurseForgeApiClient = null;
-            }
-            if (ModrinthApiClient != null)
-            {
-                ModrinthApiClient.Dispose();
-                ModrinthApiClient = null;
-            }
+            CurseForgeApiClient?.Dispose();
+            CurseForgeApiClient = null;
+            ModrinthApiClient?.Dispose();
+            ModrinthApiClient = null;
             ModList.ItemsSource = null;
             ModList.Items.Clear();
             ModVerList.Items.Clear();
             VerFilter_VersList.Clear();
-            GC.Collect(); // find finalizable objects
-            GC.WaitForPendingFinalizers(); // wait until finalizers executed
-            GC.Collect(); // collect finalized objects
+            GC.Collect();
         }
+
+        #endregion
     }
 }

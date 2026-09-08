@@ -21,7 +21,7 @@
                         <ColumnDefinition Width="Auto"/>
                         <ColumnDefinition/>
                     </Grid.ColumnDefinitions>
-                    <Button x:Name="Return" Grid.Column="0" hc:IconElement.Geometry="{StaticResource LeftGeometry}" Content="返回Frpc列表" HorizontalAlignment="Left" Click="Return_Click"/>
+                    <Button x:Name="Return" Grid.Column="0" hc:IconElement.Geometry="{StaticResource LeftGeometry}" Content="{Binding [Page_FrpcPage_Return], Source={x:Static langs:LanguageManager.Instance}}" HorizontalAlignment="Left" Click="Return_Click"/>
                     <ToggleButton x:Name="startfrpcBtn" Grid.Column="1" Margin="10,0,10,0" VerticalAlignment="Center" IsEnabled="False" Click="startfrpc_Click">
                         <ToggleButton.Style>
                             <Style TargetType="ToggleButton" BasedOn="{StaticResource ToggleButtonPrimary.NoCheckedBorder}">
@@ -36,7 +36,7 @@
                             </Style>
                         </ToggleButton.Style>
                     </ToggleButton>
-                    <TextBlock x:Name="frplab1" Grid.Column="2" Text="节点状态" TextWrapping="Wrap" FontSize="16" Foreground="{DynamicResource DarkPrimaryBrush}" VerticalAlignment="Center"/>
+                    <TextBlock x:Name="frplab1" Grid.Column="2" Text="{Binding [Page_FrpcPage_NodeStatus], Source={x:Static langs:LanguageManager.Instance}}" TextWrapping="Wrap" FontSize="16" Foreground="{DynamicResource DarkPrimaryBrush}" VerticalAlignment="Center"/>
                 </Grid>
                 <hc:ScrollViewer IsInertiaEnabled="True">
                     <hc:UniformSpacingPanel x:Name="ProxiesContainer" 

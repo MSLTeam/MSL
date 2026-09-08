@@ -59,7 +59,7 @@ namespace MSL.pages.frpProviders
                 {
                     LogHelper.Write.Info("检测到已保存的 ChmlFrp AccessToken，尝试自动登录。");
                     MagicDialog dlg = new MagicDialog();
-                    dlg.ShowTextDialog(Window.GetWindow(this), "登录中……");
+                    dlg.ShowTextDialog(Window.GetWindow(this), Lang.Frp_Chml_LoggingIn);
                     await LoginWithAccessToken(savedToken, save: false);
                     dlg.CloseTextDialog();
                 }
@@ -119,7 +119,7 @@ namespace MSL.pages.frpProviders
             _pollCts?.Cancel();
             _pollCts = new CancellationTokenSource();
 
-            OAuthStatusText.Text = "正在获取授权码……";
+            OAuthStatusText.Text = Lang.Frp_Chml_GettingAuthCode;
             OAuthErrorText.Text = "";
             OAuthLoginBtn.IsEnabled = false;
 
@@ -129,7 +129,7 @@ namespace MSL.pages.frpProviders
                 var deviceResp = await RequestDeviceAuthorization(_pollCts.Token);
 
                 DeviceCodeText.Text = deviceResp.UserCode;
-                OAuthStatusText.Text = "请在浏览器中完成授权……";
+                OAuthStatusText.Text = Lang.Frp_Chml_BrowserAuth;
 
                 // Step 2: 打开授权页
                 string target = deviceResp.VerificationUriComplete ?? deviceResp.VerificationUri;
@@ -145,7 +145,7 @@ namespace MSL.pages.frpProviders
             }
             catch (OperationCanceledException)
             {
-                OAuthStatusText.Text = "授权已取消。";
+                OAuthStatusText.Text = Lang.Frp_Chml_AuthCancelled;
             }
             catch (Exception ex)
             {
@@ -197,7 +197,7 @@ namespace MSL.pages.frpProviders
                 {
                     string accessToken = at.ToString();
                     LogHelper.Write.Info("OAuth Device Flow 获取 access_token 成功。");
-                    OAuthStatusText.Text = "授权成功，正在加载数据……";
+                    OAuthStatusText.Text = Lang.Frp_Chml_AuthSuccess;
                     await LoginWithAccessToken(accessToken, save);
                     return;
                 }
@@ -208,21 +208,21 @@ namespace MSL.pages.frpProviders
                     switch (err)
                     {
                         case "authorization_pending":
-                            OAuthStatusText.Text = "等待用户在浏览器中确认授权……";
+                            OAuthStatusText.Text = Lang.Frp_Chml_WaitingAuth;
                             break;
                         case "slow_down":
                             intervalSeconds += 5;
-                            OAuthStatusText.Text = "请求过于频繁，已自动降低频率……";
+                            OAuthStatusText.Text = Lang.Frp_Chml_TooFrequent;
                             break;
                         case "expired_token":
-                            OAuthErrorText.Text = "授权码已过期，请重新开始授权。";
+                            OAuthErrorText.Text = Lang.Frp_Chml_AuthExpired;
                             return;
                         case "access_denied":
-                            OAuthErrorText.Text = "用户已拒绝授权。";
+                            OAuthErrorText.Text = Lang.Frp_Chml_AuthDenied;
                             return;
                         default:
                             string desc = json.TryGetValue("error_description", out var d) ? d.ToString() : err;
-                            OAuthErrorText.Text = $"授权失败：{desc}";
+                            OAuthErrorText.Text = Lang.Frp_Chml_AuthFailed + desc;
                             return;
                     }
                 }
@@ -245,7 +245,7 @@ namespace MSL.pages.frpProviders
                 if (string.IsNullOrWhiteSpace(response))
                 {
                     MagicShow.ShowMsgDialog(Window.GetWindow(this),
-                        "登录失败！\n服务器返回内容为空。", LanguageManager.Instance["Error"]);
+                        Lang.Frp_Chml_LoginFailedEmpty, LanguageManager.Instance["Error"]);
                     return;
                 }
 
@@ -253,7 +253,7 @@ namespace MSL.pages.frpProviders
                 if (jsonResponse == null)
                 {
                     MagicShow.ShowMsgDialog(Window.GetWindow(this),
-                        "登录失败！\n服务器返回了无效数据。", LanguageManager.Instance["Error"]);
+                        Lang.Frp_Chml_LoginFailedInvalid, LanguageManager.Instance["Error"]);
                     return;
                 }
 
@@ -279,7 +279,7 @@ namespace MSL.pages.frpProviders
                 string errMsg = jsonResponse.TryGetValue("msg", out var m) ? m.ToString() : "未知错误";
                 LogHelper.Write.Warn($"ChmlFrp 登录失败: {errMsg}");
                 MagicShow.ShowMsgDialog(Window.GetWindow(this),
-                    "登录失败！\n" + errMsg, LanguageManager.Instance["Error"]);
+                    Lang.Frp_Chml_LoginFailed + errMsg, LanguageManager.Instance["Error"]);
 
                 if (Config.Read("ChmlAccessToken") != null)
                     Config.Remove("ChmlAccessToken");
@@ -288,7 +288,7 @@ namespace MSL.pages.frpProviders
             {
                 LogHelper.Write.Error($"LoginWithAccessToken 异常: {ex}");
                 MagicShow.ShowMsgDialog(Window.GetWindow(this),
-                    "登录失败！\n" + ex.Message, LanguageManager.Instance["Error"]);
+                    Lang.Frp_Chml_LoginFailed + ex.Message, LanguageManager.Instance["Error"]);
                 if (Config.Read("ChmlAccessToken") != null)
                     Config.Remove("ChmlAccessToken");
             }
@@ -324,7 +324,7 @@ namespace MSL.pages.frpProviders
 
             var json = JsonConvert.DeserializeObject<Dictionary<string, object>>(raw);
             if (json == null || !json.ContainsKey("device_code"))
-                throw new Exception("账户中心返回了无效的授权响应，请稍后重试。");
+                throw new Exception(Lang.Frp_Chml_InvalidAuthResponse);
 
             return new DeviceAuthResponse
             {
@@ -385,10 +385,10 @@ namespace MSL.pages.frpProviders
                 var userInfoRaw = JsonConvert.DeserializeObject<Dictionary<string, object>>(uResponse);
 
                 var userInfo = JObject.FromObject(userInfoRaw["data"]);
-                UserInfo.Text = $"用户：#{userInfo["id"]} {userInfo["username"]}\n" +
-                                $"邮箱：{userInfo["email"]}\n" +
-                                $"会员类型：{userInfo["usergroup"]}\n" +
-                                $"隧道数：{userInfo["tunnnelCount"]}/{userInfo["tunnel"]}";
+                UserInfo.Text = $"{Lang.Frp_Chml_User}#{userInfo["id"]} {userInfo["username"]}\n" +
+                                $"{Lang.Frp_Chml_Email}{userInfo["email"]}\n" +
+                                $"{Lang.Frp_Chml_MemberType}{userInfo["usergroup"]}\n" +
+                                $"{Lang.Frp_Chml_TunnelCount}{userInfo["tunnnelCount"]}/{userInfo["tunnel"]}";
                 LogHelper.Write.Info($"成功获取用户信息: {userInfo["username"]}");
 
                 ObservableCollection<TunnelInfo> tunnels = new ObservableCollection<TunnelInfo>();
@@ -460,7 +460,7 @@ namespace MSL.pages.frpProviders
         {
             if (!(FrpList.SelectedItem is TunnelInfo selectedTunnel))
             {
-                await MagicShow.ShowMsgDialogAsync(Window.GetWindow(this), "请您选择一个隧道再按确定哦~", "隧道呢？");
+                await MagicShow.ShowMsgDialogAsync(Window.GetWindow(this), Lang.Frp_Chml_SelectTunnel, Lang.Frp_Chml_TunnelSelectTitle);
                 return;
             }
 
@@ -485,17 +485,17 @@ namespace MSL.pages.frpProviders
                 catch { /* 直接是 ini 文本 */ }
 
                 if (string.IsNullOrWhiteSpace(frpcConfig))
-                    throw new Exception("服务器返回的配置内容为空");
+                    throw new Exception(Lang.Frp_Chml_EmptyConfig);
 
                 Config.WriteFrpcConfig(2, $"ChmlFrp - {selectedTunnel.Name}({selectedTunnel.Node})", frpcConfig, "");
                 LogHelper.Write.Info("frpc 配置文件获取并写入成功。");
-                await MagicShow.ShowMsgDialogAsync(Window.GetWindow(this), "映射配置成功，请您点击 启动内网映射 以启动映射！", "信息");
+                await MagicShow.ShowMsgDialogAsync(Window.GetWindow(this), Lang.Frp_Chml_MapSuccess, "信息");
                 _onReturn.Invoke();
             }
             catch (Exception ex)
             {
                 LogHelper.Write.Error($"获取/写入配置失败: {ex}");
-                await MagicShow.ShowMsgDialogAsync(Window.GetWindow(this), "获取配置失败！\n" + ex.Message, "出错");
+                await MagicShow.ShowMsgDialogAsync(Window.GetWindow(this), Lang.Frp_Chml_GetConfigFailed + ex.Message, "出错");
             }
             finally
             {
@@ -510,14 +510,14 @@ namespace MSL.pages.frpProviders
         private async void Del_Tunnel_Click(object sender, RoutedEventArgs e)
         {
             (sender as Button).IsEnabled = false;
-            bool confirm = await MagicShow.ShowMsgDialogAsync(Window.GetWindow(this), "确定删除所选隧道吗？", "删除隧道", true);
+            bool confirm = await MagicShow.ShowMsgDialogAsync(Window.GetWindow(this), Lang.Frp_Chml_ConfirmDelete, Lang.Frp_Chml_DeleteTunnel, true);
             if (confirm)
             {
                 try
                 {
                     if (!(FrpList.SelectedItem is TunnelInfo selectedTunnel))
                     {
-                        MagicShow.ShowMsgDialog(Window.GetWindow(this), "请选择一个隧道再操作！", "失败！");
+                        MagicShow.ShowMsgDialog(Window.GetWindow(this), Lang.Frp_Chml_SelectTunnelFirst, "失败！");
                     }
                     else
                     {
@@ -534,7 +534,7 @@ namespace MSL.pages.frpProviders
                         if (success)
                         {
                             LogHelper.Write.Info($"隧道 ID: {selectedTunnel.ID} 删除成功。");
-                            MagicShow.ShowMsgDialog(Window.GetWindow(this), "隧道删除成功！", "删除");
+                            MagicShow.ShowMsgDialog(Window.GetWindow(this), Lang.Frp_Chml_DeleteSuccess, "删除");
                             _ = GetFrpList();
                         }
                         else
@@ -543,7 +543,7 @@ namespace MSL.pages.frpProviders
                                           : postResponse.TryGetValue("error", out var em) ? em.ToString()
                                           : "未知错误";
                             LogHelper.Write.Warn($"隧道删除失败: {errMsg}");
-                            MagicShow.ShowMsgDialog(Window.GetWindow(this), $"隧道删除失败！\n{errMsg}", "失败！");
+                            MagicShow.ShowMsgDialog(Window.GetWindow(this), Lang.Frp_Chml_DeleteFailed + errMsg, "失败！");
                         }
                     }
                 }
@@ -570,7 +570,7 @@ namespace MSL.pages.frpProviders
             if (_response.HttpResponseCode != System.Net.HttpStatusCode.OK)
             {
                 LogHelper.Write.Error($"获取节点列表 API 请求失败，状态码: {_response.HttpResponseCode}");
-                MagicShow.ShowMsgDialog(Window.GetWindow(this), "节点列表获取失败！\n" + _response.HttpResponseContent, "获取失败！");
+                MagicShow.ShowMsgDialog(Window.GetWindow(this), Lang.Frp_Chml_GetNodeFailed + _response.HttpResponseContent, "获取失败！");
                 return;
             }
 
@@ -590,7 +590,7 @@ namespace MSL.pages.frpProviders
                             Area = $"{item["area"]}",
                             Notes = $"{item["notes"]}",
                             NodeGroup = $"{item["nodegroup"]}",
-                            NodeGroupName = item["nodegroup"].ToString() == "vip" ? "VIP节点" : "普通节点"
+                            NodeGroupName = item["nodegroup"].ToString() == "vip" ? Lang.Frp_Chml_VipNode : Lang.Frp_Chml_NormalNode
                         });
                     }
                     LogHelper.Write.Info($"成功获取并加载了 {nodes.Count} 个节点。");
@@ -634,7 +634,7 @@ namespace MSL.pages.frpProviders
             else
             {
                 LogHelper.Write.Warn("用户尝试创建隧道，但未选择任何节点。");
-                MagicShow.ShowMsgDialog(Window.GetWindow(this), "您似乎没有选择节点！", "错误");
+                MagicShow.ShowMsgDialog(Window.GetWindow(this), Lang.Frp_Chml_NoNode, "错误");
             }
             (sender as Button).IsEnabled = true;
         }
@@ -666,7 +666,7 @@ namespace MSL.pages.frpProviders
             if (_response.HttpResponseCode != System.Net.HttpStatusCode.OK)
             {
                 LogHelper.Write.Error($"创建隧道 API 请求失败，状态码: {_response.HttpResponseCode}");
-                MagicShow.ShowMsgDialog(Window.GetWindow(this), "隧道创建失败！\n" + _response.HttpResponseContent, "创建失败！");
+                MagicShow.ShowMsgDialog(Window.GetWindow(this), Lang.Frp_Chml_CreateFailed + _response.HttpResponseContent, "创建失败！");
                 return;
             }
 
@@ -676,14 +676,14 @@ namespace MSL.pages.frpProviders
             if (postResponse.TryGetValue("state", out var sv) && sv.ToString() == "success")
             {
                 LogHelper.Write.Info($"隧道 {name} 创建成功。");
-                MagicShow.ShowMsgDialog(Window.GetWindow(this), "隧道创建成功！", "创建成功！");
+                MagicShow.ShowMsgDialog(Window.GetWindow(this), Lang.Frp_Chml_CreateSuccess, "创建成功！");
                 MainCtrl.SelectedIndex = 0;
             }
             else
             {
                 string errMsg = postResponse.TryGetValue("msg", out var m) ? m.ToString() : "未知错误";
                 LogHelper.Write.Warn($"隧道创建失败，API返回信息: {errMsg}");
-                MagicShow.ShowMsgDialog(Window.GetWindow(this), $"隧道创建失败！\n{errMsg}", "创建失败！");
+                MagicShow.ShowMsgDialog(Window.GetWindow(this), Lang.Frp_Chml_CreateFailed + errMsg, "创建失败！");
             }
         }
 

@@ -6,6 +6,7 @@
              xmlns:local="clr-namespace:MSL.controls.dialogs"
              xmlns:hc="https://handyorg.github.io/handycontrol"
              xmlns:ctrls="clr-namespace:MSL.controls"
+             xmlns:langs="clr-namespace:MSL.langs"
              mc:Ignorable="d" 
              d:DesignHeight="450" d:DesignWidth="800"
              MinHeight="400" MinWidth="600"
@@ -18,13 +19,13 @@
                 <RowDefinition/>
             </Grid.RowDefinitions>
             <Grid x:Name="HeaderPanel" VerticalAlignment="Top">
-                <TextBlock Text="AI日志分析功能" Style="{StaticResource MagicText16}" FontWeight="Bold" VerticalAlignment="Center"/>
-                <Button x:Name="Close" HorizontalAlignment="Right" VerticalAlignment="Top" Style="{StaticResource ButtonPrimary}" Content="关闭" Click="Close_Click"/>
+                <TextBlock Text="{Binding [SR_AILogAnalysis], Source={x:Static langs:LanguageManager.Instance}}" Style="{StaticResource MagicText16}" FontWeight="Bold" VerticalAlignment="Center"/>
+                <Button x:Name="Close" HorizontalAlignment="Right" VerticalAlignment="Top" Style="{StaticResource ButtonPrimary}" Content="{Binding [Close], Source={x:Static langs:LanguageManager.Instance}}" Click="Close_Click"/>
             </Grid>
             <Grid Grid.Row="2">
                 <ContentControl x:Name="LoginControl" Visibility="Collapsed"/>
                 <TabControl x:Name="MainGrid" BorderThickness="0">
-                    <TabItem Header="服务器信息输入">
+                    <TabItem Header="{Binding [SR_ServerInfoInput], Source={x:Static langs:LanguageManager.Instance}}">
                         <Grid>
                             <Grid.ColumnDefinitions>
                                 <ColumnDefinition Width="2*"/>
@@ -37,10 +38,10 @@
                                     <RowDefinition Height="5"/>
                                     <RowDefinition Height="5*"/>
                                 </Grid.RowDefinitions>
-                                <ctrls:MagicCard Title="用户信息">
+                                <ctrls:MagicCard Title="{Binding [SR_UserInfo], Source={x:Static langs:LanguageManager.Instance}}">
                                     <Label x:Name="UserAIInfo" VerticalAlignment="Stretch" HorizontalAlignment="Stretch" HorizontalContentAlignment="Left"/>
                                 </ctrls:MagicCard>
-                                <ctrls:MagicCard Grid.Row="2" Title="服务器信息">
+                                <ctrls:MagicCard Grid.Row="2" Title="{Binding [SR_ServerInfo], Source={x:Static langs:LanguageManager.Instance}}">
                                     <TabControl BorderThickness="0">
                                         <TabItem Header="ServerInfo">
                                             <TextBox x:Name="ServerInfoInput" Padding="7" TextWrapping="Wrap" VerticalScrollBarVisibility="Auto"/>
@@ -54,7 +55,7 @@
                                     </TabControl>
                                 </ctrls:MagicCard>
                             </Grid>
-                            <ctrls:MagicCard Grid.Column="2" Title="服务器日志">
+                            <ctrls:MagicCard Grid.Column="2" Title="{Binding [SR_ServerLog], Source={x:Static langs:LanguageManager.Instance}}">
                                 <Grid>
                                     <Grid.RowDefinitions>
                                         <RowDefinition/>
@@ -68,22 +69,22 @@
                                     <hc:UniformSpacingPanel Grid.Row="4" Orientation="Horizontal" VerticalAlignment="Bottom" HorizontalAlignment="Right" Spacing="5">
                                         <ComboBox x:Name="ModelSelector" 
               Width="150" 
-              hc:InfoElement.Placeholder="选择模型"
+              hc:InfoElement.Placeholder="{Binding [SR_SelectModel], Source={x:Static langs:LanguageManager.Instance}}"
               DisplayMemberPath="DisplayName" 
               SelectedValuePath="Id"
               IsEnabled="False"/>
-                                        <Button x:Name="Store" Style="{StaticResource ButtonPrimary}" Content="商城" Click="Store_Click"/>
-                                        <Button x:Name="StartAnalyse" Style="{StaticResource ButtonPrimary}" Content="开始分析" Click="StartAnalyse_Click"/>
+                                        <Button x:Name="Store" Style="{StaticResource ButtonPrimary}" Content="{Binding [SR_Marketplace], Source={x:Static langs:LanguageManager.Instance}}" Click="Store_Click"/>
+                                        <Button x:Name="StartAnalyse" Style="{StaticResource ButtonPrimary}" Content="{Binding [SR_StartAnalysis], Source={x:Static langs:LanguageManager.Instance}}" Click="StartAnalyse_Click"/>
                                     </hc:UniformSpacingPanel>
                                 </Grid>
                             </ctrls:MagicCard>
                         </Grid>
                     </TabItem>
-                    <TabItem Header="分析结果输出">
+                    <TabItem Header="{Binding [SR_AnalysisOutput], Source={x:Static langs:LanguageManager.Instance}}">
                         <RichTextBox x:Name="AnalysisOutput" IsReadOnly="True" HorizontalContentAlignment="Left" VerticalContentAlignment="Top" VerticalScrollBarVisibility="Auto">
                             <FlowDocument>
                                 <Paragraph>
-                                    <Run Text="此处显示AI分析结果……"/>
+                                    <Run x:Name="AnalysisResultPlaceholderRun"/>
                                 </Paragraph>
                             </FlowDocument>
                         </RichTextBox>

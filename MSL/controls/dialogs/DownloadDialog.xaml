@@ -30,7 +30,7 @@
                     </Grid.ColumnDefinitions>
                     <TextBlock Grid.Row="1" x:Name="StatusLab" Foreground="{DynamicResource DarkPrimaryBrush}" VerticalAlignment="Center" HorizontalAlignment="Left" TextWrapping="Wrap" FontSize="14" Text="{Binding [Loading],Source={x:Static langs:LanguageManager.Instance}}"/>
                     <hc:UniformSpacingPanel Grid.Column="1" Spacing="10" VerticalAlignment="Bottom">
-                        <Button Grid.Column="1" x:Name="PauseBtn" IsEnabled="False" Style="{StaticResource ButtonPrimary}" Content="暂停" MinWidth="80" Click="PauseBtn_Click" FontSize="14"/>
+                        <Button Grid.Column="1" x:Name="PauseBtn" IsEnabled="False" Style="{StaticResource ButtonPrimary}" Content="{Binding [SR_Pause], Source={x:Static langs:LanguageManager.Instance}}" MinWidth="80" Click="PauseBtn_Click" FontSize="14"/>
                         <Button Grid.Column="1" x:Name="button1" Style="{StaticResource ButtonPrimary}" Content="{Binding [Cancel],Source={x:Static langs:LanguageManager.Instance}}" MinWidth="80" Click="button1_Click" FontSize="14" MouseDoubleClick="button1_MouseDoubleClick"/>
                     </hc:UniformSpacingPanel>
                 </Grid>

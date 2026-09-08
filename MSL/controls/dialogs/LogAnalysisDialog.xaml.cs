@@ -1,5 +1,6 @@
 ﻿using HandyControl.Controls;
 using MdXaml;
+using MSL.langs;
 using MSL.pages.frpProviders.MSLFrp;
 using MSL.utils;
 using MSL.utils.Config;
@@ -28,6 +29,7 @@ namespace MSL.controls.dialogs
         public LogAnalysisDialog(Window window, string rserverbase, string rservercore)
         {
             InitializeComponent();
+            AnalysisResultPlaceholderRun.Text = Lang.SR_AnalysisResultPlaceholder;
             FatherWindow = window;
             Rserverbase = rserverbase;
             Rservercore = rservercore;

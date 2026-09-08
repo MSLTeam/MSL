@@ -18,7 +18,7 @@
             </Grid.RowDefinitions>
             <Label Style="{StaticResource BorderTitle}" Content="{Binding [Page_FrpcPage_Title], Source={x:Static langs:LanguageManager.Instance}}"/>
             <StackPanel Grid.Row="0" Orientation="Horizontal" HorizontalAlignment="Right" VerticalAlignment="Top">
-                <Button x:Name="MyInfo" Content="我的MSL Frp信息" Click="MyInfo_Click"/>
+                <Button x:Name="MyInfo" Content="{Binding [Page_FrpcList_MyInfo], Source={x:Static langs:LanguageManager.Instance}}" Click="MyInfo_Click"/>
                 <!-- 新功能，还没写好，先注释掉（）
                 <Button x:Name="FastStart" Content="一键启动" Margin="3,0"/>
                 <Button x:Name="FastStop" Content="一键停止"/>
@@ -37,8 +37,8 @@
                 </ListBox>
             </Border>
             <StackPanel Grid.Row="1" Orientation="Horizontal" HorizontalAlignment="Right" VerticalAlignment="Bottom">
-                <Button x:Name="AddFrpc" hc:IconElement.Geometry="{StaticResource AddGeometry}" Style="{StaticResource ButtonPrimary}" Content="添加隧道" Click="AddFrpc_Click"/>
-                <Button x:Name="DelFrpc" hc:IconElement.Geometry="{StaticResource DeleteGeometry}" Style="{StaticResource ButtonDanger}" Content="删除选中" Margin="10" Click="DelFrpc_Click"/>
+                <Button x:Name="AddFrpc" hc:IconElement.Geometry="{StaticResource AddGeometry}" Style="{StaticResource ButtonPrimary}" Content="{Binding [Page_FrpcList_AddTunnel], Source={x:Static langs:LanguageManager.Instance}}" Click="AddFrpc_Click"/>
+                <Button x:Name="DelFrpc" hc:IconElement.Geometry="{StaticResource DeleteGeometry}" Style="{StaticResource ButtonDanger}" Content="{Binding [Page_FrpcList_DeleteSelected], Source={x:Static langs:LanguageManager.Instance}}" Margin="10" Click="DelFrpc_Click"/>
             </StackPanel>
         </Grid>
     </controls:MagicCard>

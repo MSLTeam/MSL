@@ -6,6 +6,7 @@
       xmlns:local="clr-namespace:MSL.pages.frpProviders.MSLFrp"
       xmlns:hc="https://handyorg.github.io/handycontrol"
       xmlns:controls="clr-namespace:MSL.controls"
+      xmlns:langs="clr-namespace:MSL.langs"
       mc:Ignorable="d" 
       d:DesignHeight="450" d:DesignWidth="800"
       Title="MSLFrpProfile" Loaded="Page_Loaded">
@@ -18,7 +19,7 @@
                 <ColumnDefinition Width="10"/>
                 <ColumnDefinition/>
             </Grid.ColumnDefinitions>
-            <controls:MagicCard Grid.Column="0" Title="我的信息">
+            <controls:MagicCard Grid.Column="0" Title="{Binding [Frp_MSLFrpProfile_MyInfo], Source={x:Static langs:LanguageManager.Instance}}">
                 <Grid>
                     <Grid.RowDefinitions>
                         <RowDefinition Height="100"/>
@@ -40,14 +41,14 @@
                         <Label x:Name="QQ_Label" Style="{StaticResource MagicLabel14}"/>
                         <StackPanel Orientation="Horizontal">
                             <Label x:Name="Score_Label" Style="{StaticResource MagicLabel14}"/>
-                            <Button x:Name="AdReward_Button" Click="AdReward_Button_Click" Content="赚积分" Margin="5,0,0,0" Style="{StaticResource ButtonPrimary}"/>
+                            <Button x:Name="AdReward_Button" Click="AdReward_Button_Click" Content="{Binding [Frp_MSLFrpProfile_EarnPoints], Source={x:Static langs:LanguageManager.Instance}}" Margin="5,0,0,0" Style="{StaticResource ButtonPrimary}"/>
                         </StackPanel>
                         <Label x:Name="RegTime_Label" Style="{StaticResource MagicLabel14}"/>
                         <Label x:Name="LastLogin_Label" Style="{StaticResource MagicLabel14}"/>
                         <Label x:Name="Perm_Label" Style="{StaticResource MagicLabel14}"/>
                         <StackPanel Orientation="Horizontal">
                             <Label x:Name="RealnameVerify_Label" Style="{StaticResource MagicLabel14}"/>
-                            <Button x:Name="RealnameVerify_Button" Click="RealnameVerify_Button_Click" Visibility="Collapsed" Content="点我实名"/>
+                            <Button x:Name="RealnameVerify_Button" Click="RealnameVerify_Button_Click" Visibility="Collapsed" Content="{Binding [Frp_MSLFrpProfile_RealnameVerify], Source={x:Static langs:LanguageManager.Instance}}"/>
                         </StackPanel>
 
                     </hc:UniformSpacingPanel>
@@ -59,14 +60,14 @@
                     <RowDefinition Height="5"/>
                     <RowDefinition/>
                 </Grid.RowDefinitions>
-                <controls:MagicCard Grid.Row="0" Title="积分购买">
+                <controls:MagicCard Grid.Row="0" Title="{Binding [Frp_MSLFrpProfile_PointPurchase], Source={x:Static langs:LanguageManager.Instance}}">
                     <hc:UniformSpacingPanel Orientation="Vertical" Spacing="5">
                         <Grid>
                             <Grid.ColumnDefinitions>
                                 <ColumnDefinition Width="Auto"/>
                                 <ColumnDefinition/>
                             </Grid.ColumnDefinitions>
-                            <Label Grid.Column="0" Style="{StaticResource MagicLabel14}" Content="输入金额[￥1=100积分] (单位: 元)："/>
+                            <Label Grid.Column="0" Style="{StaticResource MagicLabel14}" Content="{Binding [Frp_MSLFrpProfile_InputAmount], Source={x:Static langs:LanguageManager.Instance}}"/>
                             <TextBox x:Name="AmountText" Grid.Column="1"/>
                         </Grid>
                         <Grid>
@@ -75,17 +76,17 @@
                                 <ColumnDefinition/>
                                 <ColumnDefinition Width="Auto"/>
                             </Grid.ColumnDefinitions>
-                            <Label Grid.Column="0" Style="{StaticResource MagicLabel14}" Content="选择付款方式："/>
+                            <Label Grid.Column="0" Style="{StaticResource MagicLabel14}" Content="{Binding [Frp_MSLFrpProfile_SelectPayMethod], Source={x:Static langs:LanguageManager.Instance}}"/>
                             <ComboBox Grid.Column="1" SelectedIndex="0" x:Name="PayMethod">
-                                <ComboBoxItem Content="支付宝"/>
-                                <ComboBoxItem Content="微信"/>
+                                <ComboBoxItem Content="{Binding [Frp_MSLFrpProfile_Alipay], Source={x:Static langs:LanguageManager.Instance}}"/>
+                                <ComboBoxItem Content="{Binding [Frp_MSLFrpProfile_Wechat], Source={x:Static langs:LanguageManager.Instance}}"/>
                             </ComboBox>
-                            <Button Grid.Column="2" x:Name="PayOrder" Click="PayOrder_Click" MinWidth="100" Content="购买"/>
+                            <Button Grid.Column="2" x:Name="PayOrder" Click="PayOrder_Click" MinWidth="100" Content="{Binding [Frp_MSLFrpProfile_Purchase], Source={x:Static langs:LanguageManager.Instance}}"/>
                         </Grid>
-                        <Button Content="付款遇到问题?" x:Name="AskBtn" MinWidth="100" Click="AskBtn_Click"/>
+                        <Button Content="{Binding [Frp_MSLFrpProfile_PayIssue], Source={x:Static langs:LanguageManager.Instance}}" x:Name="AskBtn" MinWidth="100" Click="AskBtn_Click"/>
                     </hc:UniformSpacingPanel>
                 </controls:MagicCard>
-                <controls:MagicCard Grid.Row="2" Title="积分兑换">
+                <controls:MagicCard Grid.Row="2" Title="{Binding [Frp_MSLFrpProfile_PointExchange], Source={x:Static langs:LanguageManager.Instance}}">
                     <hc:ScrollViewer IsInertiaEnabled="True">
                         <hc:UniformSpacingPanel x:Name="GoodsList" Orientation="Vertical" Spacing="10"/>
                     </hc:ScrollViewer>

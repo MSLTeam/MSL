@@ -148,10 +148,12 @@
       <DependentUpon>SakuraFrp.xaml</DependentUpon>
     </Compile>
     <Compile Include="utils\Config\AppConfig.cs" />
+    <Compile Include="utils\Config\ConfigPaths.cs" />
     <Compile Include="utils\Config\Config.cs" />
     <Compile Include="utils\Config\ConfigStore.cs" />
     <Compile Include="utils\Config\ConfigWriter.cs" />
     <Compile Include="utils\Config\ServerConfig.cs" />
+    <Compile Include="utils\DotnetVerHelper.cs" />
     <Compile Include="utils\DownloadManager.cs" />
     <Compile Include="utils\FrpApiUtils.cs" />
     <Compile Include="utils\Functions.cs" />
@@ -173,10 +175,13 @@
     <Compile Include="utils\LogHelper.cs" />
     <Compile Include="utils\MCServerLogHelper.cs" />
     <Compile Include="utils\MCServerService.cs" />
+    <Compile Include="utils\MCSLogHandler.cs" />
+    <Compile Include="utils\SystemMonitor.cs" />
     <Compile Include="utils\MinecraftServerTerm.cs" />
     <Compile Include="utils\ServerCoreInstaller.cs" />
     <Compile Include="utils\ServerRunnerModel.cs" />
     <Compile Include="utils\ShowService.cs" />
+    <Compile Include="utils\SkinHelper.cs" />
     <Compile Include="controls\dialogs\TextDialog.xaml.cs">
       <DependentUpon>TextDialog.xaml</DependentUpon>
     </Compile>
@@ -224,6 +229,24 @@
     </Compile>
     <Compile Include="forms\ServerRunner.xaml.cs">
       <DependentUpon>ServerRunner.xaml</DependentUpon>
+    </Compile>
+    <Compile Include="pages\serverRunner\SRPluginsMods.xaml.cs">
+      <DependentUpon>SRPluginsMods.xaml</DependentUpon>
+    </Compile>
+    <Compile Include="pages\serverRunner\SRDashboard.xaml.cs">
+      <DependentUpon>SRDashboard.xaml</DependentUpon>
+    </Compile>
+    <Compile Include="pages\serverRunner\SRConsole.xaml.cs">
+      <DependentUpon>SRConsole.xaml</DependentUpon>
+    </Compile>
+    <Compile Include="pages\serverRunner\SRInstanceSettings.xaml.cs">
+      <DependentUpon>SRInstanceSettings.xaml</DependentUpon>
+    </Compile>
+    <Compile Include="pages\serverRunner\SRMoreFunctions.xaml.cs">
+      <DependentUpon>SRMoreFunctions.xaml</DependentUpon>
+    </Compile>
+    <Compile Include="pages\serverRunner\SRTimerTasks.xaml.cs">
+      <DependentUpon>SRTimerTasks.xaml</DependentUpon>
     </Compile>
     <Compile Include="forms\FrpProvider.xaml.cs">
       <DependentUpon>FrpProvider.xaml</DependentUpon>
@@ -385,6 +408,30 @@
       <Generator>MSBuild:Compile</Generator>
     </Page>
     <Page Include="forms\ServerRunner.xaml">
+      <SubType>Designer</SubType>
+      <Generator>MSBuild:Compile</Generator>
+    </Page>
+    <Page Include="pages\serverRunner\SRPluginsMods.xaml">
+      <SubType>Designer</SubType>
+      <Generator>MSBuild:Compile</Generator>
+    </Page>
+    <Page Include="pages\serverRunner\SRDashboard.xaml">
+      <SubType>Designer</SubType>
+      <Generator>MSBuild:Compile</Generator>
+    </Page>
+    <Page Include="pages\serverRunner\SRConsole.xaml">
+      <SubType>Designer</SubType>
+      <Generator>MSBuild:Compile</Generator>
+    </Page>
+    <Page Include="pages\serverRunner\SRInstanceSettings.xaml">
+      <SubType>Designer</SubType>
+      <Generator>MSBuild:Compile</Generator>
+    </Page>
+    <Page Include="pages\serverRunner\SRMoreFunctions.xaml">
+      <SubType>Designer</SubType>
+      <Generator>MSBuild:Compile</Generator>
+    </Page>
+    <Page Include="pages\serverRunner\SRTimerTasks.xaml">
       <SubType>Designer</SubType>
       <Generator>MSBuild:Compile</Generator>
     </Page>

@@ -1,0 +1,92 @@
+<UserControl x:Class="MSL.pages.serverrunner.SRConsole"
+        xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+        xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+        xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
+        xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+        xmlns:hc="https://handyorg.github.io/handycontrol"
+        xmlns:avalon="http://icsharpcode.net/sharpdevelop/avalonedit"
+        xmlns:iconPacks="http://metro.mahapps.com/winfx/xaml/iconpacks"
+        xmlns:controls="clr-namespace:MSL.controls"
+        xmlns:langs="clr-namespace:MSL.langs" Style="{StaticResource AnimationControl}"
+        mc:Ignorable="d" d:DesignHeight="450" d:DesignWidth="800">
+    <Grid x:Name="CmdGrid">
+        <Grid.RowDefinitions>
+            <RowDefinition Height="*"/>
+            <RowDefinition Height="Auto"/>
+        </Grid.RowDefinitions>
+        <avalon:TextEditor x:Name="outlog"
+                           Grid.Row="0"
+                           Margin="5,10,10,5" Padding="7" FontSize="14"
+                           IsReadOnly="True" Background="{DynamicResource BorderBackground}"
+                           BorderBrush="{DynamicResource BorderBrush}" BorderThickness="1" WordWrap="True"
+                           ScrollViewer.HorizontalScrollBarVisibility="Disabled"
+                           MinHeight="100">
+            <avalon:TextEditor.ContextMenu>
+                <ContextMenu>
+                    <MenuItem Header="{Binding [SR_Copy], Source={x:Static langs:LanguageManager.Instance}}" x:Name="AEMenuCopy" Click="LogMenu_Copy">
+                        <MenuItem.Icon>
+                            <iconPacks:PackIconMaterial Kind="ContentCopy"/>
+                        </MenuItem.Icon>
+                    </MenuItem>
+                    <MenuItem Header="{Binding [SR_SelectAll], Source={x:Static langs:LanguageManager.Instance}}" x:Name="AEMenuSelectAll" Click="LogMenu_SelectAll">
+                        <MenuItem.Icon>
+                            <iconPacks:PackIconMaterial Kind="SelectAll"/>
+                        </MenuItem.Icon>
+                    </MenuItem>
+                    <Separator/>
+                    <MenuItem Header="{Binding [SR_ClearScreen], Source={x:Static langs:LanguageManager.Instance}}" x:Name="AEMenuClear" Click="LogMenu_Clear">
+                        <MenuItem.Icon>
+                            <iconPacks:PackIconMaterial Kind="Broom"/>
+                        </MenuItem.Icon>
+                    </MenuItem>
+                </ContextMenu>
+            </avalon:TextEditor.ContextMenu>
+        </avalon:TextEditor>
+        <!-- 补全候选弹出层，悬浮在输入框上方 -->
+        <Popup x:Name="completionPopup" PlacementTarget="{Binding ElementName=cmdtext}" Placement="Top" StaysOpen="False" AllowsTransparency="True">
+            <Border Background="{DynamicResource BorderBackground}"
+                    BorderBrush="{DynamicResource BorderBrush}" BorderThickness="1" CornerRadius="4" MaxHeight="200">
+                <ListBox x:Name="completionList" MinWidth="200" MaxWidth="500"
+                         FontSize="14" KeyDown="completionList_KeyDown" MouseDoubleClick="completionList_MouseDoubleClick"/>
+            </Border>
+        </Popup>
+        <Grid Grid.Row="1">
+            <Grid.ColumnDefinitions>
+                <ColumnDefinition Width="Auto"/>
+                <ColumnDefinition Width="*"/>
+                <ColumnDefinition Width="Auto"/>
+                <ColumnDefinition Width="Auto"/>
+                <ColumnDefinition Width="Auto"/>
+                <ColumnDefinition Width="Auto"/>
+            </Grid.ColumnDefinitions>
+
+            <ComboBox Grid.Column="0" x:Name="fastCMD" HorizontalAlignment="Left" Margin="5,0,5,10" SelectedIndex="0" IsEnabled="False" Width="100" Height="32">
+                <ComboBoxItem Content="{Binding [SR_CmdHint], Source={x:Static langs:LanguageManager.Instance}}"/>
+            </ComboBox>
+
+            <TextBox x:Name="cmdtext" Grid.Column="1" Margin="0,0,5,10" KeyDown="cmdtext_KeyDown" PreviewKeyDown="cmdtext_PreviewKeyDown" IsEnabled="False"/>
+            <Button x:Name="sendcmd" Grid.Column="2" Content="{Binding [SR_Send], Source={x:Static langs:LanguageManager.Instance}}" Style="{StaticResource ButtonPrimary}" MinWidth="60" Padding="10,0" Height="32" Margin="0,0,5,10" Click="sendcmd_Click" IsEnabled="False"/>
+            <ComboBox x:Name="MoreOperation" Grid.Column="3" Height="32" Margin="0,0,5,10" SelectionChanged="MoreOperation_SelectionChanged">
+                <ComboBoxItem Content="{Binding [SR_MoreActions], Source={x:Static langs:LanguageManager.Instance}}" IsSelected="True"/>
+                <ComboBoxItem Content="{Binding [SR_Backup], Source={x:Static langs:LanguageManager.Instance}}"/>
+                <ComboBoxItem Content="{Binding [SR_LogAnalysis], Source={x:Static langs:LanguageManager.Instance}}"/>
+            </ComboBox>
+            <ToggleButton x:Name="controlServer" Grid.Column="4" Margin="0,0,10,10" MinWidth="60" Height="32" Click="controlServer_Click" MouseDoubleClick="controlServer_MouseDoubleClick">
+                <ToggleButton.Style>
+                    <Style TargetType="ToggleButton" BasedOn="{StaticResource ToggleButton.NoCheckedBorder}">
+
+                        <Style.Triggers>
+                            <Trigger Property="IsChecked" Value="True">
+                                <Setter Property="Content" Value="{Binding [Form_ServerRunner_Stop], Source={x:Static langs:LanguageManager.Instance}}" />
+                            </Trigger>
+                            <Trigger Property="IsChecked" Value="False">
+                                <Setter Property="Content" Value="{Binding [Form_ServerRunner_Launch], Source={x:Static langs:LanguageManager.Instance}}" />
+                            </Trigger>
+                        </Style.Triggers>
+                    </Style>
+                </ToggleButton.Style>
+            </ToggleButton>
+        </Grid>
+
+    </Grid>
+</UserControl>

@@ -1,6 +1,5 @@
 ﻿using HandyControl.Controls;
 using HandyControl.Themes;
-using HandyControl.Tools;
 using MSL.langs;
 using MSL.pages;
 using MSL.utils;
@@ -9,6 +8,7 @@ using Newtonsoft.Json.Linq;
 using System;
 using System.Collections.Generic;
 using System.Diagnostics;
+using System.Globalization;
 using System.IO;
 using System.Net;
 using System.Net.Http;
@@ -16,7 +16,6 @@ using System.Threading.Tasks;
 using System.Windows;
 using System.Windows.Controls;
 using System.Windows.Media;
-using System.Windows.Media.Imaging;
 using System.Windows.Threading;
 
 namespace MSL
@@ -65,6 +64,12 @@ namespace MSL
                 var cfg = AppConfig.Current;
                 ConfigStore.DeviceID = Functions.GetDeviceID();
 
+                // 恢复语言设置
+                if (!string.IsNullOrEmpty(cfg.Lang))
+                {
+                    LanguageManager.Instance.ChangeLanguage(new CultureInfo(cfg.Lang));
+                }
+
                 // EULA 检查
                 if (cfg.Eula == null || cfg.Eula != ConfigStore.DeviceID.Substring(0, 5))
                 {
@@ -102,15 +107,15 @@ namespace MSL
             {
                 LogHelper.Write.Error($"执行主窗体初始化任务时出错： {ex}");
                 MagicShow.ShowMsgDialog(this,
-                    $"软件加载时出现错误！\n请检查您是否安装了.NET Framework 4.7.2运行库，若安装后依旧出错，请联系作者！\n错误信息：{ex.Message}",
-                    "错误");
+                    LanguageManager.Instance["MainWindow_LoadErrorDotNet"] + ex.Message,
+                    LanguageManager.Instance["Error"]);
             }
             catch (Exception ex)
             {
                 LogHelper.Write.Error($"执行主窗体初始化任务时出错： {ex}");
                 MagicShow.ShowMsgDialog(this,
-                    $"软件加载时出现错误！若无法正常使用，请联系作者进行解决。\n错误信息：{ex.Message}",
-                    "错误");
+                    LanguageManager.Instance["MainWindow_LoadError"] + ex.Message,
+                    LanguageManager.Instance["Error"]);
             }
         }
 
@@ -154,9 +159,7 @@ namespace MSL
                 }
                 LogHelper.Write.Info("读取托盘图标配置成功！");
 
-                // 侧边栏
-                SideMenu.Width = cfg.SideMenuExpanded ? double.NaN : 50;
-                LogHelper.Write.Info("读取侧栏配置成功！");
+                // 侧边栏展开状态由 ListBoxSideMenuStyle 自己从配置恢复，这里不再处理
 
                 // 主题色
                 var brushConverter = new BrushConverter();
@@ -299,7 +302,7 @@ namespace MSL
                     MagicFlowMsg.ShowMessage(LanguageManager.Instance["MainWindow_GrowlMsg_MSLServerDown"], 2);
                     if (!isBackupUrl)
                     {
-                        MagicFlowMsg.ShowMessage("软件将使用备用URL...");
+                        MagicFlowMsg.ShowMessage(LanguageManager.Instance["MainWindow_FallbackUrl"]);
                         LogHelper.Write.Warn("正在尝试使用备用API地址...");
                         ConfigStore.ApiLink = "https://api.mslmc.net/v4";
                         await OnlineService(cfg, true);
@@ -339,7 +342,7 @@ namespace MSL
                 MagicFlowMsg.ShowMessage(LanguageManager.Instance["MainWindow_GrowlMsg_MSLServerDown"] + $"\n[HTTP]{ex.InnerException?.Message}", 2);
                 if (!isBackupUrl)
                 {
-                    MagicFlowMsg.ShowMessage("软件将使用备用URL...");
+                    MagicFlowMsg.ShowMessage(LanguageManager.Instance["MainWindow_FallbackUrl"]);
                     LogHelper.Write.Warn("正在尝试使用备用API地址...");
                     ConfigStore.ApiLink = "https://api.mslmc.net/v4";
                     await OnlineService(cfg, true);
@@ -474,7 +477,7 @@ namespace MSL
                 LogHelper.Write.Info($"获取到MSL {latestVersion} 的下载地址: {downloadUrl}");
 
                 await MagicShow.ShowDownloader(this, downloadUrl, AppDomain.CurrentDomain.BaseDirectory,
-                    "MSL" + latestVersion + ".exe", "下载新版本中……");
+                    "MSL" + latestVersion + ".exe", LanguageManager.Instance["MainWindow_DownloadNewVer"]);
 
                 string newExe = "MSL" + latestVersion + ".exe";
                 if (!File.Exists(newExe))
@@ -503,7 +506,7 @@ namespace MSL
             catch (Exception ex)
             {
                 LogHelper.Write.Error(ex.ToString());
-                MagicShow.ShowMsgDialog(this, "出现错误，更新失败！\n" + ex.Message, LanguageManager.Instance["Error"]);
+                MagicShow.ShowMsgDialog(this, LanguageManager.Instance["MainWindow_UpdateFailed"] + "\n" + ex.Message, LanguageManager.Instance["Error"]);
             }
         }
         #endregion
@@ -511,7 +514,6 @@ namespace MSL
         #region 事件
         private void Window_Closing(object sender, System.ComponentModel.CancelEventArgs e)
         {
-            LogHelper.Write.Info("MSL，关闭！");
             if (MainNotifyIcon.Visibility == Visibility.Visible)
             {
                 e.Cancel = true;
@@ -530,13 +532,16 @@ namespace MSL
                     LogHelper.Write.Warn("MSL关闭事件被终止。");
                 }
             }
+            LogHelper.Write.Info("MSL，关闭！");
         }
 
         private void Window_Closed(object sender, EventArgs e)
         {
             DownloadManager.Instance.Dispose();
-            AppConfig.Current.SaveImmediate();      // 同步写，阻塞直到完成
-            ServerConfig.Current.SaveImmediate();   // 同步写，阻塞直到完成
+            try { AppConfig.Current.SaveImmediate(); }       // 同步写，阻塞直到完成
+            catch (Exception ex) { LogHelper.Write.Error($"[关闭] AppConfig 保存失败: {ex.Message}"); }
+            try { ServerConfig.Current.SaveImmediate(); }    // 同步写，阻塞直到完成
+            catch (Exception ex) { LogHelper.Write.Error($"[关闭] ServerConfig 保存失败: {ex.Message}"); }
             Application.Current.Shutdown();
         }
 
@@ -627,122 +632,12 @@ namespace MSL
             if (SideMenu.SelectedIndex != -1)
                 frame.Content = Pages[SideMenu.SelectedIndex];
         }
-
-        private void SideMenuContextOpen_Click(object sender, RoutedEventArgs e)
-        {
-            var cfg = AppConfig.Current;
-            if (SideMenu.Width == 50)
-            {
-                SideMenu.Width = double.NaN;
-                cfg.SideMenuExpanded = true;
-            }
-            else
-            {
-                SideMenu.Width = 50;
-                cfg.SideMenuExpanded = false;
-            }
-            cfg.Save();
-        }
         #endregion
 
         #region 皮肤
-        public static ImageBrush BackImageBrush;
-
         private void ChangeSkinStyle()
         {
-            try
-            {
-                var cfg = AppConfig.Current;
-                if (cfg.MicaEffect)
-                {
-                    if (File.Exists("MSL\\Background.png")) DisposeBackImage();
-                    ChangeTitleStyle(true);
-                    ThemeManager.Current.UsingSystemTheme = true;
-                    SystemBackdropType = BackdropType.Auto;
-                    SystemBackdropType = BackdropType.Mica;
-                    SideMenuPanel.Background = Brushes.Transparent;
-                }
-                else
-                {
-                    SystemBackdropType = BackdropType.Auto;
-                    SetResourceReference(BackgroundProperty, "BackgroundBrush");
-                    SideMenuPanel.SetResourceReference(Panel.BackgroundProperty, "SideMenuBrush");
-
-                    if (cfg.DarkTheme != "Auto")
-                        ThemeManager.Current.UsingSystemTheme = false;
-
-                    ChangeTitleStyle(cfg.SemitransparentTitle);
-
-                    if (File.Exists("MSL\\Background.png"))
-                    {
-                        if (BackImageBrush != null)
-                        {
-                            BackImageBrush = null;
-                            GC.Collect();
-                        }
-                        BackImageBrush = new ImageBrush(GetImage("MSL\\Background.png"))
-                        {
-                            Stretch = Stretch.UniformToFill
-                        };
-                        Background = BackImageBrush;
-                        frame.BorderThickness = new Thickness(0);
-                    }
-                    else
-                    {
-                        DisposeBackImage();
-                    }
-                }
-            }
-            catch { }
-        }
-
-        private void DisposeBackImage()
-        {
-            if (BackImageBrush == null) return;
-            SetResourceReference(BackgroundProperty, "BackgroundBrush");
-            frame.BorderThickness = new Thickness(1, 0, 0, 0);
-            _ = Task.Run(async () =>
-            {
-                await Task.Delay(400);
-                BackImageBrush = null;
-                await Task.Delay(100);
-                GC.Collect();
-            });
-        }
-
-        private BitmapImage GetImage(string imagePath)
-        {
-            var bitmap = new BitmapImage();
-            if (!File.Exists(imagePath)) return bitmap;
-            bitmap.BeginInit();
-            bitmap.CacheOption = BitmapCacheOption.OnLoad;
-            using (var ms = new System.IO.MemoryStream(File.ReadAllBytes(imagePath)))
-            {
-                bitmap.StreamSource = ms;
-                bitmap.EndInit();
-                bitmap.Freeze();
-            }
-            return bitmap;
-        }
-
-        private void ChangeTitleStyle(bool isOpen)
-        {
-            if (isOpen)
-            {
-                SetResourceReference(NonClientAreaBackgroundProperty, "SideMenuBrush");
-                SetResourceReference(NonClientAreaForegroundProperty, "PrimaryTextBrush");
-                SetResourceReference(CloseButtonForegroundProperty, "PrimaryTextBrush");
-                SetResourceReference(OtherButtonForegroundProperty, "PrimaryTextBrush");
-                SetResourceReference(OtherButtonHoverForegroundProperty, "PrimaryTextBrush");
-            }
-            else
-            {
-                SetResourceReference(NonClientAreaBackgroundProperty, "PrimaryBrush");
-                NonClientAreaForeground = Brushes.White;
-                CloseButtonForeground = Brushes.White;
-                OtherButtonForeground = Brushes.White;
-                OtherButtonHoverForeground = Brushes.White;
-            }
+            SkinHelper.ApplySkin(this, SideMenuPanel, frame);
         }
         #endregion
     }

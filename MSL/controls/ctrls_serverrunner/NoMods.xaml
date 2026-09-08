@@ -4,15 +4,16 @@
              xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006" 
              xmlns:d="http://schemas.microsoft.com/expression/blend/2008" 
              xmlns:local="clr-namespace:MSL.controls"
+             xmlns:langs="clr-namespace:MSL.langs"
              mc:Ignorable="d" 
              d:DesignHeight="450" d:DesignWidth="800">
     <local:MagicCard HorizontalAlignment="Center" VerticalAlignment="Center" Padding="15">
         <StackPanel>
-            <TextBlock Text="无法管理该服务器的模组" Foreground="{DynamicResource DarkPrimaryBrush}" FontSize="18" FontWeight="Bold" HorizontalAlignment="Center" Margin="10"/>
-            <TextBlock Text="未检测到mods文件夹，您所使用的服务端核心支持加载模组吗？&#xA;请重启服务器并检查所用服务端是否支持相应功能后再试" TextAlignment="Center" TextWrapping="Wrap" Foreground="{DynamicResource PrimaryTextBrush}" FontSize="16"/>
-            <Button x:Name="reFresh" Content="刷新" Style="{StaticResource ButtonPrimary}"
+            <TextBlock Text="{Binding [SR_CantManageMods], Source={x:Static langs:LanguageManager.Instance}}" Foreground="{DynamicResource DarkPrimaryBrush}" FontSize="18" FontWeight="Bold" HorizontalAlignment="Center" Margin="10"/>
+            <TextBlock Text="{Binding [SR_NoModsFolderDesc], Source={x:Static langs:LanguageManager.Instance}}" TextAlignment="Center" TextWrapping="Wrap" Foreground="{DynamicResource PrimaryTextBrush}" FontSize="16"/>
+            <Button x:Name="reFresh" Content="{Binding [SR_Refresh], Source={x:Static langs:LanguageManager.Instance}}" Style="{StaticResource ButtonPrimary}"
                     Command="{Binding RefreshCommand, RelativeSource={RelativeSource AncestorType=UserControl}}"
-                    Margin="10" Width="100" Height="32" FontSize="16"/>
+                    Margin="10" MinWidth="80" Padding="10,0" Height="32" FontSize="16"/>
         </StackPanel>
     </local:MagicCard>
 </UserControl>

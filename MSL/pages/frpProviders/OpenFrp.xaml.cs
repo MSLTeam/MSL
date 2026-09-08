@@ -1,4 +1,5 @@
-﻿using MSL.utils;
+﻿using MSL.langs;
+using MSL.utils;
 using MSL.utils.Config;
 using Newtonsoft.Json;
 using Newtonsoft.Json.Linq;
@@ -113,7 +114,7 @@ namespace MSL.pages.frpProviders
                 LogHelper.Write.Error($"[OpenFrp] Argo Access登录请求失败。状态码: {response.HttpResponseCode}, 内容: {response.HttpResponseContent}, 异常: {response.HttpResponseException}");
                 if (string.IsNullOrEmpty(response.HttpResponseContent.ToString()))
                 {
-                    MagicShow.ShowMsgDialog(Functions.GetWindow(this), "请求失败！请重试！" + (string.IsNullOrEmpty((string)response.HttpResponseException) ? string.Empty : $"\n{response.HttpResponseException}"), "错误");
+                    MagicShow.ShowMsgDialog(Functions.GetWindow(this), Lang.Frp_OpenFrp_RequestFailed + (string.IsNullOrEmpty((string)response.HttpResponseException) ? string.Empty : $"\n{response.HttpResponseException}"), "错误");
                     return;
                 }
                 MagicShow.ShowMsgDialog(Functions.GetWindow(this), JObject.Parse(response.HttpResponseContent.ToString())["msg"] + "\n请重试！", "错误");
@@ -127,14 +128,14 @@ namespace MSL.pages.frpProviders
             LogHelper.Write.Info($"[OpenFrp] Argo Access登录请求成功，开始轮询授权结果。Request UUID: {requestUuid}");
 
             MagicDialog magicDialog = new MagicDialog();
-            magicDialog.ShowTextDialog("请在打开的浏览器网页中确认授权……");
+            magicDialog.ShowTextDialog(Lang.Frp_OpenFrp_BrowserAuth);
             var (PubKey, PollData) = await GetPublicKey(requestUuid);
             magicDialog.CloseTextDialog();
 
             if (PollData == null)
             {
                 LogHelper.Write.Error($"[OpenFrp] 获取服务器公钥失败，轮询超时或出错。");
-                MagicShow.ShowMsgDialog(Window.GetWindow(this), "获取公钥失败！", "错误");
+                MagicShow.ShowMsgDialog(Window.GetWindow(this), Lang.Frp_OpenFrp_GetPubKeyFailed, "错误");
                 return;
             }
             else
@@ -142,7 +143,7 @@ namespace MSL.pages.frpProviders
                 if (PollData["code"].ToString() != "200")
                 {
                     LogHelper.Write.Error($"[OpenFrp] 获取服务器公钥失败，API返回错误。消息: {PollData["msg"]}");
-                    MagicShow.ShowMsgDialog(Window.GetWindow(this), "获取公钥失败！" + PollData["msg"].ToString(), "错误");
+                    MagicShow.ShowMsgDialog(Window.GetWindow(this), Lang.Frp_OpenFrp_GetPubKeyFailed + PollData["msg"].ToString(), "错误");
                     return;
                 }
             }
@@ -202,16 +203,16 @@ namespace MSL.pages.frpProviders
                 catch (Exception ex)
                 {
                     LogHelper.Write.Error($"[OpenFrp] 解密Authorization失败: {ex.ToString()}");
-                    MagicFlowMsg.ShowMessage($"解密失败: {ex.Message}", 2);
+                    MagicFlowMsg.ShowMessage(Lang.Frp_OpenFrp_DecryptFailed + ex.Message, 2);
                     // Console.WriteLine($"解密失败: {ex.Message}");
                 }
 
-                MagicShow.ShowMsgDialog(Functions.GetWindow(this), "登陆失败！", "err");
+                MagicShow.ShowMsgDialog(Functions.GetWindow(this), Lang.Frp_OpenFrp_LoginFailed, "err");
             }
             catch (Exception ex)
             {
                 LogHelper.Write.Error($"[OpenFrp] Argo Access登录解密过程中出现未知错误: {ex.ToString()}");
-                MagicShow.ShowMsgDialog(Functions.GetWindow(this), $"解密过程中出错: {ex.Message}\n{ex.StackTrace}", "err");
+                MagicShow.ShowMsgDialog(Functions.GetWindow(this), Lang.Frp_OpenFrp_DecryptError + ex.Message + "\n" + ex.StackTrace, "err");
             }
         }
 
@@ -271,7 +272,7 @@ namespace MSL.pages.frpProviders
         {
             if (string.IsNullOrEmpty(token))
             {
-                token = await MagicShow.ShowInput(Window.GetWindow(this), "请输入Authorization");
+                token = await MagicShow.ShowInput(Window.GetWindow(this), Lang.Frp_OpenFrp_InputAuth);
                 if (token == null)
                 {
                     return;
@@ -280,7 +281,7 @@ namespace MSL.pages.frpProviders
 
             LogHelper.Write.Info($"[OpenFrp] 开始使用Authorization进行登录。");
             MagicDialog MagicDialog = new MagicDialog();
-            MagicDialog.ShowTextDialog(Window.GetWindow(this), "登录中……");
+            MagicDialog.ShowTextDialog(Window.GetWindow(this), Lang.Frp_OpenFrp_LoggingIn);
             var (Code, Msg) = await OpenFrpApi.Login(token, SaveToken.IsChecked == true);
             MagicDialog.CloseTextDialog();
             if (Code == 200)
@@ -293,7 +294,7 @@ namespace MSL.pages.frpProviders
             else
             {
                 LogHelper.Write.Error($"[OpenFrp] Authorization登录失败。消息: {Msg}");
-                MagicShow.ShowMsgDialog(Window.GetWindow(this), "登录失败！请检查您的Authorization是否正确！" + Msg, "错误！");
+                MagicShow.ShowMsgDialog(Window.GetWindow(this), Lang.Frp_OpenFrp_CheckAuth + Msg, "错误！");
                 if (Config.Read("OpenFrpToken") != null)
                     Config.Remove("OpenFrpToken");
                 return;
@@ -337,7 +338,7 @@ namespace MSL.pages.frpProviders
             else
             {
                 LogHelper.Write.Error($"[OpenFrp] 获取用户隧道列表失败。消息: {Msg}");
-                MagicShow.ShowMsgDialog(Window.GetWindow(this), "获取失败！" + Msg, "错误！");
+                MagicShow.ShowMsgDialog(Window.GetWindow(this), Lang.Frp_OpenFrp_GetFailed + Msg, "错误！");
             }
         }
 
@@ -348,7 +349,7 @@ namespace MSL.pages.frpProviders
             if (!Flag)
             {
                 LogHelper.Write.Error($"[OpenFrp] 获取节点列表失败。");
-                MagicShow.ShowMsgDialog(Functions.GetWindow(this), "获取节点列表失败！", "ERR");
+                MagicShow.ShowMsgDialog(Functions.GetWindow(this), Lang.Frp_OpenFrp_GetNodeListFailed, "ERR");
                 return;
             }
             LogHelper.Write.Info($"[OpenFrp] 获取节点列表成功。");
@@ -387,7 +388,7 @@ namespace MSL.pages.frpProviders
         {
             if (TunnelList.SelectedIndex == -1)
             {
-                MagicShow.ShowMsgDialog(Functions.GetWindow(this), "请确保您选择了一个隧道", "错误");
+                MagicShow.ShowMsgDialog(Functions.GetWindow(this), Lang.Frp_OpenFrp_SelectTunnel, "错误");
                 return;
             }
 
@@ -396,7 +397,7 @@ namespace MSL.pages.frpProviders
             LogHelper.Write.Info($"[OpenFrp] 准备启动映射，选择的隧道: {o}, ID: {id}");
             Config.WriteFrpcConfig(1, $"OpenFrp节点 - {o}", $"-u {token} -p {id}", "");
             LogHelper.Write.Info($"[OpenFrp] 映射配置写入成功。");
-            await MagicShow.ShowMsgDialogAsync(Functions.GetWindow(this), "映射配置成功，请您点击“启动内网映射”以启动映射！", "信息");
+            await MagicShow.ShowMsgDialogAsync(Functions.GetWindow(this), Lang.Frp_OpenFrp_MapSuccess, "信息");
             _onReturn.Invoke();
         }
 
@@ -406,7 +407,7 @@ namespace MSL.pages.frpProviders
             {
                 if (NodeList.SelectedIndex == -1)
                 {
-                    MagicShow.ShowMsgDialog(Functions.GetWindow(this), "请先选择一个节点", "错误");
+                    MagicShow.ShowMsgDialog(Functions.GetWindow(this), Lang.Frp_OpenFrp_SelectNode, "错误");
                     return;
                 }
                 string type;
@@ -421,10 +422,10 @@ namespace MSL.pages.frpProviders
                 else
                 {
                     addProxieBtn.IsEnabled = true;
-                    MagicShow.ShowMsgDialog(Functions.GetWindow(this), "请先选择一个节点", "错误");
+                    MagicShow.ShowMsgDialog(Functions.GetWindow(this), Lang.Frp_OpenFrp_SelectNode, "错误");
                     return;
                 }
-                string proxy_name = await MagicShow.ShowInput(Window.GetWindow(this), "给隧道取个名称吧（不支持中文）");
+                string proxy_name = await MagicShow.ShowInput(Window.GetWindow(this), Lang.Frp_OpenFrp_TunnelName);
                 if (proxy_name != null)
                 {
                     LogHelper.Write.Info($"[OpenFrp] 开始创建隧道。名称: {proxy_name}, 节点ID: {selected_node_id}, 类型: {type}, 本地端口: {portBox.Text}, 远程端口: {remotePortBox.Text}, 压缩: {zip}");
@@ -435,19 +436,19 @@ namespace MSL.pages.frpProviders
                     {
                         LogHelper.Write.Info($"[OpenFrp] 隧道创建成功。");
                         MainCtrl.SelectedIndex = 0;
-                        MagicShow.ShowMsgDialog(Functions.GetWindow(this), "隧道创建成功！", "提示");
+                        MagicShow.ShowMsgDialog(Functions.GetWindow(this), Lang.Frp_OpenFrp_CreateSuccess, "提示");
                     }
                     else
                     {
                         LogHelper.Write.Error($"[OpenFrp] 隧道创建失败。消息: {msg}");
-                        MagicShow.ShowMsgDialog(Functions.GetWindow(this), "创建失败！" + msg, "错误");
+                        MagicShow.ShowMsgDialog(Functions.GetWindow(this), Lang.Frp_OpenFrp_CreateFailed + msg, "错误");
                     }
                 }
             }
             catch (Exception ex)
             {
                 LogHelper.Write.Error($"[OpenFrp] 创建隧道时发生未知错误: {ex.ToString()}");
-                MagicShow.ShowMsgDialog(Window.GetWindow(this), "出现错误！" + ex.Message, "错误");
+                MagicShow.ShowMsgDialog(Window.GetWindow(this), Lang.Frp_OpenFrp_Error + ex.Message, "错误");
             }
             addProxieBtn.IsEnabled = true;
         }
@@ -463,7 +464,7 @@ namespace MSL.pages.frpProviders
             {
                 if (TunnelList.SelectedIndex == -1)
                 {
-                    MagicShow.ShowMsgDialog(Functions.GetWindow(this), "请先选择一个隧道", "错误");
+                    MagicShow.ShowMsgDialog(Functions.GetWindow(this), Lang.Frp_OpenFrp_SelectTunnelFirst, "错误");
                     return;
                 }
                 object o = TunnelList.SelectedValue;
@@ -474,19 +475,19 @@ namespace MSL.pages.frpProviders
                 if (_return)
                 {
                     LogHelper.Write.Info($"[OpenFrp] 删除隧道成功。");
-                    MagicShow.ShowMsgDialog(Functions.GetWindow(this), "删除成功！", "提示");
+                    MagicShow.ShowMsgDialog(Functions.GetWindow(this), Lang.Frp_OpenFrp_DeleteSuccess, "提示");
                 }
                 else
                 {
                     LogHelper.Write.Error($"[OpenFrp] 删除隧道失败。消息: {msg}");
-                    MagicShow.ShowMsgDialog(Functions.GetWindow(this), "删除失败！" + msg, "错误");
+                    MagicShow.ShowMsgDialog(Functions.GetWindow(this), Lang.Frp_OpenFrp_DeleteFailed + msg, "错误");
                 }
                 await GetUserTunnels();
             }
             catch (Exception ex)
             {
                 LogHelper.Write.Error($"[OpenFrp] 删除隧道时发生未知错误: {ex.ToString()}");
-                MagicShow.ShowMsgDialog(Functions.GetWindow(this), "出现错误！" + ex.Message, "错误");
+                MagicShow.ShowMsgDialog(Functions.GetWindow(this), Lang.Frp_OpenFrp_Error + ex.Message, "错误");
             }
             finally
             {
@@ -504,7 +505,7 @@ namespace MSL.pages.frpProviders
             if (NodeList.SelectedIndex == -1)
             {
                 if (tip)
-                    MagicShow.ShowMsgDialog(Functions.GetWindow(this), "请先选择一个节点", "错误");
+                    MagicShow.ShowMsgDialog(Functions.GetWindow(this), Lang.Frp_OpenFrp_SelectNode, "错误");
                 return;
             }
             OpenFrpApi.NodeInfo selected_node = NodeList.SelectedItem as OpenFrpApi.NodeInfo;

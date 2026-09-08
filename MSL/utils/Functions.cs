@@ -248,7 +248,7 @@ namespace MSL.utils
         {
             Random random = new Random();
             int a = random.Next();
-            if (!Directory.Exists("MSL\\frp\\" + a.ToString()))
+            if (!Directory.Exists(MSL.utils.Config.ConfigPaths.Frp(a.ToString())))
             {
                 return a;
             }
@@ -562,20 +562,27 @@ namespace MSL.utils
         public static Encoding GetTextFileEncodingType(string fileName)
         {
             Encoding encoding = Encoding.Default;
-            FileStream fileStream = new FileStream(fileName, FileMode.Open, FileAccess.Read);
-            BinaryReader binaryReader = new BinaryReader(fileStream, encoding);
-            byte[] buffer = binaryReader.ReadBytes((int)fileStream.Length);
-            binaryReader.Close();
-            fileStream.Close();
-            if (buffer.Length >= 3 && buffer[0] == 239 && buffer[1] == 187 && buffer[2] == 191)
+            byte[] buffer;
+
+            using (FileStream fileStream = new FileStream(
+                fileName,
+                FileMode.Open,
+                FileAccess.Read,
+                FileShare.ReadWrite)) // 允许其他进程同时读写
+            {
+                buffer = new byte[fileStream.Length];
+                fileStream.Read(buffer, 0, buffer.Length);
+            }
+
+            if (buffer.Length >= 3 && buffer[0] == 0xEF && buffer[1] == 0xBB && buffer[2] == 0xBF)
             {
                 encoding = Encoding.UTF8;
             }
-            else if (buffer.Length >= 3 && buffer[0] == 254 && buffer[1] == 255 && buffer[2] == 0)
+            else if (buffer.Length >= 2 && buffer[0] == 0xFE && buffer[1] == 0xFF)
             {
                 encoding = Encoding.BigEndianUnicode;
             }
-            else if (buffer.Length >= 3 && buffer[0] == 255 && buffer[1] == 254 && buffer[2] == 65)
+            else if (buffer.Length >= 2 && buffer[0] == 0xFF && buffer[1] == 0xFE)
             {
                 encoding = Encoding.Unicode;
             }
@@ -583,7 +590,15 @@ namespace MSL.utils
             {
                 encoding = Encoding.UTF8;
             }
+
             return encoding;
+        }
+
+        public static string ReadAllTextShared(string path, Encoding encoding)
+        {
+            using FileStream fs = new FileStream(path, FileMode.Open, FileAccess.Read, FileShare.ReadWrite);
+            using StreamReader reader = new StreamReader(fs, encoding);
+            return reader.ReadToEnd();
         }
 
         /// <summary>

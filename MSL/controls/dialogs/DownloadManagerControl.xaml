@@ -6,6 +6,7 @@
              xmlns:local="clr-namespace:MSL.controls.dialogs"
              xmlns:control="clr-namespace:MSL.controls"
              xmlns:hc="https://handyorg.github.io/handycontrol"
+             xmlns:langs="clr-namespace:MSL.langs"
              mc:Ignorable="d" 
              d:DesignHeight="450" d:DesignWidth="800">
 
@@ -72,11 +73,9 @@
                             <WrapPanel Grid.Row="2" Grid.Column="0" Orientation="Horizontal" Margin="0,5,0,0">
                                 <TextBlock Style="{StaticResource MagicText}" Margin="0,0,15,0" VerticalAlignment="Center">
                                     <Run Text="{Binding Progress.ProgressPercentage}"/><Run Text="%"/>
-                                    <Run Text="  "/>
-                                    <Run Text="速度："/>
+                                    <Run Text="  Speed: "/>
                                     <Run Text="{Binding SpeedText}"/>
-                                    <Run Text="  "/>
-                                    <Run Text=" 剩余时间："/>
+                                    <Run Text="  Remaining: "/>
                                     <Run Text="{Binding RemainingText}"/>
                                 </TextBlock>
                                 <TextBlock Text="{Binding StatusText}" Style="{StaticResource MagicText}"
@@ -105,15 +104,15 @@
                 </Grid.ColumnDefinitions>
 
                 <StackPanel Grid.Column="0" Orientation="Horizontal">
-                    <TextBlock Text="正在下载: " VerticalAlignment="Center"/>
+                    <TextBlock Text="{Binding [SR_DownloadingLabel], Source={x:Static langs:LanguageManager.Instance}}" VerticalAlignment="Center"/>
                     <TextBlock x:Name="ActiveDownloadsTextBlock" Text="0" VerticalAlignment="Center"/>
                 </StackPanel>
 
                 <StackPanel Grid.Column="1" Orientation="Horizontal">
-                    <Button x:Name="PauseAllButton" Content="全部暂停" Width="80" Margin="15,0,5,0" Click="PauseAllButton_Click"/>
-                    <Button x:Name="ResumeAllButton" Content="全部继续" Width="80" Margin="0,0,5,0" Click="ResumeAllButton_Click"/>
-                    <Button x:Name="CancelAllButton" Content="全部取消" Width="80" Margin="0,0,5,0" Click="CancelAllButton_Click"/>
-                    <Button x:Name="RemoveCompletedButton" Content="移除已完成/已取消" Width="150" Click="RemoveCompletedButton_Click"/>
+                    <Button x:Name="PauseAllButton" Content="{Binding [SR_PauseAll], Source={x:Static langs:LanguageManager.Instance}}" MinWidth="80" Padding="8,0" Margin="15,0,5,0" Click="PauseAllButton_Click"/>
+                    <Button x:Name="ResumeAllButton" Content="{Binding [SR_ResumeAll], Source={x:Static langs:LanguageManager.Instance}}" MinWidth="80" Padding="8,0" Margin="0,0,5,0" Click="ResumeAllButton_Click"/>
+                    <Button x:Name="CancelAllButton" Content="{Binding [SR_CancelAll], Source={x:Static langs:LanguageManager.Instance}}" MinWidth="80" Padding="8,0" Margin="0,0,5,0" Click="CancelAllButton_Click"/>
+                    <Button x:Name="RemoveCompletedButton" Content="{Binding [SR_RemoveDoneCancelled], Source={x:Static langs:LanguageManager.Instance}}" MinWidth="80" Padding="8,0" Click="RemoveCompletedButton_Click"/>
                 </StackPanel>
             </Grid>
         </Grid>
