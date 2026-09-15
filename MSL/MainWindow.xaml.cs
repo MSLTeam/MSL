@@ -1,4 +1,4 @@
-﻿using HandyControl.Controls;
+using HandyControl.Controls;
 using HandyControl.Themes;
 using MSL.langs;
 using MSL.pages;
@@ -12,6 +12,7 @@ using System.Globalization;
 using System.IO;
 using System.Net;
 using System.Net.Http;
+using System.Text;
 using System.Threading.Tasks;
 using System.Windows;
 using System.Windows.Controls;
@@ -272,19 +273,66 @@ namespace MSL
         private async Task AutoRunFrpc(AppConfig cfg)
         {
             string frpcs = cfg.AutoOpenFrpc;
-            MagicFlowMsg.ShowMessage(LanguageManager.Instance["MainWindow_GrowlMsg_AutoLaunchFrpc"]);
-            if (!frpcs.Contains(",")) frpcs += ",";
+            if (string.IsNullOrWhiteSpace(frpcs) || frpcs == "False") return;
 
-            while (frpcs != "")
+            MagicFlowMsg.ShowMessage(LanguageManager.Instance["MainWindow_GrowlMsg_AutoLaunchFrpc"]);
+            var frpcIdStrings = frpcs.Split(new[] { ',' }, StringSplitOptions.RemoveEmptyEntries);
+            if (frpcIdStrings.Length == 0) return;
+
+            JObject frpConfig = null;
+            if (File.Exists(ConfigPaths.FrpConfig))
             {
-                await Task.Delay(50);
-                int idx = frpcs.IndexOf(",");
-                FrpcList.FrpcID = int.Parse(frpcs.Substring(0, idx));
-                if (!FrpcList.FrpcPageList.ContainsKey(FrpcList.FrpcID))
+                try
                 {
-                    FrpcList.FrpcPageList.Add(FrpcList.FrpcID, new FrpcPage(FrpcList.FrpcID, true));
+                    frpConfig = JObject.Parse(File.ReadAllText(ConfigPaths.FrpConfig, Encoding.UTF8));
                 }
-                frpcs = frpcs.Replace(FrpcList.FrpcID + ",", "");
+                catch (Exception ex)
+                {
+                    LogHelper.Write.Error($"读取 Frpc 配置文件失败: {ex.Message}");
+                }
+            }
+
+            var validIds = new List<string>();
+            bool configDirty = false;
+
+            foreach (var idStr in frpcIdStrings)
+            {
+                if (!int.TryParse(idStr.Trim(), out int frpId))
+                {
+                    LogHelper.Write.Warn($"自启动内网映射检测到非法 ID: '{idStr}'，已跳过。");
+                    configDirty = true;
+                    continue;
+                }
+
+                if (frpConfig == null || frpConfig[frpId.ToString()] == null)
+                {
+                    LogHelper.Write.Warn($"自启动内网映射检测到已失效的 FrpID: {frpId}（在配置中不存在），已跳过。");
+                    configDirty = true;
+                    continue;
+                }
+
+                validIds.Add(frpId.ToString());
+
+                try
+                {
+                    await Task.Delay(50);
+                    FrpcList.FrpcID = frpId;
+                    if (!FrpcList.FrpcPageList.ContainsKey(frpId))
+                    {
+                        FrpcList.FrpcPageList.Add(frpId, new FrpcPage(frpId, true));
+                    }
+                }
+                catch (Exception ex)
+                {
+                    LogHelper.Write.Error($"自动启动 Frpc (FrpID: {frpId}) 发生异常: {ex.Message}");
+                }
+            }
+
+            if (configDirty)
+            {
+                cfg.AutoOpenFrpc = validIds.Count > 0 ? string.Join(",", validIds) + "," : "False";
+                cfg.Save();
+                LogHelper.Write.Info($"已自动清理无效的自启动内网映射 ID，更新后配置: {cfg.AutoOpenFrpc}");
             }
         }
         #endregion

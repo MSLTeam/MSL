@@ -501,6 +501,12 @@ Do you want to create a new server?</value>
   <data name="Page_SettingsPage_AS_ALF_FrpcList" xml:space="preserve">
     <value>Enter the ID of the Frpc to auto-start (separate with commas):</value>
   </data>
+  <data name="Page_SettingsPage_AS_ALF_AvailableList" xml:space="preserve">
+    <value>Frpc list:</value>
+  </data>
+  <data name="Page_SettingsPage_AS_ALF_AutoLaunchList" xml:space="preserve">
+    <value>Startup list:</value>
+  </data>
   <data name="Page_SettingsPage_AS_ALS_AutoLaunchServers" xml:space="preserve">
     <value>Startup list:</value>
   </data>
@@ -737,7 +743,7 @@ Click OK to download.</value>
     <value>Please add a server to the startup list first!</value>
   </data>
   <data name="SettingsPage_AddFrpcIdFirst" xml:space="preserve">
-    <value>Please enter the Frpc ID(s) to auto-start!</value>
+    <value>Please add the Frpc tunnel to the launch list first!</value>
   </data>
   <data name="SettingsPage_SaveColorSuc" xml:space="preserve">
     <value>Color saved successfully!</value>

@@ -107,10 +107,19 @@
                     <Expander FontSize="14" Header="{Binding [Page_SettingsPage_AS_AutoLaunchFrpc],Source={x:Static lang:LanguageManager.Instance}}">
                         <StackPanel Margin="10,10,10,0">
                             <ToggleButton Name="openfrpOnStart" Style="{StaticResource ToggleButtonSwitch.Content}" HorizontalAlignment="Left" VerticalAlignment="Center" Click="openfrpOnStart_Click"/>
-                            <WrapPanel Orientation="Horizontal" Margin="0,5,0,0">
-                                <Label Content="{Binding [Page_SettingsPage_AS_ALF_FrpcList],Source={x:Static lang:LanguageManager.Instance}}"/>
-                                <TextBox x:Name="AutoOpenFrpcList" Width="150" FontSize="14"/>
-                            </WrapPanel>
+                            <Grid Margin="0,5,200,0" Height="150">
+                                <Grid.ColumnDefinitions>
+                                    <ColumnDefinition/>
+                                    <ColumnDefinition Width="Auto"/>
+                                    <ColumnDefinition/>
+                                </Grid.ColumnDefinitions>
+                                <Label Grid.Column="0" Content="{Binding [Page_SettingsPage_AS_ALF_AvailableList],Source={x:Static lang:LanguageManager.Instance}}"/>
+                                <ListBox Grid.Column="0" x:Name="FrpcAvailableList" Margin="0,30,5,0"/>
+                                <Button Grid.Column="1" x:Name="TransferFrpcOut" hc:IconElement.Geometry="{StaticResource LeftGeometry}" Margin="0,0,0,10" Click="TransferFrpcOut_Click"/>
+                                <Button Grid.Column="1" x:Name="TransferFrpcIn" hc:IconElement.Geometry="{StaticResource RightGeometry}" Margin="0,50,0,0" Click="TransferFrpcIn_Click"/>
+                                <Label Grid.Column="2" Content="{Binding [Page_SettingsPage_AS_ALF_AutoLaunchList],Source={x:Static lang:LanguageManager.Instance}}"/>
+                                <ListBox Grid.Column="2" x:Name="AutoStartFrpcList" Margin="5,30,0,0"/>
+                            </Grid>
                         </StackPanel>
                     </Expander>
                     <hc:Divider Margin="0,10,0,10"/>

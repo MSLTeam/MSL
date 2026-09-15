@@ -502,6 +502,12 @@ MSLAPI —— MSL自有服务端&amp;运行库镜像源
   <data name="Page_SettingsPage_AS_ALF_FrpcList" xml:space="preserve">
     <value>输入需要自启动Frpc的ID（ID在方括号内，使用半角逗号分隔和结尾）：</value>
   </data>
+  <data name="Page_SettingsPage_AS_ALF_AvailableList" xml:space="preserve">
+    <value>映射列表：</value>
+  </data>
+  <data name="Page_SettingsPage_AS_ALF_AutoLaunchList" xml:space="preserve">
+    <value>启动列表：</value>
+  </data>
   <data name="Page_SettingsPage_AS_ALS_AutoLaunchServers" xml:space="preserve">
     <value>启动列表：</value>
   </data>
@@ -738,7 +744,7 @@ MSLAPI —— MSL自有服务端&amp;运行库镜像源
     <value>请先将服务器添加至启动列表！</value>
   </data>
   <data name="SettingsPage_AddFrpcIdFirst" xml:space="preserve">
-    <value>请先将需要自启动的Frpc之ID填入框中！</value>
+    <value>请先将Frpc映射添加至启动列表！</value>
   </data>
   <data name="SettingsPage_SaveColorSuc" xml:space="preserve">
     <value>保存颜色成功！</value>

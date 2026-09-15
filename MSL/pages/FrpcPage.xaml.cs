@@ -1,4 +1,5 @@
-﻿using HandyControl.Controls;
+using HandyControl.Controls;
+using HandyControl.Tools;
 using ICSharpCode.SharpZipLib.Zip;
 using MSL.langs;
 using MSL.utils;
@@ -31,6 +32,7 @@ namespace MSL.pages
         public readonly Process FrpcProcess = new Process();
         private readonly int FrpID;
         private int FrpcServer;
+        private Window GetOwnerWindow() => Window.GetWindow(this) ?? WindowHelper.GetActiveWindow() ?? Application.Current.MainWindow;
 
         public FrpcPage(int frpId, bool autoStart = false)
         {
@@ -326,14 +328,36 @@ namespace MSL.pages
             try
             {
                 Directory.CreateDirectory(ConfigPaths.FrpDir);
+                if (!File.Exists(ConfigPaths.FrpConfig))
+                {
+                    LogHelper.Write.Error($"启动 Frpc (FrpID: {FrpID}) 失败：配置文件 {ConfigPaths.FrpConfig} 不存在。");
+                    MagicFlowMsg.ShowMessage($"内网映射配置文件不存在，启动取消", 2);
+                    return;
+                }
+
+                // 读取配置
+                JObject jobject = JObject.Parse(File.ReadAllText(ConfigPaths.FrpConfig, Encoding.UTF8));
+                if (jobject[FrpID.ToString()] == null)
+                {
+                    LogHelper.Write.Error($"启动 Frpc (FrpID: {FrpID}) 失败：未找到该映射配置。");
+                    MagicFlowMsg.ShowMessage($"内网映射 [{FrpID}] 配置不存在，启动取消", 2);
+                    return;
+                }
+
+                string tunnelDir = Path.Combine(ConfigPaths.FrpDir, FrpID.ToString());
+                if (!Directory.Exists(tunnelDir) || (!File.Exists(Path.Combine(tunnelDir, "frpc")) && !File.Exists(Path.Combine(tunnelDir, "frpc.toml")) && !File.Exists(Path.Combine(tunnelDir, "frpc.ini"))))
+                {
+                    LogHelper.Write.Error($"启动 Frpc (FrpID: {FrpID}) 失败：隧道目录或配置文件不存在。");
+                    MagicFlowMsg.ShowMessage($"内网映射 [{FrpID}] 配置文件不存在，启动取消", 2);
+                    return;
+                }
+
                 MagicFlowMsg.ShowMessage(Lang.Page_FrpcPage_StartingMapping, 4);
                 //Growl.Info("正在启动内网映射！");
                 startfrpcBtn.IsEnabled = false;
                 frpcOutlog.Text = Lang.Page_FrpcPage_Starting;
-                // 读取配置
-                JObject jobject = JObject.Parse(File.ReadAllText(ConfigPaths.FrpConfig, Encoding.UTF8));
                 // 默认的玩意
-                int frpcServer = (int)jobject[FrpID.ToString()]["frpcServer"];
+                int frpcServer = (int?)jobject[FrpID.ToString()]?["frpcServer"] ?? 0;
                 string frpcversion = Config.Read("FrpcVersion")?.ToString() ?? "";
                 string frpcExeName; // frpc客户端主程序
                 string downloadUrl = ""; // frpc客户端在api的调用位置
@@ -360,7 +384,7 @@ namespace MSL.pages
                         {
                             LogHelper.Write.Info("检测到 MSLFrp 需要更新。");
                             downloadUrl = (await HttpService.GetApiContentAsync("download/frpc/MSLFrp/amd64?os=" + osver))["data"]["url"].ToString();//丢os版本号
-                            await MagicShow.ShowDownloader(Window.GetWindow(this), downloadUrl, "MSL\\frp", downloadFileName, LanguageManager.Instance["Update_Frpc_Info"]);
+                            await MagicShow.ShowDownloader(GetOwnerWindow(), downloadUrl, "MSL\\frp", downloadFileName, LanguageManager.Instance["Update_Frpc_Info"]);
                             Config.Write("FrpcVersion", "20260105");
                             downloadUrl = "";
                         }
@@ -465,7 +489,7 @@ namespace MSL.pages
                             //downloadSource.Add(downSource["value"].ToString());
                             string finalUrl = downSource["value"].ToString() + latestVer + "frpc_windows_amd64.zip";
                             LogHelper.Write.Info($"尝试从源下载 OpenFrp: {finalUrl}");
-                            int _return = await MagicShow.ShowDownloaderWithIntReturn(Window.GetWindow(this), finalUrl, "MSL\\frp", downloadFileName, LanguageManager.Instance["Download_Frpc_Info"], "", true);
+                            int _return = await MagicShow.ShowDownloaderWithIntReturn(GetOwnerWindow(), finalUrl, "MSL\\frp", downloadFileName, LanguageManager.Instance["Download_Frpc_Info"], "", true);
                             if (_return == 2)
                             {
                                 LogHelper.Write.Warn("用户取消了 OpenFrp 下载。");
@@ -482,7 +506,7 @@ namespace MSL.pages
                     {
                         LogHelper.Write.Info("正在获取 SakuraFrp 下载地址。");
                         JObject apiData = JObject.Parse((await HttpService.GetContentAsync("https://api.natfrp.com/v4/system/clients")).ToString());
-                        await MagicShow.ShowDownloader(Window.GetWindow(this), (string)apiData["frpc"]["archs"]["windows_amd64"]["url"], "MSL\\frp", downloadFileName, LanguageManager.Instance["Download_Frpc_Info"]);
+                        await MagicShow.ShowDownloader(GetOwnerWindow(), (string)apiData["frpc"]["archs"]["windows_amd64"]["url"], "MSL\\frp", downloadFileName, LanguageManager.Instance["Download_Frpc_Info"]);
                     }
                     else if (downloadUrl == "ChmlFrp")
                     {
@@ -490,7 +514,7 @@ namespace MSL.pages
                         string link = "https://cf-v1.uapis.cn/download/ChmlFrp-0.51.2_251023_2_windows_amd64.zip";
 
                         LogHelper.Write.Info($"找到 ChmlFrp amd64 下载地址: {link}");
-                        await MagicShow.ShowDownloader(Window.GetWindow(this), link, "MSL\\frp", downloadFileName, LanguageManager.Instance["Download_Frpc_Info"]);
+                        await MagicShow.ShowDownloader(GetOwnerWindow(), link, "MSL\\frp", downloadFileName, LanguageManager.Instance["Download_Frpc_Info"]);
 
                     }
                     else if (downloadUrl == "MEFrp")
@@ -530,7 +554,7 @@ namespace MSL.pages
                             }
                             string fileName = $"https://drive.mcsl.com.cn/d/ME-Frp/Lanzou/MEFrp-Core/{version}/{targetFile["name"].ToString()}";
                             LogHelper.Write.Info($"找到 ME Frp 下载链接: {fileName}");
-                            await MagicShow.ShowDownloader(Window.GetWindow(this), fileName, "MSL\\frp", downloadFileName, LanguageManager.Instance["Download_Frpc_Info"],enableParalle:false,useNativeHttpClient:false);
+                            await MagicShow.ShowDownloader(GetOwnerWindow(), fileName, "MSL\\frp", downloadFileName, LanguageManager.Instance["Download_Frpc_Info"],enableParalle:false,useNativeHttpClient:false);
                         }
                         catch (Exception ex)
                         {
@@ -544,7 +568,7 @@ namespace MSL.pages
                     else if (downloadUrl != "")
                     {
                         LogHelper.Write.Info($"正在从 {downloadUrl} 下载 {downloadFileName}。");
-                        await MagicShow.ShowDownloader(Window.GetWindow(this), downloadUrl, "MSL\\frp", downloadFileName, LanguageManager.Instance["Download_Frpc_Info"]);
+                        await MagicShow.ShowDownloader(GetOwnerWindow(), downloadUrl, "MSL\\frp", downloadFileName, LanguageManager.Instance["Download_Frpc_Info"]);
                     }
 
                     //只有官方版本+sakura不需要
@@ -579,7 +603,7 @@ namespace MSL.pages
 
                 if (frpcServer == 0)
                 {
-                    tempStr = jobject[FrpID.ToString()]["name"].ToString();
+                    tempStr = jobject[FrpID.ToString()]?["name"]?.ToString() ?? string.Empty;
                 }
                 //该启动了！
                 FrpcProcess.StartInfo.WorkingDirectory = $"MSL\\frp\\{FrpID}";
@@ -611,11 +635,11 @@ namespace MSL.pages
                 LogHelper.Write.Fatal($"启动 Frpc (FrpID: {FrpID}) 时发生严重错误: {e.ToString()}");
                 if (e.Message.Contains("Frpc Not Found"))
                 {
-                    MagicShow.ShowMsg(Window.GetWindow(this), Lang.Page_FrpcPage_CustomFrpcNotFound + e.Message, Lang.Page_FrpcPage_Error);
+                    MagicShow.ShowMsg(GetOwnerWindow(), Lang.Page_FrpcPage_CustomFrpcNotFound + e.Message, Lang.Page_FrpcPage_Error);
                 }
                 else
                 {
-                    MagicShow.ShowMsg(Window.GetWindow(this), Lang.Page_FrpcPage_ErrorCheckAVFull + e.Message, Lang.Page_FrpcPage_Error);
+                    MagicShow.ShowMsg(GetOwnerWindow(), Lang.Page_FrpcPage_ErrorCheckAVFull + e.Message, Lang.Page_FrpcPage_Error);
                 }
             }
             finally

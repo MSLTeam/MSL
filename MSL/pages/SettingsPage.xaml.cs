@@ -1,4 +1,4 @@
-﻿using HandyControl.Controls;
+using HandyControl.Controls;
 using HandyControl.Themes;
 using HandyControl.Tools;
 using Microsoft.Win32;
@@ -6,11 +6,14 @@ using MSL.controls.dialogs;
 using MSL.langs;
 using MSL.utils;
 using MSL.utils.Config;
+using Newtonsoft.Json.Linq;
 using System;
+using System.Collections.Generic;
 using System.Diagnostics;
 using System.Globalization;
 using System.IO;
 using System.Linq;
+using System.Text;
 using System.Threading.Tasks;
 using System.Windows;
 using System.Windows.Media;
@@ -29,6 +32,7 @@ namespace MSL.pages
         public static event App.DeleControl ChangeSkinStyle;
 
         private string _autoStartList = "";
+        private string _autoStartFrpcList = "";
 
         // 当前配置单例
         private static AppConfig Cfg => AppConfig.Current;
@@ -62,8 +66,7 @@ namespace MSL.pages
                 if (Cfg.AutoOpenFrpc != "False")
                 {
                     openfrpOnStart.IsChecked = true;
-                    AutoOpenFrpcList.Text = Cfg.AutoOpenFrpc;
-                    AutoOpenFrpcList.IsEnabled = false;
+                    _autoStartFrpcList = Cfg.AutoOpenFrpc;
                 }
 
                 autoGetPlayerInfo.IsChecked = Cfg.AutoGetPlayerInfo;
@@ -112,6 +115,9 @@ namespace MSL.pages
 
                 // 服务器列表
                 LoadServerList();
+
+                // 映射列表
+                LoadFrpcList();
             }
             catch
             {
@@ -135,6 +141,31 @@ namespace MSL.pages
                         AutoStartServers.Items.Add(entry);
                     else
                         ServersList.Items.Add(entry);
+                }
+            }
+            catch { }
+        }
+
+        // 加载 Frpc 列表
+        private void LoadFrpcList()
+        {
+            FrpcAvailableList.Items.Clear();
+            AutoStartFrpcList.Items.Clear();
+            try
+            {
+                if (!File.Exists(ConfigPaths.FrpConfig)) return;
+                var autoStartIds = (_autoStartFrpcList ?? "").Split(new[] { ',' }, StringSplitOptions.RemoveEmptyEntries).ToHashSet();
+                JObject jobject = JObject.Parse(File.ReadAllText(ConfigPaths.FrpConfig, Encoding.UTF8));
+                foreach (var property in jobject.Properties())
+                {
+                    string id = property.Name;
+                    if (id == "MSLFrpAccount" || id == "MSLFrpPasswd") continue;
+                    string name = property.Value?["name"]?.ToString() ?? Lang.Page_FrpcList_UnnamedTunnel;
+                    string entry = $"[{id}]{name}";
+                    if (autoStartIds.Contains(id))
+                        AutoStartFrpcList.Items.Add(entry);
+                    else
+                        FrpcAvailableList.Items.Add(entry);
                 }
             }
             catch { }
@@ -243,19 +274,17 @@ namespace MSL.pages
         {
             if (openfrpOnStart.IsChecked == true)
             {
-                if (string.IsNullOrWhiteSpace(AutoOpenFrpcList.Text))
+                if (string.IsNullOrWhiteSpace(_autoStartFrpcList))
                 {
                     Growl.Error(LanguageManager.Instance["SettingsPage_AddFrpcIdFirst"]);
                     openfrpOnStart.IsChecked = false;
                     return;
                 }
-                Cfg.AutoOpenFrpc = AutoOpenFrpcList.Text;
-                AutoOpenFrpcList.IsEnabled = false;
+                Cfg.AutoOpenFrpc = _autoStartFrpcList;
             }
             else
             {
                 Cfg.AutoOpenFrpc = "False";
-                AutoOpenFrpcList.IsEnabled = true;
             }
             Cfg.Save();
             MagicFlowMsg.ShowMessage(openfrpOnStart.IsChecked == true ? LanguageManager.Instance["SettingsPage_ToggleOn"] : LanguageManager.Instance["SettingsPage_ToggleOff"], 1);
@@ -632,6 +661,44 @@ namespace MSL.pages
             }
             MoveItems(ServersList, AutoStartServers);
             AutoStartServers_ItemsChanged();
+        }
+
+        private void AutoStartFrpcList_ItemsChanged()
+        {
+            var ids = new List<string>();
+            foreach (var item in AutoStartFrpcList.Items)
+            {
+                string s = item?.ToString() ?? "";
+                int left = s.IndexOf('[');
+                int right = s.IndexOf(']');
+                if (left >= 0 && right > left)
+                {
+                    ids.Add(s.Substring(left + 1, right - left - 1));
+                }
+            }
+            _autoStartFrpcList = ids.Count > 0 ? string.Join(",", ids) + "," : "";
+        }
+
+        private void TransferFrpcOut_Click(object sender, RoutedEventArgs e)
+        {
+            if (openfrpOnStart.IsChecked == true)
+            {
+                MagicShow.ShowMsgDialog(Window.GetWindow(this), LanguageManager.Instance["SettingsPage_CloseBeforeAdjust"], LanguageManager.Instance["Tip"]);
+                return;
+            }
+            MoveItems(AutoStartFrpcList, FrpcAvailableList);
+            AutoStartFrpcList_ItemsChanged();
+        }
+
+        private void TransferFrpcIn_Click(object sender, RoutedEventArgs e)
+        {
+            if (openfrpOnStart.IsChecked == true)
+            {
+                MagicShow.ShowMsgDialog(Window.GetWindow(this), LanguageManager.Instance["SettingsPage_CloseBeforeAdjust"], LanguageManager.Instance["Tip"]);
+                return;
+            }
+            MoveItems(FrpcAvailableList, AutoStartFrpcList);
+            AutoStartFrpcList_ItemsChanged();
         }
 
         private static void MoveItems(System.Windows.Controls.ListBox from, System.Windows.Controls.ListBox to)

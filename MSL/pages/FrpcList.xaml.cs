@@ -1,4 +1,4 @@
-﻿using MSL.langs;
+using MSL.langs;
 using MSL.pages.frpProviders.MSLFrp;
 using MSL.utils;
 using MSL.utils.Config;
@@ -7,6 +7,7 @@ using System;
 using System.Collections.Generic;
 using System.Collections.ObjectModel;
 using System.IO;
+using System.Linq;
 using System.Windows;
 using System.Windows.Controls;
 using System.Windows.Input;
@@ -152,7 +153,21 @@ namespace MSL.pages
                 JObject keyValuePairs = JObject.Parse(File.ReadAllText(ConfigPaths.FrpConfig));
                 keyValuePairs.Remove(selectedTunnel.ID);
                 File.WriteAllText(ConfigPaths.FrpConfig, Convert.ToString(keyValuePairs));
-                Directory.Delete(ConfigPaths.Frp(selectedTunnel.ID), true);
+                if (Directory.Exists(ConfigPaths.Frp(selectedTunnel.ID)))
+                {
+                    Directory.Delete(ConfigPaths.Frp(selectedTunnel.ID), true);
+                }
+
+                // 同步清理自启动配置中的已删除隧道
+                if (AppConfig.Current.AutoOpenFrpc != "False" && !string.IsNullOrWhiteSpace(AppConfig.Current.AutoOpenFrpc))
+                {
+                    var autoIds = AppConfig.Current.AutoOpenFrpc.Split(new[] { ',' }, StringSplitOptions.RemoveEmptyEntries)
+                        .Where(id => id != selectedTunnel.ID)
+                        .ToList();
+                    AppConfig.Current.AutoOpenFrpc = autoIds.Count > 0 ? string.Join(",", autoIds) + "," : "False";
+                    AppConfig.Current.Save();
+                }
+
                 GetFrpcConfig();
             }
 
