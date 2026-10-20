@@ -1,4 +1,4 @@
-﻿<Application x:Class="MSL.App"
+<Application x:Class="MSL.App"
              xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
              xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
              xmlns:hc="https://handyorg.github.io/handycontrol"
@@ -23,6 +23,10 @@
                             <!-- 侧边栏项底色：基础透明度 0（平时不可见），hover 时模板只动画透明度。
                                  浅色模式用比原来 Gray 更浅的灰，避免压浅色背景。 -->
                             <SolidColorBrush x:Key="SideMenuItemBrush" Color="#C8C8C8" Opacity="0" />
+                            <SolidColorBrush x:Key="GoldSponsorBackground" Color="#FFFDF7" />
+                            <SolidColorBrush x:Key="GoldSponsorBorder" Color="#F8CA8E" />
+                            <SolidColorBrush x:Key="NormalSponsorBackground" Color="#F6F6F7" />
+                            <SolidColorBrush x:Key="NormalSponsorBorder" Color="#E2E2E3" />
                         </ResourceDictionary>
 
                         <ResourceDictionary x:Key="Dark" hc:ThemeDictionary.Key="Dark">
@@ -32,6 +36,10 @@
                             <SolidColorBrush x:Key="SideMenuBrush" Color="#1D1E1F" Opacity="0.7" />
                             <!-- 深色模式保持原来 Gray 的观感 -->
                             <SolidColorBrush x:Key="SideMenuItemBrush" Color="#808080" Opacity="0" />
+                            <SolidColorBrush x:Key="GoldSponsorBackground" Color="#2A2218" />
+                            <SolidColorBrush x:Key="GoldSponsorBorder" Color="#D97706" />
+                            <SolidColorBrush x:Key="NormalSponsorBackground" Color="#282828" />
+                            <SolidColorBrush x:Key="NormalSponsorBorder" Color="#3E3E42" />
                         </ResourceDictionary>
                     </hc:ThemeResources.ThemeDictionaries>
                 </hc:ThemeResources>

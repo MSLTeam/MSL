@@ -7,10 +7,103 @@
       xmlns:langs="clr-namespace:MSL.langs"
       xmlns:local="clr-namespace:MSL.pages"
       xmlns:controls="clr-namespace:MSL.controls"
+      xmlns:iconPacks="http://metro.mahapps.com/winfx/xaml/iconpacks"
       mc:Ignorable="d" d:DesignHeight="460" d:DesignWidth="750" Style="{StaticResource AnimationPage}"
       Title="About" Loaded="Page_Loaded">
     <Page.Resources>
         <controls:NoCacheBitmapConverter x:Key="NoCacheBitmapConverter"/>
+
+        <local:SponsorTemplateSelector x:Key="SponsorTemplateSelector">
+            <local:SponsorTemplateSelector.GoldTemplate>
+                <DataTemplate DataType="{x:Type local:SponsorItem}">
+                    <Border Width="215" Height="50" Margin="5,4" CornerRadius="12"
+                            BorderBrush="{DynamicResource GoldSponsorBorder}" BorderThickness="1.5"
+                            Background="{DynamicResource GoldSponsorBackground}" Padding="8,4">
+                        <Grid>
+                            <Grid.ColumnDefinitions>
+                                <ColumnDefinition Width="Auto"/>
+                                <ColumnDefinition Width="*"/>
+                            </Grid.ColumnDefinitions>
+
+                            <Border Grid.Column="0" Width="34" Height="34" CornerRadius="17"
+                                    BorderBrush="#F59E0B" BorderThickness="1.5" Margin="0,0,7,0" VerticalAlignment="Center">
+                                <Ellipse Margin="1.5">
+                                    <Ellipse.Fill>
+                                        <ImageBrush ImageSource="{Binding Avatar, Converter={StaticResource NoCacheBitmapConverter}}" Stretch="UniformToFill"/>
+                                    </Ellipse.Fill>
+                                </Ellipse>
+                            </Border>
+
+                            <Grid Grid.Column="1" VerticalAlignment="Center">
+                                <Grid.RowDefinitions>
+                                    <RowDefinition Height="Auto"/>
+                                    <RowDefinition Height="Auto"/>
+                                </Grid.RowDefinitions>
+
+                                <Grid Grid.Row="0">
+                                    <Grid.ColumnDefinitions>
+                                        <ColumnDefinition Width="*"/>
+                                        <ColumnDefinition Width="Auto"/>
+                                    </Grid.ColumnDefinitions>
+                                    <StackPanel Grid.Column="0" Orientation="Horizontal" VerticalAlignment="Center" HorizontalAlignment="Left">
+                                        <iconPacks:PackIconMaterial Kind="Crown" Width="12" Height="12" Foreground="#E67E22" VerticalAlignment="Center" Margin="0,0,3,0"/>
+                                        <TextBlock Text="{Binding Name}" FontWeight="Bold" FontSize="12.5" Foreground="{DynamicResource PrimaryTextBrush}" TextTrimming="CharacterEllipsis" VerticalAlignment="Center" MaxWidth="105"/>
+                                    </StackPanel>
+                                    <TextBlock Grid.Column="1" Text="{Binding DisplayAmount}" FontWeight="Bold" FontSize="12.5" Foreground="#D9780B" VerticalAlignment="Center" HorizontalAlignment="Right"/>
+                                </Grid>
+
+                                <Grid Grid.Row="1" Margin="0,2,0,0">
+                                    <StackPanel Orientation="Horizontal" VerticalAlignment="Center" Visibility="{Binding SloganVisibility}">
+                                        <iconPacks:PackIconMaterial Kind="FormatQuoteOpen" Width="10" Height="10" Foreground="#E67E22" VerticalAlignment="Center" Margin="0,0,2,0"/>
+                                        <TextBlock Text="{Binding Slogan}" FontStyle="Italic" FontSize="10.5" Foreground="{DynamicResource PrimaryTextBrush}" Opacity="0.8" TextTrimming="CharacterEllipsis" MaxWidth="135" ToolTip="{Binding Slogan}"/>
+                                    </StackPanel>
+                                    <TextBlock Text="{Binding RoleText}" FontSize="10.5" Foreground="{DynamicResource PrimaryTextBrush}" Opacity="0.6" VerticalAlignment="Center" Visibility="{Binding RoleTextVisibility}"/>
+                                </Grid>
+                            </Grid>
+                        </Grid>
+                    </Border>
+                </DataTemplate>
+            </local:SponsorTemplateSelector.GoldTemplate>
+
+            <local:SponsorTemplateSelector.NormalTemplate>
+                <DataTemplate DataType="{x:Type local:SponsorItem}">
+                    <Border Width="215" Height="50" Margin="5,4" CornerRadius="12"
+                            BorderBrush="{DynamicResource NormalSponsorBorder}" BorderThickness="1"
+                            Background="{DynamicResource NormalSponsorBackground}" Padding="8,4">
+                        <Grid>
+                            <Grid.ColumnDefinitions>
+                                <ColumnDefinition Width="Auto"/>
+                                <ColumnDefinition Width="*"/>
+                            </Grid.ColumnDefinitions>
+
+                            <Ellipse Grid.Column="0" Width="34" Height="34" Margin="0,0,7,0" VerticalAlignment="Center">
+                                <Ellipse.Fill>
+                                    <ImageBrush ImageSource="{Binding Avatar, Converter={StaticResource NoCacheBitmapConverter}}" Stretch="UniformToFill"/>
+                                </Ellipse.Fill>
+                            </Ellipse>
+
+                            <Grid Grid.Column="1" VerticalAlignment="Center">
+                                <Grid.RowDefinitions>
+                                    <RowDefinition Height="Auto"/>
+                                    <RowDefinition Height="Auto"/>
+                                </Grid.RowDefinitions>
+
+                                <Grid Grid.Row="0">
+                                    <Grid.ColumnDefinitions>
+                                        <ColumnDefinition Width="*"/>
+                                        <ColumnDefinition Width="Auto"/>
+                                    </Grid.ColumnDefinitions>
+                                    <TextBlock Grid.Column="0" Text="{Binding Name}" FontWeight="Bold" FontSize="12.5" Foreground="{DynamicResource PrimaryTextBrush}" TextTrimming="CharacterEllipsis" VerticalAlignment="Center" HorizontalAlignment="Left" MaxWidth="115"/>
+                                    <TextBlock Grid.Column="1" Text="{Binding DisplayAmount}" FontWeight="Bold" FontSize="12.5" Foreground="#3C82F6" VerticalAlignment="Center" HorizontalAlignment="Right"/>
+                                </Grid>
+
+                                <TextBlock Grid.Row="1" Text="{Binding RoleText}" FontSize="10.5" Foreground="{DynamicResource PrimaryTextBrush}" Opacity="0.6" VerticalAlignment="Center" HorizontalAlignment="Left" Margin="0,2,0,0"/>
+                            </Grid>
+                        </Grid>
+                    </Border>
+                </DataTemplate>
+            </local:SponsorTemplateSelector.NormalTemplate>
+        </local:SponsorTemplateSelector>
     </Page.Resources>
     <controls:MagicScrollViewer>
         <controls:MagicCard x:Name="AbortSoftwareCard" Title="{Binding [Page_About_AboutMSL], Source={x:Static langs:LanguageManager.Instance}}" Margin="0,10,0,0">
@@ -30,11 +123,26 @@
                        Text="{Binding [Page_About_MainContent], Source={x:Static langs:LanguageManager.Instance}}"/>
 
                     <hc:Shield Subject="{Binding [Page_About_Website], Source={x:Static langs:LanguageManager.Instance}}" 
-                       Status="{Binding [OpenWebsite], Source={x:Static langs:LanguageManager.Instance}}" 
-                       Command="hc:ControlCommands.OpenLink" 
-                       CommandParameter="https://www.mslmc.cn/" 
-                       Margin="0,10,0,0" 
-                       HorizontalAlignment="Left"/>
+                               Status="{Binding [OpenWebsite], Source={x:Static langs:LanguageManager.Instance}}" 
+                               Command="hc:ControlCommands.OpenLink" 
+                               CommandParameter="https://www.mslmc.cn/" 
+                               Margin="0,10,0,0" 
+                               HorizontalAlignment="Left" 
+                               Cursor="Hand"/>
+
+                    <StackPanel Orientation="Horizontal" Margin="0,8,0,0">
+                        <hc:Shield Subject="GitHub" 
+                                   Status="MSLTeam/MSL 🌟" 
+                                   Command="hc:ControlCommands.OpenLink" 
+                                   CommandParameter="https://github.com/MSLTeam/MSL" 
+                                   Cursor="Hand"/>
+                        <TextBlock Text="（好用的话点个star支持下叭~）" 
+                                   VerticalAlignment="Center" 
+                                   FontSize="12" 
+                                   Foreground="{DynamicResource PrimaryTextBrush}" 
+                                   Opacity="0.75" 
+                                   Margin="8,0,0,0"/>
+                    </StackPanel>
 
                 </StackPanel>
             </Grid>
@@ -78,7 +186,27 @@
                 </ItemsControl.ItemTemplate>
             </ItemsControl>
         </controls:MagicCard>
-        <controls:MagicCard Title="{Binding [Page_About_Thanks], Source={x:Static langs:LanguageManager.Instance}}">
+        <controls:MagicCard Title="{Binding [Page_About_Sponsor], Source={x:Static langs:LanguageManager.Instance}}">
+            <StackPanel Margin="10,6,10,12">
+                <StackPanel Orientation="Horizontal" HorizontalAlignment="Center" Margin="0,0,0,8">
+                    <TextBlock Text="{Binding [Page_About_SponsorText], Source={x:Static langs:LanguageManager.Instance}}" 
+                               Foreground="{DynamicResource PrimaryTextBrush}" FontSize="13" VerticalAlignment="Center" Margin="0,0,8,0"/>
+                    <hc:Shield Subject="爱发电" Status="前往赞助 ⚡" 
+                               Command="hc:ControlCommands.OpenLink" 
+                               CommandParameter="https://afdian.com/a/mslteam" 
+                               Cursor="Hand"/>
+                </StackPanel>
+
+                <ItemsControl x:Name="SponsorsItemsControl" ItemTemplateSelector="{StaticResource SponsorTemplateSelector}">
+                    <ItemsControl.ItemsPanel>
+                        <ItemsPanelTemplate>
+                            <WrapPanel Orientation="Horizontal" HorizontalAlignment="Center" />
+                        </ItemsPanelTemplate>
+                    </ItemsControl.ItemsPanel>
+                </ItemsControl>
+            </StackPanel>
+        </controls:MagicCard>
+        <controls:MagicCard Title="{Binding [Page_About_Thanks], Source={x:Static langs:LanguageManager.Instance}}" Visibility="Collapsed">
             <Grid>
                 <Grid.RowDefinitions>
                     <RowDefinition Height="Auto"/>
@@ -94,7 +222,7 @@
                     </StackPanel>
                 </StackPanel>
 
-                <ItemsControl x:Name="StarsItemsControl" Grid.Row="1" Margin="10,0,10,10">
+                <ItemsControl x:Name="StarsItemsControl" Grid.Row="1" Margin="10,0,10,10" Visibility="Collapsed">
                     <ItemsControl.ItemsPanel>
                         <ItemsPanelTemplate>
                             <WrapPanel Orientation="Horizontal" HorizontalAlignment="Center" />
@@ -130,7 +258,7 @@
                 <hc:Shield Subject="https://github.com/MSLTeam/MSL" Status="{Binding [OpenWebsite], Source={x:Static langs:LanguageManager.Instance}}" Margin="20,5,20,0" Command="hc:ControlCommands.OpenLink" CommandParameter="https://github.com/MSLTeam/MSL" HorizontalAlignment="Left" VerticalAlignment="Top"/>
             </StackPanel>
         </controls:MagicCard>
-        <controls:MagicCard Title="{Binding [Page_About_Package], Source={x:Static langs:LanguageManager.Instance}}">
+        <controls:MagicCard Margin="0,0,0,20" Title="{Binding [Page_About_Package], Source={x:Static langs:LanguageManager.Instance}}">
             <Expander >
                 <Expander.Style>
                     <Style TargetType="Expander" BasedOn="{StaticResource ExpanderBaseStyle}">
@@ -257,12 +385,6 @@
                     </StackPanel>
                 </StackPanel>
             </Expander>
-        </controls:MagicCard>
-        <controls:MagicCard Margin="0,0,0,20" Title="{Binding [Page_About_Sponsor], Source={x:Static langs:LanguageManager.Instance}}">
-            <StackPanel>
-                <TextBlock Text="{Binding [Page_About_SponsorText], Source={x:Static langs:LanguageManager.Instance}}" Foreground="{DynamicResource PrimaryTextBrush}" FontSize="16" VerticalAlignment="Center" HorizontalAlignment="Center"/>
-                <hc:Shield Subject="https://afdian.com/a/MSLTeam" Status="{Binding [OpenWebsite], Source={x:Static langs:LanguageManager.Instance}}" Margin="0,5,0,0" Command="hc:ControlCommands.OpenLink" CommandParameter="https://afdian.com/a/makabaka123" HorizontalAlignment="Center"/>
-            </StackPanel>
         </controls:MagicCard>
     </controls:MagicScrollViewer>
 </Page>
